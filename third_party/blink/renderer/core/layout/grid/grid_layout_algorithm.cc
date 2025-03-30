@@ -3310,7 +3310,8 @@ void GridLayoutAlgorithm::PlaceGridItems(
   GapGeometry* gap_geometry = nullptr;
 
   if (RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
-    gap_geometry = MakeGarbageCollected<GapGeometry>();
+    gap_geometry =
+        MakeGarbageCollected<GapGeometry>(GapGeometry::ContainerType::kGrid);
     BuildGapIntersectionPoints(layout_data, gap_geometry);
   }
 
@@ -3964,6 +3965,8 @@ void GridLayoutAlgorithm::BuildGapIntersectionPoints(
 
   gap_geometry->SetGapIntersections(kForColumns, std::move(columns));
   gap_geometry->SetGapIntersections(kForRows, std::move(rows));
+  gap_geometry->SetBlockGapSize(layout_data.Rows().GutterSize());
+  gap_geometry->SetInlineGapSize(layout_data.Columns().GutterSize());
 }
 
 void GridLayoutAlgorithm::MarkBlockedStatusForGapIntersections(

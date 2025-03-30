@@ -42,10 +42,10 @@ export class AutoTabGroupsResultsElement extends CrLitElement {
     };
   }
 
-  session?: TabOrganizationSession;
-  availableHeight: number = 0;
+  accessor session: TabOrganizationSession|undefined;
+  accessor availableHeight: number = 0;
 
-  protected feedbackSelectedOption_: CrFeedbackOption =
+  protected accessor feedbackSelectedOption_: CrFeedbackOption =
       CrFeedbackOption.UNSPECIFIED;
 
   static override get styles() {

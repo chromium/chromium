@@ -112,6 +112,7 @@
 <translation id="244264527810019436">Ayrim saytlardagi funksiyalar Inkognito rejimida ishlamasligi mumkin</translation>
 <translation id="2442870161001914531">Har doim kompyuter versiyasi ochilsin</translation>
 <translation id="2445311670906052406">Endi Chrome qurilmangizga oxirgi varaqlarni ulashadi. Ular qurilmadagi ilovalar roʻyxati va qidiruv natijalarida chiqadi. Buni istalgan vaqt Chrome sozlamalarida faolsizlantirishingiz mumkin.</translation>
+<translation id="245322989586167203">Saytlar odatda tarmoqni sozlash va axborot uzatish maqsadida seriyali portlarga ulanadi</translation>
 <translation id="2469312991797799607"><ph name="ORIGIN" /> sayti va unga aloqador saytlar tomonidan saqlangan barcha maʼlumotlar va cookie fayllari oʻchirib tashlanadi.</translation>
 <translation id="2482878487686419369">Bildirishnomalar</translation>
 <translation id="2485422356828889247">O‘chirib tashlash</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">Bu qurilmadan foydalanish axborotlarini saytlar bilishini taqiqlash</translation>
 <translation id="4412992751769744546">Tashqi saytlarga cookie fayllarni saqlashga ruxsat berish</translation>
 <translation id="4419929467120297501">Chrome saytlarni kezishda sizni kuzatish uchun tashqi cookie fayllardan foydalanuvchi saytlarni bloklaydi. Sozlamalar orqali <ph name="BEGIN_LINK" />tashqi cookie fayllariga ruxsatni boshqarish mumkin<ph name="END_LINK" />.</translation>
+<translation id="443121186588148776">Ketma-ket port</translation>
 <translation id="4434045419905280838">Qalquvchi oyna va yo‘naltirishlar</translation>
 <translation id="443552056913301231">Bunda qurilmadagi cookie fayllar kabi barcha maʼlumotlar oʻchib ketadi va <ph name="ORIGIN" /> saytining barcha ruxsatlari tiklanadi</translation>
 <translation id="4468959413250150279">Muayyan saytdagi ovozni o‘chirish.</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Avval so‘ralsin</translation>
 <translation id="7423538860840206698">Klipborddan o‘qish taqiqlangan</translation>
 <translation id="7425915948813553151">Saytlar uchun tungi mavzu</translation>
+<translation id="7478658909253570368">Saytlarga seriyali portlarga ulanishni taqiqlash</translation>
 <translation id="7488573225650545859">Ilovalar roʻyxatida varaqlarni ochish panelini berkitish</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Yoqilsa, saytlar kirish soʻrovlarini koʻrsatishi mumkin. Oʻchirilsa, koʻrsata olmaydi.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Bluetooth qurilmaga ulandi</translation>
 <translation id="7617547684249261169">Tarix, cookie fayllar, sayt maʼlumotlarini toʻliq yoki qisman oʻchirishingiz mumkin</translation>
 <translation id="7649070708921625228">Yordam</translation>
+<translation id="7655411746932645568">Saytlar seriyali portlarga ulanishga ruxsat soʻray oladi</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
 <translation id="7667547420449112975">Oz mamlakati sehrgari</translation>
 <translation id="7681597159868843240">Saytlar odatda virtual reallik yoki qadam sanash kabi funksiyalar uchun qurilmadagi harakat sensorlaridan foydalanadi</translation>

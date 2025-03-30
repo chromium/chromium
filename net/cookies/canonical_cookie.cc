@@ -826,7 +826,7 @@ void CanonicalCookie::PostIncludeForRequestURL(
     const CookieOptions& options_used,
     CookieOptions::SameSiteCookieContext::ContextType
         cookie_inclusion_context_used) const {
-  if (!metrics_subsampler_.ShouldSample(kHistogramSampleProbability)) {
+  if (!base::ShouldRecordSubsampledMetric(kHistogramSampleProbability)) {
     return;
   }
 
@@ -865,7 +865,7 @@ void CanonicalCookie::PostIncludeForRequestURL(
 void CanonicalCookie::PostIsSetPermittedInContext(
     const CookieAccessResult& access_result,
     const CookieOptions& options_used) const {
-  if (!metrics_subsampler_.ShouldSample(kHistogramSampleProbability)) {
+  if (!base::ShouldRecordSubsampledMetric(kHistogramSampleProbability)) {
     return;
   }
 

@@ -5481,6 +5481,243 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       true, 2);
 }
 
+// Tests that the prefetch eviction for eligible but not started triggers (i.e.
+// `PreloadingAttempt`'s `PreloadingHoldbackStatus` is `kUnspecified`) causes no
+// crash. This is a regression test of crbug.com/404703517.
+TEST_P(PrefetchServiceTest, PrefetchEvictionForEligibleButNotStartedPrefetch) {
+  NavigateAndCommit(GURL("https://example.com"));
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/2));
+
+  const auto url_1 = GURL("https://example.com/one");
+  const auto url_2 = GURL("https://example.com/two");
+  auto candidate_1 = blink::mojom::SpeculationCandidate::New();
+  candidate_1->url = url_1;
+  candidate_1->action = blink::mojom::SpeculationAction::kPrefetch;
+  candidate_1->eagerness = blink::mojom::SpeculationEagerness::kEager;
+  candidate_1->referrer = blink::mojom::Referrer::New();
+  auto candidate_2 = candidate_1.Clone();
+  candidate_2->url = url_2;
+
+  // Send `candidate_1` and `candidate_2`.
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(candidate_1.Clone());
+  candidates.push_back(candidate_2.Clone());
+  auto* prefetch_document_manager =
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
+  prefetch_document_manager->ProcessCandidates(candidates);
+  task_environment()->RunUntilIdle();
+
+  PrefetchService* prefetch_service =
+      BrowserContextImpl::From(browser_context())->GetPrefetchService();
+  base::WeakPtr<PrefetchContainer> prefetch_container1, prefetch_container2;
+  std::tie(std::ignore, prefetch_container1) =
+      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchContainer::Key(MainDocumentToken(), url_1))[0];
+  std::tie(std::ignore, prefetch_container2) =
+      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchContainer::Key(MainDocumentToken(), url_2))[0];
+
+  // `candidate_1` should be started, while `candidate_2` stays in a queue.
+  ASSERT_EQ(prefetch_container1->GetLoadState(),
+            PrefetchContainer::LoadState::kStarted);
+  ASSERT_EQ(prefetch_container2->GetLoadState(),
+            PrefetchContainer::LoadState::kEligible);
+
+  // Try to evict.
+  prefetch_service->EvictPrefetchesForBrowsingDataRemoval(
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kPreserve)
+          ->BuildStorageKeyFilter(),
+      PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved);
+
+  // - `candidate_1` should have `PreloadingEligibility::kEligible`,
+  //   `PreloadingHoldbackStatus::kAllowed` and
+  //   `PreloadingTriggeringOutcome::kFailure` as
+  //   `kPrefetchEvictedAfterBrowsingDataRemoved`.
+  // - `candidate_2` should have `PreloadingEligibility::kEligible` but
+  //   `PreloadingHoldbackStatus::kUnspecified` (as the holdback status will be
+  //   determined when the prefetch is actually started) and
+  //   `PreloadingTriggeringOutcome::kUnspecified`.
+  {
+    const auto source_id = ForceLogsUploadAndGetUkmId();
+    auto actual_attempts = test_ukm_recorder()->GetEntries(
+        ukm::builders::Preloading_Attempt::kEntryName,
+        test::kPreloadingAttemptUkmMetrics);
+    ASSERT_EQ(actual_attempts.size(), 2u);
+    std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> expected_attempts =
+        {attempt_entry_builder()->BuildEntry(
+             source_id, PreloadingType::kPrefetch,
+             PreloadingEligibility::kEligible,
+             PreloadingHoldbackStatus::kAllowed,
+             PreloadingTriggeringOutcome::kFailure,
+             ToPreloadingFailureReason(
+                 PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved),
+             /*accurate=*/false,
+             /*ready_time=*/std::nullopt,
+             blink::mojom::SpeculationEagerness::kEager),
+         attempt_entry_builder()->BuildEntry(
+             source_id, PreloadingType::kPrefetch,
+             PreloadingEligibility::kEligible,
+             PreloadingHoldbackStatus::kUnspecified,
+             PreloadingTriggeringOutcome::kUnspecified,
+             PreloadingFailureReason::kUnspecified,
+             /*accurate=*/false,
+             /*ready_time=*/std::nullopt,
+             blink::mojom::SpeculationEagerness::kEager)};
+    ASSERT_THAT(actual_attempts,
+                testing::UnorderedElementsAreArray(expected_attempts))
+        << test::ActualVsExpectedUkmEntriesToString(actual_attempts,
+                                                    expected_attempts);
+  }
+}
+
+// Tests that the prefetch eviction during eligiblity check (i.e.
+// `PreloadingAttempt`'s `PreloadingEligibility` is `kUnspecified`) causes no
+// crash. This is a regression test of crbug.com/404703517.
+TEST_P(PrefetchServiceTest, PrefetchEvictionDuringEligiblityCheck) {
+  NavigateAndCommit(GURL("https://example.com"));
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/1));
+  PrefetchService* prefetch_service =
+      BrowserContextImpl::From(browser_context())->GetPrefetchService();
+
+  // Pause the elibility check.
+  base::test::TestFuture<base::OnceClosure> eligibility_check_callback_future;
+  prefetch_service->SetDelayEligibilityCheckForTesting(base::BindRepeating(
+      [](base::test::TestFuture<base::OnceClosure>*
+             eligibility_check_callback_future,
+         base::OnceClosure callback) {
+        eligibility_check_callback_future->SetValue(std::move(callback));
+      },
+      base::Unretained(&eligibility_check_callback_future)));
+
+  const auto url_1 = GURL("https://example.com/one");
+  auto candidate_1 = blink::mojom::SpeculationCandidate::New();
+  candidate_1->url = url_1;
+  candidate_1->action = blink::mojom::SpeculationAction::kPrefetch;
+  candidate_1->eagerness = blink::mojom::SpeculationEagerness::kEager;
+  candidate_1->referrer = blink::mojom::Referrer::New();
+
+  // Send `candidate_1`;
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(candidate_1.Clone());
+  auto* prefetch_document_manager =
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
+  prefetch_document_manager->ProcessCandidates(candidates);
+  task_environment()->RunUntilIdle();
+
+  base::WeakPtr<PrefetchContainer> prefetch_container1;
+  std::tie(std::ignore, prefetch_container1) =
+      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchContainer::Key(MainDocumentToken(), url_1))[0];
+
+  // `candidate_1` should be on a way of eligibility check.
+  ASSERT_EQ(prefetch_container1->GetLoadState(),
+            PrefetchContainer::LoadState::kNotStarted);
+
+  // Try to evict.
+  prefetch_service->EvictPrefetchesForBrowsingDataRemoval(
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kPreserve)
+          ->BuildStorageKeyFilter(),
+      PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved);
+  {
+    const auto source_id = ForceLogsUploadAndGetUkmId();
+    auto actual_attempts = test_ukm_recorder()->GetEntries(
+        ukm::builders::Preloading_Attempt::kEntryName,
+        test::kPreloadingAttemptUkmMetrics);
+    ASSERT_EQ(actual_attempts.size(), 1u);
+    std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> expected_attempts =
+        {attempt_entry_builder()->BuildEntry(
+            source_id, PreloadingType::kPrefetch,
+            PreloadingEligibility::kUnspecified,
+            PreloadingHoldbackStatus::kUnspecified,
+            PreloadingTriggeringOutcome::kUnspecified,
+            PreloadingFailureReason::kUnspecified,
+            /*accurate=*/false,
+            /*ready_time=*/std::nullopt,
+            blink::mojom::SpeculationEagerness::kEager)};
+    ASSERT_THAT(actual_attempts,
+                testing::UnorderedElementsAreArray(expected_attempts))
+        << test::ActualVsExpectedUkmEntriesToString(actual_attempts,
+                                                    expected_attempts);
+  }
+
+  prefetch_service->SetDelayEligibilityCheckForTesting(base::NullCallback());
+}
+
+// Tests that the prefetch eviction for heldback triggers causes no crash. This
+// is a regression test of crbug.com/404703517.
+TEST_P(PrefetchServiceTest, PrefetchEvictionWhenHoldback) {
+  content::test::PreloadingConfigOverride preloading_config_override;
+  preloading_config_override.SetHoldback(
+      PreloadingType::kPrefetch,
+      content_preloading_predictor::kSpeculationRules, true);
+
+  NavigateAndCommit(GURL("https://example.com"));
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/1));
+  PrefetchService* prefetch_service =
+      BrowserContextImpl::From(browser_context())->GetPrefetchService();
+
+  const auto url_1 = GURL("https://example.com/one");
+  auto candidate_1 = blink::mojom::SpeculationCandidate::New();
+  candidate_1->url = url_1;
+  candidate_1->action = blink::mojom::SpeculationAction::kPrefetch;
+  candidate_1->eagerness = blink::mojom::SpeculationEagerness::kEager;
+  candidate_1->referrer = blink::mojom::Referrer::New();
+
+  // Send `candidate_1`;
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(candidate_1.Clone());
+  auto* prefetch_document_manager =
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
+  prefetch_document_manager->ProcessCandidates(candidates);
+  task_environment()->RunUntilIdle();
+
+  base::WeakPtr<PrefetchContainer> prefetch_container1;
+  std::tie(std::ignore, prefetch_container1) =
+      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchContainer::Key(MainDocumentToken(), url_1))[0];
+  task_environment()->RunUntilIdle();
+
+  // `candidate_1` should be failed as heldback
+  ASSERT_EQ(prefetch_container1->GetLoadState(),
+            PrefetchContainer::LoadState::kFailedHeldback);
+
+  // Try to evict.
+  prefetch_service->EvictPrefetchesForBrowsingDataRemoval(
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kPreserve)
+          ->BuildStorageKeyFilter(),
+      PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved);
+  {
+    const auto source_id = ForceLogsUploadAndGetUkmId();
+    auto actual_attempts = test_ukm_recorder()->GetEntries(
+        ukm::builders::Preloading_Attempt::kEntryName,
+        test::kPreloadingAttemptUkmMetrics);
+    ASSERT_EQ(actual_attempts.size(), 1u);
+    std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> expected_attempts =
+        {attempt_entry_builder()->BuildEntry(
+            source_id, PreloadingType::kPrefetch,
+            PreloadingEligibility::kEligible,
+            PreloadingHoldbackStatus::kHoldback,
+            PreloadingTriggeringOutcome::kUnspecified,
+            PreloadingFailureReason::kUnspecified,
+            /*accurate=*/false,
+            /*ready_time=*/std::nullopt,
+            blink::mojom::SpeculationEagerness::kEager)};
+    ASSERT_THAT(actual_attempts,
+                testing::UnorderedElementsAreArray(expected_attempts))
+        << test::ActualVsExpectedUkmEntriesToString(actual_attempts,
+                                                    expected_attempts);
+  }
+}
+
 class PrefetchServiceNewLimitsTest
     : public PrefetchServiceTestBase,
       public WithPrefetchServiceRearchParam,

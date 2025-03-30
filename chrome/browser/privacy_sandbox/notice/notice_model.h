@@ -30,7 +30,7 @@ using NoticeId = std::pair<notice::mojom::PrivacySandboxNotice, SurfaceType>;
 class Notice {
   // TODO(crbug.com/392612108): Include view group information.
  public:
-  explicit Notice(NoticeId notice_id);
+  explicit Notice(NoticeId notice_id, const base::Feature*);
   Notice(const Notice& other);
   virtual ~Notice();
 
@@ -40,19 +40,16 @@ class Notice {
   Notice* SetPreReqApis(const std::vector<NoticeApi*>& apis);
 
   // TODO(crbug.com/392612108): Implement a function to check if this
-  // notice was ever fulfilled, currently blocked by creating a
-  // feature / associated enum + surface to a string.
+  // notice was ever fulfilled.
 
   // Accessors.
   const std::vector<raw_ptr<NoticeApi>>& GetTargetApis();
   const std::vector<raw_ptr<NoticeApi>>& GetPreReqApis();
   NoticeId GetNoticeId();
+  const base::Feature* GetFeature();
 
   // Gets the type of notice.
   virtual NoticeType GetNoticeType();
-
-  // TODO(crbug.com/392612108): Implement an EventOccurred function, to be
-  // called from the framework once an event has occurred on this notice.
 
   // TODO(crbug.com/392612108) NoticeViews should also implement a function to
   // guard against a notice showing in certain conditions, even if it is the
@@ -60,17 +57,16 @@ class Notice {
   // notice showing for the wrong group of users: Over 18 for example.
 
  private:
-  // TODO(crbug.com/392612108): Add a feature for every notice here, we will
-  // use the associated string/name for pref setting.
   virtual std::vector<NoticeEvent> FulfillmentEvents() const;
   NoticeId notice_id_;
   std::vector<raw_ptr<NoticeApi>> target_apis_;
   std::vector<raw_ptr<NoticeApi>> pre_req_apis_;
+  raw_ptr<const base::Feature> feature_;
 };
 
 class Consent : public Notice {
  public:
-  explicit Consent(NoticeId notice_id);
+  explicit Consent(NoticeId notice_id, const base::Feature* feature);
   NoticeType GetNoticeType() override;
 
  private:
@@ -119,21 +115,21 @@ class NoticeCatalog {
   // classes need access to the template implementation source.
   // Registers a new notice.
   template <typename T>
-  Notice* RegisterAndRetrieveNewNotice(NoticeId notice_id) {
-    notices_.emplace(notice_id, std::make_unique<T>(T(notice_id)));
+  Notice* RegisterAndRetrieveNewNotice(NoticeId notice_id,
+                                       const base::Feature* feature) {
+    notices_.emplace(notice_id, std::make_unique<T>(T(notice_id, feature)));
     return notices_[notice_id].get();
   }
 
   // Registers a group of notices with the same requirements to be shown (for
   // ex. Topics can have TopicsClankBrApp, TopicsDesktop and TopicsClankCCT)
-  // TODO(crbug.com/392612108): As part of `notice_ids` we should also add
-  // the associated feature.
   template <typename T>
-  void RegisterNoticeGroup(std::vector<NoticeId>&& notice_ids,
-                           std::vector<NoticeApi*>&& target_apis,
-                           std::vector<NoticeApi*>&& pre_req_apis = {}) {
+  void RegisterNoticeGroup(
+      std::vector<std::pair<NoticeId, const base::Feature*>>&& notice_ids,
+      std::vector<NoticeApi*>&& target_apis,
+      std::vector<NoticeApi*>&& pre_req_apis = {}) {
     for (auto notice_id : notice_ids) {
-      RegisterAndRetrieveNewNotice<T>(notice_id)
+      RegisterAndRetrieveNewNotice<T>(notice_id.first, notice_id.second)
           ->SetTargetApis(target_apis)
           ->SetPreReqApis(pre_req_apis);
     }

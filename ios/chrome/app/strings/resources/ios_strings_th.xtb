@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">นำออก</translation>
 <translation id="1190609913194133056">ศูนย์การแจ้งเตือน</translation>
 <translation id="1201402288615127009">ถัดไป</translation>
-<translation id="1202892408424955784">ผลิตภัณฑ์ที่ติดตาม</translation>
 <translation id="1204075260022434100">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" ในบัญชี {email} ของคุณแล้ว}other{บันทึกบุ๊กมาร์ก {count} รายการไปยัง "{title}" ในบัญชี {email} ของคุณแล้ว}}</translation>
 <translation id="120431140543679678">ติดตาม</translation>
 <translation id="1207493287814084192">17:30 น.</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">รายการใหม่</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> บัญชีใช้รหัสผ่านเดียวกัน</translation>
 <translation id="2059166748188874810">เทศบาล</translation>
-<translation id="2060114494785549741">ลบในอีก 1 เดือน</translation>
 <translation id="2060638295449304809">ที่อยู่ข้างต้นจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">ตัวเลือกประเภทหน่วย</translation>
 <translation id="2067852168641682340">บันทึกลงในบัญชีนี้ทุกครั้ง</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">ซ่อนการ์ด "ติดตามราคา"</translation>
 <translation id="2216366330550244277">ไปที่หน้าผลิตภัณฑ์</translation>
 <translation id="2220529011494928058">รายงานปัญหา</translation>
-<translation id="2220887224562128152">เมื่อตั้งเวลาลบไฟล์แล้ว คุณจะกู้คืนไฟล์ไม่ได้</translation>
 <translation id="2223461067862937305">สร้างคิวอาร์โค้ด</translation>
 <translation id="2229345671837147090">ตารางกริดของแท็บระยะไกล</translation>
 <translation id="2230173723195178503">หน้าเว็บโหลดแล้ว</translation>
@@ -384,7 +381,6 @@
 <translation id="2539748786028143624">เปิดใช้การปกป้องที่ดียิ่งขึ้น…</translation>
 <translation id="2540111494300686866">ระงับกล่องโต้ตอบ</translation>
 <translation id="2542268842667970959">ซ่อน "การตรวจสอบความปลอดภัย"</translation>
-<translation id="2543870349255816922">การ์ดนี้แสดงราคาต่ำลงของผลิตภัณฑ์ที่ติดตามจากอุปกรณ์ที่ซิงค์เครื่องใดเครื่องหนึ่ง</translation>
 <translation id="2547458583188611426">การซิงค์ไม่ทำงาน หากต้องการเริ่มการซิงค์ ให้ป้อนรหัสผ่าน</translation>
 <translation id="2551153019974022505">ข้อผิดพลาดของบัญชี</translation>
 <translation id="2559843230610279254">กลุ่มแท็บ, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> แท็บ</translation>
@@ -495,7 +491,6 @@
 <translation id="3059270601560379555">ค้นหาใหม่</translation>
 <translation id="3064547930554042309">จัดการการดาวน์โหลด</translation>
 <translation id="3072279342064724558">มีรหัสผ่านอยู่แล้ว</translation>
-<translation id="3074862506644936708">เปิดใช้การลบอัตโนมัติ</translation>
 <translation id="3076846064362030967">คุณจะไม่ออกจากระบบบัญชี Google ระบบอาจบันทึก<ph name="BEGIN_LINK" />กิจกรรมรูปแบบอื่น<ph name="END_LINK" />ในบัญชี Google เมื่อคุณลงชื่อเข้าใช้ คุณลบข้อมูลนี้ได้ทุกเมื่อ
 
 
@@ -917,6 +912,7 @@
 <translation id="4896467949657706481">ปิดแท็บแล้ว คุณออกจากระบบแล้ว</translation>
 <translation id="4913626501929406101">คุณแชร์สำเนารหัสผ่านกับคนในกลุ่มครอบครัวได้อย่างปลอดภัย <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">ยอมรับ</translation>
+<translation id="4930714375720679147">เปิด</translation>
 <translation id="4932733599132424254">วันที่</translation>
 <translation id="4936354130727646074">ไม่ต้องย้าย</translation>
 <translation id="4937410517508563815">บันทึกรหัสผ่านในบัญชี</translation>
@@ -1152,7 +1148,6 @@
 <translation id="5899314093904173337">ให้คนที่อยู่ใกล้ๆ สแกนคิวอาร์โค้ดนี้โดยใช้กล้องหรือตัวสแกนคิวอาร์โค้ดเพื่อแชร์</translation>
 <translation id="5902752768726620872">{count,plural, =1{แท็บใหม่ {count} แท็บ}other{แท็บใหม่ {count} แท็บ}}</translation>
 <translation id="5911030830365207728">Google แปลภาษา</translation>
-<translation id="5917913282764181683">ลบการดาวน์โหลดโดยอัตโนมัติ</translation>
 <translation id="5922999516621365983">ลากแท็บมาที่นี่เพื่อปักหมุด</translation>
 <translation id="5936006948844852401">จัดการพื้นที่เก็บข้อมูล</translation>
 <translation id="5936065461722368675">แปลทั้งหน้า</translation>
@@ -1511,7 +1506,6 @@
 <translation id="741204030948306876">ได้สิ ตกลง</translation>
 <translation id="7417689656810783109">เปลี่ยนชื่อกลุ่ม</translation>
 <translation id="7419565702166471774">ใช้การเชื่อมต่อที่ปลอดภัยทุกครั้ง</translation>
-<translation id="742001653298797675">ตั้งเวลาให้ระบบลบการดาวน์โหลดทั้งหมดหลังจากผ่านไป 1 เดือนเพื่อประหยัดพื้นที่ในโทรศัพท์และปกป้องความเป็นส่วนตัว</translation>
 <translation id="7425053386765766120">เพิ่มวิธีการชำระเงิน…</translation>
 <translation id="7425346204213733349">การเปลี่ยนแปลงบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ จะไม่ซิงค์กับบัญชี Google ของคุณอีกต่อไป อย่างไรก็ตาม ข้อมูลที่คุณมีจะยังคงจัดเก็บอยู่ในบัญชี Google</translation>
 <translation id="742664698522525515">เก็บกลุ่มไว้ไหม</translation>

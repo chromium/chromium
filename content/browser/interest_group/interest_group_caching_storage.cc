@@ -562,6 +562,28 @@ void InterestGroupCachingStorage::GetBiddingAndAuctionServerKeys(
       .Then(std::move(callback));
 }
 
+void InterestGroupCachingStorage::WriteHashedKAnonymityKeysToCache(
+    const std::vector<std::string>& positive_hashed_keys,
+    const std::vector<std::string>& negative_hashed_keys,
+    base::Time time_fetched) {
+  interest_group_storage_
+      .AsyncCall(base::IgnoreResult(
+          &InterestGroupStorage::WriteHashedKAnonymityKeysToCache))
+      .WithArgs(positive_hashed_keys, negative_hashed_keys, time_fetched);
+}
+
+void InterestGroupCachingStorage::LoadPositiveHashedKAnonymityKeysFromCache(
+    const std::vector<std::string>& keys,
+    base::Time min_valid_time,
+    base::OnceCallback<void(InterestGroupStorage::KAnonymityCacheResponse)>
+        callback) {
+  interest_group_storage_
+      .AsyncCall(
+          &InterestGroupStorage::LoadPositiveHashedKAnonymityKeysFromCache)
+      .WithArgs(keys, min_valid_time)
+      .Then(std::move(callback));
+}
+
 void InterestGroupCachingStorage::GetLastMaintenanceTimeForTesting(
     base::RepeatingCallback<void(base::Time)> callback) const {
   interest_group_storage_

@@ -8,6 +8,7 @@
 <translation id="100323615638474026">USB qurilma (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Oxirgi yuklab olish tarixi</translation>
 <translation id="1004218526896219317">Ruxsat etilgan saytlar</translation>
+<translation id="1005230401424685968">YYYY</translation>
 <translation id="1005274289863221750">Mikrofon va kameradan foydalanish</translation>
 <translation id="1005333234656240382">ADB tuzatish vositasi yoqilsinmi?</translation>
 <translation id="1005671386794704751">Rose</translation>
@@ -1366,6 +1367,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="193565226207940518">Yordam vositasi</translation>
 <translation id="1935995810530254458">Baribir nusxalansin</translation>
 <translation id="1936157145127842922">Jildda ko‘rsatish</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Sahifa mutolaa roʻyxatiga qoʻshildi}other{Sahifalar mutolaa roʻyxatiga qoʻshildi}}</translation>
 <translation id="1936931585862840749">Chop etish uchun nusxalar sonini kiriting (1-<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> protsessorli qurilmangizga <ph name="ARCHITECTURE_CONTAINER" /> turidagi zaxiraviy nusxasi tiklanmaydi. Arxivni boshqa turdagi protsessorli qurilmada tiklash yoki Fayllar ilovasi orqali tarkibidagi zaxiralangan fayllarini ochish mumkin.</translation>
 <translation id="1938351510777341717">Tashqi buyruq</translation>
@@ -3175,7 +3177,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
         <ph name="BREAK" />
         <ph name="BREAK" />
         Chromeni moslash sahifasi orqali istalgan vaqt bu bildirgi sozlamalarini boshqarish yoki qoʻshimcha parametrlarni koʻrish mumkin.</translation>
-<translation id="3207437351138888228">Shakl toʻldirishda kiritilgan axborot va uning sahifasi taklif yaratish maqsadida Google serverlariga yuboriladi</translation>
 <translation id="3207960819495026254">Xatcho‘plarga qo‘shildi</translation>
 <translation id="3208584281581115441">Hozir tekshirish</translation>
 <translation id="3208703785962634733">Tasdiqlanmagan</translation>
@@ -3220,6 +3221,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3242289508736283383">Manifest faylida “kiosk_only” atributi mavjud ilovalarni ChromeOS tizimida faqatgina kiosk rejimida oʻrnatish mumkin</translation>
 <translation id="3243017971870859287">ChromeOS Flex qurilmasi va komponenti seriya raqamlarini oʻqish</translation>
 <translation id="324366796737464147">Shovqinsizlantirish</translation>
+<translation id="3244271242291266297">OO</translation>
 <translation id="3244294424315804309">Ovoz o‘chirib qo‘yilsin</translation>
 <translation id="3247006341013237647">Varaqlar tartiblansinmi?</translation>
 <translation id="3247649647204519958">Bu yerda kengaytmalarning ochilgan saytdagi ruxsatlarini koʻrish va boshqarish mumkin</translation>
@@ -6086,7 +6088,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5267572070504076962">Xavfli saytlardan himoyalanish uchun xavfsiz kezish funksiyasini yoqing</translation>
 <translation id="5269977353971873915">Chop etib bo‘lmadi</translation>
 <translation id="5271578170655641944">Google Drive ruxsati olib tashlansinmi?</translation>
-<translation id="5271782684896713035">Xodimlarimiz bu funksiyani yaxshilash maqsadida mazkur maʼlumotlarni koʻrishi mumkin</translation>
 <translation id="5273806377963980154">Sayt URL manzilini tahrirlash</translation>
 <translation id="5275084684151588738">Foydalanuvchi lugʻatlari</translation>
 <translation id="5275338516105640560">Saqlangan varaqlar guruhi uchun tugma</translation>

@@ -325,7 +325,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2527209463677295330">Drwy gynnwys mwy o destun tudalen, gallech weld canlyniadau gwell</translation>
 <translation id="2527779675047087889">Cuddio cynnwys y clipfwrdd</translation>
 <translation id="2532336938189706096">Gwedd We</translation>
-<translation id="2534155362429831547">Cafodd <ph name="NUMBER_OF_ITEMS" /> eitem eu dileu</translation>
 <translation id="253498598929009420">Bydd y wefan yn gallu gweld cynnwys eich sgrîn</translation>
 <translation id="2536728043171574184">Wrthi'n edrych ar gopi all-lein o'r dudalen hon</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, Tab</translation>
@@ -365,7 +364,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2677748264148917807">Gadael</translation>
 <translation id="2687009626279857299">Wedi stopio gweithio ar y ddyfais hon</translation>
 <translation id="2702516483241149200">Newydd: gallwch rannu dolen sy'n sgrolio i'r testun hwn</translation>
-<translation id="2705073298859543115">Creu crynodeb</translation>
 <translation id="2708051474374549906">Amddiffyniad amser real, rhagweithiol yn erbyn gwefannau, lawrlwythiadau ac estyniadau peryglus sy'n seiliedig ar anfon eich data pori i Google</translation>
 <translation id="2708226184420201102">Agor yn y porwr <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">Newydd</translation>
@@ -1199,7 +1197,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6564820424018738527">Gall eich dyfais Android gynnwys gosodiad tebyg. Os caiff mesur hysbysebion ei droi ymlaen yn Chrome ac ar eich dyfais Android, mae'n bosib y gall cwmni fesur effeithiolrwydd hysbyseb ar draws gwefannau rydych yn ymweld â nhw a'r apiau rydych yn eu defnyddio.</translation>
 <translation id="6565959834589222080">Defnyddir Wi-Fi pan fydd ar gael</translation>
 <translation id="6569373978618239158">Nawr byddwch yn gweld straeon o <ph name="SITE_NAME" /> pan fyddwch yn agor tab newydd. Mae gwefannau rydych yn eu dilyn yn cael eu cadw yn eich cyfrif Google. Gallwch eu rheoli yn y gosodiadau Discover.</translation>
-<translation id="6570116402456758630">Crynodeb tudalen</translation>
 <translation id="657177046675873214">I gael eich nodau tudalen ar eich holl ddyfeisiau, trowch 'Nodau tudalen' ymlaen yn y gosodiadau</translation>
 <translation id="6573096386450695060">Caniatáu bob amser</translation>
 <translation id="6573431926118603307">Bydd tabiau rydych wedi'u hagor yn Chrome ar eich dyfeisiau eraill yn ymddangos yma.</translation>

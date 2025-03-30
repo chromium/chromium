@@ -5,8 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_WEBRTC_OVERRIDES_METRONOME_SOURCE_H_
 #define THIRD_PARTY_BLINK_WEBRTC_OVERRIDES_METRONOME_SOURCE_H_
 
-#include <atomic>
-#include <set>
+#include <memory>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -15,13 +14,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/delayed_task_handle.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/functional/any_invocable.h"
 #include "third_party/webrtc/api/metronome/metronome.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
 

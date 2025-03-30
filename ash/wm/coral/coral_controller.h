@@ -137,7 +137,8 @@ class ASH_EXPORT CoralController {
                             const Desk* source_desk);
 
   // Creates a saved desk with up to one browser with tabs from `group`.
-  void CreateSavedDeskFromGroup(coral::mojom::GroupPtr group,
+  void CreateSavedDeskFromGroup(const std::string& template_name,
+                                coral::mojom::GroupPtr group,
                                 aura::Window* root_window);
 
   void OpenFeedbackDialog(const std::string& group_description);
@@ -166,6 +167,7 @@ class ASH_EXPORT CoralController {
   // nothing.
   void OnTemplateCreated(std::vector<coral::mojom::EntityPtr> tab_app_entities,
                          std::unique_ptr<aura::WindowTracker> window_tracker,
+                         const std::string& template_name,
                          std::unique_ptr<DeskTemplate> desk_template);
 
   // Callback that is run after a saved desk is saved. Shows the saved desk

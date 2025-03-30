@@ -1080,6 +1080,10 @@ inline constexpr char kDeviceRestrictionScheduleHighestSeenTime[] =
 constexpr char kSunfishEnabled[] = "ash.capture_mode.sunfish_enabled";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Deprecated 03/2025.
+inline constexpr char kRecurrentSSLInterstitial[] =
+    "profile.ssl_recurrent_interstitial";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1509,6 +1513,9 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 03/2025.
   registry->RegisterBooleanPref(kSunfishEnabled, true);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Deprecated 03/2025
+  registry->RegisterDictionaryPref(kRecurrentSSLInterstitial);
 }
 
 }  // namespace
@@ -1841,7 +1848,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chrome_labs_prefs::RegisterProfilePrefs(registry);
   ChromeLocationBarModelDelegate::RegisterProfilePrefs(registry);
   content_settings::CookieSettings::RegisterProfilePrefs(registry);
-  StatefulSSLHostStateDelegate::RegisterProfilePrefs(registry);
   ChromeVersionService::RegisterProfilePrefs(registry);
   chrome_browser_net::NetErrorTabHelper::RegisterProfilePrefs(registry);
   chrome_prefs::RegisterProfilePrefs(registry);
@@ -2779,6 +2785,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 03/2025.
   profile_prefs->ClearPref(kSunfishEnabled);
 #endif
+
+  // Added 03/2025.
+  profile_prefs->ClearPref(kRecurrentSSLInterstitial);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

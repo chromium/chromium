@@ -326,7 +326,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2527209463677295330">Se includi più testo di una pagina, potresti vedere risultati migliori</translation>
 <translation id="2527779675047087889">Nascondi contenuti degli appunti</translation>
 <translation id="2532336938189706096">Visualizzazione web</translation>
-<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> elementi eliminati</translation>
 <translation id="253498598929009420">Il sito potrà vedere i contenuti del tuo schermo</translation>
 <translation id="2536728043171574184">È visualizzata una copia offline della pagina</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, scheda</translation>
@@ -366,7 +365,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2677748264148917807">Esci</translation>
 <translation id="2687009626279857299">Ha smesso di funzionare su questo dispositivo</translation>
 <translation id="2702516483241149200">Novità: condividi un link che scorre direttamente a questo testo</translation>
-<translation id="2705073298859543115">Crea riepilogo</translation>
 <translation id="2708051474374549906">Protezione proattiva in tempo reale da estensioni, siti e download pericolosi in base ai tuoi dati di navigazione inviati a Google.</translation>
 <translation id="2708226184420201102">Apri nel browser <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">Nuovo</translation>
@@ -1200,7 +1198,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6564820424018738527">Il tuo dispositivo Android potrebbe includere un'impostazione simile. Se la misurazione degli annunci è attiva in Chrome e sul tuo dispositivo Android, una società potrebbe essere in grado di misurare l'efficacia di un annuncio sui siti web che visiti e sulle app che utilizzi.</translation>
 <translation id="6565959834589222080">Viene utilizzata la rete Wi-Fi quando è disponibile</translation>
 <translation id="6569373978618239158">Vedrai storie di <ph name="SITE_NAME" /> quando aprirai una nuova scheda. I siti che segui vengono salvati nel tuo Account Google. Puoi gestirli nelle impostazioni di Discover.</translation>
-<translation id="6570116402456758630">Riepilogo pagina</translation>
 <translation id="657177046675873214">Per trovare i tuoi preferiti su tutti i dispositivi, attiva l'opzione "Preferiti" nelle impostazioni</translation>
 <translation id="6573096386450695060">Consenti sempre</translation>
 <translation id="6573431926118603307">Le schede aperte in Chrome sugli altri dispositivi verranno visualizzate qui.</translation>

@@ -137,7 +137,7 @@ void PaymentsNetworkInterfaceBase::OnSimpleLoaderComplete(
 void PaymentsNetworkInterfaceBase::OnSimpleLoaderCompleteInternal(
     int response_code,
     const std::string& data) {
-  VLOG(2) << "Got data: " << data;
+  DVLOG(2) << "Got data: " << data;
 
   PaymentsRpcResult result = PaymentsRpcResult::kSuccess;
 
@@ -243,8 +243,8 @@ void PaymentsNetworkInterfaceBase::OnSimpleLoaderCompleteInternal(
   }
 
   if (result != PaymentsRpcResult::kSuccess) {
-    VLOG(1) << "Payments returned error: " << response_code
-            << " with data: " << data;
+    DVLOG(1) << "Payments returned error: " << response_code
+             << " with data: " << data;
   }
 
   request_->RespondToDelegate(result);
@@ -269,7 +269,7 @@ void PaymentsNetworkInterfaceBase::AccessTokenFetchFinished(
 
 void PaymentsNetworkInterfaceBase::AccessTokenError(
     const GoogleServiceAuthError& error) {
-  VLOG(1) << "Unhandled OAuth2 error: " << error.ToString();
+  DVLOG(1) << "Unhandled OAuth2 error: " << error.ToString();
   if (simple_url_loader_) {
     simple_url_loader_.reset();
   }

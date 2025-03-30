@@ -242,7 +242,7 @@ class TestActionRunLowToHighPowerTest(sghitb.TestAction):
           test_instance: sghitb.SkiaGoldHeartbeatIntegrationTestBase) -> None:
     is_dual_gpu = test_instance.IsDualGPUMacLaptop()
     sghitb.EvalInTestIframe(tab_data.tab,
-                            'initialize(%s)' % json.dumps(is_dual_gpu))
+                            f'initialize({json.dumps(is_dual_gpu)})')
 # pytype: enable=signature-mismatch
 
 

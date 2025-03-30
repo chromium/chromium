@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Datoteka manifesta nije važeća</translation>
 <translation id="7217838517480956708">Administrator ovog računala zahtijeva instalaciju proširenja <ph name="EXTENSION_NAME" />. Ona se ne može ukloniti ni izmijeniti.</translation>
 <translation id="7612608473764576263">Vrijednost unosa osobnog ključa mora biti u važećem formatu (RSA ključ u formatu PKCS#8 s PEM kodiranjem).</translation>
+<translation id="7876803335449432072">Nije bilo moguće učitati datoteku <ph name="RELATIVE_PATH" /> za sadržajnu skriptu. Stilske tablice sadržajnih skripti mogu se učitati samo iz podržanih datoteka stilskih tablica kao što su .css datoteke.</translation>
 <translation id="7939686037314084444">Proširenje se nije pravilno učitalo. Možda neće moći presresti mrežne zahtjeve.</translation>
 <translation id="7972881773422714442">Opcije: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Prema korisniku</translation>
 <translation id="8047248493720652249">To proširenje nije uspjelo dodijeliti naziv preuzimanju "<ph name="ATTEMPTED_FILENAME" />" jer je drugo proširenje (<ph name="EXTENSION_NAME" />) odredilo drugačiji naziv datoteke "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> od dobavljača <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Datoteka manifesta nedostaje ili nije čitljiva</translation>
+<translation id="8621383749470166852">Nije bilo moguće učitati datoteku <ph name="RELATIVE_PATH" /> za sadržajnu skriptu. Sadržajne skripte mogu se učitati samo iz podržanih JavaScript datoteka kao što su .js datoteke.</translation>
 <translation id="8636666366616799973">Paket je nevažeći. Pojedinosti "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" zahtijeva pristup jednom od vaših uređaja:</translation>
 <translation id="8885905466771744233">Osobni ključ za navedeno proširenje već postoji. Ponovo koristite taj ključ ili ga prvo izbrišite.</translation>

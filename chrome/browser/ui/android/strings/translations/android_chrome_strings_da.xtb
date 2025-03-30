@@ -325,7 +325,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2527209463677295330">Medtag mere af sideteksten for at se bedre resultater</translation>
 <translation id="2527779675047087889">Skjul indhold i udklipsholderen</translation>
 <translation id="2532336938189706096">Webvisning</translation>
-<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> elementer blev slettet</translation>
 <translation id="253498598929009420">Websitet vil kunne se indholdet på din skærm</translation>
 <translation id="2536728043171574184">Du ser en offlinekopi af denne side</translation>
 <translation id="2542548955756682219">Fane: <ph name="TAB_TITLE" /></translation>
@@ -365,7 +364,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2677748264148917807">Forlad</translation>
 <translation id="2687009626279857299">Stoppede med at fungere på denne enhed</translation>
 <translation id="2702516483241149200">Nyhed: Del et link, der ruller til denne tekst</translation>
-<translation id="2705073298859543115">Opret oversigt</translation>
 <translation id="2708051474374549906">Proaktiv beskyttelse i realtid mod skadelige websites, downloads og udvidelser i realtid, der er baseret på dine browserdata, som sendes til Google</translation>
 <translation id="2708226184420201102">Åbn i <ph name="PRODUCT_NAME" />-browseren</translation>
 <translation id="271033894570825754">Nyt</translation>
@@ -677,6 +675,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4195643157523330669">Åbn på ny fane</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 fane på denne enhed}one{# fane på denne enhed}other{# faner på denne enhed}}</translation>
 <translation id="4198423547019359126">Der er ingen tilgængelige downloadplaceringer</translation>
+<translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Du har brugt den på dette website</translation>
 <translation id="4214315110991671325">Hvis du tillader cookies, kan Chrome bruge dem til forudindlæsning.</translation>
 <translation id="4216511743389425832">Få oplæst denne side</translation>
 <translation id="4225725533026049334">Følger</translation>
@@ -1198,7 +1197,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6564820424018738527">Din Android-enhed har muligvis en lignende indstilling. Hvis annoncemåling er aktiveret i Chrome og på din Android-enhed, kan en virksomhed måle effektiviteten af en annonce på de websites, du besøger, og i de apps, du bruger.</translation>
 <translation id="6565959834589222080">Wi-Fi anvendes, når det er tilgængeligt</translation>
 <translation id="6569373978618239158">Du får nu vist historier fra <ph name="SITE_NAME" />, når du åbner en ny fane. De websites, du følger, gemmes på din Google-konto. Du kan administrere dem i indstillingerne for Discover.</translation>
-<translation id="6570116402456758630">Sideoversigt</translation>
 <translation id="657177046675873214">Aktivér "Bogmærker" i indstillingerne for at få adgang til dine bogmærker på alle dine enheder</translation>
 <translation id="6573096386450695060">Tillad altid</translation>
 <translation id="6573431926118603307">Faner, du har åbnet i Chrome på dine andre enheder, vises her.</translation>

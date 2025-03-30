@@ -721,7 +721,7 @@ TEST_F(SerialChooserContextTest, PolicyAskForUrls) {
   context()->GrantPortPermission(kFooOrigin, *port);
   context()->GrantPortPermission(kBarOrigin, *port);
 
-  // Set the default to "ask" so that the policy being tested overrides it.
+  // Set the default to "block" so that the policy being tested overrides it.
   auto* profile_prefs = profile()->GetTestingPrefService();
   profile_prefs->SetManagedPref(
       prefs::kManagedDefaultSerialGuardSetting,
@@ -772,6 +772,32 @@ TEST_F(SerialChooserContextTest, PolicyBlockedForUrls) {
   std::vector<std::unique_ptr<SerialChooserContext::Object>>
       all_origin_objects = context()->GetAllGrantedObjects();
   EXPECT_EQ(1u, all_origin_objects.size());
+}
+
+TEST_F(SerialChooserContextTest, ConflictingSerialAskAndSerialBlockedPolicies) {
+  const auto kFooOrigin = url::Origin::Create(GURL("https://foo.origin"));
+
+  auto port = device::mojom::SerialPortInfo::New();
+  port->token = base::UnguessableToken::Create();
+  context()->GrantPortPermission(kFooOrigin, *port);
+
+  auto* profile_prefs = profile()->GetTestingPrefService();
+  profile_prefs->SetManagedPref(prefs::kManagedSerialAskForUrls,
+                                ParseJson(R"([ "https://foo.origin" ])"));
+  profile_prefs->SetManagedPref(prefs::kManagedSerialBlockedForUrls,
+                                ParseJson(R"([ "https://foo.origin" ])"));
+
+  // When both policies conflict, then the blocking policy wins.
+  EXPECT_FALSE(context()->CanRequestObjectPermission(kFooOrigin));
+  EXPECT_FALSE(context()->HasPortPermission(kFooOrigin, *port));
+
+  std::vector<std::unique_ptr<SerialChooserContext::Object>> objects =
+      context()->GetGrantedObjects(kFooOrigin);
+  EXPECT_EQ(0u, objects.size());
+
+  std::vector<std::unique_ptr<SerialChooserContext::Object>>
+      all_origin_objects = context()->GetAllGrantedObjects();
+  EXPECT_EQ(0u, all_origin_objects.size());
 }
 
 TEST_F(SerialChooserContextTest, BluetoothPortConnectedState) {

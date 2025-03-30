@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -63,10 +64,12 @@ void ArcDlcInstaller::OnHardwareCheckComplete(
   dlcservice::InstallRequest install_request;
   install_request.set_id(kArcvmDlcId);
   MaybeShowDlcInstallNotification(NotificationType::kArcVmPreloadStarted);
+  base::TimeTicks start_installation_time = base::TimeTicks::Now();
   ash::DlcserviceClient::Get()->Install(
       install_request,
       base::BindOnce(&ArcDlcInstaller::OnDlcInstalled,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     start_installation_time),
       base::DoNothing());
 }
 
@@ -118,6 +121,7 @@ void ArcDlcInstaller::OnPrimaryUserSessionStarted(const AccountId& account_id) {
 
 void ArcDlcInstaller::OnDlcInstalled(
     base::OnceCallback<void(bool)> callback,
+    base::TimeTicks start_installation_time,
     const ash::DlcserviceClient::InstallResult& install_result) {
   if (install_result.error != dlcservice::kErrorNone) {
     VLOG(1) << "Failed to install ARCVM DLC: " << install_result.error;
@@ -127,6 +131,9 @@ void ArcDlcInstaller::OnDlcInstalled(
     return;
   }
 
+  base::TimeDelta install_duration =
+      base::TimeTicks::Now() - start_installation_time;
+  base::UmaHistogramLongTimes("Arc.DlcInstaller.InstallTime", install_duration);
   base::UmaHistogramBoolean("Arc.DlcInstaller.Install", true);
   MaybeShowDlcInstallNotification(NotificationType::kArcVmPreloadSucceeded);
   OnPrepareArcDlc(std::move(callback), true);

@@ -325,7 +325,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2527209463677295330">Dacă incluzi mai mult din textul paginii, ai putea vedea rezultate mai bune</translation>
 <translation id="2527779675047087889">Ascunde conținutul clipboardului</translation>
 <translation id="2532336938189706096">Vizualizare pe web</translation>
-<translation id="2534155362429831547">Elemente șterse: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="253498598929009420">Site-ul va putea să vadă conținutul ecranului</translation>
 <translation id="2536728043171574184">Se afișează o versiune offline a acestei pagini</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, filă</translation>
@@ -365,7 +364,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2677748264148917807">Ieși</translation>
 <translation id="2687009626279857299">Nu mai funcționează pe acest dispozitiv</translation>
 <translation id="2702516483241149200">Nou: distribuie un link care derulează la acest text</translation>
-<translation id="2705073298859543115">Creează un rezumat</translation>
 <translation id="2708051474374549906">Protecție proactivă în timp real împotriva site-urilor, descărcărilor și extensiilor periculoase, pe baza datelor de navigare trimise la Google</translation>
 <translation id="2708226184420201102">Deschide în browserul <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">Nou</translation>
@@ -677,6 +675,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="4195643157523330669">Deschide în filă nouă</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{O filă pe acest dispozitiv}few{# file pe acest dispozitiv}other{# de file pe acest dispozitiv}}</translation>
 <translation id="4198423547019359126">Nu există locații de descărcare disponibile</translation>
+<translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Folosit pe acest site</translation>
 <translation id="4214315110991671325">Dacă permiți cookie-uri, Chrome le va folosi probabil pentru preîncărcare.</translation>
 <translation id="4216511743389425832">Ascultă pagina</translation>
 <translation id="4225725533026049334">Urmărești</translation>
@@ -1198,7 +1197,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6564820424018738527">Dispozitivul tău Android poate avea o setare similară. În cazul în care cuantificarea anunțurilor este activată în Chrome și pe dispozitivul Android, o companie poate măsura eficiența unui anunț pe site-urile pe care le accesezi și în aplicațiile pe care le folosești.</translation>
 <translation id="6565959834589222080">Conexiunea Wi-Fi este folosită când este disponibilă</translation>
 <translation id="6569373978618239158">Acum vei vedea articole de la <ph name="SITE_NAME" /> când deschizi o filă nouă. Site-urile pe care le urmărești sunt salvate în contul tău Google. Le poți gestiona din setările Discover.</translation>
-<translation id="6570116402456758630">Rezumatul paginii</translation>
 <translation id="657177046675873214">Pentru a accesa marcajele de pe toate dispozitivele, activează Marcaje în setări</translation>
 <translation id="6573096386450695060">Permite întotdeauna</translation>
 <translation id="6573431926118603307">Filele deschise în Chrome pe alte dispozitive vor apărea aici.</translation>

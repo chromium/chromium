@@ -441,7 +441,6 @@
 <translation id="1734878702283171397">ਸਿਸਟਮ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, ਇਸਦੀ ਮਿਆਦ <ph name="CARD_EXPIRATION" /> ਨੂੰ ਸਮਾਪਤ ਹੋਵੇਗੀ</translation>
 <translation id="1736420071277903564">ਕੰਪਿਊਟਰ</translation>
-<translation id="1739422091279046802">ਸਕ੍ਰੋਲ ਕਰਨਾ ਅਤੇ ਜ਼ੂਮ ਕਰਨਾ</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode ਦੇ <ph name="SECURE_DNS_MODE_SECURE" /> ਹੋਣ 'ਤੇ ਨਿਰਧਾਰਤ ਹੋਣਾ ਅਤੇ ਸਤਰ ਦਾ ਵੈਧ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
 <translation id="1743393865165844832">ਬਿਸਤਰ ਸੰਬੰਧੀ ਉਤਪਾਦ ਅਤੇ ਬਿਸਤਰ ਲਿਨਨ</translation>
 <translation id="1743892871127720056">ਤੁਲਨਾ ਕਰਨ ਵਾਲੀ ਸਾਰਨੀ ਦਾ ਸਿਰਲੇਖ, ਲਿਖਤ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
@@ -1566,6 +1565,7 @@
 <translation id="3715016660240337709">{0,plural, =1{ਫ਼ਾਈਲ ਨੂੰ ਅੱਪਲੋਡ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}one{<ph name="FILE_COUNT" /> ਫ਼ਾਈਲ ਨੂੰ ਅੱਪਲੋਡ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}other{<ph name="FILE_COUNT" /> ਫ਼ਾਈਲਾਂ ਨੂੰ ਅੱਪਲੋਡ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}}</translation>
 <translation id="3715597595485130451">ਵਾਈ-ਫਾਈ ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />ਪ੍ਰੌਕਸੀ, ਫ਼ਾਇਰਵਾਲ, ਅਤੇ DNS ਸੰਰੂਪਣ ਦੀ ਜਾਂਚ ਕਰੋ<ph name="END_LINK" /></translation>
+<translation id="3723316892512143176">ਇਬਾਨ</translation>
 <translation id="3723663469265383848">ਅੱਪਡੇਟ ਦੌਰਾਨ, ਤੁਸੀਂ 10 ਮਿੰਟਾਂ ਤੱਕ ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਨਹੀਂ ਵਰਤ ਸਕੋਗੇ।</translation>
 <translation id="372429172604983730">ਜਿਨ੍ਹਾਂ ਐਪਲੀਕੇਸ਼ਨਾਂ ਕਰਕੇ ਗੜਬੜ ਹੋ ਸਕਦੀ ਹੈ ਉਹਨਾਂ ਵਿੱਚ ਐਂਟੀਵਾਇਰਸ, ਫ਼ਾਇਰਵਾਲ, ਅਤੇ ਵੈੱਬ-ਫਿਲਟਰਿੰਗ ਜਾਂ ਪ੍ਰੌਕਸੀ ਸਾਫਟਵੇਅਰ ਸ਼ਾਮਲ ਹਨ।</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Slides ਵਿੱਚ ਤੇਜ਼ੀ ਨਾਲ Google ਪੇਸ਼ਕਾਰੀ ਬਣਾਉਣ ਲਈ Tab ਦਬਾ ਕੇ ਫਿਰ Enter ਦਬਾਓ</translation>
@@ -2492,6 +2492,7 @@
 <translation id="5379618281582508161">ਇਸ ਪਾਸਵਰਡ ਨੂੰ ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="5380953781541843508">ਵਧਦੇ ਕ੍ਰਮ ਵਿੱਚ</translation>
 <translation id="5381318171304904246">ਜਾਰੀ ਰੱਖਣ 'ਤੇ, ਤੁਹਾਨੂੰ ਤੁਹਾਡੇ ਬੈਂਕ ਦੀ ਵੈੱਬਸਾਈਟ 'ਤੇ ਲਿਜਾਇਆ ਜਾਵੇਗਾ। ਪੁਸ਼ਟੀ ਕਰਨ ਤੋਂ ਬਾਅਦ, ਤੁਹਾਨੂੰ ਤੁਹਾਡੀ ਖਰੀਦ ਪੂਰੀ ਕਰਨ ਲਈ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਵਾਪਸ ਲਿਜਾਇਆ ਜਾਵੇਗਾ।</translation>
+<translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> ਨੇ ਟੈਬ “<ph name="WEBSITE_TITLE" />” ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ</translation>
 <translation id="5383478552402031184">ਫਰਸ਼ ਲਗਾਉਣਾ</translation>
 <translation id="5385857628869214740">ਹਾਸਰਸ</translation>
 <translation id="5385966243497224160">ਗੈਰ-HTTPS URL ਦੀ ਪੂਰਵ-ਝਲਕ ਨਹੀਂ ਦਿਖਾਈ ਜਾ ਸਕਦੀ</translation>
@@ -2877,6 +2878,7 @@
 <translation id="6059925163896151826">USB ਡੀਵਾਈਸਾਂ</translation>
 <translation id="6060009363608157444">ਅਵੈਧ DnsOverHttps ਮੋਡ।</translation>
 <translation id="6061154937977953833">ਕੁਸ਼ਤੀ</translation>
+<translation id="6062405040252994646">ਟੂਲ</translation>
 <translation id="6062937464449575061">ਕੀਮਤ ਟਰੈਕਿੰਗ ਬੰਦ ਕਰੋ</translation>
 <translation id="6063415549109819824">ਘਰ ਸੰਬੰਧੀ ਵਿੱਤ ਸੇਵਾਵਾਂ</translation>
 <translation id="6070432475334343308"><ph name="CLOUD_PROVIDER" /> 'ਤੇ ਮੌਜੂਦ <ph name="FOLDER_NAME" /> ਵਿੱਚ ਇੱਕ ਜਾਂ ਇੱਕ ਤੋਂ ਵੱਧ ਫ਼ਾਈਲਾਂ ਨੂੰ ਅੱਪਲੋਡ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
@@ -3922,6 +3924,7 @@
 <translation id="787226752901403048">ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਅਤੇ ਸ਼ਾਮਲ ਹੋਣ ਲਈ ਅਤੇ ਜੁਗਤਾਂ 'ਤੇ ਇਕੱਠੇ ਕੰਮ ਕਰਨ ਲਈ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="7877007680666472091">ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਆਈਡੀਆਂ</translation>
 <translation id="7878562273885520351">ਸ਼ਾਇਦ ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਨਾਲ ਛੇੜਛਾੜ ਹੋਈ</translation>
+<translation id="7881044256965445977">ਆਪਣੇ ਸਥਾਨਕ ਨੈੱਟਵਰਕ 'ਤੇ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ ਨੂੰ ਲੱਭੋ ਅਤੇ ਉਸ ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="7882421473871500483">ਭੂਰਾ</translation>
 <translation id="7886897188117641322">ਚੁਣੋ ਕਿ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਲਈ ਵਿਸ਼ਿਆਂ ਦੀਆਂ ਕਿਹੜੀਆਂ ਵਿਸਤ੍ਰਿਤ ਸ਼੍ਰੇਣੀਆਂ ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਸਕਦੀ</translation>
 <translation id="7887683347370398519">ਆਪਣੇ CVC ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
@@ -4679,6 +4682,7 @@
 <translation id="94613679163347541">ਕੀ <ph name="CATEGORY" /> ਦੀ ਤੁਲਨਾ ਕਰਨੀ ਹੈ?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sites ਵਿੱਚ ਤੇਜ਼ੀ ਨਾਲ ਨਵੀਂ ਸਾਈਟ ਬਣਾਉਣ ਲਈ Tab ਦਬਾ ਕੇ ਫਿਰ Enter ਦਬਾਓ</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome ਕੁਕੀਜ਼ ਨੂੰ ਅੱਜ ਦੁਬਾਰਾ ਸੀਮਤ ਕਰ ਦੇਵੇਗਾ}=1{Chrome ਕੁਕੀਜ਼ ਨੂੰ ਕੱਲ੍ਹ ਦੁਬਾਰਾ ਸੀਮਤ ਕਰ ਦੇਵੇਗਾ}other{Chrome ਕੁਕੀਜ਼ ਨੂੰ # ਦਿਨਾਂ ਵਿੱਚ ਦੁਬਾਰਾ ਸੀਮਤ ਕਰ ਦੇਵੇਗਾ}}</translation>
+<translation id="949026252328034572"><ph name="MEMBER_COUNT" /> ਮੈਂਬਰ "<ph name="GROUP_NAME" />" ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਏ</translation>
 <translation id="949314938206378263">ਤੁਸੀਂ ਇਸ ਸਾਈਟ 'ਤੇ ਜਾਣ ਲਈ ਕਿਹਾ ਹੈ। ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ Family Link ਵਿੱਚ ਜਵਾਬ ਦੇ ਸਕਦੇ ਹਨ।</translation>
 <translation id="950736567201356821">ਉੱਪਰ ਤਿੰਨ ਮੋਰੀਆਂ</translation>
 <translation id="950926967802086924">ਪਾਸਕੀ • Google Password Manager</translation>

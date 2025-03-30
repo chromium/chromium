@@ -4745,6 +4745,15 @@ targets.bundle(
     ],
 )
 
+# Use this for targets for which we only need the bare minimum coverage,
+# roughly one build config per platform.
+targets.bundle(
+    name = "gtests_once",
+    targets = [
+        "layer_list_mode_cc_unittests",
+    ],
+)
+
 targets.bundle(
     name = "headless_browser_gtests",
     targets = [

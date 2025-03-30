@@ -184,13 +184,16 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
 
     mock_model_ = new MockTranslateBubbleModel(
         TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE);
+
+    action_item_ = actions::ActionItem::Builder().SetActionId(0).Build();
   }
 
   void CreateAndShowBubble() {
     std::unique_ptr<TranslateBubbleModel> model(mock_model_);
     bubble_ = new TranslateBubbleView(
-        anchor_widget_->GetContentsView(), std::move(model),
-        translate::TranslateErrors::NONE, nullptr, base::DoNothing());
+        action_item_->GetAsWeakPtr(), anchor_widget_->GetContentsView(),
+        std::move(model), translate::TranslateErrors::NONE, nullptr,
+        base::DoNothing());
     views::BubbleDialogDelegateView::CreateBubble(bubble_)->Show();
   }
 
@@ -204,7 +207,9 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
 
   void TearDown() override {
     mock_model_ = nullptr;
-    bubble_.ExtractAsDangling()->GetWidget()->CloseNow();
+    if (bubble_) {
+      bubble_.ExtractAsDangling()->GetWidget()->CloseNow();
+    }
     anchor_widget_.reset();
 
     ChromeViewsTestBase::TearDown();
@@ -224,6 +229,7 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
   raw_ptr<MockTranslateBubbleModel> mock_model_ = nullptr;
   raw_ptr<TranslateBubbleView> bubble_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<actions::ActionItem> action_item_;
 };
 
 TEST_F(TranslateBubbleViewTest, TargetLanguageTabTriggersTranslate) {
@@ -588,4 +594,15 @@ TEST_F(TranslateBubbleViewTest, SourceLanguageTabUpdatesViewState) {
   bubble_->TabSelectedAt(0);
   EXPECT_EQ(TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE,
             bubble_->GetViewState());
+}
+
+TEST_F(TranslateBubbleViewTest, ActionItemUpdatesWithBubbleLifetime) {
+  EXPECT_FALSE(action_item_->GetIsShowingBubble());
+  CreateAndShowBubble();
+  EXPECT_TRUE(action_item_->GetIsShowingBubble());
+  auto* const bubble = bubble_.get();
+  bubble_ = nullptr;
+  mock_model_ = nullptr;
+  bubble->GetWidget()->CloseNow();
+  EXPECT_FALSE(action_item_->GetIsShowingBubble());
 }

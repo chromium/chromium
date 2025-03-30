@@ -139,7 +139,7 @@ void MultipleRequestPaymentsNetworkInterfaceBase::RequestOperation::
         const std::variant<GoogleServiceAuthError, std::string>& result) {
   if (std::holds_alternative<GoogleServiceAuthError>(result)) {
     GoogleServiceAuthError error = std::get<GoogleServiceAuthError>(result);
-    VLOG(1) << "Unhandled access token error: " << error.ToString();
+    DVLOG(1) << "Unhandled access token error: " << error.ToString();
     if (simple_url_loader_) {
       simple_url_loader_.reset();
     }
@@ -225,7 +225,7 @@ void MultipleRequestPaymentsNetworkInterfaceBase::RequestOperation::
 
 void MultipleRequestPaymentsNetworkInterfaceBase::RequestOperation::
     OnSimpleLoaderCompleteInternal(int response_code, const std::string& data) {
-  VLOG(2) << "Got data: " << data;
+  DVLOG(2) << "Got data: " << data;
 
   PaymentsRpcResult result = PaymentsRpcResult::kSuccess;
 
@@ -332,8 +332,8 @@ void MultipleRequestPaymentsNetworkInterfaceBase::RequestOperation::
   }
 
   if (result != PaymentsRpcResult::kSuccess) {
-    VLOG(1) << "Payments returned error: " << response_code
-            << " with data: " << data;
+    DVLOG(1) << "Payments returned error: " << response_code
+             << " with data: " << data;
   }
 
   ReportOperationResult(result);

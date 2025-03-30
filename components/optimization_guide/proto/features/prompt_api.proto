@@ -49,12 +49,12 @@ message PromptApiRequest {
 
 // Type for OnDeviceModelExecutionFeatureConfig::feature_metadata.
 message PromptApiMetadata {
+  reserved 2;
+
   // A version for config changes that require implementor updates.
   // Version 0->2 Changes from using StringValue -> PromptApiRequest.
   uint32 version = 1;
-  // A boolean flag telling if the prompt API model execution config sets
-  // the streaming behavior to chunk-by-chunk.
-  bool is_streaming_chunk_by_chunk = 2;
+
   // The maximum value of top k and temperature that this feature can support.
   // If the provided value is largest than the max value, they will be clamped.
   SamplingParams max_sampling_params = 3;

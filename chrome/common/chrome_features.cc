@@ -416,7 +416,7 @@ BASE_FEATURE(kGlicScrollTo, "GlicScrollTo", base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls whether the Glic UI container can be resized by the user
 BASE_FEATURE(kGlicUserResize,
              "GlicUserResize",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the web client should resize itself to fit the window.
 BASE_FEATURE(kGlicSizingFitWindow,

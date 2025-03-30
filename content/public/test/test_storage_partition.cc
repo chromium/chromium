@@ -170,7 +170,7 @@ CdmStorageDataModel* TestStoragePartition::GetCdmStorageDataModel() {
 
 network::mojom::DeviceBoundSessionManager*
 TestStoragePartition::GetDeviceBoundSessionManager() {
-  return nullptr;
+  return device_bound_session_manager_;
 }
 
 BrowsingTopicsSiteDataManager*

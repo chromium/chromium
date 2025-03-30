@@ -291,8 +291,8 @@ static void JNI_CronetUrlRequestContext_AddPkp(
           jinclude_subdomains,
           base::Time::UnixEpoch() + base::Milliseconds(jexpiration_time)));
   for (auto bytes_array : jhashes.ReadElements<jbyteArray>()) {
-    static_assert(std::is_pod<net::SHA256HashValue>::value,
-                  "net::SHA256HashValue is not POD");
+    static_assert(std::is_trivially_copyable<net::SHA256HashValue>::value,
+                  "net::SHA256HashValue is not trivially copyable");
     static_assert(sizeof(net::SHA256HashValue) * CHAR_BIT == 256,
                   "net::SHA256HashValue contains overhead");
     if (env->GetArrayLength(bytes_array.obj()) !=

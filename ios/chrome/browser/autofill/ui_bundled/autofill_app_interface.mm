@@ -394,6 +394,16 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
   return personalDataManager->address_data_manager().GetProfiles().size();
 }
 
++ (BOOL)isAccountProfileAtIndex:(NSInteger)index {
+  CHECK_LT(index, self.profilesCount);
+
+  autofill::PersonalDataManager* personalDataManager =
+      [self personalDataManager];
+  return personalDataManager->address_data_manager()
+      .GetProfiles()[index]
+      ->IsAccountProfile();
+}
+
 + (void)clearProfilesStore {
   ProfileIOS* profileIOS = chrome_test_util::GetOriginalProfile();
   autofill::AddressDataManager& addressDataManager =

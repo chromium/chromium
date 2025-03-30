@@ -790,6 +790,7 @@ void BidderWorklet::FinishGenerateBid(
   GenerateBidIfReady(task);
   if (!finalized_any_bid_) {
     finalized_any_bid_ = true;
+    SetEagerJsCompilation(true);
     if (features::kFledgeWaitForPromisesToPrepareContexts.Get()) {
       MaybePrepareContexts();
     }
@@ -2723,23 +2724,25 @@ bool BidderWorklet::IsReadyToGenerateBid(const GenerateBidTask& task) const {
   return GenerateBidTaskHasInputs(task) && IsCodeReady();
 }
 
-void BidderWorklet::DisableEagerJsCompilationIfOnlyWaitingOnJs(
-    const GenerateBidTask& task) {
-  if (GenerateBidTaskHasInputs(task) && worklet_loader_ && !wasm_loader_) {
-    for (size_t thread_index = 0; thread_index < v8_runners_.size();
-         ++thread_index) {
-      v8_runners_[thread_index]->PostTask(
-          FROM_HERE,
-          base::BindOnce(&AuctionV8Helper::DisableEagerJsCompilation,
-                         base::Unretained(v8_helpers_[thread_index].get())));
-    }
+void BidderWorklet::SetEagerJsCompilation(bool eagerly_compile_js) {
+  for (size_t thread_index = 0; thread_index < v8_runners_.size();
+       ++thread_index) {
+    v8_runners_[thread_index]->PostTask(
+        FROM_HERE,
+        base::BindOnce(&AuctionV8Helper::SetEagerJsCompilation,
+                       base::Unretained(v8_helpers_[thread_index].get()),
+                       eagerly_compile_js));
   }
 }
 
 void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
   if (!IsReadyToGenerateBid(*task)) {
-    DisableEagerJsCompilationIfOnlyWaitingOnJs(*task);
+    // Disable eager JS compilation if we're only waiting on Javascript, so that
+    // we can begin generating this bid as soon as we have the script.
+    if (GenerateBidTaskHasInputs(*task) && worklet_loader_ && !wasm_loader_) {
+      SetEagerJsCompilation(false);
+    }
     return;
   }
 

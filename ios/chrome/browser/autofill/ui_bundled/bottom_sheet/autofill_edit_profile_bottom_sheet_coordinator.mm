@@ -93,6 +93,7 @@
           initWithDelegate:self
              editSheetMode:[_handler saveProfilePromptMode]];
 
+  // TODO(crbug.com/405976686): Rename settingsView
   // View controller that lays down the table views for the edit profile view.
   _autofillProfileEditTableViewController =
       [[AutofillProfileEditTableViewController alloc]
@@ -127,6 +128,8 @@
 }
 
 - (void)stop {
+  // TODO(crbug.com/406514222): Coordinator's parent should be calling this
+  // method.
   [super stop];
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:YES

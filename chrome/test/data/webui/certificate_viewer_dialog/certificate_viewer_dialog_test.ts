@@ -129,10 +129,10 @@ suite('CertificateViewer', function() {
     certFields.selectedItem = certFields.items[0]!;
     assertEquals('', certFieldVal.textContent);
 
-    // Test that when cert metadata is not provided is, modifications tab is
-    // hidden.
-    const modificationsTab = getRequiredElement('modifications-tab');
-    assertTrue(modificationsTab.hidden);
+    // Test that when cert metadata is not provided, modifications tab and
+    // panel are not present.
+    assertFalse(!!document.querySelector('#modifications-tab'));
+    assertFalse(!!document.querySelector('#modifications'));
   });
 
   test('InvalidCert', function() {

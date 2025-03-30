@@ -110,14 +110,15 @@ export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
     };
   }
 
-  data?: chrome.developerPrivate.ExtensionInfo;
-  delegate?: ErrorPageDelegate&ItemDelegate;
-  inDevMode: boolean = false;
-  protected entries_: Array<ManifestError|RuntimeError> = [];
-  protected code_: chrome.developerPrivate.RequestFileSourceResponse|null =
-      null;
-  private selectedEntry_: number = -1;
-  private selectedStackFrame_: chrome.developerPrivate.StackFrame|null = null;
+  accessor data: chrome.developerPrivate.ExtensionInfo|undefined;
+  accessor delegate: ErrorPageDelegate&ItemDelegate|undefined;
+  accessor inDevMode: boolean = false;
+  protected accessor entries_: Array<ManifestError|RuntimeError> = [];
+  protected accessor code_: chrome.developerPrivate.RequestFileSourceResponse|
+      null = null;
+  private accessor selectedEntry_: number = -1;
+  private accessor selectedStackFrame_: chrome.developerPrivate.StackFrame|
+      null = null;
 
   override firstUpdated() {
     this.addEventListener('view-enter-start', this.onViewEnterStart_);

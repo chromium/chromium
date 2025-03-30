@@ -40,7 +40,8 @@ enum class EntryPointImpression {
   kAfterFreEnabled = 3,
   kAfterFreDisabled = 4,
   kNotPermitted = 5,
-  kMaxValue = kNotPermitted,
+  kIncompleteFre = 6,
+  kMaxValue = kIncompleteFre,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicEntryPointImpression)
 

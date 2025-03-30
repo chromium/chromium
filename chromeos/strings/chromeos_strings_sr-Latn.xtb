@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">Potrebna je potvrda autentičnosti proksija</translation>
 <translation id="4594021849294327751">Napravi transkript</translation>
 <translation id="4594541568452132351">Izaberite jezik transkripcije i model preuzimanja</translation>
-<translation id="4607282946861182308">Ne možemo da napravimo slike na kojima je ovo. Probajte sa drugim upitom.</translation>
 <translation id="4609350030397390689">Smanjite osvetljenost tastature</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite taster Enter da biste otkazali zadatak štampanja.</translation>
 <translation id="463791356324567266">Otkazuje se skeniranje...</translation>
@@ -1659,6 +1658,7 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="8543574988889671960">Ponovo učitajte karticu</translation>
 <translation id="8550364285433943656">Postavite kontrole za radnje u igri da biste igrali pomoću tastera na tastaturi</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">Generativna veštačka inteligencija može da prikazuje netačne informacije, uključujući i informacije o ljudima, pa proverite odgovore.</translation>
 <translation id="8575298406870537639">Mobilni operater može da zatraži ovu opciju radi povezivanja na mrežu. Obratite se mobilnom operateru za detalje.</translation>
 <translation id="8576249514688522074">Nije pokrenuto</translation>
 <translation id="8584654835905316966">Restartovanje je obavezno da bi se dovršila instalacija firmvera za <ph name="DEVICE_NAME" /> na verziju <ph name="VERSION" />. Može da izgleda kao da se računar restartuje nekoliko puta. Ovo je očekivano ponašanje.</translation>
@@ -1673,7 +1673,6 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">Deli URL:</translation>
 <translation id="8660881923941176839">funte</translation>
-<translation id="8670057600920888023">Generativna veštačka inteligencija je eksperimentalna i sadržaj može da bude netačan, obmanjujući ili uvredljiv.</translation>
 <translation id="8670574982334489519">desna</translation>
 <translation id="8675354002693747642">Tajni ključ</translation>
 <translation id="8677859815076891398">Nema albuma. Napravite album u <ph name="LINK_BEGIN" />Google slikama<ph name="LINK_END" />.</translation>

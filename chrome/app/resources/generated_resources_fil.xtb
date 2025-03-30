@@ -8,6 +8,7 @@
 <translation id="100323615638474026">USB device (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Kamakailang history ng pag-download</translation>
 <translation id="1004218526896219317">Access sa site</translation>
+<translation id="1005230401424685968">YYYY</translation>
 <translation id="1005274289863221750">Gamitin ang iyong mikropono at camera</translation>
 <translation id="1005333234656240382">I-enable ang pag-debug ng ADB?</translation>
 <translation id="1005671386794704751">Rose</translation>
@@ -1378,6 +1379,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="193565226207940518">Tool sa Suporta</translation>
 <translation id="1935995810530254458">Kopyahin pa rin</translation>
 <translation id="1936157145127842922">Ipakita sa Folder</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Idinagdag ang page sa listahan ng babasahin}one{Idinagdag ang mga page sa listahan ng babasahin}other{Idinagdag ang mga page sa listahan ng babasahin}}</translation>
 <translation id="1936931585862840749">Gumamit ng numero para isaad kung gaano karaming kopya ang ipi-print (1 hanggang <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Hindi puwedeng mag-import ng uri ng architecture ng container na <ph name="ARCHITECTURE_CONTAINER" /> sa device na ito na <ph name="ARCHITECTURE_DEVICE" />. Maaari mong subukang i-restore ang container na ito sa ibang device, o puwede mong i-access ang mga file sa loob ng ganitong larawan ng container sa pamamagitan ng pagbukas sa app na Mga File.</translation>
 <translation id="1938351510777341717">External na Command</translation>
@@ -2994,6 +2996,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3045447014237878114">Awtomatikong nag-download ng maraming file ang site na ito</translation>
 <translation id="3046178388369461825">Kaunting-kaunti na lang ang espasyo sa Linux disk</translation>
 <translation id="304644035656848980">Preview ng iyong mikropono</translation>
+<translation id="3046892784550338476">Bersyon <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Webpage, Kumpleto</translation>
 <translation id="304747341537320566">Mga Engine sa Pagsasalita</translation>
 <translation id="3047678109605649715">Walang <ph name="LANGUAGE" /> na boses sa iyong device. Magbakante ng space sa iyong device, at subukan ulit.</translation>
@@ -3189,7 +3192,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
         <ph name="BREAK" />
         <ph name="BREAK" />
         Puwede mong pamahalaan ang mga setting mula sa card na ito anumang oras o tingnan ang higit pang opsyon sa I-customize ang Chrome.</translation>
-<translation id="3207437351138888228">Kapag nagsagot ka ng form, ipapadala sa Google ang iyong impormasyon at ang page kung saan ito nagmula para bumuo ng mga suhestyon</translation>
 <translation id="3207960819495026254">Naka-bookmark</translation>
 <translation id="3208584281581115441">Suriin ngayon</translation>
 <translation id="3208703785962634733">Hindi kumpirmado</translation>
@@ -3234,6 +3236,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3242289508736283383">Naka-install dapat sa kiosk mode ng ChromeOS ang app na may 'kiosk_only' na manifest attribute</translation>
 <translation id="3243017971870859287">Basahin ang mga serial number ng ChromeOS Flex device at bahagi</translation>
 <translation id="324366796737464147">Pagkansela ng ingay</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Patuloy na i-mute ang tunog</translation>
 <translation id="3247006341013237647">Isaayos ang mga tab?</translation>
 <translation id="3247649647204519958">Mula rito, makikita at mapapamahalaan mo ang mga pahintulot sa extension para sa site kung nasaan ka</translation>
@@ -6101,7 +6104,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5267572070504076962">I-on ang Ligtas na Pag-browse para magkaroon ng proteksyon laban sa mga mapanganib na site</translation>
 <translation id="5269977353971873915">Nabigo ang Pag-print</translation>
 <translation id="5271578170655641944">Alisin ang access sa Google Drive?</translation>
-<translation id="5271782684896713035">Puwedeng makita ng mga taong tagasuri ang data para mapahusay ang feature na ito</translation>
 <translation id="5273806377963980154">I-edit ang URL ng site</translation>
 <translation id="5275084684151588738">Mga Diksyunaryo ng User</translation>
 <translation id="5275338516105640560">Button na Na-save na Grupo ng Tab</translation>

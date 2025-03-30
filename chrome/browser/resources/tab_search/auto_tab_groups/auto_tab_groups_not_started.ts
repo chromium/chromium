@@ -44,15 +44,15 @@ export class AutoTabGroupsNotStartedElement extends
     };
   }
 
-  showFre: boolean = false;
-  modelStrategy: TabOrganizationModelStrategy =
+  accessor showFre: boolean = false;
+  accessor modelStrategy: TabOrganizationModelStrategy =
       TabOrganizationModelStrategy.kTopic;
 
-  protected tabOrganizationModelStrategyEnabled_: boolean =
+  protected accessor tabOrganizationModelStrategyEnabled_: boolean =
       loadTimeData.getBoolean('tabOrganizationModelStrategyEnabled');
-  protected tabOrganizationUserInstructionEnabled_: boolean =
+  protected accessor tabOrganizationUserInstructionEnabled_: boolean =
       loadTimeData.getBoolean('TabOrganizationUserInstructionEnabled');
-  private signedIn_: boolean = false;
+  private accessor signedIn_: boolean = false;
   private syncBrowserProxy_: TabSearchSyncBrowserProxy =
       TabSearchSyncBrowserProxyImpl.getInstance();
 

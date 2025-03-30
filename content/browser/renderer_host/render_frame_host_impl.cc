@@ -2477,6 +2477,10 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   // of overrides.
   idle_manager_ = std::make_unique<IdleManagerImpl>(this);
 
+  // The renderer process priority has been set in the RenderWidgetHost so
+  // it is safe to remove to spare renderer priority here.
+  site_instance->GetProcess()->SetHasSpareRendererPriority(false);
+
   SiteInstanceGroupId sig_id = site_instance_->group()->GetId();
   bool rfh_in_bfcache =
       frame_tree->controller()

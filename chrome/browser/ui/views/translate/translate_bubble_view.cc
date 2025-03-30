@@ -28,7 +28,6 @@
 #include "chrome/browser/translate/translate_service.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/translate/translate_bubble_model_impl.h"
@@ -135,6 +134,33 @@ void OpenLanguageSettings(TranslateBubbleModel* model_,
 
 }  // namespace
 
+TranslateBubbleView::TranslateBubbleView(
+    base::WeakPtr<actions::ActionItem> action_item,
+    views::View* anchor_view,
+    std::unique_ptr<TranslateBubbleModel> model,
+    translate::TranslateErrors error_type,
+    content::WebContents* web_contents,
+    base::OnceClosure on_closing)
+    : LocationBarBubbleDelegateView(anchor_view,
+                                    web_contents,
+                                    /*autosize=*/true),
+      model_(std::move(model)),
+      error_type_(error_type),
+      translate_action_item_(action_item),
+      is_in_incognito_window_(
+          web_contents && web_contents->GetBrowserContext()->IsOffTheRecord()),
+      on_closing_(std::move(on_closing)) {
+  UpdateInsets(TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE);
+
+  if (web_contents) {  // web_contents can be null in unit_tests.
+    mouse_handler_ =
+        std::make_unique<WebContentMouseHandler>(this, web_contents);
+  }
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  SetFootnoteView(CreateWordmarkView());
+  SetProperty(views::kElementIdentifierKey, kIdentifier);
+}
+
 TranslateBubbleView::~TranslateBubbleView() {
   // A child view could refer to a model which is owned by this class when
   // the child view is destructed. For example, `source_language_combobox_` has
@@ -214,15 +240,8 @@ void TranslateBubbleView::Init() {
     model_->ShowError(error_type_);
   }
 
-  Browser* browser = chrome::FindLastActive();
-  if (browser) {
-    translate_action_item_ =
-        actions::ActionManager::Get()
-            .FindAction(kActionShowTranslate,
-                        browser->browser_actions()->root_action_item())
-            ->GetAsWeakPtr();
-    CHECK(translate_action_item_.get());
-    translate_action_item_.get()->SetIsShowingBubble(true);
+  if (translate_action_item_.get()) {
+    translate_action_item_->SetIsShowingBubble(true);
   }
 }
 
@@ -479,31 +498,6 @@ void TranslateBubbleView::SetViewState(translate::TranslateStep step,
         TranslateBubbleModelImpl::TranslateStepToViewState(step);
     SwitchView(state);
   }
-}
-
-TranslateBubbleView::TranslateBubbleView(
-    views::View* anchor_view,
-    std::unique_ptr<TranslateBubbleModel> model,
-    translate::TranslateErrors error_type,
-    content::WebContents* web_contents,
-    base::OnceClosure on_closing)
-    : LocationBarBubbleDelegateView(anchor_view,
-                                    web_contents,
-                                    /*autosize=*/true),
-      model_(std::move(model)),
-      error_type_(error_type),
-      is_in_incognito_window_(
-          web_contents && web_contents->GetBrowserContext()->IsOffTheRecord()),
-      on_closing_(std::move(on_closing)) {
-  UpdateInsets(TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE);
-
-  if (web_contents) {  // web_contents can be null in unit_tests.
-    mouse_handler_ =
-        std::make_unique<WebContentMouseHandler>(this, web_contents);
-  }
-  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  SetFootnoteView(CreateWordmarkView());
-  SetProperty(views::kElementIdentifierKey, kIdentifier);
 }
 
 views::View* TranslateBubbleView::GetCurrentView() const {

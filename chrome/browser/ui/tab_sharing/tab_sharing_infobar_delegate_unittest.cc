@@ -60,6 +60,8 @@ class TabSharingInfoBarDelegateTest
       public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   struct Preferences {
+    content::GlobalRenderFrameHostId shared_tab_id;
+    content::GlobalRenderFrameHostId capturer_id;
     std::u16string shared_tab_name;
     std::u16string capturer_name;
     TabRole role;
@@ -80,7 +82,8 @@ class TabSharingInfoBarDelegateTest
         browser()->tab_strip_model()->GetWebContentsAt(prefs.tab_index);
     return TabSharingInfoBarDelegate::Create(
         infobars::ContentInfoBarManager::FromWebContents(web_contents), nullptr,
-        prefs.shared_tab_name, prefs.capturer_name, web_contents, prefs.role,
+        prefs.shared_tab_id, prefs.capturer_id, prefs.shared_tab_name,
+        prefs.capturer_name, web_contents, prefs.role,
         prefs.can_share_instead
             ? TabSharingInfoBarDelegate::ButtonState::ENABLED
             : TabSharingInfoBarDelegate::ButtonState::NOT_SHOWN,

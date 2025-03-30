@@ -52,12 +52,12 @@ export class RelatedWebsiteSetsAppElement extends CrLitElement {
   }
 
   // TODO (b/330877132): Add Localization once UI stable
-  protected pageTitle_: string = 'Related Website Sets';
-  protected narrow_: boolean = true;
-  protected isDrawerOpen_: boolean = false;
-  protected relatedWebsiteSets_: RelatedWebsiteSet[] = [];
-  protected errorMessage_: string = '';
-  protected query_: string = '';
+  protected accessor pageTitle_: string = 'Related Website Sets';
+  protected accessor narrow_: boolean = true;
+  protected accessor isDrawerOpen_: boolean = false;
+  protected accessor relatedWebsiteSets_: RelatedWebsiteSet[] = [];
+  protected accessor errorMessage_: string = '';
+  protected accessor query_: string = '';
 
   private apiProxy_: RelatedWebsiteSetsApiBrowserProxy =
       RelatedWebsiteSetsApiBrowserProxyImpl.getInstance();

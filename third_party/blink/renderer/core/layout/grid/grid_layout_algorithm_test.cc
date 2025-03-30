@@ -262,7 +262,8 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmGapGeometry) {
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
   GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
 
-  auto* gap_geometry = MakeGarbageCollected<GapGeometry>();
+  auto* gap_geometry =
+      MakeGarbageCollected<GapGeometry>(GapGeometry::ContainerType::kGrid);
   BuildGridGeometry(algorithm, gap_geometry);
 
   Vector<GapIntersectionList> expected_column_intersections = {
@@ -339,7 +340,8 @@ TEST_F(GridLayoutAlgorithmTest, GapIntersectionsForGridWithSpanners) {
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
   GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
 
-  auto* gap_geometry = MakeGarbageCollected<GapGeometry>();
+  auto* gap_geometry =
+      MakeGarbageCollected<GapGeometry>(GapGeometry::ContainerType::kGrid);
   BuildGridGeometry(algorithm, gap_geometry);
 
   Vector<GapIntersectionList> expected_column_intersections = {

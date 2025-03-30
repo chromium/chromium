@@ -112,6 +112,7 @@
 <translation id="244264527810019436">シークレット モードでは、一部サイトの機能が使用できなくなる可能性があります</translation>
 <translation id="2442870161001914531">常に PC 版サイトを表示する</translation>
 <translation id="2445311670906052406">Chrome で最近使ったタブがデバイスと共有され、デバイスのアプリリストと検索結果に表示されるようになりました。この機能は Chrome の設定でいつでもオフにできます。</translation>
+<translation id="245322989586167203">多くのサイトは、ネットワークを設定するなど、データ転送機能を使用するためにシリアルポートに接続します</translation>
 <translation id="2469312991797799607">この操作を行うと、<ph name="ORIGIN" /> とそのドメインの全サイトのデータと Cookie がすべて削除されます</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2485422356828889247">アンインストール</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">サイトによるこのデバイスのアクティブ状態の検出をブロックする</translation>
 <translation id="4412992751769744546">サードパーティの Cookie を許可する</translation>
 <translation id="4419929467120297501">Chrome では、サードパーティ Cookie の使用を制限し、ブラウジング中のユーザーをトラッキングできないようにしています。<ph name="BEGIN_LINK" />サードパーティ Cookie へのアクセスを管理<ph name="END_LINK" />するには、設定に移動してください。</translation>
+<translation id="443121186588148776">シリアルポート</translation>
 <translation id="4434045419905280838">ポップアップとリダイレクト</translation>
 <translation id="443552056913301231">この操作を行うと、Cookie を含むすべてのローカルデータが削除され、<ph name="ORIGIN" /> のすべての権限がリセットされます</translation>
 <translation id="4468959413250150279">特定のサイトの音声をミュートします。</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">最初に確認する</translation>
 <translation id="7423538860840206698">クリップボードの読み取りがブロックされています</translation>
 <translation id="7425915948813553151">サイトのダークモード</translation>
+<translation id="7478658909253570368">サイトにシリアルポートへの接続を許可しない</translation>
 <translation id="7488573225650545859">[アプリリストにタブを表示] を非表示にする</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">オンにすると、サイトはログイン メッセージを表示できます。オフにすると、サイトはログイン メッセージを表示できません。</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Bluetooth デバイスに接続されています</translation>
 <translation id="7617547684249261169">履歴、Cookie、サイトデータなどの一部またはすべてを削除できます</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
+<translation id="7655411746932645568">サイトがシリアルポートへの接続を要求できるようにする</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7667547420449112975">オズの魔法使い</translation>
 <translation id="7681597159868843240">多くのサイトは、バーチャル リアリティやフィットネス トラッキングなどの機能にデバイスのモーション センサーを使用します</translation>

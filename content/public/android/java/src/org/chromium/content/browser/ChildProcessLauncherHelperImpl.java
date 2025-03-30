@@ -340,6 +340,8 @@ public final class ChildProcessLauncherHelperImpl {
 
     private boolean mDroppedStrongBingingDueToBackgrounding;
 
+    private boolean mIsSpareRenderer;
+
     @CalledByNative
     private static @Nullable FileDescriptorInfo makeFdInfo(
             int id, int fd, boolean autoClose, long offset, long size) {
@@ -763,8 +765,9 @@ public final class ChildProcessLauncherHelperImpl {
         LauncherThread.post(() -> mLauncher.stop());
     }
 
+    @VisibleForTesting
     @CalledByNative
-    private void setPriority(
+    void setPriority(
             int pid,
             boolean visible,
             boolean hasMediaStream,
@@ -774,6 +777,7 @@ public final class ChildProcessLauncherHelperImpl {
             boolean intersectsViewport,
             boolean boostForPendingViews,
             boolean boostForLoading,
+            boolean isSpareRenderer,
             @ChildProcessImportance int importance) {
         assert LauncherThread.runningOnLauncherThread();
         assert mLauncher.getPid() == pid
@@ -788,6 +792,7 @@ public final class ChildProcessLauncherHelperImpl {
         }
 
         ChildProcessConnection connection = assumeNonNull(mLauncher.getConnection());
+
         if (ChildProcessCreationParamsImpl.getIgnoreVisibilityForImportance()) {
             visible = false;
             boostForPendingViews = false;
@@ -832,6 +837,16 @@ public final class ChildProcessLauncherHelperImpl {
                 default:
                     assert false;
             }
+        }
+
+        if (mIsSpareRenderer != isSpareRenderer
+                && ChildProcessConnection.supportNotPerceptibleBinding()) {
+            if (isSpareRenderer) {
+                connection.addNotPerceptibleBinding();
+            } else {
+                connection.removeNotPerceptibleBinding();
+            }
+            mIsSpareRenderer = isSpareRenderer;
         }
 
         if (mRanking != null) {

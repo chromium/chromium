@@ -126,6 +126,14 @@ found in the LICENSE file.
     flex-grow: 1;
   }
 
+  *:disabled {
+    pointer-events: none;
+    opacity: 0.6;
+  }
+  fieldset:disabled :is(h1, h2, h3, h4, h5, h6) {
+    text-decoration: line-through;
+  }
+
   /* Dark Mode Styles */
   @media (prefers-color-scheme: dark) {
     body {
@@ -192,17 +200,19 @@ found in the LICENSE file.
     Update</button>
 </div>
 <div class="section">
-  <h1>MacOS Permissions</h2>
-  <button id="getOsMicrophonePermissionButton">Get OS Microphone permission state</button>
-  <span id="osMicrophonePermissionResult"></span>
-  <div>
-  <div class="permission-switch">
-    <label for="osGeolocationPermissionSwitch">OS Geolocation:</label>
-    <input type="checkbox" id="osGeolocationPermissionSwitch" disabled />
-  </div>
-  <button id="openOsLocationSettings">Open OS Location settings</button>
-  <button id="openOsMicrophoneSettings">Open OS Microphone settings</button>
-  </div>
+  <fieldset id="macOsPermissionsFieldset">
+    <h1>MacOS Permissions</h1>
+    <button id="getOsMicrophonePermissionButton">Get OS Microphone permission state</button>
+    <span id="osMicrophonePermissionResult"></span>
+    <div>
+      <div class="permission-switch">
+        <label for="osGeolocationPermissionSwitch">OS Geolocation:</label>
+        <input type="checkbox" id="osGeolocationPermissionSwitch" disabled />
+      </div>
+      <button id="openOsLocationSettings">Open OS Location settings</button>
+      <button id="openOsMicrophoneSettings">Open OS Microphone settings</button>
+    </div>
+  </fieldset>
 </div>
 <div class="section">
   <h1>Glic Settings</h1>
@@ -224,7 +234,7 @@ found in the LICENSE file.
 <div class="section">
   <h1>Sizing</h1>
   <button id="enableTestSizingMode">Test Sizing</button>
-  <input id="enableDragResize" type="checkbox">Enable drag resizing</input>
+  <input id="enableDragResizeCheckbox" type="checkbox">Enable drag resizing</input>
 </div>
 <div class="section">
   <h1>State</h1>
@@ -267,16 +277,17 @@ found in the LICENSE file.
   <br />
 </div>
 <div class="section">
-  <h1>Test Panel Controls</h1>
-  <button id="attachpanelbn">Attach Panel</button>
-  <br />
-  <button id="detachpanelbn">Detach Panel</button>
-  <br />
-  <div>
-    <label>Can Attach:
-      <input id="canAttachCheckbox" type="checkbox" disabled>
-    </label>
-  </div>
+  <fieldset id="attachmentControlsFieldset">
+    <h1>Attachment Controls</h1>
+    <div>
+      <label>Can Attach:
+        <input id="canAttachCheckbox" type="checkbox" disabled>
+      </label>
+    </div>
+    <button id="attachpanelbn">Attach Panel</button>
+    &nbsp;
+    <button id="detachpanelbn">Detach Panel</button>
+  </fieldset>
 </div>
 <div class="section">
   <h1>Test getContextFromFocusedTab()</h1>
@@ -284,6 +295,7 @@ found in the LICENSE file.
     <button id="getpagecontext">Get page Context</button>
     <div>
     <label> <input type="checkbox" id="innerTextCheckbox" /> Inner Text </label>
+    <br />
     <label> innerTextBytesLimit: <input id="innerTextBytesLimit" value="100">
     </label>
     </div>

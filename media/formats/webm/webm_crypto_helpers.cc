@@ -98,7 +98,7 @@ bool WebMCreateDecryptConfig(const uint8_t* data_ptr,
                              const uint8_t* key_id_ptr,
                              int key_id_size,
                              std::unique_ptr<DecryptConfig>* decrypt_config,
-                             int* data_offset) {
+                             size_t* data_offset) {
   // TODO(crbug.com/40284755):: The function should receive a span, not a
   // pointer/length pair.
   auto data =
@@ -161,7 +161,7 @@ bool WebMCreateDecryptConfig(const uint8_t* data_ptr,
         std::string(key_id.begin(), key_id.end()), counter_block,
         subsample_entries);
   }
-  *data_offset = base::checked_cast<int>(data.size() - reader.remaining());
+  *data_offset = data.size() - reader.remaining();
 
   return true;
 }

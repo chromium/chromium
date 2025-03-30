@@ -1,1 +1,2 @@
 per-file *cookie*=file://net/cookies/OWNERS
+per-file *device_bound_session*=file://net/device_bound_sessions/OWNERS

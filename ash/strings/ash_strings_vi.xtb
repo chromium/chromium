@@ -732,6 +732,7 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="346243998268439747">Đặt lại mức thu phóng</translation>
 <translation id="3465223694362104965">Một bàn phím khác đã kết nối với thiết bị này kể từ lần đăng nhập cuối của bạn. Hãy đảm bảo rằng bạn tin tưởng bàn phím này trước khi sử dụng.</translation>
 <translation id="3465356146291925647">Do quản trị viên của bạn quản lý</translation>
+<translation id="3470502288861289375">Đang sao chép...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> rồi đến <ph name="KEY_TWO" /> hoặc <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" /></translation>

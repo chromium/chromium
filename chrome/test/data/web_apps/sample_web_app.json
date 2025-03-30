@@ -54,6 +54,7 @@
    "disallowed_launch_protocols": [ "web+disallowed_1234_0", "web+disallowed_1234_1", "web+disallowed_1234_2", "web+disallowed_1234_3", "web+disallowed_1234_4", "web+disallowed_1234_5", "web+disallowed_1234_6" ],
    "display_mode": "standalone",
    "display_override": [ "standalone", "fullscreen" ],
+   "diy_app_icons_masked_on_mac": true,
    "downloaded_icon_sizes": {
       "ANY": [ 256 ],
       "MASKABLE": [ 256 ],
@@ -170,7 +171,6 @@
    },
    "install_state": "1",
    "is_diy_app": true,
-   "diy_app_icons_masked_on_mac": true,
    "is_from_sync_and_pending_installation": true,
    "is_generated_icon": true,
    "is_uninstalling": false,
@@ -519,6 +519,7 @@
       }
    },
    "theme_color": "rgba(220,247,174,0.6470588235294118)",
+   "update_token": "2892851035",
    "user_link_capturing_preference": "1",
    "was_shortcut_app": true,
    "window_controls_overlay_enabled": false

@@ -1057,6 +1057,15 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Stylus"/>
 </enum>
 
+<!-- LINT.IfChange(InputOnVizSequenceDroppedReason) -->
+
+<enum name="InputOnVizSequenceDroppedReason">
+  <int value="0" label="ActiveSeqOnVizAbnormalDownTime"/>
+  <int value="1" label="FailedToTransferPotentialPointer"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/input/input_transfer_handler_android.h:InputOnVizSequenceDroppedReason)-->
+
 <enum name="InputOnVizStateProcessingResult">
   <int value="0" label="ProcessedSuccessfully"/>
   <int value="1" label="CouldNotFindViewForFrameSinkId"/>
@@ -1695,6 +1704,8 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="TABLET_BUTTON_ANIMATION_IN_PROGRESS"/>
 </enum>
 
+<!-- LINT.IfChange(TransferInputToVizResult) -->
+
 <enum name="TransferInputToVizResult">
   <int value="0" label="SuccessfullyTransferred"/>
   <int value="1" label="InputTransferHandlerNotFoundInMap"/>
@@ -1705,9 +1716,13 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="ImeIsActive"/>
   <int value="7" label="RequestedByEmbedder"/>
   <int value="8" label="SystemServerDidNotTransfer"/>
-  <int value="9" label="kBrowserTokenChanged"/>
-  <int value="10" label="kMultipleBrowserWindowsOpen"/>
+  <int value="9" label="BrowserTokenChanged"/>
+  <int value="10" label="MultipleBrowserWindowsOpen"/>
+  <int value="11" label="DownTimeAfterEventTime"/>
+  <int value="12" label="SequenceTransferredBackFromViz"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/input/transfer_input_to_viz_result.h:TransferInputToVizResult)-->
 
 <enum name="UrlTargetType">
   <int value="0" label="URL"/>

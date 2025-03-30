@@ -110,9 +110,6 @@ class OnDeviceModelServiceController
       ModelBasedCapabilityKey feature,
       std::unique_ptr<OnDeviceModelAdaptationMetadata> adaptation_metadata);
 
-  // Called when the model adaptation remote is disconnected.
-  void OnModelAdaptationRemoteDisconnected();
-
   // Add/remove observers for notifying on-device model availability changes.
   void AddOnDeviceModelAvailabilityChangeObserver(
       ModelBasedCapabilityKey feature,

@@ -91,6 +91,7 @@
 <translation id="1269405891096105529">Периферійні пристрої не підтримуються в режимі гостя</translation>
 <translation id="1270290102613614947">Екранну клавіатуру вимкнено</translation>
 <translation id="1272079795634619415">Зупинити</translation>
+<translation id="12741168609094094">Виберіть об’єкт на екрані, щоб виконати пошук, скопіювати текст тощо</translation>
 <translation id="1275285675049378717">Живлення пристрою (<ph name="POWER_SOURCE" />)</translation>
 <translation id="1275718070701477396">Вибрано</translation>
 <translation id="1276975447697633661">Виберіть файл і натисніть <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@
 <translation id="1720230731642245863">Точку доступу вимкнено</translation>
 <translation id="1731815243805539470">Перейти в попередній профіль користувача</translation>
 <translation id="1733996486177697563">Ви можете перемикатися між темною та світлою темами. Для цього натисніть і утримуйте будь-яку область на робочому столі, а потім виберіть "Оформлення та стиль".</translation>
+<translation id="1735992454301033090">Виділено область. Щоб перемістити її, використовуйте клавіші зі стрілками.</translation>
 <translation id="1736898441010944794">Пристрої з Bluetooth можуть бачити <ph name="NAME" />.</translation>
 <translation id="1737078180382804488">Відхилити налаштування перегляду сповіщень на телефоні</translation>
 <translation id="174102739345480129">Маркер вимкнено.</translation>
@@ -494,6 +496,7 @@
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> минулого тижня</translation>
 <translation id="2687510499067466116">Комбінацію клавіш змінено</translation>
 <translation id="2689613560355655046">Робочий стіл 8</translation>
+<translation id="2692092709110488417">Натисніть клавішу Tab, щоб виділити область і перемістити її</translation>
 <translation id="2695305337569143674">веб-переглядач</translation>
 <translation id="2697697418792422688">Показати налаштування клавіатури. Вибрано клавіатуру "<ph name="KEYBOARD_NAME" />".</translation>
 <translation id="2699913284398121653">Перенесіть дані з облікового запису закладу освіти в особистий за допомогою додатка Перенесення контенту</translation>
@@ -729,6 +732,7 @@
 <translation id="346243998268439747">Скинути масштабування</translation>
 <translation id="3465223694362104965">Після вашого останнього входу до пристрою було підключено іншу клавіатуру. Переконайтеся, що вона безпечна, перш ніж користуватися нею.</translation>
 <translation id="3465356146291925647">Мережею керує адміністратор</translation>
+<translation id="3470502288861289375">Копіювання…</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, а потім – <ph name="KEY_TWO" /> або <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Комбінація клавіш "Control-Shift-Space"</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1033,6 +1037,7 @@
 <translation id="4412698727486357573">Довідковий центр</translation>
 <translation id="4412944820643904175">Функцію "<ph name="FEATURE_NAME" />" вимкнено.</translation>
 <translation id="4417647906073317561">Налаштування режиму концентрації уваги. Установіть таймер, виберіть завдання й музику та пориньте в роботу.</translation>
+<translation id="4418600384772451109">Закрити панель</translation>
 <translation id="4424159417645388645">Робочий стіл 5</translation>
 <translation id="4426817706804363424">Так тримати!</translation>
 <translation id="4430019312045809116">Гучність</translation>
@@ -2229,6 +2234,7 @@
 <translation id="8287009018010202411">Продуктивність</translation>
 <translation id="828708037801473432">Вимкнено</translation>
 <translation id="8297006494302853456">Слабкий</translation>
+<translation id="8300451473979404345">Виділено маркер. Щоб перемістити його, використовуйте клавіші зі стрілками.</translation>
 <translation id="8308637677604853869">Попереднє меню</translation>
 <translation id="830868413617744215">Бета-версія</translation>
 <translation id="8314772463905284467">Режим Caps Lock увімкнено</translation>
@@ -2289,6 +2295,7 @@
 <translation id="851458219935658693">Показувати вікна з поточного робочого столу, перемикач вибрано</translation>
 <translation id="851660987304951246">Використовуйте функцію "Допомога із читанням", щоб швидко підсумовувати контент або ставити запитання</translation>
 <translation id="8517041960877371778">Пристрій <ph name="DEVICE_TYPE" /> може не заряджатися, коли він увімкнений.</translation>
+<translation id="8519329096920173967">Пошук на екрані за допомогою Google Об’єктива</translation>
 <translation id="8535393432370007982">Скасувати сортування за кольором</translation>
 <translation id="8536886494750559755">Показати налаштування швидкого обміну. Його бачитимуть усі користувачі протягом <ph name="TIME_REMAINING" />.</translation>
 <translation id="8539803091108018926">Текст скопійовано в буфер обміну</translation>

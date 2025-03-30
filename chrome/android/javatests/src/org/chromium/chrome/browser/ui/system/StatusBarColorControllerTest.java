@@ -164,8 +164,7 @@ public class StatusBarColorControllerTest {
     public void testStatusBarColorNtp() {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
         final @ColorInt int expectedColor =
-                ChromeColors.getSurfaceColor(
-                        activity, R.dimen.home_surface_background_color_elevation);
+                ContextCompat.getColor(activity, R.color.home_surface_background_color);
 
         sActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, false);
         NewTabPageTestUtils.waitForNtpLoaded(activity.getActivityTab());
@@ -250,8 +249,7 @@ public class StatusBarColorControllerTest {
 
         mOmniboxUtils.requestFocus();
         final @ColorInt int focusedColor =
-                ChromeColors.getSurfaceColor(
-                        activity, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
+                ContextCompat.getColor(activity, R.color.omnibox_suggestion_dropdown_bg);
 
         statusBarColorController.onSuggestionDropdownScroll();
         final @ColorInt int scrolledColor =
@@ -287,8 +285,7 @@ public class StatusBarColorControllerTest {
     public void testBrandColorIgnoredWhenOmniboxIsFocused() throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
         final @ColorInt int expectedFocusedColor =
-                ChromeColors.getSurfaceColor(
-                        activity, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
+                ContextCompat.getColor(activity, R.color.omnibox_suggestion_dropdown_bg);
 
         String pageWithBrandColorUrl =
                 sActivityTestRule
@@ -312,8 +309,7 @@ public class StatusBarColorControllerTest {
             throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
         final @ColorInt int expectedFocusedColor =
-                ChromeColors.getSurfaceColor(
-                        activity, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
+                ContextCompat.getColor(activity, R.color.omnibox_suggestion_dropdown_bg);
 
         String pageWithBrandColorUrl =
                 sActivityTestRule

@@ -112,6 +112,7 @@
 <translation id="244264527810019436">Některé weby nemusejí v anonymním režimu fungovat správně</translation>
 <translation id="2442870161001914531">Vždy požadovat zobrazení na počítači</translation>
 <translation id="2445311670906052406">Chrome teď nedávno použité karty sdílí se zařízením. Uvidíte je v seznamu aplikací v zařízení a ve výsledcích vyhledávání. Tuto funkci můžete v nastavení Chromu kdykoli vypnout.</translation>
+<translation id="245322989586167203">Weby se k sériovým portům obvykle připojují kvůli přenosu dat, například při nastavování sítě</translation>
 <translation id="2469312991797799607">Touto akcí vymažete veškerá data a soubory cookie webu <ph name="ORIGIN" /> a všech jeho podřízených webů</translation>
 <translation id="2482878487686419369">Oznámení</translation>
 <translation id="2485422356828889247">Odinstalovat</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">Nedovolit webům zjistit, kdy aktivně používáte toto zařízení</translation>
 <translation id="4412992751769744546">Povolit cookies třetích stran</translation>
 <translation id="4419929467120297501">Chrome brání webům v používání souborů cookie třetích stran ke sledování vašeho procházení. Pokud chcete <ph name="BEGIN_LINK" />spravovat přístup k souborům cookie třetích stran<ph name="END_LINK" />, přejděte do nastavení.</translation>
+<translation id="443121186588148776">Sériový port</translation>
 <translation id="4434045419905280838">Vyskakovací okna a přesměrování</translation>
 <translation id="443552056913301231">Touto akcí vymažete všechna místní data, včetně souborů cookie, a resetujete všechna oprávnění pro <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Vypne zvuk na konkrétním webu.</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Nejprve se dotázat</translation>
 <translation id="7423538860840206698">Čtení schránky je blokováno</translation>
 <translation id="7425915948813553151">Tmavý motiv pro weby</translation>
+<translation id="7478658909253570368">Nepovolovat webům připojení k sériovým portům</translation>
 <translation id="7488573225650545859">Skrýt kartu Zobrazení karet v seznamu aplikací</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Když je tato možnost zapnutá, weby mohou zobrazovat výzvy k přihlášení. Když je tato možnost vypnutá, weby výzvy k přihlášení zobrazovat nemohou.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Telefon je připojen k zařízení Bluetooth</translation>
 <translation id="7617547684249261169">Můžete smazat část nebo celou svou historii, soubory cookie, data webů a další položky</translation>
 <translation id="7649070708921625228">Nápověda</translation>
+<translation id="7655411746932645568">Weby mohou žádat o připojení k sériovým portům</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7667547420449112975">Čaroděj ze země Oz</translation>
 <translation id="7681597159868843240">Weby obvykle používají senzory pohybu na zařízení kvůli funkcím, jako je virtuální realita nebo sledování fitness aktivit</translation>

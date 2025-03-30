@@ -45,7 +45,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
@@ -64,7 +63,6 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 
 import java.util.List;
 import java.util.function.DoubleConsumer;
@@ -218,7 +216,6 @@ public class IncognitoTabSwitcherPaneUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testIncognitoReauthCallback() {
         assertNull(mIncognitoTabSwitcherPane.getHubSearchEnabledStateSupplier().get());
         checkNewTabButton(/* enabled= */ false);

@@ -441,7 +441,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1734878702283171397">Pokušajte kontaktirati administratora sistema.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, ističe <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Računar</translation>
-<translation id="1739422091279046802">klizanje i zumiranje</translation>
 <translation id="1741613555002899862">Mora biti naznačeno i niz mora biti važeći kada je vrijednost DnsOverHttpsMode postavljena na <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Kreveti i posteljina</translation>
 <translation id="1743892871127720056">Naslov tabele poređenja, uređivanje teksta</translation>
@@ -569,6 +568,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1975584088563498795">Poštansko sanduče 10</translation>
 <translation id="1978555033938440688">Verzija firmvera</translation>
 <translation id="1979156660928743046">Informacije o medijima</translation>
+<translation id="1987486584747170374">Vaša pretraživanja, najbolji rezultati za vaše upite i sadržaj na tim stranicama šalju se Googleu. Pregledavatelji ih neće upotrebljavati za poboljšanje AI-ja. Vaša organizacija uvijek može promijeniti te postavke.</translation>
 <translation id="1988881251331415125">Ako nema greške u pravopisu, <ph name="BEGIN_LINK" />pokušajte pokrenuti Dijagnostiku povezivosti<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> želi trajno pohraniti veliku količinu podataka na vaš lokalni računar</translation>
@@ -764,6 +764,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2301098101308036335">Koje su web lokacije posjećene i kada.</translation>
 <translation id="230286397113210245">Dugme Otvori anonimni prozor, aktivirajte da otvorite novi anonimni prozor i da privatno pregledate</translation>
 <translation id="2306124309679506798">Dozvoliti interaktivno iskustvo?</translation>
+<translation id="2307711332257985952">Vaša kućna i poslovna adresa sada su dostupne u Chromeu</translation>
 <translation id="2312234273148520048">Začini i preljevi</translation>
 <translation id="2316087952091171402">Manje od <ph name="UPPER_ESTIMATE" />. Moguće je sporije učitavanje nekih web lokacija prilikom sljedeće posjete.</translation>
 <translation id="2316159751672436664">Personalizirajte alate za pristupačnost u postavkama ChromeOS-a</translation>
@@ -1179,6 +1180,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3102312643185441063">Štedni</translation>
 <translation id="3103188521861412364">Dionice i obveznice</translation>
 <translation id="3103535543639438037">Uporedite slične proizvode jedan pored drugog</translation>
+<translation id="3103993932858740905">Kad plaćate obročno, ispunjava se jednokratni broj virtualne kartice. Taj je broj namijenjen samo za ovu kupnju.</translation>
 <translation id="3105172416063519923">ID materijala:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />provjeriti konfiguraciju sigurnosnog DNS-a<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Srednja ladica</translation>
@@ -2496,7 +2498,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5379618281582508161">Potvrdite identitet da dobijete ovu lozinku na svim uređajima</translation>
 <translation id="5380953781541843508">uzlaznim redoslijedom</translation>
 <translation id="5381318171304904246">Kada nastavite, preusmjerit ćemo vas na web lokaciju banke. Nakon što potvrdite, automatski ćemo vas vratiti da završite kupovinu.</translation>
-<translation id="5381952079334035181">Korisnik <ph name="MEMBER_FIRST_NAME" /> ažurirao je karticu <ph name="WEBSITE_TITLE" /></translation>
+<translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> je ažurirao/la karticu "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="5383478552402031184">Podne obloge</translation>
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5385966243497224160">Nije moguće pregledati URL-ove koji ne koriste HTTPS</translation>
@@ -2882,6 +2884,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6059925163896151826">USB uređaji</translation>
 <translation id="6060009363608157444">Nevažeći DnsOverHttps način.</translation>
 <translation id="6061154937977953833">Hrvanje</translation>
+<translation id="6062405040252994646">Alat</translation>
 <translation id="6062937464449575061">Prestani pratiti cijenu</translation>
 <translation id="6063415549109819824">Stambeno kreditiranje</translation>
 <translation id="6070432475334343308">Jedan ili više fajlova nije otpremljeno u folder <ph name="FOLDER_NAME" /> na usluzi <ph name="CLOUD_PROVIDER" /></translation>
@@ -3929,7 +3932,7 @@ Dodatni detalji:
 <translation id="787226752901403048">Prijavite se u Chrome da dijelite grupe kartica, pridružujete im se i sarađujete na idejama</translation>
 <translation id="7877007680666472091">ID-ovi zaštićenog sadržaja</translation>
 <translation id="7878562273885520351">Moguće je da je vaša lozinka ugrožena</translation>
-<translation id="7881044256965445977">Traženje i povezivanje s bilo kojim uređajem na vašoj lokalnoj mreži</translation>
+<translation id="7881044256965445977">Traženje bilo kojeg uređaja i povezivanje s njim na lokalnoj mreži</translation>
 <translation id="7882421473871500483">Smeđa</translation>
 <translation id="7886897188117641322">Odaberite koje široke kategorije tema se mogu koristiti kao pomoć za personaliziranje oglasa</translation>
 <translation id="7887683347370398519">Provjerite CVC i pokušajte ponovo</translation>
@@ -4687,7 +4690,7 @@ Dodatni detalji:
 <translation id="94613679163347541">Uporediti proizvode iz kategorije <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da brzo kreirate novu web lokaciju na usluzi Google Web lokacije</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome će ponovo ograničiti kolačiće danas}=1{Chrome će ponovo ograničiti kolačiće sutra}one{Chrome će ponovo ograničiti kolačiće za # dan}few{Chrome će ponovo ograničiti kolačiće za # dana}other{Chrome će ponovo ograničiti kolačiće za # dana}}</translation>
-<translation id="949026252328034572">Članovi (njih <ph name="MEMBER_COUNT" />) pridružilo se grupi kartica <ph name="GROUP_NAME" /></translation>
+<translation id="949026252328034572">Više članova (<ph name="MEMBER_COUNT" />) pridružilo se grupi kartica "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">Pitao/la si da posjetiš ovu web lokaciju. Roditelj može odgovoriti u Family Linku.</translation>
 <translation id="950736567201356821">Trostruko bušenje na gornjoj strani</translation>
 <translation id="950926967802086924">Pristupni ključ • Google upravitelj lozinki</translation>

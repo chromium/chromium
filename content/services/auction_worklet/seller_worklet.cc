@@ -655,11 +655,16 @@ void SellerWorklet::ScoreAd(
       !base::FeatureList::IsEnabled(
           features::kFledgeAlwaysReuseSellerContext) &&
       IsCodeReady()) {
-    score_ad_task->context_prep_task_id = cancelable_task_tracker_.PostTask(
-        v8_runners_[score_ad_task->thread].get(), FROM_HERE,
-        base::BindOnce(&SellerWorklet::V8State::PrepareContextRecycler,
-                       base::Unretained(v8_state_[score_ad_task->thread].get()),
-                       trace_id));
+    if (IsCodeReady()) {
+      score_ad_task->context_prep_task_id = cancelable_task_tracker_.PostTask(
+          v8_runners_[score_ad_task->thread].get(), FROM_HERE,
+          base::BindOnce(
+              &SellerWorklet::V8State::PrepareContextRecycler,
+              base::Unretained(v8_state_[score_ad_task->thread].get()),
+              trace_id));
+    } else if (score_ad_tasks_.size() == 1) {
+      SetEagerJsCompilation(true);
+    }
   }
 
   score_ad_task->trace_wait_deps_start = base::TimeTicks::Now();
@@ -2311,16 +2316,14 @@ bool SellerWorklet::IsReadyToScoreAd(const ScoreAdTask& task) const {
          ScoreAdTaskHasInputs(task) && IsCodeReady();
 }
 
-void SellerWorklet::DisableEagerJsCompilationIfOnlyWaitingOnJs(
-    const ScoreAdTask& task) {
-  if (ScoreAdTaskHasInputs(task) && worklet_loader_) {
-    for (size_t thread_index = 0; thread_index < v8_runners_.size();
-         ++thread_index) {
-      v8_runners_[thread_index]->PostTask(
-          FROM_HERE,
-          base::BindOnce(&AuctionV8Helper::DisableEagerJsCompilation,
-                         base::Unretained(v8_helpers_[thread_index].get())));
-    }
+void SellerWorklet::SetEagerJsCompilation(bool eagerly_compile_js) {
+  for (size_t thread_index = 0; thread_index < v8_runners_.size();
+       ++thread_index) {
+    v8_runners_[thread_index]->PostTask(
+        FROM_HERE,
+        base::BindOnce(&AuctionV8Helper::SetEagerJsCompilation,
+                       base::Unretained(v8_helpers_[thread_index].get()),
+                       eagerly_compile_js));
   }
 }
 
@@ -2328,7 +2331,11 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
   if (!IsReadyToScoreAd(*task)) {
-    DisableEagerJsCompilationIfOnlyWaitingOnJs(*task);
+    if (ScoreAdTaskHasInputs(*task) && worklet_loader_) {
+      // Disable eager JS compilation if we're only waiting on Javascript, so
+      // that we can begin scoring this bid as soon as we have the script.
+      SetEagerJsCompilation(false);
+    }
     return;
   }
 

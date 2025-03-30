@@ -71,8 +71,8 @@ export class ExtensionsOptionsDialogElement extends CrLitElement {
     };
   }
 
-  private extensionOptions_?: ExtensionOptionsElement;
-  protected data_?: chrome.developerPrivate.ExtensionInfo;
+  private accessor extensionOptions_: ExtensionOptionsElement|undefined;
+  protected accessor data_: chrome.developerPrivate.ExtensionInfo|undefined;
   private preferredSize_: {height: number, width: number}|null = null;
   private eventTracker_: EventTracker = new EventTracker();
   private updateDialogSizeTimeout_: number|null = null;

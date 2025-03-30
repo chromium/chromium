@@ -9,12 +9,10 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/supports_user_data.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -60,10 +58,9 @@ void RunSavePackageScanningCallback(download::DownloadItem* item, bool allowed);
 bool IncludeDeviceInfo(Profile* profile, bool per_profile);
 
 // Returns the email address of the unconsented account signed in to the profile
-// or an empty string if no account is signed in.  If either `profile` or
-// `identity_manager` is null then the empty string is returned.
+// or an empty string if no account is signed in.  If `profile` is null then the
+// empty string is returned.
 std::string GetProfileEmail(Profile* profile);
-std::string GetProfileEmail(signin::IdentityManager* identity_manager);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #if BUILDFLAG(FULL_SAFE_BROWSING)

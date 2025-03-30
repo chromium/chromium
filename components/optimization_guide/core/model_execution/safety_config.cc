@@ -105,6 +105,10 @@ bool SafetyConfig::CanCheckPartialOutput(
     // every token.
     return true;
   }
+  // Response checks do not work well with streaming responses.
+  if (proto_->response_check_size() > 0) {
+    return false;
+  }
   if (!proto_->has_partial_output_checks()) {
     // TODO(crbug.com/379429927): Temporary fix before rolling out the partial
     // output checks. Change the return value to false after fully landing the

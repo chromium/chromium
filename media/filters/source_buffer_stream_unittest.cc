@@ -48,9 +48,8 @@ typedef StreamParser::BufferQueue BufferQueue;
 
 static const int kDefaultFramesPerSecond = 30;
 static const int kDefaultKeyframesPerSecond = 6;
-static const uint8_t kDataA = 0x11;
-static const uint8_t kDataB = 0x33;
-static const size_t kDataSize = 1u;
+static std::array<const uint8_t, 1> kDataA = {0x11};
+static std::array<const uint8_t, 1> kDataB = {0x33};
 
 // Matchers for verifying common media log entry strings.
 MATCHER_P(ContainsTrackBufferExhaustionSkipLog, skip_milliseconds, "") {
@@ -107,14 +106,14 @@ class SourceBufferStreamTest : public testing::Test {
 
   void NewCodedFrameGroupAppend(int starting_position, int number_of_buffers) {
     AppendBuffers(starting_position, number_of_buffers, true, base::TimeDelta(),
-                  &kDataA, kDataSize);
+                  kDataA);
   }
 
   void NewCodedFrameGroupAppend(int starting_position,
                                 int number_of_buffers,
-                                const uint8_t* data) {
+                                base::span<const uint8_t> data) {
     AppendBuffers(starting_position, number_of_buffers, true, base::TimeDelta(),
-                  data, kDataSize);
+                  data);
   }
 
   void NewCodedFrameGroupAppend_OffsetFirstBuffer(
@@ -122,19 +121,19 @@ class SourceBufferStreamTest : public testing::Test {
       int number_of_buffers,
       base::TimeDelta first_buffer_offset) {
     AppendBuffers(starting_position, number_of_buffers, true,
-                  first_buffer_offset, &kDataA, kDataSize);
+                  first_buffer_offset, kDataA);
   }
 
   void AppendBuffers(int starting_position, int number_of_buffers) {
     AppendBuffers(starting_position, number_of_buffers, false,
-                  base::TimeDelta(), &kDataA, kDataSize);
+                  base::TimeDelta(), kDataA);
   }
 
   void AppendBuffers(int starting_position,
                      int number_of_buffers,
-                     const uint8_t* data) {
+                     base::span<const uint8_t> data) {
     AppendBuffers(starting_position, number_of_buffers, false,
-                  base::TimeDelta(), data, kDataSize);
+                  base::TimeDelta(), data);
   }
 
   void NewCodedFrameGroupAppend(const std::string& buffers_to_append) {
@@ -170,7 +169,7 @@ class SourceBufferStreamTest : public testing::Test {
 
   bool GarbageCollectWithPlaybackAtBuffer(int position, int new_data_buffers) {
     return GarbageCollect(position * frame_duration_,
-                          new_data_buffers * kDataSize);
+                          new_data_buffers * kDataA.size());
   }
 
   void RemoveInMs(int start, int end, int duration) {
@@ -265,17 +264,16 @@ class SourceBufferStreamTest : public testing::Test {
 
   void CheckExpectedBuffers(int starting_position,
                             int ending_position,
-                            const uint8_t* data) {
-    CheckExpectedBuffers(starting_position, ending_position, false,
-                         UNSAFE_TODO(base::span(data, kDataSize)));
+                            base::span<const uint8_t> data) {
+    CheckExpectedBuffers(starting_position, ending_position, false, data);
   }
 
   void CheckExpectedBuffers(int starting_position,
                             int ending_position,
-                            const uint8_t* data,
+                            base::span<const uint8_t> data,
                             bool expect_keyframe) {
     CheckExpectedBuffers(starting_position, ending_position, expect_keyframe,
-                         UNSAFE_TODO(base::span(data, kDataSize)));
+                         data);
   }
 
   void CheckExpectedBuffers(
@@ -416,7 +414,7 @@ class SourceBufferStreamTest : public testing::Test {
   }
 
   int GetMemoryUsagePerBuffer() const {
-    return kDataSize + sizeof(StreamParserBuffer);
+    return kDataA.size() + sizeof(StreamParserBuffer);
   }
 
   base::TimeDelta frame_duration() const { return frame_duration_; }
@@ -446,8 +444,7 @@ class SourceBufferStreamTest : public testing::Test {
                      int number_of_buffers,
                      bool begin_coded_frame_group,
                      base::TimeDelta first_buffer_offset,
-                     const uint8_t* data,
-                     int size) {
+                     base::span<const uint8_t> data) {
     if (begin_coded_frame_group) {
       stream_->OnStartOfCodedFrameGroup(starting_position * frame_duration_);
     }
@@ -459,8 +456,8 @@ class SourceBufferStreamTest : public testing::Test {
       int position = starting_position + i;
       bool is_keyframe = position % keyframe_interval == 0;
       // Track ID is meaningless to these tests.
-      scoped_refptr<StreamParserBuffer> buffer = StreamParserBuffer::CopyFrom(
-          data, size, is_keyframe, GetStreamType(), 0);
+      scoped_refptr<StreamParserBuffer> buffer =
+          StreamParserBuffer::CopyFrom(data, is_keyframe, GetStreamType(), 0);
       base::TimeDelta timestamp = frame_duration_ * position;
 
       if (i == 0)
@@ -613,8 +610,8 @@ class SourceBufferStreamTest : public testing::Test {
       }
 
       // Create buffer. Track ID is meaningless to these tests
-      scoped_refptr<StreamParserBuffer> buffer = StreamParserBuffer::CopyFrom(
-          &kDataA, kDataSize, is_keyframe, GetStreamType(), 0);
+      scoped_refptr<StreamParserBuffer> buffer =
+          StreamParserBuffer::CopyFrom(kDataA, is_keyframe, GetStreamType(), 0);
       buffer->set_timestamp(buffer_timestamps[0]);
       if (is_duration_estimated)
         buffer->set_is_duration_estimated(true);
@@ -631,8 +628,8 @@ class SourceBufferStreamTest : public testing::Test {
       // it as the preroll.
       if (has_preroll) {
         scoped_refptr<StreamParserBuffer> preroll_buffer =
-            StreamParserBuffer::CopyFrom(&kDataA, kDataSize, is_keyframe,
-                                         GetStreamType(), 0);
+            StreamParserBuffer::CopyFrom(kDataA, is_keyframe, GetStreamType(),
+                                         0);
         preroll_buffer->set_duration(frame_duration_);
         buffer->SetPrerollBuffer(preroll_buffer);
       }
@@ -834,11 +831,11 @@ TEST_F(SourceBufferStreamTest, End_Overlap) {
 // after:                 B  b  b  b  b  B  b  b        A  a  a  a  a
 TEST_F(SourceBufferStreamTest, End_Overlap_Several) {
   // Append 10 buffers at positions 10 through 19 (DTS and PTS).
-  NewCodedFrameGroupAppend(10, 10, &kDataA);
+  NewCodedFrameGroupAppend(10, 10, kDataA);
 
   // Append 8 buffers at positions 5 through 12 (DTS); 5 through 14 (PTS) with
   // partial second GOP.
-  NewCodedFrameGroupAppend(5, 8, &kDataB);
+  NewCodedFrameGroupAppend(5, 8, kDataB);
 
   // Check expected ranges: stream should not have kept buffers at DTS 13,14;
   // PTS 12,13 because the keyframe on which they depended (10, PTS=DTS) was
@@ -852,9 +849,9 @@ TEST_F(SourceBufferStreamTest, End_Overlap_Several) {
 
   // Check buffers in range.
   Seek(5);
-  CheckExpectedBuffers(5, 12, &kDataB);
+  CheckExpectedBuffers(5, 12, kDataB);
   // No seek is necessary (1 continuous range).
-  CheckExpectedBuffers(15, 19, &kDataA);
+  CheckExpectedBuffers(15, 19, kDataA);
   CheckNoNextBuffer();
 }
 
@@ -887,15 +884,15 @@ TEST_F(SourceBufferStreamTest, End_Overlap_SingleBuffer) {
 TEST_F(SourceBufferStreamTest, Complete_Overlap_Several) {
   // Append 2 buffers at positions 5 through 6 (DTS); 5 through 9 (PTS) partial
   // GOP.
-  NewCodedFrameGroupAppend(5, 2, &kDataA);
+  NewCodedFrameGroupAppend(5, 2, kDataA);
 
   // Append 2 buffers at positions 15 through 16 (DTS); 15 through 19 (PTS)
   // partial GOP.
-  NewCodedFrameGroupAppend(15, 2, &kDataA);
+  NewCodedFrameGroupAppend(15, 2, kDataA);
 
   // Append 2 buffers at positions 25 through 26 (DTS); 25 through 29 (PTS)
   // partial GOP.
-  NewCodedFrameGroupAppend(25, 2, &kDataA);
+  NewCodedFrameGroupAppend(25, 2, kDataA);
 
   // Check expected ranges.  Unlike the rest of the position based test API used
   // in this case, these range expectation strings are the actual timestamps
@@ -903,13 +900,13 @@ TEST_F(SourceBufferStreamTest, Complete_Overlap_Several) {
   CheckExpectedRanges("{ [5,9) [15,19) [25,29) }");
 
   // Append buffers at positions 0 through 29 (DTS and PTS).
-  NewCodedFrameGroupAppend(0, 30, &kDataB);
+  NewCodedFrameGroupAppend(0, 30, kDataB);
 
   // Check expected range.
   CheckExpectedRanges("{ [0,29) }");
   // Check buffers in range.
   Seek(0);
-  CheckExpectedBuffers(0, 29, &kDataB);
+  CheckExpectedBuffers(0, 29, kDataB);
 }
 
 // Using position based test API:
@@ -920,22 +917,22 @@ TEST_F(SourceBufferStreamTest, Complete_Overlap_Several) {
 TEST_F(SourceBufferStreamTest, Complete_Overlap_Several_Then_Merge) {
   // Append 2 buffers at positions 5 through 6 (DTS); 5 through 9 (PTS) partial
   // GOP.
-  NewCodedFrameGroupAppend(5, 2, &kDataA);
+  NewCodedFrameGroupAppend(5, 2, kDataA);
 
   // Append 2 buffers at positions 10 through 11 (DTS); 15 through 19 (PTS)
   // partial GOP.
-  NewCodedFrameGroupAppend(15, 2, &kDataA);
+  NewCodedFrameGroupAppend(15, 2, kDataA);
 
   // Append 2 buffers at positions 25 through 26 (DTS); 25 through 29 (PTS)
   // partial GOP.
-  NewCodedFrameGroupAppend(25, 2, &kDataA);
+  NewCodedFrameGroupAppend(25, 2, kDataA);
 
   // Append 2 buffers at positions 35 through 36 (DTS); 35 through 39 (PTS)
   // partial GOP.
-  NewCodedFrameGroupAppend(35, 2, &kDataA);
+  NewCodedFrameGroupAppend(35, 2, kDataA);
 
   // Append buffers at positions 0 through 34 (DTS and PTS).
-  NewCodedFrameGroupAppend(0, 35, &kDataB);
+  NewCodedFrameGroupAppend(0, 35, kDataB);
 
   // Check expected ranges.  Unlike the rest of the position based test API used
   // in this case, these range expectation strings are the actual timestamps
@@ -944,25 +941,25 @@ TEST_F(SourceBufferStreamTest, Complete_Overlap_Several_Then_Merge) {
 
   // Check buffers in range.
   Seek(0);
-  CheckExpectedBuffers(0, 34, &kDataB);
-  CheckExpectedBuffers(35, 36, &kDataA);
+  CheckExpectedBuffers(0, 34, kDataB);
+  CheckExpectedBuffers(35, 36, kDataA);
 }
 
 TEST_F(SourceBufferStreamTest, Complete_Overlap_Selected) {
   // Append 10 buffers at positions 5 through 14.
-  NewCodedFrameGroupAppend(5, 10, &kDataA);
+  NewCodedFrameGroupAppend(5, 10, kDataA);
 
   // Seek to buffer at position 5.
   Seek(5);
 
   // Replace old data with new data.
-  NewCodedFrameGroupAppend(5, 10, &kDataB);
+  NewCodedFrameGroupAppend(5, 10, kDataB);
 
   // Check ranges are correct.
   CheckExpectedRanges("{ [5,14) }");
 
   // Check that data has been replaced with new data.
-  CheckExpectedBuffers(5, 14, &kDataB);
+  CheckExpectedBuffers(5, 14, kDataB);
 }
 
 // This test is testing that a client can append data to SourceBufferStream that
@@ -971,28 +968,28 @@ TEST_F(SourceBufferStreamTest, Complete_Overlap_Selected) {
 // the keyframe of the new data, after which it will return the new data.
 TEST_F(SourceBufferStreamTest, Complete_Overlap_Selected_TrackBuffer) {
   // Append 10 buffers at positions 5 through 14.
-  NewCodedFrameGroupAppend(5, 10, &kDataA);
+  NewCodedFrameGroupAppend(5, 10, kDataA);
 
   // Seek to buffer at position 5 and get next buffer.
   Seek(5);
-  CheckExpectedBuffers(5, 5, &kDataA);
+  CheckExpectedBuffers(5, 5, kDataA);
 
   // Do a complete overlap by appending 20 buffers at positions 0 through 19.
-  NewCodedFrameGroupAppend(0, 20, &kDataB);
+  NewCodedFrameGroupAppend(0, 20, kDataB);
 
   // Check range is correct.
   CheckExpectedRanges("{ [0,19) }");
 
   // Expect old data up until next keyframe in new data.
-  CheckExpectedBuffers(6, 9, &kDataA);
-  CheckExpectedBuffers(10, 10, &kDataB, true);
+  CheckExpectedBuffers(6, 9, kDataA);
+  CheckExpectedBuffers(10, 10, kDataB, true);
 
   // Expect rest of data to be new.
-  CheckExpectedBuffers(11, 19, &kDataB);
+  CheckExpectedBuffers(11, 19, kDataB);
 
   // Seek back to beginning; all data should be new.
   Seek(0);
-  CheckExpectedBuffers(0, 19, &kDataB);
+  CheckExpectedBuffers(0, 19, kDataB);
 
   // Check range continues to be correct.
   CheckExpectedRanges("{ [0,19) }");
@@ -1000,116 +997,116 @@ TEST_F(SourceBufferStreamTest, Complete_Overlap_Selected_TrackBuffer) {
 
 TEST_F(SourceBufferStreamTest, Complete_Overlap_Selected_EdgeCase) {
   // Append 10 buffers at positions 5 through 14.
-  NewCodedFrameGroupAppend(5, 10, &kDataA);
+  NewCodedFrameGroupAppend(5, 10, kDataA);
 
   // Seek to buffer at position 5 and get next buffer.
   Seek(5);
-  CheckExpectedBuffers(5, 5, &kDataA);
+  CheckExpectedBuffers(5, 5, kDataA);
 
   // Replace existing data with new data.
-  NewCodedFrameGroupAppend(5, 10, &kDataB);
+  NewCodedFrameGroupAppend(5, 10, kDataB);
 
   // Check ranges are correct.
   CheckExpectedRanges("{ [5,14) }");
 
   // Expect old data up until next keyframe in new data.
-  CheckExpectedBuffers(6, 9, &kDataA);
-  CheckExpectedBuffers(10, 10, &kDataB, true);
+  CheckExpectedBuffers(6, 9, kDataA);
+  CheckExpectedBuffers(10, 10, kDataB, true);
 
   // Expect rest of data to be new.
-  CheckExpectedBuffers(11, 14, &kDataB);
+  CheckExpectedBuffers(11, 14, kDataB);
 
   // Seek back to beginning; all data should be new.
   Seek(5);
-  CheckExpectedBuffers(5, 14, &kDataB);
+  CheckExpectedBuffers(5, 14, kDataB);
 
   // Check range continues to be correct.
   CheckExpectedRanges("{ [5,14) }");
 }
 
 TEST_F(SourceBufferStreamTest, Complete_Overlap_Selected_Multiple) {
-  static const uint8_t kDataC = 0x55;
-  static const uint8_t kDataD = 0x77;
+  static std::array<const uint8_t, 1> kDataC = {0x55};
+  static std::array<const uint8_t, 1> kDataD = {0x77};
 
   // Append 5 buffers at positions 5 through 9.
-  NewCodedFrameGroupAppend(5, 5, &kDataA);
+  NewCodedFrameGroupAppend(5, 5, kDataA);
 
   // Seek to buffer at position 5 and get next buffer.
   Seek(5);
-  CheckExpectedBuffers(5, 5, &kDataA);
+  CheckExpectedBuffers(5, 5, kDataA);
 
   // Replace existing data with new data.
-  NewCodedFrameGroupAppend(5, 5, &kDataB);
+  NewCodedFrameGroupAppend(5, 5, kDataB);
 
   // Then replace it again with different data.
-  NewCodedFrameGroupAppend(5, 5, &kDataC);
+  NewCodedFrameGroupAppend(5, 5, kDataC);
 
   // Now append 5 new buffers at positions 10 through 14.
-  NewCodedFrameGroupAppend(10, 5, &kDataC);
+  NewCodedFrameGroupAppend(10, 5, kDataC);
 
   // Now replace all the data entirely.
-  NewCodedFrameGroupAppend(5, 10, &kDataD);
+  NewCodedFrameGroupAppend(5, 10, kDataD);
 
   // Expect buffers 6 through 9 to be DataA, and the remaining
   // buffers to be kDataD.
-  CheckExpectedBuffers(6, 9, &kDataA);
-  CheckExpectedBuffers(10, 14, &kDataD);
+  CheckExpectedBuffers(6, 9, kDataA);
+  CheckExpectedBuffers(10, 14, kDataD);
 
   // At this point we cannot fulfill request.
   CheckNoNextBuffer();
 
   // Seek back to beginning; all data should be new.
   Seek(5);
-  CheckExpectedBuffers(5, 14, &kDataD);
+  CheckExpectedBuffers(5, 14, kDataD);
 }
 
 TEST_F(SourceBufferStreamTest, Start_Overlap_Selected) {
   // Append 10 buffers at positions 0 through 9.
-  NewCodedFrameGroupAppend(0, 10, &kDataA);
+  NewCodedFrameGroupAppend(0, 10, kDataA);
 
   // Seek to position 5, then add buffers to overlap data at that position.
   Seek(5);
-  NewCodedFrameGroupAppend(5, 10, &kDataB);
+  NewCodedFrameGroupAppend(5, 10, kDataB);
 
   // Check expected range.
   CheckExpectedRanges("{ [0,14) }");
 
   // Because we seeked to a keyframe, the next buffers should all be new data.
-  CheckExpectedBuffers(5, 14, &kDataB);
+  CheckExpectedBuffers(5, 14, kDataB);
 
   // Make sure all data is correct.
   Seek(0);
-  CheckExpectedBuffers(0, 4, &kDataA);
-  CheckExpectedBuffers(5, 14, &kDataB);
+  CheckExpectedBuffers(0, 4, kDataA);
+  CheckExpectedBuffers(5, 14, kDataB);
 }
 
 TEST_F(SourceBufferStreamTest, Start_Overlap_Selected_TrackBuffer) {
   // Append 15 buffers at positions 0 through 14.
-  NewCodedFrameGroupAppend(0, 15, &kDataA);
+  NewCodedFrameGroupAppend(0, 15, kDataA);
 
   // Seek to 10 and get buffer.
   Seek(10);
-  CheckExpectedBuffers(10, 10, &kDataA);
+  CheckExpectedBuffers(10, 10, kDataA);
 
   // Now append 10 buffers of new data at positions 10 through 19.
-  NewCodedFrameGroupAppend(10, 10, &kDataB);
+  NewCodedFrameGroupAppend(10, 10, kDataB);
 
   // Check expected range.
   CheckExpectedRanges("{ [0,19) }");
 
   // The next 4 buffers should be a from the old buffer, followed by a keyframe
   // from the new data.
-  CheckExpectedBuffers(11, 14, &kDataA);
-  CheckExpectedBuffers(15, 15, &kDataB, true);
+  CheckExpectedBuffers(11, 14, kDataA);
+  CheckExpectedBuffers(15, 15, kDataB, true);
 
   // The rest of the buffers should be new data.
-  CheckExpectedBuffers(16, 19, &kDataB);
+  CheckExpectedBuffers(16, 19, kDataB);
 
   // Now seek to the beginning; positions 0 through 9 should be the original
   // data, positions 10 through 19 should be the new data.
   Seek(0);
-  CheckExpectedBuffers(0, 9, &kDataA);
-  CheckExpectedBuffers(10, 19, &kDataB);
+  CheckExpectedBuffers(0, 9, kDataA);
+  CheckExpectedBuffers(10, 19, kDataB);
 
   // Make sure range is still correct.
   CheckExpectedRanges("{ [0,19) }");
@@ -1117,29 +1114,29 @@ TEST_F(SourceBufferStreamTest, Start_Overlap_Selected_TrackBuffer) {
 
 TEST_F(SourceBufferStreamTest, Start_Overlap_Selected_EdgeCase) {
   // Append 10 buffers at positions 5 through 14.
-  NewCodedFrameGroupAppend(5, 10, &kDataA);
+  NewCodedFrameGroupAppend(5, 10, kDataA);
 
   Seek(10);
-  CheckExpectedBuffers(10, 10, &kDataA);
+  CheckExpectedBuffers(10, 10, kDataA);
 
   // Now replace the last 5 buffers with new data.
-  NewCodedFrameGroupAppend(10, 5, &kDataB);
+  NewCodedFrameGroupAppend(10, 5, kDataB);
 
   // The next 4 buffers should be the original data, held in the track buffer.
-  CheckExpectedBuffers(11, 14, &kDataA);
+  CheckExpectedBuffers(11, 14, kDataA);
 
   // The next buffer is at position 15, so we should fail to fulfill the
   // request.
   CheckNoNextBuffer();
 
   // Now append data at 15 through 19 and check to make sure it's correct.
-  NewCodedFrameGroupAppend(15, 5, &kDataB);
-  CheckExpectedBuffers(15, 19, &kDataB);
+  NewCodedFrameGroupAppend(15, 5, kDataB);
+  CheckExpectedBuffers(15, 19, kDataB);
 
   // Seek to beginning of buffered range and check buffers.
   Seek(5);
-  CheckExpectedBuffers(5, 9, &kDataA);
-  CheckExpectedBuffers(10, 19, &kDataB);
+  CheckExpectedBuffers(5, 9, kDataA);
+  CheckExpectedBuffers(10, 19, kDataB);
 
   // Check expected range.
   CheckExpectedRanges("{ [5,19) }");
@@ -1154,24 +1151,24 @@ TEST_F(SourceBufferStreamTest, Start_Overlap_Selected_EdgeCase) {
 // after:  B b b b b*B*b b b b A a a a a
 TEST_F(SourceBufferStreamTest, End_Overlap_Selected) {
   // Append 10 buffers at positions 5 through 14.
-  NewCodedFrameGroupAppend(5, 10, &kDataA);
+  NewCodedFrameGroupAppend(5, 10, kDataA);
 
   // Seek to position 5.
   Seek(5);
 
   // Now append 10 buffers at positions 0 through 9.
-  NewCodedFrameGroupAppend(0, 10, &kDataB);
+  NewCodedFrameGroupAppend(0, 10, kDataB);
 
   // Check expected range.
   CheckExpectedRanges("{ [0,14) }");
 
   // Because we seeked to a keyframe, the next buffers should be new.
-  CheckExpectedBuffers(5, 9, &kDataB);
+  CheckExpectedBuffers(5, 9, kDataB);
 
   // Make sure all data is correct.
   Seek(0);
-  CheckExpectedBuffers(0, 9, &kDataB);
-  CheckExpectedBuffers(10, 14, &kDataA);
+  CheckExpectedBuffers(0, 9, kDataB);
+  CheckExpectedBuffers(10, 14, kDataA);
 }
 
 // This test covers the case where new buffers end-overlap an existing, selected
@@ -1183,25 +1180,25 @@ TEST_F(SourceBufferStreamTest, End_Overlap_Selected) {
 // after: |B b b b b B b b b b A a a*a*a|
 TEST_F(SourceBufferStreamTest, End_Overlap_Selected_AfterEndOfNew_1) {
   // Append 10 buffers at positions 5 through 14.
-  NewCodedFrameGroupAppend(5, 10, &kDataA);
+  NewCodedFrameGroupAppend(5, 10, kDataA);
 
   // Seek to position 10, then move to position 13.
   Seek(10);
-  CheckExpectedBuffers(10, 12, &kDataA);
+  CheckExpectedBuffers(10, 12, kDataA);
 
   // Now append 10 buffers at positions 0 through 9.
-  NewCodedFrameGroupAppend(0, 10, &kDataB);
+  NewCodedFrameGroupAppend(0, 10, kDataB);
 
   // Check expected range.
   CheckExpectedRanges("{ [0,14) }");
 
   // Make sure rest of data is as expected.
-  CheckExpectedBuffers(13, 14, &kDataA);
+  CheckExpectedBuffers(13, 14, kDataA);
 
   // Make sure all data is correct.
   Seek(0);
-  CheckExpectedBuffers(0, 9, &kDataB);
-  CheckExpectedBuffers(10, 14, &kDataA);
+  CheckExpectedBuffers(0, 9, kDataB);
+  CheckExpectedBuffers(10, 14, kDataA);
 }
 
 // Using position based test API:
@@ -1215,15 +1212,15 @@ TEST_F(SourceBufferStreamTest, End_Overlap_Selected_AfterEndOfNew_1) {
 // after:  B b b b b B b b     A a a*a*a
 TEST_F(SourceBufferStreamTest, End_Overlap_Selected_AfterEndOfNew_2) {
   // Append 10 buffers at positions 5 through 14 (DTS and PTS, 2 full GOPs)
-  NewCodedFrameGroupAppend(5, 10, &kDataA);
+  NewCodedFrameGroupAppend(5, 10, kDataA);
 
   // Seek to position 10, then move to position 13.
   Seek(10);
-  CheckExpectedBuffers(10, 12, &kDataA);
+  CheckExpectedBuffers(10, 12, kDataA);
 
   // Now append 8 buffers at positions 0 through 7 (DTS); 0 through 9 (PTS) with
   // partial second GOP.
-  NewCodedFrameGroupAppend(0, 8, &kDataB);
+  NewCodedFrameGroupAppend(0, 8, kDataB);
 
   // Check expected ranges: stream should not have kept buffers at DTS 8,9;
   // PTS 7,8 because the keyframe on which they depended (5, PTS=DTS) was
@@ -1236,13 +1233,13 @@ TEST_F(SourceBufferStreamTest, End_Overlap_Selected_AfterEndOfNew_2) {
   CheckExpectedRanges("{ [0,14) }");
 
   // Make sure rest of data is as expected.
-  CheckExpectedBuffers(13, 14, &kDataA);
+  CheckExpectedBuffers(13, 14, kDataA);
 
   // Make sure all data is correct.
   Seek(0);
-  CheckExpectedBuffers(0, 7, &kDataB);
+  CheckExpectedBuffers(0, 7, kDataB);
   // No seek should be necessary (1 continuous range).
-  CheckExpectedBuffers(10, 14, &kDataA);
+  CheckExpectedBuffers(10, 14, kDataA);
   CheckNoNextBuffer();
 }
 
@@ -1258,15 +1255,15 @@ TEST_F(SourceBufferStreamTest, End_Overlap_Selected_AfterEndOfNew_2) {
 // track:                  a a
 TEST_F(SourceBufferStreamTest, End_Overlap_Selected_AfterEndOfNew_3) {
   // Append 10 buffers at positions 5 through 14 (DTS and PTS, 2 full GOPs)
-  NewCodedFrameGroupAppend(5, 10, &kDataA);
+  NewCodedFrameGroupAppend(5, 10, kDataA);
 
   // Seek to position 5, then move to position 8.
   Seek(5);
-  CheckExpectedBuffers(5, 7, &kDataA);
+  CheckExpectedBuffers(5, 7, kDataA);
 
   // Now append 8 buffers at positions 0 through 7 (DTS); 0 through 9 (PTS) with
   // partial second GOP.
-  NewCodedFrameGroupAppend(0, 8, &kDataB);
+  NewCodedFrameGroupAppend(0, 8, kDataB);
 
   // Check expected ranges: stream should not have kept buffers at DTS 8,9;
   // PTS 7,8 because the keyframe on which they depended (5, PTS=DTS) was
@@ -1280,15 +1277,15 @@ TEST_F(SourceBufferStreamTest, End_Overlap_Selected_AfterEndOfNew_3) {
   CheckExpectedRanges("{ [0,14) }");
 
   // Check for data in the track buffer.
-  CheckExpectedBuffers(8, 9, &kDataA);
+  CheckExpectedBuffers(8, 9, kDataA);
   // The buffer immediately after the track buffer should be a keyframe.
-  CheckExpectedBuffers(10, 10, &kDataA, true);
+  CheckExpectedBuffers(10, 10, kDataA, true);
 
   // Make sure all data is correct.
   Seek(0);
-  CheckExpectedBuffers(0, 7, &kDataB);
+  CheckExpectedBuffers(0, 7, kDataB);
   // No seek should be necessary (1 continuous range).
-  CheckExpectedBuffers(10, 14, &kDataA);
+  CheckExpectedBuffers(10, 14, kDataA);
   CheckNoNextBuffer();
 }
 
@@ -1302,27 +1299,27 @@ TEST_F(SourceBufferStreamTest, End_Overlap_Selected_AfterEndOfNew_3) {
 // track:                 |a a|
 TEST_F(SourceBufferStreamTest, End_Overlap_Selected_OverlappedByNew_1) {
   // Append 10 buffers at positions 5 through 14.
-  NewCodedFrameGroupAppend(5, 10, &kDataA);
+  NewCodedFrameGroupAppend(5, 10, kDataA);
 
   // Seek to position 5, then move to position 8.
   Seek(5);
-  CheckExpectedBuffers(5, 7, &kDataA);
+  CheckExpectedBuffers(5, 7, kDataA);
 
   // Now append 10 buffers at positions 0 through 9.
-  NewCodedFrameGroupAppend(0, 10, &kDataB);
+  NewCodedFrameGroupAppend(0, 10, kDataB);
 
   // Check expected range.
   CheckExpectedRanges("{ [0,14) }");
 
   // Check for data in the track buffer.
-  CheckExpectedBuffers(8, 9, &kDataA);
+  CheckExpectedBuffers(8, 9, kDataA);
   // The buffer immediately after the track buffer should be a keyframe.
-  CheckExpectedBuffers(10, 10, &kDataA, true);
+  CheckExpectedBuffers(10, 10, kDataA, true);
 
   // Make sure all data is correct.
   Seek(0);
-  CheckExpectedBuffers(0, 9, &kDataB);
-  CheckExpectedBuffers(10, 14, &kDataA);
+  CheckExpectedBuffers(0, 9, kDataB);
+  CheckExpectedBuffers(10, 14, kDataA);
 }
 
 // Using position based test API:
@@ -1337,15 +1334,15 @@ TEST_F(SourceBufferStreamTest, End_Overlap_Selected_OverlappedByNew_1) {
 // track:              a a a a
 TEST_F(SourceBufferStreamTest, End_Overlap_Selected_OverlappedByNew_2) {
   // Append 10 buffers at positions 5 through 14 (PTS and DTS, 2 full GOPs).
-  NewCodedFrameGroupAppend(5, 10, &kDataA);
+  NewCodedFrameGroupAppend(5, 10, kDataA);
 
   // Seek to position 5, then move to position 6.
   Seek(5);
-  CheckExpectedBuffers(5, 5, &kDataA);
+  CheckExpectedBuffers(5, 5, kDataA);
 
   // Now append 7 buffers at positions 0 through 6 (DTS); 0 through 9 (PTS) with
   // partial second GOP.
-  NewCodedFrameGroupAppend(0, 7, &kDataB);
+  NewCodedFrameGroupAppend(0, 7, kDataB);
 
   // Check expected ranges: stream should not have kept buffers at DTS 7,8,9;
   // PTS 6,7,8 because the keyframe on which they depended (5, PTS=DTS) was
@@ -1359,15 +1356,15 @@ TEST_F(SourceBufferStreamTest, End_Overlap_Selected_OverlappedByNew_2) {
   CheckExpectedRanges("{ [0,14) }");
 
   // Check for data in the track buffer.
-  CheckExpectedBuffers(6, 9, &kDataA);
+  CheckExpectedBuffers(6, 9, kDataA);
   // The buffer immediately after the track buffer should be a keyframe.
-  CheckExpectedBuffers(10, 10, &kDataA, true);
+  CheckExpectedBuffers(10, 10, kDataA, true);
 
   // Make sure all data is correct.
   Seek(0);
-  CheckExpectedBuffers(0, 6, &kDataB);
+  CheckExpectedBuffers(0, 6, kDataB);
   // No seek should be necessary (1 continuous range).
-  CheckExpectedBuffers(10, 14, &kDataA);
+  CheckExpectedBuffers(10, 14, kDataA);
   CheckNoNextBuffer();
 }
 
@@ -1385,15 +1382,15 @@ TEST_F(SourceBufferStreamTest, End_Overlap_Selected_OverlappedByNew_2) {
 // track:              a a a a
 TEST_F(SourceBufferStreamTest, End_Overlap_Selected_OverlappedByNew_3) {
   // Append 15 buffers at positions 5 through 19 (PTS and DTS, 3 full GOPs).
-  NewCodedFrameGroupAppend(5, 15, &kDataA);
+  NewCodedFrameGroupAppend(5, 15, kDataA);
 
   // Seek to position 5, then move to position 6.
   Seek(5);
-  CheckExpectedBuffers(5, 5, &kDataA);
+  CheckExpectedBuffers(5, 5, kDataA);
 
   // Now append 11 buffers at positions 0 through 10 (PTS and DTS, 2 full GOPs
   // and just the keyframe of a third GOP).
-  NewCodedFrameGroupAppend(0, 11, &kDataB);
+  NewCodedFrameGroupAppend(0, 11, kDataB);
 
   // Check expected ranges: stream should not have kept buffers at 11-14 (DTS
   // and PTS) because the keyframe on which they depended (10, PTS=DTS) was
@@ -1407,16 +1404,16 @@ TEST_F(SourceBufferStreamTest, End_Overlap_Selected_OverlappedByNew_3) {
   CheckExpectedRanges("{ [0,19) }");
 
   // Check for data in the track buffer.
-  CheckExpectedBuffers(6, 9, &kDataA);
+  CheckExpectedBuffers(6, 9, kDataA);
   // The buffer immediately after the track buffer should be a keyframe
   // from the new data.
-  CheckExpectedBuffers(10, 10, &kDataB, true);
+  CheckExpectedBuffers(10, 10, kDataB, true);
 
   // Make sure all data is correct.
   Seek(0);
-  CheckExpectedBuffers(0, 10, &kDataB);
+  CheckExpectedBuffers(0, 10, kDataB);
   // No seek should be necessary (1 continuous range).
-  CheckExpectedBuffers(15, 19, &kDataA);
+  CheckExpectedBuffers(15, 19, kDataA);
 }
 
 // This test covers the case where new buffers end-overlap an existing, selected
@@ -1428,29 +1425,29 @@ TEST_F(SourceBufferStreamTest, End_Overlap_Selected_OverlappedByNew_3) {
 // track:             |a a a a|
 TEST_F(SourceBufferStreamTest, End_Overlap_Selected_NoKeyframeAfterNew) {
   // Append 5 buffers at positions 5 through 9.
-  NewCodedFrameGroupAppend(5, 5, &kDataA);
+  NewCodedFrameGroupAppend(5, 5, kDataA);
 
   // Seek to position 5, then move to position 6.
   Seek(5);
-  CheckExpectedBuffers(5, 5, &kDataA);
+  CheckExpectedBuffers(5, 5, kDataA);
 
   // Now append 6 buffers at positions 0 through 5.
-  NewCodedFrameGroupAppend(0, 6, &kDataB);
+  NewCodedFrameGroupAppend(0, 6, kDataB);
 
   // Check expected range.
   CheckExpectedRanges("{ [0,5) }");
 
   // Check for data in the track buffer.
-  CheckExpectedBuffers(6, 9, &kDataA);
+  CheckExpectedBuffers(6, 9, kDataA);
 
   // Now there's no data to fulfill the request.
   CheckNoNextBuffer();
 
   // Let's fill in the gap, buffers 6 through 10.
-  AppendBuffers(6, 5, &kDataB);
+  AppendBuffers(6, 5, kDataB);
 
   // We should be able to get the next buffer.
-  CheckExpectedBuffers(10, 10, &kDataB);
+  CheckExpectedBuffers(10, 10, kDataB);
 }
 
 // Using position based test API:
@@ -1470,15 +1467,15 @@ TEST_F(SourceBufferStreamTest, End_Overlap_Selected_NoKeyframeAfterNew) {
 TEST_F(SourceBufferStreamTest, End_Overlap_Selected_NoKeyframeAfterNew2) {
   // Append 7 buffers at positions 10 through 16 (DTS); 10 through 19 (PTS) with
   // a partial second GOP.
-  NewCodedFrameGroupAppend(10, 7, &kDataA);
+  NewCodedFrameGroupAppend(10, 7, kDataA);
 
   // Seek to position 15, then move to position 16.
   Seek(15);
-  CheckExpectedBuffers(15, 15, &kDataA);
+  CheckExpectedBuffers(15, 15, kDataA);
 
   // Now append 11 buffers at positions 5 through 15 (PTS and DTS), 2 full GOPs
   // and just the keyframe of a third GOP.
-  NewCodedFrameGroupAppend(5, 11, &kDataB);
+  NewCodedFrameGroupAppend(5, 11, kDataB);
 
   // Check expected ranges: stream should not have kept buffer at DTS 16, PTS 19
   // because the keyframe it depended on (15, PTS=DTS) was overwritten.
@@ -1492,11 +1489,11 @@ TEST_F(SourceBufferStreamTest, End_Overlap_Selected_NoKeyframeAfterNew2) {
   // Now do another end-overlap. Append one full GOP plus keyframe of 2nd. Note
   // that this new keyframe at (5, PTS=DTS) is continuous with the overlapped
   // range's next GOP (B) at (10, PTS=DTS).
-  NewCodedFrameGroupAppend(0, 6, &kDataA);
+  NewCodedFrameGroupAppend(0, 6, kDataA);
   CheckExpectedRanges("{ [0,15) }");
 
   // Check for data in the track buffer.
-  CheckExpectedBuffers(16, 16, &kDataA);
+  CheckExpectedBuffers(16, 16, kDataA);
 
   // Now there's no data to fulfill the request.
   CheckNoNextBuffer();
@@ -1504,28 +1501,28 @@ TEST_F(SourceBufferStreamTest, End_Overlap_Selected_NoKeyframeAfterNew2) {
   // Add data to the end of the range in the position just read from the track
   // buffer. The stream should not be able to fulfill the next read
   // until we've added a keyframe continuous beyond this point.
-  NewCodedFrameGroupAppend(15, 1, &kDataB);
+  NewCodedFrameGroupAppend(15, 1, kDataB);
   CheckNoNextBuffer();
   for (int i = 16; i <= 19; i++) {
-    AppendBuffers(i, 1, &kDataB);
+    AppendBuffers(i, 1, kDataB);
     CheckNoNextBuffer();
   }
 
   // Now append a keyframe at PTS=DTS=20.
-  AppendBuffers(20, 1, &kDataB);
+  AppendBuffers(20, 1, kDataB);
 
   // The buffer at position 16 (PTS 19) in track buffer is adjacent to the next
   // keyframe, so no warning should be emitted on that track buffer exhaustion.
   // We should be able to get the next buffer (no longer from the track buffer).
-  CheckExpectedBuffers(20, 20, &kDataB, true);
+  CheckExpectedBuffers(20, 20, kDataB, true);
   CheckNoNextBuffer();
 
   // Make sure all data is correct.
   CheckExpectedRanges("{ [0,20) }");
   Seek(0);
-  CheckExpectedBuffers(0, 5, &kDataA);
+  CheckExpectedBuffers(0, 5, kDataA);
   // No seek should be necessary (1 continuous range).
-  CheckExpectedBuffers(10, 20, &kDataB);
+  CheckExpectedBuffers(10, 20, kDataB);
   CheckNoNextBuffer();
 }
 
@@ -1538,41 +1535,41 @@ TEST_F(SourceBufferStreamTest, End_Overlap_Selected_NoKeyframeAfterNew2) {
 // track:             |a a a a|
 TEST_F(SourceBufferStreamTest, End_Overlap_Selected_NoKeyframeAfterNew3) {
   // Append 5 buffers at positions 5 through 9.
-  NewCodedFrameGroupAppend(5, 5, &kDataA);
+  NewCodedFrameGroupAppend(5, 5, kDataA);
 
   // Append 5 buffers at positions 15 through 19.
-  NewCodedFrameGroupAppend(15, 5, &kDataA);
+  NewCodedFrameGroupAppend(15, 5, kDataA);
 
   // Check expected range.
   CheckExpectedRanges("{ [5,9) [15,19) }");
 
   // Seek to position 5, then move to position 6.
   Seek(5);
-  CheckExpectedBuffers(5, 5, &kDataA);
+  CheckExpectedBuffers(5, 5, kDataA);
 
   // Now append 6 buffers at positions 0 through 5.
-  NewCodedFrameGroupAppend(0, 6, &kDataB);
+  NewCodedFrameGroupAppend(0, 6, kDataB);
 
   // Check expected range.
   CheckExpectedRanges("{ [0,5) [15,19) }");
 
   // Check for data in the track buffer.
-  CheckExpectedBuffers(6, 9, &kDataA);
+  CheckExpectedBuffers(6, 9, kDataA);
 
   // Now there's no data to fulfill the request.
   CheckNoNextBuffer();
 
   // Let's fill in the gap, buffers 6 through 14.
-  AppendBuffers(6, 9, &kDataB);
+  AppendBuffers(6, 9, kDataB);
 
   // Check expected range.
   CheckExpectedRanges("{ [0,19) }");
 
   // We should be able to get the next buffer.
-  CheckExpectedBuffers(10, 14, &kDataB);
+  CheckExpectedBuffers(10, 14, kDataB);
 
   // We should be able to get the next buffer.
-  CheckExpectedBuffers(15, 19, &kDataA);
+  CheckExpectedBuffers(15, 19, kDataA);
 }
 
 // This test covers the case when new buffers overlap the middle of a selected
@@ -1584,25 +1581,25 @@ TEST_F(SourceBufferStreamTest, End_Overlap_Selected_NoKeyframeAfterNew3) {
 // after:  A a a a a*B*b b b b A a a a a
 TEST_F(SourceBufferStreamTest, Middle_Overlap_Selected_1) {
   // Append 15 buffers at positions 0 through 14.
-  NewCodedFrameGroupAppend(0, 15, &kDataA);
+  NewCodedFrameGroupAppend(0, 15, kDataA);
 
   // Seek to position 5.
   Seek(5);
 
   // Now append 5 buffers at positions 5 through 9.
-  NewCodedFrameGroupAppend(5, 5, &kDataB);
+  NewCodedFrameGroupAppend(5, 5, kDataB);
 
   // Check expected range.
   CheckExpectedRanges("{ [0,14) }");
 
   // Check for next data; should be new data.
-  CheckExpectedBuffers(5, 9, &kDataB);
+  CheckExpectedBuffers(5, 9, kDataB);
 
   // Make sure all data is correct.
   Seek(0);
-  CheckExpectedBuffers(0, 4, &kDataA);
-  CheckExpectedBuffers(5, 9, &kDataB);
-  CheckExpectedBuffers(10, 14, &kDataA);
+  CheckExpectedBuffers(0, 4, kDataA);
+  CheckExpectedBuffers(5, 9, kDataB);
+  CheckExpectedBuffers(10, 14, kDataA);
   CheckNoNextBuffer();
 }
 
@@ -1615,25 +1612,25 @@ TEST_F(SourceBufferStreamTest, Middle_Overlap_Selected_1) {
 // after:  A a a a a B b b b b A*a*a a a
 TEST_F(SourceBufferStreamTest, Middle_Overlap_Selected_2) {
   // Append 15 buffers at positions 0 through 14.
-  NewCodedFrameGroupAppend(0, 15, &kDataA);
+  NewCodedFrameGroupAppend(0, 15, kDataA);
 
   // Seek to 10 then move to position 11.
   Seek(10);
-  CheckExpectedBuffers(10, 10, &kDataA);
+  CheckExpectedBuffers(10, 10, kDataA);
 
   // Now append 5 buffers at positions 5 through 9.
-  NewCodedFrameGroupAppend(5, 5, &kDataB);
+  NewCodedFrameGroupAppend(5, 5, kDataB);
 
   // Check expected range.
   CheckExpectedRanges("{ [0,14) }");
 
   // Make sure data is correct.
-  CheckExpectedBuffers(11, 14, &kDataA);
+  CheckExpectedBuffers(11, 14, kDataA);
   CheckNoNextBuffer();
   Seek(0);
-  CheckExpectedBuffers(0, 4, &kDataA);
-  CheckExpectedBuffers(5, 9, &kDataB);
-  CheckExpectedBuffers(10, 14, &kDataA);
+  CheckExpectedBuffers(0, 4, kDataA);
+  CheckExpectedBuffers(5, 9, kDataB);
+  CheckExpectedBuffers(10, 14, kDataA);
   CheckNoNextBuffer();
 }
 
@@ -1647,31 +1644,31 @@ TEST_F(SourceBufferStreamTest, Middle_Overlap_Selected_2) {
 // after:  A a*a*a a B         A a a a a
 TEST_F(SourceBufferStreamTest, Middle_Overlap_Selected_3) {
   // Append 15 buffers at positions 0 through 14.
-  NewCodedFrameGroupAppend(0, 15, &kDataA);
+  NewCodedFrameGroupAppend(0, 15, kDataA);
 
   // Seek to beginning then move to position 2.
   Seek(0);
-  CheckExpectedBuffers(0, 1, &kDataA);
+  CheckExpectedBuffers(0, 1, kDataA);
 
   // Now append 1 buffer at position 5 (just the keyframe of a GOP).
-  NewCodedFrameGroupAppend(5, 1, &kDataB);
+  NewCodedFrameGroupAppend(5, 1, kDataB);
 
   // Check expected range.
   CheckExpectedRanges("{ [0,14) }");
 
   // Make sure data is correct.
-  CheckExpectedBuffers(2, 4, &kDataA);
-  CheckExpectedBuffers(5, 5, &kDataB);
+  CheckExpectedBuffers(2, 4, kDataA);
+  CheckExpectedBuffers(5, 5, kDataB);
   // No seek should be necessary (1 continuous range).
-  CheckExpectedBuffers(10, 14, &kDataA);
+  CheckExpectedBuffers(10, 14, kDataA);
   CheckNoNextBuffer();
 
   // Seek to the beginning and recheck data in case track buffer erroneously
   // became involved.
   Seek(0);
-  CheckExpectedBuffers(0, 4, &kDataA);
-  CheckExpectedBuffers(5, 5, &kDataB);
-  CheckExpectedBuffers(10, 14, &kDataA);
+  CheckExpectedBuffers(0, 4, kDataA);
+  CheckExpectedBuffers(5, 5, kDataB);
+  CheckExpectedBuffers(10, 14, kDataA);
   CheckNoNextBuffer();
 }
 
@@ -1686,30 +1683,30 @@ TEST_F(SourceBufferStreamTest, Middle_Overlap_Selected_3) {
 // track:                  a a
 TEST_F(SourceBufferStreamTest, Middle_Overlap_Selected_4) {
   // Append 15 buffers at positions 0 through 14.
-  NewCodedFrameGroupAppend(0, 15, &kDataA);
+  NewCodedFrameGroupAppend(0, 15, kDataA);
 
   // Seek to 5 then move to position 8.
   Seek(5);
-  CheckExpectedBuffers(5, 7, &kDataA);
+  CheckExpectedBuffers(5, 7, kDataA);
 
   // Now append 1 buffer at position 5.
-  NewCodedFrameGroupAppend(5, 1, &kDataB);
+  NewCodedFrameGroupAppend(5, 1, kDataB);
 
   // Check expected range.
   CheckExpectedRanges("{ [0,14) }");
 
   // Buffers 8 and 9 should be in the track buffer.
-  CheckExpectedBuffers(8, 9, &kDataA);
+  CheckExpectedBuffers(8, 9, kDataA);
 
   // The buffer immediately after the track buffer should be a keyframe.
-  CheckExpectedBuffers(10, 10, &kDataA, true);
+  CheckExpectedBuffers(10, 10, kDataA, true);
 
   // Make sure all data is correct.
   Seek(0);
-  CheckExpectedBuffers(0, 4, &kDataA);
-  CheckExpectedBuffers(5, 5, &kDataB);
+  CheckExpectedBuffers(0, 4, kDataA);
+  CheckExpectedBuffers(5, 5, kDataB);
   // No seek should be necessary (1 continuous range).
-  CheckExpectedBuffers(10, 14, &kDataA);
+  CheckExpectedBuffers(10, 14, kDataA);
   CheckNoNextBuffer();
 }
 
@@ -1722,14 +1719,14 @@ TEST_F(SourceBufferStreamTest, Overlap_OneByOne) {
 
   // Overlap with 10 buffers starting at the beginning, appended one at a
   // time.
-  NewCodedFrameGroupAppend(0, 1, &kDataB);
+  NewCodedFrameGroupAppend(0, 1, kDataB);
   for (int i = 1; i < 10; i++)
-    AppendBuffers(i, 1, &kDataB);
+    AppendBuffers(i, 1, kDataB);
 
   // All data should be replaced.
   Seek(0);
   CheckExpectedRanges("{ [0,9) }");
-  CheckExpectedBuffers(0, 9, &kDataB);
+  CheckExpectedBuffers(0, 9, kDataB);
 }
 
 TEST_F(SourceBufferStreamTest, Overlap_OneByOne_DeleteGroup) {
@@ -2083,21 +2080,21 @@ TEST_F(SourceBufferStreamTest, Seek_InBetweenTimestamps) {
 // response to the Seek().
 TEST_F(SourceBufferStreamTest, Seek_After_TrackBuffer_Filled) {
   // Append 10 buffers at positions 5 through 14.
-  NewCodedFrameGroupAppend(5, 10, &kDataA);
+  NewCodedFrameGroupAppend(5, 10, kDataA);
 
   // Seek to buffer at position 5 and get next buffer.
   Seek(5);
-  CheckExpectedBuffers(5, 5, &kDataA);
+  CheckExpectedBuffers(5, 5, kDataA);
 
   // Do a complete overlap by appending 20 buffers at positions 0 through 19.
-  NewCodedFrameGroupAppend(0, 20, &kDataB);
+  NewCodedFrameGroupAppend(0, 20, kDataB);
 
   // Check range is correct.
   CheckExpectedRanges("{ [0,19) }");
 
   // Seek to beginning; all data should be new.
   Seek(0);
-  CheckExpectedBuffers(0, 19, &kDataB);
+  CheckExpectedBuffers(0, 19, kDataB);
 
   // Check range continues to be correct.
   CheckExpectedRanges("{ [0,19) }");
@@ -2362,9 +2359,9 @@ TEST_F(SourceBufferStreamTest, GetNextBuffer_ExhaustThenAppend) {
 // buffer is not buffered.
 TEST_F(SourceBufferStreamTest, GetNextBuffer_ExhaustThenStartOverlap) {
   // Append 10 buffers at positions 0 through 9 and exhaust the buffers.
-  NewCodedFrameGroupAppend(0, 10, &kDataA);
+  NewCodedFrameGroupAppend(0, 10, kDataA);
   Seek(0);
-  CheckExpectedBuffers(0, 9, &kDataA);
+  CheckExpectedBuffers(0, 9, kDataA);
 
   // Next buffer is at position 10, so should not be able to fulfill request.
   CheckNoNextBuffer();
@@ -2372,19 +2369,19 @@ TEST_F(SourceBufferStreamTest, GetNextBuffer_ExhaustThenStartOverlap) {
   // Append 6 buffers at positions 5 through 10. This is to test that doing a
   // start-overlap successfully fulfills the read at position 10, even though
   // position 10 was unbuffered.
-  NewCodedFrameGroupAppend(5, 6, &kDataB);
-  CheckExpectedBuffers(10, 10, &kDataB);
+  NewCodedFrameGroupAppend(5, 6, kDataB);
+  CheckExpectedBuffers(10, 10, kDataB);
 
   // Then add 5 buffers from positions 11 though 15.
-  AppendBuffers(11, 5, &kDataB);
+  AppendBuffers(11, 5, kDataB);
 
   // Check the next 4 buffers are correct, which also effectively seeks to
   // position 15.
-  CheckExpectedBuffers(11, 14, &kDataB);
+  CheckExpectedBuffers(11, 14, kDataB);
 
   // Replace the next buffer at position 15 with another start overlap.
-  NewCodedFrameGroupAppend(15, 2, &kDataA);
-  CheckExpectedBuffers(15, 16, &kDataA);
+  NewCodedFrameGroupAppend(15, 2, kDataA);
+  CheckExpectedBuffers(15, 16, kDataA);
 }
 
 // Tests a start overlap that occurs right at the timestamp of the last output
@@ -2417,50 +2414,50 @@ TEST_F(SourceBufferStreamTest, GetNextBuffer_ExhaustThenStartOverlap2) {
 // whose next buffer is not buffered.
 TEST_F(SourceBufferStreamTest, GetNextBuffer_ExhaustThenCompleteOverlap) {
   // Append 5 buffers at positions 10 through 14 and exhaust the buffers.
-  NewCodedFrameGroupAppend(10, 5, &kDataA);
+  NewCodedFrameGroupAppend(10, 5, kDataA);
   Seek(10);
-  CheckExpectedBuffers(10, 14, &kDataA);
+  CheckExpectedBuffers(10, 14, kDataA);
 
   // Next buffer is at position 15, so should not be able to fulfill request.
   CheckNoNextBuffer();
 
   // Do a complete overlap and test that this successfully fulfills the read
   // at position 15.
-  NewCodedFrameGroupAppend(5, 11, &kDataB);
-  CheckExpectedBuffers(15, 15, &kDataB);
+  NewCodedFrameGroupAppend(5, 11, kDataB);
+  CheckExpectedBuffers(15, 15, kDataB);
 
   // Then add 5 buffers from positions 16 though 20.
-  AppendBuffers(16, 5, &kDataB);
+  AppendBuffers(16, 5, kDataB);
 
   // Check the next 4 buffers are correct, which also effectively seeks to
   // position 20.
-  CheckExpectedBuffers(16, 19, &kDataB);
+  CheckExpectedBuffers(16, 19, kDataB);
 
   // Do a complete overlap and replace the buffer at position 20.
-  NewCodedFrameGroupAppend(0, 21, &kDataA);
-  CheckExpectedBuffers(20, 20, &kDataA);
+  NewCodedFrameGroupAppend(0, 21, kDataA);
+  CheckExpectedBuffers(20, 20, kDataA);
 }
 
 // This test covers the case where a range is stalled waiting for its next
 // buffer, then an end-overlap causes the end of the range to be deleted.
 TEST_F(SourceBufferStreamTest, GetNextBuffer_ExhaustThenEndOverlap) {
   // Append 5 buffers at positions 10 through 14 and exhaust the buffers.
-  NewCodedFrameGroupAppend(10, 5, &kDataA);
+  NewCodedFrameGroupAppend(10, 5, kDataA);
   Seek(10);
-  CheckExpectedBuffers(10, 14, &kDataA);
+  CheckExpectedBuffers(10, 14, kDataA);
   CheckExpectedRanges("{ [10,14) }");
 
   // Next buffer is at position 15, so should not be able to fulfill request.
   CheckNoNextBuffer();
 
   // Do an end overlap that causes the latter half of the range to be deleted.
-  NewCodedFrameGroupAppend(5, 6, &kDataB);
+  NewCodedFrameGroupAppend(5, 6, kDataB);
   CheckNoNextBuffer();
   CheckExpectedRanges("{ [5,10) }");
 
   // Fill in the gap. Getting the next buffer should still stall at position 15.
   for (int i = 11; i <= 14; i++) {
-    AppendBuffers(i, 1, &kDataB);
+    AppendBuffers(i, 1, kDataB);
     CheckNoNextBuffer();
   }
 
@@ -2477,25 +2474,25 @@ TEST_F(SourceBufferStreamTest, GetNextBuffer_ExhaustThenEndOverlap) {
 // "next buffer" position.
 TEST_F(SourceBufferStreamTest, GetNextBuffer_Overlap_Selected_Complete) {
   // Append 5 buffers at positions 5 through 9.
-  NewCodedFrameGroupAppend(5, 5, &kDataA);
+  NewCodedFrameGroupAppend(5, 5, kDataA);
 
   // Seek to buffer at position 5 and get next buffer.
   Seek(5);
-  CheckExpectedBuffers(5, 5, &kDataA);
+  CheckExpectedBuffers(5, 5, kDataA);
 
   // Replace existing data with new data.
-  NewCodedFrameGroupAppend(5, 5, &kDataB);
+  NewCodedFrameGroupAppend(5, 5, kDataB);
 
   // Expect old data up until next keyframe in new data.
-  CheckExpectedBuffers(6, 9, &kDataA);
+  CheckExpectedBuffers(6, 9, kDataA);
 
   // Next buffer is at position 10, so should not be able to fulfill the
   // request.
   CheckNoNextBuffer();
 
   // Now add 5 new buffers at positions 10 through 14.
-  AppendBuffers(10, 5, &kDataB);
-  CheckExpectedBuffers(10, 14, &kDataB);
+  AppendBuffers(10, 5, kDataB);
+  CheckExpectedBuffers(10, 14, kDataB);
 }
 
 TEST_F(SourceBufferStreamTest, PresentationTimestampIndependence) {
@@ -2536,15 +2533,15 @@ TEST_F(SourceBufferStreamTest, GarbageCollection_DeleteFront) {
   SetMemoryLimit(20);
 
   // Append 20 buffers at positions 0 through 19.
-  NewCodedFrameGroupAppend(0, 1, &kDataA);
+  NewCodedFrameGroupAppend(0, 1, kDataA);
   for (int i = 1; i < 20; i++)
-    AppendBuffers(i, 1, &kDataA);
+    AppendBuffers(i, 1, kDataA);
 
   // GC should be a no-op, since we are just under memory limit.
   EXPECT_TRUE(GarbageCollectWithPlaybackAtBuffer(0, 0));
   CheckExpectedRanges("{ [0,19) }");
   Seek(0);
-  CheckExpectedBuffers(0, 19, &kDataA);
+  CheckExpectedBuffers(0, 19, kDataA);
 
   // Seek to the middle of the stream.
   Seek(10);
@@ -2555,12 +2552,12 @@ TEST_F(SourceBufferStreamTest, GarbageCollection_DeleteFront) {
   CheckExpectedRanges("{ [5,19) }");
 
   // Append 5 buffers to the end of the stream.
-  AppendBuffers(20, 5, &kDataA);
+  AppendBuffers(20, 5, kDataA);
   CheckExpectedRanges("{ [5,24) }");
 
-  CheckExpectedBuffers(10, 24, &kDataA);
+  CheckExpectedBuffers(10, 24, kDataA);
   Seek(5);
-  CheckExpectedBuffers(5, 9, &kDataA);
+  CheckExpectedBuffers(5, 9, kDataA);
 }
 
 TEST_F(SourceBufferStreamTest,
@@ -2594,7 +2591,7 @@ TEST_F(SourceBufferStreamTest, GarbageCollection_DeleteFrontGOPsAtATime) {
   SetMemoryLimit(20);
 
   // Append 20 buffers at positions 0 through 19.
-  NewCodedFrameGroupAppend(0, 20, &kDataA);
+  NewCodedFrameGroupAppend(0, 20, kDataA);
 
   // Seek to position 10.
   Seek(10);
@@ -2602,14 +2599,14 @@ TEST_F(SourceBufferStreamTest, GarbageCollection_DeleteFrontGOPsAtATime) {
 
   // Add one buffer to put the memory over the cap.
   EXPECT_TRUE(GarbageCollectWithPlaybackAtBuffer(10, 1));
-  AppendBuffers(20, 1, &kDataA);
+  AppendBuffers(20, 1, kDataA);
 
   // GC should have deleted the first 5 buffers so that the range still begins
   // with a keyframe.
   CheckExpectedRanges("{ [5,20) }");
-  CheckExpectedBuffers(10, 20, &kDataA);
+  CheckExpectedBuffers(10, 20, kDataA);
   Seek(5);
-  CheckExpectedBuffers(5, 9, &kDataA);
+  CheckExpectedBuffers(5, 9, kDataA);
 }
 
 TEST_F(SourceBufferStreamTest, GarbageCollection_DeleteBack) {
@@ -2617,11 +2614,11 @@ TEST_F(SourceBufferStreamTest, GarbageCollection_DeleteBack) {
   SetMemoryLimit(5);
 
   // Append 5 buffers at positions 15 through 19.
-  NewCodedFrameGroupAppend(15, 5, &kDataA);
+  NewCodedFrameGroupAppend(15, 5, kDataA);
   EXPECT_TRUE(GarbageCollectWithPlaybackAtBuffer(0, 0));
 
   // Append 5 buffers at positions 0 through 4.
-  NewCodedFrameGroupAppend(0, 5, &kDataA);
+  NewCodedFrameGroupAppend(0, 5, kDataA);
   CheckExpectedRanges("{ [0,4) [15,19) }");
 
   // Seek to position 0.
@@ -2629,7 +2626,7 @@ TEST_F(SourceBufferStreamTest, GarbageCollection_DeleteBack) {
   EXPECT_TRUE(GarbageCollectWithPlaybackAtBuffer(0, 0));
   // Should leave the first 5 buffers from 0 to 4.
   CheckExpectedRanges("{ [0,4) }");
-  CheckExpectedBuffers(0, 4, &kDataA);
+  CheckExpectedBuffers(0, 4, kDataA);
 }
 
 TEST_F(SourceBufferStreamTest, GarbageCollection_DeleteFrontAndBack) {
@@ -2640,18 +2637,18 @@ TEST_F(SourceBufferStreamTest, GarbageCollection_DeleteFrontAndBack) {
   Seek(15);
 
   // Append 40 buffers at positions 0 through 39.
-  NewCodedFrameGroupAppend(0, 40, &kDataA);
+  NewCodedFrameGroupAppend(0, 40, kDataA);
   // GC will try to keep data between current playback position and last append
   // position. This will ensure that the last append position is 19 and will
   // allow GC algorithm to collect data outside of the range [15,19)
-  NewCodedFrameGroupAppend(15, 5, &kDataA);
+  NewCodedFrameGroupAppend(15, 5, kDataA);
   CheckExpectedRanges("{ [0,39) }");
 
   // Should leave the GOP containing the current playback position 15 and the
   // last append position 19. GC returns false, since we are still above limit.
   EXPECT_FALSE(GarbageCollectWithPlaybackAtBuffer(15, 0));
   CheckExpectedRanges("{ [15,19) }");
-  CheckExpectedBuffers(15, 19, &kDataA);
+  CheckExpectedBuffers(15, 19, kDataA);
   CheckNoNextBuffer();
 }
 
@@ -2766,7 +2763,7 @@ TEST_F(SourceBufferStreamTest, GarbageCollection_NoSeek) {
   SetMemoryLimit(20);
 
   // Append 25 buffers at positions 0 through 24.
-  NewCodedFrameGroupAppend(0, 25, &kDataA);
+  NewCodedFrameGroupAppend(0, 25, kDataA);
 
   // If playback is still in the first GOP (starting at 0), GC should fail.
   EXPECT_FALSE(GarbageCollectWithPlaybackAtBuffer(2, 0));
@@ -2778,15 +2775,15 @@ TEST_F(SourceBufferStreamTest, GarbageCollection_NoSeek) {
   CheckExpectedRanges("{ [5,24) }");
   CheckNoNextBuffer();
   Seek(5);
-  CheckExpectedBuffers(5, 24, &kDataA);
+  CheckExpectedBuffers(5, 24, kDataA);
 }
 
 TEST_F(SourceBufferStreamTest, GarbageCollection_PendingSeek) {
   // Append 10 buffers at positions 0 through 9.
-  NewCodedFrameGroupAppend(0, 10, &kDataA);
+  NewCodedFrameGroupAppend(0, 10, kDataA);
 
   // Append 5 buffers at positions 25 through 29.
-  NewCodedFrameGroupAppend(25, 5, &kDataA);
+  NewCodedFrameGroupAppend(25, 5, kDataA);
 
   // Seek to position 15.
   Seek(15);
@@ -2797,7 +2794,7 @@ TEST_F(SourceBufferStreamTest, GarbageCollection_PendingSeek) {
   SetMemoryLimit(5);
 
   // Append 5 buffers as positions 30 to 34 to trigger GC.
-  AppendBuffers(30, 5, &kDataA);
+  AppendBuffers(30, 5, kDataA);
 
   EXPECT_TRUE(GarbageCollectWithPlaybackAtBuffer(30, 0));
 
@@ -2810,13 +2807,13 @@ TEST_F(SourceBufferStreamTest, GarbageCollection_PendingSeek) {
 
   // Append data to fulfill seek.
   EXPECT_TRUE(GarbageCollectWithPlaybackAtBuffer(30, 5));
-  NewCodedFrameGroupAppend(15, 5, &kDataA);
+  NewCodedFrameGroupAppend(15, 5, kDataA);
 
   // Check to make sure all is well.
   CheckExpectedRanges("{ [15,19) [30,34) }");
-  CheckExpectedBuffers(15, 19, &kDataA);
+  CheckExpectedBuffers(15, 19, kDataA);
   Seek(30);
-  CheckExpectedBuffers(30, 34, &kDataA);
+  CheckExpectedBuffers(30, 34, kDataA);
 }
 
 TEST_F(SourceBufferStreamTest, GarbageCollection_NeedsMoreData) {
@@ -2824,16 +2821,16 @@ TEST_F(SourceBufferStreamTest, GarbageCollection_NeedsMoreData) {
   SetMemoryLimit(15);
 
   // Append 10 buffers at positions 0 through 9.
-  NewCodedFrameGroupAppend(0, 10, &kDataA);
+  NewCodedFrameGroupAppend(0, 10, kDataA);
 
   // Advance next buffer position to 10.
   Seek(0);
   EXPECT_TRUE(GarbageCollectWithPlaybackAtBuffer(0, 0));
-  CheckExpectedBuffers(0, 9, &kDataA);
+  CheckExpectedBuffers(0, 9, kDataA);
   CheckNoNextBuffer();
 
   // Append 20 buffers at positions 15 through 34.
-  NewCodedFrameGroupAppend(15, 20, &kDataA);
+  NewCodedFrameGroupAppend(15, 20, kDataA);
   CheckExpectedRanges("{ [0,9) [15,34) }");
 
   // GC should save the keyframe before the next buffer position and the data
@@ -2845,10 +2842,10 @@ TEST_F(SourceBufferStreamTest, GarbageCollection_NeedsMoreData) {
 
   // Now fulfill the seek at position 10. This will make GC delete the data
   // before position 10 to keep it within cap.
-  NewCodedFrameGroupAppend(10, 5, &kDataA);
+  NewCodedFrameGroupAppend(10, 5, kDataA);
   EXPECT_TRUE(GarbageCollectWithPlaybackAtBuffer(10, 0));
   CheckExpectedRanges("{ [10,24) }");
-  CheckExpectedBuffers(10, 24, &kDataA);
+  CheckExpectedBuffers(10, 24, kDataA);
 }
 
 // Using position based test API:
@@ -2880,7 +2877,7 @@ TEST_F(SourceBufferStreamTest, GarbageCollection_TrackBuffer) {
 
   // Append 18 buffers at positions 0 through 17 (DTS), 0 through 19 (PTS) with
   // partial 4th GOP.
-  NewCodedFrameGroupAppend(0, 18, &kDataA);
+  NewCodedFrameGroupAppend(0, 18, kDataA);
 
   EXPECT_TRUE(GarbageCollectWithPlaybackAtBuffer(15, 0));
 
@@ -2891,11 +2888,11 @@ TEST_F(SourceBufferStreamTest, GarbageCollection_TrackBuffer) {
   CheckExpectedRanges("{ [15,19) }");
 
   // Move next buffer position to 16.
-  CheckExpectedBuffers(15, 15, &kDataA);
+  CheckExpectedBuffers(15, 15, kDataA);
 
   // Completely overlap the existing buffers with 4 full GOPs (0-19, PTS and
   // DTS).
-  NewCodedFrameGroupAppend(0, 20, &kDataB);
+  NewCodedFrameGroupAppend(0, 20, kDataB);
 
   // Final GOP [15,19) contains 5 buffers, which is more than memory limit of
   // 3 buffers set at the beginning of the test, so GC will fail.
@@ -2905,11 +2902,11 @@ TEST_F(SourceBufferStreamTest, GarbageCollection_TrackBuffer) {
   // to the track buffer upon overlap. The source buffer (i.e. not the track
   // buffer) is now waiting for the next keyframe beyond GOP that survived GC.
   CheckExpectedRanges("{ [15,19) }");     // Source buffer
-  CheckExpectedBuffers(16, 17, &kDataA);  // Exhaust the track buffer
+  CheckExpectedBuffers(16, 17, kDataA);   // Exhaust the track buffer
   CheckNoNextBuffer();  // Confirms the source buffer is awaiting next keyframe.
 
   // Now add a 5-frame GOP  at position 20-24 (PTS and DTS).
-  AppendBuffers(20, 5, &kDataB);
+  AppendBuffers(20, 5, kDataB);
 
   // 5 buffers in final GOP, GC will fail
   EXPECT_FALSE(GarbageCollectWithPlaybackAtBuffer(20, 0));
@@ -2922,7 +2919,7 @@ TEST_F(SourceBufferStreamTest, GarbageCollection_TrackBuffer) {
   // to the next keyframe (PTS=DTS=20), so no warning should be emitted on that
   // track buffer exhaustion even though the last frame read out of track buffer
   // before exhaustion was position 17 (PTS 16).
-  CheckExpectedBuffers(20, 24, &kDataB);
+  CheckExpectedBuffers(20, 24, kDataB);
   CheckNoNextBuffer();
 }
 
@@ -2931,7 +2928,7 @@ TEST_F(SourceBufferStreamTest, GarbageCollection_SaveDataAtPlaybackPosition) {
   // Set memory limit to 30 buffers = 1 second of data.
   SetMemoryLimit(30);
   // And append 300 buffers = 10 seconds of data.
-  NewCodedFrameGroupAppend(0, 300, &kDataA);
+  NewCodedFrameGroupAppend(0, 300, kDataA);
   CheckExpectedRanges("{ [0,299) }");
 
   // Playback position at 0, all data must be preserved.
@@ -3411,7 +3408,7 @@ TEST_F(SourceBufferStreamTest, ConfigChange_Basic) {
   CheckVideoConfig(video_config_);
 
   // Append 5 buffers at positions 0 through 4
-  NewCodedFrameGroupAppend(0, 5, &kDataA);
+  NewCodedFrameGroupAppend(0, 5, kDataA);
 
   CheckVideoConfig(video_config_);
 
@@ -3423,7 +3420,7 @@ TEST_F(SourceBufferStreamTest, ConfigChange_Basic) {
   CheckVideoConfig(video_config_);
 
   // Append 5 buffers at positions 5 through 9.
-  NewCodedFrameGroupAppend(5, 5, &kDataB);
+  NewCodedFrameGroupAppend(5, 5, kDataB);
 
   // Consume the buffers associated with the initial config.
   scoped_refptr<StreamParserBuffer> buffer;
@@ -3452,9 +3449,9 @@ TEST_F(SourceBufferStreamTest, ConfigChange_Seek) {
   VideoDecoderConfig new_config = TestVideoConfig::Large();
 
   Seek(0);
-  NewCodedFrameGroupAppend(0, 5, &kDataA);
+  NewCodedFrameGroupAppend(0, 5, kDataA);
   stream_->UpdateVideoConfig(new_config, false);
-  NewCodedFrameGroupAppend(5, 5, &kDataB);
+  NewCodedFrameGroupAppend(5, 5, kDataB);
 
   // Seek to the start of the buffers with the new config and make sure a
   // config change is signalled.
@@ -3464,8 +3461,7 @@ TEST_F(SourceBufferStreamTest, ConfigChange_Seek) {
   EXPECT_TRUE(stream_->IsNextBufferConfigChanged());
   EXPECT_STATUS_FOR_STREAM_OP(kConfigChange, GetNextBuffer(&buffer));
   CheckVideoConfig(new_config);
-  CheckExpectedBuffers(5, 9, &kDataB);
-
+  CheckExpectedBuffers(5, 9, kDataB);
 
   // Seek to the start which has a different config. Don't fetch any buffers and
   // seek back to buffers with the current config. Make sure a config change
@@ -3473,8 +3469,7 @@ TEST_F(SourceBufferStreamTest, ConfigChange_Seek) {
   CheckVideoConfig(new_config);
   Seek(0);
   Seek(7);
-  CheckExpectedBuffers(5, 9, &kDataB);
-
+  CheckExpectedBuffers(5, 9, kDataB);
 
   // Seek to the start and make sure a config change is signalled.
   CheckVideoConfig(new_config);
@@ -3483,7 +3478,7 @@ TEST_F(SourceBufferStreamTest, ConfigChange_Seek) {
   EXPECT_TRUE(stream_->IsNextBufferConfigChanged());
   EXPECT_STATUS_FOR_STREAM_OP(kConfigChange, GetNextBuffer(&buffer));
   CheckVideoConfig(video_config_);
-  CheckExpectedBuffers(0, 4, &kDataA);
+  CheckExpectedBuffers(0, 4, kDataA);
 }
 
 TEST_F(SourceBufferStreamTest, SetExplicitDuration) {
@@ -4409,7 +4404,7 @@ TEST_F(SourceBufferStreamTest, Audio_SpliceTrimming_ExistingTrimming) {
 
   // Buffer A1: PTS = 0, front discard = 2ms, duration = 2ms.
   scoped_refptr<StreamParserBuffer> bufferA1 = StreamParserBuffer::CopyFrom(
-      &kDataA, kDataSize, is_keyframe, DemuxerStream::AUDIO, 0);
+      kDataA, is_keyframe, DemuxerStream::AUDIO, 0);
   bufferA1->set_timestamp(base::Milliseconds(0));
   bufferA1->set_duration(kDuration / 2);
   const DecoderBuffer::DiscardPadding discardA1 =
@@ -4419,7 +4414,7 @@ TEST_F(SourceBufferStreamTest, Audio_SpliceTrimming_ExistingTrimming) {
 
   // Buffer A2: PTS = 2, end discard = 2ms, duration = 2ms.
   scoped_refptr<StreamParserBuffer> bufferA2 = StreamParserBuffer::CopyFrom(
-      &kDataA, kDataSize, is_keyframe, DemuxerStream::AUDIO, 0);
+      kDataA, is_keyframe, DemuxerStream::AUDIO, 0);
   bufferA2->set_timestamp(base::Milliseconds(2));
   bufferA2->set_duration(kDuration / 2);
   const DecoderBuffer::DiscardPadding discardA2 =
@@ -4429,7 +4424,7 @@ TEST_F(SourceBufferStreamTest, Audio_SpliceTrimming_ExistingTrimming) {
 
   // Buffer B1: PTS = 3, front discard = 2ms, duration = 2ms.
   scoped_refptr<StreamParserBuffer> bufferB1 = StreamParserBuffer::CopyFrom(
-      &kDataA, kDataSize, is_keyframe, DemuxerStream::AUDIO, 0);
+      kDataA, is_keyframe, DemuxerStream::AUDIO, 0);
   bufferB1->set_timestamp(base::Milliseconds(3));
   bufferB1->set_duration(kDuration / 2);
   const DecoderBuffer::DiscardPadding discardB1 =
@@ -4439,7 +4434,7 @@ TEST_F(SourceBufferStreamTest, Audio_SpliceTrimming_ExistingTrimming) {
 
   // Buffer B2: PTS = 5, no discard padding, duration = 4ms.
   scoped_refptr<StreamParserBuffer> bufferB2 = StreamParserBuffer::CopyFrom(
-      &kDataA, kDataSize, is_keyframe, DemuxerStream::AUDIO, 0);
+      kDataA, is_keyframe, DemuxerStream::AUDIO, 0);
   bufferB2->set_timestamp(base::Milliseconds(5));
   bufferB2->set_duration(kDuration);
   B_buffers.push_back(bufferB2);

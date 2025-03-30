@@ -51,8 +51,8 @@ export class ExtensionsToggleRowElement extends CrLitElement {
     };
   }
 
-  checked: boolean = false;
-  disabled: boolean = false;
+  accessor checked: boolean = false;
+  accessor disabled: boolean = false;
 
   /**
    * Exposing the clickable part of extensions-toggle-row for testing

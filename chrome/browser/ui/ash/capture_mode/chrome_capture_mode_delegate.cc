@@ -123,14 +123,21 @@ constexpr int kHttpPostFailNoConnection = -1;
 
 constexpr char kLensWebQFMetadataURL[] = "https://lens.google.com/qfmetadata";
 
-// TODO: crbug.com/399425007 - Properly define this annotation.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("chromeos_lens_web_image_search",
                                         R"(
         semantics {
-          sender: "..."
-          description: "..."
-          trigger: "..."
+          sender: "Select to Search on ChromeOS"
+          description:
+            "ChromeOS allows image search and text detection for anything on "
+            "your screen. By selecting a desired region to search, ChromeOS "
+            "will send your image data to a server to be processed, then "
+            "return a page of relevant search results, along with the ability "
+            "to copy the selected text."
+          trigger:
+            "In a standalone session, the user selects a region on their "
+            "screen. In a capture mode screenshot session, the user selects "
+            "a region on their screen, then presses the search button."
           internal {
             contacts {
                 email: "chromeos-wm@google.com"
@@ -141,17 +148,26 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             type: IMAGE
             type: USAGE_AND_PERFORMANCE_METRICS
           }
-          data: "..."
+          data: "Image data from the region selected by the user. An access "
+                "token associated with the user's primary account."
           destination: GOOGLE_OWNED_SERVICE
-          last_reviewed: "2025-03-13"
+          last_reviewed: "2025-03-27"
         }
         policy {
-          cookies_allowed: YES
-          cookies_store: "..."
-          setting: "..."
-          chrome_policy {}
+          cookies_allowed: NO
+          chrome_policy {
+            DisableScreenshots {
+              DisableScreenshots: false
+            }
+            LensOverlaySettings {
+              LensOverlaySettings: 1
+            }
+          }
         }
-        comments: "..."
+        comments:
+         "There is no user setting to control this feature, it is generally "
+         "made available to all users with Google as their default search "
+         "engine unless disabled by a policy."
       )");
 
 // The expected message id for the query forumlation metadata response body.

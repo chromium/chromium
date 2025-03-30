@@ -22,10 +22,11 @@ CopyOperation = Tuple[Optional[str], str]
 
 
 class BaselineCopier:
-    def __init__(self, host: Host, default_port: Optional[Port] = None):
+
+    def __init__(self, host: Host, default_port: Port):
         self._host = host
         self._fs = host.filesystem
-        self._default_port = default_port or host.port_factory.get()
+        self._default_port = default_port
         self._optimizer = BaselineOptimizer(host, self._default_port,
                                             host.port_factory.all_port_names())
 

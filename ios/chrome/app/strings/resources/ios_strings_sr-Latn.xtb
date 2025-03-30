@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1190609913194133056">Centar za obaveštenja</translation>
 <translation id="1201402288615127009">Dalje</translation>
-<translation id="1202892408424955784">Proizvodi koje pratite</translation>
 <translation id="1204075260022434100">{count,plural, =1{Obeleživač je sačuvan u folderu {title} na nalogu, {email}}one{{count} obeleživač je sačuvan u folderu {title} na nalogu, {email}}few{{count} obeleživača su sačuvana u folderu {title} na nalogu, {email}}other{{count} obeleživača je sačuvano u folderu {title} na nalogu, {email}}}</translation>
 <translation id="120431140543679678">Prati</translation>
 <translation id="1207493287814084192">17:30</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">nova stavka</translation>
 <translation id="2049727122989709386">Nalozi (<ph name="COUNT" />) koriste istu lozinku</translation>
 <translation id="2059166748188874810">Opština</translation>
-<translation id="2060114494785549741">Izbriši za 1 mesec</translation>
 <translation id="2060638295449304809">Ova adresa se čuva samo na ovom uređaju. Da biste je koristili na drugim uređajima, sačuvajte je na Google nalogu, <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Birač tipa jedinice</translation>
 <translation id="2067852168641682340">Sačuvaj na ovom nalogu svaki put</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">Sakrijte karticu Pratite cenu</translation>
 <translation id="2216366330550244277">Idite na stranicu proizvoda</translation>
 <translation id="2220529011494928058">Prijavi problem</translation>
-<translation id="2220887224562128152">Kada se fajl zakaže za brisanje, ne može da se vrati.</translation>
 <translation id="2223461067862937305">Napravi QR kôd</translation>
 <translation id="2229345671837147090">Mreža udaljenih kartica</translation>
 <translation id="2230173723195178503">Veb-stranica je učitana</translation>
@@ -384,7 +381,6 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="2539748786028143624">Uključi Poboljšanu zaštitu…</translation>
 <translation id="2540111494300686866">Spreči dijaloge</translation>
 <translation id="2542268842667970959">Sakrij opciju Provera bezbednosti</translation>
-<translation id="2543870349255816922">Ova kartica prikazuje pad cene proizvoda koji pratite sa jednog od sinhronizovanih uređaja</translation>
 <translation id="2547458583188611426">Sinhronizacija ne radi. Da biste pokrenuli sinhronizaciju, unesite pristupnu frazu.</translation>
 <translation id="2551153019974022505">Greška sa nalogom</translation>
 <translation id="2559843230610279254">Grupa kartica, <ph name="GROUP_TITLE" />, kartica: <ph name="TABS_NUMBER" />.</translation>
@@ -495,7 +491,6 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="3059270601560379555">Nova pretraga</translation>
 <translation id="3064547930554042309">Upravljajte preuzimanjima</translation>
 <translation id="3072279342064724558">Lozinka već postoji</translation>
-<translation id="3074862506644936708">Omogući automatsko brisanje</translation>
 <translation id="3076846064362030967">Nećemo vas odjaviti sa Google naloga. <ph name="BEGIN_LINK" />Drugi oblici aktivnosti<ph name="END_LINK" /> mogu da se sačuvaju na Google nalogu kada ste prijavljeni. Možete da ih izbrišete u bilo kom trenutku.
 
 
@@ -917,6 +912,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4896467949657706481">Kartice su zatvorene; odjavljeni ste</translation>
 <translation id="4913626501929406101">Možete bezbedno da delite kopiju lozinke sa nekim u grupi za porodicu. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Prihvati</translation>
+<translation id="4930714375720679147">Uključi</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4936354130727646074">Nikad ne premeštaj</translation>
 <translation id="4937410517508563815">Sačuvajte lozinke na nalogu</translation>
@@ -1152,7 +1148,6 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5899314093904173337">Da biste delili sa ljudima u blizini, dajte im da skeniraju ovaj QR kôd pomoću kamere ili aplikacije za skeniranje QR koda</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} nova kartica}one{{count} nova kartica}few{{count} nove kartice}other{{count} novih kartica}}</translation>
 <translation id="5911030830365207728">Google prevodilac</translation>
-<translation id="5917913282764181683">Automatski brišite preuzimanja</translation>
 <translation id="5922999516621365983">Prevucite karticu ovde da biste je zakačili.</translation>
 <translation id="5936006948844852401">Upravljaj prostorom</translation>
 <translation id="5936065461722368675">Prevedi celu stranicu</translation>
@@ -1511,7 +1506,6 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="741204030948306876">Da, omogući</translation>
 <translation id="7417689656810783109">Preimenujte grupu</translation>
 <translation id="7419565702166471774">Uvek koristi bezbedne veze</translation>
-<translation id="742001653298797675">Zakažite brisanje svih preuzimanja posle jednog meseca da biste uštedeli prostor na telefonu i zaštitili privatnost.</translation>
 <translation id="7425053386765766120">Dodaj način plaćanja…</translation>
 <translation id="7425346204213733349">Promene obeleživača, istorije, lozinki i drugih podešavanja se više neće sinhronizovati sa Google nalogom. Međutim, postojeći podaci će ostati sačuvani na Google nalogu.</translation>
 <translation id="742664698522525515">Želite da zadržite grupu?</translation>

@@ -55,7 +55,7 @@ export class ActivityLogHistoryItemElement extends CrLitElement {
     };
   }
 
-  data: ActivityGroup = {
+  accessor data: ActivityGroup = {
     activityIds: new Set<string>(),
     key: '',
     count: 0,
@@ -63,8 +63,8 @@ export class ActivityLogHistoryItemElement extends CrLitElement {
     countsByUrl: new Map<string, number>(),
     expanded: false,
   };
-  protected expanded_: boolean = false;
-  protected isExpandable_: boolean = false;
+  protected accessor expanded_: boolean = false;
+  protected accessor isExpandable_: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

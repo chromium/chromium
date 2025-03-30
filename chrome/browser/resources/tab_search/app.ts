@@ -37,16 +37,17 @@ export class TabSearchAppElement extends CrLitElement {
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
   private documentVisibilityChangedListener_: () => void;
-  protected selectedTabSection_: TabSearchSection = TabSearchSection.kSearch;
-  protected tabNames_: string[] = [
+  protected accessor selectedTabSection_: TabSearchSection =
+      TabSearchSection.kSearch;
+  protected accessor tabNames_: string[] = [
     loadTimeData.getString('tabSearchTabName'),
     loadTimeData.getString('tabOrganizationTabName'),
   ];
-  protected tabOrganizationEnabled_: boolean =
+  protected accessor tabOrganizationEnabled_: boolean =
       loadTimeData.getBoolean('tabOrganizationEnabled');
-  protected declutterEnabled_: boolean =
+  protected accessor declutterEnabled_: boolean =
       loadTimeData.getBoolean('declutterEnabled');
-  protected availableHeight_: number = 0;
+  protected accessor availableHeight_: number = 0;
 
   static override get styles() {
     return getCss();

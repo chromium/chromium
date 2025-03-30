@@ -325,7 +325,6 @@
 <translation id="2527209463677295330">ተጨማሪ የገጽ ጽሁፍ በማካተት፣ የተሻሉ ውጤቶችን ማየት ይችላሉ</translation>
 <translation id="2527779675047087889">የቅንጥብ ሰሌዳ ይዘቶችን ደብቅ</translation>
 <translation id="2532336938189706096">የድር ዕይታ</translation>
-<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> ንጥሎች ተሰርዟል</translation>
 <translation id="253498598929009420">ጣቢያው የማያ ገጽዎን ይዘቶች ማየት ይችላል</translation>
 <translation id="2536728043171574184">የዚህን ገፅ የመስመር ውጭ ቅጂ በመመልከት ላይ</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />፣ ትር</translation>
@@ -365,7 +364,6 @@
 <translation id="2677748264148917807">ለቅቀህ ውጣ</translation>
 <translation id="2687009626279857299">በዚህ መሣሪያ ላይ መሥራት አቁሟል</translation>
 <translation id="2702516483241149200">አዲስ፦ ወደዚህ ጽሁፍ የሚሸበለል አገናኝ ያጋሩ</translation>
-<translation id="2705073298859543115">ማጠቃለያ ፍጠር</translation>
 <translation id="2708051474374549906">ወደ Google በሚላከው የእርስዎ የአሰሳ ውሂብ ላይ ተመስርቶ አደገኛ ከሆኑ ጣቢያዎች፣ ውርዶች እና ቅጥያዎች የሚደረግ የእውነተኛ ጊዜ ንቁ ጥበቃ</translation>
 <translation id="2708226184420201102">በ<ph name="PRODUCT_NAME" /> አሳሽ ውስጥ ክፈት</translation>
 <translation id="271033894570825754">አዲስ</translation>
@@ -1199,7 +1197,6 @@
 <translation id="6564820424018738527">የእርስዎ Android መሣሪያ ተመሳሳይ ቅንብር ሊያካትት ይችላል። የማስታወቂያ ልኬት በChrome እና በእርስዎ Android መሣሪያ ውስጥ ከበራ አንድ ኩባንያ የማስታወቂያ ውጤታማነትን በመላ እርስዎ የሚጎበኟቸው ድር ጣቢያዎች እና የሚጠቀሙባቸው መተግበሪያዎች ላይ መለካት ይችል ይሆናል።</translation>
 <translation id="6565959834589222080">Wi-Fi የሚገኝ ሲሆን ሥራ ላይ ይውላል</translation>
 <translation id="6569373978618239158">አዲስ ትር ሲከፍቱ አሁን ከ<ph name="SITE_NAME" /> ታሪኮችን ማየት ይችላሉ። እርስዎ የሚከተሏቸው ጣቢያዎች በGoogle መለያዎ ውስጥ ይቀመጣሉ። በምርምር ቅንብሮች ውስጥ ሊያቀናብሯቸው ይችላሉ።</translation>
-<translation id="6570116402456758630">የገፅ ማጠቃለያ</translation>
 <translation id="657177046675873214">እልባቶችዎን በሁሉም መሣሪያዎችዎ ላይ ለማግኘት፣ ቅንብሮች ውስጥ «እልባቶች» የሚለውን ያብሩ</translation>
 <translation id="6573096386450695060">ሁልጊዜ ፍቀድ</translation>
 <translation id="6573431926118603307">በሌሎች መሣሪያዎችዎ ላይ ባለ Chrome ላይ የከፈቷቸው ትሮች እዚህ ይመጣሉ።</translation>

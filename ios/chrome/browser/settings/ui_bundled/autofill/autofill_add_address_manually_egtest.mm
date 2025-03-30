@@ -1,0 +1,185 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/field_types.h"
+#import "components/autofill/ios/common/features.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "ui/base/l10n/l10n_util.h"
+
+using chrome_test_util::ButtonWithAccessibilityLabelId;
+using chrome_test_util::SettingsDoneButton;
+using chrome_test_util::SettingsMenuBackButton;
+using chrome_test_util::SettingsToolbarAddButton;
+
+namespace {
+
+// Matcher for the "Save Address" button.
+id<GREYMatcher> SaveAddressButton() {
+  return ButtonWithAccessibilityLabelId(
+      IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
+}
+
+// Returns a matcher for a UITextField with an accessibility ID derived from the
+// provided `text_field_label`.
+id<GREYMatcher> TextFieldWithLabel(NSString* text_field_label) {
+  return grey_allOf(grey_accessibilityID([text_field_label
+                        stringByAppendingString:@"_textField"]),
+                    grey_kindOfClass([UITextField class]), nil);
+}
+
+// Helper to open the address settings page.
+void OpenAddressSettings() {
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::AddressesAndMoreButton()];
+}
+
+}  // namespace
+
+@interface AutofillAddAddressManuallyTestCase : ChromeTestCase
+@end
+
+@implementation AutofillAddAddressManuallyTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+
+  config.features_enabled.push_back(kAddAddressManually);
+  config.features_enabled.push_back(
+      kAutofillDynamicallyLoadsFieldsForAddressInput);
+
+  return config;
+}
+
+- (void)setUp {
+  [super setUp];
+  [AutofillAppInterface clearProfilesStore];
+}
+
+- (void)tearDownHelper {
+  [AutofillAppInterface clearProfilesStore];
+  [super tearDownHelper];
+}
+
+#pragma mark - Helpers
+
+// Closes the settings.
+- (void)exitSettingsMenu {
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+  // Wait for UI components to finish loading.
+  [ChromeEarlGreyUI waitForAppToIdle];
+}
+
+// Populates required address fields.
+- (void)fillRequiredFields {
+  NSString* streetAddressLabel = base::SysUTF8ToNSString(
+      autofill::FieldTypeToDeveloperRepresentationString(
+          autofill::ADDRESS_HOME_STREET_ADDRESS));
+
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(streetAddressLabel)]
+      performAction:grey_replaceText(@"Rue St Catherine")];
+
+  NSString* cityLabel = base::SysUTF8ToNSString(
+      autofill::FieldTypeToDeveloperRepresentationString(
+          autofill::ADDRESS_HOME_CITY));
+
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(cityLabel)]
+      performAction:grey_replaceText(@"Montreal")];
+
+  NSString* stateLabel = base::SysUTF8ToNSString(
+      autofill::FieldTypeToDeveloperRepresentationString(
+          autofill::ADDRESS_HOME_STATE));
+
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(stateLabel)]
+      performAction:grey_replaceText(@"Quebec")];
+
+  NSString* zipLabel = base::SysUTF8ToNSString(
+      autofill::FieldTypeToDeveloperRepresentationString(
+          autofill::ADDRESS_HOME_ZIP));
+
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(zipLabel)]
+      performAction:grey_replaceText(@"H3H 1H1")];
+}
+
+#pragma mark - Tests
+
+// Tests adding a local address manually through settings.
+- (void)testAddLocalAddressManually {
+  OpenAddressSettings();
+
+  // Tap the "Add" button.
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
+      performAction:grey_tap()];
+
+  // Fill the required fields.
+  [self fillRequiredFields];
+
+  // Save the profile.
+  [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
+      performAction:grey_tap()];
+
+  // Ensure profile is saved.
+  GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
+                  @"Profile should have been saved.");
+
+  // Confirm saved profile is a local profile.
+  GREYAssertEqual(NO, [AutofillAppInterface isAccountProfileAtIndex:0],
+                  @"Profile should have been saved locally.");
+}
+
+// Tests adding an account address manually through settings.
+- (void)testAddAccountAddressManually {
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
+
+  OpenAddressSettings();
+
+  // Tap the "Add" button.
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
+      performAction:grey_tap()];
+
+  // Fill the required fields.
+  [self fillRequiredFields];
+
+  // Save the profile.
+  [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
+      performAction:grey_tap()];
+
+  // Ensure profile is saved.
+  GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
+                  @"Profile should have been saved.");
+
+  // Confirm saved profile is an account profile.
+  GREYAssertEqual(YES, [AutofillAppInterface isAccountProfileAtIndex:0],
+                  @"Profile should have been saved to account.");
+
+  // Exit settings.
+  [self exitSettingsMenu];
+
+  // Sign out.
+  [SigninEarlGreyUI signOut];
+}
+
+// Tests that tapping the `Cancel` button triggers the dismissal of the add
+// address bottom sheet.
+- (void)testCancelButton {
+  // TODO(crbug.com/406799169): EGTest for checking if the `Cancel` button works
+  // as expected.
+}
+
+@end

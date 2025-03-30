@@ -452,6 +452,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual bool IsLoaded() const;
   virtual bool IsModal() const;
   virtual bool IsMultiSelectable() const;
+  virtual bool ComputeIsOffScreen() const;
   virtual bool IsRequired() const;
   virtual AccessibilitySelectedState IsSelected() const;
   virtual bool IsSelectedFromFocusSupported() const;
@@ -540,6 +541,19 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // more than one object but have only one primary parent.
   bool HasIndirectChildren() const;
   bool IsExcludedByFormControlsFilter() const;
+
+  void SetIsOnScreen(bool visibility) { cached_is_on_screen_ = visibility; }
+  bool WasEverOnScreen() const {
+    return cached_is_on_screen_ ? cached_is_on_screen_.value() : false;
+  }
+
+  // A node can oly flip from off-screen to on-screen if it was explicitly
+  // marked as off-screen at some point. Since we keep track if a node was ever
+  // on-screen, it can't also flip from on-screen to off-screen because of this
+  // reason.
+  bool CanFlipFromOffScreenToOnScreen() const {
+    return cached_is_on_screen_ && !cached_is_on_screen_.value();
+  }
 
   //
   // Accessible name calculation
@@ -1625,6 +1639,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool cached_is_descendant_of_disabled_node_ : 1 = false;
   bool cached_can_set_focus_attribute_ : 1 = false;
   bool cached_is_in_menu_list_subtree_ : 1 = false;
+  std::optional<bool> cached_is_on_screen_;
 
   Member<AXObject> cached_live_region_root_;
   gfx::RectF cached_local_bounding_box_;

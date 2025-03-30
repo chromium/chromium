@@ -69,8 +69,7 @@ void Translator::Translate(
   // translation should be |input|. In such cases, |sourceLanguage| and
   // |targetLanguage| should be ignored."
   if (!ContainsTranslatableContent(input)) {
-    responder->OnStreaming(
-        input, blink::mojom::ModelStreamingResponderAction::kReplace);
+    responder->OnStreaming(input);
     responder->OnCompletion(/*context_info=*/nullptr);
     return;
   }
@@ -89,9 +88,7 @@ void Translator::Translate(
                             kErrorGenericFailure);
                     return;
                   }
-                  responder->OnStreaming(
-                      *output,
-                      blink::mojom::ModelStreamingResponderAction::kReplace);
+                  responder->OnStreaming(*output);
                   responder->OnCompletion(/*context_info=*/nullptr);
                 },
                 std::move(responder)),

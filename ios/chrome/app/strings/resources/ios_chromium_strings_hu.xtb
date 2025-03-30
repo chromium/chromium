@@ -91,6 +91,7 @@ Az adatokat a Chromium-élmény javítására használó további beállítások
 <translation id="3054480780637153380">Nyissa meg a Chromium beállításait iOS rendszeren, majd koppintson az „Alapértelmezett böngésző” elemre, és válassza ki a Chromiumot.</translation>
 <translation id="3102849287235003384">Ha az összes webhelyen ki szeretne jelentkezni Google-fiókjából, <ph name="BEGIN_LINK" />jelentkezzen ki a Chromiumból<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Legyen a Chromium az alapértelmezett böngészője?</translation>
+<translation id="3180939591219927904">Kapcsolja be az „Inkognitó lapok zárolása a Chromium bezárásakor” beállítást.</translation>
 <translation id="3242612358525156339">Eszköze beállításai között nyissa meg a(z) „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” elemet, majd válassza a „Chromium” lehetőséget.</translation>
 <translation id="328933489847748230">{count,plural, =1{Jelenleg 1 Chromium-ablak látható}other{Jelenleg {count} Chromium-ablak látható}}</translation>
 <translation id="3344973607274501920">A Chromium nem tudta ellenőrizni a jelszavakat. Ellenőrizze az internetkapcsolatot.</translation>
@@ -260,6 +261,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">A kiválasztott adatokat eltávolítottuk a Chromiumból és a szinkronizált eszközökről. Előfordulhat, hogy Google-fiókjában (a history.google.com címen) még szerepelnek a böngészési előzmények egyéb formái, így például a keresések és egyéb tevékenységek más Google-szolgáltatásokból.</translation>
 <translation id="7395825497086981028">Jelszavát elmenti a rendszer a fiókhoz (<ph name="EMAIL" />) kapcsolt Jelszókezelőbe.</translation>
+<translation id="7504829997542308412">Nyissa meg a Chromiumot.</translation>
 <translation id="7531461704633548377">A Chromiumból</translation>
 <translation id="7554983317097061001">Chromium-tipp: Helyezze át a Chromiumot a Dockra</translation>
 <translation id="7576863740961052505">A Chromium beállításainak kezelése</translation>

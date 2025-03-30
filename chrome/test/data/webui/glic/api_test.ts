@@ -7,7 +7,7 @@
 //   --gn_target chrome/test/data/webui/glic:build_ts
 
 import {PanelStateKind, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {GlicBrowserHost, GlicWebClient, Observable, PanelOpeningData, ScrollToError, Subscriber} from '/glic/glic_api/glic_api.js';
+import type {GlicBrowserHost, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, ScrollToError, Subscriber} from '/glic/glic_api/glic_api.js';
 
 import {createGlicHostRegistryOnLoad} from './api_boot.js';
 
@@ -60,7 +60,7 @@ class WebClient implements GlicWebClient {
   }
 
   async notifyPanelWillOpen(_panelOpeningData: PanelOpeningData):
-      Promise<void> {
+      Promise<void|OpenPanelInfo> {
     this.firstOpened.resolve();
   }
 
@@ -506,11 +506,29 @@ class NotifyPanelWillOpenTest extends ApiTestFixtureBase {
   }
 }
 
+class InitiallyNotResizableWebClient extends WebClient {
+  override async notifyPanelWillOpen(_panelOpeningData: PanelOpeningData):
+      Promise<void|OpenPanelInfo> {
+    return {startingMode: WebClientMode.TEXT, canUserResize: false};
+  }
+}
+
+class InitiallyNotResizableTest extends ApiTestFixtureBase {
+  override createWebClient(): WebClient {
+    return new InitiallyNotResizableWebClient();
+  }
+
+  async testInitiallyNotResizable() {
+    await sleep(100);
+  }
+}
+
 // All test fixtures. We look up tests by name, and the fixture name is ignored.
 // Therefore all tests must have unique names.
 const TEST_FIXTURES = [
   ApiTests,
   NotifyPanelWillOpenTest,
+  InitiallyNotResizableTest,
 ];
 
 function findTestFixture(testName: string): any {

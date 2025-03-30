@@ -1126,7 +1126,10 @@ const char kCompressionDictionaryTransportRequireKnownRootCertDescription[] =
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 const char kContextualCueingName[] = "Contextual cueing";
 const char kContextualCueingDescription[] =
-    "Enables the contextual cueing system to support showing actions";
+    "Enables the contextual cueing system to support showing actions.";
+const char kGlicZeroStateSuggestionsName[] = "Glic zero state suggestions";
+const char kGlicZeroStateSuggestionsDescription[] =
+    "Enables zero state suggestions in Glic.";
 
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
@@ -5440,6 +5443,12 @@ const char kSmartCardWebApiDescription[] =
     "Enable access to the Smart Card API. See "
     "https://github.com/WICG/web-smart-card#readme for more information.";
 
+const char kTabCaptureInfobarLinksName[] =
+    "Navigation links in the tab-sharing bar";
+const char kTabCaptureInfobarLinksDescription[] =
+    "Enables quick-navigation links to the captured and capturing tab in the "
+    "tab-sharing bar.";
+
 #if !BUILDFLAG(IS_ANDROID)
 const char kTranslateOpenSettingsName[] = "Translate Open Settings";
 const char kTranslateOpenSettingsDescription[] =
@@ -8021,9 +8030,6 @@ const char kOidcAuthProfileManagementDescription[] =
 
 const char kGlicName[] = "Glic";
 const char kGlicDescription[] = "Enables glic";
-
-const char kGlicDetachedName[] = "Glic Detached Mode";
-const char kGlicDetachedDescription[] = "Enables glic detached mode";
 
 const char kGlicUserResizeName[] = "Glic User Resize";
 const char kGlicUserResizeDescription[] =

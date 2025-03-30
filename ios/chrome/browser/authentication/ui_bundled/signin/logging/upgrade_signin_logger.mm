@@ -106,7 +106,8 @@ using signin_metrics::RecordSigninUserActionForAccessPoint;
     }
     case SigninCoordinatorResultDisabled:
     case SigninCoordinatorUINotAvailable:
-    case SigninCoordinatorResultInterrupted: {
+    case SigninCoordinatorResultInterrupted:
+    case SigninCoordinatorProfileSwitch: {
       // TODO(crbug.com/40622384): Add metric for when the sign-in has been
       // interrupted.
       break;

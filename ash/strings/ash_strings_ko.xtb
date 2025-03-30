@@ -732,6 +732,7 @@
 <translation id="346243998268439747">확대/축소 수준 재설정</translation>
 <translation id="3465223694362104965">마지막으로 로그인한 이후로 다른 키보드가 이 기기에 연결되었습니다. 사용하기 전에 이 키보드를 신뢰하는지 확인하세요.</translation>
 <translation id="3465356146291925647">관리자가 관리함</translation>
+<translation id="3470502288861289375">복사 중...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> 키를 누른 후 <ph name="KEY_TWO" /> 또는 <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" /></translation>

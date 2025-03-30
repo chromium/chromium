@@ -112,6 +112,7 @@
 <translation id="244264527810019436">Es posible que las funciones de algunos sitios no funcionen en el modo Incógnito</translation>
 <translation id="2442870161001914531">Solicitar siempre el sitio para computadoras</translation>
 <translation id="2445311670906052406">Chrome ahora comparte tus pestañas recientes con tu dispositivo. Las verás en la lista de apps y en los resultados de la búsqueda de tu dispositivo. Puedes desactivar esta opción en cualquier momento en la configuración de Chrome.</translation>
+<translation id="245322989586167203">Por lo general los sitios se conectan a puertos en serie para habilitar funciones de transferencia de datos, como la configuración de la red</translation>
 <translation id="2469312991797799607">Esta acción borrará todos los datos y cookies de <ph name="ORIGIN" /> y de todos sus sitios secundarios</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="2485422356828889247">Desinstalación</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">No permitir que los sitios sepan cuando estás usando activamente este dispositivo</translation>
 <translation id="4412992751769744546">Permitir cookies de terceros</translation>
 <translation id="4419929467120297501">Chrome impide que los sitios usen cookies de terceros para seguirte mientras navegas. Ve a la configuración para <ph name="BEGIN_LINK" />administrar el acceso a las cookies de terceros<ph name="END_LINK" />.</translation>
+<translation id="443121186588148776">Puerto en serie</translation>
 <translation id="4434045419905280838">Ventanas emergentes y redireccionamientos</translation>
 <translation id="443552056913301231">Esta acción borrará todos los datos locales, incluidas las cookies, y restablecerá todos los permisos de <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Silenciar un sitio específico.</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Preguntar primero</translation>
 <translation id="7423538860840206698">Se impidió la lectura del portapapeles</translation>
 <translation id="7425915948813553151">Tema oscuro para los sitios</translation>
+<translation id="7478658909253570368">No permitir que los sitios se conecten a puertos en serie</translation>
 <translation id="7488573225650545859">Ocultar la opción Ver pestañas en la lista de apps</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Cuando esta opción está activada, los sitios pueden mostrar mensajes de acceso. Cuando está desactivada, los sitios no pueden mostrar mensajes de acceso.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Conectado a un dispositivo Bluetooth</translation>
 <translation id="7617547684249261169">Puedes borrar tu historial, cookies, datos de sitios y más de forma parcial o por completo</translation>
 <translation id="7649070708921625228">Ayuda</translation>
+<translation id="7655411746932645568">Permitir que los sitios soliciten permiso para conectarse a puertos en serie</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7667547420449112975">El maravilloso mago de Oz</translation>
 <translation id="7681597159868843240">Por lo general, los sitios utilizan los sensores de movimiento del dispositivo en funciones, como el seguimiento de la actividad física o la realidad virtual.</translation>

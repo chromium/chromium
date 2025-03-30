@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">需要 Proxy 驗證</translation>
 <translation id="4594021849294327751">建立轉錄文字</translation>
 <translation id="4594541568452132351">選取轉錄語言並下載模型</translation>
-<translation id="4607282946861182308">無法製作相應的圖像，請嘗試其他提示。</translation>
 <translation id="4609350030397390689">鍵盤校暗亮度</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />，印咗 <ph name="PRINTED_PAGE_NUMBER" /> 頁，總共有 <ph name="TOTAL_PAGE_NUMBER" /> 頁。㩒一下 Enter 鍵就可以取消列印工作。</translation>
 <translation id="463791356324567266">正在取消掃瞄…</translation>
@@ -1659,6 +1658,7 @@
 <translation id="8543574988889671960">重新載入分頁</translation>
 <translation id="8550364285433943656">針對遊戲操作設定控制項，即可使用鍵盤按鍵玩遊戲</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">生成式 AI 可能會出錯 (包括人物資料)，請加以複查。</translation>
 <translation id="8575298406870537639">流動網絡供應商可能會要求您必須選擇此選項，才能連接他們的網絡。詳情請聯絡流動網絡供應商。</translation>
 <translation id="8576249514688522074">未初始化</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" />必須重新啟動，才能完成安裝韌體版本 <ph name="VERSION" />。電腦可能會多次重新啟動，這是正常現象。</translation>
@@ -1673,7 +1673,6 @@
 <translation id="8655295600908251630">版本</translation>
 <translation id="8655828773034788261">分享網址：</translation>
 <translation id="8660881923941176839">磅</translation>
-<translation id="8670057600920888023">生成式 AI 尚在實驗階段，內容或會不準確、誤導或令人反感。</translation>
 <translation id="8670574982334489519">右邊</translation>
 <translation id="8675354002693747642">預先共用密鑰</translation>
 <translation id="8677859815076891398">沒有相簿。請在「<ph name="LINK_BEGIN" />Google 相片<ph name="LINK_END" />」中建立相簿。</translation>

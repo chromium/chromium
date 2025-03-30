@@ -281,6 +281,18 @@ class ScriptPromiseResolver final : public ScriptPromiseResolverBase {
         MakeGarbageCollected<IDLResolvedType>(value));
   }
 
+  // This Resolve() method allows a Promise expecting to be resolved with an
+  // enum type to be resolved with an enum value of that type rather than having
+  // to explicitly construct the enum type.
+  template <typename T = IDLResolvedType>
+    requires std::derived_from<IDLResolvedType, bindings::EnumerationBase>
+  void Resolve(T::Enum value) {
+    if (!PrepareToResolveOrReject<kResolving>()) {
+      return;
+    }
+    ResolveOrReject<IDLResolvedType>(T(value));
+  }
+
   // A promise may be resolved with another promise if they are the same type.
   void Resolve(ScriptPromise<IDLResolvedType> promise) {
     if (!PrepareToResolveOrReject<kResolving>()) {

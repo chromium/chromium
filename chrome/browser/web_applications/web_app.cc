@@ -801,6 +801,10 @@ void WebApp::SetRelatedApplications(
   related_applications_ = std::move(related_applications);
 }
 
+void WebApp::SetUpdateToken(const std::optional<std::string>& update_token) {
+  update_token_ = update_token;
+}
+
 void WebApp::AddPlaceholderInfoToManagementExternalConfigMap(
     WebAppManagement::Type type,
     bool is_placeholder) {
@@ -1010,7 +1014,8 @@ bool WebApp::operator==(const WebApp& other) const {
         app.is_diy_app_,
         app.was_shortcut_app_,
         app.related_applications_,
-        app.diy_app_icons_masked_on_mac_
+        app.diy_app_icons_masked_on_mac_,
+        app.update_token_
         // clang-format on
     );
   };
@@ -1231,6 +1236,8 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("related_applications",
            RelatedApplicationsToDebugValue(related_applications_));
+
+  root.Set("update_token", OptionalToStringValue(update_token_));
 
   return base::Value(std::move(root));
 }

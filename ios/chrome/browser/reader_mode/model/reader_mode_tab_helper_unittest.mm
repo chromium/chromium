@@ -229,6 +229,8 @@ TEST_F(ReaderModeTabHelperTest, TriggerDistillerJs) {
   auto test_web_state = std::make_unique<web::FakeWebState>();
   auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
   web::FakeWebFramesManager* frames_manager_ptr = frames_manager.get();
+  test_web_state->SetWebFramesManager(
+      std::make_unique<web::FakeWebFramesManager>());
   test_web_state->SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
                                       std::move(frames_manager));
   const GURL test_url = GURL("https://test.url/");
@@ -265,6 +267,7 @@ TEST_F(ReaderModeTabHelperTest, TriggerDistillerJs) {
   histogram_tester_.ExpectTotalCount(
       kReaderModeHeuristicClassificationHistogram, 1);
   histogram_tester_.ExpectTotalCount(kReaderModeDistillerLatencyHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kReaderModeAmpClassificationHistogram, 1);
   ExpectDistillerLatencyEntriesCount(1u);
   ExpectDistillerResultEntriesCount(1u);
 }

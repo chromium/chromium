@@ -20,7 +20,23 @@ MasonryLayoutAlgorithm::MasonryLayoutAlgorithm(
 
 MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
-  return {MinMaxSizes(), /*depends_on_block_constraints=*/false};
+  const GridLineResolver line_resolver(Style(), ComputeAutomaticRepetitions());
+
+  auto ComputeIntrinsicInlineSize = [&](SizingConstraint sizing_constraint) {
+    wtf_size_t start_offset;
+    const auto track_collection =
+        BuildGridAxisTracks(line_resolver, sizing_constraint, start_offset);
+    return track_collection.CalculateSetSpanSize();
+  };
+
+  MinMaxSizes intrinsic_sizes{
+      ComputeIntrinsicInlineSize(SizingConstraint::kMinContent),
+      ComputeIntrinsicInlineSize(SizingConstraint::kMaxContent)};
+  intrinsic_sizes += BorderScrollbarPadding().InlineSum();
+
+  // TODO(ethavar): Compute `depends_on_block_constraints` by checking if any
+  // masonry item has `is_sizing_dependent_on_block_size` set to true.
+  return {intrinsic_sizes, /*depends_on_block_constraints=*/false};
 }
 
 const LayoutResult* MasonryLayoutAlgorithm::Layout() {
@@ -36,18 +52,19 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
 
   // TODO(ethavar): Compute the actual block size for the fragment.
   container_builder_.SetFragmentsTotalBlockSize(intrinsic_block_size_);
+  container_builder_.SetIntrinsicBlockSize(intrinsic_block_size_);
   return container_builder_.ToBoxFragment();
 }
 
 void MasonryLayoutAlgorithm::PlaceMasonryItems(
     const GridLayoutTrackCollection& track_collection,
     GridItems& masonry_items) {
-  const auto grid_axis_direction = track_collection.Direction();
   const auto& border_scrollbar_padding = BorderScrollbarPadding();
   const auto& container_space = GetConstraintSpace();
+
   const auto container_writing_direction =
       container_space.GetWritingDirection();
-
+  const auto grid_axis_direction = track_collection.Direction();
   const bool is_for_columns = grid_axis_direction == kForColumns;
 
   // Initialize data structure to keep track of running positions, where the
@@ -217,7 +234,8 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
 
     // TODO(ethavar): Compute the min available size and use it here.
     const GridTrackSizingAlgorithm track_sizing_algorithm(
-        style, ChildAvailableSize(), ChildAvailableSize(), sizing_constraint);
+        style, available_size, /*container_min_available_size=*/LogicalSize(),
+        sizing_constraint);
 
     track_sizing_algorithm.ComputeUsedTrackSizes(
         ContributionSizeForVirtualItem, &track_collection, &virtual_items);

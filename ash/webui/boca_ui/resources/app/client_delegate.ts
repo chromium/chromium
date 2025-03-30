@@ -21,6 +21,7 @@ export function getStudentActivityMojomToUI(activities: Activity[]):
     return {
       id: item.id,
       studentActivity: {
+        studentStatusDetail: item.activity.studentStatusDetail.valueOf(),
         isActive: item.activity.isActive,
         activeTab: item.activity.activeTab ? item.activity.activeTab :
                                              undefined,

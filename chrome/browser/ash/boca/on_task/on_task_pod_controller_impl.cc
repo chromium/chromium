@@ -45,7 +45,7 @@ std::unique_ptr<views::Widget> CreateChildWidget(
   auto widget = std::make_unique<views::Widget>();
   widget->Init(std::move(params));
   widget->SetContentsView(std::move(view));
-  widget->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
+  widget->SetVisibilityAnimationTransition(views::Widget::ANIMATE_SHOW);
 
   return widget;
 }
@@ -146,6 +146,16 @@ void OnTaskPodControllerImpl::OnWindowBoundsChanged(
     pod_widget_->SetBounds(CalculateWidgetBounds());
   }
   is_window_pinned_ = is_window_pinned;
+}
+
+void OnTaskPodControllerImpl::OnWindowVisibilityChanged(aura::Window* window,
+                                                        bool visible) {
+  DCHECK(pod_widget_);
+  if (visible) {
+    pod_widget_->Show();
+  } else {
+    pod_widget_->Hide();
+  }
 }
 
 void OnTaskPodControllerImpl::OnPauseModeChanged() {

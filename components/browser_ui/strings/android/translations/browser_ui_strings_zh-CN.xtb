@@ -112,6 +112,7 @@
 <translation id="244264527810019436">在无痕模式下，某些网站上的功能可能会无法正常运行</translation>
 <translation id="2442870161001914531">始终请求访问桌面版网站</translation>
 <translation id="2445311670906052406">Chrome 现在会与您的设备分享您近期打开的标签页。您可以在设备的应用列表和搜索结果中看到这些标签页。您可以随时在 Chrome 设置中关闭此功能。</translation>
+<translation id="245322989586167203">网站通常会连接到串行端口以实现数据传输功能（例如设置您的网络）</translation>
 <translation id="2469312991797799607">此操作会删除 <ph name="ORIGIN" /> 及其下属所有网站的全部数据和 Cookie</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2485422356828889247">卸载</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">禁止网站了解您何时在主动使用此设备</translation>
 <translation id="4412992751769744546">允许第三方 Cookie</translation>
 <translation id="4419929467120297501">Chrome 会阻止网站使用第三方 Cookie 跟踪您在浏览时的活动。访问“设置”可<ph name="BEGIN_LINK" />管理对第三方 Cookie 的使用权限<ph name="END_LINK" />。</translation>
+<translation id="443121186588148776">串行端口</translation>
 <translation id="4434045419905280838">弹出式窗口和重定向</translation>
 <translation id="443552056913301231">此操作会删除所有本地数据（包括 Cookie）并重置 <ph name="ORIGIN" /> 的所有权限</translation>
 <translation id="4468959413250150279">将某个特定网站静音。</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">先询问</translation>
 <translation id="7423538860840206698">已阻止读取剪贴板中的内容</translation>
 <translation id="7425915948813553151">为网站开启深色主题</translation>
+<translation id="7478658909253570368">不允许网站连接到串行端口</translation>
 <translation id="7488573225650545859">隐藏“查看应用列表中的标签页”</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">开启此设置后，网站可以显示登录提示。关闭此设置后，网站无法显示登录提示。</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">已连接到蓝牙设备</translation>
 <translation id="7617547684249261169">您可以删除部分或全部历史记录、Cookie、网站数据等</translation>
 <translation id="7649070708921625228">帮助</translation>
+<translation id="7655411746932645568">网站可以请求连接到串行端口</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7667547420449112975">绿野仙踪</translation>
 <translation id="7681597159868843240">网站通常会使用您设备的移动传感器以实现某些功能（例如虚拟现实或健身跟踪）</translation>

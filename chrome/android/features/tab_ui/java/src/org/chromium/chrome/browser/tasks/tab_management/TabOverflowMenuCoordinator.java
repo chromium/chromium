@@ -148,9 +148,9 @@ public abstract class TabOverflowMenuCoordinator<T> {
             mMenuWindow.setPreferredHorizontalOrientation(horizontalOrientation);
             // Override animation style or animate from anchor as default.
             if (animStyle == ResourcesCompat.ID_NULL) {
-                mMenuWindow.setAnimationStyle(animStyle);
-            } else {
                 mMenuWindow.setAnimateFromAnchor(true);
+            } else {
+                mMenuWindow.setAnimationStyle(animStyle);
             }
             mMenuWindow.setMaxWidth(popupWidthPx);
 

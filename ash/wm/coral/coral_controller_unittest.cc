@@ -12,6 +12,7 @@
 #include "ash/public/cpp/test/test_saved_desk_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
@@ -380,6 +381,13 @@ class CoralSavedGroupTest : public CoralControllerTest {
     return save_as_group_item;
   }
 
+  void EnterOverviewAndSaveGroupAsTemplate() {
+    Shell::Get()->overview_controller()->StartOverview(
+        OverviewStartAction::kTests);
+    views::MenuItemView* save_as_group_item = GetSaveAsGroupMenuItem();
+    LeftClickOn(save_as_group_item);
+  }
+
   void SetUp() override {
     CoralControllerTest::SetUp();
     ash_test_helper()->saved_desk_test_helper()->WaitForDeskModels();
@@ -412,18 +420,14 @@ TEST_F(CoralSavedGroupTest, SaveBrowserInGroup) {
                       "Coral desk"));
   OverrideTestResponse(std::move(test_groups));
 
-  // Enter overview and click on the save as group menu item.
-  Shell::Get()->overview_controller()->StartOverview(
-      OverviewStartAction::kTests);
-  views::MenuItemView* save_as_group_item = GetSaveAsGroupMenuItem();
-  LeftClickOn(save_as_group_item);
+  EnterOverviewAndSaveGroupAsTemplate();
 
   // Verify the desk model entry name and type.
   const desks_storage::DeskModel::GetAllEntriesResult& result =
       desk_model()->GetAllEntries();
   ASSERT_EQ(result.entries.size(), 1u);
   const DeskTemplate* coral_template = result.entries[0];
-  EXPECT_EQ(coral_template->template_name(), u"saved group");
+  EXPECT_EQ(coral_template->template_name(), u"Coral desk");
   EXPECT_EQ(coral_template->type(), DeskTemplateType::kCoral);
 
   // Verify that the desk model entry browser info matches our fake coral
@@ -440,6 +444,50 @@ TEST_F(CoralSavedGroupTest, SaveBrowserInGroup) {
   EXPECT_THAT(browser_extra_info.urls,
               testing::ElementsAre(GURL("https://google.com/"),
                                    GURL("https://youtube.com/")));
+}
+
+// Tests saving a group with an empty (invalid) title.
+TEST_F(CoralSavedGroupTest, SaveEmptyTitleGroup) {
+  // Prepare a coral group with an empty title.
+  std::vector<coral::mojom::GroupPtr> test_groups;
+  test_groups.push_back(
+      CreateTestGroup({{"Google", GURL("https://google.com/")},
+                       {"Youtube", GURL("https://youtube.com/")}},
+                      ""));
+  OverrideTestResponse(std::move(test_groups));
+
+  EnterOverviewAndSaveGroupAsTemplate();
+
+  // Verify the desk model entry name and type.
+  const desks_storage::DeskModel::GetAllEntriesResult& result =
+      desk_model()->GetAllEntries();
+  ASSERT_EQ(result.entries.size(), 1u);
+  const DeskTemplate* coral_template = result.entries[0];
+  EXPECT_EQ(coral_template->template_name(),
+            l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_SUGGESTION_NAME));
+  EXPECT_EQ(coral_template->type(), DeskTemplateType::kCoral);
+}
+
+// Tests saving a group with title in generation.
+TEST_F(CoralSavedGroupTest, SaveNullTitleGroup) {
+  // Prepare a null titled group.
+  std::vector<coral::mojom::GroupPtr> test_groups;
+  test_groups.push_back(
+      CreateTestGroup({{"Google", GURL("https://google.com/")},
+                       {"Youtube", GURL("https://youtube.com/")}},
+                      std::nullopt));
+  OverrideTestResponse(std::move(test_groups));
+
+  EnterOverviewAndSaveGroupAsTemplate();
+
+  // Verify the desk model entry name and type.
+  const desks_storage::DeskModel::GetAllEntriesResult& result =
+      desk_model()->GetAllEntries();
+  ASSERT_EQ(result.entries.size(), 1u);
+  const DeskTemplate* coral_template = result.entries[0];
+  EXPECT_EQ(coral_template->template_name(),
+            l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_SUGGESTION_NAME));
+  EXPECT_EQ(coral_template->type(), DeskTemplateType::kCoral);
 }
 
 // Tests saving a group that has a couple apps in it.
@@ -461,23 +509,17 @@ TEST_F(CoralSavedGroupTest, SaveAppsInGroup) {
   std::vector<coral::mojom::GroupPtr> test_groups;
   test_groups.push_back(CreateTestGroup(
       {{"Window1", "window1_app_id"}, {"Window2", "window2_app_id"}},
-      "saved group"));
+      "Coral desk"));
   OverrideTestResponse(std::move(test_groups));
 
-  // Enter overview and click on the save as group menu item.
-  Shell::Get()->overview_controller()->StartOverview(
-      OverviewStartAction::kTests);
-  views::MenuItemView* save_as_group_item = GetSaveAsGroupMenuItem();
-  LeftClickOn(save_as_group_item);
+  EnterOverviewAndSaveGroupAsTemplate();
 
   // Verify the desk model entry name and type.
   const desks_storage::DeskModel::GetAllEntriesResult& result =
       desk_model()->GetAllEntries();
   ASSERT_EQ(result.entries.size(), 1u);
   const DeskTemplate* coral_template = result.entries[0];
-  // TODO(crbug.com/365839564): This should be the name of the group, not the
-  // desk.
-  EXPECT_EQ(coral_template->template_name(), u"Desk 1");
+  EXPECT_EQ(coral_template->template_name(), u"Coral desk");
   EXPECT_EQ(coral_template->type(), DeskTemplateType::kCoral);
 
   // Verify that the desk model entry browser info matches our fake coral
@@ -500,11 +542,7 @@ TEST_F(CoralSavedGroupTest, ShowSavedDeskLibrary) {
       CreateTestGroup({{"Google", GURL("https://google.com/")}}, "Coral desk"));
   OverrideTestResponse(std::move(test_groups));
 
-  // Enter overview and click on the save as group menu item.
-  Shell::Get()->overview_controller()->StartOverview(
-      OverviewStartAction::kTests);
-  views::MenuItemView* save_as_group_item = GetSaveAsGroupMenuItem();
-  LeftClickOn(save_as_group_item);
+  EnterOverviewAndSaveGroupAsTemplate();
 
   // Tests that the saved desk library is shown.
   EXPECT_TRUE(base::test::RunUntil([]() {
@@ -602,11 +640,7 @@ TEST_F(CoralSavedGroupTest, SaveSuppressionContext) {
                       "Coral desk"));
   OverrideTestResponse(std::move(test_groups));
 
-  // Enter overview and click on the save as group menu item.
-  Shell::Get()->overview_controller()->StartOverview(
-      OverviewStartAction::kTests);
-  views::MenuItemView* save_as_group_item = GetSaveAsGroupMenuItem();
-  LeftClickOn(save_as_group_item);
+  EnterOverviewAndSaveGroupAsTemplate();
 
   // Tests that the saved desk library is shown.
   EXPECT_TRUE(base::test::RunUntil([]() {

@@ -206,6 +206,13 @@ void GlicProfileManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+bool GlicProfileManager::IsShowing() const {
+  if (!last_active_glic_) {
+    return false;
+  }
+  return last_active_glic_->window_controller().IsPanelOrFreShowing();
+}
+
 // static
 void GlicProfileManager::ForceProfileForLaunchForTesting(Profile* profile) {
   g_forced_profile_for_launch_ = profile;
@@ -248,13 +255,8 @@ bool GlicProfileManager::CanPreloadForProfile(Profile* profile) const {
   }
 
   if (!base::FeatureList::IsEnabled(features::kGlicWarmMultiple) &&
-      last_active_glic_) {
-    if (last_active_glic_->window_controller().IsShowing() ||
-        last_active_glic_->window_controller()
-            .fre_controller()
-            ->IsShowingDialog()) {
-      return false;
-    }
+      IsShowing()) {
+    return false;
   }
 
   return !profile->ShutdownStarted() && !IsUnderMemoryPressure();

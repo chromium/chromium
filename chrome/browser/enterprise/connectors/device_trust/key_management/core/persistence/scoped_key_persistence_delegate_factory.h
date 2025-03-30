@@ -16,7 +16,7 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate_factory.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 
 namespace enterprise_connectors {
 namespace test {
@@ -63,7 +63,7 @@ class ScopedKeyPersistenceDelegateFactory
   }
 
  private:
-  crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
   std::vector<uint8_t> hw_wrapped_key_;
   std::vector<uint8_t> ec_wrapped_key_;
 

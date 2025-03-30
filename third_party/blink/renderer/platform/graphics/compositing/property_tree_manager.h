@@ -40,6 +40,9 @@ class ScrollPaintPropertyNode;
 class SynthesizedClip;
 class TransformPaintPropertyNode;
 
+using StackScrollTranslationVector =
+    HeapVector<Member<const TransformPaintPropertyNode>, 32>;
+
 class PropertyTreeManagerClient {
  public:
   virtual ~PropertyTreeManagerClient() = default;
@@ -196,6 +199,9 @@ class PropertyTreeManager {
   void UpdateConditionalRenderSurfaceReasons(
       const cc::LayerList& layers,
       const HashSet<int>& layers_having_text);
+
+  void EnsureCompositorNodesForAnchorPositionAdjustmentContainers(
+      const StackScrollTranslationVector& scroll_translations);
 
   // The type of operation the current cc effect node applies.
   enum CcEffectType {
@@ -401,6 +407,8 @@ class PropertyTreeManager {
   // clip_expander of their cc nodes after all effect nodes have been converted.
   HeapVector<Member<const ClipPaintPropertyNode>, 16>
       pixel_moving_filter_clip_expanders_;
+
+  HashSet<CompositorElementId> anchor_position_adjustment_container_ids_;
 };
 
 }  // namespace blink

@@ -91,6 +91,7 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="3054480780637153380">Obre la configuració de Chromium a iOS, toca Aplicació de navegador predeterminada i selecciona Chromium.</translation>
 <translation id="3102849287235003384">Per tancar la sessió del teu Compte de Google en tots els llocs web, <ph name="BEGIN_LINK" />tanca la sessió de Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Vols establir Chromium com a navegador predeterminat?</translation>
+<translation id="3180939591219927904">Activa l'opció Bloqueja les pestanyes d'incògnit després de tancar Chromium</translation>
 <translation id="3242612358525156339">Des de la configuració del dispositiu, obre <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> i selecciona Chromium</translation>
 <translation id="328933489847748230">{count,plural, =1{S'està mostrant 1 finestra de Chromium}other{S'estan mostrant {count} finestres de Chromium}}</translation>
 <translation id="3344973607274501920">Chromium no ha pogut comprovar les teves contrasenyes. Comprova la connexió a Internet.</translation>
@@ -260,6 +261,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Les dades seleccionades s'han suprimit de Chromium i dels dispositius sincronitzats. És possible que el teu compte de Google tingui altres formes de l'historial de navegació a history.google.com, com ara les cerques i l'activitat d'altres serveis de Google.</translation>
 <translation id="7395825497086981028">La contrasenya es desarà al gestor de contrasenyes per a <ph name="EMAIL" />.</translation>
+<translation id="7504829997542308412">Obre Chromium</translation>
 <translation id="7531461704633548377">De Chromium</translation>
 <translation id="7554983317097061001">Consell de Chromium: mou Chromium al Dock</translation>
 <translation id="7576863740961052505">Gestiona la configuració de Chromium</translation>

@@ -16,6 +16,7 @@
 #include <sys/socket.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -453,21 +454,27 @@ bool NaClForkDelegate::GetTerminationStatus(pid_t pid, bool known_dead,
 void NaClForkDelegate::AddPassthroughEnvToOptions(
     base::LaunchOptions* options) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  std::string pass_through_string;
   std::vector<std::string> pass_through_vars;
-  if (env->GetVar(kNaClEnvPassthrough, &pass_through_string)) {
-    pass_through_vars = base::SplitString(
-        pass_through_string, std::string(1, kNaClEnvPassthroughDelimiter),
-        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+
+  std::optional<std::string> pass_through_string =
+      env->GetVar(kNaClEnvPassthrough);
+  if (pass_through_string.has_value()) {
+    pass_through_vars =
+        base::SplitString(pass_through_string.value(),
+                          std::string(1, kNaClEnvPassthroughDelimiter),
+                          base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   }
+
   pass_through_vars.push_back(kNaClExeStderr);
   pass_through_vars.push_back(kNaClExeStdout);
   pass_through_vars.push_back(kNaClVerbosity);
   pass_through_vars.push_back(sandbox::kSandboxEnvironmentApiRequest);
-  for (size_t i = 0; i < pass_through_vars.size(); ++i) {
-    std::string temp;
-    if (env->GetVar(pass_through_vars[i], &temp))
-      options->environment[pass_through_vars[i]] = temp;
+
+  for (const std::string& var : pass_through_vars) {
+    std::optional<std::string> value = env->GetVar(var);
+    if (value.has_value()) {
+      options->environment[var] = value.value();
+    }
   }
 }
 

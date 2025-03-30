@@ -7,17 +7,14 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_data.h"
+#include "third_party/blink/renderer/core/layout/grid/subgrid_min_max_sizes_cache.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 
 namespace blink {
 
-class SubgridMinMaxSizesCache;
-
 class CORE_EXPORT LayoutGrid : public LayoutBlock {
  public:
   explicit LayoutGrid(Element* element);
-
-  void Trace(Visitor* visitor) const override;
 
   const char* GetName() const override {
     NOT_DESTROYED();
@@ -75,7 +72,7 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
                       const ComputedStyle* old_style) override;
 
   std::optional<GridPlacementData> cached_placement_data_;
-  Member<const SubgridMinMaxSizesCache> cached_subgrid_min_max_sizes_;
+  std::optional<const SubgridMinMaxSizesCache> cached_subgrid_min_max_sizes_;
 };
 
 // wtf/casting.h helper.

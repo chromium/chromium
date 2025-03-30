@@ -62,14 +62,15 @@ class LanguageDetectorCreateTask
  public:
   LanguageDetectorCreateTask(ScriptState* script_state,
                              ScriptPromiseResolver<LanguageDetector>* resolver,
-                             const LanguageDetectorCreateOptions* options)
+                             LanguageDetectorCreateOptions* options)
       : ExecutionContextClient(ExecutionContext::From(script_state)),
         AIContextObserver(script_state,
                           this,
                           resolver,
                           options->getSignalOr(nullptr)),
         task_runner_(AIInterfaceProxy::GetTaskRunner(GetExecutionContext())),
-        resolver_(resolver) {
+        resolver_(resolver),
+        options_(options) {
     if (options->hasMonitor()) {
       monitor_ = MakeGarbageCollected<AICreateMonitor>(GetExecutionContext(),
                                                        task_runner_);
@@ -82,6 +83,7 @@ class LanguageDetectorCreateTask
     AIContextObserver::Trace(visitor);
     visitor->Trace(resolver_);
     visitor->Trace(monitor_);
+    visitor->Trace(options_);
   }
 
   void OnModelLoaded(base::expected<LanguageDetectionModel*,
@@ -106,7 +108,7 @@ class LanguageDetectorCreateTask
                                          kNormalizedDownloadProgressMax);
     }
     resolver_->Resolve(MakeGarbageCollected<LanguageDetector>(
-        maybe_model.value(), task_runner_));
+        maybe_model.value(), options_, task_runner_));
     Cleanup();
   }
 
@@ -117,6 +119,7 @@ class LanguageDetectorCreateTask
 
   Member<AICreateMonitor> monitor_;
   Member<ScriptPromiseResolver<LanguageDetector>> resolver_;
+  Member<LanguageDetectorCreateOptions> options_;
 };
 
 void OnGotStatus(
@@ -194,12 +197,15 @@ ScriptPromise<LanguageDetector> LanguageDetector::create(
 
 LanguageDetector::LanguageDetector(
     LanguageDetectionModel* language_detection_model,
+    LanguageDetectorCreateOptions* options,
     scoped_refptr<base::SequencedTaskRunner>& task_runner)
     : task_runner_(task_runner),
-      language_detection_model_(language_detection_model) {}
+      language_detection_model_(language_detection_model),
+      options_(options) {}
 
 void LanguageDetector::Trace(Visitor* visitor) const {
   visitor->Trace(language_detection_model_);
+  visitor->Trace(options_);
   ScriptWrappable::Trace(visitor);
 }
 

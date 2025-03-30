@@ -143,9 +143,9 @@ found in the LICENSE file.
     <dimen name="tab_strip_shared_image_tiles_size">26dp</dimen>
 
     <!-- Dimens for tab group list bottom sheet. -->
-    <dimen name="tab_group_list_bottom_sheet_horizontal_padding">18dp</dimen>
     <dimen name="tab_group_list_bottom_sheet_drag_handlebar_margin_top">12dp</dimen>
-    <dimen name="tab_group_list_bottom_sheet_title_text_margin_top">22dp</dimen>
+    <dimen name="tab_group_list_bottom_sheet_title_margin_left">24dp</dimen>
+    <dimen name="tab_group_list_bottom_sheet_title_text_margin_top">14dp</dimen>
     <!-- tab_group_list_bottom_sheet_title_text_margin_bottom = (tab_group_row_height-tab_group_cluster_size)/2 -->
     <dimen name="tab_group_list_bottom_sheet_title_text_margin_bottom">8dp</dimen>
     <dimen name="tab_group_list_new_group_row_height">60dp</dimen>

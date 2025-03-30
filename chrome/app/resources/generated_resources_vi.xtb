@@ -8,6 +8,7 @@
 <translation id="100323615638474026">Thiết bị USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Nhật ký tải xuống gần đây</translation>
 <translation id="1004218526896219317">Quyền truy cập vào trang web</translation>
+<translation id="1005230401424685968">YYYY</translation>
 <translation id="1005274289863221750">Sử dụng micrô và máy ảnh của bạn</translation>
 <translation id="1005333234656240382">Bật tùy chọn gỡ lỗi ADB?</translation>
 <translation id="1005671386794704751">Hồng</translation>
@@ -1377,6 +1378,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="193565226207940518">Công cụ hỗ trợ</translation>
 <translation id="1935995810530254458">Vẫn sao chép</translation>
 <translation id="1936157145127842922">Hiển thị trong Thư mục</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Đã thêm trang vào danh sách đọc}other{Đã thêm trang vào danh sách đọc}}</translation>
 <translation id="1936931585862840749">Hãy dùng số để biểu thị số lượng bản cần in (1 đến <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Không thể nhập loại kiến trúc vùng chứa <ph name="ARCHITECTURE_CONTAINER" /> bằng thiết bị thuộc loại <ph name="ARCHITECTURE_DEVICE" /> này. Bạn có thể thử khôi phục vùng chứa này vào một thiết bị khác hoặc truy cập vào các tệp bên trong hình ảnh vùng chứa này bằng cách mở trong ứng dụng Files.</translation>
 <translation id="1938351510777341717">Lệnh bên ngoài</translation>
@@ -2993,6 +2995,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3045447014237878114">Trang web này đã tự động tải nhiều tệp xuống</translation>
 <translation id="3046178388369461825">Dung lượng ổ đĩa Linux còn rất ít</translation>
 <translation id="304644035656848980">Nghe thử micrô của bạn</translation>
+<translation id="3046892784550338476">Phiên bản <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Trang web, toàn bộ</translation>
 <translation id="304747341537320566">Công cụ chuyển văn bản sang lời nói</translation>
 <translation id="3047678109605649715">Không có giọng nói <ph name="LANGUAGE" /> nào trên thiết bị của bạn. Hãy giải phóng dung lượng trên thiết bị rồi thử lại.</translation>
@@ -3188,7 +3191,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
         <ph name="BREAK" />
         <ph name="BREAK" />
         Bạn có thể quản lý các chế độ cài đặt trên thẻ này bất cứ lúc nào hoặc xem thêm tuỳ chọn trong phần Tuỳ chỉnh Chrome.</translation>
-<translation id="3207437351138888228">Khi bạn điền vào một biểu mẫu, thông tin của bạn và trang có biểu mẫu đó sẽ được gửi đến Google để tạo đề xuất</translation>
 <translation id="3207960819495026254">Đã đánh dấu trang</translation>
 <translation id="3208584281581115441">Kiểm tra ngay</translation>
 <translation id="3208703785962634733">Không được xác nhận</translation>
@@ -3233,6 +3235,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3242289508736283383">Phải cài đặt ứng dụng có thuộc tính tệp kê khai "kiosk_only" ở chế độ kiosk ChromeOS</translation>
 <translation id="3243017971870859287">Đọc số sê-ri của linh kiện và thiết bị ChromeOS Flex</translation>
 <translation id="324366796737464147">Khử tiếng ồn</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Tiếp tục tắt tiếng</translation>
 <translation id="3247006341013237647">Bạn muốn sắp xếp thẻ?</translation>
 <translation id="3247649647204519958">Tại đây, bạn có thể xem và quản lý các quyền của tiện ích đối với trang web bạn đang truy cập</translation>
@@ -5364,7 +5367,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4744268813103118742">Mở trang web</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Bật âm thanh trang web}other{Bật âm thanh các trang web}}</translation>
-<translation id="4745500401920035244">Quản trị viên của bạn đã thực hiện một thay đổi trên toàn hệ thống, khiến một số hồ sơ cũ bị vô hiệu hoá. Bạn không thể truy cập vào hồ sơ này nữa nhưng vẫn có thể xoá hồ sơ</translation>
+<translation id="4745500401920035244">Quản trị viên của bạn đã thực hiện một thay đổi trên toàn hệ thống, khiến một số hồ sơ cũ bị vô hiệu hoá. Bạn không thể truy cập vào hồ sơ này nữa nhưng vẫn có thể xoá hồ sơ.</translation>
 <translation id="474609389162964566">Hãy nói "Ok Google" để sử dụng Trợ lý của bạn</translation>
 <translation id="4746757725581505837">Bạn sắp xoá dữ liệu của <ph name="BRAND" /> được lưu trên thiết bị này</translation>
 <translation id="4748783296226936791">Các trang web thường kết nối với thiết bị HID cho những tính năng sử dụng bàn phím không phổ biến, tay điều khiển trò chơi và các thiết bị khác</translation>
@@ -6100,7 +6103,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5267572070504076962">Bật tính năng Duyệt web an toàn để được bảo vệ khỏi các trang web nguy hiểm</translation>
 <translation id="5269977353971873915">In không thành công</translation>
 <translation id="5271578170655641944">Xoá quyền truy cập vào Google Drive?</translation>
-<translation id="5271782684896713035">Nhân viên đánh giá có thể xem xét dữ liệu để cải thiện tính năng này</translation>
 <translation id="5273806377963980154">Chỉnh sửa URL của trang web</translation>
 <translation id="5275084684151588738">Từ điển người dùng</translation>
 <translation id="5275338516105640560">Nút Nhóm thẻ đã lưu</translation>

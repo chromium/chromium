@@ -36,25 +36,25 @@ export class SuggestRequestElement extends PolymerElement {
 
       requestDataJson_: {
         type: String,
-        computed: `computeRquestDataJson_(request.data)`,
+        computed: 'computeRquestDataJson_(request.data)',
       },
 
       responseJson_: {
         type: String,
-        computed: `computeResponseJson_(request.response)`,
+        computed: 'computeResponseJson_(request.response)',
       },
 
       pgcl_: {
         type: String,
-        computed: `computePageClassification_(request.url)`,
+        computed: 'computePageClassification_(request.url)',
       },
     };
   }
 
-  request: Request;
-  private requestDataJson_: string = '';
-  private responseJson_: string = '';
-  private pgcl_: string = '';
+  declare request: Request;
+  declare private requestDataJson_: string;
+  declare private responseJson_: string;
+  declare private pgcl_: string;
 
   private computeRquestDataJson_(): string {
     try {

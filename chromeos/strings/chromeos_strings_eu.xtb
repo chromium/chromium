@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">Proxy-autentifikazioa behar da</translation>
 <translation id="4594021849294327751">Sortu transkripzioa</translation>
 <translation id="4594541568452132351">Hautatu transkripzio-hizkuntza eta deskargatu eredua</translation>
-<translation id="4607282946861182308">Ezin da sortu horren irudirik. Probatu beste eskaera-mezu batekin.</translation>
 <translation id="4609350030397390689">Teklatuaren distira jaisteko tekla</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" /> (<ph name="CREATION_TIME" />) - <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> orri Sakatu Sartu inprimatze-lana bertan behera uzteko.</translation>
 <translation id="463791356324567266">Eskaneatzeko prozesua bertan behera uzten…</translation>
@@ -1540,6 +1539,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8010765388850538088">Lortu AA generatiboari buruzko informazio gehiago</translation>
 <translation id="8017679124341497925">Editatu da lasterbidea</translation>
 <translation id="802154636333426148">Ezin izan da deskargatu</translation>
+<translation id="8027467664787098346">Lortu hautatutako horma-paperari buruzko informazio gehiago</translation>
 <translation id="8028993641010258682">Tamaina</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Gaitu kolore automatikoaren modua</translation>
@@ -1658,6 +1658,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8543574988889671960">Kargatu fitxa berriro</translation>
 <translation id="8550364285433943656">Ezarri kontrolatzeko aukerak jokoko ekintzei teklatuarekin jokatzeko</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">Baliteke AA generatiboak akatsak egitea (jendeari buruzkoak barne); beraz, egiaztatu informazioa.</translation>
 <translation id="8575298406870537639">Baliteke zure operadoreak aukera hau eskatzea haren sarera konektatzeko. Horri buruzko xehetasunak lortzeko, jarri operadorearekin harremanetan.</translation>
 <translation id="8576249514688522074">Hasieratu gabe</translation>
 <translation id="8584654835905316966">Berrabiaraztea beharrezkoa da <ph name="DEVICE_NAME" /> gailuan <ph name="VERSION" /> bertsioko firmwarea instalatzeko. Baliteke behin baino gehiagotan berrabiaraztea ordenagailua. Portaera hori normala da.</translation>
@@ -1672,7 +1673,6 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8655295600908251630">Kanala</translation>
 <translation id="8655828773034788261">Partekatzeko URLa:</translation>
 <translation id="8660881923941176839">libra</translation>
-<translation id="8670057600920888023">AA generatiboa esperimentala da, eta baliteke haren edukia okerra, engainagarria edo iraingarria izatea.</translation>
 <translation id="8670574982334489519">eskuinaldea</translation>
 <translation id="8675354002693747642">Aurrez partekatutako gakoa</translation>
 <translation id="8677859815076891398">Ez dago albumik. Sortu bat <ph name="LINK_BEGIN" />Google Argazkiak<ph name="LINK_END" /> zerbitzuan.</translation>

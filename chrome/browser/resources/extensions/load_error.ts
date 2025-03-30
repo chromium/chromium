@@ -61,15 +61,15 @@ export class LoadErrorElement extends CrLitElement {
     ];
   }
 
-  delegate?: LoadErrorDelegate;
-  loadError?: Error|chrome.developerPrivate.LoadError;
+  accessor delegate: LoadErrorDelegate|undefined;
+  accessor loadError: Error|chrome.developerPrivate.LoadError|undefined;
 
-  protected codeSectionProperties_:
+  protected accessor codeSectionProperties_:
       chrome.developerPrivate.RequestFileSourceResponse|null = null;
-  protected file_?: string;
-  protected error_: string|null = null;
-  protected isCodeSectionActive_?: boolean;
-  protected retrying_: boolean = false;
+  protected accessor file_: string|undefined;
+  protected accessor error_: string|null = null;
+  protected accessor isCodeSectionActive_: boolean|undefined;
+  protected accessor retrying_: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

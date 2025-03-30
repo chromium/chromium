@@ -10,7 +10,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Drawable.ConstantState;
 import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.StateListDrawable;
 import android.util.SparseArray;
 import android.util.TypedValue;
 
@@ -22,6 +21,7 @@ import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.color.MaterialColors;
 
@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.util.ColorUtils;
@@ -387,39 +386,33 @@ public class OmniboxResourceProvider {
             Context context, @BrandedColorScheme int colorScheme) {
         return colorScheme == BrandedColorScheme.INCOGNITO
                 ? context.getColor(R.color.omnibox_suggestion_bg_incognito)
-                : ChromeColors.getSurfaceColor(context, R.dimen.omnibox_suggestion_bg_elevation);
+                : ContextCompat.getColor(context, R.color.omnibox_suggestion_bg);
     }
 
     /**
-     * Returns the background hover color for suggestions in a "standard" (non-incognito) model with
-     * the given context.
+     * Returns the background hover drawable for suggestions in a "standard" (non-incognito) model
+     * with the given context.
      */
-    public static @ColorInt int getHoverSuggestionBackgroundColor(
+    private static Drawable getHoverSuggestionBackgroundDrawable(
             Context context, @BrandedColorScheme int colorScheme) {
         return colorScheme == BrandedColorScheme.INCOGNITO
-                ? context.getColor(R.color.default_bg_color_dark_elev_1_baseline)
-                : ChromeColors.getSurfaceColor(
-                        context, R.dimen.omnibox_suggestion_bg_hover_elevation);
+                ? new ColorDrawable(context.getColor(R.color.omnibox_suggestion_bg_hover_incognito))
+                : AppCompatResources.getDrawable(
+                        context, R.drawable.omnibox_suggestion_bg_hover_layers);
     }
 
     /** Returns a stateful suggestion background with the select default state. */
     public static Drawable getStatefulSuggestionBackground(
             Context context, @ColorInt int defaultColor, @BrandedColorScheme int colorScheme) {
         var background = new ColorDrawable(defaultColor);
-        var hover = new ColorDrawable(getHoverSuggestionBackgroundColor(context, colorScheme));
+        // Hover, selected, hover and selected are defined in the drawable here.
+        var hover = getHoverSuggestionBackgroundDrawable(context, colorScheme);
 
         // Ripple effect to use when the user interacts with the suggestion.
         var ripple =
                 resolveAttributeToDrawable(context, colorScheme, R.attr.selectableItemBackground);
 
-        var statefulBackground = new StateListDrawable();
-        statefulBackground.addState(new int[] {android.R.attr.state_selected}, hover);
-        statefulBackground.addState(new int[] {android.R.attr.state_hovered}, hover);
-        statefulBackground.addState(
-                new int[] {android.R.attr.state_selected, android.R.attr.state_hovered}, hover);
-        statefulBackground.addState(new int[] {}, background);
-
-        return new LayerDrawable(new Drawable[] {statefulBackground, ripple});
+        return new LayerDrawable(new Drawable[] {background, hover, ripple});
     }
 
     /**
@@ -430,8 +423,7 @@ public class OmniboxResourceProvider {
             Context context, @BrandedColorScheme int brandedColorScheme) {
         return brandedColorScheme == BrandedColorScheme.INCOGNITO
                 ? context.getColor(R.color.omnibox_dropdown_bg_incognito)
-                : ChromeColors.getSurfaceColor(
-                        context, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
+                : ContextCompat.getColor(context, R.color.omnibox_suggestion_dropdown_bg);
     }
 
     /**

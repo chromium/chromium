@@ -15,6 +15,8 @@ specific_include_rules = {
   "page_content_proto_provider_browsertest\.cc": [
     "+content/shell",
     "+components/network_session_configurator/common/network_switches.h",
+    "+components/ukm/test_ukm_recorder.h",
+    "+services/metrics/public/cpp/ukm_builders.h",
   ],
   "page_content_proto_util_unittest\.cc": [
     "+third_party/blink/renderer/platform/graphics",

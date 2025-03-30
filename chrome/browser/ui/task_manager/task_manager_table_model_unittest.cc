@@ -42,3 +42,11 @@ TEST_F(TaskManagerTableModelTest, FormatListToString) {
   EXPECT_TRUE(ContainsSubstringsInOrder(
       task_manager::TaskManagerTableModel::FormatListToString(tasks), tasks));
 }
+
+TEST_F(TaskManagerTableModelTest, DefaultCategory) {
+  // Prevents a situation where a developer creates a new category, and sets the
+  // new kDefaultCategory to the new category, without updating kMax.
+  EXPECT_LE(
+      static_cast<int>(task_manager::TaskManagerTableModel::kDefaultCategory),
+      static_cast<int>(task_manager::DisplayCategory::kMax));
+}

@@ -363,17 +363,8 @@ public class ChromeTabbedActivityTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.REDIRECT_EXPLICIT_CTA_INTENTS_TO_EXISTING_ACTIVITY)
     @MinAndroidSdkLevel(VERSION_CODES.S)
     public void testExplicitViewIntent_OpensInExistingLiveActivity() {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectBooleanRecordTimes(
-                                ChromeTabbedActivity
-                                        .HISTOGRAM_EXPLICIT_VIEW_INTENT_FINISHED_NEW_ACTIVITY,
-                                true,
-                                1)
-                        .build();
         int initialWindowCount = MultiWindowUtils.getInstanceCount();
         Intent intent =
                 new Intent(Intent.ACTION_VIEW, Uri.parse(JUnitTestGURLs.EXAMPLE_URL.getSpec()));
@@ -399,7 +390,6 @@ public class ChromeTabbedActivityTest {
                     TabModel tabModel = mActivity.getCurrentTabModel();
                     Criteria.checkThat(tabModel.getCount(), Matchers.is(2));
                 });
-        histogramWatcher.assertExpected();
     }
 
     @Test

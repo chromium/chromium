@@ -194,11 +194,6 @@ BASE_FEATURE(kOmitCorsClientCert,
              "OmitCorsClientCert",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Load Pervasive Payloads List for Cache Transparency.
-BASE_FEATURE(kPervasivePayloadsList,
-             "PervasivePayloadsList",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables support for the `Variants` response header and reduce
 // accept-language. https://github.com/Tanych/accept-language
 BASE_FEATURE(kReduceAcceptLanguage,

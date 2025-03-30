@@ -17,6 +17,7 @@ source_set("coordinator") {
     "//components/password_manager/core/browser",
     "//components/segmentation_platform/public",
     "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/first_run/ui_bundled:features",
     "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
     "//ios/chrome/browser/first_run/ui_bundled/best_features/ui",

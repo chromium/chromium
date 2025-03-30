@@ -318,27 +318,12 @@ public class HistoryManager
         } else if (item.getItemId() == R.id.selection_mode_delete_menu_id) {
             mUmaRecorder.recordRemoveSelected(mIsSearching);
 
-            int numItemsRemoved = 0;
-            HistoryItem lastItemRemoved = null;
             for (HistoryItem historyItem : mSelectionDelegate.getSelectedItems()) {
                 mContentManager.markItemForRemoval(historyItem);
-                numItemsRemoved++;
-                lastItemRemoved = historyItem;
             }
 
             mContentManager.removeItems();
             mSelectionDelegate.clearSelection();
-
-            if (numItemsRemoved == 1) {
-                assert lastItemRemoved != null;
-                mContentManager.announceItemRemoved(lastItemRemoved);
-            } else if (numItemsRemoved > 1) {
-                mContentManager
-                        .getRecyclerView()
-                        .announceForAccessibility(
-                                mActivity.getString(
-                                        R.string.multiple_history_items_deleted, numItemsRemoved));
-            }
 
             return true;
         } else if (item.getItemId() == R.id.search_menu_id) {

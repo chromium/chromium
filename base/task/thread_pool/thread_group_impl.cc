@@ -36,7 +36,7 @@ class ThreadGroupImpl::ScopedCommandsExecutor
     CheckedLock::AssertNoLockHeldOnCurrentThread();
 
     // Wake up workers.
-    for (auto worker : workers_to_wake_up_) {
+    for (auto& worker : workers_to_wake_up_) {
       worker->WakeUp();
     }
   }

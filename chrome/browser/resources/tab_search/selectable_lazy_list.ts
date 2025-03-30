@@ -79,14 +79,14 @@ export class SelectableLazyListElement<T = object> extends CrLitElement {
     };
   }
 
-  expandedList: boolean = false;
-  maxHeight?: number;
-  items: T[] = [];
-  itemSize: number = 100;
-  template: (item: T, index: number) => TemplateResult = () => html``;
-  selected: number = NO_SELECTION;
-  isSelectable: (item: T) => boolean = (_item) => true;
-  private selectedItem_: Element|null = null;
+  accessor expandedList: boolean = false;
+  accessor maxHeight: number|undefined;
+  accessor items: T[] = [];
+  accessor itemSize: number = 100;
+  accessor template: (item: T, index: number) => TemplateResult = () => html``;
+  accessor selected: number = NO_SELECTION;
+  accessor isSelectable: (item: T) => boolean = (_item) => true;
+  private accessor selectedItem_: Element|null = null;
   private firstSelectableIndex_: number = NO_SELECTION;
   private lastSelectableIndex_: number = NO_SELECTION;
   private viewportFillStartTime_: number = 0;

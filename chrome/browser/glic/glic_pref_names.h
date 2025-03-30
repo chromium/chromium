@@ -36,6 +36,18 @@ enum class SettingsPolicyState {
   kMaxValue = kDisabled
 };
 
+// Value enums for the glic.completed_fre pref. Integer pref that determines the
+// Fre status for user profile.
+enum class FreStatus {
+  kMinValue = 0,
+
+  kNotStarted = kMinValue,
+  kCompleted = 1,
+  kIncomplete = 2,
+
+  kMaxValue = kIncomplete
+};
+
 // Boolean pref that determines if the glic button in tabstrip is pinned.
 inline constexpr char kGlicPinnedToTabstrip[] = "glic.pinned_to_tabstrip";
 
@@ -46,8 +58,8 @@ inline constexpr char kGlicMicrophoneEnabled[] = "glic.microphone_enabled";
 // Boolean pref that enables or disables tab context for Glic.
 inline constexpr char kGlicTabContextEnabled[] = "glic.tab_context_enabled";
 
-// Boolean pref that tracks whether the Glic FRE was completed for this user
-// profile.
+// Integer pref that determines the Fre status for user profile. Values are from
+// the FreStatus enum.
 inline constexpr char kGlicCompletedFre[] = "glic.completed_fre";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);

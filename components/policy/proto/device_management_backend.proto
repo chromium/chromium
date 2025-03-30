@@ -3314,6 +3314,8 @@ message ProfileRegistrationPayload {
   // for this user already.
   optional string subject = 2;
   optional string issuer = 3;
+  // Used to detect duplicate GAIA profile for the same account
+  optional string email = 4;
 }
 
 // Gets an enrollment token to a managed Google Play account for using it with

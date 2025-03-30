@@ -1689,7 +1689,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DragDrop.Tab.FromStrip.Result.DesktopWindow"
-    enum="DragDropTabResult" expires_after="2025-05-04">
+    enum="DragDropTabResult" expires_after="2025-11-04">
   <owner>aishwaryarj@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -1749,7 +1749,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DragDrop.Tab.Type.DesktopWindow" enum="DragDropType"
-    expires_after="2025-05-04">
+    expires_after="2025-11-04">
   <owner>aishwaryarj@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -1834,20 +1834,6 @@ chromium-metrics-reviews@google.com.
   <owner>src/chrome/android/OWNERS</owner>
   <summary>
     Records the input device source for the action down touch event.
-  </summary>
-</histogram>
-
-<histogram name="Android.ExplicitViewIntentFinishedNewTabbedActivity"
-    enum="Boolean" expires_after="2025-03-30">
-  <owner>aishwaryarj@google.com</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Recorded during an atypical situation where a VIEW intent from an external
-    app not routed via ChromeLauncherActivity, attempts to launch a new
-    ChromeTabbedActivity, when multi-instance is supported. The histogram
-    records true when the new activity is finished and the intent is launched in
-    an existing ChromeTabbedActivity instead, false when we fail to find an
-    existing ChromeTabbedActivity to launch such an intent in.
   </summary>
 </histogram>
 
@@ -2354,6 +2340,23 @@ chromium-metrics-reviews@google.com.
     The metric is recorded when a touch sequence in Browser fails to transfer
     while while there's a potentially ongoing touch sequence on Viz. The metric
     records the number of events lost in such cases.
+  </summary>
+</histogram>
+
+<histogram name="Android.InputOnViz.Browser.SequenceDroppedReason"
+    enum="InputOnVizSequenceDroppedReason" expires_after="2025-06-30">
+  <owner>kartarsingh@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    Records the reason a touch sequence was dropped on browser process while
+    InputOnViz was enabled. A dropped touch sequence would have not have any
+    affect on web contents, the input events never get transferred over to
+    Renderer for such a sequence.
+
+    `Android.InputOnViz.Browser.EventTypesInDroppedSequence` and
+    `Android.InputOnViz.Browser.NumEventsInDroppedSequence` could be used to
+    know what type of events exist in dropped sequences and the number of events
+    in these dropped sequences.
   </summary>
 </histogram>
 

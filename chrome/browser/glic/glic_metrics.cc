@@ -283,9 +283,16 @@ void GlicMetrics::DidRequestContextFromFocusedTab() {
 }
 
 void GlicMetrics::OnImpressionTimerFired() {
-  if (window_controller_->fre_controller()->ShouldShowFreDialog()) {
+  if (profile_->GetPrefs()->GetInteger(prefs::kGlicCompletedFre) ==
+      static_cast<int>(prefs::FreStatus::kNotStarted)) {
     base::UmaHistogramEnumeration("Glic.EntryPoint.Impression",
                                   EntryPointImpression::kBeforeFre);
+    return;
+  }
+  if (profile_->GetPrefs()->GetInteger(prefs::kGlicCompletedFre) ==
+      static_cast<int>(prefs::FreStatus::kIncomplete)) {
+    base::UmaHistogramEnumeration("Glic.EntryPoint.Impression",
+                                  EntryPointImpression::kIncompleteFre);
     return;
   }
   if (!enabling_->IsAllowed()) {

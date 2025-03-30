@@ -325,7 +325,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2527209463677295330">En ajoutant plus de texte d'une page, vous pourriez obtenir de meilleurs résultats</translation>
 <translation id="2527779675047087889">Masquer le contenu du presse-papier</translation>
 <translation id="2532336938189706096">Affichage Web</translation>
-<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> éléments supprimés</translation>
 <translation id="253498598929009420">Le site pourra voir le contenu de votre écran</translation>
 <translation id="2536728043171574184">Affichage d’une copie hors ligne de cette page en cours</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, onglet</translation>
@@ -365,7 +364,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2677748264148917807">Quitter</translation>
 <translation id="2687009626279857299">A cessé de fonctionner sur cet appareil</translation>
 <translation id="2702516483241149200">Nouveauté : communiquez un lien qui fait défiler l'écran jusqu'à ce texte</translation>
-<translation id="2705073298859543115">Créer un résumé</translation>
 <translation id="2708051474374549906">Une protection proactive en temps réel contre les sites, les extensions et les téléchargements dangereux, basée sur les données de navigation envoyées à Google</translation>
 <translation id="2708226184420201102">Ouvrir dans le navigateur <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">Nouveau</translation>
@@ -677,6 +675,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Un onglet sur cet appareil}one{# onglets sur cet appareil}other{# onglets sur cet appareil}}</translation>
 <translation id="4198423547019359126">Aucun dossier de téléchargement n'est disponible</translation>
+<translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Vous l'avez utilisé sur ce site</translation>
 <translation id="4214315110991671325">Si vous autorisez les témoins, Chrome peut les utiliser pour procéder au préchargement.</translation>
 <translation id="4216511743389425832">Écouter cette page</translation>
 <translation id="4225725533026049334">Suivi</translation>
@@ -1198,7 +1197,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6564820424018738527">Il se peut que votre appareil Android dispose d'un paramètre similaire. Si la mesure des annonces est activée dans Chrome et sur votre appareil Android, une entreprise peut être capable de mesurer l'efficacité d'une annonce sur les sites Web que vous visitez et dans les applis que vous utilisez.</translation>
 <translation id="6565959834589222080">Le Wi-Fi est utilisé lorsque c'est possible</translation>
 <translation id="6569373978618239158">Vous verrez maintenant des histoires de <ph name="SITE_NAME" /> lorsque vous ouvrez un nouvel onglet. Les sites que vous suivez sont enregistrés dans votre compte Google. Vous pouvez les gérer dans les paramètres de Découvertes.</translation>
-<translation id="6570116402456758630">Résumé de la page</translation>
 <translation id="657177046675873214">Pour accéder à vos favoris sur tous vos appareils, activez « Favoris » dans les paramètres.</translation>
 <translation id="6573096386450695060">Toujours autoriser</translation>
 <translation id="6573431926118603307">Les onglets déjà ouverts dans Chrome sur vos autres appareils s'afficheront ici.</translation>

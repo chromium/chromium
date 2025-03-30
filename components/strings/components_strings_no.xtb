@@ -441,7 +441,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1734878702283171397">Prøv å kontakte systemadministratoren.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, utløper <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Datamaskin</translation>
-<translation id="1739422091279046802">rulling og zooming</translation>
 <translation id="1741613555002899862">Må være angitt som en gyldig streng når DnsOverHttpsMode er <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Sengetøy</translation>
 <translation id="1743892871127720056">Tittel på Sammenligning-tabellen, rediger tekst</translation>
@@ -2882,6 +2881,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6059925163896151826">USB-enheter</translation>
 <translation id="6060009363608157444">Ugyldig DnsOverHttps-modus.</translation>
 <translation id="6061154937977953833">Bryting</translation>
+<translation id="6062405040252994646">Verktøy</translation>
 <translation id="6062937464449575061">Slutt å spore pris</translation>
 <translation id="6063415549109819824">Boligfinansiering</translation>
 <translation id="6070432475334343308">En eller flere filer ble ikke lastet opp til <ph name="FOLDER_NAME" /> i <ph name="CLOUD_PROVIDER" /></translation>

@@ -91,6 +91,7 @@
 <translation id="1269405891096105529">Արտաքին սարքը չի աջակցվում հյուրի ռեժիմում</translation>
 <translation id="1270290102613614947">Էկրանի ստեղնաշարն անջատված է</translation>
 <translation id="1272079795634619415">Դադարեցնել</translation>
+<translation id="12741168609094094">Ձեր էկրանին ցանկացած բան՝ տեքստը որոնելու, պատճենելու և ավելիի համար</translation>
 <translation id="1275285675049378717">Լիցքավորում է <ph name="POWER_SOURCE" /> սարքը</translation>
 <translation id="1275718070701477396">Ընտրված</translation>
 <translation id="1276975447697633661">Ընտրեք ֆայլը, ապա սեղմեք <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@
 <translation id="1720230731642245863">Թեժ կետն անջատված է</translation>
 <translation id="1731815243805539470">Անցնել նախորդ օգտատիրոջը</translation>
 <translation id="1733996486177697563">Անցեք մուգ թեմայից բաց թեմային և հակառակը։ Հպեք աշխատասեղանին և պահեք, այնուհետև ընտրեք «Պաստառ և ոճ»։</translation>
+<translation id="1735992454301033090">Ընտրված տարածք, օգտագործեք սլաք բանալիները՝ շարժելու համար</translation>
 <translation id="1736898441010944794">«<ph name="NAME" />» ադապտերը տեսանելի է Bluetooth սարքերին։</translation>
 <translation id="1737078180382804488">Բաց թողնել հեռախոսի ծանուցումների դիտումը</translation>
 <translation id="174102739345480129">Նշիչն անջատված է։</translation>
@@ -494,6 +496,7 @@
 <translation id="2683887737780133806">Անցած <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2687510499067466116">Ստեղնային դյուրանցումը փոխվել է</translation>
 <translation id="2689613560355655046">Աշխատասեղան 8</translation>
+<translation id="2692092709110488417">Հպեք ներդիրը՝ ընգծելու և ընտրված տարածքը շարժելու համար</translation>
 <translation id="2695305337569143674">ցանց</translation>
 <translation id="2697697418792422688">Ցուցադրել ստեղնաշարի կարգավորումները։ Ընտրված է՝ <ph name="KEYBOARD_NAME" />։</translation>
 <translation id="2699913284398121653">Օգտագործեք «Բովանդակության տեղափոխում» հավելվածը՝ ձեր ուսումնական հաշվի տվյալները անձնական հաշիվ տեղափոխելու համար</translation>
@@ -729,6 +732,7 @@
 <translation id="346243998268439747">Վերականգնել սկզբնական մասշտաբը</translation>
 <translation id="3465223694362104965">Ձեր վերջին մուտքից հետո այս սարքին մեկ այլ ստեղնաշար է միացվել: Նախքան այդ ստեղնաշարն օգտագործելը համոզվեք, որ այն անվտանգ է:</translation>
 <translation id="3465356146291925647">Կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
+<translation id="3470502288861289375">Պատճենում…</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, ապա <ph name="KEY_TWO" /> կամ <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Ctrl+Shift+Բացատ</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1033,6 +1037,7 @@
 <translation id="4412698727486357573">Օգնության կենտրոն</translation>
 <translation id="4412944820643904175">«<ph name="FEATURE_NAME" />» գործառույթն անջատված է։</translation>
 <translation id="4417647906073317561">Առանց շեղումների ռեժիմի կարգավորումներ։ Սահմանեք ժամանակաչափ, առաջադրանք և երաժշտություն, որոնք կօգնեն ձեզ կենտրոնանալ։</translation>
+<translation id="4418600384772451109">Փակել վահանակը</translation>
 <translation id="4424159417645388645">Աշխատասեղան 5</translation>
 <translation id="4426817706804363424">Կեցցե՛ք։</translation>
 <translation id="4430019312045809116">Ձայնի ուժգնություն</translation>
@@ -2229,6 +2234,7 @@
 <translation id="8287009018010202411">Արդյունավետ աշխատանք</translation>
 <translation id="828708037801473432">Անջատված է</translation>
 <translation id="8297006494302853456">Թույլ</translation>
+<translation id="8300451473979404345">Ընտրված կեղծանուն, օգտագործեք սլաք բանալիները՝ շարժելու համար</translation>
 <translation id="8308637677604853869">Նախորդ ցանկը</translation>
 <translation id="830868413617744215">Բետա</translation>
 <translation id="8314772463905284467">Caps Lock-ը միացված է</translation>
@@ -2289,6 +2295,7 @@
 <translation id="851458219935658693">Ընթացիկ աշխատասեղանի պատուհանների ցուցադրում, ընտրված է կետակոճակը</translation>
 <translation id="851660987304951246">Օգտագործեք «Օգնիր ինձ կարդալ» գործառույթը՝ բովանդակությունն արագ ամփոփելու կամ հարցեր տալու համար</translation>
 <translation id="8517041960877371778">Որպեսզի ձեր <ph name="DEVICE_TYPE" /> սարքը լիցքավորվի, անհրաժեշտ է անջատել այն:</translation>
+<translation id="8519329096920173967">Որոնել իմ էկրանը Google Տեսապակիով</translation>
 <translation id="8535393432370007982">Ըստ գույնի դասավորումը հետարկվեց</translation>
 <translation id="8536886494750559755">Ցույց տալ Quick Share գործառույթի կարգավորումները։ Տեսանելի է բոլորին հետևյալ տևողությամբ՝ <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Տեքստը պատճենվեց սեղմատախտակին</translation>

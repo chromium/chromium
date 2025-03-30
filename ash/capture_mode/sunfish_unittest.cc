@@ -2680,7 +2680,7 @@ TEST_F(SunfishTest, PanelCreationWithMenuObserved) {
       StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
   CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
-  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 100, 100),
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(200, 200, 100, 100),
                           /*release_mouse=*/true, /*verify_region=*/true);
 
   // Shift-Tab two times to focus on the settings button.

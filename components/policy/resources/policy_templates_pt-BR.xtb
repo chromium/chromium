@@ -384,15 +384,6 @@ Para ver mais informações sobre contextos seguros, consulte Secure Contexts (h
 <translation id="1305400589435476516">Se a política for definida como "Ativada", o roaming de dados será permitido no dispositivo.
 
       Se ela for definida como "Desativada" ou não for definida, o roaming de dados ficará indisponível.</translation>
-<translation id="1308526987406924874">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites não podem pedir que o usuário conceda permissão de acesso a uma porta serial.
-
-      Se a política não tiver definição, <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      No caso de padrões de URL que não correspondem à política <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> (se houver uma correspondência), <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (se definida) ou as preferências pessoais dos usuários têm precedência, nessa ordem.
-
-      Os padrões de URL não podem entrar em conflito com <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="1309259005392595570">Desativar o contrato de chave pós-quântico para TLS</translation>
 <translation id="1309465583050255779">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> especificará o nome do provedor de pesquisa padrão.
 
@@ -852,6 +843,7 @@ Se esta política não for definida, o usuário poderá adicionar exceções par
       Se esta política for deixada sem definição para um site, a política de <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> será aplicada, se configurada. Caso contrário, a permissão vai seguir os padrões do navegador e autorizar a escolha dos usuários para cada site.</translation>
 <translation id="1574258262373444557">Não usar <ph name="AES_KL_NAME" /> como o algoritmo para a criptografia de armazenamento do usuário</translation>
 <translation id="1575015449587326319">Política de configuração para o conector OnFileDownloaded do Chrome Enterprise</translation>
+<translation id="1576797364335927541">Desativar <ph name="ALR_FEATURE_NAME" /></translation>
 <translation id="1577162851453388235">A API Direct Sockets permite a comunicação com endpoints arbitrários usando TCP e UDP.
 Consulte https://github.com/WICG/direct-sockets (link em inglês) para saber mais.
 
@@ -2348,6 +2340,15 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 <translation id="2608535066974278204">Período (em minutos) que especifica a duração da janela de reinicialização.</translation>
 <translation id="2608887839902987727">Impedir que a autenticação do portal cativo ignore as configurações de proxy</translation>
 <translation id="2608985885792348429">Configuração padrão da área de transferência</translation>
+<translation id="2613388238625781546">O cabeçalho da solicitação HTTP <ph name="AL_HEADER_NAME" /> e o getter <ph name="JS_GETTER_NAME" /> do JavaScript serão reduzidos por motivos de privacidade.
+Para facilitar os testes e garantir a compatibilidade, esta política permite que você ative ou desative o recurso <ph name="ALR_FEATURE_NAME" />.
+
+Se a política for ativada ou deixada sem definição, o <ph name="ALR_FEATURE_NAME" /> será aplicado por testes de campo.
+Se a política for desativada, os testes de campo não poderão ativar o <ph name="ALR_FEATURE_NAME" />.
+
+Para mais informações sobre esse recurso, acesse: https://github.com/explainers-by-googlers/reduce-accept-language (site em inglês).
+
+OBSERVAÇÃO: somente processos de renderizador recém-iniciados vão refletir as mudanças nesta política enquanto o navegador estiver em execução.</translation>
 <translation id="2613493229743687635">A API <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> permite que aplicativos da Web isolados (identificados pela origem) capturem várias superfícies de uma só vez sem precisar de permissão adicional do usuário.
       Se a política for deixada sem definição, a propriedade <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> não ficará disponível para nenhum aplicativo da Web.
 Para melhorar a privacidade, esta política não vai oferecer suporte a atualizações do valor da política no meio da sessão. Portanto, as mudanças só serão aplicadas depois que o usuário sair e fizer login de novo.
@@ -2929,15 +2930,6 @@ Observação: para ver mais exemplos detalhados, acesse The Chromium Projects em
           Esta política é opcional. Se não for definida, não ocorrerá substituição do termo de pesquisa.
 
           Esta política só é respeitada se a política "DefaultSearchProviderEnabled" estiver ativada.</translation>
-<translation id="3049115011983576556">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites podem pedir que o usuário conceda permissão de acesso a uma porta serial.
-
-      Se a política não tiver definição, <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários serão aplicadas.
-
-      No caso de padrões de URL que não correspondem à política <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> (se houver uma correspondência), <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (se definida) ou as preferências pessoais dos usuários têm precedência, nessa ordem.
-
-      Os padrões de URL não podem entrar em conflito com <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="305106159605171619">A redução do user agent foi desativada e não foi ativada por testes de campo e de origem.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3057459316145779761">Não permitir o uso do Chrome for Testing</translation>
@@ -4666,6 +4658,27 @@ Se a política não for definida, a <ph name="ASK_GEOLOCATION_POLICY_NAME" /> se
 <translation id="4311195029067684288">Completa</translation>
 <translation id="4311662690937656540">Usar logins on-line nas telas de login e de bloqueio</translation>
 <translation id="4313767483634435271">Endereço MAC designado da base para o dispositivo</translation>
+<translation id="4313778862255986189">Este é um recurso Beta. Como ele está em desenvolvimento e disponível para nossos trusted testers, pode sofrer mudanças e atualizações.
+
+Esta política permite que os administradores definam um agregador de pesquisa corporativo designado para fornecer recomendações e resultados de pesquisa na barra de endereço quando for acionado por uma palavra-chave específica. É possível iniciar uma pesquisa digitando a palavra-chave especificada no campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> com ou sem o prefixo @ (por exemplo, <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />), seguida da barra de espaço ou tecla Tab, na barra de endereço.
+
+Estes campos são obrigatórios: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
+
+O campo <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corresponde ao nome do mecanismo de pesquisa mostrado ao usuário na barra de endereço.
+
+O campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corresponde à palavra-chave inserida pelo usuário para acionar a pesquisa. O atalho pode incluir palavras e caracteres simples, mas não pode ter espaços nem começar com o símbolo @. Os atalhos precisam ser exclusivos.
+
+O campo <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica o URL em que a pesquisa será feita. Digite o endereço da Web da página de resultados do mecanismo de pesquisa e use <ph name="SEARCH_TERM_MARKER" /> no lugar da consulta.
+
+O campo <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica o URL que fornece sugestões de pesquisa. Se <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> tiver <ph name="SEARCH_TERM_MARKER" />, o Chrome vai receber sugestões de pesquisa por uma solicitação GET no URL, substituindo <ph name="SEARCH_TERM_MARKER" /> pela consulta de pesquisa do usuário. Caso contrário, uma solicitação POST será feita, e a consulta do usuário será transmitida nos parâmetros POST na chave <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
+
+O campo <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica o URL de uma imagem que será usada nas sugestões de pesquisa. Um ícone padrão será usado quando esse campo não estiver definido. Recomendamos usar um favicon (por exemplo, <ph name="ICON_URL_EXAMPLE" />). Formatos de arquivos de imagem aceitos: JPEG, PNG e ICO.
+
+O campo <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica se a barra de endereço <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> é necessária para mostrar as recomendações de pesquisa. Se esse campo não for definido, a barra de endereço <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> não será obrigatória.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas no <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas no <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4314538398999793073">Desativar a consulta CNAME ao negociar a autenticação do Kerberos</translation>
 <translation id="4320592646346933548">Wi-Fi</translation>
 <translation id="43213511254881626">Esta política controla se o gerenciador de senhas integrado pode excluir senhas não descriptografáveis do banco de dados. Isso é necessário para restaurar a funcionalidade completa do gerenciador de senhas integrado, mas pode incluir uma perda permanente de dados. Se for possível corrigir os valores de senhas não descriptografáveis para que possam ser descriptografados, geralmente será necessário que o usuário realize ações complexas.
@@ -4733,8 +4746,6 @@ Observação: esta política substituiu a política <ph name="ARC_GLS_POLICY_NAM
 <translation id="4380159792986204036">Permitir que o quiosque da Web abra mais de uma janela do navegador em qualquer tela</translation>
 <translation id="4381227367939912539">Desativar o jogo easter egg de dinossauro</translation>
 <translation id="4382413175336720282">A verificação de URLs em tempo real está desativada.</translation>
-<translation id="4384480363454039240">Quando a política é ativada ou deixada sem definição, os usuários podem rastrear as encomendas no <ph name="PRODUCT_NAME" /> pela página "Nova guia".
-Quando ela é desativada, os usuários não podem rastrear as encomendas no <ph name="PRODUCT_NAME" /> pela página "Nova guia".</translation>
 <translation id="4387741272680827493">A definição da política especifica uma lista de nomes de host que ignoram upgrades HSTS pré-carregados de HTTP para HTTPS.
 
       Apenas nomes de host de etiqueta única são permitidos nesta política, e ela se aplica somente a entradas HSTS pré-carregadas "estáticas" (por exemplo, <ph name="EXAMPLE_HSTS_PRELOAD_TLDS" />). A política não impede upgrades HSTS para servidores que fazem solicitações de upgrade HSTS "dinamicamente" usando um cabeçalho de resposta <ph name="HSTS_HEADER_NAME" />.
@@ -9121,6 +9132,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7203243973351251622">Gravador (compatível desde a versão 130)</translation>
 <translation id="7207095846245296855">Forçar o Google SafeSearch</translation>
 <translation id="7211368186050418507">Nunca detectar o fuso horário automaticamente</translation>
+<translation id="7214815535735080007">Controlar <ph name="ALR_FEATURE_NAME" /></translation>
 <translation id="721617466745658461">Permitir que os usuários selecionem o binário <ph name="LACROS_NAME" /> do navegador</translation>
 <translation id="7216442368414164495">Permitir que os usuários ativem os relatórios estendidos do Navegação segura</translation>
 <translation id="7218238054592349618">Permitir a otimização do JavaScript nestes sites</translation>
@@ -11175,6 +11187,7 @@ o esquema https.</translation>
 <translation id="8768528324886802059">A definição da política especifica quais hosts de mensagens nativas não estão sujeitos à lista de proibições. Um valor de <ph name="WILDCARD_VALUE" /> da lista de proibições significa que todos os hosts de mensagens nativas serão proibidos, a menos que tenham permissão explícita.
 
       Todos os hosts de mensagens nativas têm permissão por padrão. No entanto, se todos os hosts de mensagens nativas forem bloqueados pela política, um administrador poderá usar a lista de permissões para mudar essa política.</translation>
+<translation id="8769201477622486852">Ativar <ph name="ALR_FEATURE_NAME" /></translation>
 <translation id="877101880914876353">Intervalo de exibição de imagens do protetor da tela de login do dispositivo.</translation>
 <translation id="877557628527387598">Login com senha</translation>
 <translation id="8777369558049831576">Exibir uma caixa de seleção "Sempre aberto" na caixa de diálogo do protocolo externo.</translation>

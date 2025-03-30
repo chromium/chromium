@@ -7,16 +7,9 @@
 #include <vector>
 
 #include "media/cdm/cenc_utils.h"
+#include "third_party/widevine/cdm/widevine_cdm_common.h"
 
 namespace cdm {
-
-namespace {
-
-const uint8_t kWidevineUuid[16] = {
-    0xED, 0xEF, 0x8B, 0xA9, 0x79, 0xD6, 0x4A, 0xCE,  //
-    0xA3, 0xC8, 0x27, 0xDC, 0xD5, 0x1D, 0x21, 0xED};
-
-}  // namespace
 
 WidevineDrmDelegateAndroid::WidevineDrmDelegateAndroid() = default;
 

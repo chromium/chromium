@@ -71,7 +71,7 @@ CGFloat const kSheetCornerRadius = 30;
 }
 
 - (void)stop {
-  [self.baseViewController dismissViewControllerAnimated:NO completion:nil];
+  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
 
   _mainViewController = nil;
   _magicStackViewController = nil;

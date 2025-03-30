@@ -1715,7 +1715,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <token key="OmniboxProvider" variants="OmniboxProviders"/>
 </histogram>
 
-<histogram name="Omnibox.QueryTime2" units="ms" expires_after="2025-09-14">
+<histogram name="Omnibox.QueryTime2{QueryTimeSuffix}" units="ms"
+    expires_after="2025-09-14">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -1724,7 +1725,17 @@ Keep consistent with active providers. Doesn't need to include every provider in
     user has typed N characters (for 'Omnibox.QueryTime2.N') or any length input
     (for 'Omnibox.QueryTime2'). This measures the time it takes to start all
     autocomplete providers (but not wait for the asynchronous ones to finish).
+    {QueryTimeSuffix}
   </summary>
+  <token key="QueryTimeSuffix">
+    <variant name=""/>
+    <variant name=".0" summary="N = 0"/>
+    <variant name=".1" summary="N = 1"/>
+    <variant name=".2" summary="N = 2"/>
+    <variant name=".3" summary="N = 3"/>
+    <variant name=".4" summary="N = 4"/>
+    <variant name=".5" summary="N = 5"/>
+  </token>
 </histogram>
 
 <histogram name="Omnibox.ResumeJourneyShown" units="position"
@@ -2877,6 +2888,60 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.ZeroSuggest.Precision" enum="Boolean"
+    expires_after="2025-06-22">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Upon navigation, this metric is recorded if at least one zero-prefix
+    suggestion was offered during the course of the Omnibox session. Given that
+    at least one zero-prefix suggestion was offered during the session, this
+    records whether or not the user ultimately selected a zero-prefix suggestion
+    in the Omnibox.
+
+    An &quot;Omnibox session&quot; is currently defined as a span of time that
+    starts when the user focuses the Omnibox and ends when the user de-focuses
+    it, whether implicitly (e.g. by selecting one of the suggestions) or
+    explictly (e.g. by clicking on some non-Omnibox browser UI). The session
+    data that's maintained by AutocompleteResult will be initialized when the
+    session starts, updated throughout the course of the session, and ultimately
+    reset when the session ends.
+
+    This metric is analogous to &quot;Bsb zpSCTR&quot;. Precision = Zero-Prefix
+    Suggestions Used / Navigations with Zero-Prefix Suggestions Offered
+    (Precision = Usage / Recall).
+  </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.ZeroSuggest.Precision.ByPageContext.{OmniboxPageContext}"
+    enum="Boolean" expires_after="2025-06-22">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Upon navigation, this metric is recorded if at least one zero-prefix
+    suggestion was offered during the course of the Omnibox session. Given that
+    at least one zero-prefix suggestion was offered during the session, this
+    records whether or not the user ultimately selected a zero-prefix suggestion
+    in the Omnibox.
+
+    An &quot;Omnibox session&quot; is currently defined as a span of time that
+    starts when the user focuses the Omnibox and ends when the user de-focuses
+    it, whether implicitly (e.g. by selecting one of the suggestions) or
+    explictly (e.g. by clicking on some non-Omnibox browser UI). The session
+    data that's maintained by AutocompleteResult will be initialized when the
+    session starts, updated throughout the course of the session, and ultimately
+    reset when the session ends.
+
+    Sliced by page context (a.k.a. page classification).
+
+    This metric is analogous to &quot;Bsb zpSCTR&quot;. Precision = Zero-Prefix
+    Suggestions Used / Navigations with Zero-Prefix Suggestions Offered
+    (Precision = Usage / Recall).
+  </summary>
+  <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
+</histogram>
+
 <histogram name="Omnibox.ZeroSuggest.QueryResults" units="units"
     expires_after="2025-12-15">
   <owner>pnoland@chromium.org</owner>
@@ -2888,6 +2953,53 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.ZeroSuggest.Recall" enum="Boolean"
+    expires_after="2025-06-22">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Upon navigation, this metric is recorded if at least one zero-prefix
+    suggestion was offered during the course of the Omnibox session.
+
+    An &quot;Omnibox session&quot; is currently defined as a span of time that
+    starts when the user focuses the Omnibox and ends when the user de-focuses
+    it, whether implicitly (e.g. by selecting one of the suggestions) or
+    explictly (e.g. by clicking on some non-Omnibox browser UI). The session
+    data that's maintained by AutocompleteResult will be initialized when the
+    session starts, updated throughout the course of the session, and ultimately
+    reset when the session ends.
+
+    This metric is analogous to &quot;Bsb QwZPS&quot;. Recall = Navigations with
+    Zero-Prefix Suggestions Offered / All Navigations (Recall = Usage /
+    Precision).
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.ZeroSuggest.Recall.ByPageContext.{OmniboxPageContext}"
+    enum="Boolean" expires_after="2025-06-22">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Upon navigation, this metric is recorded if at least one zero-prefix
+    suggestion was offered during the course of the Omnibox session.
+
+    An &quot;Omnibox session&quot; is currently defined as a span of time that
+    starts when the user focuses the Omnibox and ends when the user de-focuses
+    it, whether implicitly (e.g. by selecting one of the suggestions) or
+    explictly (e.g. by clicking on some non-Omnibox browser UI). The session
+    data that's maintained by AutocompleteResult will be initialized when the
+    session starts, updated throughout the course of the session, and ultimately
+    reset when the session ends.
+
+    This metric is analogous to &quot;Bsb QwZPS&quot;. Recall = Navigations with
+    Zero-Prefix Suggestions Offered / All Navigations (Recall = Usage /
+    Precision).
+
+    Sliced by page context (a.k.a. page classification).
+  </summary>
+  <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
+</histogram>
+
 <histogram name="Omnibox.ZeroSuggest.URLResults" units="units"
     expires_after="2025-12-15">
   <owner>pnoland@chromium.org</owner>
@@ -2897,6 +3009,51 @@ Keep consistent with active providers. Doesn't need to include every provider in
     time ZeroSuggestProvider produces results on omnibox focus or on omnibox
     input clobber, either from the cache or from the remote response.
   </summary>
+</histogram>
+
+<histogram name="Omnibox.ZeroSuggest.Usage" enum="Boolean"
+    expires_after="2025-06-22">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Upon navigation, this metric is recorded if the user selected a zero-prefix
+    suggestion in the Omnibox.
+
+    An &quot;Omnibox session&quot; is currently defined as a span of time that
+    starts when the user focuses the Omnibox and ends when the user de-focuses
+    it, whether implicitly (e.g. by selecting one of the suggestions) or
+    explictly (e.g. by clicking on some non-Omnibox browser UI). The session
+    data that's maintained by AutocompleteResult will be initialized when the
+    session starts, updated throughout the course of the session, and ultimately
+    reset when the session ends.
+
+    This metric is analogous to &quot;Bsb zpSQ/SEQ&quot;. Usage = Zero-Prefix
+    Suggestions Used / All Navigations (Usage = Precision * Recall).
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.ZeroSuggest.Usage.ByPageContext.{OmniboxPageContext}"
+    enum="Boolean" expires_after="2025-06-22">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Upon navigation, this metric is recorded if the user selected a zero-prefix
+    suggestion in the Omnibox.
+
+    An &quot;Omnibox session&quot; is currently defined as a span of time that
+    starts when the user focuses the Omnibox and ends when the user de-focuses
+    it, whether implicitly (e.g. by selecting one of the suggestions) or
+    explictly (e.g. by clicking on some non-Omnibox browser UI). The session
+    data that's maintained by AutocompleteResult will be initialized when the
+    session starts, updated throughout the course of the session, and ultimately
+    reset when the session ends.
+
+    This metric is analogous to &quot;Bsb zpSQ/SEQ&quot;. Usage = Zero-Prefix
+    Suggestions Used / All Navigations (Usage = Precision * Recall).
+
+    Sliced by page context (a.k.a. page classification).
+  </summary>
+  <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
 </histogram>
 
 <histogram name="Omnibox.ZeroSuggestProvider.CacheMemoryUsage" units="Bytes"

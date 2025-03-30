@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 
 namespace client_certificates {
 
@@ -22,7 +22,7 @@ class ScopedSSLKeyConverter {
 
  private:
   const bool supports_unexportable_;
-  std::optional<crypto::ScopedMockUnexportableKeyProvider>
+  std::optional<crypto::ScopedFakeUnexportableKeyProvider>
       unexportable_provider_;
   std::optional<crypto::ScopedNullUnexportableKeyProvider>
       unexportable_null_provider_;

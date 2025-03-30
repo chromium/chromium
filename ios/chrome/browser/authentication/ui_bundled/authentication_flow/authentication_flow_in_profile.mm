@@ -478,11 +478,13 @@ enum class AuthenticationFlowInProfileState {
   NOTREACHED();
 }
 
-- (void)didSwitchToProfileWithSuccess:(BOOL)success
-                    newProfileBrowser:(Browser*)newProfileBrowser {
+- (void)didFailToSwitchToProfile {
   // This class only ever switches (back) to the personal profile, which should
   // never fail.
-  CHECK(success);
+  NOTREACHED();
+}
+
+- (void)didSwitchToProfileWithNewProfileBrowser:(Browser*)newProfileBrowser {
   CHECK(newProfileBrowser);
 
   // After the profile switch, `_browser` is not valid anymore.

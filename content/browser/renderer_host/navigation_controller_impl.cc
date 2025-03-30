@@ -4944,8 +4944,9 @@ void NavigationControllerImpl::NavigateToNavigationApiKey(
   FrameTreeNode* node = initiator_rfh->frame_tree_node();
   FrameNavigationEntry* current_entry =
       GetLastCommittedEntry()->GetFrameEntry(node);
-  if (!current_entry)
+  if (!current_entry || !current_entry->committed_origin()) {
     return;
+  }
 
   // TODO(crbug.com/40878000): Make sure that the right task ID is passed
   // when `navigation.traverseTo()` is called.

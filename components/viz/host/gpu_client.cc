@@ -211,15 +211,4 @@ void GpuClient::CreateVideoEncodeAcceleratorProvider(
   }
 }
 
-void GpuClient::CreateClientGpuMemoryBufferFactory(
-    mojo::PendingReceiver<gpu::mojom::ClientGmbInterface> receiver) {
-  // Send the PendingReceiver to GpuService via IPC.
-  if (auto* gpu_host = delegate_->EnsureGpuHost()) {
-    gpu_host->gpu_service()->BindClientGmbInterface(std::move(receiver),
-                                                    client_id_);
-  } else {
-    receiver.ResetWithReason(0, "Can not bind the ClientGmbInterface.");
-  }
-}
-
 }  // namespace viz

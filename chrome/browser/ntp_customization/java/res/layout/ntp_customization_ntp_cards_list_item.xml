@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<org.chromium.chrome.browser.ntp_customization.NtpCardsListItemView
+<org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsListItemView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="UnusedResources"
@@ -20,4 +20,4 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         tools:baselinealigned="false"
         android:layout_marginHorizontal="@dimen/ntp_customization_edit_icon_margin" />
-</org.chromium.chrome.browser.ntp_customization.NtpCardsListItemView>
+</org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsListItemView>

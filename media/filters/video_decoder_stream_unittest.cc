@@ -620,9 +620,8 @@ TEST_P(VideoDecoderStreamTest, Read_AfterReset) {
   Read();
 }
 
-// Tests that the decoder stream will switch from a software decoder to a
-// hardware decoder if the config size increases
-TEST_P(VideoDecoderStreamTest, ConfigChangeSwToHw) {
+// Tests config changes with increasing sizes work correctly.
+TEST_P(VideoDecoderStreamTest, ConfigChangeIncreasingSize) {
   if (base::FeatureList::IsEnabled(kVideoDecodeBatching) &&
       GetParam().parallel_decoding != 1) {
     // Fake demuxer allows reading over different configs when batch decoding is
@@ -643,12 +642,8 @@ TEST_P(VideoDecoderStreamTest, ConfigChangeSwToHw) {
 
   // Initially we should be using a software decoder
   EXPECT_TRUE(decoder_);
-  EXPECT_FALSE(decoder_->IsPlatformDecoder());
 
   ReadAllFrames();
-
-  // We should end up on a hardware decoder
-  EXPECT_TRUE(decoder_->IsPlatformDecoder());
 
   // Test goes through 3 size changes from the initial kHDSize, each
   // step increases by [width_delta, height_delta].
@@ -668,9 +663,8 @@ TEST_P(VideoDecoderStreamTest, ConfigChangeSwToHw) {
   EXPECT_TRUE(decoder_->eos_next_configs().back().Matches(expected_config));
 }
 
-// Tests that the decoder stream will stay on a hardware decoder when the config
-// size decreases.
-TEST_P(VideoDecoderStreamTest, ConfigChangeHwToSw) {
+// Tests config changes with decreasing sizes work correctly.
+TEST_P(VideoDecoderStreamTest, ConfigChangeDecreasingSize) {
   if (base::FeatureList::IsEnabled(kVideoDecodeBatching) &&
       GetParam().parallel_decoding != 1) {
     // Fake demuxer allows reading over different configs when batch decoding is
@@ -688,13 +682,8 @@ TEST_P(VideoDecoderStreamTest, ConfigChangeHwToSw) {
                       gfx::Vector2dF(-width_delta, -height_delta));
   Initialize();
 
-  // We should initially be using a hardware decoder
   EXPECT_TRUE(decoder_);
-  EXPECT_TRUE(decoder_->IsPlatformDecoder());
   ReadAllFrames();
-
-  // We should remain on a hardware decoder.
-  EXPECT_TRUE(decoder_->IsPlatformDecoder());
 }
 
 // Tests that the decoder stream will remain on the same decoder when elided

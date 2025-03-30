@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.bookmarks.bar;
 
+import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocus;
+import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocusOnFirstFocusableDescendant;
+
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -119,5 +122,23 @@ public class BookmarkBarCoordinator {
         return (BookmarkBarButton)
                 LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.bookmark_bar_button, parent, false);
+    }
+
+    /** Requests focus within the bookmark bar. */
+    public void requestFocus() {
+        if (setFocusOnFirstFocusableDescendant(
+                mView.findViewById(R.id.bookmark_bar_items_container))) {
+            // If we set focus on a bookmark in the RecyclerView of user bookmarks, we are done.
+            return;
+        }
+        // Otherwise (there were no user bookmarks), focus on the all bookmarks button at the end.
+        setFocus(mView.findViewById(R.id.bookmark_bar_all_bookmarks_button));
+    }
+
+    /**
+     * @return Whether keyboard focus is within this view.
+     */
+    public boolean hasKeyboardFocus() {
+        return mView.getFocusedChild() != null;
     }
 }

@@ -25,6 +25,7 @@ build_webui("build") {
   mojo_files_deps = [ "//chrome/browser/ui/webui/search_engine_choice:mojo_bindings_ts__generator" ]
   mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/search_engine_choice/search_engine_choice.mojom-webui.ts" ]
 
+  ts_tsconfig_base = "//tools/typescript/tsconfig_base_lit_389737066.json"
   ts_deps = [
     "//chrome/browser/resources/signin:build_ts",
     "//third_party/lit/v3_0:build_ts",

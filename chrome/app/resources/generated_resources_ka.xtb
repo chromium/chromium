@@ -8,6 +8,7 @@
 <translation id="100323615638474026">USB მოწყობილობა (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">ბოლოდროინდელი ჩამოტვირთვის ისტორია</translation>
 <translation id="1004218526896219317">საიტებზე წვდომა</translation>
+<translation id="1005230401424685968">წწწწ</translation>
 <translation id="1005274289863221750">გამოიყენეთ მიკროფონი და კამერა</translation>
 <translation id="1005333234656240382">გსურთ ADB გამართვის ჩართვა?</translation>
 <translation id="1005671386794704751">ვარდისფერი</translation>
@@ -1367,6 +1368,7 @@
 <translation id="193565226207940518">მხარდაჭერის ხელსაწყო</translation>
 <translation id="1935995810530254458">მაინც კოპირება</translation>
 <translation id="1936157145127842922">საქაღალდეში ჩვენება</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{გვერდი დაემატა საკითხავ სიას}other{გვერდები დაემატა საკითხავ სიას}}</translation>
 <translation id="1936931585862840749">ამოსაბეჭდი ეგზემპლარების რაოდენობის მისათითებლად გამოიყენეთ რიცხვი (1-დან <ph name="MAX_COPIES" />-მდე).</translation>
 <translation id="1937774647013465102">კონტეინერის <ph name="ARCHITECTURE_CONTAINER" /> არქიტექტურის ტიპის იმპორტირება ვერ მოხერხდება ამ მოწყობილობით, რომელიც არის <ph name="ARCHITECTURE_DEVICE" />. შეგიძლიათ ცადოთ ამ კონტეინერის აღდგენა სხვა მოწყობილობის მეშვეობით ან იქონიოთ წვდომა კონტეინერის იმიჯში შემავალ ფაილებზე Files აპის საშუალებით.</translation>
 <translation id="1938351510777341717">გარე ბრძანება</translation>
@@ -2980,6 +2982,7 @@
 <translation id="3045447014237878114">ამ საიტმა ავტომატურად ჩამოტვირთა რამდენიმე ფაილი</translation>
 <translation id="3046178388369461825">Linux-ისთვის დისკის მეხსიერება კრიტიკულად არასაკმარისია</translation>
 <translation id="304644035656848980">თქვენი მიკროფონის წინასწარი ვერსია</translation>
+<translation id="3046892784550338476">ვერსია <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">ვებგვერდო, მთლიანი</translation>
 <translation id="304747341537320566">მეტყველების მოდულები</translation>
 <translation id="3047678109605649715">თქვენს მოწყობილობაში არ არის <ph name="LANGUAGE" /> ხმები. გაათავისუფლეთ მეხსიერების სივრცე თქვენს მოწყობილობაზე და ცადეთ ხელახლა.</translation>
@@ -3072,6 +3075,7 @@
 <translation id="3122883569442693641">დაწვრილებით</translation>
 <translation id="3124111068741548686">მომხმარებლის სახელურები</translation>
 <translation id="3124332159330678621">მოირგეთ Chrome — შესძინეთ მას ახალი იერი</translation>
+<translation id="3125816458150005808">ჩამაგრების მოხსნა და მენიუდან მისი გახსნა შეგიძლიათ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">დატენასთან და მუშაობასთან დაკავშირებული პრობლემების თავიდან ასაცილებლად გამოიყენეთ USB Type-C ტიპის ან Dell-ის თავსებადი ელკვების ადაპტერი.</translation>
 <translation id="3127862849166875294">Linux-ის დისკის ზომის შეცვლა</translation>
@@ -3175,7 +3179,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         სურვილისამებრ, ნებისმიერ დროს შეგიძლიათ მართოთ პარამეტრები ამ ბარათიდან, ან გაეცნოთ მეტ ვარიანტს „Chrome-ის მორგების“ სექციიდან.</translation>
-<translation id="3207437351138888228">ფორმის შევსებისას, შემოთავაზებების გენერირების მიზნით, Google-ს გაეგზავნება თქვენი ინფორმაცია და მისი წყარო გვერდები</translation>
 <translation id="3207960819495026254">ჩანიშნულია</translation>
 <translation id="3208584281581115441">ახლავე შემოწმება</translation>
 <translation id="3208703785962634733">დაუდასტურებელი</translation>
@@ -3220,6 +3223,7 @@
 <translation id="3242289508736283383">აპი, რომლის მანიფესტის ატრიბუტიცაა „kiosk_only“, უნდა დაინსტალირდეს ChromeOS-ის კიოსკის რეჟიმში</translation>
 <translation id="3243017971870859287">ChromeOS Flex მოწყობილობისა და კომპონენტების სერიული ნომრების წაკითხვა</translation>
 <translation id="324366796737464147">ხმაურის შემცირება</translation>
+<translation id="3244271242291266297">თთ</translation>
 <translation id="3244294424315804309">ხმის დადუმების გაგრძელება</translation>
 <translation id="3247006341013237647">გსურთ ჩანართების ორგანიზება?</translation>
 <translation id="3247649647204519958">აქედან შეგიძლიათ ნახოთ და მართოთ გაფართოებებთან დაკავშირებული ნებართვები იმ საიტისთვის, რომელზეც იმყოფებით</translation>
@@ -5322,6 +5326,7 @@
 <translation id="4723140812774948886">შემდეგით ჩანაცვლება</translation>
 <translation id="4724450788351008910">კუთვნილების შეცვლა</translation>
 <translation id="4725511304875193254">კორგი</translation>
+<translation id="4725762702191453794">ჩანართებში ძიება უკვე ჩამაგრებულია თქვენს ხელსაწყოთა ზოლში</translation>
 <translation id="4726710355753484204">მასშტაბის გასადიდებლად გამოიყენეთ კლავიშთა კომბინაცია Ctrl + Alt + სიკაშკაშის მომატება.
 მასშტაბის შესამცირებლად გამოიყენეთ კლავიშთა კომბინაცია Ctrl + Alt + სიკაშკაშის დაკლება.</translation>
 <translation id="4726710629007580002">ამ გაფართოების დაყენების დროს იყო რამდენიმე გაფრთხილება:</translation>
@@ -6087,7 +6092,6 @@
 <translation id="5267572070504076962">ჩართეთ Safe Browsing, სახიფათო საიტებისგან დაცვით რომ ისარგებლოთ</translation>
 <translation id="5269977353971873915">ბეჭვდის შეცდომა</translation>
 <translation id="5271578170655641944">გსურთ Google Drive-ზე წვდომის გაუქმება?</translation>
-<translation id="5271782684896713035">ეს მონაცემები შეიძლება ნახონ ადამიანმა მიმომხილველებმა, ამ ფუნქციის გაუმჯობესების მიზნით</translation>
 <translation id="5273806377963980154">საიტის URL-ის რედაქტირება</translation>
 <translation id="5275084684151588738">მომხმარებლის ლექსიკონები</translation>
 <translation id="5275338516105640560">ჩანართების შენახული ჯგუფის ღილაკი</translation>

@@ -150,7 +150,7 @@ class SobelMatchingAlgorithm(FuzzyMatchingAlgorithm):
 
 
 def _GenerateOptionalKey(key: str, value: int | str) -> list[str]:
-  return ['--add-test-optional-key', '%s:%s' % (key, value)]
+  return ['--add-test-optional-key', f'{key}:{value}']
 
 
 class SampleAreaMatchingAlgorithm(SkiaGoldMatchingAlgorithm):

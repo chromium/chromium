@@ -133,6 +133,7 @@ void CollaborationControllerDelegateDesktop::Cancel(ResultCallback result) {
 }
 
 void CollaborationControllerDelegateDesktop::ShowAuthenticationUi(
+    collaboration::FlowType flow_type,
     ResultCallback result) {
   MaybeShowSignInOrSyncPromptDialog();
   authentication_ui_callback_ = std::move(result);

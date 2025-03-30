@@ -136,6 +136,7 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
 
   void Trace(Visitor*) const;
 
+  void NotifyInspector();
   void Navigate();
 
   KURL RequestURL() const;

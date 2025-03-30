@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_finch_features.h"
 
@@ -164,4 +165,15 @@ wgpu::SharedFence CreateDawnSharedFence(
 
   return shared_fence;
 }
+
+std::string D3D11TextureDescToString(const D3D11_TEXTURE2D_DESC& desc) {
+  return base::StringPrintf(
+      "width=%u,height=%u,miplevels=%u,arraysize=%u,format=%u,samplecount=%u,"
+      "samplequality=%u,usage=%u,bindflags=%08x,cpuaccessflags=%08x,"
+      "miscflags=%08x",
+      desc.Width, desc.Height, desc.MipLevels, desc.ArraySize, desc.Format,
+      desc.SampleDesc.Count, desc.SampleDesc.Quality, desc.Usage,
+      desc.BindFlags, desc.CPUAccessFlags, desc.MiscFlags);
+}
+
 }  // namespace gpu

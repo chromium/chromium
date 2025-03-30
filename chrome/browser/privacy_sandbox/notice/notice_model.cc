@@ -21,7 +21,8 @@ const std::vector<Notice*>& NoticeApi::GetLinkedNotices() {
 }
 
 // Notice class definitions.
-Notice::Notice(NoticeId notice_id) : notice_id_(notice_id) {}
+Notice::Notice(NoticeId notice_id, const base::Feature* feature)
+    : notice_id_(notice_id), feature_(feature) {}
 Notice::Notice(const Notice& other) = default;
 Notice::~Notice() = default;
 
@@ -52,6 +53,10 @@ NoticeId Notice::GetNoticeId() {
   return notice_id_;
 }
 
+const base::Feature* Notice::GetFeature() {
+  return feature_;
+}
+
 std::vector<NoticeEvent> Notice::FulfillmentEvents() const {
   return {NoticeEvent::kAck, NoticeEvent::kSettings};
 }
@@ -61,7 +66,8 @@ NoticeType Notice::GetNoticeType() {
 }
 
 // Consent class definitions.
-Consent::Consent(NoticeId notice_id) : Notice(notice_id) {}
+Consent::Consent(NoticeId notice_id, const base::Feature* feature)
+    : Notice(notice_id, feature) {}
 
 std::vector<NoticeEvent> Consent::FulfillmentEvents() const {
   return {NoticeEvent::kOptIn, NoticeEvent::kOptOut};

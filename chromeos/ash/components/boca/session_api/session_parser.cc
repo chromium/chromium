@@ -30,6 +30,12 @@ namespace ash::boca {
   if (status == "REMOVED_BY_TEACHER") {
     return ::boca::StudentStatus::REMOVED_BY_TEACHER;
   }
+  if (status == "NOT_ADDED_CONFIGURED_AS_TEACHER") {
+    return ::boca::StudentStatus::NOT_ADDED_CONFIGURED_AS_TEACHER;
+  }
+  if (status == "NOT_ADDED_NOT_CONFIGURED") {
+    return ::boca::StudentStatus::NOT_ADDED_NOT_CONFIGURED;
+  }
   return ::boca::StudentStatus::STUDENT_STATE_UNKNOWN;
 }
 

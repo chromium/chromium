@@ -441,7 +441,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1734878702283171397">Prova de contactar amb l'administrador del sistema.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />; data de caducitat: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Ordinador</translation>
-<translation id="1739422091279046802">desplaçament i zoom</translation>
 <translation id="1741613555002899862">S'ha d'especificar juntament amb una cadena vàlida quan DnsOverHttpsMode sigui <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Roba de llit</translation>
 <translation id="1743892871127720056">Títol de la taula comparativa, edita el text</translation>
@@ -569,6 +568,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1975584088563498795">Bústia de correu 10</translation>
 <translation id="1978555033938440688">Versió del microprogramari</translation>
 <translation id="1979156660928743046">Informació del contingut multimèdia</translation>
+<translation id="1987486584747170374">Les teves cerques, les millors coincidències i el contingut de les pàgines associades s'envien a Google. Els revisors humans no utilitzaran aquestes dades per millorar la IA. La teva organització pot canviar aquestes opcions de configuració en qualsevol moment.</translation>
 <translation id="1988881251331415125">Si està ben escrit, <ph name="BEGIN_LINK" />prova d'executar el diagnòstic de connectivitat<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> vol emmagatzemar una gran quantitat de dades a l'ordinador local de manera permanent</translation>
@@ -764,6 +764,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2301098101308036335">Quins llocs web es visiten i quan.</translation>
 <translation id="230286397113210245">Botó Obre una finestra d'incògnit: activa'l per obrir una finestra d'incògnit nova i navegar en privat</translation>
 <translation id="2306124309679506798">Vols permetre una experiència immersiva?</translation>
+<translation id="2307711332257985952">Les adreces de casa i de la feina ja estan disponibles a Chrome</translation>
 <translation id="2312234273148520048">Condiments i salses</translation>
 <translation id="2316087952091171402">Inferior a <ph name="UPPER_ESTIMATE" />. És possible que alguns llocs web es carreguin més a poc a poc la propera vegada que els visitis.</translation>
 <translation id="2316159751672436664">Personalitza les eines d'accessibilitat a la configuració de Chrome OS</translation>
@@ -1179,6 +1180,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3102312643185441063">Estalvis</translation>
 <translation id="3103188521861412364">Accions i bons</translation>
 <translation id="3103535543639438037">Compara productes similars en paral·lel</translation>
+<translation id="3103993932858740905">Si pagues a terminis, es mostrarà un número de targeta virtual únic, que només servirà per a aquesta compra.</translation>
 <translation id="3105172416063519923">Identificador de l'element:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Comprova la configuració de DNS segur<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Safata central</translation>
@@ -1569,6 +1571,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3715016660240337709">{0,plural, =1{S'ha bloquejat el fitxer perquè no es pugui penjar}other{S'han bloquejat <ph name="FILE_COUNT" /> fitxers perquè no es puguin penjar}}</translation>
 <translation id="3715597595485130451">Connexió de xarxa Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Comproveu el servidor intermediari, el tallafoc i la configuració de DNS<ph name="END_LINK" /></translation>
+<translation id="3723316892512143176">IBAN</translation>
 <translation id="3723663469265383848">Durant l'actualització, no podràs fer servir el dispositiu durant un màxim de 10 minuts.</translation>
 <translation id="372429172604983730">Entre les aplicacions que poden provocar aquest error hi ha l'antivirus, el tallafoc i el programari de filtratge web o del servidor intermediari.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per crear una presentació ràpidament a Presentacions de Google</translation>
@@ -2495,6 +2498,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5379618281582508161">Per obtenir aquesta contrasenya en tots els teus dispositius, verifica la teva identitat</translation>
 <translation id="5380953781541843508">en ordre ascendent</translation>
 <translation id="5381318171304904246">En continuar, se't dirigirà al lloc web del teu banc. Un cop hagis verificat la teva identitat, tornaràs automàticament a aquesta pàgina per finalitzar la compra.</translation>
+<translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> ha actualitzat la pestanya "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="5383478552402031184">Terres</translation>
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5385966243497224160">No es pot previsualitzar l'URL que no és HTTPS</translation>
@@ -2880,6 +2884,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6059925163896151826">Dispositius USB</translation>
 <translation id="6060009363608157444">El mode DnsOverHttps no és vàlid.</translation>
 <translation id="6061154937977953833">Lluita</translation>
+<translation id="6062405040252994646">Eina</translation>
 <translation id="6062937464449575061">Deixa de seguir el preu</translation>
 <translation id="6063415549109819824">Finançament de l'habitatge</translation>
 <translation id="6070432475334343308">Un o més fitxers no s'han penjat a <ph name="FOLDER_NAME" /> de <ph name="CLOUD_PROVIDER" /></translation>
@@ -3927,6 +3932,7 @@ Detalls addicionals:
 <translation id="787226752901403048">Inicia la sessió a Chrome per compartir grups de pestanyes, unir-t'hi i col·laborar en idees</translation>
 <translation id="7877007680666472091">identificadors de contingut protegit</translation>
 <translation id="7878562273885520351">La teva contrasenya pot estar en perill</translation>
+<translation id="7881044256965445977">Cerca qualsevol dispositiu de la teva xarxa local i connecta-t'hi</translation>
 <translation id="7882421473871500483">Marró</translation>
 <translation id="7886897188117641322">Tria quines categories àmplies de temes es poden utilitzar per personalitzar els anuncis</translation>
 <translation id="7887683347370398519">Comproveu el CVC i torneu-ho a provar</translation>
@@ -4683,6 +4689,7 @@ Detalls addicionals:
 <translation id="94613679163347541">Vols comparar <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per crear un lloc web a Google Sites ràpidament</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome tornarà a limitar les galetes avui}=1{Chrome tornarà a limitar les galetes demà}other{# dies perquè Chrome torni a limitar les galetes}}</translation>
+<translation id="949026252328034572"><ph name="MEMBER_COUNT" /> membres s'han unit al grup de pestanyes "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">Has demanat visitar aquest lloc web. El teu pare o mare pot respondre a Family Link.</translation>
 <translation id="950736567201356821">Encunyació triple a la part superior</translation>
 <translation id="950926967802086924">Clau d'accés • Gestor de contrasenyes de Google</translation>

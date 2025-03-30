@@ -139,8 +139,10 @@ bool ShouldKeepTaskForTabsAndExtensions(Task::Type type,
                                         Task::SubType subtype) {
   switch (type) {
     case Task::RENDERER:
-      return subtype != Task::SubType::kSpareRenderer &&
-             subtype != Task::SubType::kUnknownRenderer;
+      // Only keep renderers with no sub type. Any other explicitly labeled
+      // renderers, such as Spare Renderers, or Unknown renderers should show up
+      // in Browser/System.
+      return subtype == Task::SubType::kNoSubType;
     case Task::EXTENSION:
     case Task::GUEST:
     case Task::PLUGIN:
@@ -161,19 +163,15 @@ bool ShouldKeepTaskForSystem(Task::Type type, Task::SubType subtype) {
     case Task::PLUGIN_VM:
     case Task::ZYGOTE:
     case Task::UTILITY:
-    case Task::PLUGIN:
+    case Task::NACL:
     case Task::SANDBOX_HELPER:
       return true;
-    default:
-      break;
-  }
 
-  // The subtypes are normal renderers, however killing these is not beneficial
-  // to the user, so they are categorized under System.
-  switch (subtype) {
-    case Task::SubType::kSpareRenderer:
-    case Task::SubType::kUnknownRenderer:
-      return true;
+    case Task::RENDERER:
+      // The subtypes are normal renderers, however killing these is not
+      // beneficial to the user, so they are categorized under Browser/System.
+      return subtype != Task::SubType::kNoSubType;
+
     default:
       return false;
   }

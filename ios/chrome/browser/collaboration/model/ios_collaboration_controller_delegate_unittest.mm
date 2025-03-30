@@ -380,7 +380,7 @@ TEST_F(IOSCollaborationControllerDelegateTest,
               }]
       baseViewController:base_view_controller_]);
 
-  delegate_->ShowAuthenticationUi(mock_callback.Get());
+  delegate_->ShowAuthenticationUi(FlowType::kJoin, mock_callback.Get());
 }
 
 // Tests `ShowAuthenticationUi` when the user sign in and accept the sync opt
@@ -405,7 +405,7 @@ TEST_F(IOSCollaborationControllerDelegateTest,
               }]
       baseViewController:base_view_controller_]);
 
-  delegate_->ShowAuthenticationUi(mock_callback.Get());
+  delegate_->ShowAuthenticationUi(FlowType::kJoin, mock_callback.Get());
 }
 
 // Tests `ShowAuthenticationUi` when the user sign in but don't sync.
@@ -428,7 +428,7 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowAuthenticationUiSyncDenied) {
               }]
       baseViewController:base_view_controller_]);
 
-  delegate_->ShowAuthenticationUi(mock_callback.Get());
+  delegate_->ShowAuthenticationUi(FlowType::kJoin, mock_callback.Get());
 }
 
 // Tests `ShowAuthenticationUi` when the user is signed-in.
@@ -452,7 +452,7 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowAuthenticationUiWithSignIn) {
               }]
       baseViewController:base_view_controller_]);
 
-  delegate_->ShowAuthenticationUi(mock_callback.Get());
+  delegate_->ShowAuthenticationUi(FlowType::kJoin, mock_callback.Get());
 }
 
 // Tests `NotifySignInAndSyncStatusChange`.

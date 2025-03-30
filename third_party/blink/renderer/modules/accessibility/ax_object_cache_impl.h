@@ -37,6 +37,7 @@
 #include "third_party/blink/public/mojom/render_accessibility.mojom-blink.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache_base.h"
+#include "third_party/blink/renderer/core/accessibility/axid.h"
 #include "third_party/blink/renderer/core/accessibility/blink_ax_event_intent.h"
 #include "third_party/blink/renderer/core/editing/commands/selection_for_undo_step.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -888,6 +889,12 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // All other AXIDs are generated.
   bool IsDOMNodeID(AXID axid) { return axid > 0; }
 
+  // When the AXMode kOnScreenOnly is on, this is the last step performed before
+  // FinalizeTree() is called. It will recursively traversse the tree and mark
+  // nodes as on-screen or off-screen. This information is later used to
+  // determine which nodes will be serialized.
+  bool MarkOnScreenNodes(AXObject* obj);
+
   HeapHashSet<WeakMember<InspectorAccessibilityAgent>> agents_;
 
   struct AXEventParams final : public GarbageCollected<AXEventParams> {
@@ -1002,6 +1009,9 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   HeapHashMap<Member<const LayoutObject>, AXInlineTextBoxFragmentMapping>
       layout_object_to_inline_text_boxes_;
 
+  // When the AXMode filter flag kOnScreenOnly is set, this set holds the IDs of
+  // nodes that are not on-screen, but are still serialized.
+  WTF::HashSet<AXID> extra_off_screen_nodes_to_serialize_;
 #if AX_FAIL_FAST_BUILD()
   size_t included_node_count_ = 0;
   size_t plugin_included_node_count_ = 0;

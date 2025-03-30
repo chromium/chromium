@@ -69,6 +69,8 @@ struct ProcessAllocationContext {
       ProcessAllocationNavigationStage stage,
       int64_t navigation_id);
 
+  bool IsForNavigation() const;
+
   ProcessAllocationSource source;
   // The navigation_context will be only available when source is
   // kNavigationRequest.

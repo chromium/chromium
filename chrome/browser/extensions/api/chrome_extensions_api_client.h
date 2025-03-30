@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_CHROME_EXTENSIONS_API_CLIENT_H_
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/extensions_api_client.h"
 
@@ -52,6 +53,7 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
                         const Extension& extension) override;
   void OpenFileUrl(const GURL& file_url,
                    content::BrowserContext* browser_context) override;
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   AppViewGuestDelegate* CreateAppViewGuestDelegate() const override;
   ExtensionOptionsGuestDelegate* CreateExtensionOptionsGuestDelegate(
       ExtensionOptionsGuest* guest) const override;
@@ -64,6 +66,7 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
       WebViewGuest* web_view_guest) const override;
   WebViewPermissionHelperDelegate* CreateWebViewPermissionHelperDelegate(
       WebViewPermissionHelper* web_view_permission_helper) const override;
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<ConsentProvider> CreateConsentProvider(
       content::BrowserContext* browser_context) const override;

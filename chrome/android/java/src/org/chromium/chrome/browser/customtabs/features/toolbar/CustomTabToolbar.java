@@ -9,6 +9,7 @@ import static androidx.browser.customtabs.CustomTabsIntent.NO_TITLE;
 
 import static org.chromium.base.MathUtils.interpolate;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType.INCOGNITO;
+import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocusOnFirstFocusableDescendant;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -824,6 +825,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         if (!ChromeFeatureList.sCctAdaptiveButton.isEnabled()) return;
 
         mLocationBar.updateOptionalButton(buttonData);
+    }
+
+    @Override
+    public void requestKeyboardFocus() {
+        setFocusOnFirstFocusableDescendant(this);
     }
 
     private void updateCustomActionButtonVisuals(

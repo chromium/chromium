@@ -2939,7 +2939,7 @@ String Element::ComputedNameNoLifecycleUpdate() {
 
 void Element::ariaNotify(const String& announcement,
                          const AriaNotificationOptions* options) {
-  DCHECK(RuntimeEnabledFeatures::AriaNotifyEnabled());
+  DCHECK(RuntimeEnabledFeatures::AriaNotifyEnabled(GetExecutionContext()));
 
   if (auto* cache = GetDocument().ExistingAXObjectCache()) {
     cache->HandleAriaNotification(this, announcement, options);

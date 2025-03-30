@@ -33,6 +33,28 @@ export interface AnnotationBrush {
   color?: Color;
   size?: number;
 }
+
+export enum TextAlignment {
+  LEFT = 'LEFT',
+  CENTER = 'CENTER',
+  RIGHT = 'RIGHT',
+  JUSTIFY = 'JUSTIFY',
+}
+
+export interface TextStyles {
+  bold: boolean;
+  italic: boolean;
+  underline: boolean;
+  strikethrough: boolean;
+}
+
+export interface AnnotationText {
+  font: string;
+  size: number;
+  color: Color;
+  alignment: TextAlignment;
+  styles: TextStyles;
+}
 // </if>
 
 export interface Attachment {

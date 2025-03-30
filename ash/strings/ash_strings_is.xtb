@@ -91,6 +91,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1269405891096105529">Jaðartæki ekki stutt í gestastillingu</translation>
 <translation id="1270290102613614947">Skjályklaborð óvirkt</translation>
 <translation id="1272079795634619415">Stöðva</translation>
+<translation id="12741168609094094">Veldu hvað sem er á skjánum til að leita, afrita texta og fleira</translation>
 <translation id="1275285675049378717">Knýr <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Valið</translation>
 <translation id="1276975447697633661">Veldu skrána og ýttu á <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1720230731642245863">Slökkt er á heitum reit</translation>
 <translation id="1731815243805539470">Skipta yfir í fyrri notanda</translation>
 <translation id="1733996486177697563">Skiptu á milli dökka og ljósa þemans. Haltu inni á skjáborðinu og veldu „Veggfóður og stíll“.</translation>
+<translation id="1735992454301033090">Svæði valið, notaðu örvalyklana til að færa rammann til</translation>
 <translation id="1736898441010944794">„<ph name="NAME" />“ er sýnilegt Bluetooth-tækjum.</translation>
 <translation id="1737078180382804488">Hafna að setja upp skoðun tilkynninga símans</translation>
 <translation id="174102739345480129">Slökkt er á merkipennanum.</translation>
@@ -494,6 +496,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> í síðustu viku</translation>
 <translation id="2687510499067466116">Flýtilykli var breytt</translation>
 <translation id="2689613560355655046">Skrifborð 8</translation>
+<translation id="2692092709110488417">Ýttu á dálkalykilinn til að setja valda svæðið í fókus og færa rammann til</translation>
 <translation id="2695305337569143674">vefur</translation>
 <translation id="2697697418792422688">Sýna lyklaborðsstillingar. <ph name="KEYBOARD_NAME" /> er valið.</translation>
 <translation id="2699913284398121653">Notaðu forritið fyrir flutning á námsefni til að færa gögn skólareikningsins þíns yfir á einkareikninginn þinn</translation>
@@ -729,6 +732,7 @@ Annars verður aftur kveikt á innbyggða snertifletinum eftir <ph name="TIMEOUT
 <translation id="346243998268439747">Endurstilla aðdrátt</translation>
 <translation id="3465223694362104965">Annað lyklaborð hefur tengst þessu tæki frá því að þú skráðir þig síðast inn. Gakktu úr skugga um að þú treystir þessu lyklaborði áður en þú notar það.</translation>
 <translation id="3465356146291925647">Stjórnað af kerfisstjóra</translation>
+<translation id="3470502288861289375">Afritar...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> og svo <ph name="KEY_TWO" /> eða <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control-Shift-bilslá</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> sendistyrkur</translation>
@@ -1033,6 +1037,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4412698727486357573">Hjálparmiðstöð</translation>
 <translation id="4412944820643904175">Slökkt er á <ph name="FEATURE_NAME" />.</translation>
 <translation id="4417647906073317561">Einbeitingarstillingar. Stilltu tíma og veldu verkefni og tónlist til að komast í gírinn.</translation>
+<translation id="4418600384772451109">Loka glugga</translation>
 <translation id="4424159417645388645">Skrifborð 5</translation>
 <translation id="4426817706804363424">Meira svona!</translation>
 <translation id="4430019312045809116">Hljóðstyrkur</translation>
@@ -2229,6 +2234,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8287009018010202411">Afköst</translation>
 <translation id="828708037801473432">Slökkt</translation>
 <translation id="8297006494302853456">Veikt</translation>
+<translation id="8300451473979404345">Handfang valið, notaðu örvalyklana til að færa rammann til</translation>
 <translation id="8308637677604853869">Fyrri valmynd</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Kveikt er á hástafalás</translation>
@@ -2289,6 +2295,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="851458219935658693">Sýna glugga á núverandi skrifborði, hringhnappur valinn</translation>
 <translation id="851660987304951246">Notaðu „Hjálpa mér að lesa“ til að gera snögga samantekt á efni eða spyrja spurninga</translation>
 <translation id="8517041960877371778">Ekki er víst að <ph name="DEVICE_TYPE" /> hlaðist á meðan kveikt er á tölvunni.</translation>
+<translation id="8519329096920173967">Leita á skjánum með Google-linsu</translation>
 <translation id="8535393432370007982">Afturkalla röðun eftir lit</translation>
 <translation id="8536886494750559755">Opna stillingar flýtideilingar. Sýnilegt öllum í <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Texti afritaður á klippiborð</translation>

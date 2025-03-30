@@ -31,6 +31,10 @@ class DownloadItem;
 }  // namespace download
 #endif  // BUILDFLAG(USE_BLINK)
 
+namespace signin {
+class IdentityManager;
+}
+
 namespace enterprise_connectors {
 
 // Alias to reduce verbosity when using TriggeredRule::Actions.
@@ -342,6 +346,11 @@ enum class EventResult {
 // Helper function to convert a EventResult to a string that.  The format of
 // string returned is processed by the sever.
 std::string EventResultToString(EventResult result);
+
+// Returns the email address of the unconsented account signed in to the profile
+// or an empty string if no account is signed in.  If `identity_manager` is null
+// then the empty string is returned.
+std::string GetProfileEmail(signin::IdentityManager* identity_manager);
 
 }  // namespace enterprise_connectors
 

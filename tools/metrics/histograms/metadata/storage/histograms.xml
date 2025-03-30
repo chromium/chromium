@@ -1254,6 +1254,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.InterestGroup.KAnonymityKeysCacheHitRate" units="%"
+    expires_after="2025-07-13">
+  <owner>orrb@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The fraction of keys that need to be fetched for a particular interest group
+    that are available from the on-device cache of keys retained from prior
+    requests to the k-anonymity server. As with other percent metrics, this is
+    recorded as an integer of 0-100. Recorded immediately after the cache is
+    checked for k-anonymity keys prior to attempting a fetch from the
+    k-anonymity server, and only when the cache is checked, i.e. not when the
+    `kFledgeCacheKAnonHashedKeys` feature is disabled.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Storage.InterestGroup.PerInterestGroup.NumAdComponents"
     units="ad components" expires_after="2025-09-14">
   <owner>caraitto@chromium.org</owner>

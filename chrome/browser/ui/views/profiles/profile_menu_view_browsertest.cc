@@ -1105,7 +1105,10 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_SingleProfileWithCustomName_UnoEnabled,
     ProfileMenuClickTest_SingleProfileWithCustomName_UnoEnabled,
     /*enabled_features=*/{},
-    /*disabled_features=*/{switches::kImprovedSigninUIOnDesktop}) {
+    /*disabled_features=*/
+    std::vector<base::test::FeatureRef>(
+        {switches::kImprovedSigninUIOnDesktop,
+         switches::kEnableImprovedGuestProfileMenu})) {
   profiles::UpdateProfileName(browser()->profile(), u"Custom name");
   RunTest();
 }
@@ -1164,7 +1167,10 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_MultipleProfiles_UnoEnabled,
     ProfileMenuClickTest_MultipleProfiles_UnoEnabled,
     /*enabled_features=*/{},
-    /*disabled_features=*/{switches::kImprovedSigninUIOnDesktop}) {
+    /*disabled_features=*/
+    std::vector<base::test::FeatureRef>(
+        {switches::kImprovedSigninUIOnDesktop,
+         switches::kEnableImprovedGuestProfileMenu})) {
   // Add two additional profiles.
   CreateAdditionalProfile();
   CreateAdditionalProfile();
@@ -1269,7 +1275,10 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_SyncEnabled_UnoEnabled,
     MAYBE_ProfileMenuClickTest_SyncEnabled_UnoEnabled,
     /*enabled_features=*/{},
-    /*disabled_features=*/{switches::kImprovedSigninUIOnDesktop}) {
+    /*disabled_features=*/
+    std::vector<base::test::FeatureRef>(
+        {switches::kImprovedSigninUIOnDesktop,
+         switches::kEnableImprovedGuestProfileMenu})) {
   EnableSync();
   RunTest();
 }
@@ -1326,7 +1335,10 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_SyncError_UnoEnabled,
     ProfileMenuClickTest_SyncError_UnoEnabled,
     /*enabled_features=*/{},
-    /*disabled_features=*/{switches::kImprovedSigninUIOnDesktop}) {
+    /*disabled_features=*/
+    std::vector<base::test::FeatureRef>(
+        {switches::kImprovedSigninUIOnDesktop,
+         switches::kEnableImprovedGuestProfileMenu})) {
   ASSERT_TRUE(
       sync_harness()->SignInPrimaryAccount(signin::ConsentLevel::kSync));
   // Check that the setup was successful.
@@ -1397,7 +1409,10 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_SyncPaused_UnoEnabled,
     MAYBE_ProfileMenuClickTest_SyncPaused_UnoEnabled,
     /*enabled_features=*/{},
-    /*disabled_features=*/{switches::kImprovedSigninUIOnDesktop}) {
+    /*disabled_features=*/
+    std::vector<base::test::FeatureRef>(
+        {switches::kImprovedSigninUIOnDesktop,
+         switches::kEnableImprovedGuestProfileMenu})) {
   EnableSync();
   sync_harness()->EnterSyncPausedStateForPrimaryAccount();
   // Check that the setup was successful.
@@ -1467,7 +1482,10 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_SigninDisallowed_UnoEnabled,
     ProfileMenuClickTest_SigninDisallowed_UnoEnabled,
     /*enabled_features=*/{},
-    /*disabled_features=*/{switches::kImprovedSigninUIOnDesktop}) {
+    /*disabled_features=*/
+    std::vector<base::test::FeatureRef>(
+        {switches::kImprovedSigninUIOnDesktop,
+         switches::kEnableImprovedGuestProfileMenu})) {
   // Check that the setup was successful.
   ASSERT_FALSE(
       browser()->profile()->GetPrefs()->GetBoolean(prefs::kSigninAllowed));
@@ -1537,7 +1555,10 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_WithUnconsentedPrimaryAccount_UnoEnabled,
     ProfileMenuClickTest_WithUnconsentedPrimaryAccount_UnoEnabled,
     /*enabled_features=*/{},
-    /*disabled_features=*/{switches::kImprovedSigninUIOnDesktop}) {
+    /*disabled_features=*/
+    std::vector<base::test::FeatureRef>(
+        {switches::kImprovedSigninUIOnDesktop,
+         switches::kEnableImprovedGuestProfileMenu})) {
   secondary_account_helper::SignInUnconsentedAccount(
       GetProfile(), &test_url_loader_factory_, "user@example.com");
   UnconsentedPrimaryAccountChecker(identity_manager()).Wait();
@@ -1615,7 +1636,10 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_WithPendingAccount_UnoEnabled,
     MAYBE_ProfileMenuClickTest_WithPendingAccount_UnoEnabled,
     /*enabled_features=*/{},
-    /*disabled_features=*/{switches::kImprovedSigninUIOnDesktop}) {
+    /*disabled_features=*/
+    std::vector<base::test::FeatureRef>(
+        {switches::kImprovedSigninUIOnDesktop,
+         switches::kEnableImprovedGuestProfileMenu})) {
   AccountInfo account_info = signin::MakePrimaryAccountAvailable(
       identity_manager(), "user@example.com", signin::ConsentLevel::kSignin);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
@@ -1760,7 +1784,10 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_GuestProfile,
     ProfileMenuClickTest_GuestProfile_UnoEnabled,
     /*enabled_features=*/{},
-    /*disabled_features=*/{switches::kImprovedSigninUIOnDesktop}) {
+    /*disabled_features=*/
+    std::vector<base::test::FeatureRef>(
+        {switches::kImprovedSigninUIOnDesktop,
+         switches::kEnableImprovedGuestProfileMenu})) {
   SetTargetBrowser(CreateGuestBrowser());
 
   RunTest();

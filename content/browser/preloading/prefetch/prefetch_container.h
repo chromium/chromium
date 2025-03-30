@@ -830,6 +830,8 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Updates `attempt_`'s outcome and failure reason based on
   // `new_prefetch_status`.
+  // This should only be called after the prefetch is started, because
+  // `attempt_` is degined to record the outcome or failure of started triggers.
   void SetTriggeringOutcomeAndFailureReasonFromStatus(
       PrefetchStatus new_prefetch_status);
 

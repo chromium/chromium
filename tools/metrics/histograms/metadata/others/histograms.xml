@@ -22,6 +22,18 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="BlueZPerProfileResult">
+  <variant name="A2DPSink."
+      summary="This metric records results for A2DP Sink profile."/>
+  <variant name="AVRCP."
+      summary="This metric records results for AVRCP Controller profile."/>
+  <variant name="Battery."
+      summary="This metric records results for Battery profile."/>
+  <variant name="HFP." summary="This metric records results for HFP profile."/>
+  <variant name="HID." summary="This metric records results for HID profile."/>
+  <variant name="HOG." summary="This metric records results for HOG profile."/>
+</variants>
+
 <variants name="BootVariant">
   <variant name="FirstBoot"
       summary="first boot after ChromeOS has been updated"/>
@@ -196,6 +208,39 @@ chromium-metrics-reviews@google.com.
   <variant name=".NtpRealbox" summary="from the realbox on the NTP"/>
   <variant name=".NtpTabResumption"
       summary="from the Tab resumption module on the NTP"/>
+</variants>
+
+<variants name="PreferenceChangeType">
+  <variant name=".Changed"
+      summary="Preference value when changed by the user."/>
+  <variant name=".Started" summary="Preference value upon startup."/>
+</variants>
+
+<variants name="Spellcheck_Windows_LocaleSupportType">
+  <variant name=".Both"
+      summary="This variation counts the number of locales that are supported
+               by both Hunspell and the OS spell checker."/>
+  <variant name=".HunspellOnly"
+      summary="This variation counts the number of locales that are only
+               supported by Hunspell."/>
+  <variant name=".NativeOnly"
+      summary="This variation counts the number of locales that are only
+               supported by the OS spell checker."/>
+  <variant name=".NoSupport"
+      summary="This variation counts the number of locales that are not
+               supported by either Hunspell or the OS spell checker."/>
+</variants>
+
+<variants name="Spellcheck_Windows_SpellcheckType">
+  <variant name=".HunspellOnly"
+      summary="This variation measures the duration when only Hunspell is
+               used."/>
+  <variant name=".Hybrid"
+      summary="This variation measures the duration when Hunspell is used for
+               some locales and the OS spell checker is used for others."/>
+  <variant name=".NativeOnly"
+      summary="This variation measures the duration when only by the OS spell
+               checker is used."/>
 </variants>
 
 <variants name="WebContentsObserverMethods">
@@ -2596,8 +2641,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="AnimatedImage.NumOfFramesSkipped" units="count"
-    expires_after="2023-04-24">
+<histogram name="AnimatedImage.NumOfFramesSkipped{RendererThreadType}"
+    units="count" expires_after="2023-04-24">
   <owner>khushalsagar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -2612,8 +2657,15 @@ chromium-metrics-reviews@google.com.
     hidden).
 
     Warning: this histogram was expired from 2020-04-24 to 2022-04-29; data may
-    be missing.
+    be missing. {RendererThreadType}
   </summary>
+  <token key="RendererThreadType">
+    <variant name=""/>
+    <variant name=".Compositor"
+        summary="Measurement taken on the compositor thread."/>
+    <variant name=".Main"
+        summary="Measurement taken on the main/render thread."/>
+  </token>
 </histogram>
 
 <histogram
@@ -2676,30 +2728,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BlueZ.PerProfile.ConnectionResult"
+<histogram name="BlueZ.PerProfile.{BlueZPerProfileResult}ConnectionResult"
     enum="BlueZResultOfPerProfileConnection" expires_after="2023-06-11">
-<!-- Name completed by histogram_suffixes name="BlueZPerProfileResult" -->
-
   <owner>mmandlik@google.com</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
     Records the outcome of bluetooth profile connection request to a remote
     device. This helps to understand the percentage of successful profile
     connections against failures and the causes of failures.
+    {BlueZPerProfileResult}
   </summary>
+  <token key="BlueZPerProfileResult" variants="BlueZPerProfileResult">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="BlueZ.PerProfile.ProbingResult"
+<histogram name="BlueZ.PerProfile.{BlueZPerProfileResult}ProbingResult"
     enum="BlueZResultOfPerProfileProbing" expires_after="2023-06-11">
-<!-- Name completed by histogram_suffixes name="BlueZPerProfileResult" -->
-
   <owner>mmandlik@google.com</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
     Records the outcome of bluetooth profile probing while pairing with a remote
     device. This helps to understand the percentage of successful profile
-    probing against failures and the causes of failures.
+    probing against failures and the causes of failures. {BlueZPerProfileResult}
   </summary>
+  <token key="BlueZPerProfileResult" variants="BlueZPerProfileResult">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="BlueZ.ReasonOfDisconnection" enum="BlueZReasonOfDisconnection"
@@ -3123,7 +3178,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CertificateType2" units="units" expires_after="never">
+<histogram name="CertificateType2{CertificateTypeBRValidity2}" units="units"
+    expires_after="never">
 <!-- expires-never: histograms are used to assess policy -->
 
 <!-- https://crbug.com/732640#c5 -->
@@ -3133,8 +3189,19 @@ chromium-metrics-reviews@google.com.
     Information about the certificate algorithms and sizes in use on the web, to
     examine compliance with the CA/Browser Forum requirements and security best
     practice. This histogram considers the notBefore as the issuance date, for
-    purposes of what requirements apply.
+    purposes of what requirements apply. {CertificateTypeBRValidity2}
   </summary>
+  <token key="CertificateTypeBRValidity2">
+    <variant name=""/>
+    <variant name=".BR"
+        summary="The *leaf* certificate of the chain expires after 2013-12-31
+                 and was issued on or after 2012-07-01, as judged by the
+                 notBefore, meaning that it should be in scope for the
+                 Baseline Requirement's key size requirements"/>
+    <variant name=".NonBR"
+        summary="The *leaf* certificate of the chain expires on or before
+                 2013-12-31 or was issued before 2012-07-01"/>
+  </token>
 </histogram>
 
 <histogram name="ChromiumAndroidLinker.RelroAvailableImmediately"
@@ -5400,10 +5467,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FirstUserAction.BackgroundTime" units="minutes"
-    expires_after="2025-09-12">
-<!-- Name completed by histogram_suffixes name="FirstUserActionType" and name="FirstUserActionTypeDevice" -->
-
+<histogram name="FirstUserAction.BackgroundTime{FirstUserActionType}"
+    units="minutes" expires_after="2025-09-12">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -5413,8 +5478,20 @@ chromium-metrics-reviews@google.com.
     with a grain of salt. Was expired for M85, M86.
 
     The amount of time (in seconds) that the app was in the background before
-    the user started it
+    the user started it {FirstUserActionType}
   </summary>
+  <token key="FirstUserActionType">
+    <variant name=""/>
+    <variant name="Continuation"
+        summary="and performed an user action indicating that they were
+                 continuing a task from the last time they used the app"/>
+    <variant name="Expiration"
+        summary="and did not perform any user actions that indicate either a
+                 new task or a continued task before some timeout expired"/>
+    <variant name="NewTask"
+        summary="and performed an user action indicating that they were
+                 beginning a new task from the last time they used the app"/>
+  </token>
 </histogram>
 
 <histogram name="FirstUserAction.HandsetUserActionType"
@@ -5673,15 +5750,20 @@ chromium-metrics-reviews@google.com.
   <summary>The duration of preparation for enrollment in attestation.</summary>
 </histogram>
 
-<histogram base="true" name="Hwsec.Attestation.Status"
+<histogram name="Hwsec.Attestation.Status{AttestationOps}"
     enum="HwsecAttestationOpsStatus" expires_after="2025-09-14">
-<!-- Name completed by histogram_suffixes name="AttestationOps" -->
-
   <owner>chingkang@chromium.org</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
     The result of attestation-related operations on the Chrome OS side.
+    {AttestationOps}
   </summary>
+  <token key="AttestationOps">
+    <variant name=".ActivateAttestationKey" summary=""/>
+    <variant name=".DecryptDatabase" summary=""/>
+    <variant name=".EncryptDatabase" summary=""/>
+    <variant name=".PrepareForEnrollment" summary=""/>
+  </token>
 </histogram>
 
 <histogram name="Hyphenation.Open" units="ms" expires_after="2025-05-11">
@@ -6047,15 +6129,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Manifest.HasProperty" enum="Boolean"
+<histogram name="Manifest.HasProperty{ManifestProperties}" enum="Boolean"
     expires_after="2025-09-14">
   <owner>mgiuca@chromium.org</owner>
   <summary>
     Tracks which properties of a Manifest were present when it was parsed. If a
     property can't be parsed, it will be recorded as not present. These
     histograms will only be used if the Manifest was correctly fetched and
-    parsed and the parsed manifest is not empty.
+    parsed and the parsed manifest is not empty. {ManifestProperties}
   </summary>
+  <token key="ManifestProperties">
+    <variant name=""/>
+    <variant name=".description" summary=""/>
+    <variant name=".display" summary=""/>
+    <variant name=".gcm_sender_id" summary=""/>
+    <variant name=".icons" summary=""/>
+    <variant name=".name" summary=""/>
+    <variant name=".orientation" summary=""/>
+    <variant name=".protocol_handlers" summary=""/>
+    <variant name=".screenshots" summary=""/>
+    <variant name=".share_target" summary=""/>
+    <variant name=".short_name" summary=""/>
+    <variant name=".start_url" summary=""/>
+  </token>
 </histogram>
 
 <histogram name="Manifest.ParseIdResult" enum="ManifestParseIdResultType"
@@ -6301,31 +6397,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Mouse.ScrollAcceleration" enum="BooleanEnabled"
-    expires_after="2025-12-01">
-<!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
-
+<histogram name="Mouse.ScrollAcceleration{PreferenceChangeType}"
+    enum="BooleanEnabled" expires_after="2025-12-01">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Whether mouse scroll acceleration is enabled. Only reported on Chrome OS.
 
     Warning: this histogram was expired from 2022-06-15 to M123; data may be
-    missing.
+    missing. {PreferenceChangeType}
   </summary>
 </histogram>
 
-<histogram base="true" name="Mouse.ScrollSensitivity" enum="PointerSensitivity"
-    expires_after="2025-12-01">
-<!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
-
+<histogram name="Mouse.ScrollSensitivity{PreferenceChangeType}"
+    enum="PointerSensitivity" expires_after="2025-12-01">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Mouse scroll sensitivity value. Only reported on Chrome OS.
 
     Warning: this histogram was expired from 2020-12-01 to M105; data may be
-    missing.
+    missing. {PreferenceChangeType}
   </summary>
 </histogram>
 
@@ -7680,8 +7772,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="PointingStick.Acceleration" enum="BooleanEnabled"
-    expires_after="2025-06-11">
+<histogram name="PointingStick.Acceleration{PreferenceChangeType}"
+    enum="BooleanEnabled" expires_after="2025-06-11">
   <owner>dpad@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -7690,10 +7782,11 @@ chromium-metrics-reviews@google.com.
     Chrome OS.
 
     Expired from 2021-04-01 to M113. May be missing some data.
+    {PreferenceChangeType}
   </summary>
 </histogram>
 
-<histogram base="true" name="PointingStick.PointerSensitivity"
+<histogram name="PointingStick.PointerSensitivity{PreferenceChangeType}"
     enum="PointerSensitivity" expires_after="2025-06-11">
   <owner>dpad@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -7702,10 +7795,11 @@ chromium-metrics-reviews@google.com.
     red joysticks found in some laptop keyboards). Only reported on Chrome OS.
 
     Expired from 2021-04-01 to M113. May be missing some data.
+    {PreferenceChangeType}
   </summary>
 </histogram>
 
-<histogram base="true" name="PointingStick.PrimaryButtonRight"
+<histogram name="PointingStick.PrimaryButtonRight{PreferenceChangeType}"
     enum="PointerPrimaryButton" expires_after="2025-06-11">
   <owner>dpad@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -7715,6 +7809,7 @@ chromium-metrics-reviews@google.com.
     on Chrome OS.
 
     Expired from 2021-04-01 to M113. May be missing some data.
+    {PreferenceChangeType}
   </summary>
 </histogram>
 
@@ -9055,7 +9150,8 @@ useful for Chirp alerts (go/crca-alerts). -->
   <summary>The number of unique checked words within a session.</summary>
 </histogram>
 
-<histogram base="true" name="Spellcheck.Windows.ChromeLocalesSupport2"
+<histogram
+    name="Spellcheck.Windows.ChromeLocalesSupport2{Spellcheck_Windows_LocaleSupportType}"
     units="locales" expires_after="2025-02-02">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -9073,10 +9169,12 @@ useful for Chirp alerts (go/crca-alerts). -->
 
     This is recorded once during spell check initialization, and then once each
     time the user changes their Chrome languages.
+    {Spellcheck_Windows_LocaleSupportType}
   </summary>
 </histogram>
 
-<histogram base="true" name="Spellcheck.Windows.SpellcheckLocalesSupport2"
+<histogram
+    name="Spellcheck.Windows.SpellcheckLocalesSupport2{Spellcheck_Windows_LocaleSupportType}"
     units="locales" expires_after="2025-02-02">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -9091,10 +9189,12 @@ useful for Chirp alerts (go/crca-alerts). -->
 
     This is recorded once during spell check initialization, and then once each
     time the user changes their enabled spell check languages.
+    {Spellcheck_Windows_LocaleSupportType}
   </summary>
 </histogram>
 
-<histogram base="true" name="Spellcheck.Windows.SpellcheckRequestDuration"
+<histogram
+    name="Spellcheck.Windows.SpellcheckRequestDuration{Spellcheck_Windows_SpellcheckType}"
     units="ms" expires_after="2024-12-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -9105,10 +9205,12 @@ useful for Chirp alerts (go/crca-alerts). -->
     callback.
 
     This is recorded every time a spell check is performed.
+    {Spellcheck_Windows_SpellcheckType}
   </summary>
 </histogram>
 
-<histogram base="true" name="Spellcheck.Windows.SuggestionGatheringDuration"
+<histogram
+    name="Spellcheck.Windows.SuggestionGatheringDuration{Spellcheck_Windows_SpellcheckType}"
     units="ms" expires_after="2024-12-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -9121,6 +9223,7 @@ useful for Chirp alerts (go/crca-alerts). -->
     This is recorded every time the user opens the context menu on a misspelled
     word, but only if the suggestions hadn't been pre-generated (which happens
     when all spell check locales are supported by the OS spell checker).
+    {Spellcheck_Windows_SpellcheckType}
   </summary>
 </histogram>
 
@@ -9591,31 +9694,27 @@ should be kept until we use this API.  -->
   </summary>
 </histogram>
 
-<histogram base="true" name="Touchpad.ScrollAcceleration" enum="BooleanEnabled"
-    expires_after="2025-12-01">
-<!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
-
+<histogram name="Touchpad.ScrollAcceleration{PreferenceChangeType}"
+    enum="BooleanEnabled" expires_after="2025-12-01">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Whether touchpad scroll acceleration is enabled. Only reported on Chrome OS.
 
     Warning: this histogram was expired from 2020-12-01 to M105, 2023-12-10 to
-    M123; data may be missing.
+    M123; data may be missing. {PreferenceChangeType}
   </summary>
 </histogram>
 
-<histogram base="true" name="Touchpad.ScrollSensitivity"
+<histogram name="Touchpad.ScrollSensitivity{PreferenceChangeType}"
     enum="PointerSensitivity" expires_after="2025-12-01">
-<!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
-
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Touchpad scroll sensitivity value. Only reported on Chrome OS.
 
     Warning: this histogram was expired from 2020-12-01 to M105, 2023-12-10 to
-    M123; data may be missing.
+    M123; data may be missing. {PreferenceChangeType}
   </summary>
 </histogram>
 

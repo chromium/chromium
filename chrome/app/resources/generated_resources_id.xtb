@@ -8,6 +8,7 @@
 <translation id="100323615638474026">Perangkat USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Histori download terbaru</translation>
 <translation id="1004218526896219317">Akses situs</translation>
+<translation id="1005230401424685968">TTTT</translation>
 <translation id="1005274289863221750">Menggunakan mikrofon dan kamera Anda</translation>
 <translation id="1005333234656240382">Aktifkan proses debug ADB?</translation>
 <translation id="1005671386794704751">Rose</translation>
@@ -1377,6 +1378,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="193565226207940518">Alat Dukungan</translation>
 <translation id="1935995810530254458">Tetap salin</translation>
 <translation id="1936157145127842922">Tampilkan dalam Folder</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Halaman ditambahkan ke daftar bacaan}other{Halaman ditambahkan ke daftar bacaan}}</translation>
 <translation id="1936931585862840749">Gunakan angka untuk menunjukkan jumlah salinan yang akan dicetak (1 sampai <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Tidak dapat mengimpor jenis arsitektur container <ph name="ARCHITECTURE_CONTAINER" /> dengan perangkat ini yang menggunakan arsitektur <ph name="ARCHITECTURE_DEVICE" />. Anda dapat mencoba memulihkan container ini ke dalam perangkat berbeda, atau mengakses file di dalam gambar container ini dengan membukanya di aplikasi File.</translation>
 <translation id="1938351510777341717">External Command</translation>
@@ -3188,7 +3190,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
         <ph name="BREAK" />
         <ph name="BREAK" />
         Anda dapat mengelola setelan dari kartu ini kapan saja atau melihat opsi lainnya di Sesuaikan Chrome.</translation>
-<translation id="3207437351138888228">Saat Anda mengisi formulir, info Anda dan halaman asalnya akan dikirim ke Google untuk membuat saran</translation>
 <translation id="3207960819495026254">Diberi bookmark</translation>
 <translation id="3208584281581115441">Periksa sekarang</translation>
 <translation id="3208703785962634733">Tidak dipastikan</translation>
@@ -3233,6 +3234,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3242289508736283383">Aplikasi dengan atribut manifes 'kiosk_only' harus diinstal dalam mode kios ChromeOS</translation>
 <translation id="3243017971870859287">Membaca nomor seri perangkat dan komponen ChromeOS Flex</translation>
 <translation id="324366796737464147">Peredam bising</translation>
+<translation id="3244271242291266297">BB</translation>
 <translation id="3244294424315804309">Lanjutkan mematikan suara</translation>
 <translation id="3247006341013237647">Atur tab?</translation>
 <translation id="3247649647204519958">Dari sini, Anda dapat melihat dan mengelola izin ekstensi untuk situs yang Anda buka</translation>
@@ -6100,7 +6102,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5267572070504076962">Aktifkan Safe Browsing untuk mendapatkan perlindungan terhadap situs berbahaya</translation>
 <translation id="5269977353971873915">Gagal Mencetak</translation>
 <translation id="5271578170655641944">Hapus akses Google Drive?</translation>
-<translation id="5271782684896713035">Data mungkin dilihat oleh petugas peninjau untuk meningkatkan kualitas fitur ini</translation>
 <translation id="5273806377963980154">Edit URL situs</translation>
 <translation id="5275084684151588738">Kamus Pengguna</translation>
 <translation id="5275338516105640560">Tombol Grup Tab Tersimpan</translation>

@@ -424,7 +424,9 @@ gpu::SyncToken Buffer::Texture::CopyTexImage(
     sync_token = sii->GenUnverifiedSyncToken();
 
     gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
-    ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+    std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+        shared_image_->BeginRasterAccess(ri, sync_token, /*readonly=*/true);
+
     DCHECK_NE(query_id_, 0u);
     ri->BeginQueryEXT(query_type_, query_id_);
 
@@ -437,7 +439,7 @@ gpu::SyncToken Buffer::Texture::CopyTexImage(
     // Create and return a sync token that can be used to ensure that the
     // CopySharedImage call is processed before issuing any commands
     // that will read from the target texture on a different context.
-    ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+    sync_token = gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
   }
   return sync_token;
 }

@@ -507,7 +507,6 @@ void DistributeExtraSpaceToSets(LayoutUnit extra_space,
                                 GridItemContributionType contribution_type,
                                 GridSetPtrVector* sets_to_grow,
                                 GridSetPtrVector* sets_to_grow_beyond_limit) {
-  DCHECK_GT(extra_space, 0);
   DCHECK(sets_to_grow);
 
   if (extra_space == kIndefiniteSize) {

@@ -19,7 +19,6 @@
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registrar_observer.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/webapps/common/web_app_id.h"
 #include "extensions/browser/app_sorting.h"
@@ -30,7 +29,7 @@
 
 namespace web_app {
 class WebApp;
-class WebAppRegistrar;
+class WebAppSyncBridge;
 }  // namespace web_app
 
 namespace extensions {

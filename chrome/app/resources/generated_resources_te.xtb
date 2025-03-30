@@ -8,6 +8,7 @@
 <translation id="100323615638474026">USB పరికరం (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">ఇటీవలి డౌన్‌లోడ్ హిస్టరీ</translation>
 <translation id="1004218526896219317">సైట్ యాక్సెస్</translation>
+<translation id="1005230401424685968">YYYY</translation>
 <translation id="1005274289863221750">మీ మైక్రోఫోన్ మరియు కెమెరాను ఉపయోగించండి</translation>
 <translation id="1005333234656240382">ADB డీబగ్గింగ్‌ను ఎనేబుల్ చేయాలా?</translation>
 <translation id="1005671386794704751">గులాబీ రంగు</translation>
@@ -1375,6 +1376,7 @@
 <translation id="193565226207940518">సపోర్ట్ టూల్</translation>
 <translation id="1935995810530254458">ఏదైమైనా కాపీ చేయండి</translation>
 <translation id="1936157145127842922">ఫోల్డర్‌లో చూపించు</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{చదవాల్సిన లిస్ట్‌కు పేజీ జోడించబడింది}other{చదవాల్సిన లిస్ట్‌కు పేజీలు జోడించబడ్డాయి}}</translation>
 <translation id="1936931585862840749">ఎన్ని కాపీలను ప్రింట్ చేయాలో సూచించడానికి సంఖ్యను (1 నుండి <ph name="MAX_COPIES" />) ఉపయోగించండి.</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> అయిన ఈ పరికరంతో <ph name="ARCHITECTURE_CONTAINER" /> రకమైన కంటెయినర్ ఆర్కిటెక్చర్‌ను దిగుమతి చేయడం సాధ్యపడదు. మీరు ఈ కంటెయినర్‌ను వేరే పరికరంలోకి పునరుద్ధరించడం ప్రయత్నించవచ్చు లేదా ఈ కంటెయినర్ చిత్రంలోని ఫైళ్లను "ఫైల్స్ యాప్"లో తెరవడం ద్వారా యాక్సెస్ చేయవచ్చు.</translation>
 <translation id="1938351510777341717">బాహ్య ఆదేశం</translation>
@@ -2991,6 +2993,7 @@
 <translation id="3045447014237878114">ఈ సైట్ పలు ఫైళ్లను ఆటోమేటిక్‌గా డౌన్‌లోడ్ చేసింది</translation>
 <translation id="3046178388369461825">Linux డిస్క్ స్పేస్ చాలా తక్కువగా ఉంది</translation>
 <translation id="304644035656848980">మీ మైక్రోఫోన్ ప్రివ్యూ</translation>
+<translation id="3046892784550338476">వెర్షన్ <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">వెబ్‌పేజీ, సంపూర్ణం</translation>
 <translation id="304747341537320566">ప్రసంగ ఇంజిన్‌లు</translation>
 <translation id="3047678109605649715">మీ పరికరంలో <ph name="LANGUAGE" /> భాష వాయిస్‌లు లేవు. మీ పరికరంలో స్పేస్‌ను క్లీన్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
@@ -3083,6 +3086,7 @@
 <translation id="3122883569442693641">మరిన్ని వివరాలు</translation>
 <translation id="3124111068741548686">వినియోగదారు నిర్వహించేవి</translation>
 <translation id="3124332159330678621">మీ బ్రౌజర్‌కు కొత్త రూపాన్ని అందించడానికి Chromeను అనుకూలంగా మార్చండి</translation>
+<translation id="3125816458150005808">మీరు దాన్ని అన్‌పిన్ చేసి మెనూ నుండి తెరవవచ్చు</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">ఛార్జింగ్ మరియు పనితీరు సమస్యలను నివారించడానికి, అనుకూలమైన డెల్ లేదా USB టైప్-సి పవర్ అడాప్టర్‌ను ఉపయోగించండి.</translation>
 <translation id="3127862849166875294">Linux డిస్క్ సైజ్‌ మార్పు</translation>
@@ -3186,7 +3190,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         మీరు ఈ కార్డ్ నుండి సెట్టింగ్‌లను ఎప్పుడైనా మేనేజ్ చేయవచ్చు, లేదా 'Chromeను అనుకూలంగా మార్చుకోండి'లో మరిన్ని ఆప్షన్‌లను చూడవచ్చు.</translation>
-<translation id="3207437351138888228">మీరు ఫారమ్‌ను నింపేటప్పుడు, పేజీ సూచనలను జెనరేట్ చేయడానికి మీ సమాచారం, దాని నుండి వచ్చే పేజీ Googleకు పంపబడతాయి</translation>
 <translation id="3207960819495026254">బుక్‌మార్క్ చేయబడింది</translation>
 <translation id="3208584281581115441">ఇప్పుడే చెక్ చేయండి</translation>
 <translation id="3208703785962634733">నిర్థారించబడలేదు</translation>
@@ -3231,6 +3234,7 @@
 <translation id="3242289508736283383">'kiosk_only' మ్యానిఫెస్ట్ లక్షణం గల యాప్‌ను తప్పనిసరిగా ChromeOS కియోస్క్ మోడ్‌లో ఇన్‌స్టాల్ చేయాలి</translation>
 <translation id="3243017971870859287">ChromeOS Flex పరికరం, అలాగే కాంపోనెంట్ సీరియల్ నంబర్‌లను చదవండి</translation>
 <translation id="324366796737464147">నాయిస్ క్యాన్సిలేషన్</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">సౌండ్‌ని మ్యూట్ చేయడాన్ని కొనసాగించండి</translation>
 <translation id="3247006341013237647">ట్యాబ్‌లను ఆర్గనైజ్ చేయాలా?</translation>
 <translation id="3247649647204519958">ఇప్పటి నుండి, మీరు ఉన్న సైట్ కోసం ఎక్స్‌టెన్షన్ అనుమతులను చూడవచ్చు, మేనేజ్ చేయవచ్చు</translation>
@@ -5333,6 +5337,7 @@
 <translation id="4723140812774948886">తర్వాతి దానితో స్వాప్ చేయి</translation>
 <translation id="4724450788351008910">అనుబంధం మార్చబడింది</translation>
 <translation id="4725511304875193254">కార్గి</translation>
+<translation id="4725762702191453794">ట్యాబ్ సెర్చ్ ఇప్పుడు మీ టూల్‌బార్‌కు పిన్ చేయబడింది</translation>
 <translation id="4726710355753484204">జూమ్ - ఇన్ చేయడానికి Ctrl + Alt + ప్రకాశాన్ని పెంచే కీలను ఉపయోగించండి.
 జూమ్ - అవుట్ చేయడానికి Ctrl + Alt + ప్రకాశాన్ని తగ్గించే కీలను ఉపయోగించండి.</translation>
 <translation id="4726710629007580002">ఈ ఎక్స్‌టెన్ష‌న్‌ను ఇన్‌స్టాల్ చేయడానికి ప్రయత్నిస్తున్నప్పుడు హెచ్చరికలు చేయబడ్డాయి:</translation>
@@ -6098,7 +6103,6 @@
 <translation id="5267572070504076962">హానికరమైన సైట్‌ల నుండి రక్షణ పొందడానికి సురక్షిత బ్రౌజింగ్‌ను ఆన్ చేయండి</translation>
 <translation id="5269977353971873915">ముద్రణ విఫలమైంది</translation>
 <translation id="5271578170655641944">Google Drive యాక్సెస్‌ను తీసివేయాలా?</translation>
-<translation id="5271782684896713035">ఈ ఫీచర్‌ను మెరుగుపరచడానికి, రివ్యూవర్‌లు డేటాను చెక్ చేయవచ్చు</translation>
 <translation id="5273806377963980154">సైట్ URLను ఎడిట్ చేయండి</translation>
 <translation id="5275084684151588738">యూజర్ డిక్షనరీలు</translation>
 <translation id="5275338516105640560">సేవ్ చేయబడిన ట్యాబ్ గ్రూప్ బటన్</translation>

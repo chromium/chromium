@@ -54,7 +54,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -69,7 +68,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -86,7 +84,6 @@ import java.io.IOException;
             + "/event_trigger2/name%3Aiph_tabgroups_drag_and_drop;comparator%3A<2;window%3A90;storage%3A365"
             + "/event_used/name%3Atab_drag_and_drop_to_group;comparator%3A==0;window%3A365;storage%3A365"
             + "/session_rate/<1")
-@DisableFeatures({OmniboxFeatureList.ANDROID_HUB_SEARCH})
 @DoNotBatch(reason = "Batching can cause message state to leak between tests.")
 public class TabGridIphTest {
     private ModalDialogManager mModalDialogManager;
@@ -100,7 +97,7 @@ public class TabGridIphTest {
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(
                             ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
-                    .setRevision(3)
+                    .setRevision(4)
                     .build();
 
     @Before

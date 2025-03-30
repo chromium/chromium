@@ -26,7 +26,7 @@ typedef StreamParser::TrackId TrackId;
 typedef StreamParser::BufferQueue BufferQueue;
 
 const int kEnd = -1;
-const uint8_t kFakeData[] = {0xFF};
+const std::array<const uint8_t, 1> kFakeData = {0xFF};
 const TrackId kAudioTrackId = 0;
 const TrackId kVideoTrackId = 1;
 
@@ -54,8 +54,7 @@ static void GenerateBuffers(const int* decode_timestamps,
   for (int i = 0; decode_timestamps[i] != kEnd; ++i) {
     scoped_refptr<StreamParserBuffer> buffer;
     if (i % 3 == 0) {
-      buffer = StreamParserBuffer::CopyFrom(kFakeData, sizeof(kFakeData), true,
-                                            type, track_id);
+      buffer = StreamParserBuffer::CopyFrom(kFakeData, true, type, track_id);
     } else if (i % 3 == 1) {
       buffer = StreamParserBuffer::FromArray(
           base::HeapArray<uint8_t>::CopiedFrom(kFakeData), true, type,

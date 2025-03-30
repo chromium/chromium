@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
@@ -3775,6 +3776,59 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSameSiteProcessTest,
   EXPECT_EQ(content_host1->GetProcess(), content_host2->GetProcess());
 }
 
+class PDFExtensionZoomTest : public PDFExtensionTest {
+ public:
+  PDFExtensionZoomTest() = default;
+  ~PDFExtensionZoomTest() override = default;
+
+ protected:
+  // Callers must set the default zoom level and load the PDF before calling
+  // `TestDefaultZoom()`.
+  void TestDefaultZoom(content::RenderFrameHost* extension_host) {
+    WebContents* web_contents = GetActiveWebContents();
+    auto* main_contents_zoom_controller =
+        zoom::ZoomController::FromWebContents(web_contents);
+    ASSERT_TRUE(main_contents_zoom_controller);
+
+    // The PDF extension should not use the default zoom level and stay at 0
+    // zoom level, since the PDF UI should not be affected by zoom.
+    auto* extension_host_zoom_controller =
+        UseOopif()
+            ? zoom::ZoomController::FromWebContentsAndRenderFrameHost(
+                  web_contents, extension_host->GetGlobalId())
+            : zoom::ZoomController::FromWebContents(
+                  content::WebContents::FromRenderFrameHost(extension_host));
+    ASSERT_TRUE(extension_host_zoom_controller);
+    EXPECT_NE(main_contents_zoom_controller, extension_host_zoom_controller);
+
+    const double actual_zoom = extension_host_zoom_controller->GetZoomLevel();
+    EXPECT_NE(main_contents_zoom_controller->GetZoomLevel(), actual_zoom);
+    // A zoom level of 0 corresponds to a zoom factor of 1, or 100%.
+    EXPECT_EQ(0, actual_zoom);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionZoomTest, DefaultZoomFullPage) {
+  browser()->profile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(0.5);
+
+  content::RenderFrameHost* extension_host =
+      LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(extension_host);
+
+  TestDefaultZoom(extension_host);
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionZoomTest, DefaultZoomEmbed) {
+  browser()->profile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(0.5);
+
+  content::RenderFrameHost* extension_host =
+      LoadPdfInFirstChildGetExtensionHost(
+          embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
+  ASSERT_TRUE(extension_host);
+
+  TestDefaultZoom(extension_host);
+}
+
 // PDF extension tests for the OOPIF PDF viewer.
 class PDFExtensionOopifTest : public PDFExtensionTestWithoutOopifOverride {
  public:
@@ -4596,3 +4650,4 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PDFExtensionPrerenderAndFencedFrameTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionIncognitoTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionSameSiteProcessTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionZoomTest);

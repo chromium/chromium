@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_WEBRTC_OVERRIDES_LOW_PRECISION_TIMER_H_
 #define THIRD_PARTY_BLINK_WEBRTC_OVERRIDES_LOW_PRECISION_TIMER_H_
 
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -14,7 +13,6 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
-#include "third_party/webrtc_overrides/metronome_source.h"
 
 namespace blink {
 

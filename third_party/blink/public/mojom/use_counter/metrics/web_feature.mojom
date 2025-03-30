@@ -4843,6 +4843,8 @@ enum WebFeature {
   kSummarizer_SharedContext = 5457,
   kSummarizer_Type = 5458,
   kCrossOriginSameSiteCookieAccessViaStorageAccessAPI = 5459,
+  kV8GPUAdapter_IsFallbackAdapter_AttributeGetter = 5460,
+  kLanguageDetector_ExpectedInputLanguages = 5461,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

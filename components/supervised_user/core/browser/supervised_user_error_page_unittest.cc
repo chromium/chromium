@@ -4,6 +4,8 @@
 
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 
+#include <optional>
+
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -195,7 +197,8 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
       param.allow_access_requests, param.custodian, param.second_custodian,
       param.reason,
       /*app_locale=*/"",
-      /*already_sent_remote_request=*/false, /*is_main_frame=*/true);
+      /*already_sent_remote_request=*/false, /*is_main_frame=*/true,
+      /*ios_font_size_multiplier=*/std::nullopt);
 
   VerifyCustodianInfo();
 

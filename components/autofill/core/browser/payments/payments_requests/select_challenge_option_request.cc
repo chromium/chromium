@@ -81,7 +81,7 @@ std::string SelectChallengeOptionRequest::GetRequestContent() {
 
   std::string request_content;
   base::JSONWriter::Write(request_dict, &request_content);
-  VLOG(3) << "selectchallengeoption request body: " << request_content;
+  DVLOG(3) << "selectchallengeoption request body: " << request_content;
   return request_content;
 }
 

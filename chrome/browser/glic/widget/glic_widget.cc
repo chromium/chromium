@@ -48,8 +48,8 @@ void* kGlicWidgetIdentifier = &kGlicWidgetIdentifier;
 GlicWidget::GlicWidget(ThemeService* theme_service, InitParams params)
     : views::Widget(std::move(params)) {
   if (UserResizeEnabled()) {
-    // Widget starts out non-resizable; client may enable resizing.
     minimum_widget_size_ = GetInitialSize();
+    OnSizeConstraintsChanged();
   }
   theme_service_observation_.Observe(theme_service);
 }
@@ -64,7 +64,8 @@ gfx::Size GlicWidget::GetInitialSize() {
 std::unique_ptr<GlicWidget> GlicWidget::Create(
     Profile* profile,
     const gfx::Rect& initial_bounds,
-    base::WeakPtr<ui::AcceleratorTarget> accelerator_delegate) {
+    base::WeakPtr<ui::AcceleratorTarget> accelerator_delegate,
+    bool user_resizable) {
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
@@ -82,6 +83,7 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
   params.animation_enabled = true;
 #endif
   auto delegate = std::make_unique<GlicWidgetDelegate>();
+  delegate->SetCanResize(UserResizeEnabled() && user_resizable);
   params.delegate = delegate.release();
 
   auto widget = base::WrapUnique(new GlicWidget(
@@ -111,6 +113,7 @@ display::Display GlicWidget::GetDisplay() {
 void GlicWidget::SetMinimumSize(const gfx::Size& size) {
   minimum_widget_size_ = size;
   minimum_widget_size_.SetToMax(GetInitialSize());
+  OnSizeConstraintsChanged();
 }
 
 gfx::Size GlicWidget::GetMinimumSize() const {

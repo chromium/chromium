@@ -31,7 +31,9 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -107,30 +109,6 @@ public class KeyboardShortcutsTest {
     public void testOpenBookmarks_withoutMetaState() {
         testOpenBookmarks(
                 /* expectHandled= */ false, /* isCurrentTabVisible= */ true, /* metaState= */ 0);
-    }
-
-    private void testOpenBookmarks(
-            boolean expectHandled, boolean isCurrentTabVisible, int metaState) {
-        assertEquals(
-                expectHandled,
-                KeyboardShortcuts.onKeyDown(
-                        new KeyEvent(
-                                /* downTime= */ SystemClock.uptimeMillis(),
-                                /* eventTime= */ SystemClock.uptimeMillis(),
-                                KeyEvent.ACTION_DOWN,
-                                KeyEvent.KEYCODE_O,
-                                /* repeat= */ 0,
-                                metaState),
-                        isCurrentTabVisible,
-                        /* tabSwitchingEnabled= */ true,
-                        mTabModelSelector,
-                        mMenuOrKeyboardActionController,
-                        mToolbarManager));
-
-        verify(mMenuOrKeyboardActionController, expectHandled ? times(1) : never())
-                .onMenuOrKeyboardAction(
-                        /* id= */ eq(R.id.all_bookmarks_menu_id),
-                        /* fromMenu= */ expectHandled ? eq(false) : anyBoolean());
     }
 
     @Test
@@ -245,21 +223,7 @@ public class KeyboardShortcutsTest {
                                 "expected handling of key event with keycode %s and metaState %s to"
                                         + " be %s",
                                 keyCode, metaState, expectHandled);
-                assertTrue(
-                        message,
-                        KeyboardShortcuts.onKeyDown(
-                                new KeyEvent(
-                                        /* downTime= */ SystemClock.uptimeMillis(),
-                                        /* eventTime= */ SystemClock.uptimeMillis(),
-                                        KeyEvent.ACTION_DOWN,
-                                        keyCode,
-                                        /* repeat= */ 0,
-                                        metaState),
-                                /* isCurrentTabVisible= */ true,
-                                /* tabSwitchingEnabled= */ true,
-                                mTabModelSelector,
-                                mMenuOrKeyboardActionController,
-                                mToolbarManager));
+                assertTrue(message, keyDown(keyCode, metaState, true));
                 verify(mTabModel, times(1))
                         .setIndex(SMALL_NUMBER_OF_TABS - 1, TabSelectionType.FROM_USER);
                 clearInvocations(mTabModel);
@@ -278,26 +242,53 @@ public class KeyboardShortcutsTest {
                         String.format(
                                 "expected key event with keycode %s and metaState %s to be handled",
                                 keyCode, metaState);
-                assertTrue(
-                        message,
-                        KeyboardShortcuts.onKeyDown(
-                                new KeyEvent(
-                                        /* downTime= */ SystemClock.uptimeMillis(),
-                                        /* eventTime= */ SystemClock.uptimeMillis(),
-                                        KeyEvent.ACTION_DOWN,
-                                        keyCode,
-                                        /* repeat= */ 0,
-                                        metaState),
-                                /* isCurrentTabVisible= */ true,
-                                /* tabSwitchingEnabled= */ true,
-                                mTabModelSelector,
-                                mMenuOrKeyboardActionController,
-                                mToolbarManager));
+                assertTrue(message, keyDown(keyCode, metaState, true));
                 verify(mTabModel, times(1))
                         .setIndex(LARGE_NUMBER_OF_TABS - 1, TabSelectionType.FROM_USER);
                 clearInvocations(mTabModel);
             }
         }
+    }
+
+    // Tests for focus placement on top Clank.
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_KEYBOARD_A11Y)
+    public void testGoToToolbar() {
+        assertTrue(
+                keyDown(KeyEvent.KEYCODE_T, KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON, true));
+        verify(mToolbarManager, times(1)).requestFocus();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_KEYBOARD_A11Y)
+    public void testGoToBookmarksBar() {
+        keyDown(KeyEvent.KEYCODE_B, KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON, true);
+        verify(mMenuOrKeyboardActionController, times(1))
+                .onMenuOrKeyboardAction(
+                        /* id= */ eq(R.id.focus_bookmarks), /* fromMenu= */ eq(false));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_KEYBOARD_A11Y)
+    public void testFocusSwitch() {
+        keyDown(KeyEvent.KEYCODE_F6, 0, true);
+        verify(mMenuOrKeyboardActionController, times(1))
+                .onMenuOrKeyboardAction(
+                        /* id= */ eq(R.id.switch_keyboard_focus_row), /* fromMenu= */ eq(false));
+    }
+
+    private void testOpenBookmarks(
+            boolean expectHandled, boolean isCurrentTabVisible, int metaState) {
+        assertEquals(expectHandled, keyDown(KeyEvent.KEYCODE_O, metaState, isCurrentTabVisible));
+
+        verify(mMenuOrKeyboardActionController, expectHandled ? times(1) : never())
+                .onMenuOrKeyboardAction(
+                        /* id= */ eq(R.id.all_bookmarks_menu_id),
+                        /* fromMenu= */ expectHandled ? eq(false) : anyBoolean());
     }
 
     private void assertGoToTab(boolean expectHandled, int keyCode, int metaState) {
@@ -308,26 +299,28 @@ public class KeyboardShortcutsTest {
         // Note: we always expect (CTRL or ALT) + [1-9] to be a "go to tab" shortcut; we expect
         // onKeyDown to always be true. However, setting the index of the tab model won't happen if
         // the number is out of range.
-        assertTrue(
-                message,
-                KeyboardShortcuts.onKeyDown(
-                        new KeyEvent(
-                                /* downTime= */ SystemClock.uptimeMillis(),
-                                /* eventTime= */ SystemClock.uptimeMillis(),
-                                KeyEvent.ACTION_DOWN,
-                                keyCode,
-                                /* repeat= */ 0,
-                                metaState),
-                        /* isCurrentTabVisible= */ true,
-                        /* tabSwitchingEnabled= */ true,
-                        mTabModelSelector,
-                        mMenuOrKeyboardActionController,
-                        mToolbarManager));
+        assertTrue(message, keyDown(keyCode, metaState, true));
         int numCode =
                 (KeyEvent.KEYCODE_1 <= keyCode && keyCode <= KeyEvent.KEYCODE_8)
                         ? keyCode - KeyEvent.KEYCODE_0
                         : keyCode - KeyEvent.KEYCODE_NUMPAD_0;
         verify(mTabModel, expectHandled ? times(1) : never())
                 .setIndex(numCode - 1, TabSelectionType.FROM_USER);
+    }
+
+    private boolean keyDown(int keyCode, int metaState, boolean isCurrentTabVisible) {
+        return KeyboardShortcuts.onKeyDown(
+                new KeyEvent(
+                        /* downTime= */ SystemClock.uptimeMillis(),
+                        /* eventTime= */ SystemClock.uptimeMillis(),
+                        KeyEvent.ACTION_DOWN,
+                        keyCode,
+                        /* repeat= */ 0,
+                        metaState),
+                isCurrentTabVisible,
+                /* tabSwitchingEnabled= */ true,
+                mTabModelSelector,
+                mMenuOrKeyboardActionController,
+                mToolbarManager);
     }
 }

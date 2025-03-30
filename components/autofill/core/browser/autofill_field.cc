@@ -343,8 +343,9 @@ void AutofillField::MaybeAddServerPrediction(
     AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
         prediction) {
   overall_type_ = std::nullopt;
-  if (server_predictions_.size() == 1 && !server_predictions_[0].has_type() &&
-      !server_predictions_[0].has_source()) {
+  if (server_predictions_.size() == 1 &&
+      server_predictions_[0].type() == NO_SERVER_DATA &&
+      server_predictions_[0].source() == FieldPrediction::SOURCE_UNSPECIFIED) {
     // If the only existing "server prediction" is an empty one, remove it.
     server_predictions_.clear();
   }

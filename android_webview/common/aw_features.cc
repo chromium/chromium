@@ -101,12 +101,6 @@ BASE_FEATURE(kWebViewRecordAppDataDirectorySize,
              "WebViewRecordAppDataDirectorySize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Flag to restrict main frame Web Content to verified web content. Verification
-// happens via Digital Asset Links.
-BASE_FEATURE(kWebViewRestrictSensitiveContent,
-             "WebViewRestrictSensitiveContent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable blocking the loading of mature sites (according to Google SafeSearch)
 // on WebViews running on supervised user accounts.
 BASE_FEATURE(kWebViewSupervisedUserSiteBlock,

@@ -23,7 +23,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/metrics_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/unexportable_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -203,7 +203,7 @@ class KeyRotationManagerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<crypto::UnexportableKeyProvider> key_provider_;
 

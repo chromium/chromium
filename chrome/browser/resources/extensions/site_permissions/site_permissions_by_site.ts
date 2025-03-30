@@ -43,9 +43,9 @@ export class ExtensionsSitePermissionsBySiteElement extends CrLitElement {
     };
   }
 
-  delegate?: ItemDelegate&SiteSettingsDelegate;
-  extensions: chrome.developerPrivate.ExtensionInfo[] = [];
-  protected siteGroups_: chrome.developerPrivate.SiteGroup[] = [];
+  accessor delegate: ItemDelegate&SiteSettingsDelegate|undefined;
+  accessor extensions: chrome.developerPrivate.ExtensionInfo[] = [];
+  protected accessor siteGroups_: chrome.developerPrivate.SiteGroup[] = [];
 
   override firstUpdated() {
     assert(this.delegate);
