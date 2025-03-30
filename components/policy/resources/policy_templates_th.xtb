@@ -385,15 +385,6 @@
 <translation id="1305400589435476516">การตั้งค่านโยบายเป็น "เปิดใช้" จะทำให้อุปกรณ์โรมมิ่งข้อมูลได้
 
       การตั้งค่านโยบายเป็น "ปิดใช้" หรือไม่ได้ตั้งค่าจะทำให้ใช้การโรมมิ่งข้อมูลไม่ได้</translation>
-<translation id="1308526987406924874">การตั้งค่านโยบายจะให้คุณสร้างรายการรูปแบบ URL ซึ่งระบุเว็บไซต์ที่ไม่สามารถขอให้ผู้ใช้ให้สิทธิ์เข้าถึงพอร์ตอนุกรมได้
-
-      การไม่ตั้งค่านโยบายหมายความว่า <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> จะมีผลกับทุกเว็บไซต์ (หากตั้งค่าไว้) แต่หากไม่ได้ตั้งค่าไว้ การตั้งค่าส่วนตัวของผู้ใช้จะมีผล
-
-      สำหรับรูปแบบ URL ที่ไม่ตรงกับนโยบาย <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> (หากมีการจับคู่) <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (หากตั้งค่าไว้) หรือการตั้งค่าส่วนตัวของผู้ใช้จะมีความสำคัญเหนือกว่าตามลำดับข้างต้น
-
-      รูปแบบ URL ต้องไม่ขัดแย้งกับ <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> ไม่มีนโยบายที่จะมีความสำคัญสูงกว่าหาก URL ตรงกับทั้ง 2 นโยบาย
-
-      ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ <ph name="URL_LABEL" /> ที่ถูกต้องได้ที่ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns <ph name="WILDCARD_VALUE" /> ไม่ใช่ค่าที่ยอมรับสำหรับนโยบายนี้</translation>
 <translation id="1309259005392595570">ปิดใช้ข้อตกลงเกี่ยวกับคีย์ในการเข้ารหัสเพื่อรักษาความปลอดภัยจากคอมพิวเตอร์ควอนตัมสำหรับ TLS</translation>
 <translation id="1309465583050255779">หาก <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> เปิดอยู่ การตั้งค่า <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> จะระบุชื่อของผู้ให้บริการค้นหาเริ่มต้น
 
@@ -2818,15 +2809,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
           นโยบายนี้ไม่บังคับ หากไม่ตั้งค่านโยบาย จะไม่มีการแทนที่คำค้นหา
 
           นโยบายนี้มีผลต่อเมื่อเปิดใช้งานนโยบาย "DefaultSearchProviderEnabled"</translation>
-<translation id="3049115011983576556">การตั้งค่านโยบายจะให้คุณสร้างรายการรูปแบบ URL ซึ่งระบุเว็บไซต์ที่ขอให้ผู้ใช้ให้สิทธิ์เข้าถึงพอร์ตอนุกรมได้
-
-      การไม่ตั้งค่านโยบายหมายความว่า <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> จะมีผลกับทุกเว็บไซต์ (หากตั้งค่าไว้) แต่หากไม่ได้ตั้งค่าไว้ การตั้งค่าส่วนตัวของผู้ใช้จะมีผล
-
-      สำหรับรูปแบบ URL ที่ไม่ตรงกับนโยบาย <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> (หากมีการจับคู่) <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (หากตั้งค่าไว้) หรือการตั้งค่าส่วนตัวของผู้ใช้จะมีความสำคัญเหนือกว่าตามลำดับข้างต้น
-
-      รูปแบบ URL ต้องไม่ขัดแย้งกับ <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> ไม่มีนโยบายที่จะมีความสำคัญสูงกว่าหาก URL ตรงกับทั้ง 2 นโยบาย
-
-      ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ <ph name="URL_LABEL" /> ที่ถูกต้องได้ที่ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns <ph name="WILDCARD_VALUE" /> ไม่ใช่ค่าที่ยอมรับสำหรับนโยบายนี้</translation>
 <translation id="305106159605171619">การลด User Agent ปิดใช้อยู่ และไม่ได้เปิดใช้ผ่านช่วงทดลองใช้งานภาคสนามหรือช่วงทดลองใช้จากต้นทาง</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3057459316145779761">ไม่อนุญาตให้ใช้ Chrome สำหรับการทดสอบ</translation>
@@ -4500,6 +4482,27 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 <translation id="4311195029067684288">เต็ม</translation>
 <translation id="4311662690937656540">บังคับใช้การเข้าสู่ระบบออนไลน์ในหน้าจอเข้าสู่ระบบและหน้าจอล็อก</translation>
 <translation id="4313767483634435271">ที่อยู่ MAC ของแท่นชาร์จที่กำหนดของอุปกรณ์</translation>
+<translation id="4313778862255986189">ฟีเจอร์นี้อยู่ในเวอร์ชันเบต้า เนื่องจากฟีเจอร์นี้อยู่ระหว่างการพัฒนา จึงพร้อมให้บริการแก่ผู้ทดสอบที่เชื่อถือได้ โปรดทราบว่าฟีเจอร์นี้อาจมีการเปลี่ยนแปลงและอัปเดต
+
+นโยบายนี้อนุญาตให้ผู้ดูแลระบบตั้งค่าเครื่องมือรวบรวมข้อมูลการค้นหาขององค์กรที่กำหนดซึ่งจะแสดงคำแนะนำและผลการค้นหาในแถบที่อยู่เมื่อถูกเรียกให้แสดงโดยคีย์เวิร์ดเฉพาะ ผู้ใช้เริ่มการค้นหาได้โดยการพิมพ์คีย์เวิร์ดที่ระบุในช่อง <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> โดยใส่หรือไม่ใส่คำนำหน้า @ (เช่น <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) ตามด้วยการกด Space หรือ Tab ในแถบที่อยู่
+
+ต้องใส่ข้อมูลในช่อง <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />
+
+ช่อง <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> สอดคล้องกับชื่อเครื่องมือค้นหาที่แสดงให้ผู้ใช้เห็นในแถบที่อยู่
+
+ช่อง <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> สอดคล้องกับคีย์เวิร์ดที่ผู้ใช้ป้อนเพื่อเรียกใช้การค้นหา ทางลัดมีคำและอักขระธรรมดาได้ แต่ต้องไม่มีการเว้นวรรคหรือเริ่มต้นด้วยสัญลักษณ์ @ และทางลัดต้องไม่ซ้ำกัน
+
+ช่อง <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> จะระบุ URL ที่จะค้นหา ป้อนที่อยู่เว็บสำหรับหน้าผลการค้นหาของเครื่องมือค้นหา แล้วใช้ <ph name="SEARCH_TERM_MARKER" /> แทนตำแหน่งที่เป็นคำค้นหา
+
+ช่อง <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> จะระบุ URL ที่ให้การแนะนำการค้นหา หาก <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> มี <ph name="SEARCH_TERM_MARKER" /> Chrome จะได้รับการแนะนำการค้นหาจากคำขอ GET ไปยัง URL ที่แทนที่ <ph name="SEARCH_TERM_MARKER" /> ด้วยคำค้นหาของผู้ใช้ มิเช่นนั้น ระบบจะสร้างคำขอ POST และส่งคำค้นหาของผู้ใช้ในพารามิเตอร์ POST ภายใต้คีย์ <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />
+
+ช่อง <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> จะระบุ URL ไปยังรูปภาพที่จะใช้ในการแนะนำการค้นหา ระบบจะใช้ไอคอนเริ่มต้นเมื่อไม่ได้ตั้งค่าช่องนี้ ขอแนะนำให้ใช้ไอคอน Fav (ตัวอย่าง <ph name="ICON_URL_EXAMPLE" />) รูปแบบไฟล์ภาพที่รองรับ ได้แก่ JPEG, PNG และ ICO
+
+ช่อง <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> จะระบุว่าต้องใช้แถบที่อยู่ <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> เพื่อดูการแนะนำการค้นหาหรือไม่ หากไม่ได้ตั้งค่าช่องนี้ ก็ไม่จำเป็นต้องใช้แถบที่อยู่ <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />
+
+ใน <ph name="MS_WIN_NAME" /> นโยบายนี้ใช้ได้เฉพาะในอินสแตนซ์ที่เข้าร่วมโดเมน <ph name="MS_AD_NAME" />, เข้าร่วม <ph name="MS_AAD_NAME" /> หรือลงทะเบียนใน <ph name="CHROME_ENTERPRISE_CORE_NAME" />
+
+ใน <ph name="MAC_OS_NAME" /> นโยบายนี้ใช้ได้เฉพาะในอินสแตนซ์ที่จัดการผ่าน MDM, เข้าร่วมโดเมนผ่าน MCX หรือลงทะเบียนใน <ph name="CHROME_ENTERPRISE_CORE_NAME" /></translation>
 <translation id="4314538398999793073">ปิดใช้การค้นหา CNAME ระหว่างการตรวจสอบสิทธิ์ Kerberos</translation>
 <translation id="4320592646346933548">Wi-Fi</translation>
 <translation id="43213511254881626">นโยบายนี้ควบคุมว่าจะให้เครื่องมือจัดการรหัสผ่านในตัวสามารถลบรหัสผ่านที่ถอดรหัสไม่ได้ออกจากฐานข้อมูลได้หรือไม่ การตั้งค่านี้จำเป็นต่อการคืนค่าฟังก์ชันการทำงานทั้งหมดของเครื่องมือจัดการรหัสผ่านในตัว แต่อาจทำให้ข้อมูลสูญหายถาวร ค่ารหัสผ่านที่ถอดรหัสไม่ได้จะไม่เปลี่ยนเป็นค่าที่ถอดรหัสได้เอง และหากสามารถแก้ไขได้ โดยปกติแล้วจะต้องให้ผู้ใช้ดำเนินการที่มีความซับซ้อน
@@ -4567,8 +4570,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 <translation id="4380159792986204036">อนุญาตให้คีออสก์เว็บเปิดหน้าต่างเบราว์เซอร์มากกว่า 1 หน้าต่างในหน้าจอใดก็ได้</translation>
 <translation id="4381227367939912539">ปิดใช้เกมไดโนเสาร์ไข่อีสเตอร์</translation>
 <translation id="4382413175336720282">ปิดใช้การตรวจสอบ URL แบบเรียลไทม์อยู่</translation>
-<translation id="4384480363454039240">เมื่อไม่ได้ตั้งค่านโยบายหรือตั้งค่าเป็น "เปิดใช้" ผู้ใช้จะติดตามพัสดุของตนเองใน <ph name="PRODUCT_NAME" /> ผ่านหน้าแท็บใหม่ได้
-เมื่อตั้งค่านโยบายเป็น "ปิดใช้" ผู้ใช้จะติดตามพัสดุใน <ph name="PRODUCT_NAME" /> ผ่านหน้าแท็บใหม่ไม่ได้</translation>
 <translation id="4387741272680827493">การตั้งค่านโยบายจะเป็นการระบุรายชื่อโฮสต์ที่ไม่ต้องมีการอัปเกรด HSTS แบบโหลดล่วงหน้าจาก http เป็น https
 
       นโยบายนี้อนุญาตเฉพาะชื่อโฮสต์แบบป้ายกำกับเดี่ยวเท่านั้น และมีผลเฉพาะกับรายการที่โหลด HSTS ไว้ล่วงหน้าแบบ "คงที่" (เช่น <ph name="EXAMPLE_HSTS_PRELOAD_TLDS" />) นโยบายนี้ไม่ได้ป้องกันการอัปเกรด HSTS สำหรับเซิร์ฟเวอร์ที่ขอการอัปเกรด HSTS แบบ "ไดนามิก" โดยใช้ส่วนหัวการตอบกลับ <ph name="HSTS_HEADER_NAME" />

@@ -234,10 +234,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
           pending_receiver,
       int client_id) override;
 
-  void BindClientGmbInterface(
-      mojo::PendingReceiver<gpu::mojom::ClientGmbInterface> pending_receiver,
-      int client_id) override;
-
   void CreateGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
                              const gfx::Size& size,
                              gfx::BufferFormat format,

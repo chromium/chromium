@@ -46,6 +46,7 @@ source_set("autofill") {
     "//ios/chrome/browser/autofill/ui_bundled/address_editor:autofill_shared_ui",
     "//ios/chrome/browser/autofill/ui_bundled/address_editor:constants",
     "//ios/chrome/browser/autofill/ui_bundled/address_editor/cells",
+    "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet",
     "//ios/chrome/browser/autofill/ui_bundled/cells",
     "//ios/chrome/browser/autofill/ui_bundled/form_input_accessory:form_input_accessory",
     "//ios/chrome/browser/net/model:crurl",
@@ -142,6 +143,7 @@ source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
+    "autofill_add_address_manually_egtest.mm",
     "autofill_add_credit_card_egtest.mm",
     "autofill_credit_card_settings_egtest.mm",
     "autofill_edit_credit_card_egtest.mm",

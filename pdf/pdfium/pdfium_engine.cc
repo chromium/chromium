@@ -4410,7 +4410,7 @@ void PDFiumEngine::ScheduleSearchifyIfNeeded(PDFiumPage* page) {
   CHECK(page);
   CHECK(page->available());
 
-  if (page->IsPageSearchified()) {
+  if (client_->IsPrintPreview() || page->IsPageSearchified()) {
     return;
   }
 

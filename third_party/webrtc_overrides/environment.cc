@@ -4,8 +4,6 @@
 
 #include "third_party/webrtc_overrides/environment.h"
 
-#include <memory>
-#include <string_view>
 
 #include "third_party/webrtc/api/environment/environment.h"
 #include "third_party/webrtc/api/environment/environment_factory.h"

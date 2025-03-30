@@ -456,7 +456,7 @@ class CORE_EXPORT Animation : public EventTarget,
     FlushPendingUpdates();
     return GetTriggerInternal();
   }
-  AnimationTrigger* GetTriggerInternal() { return trigger_; }
+  AnimationTrigger* GetTriggerInternal() const { return trigger_; }
   virtual void setTrigger(AnimationTrigger* trigger) { trigger_ = trigger; }
 
   struct AnimationTriggerData {
@@ -490,6 +490,10 @@ class CORE_EXPORT Animation : public EventTarget,
   void SetPendingTriggerPlayStateUpdate(bool pending) {
     trigger_data_.play_state_update_pending = pending;
   }
+  // Indicates if an animation is scroll-triggered and could still be played by
+  // its trigger. These animations are to appear in list for getAnimations
+  // calls, and must not be garbage-collected.
+  bool CanBeTriggered() const;
 
  protected:
   DispatchEventResult DispatchEventInternal(Event&) override;

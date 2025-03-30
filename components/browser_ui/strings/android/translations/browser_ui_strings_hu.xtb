@@ -112,6 +112,7 @@
 <translation id="244264527810019436">Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek inkognitó módban</translation>
 <translation id="2442870161001914531">Mindig az asztali webhely kérése</translation>
 <translation id="2445311670906052406">A Chrome mostantól megosztja az eszközével a nemrég megnyitott lapokat. Ezeket az eszköz alkalmazáslistájában és a keresési találatok között láthatja. Ezt bármikor kikapcsolhatja a Chrome beállításai között.</translation>
+<translation id="245322989586167203">A webhelyek általában bizonyos adatátviteli funkciók (például hálózat beállításának) biztosítása érdekében csatlakoznak soros portokhoz</translation>
 <translation id="2469312991797799607">A művelet minden adatot és cookie-t töröl a(z) <ph name="ORIGIN" /> domainről és az alatta lévő összes webhelyről.</translation>
 <translation id="2482878487686419369">Értesítések</translation>
 <translation id="2485422356828889247">Eltávolítás</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">A webhelyek nem kaphatnak információt arról, hogy Ön mikor használja aktívan ezt az eszközt.</translation>
 <translation id="4412992751769744546">Harmadik felektől származó cookie-k engedélyezése</translation>
 <translation id="4419929467120297501">A Chrome megakadályozza a webhelyek számára, hogy harmadik féltől származó cookie-kat használjanak az Ön nyomon követésére böngészés közben. A beállítások között <ph name="BEGIN_LINK" />kezelheti a harmadik féltől származó cookie-khoz való hozzáférést<ph name="END_LINK" />.</translation>
+<translation id="443121186588148776">Soros port</translation>
 <translation id="4434045419905280838">Előugró ablakok és átirányítások</translation>
 <translation id="443552056913301231">A művelet törli az összes helyi adatot (a cookie-kat is), és alaphelyzetbe állítja a(z) <ph name="ORIGIN" /> összes engedélyét</translation>
 <translation id="4468959413250150279">Egy adott webhely hangjának némítása.</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Kérdezzen rá</translation>
 <translation id="7423538860840206698">Le van tiltva a vágólap megtekintése</translation>
 <translation id="7425915948813553151">Sötét téma a webhelyeknél</translation>
+<translation id="7478658909253570368">A webhelyek nem csatlakozhatnak soros portokhoz</translation>
 <translation id="7488573225650545859">Nézetlapok elrejtése az alkalmazáslistában</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Ha be van kapcsolva, a webhelyek megjeleníthetnek bejelentkezési értesítéseket. Ha ki van kapcsolva, a webhelyek nem jeleníthetnek meg bejelentkezési értesítéseket.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Bluetooth-eszközhöz csatlakoztatva</translation>
 <translation id="7617547684249261169">Törölheti az előzmények, a cookie-k, a webhelyadatok és egyebek egy részét vagy egészét</translation>
 <translation id="7649070708921625228">Súgó</translation>
+<translation id="7655411746932645568">A webhelyek engedélyt kérhetnek a soros portokhoz való csatlakozásra</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7667547420449112975">Óz, a csodák csodája</translation>
 <translation id="7681597159868843240">A webhelyek általában bizonyos funkciókhoz (például virtuális valósághoz vagy edzéskövetéshez) használják az eszköz mozgásérzékelőit.</translation>

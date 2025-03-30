@@ -7,6 +7,8 @@ specific_include_rules = {
   '.*test\.cc': [
     # Tests may depend upon views.
     "+chrome/browser/ui/views",
+    # Tests may depend upon saved_tab_groups internals.
+    "+components/saved_tab_groups/internal",
   ],
   "session_restore\.cc": [
     "+ash/shell.h",

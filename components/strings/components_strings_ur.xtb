@@ -441,7 +441,6 @@
 <translation id="1734878702283171397">سسٹم کے منتظم سے رابطہ کرنے کی کوشش کریں۔</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />، <ph name="CARD_NETWORK_NAME" />، <ph name="CARD_LAST_FOUR_DIGITS" />، اختتامی تاریخ <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">کمپیوٹر</translation>
-<translation id="1739422091279046802">اسکرولنگ اور زومنگ</translation>
 <translation id="1741613555002899862">‏جب DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> میں ہو، تو متعینہ اور درست اسٹرنگ ہونا چاہیے۔</translation>
 <translation id="1743393865165844832">گدا اور بستر کی چادریں</translation>
 <translation id="1743892871127720056">ٹیبل کے عنوان کا موازنہ کریں، ٹیکسٹ میں ترمیم کریں</translation>
@@ -569,6 +568,7 @@
 <translation id="1975584088563498795">میل باکس 10</translation>
 <translation id="1978555033938440688">فرم ویئر ورژن</translation>
 <translation id="1979156660928743046">میڈیا کی معلومات</translation>
+<translation id="1987486584747170374">‏آپ کی تلاشیں، بہترین مماثلتیں اور ان کے صفحہ کے مواد Google کو بھیجے جاتے ہیں۔ یہ انسانی جائزہ کاران کے ذریعے AI کو بہتر بنانے کے لیے استعمال نہیں کیا جائے گا۔ آپ کی تنظیم کسی بھی وقت ان ترتیبات کو تبدیل کر سکتی ہے۔</translation>
 <translation id="1988881251331415125">اگر ہجے درست ہیں تو <ph name="BEGIN_LINK" />کنیکٹوٹی کی تشخیصات چلانے کی کوشش کریں<ph name="END_LINK" />۔</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> آپ کے مقامی کمپیوٹر پر مستقل طور پر بڑا ڈیٹا اسٹور کرنا چاہتا ہے</translation>
@@ -764,6 +764,7 @@
 <translation id="2301098101308036335">کون سی ویب سائٹ دیکھی گئی ہے اور کب۔</translation>
 <translation id="230286397113210245">پوشیدگی ونڈو کھولیں بٹن، نجی طور پر براؤز کرنے کی خاطر ایک نئی پوشیدگی ونڈو کھولنے کے لیے فعال کریں</translation>
 <translation id="2306124309679506798">عمیق تجربے کی اجازت دیں؟</translation>
+<translation id="2307711332257985952">‏آپ کے گھر اور دفتر کے پتے اب Chrome میں دستیاب ہیں</translation>
 <translation id="2312234273148520048">مصالحہ جات اور سجاوٹیں</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> سے کم۔ آپ کے اگلے ملاحظہ پر کچھ سائٹس مزید آہستہ سے لوڈ ہو سکتی ہیں۔</translation>
 <translation id="2316159751672436664">‏ChromeOS کی ترتیبات میں اپنی ایکسیسبیلٹی کے ٹولز کو ذاتی نوعیت کا بنائیں</translation>
@@ -1179,6 +1180,7 @@
 <translation id="3102312643185441063">سیونگز</translation>
 <translation id="3103188521861412364">اسٹاکس اور بونڈز</translation>
 <translation id="3103535543639438037">ملتے جلتے پروڈکٹس کا پہلو بہ پہلو موازنہ کریں</translation>
+<translation id="3103993932858740905">جب آپ وقت کے ساتھ ادائیگی کرتے ہیں تو ایک یک وقتی ورچوئل کارڈ نمبر استعمال کیا جاتا ہے۔ یہ نمبر صرف اسی خریداری کے لیے ہے۔</translation>
 <translation id="3105172416063519923">‏اثاثہ ID:</translation>
 <translation id="3107591622054137333">‏<ph name="BEGIN_LINK" />محفوظ DNS کنفیگریشن کو چیک کرنے کی کوشش کریں<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">درمیانی ٹرے</translation>
@@ -2883,6 +2885,7 @@
 <translation id="6059925163896151826">‏USB آلات</translation>
 <translation id="6060009363608157444">‏DnsOverHttps وضع غلط ہے۔</translation>
 <translation id="6061154937977953833">کُشتی</translation>
+<translation id="6062405040252994646">ٹول</translation>
 <translation id="6062937464449575061">قیمت کو ٹریک کرنا بند کریں</translation>
 <translation id="6063415549109819824">گھر کیلئے سرمایہ کی فراہمی</translation>
 <translation id="6070432475334343308">ایک یا ایک زیادہ فائلز <ph name="CLOUD_PROVIDER" /> پر <ph name="FOLDER_NAME" /> میں اپ لوڈ نہیں ہوئیں</translation>

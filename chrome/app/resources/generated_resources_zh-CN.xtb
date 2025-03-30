@@ -8,6 +8,7 @@
 <translation id="100323615638474026">USB 设备 (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">近期的下载记录</translation>
 <translation id="1004218526896219317">有权访问的网站</translation>
+<translation id="1005230401424685968">YYYY</translation>
 <translation id="1005274289863221750">使用您的麦克风和摄像头</translation>
 <translation id="1005333234656240382">启用 ADB 调试？</translation>
 <translation id="1005671386794704751">花瓣粉</translation>
@@ -1360,6 +1361,7 @@
 <translation id="193565226207940518">支持工具</translation>
 <translation id="1935995810530254458">仍然复制</translation>
 <translation id="1936157145127842922">在文件夹中显示</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{页面已添加到阅读清单}other{页面已添加到阅读清单}}</translation>
 <translation id="1936931585862840749">请使用一个介于 1-<ph name="MAX_COPIES" /> 之间的数字来表明要打印多少份。</translation>
 <translation id="1937774647013465102">无法使用此设备（即 <ph name="ARCHITECTURE_DEVICE" />）导入容器架构类型 <ph name="ARCHITECTURE_CONTAINER" />。您既可尝试将此容器恢复到另一设备中，也可使用“文件”应用打开此容器映像内的文件以进行访问。</translation>
 <translation id="1938351510777341717">外部命令</translation>
@@ -3165,7 +3167,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         您可以随时从此卡片中管理设置，或在“自定义 Chrome”部分中查看更多选项。</translation>
-<translation id="3207437351138888228">当您填写表单时，系统会将您的信息和所在的网页发送给 Google，以便生成建议</translation>
 <translation id="3207960819495026254">已加书签</translation>
 <translation id="3208584281581115441">立即检查</translation>
 <translation id="3208703785962634733">未确认</translation>
@@ -3210,6 +3211,7 @@
 <translation id="3242289508736283383">具有“kiosk_only”这项清单属性的应用必须在 Chrome 操作系统自助服务终端模式下进行安装</translation>
 <translation id="3243017971870859287">读取 ChromeOS Flex 设备序列号和组件序列号</translation>
 <translation id="324366796737464147">降噪</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">继续保持静音</translation>
 <translation id="3247006341013237647">要整理标签页？</translation>
 <translation id="3247649647204519958">在此处，您可以查看和管理针对您所在网站的扩展程序权限</translation>
@@ -6075,7 +6077,6 @@
 <translation id="5267572070504076962">开启安全浏览功能，防范危险网站</translation>
 <translation id="5269977353971873915">打印失败</translation>
 <translation id="5271578170655641944">撤消 Google 云端硬盘访问权限？</translation>
-<translation id="5271782684896713035">人工审核员可能会查看这些数据，以改进此功能</translation>
 <translation id="5273806377963980154">修改网站网址</translation>
 <translation id="5275084684151588738">用户字典</translation>
 <translation id="5275338516105640560">“已保存的标签页分组”按钮</translation>

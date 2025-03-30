@@ -205,7 +205,6 @@ class CapturedSitesPasswordManagerBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    web_contents_ = PasswordManagerBrowserTestBase::GetNewTab(browser());
     recipe_replayer_ =
         std::make_unique<captured_sites_test_utils::TestRecipeReplayer>(
             browser(), this);
@@ -241,7 +240,6 @@ class CapturedSitesPasswordManagerBrowserTest
   }
 
   void TearDownOnMainThread() override {
-    web_contents_ = nullptr;
     recipe_replayer_.reset();
     // Need to delete the URL loader and its underlying interceptor on the main
     // thread. Will result in a fatal crash otherwise. The pointer  has its
@@ -256,7 +254,7 @@ class CapturedSitesPasswordManagerBrowserTest
   }
 
   content::WebContents* WebContents() {
-    return web_contents_;
+    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
  private:
@@ -266,7 +264,6 @@ class CapturedSitesPasswordManagerBrowserTest
   std::unique_ptr<captured_sites_test_utils::ProfileDataController>
       profile_controller_;
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
   std::unique_ptr<ServerUrlLoader> server_url_loader_;
 
   base::CallbackListSubscription create_services_subscription_;

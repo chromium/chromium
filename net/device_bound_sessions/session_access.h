@@ -17,11 +17,29 @@ struct NET_EXPORT SessionAccess {
     kTermination = 2,
   };
 
+  SessionAccess();
+  SessionAccess(AccessType access, SessionKey key);
+  SessionAccess(AccessType access,
+                SessionKey key,
+                const std::vector<std::string>& cookies);
+
+  ~SessionAccess();
+
+  SessionAccess(const SessionAccess&);
+  SessionAccess& operator=(const SessionAccess&);
+
+  SessionAccess(SessionAccess&&) noexcept;
+  SessionAccess& operator=(SessionAccess&&) noexcept;
+
   // Type of access
   AccessType access_type;
 
   // Key of accessed session
   SessionKey session_key;
+
+  // Cookies bound by this session. Only populated when `access_type` is
+  // `kTermination`.
+  std::vector<std::string> cookies;
 
   bool operator==(const SessionAccess& other) const;
 };

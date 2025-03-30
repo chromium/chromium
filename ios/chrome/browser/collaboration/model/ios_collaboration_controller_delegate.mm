@@ -47,6 +47,8 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+using signin_metrics::AccessPoint;
+
 namespace collaboration {
 
 namespace {
@@ -159,6 +161,7 @@ void IOSCollaborationControllerDelegate::Cancel(ResultCallback result) {
 }
 
 void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
+    FlowType flow_type,
     ResultCallback result) {
   CollaborationService* collaboration_service =
       CollaborationServiceFactory::GetForProfile(browser_->GetProfile());
@@ -186,10 +189,20 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
       &IOSCollaborationControllerDelegate::OnAuthenticationComplete,
       weak_ptr_factory_.GetWeakPtr(), std::move(result)));
 
+  AccessPoint access_point;
+  switch (flow_type) {
+    case FlowType::kJoin:
+      access_point = AccessPoint::kCollaborationJoinTabGroup;
+      break;
+    case FlowType::kShareOrManage:
+      access_point = AccessPoint::kCollaborationShareTabGroup;
+      break;
+  }
+
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:operation
                identity:nil
-            accessPoint:signin_metrics::AccessPoint::kCollaborationShareTabGroup
+            accessPoint:access_point
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:completion_block];

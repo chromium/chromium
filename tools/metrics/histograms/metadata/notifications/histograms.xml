@@ -900,17 +900,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Notifications.Scheduler.NotificationLifeCycleEvent"
+<histogram
+    name="Notifications.Scheduler.NotificationLifeCycleEvent{NotificationSchedulerClientType}"
     enum="NotificationSchedulerNotificationLifeCycleEvent"
     expires_after="2023-03-05">
-<!-- Name completed by histogram_suffixes name="NotificationSchedulerClientType" -->
-
   <owner>shaktisahu@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <summary>
     Records life cycle events for a scheduled notification, when notification is
     scheduled, shown or encountering any error.
+    {NotificationSchedulerClientType}
   </summary>
+  <token key="NotificationSchedulerClientType">
+    <variant name=""/>
+    <variant name=".__Test__" summary=""/>
+    <variant name=".ChromeUpdate" summary=""/>
+    <variant name=".FeatureGuide" summary="Deprecated"/>
+    <variant name=".Prefetch" summary=""/>
+    <variant name=".ReadingList" summary=""/>
+    <variant name=".Unknown" summary=""/>
+    <variant name=".WebUI" summary=""/>
+  </token>
 </histogram>
 
 <histogram name="Notifications.UsingSystemNotificationCenter"

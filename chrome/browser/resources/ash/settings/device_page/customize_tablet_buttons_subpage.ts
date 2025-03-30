@@ -7,7 +7,6 @@
  * 'customize-tablet-buttons-subpage' displays the customized tablet buttons
  * and allow users to configure their tablet buttons for each graphics tablet.
  */
-import '../icons.html.js';
 import '../settings_shared.css.js';
 import './input_device_settings_shared.css.js';
 

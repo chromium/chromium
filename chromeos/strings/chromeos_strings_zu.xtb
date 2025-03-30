@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">Kudingeka ukuqinisekisa kommeleli</translation>
 <translation id="4594021849294327751">Sungula okulotshiweyo</translation>
 <translation id="4594541568452132351">Khetha ulimi lokuloba bese udawuniloda imodeli</translation>
-<translation id="4607282946861182308">Ayikwazi ukusungula imifanekiso yalokhu. Zama omunye umyalelo.</translation>
 <translation id="4609350030397390689">Ukugqama kwekhibhodi kuphansi</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> kwangu-<ph name="TOTAL_PAGE_NUMBER" /> Cindezela u-enter ukuze ukhansele umsebenzi wokuphrinta.</translation>
 <translation id="463791356324567266">Ikhansela ukuskena...</translation>
@@ -1540,6 +1539,7 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="8010765388850538088">Funda kabanzi mayelana ne-AI Ekhiqizayo</translation>
 <translation id="8017679124341497925">Isinqamuleli sihleliwe</translation>
 <translation id="802154636333426148">Ukulanda kwehlulekile</translation>
+<translation id="8027467664787098346">Funda kabanzi mayelana nesithombe sangemuva esikhethiwe</translation>
 <translation id="8028993641010258682">Usayizi</translation>
 <translation id="8031884997696620457">I-HSPAPlus</translation>
 <translation id="80398733265834479">Nika amandla imodi yombala ozenzakalelayo</translation>
@@ -1658,6 +1658,7 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="8543574988889671960">Layisha ithebhu kabusha</translation>
 <translation id="8550364285433943656">Beka izilawuli kuzenzo zegeyimu ukuze udlale ngokhiye bekhibhodi</translation>
 <translation id="8557447961879934694">I-WPA2</translation>
+<translation id="8558521694042102707">I-AI ekhiqizayo ingawenza amaphutha, okuhlanganisa amaphutha ngabantu, ngakho qinisekisa.</translation>
 <translation id="8575298406870537639">Inkampani yenethiwekhi yakho idinga le nketho ukuze ixhume kunethiwekhi yayo. Xhumana nenkampani yakho yenethiwekhi mayelana nemininingwane.</translation>
 <translation id="8576249514688522074">Akuqaliswanga</translation>
 <translation id="8584654835905316966">Kudingeka ukuqalisa kabusha ukuze uqedele ukufaka ifirmware ye-<ph name="DEVICE_NAME" /> ibe uhlobo <ph name="VERSION" />. Ikhompyutha yakho ingase ibonakale iqalisa izikhathi ezithize. Lokhu kulindelekile.</translation>
@@ -1672,7 +1673,6 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="8655295600908251630">Isiteshi</translation>
 <translation id="8655828773034788261">Yabelana i-URL:</translation>
 <translation id="8660881923941176839">amaphawundi</translation>
-<translation id="8670057600920888023">I-AI ekhiqizayo ingeyokulinga futhi okuqukethwe kungase kunganembi, kudukise, noma kube okuhlaselayo.</translation>
 <translation id="8670574982334489519">kwesokudla</translation>
 <translation id="8675354002693747642">Ukhiye owabiwe ngaphambilini</translation>
 <translation id="8677859815076891398">Awekho ama-albhamu. Dala i-albhamu <ph name="LINK_BEGIN" />Ezithombeni ze-Google<ph name="LINK_END" />.</translation>

@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/autofill/payments/bnpl_issuer_linked_pill.h"
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
@@ -17,8 +19,8 @@
 namespace autofill::payments {
 
 BnplLinkedIssuerPill::BnplLinkedIssuerPill()
-    // TODO(crbug.com/356443046): Move to resources and translate string.
-    : views::Label(u"Linked",
+    : views::Label(l10n_util::GetStringUTF16(
+                       IDS_AUTOFILL_CARD_BNPL_LINKED_ISSUER_PILL_LABEL),
                    views::style::CONTEXT_DIALOG_BODY_TEXT,
                    views::style::STYLE_SECONDARY) {
   // TODO(kylixrd): Find appropriate metrics on ChromeLayoutProvider.

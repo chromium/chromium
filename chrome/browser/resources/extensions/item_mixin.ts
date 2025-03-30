@@ -27,8 +27,8 @@ export const ItemMixin = <T extends Constructor<CrLitElement>>(
       };
     }
 
-    data?: chrome.developerPrivate.ExtensionInfo;
-    delegate?: ItemDelegate;
+    accessor data: chrome.developerPrivate.ExtensionInfo|undefined;
+    accessor delegate: ItemDelegate|undefined;
 
     /**
      * Prevents reloading the same item while it's already being reloaded.

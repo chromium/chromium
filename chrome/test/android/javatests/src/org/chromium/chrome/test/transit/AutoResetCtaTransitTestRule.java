@@ -32,11 +32,11 @@ public class AutoResetCtaTransitTestRule extends BaseCtaTransitTestRule implemen
     private final RuleChain mChain;
 
     /** Create with {@link ChromeTransitTestRules#autoResetCtaActivityRule()}. */
-    AutoResetCtaTransitTestRule() {
+    AutoResetCtaTransitTestRule(boolean clearAllTabState) {
         super();
         mBatchedRule =
                 new BatchedPublicTransitRule<>(PageStation.class, /* expectResetByTest= */ false);
-        mInitialStateRule = new BlankCTATabInitialStateRule(mActivityTestRule, true);
+        mInitialStateRule = new BlankCTATabInitialStateRule(mActivityTestRule, clearAllTabState);
         mChain =
                 RuleChain.outerRule(mActivityTestRule)
                         .around(mInitialStateRule)

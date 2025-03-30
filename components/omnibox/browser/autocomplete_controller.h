@@ -451,6 +451,10 @@ class AutocompleteController : public AutocompleteProviderListener,
   // provider's TemplateURL supports it.
   void UpdateSearchboxStats(AutocompleteResult* result);
 
+  // For each AutocompleteMatch in `result`, updates the "shown in session" data
+  // that's needed in order to ensure proper client-side metrics logging.
+  void UpdateShownInSession(AutocompleteResult* result);
+
   // Update the tail suggestions' `tail_suggest_common_prefix`.
   void UpdateTailSuggestPrefix(AutocompleteResult* result);
 

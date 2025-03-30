@@ -324,6 +324,24 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
       const url::Origin& coordinator,
       base::OnceCallback<void(std::pair<base::Time, std::string>)> callback);
 
+  // Writes all of these keys to the cache, the first vector with
+  // `is_kanon = true`, and the second vector with `is_kanon = false`.
+  void WriteHashedKAnonymityKeysToCache(
+      const std::vector<std::string>& positive_hashed_keys,
+      const std::vector<std::string>& negative_hashed_keys,
+      base::Time time_fetched);
+
+  // Takes a vector of keys to lookup from the cache. Calls a callback that
+  // provides two vectors of keys: the first a vector that includes those
+  // unexpired keys for which it was found in the cache that that key is
+  // k-anonymous, the second a vector that includes all keys not found in the
+  // cache.
+  void LoadPositiveHashedKAnonymityKeysFromCache(
+      const std::vector<std::string>& keys,
+      base::Time min_valid_time,
+      base::OnceCallback<void(InterestGroupStorage::KAnonymityCacheResponse)>
+          callback);
+
   void GetLastMaintenanceTimeForTesting(
       base::RepeatingCallback<void(base::Time)> callback) const;
 

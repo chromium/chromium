@@ -8,10 +8,14 @@ import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {FrePageHandlerFactory, FrePageHandlerRemote, FreWebUiState} from './glic_fre.mojom-webui.js';
 
-interface StateDescriptor {
-  onEnter?: () => void;
-  onExit?: () => void;
-}
+// Time to wait before showing loading panel.
+const PRE_HOLD_LOADING_TIME_MS = loadTimeData.getInteger('preLoadingTimeMs');
+
+// Minimum time to hold "loading" panel visible.
+const MIN_HOLD_LOADING_TIME_MS = loadTimeData.getInteger('minLoadingTimeMs');
+
+// Maximum time to wait for load before showing error panel.
+const MAX_WAIT_TIME_MS = loadTimeData.getInteger('maxLoadingTimeMs');
 
 interface PageElementTypes {
   webviewContainer: HTMLDivElement;
@@ -23,10 +27,12 @@ const $: PageElementTypes = new Proxy({}, {
   },
 });
 
-type PanelId = 'guestPanel'|'offlinePanel'|'errorPanel';
+type PanelId = 'guestPanel'|'offlinePanel'|'errorPanel'|'loadingPanel';
 
-// Maximum time to wait for load before showing error panel.
-const kMaxWaitTimeMs = 15000;
+interface StateDescriptor {
+  onEnter?: () => void;
+  onExit?: () => void;
+}
 
 const freHandler = new FrePageHandlerRemote();
 FrePageHandlerFactory.getRemote().createPageHandler(
@@ -40,6 +46,11 @@ export class FreAppController {
   // with an empty <webview>.
   private webview: chrome.webviewTag.WebView;
   private webviewEventTracker = new EventTracker();
+
+  // When entering loading state, this represents the earliest timestamp at
+  // which the UI can transition to the ready state. This ensures that the
+  // loading UI isn't just a brief flash on screen.
+  private earliestLoadingDismissTime: number|undefined;
 
   constructor() {
     this.onLoadCommit = this.onLoadCommit.bind(this);
@@ -91,7 +102,12 @@ export class FreAppController {
   }
 
   onContentLoad() {
-    this.setState(FreWebUiState.kReady);
+    if (this.state === FreWebUiState.kBeginLoading ||
+        this.state === FreWebUiState.kFinishLoading) {
+      this.setState(FreWebUiState.kReady);
+    } else if (this.state === FreWebUiState.kShowLoading) {
+      this.setState(FreWebUiState.kHoldLoading);
+    }
   }
 
   onNewWindow(e: any) {
@@ -193,6 +209,9 @@ export class FreAppController {
   }
 
   async beginLoading(): Promise<void> {
+    // Time at which to show the loading panel if the web client is not ready.
+    const showLoadingTime = performance.now() + PRE_HOLD_LOADING_TIME_MS;
+
     // Attempt to re-sync cookies before continuing.
     const {success} = await freHandler.prepareForClient();
     if (!success) {
@@ -203,10 +222,41 @@ export class FreAppController {
     // Load the web client now that cookie sync is complete.
     this.destroyWebview();
 
-    // TODO(crbug.com/393417356): Set up a timer to transition to showLoading
-    // state after a determined prehold loading time.
     this.webview.src = loadTimeData.getString('glicFreURL');
-    this.setState(FreWebUiState.kShowLoading);
+    this.loadingTimer = setTimeout(() => {
+      this.setState(FreWebUiState.kShowLoading);
+    }, Math.max(0, showLoadingTime - performance.now()));
+  }
+
+  showLoading(): void {
+    this.showPanel('loadingPanel');
+    // After `kMinHoldLoadingTimeMs`, transition to `kFinishLoading` or `kReady`
+    // states. Note that we never transition from `kShowLoading` to `kReady`
+    // before the timeout.
+    this.earliestLoadingDismissTime =
+        performance.now() + MIN_HOLD_LOADING_TIME_MS;
+    this.loadingTimer = setTimeout(() => {
+      this.setState(FreWebUiState.kFinishLoading);
+    }, MIN_HOLD_LOADING_TIME_MS);
+  }
+
+  holdLoading(): void {
+    // The web client is ready but we wait for the remainder of
+    // `kMinHoldLoadingTimeMs` before showing it. This is to allow enough time
+    // to view the loading animation.
+    this.loadingTimer = setTimeout(() => {
+      this.setState(FreWebUiState.kReady);
+    }, Math.max(0, this.earliestLoadingDismissTime! - performance.now()));
+  }
+
+  finishLoading(): void {
+    // The web client is not yet ready, so wait for the remainder of
+    // `kMaxWaitTimeMs`. Switch to the error state at that time unless
+    // interrupted by `onContentLoad`, triggering the ready state.
+    this.loadingTimer = setTimeout(() => {
+      console.warn('Exceeded timeout in finishLoading');
+      this.setState(FreWebUiState.kError);
+    }, MAX_WAIT_TIME_MS - MIN_HOLD_LOADING_TIME_MS);
   }
 
   private createWebview(): chrome.webviewTag.WebView {
@@ -224,31 +274,6 @@ export class FreAppController {
         webview, 'newwindow', this.onNewWindow.bind(this));
 
     return webview;
-  }
-
-  showLoading(): void {
-    // TODO crbug.com/393417356. Show a loading panel and transition to finish
-    // loading after a minimum hold loading time.
-    this.setState(FreWebUiState.kFinishLoading);
-  }
-
-  holdLoading(): void {
-    // TODO crbug.com/393417356. Setup a timer to transition to ready
-    // only after a minimum hold loading time.
-    // The web client is ready, but we still wait for the remainder of
-    // `kMinHoldLoadingTimeMs` before showing it, to allow the loading
-    // animation
-    // to complete once.
-    this.setState(FreWebUiState.kReady);
-  }
-
-  finishLoading(): void {
-    // The web client is not yet ready, so wait for the remainder of
-    // `kMaxWaitTimeMs`. Switch to error state at that time unless interrupted
-    // by `onContentLoad`.
-    this.loadingTimer = setTimeout(() => {
-      this.setState(FreWebUiState.kError);
-    }, kMaxWaitTimeMs);
   }
 
   // Destroy the current webview and create a new one. This is necessary because

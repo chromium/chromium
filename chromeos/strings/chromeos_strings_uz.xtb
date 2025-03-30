@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">Proksi hisob tekshiruvini talab qiladi</translation>
 <translation id="4594021849294327751">Transkripsiya yaratish</translation>
 <translation id="4594541568452132351">Transkripsiya tilini tanlang va modelini yuklab oling</translation>
-<translation id="4607282946861182308">Buning rasmlarini yaratish imkonsiz. Boshqa soʻrov yuboring.</translation>
 <translation id="4609350030397390689">Klaviatura yorqinligi pasaytirish</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Chop etilishini bekor qilish uchun Enter tugmasini bosing.</translation>
 <translation id="463791356324567266">Skanerlash bekor qilinmoqda...</translation>
@@ -1659,6 +1658,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="8543574988889671960">Varaqni qayta yuklash</translation>
 <translation id="8550364285433943656">Klavuaturada oʻynash uchun amallar tugmalarini tanlang</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">Generativ AI odamlar haqida ham xato maʼlumotlarni berishi mumkin, shuning uchun javoblarini qayta tekshiring.</translation>
 <translation id="8575298406870537639">Aloqa operatoringiz oʻz tarmogʻiga ulanishi uchun bu parametrni talab qilishi mumkin. Tafsilotlar uchun aloqa operatoringizga murojaat qiling.</translation>
 <translation id="8576249514688522074">Faolsizlantirildi</translation>
 <translation id="8584654835905316966"><ph name="VERSION" /> versiyali <ph name="DEVICE_NAME" /> tizim dasturini oʻrnatish uchun qurilmani oʻchirib yoqish zarur. Kompyuter bir necha marta qayta ishga tushirilishi mumkin. Bu odatiy holat.</translation>
@@ -1673,7 +1673,6 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">URL havolasi:</translation>
 <translation id="8660881923941176839">funt</translation>
-<translation id="8670057600920888023">Generativ AI tajribaviy, shuning uchun xato, befoyda va haqoratomuz kontent chiqishi mumkin.</translation>
 <translation id="8670574982334489519">oʻng</translation>
 <translation id="8675354002693747642">Umumiy kalit</translation>
 <translation id="8677859815076891398">Albomlar mavjud emas. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> orqali albom yarating.</translation>

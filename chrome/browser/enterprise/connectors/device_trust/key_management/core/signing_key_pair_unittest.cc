@@ -9,7 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/ec_signing_key.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -56,7 +56,7 @@ std::unique_ptr<crypto::UnexportableSigningKey> GenerateSigningKey(
 
 class SigningKeyPairTest : public testing::Test {
  protected:
-  crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
 };
 
 // Tests that the SigningKeyPair instance is correctly initialized with a

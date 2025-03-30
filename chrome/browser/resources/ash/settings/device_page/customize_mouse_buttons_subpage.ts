@@ -7,7 +7,6 @@
  * 'settings-customize-mouse-buttons-subpage' displays the customized buttons
  * and allow users to configure their buttons for each mouse.
  */
-import '../icons.html.js';
 import '../settings_shared.css.js';
 import './input_device_settings_shared.css.js';
 import '../controls/settings_toggle_button.js';

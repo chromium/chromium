@@ -29,6 +29,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace autofill {
@@ -46,12 +47,7 @@ class SelectBnplIssuerViewDesktop : public SelectBnplIssuerView {
       delete;
   ~SelectBnplIssuerViewDesktop() override;
 
-  // SelectBnplIssuerView:
-  void Dismiss() override;
-
  private:
-  void CloseDialog(views::Widget::ClosedReason closed_reason);
-
   base::WeakPtr<SelectBnplIssuerDialogController> controller_;
   std::unique_ptr<views::Widget> dialog_;
 };
@@ -68,36 +64,18 @@ SelectBnplIssuerViewDesktop::SelectBnplIssuerViewDesktop(
                   ->tab_dialog_manager()
                   ->CreateShowDialogAndBlockTabInteraction(
                       select_bnpl_issuer_delegate.release());
-    dialog_->MakeCloseSynchronous(base::BindOnce(
-        &SelectBnplIssuerViewDesktop::CloseDialog, base::Unretained(this)));
   }
 }
 
 SelectBnplIssuerViewDesktop::~SelectBnplIssuerViewDesktop() = default;
 
-void SelectBnplIssuerViewDesktop::Dismiss() {
-  if (controller_) {
-    controller_->OnDialogClosed();
-    controller_ = nullptr;
-  }
-  if (dialog_) {
-    dialog_->CloseWithReason(views::Widget::ClosedReason::kAcceptButtonClicked);
-  }
-}
-
-void SelectBnplIssuerViewDesktop::CloseDialog(
-    views::Widget::ClosedReason closed_reason) {
-  if (closed_reason == views::Widget::ClosedReason::kCancelButtonClicked ||
-      closed_reason == views::Widget::ClosedReason::kUnspecified) {
-    if (controller_) {
-      controller_->OnCancel();
-      controller_ = nullptr;
-    }
-  }
-  dialog_.reset();
-}
-
 }  // namespace
+
+BEGIN_METADATA(SelectBnplIssuerDialog)
+END_METADATA
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SelectBnplIssuerDialog, kThrobberId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SelectBnplIssuerDialog, kBnplIssuerView);
 
 SelectBnplIssuerDialog::SelectBnplIssuerDialog(
     base::WeakPtr<SelectBnplIssuerDialogController> controller,
@@ -120,16 +98,21 @@ SelectBnplIssuerDialog::SelectBnplIssuerDialog(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kControl, views::DialogContentType::kText));
-  SetTitle(controller_->GetTitle());
   SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  // This sets the cancel callback in DialogDelegate, which this class extends,
+  // and the callback is not run during destruction. Thus, `this` will always be
+  // present when it needs to be run.
+  SetCancelCallbackWithClose(base::BindRepeating(
+      &SelectBnplIssuerDialog::OnCancelled, base::Unretained(this)));
 
   container_view_ = AddChildView(std::make_unique<views::View>());
   container_view_->SetUseDefaultFillLayout(true);
 
   bnpl_issuer_view_ = container_view_->AddChildView(
       std::make_unique<BnplIssuerView>(controller_, this));
-
+  bnpl_issuer_view_->SetProperty(views::kElementIdentifierKey,
+                                 SelectBnplIssuerDialog::kBnplIssuerView);
   TextWithLink link_text = controller_.get()->GetLinkText();
   TextLinkInfo link_info;
   link_info.offset = link_text.offset;
@@ -153,15 +136,18 @@ void SelectBnplIssuerDialog::DisplayThrobber() {
           .AddChild(views::Builder<views::Throbber>(
                         std::make_unique<views::Throbber>(24))
                         .CopyAddressTo(&throbber))
+          .SetProperty(views::kElementIdentifierKey,
+                       SelectBnplIssuerDialog::kThrobberId)
           .Build());
   throbber->Start();
   throbber->SizeToPreferredSize();
 }
 
-bool SelectBnplIssuerDialog::Accept() {
-  // TODO(kylixrd): Should eventually return false and require the controller to
-  // dismiss the dialog. This will eventually display a spinner.
-  return views::DialogDelegate::Accept();
+bool SelectBnplIssuerDialog::OnCancelled() {
+  // Deletes `this`. Do not access any class variables or `this` in any way
+  // after `controller_->OnUserCancelled()`.
+  controller_->OnUserCancelled();
+  return false;
 }
 
 void SelectBnplIssuerDialog::AddedToWidget() {
@@ -169,8 +155,7 @@ void SelectBnplIssuerDialog::AddedToWidget() {
   // Widget.
   GetBubbleFrameView()->SetTitleView(
       std::make_unique<TitleWithIconAfterLabelView>(
-          // TODO(crbug.com/356443046): Move to resources and translate string.
-          u"Choose a pay over time provider",
+          controller_->GetTitle(),
           TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
 }
 
@@ -184,9 +169,6 @@ void SelectBnplIssuerDialog::OnSettingsLinkClicked() {
   }
   chrome::ShowSettingsSubPage(browser, chrome::kPaymentsSubPage);
 }
-
-BEGIN_METADATA(SelectBnplIssuerDialog)
-END_METADATA
 
 }  // namespace payments
 

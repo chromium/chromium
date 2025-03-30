@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.facilitated_payments;
 
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_ICON;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_SUMMARY;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_NUMBER;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_PAYMENT_RAIL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_TRANSACTION_LIMIT;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_TYPE;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_NAME;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.ON_BANK_ACCOUNT_CLICK_ACTION;
 
@@ -34,9 +36,15 @@ class BankAccountViewBinder {
         if (propertyKey == BANK_NAME) {
             TextView bankName = view.findViewById(R.id.bank_name);
             bankName.setText(model.get(BANK_NAME));
-        } else if (propertyKey == BANK_ACCOUNT_SUMMARY) {
-            TextView bankAccountSummary = view.findViewById(R.id.bank_account_summary);
-            bankAccountSummary.setText(model.get(BANK_ACCOUNT_SUMMARY));
+        } else if (propertyKey == BANK_ACCOUNT_PAYMENT_RAIL) {
+            TextView bankAccountPaymentRail = view.findViewById(R.id.bank_account_payment_rail);
+            bankAccountPaymentRail.setText(model.get(BANK_ACCOUNT_PAYMENT_RAIL));
+        } else if (propertyKey == BANK_ACCOUNT_TYPE) {
+            TextView bankAccountType = view.findViewById(R.id.bank_account_type);
+            bankAccountType.setText(model.get(BANK_ACCOUNT_TYPE));
+        } else if (propertyKey == BANK_ACCOUNT_NUMBER) {
+            TextView bankAccountNumber = view.findViewById(R.id.bank_account_number);
+            bankAccountNumber.setText(model.get(BANK_ACCOUNT_NUMBER));
         } else if (propertyKey == BANK_ACCOUNT_TRANSACTION_LIMIT) {
             TextView transactionLimit = view.findViewById(R.id.bank_account_additional_info);
             transactionLimit.setText(model.get(BANK_ACCOUNT_TRANSACTION_LIMIT));

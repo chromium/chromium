@@ -112,6 +112,7 @@
 <translation id="244264527810019436">Mae'n bosib na fydd nodweddion ar rai gwefannau yn gweithio yn y modd anhysbys</translation>
 <translation id="2442870161001914531">Gofyn am wefan bwrdd gwaith bob amser</translation>
 <translation id="2445311670906052406">Mae Chrome bellach yn rhannu'ch tabiau diweddar â'ch dyfais. Byddwch yn eu gweld yn rhestr apiau a chanlyniadau chwilio eich dyfais. Gallwch ddiffodd hwn unrhyw bryd yng ngosodiadau Chrome.</translation>
+<translation id="245322989586167203">Mae gwefannau fel arfer yn cysylltu â phyrth cyfresol ar gyfer nodweddion trosglwyddo data, megis gosod eich rhwydwaith</translation>
 <translation id="2469312991797799607">Bydd y weithred hon yn dileu'r holl ddata a chwcis ar gyfer <ph name="ORIGIN" /> a'r holl wefannau oddi tano</translation>
 <translation id="2482878487686419369">Hysbysiadau</translation>
 <translation id="2485422356828889247">Dadosod</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">Rhwystro gwefannau rhag gwybod pan fyddwch wrthi'n defnyddio'r ddyfais hon</translation>
 <translation id="4412992751769744546">Caniatáu cwcis trydydd parti</translation>
 <translation id="4419929467120297501">Mae Chrome yn rhwystro gwefannau rhag defnyddio cwcis trydydd parti i'ch olrhain wrth i chi bori. Ewch i'r gosodiadau i <ph name="BEGIN_LINK" />reoli mynediad at gwcis trydydd parti<ph name="END_LINK" />.</translation>
+<translation id="443121186588148776">Porth cyfresol</translation>
 <translation id="4434045419905280838">Ffenestri naid ac ailgyfeiriadau</translation>
 <translation id="443552056913301231">Bydd y weithred hon yn dileu'r holl ddata lleol, gan gynnwys cwcis, ac yn ailosod pob caniatâd ar gyfer <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Distewi sain ar gyfer gwefan benodol.</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Gofyn yn gyntaf</translation>
 <translation id="7423538860840206698">Wedi'i rwystro rhag darllen y clipfwrdd</translation>
 <translation id="7425915948813553151">Thema dywyll ar gyfer gwefannau</translation>
+<translation id="7478658909253570368">Peidio â chaniatáu i wefannau gysylltu â phyrth cyfresol</translation>
 <translation id="7488573225650545859">Cuddio tabiau Gweld yn eich rhestr apiau</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Pan fydd wedi'i droi ymlaen, gall gwefannau ddangos negeseuon annog mewngofnodi. Pan fydd wedi'i ddiffodd, ni all gwefannau ddangos negeseuon annog mewngofnodi.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Wedi cysylltu â dyfais Bluetooth</translation>
 <translation id="7617547684249261169">Gallwch ddileu rhywfaint neu'r cyfan o'ch hanes, cwcis, data gwefan a rhagor</translation>
 <translation id="7649070708921625228">Cymorth</translation>
+<translation id="7655411746932645568">Gall gwefannau ofyn am gysylltu â phyrth cyfresol</translation>
 <translation id="7658239707568436148">Canslo</translation>
 <translation id="7667547420449112975">Dewin Rhyfeddol Oz</translation>
 <translation id="7681597159868843240">Mae gwefannau fel arfer yn defnyddio synwyryddion symudiad eich dyfais ar gyfer nodweddion megis rhithwironedd neu olrhain ffitrwydd</translation>

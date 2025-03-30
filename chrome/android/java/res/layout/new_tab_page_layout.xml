@@ -11,7 +11,6 @@ found in the LICENSE file.
     android:id="@+id/ntp_content"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/home_surface_background"
     android:layout_gravity="center_horizontal"
     android:orientation="vertical"
     android:gravity="center"

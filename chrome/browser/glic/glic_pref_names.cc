@@ -15,7 +15,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kGlicMicrophoneEnabled, false);
   registry->RegisterBooleanPref(kGlicGeolocationEnabled, false);
   registry->RegisterBooleanPref(kGlicTabContextEnabled, false);
-  registry->RegisterBooleanPref(kGlicCompletedFre, false);
+  registry->RegisterIntegerPref(
+      kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kNotStarted));
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

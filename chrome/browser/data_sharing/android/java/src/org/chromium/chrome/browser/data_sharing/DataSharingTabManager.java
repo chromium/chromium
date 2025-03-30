@@ -37,6 +37,7 @@ import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.collaboration.CollaborationControllerDelegate;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.FlowType;
+import org.chromium.components.collaboration.Outcome;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
@@ -672,7 +673,9 @@ public class DataSharingTabManager {
      * @return The session id associated with the UI instance.
      */
     public String showManageSharing(
-            Activity activity, String collaborationId, @Nullable Runnable finishRunnable) {
+            Activity activity,
+            String collaborationId,
+            @Nullable Callback<@Outcome Integer> outcomeCallback) {
         assert mProfile != null;
 
         DataSharingUIDelegate uiDelegate = mDataSharingService.getUiDelegate();
@@ -719,6 +722,12 @@ public class DataSharingTabManager {
 
         DataSharingManageUiConfig.ManageCallback manageCallback =
                 new DataSharingManageUiConfig.ManageCallback() {
+                    private Callback<@Outcome Integer> mOutcomeCallback;
+
+                    {
+                        mOutcomeCallback = outcomeCallback;
+                    }
+
                     @Override
                     public void onShareInviteLinkClicked(GroupToken groupToken) {
                         onShareInviteLinkClickedWithWait(groupToken, null);
@@ -762,9 +771,21 @@ public class DataSharingTabManager {
                     }
 
                     @Override
+                    public void onLeaveGroup() {
+                        Callback<@Outcome Integer> callback = mOutcomeCallback;
+                        mOutcomeCallback = null;
+
+                        // TODO(haileywang): remove assert if we don't observe any crash
+                        assert callback != null;
+                        if (callback != null) {
+                            callback.onResult(Outcome.DELETE_OR_LEAVE_GROUP);
+                        }
+                    }
+
+                    @Override
                     public void onSessionFinished() {
-                        if (finishRunnable != null) {
-                            finishRunnable.run();
+                        if (mOutcomeCallback != null) {
+                            mOutcomeCallback.onResult(Outcome.SUCCESS);
                         }
                     }
                 };

@@ -25,6 +25,9 @@ class WebContents;
 
 namespace task_manager {
 
+// Do not reuse integers. This enum is required to be stable because the integer
+// values are saved to the user's profile.
+//
 // Determines what OTHER processes to filter out from the Task List.
 // For example, if the selected DisplayCategory is kTabs, Tab processes will be
 // kept, and Extension and System processes will be filtered out.
@@ -75,6 +78,12 @@ class TableViewDelegate {
 class TaskManagerTableModel : public TaskManagerObserver,
                               public ui::TableModel {
  public:
+  static constexpr DisplayCategory kDefaultCategory =
+      DisplayCategory::kTabsAndExtensions;
+
+  // TODO(crbug.com/364926055): Once the refreshed Task Manager has launched,
+  // change the initial display category to kDefaultCategory. Required to be
+  // kAll for backwards compatibility with prod.
   explicit TaskManagerTableModel(
       TableViewDelegate* delegate,
       DisplayCategory initial_display_category = DisplayCategory::kAll);

@@ -96,7 +96,14 @@ void AndroidStateTransferHandler::StateOnTouchTransfer(
 bool AndroidStateTransferHandler::OnMotionEvent(
     base::android::ScopedInputEvent input_event,
     const FrameSinkId& root_frame_sink_id) {
-  TRACE_EVENT("input", "AndroidStateTransferHandler::OnMotionEvent");
+  TRACE_EVENT("input", "AndroidStateTransferHandler::OnMotionEvent",
+              [&](perfetto::EventContext& ctx) {
+                auto* chrome_track_event =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                auto* forwarder = chrome_track_event->set_event_forwarder();
+
+                input_event.WriteIntoTrace(ctx.Wrap(forwarder));
+              });
 
   const int action = AMotionEvent_getAction(input_event.a_input_event()) &
                      AMOTION_EVENT_ACTION_MASK;
@@ -200,14 +207,17 @@ void AndroidStateTransferHandler::EmitPendingTransfersHistogram() {
 
 void AndroidStateTransferHandler::HandleTouchEvent(
     base::android::ScopedInputEvent input_event) {
+  // TODO(crbug.com/406986388) : Add flow events to track the events starting
+  // from when they were first were processed by Viz.
+  TRACE_EVENT("input", "AndroidStateTransferHandler::HandleTouchEvent");
   CHECK(state_for_curr_sequence_.has_value());
   const int action = AMotionEvent_getAction(input_event.a_input_event()) &
                      AMOTION_EVENT_ACTION_MASK;
-  // Due to an Android platform bug b/395610162, we see some motion events have
-  // different down time than the rest of the sequence.
-  CHECK(action == AMOTION_EVENT_ACTION_MOVE ||
-        GetEventDowntime(input_event) ==
-            state_for_curr_sequence_->transfer_state->down_time_ms);
+
+  if (GetEventDowntime(input_event) !=
+      state_for_curr_sequence_->transfer_state->down_time_ms) {
+    TRACE_EVENT_INSTANT("input", "DifferentDownTimeInSequence");
+  }
 
   if (!state_for_curr_sequence_->rir_support) {
     if (action == AMOTION_EVENT_ACTION_CANCEL ||

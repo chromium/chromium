@@ -49,6 +49,7 @@ class OnTaskPodControllerImpl : public OnTaskPodController,
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
+  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
 
   // Component accessors used for testing purposes.
   views::Widget* GetPodWidgetForTesting();

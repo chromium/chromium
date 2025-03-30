@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -44,11 +45,6 @@ class TestGpuImpl : public mojom::Gpu {
 
   void BindReceiver(mojo::PendingReceiver<mojom::Gpu> receiver) {
     receivers_.Add(this, std::move(receiver));
-  }
-
-  // mojom::Gpu overrides:
-  void CreateClientGpuMemoryBufferFactory(
-      mojo::PendingReceiver<gpu::mojom::ClientGmbInterface> receiver) override {
   }
 
   void EstablishGpuChannel(EstablishGpuChannelCallback callback) override {

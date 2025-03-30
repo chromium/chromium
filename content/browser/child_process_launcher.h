@@ -89,7 +89,8 @@ struct RenderProcessPriority {
                         unsigned int frame_depth,
                         bool intersects_viewport,
                         bool boost_for_pending_views,
-                        bool boost_for_loading
+                        bool boost_for_loading,
+                        bool is_spare_renderer
 #if BUILDFLAG(IS_ANDROID)
                         ,
                         ChildProcessImportance importance
@@ -98,25 +99,11 @@ struct RenderProcessPriority {
                         ,
                         std::optional<base::Process::Priority> priority_override
 #endif
-                        )
-      : visible(visible),
-        has_media_stream(has_media_stream),
-        has_immersive_xr_session(has_immersive_xr_session),
-        has_foreground_service_worker(has_foreground_service_worker),
-        frame_depth(frame_depth),
-        intersects_viewport(intersects_viewport),
-        boost_for_pending_views(boost_for_pending_views),
-        boost_for_loading(boost_for_loading)
-#if BUILDFLAG(IS_ANDROID)
-        ,
-        importance(importance)
-#endif
-#if !BUILDFLAG(IS_ANDROID)
-        ,
-        priority_override(priority_override)
-#endif
-  {
-  }
+  );
+
+  RenderProcessPriority(const RenderProcessPriority&);
+
+  RenderProcessPriority& operator=(const RenderProcessPriority&);
 
   // Returns true if the child process is backgrounded.
   // DEPRECATED NOTICE: Use GetProcessPriority() instead.
@@ -175,6 +162,11 @@ struct RenderProcessPriority {
   // |boost_for_loading| is true if this process is responsible for committing
   // navigation and initial loading.
   bool boost_for_loading;
+
+  // |is_spare_renderer| is true if this process should be treated as a spare
+  // renderer. The process will be given a moderate priority even it is not
+  // visible and used.
+  bool is_spare_renderer;
 
 #if BUILDFLAG(IS_ANDROID)
   ChildProcessImportance importance;

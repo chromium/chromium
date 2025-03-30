@@ -32,8 +32,8 @@ export class AutoTabGroupsFailureElement extends CrLitElement {
     };
   }
 
-  error: TabOrganizationError = TabOrganizationError.kNone;
-  showFre: boolean = false;
+  accessor error: TabOrganizationError = TabOrganizationError.kNone;
+  accessor showFre: boolean = false;
 
   static override get styles() {
     return getCss();

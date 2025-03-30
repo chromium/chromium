@@ -789,7 +789,6 @@
 <translation id="4593212453765072419">Wymagane uwierzytelnienie na serwerze proxy</translation>
 <translation id="4594021849294327751">Utwórz transkrypcję</translation>
 <translation id="4594541568452132351">Wybierz język transkrypcji i pobierz model</translation>
-<translation id="4607282946861182308">Nie udało się utworzyć obrazów. Użyj innego promptu.</translation>
 <translation id="4609350030397390689">Zmniejsz jasność klawiatury</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Naciśnij Enter, by anulować zadanie drukowania.</translation>
 <translation id="463791356324567266">Anuluję skanowanie…</translation>
@@ -1655,6 +1654,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8543574988889671960">Załaduj kartę ponownie</translation>
 <translation id="8550364285433943656">Dodaj elementy sterujące do działań w grze, aby grać za pomocą klawiszy na klawiaturze</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">Generatywna AI może popełniać błędy, także dotyczące osób, dlatego sprawdzaj uzyskane odpowiedzi.</translation>
 <translation id="8575298406870537639">Tej opcji może wymagać operator do połączenia z jego siecią. Aby uzyskać szczegółowe informacje, skontaktuj się z operatorem.</translation>
 <translation id="8576249514688522074">Nie zainicjowano</translation>
 <translation id="8584654835905316966">Aby dokończyć instalację aktualizacji oprogramowania układowego <ph name="DEVICE_NAME" /> do wersji <ph name="VERSION" />, musisz ponownie uruchomić urządzenie. Komputer może kilka razy uruchomić się ponownie. Jest to działanie prawidłowe.</translation>
@@ -1669,7 +1669,6 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8655295600908251630">Kanał</translation>
 <translation id="8655828773034788261">Udostępnij adres URL:</translation>
 <translation id="8660881923941176839">funty</translation>
-<translation id="8670057600920888023">Generatywna AI ma charakter eksperymentalny, dlatego treści mogą być niedokładne, mylące lub obraźliwe.</translation>
 <translation id="8670574982334489519">prawa</translation>
 <translation id="8675354002693747642">Klucz wstępny</translation>
 <translation id="8677859815076891398">Brak albumów. Utwórz album w <ph name="LINK_BEGIN" />Zdjęciach Google<ph name="LINK_END" />.</translation>

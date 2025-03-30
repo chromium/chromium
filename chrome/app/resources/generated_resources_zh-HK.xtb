@@ -8,6 +8,7 @@
 <translation id="100323615638474026">USB 裝置 (<ph name="VENDOR_ID" />：<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">最近的下載記錄</translation>
 <translation id="1004218526896219317">網站存取權</translation>
+<translation id="1005230401424685968">YYYY</translation>
 <translation id="1005274289863221750">使用您的麥克風和相機</translation>
 <translation id="1005333234656240382">要啟用 ADB 偵錯嗎？</translation>
 <translation id="1005671386794704751">玫瑰粉紅</translation>
@@ -1377,6 +1378,7 @@
 <translation id="193565226207940518">支援工具</translation>
 <translation id="1935995810530254458">仍要複製</translation>
 <translation id="1936157145127842922">在資料夾中顯示</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{已將頁面加入閱讀清單}other{已將頁面加入閱讀清單}}</translation>
 <translation id="1936931585862840749">使用數字指定列印份數 (1 至 <ph name="MAX_COPIES" /> 份)。</translation>
 <translation id="1937774647013465102">此裝置使用 <ph name="ARCHITECTURE_DEVICE" />，因此無法匯入容器架構類型 <ph name="ARCHITECTURE_CONTAINER" />。您可嘗試將此容器還原至其他裝置，或透過 Files 應用程式存取此容器圖片內的檔案。</translation>
 <translation id="1938351510777341717">外置 Command 鍵</translation>
@@ -3185,7 +3187,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         你可隨時透過此資訊卡管理設定，或前往「自訂 Chrome」查看更多選項。</translation>
-<translation id="3207437351138888228">填入表格時，你的資料和表格來源網頁會傳送至 Google 以生成建議</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3208584281581115441">立即檢查</translation>
 <translation id="3208703785962634733">尚未確認的</translation>
@@ -3230,6 +3231,7 @@
 <translation id="3242289508736283383">含有「kiosk_only」資訊清單屬性的應用程式必須在 Chrome OS Kiosk 模式中安裝</translation>
 <translation id="3243017971870859287">讀取 ChromeOS Flex 裝置和組件序號</translation>
 <translation id="324366796737464147">消噪</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">繼續保持靜音</translation>
 <translation id="3247006341013237647">要整理分頁嗎？</translation>
 <translation id="3247649647204519958">您可在此處查看及管理擴充程式在目前網站上的權限</translation>
@@ -6093,7 +6095,6 @@
 <translation id="5267572070504076962">開啟「安全瀏覽」功能可避免受危險網站的攻擊</translation>
 <translation id="5269977353971873915">列印失敗</translation>
 <translation id="5271578170655641944">要移除「Google 雲端硬碟」存取權嗎？</translation>
-<translation id="5271782684896713035">資料可能會送交人手審查以改善此功能</translation>
 <translation id="5273806377963980154">編輯網站網址</translation>
 <translation id="5275084684151588738">用戶字典</translation>
 <translation id="5275338516105640560">「已儲存至分頁群組」按鈕</translation>

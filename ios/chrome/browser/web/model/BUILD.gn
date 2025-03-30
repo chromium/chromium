@@ -326,6 +326,7 @@ source_set("web_internal") {
     "//ios/components/security_interstitials/https_only_mode:feature",
     "//ios/components/security_interstitials/lookalikes",
     "//ios/components/security_interstitials/safe_browsing",
+    "//ios/components/ui_util",
     "//ios/components/webui:url_constants",
     "//ios/net",
     "//ios/public/provider/chrome/browser/additional_features:additional_features_api",

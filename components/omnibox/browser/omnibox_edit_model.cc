@@ -2641,10 +2641,20 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   // dropdown is closed or the user used paste-and-go.  (In most
   // cases when this happens, the user never modified the omnibox.)
   const bool popup_open = PopupIsOpen();
+  const base::TimeDelta default_time_delta = base::Milliseconds(-1);
   if (input_.IsZeroSuggest() || !pasted_text.empty()) {
-    const base::TimeDelta default_time_delta = base::Milliseconds(-1);
     elapsed_time_since_user_first_modified_omnibox = default_time_delta;
     elapsed_time_since_last_change_to_default_match = default_time_delta;
+  }
+
+  base::TimeDelta elapsed_time_since_user_focused_omnibox = default_time_delta;
+  if (!last_omnibox_focus_.is_null()) {
+    elapsed_time_since_user_focused_omnibox = now - last_omnibox_focus_;
+    // Only record focus to open time when a focus actually happened (as
+    // opposed to, say, dragging a link onto the omnibox).
+    LogFocusToOpenTime(elapsed_time_since_user_focused_omnibox,
+                       input_.IsZeroSuggest(), GetPageClassification(), match,
+                       selection.IsAction() ? selection.action_index : -1);
   }
 
   // In some unusual cases, we ignore autocomplete_controller()->result() and
@@ -2684,7 +2694,8 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
       completed_length, elapsed_time_since_last_change_to_default_match,
       dropdown_ignored ? fake_single_entry_result
                        : autocomplete_controller()->result(),
-      destination_url, is_incognito);
+      destination_url, is_incognito,
+      match.zero_prefix_suggestions_shown_in_session);
 // Check disabled on iOS as the platform shows a default suggestion on focus
 // (crbug.com/40061502).
 #if !BUILDFLAG(IS_IOS)
@@ -2695,6 +2706,8 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
       << "omnibox text at same time or before the most recent time the "
       << "default match changed.";
 #endif
+  log.elapsed_time_since_user_focused_omnibox =
+      elapsed_time_since_user_focused_omnibox;
   log.ukm_source_id = controller_->client()->GetUKMSourceId();
 
   if ((disposition == WindowOpenDisposition::CURRENT_TAB) &&
@@ -2723,13 +2736,6 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
 
   LOCAL_HISTOGRAM_BOOLEAN("Omnibox.EventCount", true);
   omnibox::answer_data_parser::LogAnswerUsed(match.answer_type);
-  if (!last_omnibox_focus_.is_null()) {
-    // Only record focus to open time when a focus actually happened (as
-    // opposed to, say, dragging a link onto the omnibox).
-    LogFocusToOpenTime(now - last_omnibox_focus_, input_.IsZeroSuggest(),
-                       GetPageClassification(), match,
-                       selection.IsAction() ? selection.action_index : -1);
-  }
 
   TemplateURLService* service = controller_->client()->GetTemplateURLService();
   TemplateURL* template_url = match.GetTemplateURL(service, false);

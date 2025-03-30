@@ -100,18 +100,18 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
     };
   }
 
-  extensions: chrome.developerPrivate.ExtensionInfo[] = [];
-  delegate: ToolbarDelegate = new DummyToolbarDelegate();
-  inDevMode: boolean = false;
-  devModeControlledByPolicy: boolean = false;
-  isChildAccount: boolean = false;
+  accessor extensions: chrome.developerPrivate.ExtensionInfo[] = [];
+  accessor delegate: ToolbarDelegate = new DummyToolbarDelegate();
+  accessor inDevMode: boolean = false;
+  accessor devModeControlledByPolicy: boolean = false;
+  accessor isChildAccount: boolean = false;
 
-  narrow: boolean = false;
-  canLoadUnpacked?: boolean;
+  accessor narrow: boolean = false;
+  accessor canLoadUnpacked: boolean|undefined;
 
-  protected expanded_: boolean = false;
-  protected showPackDialog_: boolean = false;
-  private isUpdating_: boolean = false;
+  protected accessor expanded_: boolean = false;
+  protected accessor showPackDialog_: boolean = false;
+  private accessor isUpdating_: boolean = false;
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);

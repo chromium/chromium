@@ -22,6 +22,7 @@
 #include "cc/animation/keyframe_effect.h"
 #include "cc/animation/keyframe_model.h"
 #include "cc/layers/layer_impl.h"
+#include "cc/layers/mirror_layer_impl.h"
 #include "cc/layers/picture_layer_impl.h"
 #include "cc/layers/surface_layer_impl.h"
 #include "cc/tiles/picture_layer_tiling.h"
@@ -151,6 +152,8 @@ void ComputePropertyTreeNodeUpdate(
       old_node->opacity == new_node.opacity &&
       old_node->render_surface_reason == new_node.render_surface_reason &&
       old_node->surface_contents_scale == new_node.surface_contents_scale &&
+      old_node->subtree_capture_id == new_node.subtree_capture_id &&
+      old_node->subtree_size == new_node.subtree_size &&
       old_node->blend_mode == new_node.blend_mode &&
       old_node->target_id == new_node.target_id &&
       old_node->has_copy_request == new_node.has_copy_request &&
@@ -173,6 +176,8 @@ void ComputePropertyTreeNodeUpdate(
   wire->has_render_surface =
       new_node.render_surface_reason != RenderSurfaceReason::kNone;
   wire->surface_contents_scale = new_node.surface_contents_scale;
+  wire->subtree_capture_id = new_node.subtree_capture_id;
+  wire->subtree_size = new_node.subtree_size;
   wire->blend_mode = base::checked_cast<uint32_t>(new_node.blend_mode);
   wire->target_id = new_node.target_id;
   wire->copy_output_requests = std::move(copy_requests);
@@ -439,6 +444,11 @@ void SerializePictureLayerTileUpdates(
   }
 }
 
+void SerializeMirrorLayerExtra(MirrorLayerImpl& layer,
+                               viz::mojom::MirrorLayerExtraPtr& extra) {
+  extra->mirrored_layer_id = layer.mirrored_layer_id();
+}
+
 void SerializeSurfaceLayerExtra(SurfaceLayerImpl& layer,
                                 viz::mojom::SurfaceLayerExtraPtr& extra) {
   extra->surface_range = layer.range();
@@ -475,6 +485,14 @@ void SerializeLayer(LayerImpl& layer,
   wire.effect_tree_index = layer.effect_tree_index();
   wire.scroll_tree_index = layer.scroll_tree_index();
   switch (layer.GetLayerType()) {
+    case mojom::LayerType::kMirror: {
+      auto mirror_layer_extra = viz::mojom::MirrorLayerExtra::New();
+      SerializeMirrorLayerExtra(static_cast<MirrorLayerImpl&>(layer),
+                                mirror_layer_extra);
+      wire.layer_extra = viz::mojom::LayerExtra::NewMirrorLayerExtra(
+          std::move(mirror_layer_extra));
+      break;
+    }
     case mojom::LayerType::kSurface: {
       auto surface_layer_extra = viz::mojom::SurfaceLayerExtra::New();
       SerializeSurfaceLayerExtra(static_cast<SurfaceLayerImpl&>(layer),

@@ -8,6 +8,7 @@
 <translation id="100323615638474026">USB-Gerät (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Aktueller Downloadverlauf</translation>
 <translation id="1004218526896219317">Websitezugriff</translation>
+<translation id="1005230401424685968">JJJJ</translation>
 <translation id="1005274289863221750">Dein Mikrofon und deine Kamera verwenden</translation>
 <translation id="1005333234656240382">ADB-Fehlerbehebung aktivieren?</translation>
 <translation id="1005671386794704751">Rosé</translation>
@@ -1364,6 +1365,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="193565226207940518">Supporttool</translation>
 <translation id="1935995810530254458">Trotzdem kopieren</translation>
 <translation id="1936157145127842922">In Ordner anzeigen</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Seite zur Leseliste hinzugefügt}other{Seiten zur Leseliste hinzugefügt}}</translation>
 <translation id="1936931585862840749">Gib eine Zahl ein, um die Anzahl der zu druckenden Exemplare festzulegen (1 bis <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Der Containerarchitekturtyp <ph name="ARCHITECTURE_CONTAINER" /> kann bei diesem Gerät nicht importiert werden, weil es sich um ein <ph name="ARCHITECTURE_DEVICE" />-Gerät handelt. Du kannst probieren, diesen Container auf einem anderen Gerät wiederherzustellen oder das Containerimage in der App "Dateien" öffnen und dort auf die enthaltenen Dateien zugreifen.</translation>
 <translation id="1938351510777341717">Externer Befehl</translation>
@@ -2002,6 +2004,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2373666622366160481">An Papierformat anpassen</translation>
 <translation id="2375406435414127095">Mit dem Smartphone verbinden</translation>
 <translation id="2376056713414548745">Vorlesen</translation>
+<translation id="2376122016044804363">Bestätigungen zum Kopieren von Inhalten in die Zwischenablage</translation>
 <translation id="2377667304966270281">Harte Fehler</translation>
 <translation id="237828693408258535">Diese Seite übersetzen?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Diese Erweiterung wird möglicherweise bald nicht mehr unterstützt}other{Diese Erweiterungen werden möglicherweise bald nicht mehr unterstützt}}</translation>
@@ -3154,6 +3157,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3192586965067888278">Beschreibe ausführlich das Problem. Das Feedback wird zur manuellen Überprüfung an Google gesendet und kann zur Verbesserung oder Entwicklung von Google-Produkten und -Diensten verwendet werden.</translation>
 <translation id="3192947282887913208">Audiodateien</translation>
 <translation id="3193695589337931419">Dienstprogramm für Systemsignale</translation>
+<translation id="3194095220941877499">Zeigt eine Bestätigung an, wenn du Links, Bilder oder Videos kopierst</translation>
 <translation id="3196912927885212665">Zur Einrichtung mit deinem Android-Smartphone muss Bluetooth auf deinem Chromebook aktiviert sein</translation>
 <translation id="3197453258332670132">Wenn du rechts klickst oder lange drückst, werden verknüpfte Informationen zum ausgewählten Text angezeigt</translation>
 <translation id="3199127022143353223">Server</translation>
@@ -3168,7 +3172,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
         <ph name="BREAK" />
         <ph name="BREAK" />
         Du kannst die Einstellungen jederzeit über diese Karte verwalten oder unter „Chrome anpassen“ weitere Optionen aufrufen.</translation>
-<translation id="3207437351138888228">Wenn du ein Formular ausfüllst, werden deine Informationen und die Seite, von der das Formular stammt, an Google gesendet, um Vorschläge zu generieren</translation>
 <translation id="3207960819495026254">Mit einem Lesezeichen versehen</translation>
 <translation id="3208584281581115441">Jetzt prüfen</translation>
 <translation id="3208703785962634733">Nicht bestätigt</translation>
@@ -3213,6 +3216,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3242289508736283383">App mit Manifest-Attribut „kiosk_only“ muss im Chrome OS-Kioskmodus installiert werden</translation>
 <translation id="3243017971870859287">Seriennummern von ChromeOS Flex-Geräten und -Komponenten lesen</translation>
 <translation id="324366796737464147">Geräuschunterdrückung</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Töne weiterhin stummschalten</translation>
 <translation id="3247006341013237647">Tabs organisieren?</translation>
 <translation id="3247649647204519958">Hier kannst du die Erweiterungsberechtigungen für die aktuelle Website ansehen und verwalten</translation>
@@ -6079,7 +6083,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5267572070504076962">Du kannst Safe Browsing aktivieren, um den Schutz vor gefährlichen Websites zu verbessern</translation>
 <translation id="5269977353971873915">Fehler beim Drucken</translation>
 <translation id="5271578170655641944">Google Drive-Zugriff entfernen?</translation>
-<translation id="5271782684896713035">Zur Verbesserung dieser Funktion können die Daten von Prüfern angesehen werden.</translation>
 <translation id="5273806377963980154">Website-URL bearbeiten</translation>
 <translation id="5275084684151588738">Meine Wörterbücher</translation>
 <translation id="5275338516105640560">Schaltfläche „Gespeicherte Tabgruppe“</translation>

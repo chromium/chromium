@@ -42,6 +42,10 @@ def _create_config(config_args, development):
                 return ''
 
             @property
+            def provisioning_profile_basename(self):
+                return None
+
+            @property
             def run_spctl_assess(self):
                 # Self-signed or ad-hoc signed signing identities won't pass
                 # spctl assessment so don't do it.

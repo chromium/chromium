@@ -32,9 +32,16 @@ base::OnceClosure BindAppend(std::string* a, const char* b) {
 
 class GlicWindowResizeAnimationTest : public test::InteractiveGlicTest {
  public:
+  GlicWindowResizeAnimationTest() {
+    features_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{},
+        // TODO(402795394): Update size expectations in tests so they work with
+        // the user-resize minimum size.
+        /*disabled_features=*/{features::kGlicUserResize});
+  }
+
   void SetUpOnMainThread() override {
     test::InteractiveGlicTest::SetUpOnMainThread();
-
     RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached));
   }
 
@@ -80,6 +87,7 @@ class GlicWindowResizeAnimationTest : public test::InteractiveGlicTest {
   base::TimeTicks animation_creation_time() { return animation_creation_time_; }
 
  private:
+  base::test::ScopedFeatureList features_;
   const base::TimeTicks animation_creation_time_ = base::TimeTicks::Now();
 };
 }  // namespace

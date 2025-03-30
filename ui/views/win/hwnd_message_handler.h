@@ -94,8 +94,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // See WindowImpl for details on |debugging_id|.
   static std::unique_ptr<HWNDMessageHandler> Create(
       HWNDMessageHandlerDelegate* delegate,
-      const std::string& debugging_id,
-      bool headless_mode);
+      const std::string& debugging_id);
 
   HWNDMessageHandler(const HWNDMessageHandler&) = delete;
   HWNDMessageHandler& operator=(const HWNDMessageHandler&) = delete;

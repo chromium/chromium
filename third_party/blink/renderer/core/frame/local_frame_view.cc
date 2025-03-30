@@ -2991,8 +2991,7 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
     }
   }
 
-  PaintArtifactCompositor::StackScrollTranslationVector
-      scroll_translation_nodes;
+  StackScrollTranslationVector scroll_translation_nodes;
   ForAllNonThrottledLocalFrameViews(
       [&scroll_translation_nodes](LocalFrameView& frame_view) {
         if (RuntimeEnabledFeatures::

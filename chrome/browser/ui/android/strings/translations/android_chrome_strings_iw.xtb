@@ -325,7 +325,6 @@
 <translation id="2527209463677295330">רוצה לראות תוצאות טובות יותר? כדאי לכלול כמה שיותר טקסט מהדף</translation>
 <translation id="2527779675047087889">הסתרת התוכן שבלוח</translation>
 <translation id="2532336938189706096">תצוגת אינטרנט</translation>
-<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> פריטים נמחקו</translation>
 <translation id="253498598929009420">האתר יוכל לראות את תוכן המסך שלך</translation>
 <translation id="2536728043171574184">מוצג העתק לא מקוון של עמוד זה</translation>
 <translation id="2542548955756682219">‫<ph name="TAB_TITLE" />, כרטיסייה</translation>
@@ -365,7 +364,6 @@
 <translation id="2677748264148917807">יציאה</translation>
 <translation id="2687009626279857299">השירות הפסיק לפעול במכשיר הזה</translation>
 <translation id="2702516483241149200">חדש: ניתן לשתף קישור שגולל לטקסט הזה</translation>
-<translation id="2705073298859543115">יצירת סיכום</translation>
 <translation id="2708051474374549906">‏הגנה יזומה בזמן אמת מפני אתרים, הורדות ותוספים מסוכנים, המבוססת על נתוני הגלישה שלך שנשלחים אל Google</translation>
 <translation id="2708226184420201102">פתיחה בדפדפן <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">חדש</translation>
@@ -1199,7 +1197,6 @@
 <translation id="6564820424018738527">‏במכשיר Android מופיעה הגדרה דומה. אם האפשרות "מדידת ביצועים של מודעות" מופעלת ב-Chrome ובמכשיר Android, יכול להיות שתהיה לחברה מסוימת הרשאה למדוד את רמת האפקטיביות של מודעה כלשהי באתרים שבהם מבקרים ובאפליקציות שבהן משתמשים.</translation>
 <translation id="6565959834589222080">‏המכשיר יתחבר לרשת Wi-Fi כאשר תהיה זמינה</translation>
 <translation id="6569373978618239158">‏בפתיחת כרטיסייה חדשה, יוצגו לך סטוריז מהאתר <ph name="SITE_NAME" />. אתרים שנמצאים במעקב נשמרים בחשבון Google שלך. יש לך אפשרות לנהל אותם בהגדרות של Discover.</translation>
-<translation id="6570116402456758630">סיכום הדף</translation>
 <translation id="657177046675873214">כדי שהסימניות יופיעו בכל המכשירים, צריך להפעיל את האפשרות "סימניות" בהגדרות</translation>
 <translation id="6573096386450695060">אני רוצה לאפשר תמיד</translation>
 <translation id="6573431926118603307">‏כרטיסיות שפתחת ב-Chrome במכשירים האחרים שלך יופיעו כאן.</translation>

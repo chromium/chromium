@@ -132,6 +132,9 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("memory"),
     perfetto::Category("midi"),
     perfetto::Category("mojom"),
+    perfetto::Category("mojom.flow").SetDescription(
+        "Includes flow events related to mojom. Notably, records flows between "
+        "senders and receivers."),
     perfetto::Category("mus"),
     perfetto::Category("native"),
     perfetto::Category("navigation"),
@@ -400,7 +403,9 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category::Group("toplevel,graphics.pipeline"),
     perfetto::Category::Group("toplevel,Java"),
     perfetto::Category::Group("toplevel,latency"),
+    perfetto::Category::Group("toplevel,mojom"),
     perfetto::Category::Group("toplevel,viz"),
+    perfetto::Category::Group("toplevel.flow,mojom.flow"),
     perfetto::Category::Group("ui,input"),
     perfetto::Category::Group("ui,latency"),
     perfetto::Category::Group("ui,toplevel"),

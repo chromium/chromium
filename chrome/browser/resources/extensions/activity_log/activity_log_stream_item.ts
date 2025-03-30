@@ -75,16 +75,16 @@ export class ActivityLogStreamItemElement extends CrLitElement {
     };
   }
 
-  data: StreamItem = {
+  accessor data: StreamItem = {
     timestamp: 0,
     activityType: chrome.activityLogPrivate.ExtensionActivityType.API_CALL,
     argUrl: '',
     args: '{}',
     expanded: false,
   };
-  protected expanded_: boolean = false;
-  protected argsList_: StreamArgItem[] = [];
-  protected isExpandable_: boolean = false;
+  protected accessor expanded_: boolean = false;
+  protected accessor argsList_: StreamArgItem[] = [];
+  protected accessor isExpandable_: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

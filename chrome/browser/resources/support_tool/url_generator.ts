@@ -68,13 +68,13 @@ export class UrlGeneratorElement extends UrlGeneratorElementBase {
     };
   }
 
-  private caseId_: string;
+  declare private caseId_: string;
   private generatedResult_: string;
-  private errorMessage_: string;
-  private buttonDisabled_: boolean;
-  private copiedToastMessage_: string;
-  private dataCollectors_: DataCollectorItem[];
-  private selectAll_: boolean;
+  declare private errorMessage_: string;
+  declare private buttonDisabled_: boolean;
+  declare private copiedToastMessage_: string;
+  declare private dataCollectors_: DataCollectorItem[];
+  declare private selectAll_: boolean;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   override connectedCallback() {

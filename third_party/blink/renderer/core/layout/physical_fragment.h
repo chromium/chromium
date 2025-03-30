@@ -266,6 +266,10 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
 
   bool IsGrid() const { return layout_object_->IsLayoutGrid(); }
 
+  bool IsFlex() const { return layout_object_->IsFlexibleBox(); }
+
+  bool SupportsGapDecorations() const { return IsGrid() || IsFlex(); }
+
   bool IsTextControlContainer() const;
   bool IsTextControlPlaceholder() const;
 

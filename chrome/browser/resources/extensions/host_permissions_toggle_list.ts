@@ -47,8 +47,6 @@ export class ExtensionsHostPermissionsToggleListElement extends
 
   static override get properties() {
     return {
-      ...super.properties,
-
       /**
        * The underlying permissions data.
        */
@@ -70,15 +68,15 @@ export class ExtensionsHostPermissionsToggleListElement extends
     };
   }
 
-  permissions: chrome.developerPrivate.RuntimeHostPermissions = {
+  accessor permissions: chrome.developerPrivate.RuntimeHostPermissions = {
     hasAllHosts: true,
     hostAccess: chrome.developerPrivate.HostAccess.ON_CLICK,
     hosts: [],
   };
-  itemId: string = '';
-  protected matchingRestrictedSites_: string[] = [];
-  protected showMatchingRestrictedSitesDialog_: boolean = false;
-  private selectedHost_: string = '';
+  accessor itemId: string = '';
+  protected accessor matchingRestrictedSites_: string[] = [];
+  protected accessor showMatchingRestrictedSitesDialog_: boolean = false;
+  private accessor selectedHost_: string = '';
 
   getRestrictedSitesDialog(): ExtensionsRestrictedSitesDialogElement|null {
     return this.shadowRoot.querySelector('extensions-restricted-sites-dialog');

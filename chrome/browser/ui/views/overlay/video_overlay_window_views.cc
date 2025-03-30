@@ -1551,6 +1551,18 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
               kActionButtonSize.width()),
          bottom_controls_bounds.y() + kBottomControlsVerticalMargin});
 
+    // The previous and next track buttons are always both visible if at least
+    // one of them is visible.
+    const bool should_enable_prev =
+        show_previous_track_button_ || show_previous_slide_button_;
+    const bool should_enable_next =
+        show_next_track_button_ || show_next_slide_button_;
+    const bool should_show_prev_next = should_enable_prev || should_enable_next;
+    previous_track_controls_view_->SetVisible(should_show_prev_next);
+    next_track_controls_view_->SetVisible(should_show_prev_next);
+    previous_track_controls_view_->SetEnabled(should_enable_prev);
+    next_track_controls_view_->SetEnabled(should_enable_next);
+
     // The progress bars should take up all the space that is left after the
     // previous and next buttons. Here we calculate how much horizontal space
     // one of those buttons takes up and use that to calculate the width and x
@@ -1558,12 +1570,16 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
     constexpr int kPreviousNextTrackWidthPlusHorizontalMargins =
         kBottomControlsHorizontalMargin + (2 * kControlHorizontalMargin) +
         kActionButtonSize.width();
+    const int used_horizontal_space_left_of_progress_bar =
+        should_show_prev_next
+            ? kPreviousNextTrackWidthPlusHorizontalMargins
+            : kBottomControlsHorizontalMargin + kControlHorizontalMargin;
     progress_view_->SetPosition(
         {bottom_controls_bounds.x() +
-             kPreviousNextTrackWidthPlusHorizontalMargins,
+             used_horizontal_space_left_of_progress_bar,
          bottom_controls_bounds.y() + kBottomControlsVerticalMargin});
     progress_view_->SetSize(
-        {bounds.width() - (2 * kPreviousNextTrackWidthPlusHorizontalMargins),
+        {bounds.width() - (2 * used_horizontal_space_left_of_progress_bar),
          kProgressBarHeight});
 
     gfx::Point timestamp_position(
@@ -1585,19 +1601,17 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
     live_status_->SetVisible(is_live_);
 
     // The play/pause button and replay/forward 10 seconds buttons should not be
-    // visible while dragging the progress bar.
+    // visible while dragging the progress bar or for live media.
     const bool is_dragging_progress_bar =
         progress_view_drag_state_ ==
         global_media_controls::DragState::kDragStarted;
     play_pause_controls_view_->SetVisible(show_play_pause_button_ &&
                                           !is_dragging_progress_bar);
-    replay_10_seconds_button_->SetVisible(!is_dragging_progress_bar);
-    forward_10_seconds_button_->SetVisible(!is_dragging_progress_bar);
+    replay_10_seconds_button_->SetVisible(!is_dragging_progress_bar &&
+                                          !is_live_);
+    forward_10_seconds_button_->SetVisible(!is_dragging_progress_bar &&
+                                           !is_live_);
 
-    // The previous and next track buttons are always visible, but disabled if
-    // there is no action handler for them.
-    previous_track_controls_view_->SetEnabled(show_previous_track_button_);
-    next_track_controls_view_->SetEnabled(show_next_track_button_);
     return;
   }
 

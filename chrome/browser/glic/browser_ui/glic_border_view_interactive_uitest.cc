@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "content/public/test/browser_test.h"
@@ -39,8 +40,6 @@ using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
 static constexpr char kClickFn[] = "el => el.click()";
 
 static constexpr float kFloatComparisonTolerance = 0.001f;
-
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTabId);
 
 // Note: make sure to install this on the border before the animation starts.
 class TesterImpl : public GlicBorderView::Tester {
@@ -143,6 +142,13 @@ class GlicBorderViewUiTest : public test::InteractiveGlicTest {
   }
   ~GlicBorderViewUiTest() override = default;
 
+  void SetUpOnMainThread() override {
+    embedded_test_server()->ServeFilesFromSourceDirectory(
+        GetChromeTestDataDir());
+    test::InteractiveGlicTest::SetUpOnMainThread();
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), Title1()));
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kForcePrefersNoReducedMotion);
     test::InteractiveGlicTest::SetUpCommandLine(command_line);
@@ -152,9 +158,9 @@ class GlicBorderViewUiTest : public test::InteractiveGlicTest {
     const DeepQuery kContextAccessIndicatorCheckBox{
         {"#contextAccessIndicator"}};
     RunTestSequence(
-        InstrumentTab(kActiveTabId),
-        NavigateWebContents(kActiveTabId, embedded_test_server()->GetURL("/")),
-        OpenGlicWindow(GlicWindowMode::kAttached),
+        // See https://crrev.com/c/6373789: the glic window is in detach mode by
+        // default.
+        OpenGlicWindow(GlicWindowMode::kDetached),
         ExecuteJsAt(test::kGlicContentsElementId,
                     kContextAccessIndicatorCheckBox, kClickFn));
   }
@@ -171,6 +177,10 @@ class GlicBorderViewUiTest : public test::InteractiveGlicTest {
                     CheckControllerHasWidget(true),
                     CheckControllerWidgetMode(GlicWindowMode::kAttached));
   }
+
+  GURL Title1() const { return embedded_test_server()->GetURL("/title1.html"); }
+
+  GURL Title2() const { return embedded_test_server()->GetURL("/title2.html"); }
 
  private:
   base::test::ScopedFeatureList features_;
@@ -379,19 +389,18 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_FocusedTabChange) {
 
 // Ensures that only the emphasis animation is restarted when the focused tab is
 // destroyed.
-// crbug.com/406843285: Fix and Re-enable.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_FocusedTabDestroyed) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabDestroyed) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   TesterImpl tester(border);
 
   // Adding a new tab so the focus changes to the new tab.
-  auto new_tab_url = GURL(chrome::kChromeUINewTabURL);
-  chrome::AddTabAt(browser(), new_tab_url,
+  auto title2_url = Title2();
+  chrome::AddTabAt(browser(), title2_url,
                    /*index=*/-1, /*foreground=*/true);
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
-  tester.WaitForFocusedTabChange(new_tab_url);
+  tester.WaitForFocusedTabChange(title2_url);
 
   StartBorderAnimation();
   tester.WaitForAnimationStart();
@@ -434,9 +443,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_FocusedTabDestroyed) {
   EXPECT_FALSE(border->IsShowing());
 }
 
-// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
-// kGlicAlwaysDetached is now default true.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_FocusedWindowChange) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedWindowChange) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   auto tester = std::make_unique<TesterImpl>(border);
@@ -463,22 +470,18 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_FocusedWindowChange) {
     new_tester = std::make_unique<TesterImpl>(new_border);
     views::test::WaitForWidgetActive(new_browser->GetBrowserView().GetWidget(),
                                      /*active=*/true);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(new_browser, Title2()));
   }
 
   // Flush out the ramp down animation in the old browser window.
   tester->WaitForRampDownStarted();
   tester->FinishRampDown();
   EXPECT_FALSE(border->IsShowing());
-  // After the new window has become active, the animation is not showing in
-  // either browser windows because the glic window is attached to the old
-  // browser window while the user focuses on the new browser window.
-  ASSERT_TRUE(new_border);
-  EXPECT_FALSE(new_border->IsShowing());
 
-  // Click the glic button in the new browser's tab strip. Allows the glic
-  // window to be attached to the new browser window, where we play the border
-  // animation.
-  ClickGlicButtonInBrowser(new_browser);
+  // After the new window has become active, the border animation will
+  // automatically play in the new window because glic window is in detach mode.
+  ASSERT_TRUE(new_border);
+  EXPECT_TRUE(new_border->IsShowing());
 
   EXPECT_FALSE(border->IsShowing());
   new_tester->WaitForAnimationStart();
@@ -679,9 +682,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, EnsureTimeWraps) {
 
 // Ensures that the effect time starts from where it was left off when
 // switching to a new tab.
-// crbug.com/406843285: Fix and Re-enable.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest,
-                       DISABLED_FocusedTabChangeEffectTime) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChangeEffectTime) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   TesterImpl tester(border);
@@ -701,7 +702,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest,
   tester.AdvanceTimeAndTickAnimation(base::Seconds(0.123));
 
   // Changing the active tab.
-  chrome::AddTabAt(browser(), GURL(chrome::kChromeUINewTabURL),
+  chrome::AddTabAt(browser(), Title2(),
                    /*index=*/-1, /*foreground=*/true);
   ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
   tester.WaitForEmphasisRestarted();
@@ -821,21 +822,20 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
 // Ensures that when PrefersReducedMotion is true and the focused tab is
 // destroyed, the border stays as is without replaying the opacity ramp
 // up animation.
-// crbug.com/406843285: Fix and Re-enable.
 IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
-                       DISABLED_FocusedTabDestroyed) {
+                       FocusedTabDestroyed) {
   ASSERT_TRUE(gfx::Animation::PrefersReducedMotion());
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   TesterImpl tester(border);
 
   // Adding a new tab so the focus changes to the new tab.
-  auto new_tab_url = GURL(chrome::kChromeUINewTabURL);
-  chrome::AddTabAt(browser(), new_tab_url,
+  auto title2_url = Title2();
+  chrome::AddTabAt(browser(), title2_url,
                    /*index=*/-1, /*foreground=*/true);
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
-  tester.WaitForFocusedTabChange(new_tab_url);
+  tester.WaitForFocusedTabChange(title2_url);
 
   StartBorderAnimation();
   tester.WaitForAnimationStart();

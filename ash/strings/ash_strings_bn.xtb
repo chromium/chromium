@@ -91,6 +91,7 @@
 <translation id="1269405891096105529">গেস্ট মোডে পেরিফেরাল কাজ করে না</translation>
 <translation id="1270290102613614947">অন-স্ক্রিন কীবোর্ড অক্ষম করা রয়েছে</translation>
 <translation id="1272079795634619415">বন্ধ</translation>
+<translation id="12741168609094094">সার্চ, টেক্সট কপি এবং আরও অনেক কিছু করতে আপনার স্ক্রিনে যেকোনও কিছু বেছে নিন</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> চার্জ করা হচ্ছে</translation>
 <translation id="1275718070701477396">নির্বাচিত</translation>
 <translation id="1276975447697633661">ফাইল বেছে নিন, তারপর <ph name="KEY" /> প্রেস করুন</translation>
@@ -227,6 +228,7 @@
 <translation id="1720230731642245863">হটস্পট বন্ধ আছে</translation>
 <translation id="1731815243805539470">আগের ব্যবহারকারীতে সুইচ করুন</translation>
 <translation id="1733996486177697563">ডার্ক ও লাইট থিমের মধ্যে বদল করুন। ডেস্কটপে টাচ করে ধরে থাকুন, তারপরে ওয়ালপেপার ও স্টাইল বেছে নিন।</translation>
+<translation id="1735992454301033090">বেছে নেওয়া অংশ, সরানোর জন্য তীরচিহ্ন 'কী' ব্যবহার করুন</translation>
 <translation id="1736898441010944794">ব্লুটুথ ডিভাইসে "<ph name="NAME" />" দেখা যায়।</translation>
 <translation id="1737078180382804488">আপনার ফোনের বিজ্ঞপ্তি দেখা সংক্রান্ত সেট-আপের পদ্ধতি বাতিল করুন</translation>
 <translation id="174102739345480129">মার্কার বন্ধ আছে।</translation>
@@ -494,6 +496,7 @@
 <translation id="2683887737780133806">গত সপ্তাহের <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2687510499067466116">কীবোর্ড শর্টকাট পরিবর্তন করা হয়েছে</translation>
 <translation id="2689613560355655046">ডেস্ক ৮</translation>
+<translation id="2692092709110488417">বেছে নেওয়া অংশে ফোকাস করতে ও তা সরিয়ে দিতে ট্যাব প্রেস করুন</translation>
 <translation id="2695305337569143674">ওয়েব</translation>
 <translation id="2697697418792422688">কীবোর্ড সেটিংস দেখান। <ph name="KEYBOARD_NAME" /> বেছে নেওয়া হয়েছে।</translation>
 <translation id="2699913284398121653">আপনার স্কুল অ্যাকাউন্টের ডেটা ব্যক্তিগত অ্যাকাউন্টে সরাতে কন্টেন্ট ট্রান্সফার অ্যাপ ব্যবহার করুন</translation>
@@ -729,6 +732,7 @@
 <translation id="346243998268439747">জুম লেভেল রিসেট করুন</translation>
 <translation id="3465223694362104965">আপনি শেষবার সাইন-ইন করার পরে আরেকটি কীবোর্ড এই ডিভাইসে কানেক্ট করা হয়েছে। এটি ব্যবহার করার আগে কীবোর্ডটিকে আপনি নিরাপদ বলে মনে করেন কিনা তা দেখে নিন।</translation>
 <translation id="3465356146291925647">আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
+<translation id="3470502288861289375">অনুলিপি করা হচ্ছে...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> তারপর <ph name="KEY_TWO" /> বা <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1033,6 +1037,7 @@
 <translation id="4412698727486357573">সহায়তা কেন্দ্র</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> বন্ধ আছে।</translation>
 <translation id="4417647906073317561">ফোকাস মোড সংক্রান্ত সেটিংস। এটি ব্যবহার করতে, টাইমার, টাস্ক ও মিউজিক সেট করুন।</translation>
+<translation id="4418600384772451109">প্যানেল বন্ধ করুন</translation>
 <translation id="4424159417645388645">ডেস্ক ৫</translation>
 <translation id="4426817706804363424">এগিয়ে যান!</translation>
 <translation id="4430019312045809116">ভলিউম</translation>
@@ -2230,6 +2235,7 @@
 <translation id="8287009018010202411">প্রোডাক্টিভিটি</translation>
 <translation id="828708037801473432">বন্ধ করা আছে</translation>
 <translation id="8297006494302853456">দুর্বল</translation>
+<translation id="8300451473979404345">বেছে নেওয়া হ্যান্ডেল, সরানোর জন্য তীরচিহ্ন 'কী' ব্যবহার করুন</translation>
 <translation id="8308637677604853869">পূর্ববর্তী মেনু</translation>
 <translation id="830868413617744215">বিটা</translation>
 <translation id="8314772463905284467">Caps Lock চালু</translation>
@@ -2290,6 +2296,7 @@
 <translation id="851458219935658693">বর্তমান ডেস্ক থেকে উইন্ডো দেখুন, রেডিও বোতাম বেছে নেওয়া হয়েছে</translation>
 <translation id="851660987304951246">দ্রুত কন্টেন্টের সারাংশ তৈরি করতে বা প্রশ্ন করতে 'আমাকে পড়তে সাহায্য করো' ফিচার ব্যবহার করুন</translation>
 <translation id="8517041960877371778">আপনার <ph name="DEVICE_TYPE" /> চালু থাকা অবস্থায় চার্জ নাও হতে পারে।</translation>
+<translation id="8519329096920173967">Google Lens ব্যবহার করে আমার স্ক্রিন সার্চ করো</translation>
 <translation id="8535393432370007982">রঙ অনুযায়ী বেছে নেওয়ার সেটিং থেকে বেরিয়ে আগের অবস্থায় ফেরানো হয়েছে</translation>
 <translation id="8536886494750559755">দ্রুত শেয়ার সেটিংস দেখুন। <ph name="TIME_REMAINING" />-এর জন্য সকলেই দেখতে পাবে</translation>
 <translation id="8539803091108018926">ক্লিপবোর্ডে টেক্সট কপি করা হয়েছে</translation>

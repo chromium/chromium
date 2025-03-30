@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">Este necesară autentificarea la serverul proxy</translation>
 <translation id="4594021849294327751">Creează o transcriere</translation>
 <translation id="4594541568452132351">Selectează limba pentru transcriere și descarcă modelul</translation>
-<translation id="4607282946861182308">Nu se pot crea imagini pe baza acestei solicitări. Încearcă alta.</translation>
 <translation id="4609350030397390689">Reducerea luminozității tastaturii</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> din <ph name="TOTAL_PAGE_NUMBER" />. Apasă pe Enter pentru a anula sarcina de printare.</translation>
 <translation id="463791356324567266">Se anulează scanarea...</translation>
@@ -1540,6 +1539,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8010765388850538088">Află mai multe despre AI generativ</translation>
 <translation id="8017679124341497925">Comanda rapidă a fost editată</translation>
 <translation id="802154636333426148">Descărcarea nu a reușit</translation>
+<translation id="8027467664787098346">Află mai multe despre imaginea de fundal selectată</translation>
 <translation id="8028993641010258682">Dimensiune</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Activează modul de culoare automată</translation>
@@ -1658,6 +1658,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8543574988889671960">Reîncarcă fila</translation>
 <translation id="8550364285433943656">Plasează comenzi pe acțiunile în joc pentru a juca folosind tastele de pe tastatură</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">AI-ul generativ poate să facă greșeli, inclusiv în legătură cu persoane, așadar verifică încă o dată răspunsurile.</translation>
 <translation id="8575298406870537639">Operatorul poate solicita această opțiune ca să te conectezi la rețeaua respectivă. Contactează operatorul pentru detalii.</translation>
 <translation id="8576249514688522074">Neinițializată</translation>
 <translation id="8584654835905316966">Este necesară o repornire pentru a finaliza instalarea firmware-ului pentru <ph name="DEVICE_NAME" /> la versiunea <ph name="VERSION" />. Poate părea că computerul repornește de câteva ori. Acest comportament este normal.</translation>
@@ -1672,7 +1673,6 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655828773034788261">Trimite adresa URL:</translation>
 <translation id="8660881923941176839">livre</translation>
-<translation id="8670057600920888023">AI-ul generativ este experimental, iar conținutul poate fi incorect, înșelător sau jignitor.</translation>
 <translation id="8670574982334489519">dreapta</translation>
 <translation id="8675354002693747642">Cheie predistribuită</translation>
 <translation id="8677859815076891398">Niciun album. Creează un album în <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>

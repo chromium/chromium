@@ -53,9 +53,9 @@ TEST_F(SelectBnplIssuerDialogControllerImplTest, Getters) {
   EXPECT_EQ(controller_->GetIssuerContexts(), issuer_contexts_);
   EXPECT_CALL(selected_issuer_callback_,
               Run(issuer_contexts_[0].issuer.issuer_id()));
-  controller_->OnAccepted(issuer_contexts_[0].issuer.issuer_id());
+  controller_->OnIssuerSelected(issuer_contexts_[0].issuer.issuer_id());
   EXPECT_CALL(cancel_callback_, Run());
-  controller_->OnCancel();
+  controller_->OnUserCancelled();
 }
 
 TEST_F(SelectBnplIssuerDialogControllerImplTest, GetTitle) {

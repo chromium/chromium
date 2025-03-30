@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">প্রক্সি প্রমাণীকরণের প্রয়োজন</translation>
 <translation id="4594021849294327751">ট্রানস্ক্রিপ্ট তৈরি করুন</translation>
 <translation id="4594541568452132351">ট্রান্সক্রিপশনের ভাষা বেছে নিন ও মডেল ডাউনলোড করুন</translation>
-<translation id="4607282946861182308">এটির ছবি তৈরি করা যাচ্ছে না। অন্য প্রম্পট ব্যবহার করে দেখুন।</translation>
 <translation id="4609350030397390689">কীবোর্ড উজ্জ্বলতা কমান</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />টির মধ্যে <ph name="PRINTED_PAGE_NUMBER" /> নম্বর পৃষ্ঠা। প্রিন্ট করা বাতিল করতে এন্টার প্রেস করুন।</translation>
 <translation id="463791356324567266">স্ক্যানিং বাতিল করা হচ্ছে...</translation>
@@ -1540,6 +1539,7 @@
 <translation id="8010765388850538088">জেনারেটিভ AI সম্পর্কে আরও জানুন</translation>
 <translation id="8017679124341497925">শর্টকাট এডিট করা হয়েছে</translation>
 <translation id="802154636333426148">ডাউনলোড করা যায়নি</translation>
+<translation id="8027467664787098346">বেছে নেওয়া ওয়ালপেপার সম্পর্কে আরও জানুন</translation>
 <translation id="8028993641010258682">সাইজ</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">'অটো কালার' মোড চালু করুন</translation>
@@ -1658,6 +1658,7 @@
 <translation id="8543574988889671960">ট্যাব আবার লোড করুন</translation>
 <translation id="8550364285433943656">কীবোর্ডের 'কী'-এর মাধ্যমে খেলার জন্য গেমের অ্যাকশন কন্ট্রোল করুন</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">জেনারেটিভ AI ভুল করতে পারে যেমন কোনও ব্যক্তি সম্পর্কে ভুল তথ্য দিতে পারে, তাই এটি ডবল-চেক করুন।</translation>
 <translation id="8575298406870537639">নেটওয়ার্কে কানেক্ট করার জন্য আপনার পরিষেবা প্রদানকারীর এই বিকল্পের প্রয়োজন হতে পারে। বিশদ বিবরণের জন্য আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
 <translation id="8576249514688522074">যা শুরু করা হয়নি</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" />-এর <ph name="VERSION" /> ভার্সনে ফার্মওয়্যার ইনস্টলেশন সম্পূর্ণ করতে, রিস্টার্ট করতে হবে। আপনার কম্পিউটার একাধিকবার রিবুট হচ্ছে বলে দেখতে পেতে পারেন। এই আচরণ প্রত্যাশিত।</translation>
@@ -1672,7 +1673,6 @@
 <translation id="8655295600908251630">চ্যানেল</translation>
 <translation id="8655828773034788261">URL শেয়ার করুন:</translation>
 <translation id="8660881923941176839">পাউন্ড</translation>
-<translation id="8670057600920888023">জেনারেটিভ AI হল পরীক্ষামূলক এবং কন্টেন্ট ভুল, বিভ্রান্তিমূলক বা আপত্তিকর হতে পারে।</translation>
 <translation id="8670574982334489519">ডানদিকে</translation>
 <translation id="8675354002693747642">আগে-থাকতে শেয়ার করা কী</translation>
 <translation id="8677859815076891398">কোনও অ্যালবাম নেই। <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />-এ একটি অ্যালবাম তৈরি করুন।</translation>

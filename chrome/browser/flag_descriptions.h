@@ -603,6 +603,8 @@ extern const char kCrossTabRegionCaptureDescription[];
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 extern const char kContextualCueingName[];
 extern const char kContextualCueingDescription[];
+extern const char kGlicZeroStateSuggestionsName[];
+extern const char kGlicZeroStateSuggestionsDescription[];
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 extern const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[];
@@ -3188,6 +3190,9 @@ extern const char kSCTAuditingDescription[];
 extern const char kSmartCardWebApiName[];
 extern const char kSmartCardWebApiDescription[];
 
+extern const char kTabCaptureInfobarLinksName[];
+extern const char kTabCaptureInfobarLinksDescription[];
+
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kTranslateOpenSettingsName[];
 extern const char kTranslateOpenSettingsDescription[];
@@ -4736,9 +4741,6 @@ extern const char kOidcAuthProfileManagementDescription[];
 
 extern const char kGlicName[];
 extern const char kGlicDescription[];
-
-extern const char kGlicDetachedName[];
-extern const char kGlicDetachedDescription[];
 
 extern const char kGlicUserResizeName[];
 extern const char kGlicUserResizeDescription[];

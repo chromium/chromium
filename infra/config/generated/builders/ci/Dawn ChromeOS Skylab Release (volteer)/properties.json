@@ -79,5 +79,6 @@
     ]
   },
   "builder_group": "chromium.dawn",
+  "dawn_ref": "refs/heads/main",
   "recipe": "chromium"
 }

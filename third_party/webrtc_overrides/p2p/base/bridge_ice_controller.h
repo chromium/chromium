@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_BRIDGE_ICE_CONTROLLER_H_
 #define THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_BRIDGE_ICE_CONTROLLER_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 
@@ -24,6 +25,9 @@
 #include "third_party/webrtc_overrides/p2p/base/ice_connection.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_controller_observer.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_interaction_interface.h"
+#include "third_party/webrtc_overrides/p2p/base/ice_ping_proposal.h"
+#include "third_party/webrtc_overrides/p2p/base/ice_prune_proposal.h"
+#include "third_party/webrtc_overrides/p2p/base/ice_switch_proposal.h"
 
 namespace blink {
 

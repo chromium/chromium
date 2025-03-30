@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">সরান</translation>
 <translation id="1190609913194133056">বিজ্ঞপ্তি কেন্দ্র</translation>
 <translation id="1201402288615127009">পরের</translation>
-<translation id="1202892408424955784">যে প্রোডাক্টগুলি ট্র্যাক করা হয়েছে</translation>
 <translation id="1204075260022434100">{count,plural, =1{আপনার {email} অ্যাকাউন্টের মধ্যে, "{title}"-এ বুকমার্ক সেভ করা হয়েছে}one{আপনার {email} অ্যাকাউন্টের মধ্যে, "{title}"-এ {count}টি বুকমার্ক সেভ করা হয়েছে}other{আপনার {email} অ্যাকাউন্টের মধ্যে, "{title}"-এ {count}টি বুকমার্ক সেভ করা হয়েছে}}</translation>
 <translation id="120431140543679678">ফলো করুন</translation>
 <translation id="1207493287814084192">বিকেল ৫:৩০</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">নতুন আইটেম</translation>
 <translation id="2049727122989709386"><ph name="COUNT" />টি অ্যাকাউন্ট একই পাসওয়ার্ড ব্যবহার করছে</translation>
 <translation id="2059166748188874810">মিউনিসিপ্যালিটি</translation>
-<translation id="2060114494785549741">১ মাসের মধ্যে মুছে দিন</translation>
 <translation id="2060638295449304809">এই ঠিকানাটি শুধুমাত্র এই ডিভাইসে সেভ আছে। এটি অন্য ডিভাইসে ব্যবহার করার জন্য আপনার Google অ্যাকাউন্টে সেভ করুন, <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">ইউনিটের ধরন বাছাইকারী</translation>
 <translation id="2067852168641682340">প্রতিবার এই অ্যাকাউন্টে সেভ করুন</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">"দাম ট্র্যাক করুন" কার্ড লুকান</translation>
 <translation id="2216366330550244277">কোনও প্রোডাক্টের পৃষ্ঠায় যান</translation>
 <translation id="2220529011494928058">কোনো সমস্যার অভিযোগ করুন</translation>
-<translation id="2220887224562128152">কোনও ফাইল একবার মুছে দেওয়ার জন্য শিডিউল করা হলে, সেটি ফিরিয়ে আগের অবস্থায় ফিরিয়ে আনা যাবে না।</translation>
 <translation id="2223461067862937305">একটি QR কোড তৈরি করুন</translation>
 <translation id="2229345671837147090">রিমোট ট্যাবের গ্রিড</translation>
 <translation id="2230173723195178503">Webpage loaded</translation>
@@ -493,7 +490,6 @@
 <translation id="3059270601560379555">নতুন সার্চ</translation>
 <translation id="3064547930554042309">ডাউনলোড ম্যানেজ করুন</translation>
 <translation id="3072279342064724558">পাসওয়ার্ডটি আগে থেকেই আছে</translation>
-<translation id="3074862506644936708">অটোমেটিক মুছে দেওয়ার সুবিধা চালু করুন</translation>
 <translation id="3076846064362030967">Google অ্যাকাউন্ট থেকে আপনি সাইন-আউট হয়ে যাবেন না। আপনি সাইন-ইন করে থাকলে <ph name="BEGIN_LINK" />অন্যান্য অ্যাক্টিভিটি<ph name="END_LINK" /> আপনার Google অ্যাকাউন্টে সেভ হয়ে যেতে পারে। আপনি যেকোনও সময় সেগুলি মুছে দিতে পারেন।
 
 
@@ -912,6 +908,7 @@
 <translation id="4896467949657706481">ট্যাব বন্ধ করা হয়েছে; আপনি সাইন-আউট হয়ে গেছেন</translation>
 <translation id="4913626501929406101">নিজের ফ্যামিলি গ্রুপে কারও সাথে সুরক্ষিতভাবে আপনি পাসওয়ার্ডের কপি শেয়ার করতে পারবেন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">স্বীকার</translation>
+<translation id="4930714375720679147">চালু করুন</translation>
 <translation id="4932733599132424254">তারিখ</translation>
 <translation id="4936354130727646074">কখনও সরাবেন না</translation>
 <translation id="4937410517508563815">অ্যাকাউন্টে পাসওয়ার্ড সেভ করুন</translation>
@@ -1148,7 +1145,6 @@
 <translation id="5899314093904173337">কাছাকাছি থাকা লোকেদের সাথে শেয়ার করতে, তাদের ক্যামেরা বা QR স্ক্যানার অ্যাপ দিয়ে এই QR কোড স্ক্যান করতে দিন</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count}টি নতুন ট্যাব}one{{count}টি নতুন ট্যাব}other{{count}টি নতুন ট্যাব}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
-<translation id="5917913282764181683">আপনার ডাউনলোড অটোমেটিক মুছে দিন</translation>
 <translation id="5922999516621365983">এটি পিন করার জন্য এখানে ট্যাব টেনে আনুন।</translation>
 <translation id="5936006948844852401">স্টোরেজ ম্যানেজ করুন</translation>
 <translation id="5936065461722368675">সম্পূর্ণ পৃষ্ঠা অনুবাদ করুন</translation>
@@ -1507,7 +1503,6 @@
 <translation id="741204030948306876">হ্যাঁ, আমি রাজি</translation>
 <translation id="7417689656810783109">গ্রুপের নাম পরিবর্তন করুন</translation>
 <translation id="7419565702166471774">সবসময় সুরক্ষিত কানেকশন ব্যবহার করুন</translation>
-<translation id="742001653298797675">আপনার ফোনে স্পেস সেভ করতে ও গোপনীয়তা সুরক্ষিত রাখার জন্য এক মাস পরে মুছে দিতে নিজের সব ডাউনলোড শিডিউল করুন।</translation>
 <translation id="7425053386765766120">পেমেন্ট পদ্ধতি যোগ করুন…</translation>
 <translation id="7425346204213733349">আপনার বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংসে করা পরিবর্তন আর আপনার Google অ্যাকাউন্টের সাথে সিঙ্ক করা হবে না। অবশ্য, আপনার বিদ্যমান ডেটা আপনার Google অ্যাকাউন্টে সঞ্চিত থাকবে।</translation>
 <translation id="742664698522525515">গ্রুপটি রাখবেন?</translation>

@@ -51,17 +51,17 @@ export class SitePermissionsSiteGroupElement extends CrLitElement {
     };
   }
 
-  data: chrome.developerPrivate.SiteGroup = {
+  accessor data: chrome.developerPrivate.SiteGroup = {
     etldPlusOne: '',
     numExtensions: 0,
     sites: [],
   };
-  delegate: SiteSettingsDelegate = new DummySiteSettingsDelegate();
-  extensions: chrome.developerPrivate.ExtensionInfo[] = [];
-  listIndex: number = -1;
-  protected expanded_: boolean = false;
-  protected showEditSitePermissionsDialog_: boolean = false;
-  protected siteToEdit_: chrome.developerPrivate.SiteInfo|null = null;
+  accessor delegate: SiteSettingsDelegate = new DummySiteSettingsDelegate();
+  accessor extensions: chrome.developerPrivate.ExtensionInfo[] = [];
+  accessor listIndex: number = -1;
+  protected accessor expanded_: boolean = false;
+  protected accessor showEditSitePermissionsDialog_: boolean = false;
+  protected accessor siteToEdit_: chrome.developerPrivate.SiteInfo|null = null;
 
   protected getEtldOrSiteFaviconUrl_(): string {
     return getFaviconUrl(this.getDisplayUrl_());

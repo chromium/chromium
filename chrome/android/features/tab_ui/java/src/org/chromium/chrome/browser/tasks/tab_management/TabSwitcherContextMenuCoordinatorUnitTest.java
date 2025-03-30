@@ -21,7 +21,6 @@ import static org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin.TAB_ST
 import android.app.Activity;
 import android.content.res.Resources;
 
-import androidx.core.content.res.ResourcesCompat;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -139,7 +138,7 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
                         eq(TAB_ID),
                         eq(true),
                         eq(false),
-                        eq(ResourcesCompat.ID_NULL),
+                        eq(R.style.TabSwitcherContextMenuAnimation),
                         eq(HorizontalOrientation.LAYOUT_DIRECTION),
                         eq(mActivity));
     }

@@ -48,7 +48,9 @@ bool MergeAXTreeUpdates(const std::vector<AXTreeUpdate>& src,
   (*dst)[0] = std::move(const_cast<AXTreeUpdate&>(src[0]));
   size_t dst_index = 0;
   for (size_t i = 1; i < src.size(); i++) {
-    if (AXTreeUpdatesCanBeMerged(src[i - 1], src[i])) {
+    // Use (*dst)[dst_index] over src[i-1] for the merge because src[i-1] may
+    // be in an undetermined state after being merged.
+    if (AXTreeUpdatesCanBeMerged((*dst)[dst_index], src[i])) {
       std::vector<AXNodeData>& dst_nodes = (*dst)[dst_index].nodes;
       std::vector<AXNodeData>& src_nodes =
           const_cast<std::vector<AXNodeData>&>(src[i].nodes);

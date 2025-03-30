@@ -65,7 +65,8 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
             assertEquals(1, mSheetAccountItems.size());
             assertEquals(HeaderType.VERIFY, mModel.get(ItemProperties.HEADER).get(TYPE));
             verify(mMockDelegate).onAccountsDisplayed();
-            assertFalse(containsItemOfType(mModel, ItemProperties.SPINNER_ENABLED));
+            assertFalse(mModel.get(ItemProperties.SPINNER_ENABLED));
+            assertFalse(mModel.get(ItemProperties.DRAGBAR_HANDLE_VISIBLE));
         }
     }
 
@@ -88,7 +89,8 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
             assertEquals(
                     HeaderType.VERIFY_AUTO_REAUTHN, mModel.get(ItemProperties.HEADER).get(TYPE));
             verify(mMockDelegate).onAccountsDisplayed();
-            assertFalse(containsItemOfType(mModel, ItemProperties.SPINNER_ENABLED));
+            assertFalse(mModel.get(ItemProperties.SPINNER_ENABLED));
+            assertFalse(mModel.get(ItemProperties.DRAGBAR_HANDLE_VISIBLE));
         }
     }
 

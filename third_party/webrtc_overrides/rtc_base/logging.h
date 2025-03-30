@@ -24,6 +24,8 @@
 #ifndef THIRD_PARTY_WEBRTC_OVERRIDES_WEBRTC_RTC_BASE_LOGGING_H_
 #define THIRD_PARTY_WEBRTC_OVERRIDES_WEBRTC_RTC_BASE_LOGGING_H_
 
+#include <cstddef>
+
 #include "third_party/webrtc_overrides/rtc_base/diagnostic_logging.h"
 
 //////////////////////////////////////////////////////////////////////

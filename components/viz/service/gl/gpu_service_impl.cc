@@ -929,23 +929,6 @@ void GpuServiceImpl::CreateVideoEncodeAcceleratorProvider(
       media_gpu_channel_manager_->AsWeakPtr(), main_runner_);
 }
 
-void GpuServiceImpl::BindClientGmbInterface(
-    mojo::PendingReceiver<gpu::mojom::ClientGmbInterface> pending_receiver,
-    int client_id) {
-  // Bind the receiver to the IO tread. All IPC in this interface will be
-  // then received on the IO thread.
-  if (main_runner_->BelongsToCurrentThread()) {
-    bind_task_tracker_.PostTask(
-        io_runner_.get(), FROM_HERE,
-        base::BindOnce(&GpuServiceImpl::BindClientGmbInterface,
-                       base::Unretained(this), std::move(pending_receiver),
-                       client_id));
-    return;
-  }
-  gmb_clients_[client_id] = std::make_unique<ClientGmbInterfaceImpl>(
-      client_id, std::move(pending_receiver), this, io_runner_);
-}
-
 void GpuServiceImpl::BindWebNNContextProvider(
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> pending_receiver,
     int client_id) {

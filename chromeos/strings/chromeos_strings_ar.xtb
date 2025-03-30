@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">مطلوب مصادقة الخادم الوكيل</translation>
 <translation id="4594021849294327751">إنشاء نص</translation>
 <translation id="4594541568452132351">اختيار لغة تحويل الصوت إلى نص وتنزيل النموذج</translation>
-<translation id="4607282946861182308">يتعذّر إنشاء صور استنادًا إلى الطلب الذي أدخلته. جرِّب طلبًا آخر.</translation>
 <translation id="4609350030397390689">تقليل سطوع لوحة المفاتيح</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="PRINTED_PAGE_NUMBER" /> من أصل <ph name="TOTAL_PAGE_NUMBER" />. يمكنك الضغط على enter لإلغاء مهمة الطباعة.</translation>
 <translation id="463791356324567266">جارٍ إلغاء المسح الضوئي...</translation>
@@ -1659,6 +1658,7 @@
 <translation id="8543574988889671960">إعادة تحميل علامة التبويب</translation>
 <translation id="8550364285433943656">خصِّص لكل إجراء في اللعبة مفتاحًا معيّنًا لتلعب باستخدام لوحة المفاتيح</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">قد ترتكب تكنولوجيا الذكاء الاصطناعي التوليدي أخطاء، بما فيها تلك المتعلّقة بالأشخاص، لذا يُنصَح بالتحقّق من ردودها.</translation>
 <translation id="8575298406870537639">قد يتطلّب مشغّل شبكة الجوّال تفعيل هذا الخيار للاتصال بالشبكة التابعة له. يُرجى التواصل مع مشغّل شبكة الجوّال للاطّلاع على التفاصيل.</translation>
 <translation id="8576249514688522074">غير مهيأة</translation>
 <translation id="8584654835905316966">يجب إعادة تشغيل الجهاز لإكمال عملية تثبيت البرامج الثابتة لـ <ph name="DEVICE_NAME" /> على الإصدار <ph name="VERSION" />. وقد يبدو أنّه يُعاد تشغيل جهاز الكمبيوتر عدة مرات، فهذا سلوك متوقَّع.</translation>
@@ -1673,7 +1673,6 @@
 <translation id="8655295600908251630">القناة</translation>
 <translation id="8655828773034788261">‏مشاركة عنوان URL:</translation>
 <translation id="8660881923941176839">رطل</translation>
-<translation id="8670057600920888023">لا يزال الذكاء الاصطناعي التوليدي في المرحلة التجريبية، وبالتالي قد يكون المحتوى غير دقيق أو مضلِّلاً أو مسيئًا.</translation>
 <translation id="8670574982334489519">اليمين</translation>
 <translation id="8675354002693747642">مفتاح المشاركة المسبقة</translation>
 <translation id="8677859815076891398">‏لا تتوفّر أيّ ألبومات. يمكنك إنشاء ألبوم في <ph name="LINK_BEGIN" />صور Google<ph name="LINK_END" />.</translation>

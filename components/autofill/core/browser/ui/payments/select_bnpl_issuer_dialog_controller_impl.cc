@@ -46,12 +46,8 @@ SelectBnplIssuerDialogControllerImpl::SelectBnplIssuerDialogControllerImpl(
       selected_issuer_callback_(std::move(selected_issuer_callback)),
       cancel_callback_(std::move(cancel_callback)) {}
 
-SelectBnplIssuerDialogControllerImpl::~SelectBnplIssuerDialogControllerImpl() {
-  // The browser window may be closed while the dialog is shown.
-  if (dialog_view_) {
-    dialog_view_->Dismiss();
-  }
-}
+SelectBnplIssuerDialogControllerImpl::~SelectBnplIssuerDialogControllerImpl() =
+    default;
 
 void SelectBnplIssuerDialogControllerImpl::ShowDialog(
     base::OnceCallback<std::unique_ptr<SelectBnplIssuerView>()>
@@ -59,18 +55,19 @@ void SelectBnplIssuerDialogControllerImpl::ShowDialog(
   dialog_view_ = std::move(create_and_show_dialog_callback).Run();
 }
 
-void SelectBnplIssuerDialogControllerImpl::OnAccepted(
+void SelectBnplIssuerDialogControllerImpl::OnIssuerSelected(
     const std::string& issuer_id) {
   if (selected_issuer_callback_) {
     std::move(selected_issuer_callback_).Run(issuer_id);
   }
 }
 
-void SelectBnplIssuerDialogControllerImpl::OnCancel() {
+void SelectBnplIssuerDialogControllerImpl::OnUserCancelled() {
+  Dismiss();
   std::move(cancel_callback_).Run();
 }
 
-void SelectBnplIssuerDialogControllerImpl::OnDialogClosed() {
+void SelectBnplIssuerDialogControllerImpl::Dismiss() {
   dialog_view_.reset();
 }
 

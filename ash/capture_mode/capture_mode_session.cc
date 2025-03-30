@@ -507,35 +507,41 @@ gfx::Rect GetHitTestRectForFineTunePosition(
 // Calculates the bounds for a widget of `preferred_size` so that it appears
 // along one of the edges of `capture_bounds`, or slightly above
 // `capture_bar_bounds` if there is not a good edge.
+// If non-empty, `other_container_root_bounds` specifies the root bounds of
+// another container which should be avoided to prevent overlap.
 gfx::Rect CalculateRegionEdgeBounds(
     const gfx::Size& preferred_size,
     const gfx::Rect& capture_bar_root_bounds,
     const gfx::Rect& capture_region_root_bounds,
-    const gfx::Rect& action_container_widget_root_bounds,
+    const gfx::Rect& other_container_root_bounds,
     aura::Window* root,
     CaptureRegionWidgetAlignment preferred_alignment) {
   // The capture button may be placed along the edge of a capture region if it
   // cannot be placed in the middle. This enum represents the possible edges.
   enum class Direction { kBottom, kTop, kLeft, kRight };
-
-  // Try placing the label slightly outside |capture_bounds|. The label will
-  // be |kCaptureButtonDistanceFromRegionDp| away from |capture_bounds| along
-  // one of the edges. The order we will try is bottom, top, left then right.
-  const std::vector<Direction> directions = {
-      Direction::kBottom, Direction::kTop, Direction::kLeft, Direction::kRight};
-
   // Start off with the bounds at the preferred horizontal position but centered
   // vertically. We will shift the bounds to slightly outside `capture_bounds`
   // for each direction if needed.
   gfx::Rect initial_bounds(preferred_size);
+  // `directions` specifies the edges of the capture region in the order that we
+  // will try positioning the widget.
+  std::vector<Direction> directions;
   switch (preferred_alignment) {
     case CaptureRegionWidgetAlignment::kCenter:
       initial_bounds.set_x(capture_region_root_bounds.CenterPoint().x() -
                            preferred_size.width() / 2);
+      // Prefer falling back to above the capture region rather than below the
+      // capture region, to allow widgets with right alignment to keep their
+      // default bottom right position if possible.
+      directions = {Direction::kTop, Direction::kBottom, Direction::kLeft,
+                    Direction::kRight};
       break;
     case CaptureRegionWidgetAlignment::kRight:
       initial_bounds.set_x(capture_region_root_bounds.right() -
                            preferred_size.width());
+      // Prefer right alignment below the capture region if possible.
+      directions = {Direction::kBottom, Direction::kTop, Direction::kLeft,
+                    Direction::kRight};
       break;
   }
   initial_bounds.set_y(capture_region_root_bounds.CenterPoint().y() -
@@ -566,11 +572,11 @@ gfx::Rect CalculateRegionEdgeBounds(
     }
 
     // If `widget_bounds` does not overlap with `capture_bar_root_bounds` or
-    // `action_container_widget_root_bounds` and is fully contained in root,
+    // `other_container_root_bounds` and is fully contained in root,
     // we're good.
     bool intersects_action_buttons =
-        !action_container_widget_root_bounds.IsEmpty() &&
-        widget_bounds.Intersects(action_container_widget_root_bounds);
+        !other_container_root_bounds.IsEmpty() &&
+        widget_bounds.Intersects(other_container_root_bounds);
     if (!widget_bounds.Intersects(capture_bar_root_bounds) &&
         !intersects_action_buttons && root->bounds().Contains(widget_bounds)) {
       return widget_bounds;
@@ -590,8 +596,8 @@ gfx::Rect CalculateRegionEdgeBounds(
   // above the capture bar if they both would like to be placed there.
   // If both the action buttons and the capture button want to be above the
   // capture bar, move the capture button even higher.
-  if (!action_container_widget_root_bounds.IsEmpty() &&
-      widget_bounds.Intersects(action_container_widget_root_bounds)) {
+  if (!other_container_root_bounds.IsEmpty() &&
+      widget_bounds.Intersects(other_container_root_bounds)) {
     widget_bounds.set_y(widget_bounds.y() -
                         CaptureModeSession::kCaptureButtonDistanceFromRegionDp -
                         preferred_size.height());
@@ -1397,7 +1403,8 @@ void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root,
 
   // Start with a new region when we switch displays.
   is_selecting_region_ = true;
-  UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/false, /*by_user=*/false);
+  UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/false, /*by_user=*/false,
+                      root_window_will_shutdown);
 
   UpdateRootWindowDimmers();
   MaybeReparentCameraPreviewWidget();
@@ -1469,6 +1476,13 @@ void CaptureModeSession::OnPerformCaptureForSearchEnded(
     CHECK(capture_region_overlay_controller_);
     capture_region_overlay_controller_->StartGlowAnimation(
         /*animation_delegate=*/this);
+    // TODO(crbug.com/400798746): If Scanner is not enabled, the glow animation
+    // should continue until OCR has completed. For now, just immediately pause
+    // the animation in order to avoid the animation continuing indefinitely.
+    ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+    if (!scanner_controller || !scanner_controller->CanStartSession()) {
+      capture_region_overlay_controller_->PauseGlowAnimation();
+    }
   }
 }
 
@@ -2868,7 +2882,8 @@ void CaptureModeSession::OnLocatedEventPressed(
     // If the point is outside the capture region and not on the capture bar or
     // settings menu, restart to the select phase.
     is_selecting_region_ = true;
-    UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/true, /*by_user=*/true);
+    UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/true, /*by_user=*/true,
+                        /*root_window_will_shutdown=*/false);
     num_capture_region_adjusted_ = 0;
     return;
   }
@@ -2902,7 +2917,8 @@ void CaptureModeSession::OnLocatedEventDragged(
     UpdateCaptureRegion(
         GetRectEnclosingPoints({initial_location_in_root_, location_in_root},
                                current_root_),
-        /*is_resizing=*/true, /*by_user=*/true);
+        /*is_resizing=*/true, /*by_user=*/true,
+        /*root_window_will_shutdown=*/false);
     return;
   }
 
@@ -2917,7 +2933,7 @@ void CaptureModeSession::OnLocatedEventDragged(
     new_capture_region.Offset(location_in_root - previous_location_in_root);
     new_capture_region.AdjustToFit(current_root_->bounds());
     UpdateCaptureRegion(new_capture_region, /*is_resizing=*/false,
-                        /*by_user=*/true);
+                        /*by_user=*/true, /*root_window_will_shutdown=*/false);
     return;
   }
 
@@ -2942,7 +2958,8 @@ void CaptureModeSession::OnLocatedEventDragged(
   }
   points.push_back(resizing_point);
   UpdateCaptureRegion(GetRectEnclosingPoints(points, current_root_),
-                      /*is_resizing=*/true, /*by_user=*/true);
+                      /*is_resizing=*/true, /*by_user=*/true,
+                      /*root_window_will_shutdown=*/false);
   MaybeShowMagnifierGlassAtPoint(location_in_root);
 }
 
@@ -2995,7 +3012,8 @@ void CaptureModeSession::OnLocatedEventReleased(
 void CaptureModeSession::UpdateCaptureRegion(
     const gfx::Rect& new_capture_region,
     bool is_resizing,
-    bool by_user) {
+    bool by_user,
+    bool root_window_will_shutdown) {
   const gfx::Rect old_capture_region = controller_->user_capture_region();
   if (old_capture_region == new_capture_region)
     return;
@@ -3023,7 +3041,12 @@ void CaptureModeSession::UpdateCaptureRegion(
   ClearActionContainer();
   UpdateDimensionsLabelWidget(is_resizing);
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
-  focus_cycler_->OnFineTunePositionUpdated(/*notify_selection_event=*/false);
+  if (!root_window_will_shutdown) {
+    // This updates the virtual views used for a11y on the affordance circles.
+    // Those virtual views will be destroyed soon if `root_window_will_shutdown`
+    // is true.
+    focus_cycler_->OnFineTunePositionUpdated(/*notify_selection_event=*/false);
+  }
 
   // Start a timer to request default actions or perform search after a delay.
   // This is to prevent too many requests if the user needs to repeatedly adjust
@@ -3286,8 +3309,12 @@ gfx::Rect CaptureModeSession::CalculateCaptureLabelWidgetBounds() {
   const gfx::Size preferred_size = capture_label_view_->GetPreferredSize();
   const gfx::Rect capture_bar_bounds =
       capture_mode_bar_widget_->GetNativeWindow()->bounds();
+  // Ignore the action container widget bounds when it is not visible.
+  // Otherwise, the capture label widget can move around unexpectedly in order
+  // to avoid an invisible widget while the user is adjusting the capture
+  // region.
   const gfx::Rect action_container_widget_bounds =
-      action_container_widget_
+      action_container_widget_ && action_container_widget_->IsVisible()
           ? action_container_widget_->GetNativeWindow()->bounds()
           : gfx::Rect();
 
@@ -3430,7 +3457,7 @@ void CaptureModeSession::SelectDefaultRegion() {
   default_capture_region.ClampToCenteredSize(gfx::ScaleToCeiledSize(
       default_capture_region.size(), kRegionDefaultRatio));
   UpdateCaptureRegion(default_capture_region, /*is_resizing=*/false,
-                      /*by_user=*/true);
+                      /*by_user=*/true, /*root_window_will_shutdown=*/false);
   capture_mode_util::TriggerAccessibilityAlert(
       IDS_ASH_SCREEN_CAPTURE_ALERT_DEFAULT_REGION_SELECTED);
 }
@@ -3514,7 +3541,7 @@ void CaptureModeSession::UpdateRegionForArrowKeys(ui::KeyboardCode key_code,
   }
 
   UpdateCaptureRegion(new_capture_region, /*is_resizing=*/false,
-                      /*by_user=*/true);
+                      /*by_user=*/true, /*root_window_will_shutdown=*/false);
 }
 
 void CaptureModeSession::MaybeReparentCameraPreviewWidget() {
@@ -3654,11 +3681,17 @@ gfx::Rect CaptureModeSession::CalculateActionContainerWidgetBounds() const {
   const gfx::Size preferred_size = action_container_view_->GetPreferredSize();
   const gfx::Rect capture_bar_bounds =
       capture_mode_bar_widget_->GetNativeWindow()->bounds();
-
+  // If the capture label exists, take its bounds into consideration regardless
+  // of whether it is currently visible or not. Otherwise there may be overlap
+  // if the action container and capture label both appear at the same time.
+  const gfx::Rect capture_label_widget_bounds =
+      capture_label_widget_ ? capture_label_widget_->GetNativeWindow()->bounds()
+                            : gfx::Rect();
   const gfx::Rect capture_region = controller_->user_capture_region();
   gfx::Rect bounds = CalculateRegionEdgeBounds(
-      preferred_size, capture_bar_bounds, capture_region, gfx::Rect(),
-      current_root_, CaptureRegionWidgetAlignment::kRight);
+      preferred_size, capture_bar_bounds, capture_region,
+      capture_label_widget_bounds, current_root_,
+      CaptureRegionWidgetAlignment::kRight);
 
   // User capture bounds are in root window coordinates so convert them here.
   wm::ConvertRectToScreen(current_root_, &bounds);

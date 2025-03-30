@@ -112,6 +112,7 @@
 <translation id="244264527810019436">É posible que as funcións dalgúns sitios non estean dispoñibles no modo de incógnito</translation>
 <translation id="2442870161001914531">Solicitar sempre o sitio para ordenadores</translation>
 <translation id="2445311670906052406">Agora Chrome comparte as pestanas recentes co teu dispositivo. Poderás velas na lista de aplicacións e nos resultados de busca do teu dispositivo. Desactiva esta opción cando queiras na configuración de Chrome.</translation>
+<translation id="245322989586167203">Os sitios adoitan conectarse aos portos en serie para ofrecerche determinadas funcións relacionadas coa transferencia de datos (por exemplo, configurar a túa rede)</translation>
 <translation id="2469312991797799607">Ao realizar esta acción, eliminaranse todos os datos e as cookies de <ph name="ORIGIN" /> e dos seus subsitios</translation>
 <translation id="2482878487686419369">Notificacións</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">Impide que os sitios saiban se estás utilizando este dispositivo de maneira activa</translation>
 <translation id="4412992751769744546">Permitir cookies de terceiros</translation>
 <translation id="4419929467120297501">Chrome evita que os sitios usen cookies de terceiros para facer un seguimento da túa actividade mentres navegas. Vai á configuración para <ph name="BEGIN_LINK" />xestionar o acceso ás cookies de terceiros<ph name="END_LINK" />.</translation>
+<translation id="443121186588148776">Porto en serie</translation>
 <translation id="4434045419905280838">Ventás emerxentes e redireccións</translation>
 <translation id="443552056913301231">Eliminaranse todos os datos locais, incluídas as cookies, e restableceranse todos os permisos de <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Silencia o son dun sitio específico.</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Preguntar primeiro</translation>
 <translation id="7423538860840206698">Bloqueouse a lectura do portapapeis</translation>
 <translation id="7425915948813553151">Tema escuro para os sitios</translation>
+<translation id="7478658909253570368">Non permitir que os sitios se conecten a portos en serie</translation>
 <translation id="7488573225650545859">Ocultar opción Ver pestanas na túa lista de aplicacións</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Cando esta opción está activada, os sitios poden mostrar solicitudes de inicio de sesión. Cando esta opción está desactivada, os sitios non poden mostrar solicitudes de inicio de sesión.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Estableceuse conexión cun dispositivo Bluetooth</translation>
 <translation id="7617547684249261169">Podes eliminar, parcial ou totalmente, o teu historial, as cookies, os datos dos sitios e moito máis</translation>
 <translation id="7649070708921625228">Axuda</translation>
+<translation id="7655411746932645568">Os sitios poden pedirche permiso para conectarse a portos en serie</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7667547420449112975">O marabilloso mago de Oz</translation>
 <translation id="7681597159868843240">Os sitios adoitan usar os sensores de movemento do dispositivo para ofrecerche determinadas funcións (por exemplo, as relacionadas coa realidade virtual ou co seguimento da forma física)</translation>

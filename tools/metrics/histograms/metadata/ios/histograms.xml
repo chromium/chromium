@@ -1676,6 +1676,37 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.FirstRun.BestFeatures.MainScreen.Action"
+    enum="IOSBestFeaturesMainScreenActionType" expires_after="2025-10-26">
+  <owner>hiramahmood@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Type of action user took on the initial/main screen of the Best Features
+    Experience in the FRE.
+  </summary>
+</histogram>
+
+<histogram name="IOS.FirstRun.BestFeatures.{FeatureName}.Action"
+    enum="IOSBestFeaturesDetailScreenActionType" expires_after="2025-10-26">
+  <owner>hiramahmood@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Type of action user took on the {FeatureName} detail screen of the Best
+    Features Experience in the FRE.
+  </summary>
+  <token key="FeatureName">
+    <variant name="EnhancedSafeBrowsing" summary="Enhanced Safe Browsing"/>
+    <variant name="Lens"/>
+    <variant name="LockedIncognitoTabs" summary="Locked Incognito Tabs"/>
+    <variant name="PasswordsInOtherApps" summary="Passwords In Other Apps"/>
+    <variant name="PriceTracking" summary="Price Tracking"/>
+    <variant name="SaveAutofillPasswords"
+        summary="Save and Autofill Passwords"/>
+    <variant name="SharePasswords" summary="Share Passwords"/>
+    <variant name="TabGroups" summary="Tab Groups"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.Frame.FirstContentfulPaint.MainFrame" units="ms"
     expires_after="2025-07-27">
   <owner>danieltwhite@chromium.org</owner>
@@ -4049,6 +4080,18 @@ chromium-metrics-reviews@google.com.
     Logs whether the provisional push notification permissions were granted for
     the current device or an error occured. This is logged each time the device
     responds to a provisional notification permission request.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ReaderMode.Distiller.Amp"
+    enum="ReaderModeAmpClassification" expires_after="2025-11-24">
+  <owner>fernandex@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Logs the comparison between the distillability of the web page and the type
+    of page (specifically the use of AMP). Sampled on a subset of user page
+    loads based on page load probability configuration which will be dependent
+    on the milestone and channel for iOS.
   </summary>
 </histogram>
 

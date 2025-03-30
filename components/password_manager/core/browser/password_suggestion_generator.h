@@ -30,6 +30,18 @@ using IsTriggeredOnPasswordForm =
     base::StrongAlias<class IsTriggeredOnPasswordFormTag, bool>;
 using IsCrossDomain = base::StrongAlias<class IsCrossDomainTag, bool>;
 
+extern const char kReauthPromoHistogramName[];
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FillingReauthPromoShown {
+  kNotShown,
+  kShownWithOtherSuggestions,
+  kShownAlone,
+
+  kMaxValue = kShownAlone
+};
+
 // Helper class to generate password suggestions. Calls to the generation do not
 // modify the state of this class.
 class PasswordSuggestionGenerator {

@@ -410,6 +410,9 @@ BASE_FEATURE(kIPHPageInfoStoreInfoFeature,
 BASE_FEATURE(kIPHPageZoomFeature,
              "IPH_PageZoom",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHPdfPageDownloadFeature,
+             "IPH_PdfPageDownload",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHPreviewsOmniboxUIFeature,
              "IPH_PreviewsOmniboxUI",
              base::FEATURE_ENABLED_BY_DEFAULT);

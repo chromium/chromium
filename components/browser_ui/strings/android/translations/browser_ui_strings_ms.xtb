@@ -112,6 +112,7 @@
 <translation id="244264527810019436">Ciri pada sesetengah laman mungkin tidak berfungsi dalam mod Inkognito</translation>
 <translation id="2442870161001914531">Sentiasa minta laman desktop</translation>
 <translation id="2445311670906052406">Kini Chrome berkongsi tab terbaharu anda dengan peranti anda. Anda akan melihat tab tersebut dalam senarai apl dan hasil carian peranti anda. Anda boleh mematikan ciri ini dalam tetapan Chrome pada bila-bila masa.</translation>
+<translation id="245322989586167203">Laman biasanya menyambung kepada port bersiri untuk ciri pemindahan data, seperti menyediakan rangkaian anda</translation>
 <translation id="2469312991797799607">Tindakan ini akan memadamkan semua data dan kuki untuk <ph name="ORIGIN" /> dan semua laman di bawah domain ini</translation>
 <translation id="2482878487686419369">Pemberitahuan</translation>
 <translation id="2485422356828889247">Nyahpasang</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">Sekat tapak daripada mengetahui waktu anda menggunakan peranti ini dengan aktif</translation>
 <translation id="4412992751769744546">Benarkan kuki pihak ketiga</translation>
 <translation id="4419929467120297501">Chrome menyekat laman daripada menggunakan kuki pihak ketiga untuk menjejaki anda ketika anda menyemak imbas. Lawati tetapan untuk <ph name="BEGIN_LINK" />mengurus akses kepada kuki pihak ketiga<ph name="END_LINK" />.</translation>
+<translation id="443121186588148776">Port siri</translation>
 <translation id="4434045419905280838">Tetingkap timbul dan ubah hala</translation>
 <translation id="443552056913301231">Tindakan ini akan memadamkan semua data setempat, termasuk kuki, dan menetapkan semula semua kebenaran untuk <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Redam bunyi untuk tapak tertentu.</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Tanya dahulu</translation>
 <translation id="7423538860840206698">Disekat daripada membaca papan keratan</translation>
 <translation id="7425915948813553151">Tema gelap untuk laman</translation>
+<translation id="7478658909253570368">Jangan benarkan laman menyambung kepada port bersiri</translation>
 <translation id="7488573225650545859">Sembunyikan Lihat tab dalam senarai apl anda</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Apabila dihidupkan, laman dapat memaparkan gesaan log masuk. Apabila dimatikan, laman tidak dapat memaparkan gesaan log masuk.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Disambungkan ke peranti Bluetooth</translation>
 <translation id="7617547684249261169">Anda boleh padamkan beberapa atau semua sejarah, kuki dan data laman anda serta pelbagai lagi</translation>
 <translation id="7649070708921625228">Bantuan</translation>
+<translation id="7655411746932645568">Laman boleh meminta untuk menyambung kepada port bersiri</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7667547420449112975">Ahli Sihir Oz yang Menakjubkan</translation>
 <translation id="7681597159868843240">Laman biasanya menggunakan penderia gerakan peranti anda untuk ciri seperti realiti maya atau penjejakan kecergasan</translation>

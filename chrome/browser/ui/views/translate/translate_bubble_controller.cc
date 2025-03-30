@@ -101,7 +101,7 @@ views::Widget* TranslateBubbleController::ShowTranslateBubble(
   }
 
   auto translate_bubble_view = std::make_unique<TranslateBubbleView>(
-      anchor_view, std::move(model), error_type, web_contents,
+      action_item_, anchor_view, std::move(model), error_type, web_contents,
       GetOnTranslateBubbleClosedCallback());
   translate_bubble_view_ = translate_bubble_view.get();
 

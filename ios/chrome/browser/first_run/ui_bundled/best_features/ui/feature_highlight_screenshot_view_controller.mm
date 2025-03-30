@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/feature_highlight_screenshot_view_controller.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_item.h"
+#import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/metrics_util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -64,11 +66,21 @@ NSString* const kFeatureHighlightScreenshotViewDarkAnimationId =
                        withAction:@selector(toggleDarkModeOnTraitChange)];
   }
 
-  [self.view setBackgroundColor:[UIColor colorNamed:kGrey100Color]];
+  [self.view setBackgroundColor:[UIColor colorNamed:kSecondaryBackgroundColor]];
   self.accessibilityLabel =
       kFeatureHighlightScreenshotViewAccessibilityIdentifier;
 
   [self showPromo];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+  [super viewWillDisappear:animated];
+  if (self.isMovingFromParentViewController) {
+    // Back button was pressed.
+    base::UmaHistogramEnumeration(
+        BestFeaturesActionHistogramForItemType(_bestFeaturesItem.type),
+        BestFeaturesDetailScreenActionType::kNavigateBack);
+  }
 }
 
 #if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0

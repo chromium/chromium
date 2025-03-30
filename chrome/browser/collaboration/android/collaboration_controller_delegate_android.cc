@@ -126,6 +126,7 @@ void CollaborationControllerDelegateAndroid::Cancel(ResultCallback result) {
 }
 
 void CollaborationControllerDelegateAndroid::ShowAuthenticationUi(
+    FlowType flow_type,
     ResultCallback result) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CollaborationControllerDelegateImpl_showAuthenticationUi(

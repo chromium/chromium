@@ -19,4 +19,19 @@ BASE_DECLARE_FEATURE(kPageActionMenu);
 // Returns true if the page action menu is enabled.
 bool IsPageActionMenuEnabled();
 
+extern const char kExplainGeminiEditMenuParams[];
+
+// Holds the position of Explain Gemini button in the EditMenu.
+enum class ExplainGeminiEditMenuPosition {
+  kDisabled = 0,
+  kBeforeSearch = 1,
+  kAfterSearch = 2,
+};
+
+// Returns the position of Explain Gemini in the EditMenu.
+ExplainGeminiEditMenuPosition ExplainGeminiEditMenuPositionParam();
+
+// Feature flag to enable Explain Gemini in Edit Menu.
+BASE_DECLARE_FEATURE(kExplainGeminiEditMenu);
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

@@ -98,8 +98,12 @@ class FacilitatedPaymentsPaymentMethodsProperties {
     static class BankAccountProperties {
         static final ReadableObjectPropertyKey<String> BANK_NAME =
                 new ReadableObjectPropertyKey("bank_name");
-        static final ReadableObjectPropertyKey<String> BANK_ACCOUNT_SUMMARY =
-                new ReadableObjectPropertyKey("bank_account_summary");
+        static final ReadableObjectPropertyKey<String> BANK_ACCOUNT_PAYMENT_RAIL =
+                new ReadableObjectPropertyKey("bank_account_payment_rail");
+        static final ReadableObjectPropertyKey<String> BANK_ACCOUNT_TYPE =
+                new ReadableObjectPropertyKey("bank_account_type");
+        static final ReadableObjectPropertyKey<String> BANK_ACCOUNT_NUMBER =
+                new ReadableObjectPropertyKey("bank_account_number");
         static final ReadableObjectPropertyKey<String> BANK_ACCOUNT_TRANSACTION_LIMIT =
                 new ReadableObjectPropertyKey("bank_account_transaction_limit");
         static final ReadableObjectPropertyKey<Drawable> BANK_ACCOUNT_ICON =
@@ -108,7 +112,9 @@ class FacilitatedPaymentsPaymentMethodsProperties {
                 new ReadableObjectPropertyKey<>("on_bank_account_click_action");
         static final PropertyKey[] NON_TRANSFORMING_KEYS = {
             BANK_NAME,
-            BANK_ACCOUNT_SUMMARY,
+            BANK_ACCOUNT_PAYMENT_RAIL,
+            BANK_ACCOUNT_TYPE,
+            BANK_ACCOUNT_NUMBER,
             BANK_ACCOUNT_TRANSACTION_LIMIT,
             BANK_ACCOUNT_ICON,
             ON_BANK_ACCOUNT_CLICK_ACTION

@@ -375,6 +375,15 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Symbols,Numerics,Letters,Length"/>
 </enum>
 
+<enum name="FillDataRetrievalStatusIOS">
+  <int value="0" label="Success"/>
+  <int value="1" label="No FillData matching frame"/>
+  <int value="2" label="No FillData matching form"/>
+  <int value="3" label="No FillData matching field"/>
+  <int value="4" label="No credentials matching username"/>
+  <int value="5" label="No cached last request form"/>
+</enum>
+
 <enum name="GaiaPasswordHashChange">
   <int value="0" label="Saved on Chrome sign-in (syncing)"/>
   <int value="1" label="Saved in the content area"/>
@@ -815,6 +824,12 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="The user selected password export option"/>
   <int value="1" label="Password export dismissed by the user"/>
   <int value="2" label="Password export confirmed by the user"/>
+</enum>
+
+<enum name="PasswordFillingReauthPromoShown">
+  <int value="0" label="Not shown"/>
+  <int value="1" label="Shown among other suggestions"/>
+  <int value="2" label="Shown alone"/>
 </enum>
 
 <enum name="PasswordFormHadUsernameField">

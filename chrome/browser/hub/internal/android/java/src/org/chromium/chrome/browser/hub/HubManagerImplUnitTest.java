@@ -38,7 +38,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -52,7 +51,6 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link PaneManagerImpl}. */
@@ -254,7 +252,6 @@ public class HubManagerImplUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testBackNavigation() {
         PaneListBuilder builder = new PaneListBuilder(new DefaultPaneOrderController());
         HubManagerImpl hubManager =

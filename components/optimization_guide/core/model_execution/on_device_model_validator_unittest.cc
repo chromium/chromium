@@ -63,12 +63,12 @@ TEST_F(OnDeviceModelValidatorTest, SucceedsWithEmptyConfig) {
             WaitForValidation(proto::OnDeviceModelValidationConfig()));
 }
 
-TEST_F(OnDeviceModelValidatorTest, FailsWhenSessionKilled) {
+TEST_F(OnDeviceModelValidatorTest, FailsOnServiceCrash) {
   base::test::TestFuture<OnDeviceModelValidationResult> result_future;
   auto validator = std::make_unique<OnDeviceModelValidator>(
       WillPassValidationConfig(), result_future.GetCallback(), StartSession());
-  model_remote_.reset();
-  EXPECT_EQ(OnDeviceModelValidationResult::kInterrupted, result_future.Get());
+  fake_launcher_.CrashService();
+  EXPECT_EQ(OnDeviceModelValidationResult::kServiceCrash, result_future.Get());
 }
 
 TEST_F(OnDeviceModelValidatorTest, Fails) {

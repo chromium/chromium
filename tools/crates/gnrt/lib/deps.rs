@@ -80,6 +80,20 @@ pub struct PackageId {
     version: Version,
 }
 
+impl PackageId {
+    pub fn new(name: String, version: Version) -> Self {
+        Self { name, version }
+    }
+
+    pub fn name(&self) -> &str {
+        self.name.as_str()
+    }
+
+    pub fn version(&self) -> &Version {
+        &self.version
+    }
+}
+
 impl From<&Package> for PackageId {
     fn from(p: &Package) -> Self {
         Self { name: p.package_name.clone(), version: p.version.clone() }

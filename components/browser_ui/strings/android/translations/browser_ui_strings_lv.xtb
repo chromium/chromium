@@ -112,6 +112,7 @@
 <translation id="244264527810019436">Noteiktās vietnēs funkcijas var nedarboties, ja tiek izmantots inkognito režīms</translation>
 <translation id="2442870161001914531">Vienmēr pieprasīt datora vietni</translation>
 <translation id="2445311670906052406">Tagad Chrome kopīgo jūsu nesen atvērtās cilnes ar ierīci. Tās tiks rādītas ierīces lietotņu sarakstā un meklēšanas rezultātos. Chrome iestatījumos varat jebkurā laikā izslēgt šo funkciju.</translation>
+<translation id="245322989586167203">Parasti vietnēs savienojums ar seriālajiem portiem tiek veidots, lai nodrošinātu noteiktas datu pārsūtīšanas funkcijas, piemēram, tīkla iestatīšanu.</translation>
 <translation id="2469312991797799607">Veicot šo darbību, tiks izdzēsti visi dati un sīkfaili, ko glabā <ph name="ORIGIN" /> un visas šīs grupas vietnes.</translation>
 <translation id="2482878487686419369">Paziņojumi</translation>
 <translation id="2485422356828889247">Atinstalēt</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">Nerādīt vietnēm, kad jūs aktīvi lietojat šo ierīci</translation>
 <translation id="4412992751769744546">Atļaut trešo pušu sīkfailus</translation>
 <translation id="4419929467120297501">Pārlūkā Chrome vietnēm tiek liegts pārlūkošanas laikā izmantot trešo pušu sīkfailus, lai izsekotu jūsu darbībām. Lai <ph name="BEGIN_LINK" />pārvaldītu piekļuvi trešo pušu sīkfailiem<ph name="END_LINK" />, pārejiet uz iestatījumiem.</translation>
+<translation id="443121186588148776">Seriālais ports</translation>
 <translation id="4434045419905280838">Uznirstošie elem. un novirzīšana</translation>
 <translation id="443552056913301231">Veicot šo darbību, tiks dzēsti visi lokālie dati, tostarp sīkfaili, kā arī tiks atiestatītas visas pakalpojuma <ph name="ORIGIN" /> atļaujas.</translation>
 <translation id="4468959413250150279">Izslēgt skaņu noteiktai vietnei</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Vispirms jautāt</translation>
 <translation id="7423538860840206698">Bloķēta starpliktuves satura lasīšana</translation>
 <translation id="7425915948813553151">Tumšā motīva lietošana vietnēs</translation>
+<translation id="7478658909253570368">Neļaut vietnēm veidot savienojumu ar seriālajiem portiem</translation>
 <translation id="7488573225650545859">Paslēpt kartīti Ciļņu skatīšana lietotņu sarakstā</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Kad šis slēdzis ir ieslēgts, vietnēs var rādīt pierakstīšanās uzvednes. Kad šis slēdzis ir izslēgts, vietnēs nevar rādīt pierakstīšanās uzvednes.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Izveidots savienojums ar Bluetooth ierīci</translation>
 <translation id="7617547684249261169">Varat dzēst daļu vēstures, sīkfailu, vietņu datu vai visus šos datus u. c.</translation>
 <translation id="7649070708921625228">Palīdzība</translation>
+<translation id="7655411746932645568">Atļaut vietnēm pieprasīt atļauju veidot savienojumu ar seriālajiem portiem</translation>
 <translation id="7658239707568436148">Atcelt</translation>
 <translation id="7667547420449112975">Brīnumainais burvis no Oza zemes</translation>
 <translation id="7681597159868843240">Parasti vietnēs ierīces kustību sensori tiek izmantoti, lai nodrošinātu noteiktas funkcijas, piemēram, virtuālo realitāti vai fizisko aktivitāšu uzskaiti.</translation>

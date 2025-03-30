@@ -27,9 +27,11 @@ class ShellExtensionsAPIClient : public ExtensionsAPIClient {
   // ExtensionsAPIClient implementation.
   void AttachWebContentsHelpers(content::WebContents* web_contents) const
       override;
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   AppViewGuestDelegate* CreateAppViewGuestDelegate() const override;
   WebViewGuestDelegate* CreateWebViewGuestDelegate(
       WebViewGuest* web_view_guest) const override;
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
   std::unique_ptr<VirtualKeyboardDelegate> CreateVirtualKeyboardDelegate(
       content::BrowserContext* browser_context) const override;
   std::unique_ptr<DisplayInfoProvider> CreateDisplayInfoProvider()

@@ -6,9 +6,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {AppearanceElement} from './appearance.js';
 
-// TODO(crbug.com/399172460) For extension NTPs with 3P theme, show edit theme
-// buttons after hover buttons (thirdPartyThemeLinkButton and
-// thirdPartyManageLinkButton).
 export function getHtml(this: AppearanceElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
@@ -35,6 +32,16 @@ export function getHtml(this: AppearanceElement) {
     label="$i18n{yourSearchedImage}"
     label-description="$i18n{currentTheme}">
 </customize-chrome-hover-button>
+${(!this.isSourceTabFirstPartyNtp_ && !!this.ntpManagedByName_) ? html`
+  <customize-chrome-hover-button id="thirdPartyManageLinkButton"
+      aria-button-label="${this.i18n('newTabPageManagedByA11yLabel',
+                           this.ntpManagedByName_)}"
+      class="link-out-button theme-button"
+      @click="${this.onNewTabPageManageByButtonClicked_}"
+      label-description="${this.i18n('newTabPageManagedBy',
+                           this.ntpManagedByName_)}">
+  </customize-chrome-hover-button>
+  `: ''}
 <div id="editButtonsContainer" ?hidden="${!this.showEditTheme_}">
   <cr-button id="editThemeButton" @click="${this.onEditThemeClicked_}"
       class="floating-button">
@@ -51,18 +58,7 @@ export function getHtml(this: AppearanceElement) {
     </cr-button>
   ` : ''}
 </div>
-<hr class="sp-hr" ?hidden="${!this.isSourceTabFirstPartyNtp_}">
-${(!this.isSourceTabFirstPartyNtp_ && this.ntpManagedByName_ !== '') ? html`
-  <customize-chrome-hover-button id="thirdPartyManageLinkButton"
-      aria-button-label="${this.i18n('newTabPageManagedByA11yLabel',
-                           this.ntpManagedByName_)}"
-      class="link-out-button theme-button"
-      @click="${this.onNewTabPageManageByButtonClicked_}"
-      label-description="${this.i18n('newTabPageManagedBy',
-                           this.ntpManagedByName_)}">
-  </customize-chrome-hover-button>
-  <hr class="sp-hr">
-  `: ''}
+<hr class="sp-hr" ?hidden="${!this.showEditTheme_}">
 <customize-color-scheme-mode></customize-color-scheme-mode>
 <cr-theme-color-picker id="chromeColors" ?hidden="${!this.showColorPicker_}">
 </cr-theme-color-picker>

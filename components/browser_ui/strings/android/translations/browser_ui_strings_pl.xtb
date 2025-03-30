@@ -112,6 +112,7 @@
 <translation id="244264527810019436">W niektórych witrynach funkcje mogą nie działać w trybie incognito</translation>
 <translation id="2442870161001914531">Zawsze żądaj strony na komputery</translation>
 <translation id="2445311670906052406">Chrome udostępnia teraz ostatnie karty Twojemu urządzeniu. Zobaczysz je na liście aplikacji na urządzeniu i w wynikach wyszukiwania. Tę funkcję możesz w każdej chwili wyłączyć w ustawieniach Chrome.</translation>
+<translation id="245322989586167203">Strony zwykle łączą się z portami szeregowymi w celu obsługi funkcji związanych z przesyłaniem danych, na przykład aby skonfigurować sieć</translation>
 <translation id="2469312991797799607">Spowoduje to usunięcie wszystkich danych i plików cookie powiązanych z grupą <ph name="ORIGIN" /> i znajdującymi się w niej stronami</translation>
 <translation id="2482878487686419369">Powiadomienia</translation>
 <translation id="2485422356828889247">Odinstaluj</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">Nie pozwalaj stronom sprawdzać, czy aktualnie używasz urządzenia</translation>
 <translation id="4412992751769744546">Zezwalaj na pliki cookie innych firm</translation>
 <translation id="4419929467120297501">Chrome blokuje witrynom możliwość używania plików cookie innych firm do śledzenia Twoich czynności związanych z przeglądaniem internetu. Aby <ph name="BEGIN_LINK" />zarządzać dostępem do plików cookie innych firm<ph name="END_LINK" />, otwórz ustawienia.</translation>
+<translation id="443121186588148776">Port szeregowy</translation>
 <translation id="4434045419905280838">Pop-upy i przekierowania</translation>
 <translation id="443552056913301231">Spowoduje to usunięcie wszystkich danych lokalnych, w tym plików cookie, oraz zresetowanie wszystkich uprawnień witryny <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Wycisz dźwięk na konkretnej stronie.</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Najpierw zapytaj</translation>
 <translation id="7423538860840206698">Zablokowano odczytywanie schowka</translation>
 <translation id="7425915948813553151">Ciemny motyw witryn</translation>
+<translation id="7478658909253570368">Nie zezwalaj witrynom na łączenie się z portami szeregowymi</translation>
 <translation id="7488573225650545859">Ukrywaj karty Widok na liście aplikacji</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Gdy ta opcja jest włączona, strony internetowe mogą wyświetlać prośby o zalogowanie. Gdy jest wyłączona, nie mogą wyświetlać takich próśb.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Połączono z urządzeniem Bluetooth</translation>
 <translation id="7617547684249261169">Możesz w całości lub częściowo usunąć m.in. historię, pliki cookie i dane witryn</translation>
 <translation id="7649070708921625228">Pomoc</translation>
+<translation id="7655411746932645568">Strony mogą prosić o zgodę na połączenie z portami szeregowymi</translation>
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7667547420449112975">Czarnoksiężnik z Krainy Oz</translation>
 <translation id="7681597159868843240">Witryny zwykle używają czujników ruchu urządzenia, aby obsługiwać funkcje takie jak rzeczywistość wirtualna czy monitorowanie aktywności</translation>

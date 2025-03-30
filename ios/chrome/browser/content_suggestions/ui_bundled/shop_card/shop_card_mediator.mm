@@ -163,6 +163,9 @@
   _shopCardItem.commandHandler = self;
   _shopCardItem.shopCardData.shopCardItemType =
       ShopCardItemType::kPriceDropForTrackedProducts;
+  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+    _shopCardItem.shouldShowSeeMore = YES;
+  }
   PriceDrop priceDrop;
 
   std::unique_ptr<payments::CurrencyFormatter> formatter =
@@ -219,10 +222,15 @@
 
 #pragma mark - Public
 - (void)disableModule {
+  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+    _prefService->SetBoolean(
+        prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled, false);
+  }
 }
 
 - (void)openShopCardItem:(ShopCardItem*)item {
   [self.shopCardActionDelegate openURL:item.shopCardData.productURL];
+  [self.delegate removeShopCard];
 }
 
 #pragma mark - ShopCardMediatorDelegate

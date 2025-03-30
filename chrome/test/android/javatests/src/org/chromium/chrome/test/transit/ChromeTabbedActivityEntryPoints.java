@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.test.transit;
 
+import android.content.Intent;
+
 import org.chromium.base.test.transit.EntryPointSentinelStation;
+import org.chromium.base.test.transit.Station;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
@@ -37,7 +40,20 @@ public class ChromeTabbedActivityEntryPoints {
                 entryPageStation, () -> ctaTestRule.startMainActivityWithURL(url));
     }
 
-    /** Start the ChromeTabbedActivity in an NTP. */
+    /** Start the ChromeTabbedActivity in an NTP as if it was started from the launcher. */
+    public static RegularNewTabPageStation startFromLauncher(
+            ChromeTabbedActivityTestRule ctaTestRule) {
+        EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
+        sentinel.setAsEntryPoint();
+        RegularNewTabPageStation entryPageStation =
+                RegularNewTabPageStation.newBuilder().withEntryPoint().build();
+        return sentinel.travelToSync(entryPageStation, ctaTestRule::startMainActivityFromLauncher);
+    }
+
+    /**
+     * Start the ChromeTabbedActivity in an NTP as if receiving an Intent to view
+     * "chrome-native://newtab/".
+     */
     public static RegularNewTabPageStation startOnNtp(ChromeTabbedActivityTestRule ctaTestRule) {
         EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
         sentinel.setAsEntryPoint();
@@ -45,6 +61,18 @@ public class ChromeTabbedActivityEntryPoints {
                 RegularNewTabPageStation.newBuilder().withEntryPoint().build();
         return sentinel.travelToSync(
                 entryPageStation, () -> ctaTestRule.startMainActivityWithURL(UrlConstants.NTP_URL));
+    }
+
+    /**
+     * Start the ChromeTabbedActivity with an Intent. The caller needs to specify the expected state
+     * reached by passing |expectedStation|.
+     */
+    public static <T extends Station<?>> T startWithIntent(
+            ChromeTabbedActivityTestRule ctaTestRule, Intent intent, T expectedStation) {
+        EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
+        sentinel.setAsEntryPoint();
+        return sentinel.travelToSync(
+                expectedStation, () -> ctaTestRule.startActivityCompletely(intent));
     }
 
     /**

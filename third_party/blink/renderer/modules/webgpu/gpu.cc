@@ -215,11 +215,7 @@ void GPU::OnRequestAdapterCallback(
     // there are error messages.
     case wgpu::RequestAdapterStatus::Unavailable:
     case wgpu::RequestAdapterStatus::Error:
-#ifdef WGPU_BREAKING_CHANGE_INSTANCE_DROPPED_RENAME
     case wgpu::RequestAdapterStatus::CallbackCancelled:
-#else
-    case wgpu::RequestAdapterStatus::InstanceDropped:
-#endif  // WGPU_BREAKING_CHANGE_INSTANCE_DROPPED_RENAME
       break;
   }
   if (error_message.length != 0) {

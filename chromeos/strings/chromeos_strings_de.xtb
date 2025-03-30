@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">Proxy-Authentifizierung erforderlich</translation>
 <translation id="4594021849294327751">Transkript erstellen</translation>
 <translation id="4594541568452132351">Transkriptsprache auswählen und Modell herunterladen</translation>
-<translation id="4607282946861182308">Dafür können keine Bilder erstellt werden. Versuche es mit einem anderen Prompt.</translation>
 <translation id="4609350030397390689">Tastaturhelligkeit verringern</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> von <ph name="TOTAL_PAGE_NUMBER" />. Wenn du den Druckauftrag abbrechen möchtest, drücke die Eingabetaste.</translation>
 <translation id="463791356324567266">Scannen wird abgebrochen…</translation>
@@ -1540,6 +1539,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8010765388850538088">Weitere Informationen zu generativer KI</translation>
 <translation id="8017679124341497925">Verknüpfung bearbeitet</translation>
 <translation id="802154636333426148">Downloadfehler</translation>
+<translation id="8027467664787098346">Weitere Informationen zum ausgewählten Hintergrund</translation>
 <translation id="8028993641010258682">Größe</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Automatischen Farbmodus aktivieren</translation>
@@ -1658,6 +1658,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8543574988889671960">Tab aktualisieren</translation>
 <translation id="8550364285433943656">Platziere die Steuerelemente auf Spielaktionen, um über die Tastatur zu spielen</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">Generative KI kann Fehler machen, auch bei Informationen über Personen, überprüfe daher die Antworten.</translation>
 <translation id="8575298406870537639">Dein Mobilfunkanbieter verlangt möglicherweise diese Option, damit du dich mit seinem Netzwerk verbinden kannst. Weitere Informationen erhältst du bei deinem Mobilfunkanbieter.</translation>
 <translation id="8576249514688522074">Noch nicht initialisiert</translation>
 <translation id="8584654835905316966">Ein Neustart ist erforderlich, um die Installation der Firmware für <ph name="DEVICE_NAME" /> auf Version <ph name="VERSION" /> abzuschließen. Möglicherweise startet dein Computer mehrmals neu. Dieses Verhalten ist so vorgesehen.</translation>
@@ -1672,7 +1673,6 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">URL teilen:</translation>
 <translation id="8660881923941176839">Pfund</translation>
-<translation id="8670057600920888023">Generative KI ist experimentell und die Inhalte können fehlerhaft, irreführend oder anstößig sein.</translation>
 <translation id="8670574982334489519">rechts</translation>
 <translation id="8675354002693747642">Vorinstallierter Schlüssel</translation>
 <translation id="8677859815076891398">Keine Alben. Ein Album in <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" /> erstellen.</translation>

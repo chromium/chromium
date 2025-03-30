@@ -91,6 +91,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1269405891096105529">Pajisja periferike nuk mbështetet në modalitetin "vizitor"</translation>
 <translation id="1270290102613614947">Tastiera në ekran u çaktivizua</translation>
 <translation id="1272079795634619415">Ndalo</translation>
+<translation id="12741168609094094">Zgjidh çdo gjë në ekran për të kërkuar, për të kopjuar tekstin etj.</translation>
 <translation id="1275285675049378717">Po furnizon me energji <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Përzgjedhur</translation>
 <translation id="1276975447697633661">Zgjidh skedarin, më pas shtyp <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1720230731642245863">Zona e qasjes për internet është joaktive</translation>
 <translation id="1731815243805539470">Kalo te përdoruesi i mëparshëm</translation>
 <translation id="1733996486177697563">Ndërro mes temës së errët dhe temës së ndriçuar. Prek dhe mbaj prekur në desktop dhe më pas zgjidh "Imazhi i sfondit dhe stili".</translation>
+<translation id="1735992454301033090">Zona e zgjedhur, përdor tastet e shigjetave për ta zhvendosur</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" i dukshëm për pajisjet me Bluetooth.</translation>
 <translation id="1737078180382804488">Hiq konfigurimin e shikimit të njoftimeve të telefonit tënd</translation>
 <translation id="174102739345480129">Treguesi është joaktiv.</translation>
@@ -494,6 +496,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2683887737780133806">Ditën <ph name="DAY_OF_WEEK" /> javën e kaluar</translation>
 <translation id="2687510499067466116">Shkurtorja e tastierës ka ndryshuar</translation>
 <translation id="2689613560355655046">Tavolina e punës 8</translation>
+<translation id="2692092709110488417">Shtyp Tab për të fokusuar dhe zhvendosur zonën e zgjedhur</translation>
 <translation id="2695305337569143674">uebi</translation>
 <translation id="2697697418792422688">Shfaq cilësimet e tastierës. Është zgjedhur <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">Përdor aplikacionin "Transferimi i përmbajtjes" për të zhvendosur të dhënat e llogarisë së shkollës te llogaria jote personale</translation>
@@ -729,6 +732,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph
 <translation id="346243998268439747">Rivendos nivelin e zmadhimit</translation>
 <translation id="3465223694362104965">Një tastierë tjetër është lidhur me këtë pajisje që nga identifikimi yt i fundit. Sigurohu që e beson këtë tastierë para se ta përdorësh atë.</translation>
 <translation id="3465356146291925647">Menaxhuar nga administratori yt</translation>
+<translation id="3470502288861289375">Po kopjon...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> më pas <ph name="KEY_TWO" /> ose <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control-Shift-Hapësirë</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1033,6 +1037,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4412698727486357573">Qendra e ndihmës</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> është joaktive.</translation>
 <translation id="4417647906073317561">Cilësimet e "Fokusit". Cakto një kohëmatës, detyrë dhe muzikë për t'u bërë pjesë e rrjedhës.</translation>
+<translation id="4418600384772451109">Mbyll panelin</translation>
 <translation id="4424159417645388645">Tavolina e punës 5</translation>
 <translation id="4426817706804363424">Të lumtë!</translation>
 <translation id="4430019312045809116">Volumi</translation>
@@ -2229,6 +2234,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8287009018010202411">Produktivitet</translation>
 <translation id="828708037801473432">Joaktiv</translation>
 <translation id="8297006494302853456">I dobët</translation>
+<translation id="8300451473979404345">Doreza e zgjedhur, përdor tastet e shigjetave për ta zhvendosur</translation>
 <translation id="8308637677604853869">Menyja e mëparshme</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Kyçja e kapitaleve është aktive</translation>
@@ -2289,6 +2295,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="851458219935658693">Shfaq dritaret nga tavolina aktuale e punës, butoni i radios i zgjedhur</translation>
 <translation id="851660987304951246">Përdor "Më ndihmo të lexoj" për të përmbledhur me shpejtësi përmbajtjen ose për të bërë pyetje</translation>
 <translation id="8517041960877371778">Pajisja jote <ph name="DEVICE_TYPE" /> mund të mos ngarkohet kur është e ndezur.</translation>
+<translation id="8519329096920173967">Kërko në ekranin tim me "Lenten e Google"</translation>
 <translation id="8535393432370007982">Zhbëj mënyrën e renditjes sipas ngjyrës</translation>
 <translation id="8536886494750559755">Shfaq cilësimet e "Ndarjes së shpejtë". E dukshme për të gjithë për <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Teksti u kopjua në "Kujtesën e fragmenteve"</translation>

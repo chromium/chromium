@@ -187,7 +187,9 @@
                     "simulateAdvertisement",
                     "simulateGATTOperationResponse",
                     "addService",
-                    "removeService"
+                    "removeService",
+                    "addCharacteristic",
+                    "removeCharacteristic"
                 ]
             }
         ]

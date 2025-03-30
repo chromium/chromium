@@ -13,7 +13,7 @@
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -80,7 +80,7 @@ class RegistrationTokenHelperTest : public testing::Test {
 };
 
 TEST_F(RegistrationTokenHelperTest, SuccessForTokenBinding) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>> future;
   RegistrationTokenHelper helper(unexportable_key_service(),
                                  base::ToVector(kAcceptableAlgorithms));
@@ -93,7 +93,7 @@ TEST_F(RegistrationTokenHelperTest, SuccessForTokenBinding) {
 }
 
 TEST_F(RegistrationTokenHelperTest, SuccessForTokenBindingReuseKey) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>> future;
   std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewKey());
   ASSERT_FALSE(wrapped_key.empty());
@@ -108,7 +108,7 @@ TEST_F(RegistrationTokenHelperTest, SuccessForTokenBindingReuseKey) {
 }
 
 TEST_F(RegistrationTokenHelperTest, SuccessForSessionBinding) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>> future;
   RegistrationTokenHelper helper(unexportable_key_service(),
                                  base::ToVector(kAcceptableAlgorithms));
@@ -121,7 +121,7 @@ TEST_F(RegistrationTokenHelperTest, SuccessForSessionBinding) {
 }
 
 TEST_F(RegistrationTokenHelperTest, DoubleRegistration) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>>
       future_1;
   base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>>
@@ -158,7 +158,7 @@ TEST_F(RegistrationTokenHelperTest, Failure) {
 
 TEST_F(RegistrationTokenHelperTest, FailureReuseKey) {
   const std::vector<uint8_t> kInvalidWrappedKey = {1, 2, 3};
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>> future;
   RegistrationTokenHelper helper(unexportable_key_service(),
                                  kInvalidWrappedKey);
@@ -170,7 +170,7 @@ TEST_F(RegistrationTokenHelperTest, FailureReuseKey) {
 }
 
 TEST_F(RegistrationTokenHelperTest, FailureEmptyAlgorithms) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>> future;
   RegistrationTokenHelper helper(
       unexportable_key_service(),

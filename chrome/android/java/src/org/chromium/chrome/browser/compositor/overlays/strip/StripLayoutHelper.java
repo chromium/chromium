@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -503,6 +504,7 @@ public class StripLayoutHelper
     // Tab context menu.
     @Nullable private TabContextMenuCoordinator mTabContextMenuCoordinator;
     @Nullable private TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
+    @NonNull private MultiInstanceManager mMultiInstanceManager;
 
     // Tab group share.
     @NonNull private DataSharingService mDataSharingService;
@@ -543,6 +545,8 @@ public class StripLayoutHelper
      *     visible. The tab strip can be hidden due to the tab switcher being displayed or the
      *     window width is less than 600dp.
      * @param bottomSheetController The {@link BottomSheetController} used to show bottom sheets.
+     * @param multiInstanceManager The {@link MultiInstanceManager} used to move tabs to other
+     *     windows.
      * @param shareDelegateSupplier Supplies {@link ShareDelegate} to share tab URLs.
      */
     public StripLayoutHelper(
@@ -560,6 +564,7 @@ public class StripLayoutHelper
             DataSharingTabManager dataSharingTabManager,
             Supplier<Boolean> tabStripVisibleSupplier,
             @NonNull BottomSheetController bottomSheetController,
+            @NonNull MultiInstanceManager multiInstanceManager,
             @NonNull Supplier<ShareDelegate> shareDelegateSupplier) {
         mGroupTitleDrawXOffset = TAB_OVERLAP_WIDTH_DP - FOLIO_FOOT_LENGTH_DP;
         mGroupTitleOverlapWidth = FOLIO_FOOT_LENGTH_DP - mGroupTitleDrawXOffset;
@@ -573,6 +578,7 @@ public class StripLayoutHelper
         mDataSharingTabManager = dataSharingTabManager;
         mModalDialogManager = modalDialogManager;
         mBottomSheetController = bottomSheetController;
+        mMultiInstanceManager = multiInstanceManager;
         mShareDelegateSupplier = shareDelegateSupplier;
         mScrollDelegate = new ScrollDelegate(context);
 
@@ -2113,6 +2119,7 @@ public class StripLayoutHelper
                             () -> mModel,
                             mTabGroupModelFilter,
                             mTabGroupListBottomSheetCoordinator,
+                            mMultiInstanceManager,
                             mShareDelegateSupplier,
                             mWindowAndroid);
         }

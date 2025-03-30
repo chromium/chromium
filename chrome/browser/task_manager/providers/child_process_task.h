@@ -27,6 +27,10 @@ class ChildProcessTask : public Task {
   // ChildProcessData has a ProcessType but that's not always granular enough to
   // correctly determine what string to show as the name of the task. This enum
   // is used to provide that information.
+  //
+  // Please consult Task Manager OWNERs when adding a new ProcessSubType.
+  // There is a dependency between Task Manager categories and a processes
+  // subtype.
   enum class ProcessSubtype {
     kNoSubtype,
     // The "spare" render process, a render process used so that there is always

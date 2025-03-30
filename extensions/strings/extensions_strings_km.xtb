@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">ឯកសារ​មេនីហ្វេសថ៍​មិនត្រឹមត្រូវ​​ទេ</translation>
 <translation id="7217838517480956708">អ្នកគ្រប់ឧបករណ៍នេះតម្រូវឲ្យតំឡើង <ph name="EXTENSION_NAME" />។ វាមិនអាចត្រូវបានដកចេញ ឬកែសម្រួលទេ។</translation>
 <translation id="7612608473764576263">តម្លៃ​បញ្ចូល​សម្រាប់​សោឯកជន​ត្រូវមានទម្រង់​ត្រឹមត្រូវ (PKCS#8-format PEM-encoded RSA key)។</translation>
+<translation id="7876803335449432072">មិនអាច​ផ្ទុក​ឯកសារ '<ph name="RELATIVE_PATH" />' សម្រាប់​ស្គ្រីប​ខ្លឹមសារ​បានទេ អាចផ្ទុក​សន្លឹករចនាបថ​ស្គ្រីប​ខ្លឹមសារ​បានតែពី​សន្លឹក​រចនាបថ​ដែលអាច​ប្រើបាន ដូចជា​ឯកសារ .css ប៉ុណ្ណោះ។</translation>
 <translation id="7939686037314084444">កម្មវិធី​បន្ថែម​ផ្ទុកមិន​បាន​ត្រឹមត្រូវ​ទេ។ វា​ប្រហែល​ជាមិន​អាចបង្អាក់​សំណើបណ្ដាញ​បានទេ។</translation>
 <translation id="7972881773422714442">ជម្រើស៖ <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">បែរមកអ្នកប្រើ</translation>
 <translation id="8047248493720652249">កម្មវិធីបន្ថែមនេះបានបរាជ័យក្នុងការដាក់ឈ្មោះការទាញយក "<ph name="ATTEMPTED_FILENAME" />" ពីព្រោះកម្មវិធីបន្ថែមដ៏ទៃទៀត (<ph name="EXTENSION_NAME" />) បានកំណត់ឈ្មោះឯកសារផ្សេងគ្នា "<ph name="ACTUAL_FILENAME" />"។</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> ពី <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">ឯកសារ​មេនីហ្វេសថ៍​បានបាត់ ឬ​មិនអាច​អានបាន</translation>
+<translation id="8621383749470166852">មិនអាច​ផ្ទុក​ឯកសារ '<ph name="RELATIVE_PATH" />' សម្រាប់​ស្គ្រីប​ខ្លឹមសារ​បានទេ អាចផ្ទុក​ស្គ្រីប​ខ្លឹមសារ​បានតែពី​ឯកសារ JavaScript ដែលអាច​ប្រើបាន ដូចជា​ឯកសារ .js ប៉ុណ្ណោះ។</translation>
 <translation id="8636666366616799973">កញ្ចប់គ្មានសុពលភាព។ ព័ត៌មានលំអិត '<ph name="ERROR_MESSAGE" />'។</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" កំពុង​ស្នើ​សុំ​ចូលប្រើ​ឧបករណ៍​ណា​មួយ​របស់​អ្នក៖</translation>
 <translation id="8885905466771744233">សោឯកជនសម្រាប់កម្មវិធីបន្ថែមជាក់លាក់ដែលបានបញ្ជាក់មានរួចទៅហើយ។ ប្រើសោឡើងវិញ ឬលុបវាជាមុនសិន។</translation>

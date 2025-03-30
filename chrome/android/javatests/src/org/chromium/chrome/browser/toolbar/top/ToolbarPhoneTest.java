@@ -34,6 +34,7 @@ import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.LargeTest;
@@ -90,7 +91,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -473,9 +473,8 @@ public class ToolbarPhoneTest {
         @ColorInt
         int homeSurfaceToolbarBackgroundColor =
                 ColorUtils.setAlphaComponent(
-                        ChromeColors.getSurfaceColor(
-                                mToolbar.getContext(),
-                                R.dimen.home_surface_background_color_elevation),
+                        ContextCompat.getColor(
+                                mToolbar.getContext(), R.color.home_surface_background_color),
                         0);
 
         assertEquals(false, mToolbar.isLocationBarShownInNtp());
@@ -550,10 +549,8 @@ public class ToolbarPhoneTest {
         ColorDrawable toolbarBackgroundDrawable = mToolbar.getBackgroundDrawable();
         @ColorInt
         int homeSurfaceToolbarBackgroundColor =
-                ChromeColors.getSurfaceColor(
-                        mToolbar.getContext(),
-                        org.chromium.chrome.browser.toolbar.R.dimen
-                                .home_surface_background_color_elevation);
+                ContextCompat.getColor(
+                        mToolbar.getContext(), R.color.home_surface_background_color);
 
         assertEquals(false, mToolbar.isLocationBarShownInGeneralNtp());
         assertNotEquals(homeSurfaceToolbarBackgroundColor, toolbarBackgroundDrawable.getColor());

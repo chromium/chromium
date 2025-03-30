@@ -28,22 +28,18 @@ scoped_refptr<StreamParserBuffer> StreamParserBuffer::CreateEOSBuffer(
 }
 
 scoped_refptr<StreamParserBuffer> StreamParserBuffer::CopyFrom(
-    const uint8_t* data,
-    int data_size,
+    base::span<const uint8_t> data,
     bool is_key_frame,
     Type type,
     TrackId track_id) {
   if (auto* media_client = GetMediaClient()) {
     if (auto* alloc = media_client->GetMediaAllocator()) {
-      auto data_span =
-          UNSAFE_TODO(base::span(data, base::checked_cast<size_t>(data_size)));
       return StreamParserBuffer::FromExternalMemory(
-          alloc->CopyFrom(data_span), is_key_frame, type, track_id);
+          alloc->CopyFrom(data), is_key_frame, type, track_id);
     }
   }
   return base::MakeRefCounted<StreamParserBuffer>(
-      base::PassKey<StreamParserBuffer>(), data, data_size, is_key_frame, type,
-      track_id);
+      base::PassKey<StreamParserBuffer>(), data, is_key_frame, type, track_id);
 }
 
 scoped_refptr<StreamParserBuffer> StreamParserBuffer::FromExternalMemory(
@@ -102,21 +98,15 @@ StreamParserBuffer::StreamParserBuffer(base::PassKey<StreamParserBuffer>,
 }
 
 StreamParserBuffer::StreamParserBuffer(base::PassKey<StreamParserBuffer>,
-                                       const uint8_t* data,
-                                       int data_size,
+                                       base::span<const uint8_t> data,
                                        bool is_key_frame,
                                        Type type,
                                        TrackId track_id)
-    : DecoderBuffer(
-          // TODO(crbug.com/40284755): Convert `StreamBufferParser` to
-          // `size_t` and `base::span`.
-          UNSAFE_TODO(base::span(data, base::checked_cast<size_t>(data_size)))),
-      type_(type),
-      track_id_(track_id) {
+    : DecoderBuffer(data), type_(type), track_id_(track_id) {
   // TODO(scherkus): Should DataBuffer constructor accept a timestamp and
   // duration to force clients to set them? Today they end up being zero which
   // is both a common and valid value and could lead to bugs.
-  if (data) {
+  if (!data.empty()) {
     set_duration(kNoTimestamp);
   }
 

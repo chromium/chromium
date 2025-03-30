@@ -600,7 +600,7 @@ TEST_F(SessionRestorationServiceFactoryTest,
   WriteSessionStoragePref(profile()->GetPrefs(),
                           SessionStorageFormat::kOptimized,
                           SessionStorageMigrationStatus::kFailure,
-                          base::Time::Now() - base::Days(3));
+                          base::Time::Now() - base::Hours(6));
 
   bool callback_called = false;
   base::OnceClosure closure =
@@ -652,7 +652,7 @@ TEST_F(SessionRestorationServiceFactoryTest,
   WriteSessionStoragePref(profile()->GetPrefs(),
                           SessionStorageFormat::kOptimized,
                           SessionStorageMigrationStatus::kInProgress,
-                          base::Time::Now() - base::Days(3));
+                          base::Time::Now() - base::Hours(6));
 
   bool callback_called = false;
   base::OnceClosure closure =
@@ -1076,7 +1076,7 @@ TEST_F(SessionRestorationServiceFactoryTest,
 
   WriteSessionStoragePref(profile()->GetPrefs(), SessionStorageFormat::kLegacy,
                           SessionStorageMigrationStatus::kFailure,
-                          base::Time::Now() - base::Days(3));
+                          base::Time::Now() - base::Hours(6));
 
   bool callback_called = false;
   base::OnceClosure closure =
@@ -1128,7 +1128,7 @@ TEST_F(SessionRestorationServiceFactoryTest,
 
   WriteSessionStoragePref(profile()->GetPrefs(), SessionStorageFormat::kLegacy,
                           SessionStorageMigrationStatus::kInProgress,
-                          base::Time::Now() - base::Days(3));
+                          base::Time::Now() - base::Hours(6));
 
   bool callback_called = false;
   base::OnceClosure closure =

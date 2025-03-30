@@ -441,7 +441,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1734878702283171397">Intenta ponerte en contacto con el administrador del sistema.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, caduca el <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Ordenador</translation>
-<translation id="1739422091279046802">desplazamiento y zoom</translation>
 <translation id="1741613555002899862">Se debe especificar y debe ser una cadena válida cuando DnsOverHttpsMode sea <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Sábanas y ropa de cama</translation>
 <translation id="1743892871127720056">Título de la tabla comparativa, editar texto</translation>
@@ -569,6 +568,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1975584088563498795">Buzón de correo 10</translation>
 <translation id="1978555033938440688">Versión de firmware</translation>
 <translation id="1979156660928743046">Información sobre el contenido multimedia</translation>
+<translation id="1987486584747170374">Tus búsquedas, las mejores coincidencias y el contenido de las páginas se envían a Google. No lo usarán revisores humanos para mejorar la IA. Tu organización puede cambiar esta configuración en cualquier momento.</translation>
 <translation id="1988881251331415125">Si está escrito correctamente, <ph name="BEGIN_LINK" />prueba a ejecutar el diagnóstico de conexión<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> quiere almacenar datos de gran tamaño de forma permanente en tu ordenador local</translation>
@@ -764,6 +764,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2301098101308036335">Qué sitios web se visitan y cuándo.</translation>
 <translation id="230286397113210245">Botón Abrir ventana de Incógnito: actívalo para abrir una nueva ventana de Incógnito y navegar de forma privada</translation>
 <translation id="2306124309679506798">¿Permitir una experiencia inmersiva?</translation>
+<translation id="2307711332257985952">Tus direcciones de casa y el trabajo ya están disponibles en Chrome</translation>
 <translation id="2312234273148520048">Condimentos y aderezos</translation>
 <translation id="2316087952091171402">Menos de <ph name="UPPER_ESTIMATE" />. Algunos sitios pueden tardar más en cargarse la próxima vez que los visites.</translation>
 <translation id="2316159751672436664">Personaliza las herramientas de accesibilidad desde la configuración de ChromeOS</translation>
@@ -1179,6 +1180,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3102312643185441063">Ahorro</translation>
 <translation id="3103188521861412364">Acciones y bonos</translation>
 <translation id="3103535543639438037">Comparar productos similares en paralelo</translation>
+<translation id="3103993932858740905">Cuando pagas a plazos, se rellena un número de tarjeta virtual de un solo uso. Este número solo se usa para esta compra.</translation>
 <translation id="3105172416063519923">ID de recurso:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Comprobar la configuración de DNS seguro<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Bandeja central</translation>
@@ -1569,6 +1571,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3715016660240337709">{0,plural, =1{No se ha podido subir el archivo}other{No se han podido subir <ph name="FILE_COUNT" /> archivos}}</translation>
 <translation id="3715597595485130451">Conectarse a una red Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Comprobar el proxy, el cortafuegos y la configuración de DNS<ph name="END_LINK" /></translation>
+<translation id="3723316892512143176">IBAN</translation>
 <translation id="3723663469265383848">No podrás usar tu dispositivo durante la actualización, que puede durar hasta 10 minutos.</translation>
 <translation id="372429172604983730">Entre las aplicaciones que pueden provocar este error se incluyen software cortafuegos, antivirus, proxy y de filtrado web.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para crear una nueva Presentación de Google rápidamente</translation>
@@ -2495,6 +2498,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5379618281582508161">Para acceder a esta contraseña en todos tus dispositivos, debes verificar que eres tú</translation>
 <translation id="5380953781541843508">en orden ascendente</translation>
 <translation id="5381318171304904246">Si continúas, se te dirigirá al sitio web de tu banco. Tras la verificación, volverás automáticamente para completar la compra.</translation>
+<translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> ha actualizado la pestaña <ph name="WEBSITE_TITLE" /></translation>
 <translation id="5383478552402031184">Revestimientos para suelos</translation>
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5385966243497224160">No se pueden previsualizar URLs que no sean HTTPS</translation>
@@ -2880,6 +2884,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6059925163896151826">Dispositivos USB</translation>
 <translation id="6060009363608157444">Modo DnsOverHttps no válido.</translation>
 <translation id="6061154937977953833">Lucha libre</translation>
+<translation id="6062405040252994646">Herramienta</translation>
 <translation id="6062937464449575061">Dejar de seguir precio</translation>
 <translation id="6063415549109819824">Financiación de la vivienda</translation>
 <translation id="6070432475334343308">No se han subido uno o varios archivos a <ph name="FOLDER_NAME" /> en <ph name="CLOUD_PROVIDER" /></translation>
@@ -3927,6 +3932,7 @@ Más información:
 <translation id="787226752901403048">Inicia sesión en Chrome para compartir y unirte a grupos de pestañas, así como para trabajar juntos en ideas</translation>
 <translation id="7877007680666472091">IDs de contenido protegido</translation>
 <translation id="7878562273885520351">Es posible que tu contraseña se haya vulnerado</translation>
+<translation id="7881044256965445977">Buscar y conectarse a cualquier dispositivo de tu red local</translation>
 <translation id="7882421473871500483">Marrón</translation>
 <translation id="7886897188117641322">Elige qué categorías amplias de temas se pueden usar para personalizar los anuncios</translation>
 <translation id="7887683347370398519">Comprueba el código CVC y vuelve a intentarlo</translation>
@@ -4684,6 +4690,7 @@ Más información:
 <translation id="94613679163347541">¿Comparar <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para crear un nuevo sitio con Google Sites rápidamente</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome volverá a limitar las cookies hoy}=1{Chrome volverá a limitar las cookies mañana}other{Chrome volverá a limitar las cookies dentro de # días}}</translation>
+<translation id="949026252328034572"><ph name="MEMBER_COUNT" /> miembros se han unido al grupo de pestañas <ph name="GROUP_NAME" /></translation>
 <translation id="949314938206378263">Has solicitado visitar este sitio. Tus padres pueden responder en Family Link.</translation>
 <translation id="950736567201356821">Perforado triple en la parte superior</translation>
 <translation id="950926967802086924">Llave de acceso • Gestor de contraseñas de Google</translation>

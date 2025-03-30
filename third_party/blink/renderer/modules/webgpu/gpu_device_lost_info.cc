@@ -10,11 +10,7 @@ GPUDeviceLostInfo::GPUDeviceLostInfo(const wgpu::DeviceLostReason reason,
                                      const String& message) {
   switch (reason) {
     case wgpu::DeviceLostReason::Unknown:
-#ifdef WGPU_BREAKING_CHANGE_INSTANCE_DROPPED_RENAME
     case wgpu::DeviceLostReason::CallbackCancelled:
-#else
-    case wgpu::DeviceLostReason::InstanceDropped:
-#endif  // WGPU_BREAKING_CHANGE_INSTANCE_DROPPED_RENAME
     case wgpu::DeviceLostReason::FailedCreation:
       reason_ = V8GPUDeviceLostReason::Enum::kUnknown;
       break;

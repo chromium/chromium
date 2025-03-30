@@ -6,8 +6,10 @@
 
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "google_apis/common/api_error_codes.h"
+#include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 
 namespace lens {
 
@@ -157,11 +159,12 @@ void TestLensOverlayQueryController::ResetTestingState() {
   last_sent_page_content_data_.clear();
   last_sent_page_url_ = GURL();
   num_interaction_requests_sent_ = 0;
+  num_upload_chunk_requests_sent_ = 0;
 }
 
 std::unique_ptr<EndpointFetcher>
 TestLensOverlayQueryController::CreateEndpointFetcher(
-    lens::LensOverlayServerRequest* request,
+    std::string request_string,
     const GURL& fetch_url,
     const HttpMethod& http_method,
     const base::TimeDelta& timeout,
@@ -174,62 +177,74 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
       google_apis::ApiErrorCode::HTTP_SUCCESS;
   // Whether or not to disable the response.
   bool disable_response = false;
-  if (!request) {
+
+  lens::LensOverlayServerRequest request;
+  request.ParseFromString(request_string);
+
+  const auto chunk_endpoint_url =
+      GURL(lens::features::GetLensOverlayUploadChunkEndpointURL());
+  bool is_chunk_request =
+      chunk_endpoint_url.GetWithEmptyPath() == fetch_url.GetWithEmptyPath() &&
+      chunk_endpoint_url.path() == fetch_url.path();
+
+  if (request_string.empty()) {
     // Cluster info request.
     num_cluster_info_fetch_requests_sent_++;
     fake_server_response_string =
         fake_cluster_info_response_.SerializeAsString();
-  } else if (request->has_objects_request() &&
-             !request->objects_request().has_image_data() &&
-             request->objects_request().has_payload() &&
-             request->objects_request().payload().request_type() ==
+  } else if (is_chunk_request) {
+    // Upload chunk request.
+    lens::LensOverlayUploadChunkResponse fake_response;
+    num_upload_chunk_requests_sent_++;
+    fake_server_response_string = fake_response.SerializeAsString();
+  } else if (request.has_objects_request() &&
+             !request.objects_request().has_image_data() &&
+             request.objects_request().has_payload() &&
+             request.objects_request().payload().request_type() ==
                  lens::RequestType::REQUEST_TYPE_EARLY_PARTIAL_PDF) {
     // Partial page content upload request.
     num_partial_page_content_requests_sent_++;
     sent_partial_page_content_objects_request_.CopyFrom(
-        request->objects_request());
+        request.objects_request());
     // The server doesn't send a response to this request, so no need to set
     // the response string to something meaningful.
     fake_server_response_string = "";
-    if (request->objects_request().payload().has_partial_pdf_document()) {
+    if (request.objects_request().payload().has_partial_pdf_document()) {
       last_sent_partial_content_.CopyFrom(
-          request->objects_request().payload().partial_pdf_document());
+          request.objects_request().payload().partial_pdf_document());
     } else {
       lens::LensOverlayDocument partial_pdf_document;
-      partial_pdf_document.ParseFromString(request->objects_request()
-                                               .payload()
-                                               .content()
-                                               .content_data(0)
-                                               .data());
+      partial_pdf_document.ParseFromString(
+          request.objects_request().payload().content().content_data(0).data());
       last_sent_partial_content_.CopyFrom(partial_pdf_document);
     }
-  } else if (request->has_objects_request() &&
-             !request->objects_request().has_image_data() &&
-             request->objects_request().has_payload()) {
+  } else if (request.has_objects_request() &&
+             !request.objects_request().has_image_data() &&
+             request.objects_request().has_payload()) {
     // Page content upload request.
     num_page_content_update_requests_sent_++;
-    sent_page_content_objects_request_.CopyFrom(request->objects_request());
+    sent_page_content_objects_request_.CopyFrom(request.objects_request());
     last_sent_page_content_payload_.CopyFrom(
-        request->objects_request().payload());
+        request.objects_request().payload());
     // The server doesn't send a response to this request, so no need to set
     // the response string to something meaningful.
     fake_server_response_string = "";
     sent_page_content_request_id_.CopyFrom(
-        request->objects_request().request_context().request_id());
+        request.objects_request().request_context().request_id());
     // Need to reset the underlying content bytes before changing
     // last_sent_page_content_data_ to prevent a dangling reference.
     last_sent_underlying_content_bytes_ = {};
     last_sent_page_content_data_ =
-        std::string(request->objects_request().payload().content_data());
+        std::string(request.objects_request().payload().content_data());
     last_sent_underlying_content_bytes_ =
         base::as_byte_span(last_sent_page_content_data_);
-    last_sent_underlying_content_type_ = StringToContentType(
-        request->objects_request().payload().content_type());
-    last_sent_page_url_ = GURL(request->objects_request().payload().page_url());
-  } else if (request->has_objects_request()) {
+    last_sent_underlying_content_type_ =
+        StringToContentType(request.objects_request().payload().content_type());
+    last_sent_page_url_ = GURL(request.objects_request().payload().page_url());
+  } else if (request.has_objects_request()) {
     // Full image request.
     num_full_image_requests_sent_++;
-    sent_full_image_objects_request_.CopyFrom(request->objects_request());
+    sent_full_image_objects_request_.CopyFrom(request.objects_request());
     fake_server_response.mutable_objects_response()->CopyFrom(
         fake_objects_response_);
     fake_server_response_string = fake_server_response.SerializeAsString();
@@ -238,25 +253,26 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
           google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR;
     }
     sent_full_image_request_id_.CopyFrom(
-        request->objects_request().request_context().request_id());
+        request.objects_request().request_context().request_id());
     disable_response = disable_next_objects_response_;
     disable_next_objects_response_ = false;
     next_full_image_request_should_return_error_ = false;
-  } else if (request->has_interaction_request()) {
+  } else if (request.has_interaction_request()) {
     // Interaction request.
-    sent_interaction_request_.CopyFrom(request->interaction_request());
+    sent_interaction_request_.CopyFrom(request.interaction_request());
     fake_server_response.mutable_interaction_response()->CopyFrom(
         fake_interaction_response_);
     fake_server_response_string = fake_server_response.SerializeAsString();
     sent_interaction_request_id_.CopyFrom(
-        request->interaction_request().request_context().request_id());
+        request.interaction_request().request_context().request_id());
     num_interaction_requests_sent_++;
   } else {
     NOTREACHED();
   }
-  if (request) {
-    sent_client_logs_.CopyFrom(request->client_logs());
+  if (!request_string.empty()) {
+    sent_client_logs_.CopyFrom(request.client_logs());
   }
+
   sent_fetch_url_ = fetch_url;
 
   // Create the fake endpoint fetcher to return the fake response.

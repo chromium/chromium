@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocusOnFirstFocusableDescendant;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -78,8 +80,9 @@ public class ToolbarTablet extends ToolbarLayout
          *
          * @param context Context to pull resources from.
          * @param tab Tab containing the page to download.
+         * @param fromAppMenu Whether the download is started from the app menu.
          */
-        void downloadPage(Context context, Tab tab);
+        void downloadPage(Context context, Tab tab, boolean fromAppMenu);
     }
 
     private ImageButton mHomeButton;
@@ -320,7 +323,8 @@ public class ToolbarTablet extends ToolbarLayout
                 RecordUserAction.record("MobileToolbarToggleBookmark");
             }
         } else if (mSaveOfflineButton == v) {
-            mOfflineDownloader.downloadPage(getContext(), getToolbarDataProvider().getTab());
+            mOfflineDownloader.downloadPage(
+                    getContext(), getToolbarDataProvider().getTab(), /* fromAppMenu= */ false);
             RecordUserAction.record("MobileToolbarDownloadPage");
         }
     }
@@ -727,6 +731,13 @@ public class ToolbarTablet extends ToolbarLayout
     @Override
     public ImageView getHomeButton() {
         return mHomeButton;
+    }
+
+    @Override
+    public void requestKeyboardFocus() {
+        setFocusOnFirstFocusableDescendant(this);
+        // TODO(crbug.com/360423850): Replace this setFocus(mLocationBar) when omnibox keyboard
+        // behavior is fixed.
     }
 
     private void setIncognitoIndicatorVisibility() {

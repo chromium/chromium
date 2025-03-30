@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">ຈຳເປັນຕ້ອງພິສູດຢືນຢັນພຣັອກຊີ</translation>
 <translation id="4594021849294327751">ສ້າງການຖອດຂໍ້ຄວາມຈາກສຽງ</translation>
 <translation id="4594541568452132351">ເລືອກພາສາຂອງການຖອດຖ່າຍຂໍ້ຄວາມ ແລະ ດາວໂຫຼດໂມເດວ</translation>
-<translation id="4607282946861182308">ບໍ່ສາມາດສ້າງຮູບຈາກຂໍ້ຄວາມນີ້ໄດ້. ກະລຸນາລອງໃຊ້ຂໍ້ຄວາມອື່ນ.</translation>
 <translation id="4609350030397390689">ແປ້ນພິມຫຼຸດຄວາມສະຫວ່າງ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGE_NUMBER" />. ກົດ Enter ເພື່ອຍົກເລີກວຽກພິມ.</translation>
 <translation id="463791356324567266">ກຳລັງຍົກເລີກການສະແກນ...</translation>
@@ -1541,6 +1540,7 @@
 <translation id="8010765388850538088">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບ AI ສ້າງເນື້ອຫາ</translation>
 <translation id="8017679124341497925">ແກ້ໄຂທາງລັດແລ້ວ</translation>
 <translation id="802154636333426148">ການດາວໂຫຼດບໍ່ສຳເລັດ</translation>
+<translation id="8027467664787098346">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຮູບພື້ນຫຼັງທີ່ເລືອກ</translation>
 <translation id="8028993641010258682">ຂະ​ຫນາດ</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ເປີດການນຳໃຊ້ໂໝດປັບສີອັດຕະໂນມັດ</translation>
@@ -1659,6 +1659,7 @@
 <translation id="8543574988889671960">ໂຫຼດແຖບໃໝ່</translation>
 <translation id="8550364285433943656">ວາງການຄວບຄຸມຄຳສັ່ງເກມເພື່ອຫຼິ້ນດ້ວຍປຸ່ມແປ້ນພິມ</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">AI ສ້າງເນື້ອຫາສາມາດເຮັດຜິດພາດໄດ້, ຮວມທັງກ່ຽວກັບຄົນ, ສະນັ້ນໃຫ້ກວດສອບຊໍ້າ.</translation>
 <translation id="8575298406870537639">ຜູ້ໃຫ້ບໍລິການຂອງທ່ານອາດຕ້ອງໃຊ້ຕົວເລືອກນີ້ເພື່ອເຊື່ອມຕໍ່ຫາເຄືອຂ່າຍຂອງເຂົາເຈົ້າ. ກະລຸນາຕິດຕໍ່ຫາຜູ້ໃຫ້ບໍລິການຂອງທ່ານສຳລັບລາຍລະອຽດ.</translation>
 <translation id="8576249514688522074">ບໍ່ໄດ້ລິເລີ່ມ</translation>
 <translation id="8584654835905316966">ຕ້ອງຣີສະຕາດເພື່ອຕິດຕັ້ງເຟີມແວສຳລັບ <ph name="DEVICE_NAME" /> ເປັນເວີຊັນ <ph name="VERSION" /> ໃຫ້ສຳເລັດ. ຄອມພິວເຕີຂອງທ່ານອາດເບິ່ງຄືວ່າປິດເປີດໃໝ່ຫຼາຍເທື່ອ. ລັກສະນະການເຮັດວຽກນີ້ເປັນສິ່ງທີ່ຄາດໄວ້ຢູ່ແລ້ວ.</translation>
@@ -1673,7 +1674,6 @@
 <translation id="8655295600908251630">ຊ່ອງ</translation>
 <translation id="8655828773034788261">ແບ່ງປັນ URL:</translation>
 <translation id="8660881923941176839">ພາວ</translation>
-<translation id="8670057600920888023">AI ສ້າງເນື້ອຫາຢູ່ໃນຂັ້ນທົດລອງ ແລະ ອາດມີເນື້ອຫາທີ່ບໍ່ຖືກຕ້ອງ, ເຮັດໃຫ້ເຂົ້າໃຈຜິດ ຫຼື ບໍ່ເໝາະສົມ.</translation>
 <translation id="8670574982334489519">ຂວາ</translation>
 <translation id="8675354002693747642">ລະຫັດທີ່ແບ່ງປັນລ່ວງໜ້າ</translation>
 <translation id="8677859815076891398">ບໍ່ມີອະລະບ້ຳ. ສ້າງອະລະບໍ້າໃນ <ph name="LINK_BEGIN" />Google ຮູບພາບ<ph name="LINK_END" />.</translation>

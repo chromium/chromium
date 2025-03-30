@@ -85,14 +85,14 @@ export class LazyListElement<T = object> extends CrLitElement {
     };
   }
 
-  items: T[] = [];
-  itemSize: number = 100;
-  listItemHost?: Node;
-  minViewportHeight?: number;
-  scrollTarget: HTMLElement = document.documentElement;
-  restoreFocusElement: Element|null = null;
-  template: (item: T, index: number) => TemplateResult = () => html``;
-  private numItemsDisplayed_: number = 0;
+  accessor items: T[] = [];
+  accessor itemSize: number = 100;
+  accessor listItemHost: Node|undefined;
+  accessor minViewportHeight: number|undefined;
+  accessor scrollTarget: HTMLElement = document.documentElement;
+  accessor restoreFocusElement: Element|null = null;
+  accessor template: (item: T, index: number) => TemplateResult = () => html``;
+  private accessor numItemsDisplayed_: number = 0;
 
   // Internal state
   private lastRenderedHeight_: number = 0;

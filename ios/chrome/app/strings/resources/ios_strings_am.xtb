@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">አስወግድ</translation>
 <translation id="1190609913194133056">የማሳወቂያ ማዕከል</translation>
 <translation id="1201402288615127009">ቀጣይ</translation>
-<translation id="1202892408424955784">ክትትል የሚደረግባቸው ምርቶች</translation>
 <translation id="1204075260022434100">{count,plural, =1{በመለያዎ {email}፣ ውስጥ ዕልባት ወደ «{title}» ተቀምጧል}one{በመለያዎ {email}፣ ውስጥ {title} ዕልባት ወደ «{count}» ተቀምጧል፣}other{በመለያዎ {email}፣ ውስጥ {title} ዕልባቶች ወደ «{count}» ተቀምጠዋል፣}}</translation>
 <translation id="120431140543679678">ተከተል</translation>
 <translation id="1207493287814084192">5:30 ከሰዓት</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">አዲስ ንጥል</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> መለያዎች ተመሳሳይ የይለፍ ቃል ይጠቀማሉ</translation>
 <translation id="2059166748188874810">ማዘጋጃ ቤት</translation>
-<translation id="2060114494785549741">በ1 ወር ውስጥ ሰርዝ</translation>
 <translation id="2060638295449304809">ይህ አድራሻ የተቀመጠው በዚሀ መሣሪያ ላይ ብቻ ነው። በሌሎች መሣሪያዎቸዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ <ph name="USER_EMAIL" /> ውስጥ ያስቀምጡት</translation>
 <translation id="20638360198452347">የክፍል ዓይነት መራጭ</translation>
 <translation id="2067852168641682340">ለእያንዳንዱ ጊዜ ወደዚህ መለያ አስቀምጥ</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">ዋጋ ተከታተል ካርድን ደብቅ</translation>
 <translation id="2216366330550244277">ወደ የምርት ገፅ ይሂዱ</translation>
 <translation id="2220529011494928058">ችግር ሪፖርት አድርግ</translation>
-<translation id="2220887224562128152">አንዴ ፋይል ለመሰረዝ መርሐግብር ከተያዘለት በኋላ። መልሶ ሊገኝ አይችልም።</translation>
 <translation id="2223461067862937305">QR ኮድ ፍጠር</translation>
 <translation id="2229345671837147090">የርቀት መቆጣጠሪያ ትር ፍርግርግ</translation>
 <translation id="2230173723195178503">ድረ-ገፅ ተጭኗል</translation>
@@ -384,7 +381,6 @@
 <translation id="2539748786028143624">የላቀ ጥበቃን አብራ…</translation>
 <translation id="2540111494300686866">መገናኛዎችን አፍን</translation>
 <translation id="2542268842667970959">«የደህንነት ፍተሻ» ደብቅ</translation>
-<translation id="2543870349255816922">ይህ ካርድ ከሠመሩ መሳሪያዎችዎ ውስጥ በአንዱ ላይ ክትትል በሚደረግበት ምርትዎ ላይ የዋጋ ቅነሳ ያሳያል</translation>
 <translation id="2547458583188611426">ማስመር እየሰራ አይደለም። ማስመር ለመጀመር የይለፍ ሐረግዎን ያስገቡ።</translation>
 <translation id="2551153019974022505">የመለያ ስህተት</translation>
 <translation id="2559843230610279254">የትር ቡድን፣ <ph name="GROUP_TITLE" />፣ <ph name="TABS_NUMBER" /> ትሮች።</translation>
@@ -494,7 +490,6 @@
 <translation id="3059270601560379555">አዲስ ፍለጋ</translation>
 <translation id="3064547930554042309">ውርዶችን ያስተዳድሩ</translation>
 <translation id="3072279342064724558">የይለፍ ቃል አስቀድሞ ነበር</translation>
-<translation id="3074862506644936708">ራስ ሰር ስረዛን አንቃ</translation>
 <translation id="3076846064362030967">ከእርስዎ የGoogle መለያ ዘግተው እንዲወጡ አይደረጉም። በመለያ ሲገቡ <ph name="BEGIN_LINK" />ሌሎች የእንቅስቃሴ ዓይነቶች<ph name="END_LINK" /> በGoogle መለያዎ ውስጥ ሊቀመጡ ይችላሉ። በማንኛውም ጊዜ ሊሰርዟቸው ይችላሉ።
 
 
@@ -913,6 +908,7 @@
 <translation id="4896467949657706481">ትሮች ተዘግተዋል፤ እርስዎ ዘግተው ወጥተዋል</translation>
 <translation id="4913626501929406101">የይለፍ ቃልዎ ቅጂ ደህንነቱ በተጠበቀ ሁኔታ በቤተሰብ ቡድንዎ ውስጥ ካለ ሰው ጋር ማጋራት ይችላሉ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">ይቀበሉ</translation>
+<translation id="4930714375720679147">አብራ</translation>
 <translation id="4932733599132424254">ቀን</translation>
 <translation id="4936354130727646074">መቼም አታንቀሳቅስ</translation>
 <translation id="4937410517508563815">የይለፍ ቃላትን በመለያ ውስጥ ያስቀምጡ</translation>
@@ -1148,7 +1144,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5899314093904173337">በአቅራቢያ ካሉ ሰዎች ጋር ለማጋራት ይህን የQR ኮድ በእነሱ ካሜራ ወይም የQR ቃኚ መተግበሪያ እንዲቃኙ ይፍቀዱላቸው</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} አዲስ ትር}one{{count} አዲስ ትር}other{{count} አዲስ ትሮች}}</translation>
 <translation id="5911030830365207728">Google ትርጉም</translation>
-<translation id="5917913282764181683">ውርዶችዎን በራስ-ሰር ሰርዝ</translation>
 <translation id="5922999516621365983">ትርን ለመሰካት ወደዚህ ይጎትቱት።</translation>
 <translation id="5936006948844852401">ማከማቻን አስተዳድር</translation>
 <translation id="5936065461722368675">ሙሉ ገጹን ተርጉም</translation>
@@ -1507,7 +1502,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="741204030948306876">አዎ፣ ገብቼያለሁ</translation>
 <translation id="7417689656810783109">ቡድንን እንደገና ይሰይሙ</translation>
 <translation id="7419565702166471774">ሁልጊዜ ደህንነታቸው የተጠበቁ ግንኙነቶችን ይጠቀሙ</translation>
-<translation id="742001653298797675">በስልክዎ ላይ ቦታ ለመቆጠብ እና ግላዊነትዎን ለመጠበቅ ከአንድ ወር በኋላ ሁሉንም ውርዶችዎን ለስረዛ መርሐግብር ያስይዙ።</translation>
 <translation id="7425053386765766120">የመክፈያ ዘዴን ያክሉ…</translation>
 <translation id="7425346204213733349">በእርስዎ ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች ላይ የተደረጉ ለውጦች ከአሁን በኋላ ከእርስዎ የGoogle መለያ ጋር አይሠምሩም። ሆኖም ግን ነባር ውሂብዎ በእርስዎ የGoogle መለያ ላይ እንደተከማቸ ይቆያል።</translation>
 <translation id="742664698522525515">ቡድን ይቆይ?</translation>

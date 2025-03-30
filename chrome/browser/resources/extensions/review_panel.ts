@@ -98,14 +98,14 @@ export class ExtensionsReviewPanelElement extends
     };
   }
 
-  delegate?: ItemDelegate;
-  extensions: chrome.developerPrivate.ExtensionInfo[] = [];
-  protected headerString_: string = '';
-  protected subtitleString_: string = '';
-  protected unsafeExtensionsReviewListExpanded_: boolean = true;
-  protected completionMessage_: string = '';
-  protected shouldShowCompletionInfo_: boolean = false;
-  protected shouldShowUnsafeExtensions_: boolean = false;
+  accessor delegate: ItemDelegate|undefined;
+  accessor extensions: chrome.developerPrivate.ExtensionInfo[] = [];
+  protected accessor headerString_: string = '';
+  protected accessor subtitleString_: string = '';
+  protected accessor unsafeExtensionsReviewListExpanded_: boolean = true;
+  protected accessor completionMessage_: string = '';
+  protected accessor shouldShowCompletionInfo_: boolean = false;
+  protected accessor shouldShowUnsafeExtensions_: boolean = false;
 
   /**
    * Tracks if the last action that led to the number of extensions

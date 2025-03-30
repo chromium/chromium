@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
   base::MockCallback<
       collaboration::CollaborationControllerDelegate::ResultCallback>
       callback;
-  delegate.ShowAuthenticationUi(callback.Get());
+  delegate.ShowAuthenticationUi(collaboration::FlowType::kJoin, callback.Get());
   EXPECT_NE(nullptr, delegate.prompt_dialog_widget_for_testing());
 }
 
@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
   base::MockCallback<
       collaboration::CollaborationControllerDelegate::ResultCallback>
       callback;
-  delegate.ShowAuthenticationUi(callback.Get());
+  delegate.ShowAuthenticationUi(collaboration::FlowType::kJoin, callback.Get());
   EXPECT_EQ(nullptr, delegate.prompt_dialog_widget_for_testing());
 }
 

@@ -524,6 +524,9 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
 
   if (const auto* data = transform_node.GetAnchorPositionScrollData()) {
     transform_tree_.EnsureAnchorPositionScrollData(id) = *data;
+    for (auto container_id : data->adjustment_container_ids) {
+      anchor_position_adjustment_container_ids_.insert(container_id);
+    }
   }
 
   auto compositor_element_id = transform_node.GetCompositorElementId();
@@ -1412,6 +1415,20 @@ void PropertyTreeManager::UpdatePixelMovingFilterClipExpanders() {
     // may not be composited, and the clip node is a no-op node.
   }
   pixel_moving_filter_clip_expanders_.clear();
+}
+
+void PropertyTreeManager::
+    EnsureCompositorNodesForAnchorPositionAdjustmentContainers(
+        const StackScrollTranslationVector& scroll_translations) {
+  if (anchor_position_adjustment_container_ids_.empty()) {
+    return;
+  }
+  for (auto& scroll_translation : scroll_translations) {
+    if (anchor_position_adjustment_container_ids_.Contains(
+            scroll_translation->ScrollNode()->GetCompositorElementId())) {
+      EnsureCompositorScrollAndTransformNode(*scroll_translation);
+    }
+  }
 }
 
 }  // namespace blink

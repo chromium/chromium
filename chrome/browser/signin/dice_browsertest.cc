@@ -111,7 +111,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 using net::test_server::BasicHttpResponse;
@@ -797,7 +797,7 @@ class DiceBrowserTestWithBoundSessionCredentialsEnabled
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       switches::kEnableChromeRefreshTokenBinding};
-  crypto::ScopedMockUnexportableKeyProvider mock_key_provider_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
 };
 
 // Checks that signin on Gaia triggers the fetch for a refresh token.

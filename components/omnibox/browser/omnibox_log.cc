@@ -23,7 +23,8 @@ OmniboxLog::OmniboxLog(
     base::TimeDelta elapsed_time_since_last_change_to_default_match,
     const AutocompleteResult& result,
     const GURL& final_destination_url,
-    bool is_incognito)
+    bool is_incognito,
+    bool zero_prefix_suggestions_shown_in_session)
     : text(text),
       just_deleted_text(just_deleted_text),
       input_type(input_type),
@@ -43,6 +44,8 @@ OmniboxLog::OmniboxLog(
       result(result),
       final_destination_url(final_destination_url),
       is_incognito(is_incognito),
+      zero_prefix_suggestions_shown_in_session(
+          zero_prefix_suggestions_shown_in_session),
       steady_state_omnibox_position(
           metrics::OmniboxEventProto::UNKNOWN_POSITION),
       ukm_source_id(ukm::kInvalidSourceId) {

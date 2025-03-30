@@ -59,10 +59,10 @@ export class ScreenshotElement extends ScreenshotElementBase {
     };
   }
 
-  private hasScreenshotPreview_: boolean;
-  private screenshotBase64_: string;
-  private originalScreenshotBase64_: string;
-  private showEditor_: boolean;
+  declare private hasScreenshotPreview_: boolean;
+  declare private screenshotBase64_: string;
+  declare private originalScreenshotBase64_: string;
+  declare private showEditor_: boolean;
   // The coordinate of the top left corner of the canvas.
   private canvasX_: number = 0;
   private canvasY_: number = 0;
@@ -77,13 +77,13 @@ export class ScreenshotElement extends ScreenshotElementBase {
   private cornerX_: number = 0;
   private cornerY_: number = 0;
   private mouseDown_: boolean = false;
-  private showDeleteButton_: boolean;
+  declare private showDeleteButton_: boolean;
   // The coordinates that define the rectangle to be deleted. The four numbers
   // are in accordance with `rects_`.
   private selectedRect_: [number, number, number, number];
   // The coordinates which the delete button should be located at.
-  private buttonX_: number;
-  private buttonY_: number;
+  declare private buttonX_: number;
+  declare private buttonY_: number;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   setScreenshotData(dataBase64: string) {

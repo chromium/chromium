@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">Autenticação de proxy necessária</translation>
 <translation id="4594021849294327751">Criar transcrição</translation>
 <translation id="4594541568452132351">Selecione o idioma de transcrição e baixe o modelo</translation>
-<translation id="4607282946861182308">Não é possível criar imagens desse comando. Tente outro comando.</translation>
 <translation id="4609350030397390689">Diminuir o brilho do teclado</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Pressione "Enter" para cancelar o trabalho de impressão.</translation>
 <translation id="463791356324567266">Cancelando a digitalização…</translation>
@@ -1540,6 +1539,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="8010765388850538088">Saiba mais sobre a IA generativa</translation>
 <translation id="8017679124341497925">Atalho editado</translation>
 <translation id="802154636333426148">Falha no download</translation>
+<translation id="8027467664787098346">Saiba mais sobre o plano de fundo selecionado</translation>
 <translation id="8028993641010258682">Tamanho</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Ativar o modo de cor automático</translation>
@@ -1658,6 +1658,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="8543574988889671960">Atualizar guia</translation>
 <translation id="8550364285433943656">Use as teclas do teclado para controlar as ações do jogo</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">A IA generativa pode cometer erros, inclusive sobre pessoas. Por isso, é importante checar as respostas.</translation>
 <translation id="8575298406870537639">Pode ser necessário ativar esta opção para se conectar à rede da sua operadora. Entre em contato com a operadora para mais informações.</translation>
 <translation id="8576249514688522074">Não inicializado</translation>
 <translation id="8584654835905316966">É necessário reiniciar o dispositivo para concluir a instalação do firmware do <ph name="DEVICE_NAME" /> para a versão <ph name="VERSION" />. Pode parecer que o computador está reiniciando várias vezes. Esse comportamento é esperado.</translation>
@@ -1672,7 +1673,6 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655828773034788261">Compartilhar URL:</translation>
 <translation id="8660881923941176839">libras</translation>
-<translation id="8670057600920888023">A IA generativa é uma tecnologia experimental, e o conteúdo pode ser impreciso, enganoso ou ofensivo.</translation>
 <translation id="8670574982334489519">lado direito</translation>
 <translation id="8675354002693747642">Chave pré-compartilhada</translation>
 <translation id="8677859815076891398">Nenhum álbum. Crie um no <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>

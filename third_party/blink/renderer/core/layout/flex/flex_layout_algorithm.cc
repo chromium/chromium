@@ -1780,6 +1780,9 @@ void FlexLayoutAlgorithm::PopulateGapIntersectionsForFirstLine(
   // associated with two potential cross axis gap intersections:
   // 1. The cross axis offset of the line.
   item_cross_intersection.block_offset = flex_line.cross_axis_offset;
+  // Since it is the first line, the cross axis intersection is "blocked" by the
+  // content edge before the line.
+  item_cross_intersection.is_blocked_before = true;
   item_cross_intersections_list.push_back(item_cross_intersection);
 
   // 2. The main and cross intersections of the cross gap with the main
@@ -1790,6 +1793,7 @@ void FlexLayoutAlgorithm::PopulateGapIntersectionsForFirstLine(
   item_cross_intersection.block_offset =
       num_lines > 1 ? (next_main_axis_gap_start + next_main_axis_gap_end) / 2
                     : flex_line.LineCrossEnd();
+  item_cross_intersection.is_blocked_before = false;
   item_cross_intersections_list.push_back(item_cross_intersection);
 
   if (num_lines > 1) {
@@ -1822,8 +1826,10 @@ void FlexLayoutAlgorithm::PopulateMainAxisGapIntersectionsForFirstItem(
       (next_main_axis_gap_start + next_main_axis_gap_end) / 2;
   CHECK(main_intersections_after_current_line.empty());
 
-  main_intersections_after_current_line.emplace_back(
-      main_gap_intersection_inline_offset, main_gap_intersection_block_offset);
+  GapIntersection main_gap_intersection(main_gap_intersection_inline_offset,
+                                        main_gap_intersection_block_offset);
+  main_gap_intersection.is_blocked_before = true;
+  main_intersections_after_current_line.push_back(main_gap_intersection);
 }
 
 void FlexLayoutAlgorithm::PopulateMainAxisGapIntersectionsForLastItem(
@@ -1837,8 +1843,13 @@ void FlexLayoutAlgorithm::PopulateMainAxisGapIntersectionsForLastItem(
                  : BorderScrollbarPadding().inline_end;
   LayoutUnit edge_inline_offset =
       container_builder_.InlineSize() - border_scrollbar_padding;
-  main_intersections_after_current_line.emplace_back(edge_inline_offset,
-                                                     cross_axis_block_offset);
+  GapIntersection main_gap_intersection(edge_inline_offset,
+                                        cross_axis_block_offset);
+
+  // The last intersection of a main gap will be "blocked" by the content edge
+  // at the end of the line.
+  main_gap_intersection.is_blocked_after = true;
+  main_intersections_after_current_line.push_back(main_gap_intersection);
 }
 
 void FlexLayoutAlgorithm::PopulateGapIntersectionsForMiddleItem(
@@ -1899,6 +1910,9 @@ void FlexLayoutAlgorithm::PopulateGapIntersectionsForLastLine(
 
   // 2. The cross end of the line.
   item_cross_intersection.block_offset = flex_line.LineCrossEnd();
+  // Since it is the last line, the cross axis intersection is "blocked" by
+  // the content edge after the line.
+  item_cross_intersection.is_blocked_after = true;
   item_cross_intersections_list.push_back(item_cross_intersection);
 }
 
@@ -2257,9 +2271,17 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
 
   if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
       Style().HasGapRule()) {
-    GapGeometry* gap_geometry = MakeGarbageCollected<GapGeometry>();
+    GapGeometry* gap_geometry =
+        MakeGarbageCollected<GapGeometry>(GapGeometry::ContainerType::kFlex);
     gap_geometry->SetGapIntersections(kForColumns, std::move(cross_axis_gaps));
     gap_geometry->SetGapIntersections(kForRows, std::move(main_axis_gaps));
+    if (is_column_) {
+      gap_geometry->SetBlockGapSize(gap_between_items_);
+      gap_geometry->SetInlineGapSize(gap_between_lines_);
+    } else {
+      gap_geometry->SetBlockGapSize(gap_between_lines_);
+      gap_geometry->SetInlineGapSize(gap_between_items_);
+    }
     container_builder_.SetGapGeometry(gap_geometry);
   }
 

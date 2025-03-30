@@ -3713,6 +3713,22 @@ chromium-metrics-reviews@google.com.
       variants="ContentAnalysisRequestType"/>
 </histogram>
 
+<histogram name="Enterprise.{UploadEvent}.FileCount" units="count"
+    expires_after="2026-03-28">
+  <owner>alshawwa@chromium.org</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Records the number of files uploaded for {UploadEvent} events. It is
+    recorded once per user action. The user action may be a drag and drop event,
+    or a file system dialog to upload multiple files.
+  </summary>
+  <token key="UploadEvent">
+    <variant name="OnFileAttach"/>
+    <variant name="OnFileTransfer"/>
+  </token>
+</histogram>
+
 <histogram name="EnterpriseCheck.AzureADJoinStatusCheckTime" units="ms"
     expires_after="2025-07-01">
   <owner>igorruvinov@chromium.org</owner>

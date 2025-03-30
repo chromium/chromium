@@ -265,7 +265,7 @@ per_channel_workflow(
       reviewers = ["aymanm@google.com"],
       labels = ["Presubmit-Ready+1"]
   ),
-  mode = "CHANGE_REQUEST",
+  mode = "SQUASH",
 )
 
 # Same as above, but importing to some git branch. Used for manual testing.

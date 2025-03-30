@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">प्रोक्सी प्रमाणित गर्नु पर्ने हुन्छ</translation>
 <translation id="4594021849294327751">ट्रान्सक्रिप्ट बनाउनुहोस्</translation>
 <translation id="4594541568452132351">ट्रान्स्क्रिप्सनको भाषा चयन गर्नुहोस् र मोडेल डाउनलोड गर्नुहोस्</translation>
-<translation id="4607282946861182308">यो प्रम्प्टअनुसारका फोटोहरू बनाउन सकिएन। अर्कै प्रम्प्ट प्रयोग गरी हेर्नुहोस्।</translation>
 <translation id="4609350030397390689">किबोर्डको चमक घटाउने की</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> मध्ये <ph name="PRINTED_PAGE_NUMBER" />। प्रिन्ट गर्ने कार्य रद्द गर्न enter थिच्नुहोस्।</translation>
 <translation id="463791356324567266">स्क्यान गर्ने कार्य रद्द गरिँदै छ...</translation>
@@ -1540,6 +1539,7 @@
 <translation id="8010765388850538088">जेनेरेटिभ AI का बारेमा थप जान्नुहोस्</translation>
 <translation id="8017679124341497925">सर्टकट सम्पादन गरियो</translation>
 <translation id="802154636333426148">डाउनलोड गर्न सकिएन</translation>
+<translation id="8027467664787098346">चयन गरिएको वालपेपरका बारेमा थप जान्नुहोस्</translation>
 <translation id="8028993641010258682">आकार</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">स्वतः रङ समायोजन गर्ने मोड अन गर्नुहोस्</translation>
@@ -1658,6 +1658,7 @@
 <translation id="8543574988889671960">ट्याब रिलोड गर्नुहोस्</translation>
 <translation id="8550364285433943656">किबोर्डका कीहरू प्रयोग गरेर गेम खेल्न गेममा कन्ट्रोलहरू सेट गर्नुहोस्</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">जेनेरेटिभ AI ले मान्छे तथा अन्य कुराका बारेमा गलत जानकारी देखाउन सक्छ। त्यसैले यसले दिने जवाफ सही छ कि छैन फेरि जाँच्नुहोस्।</translation>
 <translation id="8575298406870537639">तपाईंको मोबाइल सेवा प्रदायकले सो सेवा प्रदायकको नेटवर्कमा कनेक्ट गर्न सकोस् भन्नाका लागि तपाईंले यो विकल्प अन गर्नु पर्ने हुन सक्छ। यससम्बन्धी थप जानकारी प्राप्त गर्न आफ्नो मोबाइल सेवा प्रदायकलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="8576249514688522074">सुरु गरिएको छैन</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> को फर्मवेयर अपग्रेड गरी संस्करण <ph name="VERSION" /> इन्स्टल गर्ने प्रक्रिया पूरा गर्न कम्प्युटर रिस्टार्ट गर्नु पर्ने हुन्छ। तपाईंको कम्प्युटर धेरै पटक रिबुट हुन सक्छ। धेरै पटक रिबुट हुन अपेक्षा गरिएको छ।</translation>
@@ -1672,7 +1673,6 @@
 <translation id="8655295600908251630">च्यानल</translation>
 <translation id="8655828773034788261">URL सेयर गर्नुहोस्:</translation>
 <translation id="8660881923941176839">पाउन्ड</translation>
-<translation id="8670057600920888023">जेनेरेटिभ AI परीक्षणका क्रममा भएकाले सामग्री गलत, भ्रामक वा आपत्तिजनक हुन सक्छ।</translation>
 <translation id="8670574982334489519">दायाँ</translation>
 <translation id="8675354002693747642">पहिलै साझा गरिएको साँचो</translation>
 <translation id="8677859815076891398">कुनै पनि एल्बम छैन। <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> मा गई एउटा एल्बम बनाउनुहोस्।</translation>

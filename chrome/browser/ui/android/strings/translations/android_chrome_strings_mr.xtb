@@ -325,7 +325,6 @@
 <translation id="2527209463677295330">एखाद्या पेजवरील जास्त मजकुराचा समावेश केल्याने, तुम्हाला आणखी चांगले परिणाम दिसू शकतात</translation>
 <translation id="2527779675047087889">क्लिपबोर्डवरील आशय लपवा</translation>
 <translation id="2532336938189706096">वेब दृश्य</translation>
-<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> आयटम हटवले</translation>
 <translation id="253498598929009420">साइट तुमच्या स्क्रीनवरील आशय पाहू शकेल</translation>
 <translation id="2536728043171574184">या पेजची ऑफलाइन प्रत पाहत आहे</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, टॅब</translation>
@@ -365,7 +364,6 @@
 <translation id="2677748264148917807">सोडा</translation>
 <translation id="2687009626279857299">या डिव्हाइसवर काम करणे थांबवले आहे</translation>
 <translation id="2702516483241149200">नवीन: या मजकुरापर्यंत स्क्रोल करणारी लिंक शेअर करा</translation>
-<translation id="2705073298859543115">सारांश तयार करा</translation>
 <translation id="2708051474374549906">Google कडे पाठवल्या जाणाऱ्या तुमच्या ब्राउझिंग डेटावर आधारित धोकादायक वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून रीअल-टाइम, प्रोअ‍ॅक्टिव्ह संरक्षण</translation>
 <translation id="2708226184420201102"><ph name="PRODUCT_NAME" /> ब्राउझरमध्ये उघडा</translation>
 <translation id="271033894570825754">नवीन</translation>
@@ -507,7 +505,7 @@
 <translation id="3373701465337594448">सुरू असताना, तुम्ही भेट देता त्या तुमच्या स्वारस्यांचा अंदाज लावणाऱ्या साइटची सूची येथे दिसते</translation>
 <translation id="3374023511497244703">तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर Chrome डेटा आता तुमच्या Google खात्यामध्ये सिंक केला जाणार नाही</translation>
 <translation id="3384347053049321195">इमेज शेअर करा</translation>
-<translation id="3387650086002190359">फाइल सिस्टम एररमुळे <ph name="FILE_NAME" /> डाउनलोड अयशस्वी झाले.</translation>
+<translation id="3387650086002190359">फाइल सिस्टीम एररमुळे <ph name="FILE_NAME" /> डाउनलोड करता आले नाही.</translation>
 <translation id="3398320232533725830">बुकमार्क व्यवस्थापक उघडा</translation>
 <translation id="3414952576877147120">आकार:</translation>
 <translation id="3421726884497337397">तृतीय पक्ष कुकी कधी ब्लॉक करायच्या ते निवडा</translation>
@@ -1199,7 +1197,6 @@
 <translation id="6564820424018738527">तुमच्या Android डिव्हाइसमध्ये यासारखे सेटिंग समाविष्ट असू शकते. Chrome मध्ये आणि तुमच्या Android डिव्हाइसवर जाहिरात मापन सुरू केले असल्यास, एखादी कंपनी तुम्ही भेट देत असलेल्या वेबसाइट आणि तुम्ही वापरत असलेल्या ॲप्सवर जाहिरातीची परिणामकारकता मोजू शकते.</translation>
 <translation id="6565959834589222080">उपलब्ध असेल तेव्हा वाय-फाय वापरला जातो</translation>
 <translation id="6569373978618239158">आता, तुम्ही नवीन टॅब उघडल्यानंतर तुम्हाला <ph name="SITE_NAME" /> वरील स्टोरी दिसतील. तुम्ही फॉलो करता त्या साइट तुमच्या Google खात्यामध्ये सेव्ह केल्या जातात. तुम्ही त्या Discover सेटिंग्जमध्ये व्यवस्थापित करू शकता.</translation>
-<translation id="6570116402456758630">पेजचा सारांश</translation>
 <translation id="657177046675873214">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क मिळवण्यासाठी, सेटिंग्जमध्ये "बुकमार्क" सुरू करा</translation>
 <translation id="6573096386450695060">नेहमी अनुमती द्या</translation>
 <translation id="6573431926118603307">आपल्या अन्य डिव्हाइसेसवर तुम्ही Chrome मध्ये उघडलेले टॅब येथे दिसतील.</translation>
@@ -1448,7 +1445,7 @@
 <translation id="7588219262685291874">तुमच्या डिव्हाइसचे बॅटरी सेव्हर सुरू असेल तेव्हा गडद थीम सुरू करा</translation>
 <translation id="7592322927044331376">प्रथम, Chrome मधील पासवर्ड एक्सपोर्ट करा आणि हटवा</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> ला <ph name="TOP_ORIGIN" /> साठी हे तुम्हीच आहात याची पडताळणी करू द्या</translation>
-<translation id="7596558890252710462">ऑपरेटिंग सिस्टम</translation>
+<translation id="7596558890252710462">ऑपरेटिंग सिस्टीम</translation>
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> साधारण टॅब}other{<ph name="TABS_COUNT_MANY" /> साधारण टॅब}}</translation>
 <translation id="7603168929588204083">चुकीची तारीख</translation>
 <translation id="7605594153474022051">सिंक कार्य करत नाही</translation>

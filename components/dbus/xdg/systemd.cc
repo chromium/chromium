@@ -228,8 +228,7 @@ void OnNameHasOwnerResponse(scoped_refptr<dbus::Bus> bus,
   }
 
   auto env = base::Environment::Create();
-  std::string channel;
-  env->GetVar(kChannelEnvVar, &channel);
+  std::string channel = env->GetVar(kChannelEnvVar).value_or("");
   const char* app_name_suffix = GetAppNameSuffix(channel);
 
   // The unit naming format is specified in

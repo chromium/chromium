@@ -8,7 +8,6 @@
  * tablet settings for each device in system settings.
  */
 
-import '../icons.html.js';
 import '../settings_shared.css.js';
 import './input_device_settings_shared.css.js';
 import './per_device_app_installed_row.js';

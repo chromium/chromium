@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -21,6 +22,7 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_log.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -155,6 +157,8 @@ void GetScoringSignalsForLogging(const OmniboxScoringSignals& scoring_signals,
   }
 }
 
+constexpr base::TimeDelta kDefaultTimeDelta = base::Milliseconds(-1);
+
 }  // namespace
 
 OmniboxMetricsProvider::OmniboxMetricsProvider() = default;
@@ -267,11 +271,12 @@ OmniboxMetricsProvider::GetClientSummarizedResultType(
 }
 
 void OmniboxMetricsProvider::OnURLOpenedFromOmnibox(OmniboxLog* log) {
-  RecordOmniboxOpenedURL(*log);
-  RecordOmniboxOpenedURLClientSummarizedResultType(*log);
+  RecordOmniboxEvent(*log);
+  RecordMetrics(*log);
+  RecordZeroPrefixPrecisionRecallUsage(*log);
 }
 
-void OmniboxMetricsProvider::RecordOmniboxOpenedURL(const OmniboxLog& log) {
+void OmniboxMetricsProvider::RecordOmniboxEvent(const OmniboxLog& log) {
   std::vector<std::u16string_view> terms =
       base::SplitStringPiece(log.text, base::kWhitespaceUTF16,
                              base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
@@ -290,15 +295,14 @@ void OmniboxMetricsProvider::RecordOmniboxOpenedURL(const OmniboxLog& log) {
                                         WindowOpenDisposition::SWITCH_TO_TAB);
   if (log.completed_length != std::u16string::npos)
     omnibox_event->set_completed_length(log.completed_length);
-  const base::TimeDelta default_time_delta = base::Milliseconds(-1);
-  if (log.elapsed_time_since_user_first_modified_omnibox !=
-      default_time_delta) {
-    // Only upload the typing duration if it is set/valid.
+  // Set the typing duration only if set/valid.
+  if (log.elapsed_time_since_user_first_modified_omnibox != kDefaultTimeDelta) {
     omnibox_event->set_typing_duration_ms(
         log.elapsed_time_since_user_first_modified_omnibox.InMilliseconds());
   }
+  // Set the time since the last change to default match only if set/valid.
   if (log.elapsed_time_since_last_change_to_default_match !=
-      default_time_delta) {
+      kDefaultTimeDelta) {
     omnibox_event->set_duration_since_last_default_match_update_ms(
         log.elapsed_time_since_last_change_to_default_match.InMilliseconds());
   }
@@ -370,25 +374,75 @@ void OmniboxMetricsProvider::RecordOmniboxOpenedURL(const OmniboxLog& log) {
   }
 }
 
-void OmniboxMetricsProvider::RecordOmniboxOpenedURLClientSummarizedResultType(
-    const OmniboxLog& log) {
+void OmniboxMetricsProvider::RecordMetrics(const OmniboxLog& log) {
   if (log.selection.line < 0 || log.selection.line >= log.result->size()) {
     return;
   }
 
   auto autocomplete_match = log.result->match_at(log.selection.line);
-  auto omnibox_event_result_type = autocomplete_match.GetOmniboxEventResultType(
-      log.selection.IsAction() ? log.selection.action_index : -1);
+  const int action_index =
+      log.selection.IsAction() ? log.selection.action_index : -1;
+  auto provider_type =
+      autocomplete_match.GetOmniboxEventProviderType(action_index);
+  auto omnibox_event_result_type =
+      autocomplete_match.GetOmniboxEventResultType(action_index);
   auto client_summarized_result_type =
       GetClientSummarizedResultType(omnibox_event_result_type);
+
   // Log UMA histogram.
   base::UmaHistogramEnumeration(
       "Omnibox.SuggestionUsed.ClientSummarizedResultType",
       client_summarized_result_type);
+
   // Log UKM event.
-  if (log.ukm_source_id != ukm::kInvalidSourceId) {
-    ukm::builders::Omnibox_SuggestionUsed(log.ukm_source_id)
-        .SetResultType(static_cast<int64_t>(client_summarized_result_type))
-        .Record(ukm::UkmRecorder::Get());
+  if (log.ukm_source_id == ukm::kInvalidSourceId) {
+    return;
   }
+  ukm::builders::Omnibox_SuggestionUsed event(log.ukm_source_id);
+  event.SetResultTypeGroup(static_cast<int64_t>(client_summarized_result_type));
+  event.SetResultType(static_cast<int64_t>(omnibox_event_result_type));
+  event.SetPageClassification(
+      static_cast<int64_t>(log.current_page_classification));
+  event.SetProviderType(static_cast<int64_t>(provider_type));
+  event.SetSelectedIndex(log.selection.line);
+  event.SetTypedLength(log.text.length());
+  // Set the typing duration only if set/valid.
+  if (log.elapsed_time_since_user_first_modified_omnibox != kDefaultTimeDelta) {
+    event.SetTypingDurationMs(ukm::GetExponentialBucketMinForUserTiming(
+        log.elapsed_time_since_user_first_modified_omnibox.InMilliseconds()));
+  }
+  // Set the time since the user last focused the omnibox only if set/valid.
+  if (log.elapsed_time_since_user_focused_omnibox != kDefaultTimeDelta) {
+    event.SetTimeSinceLastFocusMs(ukm::GetExponentialBucketMinForUserTiming(
+        log.elapsed_time_since_user_focused_omnibox.InMilliseconds()));
+  }
+  event.Record(ukm::UkmRecorder::Get());
+}
+
+void OmniboxMetricsProvider::RecordZeroPrefixPrecisionRecallUsage(
+    const OmniboxLog& log) {
+  const std::string page_context = OmniboxEventProto::PageClassification_Name(
+      log.current_page_classification);
+
+  bool zero_prefix_shown = log.zero_prefix_suggestions_shown_in_session;
+  bool zero_prefix_selected = log.text.empty();
+
+  if (zero_prefix_shown) {
+    base::UmaHistogramBoolean("Omnibox.ZeroSuggest.Precision",
+                              zero_prefix_selected);
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {"Omnibox.ZeroSuggest.Precision.ByPageContext.", page_context}),
+        zero_prefix_selected);
+  }
+
+  base::UmaHistogramBoolean("Omnibox.ZeroSuggest.Recall", zero_prefix_shown);
+  base::UmaHistogramBoolean(
+      base::StrCat({"Omnibox.ZeroSuggest.Recall.ByPageContext.", page_context}),
+      zero_prefix_shown);
+
+  base::UmaHistogramBoolean("Omnibox.ZeroSuggest.Usage", zero_prefix_selected);
+  base::UmaHistogramBoolean(
+      base::StrCat({"Omnibox.ZeroSuggest.Usage.ByPageContext.", page_context}),
+      zero_prefix_selected);
 }

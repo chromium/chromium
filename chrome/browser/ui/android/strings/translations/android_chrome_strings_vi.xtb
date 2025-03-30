@@ -307,6 +307,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2453860139492968684">Kết thúc</translation>
 <translation id="2461378706168271257">Tìm thẻ của bạn</translation>
 <translation id="2461822463642141190">Hiện tại</translation>
+<translation id="2463770278804271243">TRANG</translation>
 <translation id="2468444275314013497">Trình duyệt của bạn có vẻ an toàn</translation>
 <translation id="2472163211318554013">Đăng nhập để khai thác tối đa Chrome</translation>
 <translation id="247737702124049222">Tính năng mô tả hình ảnh đang bật</translation>
@@ -325,7 +326,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2527209463677295330">Bạn có thể thấy kết quả phù hợp hơn bằng cách bao gồm thêm nhiều văn bản của trang</translation>
 <translation id="2527779675047087889">Ẩn các nội dung của bảng nhớ tạm</translation>
 <translation id="2532336938189706096">Lượt xem trên web</translation>
-<translation id="2534155362429831547">Đã xóa <ph name="NUMBER_OF_ITEMS" /> mục</translation>
 <translation id="253498598929009420">Trang web này sẽ có thể xem nội dung trên màn hình của bạn</translation>
 <translation id="2536728043171574184">Xem bản sao ngoại tuyến của trang này</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, thẻ</translation>
@@ -365,7 +365,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2677748264148917807">Rời khỏi</translation>
 <translation id="2687009626279857299">Đã ngừng hoạt động trên thiết bị này</translation>
 <translation id="2702516483241149200">Mới: chia sẻ một đường liên kết dẫn tới văn bản này</translation>
-<translation id="2705073298859543115">Tạo nội dung tóm tắt</translation>
 <translation id="2708051474374549906">Khả năng bảo vệ chủ động theo thời gian thực trước các trang web, nội dung tải xuống và tiện ích nguy hiểm, dựa trên dữ liệu duyệt web được gửi tới Google</translation>
 <translation id="2708226184420201102">Mở trong trình duyệt <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">Mới</translation>
@@ -1199,7 +1198,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6564820424018738527">Thiết bị Android của bạn có thể có chế độ cài đặt tương tự. Nếu bạn bật tính năng đo lường quảng cáo trong Chrome và trên thiết bị Android, một công ty có thể đo lường mức độ hiệu quả của quảng cáo trên những trang web bạn truy cập và ứng dụng bạn dùng.</translation>
 <translation id="6565959834589222080">Dùng mạng Wi-Fi khi có sẵn</translation>
 <translation id="6569373978618239158">Giờ đây, bạn sẽ thấy các tin bài của <ph name="SITE_NAME" /> khi mở một thẻ mới. Các trang web bạn theo dõi sẽ được lưu trong tài khoản Google của bạn. Bạn có thể quản lý các trang web đó trong phần cài đặt Khám phá.</translation>
-<translation id="6570116402456758630">Tóm tắt trang</translation>
 <translation id="657177046675873214">Để sử dụng dấu trang trên tất cả các thiết bị của bạn, hãy bật "Dấu trang" trong phần cài đặt</translation>
 <translation id="6573096386450695060">Luôn cho phép</translation>
 <translation id="6573431926118603307">Các thẻ bạn đã mở trong Chrome trên thiết bị khác sẽ xuất hiện tại đây.</translation>

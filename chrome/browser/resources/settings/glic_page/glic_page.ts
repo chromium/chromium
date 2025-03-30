@@ -128,8 +128,9 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
   private onLauncherToggleChange_(event: Event) {
     const enabled = (event.target as SettingsToggleButtonElement).checked;
     this.browserProxy_.setGlicOsLauncherEnabled(enabled);
-    this.metricsBrowserProxy_.recordBooleanHistogram(
-        'Glic.OsEntrypoint.Settings.Toggle', enabled);
+    this.metricsBrowserProxy_.recordAction(
+        'Glic.OsEntrypoint.Settings.Toggle' +
+        (enabled ? '.Enabled' : '.Disabled'));
     this.hideHelpBubble(OS_WIDGET_TOGGLE_ELEMENT_ID);
   }
 

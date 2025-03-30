@@ -1556,7 +1556,6 @@ class COMPONENT_EXPORT(AX_PLATFORM)
 
   // Fires UIA text edit event about composition (active or committed)
   void FireUiaTextEditTextChangedEvent(
-      const gfx::Range& range,
       const std::wstring& active_composition_text,
       bool is_composition_committed);
 

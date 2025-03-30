@@ -86,9 +86,9 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
   // Callback called when this is pressed.
   void OnDictationButtonPressed(const ui::Event& event);
 
-  // Sets the icon when Dictation is activated / deactivated.
-  // Also updates visibility when Dictation is enabled / disabled.
-  void UpdateIcon(bool dictation_active);
+  // Updates the state of tray based on if dictation is enabled and currently
+  // active. Also updates the icon of tray to reflect the new state.
+  void UpdateStateAndIcon(bool is_dictation_active, bool is_dictation_enabled);
 
   // Updates bounds for `progress_indicator_`.
   void UpdateProgressIndicatorBounds();

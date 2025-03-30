@@ -26,8 +26,8 @@ void RequestSingleCrashUpload_ExportThunk(const char* local_id) {
 
 size_t GetCrashReports_ExportThunk(crash_reporter::Report* reports,
                                    size_t reports_size) {
-  static_assert(std::is_pod<crash_reporter::Report>::value,
-                "crash_reporter::Report must be POD");
+  static_assert(std::is_trivially_copyable<crash_reporter::Report>::value,
+                "crash_reporter::Report must be trivially copyable");
   // Since this could be called across module boundaries, retrieve the full
   // list of reports into this vector, and then manually copy however much fits
   // into the caller's copy.

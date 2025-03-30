@@ -30,23 +30,14 @@ class BrowserContext;
 class StoragePartition;
 }  // namespace content
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}  // namespace user_prefs
-
 // Tracks state related to certificate and SSL errors. This state includes:
-// - certificate error exceptions (which are remembered for a particular length
-//   of time depending on experimental groups)
+// - certificate error exceptions
 // - mixed content exceptions
-// - when errors have recurred multiple times
 class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
                                      public KeyedService {
  public:
-  enum RecurrentInterstitialMode { PREF, IN_MEMORY, NOT_SET };
-
   StatefulSSLHostStateDelegate(
       content::BrowserContext* browser_context,
-      PrefService* pref_service,
       HostContentSettingsMap* host_content_settings_map);
 
   StatefulSSLHostStateDelegate(const StatefulSSLHostStateDelegate&) = delete;
@@ -54,8 +45,6 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
       delete;
 
   ~StatefulSSLHostStateDelegate() override;
-
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // content::SSLHostStateDelegate overrides:
   void AllowCert(const std::string& host,
@@ -109,34 +98,11 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
   // disruptive to the networking stack.
   virtual void RevokeUserAllowExceptionsHard(const std::string& host);
 
-  // Called when an error page is displayed for a given error code |error|.
-  // Tracks whether an error of interest has recurred over a threshold number of
-  // times.
-  void DidDisplayErrorPage(int error);
-
-  // Returns true if DidDisplayErrorPage() has been called over a threshold
-  // number of times for a particular error in a particular time period. The
-  // number of times and time period are controlled by the feature parameters.
-  // Only certain error codes of interest are tracked, so this may return false
-  // for an error code that has recurred.
-  bool HasSeenRecurrentErrors(int error) const;
-
-  void ResetRecurrentErrorCountForTesting();
-
   bool HttpsFirstBalancedModeSuppressedForTesting();
   void SetHttpsFirstBalancedModeSuppressedForTesting(bool suppressed);
 
   // SetClockForTesting takes ownership of the passed in clock.
   void SetClockForTesting(std::unique_ptr<base::Clock> clock);
-
-  void SetRecurrentInterstitialThresholdForTesting(int threshold);
-  void SetRecurrentInterstitialModeForTesting(
-      StatefulSSLHostStateDelegate::RecurrentInterstitialMode mode);
-  void SetRecurrentInterstitialResetTimeForTesting(int reset);
-
-  RecurrentInterstitialMode GetRecurrentInterstitialMode() const;
-  int GetRecurrentInterstitialThreshold() const;
-  int GetRecurrentInterstitialResetTime() const;
 
   // Returns whether the user has allowed a certificate error exception for
   // |host|.
@@ -200,10 +166,6 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
   // Hosts which have been contaminated with content with certificate errors.
   std::set<std::string> ran_content_with_cert_errors_hosts_;
 
-  // Tracks how many times an error page has been shown for a given error, up
-  // to a certain threshold value.
-  std::map<int /* error code */, int /* count */> recurrent_errors_;
-
   // Tracks sites that are allowed to load over HTTP when HTTPS-First Mode is
   // enabled. Allowed hosts are exact hostname matches -- subdomains of a host
   // on the allowlist must be separately allowlisted.
@@ -215,10 +177,6 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
   // The allowlist takes precedence over enforcelist. If a site is in both
   // lists, it's allowed to load over HTTP.
   security_interstitials::HttpsOnlyModeEnforcelist https_only_mode_enforcelist_;
-
-  int recurrent_interstitial_threshold_for_testing;
-  enum RecurrentInterstitialMode recurrent_interstitial_mode_for_testing;
-  int recurrent_interstitial_reset_time_for_testing;
 
   bool https_first_balanced_mode_suppressed_for_testing;
 };

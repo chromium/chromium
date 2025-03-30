@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">הסרה</translation>
 <translation id="1190609913194133056">מרכז התראות</translation>
 <translation id="1201402288615127009">הבא</translation>
-<translation id="1202892408424955784">מוצרים במעקב</translation>
 <translation id="1204075260022434100">{count,plural, =1{הסימנייה נשמרה בתיקייה ‘{title}‘ בחשבון שלך, {email}}one{‫{count} סימניות נשמרו בתיקייה ‘{title}' בחשבון שלך, {email}}two{‫{count} סימניות נשמרו בתיקייה ‘{title}' בחשבון שלך, {email}}other{‫{count} סימניות נשמרו בתיקייה ‘{title}' בחשבון שלך, {email}}}</translation>
 <translation id="120431140543679678">מעקב</translation>
 <translation id="1207493287814084192">17:30</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">פריט חדש</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> חשבונות משתמשים באותה סיסמה</translation>
 <translation id="2059166748188874810">מחוז</translation>
-<translation id="2060114494785549741">מחיקת הנתונים בעוד חודש</translation>
 <translation id="2060638295449304809">‏הכתובת הזו שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, צריך לשמור אותה בחשבון Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="20638360198452347">בורר סוגי היחידות</translation>
 <translation id="2067852168641682340">שמירה בחשבון הזה בכל פעם</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">הסתרת הכרטיס "מעקב אחר מחירים"</translation>
 <translation id="2216366330550244277">מעבר לדף של מוצר</translation>
 <translation id="2220529011494928058">דיווח על בעיה</translation>
-<translation id="2220887224562128152">אחרי שקובעים מועד מחיקה לקובץ, אי אפשר לשחזר אותו.</translation>
 <translation id="2223461067862937305">‏יצירת קוד QR</translation>
 <translation id="2229345671837147090">תצוגה של כרטיסיות ממכשירים אחרים</translation>
 <translation id="2230173723195178503">דף האינטרנט נטען</translation>
@@ -384,7 +381,6 @@
 <translation id="2539748786028143624">הפעלת ההגנה המשופרת…</translation>
 <translation id="2540111494300686866">הסתרת תיבות דו-שיח</translation>
 <translation id="2542268842667970959">הסתרת האפשרות 'בדיקת אבטחה'</translation>
-<translation id="2543870349255816922">בכרטיס הזה מוצגת ירידה במחיר של מוצר במעקב מאחד המכשירים המסונכרנים שלך</translation>
 <translation id="2547458583188611426">הסנכרון לא פועל. כדי להתחיל לסנכרן צריך להזין את ביטוי הסיסמה.</translation>
 <translation id="2551153019974022505">שגיאה בחשבון</translation>
 <translation id="2559843230610279254">קבוצת כרטיסיות, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> כרטיסיות.</translation>
@@ -494,7 +490,6 @@
 <translation id="3059270601560379555">חיפוש חדש</translation>
 <translation id="3064547930554042309">ניהול ההורדות</translation>
 <translation id="3072279342064724558">הסיסמה כבר קיימת</translation>
-<translation id="3074862506644936708">הפעלת המחיקה האוטומטית</translation>
 <translation id="3076846064362030967">‏לא תתבצע יציאה מחשבון Google שלך. <ph name="BEGIN_LINK" />סוגי פעילות אחרים<ph name="END_LINK" /> יכולים להישמר בחשבון Google אחרי שנכנסים. אפשר למחוק אותם בכל שלב.
 
 
@@ -913,6 +908,7 @@
 <translation id="4896467949657706481">הכרטיסיות נסגרו והמערכת הוציאה אותך מהחשבון</translation>
 <translation id="4913626501929406101">אפשר לשתף באופן מאובטח עותק של הסיסמה עם מישהו בקבוצה המשפחתית שלך. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">אישור</translation>
+<translation id="4930714375720679147">הפעלה</translation>
 <translation id="4932733599132424254">תאריך</translation>
 <translation id="4936354130727646074">אין להעביר אף פעם</translation>
 <translation id="4937410517508563815">שמירת סיסמאות בחשבון</translation>
@@ -1148,7 +1144,6 @@
 <translation id="5899314093904173337">‏כדי לשתף עם אנשים שנמצאים בסביבה הקרובה, הם יכולים לסרוק את קוד ה-QR הזה באמצעות המצלמה שלהם או באמצעות אפליקציית סורק QR.</translation>
 <translation id="5902752768726620872">{count,plural, =1{מספר הכרטיסיות החדשות: {count}}one{מספר הכרטיסיות החדשות: {count}}two{מספר הכרטיסיות החדשות: {count}}other{מספר הכרטיסיות החדשות: {count}}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
-<translation id="5917913282764181683">מחיקה אוטומטית של ההורדות</translation>
 <translation id="5922999516621365983">כדי להצמיד את הכרטיסייה, גוררים אותה לכאן.</translation>
 <translation id="5936006948844852401">ניהול האחסון</translation>
 <translation id="5936065461722368675">תרגום הדף המלא</translation>
@@ -1507,7 +1502,6 @@
 <translation id="741204030948306876">כן, אני רוצה</translation>
 <translation id="7417689656810783109">שינוי שם הקבוצה</translation>
 <translation id="7419565702166471774">להשתמש תמיד בחיבורים מאובטחים</translation>
-<translation id="742001653298797675">כדי לחסוך מקום בטלפון ולשמור על הפרטיות שלך, אפשר לתזמן מחיקה של כל ההורדות אחרי חודש.</translation>
 <translation id="7425053386765766120">הוספת אמצעי תשלום…</translation>
 <translation id="7425346204213733349">‏שינויים בסימניות, בהיסטוריה, בסיסמאות ובהגדרות נוספות לא יסונכרנו עוד עם חשבון Google שלך. עם זאת, הנתונים הקיימים עדיין יאוחסנו בחשבון Google שלך.</translation>
 <translation id="742664698522525515">לשמור את הקבוצה?</translation>

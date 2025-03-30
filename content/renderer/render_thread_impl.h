@@ -229,8 +229,6 @@ class CONTENT_EXPORT RenderThreadImpl
       base::OnceCallback<void(scoped_refptr<gpu::GpuChannelHost>)>;
   void EstablishGpuChannel(EstablishGpuChannelCallback callback);
 
-  gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager();
-
   blink::AssociatedInterfaceRegistry* GetAssociatedInterfaceRegistry();
 
   base::DiscardableMemoryAllocator* GetDiscardableMemoryAllocatorForTest()

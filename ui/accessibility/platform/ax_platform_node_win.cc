@@ -814,13 +814,11 @@ void AXPlatformNodeWin::OnActiveComposition(
   // AXPlatformNodeTextProviderWin
   active_composition_range_ = range;
   // Fire the UiaTextEditTextChangedEvent
-  FireUiaTextEditTextChangedEvent(range,
-                                  base::UTF16ToWide(active_composition_text),
+  FireUiaTextEditTextChangedEvent(base::UTF16ToWide(active_composition_text),
                                   is_composition_committed);
 }
 
 void AXPlatformNodeWin::FireUiaTextEditTextChangedEvent(
-    const gfx::Range& range,
     const std::wstring& active_composition_text,
     bool is_composition_committed) {
   if (!AXPlatform::GetInstance().IsUiaProviderEnabled() ||
@@ -828,8 +826,9 @@ void AXPlatformNodeWin::FireUiaTextEditTextChangedEvent(
     return;
   }
 
-  // This API is only supported from Win8.1 onwards
-  // Check if the function pointer is valid or not
+  // This API is documented as being supported from Win 8.1 onwards. Other UIA
+  // APIs have been found to be missing in early versions of Win 10, so check
+  // for the function and return early if it is not found.
   using UiaRaiseTextEditTextChangedEventFunction = HRESULT(WINAPI*)(
       IRawElementProviderSimple*, TextEditChangeType, SAFEARRAY*);
   UiaRaiseTextEditTextChangedEventFunction text_edit_text_changed_func =
@@ -840,29 +839,24 @@ void AXPlatformNodeWin::FireUiaTextEditTextChangedEvent(
     return;
   }
 
-  TextEditChangeType text_edit_change_type =
-      is_composition_committed ? TextEditChangeType_CompositionFinalized
-                               : TextEditChangeType_Composition;
-  // Composition has been finalized by TSF
-  base::win::ScopedBstr composition_text(active_composition_text.c_str());
   base::win::ScopedSafearray changed_data(
-      SafeArrayCreateVector(VT_BSTR /* element type */, 0 /* lower bound */,
-                            1 /* number of elements */));
+      ::SafeArrayCreateVector(VT_BSTR, /*lLbound=*/0, /*cElements=*/1));
   if (!changed_data.Get()) {
     return;
   }
 
   LONG index = 0;
-  HRESULT hr =
-      SafeArrayPutElement(changed_data.Get(), &index, composition_text.Get());
-
-  if (FAILED(hr)) {
+  if (FAILED(::SafeArrayPutElement(
+          changed_data.Get(), &index,
+          base::win::ScopedBstr(active_composition_text).Get()))) {
     return;
-  } else {
-    // Fire the UiaRaiseTextEditTextChangedEvent
-    text_edit_text_changed_func(this, text_edit_change_type,
-                                changed_data.Release());
   }
+
+  text_edit_text_changed_func(this,
+                              is_composition_committed
+                                  ? TextEditChangeType_CompositionFinalized
+                                  : TextEditChangeType_Composition,
+                              changed_data.Get());
 }
 
 bool AXPlatformNodeWin::IsValidUiaRelationTarget(

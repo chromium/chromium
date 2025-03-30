@@ -18,7 +18,11 @@ constexpr char kTestConfig[] = R"(
         },
         {
           "locale": "fr-CA",
-          "name": "Musique Classique"
+          "name": "Classique"
+        },
+        {
+          "locale": "he",
+          "name": "מוזיקה קלאסית"
         }
       ],
       "uuid": "a58d4418-c835-4254-b5d6-cca909046202",
@@ -45,6 +49,10 @@ constexpr char kTestConfig[] = R"(
         {
           "locale": "fr-CA",
           "name": "Nature"
+        },
+        {
+          "locale": "he",
+          "name": "צלילי טבע"
         }
       ],
       "uuid": "1c25911f-d847-4500-94e3-6e2d9a52846a",
@@ -71,6 +79,10 @@ constexpr char kTestConfig[] = R"(
         {
           "locale": "fr-CA",
           "name": "Flux"
+        },
+        {
+          "locale": "he",
+          "name": "מוזיקה מרגיעה"
         }
       ],
       "uuid": "921c4f5c-ccd8-4f1a-ba19-0b3c2685aa92",
@@ -97,6 +109,10 @@ constexpr char kTestConfig[] = R"(
         {
           "locale": "fr-CA",
           "name": "Ambiance"
+        },
+        {
+          "locale": "he",
+          "name": "מוזיקת אמביינט"
         }
       ],
       "uuid": "1b12ce3a-4857-4aae-95df-65cef1c4d4f3",

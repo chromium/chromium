@@ -776,7 +776,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kNotifications:
         return 'os-settings:apps-notifications';
       case SearchResultIcon.kOneDrive:
-        return 'settings20:onedrive';
+        return 'os-settings:onedrive';
       case SearchResultIcon.kOnScreenKeyboard:
         return 'os-settings:on-screen-keyboard';
       case SearchResultIcon.kPaintbrush:

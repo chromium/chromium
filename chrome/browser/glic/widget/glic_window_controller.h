@@ -134,6 +134,8 @@ class GlicWindowController : public views::WidgetObserver,
                                    bool prevent_close,
                                    mojom::InvocationSource source);
 
+  void FocusIfOpen();
+
   // Attaches glic to the last focused Chrome window.
   void Attach();
 
@@ -152,8 +154,10 @@ class GlicWindowController : public views::WidgetObserver,
               base::TimeDelta duration,
               base::OnceClosure callback);
 
-  // Allows the user to manually resize the widget by dragging.
-  void ShouldEnableDragResize(bool enabled);
+  // Allows the user to manually resize the widget by dragging. If the widget
+  // hasn't been created yet, apply this setting when it is created. No effect
+  // if the widget doesn't exist or the feature flag is disabled.
+  void EnableDragResize(bool enabled);
 
   // Returns the current size of the glic window.
   gfx::Size GetSize();
@@ -201,6 +205,9 @@ class GlicWindowController : public views::WidgetObserver,
   // Returns true if the state is anything other than kClosed.
   // Virtual for testing.
   virtual bool IsShowing() const;
+
+  // Returns true if either the glic panel or the FRE are showing.
+  virtual bool IsPanelOrFreShowing() const;
 
   // Returns whether or not the glic window is currently attached to a browser.
   // Virtual for testing.
@@ -461,6 +468,10 @@ class GlicWindowController : public views::WidgetObserver,
   // This member contains the last size that glic requested. This should be
   // reset every time glic is closed but is currently cached.
   std::optional<gfx::Size> glic_size_;
+
+  // Whether the widget should be user resizable, kept here in case it's
+  // specified before the widget is created.
+  bool user_resizable_ = true;
 
   // Used to monitor key and mouse events from native window.
   class WindowEventObserver;

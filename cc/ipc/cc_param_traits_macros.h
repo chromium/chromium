@@ -6,11 +6,14 @@
 #define CC_IPC_CC_PARAM_TRAITS_MACROS_H_
 
 #include "base/component_export.h"
+#include "base/pickle.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/input/touch_action.h"
 #include "cc/trees/browser_controls_params.h"
-#include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_message_utils.h"
+#include "ipc/ipc_param_traits.h"
+#include "ipc/param_traits_macros.h"
 
 #undef IPC_MESSAGE_EXPORT
 #define IPC_MESSAGE_EXPORT COMPONENT_EXPORT(CC_IPC)

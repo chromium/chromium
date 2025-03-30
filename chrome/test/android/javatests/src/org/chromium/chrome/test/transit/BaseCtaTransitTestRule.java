@@ -6,9 +6,14 @@ package org.chromium.chrome.test.transit;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
 
@@ -49,5 +54,72 @@ class BaseCtaTransitTestRule {
 
     public int tabsCount(boolean incognito) {
         return mActivityTestRule.tabsCount(incognito);
+    }
+
+    public Profile getProfile(boolean incognito) {
+        return mActivityTestRule.getProfile(incognito);
+    }
+
+    // TODO(crbug.com/406324209): Develop WebPageStation#FrameInfoUpdatedCondition and replace these
+    // calls.
+    public void assertWaitForPageScaleFactorMatch(float expectedScale) {
+        mActivityTestRule.assertWaitForPageScaleFactorMatch(expectedScale);
+    }
+
+    // TODO(crbug.com/406324209): Use PageStation#loadWebPageProgrammatically() or
+    // #loadPageProgrammatically to replace these calls.
+    public Tab.LoadUrlResult loadUrl(GURL url) {
+        return mActivityTestRule.loadUrl(url);
+    }
+
+    // TODO(crbug.com/406324209): Use PageStation#loadWebPageProgrammatically() or
+    // #loadPageProgrammatically to replace these calls.
+    public Tab.LoadUrlResult loadUrl(String url) {
+        return mActivityTestRule.loadUrl(url);
+    }
+
+    // TODO(crbug.com/406324209): Use PageStation#loadWebPageProgrammatically() or
+    // #loadPageProgrammatically to replace these calls.
+    public Tab.LoadUrlResult loadUrl(String url, long secondsToWait) {
+        return mActivityTestRule.loadUrl(url, secondsToWait);
+    }
+
+    // TODO(crbug.com/406324209): Use PageStation#loadWebPageProgrammatically() or
+    // #loadPageProgrammatically to replace these calls.
+    public Tab.LoadUrlResult loadUrlInTab(
+            String url, int pageTransition, Tab tab, long secondsToWait) {
+        return mActivityTestRule.loadUrlInTab(url, pageTransition, tab, secondsToWait);
+    }
+
+    // TODO(crbug.com/406324209): Use PageStation#loadWebPageProgrammatically() or
+    // #loadPageProgrammatically to replace these calls.
+    public Tab.LoadUrlResult loadUrlInTab(String url, int pageTransition, Tab tab) {
+        return mActivityTestRule.loadUrlInTab(url, pageTransition, tab);
+    }
+
+    // TODO(crbug.com/406324209): Use PageStation#openFakeLinkToWebPage() or #openFakeLink to
+    // replace these calls.
+    public Tab loadUrlInNewTab(String url) {
+        return mActivityTestRule.loadUrlInNewTab(url);
+    }
+
+    // TODO(crbug.com/406324209): Use Public Transit in a case-by-case basis to replace these calls,
+    // often with PageStation#openFakeLinkToWebPage().
+    public Tab loadUrlInNewTab(final String url, final boolean incognito) {
+        return mActivityTestRule.loadUrlInNewTab(url, incognito);
+    }
+
+    public Tab loadUrlInNewTab(
+            final String url, final boolean incognito, final @TabLaunchType int launchType) {
+        return mActivityTestRule.loadUrlInNewTab(url, incognito, launchType);
+    }
+
+    // TODO(crbug.com/406324209): Use PageStation#openNewIncognitoTabFast() to replace these calls.
+    public Tab newIncognitoTabFromMenu() {
+        return mActivityTestRule.newIncognitoTabFromMenu();
+    }
+
+    public KeyboardVisibilityDelegate getKeyboardDelegate() {
+        return mActivityTestRule.getKeyboardDelegate();
     }
 }

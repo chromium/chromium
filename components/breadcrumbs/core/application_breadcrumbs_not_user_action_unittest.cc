@@ -21,12 +21,12 @@ using ApplicationBreadcrumbsNotUserActions = PlatformTest;
 
 // Tests that kNotUserTriggeredActions array is not too big.
 TEST_F(ApplicationBreadcrumbsNotUserActions, Size) {
-  // At the time of writing this code there were 44 actions. It's better to fail
-  // the test if this list grows to 200 to verify that list is not unreasonably
-  // large.
+  // At the time of writing this code there were 200 actions. It's better to
+  // fail the test if this list grows to 250 to verify that list is not
+  // unreasonably large.
   EXPECT_LT(
       std::end(kNotUserTriggeredActions) - std::begin(kNotUserTriggeredActions),
-      200);
+      250);
 }
 
 // Tests that each string in kNotUserTriggeredActions array is not too long but

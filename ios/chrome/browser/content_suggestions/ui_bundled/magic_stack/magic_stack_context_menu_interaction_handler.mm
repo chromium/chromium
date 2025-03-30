@@ -57,19 +57,25 @@ BOOL AllowsLongPressForModuleType(ContentSuggestionsModuleType type) {
 NSString* GetContextMenuTitleForType(ContentSuggestionsModuleType type,
                                      MagicStackModule* config) {
   switch (type) {
-    case ContentSuggestionsModuleType::kTabResumption:
-      if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm3) {
-        TabResumptionItem* tabResumptionItemConfig =
-            static_cast<TabResumptionItem*>(config);
-        if (tabResumptionItemConfig.shopCardData &&
-            tabResumptionItemConfig.shopCardData.shopCardItemType ==
+    case ContentSuggestionsModuleType::kTabResumption: {
+      TabResumptionItem* tabResumptionItemConfig =
+          static_cast<TabResumptionItem*>(config);
+      if ((commerce::kShopCardVariation.Get() == commerce::kShopCardArm3 ||
+           commerce::kShopCardVariation.Get() == commerce::kShopCardArm4) &&
+          tabResumptionItemConfig.shopCardData) {
+        if (tabResumptionItemConfig.shopCardData.shopCardItemType ==
                 ShopCardItemType::kPriceDropOnTab &&
             tabResumptionItemConfig.shopCardData.priceDrop.has_value()) {
           return l10n_util::GetNSString(
               IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_DROP_CONTEXT_MENU_TITLE);
+        } else if (tabResumptionItemConfig.shopCardData.shopCardItemType ==
+                   ShopCardItemType::kPriceTrackableProductOnTab) {
+          return l10n_util::GetNSString(
+              IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_CONTEXT_MENU_TITLE);
         }
       }
       return l10n_util::GetNSString(IDS_IOS_TAB_RESUMPTION_CONTEXT_MENU_TITLE);
+    }
     case ContentSuggestionsModuleType::kSafetyCheck:
       return l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_CONTEXT_MENU_TITLE);
     case ContentSuggestionsModuleType::kSetUpListSync:
@@ -95,11 +101,11 @@ NSString* GetContextMenuTitleForType(ContentSuggestionsModuleType type,
     case ContentSuggestionsModuleType::kShopCard:
       if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
         return l10n_util::GetNSString(
-            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_TITLE);
+            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_CONTEXT_MENU_TITLE);
       } else if (commerce::kShopCardVariation.Get() ==
                  commerce::kShopCardArm2) {
         return l10n_util::GetNSString(
-            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_ALT_TITLE);
+            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_CONTEXT_MENU_TITLE);
       }
       return @"";
     default:
@@ -109,11 +115,21 @@ NSString* GetContextMenuTitleForType(ContentSuggestionsModuleType type,
 
 /// Descriptor string for hide action of the context menu of this container.
 NSString* GetContextMenuHideDescriptionForType(
-    ContentSuggestionsModuleType type) {
+    ContentSuggestionsModuleType type,
+    MagicStackModule* config) {
   switch (type) {
-    case ContentSuggestionsModuleType::kTabResumption:
+    case ContentSuggestionsModuleType::kTabResumption: {
+      TabResumptionItem* tabResumptionItemConfig =
+          static_cast<TabResumptionItem*>(config);
+      if (tabResumptionItemConfig.shopCardData &&
+          tabResumptionItemConfig.shopCardData.shopCardItemType ==
+              ShopCardItemType::kPriceTrackableProductOnTab) {
+        return l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_HIDE_ALT);
+      }
       return l10n_util::GetNSString(
           IDS_IOS_TAB_RESUMPTION_CONTEXT_MENU_DESCRIPTION);
+    }
     case ContentSuggestionsModuleType::kSafetyCheck:
       return l10n_util::GetNSString(
           IDS_IOS_SAFETY_CHECK_CONTEXT_MENU_DESCRIPTION);
@@ -270,7 +286,8 @@ NSString* GetContextMenuHideDescriptionForType(
   __weak __typeof(self) weakSelf = self;
 
   UIAction* hideAction = [UIAction
-      actionWithTitle:GetContextMenuHideDescriptionForType(self.type)
+      actionWithTitle:GetContextMenuHideDescriptionForType(self.type,
+                                                           self.config)
                 image:DefaultSymbolWithPointSize(kHideActionSymbol, 18)
            identifier:nil
               handler:^(UIAction* action) {

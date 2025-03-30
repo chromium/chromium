@@ -8,6 +8,7 @@
 <translation id="100323615638474026">USB құрылғысы (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Соңғы жүктеп алу тарихы</translation>
 <translation id="1004218526896219317">Сайтқа кіру</translation>
+<translation id="1005230401424685968">ЖЖЖЖ</translation>
 <translation id="1005274289863221750">Микрофоныңыз бен камераңызды пайдалану</translation>
 <translation id="1005333234656240382">ADB түзетуін қосу қажет пе?</translation>
 <translation id="1005671386794704751">Раушан</translation>
@@ -1364,6 +1365,7 @@
 <translation id="193565226207940518">Қолдау құралы</translation>
 <translation id="1935995810530254458">Сонда да көшіру</translation>
 <translation id="1936157145127842922">Қалтада көрсету</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Бет оқу тізіміне қосылды.}other{Беттер оқу тізіміне қосылды.}}</translation>
 <translation id="1936931585862840749">Басып шығарылатын көшірмелер санын көрсетіңіз (1-<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_CONTAINER" /> контейнер архитектурасы түрін бұл құрылғымен (<ph name="ARCHITECTURE_DEVICE" />) импорттау мүмкін емес. Бұл контейнерді басқа құрылғыда қалпына келтіріп көруіңізге болады немесе файлдарға контейнер кескінін Files қолданбасынан ашу арқылы кіре аласыз.</translation>
 <translation id="1938351510777341717">Сыртқы пәрмен</translation>
@@ -2002,6 +2004,7 @@
 <translation id="2373666622366160481">Қағаз өлшеміне сәйкестендіру</translation>
 <translation id="2375406435414127095">Телефоныңызға жалғаңыз</translation>
 <translation id="2376056713414548745">Дауыстап оқу</translation>
+<translation id="2376122016044804363">Буферге көшіруді растау</translation>
 <translation id="2377667304966270281">Үлкен қателер</translation>
 <translation id="237828693408258535">Осы бетті аудару керек пе?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Бұл кеңейтімге жақында қолдау көрсетілмей қалуы мүмкін}other{Бұл кеңейтімдерге жақында қолдау көрсетілмей қалуы мүмкін}}</translation>
@@ -3154,6 +3157,7 @@
 <translation id="3192586965067888278">Мәселені толық сипаттап беріңіз. Пікіріңіз Google маманына тексеруге жіберіледі және Google өнімдері мен қызметтерін жақсару немесе әзірлеу үшін қолданылуы мүмкін.</translation>
 <translation id="3192947282887913208">Аудио файлдары</translation>
 <translation id="3193695589337931419">Жүйелік сигналдар утилитасы</translation>
+<translation id="3194095220941877499">Сілтемелерді, суреттерді немесе бейнелерді көшірген кезде, растауды көрсетеді</translation>
 <translation id="3196912927885212665">Android телефонымен реттеу үшін Chromebook-тың Bluetooth функциясын қосу қажет.</translation>
 <translation id="3197453258332670132">Тінтуірдің оң жақ түймесін бассаңыз немесе ұзақ басып тұрсаңыз, таңдаған мәтініңізге қатысты ақпарат көрсетіледі.</translation>
 <translation id="3199127022143353223">Серверлер</translation>
@@ -3168,7 +3172,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Параметрлерді осы картадан кез келген уақытта басқара аласыз немесе Chrome-ды бейімдеу бөлімінде басқа опцияларды көре аласыз.</translation>
-<translation id="3207437351138888228">Үлгіні толтырған кезде, ақпаратыңыз бен оның беті ұсыныстар жасау үшін Google-ға жіберіледі.</translation>
 <translation id="3207960819495026254">Бетбелгі қойылған</translation>
 <translation id="3208584281581115441">Қазір тексеру</translation>
 <translation id="3208703785962634733">Расталмаған</translation>
@@ -3213,6 +3216,7 @@
 <translation id="3242289508736283383">"kiosk_only" манифест төлсипатына ие қолданба ChromeOS киоск режимінде орнатылуы тиіс.</translation>
 <translation id="3243017971870859287">ChromeOS Flex құрылғысы мен құрамдастың сериялық нөмірлерін оқу</translation>
 <translation id="324366796737464147">Шуды өшіру</translation>
+<translation id="3244271242291266297">АА</translation>
 <translation id="3244294424315804309">Дыбысын қоспау</translation>
 <translation id="3247006341013237647">Қойындыларды реттеу қажет пе?</translation>
 <translation id="3247649647204519958">Осы жерден сіз пайдаланып жатқан сайт үшін кеңейтім рұқсаттарын көруге және басқаруға болады</translation>
@@ -6079,7 +6083,6 @@
 <translation id="5267572070504076962">Қауіпті сайттардан қорғау үшін Safe Browsing функциясын қосыңыз.</translation>
 <translation id="5269977353971873915">Басып шығару сәтсіз аяқталды</translation>
 <translation id="5271578170655641944">Google Drive қызметін пайдалану рұқсатын өшіру керек пе?</translation>
-<translation id="5271782684896713035">Бұл функцияны жақсарту үшін деректерді тексерушілер қарауы мүмкін.</translation>
 <translation id="5273806377963980154">Сайттың URL мекенжайын өңдеу</translation>
 <translation id="5275084684151588738">Пайдаланушы сөздіктері</translation>
 <translation id="5275338516105640560">"Қойындылар тобы" түймесі сақталды.</translation>

@@ -25,8 +25,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import type {PageHandlerInterface} from './suggest_internals.mojom-webui.js';
-import {PageCallbackRouter, PageHandler, Request} from './suggest_internals.mojom-webui.js';
+import type {PageHandlerInterface, Request} from './suggest_internals.mojom-webui.js';
+import {PageCallbackRouter, PageHandler} from './suggest_internals.mojom-webui.js';
 
 interface SuggestInternalsAppElement {
   $: {
@@ -49,23 +49,44 @@ class SuggestInternalsAppElement extends PolymerElement {
 
   static get properties() {
     return {
-      filter_: String,
-      hardcodedRequest_: Request,
-      requests_: Object,
-      responseDelay_: String,
-      responseText_: String,
-      toastDuration_: Number,
-      toastMessage_: String,
+      filter_: {
+        type: String,
+        value: '',
+      },
+      hardcodedRequest_: {
+        type: Object,
+        value: null,
+      },
+      requests_: {
+        type: Array,
+        value: () => [],
+      },
+      responseDelay_: {
+        type: String,
+        value: '',
+      },
+      responseText_: {
+        type: String,
+        value: '',
+      },
+      toastDuration_: {
+        type: Number,
+        value: 3000,
+      },
+      toastMessage_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
-  private filter_: string = '';
-  private hardcodedRequest_: Request|null = null;
-  private requests_: Request[] = [];
-  private responseDelay_: string = '';
-  private responseText_: string = '';
-  private toastDuration_: number = 3000;
-  private toastMessage_: string = '';
+  declare private filter_: string;
+  declare private hardcodedRequest_: Request|null;
+  declare private requests_: Request[];
+  declare private responseDelay_: string;
+  declare private responseText_: string;
+  declare private toastDuration_: number;
+  declare private toastMessage_: string;
 
   private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerInterface;
