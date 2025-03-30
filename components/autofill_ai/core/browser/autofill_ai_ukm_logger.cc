@@ -20,6 +20,7 @@
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/forms_classifications.pb.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace autofill_ai {
@@ -119,8 +120,10 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
             ->mutable_quality()
             ->mutable_key_metrics();
 
-    // TODO(crbug.com/406013367): Set this to the registered domain of `form`.
-    mqls_key_metrics->set_domain("");
+    mqls_key_metrics->set_domain(
+        net::registry_controlled_domains::GetDomainAndRegistry(
+            form.main_frame_origin(),
+            net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES));
     mqls_key_metrics->set_form_signature(form.form_signature().value());
     mqls_key_metrics->set_form_session_identifier(
         autofill::autofill_metrics::FormGlobalIdToHash64Bit(form.global_id()));
@@ -185,8 +188,10 @@ void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,
             ->mutable_quality()
             ->mutable_field_event();
 
-    // TODO(crbug.com/406013367): Set this to the registered domain of `form`.
-    mqls_field_event->set_domain("");
+    mqls_field_event->set_domain(
+        net::registry_controlled_domains::GetDomainAndRegistry(
+            form.main_frame_origin(),
+            net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES));
     mqls_field_event->set_form_signature(form_signature.value());
     mqls_field_event->set_form_session_identifier(form_session_identifier);
     mqls_field_event->set_form_session_event_order(form_event_order);

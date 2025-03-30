@@ -31,6 +31,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "//components/optimization_guide/core:core",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/strings",
+      "//net",
       "//services/metrics/public/cpp:metrics_cpp",
       "//services/metrics/public/cpp:ukm_builders",
       "//ui/native_theme:native_theme",
