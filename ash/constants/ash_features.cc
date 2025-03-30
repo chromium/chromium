@@ -1870,7 +1870,7 @@ BASE_FEATURE(kMediaAppImageMantisModel,
 // Enables the Reimagine feature of Mantis
 BASE_FEATURE(kMediaAppImageMantisReimagine,
              "MediaAppImageMantisReimagine",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the Remove Background feature of Mantis
 BASE_FEATURE(kMediaAppImageMantisRemoveBackground,

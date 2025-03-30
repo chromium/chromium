@@ -6960,6 +6960,10 @@ const char kMahiSummarizeSelectedName[] = "Mahi summarize selected text";
 const char kMahiSummarizeSelectedDescription[] =
     "Enable Mahi to summarize the selected text";
 
+const char kMediaAppImageMantisReimagineName[] = "Reimagine feature of Mantis";
+const char kMediaAppImageMantisReimagineDescription[] =
+    "Enable the Reimagine feature of Mantis";
+
 const char kMediaAppPdfMahiName[] = "Mahi feature on Media App PDF";
 const char kMediaAppPdfMahiDescription[] =
     "Enable Mahi feature on PDF files in Gallery app.";

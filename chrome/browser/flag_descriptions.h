@@ -4091,6 +4091,9 @@ extern const char kMahiSummarizeSelectedDescription[];
 extern const char kMahiDebuggingName[];
 extern const char kMahiDebuggingDescription[];
 
+extern const char kMediaAppImageMantisReimagineName[];
+extern const char kMediaAppImageMantisReimagineDescription[];
+
 extern const char kMediaAppPdfMahiName[];
 extern const char kMediaAppPdfMahiDescription[];
 
