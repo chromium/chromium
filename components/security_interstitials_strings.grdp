@@ -188,9 +188,6 @@
   <message name="IDS_SSL_V2_PRIMARY_PARAGRAPH" desc="The primary explanatory paragraph for the SSL interstitial.">
     Attackers might be trying to steal your information from <ph name="BEGIN_BOLD">&lt;strong&gt;</ph><ph name="SITE">$1<ex>google.com</ex></ph><ph name="END_BOLD">&lt;/strong&gt;</ph> (for example, passwords, messages, or credit cards). <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_SSL_V2_RECURRENT_ERROR_PARAGRAPH" desc="A paragraph for an SSL interstitial that the user has seen multiple times in a browsing session.">
-    Warnings may be common while websites update their security. This should improve soon.
-  </message>
 
   <!-- SSL error page: overridable -->
   <message name="IDS_SSL_OVERRIDABLE_SAFETY_BUTTON" desc="The text for the button that takes the user back to the previous page.">

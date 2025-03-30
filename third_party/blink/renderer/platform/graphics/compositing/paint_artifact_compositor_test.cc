@@ -148,8 +148,7 @@ class PaintArtifactCompositorTest : public testing::Test,
   void Update(
       const PaintArtifact& artifact,
       const ViewportProperties& viewport_properties = ViewportProperties(),
-      const PaintArtifactCompositor::StackScrollTranslationVector&
-          scroll_translation_nodes = {}) {
+      const StackScrollTranslationVector& scroll_translation_nodes = {}) {
     paint_artifact_compositor_->SetNeedsUpdate();
     paint_artifact_compositor_->Update(artifact, viewport_properties,
                                        scroll_translation_nodes, {});
@@ -5093,8 +5092,8 @@ TEST_P(PaintArtifactCompositorTest, AddIndirectlyCompositedScrollNodes) {
   auto scroll_state =
       ScrollState1(PropertyTreeState::Root(), CompositingReason::kNone,
                    cc::MainThreadScrollingReason::kNotScrollingOnMain);
-  PaintArtifactCompositor::StackScrollTranslationVector
-      scroll_translation_nodes = {&scroll_state.Transform()};
+  StackScrollTranslationVector scroll_translation_nodes = {
+      &scroll_state.Transform()};
 
   Update(TestPaintArtifact()
              // Opaque contents make the scroll composited.
@@ -5118,8 +5117,8 @@ TEST_P(PaintArtifactCompositorTest, AddNonCompositedScrollNodes) {
   auto scroll_state =
       ScrollState1(PropertyTreeState::Root(), CompositingReason::kNone,
                    cc::MainThreadScrollingReason::kNotScrollingOnMain);
-  PaintArtifactCompositor::StackScrollTranslationVector
-      scroll_translation_nodes = {&scroll_state.Transform()};
+  StackScrollTranslationVector scroll_translation_nodes = {
+      &scroll_state.Transform()};
 
   Update(TestPaintArtifact().ScrollChunks(scroll_state).Build(),
          ViewportProperties(), scroll_translation_nodes);
@@ -5147,8 +5146,8 @@ TEST_P(PaintArtifactCompositorTest, AddNonCompositedMainThreadScrollNodes) {
   auto scroll_state = ScrollState1(
       PropertyTreeState::Root(), CompositingReason::kNone,
       cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects);
-  PaintArtifactCompositor::StackScrollTranslationVector
-      scroll_translation_nodes = {&scroll_state.Transform()};
+  StackScrollTranslationVector scroll_translation_nodes = {
+      &scroll_state.Transform()};
 
   Update(TestPaintArtifact().ScrollChunks(scroll_state).Build(),
          ViewportProperties(), scroll_translation_nodes);
@@ -5178,8 +5177,8 @@ TEST_P(PaintArtifactCompositorTest,
   auto scroll_state = ScrollState1(
       PropertyTreeState::Root(), CompositingReason::kNone,
       cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects);
-  PaintArtifactCompositor::StackScrollTranslationVector
-      scroll_translation_nodes = {&scroll_state.Transform()};
+  StackScrollTranslationVector scroll_translation_nodes = {
+      &scroll_state.Transform()};
 
   Update(TestPaintArtifact()
              // Opaque contents make the scroll composited.
@@ -5206,8 +5205,8 @@ TEST_P(PaintArtifactCompositorTest, AddUnpaintedNonCompositedScrollNodes) {
   auto scroll_state =
       ScrollState1(PropertyTreeState::Root(), CompositingReason::kNone,
                    main_thread_scrolling_reason);
-  PaintArtifactCompositor::StackScrollTranslationVector
-      scroll_translation_nodes = {&scroll_state.Transform()};
+  StackScrollTranslationVector scroll_translation_nodes = {
+      &scroll_state.Transform()};
 
   Update(TestPaintArtifact().Build(), ViewportProperties(),
          scroll_translation_nodes);

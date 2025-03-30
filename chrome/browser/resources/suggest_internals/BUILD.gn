@@ -21,6 +21,8 @@ build_webui("build") {
     "//chrome/browser/ui/webui/suggest_internals:mojo_bindings_ts__generator",
     "//components/omnibox/browser:mojo_bindings_ts__generator",
   ]
+
+  ts_tsconfig_base = "//tools/typescript/tsconfig_base_polymer_389737066.json"
   ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",

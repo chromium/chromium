@@ -441,7 +441,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1734878702283171397">Zkuste kontaktovat administrátora systému.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, platnost vyprší <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Počítač</translation>
-<translation id="1739422091279046802">Posouvání a přibližování</translation>
 <translation id="1741613555002899862">Když je zásada DnsOverHttpsMode nastavená na hodnotu <ph name="SECURE_DNS_MODE_SECURE" />, musí být tato zásada nastavená a musí být platná.</translation>
 <translation id="1743393865165844832">Ložní prádlo</translation>
 <translation id="1743892871127720056">Název srovnávací tabulky, pole k úpravě textu</translation>
@@ -1565,6 +1564,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3715016660240337709">{0,plural, =1{Nahrání souboru je blokováno}few{Nahrání <ph name="FILE_COUNT" /> souborů je blokováno}many{Nahrání <ph name="FILE_COUNT" /> souboru je blokováno}other{Nahrání <ph name="FILE_COUNT" /> souborů je blokováno}}</translation>
 <translation id="3715597595485130451">Připojení k síti Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Zkontrolovat proxy server, firewall a konfiguraci DNS<ph name="END_LINK" /></translation>
+<translation id="3723316892512143176">IBAN</translation>
 <translation id="3723663469265383848">Během aktualizace nebudete zařízení až 10 minut moci používat.</translation>
 <translation id="372429172604983730">Tuto chybu mohou způsobovat aplikace, jako jsou antivirové programy, firewally a software na filtrování nebo zprostředkování webového provozu.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter rychle vytvoříte novou prezentaci Google v Prezentacích</translation>
@@ -2491,6 +2491,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5379618281582508161">Pokud toto heslo chcete získat na všechna svá zařízení, ověřte svou totožnost</translation>
 <translation id="5380953781541843508">vzestupně</translation>
 <translation id="5381318171304904246">Když budete pokračovat, budete přesměrováni na web své banky. Po ověření se automaticky vrátíte, abyste nákup mohli dokončit.</translation>
+<translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> aktualizoval(a) kartu „<ph name="WEBSITE_TITLE" />“</translation>
 <translation id="5383478552402031184">Podlahy</translation>
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5385966243497224160">Náhled lze zobrazit pouze u adres protokolu HTTPS</translation>
@@ -2876,6 +2877,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6059925163896151826">Zařízení USB</translation>
 <translation id="6060009363608157444">Režim DnsOverHttps je neplatný.</translation>
 <translation id="6061154937977953833">Wrestling</translation>
+<translation id="6062405040252994646">Nástroj</translation>
 <translation id="6062937464449575061">Zrušit sledování ceny</translation>
 <translation id="6063415549109819824">Financování bydlení</translation>
 <translation id="6070432475334343308">Jeden nebo více souborů nebylo nahráno do složky <ph name="FOLDER_NAME" /> v úložišti <ph name="CLOUD_PROVIDER" /></translation>
@@ -3921,6 +3923,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="787226752901403048">Přihlaste se do Chromu, abyste mohli sdílet skupiny karet, připojovat se k nim a spolupracovat na různých nápadech</translation>
 <translation id="7877007680666472091">chráněná ID obsahu</translation>
 <translation id="7878562273885520351">Heslo může být prolomeno</translation>
+<translation id="7881044256965445977">Vyhledávat zařízení v místní síti a připojovat se k nim</translation>
 <translation id="7882421473871500483">Hnědá</translation>
 <translation id="7886897188117641322">Vyberte, které široké kategorie témat mohou být používány k personalizaci reklam</translation>
 <translation id="7887683347370398519">Zkontrolujte kód CVC a zkuste to znovu</translation>
@@ -4678,6 +4681,7 @@ Další podrobnosti:
 <translation id="94613679163347541">Porovnat položky <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter rychle vytvoříte nový web ve Webech Google</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome dnes soubory cookie opět omezí}=1{Chrome zítra soubory cookie opět omezí}few{Za # dny Chrome soubory cookie opět omezí}many{Za # dne Chrome soubory cookie opět omezí}other{Za # dní Chrome soubory cookie opět omezí}}</translation>
+<translation id="949026252328034572">Ke skupině karet „<ph name="GROUP_NAME" />“ se připojil tento počet členů: <ph name="MEMBER_COUNT" /></translation>
 <translation id="949314938206378263">Chceš navštívit web, ale je třeba povolení. Rodič může odpovědět v aplikaci Family Link.</translation>
 <translation id="950736567201356821">Tři díry nahoře</translation>
 <translation id="950926967802086924">Přístupový klíč • Správce hesel Google</translation>

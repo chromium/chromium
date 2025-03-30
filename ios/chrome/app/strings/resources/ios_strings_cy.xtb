@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">Dileu</translation>
 <translation id="1190609913194133056">Canolfan Hysbysiadau</translation>
 <translation id="1201402288615127009">Nesaf</translation>
-<translation id="1202892408424955784">Cynhyrchion sy'n cael eu dilyn</translation>
 <translation id="1204075260022434100">{count,plural, =1{Mae'r nod tudalen wedi'i gadw i "{title}" yn eich cyfrif, {email}}zero{Mae {count} nod tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}.}two{Mae {count} nod tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}.}few{Mae {count} nod tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}.}many{Mae {count} nod tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}.}other{Mae {count} nod tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}.}}</translation>
 <translation id="120431140543679678">Dilyn</translation>
 <translation id="1207493287814084192">5:30 PM</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">eitem newydd</translation>
 <translation id="2049727122989709386">Mae <ph name="COUNT" /> cyfrif yn defnyddio'r un cyfrinair</translation>
 <translation id="2059166748188874810">Bwrdeistref</translation>
-<translation id="2060114494785549741">Dileu mewn 1 mis</translation>
 <translation id="2060638295449304809">Mae'r cyfeiriad hwn yn cael ei gadw i'r ddyfais hon yn unig. I'w ddefnyddio ar eich dyfeisiau eraill, cadwch ef yn eich Cyfrif Google, <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Dewisydd math o uned</translation>
 <translation id="2067852168641682340">Cadw i'r cyfrif hwn bob tro</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">Cuddio'r cerdyn olrhain pris</translation>
 <translation id="2216366330550244277">Mynd at dudalen cynnyrch</translation>
 <translation id="2220529011494928058">Adrodd am broblem</translation>
-<translation id="2220887224562128152">Unwaith y bydd ffeil wedi'i threfnu i'w dileu, ni ellir ei hadfer.</translation>
 <translation id="2223461067862937305">Wrthi'n creu cod QR</translation>
 <translation id="2229345671837147090">Grid tabiau o bell</translation>
 <translation id="2230173723195178503">Mae tudalen we wedi'i llwytho</translation>
@@ -384,7 +381,6 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2539748786028143624">Troi Gwell Amddiffyniad ymlaen…</translation>
 <translation id="2540111494300686866">Atal deialogau</translation>
 <translation id="2542268842667970959">Cuddio 'Gwiriad Diogelwch'</translation>
-<translation id="2543870349255816922">Mae'r cerdyn hwn yn dangos gostyngiad pris ar eich cynnyrch wedi'i olrhain o un o'ch dyfeisiau wedi'u cysoni</translation>
 <translation id="2547458583188611426">Nid yw cysoni yn gweithio. I ddechrau cysoni, rhowch eich cyfrinymadrodd.</translation>
 <translation id="2551153019974022505">Gwall cyfrif</translation>
 <translation id="2559843230610279254">Grŵp tabiau, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> o dabiau.</translation>
@@ -494,7 +490,6 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="3059270601560379555">Chwiliad newydd</translation>
 <translation id="3064547930554042309">Rheoli Lawrlwythiadau</translation>
 <translation id="3072279342064724558">Cyfrinair sydd eisoes yn bodoli</translation>
-<translation id="3074862506644936708">Galluogi awtoddileu</translation>
 <translation id="3076846064362030967">Ni fyddwch yn cael eich allgofnodi o'ch Cyfrif Google. Gall <ph name="BEGIN_LINK" />mathau eraill o weithgarwch<ph name="END_LINK" /> gael eu cadw i'ch Cyfrif Google pan fyddwch wedi mewngofnodi. Gallwch eu dileu ar unrhyw adeg.
 
 
@@ -913,6 +908,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4896467949657706481">Cafodd tabiau eu cau; cawsoch eich allgofnodi</translation>
 <translation id="4913626501929406101">Gallwch rannu copi o'ch cyfrinair yn ddiogel gyda rhywun yn eich grŵp teulu. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Derbyn</translation>
+<translation id="4930714375720679147">Troi Ymlaen</translation>
 <translation id="4932733599132424254">Dyddiad</translation>
 <translation id="4936354130727646074">Peidio byth â symud</translation>
 <translation id="4937410517508563815">Cadw cyfrineiriau yn y cyfrif</translation>
@@ -1148,7 +1144,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5899314093904173337">I rannu â phobl gerllaw, gadewch iddynt sganio'r cod QR hwn gyda'u camera neu ap sganio codau QR</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} tab newydd}zero{{count} tab newydd}two{{count} dab newydd}few{{count} thab newydd}many{{count} thab newydd}other{{count} tab newydd}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
-<translation id="5917913282764181683">Dileu eich lawrlwythiadau yn awtomatig</translation>
 <translation id="5922999516621365983">Llusgwch y tab yma i'w binio.</translation>
 <translation id="5936006948844852401">Rheoli'r storfa</translation>
 <translation id="5936065461722368675">Cyfieithu'r dudalen lawn</translation>
@@ -1507,7 +1502,6 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="741204030948306876">Iawn, rwy'n cydsynio</translation>
 <translation id="7417689656810783109">Ailenwi Grŵp</translation>
 <translation id="7419565702166471774">Defnyddio cysylltiadau diogel bob tro</translation>
-<translation id="742001653298797675">Trefnwch eich holl lawrlwythiadau i'w dileu ar ôl mis i arbed lle ar eich ffôn ac amddiffyn eich preifatrwydd.</translation>
 <translation id="7425053386765766120">Ychwanegu dull talu…</translation>
 <translation id="7425346204213733349">Ni fydd newidiadau yn eich nodau tudalen, eich hanes, eich cyfrineiriau na'ch gosodiadau eraill yn cael eu cysoni â'ch Cyfrif Google mwyach. Fodd bynnag, bydd eich data presennol yn parhau i gael eu cadw yn eich Cyfrif Google.</translation>
 <translation id="742664698522525515">Cadw'r grŵp?</translation>

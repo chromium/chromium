@@ -150,6 +150,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool IsSelectedFromFocusSupported() const override;
   bool IsSelectedFromFocus() const override;
   bool IsNotUserSelectable() const override;
+  bool ComputeIsOffScreen() const override;
   bool IsRequired() const final;
   bool IsControl() const override;
   AXRestriction Restriction() const override;

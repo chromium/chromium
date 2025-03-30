@@ -11,6 +11,7 @@ specific_include_rules = {
   ],
   "web_view_impl\.cc": [
     "+base/command_line.h",
+    "+base/task/common/task_annotator.h",
     "+components/viz/common/features.h",
     "+media/base/media_switches.h",
     "+third_party/icu/source/common/unicode/uscript.h",

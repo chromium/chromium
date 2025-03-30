@@ -356,9 +356,9 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     revision = cls.GetSkiaGoldProperties().git_revision
     machine_name = re.sub(r'\W+', '_',
                           cls.GetOriginalFinderOptions().test_machine_name)
-    base_bucket = '%s/gold_failures' % (cls._error_image_cloud_storage_bucket)
-    image_name_with_revision_and_machine = '%s_%s_%s.png' % (
-        image_name, machine_name, revision)
+    base_bucket = f'{cls._error_image_cloud_storage_bucket}/gold_failures'
+    image_name_with_revision_and_machine = (
+        f'{image_name}_{machine_name}_{revision}.png')
     cls._UploadBitmapToCloudStorage(
         base_bucket,
         image_name_with_revision_and_machine,

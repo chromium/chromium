@@ -105,6 +105,11 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
           forwarder->set_has_y_movement(
               !base::IsApproximatelyEqual(pos_y_0, last_y_pos_, kEpsilon));
         }
+        if (android_action ==
+            MotionEventAndroid::GetAndroidAction(MotionEvent::Action::DOWN)) {
+          forwarder->set_down_time_ns(down_time_ms *
+                                      base::Time::kNanosecondsPerMillisecond);
+        }
       });
   last_x_pos_ = pos_x_0;
   last_y_pos_ = pos_y_0;

@@ -8,6 +8,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/loader/navigation_url_loader.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_response_reader.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
@@ -314,6 +315,11 @@ void PrefetchStreamingURLLoader::OnComplete(
 void PrefetchStreamingURLLoader::OnStartServing() {
   // Once the prefetch is served, stop the timeout timer.
   timeout_timer_.Stop();
+
+  if (base::FeatureList::IsEnabled(
+          features::kPrefetchBumpNetworkPriorityAfterBeingServed)) {
+    SetPriority(net::RequestPriority::HIGHEST, /*intra_priority_value=*/0);
+  }
 
   used_for_serving_ = true;
 }

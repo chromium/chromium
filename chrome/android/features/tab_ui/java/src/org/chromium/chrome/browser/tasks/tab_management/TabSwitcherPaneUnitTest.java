@@ -88,7 +88,6 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.feature_engagement.FeatureConstants;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -100,7 +99,6 @@ import java.util.function.DoubleConsumer;
 
 /** Unit tests for {@link TabSwitcherPane} and {@link TabSwitcherPaneBase}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
 @DisableFeatures(ChromeFeatureList.DATA_SHARING)
 public class TabSwitcherPaneUnitTest {
     private static final int TAB_ID = 723849;

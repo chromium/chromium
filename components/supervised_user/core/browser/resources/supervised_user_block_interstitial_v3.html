@@ -14,7 +14,7 @@
   <script src="%ROOT_GEN_DIR%/components/supervised_user/core/browser/resources/minified/supervised_user_block_interstitial_v3.js"></script>
 </if>
 </head>
-<body class="supervised-user-block">
+<body class="supervised-user-block" <if expr="is_ios">style="font-size: $i18n{fontsize}"</if>>
 <div class="frame-blocked" id="frame-blocked" tabindex="-1">
   <div class="message-container">
     <picture id="error-page-illustration">

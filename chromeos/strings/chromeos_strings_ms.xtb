@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">Pengesahan proksi diperlukan</translation>
 <translation id="4594021849294327751">Buat transkrip</translation>
 <translation id="4594541568452132351">Pilih bahasa transkripsi dan model muat turun</translation>
-<translation id="4607282946861182308">Tidak dapat membuat imej ini. Cuba gesaan lain.</translation>
 <translation id="4609350030397390689">Mengurangkan kecerahan papan kekunci</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> daripada <ph name="TOTAL_PAGE_NUMBER" />. Tekan enter untuk membatalkan tugas cetak.</translation>
 <translation id="463791356324567266">Membatalkan pengimbasan...</translation>
@@ -1659,6 +1658,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8543574988889671960">Muatkan semula tab</translation>
 <translation id="8550364285433943656">Letakkan kawalan pada tindakan permainan untuk bermain dengan kekunci papan kekunci</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">AI generatif boleh membuat kesilapan, termasuk tentang orang, maka semak semula respons.</translation>
 <translation id="8575298406870537639">Pembawa anda mungkin memerlukan pilihan ini untuk menyambung kepada rangkaian mereka. Hubungi pembawa anda untuk mendapatkan butiran.</translation>
 <translation id="8576249514688522074">Tidak diasalkan</translation>
 <translation id="8584654835905316966">Pemulaan semula perlu dilakukan untuk melengkapkan proses pemasangan perisian tegar untuk <ph name="DEVICE_NAME" /> kepada versi <ph name="VERSION" />. Komputer anda mungkin akan dibut semula beberapa kali. Gelagat ini dijangkakan.</translation>
@@ -1673,7 +1673,6 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8655295600908251630">Saluran</translation>
 <translation id="8655828773034788261">Kongsi URL:</translation>
 <translation id="8660881923941176839">paun</translation>
-<translation id="8670057600920888023">AI generatif ialah ciri eksperimen dan kandungan ciri ini mungkin tidak tepat, mengelirukan atau menyinggung.</translation>
 <translation id="8670574982334489519">kanan</translation>
 <translation id="8675354002693747642">Kekunci prakongsi</translation>
 <translation id="8677859815076891398">Tiada album. Buat album dalam <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>

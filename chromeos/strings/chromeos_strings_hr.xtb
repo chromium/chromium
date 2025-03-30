@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">Potrebna je autentifikacija proxy poslužitelja</translation>
 <translation id="4594021849294327751">Izradi prijepis</translation>
 <translation id="4594541568452132351">Odaberite jezik prijepisa i preuzmite model</translation>
-<translation id="4607282946861182308">Ne mogu se izraditi slike tog sadržaja. Isprobajte drugi prompt.</translation>
 <translation id="4609350030397390689">Smanjivanje svjetline tipkovnice</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite tipku Enter da biste otkazali zadatak ispisa.</translation>
 <translation id="463791356324567266">Otkazivanje skeniranja...</translation>
@@ -1659,6 +1658,7 @@ Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translati
 <translation id="8543574988889671960">Ponovo učitaj karticu</translation>
 <translation id="8550364285433943656">Postavite kontrole na radnje u igri koje ćete igrati pomoću tipki tipkovnice</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">Generativni AI može pogriješiti, uključujući kada daje informacije o osobama, stoga provjerite njegove odgovore.</translation>
 <translation id="8575298406870537639">Vaš mobilni operater može zahtijevati tu opciju radi povezivanja s njegovom mrežom. Više informacija zatražite od svojeg operatera.</translation>
 <translation id="8576249514688522074">Pokretanje je zaustavljeno</translation>
 <translation id="8584654835905316966">Potrebno je ponovno pokretanje da bi se dovršila instalacija firmwarea za uređaj <ph name="DEVICE_NAME" /> na verziju <ph name="VERSION" />. Možda će se činiti da se računalo ponovno pokreće više puta. To je očekivano ponašanje.</translation>
@@ -1673,7 +1673,6 @@ Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translati
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">Podijeli URL:</translation>
 <translation id="8660881923941176839">funta/funte</translation>
-<translation id="8670057600920888023">Generativni AI u eksperimentalnoj je fazi, a sadržaj može biti netočan, obmanjujući ili uvredljiv.</translation>
 <translation id="8670574982334489519">desni</translation>
 <translation id="8675354002693747642">Unaprijed podijeljen ključ</translation>
 <translation id="8677859815076891398">Nema albuma. Izradite album u <ph name="LINK_BEGIN" />Google fotografijama<ph name="LINK_END" />.</translation>

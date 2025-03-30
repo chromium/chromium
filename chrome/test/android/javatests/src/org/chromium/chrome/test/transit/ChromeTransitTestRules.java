@@ -33,7 +33,18 @@ public class ChromeTransitTestRules {
 
     /** Auto reset the state of the ChromeTabbedActivity and reuse it within the batch. */
     public static AutoResetCtaTransitTestRule autoResetCtaActivityRule() {
-        return new AutoResetCtaTransitTestRule();
+        return new AutoResetCtaTransitTestRule(/* clearAllTabState= */ true);
+    }
+
+    /**
+     * Auto reset the state of the ChromeTabbedActivity (keeping one tab open) and reuse it within
+     * the batch.
+     *
+     * <p>This is faster than autoResetCtaActivityRule() but might keep more state related to the
+     * tab that's kept open.
+     */
+    public static AutoResetCtaTransitTestRule fastAutoResetCtaActivityRule() {
+        return new AutoResetCtaTransitTestRule(/* clearAllTabState= */ false);
     }
 
     /**

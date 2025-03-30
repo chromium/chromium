@@ -441,7 +441,6 @@
 <translation id="1734878702283171397">Essayez de communiquer avec l'administrateur système.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, expire le <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Ordinateur</translation>
-<translation id="1739422091279046802">défilement et zoom</translation>
 <translation id="1741613555002899862">Doit être indiquée et être une chaîne valide lorsque la politique DnsOverHttpsMode est définie à <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Literie et linge de maison</translation>
 <translation id="1743892871127720056">Titre du tableau de comparaison, modifier le texte</translation>
@@ -1569,6 +1568,7 @@
 <translation id="3715016660240337709">{0,plural, =1{Le téléversement du fichier a été bloqué}one{Le téléversement de <ph name="FILE_COUNT" /> fichier a été bloqué}other{Le téléversement de <ph name="FILE_COUNT" /> fichiers a été bloqué}}</translation>
 <translation id="3715597595485130451">Connexion au réseau Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />De vérifier la configuration du mandataire, du pare-feu et du DNS<ph name="END_LINK" /></translation>
+<translation id="3723316892512143176">Iban</translation>
 <translation id="3723663469265383848">Durant la mise à jour, vous ne pourrez pas utiliser votre appareil pendant un maximum de 10 minutes.</translation>
 <translation id="372429172604983730">Voici des applications qui peuvent provoquer cette erreur : un logiciel antivirus, un logiciel de pare-feu, ou un logiciel de filtrage Web ou de mandataire.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour rapidement créer une présentation Google dans Présentations</translation>
@@ -2495,6 +2495,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5379618281582508161">Pour obtenir ce mot de passe sur tous vos appareils, confirmez qu'il s'agit bien de vous</translation>
 <translation id="5380953781541843508">en ordre croissant</translation>
 <translation id="5381318171304904246">En continuant, vous serez redirigé vers le site Web de votre banque. Après avoir confirmé votre identité, vous serez automatiquement redirigé pour finaliser votre achat.</translation>
+<translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> a mis à jour l'onglet « <ph name="WEBSITE_TITLE" /> »</translation>
 <translation id="5383478552402031184">Revêtement de sol</translation>
 <translation id="5385857628869214740">Humour</translation>
 <translation id="5385966243497224160">Impossible de consulter l'aperçu d'une URL non-HTTPS</translation>
@@ -2880,6 +2881,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6059925163896151826">Appareils USB</translation>
 <translation id="6060009363608157444">Mode DnsOverHttps incorrect.</translation>
 <translation id="6061154937977953833">Lutte</translation>
+<translation id="6062405040252994646">Outil</translation>
 <translation id="6062937464449575061">Annuler le suivi du prix</translation>
 <translation id="6063415549109819824">Crédit immobilier</translation>
 <translation id="6070432475334343308">Un ou plusieurs fichiers n'ont pas été téléversés dans le dossier <ph name="FOLDER_NAME" /> sur <ph name="CLOUD_PROVIDER" /></translation>
@@ -3926,6 +3928,7 @@ Détails supplémentaires :
 <translation id="787226752901403048">Connectez-vous à Chrome pour partager et rejoindre des groupes d'onglets et travailler ensemble sur des idées</translation>
 <translation id="7877007680666472091">identifiants de contenu protégé</translation>
 <translation id="7878562273885520351">Votre mot de passe a peut-être été compromis</translation>
+<translation id="7881044256965445977">Rechercher n'importe quel appareil sur votre réseau local et s'y connecter</translation>
 <translation id="7882421473871500483">Brun</translation>
 <translation id="7886897188117641322">Choisissez les larges catégories de sujets qui peuvent être utilisées pour personnaliser les annonces.</translation>
 <translation id="7887683347370398519">Veuillez vérifier votre CVC et réessayer</translation>
@@ -4682,6 +4685,7 @@ Détails supplémentaires :
 <translation id="94613679163347541">Comparer <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour créer un site dans Google Sites rapidement</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome limitera à nouveau les témoins aujourd'hui}=1{Chrome limitera à nouveau les témoins demain}one{# jours jusqu'à ce que Chrome limite à nouveau les témoins}other{# jours jusqu'à ce que Chrome limite à nouveau les témoins}}</translation>
+<translation id="949026252328034572"><ph name="MEMBER_COUNT" /> membres se sont joints au groupe d'onglets « <ph name="GROUP_NAME" /> »</translation>
 <translation id="949314938206378263">Tu as demandé à consulter ce site. Ton parent peut répondre dans Family Link.</translation>
 <translation id="950736567201356821">Triple perforation en haut</translation>
 <translation id="950926967802086924">Clé d'accès • Gestionnaire de mots de passe Google</translation>

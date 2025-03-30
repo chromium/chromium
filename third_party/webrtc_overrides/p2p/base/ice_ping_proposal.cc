@@ -1,5 +1,7 @@
 #include "third_party/webrtc_overrides/p2p/base/ice_ping_proposal.h"
 
+#include <string>
+
 #include "third_party/webrtc/p2p/base/ice_controller_interface.h"
 #include "third_party/webrtc/rtc_base/strings/string_builder.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_proposal.h"

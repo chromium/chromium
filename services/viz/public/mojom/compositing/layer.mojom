@@ -13,7 +13,14 @@ import "ui/gfx/mojom/rrect_f.mojom";
 import "services/viz/public/mojom/compositing/filter_operations.mojom";
 import "services/viz/public/mojom/compositing/copy_output_request.mojom";
 import "services/viz/public/mojom/compositing/resource_id.mojom";
+import "services/viz/public/mojom/compositing/subtree_capture_id.mojom";
 import "ui/gfx/mojom/transform.mojom";
+
+// Extra fields in a cc::MirrorLayerImpl that has been added to a tree or
+// modified in some interesting way since a prior tree update.
+struct MirrorLayerExtra {
+  int32 mirrored_layer_id;
+};
 
 // Extra fields in a cc::SurfaceLayerImpl that has been added to a tree or
 // modified in some interesting way since a prior tree update.
@@ -50,6 +57,8 @@ struct SurfaceLayerExtra {
 
 // Extra properties that are specific to a LayerImpl type.
 union LayerExtra {
+  // Extra properties that are specific to MirrorLayerImpl.
+  MirrorLayerExtra mirror_layer_extra;
   // Extra properties that are specific to SurfaceLayerImpl.
   SurfaceLayerExtra surface_layer_extra;
 };
@@ -277,6 +286,9 @@ struct EffectNode {
   // Scale applied to the contents of the render surface. Ignored if this node
   // doesn't induce a render surface.
   gfx.mojom.Vector2dF surface_contents_scale;
+
+  SubtreeCaptureId subtree_capture_id;
+  gfx.mojom.Size subtree_size;
 
   // This is an SkBlendMode, which has no mojom definition yet. Must be manually
   // validated to be no greater than SkBlendMode::kLastMode.

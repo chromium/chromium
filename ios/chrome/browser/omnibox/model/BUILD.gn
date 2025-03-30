@@ -13,10 +13,14 @@ source_set("ui_bundled_interface") {
     "omnibox_autocomplete_controller_debugger_delegate.h",
     "omnibox_autocomplete_controller_delegate.h",
     "omnibox_controller.h",
+    "omnibox_image_fetcher.h",
     "omnibox_text_controller.h",
     "omnibox_text_controller_delegate.h",
   ]
-  deps = [ "//ui/base:types" ]
+  deps = [
+    "//ios/chrome/browser/favicon/model",
+    "//ui/base:types",
+  ]
 }
 
 source_set("model") {
@@ -24,13 +28,16 @@ source_set("model") {
     "autocomplete_result_wrapper.mm",
     "omnibox_autocomplete_controller.mm",
     "omnibox_controller.mm",
+    "omnibox_image_fetcher.mm",
     "omnibox_text_controller.mm",
   ]
   deps = [
     "//base",
     "//components/bookmarks/browser",
+    "//components/image_fetcher/core",
     "//components/omnibox/browser",
     "//components/open_from_clipboard",
+    "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/omnibox/ui_bundled:model_interface",
     "//ios/chrome/browser/omnibox/ui_bundled/popup",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_internal",
@@ -41,6 +48,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/common:string_conversions",
+    "//ios/chrome/common/ui/favicon",
     "//ui/base:types",
   ]
 

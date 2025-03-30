@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">Hiq</translation>
 <translation id="1190609913194133056">Qendra e njoftimeve</translation>
 <translation id="1201402288615127009">Para</translation>
-<translation id="1202892408424955784">Produktet e monitoruara</translation>
 <translation id="1204075260022434100">{count,plural, =1{Faqeshënuesi u ruajt te "{title}" në llogarinë tënde, {email}}other{{count} faqeshënues u ruajtën te "{title}" në llogarinë tënde, {email}}}</translation>
 <translation id="120431140543679678">Ndiq</translation>
 <translation id="1207493287814084192">17:30</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">artikull i ri</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> llogari po përdorin të njëjtin fjalëkalim</translation>
 <translation id="2059166748188874810">Komunë</translation>
-<translation id="2060114494785549741">Fshi pas 1 muaji</translation>
 <translation id="2060638295449304809">Kjo adresë ruhet vetëm në këtë pajisje. Për ta përdorur atë në pajisje të tjera, ruaje në "Llogarinë tënde të Google", <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Përzgjedhësi i llojit të njësisë</translation>
 <translation id="2067852168641682340">Ruaj gjithmonë në këtë llogari</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">Fshih kartën "Monitoro çmimin"</translation>
 <translation id="2216366330550244277">Shko te faqja e një produkti</translation>
 <translation id="2220529011494928058">Raporto një problem</translation>
-<translation id="2220887224562128152">Pasi një skedarë të jetë planifikuar për fshirje, ai nuk mund të rikuperohet.</translation>
 <translation id="2223461067862937305">Krijo një kod QR</translation>
 <translation id="2229345671837147090">Rrjeta e skedave në distancë</translation>
 <translation id="2230173723195178503">Faqja e uebit u ngarkua</translation>
@@ -493,7 +490,6 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="3059270601560379555">Kërkim i ri</translation>
 <translation id="3064547930554042309">Menaxho shkarkimet</translation>
 <translation id="3072279342064724558">Fjalëkalimi ekziston tashmë</translation>
-<translation id="3074862506644936708">Aktivizo fshirjen automatike</translation>
 <translation id="3076846064362030967">Nuk do të dalësh nga "Llogaria jote e Google". <ph name="BEGIN_LINK" />Forma të tjera aktiviteti<ph name="END_LINK" /> mund të ruhen në "Llogarinë tënde të Google" kur je i identifikuar. Mund t'i fshish ato në çdo kohë.
 
 
@@ -912,6 +908,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4896467949657706481">Skedat janë mbyllur dhe ti ke dalë nga llogaria</translation>
 <translation id="4913626501929406101">Mund të ndash në mënyrë të sigurt një kopje të fjalëkalimit tënd me dikë në grupin tënd të familjes. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Prano</translation>
+<translation id="4930714375720679147">Aktivizo</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4936354130727646074">Mos zhvendos asnjëherë</translation>
 <translation id="4937410517508563815">Ruaj fjalëkalimet në llogari</translation>
@@ -1147,7 +1144,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5899314093904173337">Për të ndarë me personat në afërsi, lejoji të skanojnë këtë kod QR me kamerën e tyre ose aplikacionin e skanerit të kodeve QR</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} skedë e re}other{{count} skeda të reja}}</translation>
 <translation id="5911030830365207728">Përkthe me Google</translation>
-<translation id="5917913282764181683">Fshi automatikisht shkarkimet</translation>
 <translation id="5922999516621365983">Zvarrite skedën këtu për ta gozhduar.</translation>
 <translation id="5936006948844852401">Menaxho hapësirën e ruajtjes</translation>
 <translation id="5936065461722368675">Përkthe të gjithë faqen</translation>
@@ -1506,7 +1502,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="741204030948306876">Po, jam dakord</translation>
 <translation id="7417689656810783109">Riemërto grupin</translation>
 <translation id="7419565702166471774">Përdor gjithmonë lidhje të sigurta</translation>
-<translation id="742001653298797675">Planifiko të gjitha shkarkimet për fshirje pas një muaji për të kursyer hapësirën në telefonin tënd dhe për të mbrojtur privatësinë tënde.</translation>
 <translation id="7425053386765766120">Shto mënyrën e pagesës…</translation>
 <translation id="7425346204213733349">Ndryshimet te faqeshënuesit, historiku, fjalëkalimet dhe cilësimet e tjera nuk do të sinkronizohen më te llogaria jote e Google. Sidoqoftë, të dhënat e tua ekzistuese do të qëndrojnë të ruajtura te llogaria jote e Google.</translation>
 <translation id="742664698522525515">Të mbahet grupi?</translation>

@@ -41,6 +41,8 @@ class SearchifierTestClient : public TestClient {
   SearchifierTestClient& operator=(const SearchifierTestClient&) = delete;
   ~SearchifierTestClient() override = default;
 
+  bool IsPrintPreview() const override { return is_print_preview_; }
+
   void OnSearchifyStateChange(bool busy) override {
     if (busy) {
       busy_state_changed_count_++;
@@ -49,6 +51,13 @@ class SearchifierTestClient : public TestClient {
     }
   }
 
+  void set_for_print_preview() { is_print_preview_ = true; }
+
+  int busy_state_changed_count() const { return busy_state_changed_count_; }
+  int idle_state_changed_count() const { return idle_state_changed_count_; }
+
+ private:
+  bool is_print_preview_ = false;
   int busy_state_changed_count_ = 0;
   int idle_state_changed_count_ = 0;
 };
@@ -116,6 +125,11 @@ class PDFiumOnDemandSearchifierTest : public PDFiumTestBase {
     ASSERT_TRUE(engine_) << test_filename;
   }
 
+  void CreatePreviewEngine(const base::FilePath::CharType* test_filename) {
+    client_.set_for_print_preview();
+    CreateEngine(test_filename);
+  }
+
   void TearDown() override {
     // PDFium gets uninitialized via `FPDF_DestroyLibrary`. If `engine_` is not
     // destroyed here, its destruction results in a crash later.
@@ -152,10 +166,10 @@ class PDFiumOnDemandSearchifierTest : public PDFiumTestBase {
   int performed_ocrs() const { return performed_ocrs_; }
   PDFiumEngine* engine() { return engine_.get(); }
   int busy_state_changed_count() const {
-    return client_.busy_state_changed_count_;
+    return client_.busy_state_changed_count();
   }
   int idle_state_changed_count() const {
-    return client_.idle_state_changed_count_;
+    return client_.idle_state_changed_count();
   }
 
  private:
@@ -398,6 +412,18 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithUnload) {
   page3_info = page3.GetTextRunInfo(0);
   ASSERT_TRUE(page3_info.has_value());
   EXPECT_TRUE(page3_info.value().is_searchified);
+}
+
+TEST_P(PDFiumOnDemandSearchifierTest, OnePageWithImagesInPrintPreview) {
+  CreatePreviewEngine(FILE_PATH_LITERAL("image_alt_text.pdf"));
+
+  PDFiumPage& page = GetPDFiumPageForTest(*engine(), 0);
+
+  // Load the page to trigger Searchify, but it should not do anything for Print
+  // Preview.
+  page.GetPage();
+  ASSERT_FALSE(engine()->PageNeedsSearchify(0));
+  ASSERT_FALSE(engine()->GetSearchifierForTesting());
 }
 
 TEST_P(PDFiumOnDemandSearchifierTest, OcrCancellation) {

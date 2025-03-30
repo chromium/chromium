@@ -75,11 +75,7 @@ pub struct CargoManifest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub workspace: Option<WorkspaceSpec>,
     /// Regular dependencies built into production code.
-    #[serde(
-        default,
-        skip_serializing_if = "DependencySet::is_empty",
-        serialize_with = "toml::ser::tables_last"
-    )]
+    #[serde(default, skip_serializing_if = "DependencySet::is_empty")]
     pub dependencies: CargoDependencySet,
 }
 

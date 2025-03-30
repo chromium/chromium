@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "media/base/media_switches.h"
 #include "media/base/svc_scalability_mode.h"
+#include "media/base/video_aspect_ratio.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/video/video_encoder_info.h"
@@ -145,6 +146,22 @@ void SetUpOpenH264Params(VideoCodecProfile profile,
       itu_cs.range == gfx::ColorSpace::RangeID::LIMITED) {
     layer.bFullRange = itu_cs.range == gfx::ColorSpace::RangeID::FULL;
   }
+}
+
+// OpenH264 can resize frames automatically as long as
+// - the input and output aspect ratios are the same and
+// - the input is larger than the output in both dimensions.
+bool NeedsManualResizing(const gfx::Size& src, const gfx::Size& dst) {
+  if (src.IsEmpty() || dst.IsEmpty()) {
+    return true;
+  }
+
+  if (dst.width() > src.width() || dst.height() > src.height()) {
+    return true;
+  }
+
+  return VideoAspectRatio::PAR(src.width(), src.height()) !=
+         VideoAspectRatio::PAR(dst.width(), dst.height());
 }
 
 }  // namespace
@@ -380,6 +397,9 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                       "No frame provided for encoding."));
     return;
   }
+
+  TRACE_EVENT1("media", "OpenH264::EncodeFrame", "timestamp",
+               frame->timestamp());
   const bool supported_format = frame->format() == PIXEL_FORMAT_NV12 ||
                                 frame->format() == PIXEL_FORMAT_I420 ||
                                 frame->format() == PIXEL_FORMAT_XBGR ||
@@ -407,9 +427,13 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     }
   }
 
-  if (frame->format() != PIXEL_FORMAT_I420) {
-    // OpenH264 can resize frame automatically, but since we're converting
-    // pixel format anyway we can do resize as well.
+  if (frame->format() != PIXEL_FORMAT_I420 ||
+      NeedsManualResizing(frame->visible_rect().size(), options_.frame_size)) {
+    // In cases where we need to
+    // - enlarge the frame
+    // - change the pixel format or
+    // - change the aspect ratio
+    // we are forced to convert and rescale manually.
     auto i420_frame = frame_pool_.CreateFrame(
         PIXEL_FORMAT_I420, options_.frame_size, gfx::Rect(options_.frame_size),
         options_.frame_size, frame->timestamp());
@@ -462,8 +486,6 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   }
 
   SFrameBSInfo frame_info = {};
-  TRACE_EVENT1("media", "OpenH264::EncodeFrame", "timestamp",
-               frame->timestamp());
   if (int err = codec_->EncodeFrame(&picture, &frame_info)) {
     std::move(done_cb).Run(
         EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,

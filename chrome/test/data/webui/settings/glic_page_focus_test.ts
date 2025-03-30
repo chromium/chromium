@@ -5,7 +5,7 @@
 import 'chrome://settings/settings.js';
 
 import type {CrShortcutInputElement} from 'chrome://settings/lazy_load.js';
-import type {SettingsGlicPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
+import type {SettingsGlicPageElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, GlicBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, resetRouterForTesting, Router, routes, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
@@ -224,6 +224,36 @@ suite('GlicPageFocusTest', function() {
       userActions = await metricsBrowserProxy.getArgs('recordAction');
       assertEquals(1, userActions.length);
       verifyUserAction('GlicOsEntrypoint.Settings.ShortcutEdited');
+    });
+
+    test('toggle OS entrypoint', async () => {
+      // Assert no actions are logged upon load.
+      userActions = await metricsBrowserProxy.getArgs('recordAction');
+      assertEquals(0, userActions.length);
+
+      // Arrange.
+      const launcherToggle = $<SettingsToggleButtonElement>('launcherToggle');
+      assertTrue(!!launcherToggle);
+      assertTrue(launcherToggle.checked);
+
+      // Act.
+      launcherToggle.click();
+      await flushTasks();
+
+      // Assert.
+      assertTrue(!launcherToggle.checked);
+      userActions = await metricsBrowserProxy.getArgs('recordAction');
+      assertEquals(1, userActions.length);
+      verifyUserAction('Glic.OsEntrypoint.Settings.Toggle.Disabled');
+
+      // Act.
+      launcherToggle.click();
+      await flushTasks();
+
+      // Assert.
+      userActions = await metricsBrowserProxy.getArgs('recordAction');
+      assertEquals(2, userActions.length);
+      verifyUserAction('Glic.OsEntrypoint.Settings.Toggle.Enabled');
     });
   });
 });

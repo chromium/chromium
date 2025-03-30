@@ -445,7 +445,6 @@
 <translation id="1734878702283171397">Փորձեք կապվել համակարգի ադմինիստրատորի հետ:</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, վավերականության ժամկետը՝ <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Համակարգիչ</translation>
-<translation id="1739422091279046802">ոլորումով մասշտաբի փոփոխում</translation>
 <translation id="1741613555002899862">Պետք է լինի նշված և վավեր տող, եթե DnsOverHttpsMode կանոնի համար կարգավորված է <ph name="SECURE_DNS_MODE_SECURE" /> արժեքը:</translation>
 <translation id="1743393865165844832">Անկողնային պարագաներ և սպիտակեղեն</translation>
 <translation id="1743892871127720056">Համեմատության աղյուսակի վերնագիրը, խմբագրել տեքստը</translation>
@@ -1575,6 +1574,7 @@
 <translation id="3715016660240337709">{0,plural, =1{Ֆայլի վերբեռնումն արգելափակված է}one{<ph name="FILE_COUNT" /> ֆայլի վերբեռնումն արգելափակված է}other{<ph name="FILE_COUNT" /> ֆայլի վերբեռնումն արգելափակված է}}</translation>
 <translation id="3715597595485130451">Կապակցվել անլար կապին</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Ստուգել պրոքսի-սերվերի, հրապատի և DNS-ի կազմաձևումը<ph name="END_LINK" /></translation>
+<translation id="3723316892512143176">իբաներեն</translation>
 <translation id="3723663469265383848">Թարմացման ժամանակ դուք մինչև 10 րոպե չեք կարողանա օգտագործել ձեր սարքը։</translation>
 <translation id="372429172604983730">Սխալի պատճառ կարող է լինել հակավիրուսային ծրագիրը, հրապատը, վեբ բովանդակության զտման կամ պրոքսի սերվերի ծրագրերը:</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Սլայդներում արագ Google ներկայացում ստեղծելու համար սեղմեք Tab, ապա՝ Enter։</translation>
@@ -2504,6 +2504,7 @@
 <translation id="5379618281582508161">Ձեր բոլոր սարքերում այս գաղտնաբառն օգտագործելու համար հաստատեք ձեր ինքնությունը</translation>
 <translation id="5380953781541843508">աճման կարգով</translation>
 <translation id="5381318171304904246">Շարունակելու դեպքում դուք կտեղափոխվեք ձեր բանկի կայք։ Հաստատելուց հետո դուք ավտոմատ կվերադառնաք՝ ձեր գնումն ավարտելու համար։</translation>
+<translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> թարմացված ներդիր «<ph name="WEBSITE_TITLE" />»</translation>
 <translation id="5383478552402031184">Հատակապատում</translation>
 <translation id="5385857628869214740">Հումոր</translation>
 <translation id="5385966243497224160">Հնարավոր չէ նախադիտել առանց HTTPS-ի URL-ը</translation>
@@ -2889,6 +2890,7 @@
 <translation id="6059925163896151826">USB սարքեր</translation>
 <translation id="6060009363608157444">DnsOverHttps ռեժիմն անվավեր է:</translation>
 <translation id="6061154937977953833">Ըմբշամարտ</translation>
+<translation id="6062405040252994646">Գործիք</translation>
 <translation id="6062937464449575061">Այլևս չհետագծել գինը</translation>
 <translation id="6063415549109819824">Հիփոթեքային վարկեր</translation>
 <translation id="6070432475334343308">Ֆայլերից մեկը կամ մի քանիսը չեն վերբեռնվել <ph name="CLOUD_PROVIDER" />-ի <ph name="FOLDER_NAME" /> պանակ</translation>
@@ -3935,6 +3937,7 @@
 <translation id="787226752901403048">Մուտք գործեք Chrome՝ ներդիրների խմբերով կիսվելու, դրանց միանալու կամ դրանցում նույն գաղափարների շուրջ միասին աշխատելու համար</translation>
 <translation id="7877007680666472091">պաշտպանված բովանդակության նույնացուցիչներ</translation>
 <translation id="7878562273885520351">Ձեր գաղտնաբառը կարող են հափշտակել</translation>
+<translation id="7881044256965445977">Ձեր լոկալ ցանցում փնտրեք ցանկացած սարք և միացեք դրան</translation>
 <translation id="7882421473871500483">Շագանակագույն</translation>
 <translation id="7886897188117641322">Ընտրեք թեմաների լայն կատեգորիաները, որոնք կարող են օգտագործվել գովազդներն անհատականացնելու համար</translation>
 <translation id="7887683347370398519">Ստուգեք ձեր CVC կոդը և նորից փորձեք</translation>
@@ -4691,6 +4694,7 @@
 <translation id="94613679163347541">Համեմատե՞լ «<ph name="CATEGORY" />» կատեգորիայի ապրանքները</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Google Կայքերում արագ կայք ստեղծելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Այսօր Chrome-ը կրկին կսահմանափակի քուքիները}=1{Վաղը Chrome-ը կրկին կսահմանափակի քուքիները}one{# օրից Chrome-ը կրկին կսահմանափակի քուքիները}other{# օրից Chrome-ը կրկին կսահմանափակի քուքիները}}</translation>
+<translation id="949026252328034572"><ph name="MEMBER_COUNT" /> հոգի միացել է «<ph name="GROUP_NAME" />» ներդիրների խմբին</translation>
 <translation id="949314938206378263">Դուք այս կայքն այցելելու թույլտվություն եք խնդրել։ Ձեր ծնողը կարող է պատասխանել Family Link-ում։</translation>
 <translation id="950736567201356821">Երեք անցք վերևում</translation>
 <translation id="950926967802086924">Մուտքի բանալի • Google գաղտնաբառերի կառավարիչ</translation>

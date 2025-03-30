@@ -250,6 +250,13 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     if (!state.openOsSettingsApiIsAllowed) {
       (this as GlicBrowserHost).openOsPermissionSettingsMenu = undefined;
     }
+
+    if (state.alwaysDetachedMode) {
+      (this as GlicBrowserHost).attachPanel = undefined;
+      (this as GlicBrowserHost).detachPanel = undefined;
+      (this as GlicBrowserHost).canAttachPanel = undefined;
+      (this as GlicBrowserHost).getPanelState = undefined;
+    }
   }
 
   webClientInitialized(

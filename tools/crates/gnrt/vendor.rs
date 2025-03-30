@@ -10,7 +10,7 @@ use crate::inherit::{
     find_inherited_shipped_flag,
 };
 use crate::metadata_util::{metadata_nodes, metadata_packages};
-use crate::paths;
+use crate::paths::{self, get_vendor_dir_for_package};
 use crate::readme;
 use crate::util::{
     create_dirs_if_needed, get_guppy_package_graph, init_handlebars, remove_checksums_from_lock,
@@ -18,9 +18,11 @@ use crate::util::{
 };
 use crate::vet::create_vet_config;
 use crate::VendorCommandArgs;
+
 use anyhow::{format_err, Context, Result};
+
 use std::collections::{HashMap, HashSet};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 pub fn vendor(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     // Vendoring needs to work with real crates.io, not with our locally vendored
@@ -81,7 +83,7 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
     // Download missing dirs, remove the rest.
     let vendor_dir = paths.third_party_cargo_root.join("vendor");
     create_dirs_if_needed(&vendor_dir).context("creating vendor dir")?;
-    let mut dirs: HashSet<String> = std::fs::read_dir(&vendor_dir)
+    let mut dirs_to_remove: HashSet<String> = std::fs::read_dir(&vendor_dir)
         .context("reading vendor dir")?
         .filter_map(|dir| {
             if let Ok(entry) = dir {
@@ -93,11 +95,22 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
         })
         .collect();
     for p in packages.values() {
-        let crate_dir = format!("{}-{}", p.name, p.version);
+        let crate_dir = get_vendor_dir_for_package(&p.name, &p.version);
+
+        // Keep directories corresponding to packages from the dependency tree.
+        dirs_to_remove.remove(&crate_dir);
+
+        let is_already_vendored = get_package_id_from_vendored_dir(&vendor_dir.join(&crate_dir))
+            .filter(|vendored| vendored.name() == p.name && *vendored.version() == p.version)
+            .is_some();
+        if is_already_vendored {
+            continue;
+        }
+
         if is_removed(&p.id) {
             println!("Generating placeholder for removed crate {}", &crate_dir);
             generate_placeholder_crate(p, &packages, &nodes, paths, &config)?;
-        } else if !dirs.contains(&crate_dir) {
+        } else {
             println!("Downloading {}", &crate_dir);
             download_crate(&p.name, &p.version, paths)?;
             let skip_patches = match &args.no_patches {
@@ -110,9 +123,8 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
                 apply_patches(&p.name, &p.version, paths)?
             }
         }
-        dirs.remove(&crate_dir);
     }
-    for d in &dirs {
+    for d in &dirs_to_remove {
         println!("Deleting {}", d);
         std::fs::remove_dir_all(paths.third_party_cargo_root.join("vendor").join(d))
             .with_context(|| format!("removing {}", d))?
@@ -266,14 +278,28 @@ fn download_crate(
     let unzipped = flate2::read::GzDecoder::new(bytes.as_slice());
     let mut archive = tar::Archive::new(unzipped);
 
+    // Using `TempDir::with_prefix_in` to ensure that `std::fs::rename` below
+    // doesn't need to work across mount points / across filesystems.
     let vendor_dir = paths.third_party_cargo_root.join("vendor");
-    let crate_dir = vendor_dir.join(format!("{name}-{version}"));
+    let tempdir = tempfile::TempDir::with_prefix_in("tmp-gnrt-vendor", &vendor_dir)?;
+    archive.unpack(tempdir.path())?;
 
-    if let Err(e) = archive.unpack(vendor_dir) {
-        std::fs::remove_dir_all(crate_dir)
-            .with_context(|| format!("Deleting failed unpack of crate {name}-{version}"))?;
-        return Err(e).with_context(|| format!("Failed to unpack crate {name}-{version}"));
-    }
+    // Remove old vendored dir (most likely an old version of the crate).
+    let crate_dir = vendor_dir.join(get_vendor_dir_for_package(name, version));
+    std::fs::remove_dir_all(&crate_dir).or_else(|err| {
+        if err.kind() == std::io::ErrorKind::NotFound {
+            // Ignore errors if the directory already didn't exist.
+            Ok(())
+        } else {
+            Err(err)
+        }
+    })?;
+
+    // Expecting that the archive will contain a directory with a predictable
+    // path based on crate name and version.  Move this directory to the final
+    // destination (to `crate_dir`).
+    let archived_dir = tempdir.path().join(format!("{}-{}", name, version));
+    std::fs::rename(archived_dir, &crate_dir)?;
 
     std::fs::write(crate_dir.join(".cargo-checksum.json"), "{\"files\":{}}\n")
         .with_context(|| format!("writing .cargo-checksum.json for crate {}", name))?;
@@ -287,7 +313,7 @@ fn apply_patches(
     paths: &paths::ChromiumPaths,
 ) -> Result<()> {
     let vendor_dir = paths.third_party_cargo_root.join("vendor");
-    let crate_dir = vendor_dir.join(format!("{name}-{version}"));
+    let crate_dir = vendor_dir.join(get_vendor_dir_for_package(name, version));
 
     let mut patches = Vec::new();
     let Ok(patch_dir) = std::fs::read_dir(paths.third_party_cargo_root.join("patches").join(name))
@@ -439,8 +465,7 @@ fn generate_placeholder_crate(
         init_handlebars(&removed_librs_template_path).context("loading removed_librs_template")?;
 
     let vendor_dir = paths.third_party_cargo_root.join("vendor");
-    let crate_dir = vendor_dir.join(format!("{}-{}", package.name, package.version));
-
+    let crate_dir = vendor_dir.join(get_vendor_dir_for_package(&package.name, &package.version));
     create_dirs_if_needed(&crate_dir).context("creating crate dir")?;
     for x in std::fs::read_dir(&crate_dir)? {
         let entry = x?;
@@ -484,9 +509,57 @@ fn generate_placeholder_crate(
     Ok(())
 }
 
+/// Parses `dir/Cargo.toml` to extract package name and version.
+///
+/// This is intended to be used during the vendoring process, to determine
+/// if an existing `third_party/rust/chromium_crates_io/vendor/foo` directory
+/// contains an up-to-date version of a crate.
+fn get_package_id_from_vendored_dir(dir: &Path) -> Option<deps::PackageId> {
+    // Using manual, non-strongly-typed TOML parsing (instead of going through
+    // `cargo metadata` or `guppy`) to work even if `Cargo.lock` is absent
+    // (in this situation `cargo --locked --offline` would complain).
+    let file_contents = std::fs::read_to_string(dir.join("Cargo.toml")).ok()?;
+    let toml = file_contents.parse::<toml::value::Table>().ok()?;
+    let package = toml.get("package")?.as_table()?;
+    let name = package.get("name")?.as_str()?;
+    let version = package.get("version")?.as_str()?.parse().ok()?;
+    Some(deps::PackageId::new(name.to_string(), version))
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
+
+    use semver::Version;
+    use tempfile::TempDir;
+
+    #[test]
+    fn test_get_package_id_from_vendored_dir_for_happy_case() {
+        // Create a dir with only `Cargo.toml` and `src/lib.rs`, because these are the
+        // only files that exist in "placeholder" crates (ones that `gnrt`
+        // conjures to replace crates trimmed from the dependency tree).
+        let crate_dir = TempDir::with_prefix("gnrt_unittests").unwrap();
+        std::fs::write(
+            crate_dir.path().join("Cargo.toml"),
+            r#"
+            [package]
+            name = "some_package"
+            version = "1.2.3"
+        "#,
+        )
+        .unwrap();
+        let src_dir = crate_dir.path().join("src");
+        std::fs::create_dir(&src_dir).unwrap();
+        std::fs::write(src_dir.join("lib.rs"), "").unwrap();
+
+        // Check that `get_package_id_from_vendored_dir` can detect the crate name and
+        // version.
+        let Some(package_id) = get_package_id_from_vendored_dir(crate_dir.path()) else {
+            panic!("`None` returned from get_package_id_from_vendored_dir");
+        };
+        assert_eq!(package_id.name(), "some_package");
+        assert_eq!(*package_id.version(), Version::new(1, 2, 3));
+    }
 
     #[test]
     fn test_get_placeholder_crate_metadata_with_proc_macro2_dependency() {

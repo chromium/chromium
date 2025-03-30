@@ -4,17 +4,11 @@
 
 #include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 
-#include "third_party/blink/renderer/core/layout/grid/subgrid_min_max_sizes_cache.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 
 namespace blink {
 
 LayoutGrid::LayoutGrid(Element* element) : LayoutBlock(element) {}
-
-void LayoutGrid::Trace(Visitor* visitor) const {
-  visitor->Trace(cached_subgrid_min_max_sizes_);
-  LayoutBlock::Trace(visitor);
-}
 
 void LayoutGrid::AddChild(LayoutObject* new_child, LayoutObject* before_child) {
   NOT_DESTROYED();
@@ -123,8 +117,7 @@ const MinMaxSizes& LayoutGrid::CachedSubgridMinMaxSizes() const {
 
 void LayoutGrid::SetSubgridMinMaxSizesCache(MinMaxSizes&& min_max_sizes,
                                             const GridLayoutData& layout_data) {
-  cached_subgrid_min_max_sizes_ = MakeGarbageCollected<SubgridMinMaxSizesCache>(
-      std::move(min_max_sizes), layout_data);
+  cached_subgrid_min_max_sizes_.emplace(std::move(min_max_sizes), layout_data);
   SetSubgridMinMaxSizesCacheDirty(false);
 }
 

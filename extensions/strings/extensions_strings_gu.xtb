@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">મેનિફેસ્ટ ફાઇલ અમાન્ય છે</translation>
 <translation id="7217838517480956708">આ મશીનના વ્યવસ્થાપકને ઇન્સ્ટોલ કરવા માટે <ph name="EXTENSION_NAME" /> ની આવશ્કતા છે. તેને દૂર અથવા સંશોધિત કરી શકાશે નહીં.</translation>
 <translation id="7612608473764576263">ખાનગી કી માટેનું ઇનપુટ મૂલ્ય માન્ય ફૉર્મેટમાં હોવું જોઈએ (PKCS#8-ફૉર્મેટ PEM-એન્કોડેડ RSA કી).</translation>
+<translation id="7876803335449432072">કન્ટેન્ટ સ્ક્રિપ્ટ માટે '<ph name="RELATIVE_PATH" />' ફાઇલ લોડ કરી શકાઈ નથી, કન્ટેન્ટ સ્ક્રિપ્ટ સ્ટાઇલ શીટ ફક્ત .css ફાઇલો જેવી સપોર્ટેડ સ્ટાઇલ શીટ ફાઇલોમાંથી જ લોડ કરી શકાય છે.</translation>
 <translation id="7939686037314084444">એક્સ્ટેંશન યોગ્ય રીતે લોડ થવામાં નિષ્ફળ થયું. તે કદાચ નેટવર્ક વિનંતીઓને પકડી ન શકતું હોય.</translation>
 <translation id="7972881773422714442">વિકલ્પો: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">સામેનો કૅમેરો</translation>
 <translation id="8047248493720652249">આ એક્સટેન્શન "<ph name="ATTEMPTED_FILENAME" />" ને ડાઉનલોડ નામ આપવામાં નિષ્ફળ થયું કારણ કે અન્ય એક્સટેન્શન (<ph name="EXTENSION_NAME" />) એ એક જુદું ફાઇલનામ "<ph name="ACTUAL_FILENAME" />" નક્કી કર્યું છે.</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> તરફથી <ph name="PRODUCT_NAME" /></translation>
 <translation id="8517576857589387417">મેનિફેસ્ટ ફાઇલ ખૂટે છે અથવા સરળતાથી વાંચી શકાય તેવી નથી</translation>
+<translation id="8621383749470166852">કન્ટેન્ટ સ્ક્રિપ્ટ માટે '<ph name="RELATIVE_PATH" />' ફાઇલ લોડ કરી શકાઈ નથી, કન્ટેન્ટ સ્ક્રિપ્ટ ફક્ત .js ફાઇલો જેવી સપોર્ટેડ JavaScript ફાઇલોમાંથી જ લોડ કરી શકાય છે.</translation>
 <translation id="8636666366616799973">પૅકેજ અમાન્ય છે. વિગતો: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />", તમારા ઉપકરણો પૈકી એક પરની ઍક્સેસની વિનંતી કરી રહ્યું છે:</translation>
 <translation id="8885905466771744233">ઉલ્લેખિત એક્સટેન્શન માટે ખાનગી કી પહેલાંથી અસતિત્વમાં છે. તે કી ફરીથી વાપરો અથવા પહેલા એને ડિલીટ કરો.</translation>

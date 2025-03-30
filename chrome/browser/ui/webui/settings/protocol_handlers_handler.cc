@@ -21,7 +21,6 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/url_constants.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/google/core/common/google_util.h"

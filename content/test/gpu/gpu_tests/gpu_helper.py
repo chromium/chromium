@@ -217,7 +217,7 @@ def GetTargetCpuStatus(gpu_info: tgi.GPUInfo | None) -> str:
   suffix = 'unknown'
   if gpu_info:
     suffix = gpu_info.aux_attributes.get('target_cpu_bits', 'unknown')
-  return 'target-cpu-%s' % suffix
+  return f'target-cpu-{suffix}'
 
 
 def GetClangCoverage(gpu_info: tgi.GPUInfo | None) -> str:

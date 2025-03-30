@@ -47,11 +47,11 @@ export class RelatedWebsiteSetsListItemElement extends CrLitElement {
     };
   }
 
-  expanded: boolean = false;
-  primarySite: string = '';
-  memberSites: Member[] = [];
-  managedByEnterprise: boolean = false;
-  query: string = '';
+  accessor expanded: boolean = false;
+  accessor primarySite: string = '';
+  accessor memberSites: Member[] = [];
+  accessor managedByEnterprise: boolean = false;
+  accessor query: string = '';
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);

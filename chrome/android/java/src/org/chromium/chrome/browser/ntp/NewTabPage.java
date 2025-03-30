@@ -24,6 +24,7 @@ import android.widget.FrameLayout;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 
@@ -103,7 +104,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -532,9 +532,8 @@ public class NewTabPage
         mContext = activity;
         mTitle = activity.getResources().getString(R.string.new_tab_title);
 
-        mBackgroundColor =
-                ChromeColors.getSurfaceColor(
-                        mContext, R.dimen.home_surface_background_color_elevation);
+        mBackgroundColor = ContextCompat.getColor(mContext, R.color.home_surface_background_color);
+
         mIsTablet = isTablet;
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
         mTemplateUrlService.addObserver(this);
@@ -1096,8 +1095,7 @@ public class NewTabPage
     public @ColorInt int getToolbarTextBoxBackgroundColor(@ColorInt int defaultColor) {
         if (isLocationBarShownInNtp()) {
             if (!isLocationBarScrolledToTopInNtp()) {
-                return ChromeColors.getSurfaceColor(
-                        mContext, R.dimen.home_surface_background_color_elevation);
+                return ContextCompat.getColor(mContext, R.color.home_surface_background_color);
             }
 
             if (mIsInNightMode) {

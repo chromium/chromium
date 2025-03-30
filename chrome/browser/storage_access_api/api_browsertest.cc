@@ -39,6 +39,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/request_type.h"
@@ -109,10 +110,13 @@ constexpr std::string_view kHostBSubdomain2 = "subdomain2.b.test";
 constexpr std::string_view kHostC = "c.test";
 constexpr std::string_view kHostD = "d.test";
 
-constexpr char kUseCounterHistogram[] = "Blink.UseCounter.Features";
-constexpr char kRequestOutcomeHistogram[] = "API.StorageAccess.RequestOutcome";
-constexpr char kGrantIsImplicitHistogram[] =
+constexpr std::string_view kUseCounterHistogram = "Blink.UseCounter.Features";
+constexpr std::string_view kRequestOutcomeHistogram =
+    "API.StorageAccess.RequestOutcome";
+constexpr std::string_view kGrantIsImplicitHistogram =
     "API.StorageAccess.GrantIsImplicit";
+constexpr std::string_view kNetRequestHistogram =
+    "Net.HttpJob.StorageAccessNetRequest2";
 
 // Path for URL of custom response
 const char* kEchoCookiesWithCorsPath = "/echocookieswithcors";
@@ -883,11 +887,17 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
   EXPECT_EQ(ReadCookies(GetFrame(), kHostB), CookieBundle("cross-site=b.test"));
 
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
   histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.Features",
+      kUseCounterHistogram,
       blink::mojom::WebFeature::
           kCrossOriginSameSiteCookieAccessViaStorageAccessAPI,
       0);
+
+  histogram_tester.ExpectUniqueSample(kNetRequestHistogram,
+                                      /*kSameOrigin*/ 0,
+                                      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
@@ -1012,11 +1022,92 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   EXPECT_EQ(CookiesFromFetch(GetFrame(), kHostBSubdomain2),
             "cross-site=b.test");
 
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
   histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.Features",
+      kUseCounterHistogram,
       blink::mojom::WebFeature::
           kCrossOriginSameSiteCookieAccessViaStorageAccessAPI,
       1);
+  histogram_tester.ExpectUniqueSample(
+      kNetRequestHistogram,
+      /*kCrossOriginSameSiteCredentialsIncluded*/ 3,
+      /*expected_bucket_count=*/1);
+}
+
+// Validate that in a A(B) frame tree, the iframe can make uncredentialed
+// same-site requests, even if the requests are cross-origin, and the correct
+// metrics buckets are sampled to.
+IN_PROC_BROWSER_TEST_F(
+    StorageAccessAPIBrowserTest,
+    ThirdPartyCookiesIFrameRequestsAccess_CrossOriginFetch_Uncredentialed) {
+  SetBlockThirdPartyCookies(true);
+  base::HistogramTester histogram_tester;
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostBSubdomain));
+
+  ASSERT_EQ(ReadCookies(GetFrame(), kHostBSubdomain), kNoCookies);
+  ASSERT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  EXPECT_EQ(content::EvalJs(GetFrame(),
+                            content::JsReplace(R"(
+      fetch($1, {method: 'GET', mode: 'cors', credentials: 'omit'})
+        .then((result) => result.text());
+  )",
+                                               https_server().GetURL(
+                                                   kHostBSubdomain2,
+                                                   kEchoCookiesWithCorsPath))),
+            "None");
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  histogram_tester.ExpectBucketCount(
+      kUseCounterHistogram,
+      blink::mojom::WebFeature::
+          kCrossOriginSameSiteCookieAccessViaStorageAccessAPI,
+      0);
+  histogram_tester.ExpectUniqueSample(
+      kNetRequestHistogram,
+      /*kCrossOriginSameSiteCredentialsNotIncluded*/ 4,
+      /*expected_bucket_count=*/1);
+}
+
+// Validate that in a A(B) frame tree, the iframe cannot make credentialed
+// cross-site requests.
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
+                       ThirdPartyCookiesIFrameRequestsAccess_CrossSiteFetch) {
+  SetBlockThirdPartyCookies(true);
+  base::HistogramTester histogram_tester;
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+
+  ASSERT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
+  ASSERT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  EXPECT_EQ(CookiesFromFetch(GetFrame(), kHostC), "None");
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  histogram_tester.ExpectBucketCount(
+      kUseCounterHistogram,
+      blink::mojom::WebFeature::
+          kCrossOriginSameSiteCookieAccessViaStorageAccessAPI,
+      0);
+  histogram_tester.ExpectUniqueSample(kNetRequestHistogram,
+                                      /*kCrossSite*/ 2,
+                                      /*expected_bucket_count=*/1);
 }
 
 // Validate that in a A(B(B)) frame tree, the middle B iframe can obtain access,

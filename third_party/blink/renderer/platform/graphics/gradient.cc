@@ -41,6 +41,7 @@
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkShader.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
+#include "ui/gfx/geometry/clamp_float_geometry.h"
 
 namespace blink {
 
@@ -161,7 +162,7 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
         // to resolve missing components at all, but for logic reuse, we still
         // call `ResolveStopColorWithMissingParams` with a dummy three
         // components all none color.
-        pos.push_back(ClampNonFiniteToZero(stops_[i].stop));
+        pos.push_back(gfx::ClampFloatGeometry(stops_[i].stop));
         colors.push_back(ResolveStopColorWithMissingParams(
             color,
             Color::FromColorSpace(color.GetColorSpace(), std::nullopt,
@@ -172,7 +173,7 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
 
       if (i != 0) {
         // Fill left
-        pos.push_back(ClampNonFiniteToZero(stops_[i].stop));
+        pos.push_back(gfx::ClampFloatGeometry(stops_[i].stop));
         colors.push_back(ResolveStopColorWithMissingParams(
             color, stops_[i - 1].color, color_space_interpolation_space_,
             color_filter_.get()));
@@ -180,13 +181,13 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
 
       if (i != stops_.size() - 1) {
         // Fill right
-        pos.push_back(ClampNonFiniteToZero(stops_[i].stop));
+        pos.push_back(gfx::ClampFloatGeometry(stops_[i].stop));
         colors.push_back(ResolveStopColorWithMissingParams(
             color, stops_[i + 1].color, color_space_interpolation_space_,
             color_filter_.get()));
       }
     } else {
-      pos.push_back(ClampNonFiniteToZero(stops_[i].stop));
+      pos.push_back(gfx::ClampFloatGeometry(stops_[i].stop));
       if (color_filter_) {
         colors.push_back(color_filter_->FilterColor(
             color.ToGradientStopSkColor4f(color_space_interpolation_space_)));
@@ -395,8 +396,8 @@ class LinearGradient final : public Gradient {
       return PaintShader::MakeEmpty();
     }
 
-    SkPoint pts[2] = {gfx::PointFToSkPoint(ClampNonFiniteToZero(p0_)),
-                      gfx::PointFToSkPoint(ClampNonFiniteToZero(p1_))};
+    SkPoint pts[2] = {gfx::PointFToSkPoint(ClampNonFiniteToSafeFloat(p0_)),
+                      gfx::PointFToSkPoint(ClampNonFiniteToSafeFloat(p1_))};
     return PaintShader::MakeLinearGradient(
         pts, colors.data(), pos.data(), static_cast<int>(colors.size()),
         tile_mode, sk_interpolation, 0 /* flags */, &local_matrix,
@@ -449,8 +450,8 @@ class RadialGradient final : public Gradient {
 
     // The radii we give to Skia must be positive. If we're given a
     // negative radius, ask for zero instead.
-    const float radius0 = std::max(ClampNonFiniteToZero(r0_), 0.0f);
-    const float radius1 = std::max(ClampNonFiniteToZero(r1_), 0.0f);
+    const float radius0 = std::max(gfx::ClampFloatGeometry(r0_), 0.0f);
+    const float radius1 = std::max(gfx::ClampFloatGeometry(r1_), 0.0f);
 
     if (GetDegenerateHandling() == DegenerateHandling::kDisallow &&
         p0_ == p1_ && radius0 == radius1) {
@@ -458,9 +459,9 @@ class RadialGradient final : public Gradient {
     }
 
     return PaintShader::MakeTwoPointConicalGradient(
-        gfx::PointFToSkPoint(ClampNonFiniteToZero(p0_)), radius0,
-        gfx::PointFToSkPoint(ClampNonFiniteToZero(p1_)), radius1, colors.data(),
-        pos.data(), static_cast<int>(colors.size()), tile_mode,
+        gfx::PointFToSkPoint(ClampNonFiniteToSafeFloat(p0_)), radius0,
+        gfx::PointFToSkPoint(ClampNonFiniteToSafeFloat(p1_)), radius1,
+        colors.data(), pos.data(), static_cast<int>(colors.size()), tile_mode,
         sk_interpolation, 0 /* flags */, matrix, fallback_color);
   }
 

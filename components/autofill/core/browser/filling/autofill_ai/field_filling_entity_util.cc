@@ -12,228 +12,17 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_quality/addresses/address_normalizer.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/autofill_ai/select_date_matching.h"
 #include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 
 namespace autofill {
 
 namespace {
-
-// Represents a sequence of consecutive integers.
-// This is not a `base::span` because we need the indices for different
-// containers.
-struct Sequence {
-  size_t offset = 0;
-  size_t length = 0;
-};
-
-// Returns a longest sequence of non-negative consecutive integers in `nums`.
-// E.g., returns {.offset = 3, .length = 3} for {-1, 1, 2, 3, 5, 1, 2, 3}.
-Sequence GetLongestConsecutiveNonNegativeSequence(base::span<const int> nums) {
-  Sequence longest;
-  Sequence current;
-  for (size_t i = 0; i < nums.size(); ++i) {
-    if (nums[i] < 0) {
-      continue;
-    }
-    if (i == 0 || nums[i - 1] < 0 || nums[i - 1] + 1 != nums[i]) {
-      if (longest.length < current.length) {
-        longest = current;
-      }
-      current = {.offset = i, .length = 1};
-    } else {
-      ++current.length;
-    }
-  }
-  if (longest.length < current.length) {
-    longest = current;
-  }
-  return longest;
-}
-
-// Removes the non-digit prefix and suffix. For example,
-// `TrimNonDigits("foo12x3bar")` returns "12x3".
-std::u16string_view TrimNonDigits(std::u16string_view s) {
-  // There's no need to decode the Unicode characters: If `s.front()` is a
-  // second code unit ("low surrogate"), its value does not overlap with ASCII.
-  while (!s.empty() && !base::IsAsciiDigit(s.front())) {
-    s = s.substr(1);
-  }
-  while (!s.empty() && !base::IsAsciiDigit(s.back())) {
-    s = s.substr(0, s.size() - 1);
-  }
-  return s;
-}
-
-// Returns a vector of the same size as `option` where the `i`th integer is the
-// non-negative integer found in `option` or -1 if there is none.
-std::vector<int> ExtractNumbers(base::span<const SelectOption> options,
-                                std::u16string SelectOption::* selector) {
-  return base::ToVector(options, [&selector](const SelectOption& option) {
-    int num;
-    if (base::StringToInt(TrimNonDigits(option.*selector), &num) && num >= 0) {
-      return num;
-    }
-    return -1;
-  });
-}
-
-// Returns the SelectOption::value of `field.options()` that matches
-// `attribute`'s day.
-std::optional<std::u16string> GetDaySelectControlValue(
-    const AttributeInstance& attribute,
-    const AutofillField& field,
-    const std::string& app_locale) {
-  // Months have 28 to 31 days. We tolerate two additional options (e.g.,
-  // "Pick day" and "Unknown").
-  if (field.options().size() < 28 || field.options().size() > 33) {
-    return std::nullopt;
-  }
-
-  std::u16string day_string = attribute.GetInfo(
-      field.Type().GetStorableType(), app_locale, std::u16string(u"D"));
-  int day = 0;
-  if (!base::StringToInt(day_string, &day) || day < 1 || day > 31) {
-    return std::nullopt;
-  }
-
-  int index = [&]() -> int {
-    std::vector<int> text_nums =
-        ExtractNumbers(field.options(), &SelectOption::text);
-    std::vector<int> value_nums =
-        ExtractNumbers(field.options(), &SelectOption::value);
-
-    Sequence text_seq = GetLongestConsecutiveNonNegativeSequence(text_nums);
-    Sequence value_seq = GetLongestConsecutiveNonNegativeSequence(value_nums);
-
-    // The user-visible text must start at "1".
-    if (28 <= text_seq.length && text_seq.length <= 31 &&
-        text_nums[text_seq.offset] == 1) {
-      return text_seq.offset + day - 1;
-    }
-    // The user-invisible values must start at "0" or "1".
-    if (28 <= value_seq.length && value_seq.length <= 31 &&
-        value_nums[value_seq.offset] <= 1) {
-      return value_seq.offset + day - 1;
-    }
-    return -1;
-  }();
-
-  if (index < 0 || static_cast<size_t>(index) >= field.options().size()) {
-    return std::nullopt;
-  }
-  return field.options()[index].value;
-}
-
-// Returns the SelectOption::value of `field.options()` that matches
-// `attribute`'s month.
-std::optional<std::u16string> GetMonthSelectControlValue(
-    const AttributeInstance& attribute,
-    const AutofillField& field,
-    const std::string& app_locale) {
-  // There are 12 months. We tolerate two additional options (e.g.,
-  // "Pick month" and "Unknown").
-  if (field.options().size() < 12 || field.options().size() > 14) {
-    return std::nullopt;
-  }
-
-  std::u16string month_string = attribute.GetInfo(
-      field.Type().GetStorableType(), app_locale, std::u16string(u"M"));
-  int month = 0;
-  if (!base::StringToInt(month_string, &month) || month < 1 || month > 12) {
-    return std::nullopt;
-  }
-
-  int index = [&]() -> int {
-    std::vector<int> text_nums =
-        ExtractNumbers(field.options(), &SelectOption::text);
-    std::vector<int> value_nums =
-        ExtractNumbers(field.options(), &SelectOption::value);
-
-    Sequence text_seq = GetLongestConsecutiveNonNegativeSequence(text_nums);
-    Sequence value_seq = GetLongestConsecutiveNonNegativeSequence(value_nums);
-
-    // The user-visible text must contain "1" to "12".
-    if (text_seq.length == 12 && text_nums[text_seq.offset] == 1) {
-      return text_seq.offset + month - 1;
-    }
-    // The user-invisible values must be "1" to "12" or "0" to "11".
-    if (value_seq.length == 12 && value_nums[value_seq.offset] <= 1) {
-      return value_seq.offset + month - 1;
-    }
-    // If there are no numbers, perhaps the months are spelled out.
-    if (text_seq.length == 0 && value_seq.length == 0 &&
-        field.options().size() == 12) {
-      return month - 1;
-    }
-    return -1;
-  }();
-
-  if (index < 0) {
-    return std::nullopt;
-  }
-  return field.options()[index].value;
-}
-
-// Returns the SelectOption::value of `field.options()` that matches
-// `attribute`'s year.
-std::optional<std::u16string> GetYearSelectControlValue(
-    const AttributeInstance& attribute,
-    const AutofillField& field,
-    const std::string& app_locale) {
-  std::u16string year_string = attribute.GetInfo(
-      field.Type().GetStorableType(), app_locale, std::u16string(u"YYYY"));
-  int yyyy = 0;
-  if (!base::StringToInt(year_string, &yyyy)) {
-    return std::nullopt;
-  }
-
-  auto find_year = [&](base::span<const int> nums) {
-    Sequence seq = GetLongestConsecutiveNonNegativeSequence(nums);
-    if (seq.length < 2) {
-      return -1;
-    }
-
-    // Returns the index of `target` in `nums` if it occurs within `seq`.
-    // Returns -1 otherwise.
-    auto find_in_seq = [&nums, &seq](int target) -> int {
-      size_t index = seq.offset + target - nums[seq.offset];
-      if (index < 0 || index >= seq.length || target != nums[index]) {
-        return -1;
-      }
-      return index;
-    };
-
-    // Search for the four-digit year.
-    if (int index = find_in_seq(yyyy); index >= 0) {
-      return index;
-    }
-
-    // Search for the two-digit year, with an extra plausibility check to avoid
-    // confusion with day or month fields.
-    int yy = yyyy % 100;
-    bool may_be_day_or_month = (yy <= 12 && seq.length == 12) ||
-                               (28 <= seq.length && seq.length <= 31);
-    if (int index = find_in_seq(yy); index >= 0 && !may_be_day_or_month) {
-      return index;
-    }
-
-    return -1;
-  };
-
-  int index = find_year(ExtractNumbers(field.options(), &SelectOption::text));
-  if (index < 0) {
-    index = find_year(ExtractNumbers(field.options(), &SelectOption::value));
-  }
-
-  if (index < 0) {
-    return std::nullopt;
-  }
-  return field.options()[index].value;
-}
 
 // Looks for the day, month, or year from `attribute` to fill into `field`.
 std::optional<std::u16string> GetValueForDateSelectControl(
@@ -244,17 +33,29 @@ std::optional<std::u16string> GetValueForDateSelectControl(
   if (!IsDateFieldType(type)) {
     return std::nullopt;
   }
-  if (std::optional<std::u16string> match =
-          GetDaySelectControlValue(attribute, field, app_locale)) {
-    return match;
+
+  auto get_part = [&](std::u16string format_string, uint32_t min = 0,
+                      uint32_t max =
+                          std::numeric_limits<uint32_t>::max()) -> uint32_t {
+    std::u16string s = attribute.GetInfo(field.Type().GetStorableType(),
+                                         app_locale, format_string);
+    unsigned int i = 0;
+    return base::StringToUint(s, &i) && min <= i && i <= max
+               ? i
+               : std::numeric_limits<uint32_t>::max();
+  };
+
+  if (base::optional_ref<const SelectOption> match =
+          GetDayRange(field.options()).get_by_value(get_part(u"D", 1, 31))) {
+    return match->value;
   }
-  if (std::optional<std::u16string> match =
-          GetMonthSelectControlValue(attribute, field, app_locale)) {
-    return match;
+  if (base::optional_ref<const SelectOption> match =
+          GetMonthRange(field.options()).get_by_value(get_part(u"M", 1, 12))) {
+    return match->value;
   }
-  if (std::optional<std::u16string> match =
-          GetYearSelectControlValue(attribute, field, app_locale)) {
-    return match;
+  if (base::optional_ref<const SelectOption> match =
+          GetYearRange(field.options()).get_by_value(get_part(u"YYYY"))) {
+    return match->value;
   }
   return std::nullopt;
 }

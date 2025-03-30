@@ -441,7 +441,6 @@
 <translation id="1734878702283171397">Încearcă să contactezi administratorul sistemului.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, expiră pe <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Computer</translation>
-<translation id="1739422091279046802">derulare și zoom</translation>
 <translation id="1741613555002899862">Trebuie specificată și trebuie să fie un șir valid când DnsOverHttpsMode este <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Lenjerii și accesorii pentru pat</translation>
 <translation id="1743892871127720056">Compară titlul tabelului; editează textul</translation>
@@ -1569,6 +1568,7 @@
 <translation id="3715016660240337709">{0,plural, =1{Fișierul nu poate fi încărcat}few{<ph name="FILE_COUNT" /> fișiere nu pot fi încărcate}other{<ph name="FILE_COUNT" /> de fișiere nu pot fi încărcate}}</translation>
 <translation id="3715597595485130451">Conectează-te la o rețea Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />să verifici configurarea pentru proxy, firewall și DNS;<ph name="END_LINK" /></translation>
+<translation id="3723316892512143176">IBAN</translation>
 <translation id="3723663469265383848">În timpul actualizării, nu vei putea să folosești dispozitivul timp de până la 10 minute.</translation>
 <translation id="372429172604983730">Aplicațiile care pot genera această eroare includ software-ul antivirus, firewall, de filtrare web sau proxy.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a crea rapid o prezentare Google în Prezentări</translation>
@@ -2495,6 +2495,7 @@
 <translation id="5379618281582508161">Confirmă-ți identitatea ca să folosești această parolă pe toate dispozitivele</translation>
 <translation id="5380953781541843508">în ordine crescătoare</translation>
 <translation id="5381318171304904246">Dacă alegi să continui, te vom direcționa către site-ul băncii. După ce confirmi, vei reveni automat pentru a finaliza achiziția.</translation>
+<translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> a actualizat fila <ph name="WEBSITE_TITLE" /></translation>
 <translation id="5383478552402031184">Montarea pardoselilor</translation>
 <translation id="5385857628869214740">Umor</translation>
 <translation id="5385966243497224160">Nu se poate previzualiza adresa URL non-HTTPS</translation>
@@ -2880,6 +2881,7 @@
 <translation id="6059925163896151826">Dispozitive USB</translation>
 <translation id="6060009363608157444">Mod DnsOverHttps nevalid.</translation>
 <translation id="6061154937977953833">Wrestling</translation>
+<translation id="6062405040252994646">Instrument</translation>
 <translation id="6062937464449575061">Anulează urmărirea prețului</translation>
 <translation id="6063415549109819824">Credite imobiliare</translation>
 <translation id="6070432475334343308">Unul sau mai multe fișiere nu s-au încărcat în <ph name="FOLDER_NAME" /> pe <ph name="CLOUD_PROVIDER" /></translation>
@@ -3927,6 +3929,7 @@ Detalii suplimentare:
 <translation id="787226752901403048">Conectează-te la Chrome pentru a permite accesul la grupuri de file și a te alătura acestora, precum și pentru a colabora la idei</translation>
 <translation id="7877007680666472091">ID-uri de conținut protejat</translation>
 <translation id="7878562273885520351">Este posibil ca parola să fie compromisă</translation>
+<translation id="7881044256965445977">Caută și conectează-te la orice dispozitiv din rețeaua locală</translation>
 <translation id="7882421473871500483">Maro</translation>
 <translation id="7886897188117641322">Alege categoriile ample de subiecte care pot fi folosite pentru personalizarea anunțurilor</translation>
 <translation id="7887683347370398519">Verifică codul CVC și încearcă din nou</translation>
@@ -4685,6 +4688,7 @@ Detalii suplimentare:
 <translation id="94613679163347541">Compari <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a crea rapid un site în Site-uri Google</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome va limita din nou cookie-urile astăzi}=1{Chrome va limita din nou cookie-urile mâine}few{# zile până când Chrome va limita din nou cookie-urile}other{# de zile până când Chrome va limita din nou cookie-urile}}</translation>
+<translation id="949026252328034572"><ph name="MEMBER_COUNT" /> membri s-au alăturat grupului de file <ph name="GROUP_NAME" /></translation>
 <translation id="949314938206378263">Ai solicitat să accesezi acest site. Părintele tău poate să răspundă în Family Link.</translation>
 <translation id="950736567201356821">Perforare triplă în partea de sus</translation>
 <translation id="950926967802086924">Cheie de acces • Manager de parole Google</translation>

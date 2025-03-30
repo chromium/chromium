@@ -39,6 +39,9 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Returns the number of profiles (addresses) in the data manager.
 + (NSInteger)profilesCount;
 
+// Returns true if the profile is saved to account.
++ (BOOL)isAccountProfileAtIndex:(NSInteger)index;
+
 // Clears the profiles (addresses) in the data manager.
 + (void)clearProfilesStore;
 

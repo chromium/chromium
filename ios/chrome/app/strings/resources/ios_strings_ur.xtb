@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">ہٹائیں</translation>
 <translation id="1190609913194133056">اطلاعاتی مرکز</translation>
 <translation id="1201402288615127009">اگلا</translation>
-<translation id="1202892408424955784">ٹریک کردہ پروڈکٹس</translation>
 <translation id="1204075260022434100">{count,plural, =1{بُک مارک کو آپ کے اکاؤنٹ {email} میں "{title}" میں محفوظ کیا گیا}other{‫{count} بُک مارکس کو آپ کے اکاؤنٹ، {email} میں "{title}" میں محفوظ کیا گیا}}</translation>
 <translation id="120431140543679678">پیروی کریں</translation>
 <translation id="1207493287814084192">شام 5:30 بجے</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">نیا آئٹم</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> اکاؤنٹس ایک ہی پاس ورڈ کا استعمال کر رہے ہیں</translation>
 <translation id="2059166748188874810">میونسپلٹی</translation>
-<translation id="2060114494785549741">‫1 مہینے میں حذف کریں</translation>
 <translation id="2060638295449304809">‏یہ پتہ صرف اس آلہ میں محفوظ ہے۔ اپنے دیگر آلات پر اس کا استعمال کرنے کے لیے، اسے اپنے Google اکاؤنٹ، <ph name="USER_EMAIL" /> میں محفوظ کریں</translation>
 <translation id="20638360198452347">یونٹ کی قسم کا منتخب کنندہ</translation>
 <translation id="2067852168641682340">ہر بار اس اکاؤنٹ میں محفوظ کریں</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">قیمت ٹریک کرنے والے کارڈ چھپائیں</translation>
 <translation id="2216366330550244277">کسی پروڈکٹ کے صفحہ پر جائیں۔</translation>
 <translation id="2220529011494928058">ایک مسئلے کی اطلاع دیں</translation>
-<translation id="2220887224562128152">کسی فائل کو حذف کرنا شیڈول کرنے کے بعد اسے بازیافت نہیں کیا جا سکتا۔</translation>
 <translation id="2223461067862937305">‏‫QR کوڈ تخلیق کریں</translation>
 <translation id="2229345671837147090">ریموٹ ٹیب کا گرڈ</translation>
 <translation id="2230173723195178503">ویب صفحہ لوڈ کر دیا گیا ہے</translation>
@@ -384,7 +381,6 @@
 <translation id="2539748786028143624">بہتر کردہ حفاظت آن کریں…</translation>
 <translation id="2540111494300686866">ڈائیلاگز کو بند کریں</translation>
 <translation id="2542268842667970959">"سیفٹی چیک" چھپائیں</translation>
-<translation id="2543870349255816922">یہ کارڈ آپ کے مطابقت پذیر آلات میں سے ایک سے آپ کے ٹریک کردہ پروڈکٹ کی قیمت میں کمی کو دکھاتا ہے</translation>
 <translation id="2547458583188611426">مطابقت پذیری کام نہیں کر رہی ہے۔ مطابقت پذیری شروع کرنے کے لیے اپنا پاس فریز درج کریں۔</translation>
 <translation id="2551153019974022505">اکاؤنٹ کی خرابی</translation>
 <translation id="2559843230610279254">ٹیب گروپ، <ph name="GROUP_TITLE" />، <ph name="TABS_NUMBER" /> ٹیبز</translation>
@@ -444,6 +440,7 @@
 <translation id="2783161812871838616">ڈیسک ٹاپ سائٹ کی درخواست کریں</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{‏آپ کے Google اکاؤنٹ {EMAIL} میں پاس ورڈ محفوظ کیا گیا ہے}other{‏آپ کے Google اکاؤنٹ {EMAIL} میں پاس ورڈز محفوظ کیے گئے ہیں}}</translation>
 <translation id="2791174088547598693">پاس ورڈ شامل کریں…</translation>
+<translation id="2793703503584038325">پاسورڈ منتخب کریں اور "اشتراک کریں" کے آئیکن پر تھپتھپائیں</translation>
 <translation id="2797302972324086597">ملک کا کوڈ</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{‫{COUNT} فائل}other{‫{COUNT} فائلز}}</translation>
 <translation id="2816489851009559785">مینو ← ترتیبات ← ڈیفالٹ براؤزر</translation>
@@ -494,7 +491,6 @@
 <translation id="3059270601560379555">نئی تلاش</translation>
 <translation id="3064547930554042309">ڈاؤن لوڈز کا نظم کریں</translation>
 <translation id="3072279342064724558">پاس ورڈ پہلے سے موجود ہے</translation>
-<translation id="3074862506644936708">خودکار طور پر حذف کرنے کو فعال کریں</translation>
 <translation id="3076846064362030967">‏آپ اپنے Google اکاؤنٹ سے سائن آؤٹ نہیں ہوں گے۔ سائن ان ہونے پر آپ کے Google اکاؤنٹ میں <ph name="BEGIN_LINK" />سرگرمی کی دیگر اقسام<ph name="END_LINK" /> محفوظ ہو سکتی ہیں۔ آپ انہیں کسی بھی وقت حذف کر سکتے ہیں۔
 
 
@@ -584,6 +580,7 @@
 <translation id="35083190962747987">‏{url}$ کھولیں</translation>
 <translation id="3511519535430890904">براؤزنگ کا تحفظ شامل کریں</translation>
 <translation id="3517216995152707259">‏اپنے براؤزنگ ڈیٹا کو حذف کرنے پر، آپ اپنے Google اکاؤنٹ سے سائن آؤٹ نہیں ہوتے ہیں۔ ایسا کرنے کیلئے، <ph name="BEGIN_LINK" />Chrome سے سائن آؤٹ کریں<ph name="END_LINK" />۔</translation>
+<translation id="3519792890877853853">یہ کارڈ آپ کے کھلے ٹیبز میں موجود پروڈکٹس کے لیے جائزے دکھاتا ہے۔</translation>
 <translation id="3519905498307021260">{count,plural, =1{ٹیب کھولیں}other{{count} ٹیبز کھولیں}}</translation>
 <translation id="3523513363815970085">"آپ کی سرفہرست سائٹس" چھپائیں</translation>
 <translation id="3523789730715594198">‏آپ ترتیبات میں کسی بھی وقت مطابقت پذیری کو روک سکتے ہیں۔ Google آپ کی سرگزشت کی بنیاد پر تلاش اور دیگر سروسز کو ذاتی نوعیت کا بنا سکتا ہے۔</translation>
@@ -824,6 +821,7 @@
 <translation id="4565377596337484307">پاس ورڈ چھپائیں</translation>
 <translation id="4568230126482344545">حالیہ ٹیبز کو چھپائیں</translation>
 <translation id="4578835633387306383">آن کریں…</translation>
+<translation id="4580716718466706433">"پاس ورڈ مینیجر" پر جائیں</translation>
 <translation id="4587589328781138893">سائٹیں</translation>
 <translation id="4592672037257622855">{count,plural, =1{صفحہ آپ کی پڑھنے کی فہرست میں شامل کیا گیا}other{‫{count} صفحات کو آپ کی پڑھنے کی فہرست میں شامل کیا گیا}}</translation>
 <translation id="459644946100970322">قیمت کے الرٹس کو آن کریں؟</translation>
@@ -863,6 +861,7 @@
 <translation id="4717844083556844785">موجودہ ویب صفحہ پوشیدگی پر ہے</translation>
 <translation id="4719927025381752090">ترجمہ کرنے کی پیشکش</translation>
 <translation id="4720530280568305198">آپ کا انتخاب نئے ٹیب میں کھلا ہے</translation>
+<translation id="472259426228234149">‏قیمت ‎$100 - $180</translation>
 <translation id="473775607612524610">اپ ڈيٹ کریں</translation>
 <translation id="474209246745757965">اپنے کیمرے سے خریداری اور ترجمہ کریں</translation>
 <translation id="4742407542027196863">پاس ورڈز کا نظم کریں…</translation>
@@ -913,6 +912,7 @@
 <translation id="4896467949657706481">ٹیبز بند کیے گئے؛ آپ کو سائن آؤٹ کیا گیا</translation>
 <translation id="4913626501929406101">آپ اپنے فیملی گروپ میں کسی کے ساتھ اپنے پاس ورڈ کی کاپی کا اشتراک محفوظ طریقے سے کر سکتے ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">قبول کریں</translation>
+<translation id="4930714375720679147">آن کریں</translation>
 <translation id="4932733599132424254">تاریخ</translation>
 <translation id="4936354130727646074">کبھی منتقل نہ کریں</translation>
 <translation id="4937410517508563815">اکاؤنٹ میں پاس ورڈز محفوظ کریں</translation>
@@ -1148,7 +1148,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5899314093904173337">‏قریبی لوگوں سے اشتراک کرنے کے لیے، انہیں اس QR کوڈ کو ان کے کیمرے یا QR اسکینر ایپ سے اسکین کرنے دیں</translation>
 <translation id="5902752768726620872">{count,plural, =1{‫{count} نیا ٹیب}other{‫{count} نئے ٹیبز}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
-<translation id="5917913282764181683">اپنے ڈاؤن لوڈز کو خودکار طور پر حذف کریں</translation>
 <translation id="5922999516621365983">اسے پن کرنے کے لیے ٹیب کو یہاں گھسیٹیں۔</translation>
 <translation id="5936006948844852401">اسٹوریج کا نظم کریں</translation>
 <translation id="5936065461722368675">مکمل صفحے کا ترجمہ کریں</translation>
@@ -1507,7 +1506,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="741204030948306876">ہاں، میں شامل ہوں</translation>
 <translation id="7417689656810783109">گروپ کا نام تبدیل کریں</translation>
 <translation id="7419565702166471774">ہمیشہ محفوظ کنکشنز کا استعمال کریں</translation>
-<translation id="742001653298797675">اپنے فون پر جگہ بچانے اور اپنی رازداری کی حفاظت کرنے کے لیے اپنے تمام ڈاؤن لوڈز کو ایک ماہ کے بعد حذف کرنے کے لیے شیڈول کریں۔</translation>
 <translation id="7425053386765766120">ادائیگی کا طریقہ شامل کریں…</translation>
 <translation id="7425346204213733349">‏آپ کے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات کی تبدیلیوں کی مزید آپ کے Google اکاؤنٹ کے ساتھ مطابقت پذیری نہیں کی جائے گی۔ البتہ آپ کا موجودہ ڈیٹا آپ کے Google اکاؤنٹ میں اسٹور رہے گا۔</translation>
 <translation id="742664698522525515">گروپ کو برقرار رکھیں؟</translation>

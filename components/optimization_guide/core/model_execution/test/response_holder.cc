@@ -81,7 +81,12 @@ void ResponseHolder::OnStreamingResponse(
     final_status_future_.SetValue(false);
     return;
   }
-  response_received_ = GetOutput(*result.response);
+  std::string full_response;
+  for (auto partial_response : partial_responses_) {
+    full_response += partial_response;
+  }
+  full_response += GetOutput(*result.response);
+  response_received_ = full_response;
   final_status_future_.SetValue(true);
 }
 

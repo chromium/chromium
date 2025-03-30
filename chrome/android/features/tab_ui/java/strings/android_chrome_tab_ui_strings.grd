@@ -1048,6 +1048,11 @@
       <message name="IDS_ADD_TO_BOOKMARKS" desc="Content description for an action which adds a tab to the bookmarks.">
         Add to bookmarks
       </message>
+      <message name="IDS_MOVE_TAB_TO_ANOTHER_WINDOW" desc="Content description for an action which moves a tab to another window.">
+        {WINDOW_COUNT, plural,
+          =1 {Move to new window}
+          other {Move to other window}}
+      </message>
 
       <!-- Tab Group List Bottom Sheet -->
       <message name="IDS_TAB_GROUP_LIST_BOTTOM_SHEET_TITLE" desc="Title text for a bottom sheet which is used to add a tab to a tab group.">

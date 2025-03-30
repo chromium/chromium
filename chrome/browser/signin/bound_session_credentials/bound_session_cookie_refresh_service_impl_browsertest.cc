@@ -34,7 +34,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "net/cookies/canonical_cookie.h"
@@ -629,7 +629,7 @@ class BoundSessionCookieRefreshServiceImplBrowserTest
 
   base::test::ScopedFeatureList feature_list_{
       switches::kEnableBoundSessionCredentials};
-  crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
   // `server_host_` must outlive `embedded_test_server_handle_`.
   std::vector<std::unique_ptr<FakeServerHost>> server_hosts_;
   net::test_server::EmbeddedTestServerHandle embedded_test_server_handle_;

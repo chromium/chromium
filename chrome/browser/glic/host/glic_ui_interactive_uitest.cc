@@ -189,14 +189,28 @@ class GlicUiInteractiveUiTestBase : public test::InteractiveGlicTest {
 };
 
 // Tests the network being connected at startup (as normal).
-class GlicUiConnectedUiTest : public GlicUiInteractiveUiTestBase {
+class GlicUiConnectedUiTest : public GlicUiInteractiveUiTestBase,
+                              public testing::WithParamInterface<bool> {
  public:
   GlicUiConnectedUiTest()
-      : GlicUiInteractiveUiTestBase(TestParams(/*connected=*/true)) {}
+      : GlicUiInteractiveUiTestBase(TestParams(/*connected=*/true)) {
+    if (IsDetachedOnlyModeEnabled()) {
+      feature_list_.InitAndEnableFeature(features::kGlicDetached);
+    } else {
+      feature_list_.InitAndDisableFeature(features::kGlicDetached);
+    }
+  }
   ~GlicUiConnectedUiTest() override = default;
+
+  bool IsDetachedOnlyModeEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(GlicUiConnectedUiTest, DisconnectedPanelHidden) {
+INSTANTIATE_TEST_SUITE_P(All, GlicUiConnectedUiTest, testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest, DisconnectedPanelHidden) {
   RunTestSequence(
       ObserveState(kGlicUiStateHistory, &window_controller()),
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly),
@@ -204,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(GlicUiConnectedUiTest, DisconnectedPanelHidden) {
       CheckElementVisible(kOfflinePanel, false));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicUiConnectedUiTest,
+IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest,
                        DoesNotHidePanelWhenReadyButOffline) {
   RunTestSequence(
       ObserveState(kGlicUiStateHistory, &window_controller()),
@@ -214,14 +228,17 @@ IN_PROC_BROWSER_TEST_F(GlicUiConnectedUiTest,
       CheckState(kGlicUiStateHistory, IsCurrently(WebUiState::kReady)));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicUiConnectedUiTest, CanAttachWithBrowserWindow) {
+IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest, CanAttachWithBrowserWindow) {
+  if (IsDetachedOnlyModeEnabled()) {
+    GTEST_SKIP();
+  }
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents),
                   CheckMockElementChecked({"#canAttachCheckbox"}, true));
 }
 
 // DISABLED: Not reliable yet.
-IN_PROC_BROWSER_TEST_F(GlicUiConnectedUiTest,
+IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest,
                        DISABLED_CanNotAttachWithMinimizedBrowser) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached,
@@ -235,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(GlicUiConnectedUiTest,
       CheckMockElementChecked({"#canAttachCheckbox"}, false));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicUiConnectedUiTest,
+IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest,
                        DoesNotNavigateToUnsupportedOrigin) {
   RunTestSequence(
       ObserveState(kGlicUiStateHistory, &window_controller()),
@@ -253,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(GlicUiConnectedUiTest,
   })js")));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicUiConnectedUiTest, DoesNavigateToSupportedOrigin) {
+IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest, DoesNavigateToSupportedOrigin) {
   RunTestSequence(
       ObserveState(kGlicUiStateHistory, &window_controller()),
       OpenGlicWindow(GlicWindowMode::kAttached,

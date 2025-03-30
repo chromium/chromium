@@ -37,12 +37,12 @@ std::string LoadDataFromFile(const base::FilePath& file) {
 
   std::string data;
   if (!base::PathExists(file)) {
-    VLOG(1) << "File does not exist: " << file;
+    DVLOG(1) << "File does not exist: " << file;
     return std::string();
   }
 
   if (!base::ReadFileToString(file, &data)) {
-    VLOG(1) << "Failed reading from file: " << file;
+    DVLOG(1) << "Failed reading from file: " << file;
     return std::string();
   }
 

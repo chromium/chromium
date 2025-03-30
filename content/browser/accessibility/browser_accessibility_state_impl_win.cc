@@ -87,7 +87,7 @@ uint32_t DiscoverAssistiveTech() {
     if (base::EqualsCaseInsensitiveASCII(module_name,
                                          "vbufbackend_gecko_ia2.dll") ||
         base::EqualsCaseInsensitiveASCII(module_name, "nvdahelperremote.dll")) {
-      discovered_ats |= kNarrator;
+      discovered_ats |= kNvda;
     }
     if (base::EqualsCaseInsensitiveASCII(module_name, "dolwinhk.dll")) {
       discovered_ats |= kSupernova;

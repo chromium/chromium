@@ -112,6 +112,7 @@
 <translation id="244264527810019436">Funktioner på vissa webbplatser kanske inte fungerar i inkognitoläge</translation>
 <translation id="2442870161001914531">Begär alltid datorversionen av webbplatsen</translation>
 <translation id="2445311670906052406">Chrome delar nu dina senaste flikar med enheten. Du ser dem i enhetens applista och sökresultat. Du kan inaktivera detta när som helst i Chrome-inställningarna.</translation>
+<translation id="245322989586167203">Åtkomst till serieportar brukar kunna behövas för dataöverföring, t.ex. vid konfigurering av ett nätverk</translation>
 <translation id="2469312991797799607">När du gör detta raderas all data och alla cookies för <ph name="ORIGIN" /> och alla underordnade webbplatser</translation>
 <translation id="2482878487686419369">Aviseringar</translation>
 <translation id="2485422356828889247">Avinstallera</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">Blockera webbplatser från att veta när du använder enheten aktivt</translation>
 <translation id="4412992751769744546">Tillåt cookies från tredje part</translation>
 <translation id="4419929467120297501">Chrome blockerar webbplatser från att spåra dig med hjälp av tredjepartscookies när du surfar. Öppna inställningarna för att <ph name="BEGIN_LINK" />hantera åtkomst till tredjepartscookies<ph name="END_LINK" />.</translation>
+<translation id="443121186588148776">Serieport</translation>
 <translation id="4434045419905280838">Popup-fönster och omdirigeringar</translation>
 <translation id="443552056913301231">Om du gör detta raderas all lokal data, inklusive cookies, och alla behörigheter för <ph name="ORIGIN" /> återställs</translation>
 <translation id="4468959413250150279">Stäng av ljudet för en webbplats.</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Fråga först</translation>
 <translation id="7423538860840206698">Läsbehörighet till Urklipp har nekats</translation>
 <translation id="7425915948813553151">Mörkt tema för webbplatser</translation>
+<translation id="7478658909253570368">Tillåt inte att webbplatser ansluter till en serieport</translation>
 <translation id="7488573225650545859">Dölj Visa flikar i applistan</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">När detta är aktiverat kan webbplatser visa inloggningspromptar. När detta är inaktiverat får webbplatser inte visa inloggningspromptar.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Ansluten till en Bluetooth-enhet</translation>
 <translation id="7617547684249261169">Du kan radera all eller delar av din historik, dina cookies, webbplatsdata med mera</translation>
 <translation id="7649070708921625228">Hjälp</translation>
+<translation id="7655411746932645568">Webbplatser får begära tillstånd att ansluta till en serieport</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7667547420449112975">Trollkarlen från Oz</translation>
 <translation id="7681597159868843240">Åtkomst till enhetens rörelsesensorer brukar kunna behövas för funktioner som virtuell verklighet eller att hålla koll på träningen</translation>

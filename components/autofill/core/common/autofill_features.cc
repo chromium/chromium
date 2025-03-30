@@ -51,6 +51,15 @@ BASE_FEATURE(kAutofillAddressUserPerceptionSurvey,
              "AutofillAddressUserPerceptionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled (and if `AutofillAiServerModel` is also enabled), this ignores
+// the `may_run_server_model` boolean sent by the Autofill server and, instead,
+// queries the server model for every encountered form that is not already
+// cached locally.
+// Only intended for testing.
+BASE_FEATURE(kAutofillAiAlwaysTriggerServerModel,
+             "AutofillAiAlwaysTriggerServerModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, no GeoIp requirements are imposed for AutfillAi. Intended for
 // Dogfood and testing only.
 BASE_FEATURE(kAutofillAiIgnoreGeoIp,

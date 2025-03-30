@@ -262,4 +262,8 @@ const base::FeatureParam<int>
         &kInternalBeginFrameSourceOnManyDidNotProduceFrame,
         "num_did_not_produce_frame_before_internal_begin_frame_source", 4};
 
+BASE_FEATURE(kUseLayerListsByDefault,
+             "UseLayerListsByDefault",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

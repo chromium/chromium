@@ -8,6 +8,7 @@
 <translation id="100323615638474026">Kifaa cha USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Historia ya upakuaji ya hivi majuzi</translation>
 <translation id="1004218526896219317">Ufikiaji wa tovuti</translation>
+<translation id="1005230401424685968">YYYY</translation>
 <translation id="1005274289863221750">Tumia kipazasauti na kamera yako</translation>
 <translation id="1005333234656240382">Ungependa kuwasha utatuzi wa ADB?</translation>
 <translation id="1005671386794704751">Waridi</translation>
@@ -1373,6 +1374,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="193565226207940518">Zana ya Usaidizi</translation>
 <translation id="1935995810530254458">Nakili tu</translation>
 <translation id="1936157145127842922">Onyesha katika Folda</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Ukurasa umewekwa kwenye orodha ya kusoma}other{Kurasa zimewekwa kwenye orodha ya kusoma}}</translation>
 <translation id="1936931585862840749">Tumia namba kuonyesha idadi ya nakala za kuchapisha (moja hadi <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Haiwezi kupakia metadata ya aina ya usanifu wa<ph name="ARCHITECTURE_CONTAINER" /> kwa kutumia kifaa hiki ambacho ni <ph name="ARCHITECTURE_DEVICE" />. Unaweza kujaribu kurejesha metadata hii kwenye kifaa tofauti, au unaweza kufikia faili zilizo ndani ya picha ya metadata hii kwa kuzifungua katika programu ya Faili.</translation>
 <translation id="1938351510777341717">Amri ya Nje</translation>
@@ -2015,6 +2017,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2373666622366160481">Fanya itoshe kwenye karatasi</translation>
 <translation id="2375406435414127095">Unganisha kwenye simu yako</translation>
 <translation id="2376056713414548745">Soma kwa sauti</translation>
+<translation id="2376122016044804363">Kunakili kwenye uthibitisho wa ubao wa kunakili</translation>
 <translation id="2377667304966270281">Mabadilko ya Hifadhi</translation>
 <translation id="237828693408258535">Ungependa kutafsiri ukurasa huu?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Huenda kiendelezi hiki kikaacha kutumika hivi karibuni}other{Huenda viendelezi hivi vikaacha kutumika hivi karibuni}}</translation>
@@ -2989,6 +2992,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3045447014237878114">Tovuti hii ilipakua faili nyingi kiotomatiki</translation>
 <translation id="3046178388369461825">Nafasi ya hifadhi kwenye diski ya Linux ni ndogo sana</translation>
 <translation id="304644035656848980">Onyesho la kukagua maikrofoni yako</translation>
+<translation id="3046892784550338476">Toleo la <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Ukurasa wa wavuti, Umekamilika</translation>
 <translation id="304747341537320566">Mitambo ya Sauti</translation>
 <translation id="3047678109605649715">Hakuna sauti za <ph name="LANGUAGE" /> kwenye kifaa chako. Futa vipengee ili upate nafasi kwenye kifaa chako kisha ujaribu tena.</translation>
@@ -3081,6 +3085,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3122883569442693641">Maelezo zaidi</translation>
 <translation id="3124111068741548686">Mishikilio ya MTUMIAJI</translation>
 <translation id="3124332159330678621">Badilisha Chrome yako upendavyo ili ukipe kivinjari chako mwonekano mpya</translation>
+<translation id="3125816458150005808">Sasa unaweza kukibandua na ukifungue kwenye menyu</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Ili uzuie matatizo ya kuchaji na utendaji, tumia Dell inayokubalika au adapta ya nishati ya USB Aina ya C.</translation>
 <translation id="3127862849166875294">Kubadilisha ukubwa wa diski kwenye Linux</translation>
@@ -3169,6 +3174,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3192586965067888278">Eleza tatizo kwa kina. Maoni yatatumwa kwa Google ili yafanyiwe uhakiki na binadamu na yanaweza kutumiwa kuboresha au kubuni bidhaa na huduma za Google.</translation>
 <translation id="3192947282887913208">Faili za Sauti</translation>
 <translation id="3193695589337931419">Programu Saidizi ya Mawimbi ya Mfumo</translation>
+<translation id="3194095220941877499">Huonyesha uthibitisho unaponakili viungo, picha au video</translation>
 <translation id="3196912927885212665">Ili uweke mipangilio kwenye simu yako ya Android, Bluetooth ya Chromebook yako inapaswa kuwa imewashwa</translation>
 <translation id="3197453258332670132">Ukibofya kulia au ukibonyeza kwa muda mrefu, unaweza kuonyesha maelezo yanayohusiana na maandishi uliyoyachagua</translation>
 <translation id="3199127022143353223">Seva</translation>
@@ -3183,7 +3189,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
         <ph name="BREAK" />
         <ph name="BREAK" />
         Unaweza kudhibiti mipangilio katika kadi hii wakati wowote au uangalie chaguo zaidi kwenye kipengele cha Badilisha Chrome Upendavyo.</translation>
-<translation id="3207437351138888228">Unapojaza fomu, taarifa zako na ukurasa ambako zinatoka hutumwa kwenda Google ili kubuni mapendekezo</translation>
 <translation id="3207960819495026254">Imealamishwa</translation>
 <translation id="3208584281581115441">Angalia sasa</translation>
 <translation id="3208703785962634733">Haijathibitishwa</translation>
@@ -3228,6 +3233,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3242289508736283383">Programu iliyo na kipengee cha maelezo ya 'kiosk_only' lazima isakinishwe kwenye skrini nzima ya Mfumo wa Uendeshaji wa Chrome</translation>
 <translation id="3243017971870859287">Kusoma namba za ufuatiliaji wa kifaa na vipengele vya ChromeOS Flex</translation>
 <translation id="324366796737464147">Udhibiti wa kelele</translation>
+<translation id="3244271242291266297">MW</translation>
 <translation id="3244294424315804309">Endelea kuzima sauti</translation>
 <translation id="3247006341013237647">Je, ungependa kupanga vichupo?</translation>
 <translation id="3247649647204519958">Kutoka hapa, unaweza kuona na kudhibiti ruhusa za viendelezi katika tovuti uliyopo</translation>
@@ -5328,6 +5334,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4723140812774948886">Badilisha na inayofuata</translation>
 <translation id="4724450788351008910">Ushirika Ulibadilika</translation>
 <translation id="4725511304875193254">Mbwa mlinzi</translation>
+<translation id="4725762702191453794">Kipengele cha Utafutaji kwenye vichupo sasa kimebandikwa kwenye upau wa vidhibiti</translation>
 <translation id="4726710355753484204">Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kuongeza Mwangaza kwa wakati mmoja ili uvute karibu.
 Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mmoja ili usogeze mbali.</translation>
 <translation id="4726710629007580002">Kulikuwa na maonyo wakati wa kujaribu kusakinisha kiendelezi hiki:</translation>
@@ -6093,7 +6100,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5267572070504076962">Washa kipengele cha Kuvinjari Salama ili upate ulinzi dhidi ya tovuti zisizo salama</translation>
 <translation id="5269977353971873915">Uchapishaji Haukufanikiwa</translation>
 <translation id="5271578170655641944">Ungependa kuondoa idhini ya kufikia Hifadhi ya Google?</translation>
-<translation id="5271782684896713035">Huenda wahakiki wanadamu wakaona data ili kuboresha kipengele hiki</translation>
 <translation id="5273806377963980154">Badilisha URL ya tovuti</translation>
 <translation id="5275084684151588738">Kamusi za Mtumiaji</translation>
 <translation id="5275338516105640560">Kitufe cha Kikundi cha Vichupo Vilivyohifadhiwa</translation>

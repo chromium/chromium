@@ -30,6 +30,7 @@
 #include "base/numerics/math_constants.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -1877,6 +1878,44 @@ TEST_F(DisplayPrefsTest, IsDisplayAvailableInPref) {
   // Display is available in prefs after adding the display.
   UpdateDisplay("300x200");
   EXPECT_TRUE(display_prefs()->IsDisplayAvailableInPref(id));
+}
+
+class DisplayPrefsStartupTest : public DisplayPrefsTest {
+ public:
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ::switches::kUseFirstDisplayAsInternal);
+    ScopedDictPrefUpdate update(local_state(), prefs::kDisplayRotationLock);
+    update->Set("lock", true);
+    update->Set("orientation",
+                static_cast<int>(display::Display::Rotation::ROTATE_90));
+    DisplayPrefsTest::SetUp();
+  }
+};
+
+// Make sure that the orientation lock information is correctly preserved
+// during the startup in Tablet Mode, so that it'll be locked to the correct,
+// same orientation in next startup time. crbug.com/391763863.
+TEST_F(DisplayPrefsStartupTest, RotationLockInfoDuringStartupInTabletMode) {
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+
+  ASSERT_TRUE(base::test::RunUntil(
+      []() -> bool { return display::Screen::GetScreen()->InTabletMode(); }));
+
+  auto display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  ScreenOrientationController* screen_orientation_controller =
+      Shell::Get()->screen_orientation_controller();
+
+  EXPECT_EQ(display::Display::Rotation::ROTATE_90, display.rotation());
+  EXPECT_TRUE(screen_orientation_controller->rotation_locked());
+
+  const base::Value::Dict& properties =
+      local_state()->GetDict(prefs::kDisplayRotationLock);
+  const std::optional<bool> rotation_lock = properties.FindBool("lock");
+  EXPECT_TRUE(rotation_lock.value_or(false));
+
+  const std::optional<int> rotation = properties.FindInt("orientation");
+  EXPECT_EQ(display::Display::Rotation::ROTATE_90, rotation.value_or(-1));
 }
 
 }  // namespace ash

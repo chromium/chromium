@@ -21,15 +21,16 @@ namespace extensions {
 // All methods on the host interface should be called on |host_task_runner|.
 // All methods on |port| (that calls into MessageServices) should be called
 // on |message_service_task_runner|.
-class NativeMessagePort::Core : public NativeMessageHost::Client {
+class NativeMessagePortDispatcher : public NativeMessagePort::Dispatcher,
+                                    public NativeMessageHost::Client {
  public:
-  Core(
+  NativeMessagePortDispatcher(
       std::unique_ptr<NativeMessageHost> host,
       base::WeakPtr<NativeMessagePort> port,
       scoped_refptr<base::SingleThreadTaskRunner> message_service_task_runner_);
-  ~Core() override;
+  ~NativeMessagePortDispatcher() override;
 
-  void OnMessageFromChrome(const std::string& message);
+  void DispatchOnMessage(const std::string& message) override;
 
   // NativeMessageHost::Client implementation.
   void PostMessageFromNativeHost(const std::string& message) override;
@@ -43,7 +44,7 @@ class NativeMessagePort::Core : public NativeMessageHost::Client {
   scoped_refptr<base::SingleThreadTaskRunner> host_task_runner_;
 };
 
-NativeMessagePort::Core::Core(
+NativeMessagePortDispatcher::NativeMessagePortDispatcher(
     std::unique_ptr<NativeMessageHost> host,
     base::WeakPtr<NativeMessagePort> port,
     scoped_refptr<base::SingleThreadTaskRunner> message_service_task_runner)
@@ -58,18 +59,19 @@ NativeMessagePort::Core::Core(
                      base::Unretained(this)));
 }
 
-NativeMessagePort::Core::~Core() {
+NativeMessagePortDispatcher::~NativeMessagePortDispatcher() {
   DCHECK(host_task_runner_->BelongsToCurrentThread());
 }
 
-void NativeMessagePort::Core::OnMessageFromChrome(const std::string& message) {
+void NativeMessagePortDispatcher::DispatchOnMessage(
+    const std::string& message) {
   DCHECK(message_service_task_runner_->BelongsToCurrentThread());
   host_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&NativeMessageHost::OnMessage,
                                 base::Unretained(host_.get()), message));
 }
 
-void NativeMessagePort::Core::PostMessageFromNativeHost(
+void NativeMessagePortDispatcher::PostMessageFromNativeHost(
     const std::string& message) {
   DCHECK(host_task_runner_->BelongsToCurrentThread());
   message_service_task_runner_->PostTask(
@@ -77,7 +79,8 @@ void NativeMessagePort::Core::PostMessageFromNativeHost(
                                 port_, message));
 }
 
-void NativeMessagePort::Core::CloseChannel(const std::string& error_message) {
+void NativeMessagePortDispatcher::CloseChannel(
+    const std::string& error_message) {
   DCHECK(host_task_runner_->BelongsToCurrentThread());
   message_service_task_runner_->PostTask(
       FROM_HERE,
@@ -90,14 +93,14 @@ NativeMessagePort::NativeMessagePort(
     std::unique_ptr<NativeMessageHost> native_message_host)
     : MessagePort(std::move(channel_delegate), port_id),
       host_task_runner_(native_message_host->task_runner()) {
-  core_ = std::make_unique<Core>(
+  dispatcher_ = std::make_unique<NativeMessagePortDispatcher>(
       std::move(native_message_host), weak_factory_.GetWeakPtr(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 NativeMessagePort::~NativeMessagePort() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  host_task_runner_->DeleteSoon(FROM_HERE, core_.release());
+  host_task_runner_->DeleteSoon(FROM_HERE, dispatcher_.release());
 }
 
 bool NativeMessagePort::IsValidPort() {
@@ -108,7 +111,7 @@ bool NativeMessagePort::IsValidPort() {
 
 void NativeMessagePort::DispatchOnMessage(const Message& message) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  core_->OnMessageFromChrome(message.data);
+  dispatcher_->DispatchOnMessage(message.data);
 }
 
 void NativeMessagePort::PostMessageFromNativeHost(const std::string& message) {

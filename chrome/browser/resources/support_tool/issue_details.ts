@@ -36,7 +36,7 @@ export class IssueDetailsElement extends IssueDetailsElementBase {
       },
       emails_: {
         type: Array,
-        value: () => [],
+        value: () => [loadTimeData.getString('dontIncludeEmailAddress')],
       },
       issueDescription_: {
         type: String,
@@ -49,10 +49,10 @@ export class IssueDetailsElement extends IssueDetailsElementBase {
     };
   }
 
-  private caseId_: string;
-  private emails_: string[] = [this.i18n('dontIncludeEmailAddress')];
-  private issueDescription_: string;
-  private selectedEmail_: string;
+  declare private caseId_: string;
+  declare private emails_: string[];
+  declare private issueDescription_: string;
+  declare private selectedEmail_: string;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
 

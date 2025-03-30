@@ -332,6 +332,10 @@ You can use [rr](https://rr-project.org) for time travel debugging, so you
 can also step or execute backwards. This works by first recording a trace
 and then debugging based on that.
 
+For Googlers, if you have a remote cloud machine, please follow this
+[instruction](https://engdoc.corp.google.com/eng/doc/devguide/debugging/rr.md#setting-up-rr)
+to set up the machine in order to use the rr tool.
+
 You need an up-to-date version of rr, since rr is frequently updated to support
 new parts of the Linux system call API surface that Chromium uses. If you have
 any issues with the latest release version, try compiling rr

@@ -528,7 +528,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_credentials_credentials_java") {
-    aar_path = "../androidx/cipd/libs/androidx_credentials_credentials/credentials-1.5.0.aar"
+    aar_path = "../androidx/cipd/libs/androidx_credentials_credentials/credentials-1.6.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_credentials_credentials/androidx_credentials_credentials.info"
     enable_bytecode_checks = false
     deps = [
@@ -536,6 +536,7 @@ if (!limit_android_deps) {
       ":androidx_biometric_biometric_java",
       ":androidx_core_core_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+      "//third_party/android_deps:org_jspecify_jspecify_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
@@ -543,7 +544,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_credentials_credentials_play_services_auth_java") {
-    aar_path = "../androidx/cipd/libs/androidx_credentials_credentials_play_services_auth/credentials-play-services-auth-1.5.0.aar"
+    aar_path = "../androidx/cipd/libs/androidx_credentials_credentials_play_services_auth/credentials-play-services-auth-1.6.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_credentials_credentials_play_services_auth/androidx_credentials_credentials_play_services_auth.info"
     enable_bytecode_checks = false
     deps = [
@@ -1254,7 +1255,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_test_core_java") {
-    aar_path = "../androidx/cipd/libs/androidx_test_core/core-1.7.0-alpha01.aar"
+    aar_path = "../androidx/cipd/libs/androidx_test_core/core-1.7.0-alpha02.aar"
     info_path =
         "../androidx/committed/libs/androidx_test_core/androidx_test_core.info"
     enable_bytecode_checks = false
@@ -1293,7 +1294,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_test_espresso_espresso_core_java") {
-    aar_path = "../androidx/cipd/libs/androidx_test_espresso_espresso_core/espresso-core-3.7.0-alpha01.aar"
+    aar_path = "../androidx/cipd/libs/androidx_test_espresso_espresso_core/espresso-core-3.7.0-alpha02.aar"
     info_path = "../androidx/committed/libs/androidx_test_espresso_espresso_core/androidx_test_espresso_espresso_core.info"
     enable_bytecode_checks = false
     testonly = true
@@ -1349,7 +1350,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_test_ext_junit_java") {
     aar_path =
-        "../androidx/cipd/libs/androidx_test_ext_junit/junit-1.3.0-alpha01.aar"
+        "../androidx/cipd/libs/androidx_test_ext_junit/junit-1.3.0-alpha02.aar"
     info_path = "../androidx/committed/libs/androidx_test_ext_junit/androidx_test_ext_junit.info"
     enable_bytecode_checks = false
     testonly = true
@@ -1366,7 +1367,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_test_monitor_java") {
     aar_path =
-        "../androidx/cipd/libs/androidx_test_monitor/monitor-1.8.0-alpha01.aar"
+        "../androidx/cipd/libs/androidx_test_monitor/monitor-1.8.0-alpha02.aar"
     info_path = "../androidx/committed/libs/androidx_test_monitor/androidx_test_monitor.info"
     enable_bytecode_checks = false
     testonly = true
@@ -1380,7 +1381,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_test_rules_java") {
     aar_path =
-        "../androidx/cipd/libs/androidx_test_rules/rules-1.7.0-alpha01.aar"
+        "../androidx/cipd/libs/androidx_test_rules/rules-1.7.0-alpha02.aar"
     info_path = "../androidx/committed/libs/androidx_test_rules/androidx_test_rules.info"
     enable_bytecode_checks = false
     testonly = true
@@ -1394,7 +1395,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_test_runner_java") {
     aar_path =
-        "../androidx/cipd/libs/androidx_test_runner/runner-1.7.0-alpha01.aar"
+        "../androidx/cipd/libs/androidx_test_runner/runner-1.7.0-alpha02.aar"
     info_path = "../androidx/committed/libs/androidx_test_runner/androidx_test_runner.info"
     enable_bytecode_checks = false
     testonly = true
@@ -1409,7 +1410,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_test_services_storage_java") {
-    aar_path = "../androidx/cipd/libs/androidx_test_services_storage/storage-1.6.0-alpha02.aar"
+    aar_path = "../androidx/cipd/libs/androidx_test_services_storage/storage-1.6.0-alpha03.aar"
     info_path = "../androidx/committed/libs/androidx_test_services_storage/androidx_test_services_storage.info"
     enable_bytecode_checks = false
     testonly = true
@@ -2408,7 +2409,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_emoji2_emoji2_java") {
-    aar_path = "../androidx/cipd/libs/androidx_emoji2_emoji2/emoji2-1.5.0.aar"
+    aar_path =
+        "../androidx/cipd/libs/androidx_emoji2_emoji2/emoji2-1.6.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_emoji2_emoji2/androidx_emoji2_emoji2.info"
     enable_bytecode_checks = false
 
@@ -2424,12 +2426,13 @@ if (!limit_android_deps) {
       ":androidx_core_core_java",
       ":androidx_lifecycle_lifecycle_process_java",
       ":androidx_startup_startup_runtime_java",
+      "//third_party/android_deps:org_jspecify_jspecify_java",
     ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_emoji2_emoji2_views_helper_java") {
-    aar_path = "../androidx/cipd/libs/androidx_emoji2_emoji2_views_helper/emoji2-views-helper-1.5.0.aar"
+    aar_path = "../androidx/cipd/libs/androidx_emoji2_emoji2_views_helper/emoji2-views-helper-1.6.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_emoji2_emoji2_views_helper/androidx_emoji2_emoji2_views_helper.info"
     enable_bytecode_checks = false
 
@@ -2443,6 +2446,7 @@ if (!limit_android_deps) {
       ":androidx_collection_collection_java",
       ":androidx_core_core_java",
       ":androidx_emoji2_emoji2_java",
+      "//third_party/android_deps:org_jspecify_jspecify_java",
     ]
   }
 
@@ -2937,6 +2941,8 @@ if (!limit_android_deps) {
       ":androidx_lifecycle_lifecycle_viewmodel_savedstate_java",
       ":androidx_navigation_navigation_common_java",
       ":androidx_navigation_navigation_runtime_java",
+      ":androidx_savedstate_savedstate_compose_java",
+      ":androidx_savedstate_savedstate_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_serialization_core_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
@@ -3085,6 +3091,38 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_group("androidx_savedstate_savedstate_compose_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [ ":androidx_savedstate_savedstate_compose_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt(
+      "androidx_savedstate_savedstate_compose_android_java") {
+    aar_path = "../androidx/cipd/libs/androidx_savedstate_savedstate_compose_android/savedstate-compose-android-1.3.0-SNAPSHOT.aar"
+    info_path = "../androidx/committed/libs/androidx_savedstate_savedstate_compose_android/androidx_savedstate_savedstate_compose_android.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_annotation_annotation_java",
+      ":androidx_compose_runtime_runtime_java",
+      ":androidx_core_core_ktx_java",
+      ":androidx_savedstate_savedstate_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_savedstate_savedstate_ktx_java") {
     aar_path = "../androidx/cipd/libs/androidx_savedstate_savedstate_ktx/savedstate-ktx-1.3.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_savedstate_savedstate_ktx/androidx_savedstate_savedstate_ktx.info"
@@ -3207,7 +3245,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_test_espresso_espresso_idling_resource_java") {
-    aar_path = "../androidx/cipd/libs/androidx_test_espresso_espresso_idling_resource/espresso-idling-resource-3.7.0-alpha01.aar"
+    aar_path = "../androidx/cipd/libs/androidx_test_espresso_espresso_idling_resource/espresso-idling-resource-3.7.0-alpha02.aar"
     info_path = "../androidx/committed/libs/androidx_test_espresso_espresso_idling_resource/androidx_test_espresso_espresso_idling_resource.info"
     enable_bytecode_checks = false
 

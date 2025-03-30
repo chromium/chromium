@@ -439,7 +439,7 @@
     },
     {
       name: "AriaNotify",
-      status: {"Android": "test", "Win": "test", "Mac": "test", "Linux": "test"},
+      status: {"Android": "experimental", "Win": "experimental", "Mac": "experimental", "Linux": "experimental"},
       implied_by: ["AriaNotifyV2"],
     },
     {
@@ -472,7 +472,7 @@
     },
     {
       name: "AudioContextInterruptedState",
-      status: "test",
+      status: "stable",
     },
     {
       name: "AudioContextOnError",
@@ -768,7 +768,6 @@
     },
     {
       name: "CapturedSurfaceControl",
-      origin_trial_feature_name: "CapturedSurfaceControl",
       status: {"Android": "", "default": "stable"}
     },
     {
@@ -3268,14 +3267,9 @@
     },
     {
       name: "PaymentApp",
-      depends_on: ["PaymentRequest"],
       public: true,
       status: "experimental",
       base_feature: "none",
-    },
-    {
-      name: "PaymentInstruments",
-      depends_on: ["PaymentApp"],
     },
     {
       // https://chromestatus.com/feature/5198846820352000
@@ -5039,6 +5033,10 @@
       name: "WebGLImageChromium",
       base_feature: "none",
       public: true,
+    },
+    {
+      name: "WebGPUAdapterInfoIsFallbackAdapter",
+      status: "stable",
     },
     {
       // WebGPU developer features are deliberately not enabled by experimental

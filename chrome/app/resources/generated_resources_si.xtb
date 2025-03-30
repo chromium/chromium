@@ -8,6 +8,7 @@
 <translation id="100323615638474026">USB උපාංගය (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">මෑත බාගැනීම් ඉතිහාසය</translation>
 <translation id="1004218526896219317">වෙබ් අඩවි ප්‍රවේශය</translation>
+<translation id="1005230401424685968">ව.ව.ව.ව.</translation>
 <translation id="1005274289863221750">ඔබේ මයික්‍රෆෝනය සහ කැමරාව භාවිතා කරන්න</translation>
 <translation id="1005333234656240382">ADB නිදොස් කිරීම සබල කරන්නද?</translation>
 <translation id="1005671386794704751">රෝස</translation>
@@ -1366,6 +1367,7 @@
 <translation id="193565226207940518">සහාය මෙවලම</translation>
 <translation id="1935995810530254458">කෙසේ වෙතත් පිටපත් කරන්න</translation>
 <translation id="1936157145127842922">ෆෝල්ඩරය තුළ පෙන්වන්න</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{පිටුව කියවීමේ ලැයිස්තුවට එක් කරන ලදි}one{පිටු කියවීමේ ලැයිස්තුවට එක් කරන ලදි}other{පිටු කියවීමේ ලැයිස්තුවට එක් කරන ලදි}}</translation>
 <translation id="1936931585862840749">මුද්‍රණ කරන පිටපත් ගණන දැක්වීමට සංඛ්‍යාවක් භාවිත කරන්න (1 සිට <ph name="MAX_COPIES" /> දක්වා).</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> වන මෙම උපාංගය සමඟ <ph name="ARCHITECTURE_CONTAINER" /> භාජන නිර්මාණශිල්ප වර්ගය ආයාත කළ නොහැක. ඔබට මෙම භාජනය වෙනත් උපාංගයකට ප්‍රතිසාධන කිරීමට උත්සාහ කළ හැක, නැති නම් ඔබට ගොනු යෙදුම විවෘත කිරීමෙන් මෙම භාජන රූපය තුළ ගොනු වෙත ප්‍රවේශ විය හැක.</translation>
 <translation id="1938351510777341717">බාහිර විධානය</translation>
@@ -2007,6 +2009,7 @@
 <translation id="2373666622366160481">කඩදාසියට ගළපන්න</translation>
 <translation id="2375406435414127095">ඔබේ දුරකථනයට සම්බන්ධ කරන්න</translation>
 <translation id="2376056713414548745">ශබ්ද නඟා කියවන්න</translation>
+<translation id="2376122016044804363">පසුරු පුවරුවේ තහවුරු කිරීම් වෙත පිටපත් කරන ලදි</translation>
 <translation id="2377667304966270281">දෘඪ දෝෂ</translation>
 <translation id="237828693408258535">මෙම පිටුව පරිවර්තනය කරන්න ද?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{මෙම දිගුවට ඉක්මනින් තවදුරටත් සහය නොදක්වනු ලබයි}one{මෙම දිගුවලට ඉක්මනින් තවදුරටත් සහය නොදක්වනු ලබයි}other{මෙම දිගුවලට ඉක්මනින් තවදුරටත් සහය නොදක්වනු ලබයි}}</translation>
@@ -3159,6 +3162,7 @@
 <translation id="3192586965067888278">ගැටලුව විස්තරාත්මකව විස්තර කරන්න. ප්‍රතිපෝෂණ මානව සමාලෝචනය සඳහා Google වෙත යවනු ලබන අතර Google නිෂ්පාදන සහ සේවා වැඩි දියුණු කිරීම හෝ සංවර්ධනය කිරීම සඳහා භාවිතා කළ හැක.</translation>
 <translation id="3192947282887913208">ශ්‍රව්‍ය ගොනුව</translation>
 <translation id="3193695589337931419">පද්ධති සංඥා උපයෝගිතා</translation>
+<translation id="3194095220941877499">ඔබ සබැඳි, රූප හෝ වීඩියෝ පිටපත් කරන විට තහවුරු කිරීමක් පෙන්වයි</translation>
 <translation id="3196912927885212665">ඔබේ Android දුරකථනය සමග පිහිටුවීම සඳහා, ඔබේ Chromebook හි බ්ලූටූත් ක්‍රියාත්මක වීමට අවශ්‍ය වේ</translation>
 <translation id="3197453258332670132">දකුණු-ක්ලික් කිරීමකින් හෝ දිගු එබුමකින්, ඔබගේ පෙළ තේරීම සඳහා අදාළ තතු පෙන්වන්න</translation>
 <translation id="3199127022143353223">සේවාදායක</translation>
@@ -3173,7 +3177,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         ඔබට මෙම කාඩ්පතින් ඕනෑම වේලාවක සැකසීම් කළමනා කිරීමට හෝ Chrome අභිරුචිය තුළ තව විකල්ප බැලීමට හැකිය.</translation>
-<translation id="3207437351138888228">ඔබ පෝරමයක් පුරවන විට, ඔබේ තොරතුරු සහ එයින් ලැබෙන පිටුව යෝජනා උත්පාදනය කිරීමට Google වෙත යවනු ලැබේ</translation>
 <translation id="3207960819495026254">පිටුසලකුණු කළ</translation>
 <translation id="3208584281581115441">දැන් පරීක්‍ෂා කරන්න</translation>
 <translation id="3208703785962634733">තහවුරු කර නොමැත</translation>
@@ -3218,6 +3221,7 @@
 <translation id="3242289508736283383">'kiosk_only' මැනිෆෙස්ට් උපලක්ෂණය සහිත යෙදුම ChromeOS කියෝස්ක් ප්‍රකාරයේ ස්ථාපනය කළ යුතුය</translation>
 <translation id="3243017971870859287">ChromeOS Flex උපාංග සහ සංරචක අනුක්‍රමික අංක කියවන්න</translation>
 <translation id="324366796737464147">අනවශ්‍ය ශබ්ද ඉවත් කිරීම</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">හඬ නිහඬ කිරීම දිගටම කරගෙන යන්න</translation>
 <translation id="3247006341013237647">ටැබ සංවිධානය කරන්න ද?</translation>
 <translation id="3247649647204519958">මෙතැන් සිට, ඔබට ඔබ සිටින අඩවිය සඳහා දිගු අවසර බැලීම සහ කළමනාකරණය කළ හැක</translation>
@@ -6086,7 +6090,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5267572070504076962">භයානක අඩවිවලට එරෙහිව ආරක්ෂාව ලබා ගැනීමට සුරක්ෂිත බ්‍රවුස් කිරීම ක්‍රියාත්මක කරන්න</translation>
 <translation id="5269977353971873915">මුදණය අසාර්ථක විය</translation>
 <translation id="5271578170655641944">Google Drive ප්‍රවේශය ඉවත් කරන්න ද?</translation>
-<translation id="5271782684896713035">මෙම විශේෂාංගය වැඩි දියුණු කිරීම සඳහා මෙම දත්ත මානව සමාලෝචකයින් විසින් දැකිය හැක</translation>
 <translation id="5273806377963980154">අඩවි URL සංස්කරණ කරන්න</translation>
 <translation id="5275084684151588738">පරිශීලක ශබ්ද කෝෂ</translation>
 <translation id="5275338516105640560">සුරැකි ටැබ සමූහය බොත්තම</translation>

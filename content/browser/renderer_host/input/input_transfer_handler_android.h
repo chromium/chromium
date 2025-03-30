@@ -64,8 +64,12 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
       "Android.InputOnViz.Browser.NumEventsInDroppedSequence";
   static constexpr const char* kEventTypesInDroppedSequenceHistogram =
       "Android.InputOnViz.Browser.EventTypesInDroppedSequence";
+  static constexpr const char* kTouchSequenceDroppedReasonHistogram =
+      "Android.InputOnViz.Browser.SequenceDroppedReason";
 
-  bool touch_transferred() { return touch_transferred_; }
+  bool touch_transferred() {
+    return handler_state_ == HandlerState::kConsumeEventsUntilCancel;
+  }
   bool FilterRedundantDownEvent(const ui::MotionEvent& event);
 
   void RequestInputBack();
@@ -94,20 +98,44 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
   void OnTouchTransferredSuccessfully(const ui::MotionEventAndroid& event,
                                       bool browser_would_have_handled);
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(InputOnVizSequenceDroppedReason)
+  enum class InputOnVizSequenceDroppedReason {
+    kActiveSeqOnVizAbnormalDownTime = 0,
+    kFailedToTransferPotentialPointer = 1,
+    kMaxValue = kFailedToTransferPotentialPointer,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:InputOnVizSequenceDroppedReason)
+
+  void OnStartDroppingSequence(const ui::MotionEventAndroid& event,
+                               InputOnVizSequenceDroppedReason reason);
+
+  void DropCurrentSequence(const ui::MotionEventAndroid& event);
+  void ConsumeEventsUntilCancel(const ui::MotionEventAndroid& event);
+
   friend class MockInputTransferHandler;
   InputTransferHandlerAndroid();
 
   raw_ptr<InputTransferHandlerAndroidClient> client_ = nullptr;
-  bool touch_transferred_ = false;
   // Stores the event time of first down event of the most recent touch sequence
   // transferred to VizCompositor. See
   // (https://developer.android.com/reference/android/view/MotionEvent#getDownTime())
   base::TimeTicks cached_transferred_sequence_down_time_ms_;
 
   int num_events_in_dropped_sequence_ = 0;
-  // Down time of potentially a pointer sequence, that failed to be transferred
-  // to Viz.
-  std::optional<base::TimeTicks> last_failed_pointer_down_time_ms_;
+
+  enum class HandlerState {
+    // Handler is just passively listening for events in this state.
+    kIdle,
+    // The sequence is being dropped since a potential pointer sequence failed
+    // to transfer.
+    kDroppingCurrentSequence,
+    // The touch sequence was transferred to Viz and the handler is consuming
+    // rest of sequence that might hit Browser.
+    kConsumeEventsUntilCancel,
+  } handler_state_ = HandlerState::kIdle;
 
   bool requested_input_back_ = false;
   int touch_moves_seen_after_transfer_ = 0;

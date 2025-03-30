@@ -14,4 +14,5 @@ found in the LICENSE file.
     android:resizeMode="vertical|horizontal"
     android:previewImage="@drawable/quick_action_search_widget_small_preview"
     android:previewLayout="@layout/quick_action_search_widget_small_preview_layout"
+    android:description="@string/quick_action_search_widget_description"
     android:widgetCategory="home_screen|searchbox" />

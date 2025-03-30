@@ -6,6 +6,7 @@
 #define COMPONENTS_COLLABORATION_PUBLIC_COLLABORATION_CONTROLLER_DELEGATE_H_
 
 #include "base/functional/callback.h"
+#include "components/collaboration/public/collaboration_flow_type.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/strings/grit/components_strings.h"
@@ -108,6 +109,7 @@ class CollaborationControllerDelegate {
     kSuccess = 0,
     kFailure = 1,
     kCancel = 2,
+    kDeleteOrLeaveGroup = 3,
   };
 
   CollaborationControllerDelegate() = default;
@@ -136,8 +138,9 @@ class CollaborationControllerDelegate {
   // Request to cancel and close the current UI screen.
   virtual void Cancel(ResultCallback result) = 0;
 
-  // Request to show the authentication screen.
-  virtual void ShowAuthenticationUi(ResultCallback result) = 0;
+  // Request to show the authentication screen for the current `flow_type`.
+  virtual void ShowAuthenticationUi(FlowType flow_type,
+                                    ResultCallback result) = 0;
 
   // Notification for when sign-in or sync status has been updated to ensure
   // that the update propagated to all relevant components.

@@ -174,6 +174,7 @@ std::vector<mojom::IdentifiedActivityPtr> SessionActivityProtoToMojom(
       auto identity_ptr = mojom::IdentifiedActivity::New(
           item.first,
           mojom::StudentActivity::New(
+              mojom::StudentStatusDetail(item.second.state()),
               device->second.state() == ::boca::StudentDevice::ACTIVE,
               device->second.activity().active_tab().title(),
               /*is_caption_enabled=*/false,

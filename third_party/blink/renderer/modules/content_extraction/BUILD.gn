@@ -20,5 +20,7 @@ blink_modules_sources("content_extraction") {
     "inner_text_builder.h",
   ]
 
+  deps = [ "//services/metrics/public/cpp:ukm_builders" ]
+
   public_deps = [ "//third_party/blink/public/mojom:mojom_modules_blink" ]
 }

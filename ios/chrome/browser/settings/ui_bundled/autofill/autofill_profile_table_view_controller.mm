@@ -26,6 +26,8 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/autofill_edit_profile_bottom_sheet_coordinator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/settings_autofill_edit_profile_bottom_sheet_handler.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_edit_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
@@ -117,6 +119,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Add button for the toolbar, which allows the user to manually add a new
   // address.
   UIBarButtonItem* _addButtonInToolbar;
+
+  // Handler used to manage the settings workflow for manually adding an
+  // address.
+  SettingsAutofillEditProfileBottomSheetHandler* _addProfileBottomSheetHandler;
+
+  // Coordinator to present and manage the bottom sheet for manually adding an
+  // address.
+  AutofillEditProfileBottomSheetCoordinator*
+      _autofillAddProfileBottomSheetCoordinator;
 }
 
 @property(nonatomic, getter=isAutofillProfileEnabled)
@@ -323,6 +334,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)settingsWillBeDismissed {
   DCHECK(!_settingsAreDismissed);
+
+  [self stopAutofillEditProfileBottomSheetCoordinator];
 
   [self stopAutofillProfileEditCoordinator];
   _personalDataManager->RemoveObserver(_observer.get());
@@ -681,6 +694,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _autofillProfileEditCoordinator = nil;
 }
 
+- (void)stopAutofillEditProfileBottomSheetCoordinator {
+  [_autofillAddProfileBottomSheetCoordinator stop];
+  _autofillAddProfileBottomSheetCoordinator = nil;
+  _addProfileBottomSheetHandler = nil;
+}
+
 // Removes the item from the personal data manager model.
 - (void)willDeleteItemsAtIndexPaths:(NSArray*)indexPaths {
   if (_settingsAreDismissed) {
@@ -872,7 +891,24 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Opens a new view controller `AutofillAddAddressViewController` for filling
 // and saving an address.
 - (void)handleAddAddress {
-  // TODO(crbug.com/393352820): Implement function.
+  if (_settingsAreDismissed) {
+    return;
+  }
+
+  autofill::AddressDataManager& addressDataManager =
+      _personalDataManager->address_data_manager();
+
+  _addProfileBottomSheetHandler =
+      [[SettingsAutofillEditProfileBottomSheetHandler alloc]
+          initWithAddressDataManager:&addressDataManager
+                           userEmail:_userEmail];
+
+  _autofillAddProfileBottomSheetCoordinator =
+      [[AutofillEditProfileBottomSheetCoordinator alloc]
+          initWithBaseViewController:self
+                             browser:_browser
+                             handler:_addProfileBottomSheetHandler];
+  [_autofillAddProfileBottomSheetCoordinator start];
 }
 
 @end

@@ -60,15 +60,15 @@ export class ExtensionsSitePermissionsListElement extends CrLitElement {
     };
   }
 
-  delegate: SiteSettingsDelegate = new DummySiteSettingsDelegate();
-  extensions: chrome.developerPrivate.ExtensionInfo[] = [];
-  header: string = '';
-  siteSet: chrome.developerPrivate.SiteSet =
+  accessor delegate: SiteSettingsDelegate = new DummySiteSettingsDelegate();
+  accessor extensions: chrome.developerPrivate.ExtensionInfo[] = [];
+  accessor header: string = '';
+  accessor siteSet: chrome.developerPrivate.SiteSet =
       chrome.developerPrivate.SiteSet.USER_PERMITTED;
-  sites: string[] = [];
-  protected showEditSiteUrlDialog_: boolean = false;
-  protected showEditSitePermissionsDialog_: boolean = false;
-  protected siteToEdit_: string|null = null;
+  accessor sites: string[] = [];
+  protected accessor showEditSiteUrlDialog_: boolean = false;
+  protected accessor showEditSitePermissionsDialog_: boolean = false;
+  protected accessor siteToEdit_: string|null = null;
 
   // The element to return focus to once the site input dialog closes. If
   // specified, this is the 3 dots menu for the site just edited, otherwise it's

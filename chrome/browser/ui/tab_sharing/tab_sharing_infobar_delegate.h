@@ -102,6 +102,8 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
   static infobars::InfoBar* Create(
       infobars::InfoBarManager* infobar_manager,
       infobars::InfoBar* old_infobar,
+      content::GlobalRenderFrameHostId shared_tab_id,
+      content::GlobalRenderFrameHostId capturer_id,
       const std::u16string& shared_tab_name,
       const std::u16string& capturer_name,
       content::WebContents* web_contents,
@@ -163,6 +165,8 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
 
 std::unique_ptr<infobars::InfoBar> CreateTabSharingInfoBar(
     std::unique_ptr<TabSharingInfoBarDelegate> delegate,
+    content::GlobalRenderFrameHostId shared_tab_id,
+    content::GlobalRenderFrameHostId capturer_id,
     const std::u16string& shared_tab_name,
     const std::u16string& capturer_name,
     TabSharingInfoBarDelegate::TabRole role,

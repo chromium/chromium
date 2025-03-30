@@ -73,7 +73,7 @@ constexpr int kFocusToggleAcceleratorModifiers =
     ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN;
 #else
 constexpr int kFocusToggleAcceleratorModifiers =
-    ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN;
+    ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN;
 #endif
 constexpr ui::KeyboardCode kFocusToggleAcceleratorKey = ui::VKEY_G;
 
@@ -425,10 +425,10 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi,
     return;
   }
   // If floaty is focused or the source is the top button, close it
-  // If floaty is unfocused, focus it
+  // If floaty is unfocused and open, focus it
   if (IsActive() || source == mojom::InvocationSource::kTopChromeButton) {
     maybe_close();
-  } else {
+  } else if (state_ == State::kOpen) {
     // TODO(crbug.com/404601783): Bring focus to the textbox.
     GetGlicWidget()->Activate();
     GetGlicView()->web_view()->GetWebContents()->Focus();
@@ -519,6 +519,13 @@ void GlicWindowController::ToggleWhenNotAlwaysDetached(
     return;
   } else {
     Show(new_attached_browser, source);
+  }
+}
+
+void GlicWindowController::FocusIfOpen() {
+  if (IsShowing() && !IsActive()) {
+    GetGlicWidget()->Activate();
+    GetGlicView()->web_view()->GetWebContents()->Focus();
   }
 }
 
@@ -796,6 +803,8 @@ void GlicWindowController::GlicLoaded(mojom::OpenPanelInfoPtr open_info) {
     Resize(*open_info->panelSize, open_info->resizeDuration, base::DoNothing());
   }
 
+  EnableDragResize(open_info->can_user_resize);
+
   glic_loaded_ = true;
   if (state_ == State::kWaitingForGlicToLoad) {
     ShowFinish();
@@ -995,7 +1004,8 @@ void GlicWindowController::Resize(const gfx::Size& size,
   }
 }
 
-void GlicWindowController::ShouldEnableDragResize(bool enabled) {
+void GlicWindowController::EnableDragResize(bool enabled) {
+  user_resizable_ = enabled;
   if (!GetGlicWidget()) {
     return;
   }
@@ -1387,6 +1397,10 @@ bool GlicWindowController::IsShowing() const {
   return !(state_ == State::kClosed || state_ == State::kCloseAnimation);
 }
 
+bool GlicWindowController::IsPanelOrFreShowing() const {
+  return IsShowing() || fre_controller_->IsShowingDialog();
+}
+
 bool GlicWindowController::IsAttached() const {
   return attached_browser_ != nullptr;
 }
@@ -1513,7 +1527,8 @@ void GlicWindowController::MaybeAdjustSizeForDisplay(bool animate) {
 std::unique_ptr<GlicWidget> GlicWindowController::CreateGlicWidget(
     const gfx::Rect& bounds) {
   return GlicWidget::Create(profile_, bounds,
-                            /*accelerator_delegate=*/GetWeakPtr());
+                            /*accelerator_delegate=*/GetWeakPtr(),
+                            user_resizable_);
 }
 
 void GlicWindowController::CreateContents() {

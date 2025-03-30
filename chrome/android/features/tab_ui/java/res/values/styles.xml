@@ -33,4 +33,9 @@ found in the LICENSE file.
         <item name="rippleCornerRadiusBottomStart">@dimen/share_button_corner_radius</item>
         <item name="rippleCornerRadiusBottomEnd">@dimen/share_button_corner_radius</item>
     </style>
+
+    <style name="TabSwitcherContextMenuAnimation">
+        <item name="android:windowEnterAnimation">@anim/tab_switcher_context_menu_animation_in</item>
+        <item name="android:windowExitAnimation">@anim/tab_switcher_context_menu_animation_out</item>
+    </style>
 </resources>

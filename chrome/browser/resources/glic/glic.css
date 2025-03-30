@@ -2,6 +2,17 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
+:root {
+  color-scheme: light dark;
+  --color--secondary-container: light-dark(#C2E7FF, #004A77);
+  --color--on-surface: light-dark(#1B1C1D, #FFFFFF);
+  --color--on-secondary-container: light-dark(#004A77, #C2E7FF);
+  --color--error: light-dark(#B3261E, #F2B8B5);
+  --color--surface: light-dark(#FFFFFF, #1B1C1D);
+  --color--on-surface-variant: light-dark(#575B5F, #A2A9B0);
+  --color--surface-container: light-dark(#F0F4F9, #282A2C);
+}
+
 html, body {
   margin: 0;
   height: 100%
@@ -24,14 +35,14 @@ webview:not([hidden]) {
   font-size: 13px;
   font-weight: 300;
   line-height: 20px;
-  color: #C4C7C5;
+  color: var(--color--on-surface);
 }
 
 .dialog .container {
-  background: #1b1c1d;
+  background: var(--color--surface-container);
   border-radius: 12px;
-  color: white;
-  padding-bottom: 24px;
+  color: var(--color--on-surface-variant);
+  padding-bottom: 14px;
 }
 
 #loadingPanel {
@@ -40,6 +51,35 @@ webview:not([hidden]) {
 
 #loadingPanel .container {
   padding-bottom: 0px;
+  background: var(--color--surface);
+}
+
+#loadingPanel .secondline {
+  padding: 0 10px 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+#loadingPanel .p1 {
+  flex: 1;
+  height: 17px;
+  margin-right: 60px;
+  margin-top: 4px;
+  border-radius: 5px;
+}
+
+#loadingPanel .p2 {
+  height: 16px;
+  width: 76px;
+  padding: 8px 2px;
+  border-radius: 16px;
+}
+
+#loadingPanel .p3 {
+  height: 16px;
+  width: 28px;
+  padding: 8px 2px;
+  border-radius: 8px;
 }
 
 .panel .header {
@@ -53,17 +93,28 @@ webview:not([hidden]) {
   padding: 0 0 0 2px;
 }
 
+/* Adjust brightness of SVG logo */
+@media (prefers-color-scheme: light) {
+  .panel .logo {
+    filter: brightness(53.6%);
+  }
+}
+
 .panel .close-button {
   --cr-icon-button-size: 24px;
   --cr-icon-button-icon-size: 14px;
-  color: #C4C7C5;
+  color: var(--color--on-surface-variant);
 }
 
 .dialog .notice {
-  background-color: #282a2c;
+  background-color: var(--color--surface);
   border-radius: 10px;
   padding: 12px;
   margin: 0 14px;
+}
+
+.notice .icon {
+  color: var(--color--error);
 }
 
 .dialog p {
@@ -89,7 +140,7 @@ webview:not([hidden]) {
 }
 
 .outerheader {
-  background: #1b1c1d;
+  background: var(--color--surface);
   position: absolute;
   width: 100%;
   height: 48px;
@@ -116,16 +167,18 @@ webview:not([hidden]) {
   height: 752px;
   bottom: 0;
 }
+
 .tonal-button {
   width: 100%;
-  background-color: #004a77;
-  color: #c2e7ff;
+  background-color: var(--color--secondary-container);
+  color: var(--color--on-secondary-container);
 }
 
 #debug {
   position: absolute;
   right: 30px;
 }
+
 cr-progress {
   width: 80%;
   margin: 20px 10% 0;
@@ -133,8 +186,6 @@ cr-progress {
 }
 
 .placeholder {
-  flex: 1;
-  height: 24px;
   background-color: #35383b;
   background-image:
     linear-gradient(135deg, #161617 0%,
@@ -146,13 +197,44 @@ cr-progress {
                             #161617 100%);
   background-size: calc(400cqw);
   background-position: center;
-  border-radius: 8px;
   animation: 1.5s infinite linear gradient-move,
-    1.5s infinite linear pulse;
-  margin-right: 60px;
+      1.5s infinite linear pulsedark;
 }
 
-@keyframes pulse {
+@media (prefers-color-scheme: light) {
+  .placeholder {
+    background-image:
+      linear-gradient(135deg, #F0F4F9 0%,
+                              #F0F4F9 10%,
+                              #696B6C 30%,
+                              #727676 50%,
+                              #696B6C 70%,
+                              #F0F4F9 90%,
+                              #F0F4F9 100%);
+      animation: 1.5s infinite linear gradient-move,
+          1.5s infinite linear pulselight;
+  }
+}
+
+@keyframes pulselight {
+  0% {
+    opacity: 0;
+  }
+  22% {
+    opacity: 0.38;
+  }
+  67% {
+    opacity: 0.38;
+  }
+  80% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes pulsedark {
   0% {
     opacity: 0;
   }

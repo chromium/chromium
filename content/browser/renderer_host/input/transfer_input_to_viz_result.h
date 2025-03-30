@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_TRANSFER_INPUT_TO_VIZ_RESULT_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_TRANSFER_INPUT_TO_VIZ_RESULT_H_
 
+namespace content {
+
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content_public.browser
 // LINT.IfChange(TransferInputToVizResult)
@@ -20,8 +22,12 @@ enum class TransferInputToVizResult {
   kSystemServerDidNotTransfer = 8,
   kBrowserTokenChanged = 9,
   kMultipleBrowserWindowsOpen = 10,
-  kMaxValue = kMultipleBrowserWindowsOpen,
+  kDownTimeAfterEventTime = 11,
+  kSequenceTransferredBackFromViz = 12,
+  kMaxValue = kSequenceTransferredBackFromViz,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:TransferInputToVizResult)
+
+}  // namespace content
 
 #endif  // CONTENT_BROWSER_RENDERER_HOST_INPUT_TRANSFER_INPUT_TO_VIZ_RESULT_H_

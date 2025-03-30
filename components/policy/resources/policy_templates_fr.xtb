@@ -385,15 +385,6 @@ Pour en savoir plus sur les contextes sécurisés, consultez la page https://www
 <translation id="1305400589435476516">Si cette règle est activée, l'itinérance des données est autorisée sur l'appareil.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, l'itinérance des données n'est pas disponible.</translation>
-<translation id="1308526987406924874">Permet de dresser la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à demander aux utilisateurs à accéder à un port série.
-
-      Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
-
-      Si le format d'URL ne correspond pas à celui défini dans cette règle, les règles suivantes s'appliquent, selon l'ordre de priorité suivant : <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> (si une correspondance existe), <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (si elle est définie) ou les paramètres personnels de l'utilisateur.
-
-      Les formats d'URL ne peuvent pas entrer en conflit avec ceux de la règle <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />. Aucune règle ne prévaut si un format d'URL est répertorié dans les deux règles.
-
-      Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="1309259005392595570">Désactiver l'accord de clé post-quantique pour TLS</translation>
 <translation id="1309465583050255779">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> vous permet de spécifier le nom du moteur de recherche par défaut.
 
@@ -817,6 +808,7 @@ Si cette règle n'est pas configurée, les utilisateurs peuvent ajouter des exce
       Si cette règle n'est pas définie pour un site, alors la règle <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> s'applique au site (si elle est définie). Sinon, les paramètres par défaut du navigateur s'appliquent, et les utilisateurs peuvent définir l'autorisation pour chaque site.</translation>
 <translation id="1574258262373444557">Ne pas utiliser <ph name="AES_KL_NAME" /> comme algorithme de chiffrement du stockage de l'utilisateur si celui-ci est compatible</translation>
 <translation id="1575015449587326319">Règle de configuration du connecteur Chrome Enterprise OnFileDownloaded</translation>
+<translation id="1576797364335927541">Désactiver <ph name="ALR_FEATURE_NAME" /></translation>
 <translation id="1577162851453388235">L'API Direct Sockets permet de communiquer avec des points de terminaison arbitraires via TCP et UDP.
 Pour en savoir plus, veuillez consulter https://github.com/WICG/direct-sockets.
 
@@ -2244,6 +2236,15 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
 <translation id="2608535066974278204">Durée (en minutes) de la fenêtre de redémarrage.</translation>
 <translation id="2608887839902987727">Empêcher l'authentification du portail captif d'ignorer les paramètres proxy</translation>
 <translation id="2608985885792348429">Paramètre de presse-papiers par défaut</translation>
+<translation id="2613388238625781546">La réduction de l'en-tête de requête HTTP <ph name="AL_HEADER_NAME" /> et du getter JavaScript <ph name="JS_GETTER_NAME" /> est programmée pour des raisons de confidentialité.
+Pour faciliter les tests et assurer la compatibilité, cette règle vous permet d'activer ou de désactiver la fonctionnalité <ph name="ALR_FEATURE_NAME" />.
+
+Si cette règle est activée ou qu'elle n'est pas configurée, la fonctionnalité <ph name="ALR_FEATURE_NAME" /> sera appliquée via des tests en conditions réelles.
+Si cette règle est désactivée, les tests en conditions réelles ne pourront pas activer <ph name="ALR_FEATURE_NAME" />.
+
+Pour en savoir plus sur cette fonctionnalité, consultez https://github.com/explainers-by-googlers/reduce-accept-language.
+
+REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les modifications apportées à cette règle lorsque le navigateur sera en cours d'exécution.</translation>
 <translation id="2613493229743687635">L'API <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> permet aux applications Web isolées (identifiées par leur origine) de capturer plusieurs surfaces à la fois sans autorisation supplémentaire de l'utilisateur.
       Si cette règle n'est pas configurée, <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> n'est disponible pour aucune application Web.
 Afin d'améliorer la confidentialité, cette règle ne permet pas de mettre à jour sa valeur en cours de session. Par conséquent, les modifications ne s'appliqueront qu'une fois l'utilisateur déconnecté, puis reconnecté.
@@ -2805,15 +2806,6 @@ Remarque : Pour voir des exemples détaillés, accédez à The Chromium Projec
           Cette règle est facultative. Si vous ne la définissez pas, aucun remplacement des termes de recherche n'est effectué.
 
           Cette règle ne s'applique que si la règle 'DefaultSearchProviderEnabled' est activée.</translation>
-<translation id="3049115011983576556">Permet de dresser la liste des formats d'URL pour lesquels les sites sont autorisés à demander aux utilisateurs à accéder à un port série.
-
-      Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, les paramètres spécifiés par les utilisateurs s'appliquent.
-
-      Si le format d'URL ne correspond pas à celui défini dans cette règle, les règles suivantes s'appliquent, selon l'ordre de priorité suivant : <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> (si une correspondance existe), <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (si elle est définie) ou les paramètres personnels de l'utilisateur.
-
-      Les formats d'URL ne doivent pas entrer en conflit avec <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />. Aucune règle ne prévaut si un format d'URL est répertorié dans les deux règles.
-
-      Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="305106159605171619">La réduction user-agent est désactivée et ne peut pas être activée par les essais Field-Trials et Origin-Trials.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3057459316145779761">Ne pas autoriser l'utilisation de Chrome for Testing</translation>
@@ -4486,6 +4478,27 @@ Si cette règle n'est pas configurée, la règle <ph name="ASK_GEOLOCATION_POLIC
 <translation id="4311195029067684288">Complet</translation>
 <translation id="4311662690937656540">Appliquer les connexions en ligne sur les écrans de connexion et de verrouillage</translation>
 <translation id="4313767483634435271">Adresse MAC de la station d'accueil désignée de l'appareil</translation>
+<translation id="4313778862255986189">Cette fonctionnalité est en version bêta. Comme elle est en cours de développement et disponible pour nos testeurs de confiance, sachez qu'elle peut être modifiée et mise à jour.
+
+Cette règle permet aux administrateurs de définir un agrégateur de recherche d'entreprise dédié qui fournira des recommandations et des résultats de recherche dans la barre d'adresse lorsqu'il sera déclenché par un mot clé spécifique. Les utilisateurs peuvent lancer une recherche en saisissant dans la barre d'adresse le mot clé indiqué dans le champ <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, avec ou sans le préfixe @ (par exemple, <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />), puis en appuyant sur la barre d'espace ou la touche de tabulation.
+
+Les champs suivants sont obligatoires : <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> et <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
+
+Le champ <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> correspond au nom du moteur de recherche que l'utilisateur verra dans la barre d'adresse.
+
+Le champ <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> correspond au mot clé que l'utilisateur saisit pour déclencher la recherche. Le raccourci peut contenir des mots et caractères bruts, mais il ne peut pas inclure d'espaces ni commencer par le symbole @. Les raccourcis doivent être uniques.
+
+Le champ <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> spécifie l'URL sur laquelle effectuer la recherche. Saisissez l'adresse Web de la page de résultats du moteur de recherche, et utilisez <ph name="SEARCH_TERM_MARKER" /> à la place de la requête.
+
+Le champ <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> indique l'URL qui fournit des suggestions de recherche. Si <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> contient <ph name="SEARCH_TERM_MARKER" />, Chrome obtiendra alors des suggestions de recherche via une demande GET à l'URL, en remplaçant <ph name="SEARCH_TERM_MARKER" /> par la requête de recherche de l'utilisateur. Sinon, une requête POST sera envoyée et la requête de l'utilisateur sera transmise dans les paramètres POST sous la clé <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
+
+Le champ <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> indique l'URL d'une image qui sera utilisée dans les suggestions de recherche. Si ce champ n'est pas défini, une icône par défaut sera utilisée. Nous vous conseillons d'utiliser une favicon (exemple : <ph name="ICON_URL_EXAMPLE" />). Formats de fichiers image acceptés : JPEG, PNG et ICO.
+
+Le champ <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> indique si le <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> de la barre d'adresse est requis pour afficher les recommandations de recherche. Si ce champ n'est pas défini, le <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> de la barre d'adresse n'est pas requis.
+
+Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4314538398999793073">Désactiver la recherche CNAME lors de l'authentification Kerberos</translation>
 <translation id="4320592646346933548">Wi-Fi</translation>
 <translation id="43213511254881626">Cette règle détermine si le gestionnaire de mots de passe intégré peut ou non supprimer les mots de passe indéchiffrables de sa base de données. C'est nécessaire pour restaurer toutes les fonctionnalités de ce gestionnaire, mais cela peut entraîner une perte de données définitive. Les valeurs de mots de passe indéchiffrables ne deviendront pas déchiffrables d'elles-mêmes. S'il est possible de les corriger, cela nécessite généralement des actions complexes de la part des utilisateurs.
@@ -4553,8 +4566,6 @@ Remarque : cette règle rend obsolète la règle <ph name="ARC_GLS_POLICY_NAME"
 <translation id="4380159792986204036">Autoriser un kiosque Web à ouvrir plusieurs fenêtres de navigateur sur n'importe quel écran</translation>
 <translation id="4381227367939912539">Désactiver le jeu Easter Egg du dinosaure</translation>
 <translation id="4382413175336720282">La vérification en temps réel des URL est désactivée.</translation>
-<translation id="4384480363454039240">Si cette règle est activée ou n'est pas configurée, les utilisateurs peuvent suivre leurs colis dans <ph name="PRODUCT_NAME" /> via la page "Nouvel onglet".
-Si elle est désactivée, les utilisateurs ne peuvent pas suivre leurs colis dans <ph name="PRODUCT_NAME" /> via la page "Nouvel onglet".</translation>
 <translation id="4387741272680827493">Cette règle permet de dresser une liste de noms d'hôte qui ignorent les mises à niveau HSTS préchargées entre http et https.
 
       Seuls les noms d'hôte sans extension sont autorisés dans cette règle. Elle ne s'applique qu'aux entrées préchargées HSTS "statiques" (par exemple, <ph name="EXAMPLE_HSTS_PRELOAD_TLDS" />). Elle n'empêche pas les mises à niveau HSTS pour les serveurs qui ont demandé "dynamiquement" des mises à niveau HSTS à l'aide d'un en-tête de réponse <ph name="HSTS_HEADER_NAME" />.
@@ -8747,6 +8758,7 @@ Ces règles sont ignorées, sauf si l'hôte Bureau à distance Chrome est instal
 <translation id="7203243973351251622">Enregistreur (pris en charge depuis la version 130)</translation>
 <translation id="7207095846245296855">Forcer Google SafeSearch</translation>
 <translation id="7211368186050418507">Ne jamais détecter automatiquement le fuseau horaire</translation>
+<translation id="7214815535735080007">Contrôler <ph name="ALR_FEATURE_NAME" /></translation>
 <translation id="721617466745658461">Autoriser les utilisateurs à sélectionner le binaire du navigateur <ph name="LACROS_NAME" /></translation>
 <translation id="7216442368414164495">Permettre aux utilisateurs d'activer la création de rapports détaillés dans le cadre de la navigation sécurisée</translation>
 <translation id="7218238054592349618">Autoriser les optimisations JavaScript sur ces sites</translation>
@@ -10734,6 +10746,7 @@ Si cette règle n'est pas configurée, aucun mot de passe enregistré n'est impo
 <translation id="8768528324886802059">Cette règle permet de spécifier les hôtes de messagerie native à exclure de la liste noire. Si vous définissez la valeur liée à la liste noire sur <ph name="WILDCARD_VALUE" />, tous les hôtes de messagerie native sont refusés, sauf s'ils sont explicitement autorisés.
 
       Tous les hôtes de messagerie native sont autorisés par défaut. Cependant, si tous sont refusés par la règle, l'administrateur peut utiliser la liste d'autorisation pour modifier cette règle.</translation>
+<translation id="8769201477622486852">Activer <ph name="ALR_FEATURE_NAME" /></translation>
 <translation id="877101880914876353">Intervalle d'affichage de l'image affichée sur l'écran de connexion de l'économiseur d'écran de l'appareil.</translation>
 <translation id="877557628527387598">Connexion avec un mot de passe</translation>
 <translation id="8777369558049831576">Afficher une case "Toujours ouvrir" dans une boîte de dialogue de protocole externe.</translation>

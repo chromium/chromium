@@ -510,24 +510,30 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     return base::ClampRound(ratio * kHorizontalMoveThreshold);
   }
 
-  int GetInsertionIndexForDraggedBounds(
-      const gfx::Rect& dragged_bounds,
-      std::vector<TabSlotView*> dragged_views,
-      int num_dragged_tabs,
-      std::optional<tab_groups::TabGroupId> group) const override {
+  int GetInsertionIndexForDraggedBounds(const gfx::Rect& dragged_bounds,
+                                        std::vector<TabSlotView*> dragged_views,
+                                        int num_dragged_tabs) const override {
     // If the strip has no tabs, the only position to insert at is 0.
     if (!GetTabCount()) {
       return 0;
     }
 
-    // If we're dragging a group by its header, the first element of
-    // `dragged_views` is a group header, and the second one is the first tab
-    // in that group.
-    const int first_dragged_tab_model_index =
-        tab_strip_->GetModelIndexOf(dragged_views[group.has_value() ? 1 : 0])
-            .value();
+    std::optional<int> first_dragged_tab_model_index = std::nullopt;
+    bool can_insert_into_groups = true;
+    for (TabSlotView* tab_slot_view : dragged_views) {
+      const bool is_tab =
+          tab_slot_view->GetTabSlotViewType() == TabSlotView::ViewType::kTab;
+      if (first_dragged_tab_model_index == std::nullopt && is_tab) {
+        first_dragged_tab_model_index =
+            tab_strip_->GetModelIndexOf(tab_slot_view).value();
+      }
+      can_insert_into_groups &= is_tab;
+    }
+    CHECK(first_dragged_tab_model_index.has_value());
+
     const int index = CalculateInsertionIndex(
-        dragged_bounds, first_dragged_tab_model_index, num_dragged_tabs, group);
+        dragged_bounds, first_dragged_tab_model_index.value(), num_dragged_tabs,
+        can_insert_into_groups);
 
     const Tab* last_visible_tab = tab_strip_->GetLastVisibleTab();
     int last_insertion_point =
@@ -807,11 +813,10 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
   // of the dragged tabs and group header, if any. `first_dragged_tab_index` is
   // the current model index in this tabstrip of the first dragged tab. The
   // dragged tabs must be in the tabstrip already!
-  int CalculateInsertionIndex(
-      const gfx::Rect& dragged_bounds,
-      int first_dragged_tab_index,
-      int num_dragged_tabs,
-      std::optional<tab_groups::TabGroupId> dragged_group) const {
+  int CalculateInsertionIndex(const gfx::Rect& dragged_bounds,
+                              int first_dragged_tab_index,
+                              int num_dragged_tabs,
+                              bool can_insert_into_groups) const {
     // This method assumes that the dragged tabs and group are already in the
     // tabstrip (i.e. it doesn't support attaching a drag to a new tabstrip).
     // This assumption is critical because it means that tab width won't change
@@ -830,7 +835,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     for (int candidate_index = 0; candidate_index <= GetTabCount();
          ++candidate_index) {
       if (!IsValidInsertionIndex(candidate_index, first_dragged_tab_index,
-                                 num_dragged_tabs, dragged_group)) {
+                                 num_dragged_tabs, can_insert_into_groups)) {
         continue;
       }
 
@@ -845,8 +850,10 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       const int left_distance = std::abs(dragged_bounds.x() - left_ideal_x);
 
       const int right_ideal_x =
-          left_ideal_x + CalculateIdealXAdjustmentIfAddedToGroup(
-                             candidate_index, dragged_group);
+          left_ideal_x +
+          (can_insert_into_groups
+               ? CalculateIdealXAdjustmentIfAddedToGroup(candidate_index)
+               : 0);
       const int right_distance = std::abs(dragged_bounds.x() - right_ideal_x);
 
       const int distance = std::min(left_distance, right_distance);
@@ -872,11 +879,10 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
   }
 
   // Dragging can't insert tabs into some indices.
-  bool IsValidInsertionIndex(
-      int candidate_index,
-      int first_dragged_tab_index,
-      int num_dragged_tabs,
-      std::optional<tab_groups::TabGroupId> dragged_group) const {
+  bool IsValidInsertionIndex(int candidate_index,
+                             int first_dragged_tab_index,
+                             int num_dragged_tabs,
+                             bool can_insert_into_groups) const {
     if (candidate_index == 0) {
       return true;
     }
@@ -897,8 +903,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
             ? GetTabAt(candidate_index)->group()
             : std::nullopt;
     if (left_group.has_value() && left_group == right_group) {
-      // Can't drag a group into another group.
-      if (dragged_group.has_value()) {
+      if (!can_insert_into_groups) {
         return false;
       }
       // Can't drag a tab into a collapsed group.
@@ -941,33 +946,28 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
   // There might be a group starting at `candidate_index`. If there is,
   // this determines how the ideal x would change if the dragged tabs were
   // added to that group, thereby moving them to that header's right.
-  int CalculateIdealXAdjustmentIfAddedToGroup(
-      int candidate_index,
-      std::optional<tab_groups::TabGroupId> dragged_group) const {
+  int CalculateIdealXAdjustmentIfAddedToGroup(int candidate_index) const {
+    if (!tab_strip_->IsValidModelIndex(candidate_index)) {
+      return 0;
+    }
     // If the tab to the right of `candidate_index` is the first tab in a
     // (non-collapsed) group, we are sharing this model index with a group
     // header. We might end up on either side of it, so we need to check
     // both positions.
-    if (!dragged_group.has_value() &&
-        tab_strip_->IsValidModelIndex(candidate_index)) {
-      std::optional<tab_groups::TabGroupId> left_group =
-          tab_strip_->IsValidModelIndex(candidate_index - 1)
-              ? GetTabAt(candidate_index - 1)->group()
-              : std::nullopt;
-      std::optional<tab_groups::TabGroupId> right_group =
-          GetTabAt(candidate_index)->group();
-      if (right_group.has_value() && left_group != right_group) {
-        if (tab_strip_->IsGroupCollapsed(right_group.value())) {
-          return 0;
-        }
-        const int header_width =
-            GetTabGroupHeader(*right_group)->bounds().width() -
-            TabStyle::Get()->GetTabOverlap();
-        return header_width;
-      }
+    std::optional<tab_groups::TabGroupId> left_group =
+        tab_strip_->IsValidModelIndex(candidate_index - 1)
+            ? GetTabAt(candidate_index - 1)->group()
+            : std::nullopt;
+    std::optional<tab_groups::TabGroupId> right_group =
+        GetTabAt(candidate_index)->group();
+    if (!right_group.has_value() || left_group == right_group ||
+        tab_strip_->IsGroupCollapsed(right_group.value())) {
+      return 0;
     }
 
-    return 0;
+    const int header_width = GetTabGroupHeader(*right_group)->bounds().width() -
+                             TabStyle::Get()->GetTabOverlap();
+    return header_width;
   }
 
   const raw_ptr<TabStrip, DanglingUntriaged> tab_strip_;

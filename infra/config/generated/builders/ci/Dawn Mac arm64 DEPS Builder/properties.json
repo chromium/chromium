@@ -111,6 +111,7 @@
     ]
   },
   "builder_group": "chromium.dawn",
+  "dawn_ref": "refs/heads/main",
   "gardener_rotations": [
     "dawn"
   ],

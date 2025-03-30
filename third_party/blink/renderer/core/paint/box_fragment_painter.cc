@@ -1330,24 +1330,20 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundWithDecorationData(
 
 void BoxFragmentPainter::PaintGapDecorations(const PaintInfo& paint_info,
                                              const PhysicalRect& paint_rect) {
-  // TODO(crbug.com/357648037): This will change when gap decorations for
-  // flexbox are implemented.
-  if (!GetPhysicalFragment().IsGrid()) {
+  if (!box_fragment_.SupportsGapDecorations()) {
     return;
   }
+
   const GapGeometry* gap_geometry = box_fragment_.GapGeometry();
   CHECK(gap_geometry);
-
-  PaintGridGaps(kForRows, paint_info, paint_rect, gap_geometry);
-  PaintGridGaps(kForColumns, paint_info, paint_rect, gap_geometry);
+  PaintGaps(kForRows, paint_info, paint_rect, *gap_geometry);
+  PaintGaps(kForColumns, paint_info, paint_rect, *gap_geometry);
 }
 
-void BoxFragmentPainter::PaintGridGaps(GridTrackSizingDirection track_direction,
-                                       const PaintInfo& paint_info,
-                                       const PhysicalRect& paint_rect,
-                                       const GapGeometry* gap_geometry) {
-  CHECK(GetPhysicalFragment().IsGrid());
-
+void BoxFragmentPainter::PaintGaps(GridTrackSizingDirection track_direction,
+                                   const PaintInfo& paint_info,
+                                   const PhysicalRect& paint_rect,
+                                   const GapGeometry& gap_geometry) {
   const ComputedStyle& style = box_fragment_.Style();
 
   WritingModeConverter converter(style.GetWritingDirection(),
@@ -1398,14 +1394,22 @@ void BoxFragmentPainter::PaintGridGaps(GridTrackSizingDirection track_direction,
         } else {
           CHECK_EQ(rule_break, RuleBreak::kIntersection);
 
+          if (gap_geometry.GetContainerType() ==
+              GapGeometry::ContainerType::kFlex) {
+            // For flex, intersections will never be blocked before or after by
+            // other items, due to the absence of spanners. Therefore, we can
+            // break at each intersection point.
+            return false;
+          }
+
           if (intersections[end_index].is_blocked_after) {
             return false;
           }
 
           const auto cross_gaps =
               track_direction == kForColumns
-                  ? gap_geometry->GetGapIntersections(kForRows)
-                  : gap_geometry->GetGapIntersections(kForColumns);
+                  ? gap_geometry.GetGapIntersections(kForRows)
+                  : gap_geometry.GetGapIntersections(kForColumns);
 
           // Get the matching intersection in the cross direction by
           // swapping the indices. This transpose allows us determine if the
@@ -1459,19 +1463,11 @@ void BoxFragmentPainter::PaintGridGaps(GridTrackSizingDirection track_direction,
         }
       };
 
-  auto IntersectionPointIncludesContentEdge =
-      [&](const wtf_size_t intersection_point,
-          wtf_size_t num_intersections) -> bool {
-    return intersection_point == 0 ||
-           intersection_point == num_intersections - 1;
-  };
+  LayoutUnit cross_gutter_width = track_direction == kForRows
+                                      ? gap_geometry.GetBlockGapSize()
+                                      : gap_geometry.GetInlineGapSize();
 
-  auto* grid = To<LayoutGrid>(box_fragment_.GetLayoutObject());
-  const LayoutUnit cross_gutter_size = track_direction == kForColumns
-                                           ? grid->GridGap(kForRows)
-                                           : grid->GridGap(kForColumns);
-
-  const auto gaps = gap_geometry->GetGapIntersections(track_direction);
+  const auto gaps = gap_geometry.GetGapIntersections(track_direction);
   for (wtf_size_t gap_index = 0; gap_index < gaps.size(); ++gap_index) {
     LayoutUnit inline_start;
     LayoutUnit inline_size;
@@ -1500,14 +1496,14 @@ void BoxFragmentPainter::PaintGridGaps(GridTrackSizingDirection track_direction,
       // * `0` if the intersection is at the content edge of the container.
       // * The cross gutter size if it is an intersection with another gap.
       // https://drafts.csswg.org/css-gaps-1/#crossing-gap-width
-      LayoutUnit start_width =
-          IntersectionPointIncludesContentEdge(start, num_intersections)
-              ? LayoutUnit()
-              : cross_gutter_size;
-      LayoutUnit end_width =
-          IntersectionPointIncludesContentEdge(end, num_intersections)
-              ? LayoutUnit()
-              : cross_gutter_size;
+      LayoutUnit start_width = gap_geometry.IntersectionIncludesContentEdge(
+                                   start, num_intersections, gap[start])
+                                   ? LayoutUnit()
+                                   : cross_gutter_width;
+      LayoutUnit end_width = gap_geometry.IntersectionIncludesContentEdge(
+                                 end, num_intersections, gap[end])
+                                 ? LayoutUnit()
+                                 : cross_gutter_width;
 
       // Outset values are used to offset the end points of gap decorations.
       // Percentage values are resolved against the crossing gap width of the
@@ -1685,8 +1681,14 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundForBlockInInline(
   }
 }
 
+// TODO(javiercon): Remove this method once `BoxFragmentPainter::PaintGaps`
+// is implemented for multi-column.
 void BoxFragmentPainter::PaintColumnRules(const PaintInfo& paint_info,
                                           const PhysicalOffset& paint_offset) {
+  if (box_fragment_.SupportsGapDecorations()) {
+    return;
+  }
+
   const ComputedStyle& style = box_fragment_.Style();
   DCHECK(box_fragment_.IsCSSBox());
   DCHECK(style.HasColumnRule());

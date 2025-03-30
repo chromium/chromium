@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1190609913194133056">Centro de notificaciones</translation>
 <translation id="1201402288615127009">Siguiente</translation>
-<translation id="1202892408424955784">Productos con seguimiento</translation>
 <translation id="1204075260022434100">{count,plural, =1{El favorito se guardó en "{title}" en tu cuenta ({email})}other{{count} favoritos se guardaron en "{title}" en tu cuenta ({email})}}</translation>
 <translation id="120431140543679678">Seguir</translation>
 <translation id="1207493287814084192">5:30 p.m.</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">nuevo elemento</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> cuentas usan la misma contraseña</translation>
 <translation id="2059166748188874810">Municipalidad</translation>
-<translation id="2060114494785549741">Borrar en 1 mes</translation>
 <translation id="2060638295449304809">Esta dirección solo se guarda en este dispositivo. Para usarla en tus otros dispositivos, guárdala en tu Cuenta de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="20638360198452347">Selector de tipos de unidad</translation>
 <translation id="2067852168641682340">Guardar siempre en esta cuenta</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">Ocultar la tarjeta Seguir precio</translation>
 <translation id="2216366330550244277">Ir a la página de un producto</translation>
 <translation id="2220529011494928058">Informar un problema</translation>
-<translation id="2220887224562128152">Una vez que se programa la eliminación de un archivo, no se puede recuperar.</translation>
 <translation id="2223461067862937305">Crear un código QR</translation>
 <translation id="2229345671837147090">Cuadrícula de pestañas remotas</translation>
 <translation id="2230173723195178503">Se cargó la página web</translation>
@@ -493,7 +490,6 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="3059270601560379555">Nueva búsqueda</translation>
 <translation id="3064547930554042309">Administra las descargas</translation>
 <translation id="3072279342064724558">La contraseña ya existe</translation>
-<translation id="3074862506644936708">Habilitar la eliminación automática</translation>
 <translation id="3076846064362030967">No saldrás de tu Cuenta de Google. Es posible que se guarden <ph name="BEGIN_LINK" />otras formas de actividad<ph name="END_LINK" /> en tu Cuenta de Google cuando accedes. Podrás borrarlas en cualquier momento.
 
 
@@ -912,6 +908,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4896467949657706481">Se cerraron las pestañas; saliste de tu cuenta</translation>
 <translation id="4913626501929406101">Puedes compartir de forma segura una copia de tu contraseña con un miembro de tu grupo familiar. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Aceptar</translation>
+<translation id="4930714375720679147">Activar</translation>
 <translation id="4932733599132424254">Fecha</translation>
 <translation id="4936354130727646074">No mover nunca</translation>
 <translation id="4937410517508563815">Guardar contraseñas en la cuenta</translation>
@@ -1147,7 +1144,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5899314093904173337">Para habilitar el uso compartido con personas cercanas, permíteles que escaneen este código QR con la cámara o una app de lectura de código QR</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} pestaña nueva}other{{count} pestañas nuevas}}</translation>
 <translation id="5911030830365207728">Google Traductor</translation>
-<translation id="5917913282764181683">Borra automáticamente tus descargas</translation>
 <translation id="5922999516621365983">Arrastra la pestaña aquí para fijarla.</translation>
 <translation id="5936006948844852401">Administrar almacenamiento</translation>
 <translation id="5936065461722368675">Traducir la página completa</translation>
@@ -1506,7 +1502,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="741204030948306876">Sí, acepto</translation>
 <translation id="7417689656810783109">Cambiar el nombre del grupo</translation>
 <translation id="7419565702166471774">Usar siempre conexiones seguras</translation>
-<translation id="742001653298797675">Programa que se borren todas tus descargas después de un mes para ahorrar espacio en el teléfono y proteger tu privacidad.</translation>
 <translation id="7425053386765766120">Agregar forma de pago…</translation>
 <translation id="7425346204213733349">Los cambios de tus favoritos, historial, contraseñas y otras opciones de configuración ya no se sincronizarán con tu cuenta de Google. Sin embargo, los datos existentes permanecerán almacenados en tu cuenta de Google.</translation>
 <translation id="742664698522525515">¿Quieres conservar el grupo?</translation>

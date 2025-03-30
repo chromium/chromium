@@ -1541,6 +1541,7 @@ void AutocompleteController::PostProcessMatches() {
   UpdateKeywordDescriptions(&internal_result_);
   UpdateAssociatedKeywords(&internal_result_);
   UpdateSearchboxStats(&internal_result_);
+  UpdateShownInSession(&internal_result_);
   UpdateTailSuggestPrefix(&internal_result_);
   MaybeRemoveCompanyEntityImages(&internal_result_);
   MaybeCleanSuggestionsForKeywordMode(input_, &internal_result_);
@@ -1950,6 +1951,13 @@ void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {
                 .spec());
       }
     }
+  }
+}
+
+void AutocompleteController::UpdateShownInSession(AutocompleteResult* result) {
+  for (auto& match : *result) {
+    match.zero_prefix_suggestions_shown_in_session =
+        result->num_zero_prefix_suggestions_shown_in_session() > 0;
   }
 }
 

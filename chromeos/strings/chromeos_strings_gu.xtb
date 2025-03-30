@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">પ્રોક્સી પ્રમાણીકરણ આવશ્યક છે</translation>
 <translation id="4594021849294327751">ટ્રાન્સક્રિપ્ટ બનાવો</translation>
 <translation id="4594541568452132351">ટ્રાન્સક્રિપ્શનની ભાષા અને ડાઉનલોડ મૉડલ પસંદ કરો</translation>
-<translation id="4607282946861182308">આની છબીઓ બનાવી શકતા નથી. કોઈ અન્ય પ્રૉમ્પ્ટ અજમાવી જુઓ.</translation>
 <translation id="4609350030397390689">કીબોર્ડનું બ્રાઇટનેસ ઘટાડવાની કી</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />માંથી <ph name="PRINTED_PAGE_NUMBER" />. પ્રિન્ટ કરવાનું અટકાવવા માટે, Enter કી દબાવો.</translation>
 <translation id="463791356324567266">સ્કૅન કરવાનું કાર્ય રદ કરી રહ્યાં છીએ...</translation>
@@ -1540,6 +1539,7 @@
 <translation id="8010765388850538088">જનરેટિવ AI વિશે વધુ જાણો</translation>
 <translation id="8017679124341497925">શૉર્ટકટમાં ફેરફાર કર્યો</translation>
 <translation id="802154636333426148">ડાઉનલોડ નિષ્ફળ થયું</translation>
+<translation id="8027467664787098346">પસંદ કરેલા વૉલપેપર વિશે વધુ જાણો</translation>
 <translation id="8028993641010258682">કદ</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ઑટો કલર મોડ ચાલુ કરો</translation>
@@ -1658,6 +1658,7 @@
 <translation id="8543574988889671960">ફરીથી લોડ કરેલું ટૅબ</translation>
 <translation id="8550364285433943656">કીબોર્ડ કી વડે રમવા માટે ગેમ ક્રિયાઓ પર નિયંત્રણો લાગુ કરો</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">જનરેટિવ AI ભૂલો કરી શકે છે જેમાં લોકો વિશેની માહિતી પણ શામેલ છે, તેથી તેને બે વાર ચેક કરો.</translation>
 <translation id="8575298406870537639">તમારા મોબાઇલ ઑપરેટરને તેમના નેટવર્ક સાથે કનેક્ટ કરવા માટે, આ વિકલ્પની જરૂર પડી શકે છે. વિગતો માટે તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
 <translation id="8576249514688522074">શરૂ કરી નથી</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> માટે ફર્મવેયરનું ઇન્સ્ટૉલેશન વર્ઝન <ph name="VERSION" /> પર પૂર્ણ કરવા ફરી શરૂ કરવાની જરૂર છે. તમારું કમ્પ્યૂટર ઘણી વખત રીબૂટ કર્યું હોય એવું લાગે છે. આ વર્તન અપેક્ષિત છે.</translation>
@@ -1672,7 +1673,6 @@
 <translation id="8655295600908251630">ચેનલ</translation>
 <translation id="8655828773034788261">URL શેર કરો:</translation>
 <translation id="8660881923941176839">પાઉન્ડ</translation>
-<translation id="8670057600920888023">જનરેટિવ AI પ્રાયોગિક છે અને કન્ટેન્ટ અચોક્કસ, ભ્રામક અથવા અપમાનજનક હોઈ શકે છે.</translation>
 <translation id="8670574982334489519">જમણે</translation>
 <translation id="8675354002693747642">પહેલેથી-શેર કરેલી કી</translation>
 <translation id="8677859815076891398">કોઈ આલ્બમ નથી. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />માં કોઈ આલ્બમ બનાવો.</translation>

@@ -12,8 +12,6 @@ namespace autofill::payments {
 class SelectBnplIssuerView {
  public:
   virtual ~SelectBnplIssuerView() = default;
-
-  virtual void Dismiss() = 0;
 };
 
 }  // namespace autofill::payments

@@ -91,6 +91,7 @@
 <translation id="1269405891096105529">Қонақ режимінде перифериялық құрылғыға қолдау көрсетілмейді.</translation>
 <translation id="1270290102613614947">Экрандағы пернетақта өшірілді</translation>
 <translation id="1272079795634619415">Тоқтату</translation>
+<translation id="12741168609094094">Іздеу, мәтінді көшіру, т.б. үшін экранның кез келген жерін таңдаңыз.</translation>
 <translation id="1275285675049378717">Қуат берілуде (<ph name="POWER_SOURCE" />)</translation>
 <translation id="1275718070701477396">Таңдалған</translation>
 <translation id="1276975447697633661">Файлды таңдап, <ph name="KEY" /> пернесін басыңыз</translation>
@@ -227,6 +228,7 @@
 <translation id="1720230731642245863">Хотспот өшірулі</translation>
 <translation id="1731815243805539470">Алдыңғы пайдаланушыға ауысу</translation>
 <translation id="1733996486177697563">Қараңғы және жарық режим арасында ауысыңыз. Жұмыс үстелін басып тұрып, Тұсқағаз және стиль функциясын таңдаңыз.</translation>
+<translation id="1735992454301033090">Таңдалған аймақ, жылжыту үшін бағыт пернелерін пайдаланыңыз.</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" Bluetooth құрылғыларына көрінеді.</translation>
 <translation id="1737078180382804488">Телефондағы хабарландыруларды көру мүмкіндігін реттеуден бас тарту</translation>
 <translation id="174102739345480129">Белгілегіш өшірулі.</translation>
@@ -494,6 +496,7 @@
 <translation id="2683887737780133806">Өткен аптадағы <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2687510499067466116">Перне тіркесімі өзгертілді</translation>
 <translation id="2689613560355655046">8-ші жұмыс үстелі</translation>
+<translation id="2692092709110488417">Таңдалған аймақты ерекшелеп, жылжыту үшін Tab пернесін басыңыз.</translation>
 <translation id="2695305337569143674">веб</translation>
 <translation id="2697697418792422688">Пернетақта параметрлерін көрсету. <ph name="KEYBOARD_NAME" /> пернетақтасы таңдалды.</translation>
 <translation id="2699913284398121653">Оқуға арналған аккаунттағы деректерді жеке аккаунтқа контент тасымалы қолданбасымен тасымалдаңыз.</translation>
@@ -729,6 +732,7 @@
 <translation id="346243998268439747">Масштабтау деңгейін бастапқы күйге қайтару</translation>
 <translation id="3465223694362104965">Аккаунтқа соңғы рет кіргеннен бері осы құрылғыға басқа пернетақта жалғанды. Оны пайдаланбас бұрын, бұл пернетақтаның сенімді екеніне көз жеткізіңіз.</translation>
 <translation id="3465356146291925647">Әкімшіңіз басқарады</translation>
+<translation id="3470502288861289375">Көшіруде…</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, одан кейін <ph name="KEY_TWO" /> не <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1033,6 +1037,7 @@
 <translation id="4412698727486357573">Анықтама орталығы</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> өшірулі.</translation>
 <translation id="4417647906073317561">Зейін қою режимінің параметрлері. Іске кірісу үшін таймер, тапсырма және музыка орнатыңыз.</translation>
+<translation id="4418600384772451109">Панельді жабу</translation>
 <translation id="4424159417645388645">5-ші жұмыс үстелі</translation>
 <translation id="4426817706804363424">Керемет!</translation>
 <translation id="4430019312045809116">Дыбыс деңгейі</translation>
@@ -2229,6 +2234,7 @@
 <translation id="8287009018010202411">Өнімділік</translation>
 <translation id="828708037801473432">Өшірулі</translation>
 <translation id="8297006494302853456">Әлсіз</translation>
+<translation id="8300451473979404345">Таңдалған идентификатор, жылжыту үшін бағыт пернелерін пайдаланыңыз.</translation>
 <translation id="8308637677604853869">Алдыңғы мәзір</translation>
 <translation id="830868413617744215">Бета</translation>
 <translation id="8314772463905284467">Caps Lock қосулы</translation>
@@ -2289,6 +2295,7 @@
 <translation id="851458219935658693">Терезелерді қазіргі жұмыс үстелінен көрсету, ауыстырып қосқыш таңдалды.</translation>
 <translation id="851660987304951246">Контентті жылдам қорытындылау немесе сұрақтар қою үшін "Оқуға көмек керек" өнімін пайдаланыңыз</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> іске қосылғанда зарядталмауы мүмкін.</translation>
+<translation id="8519329096920173967">Экранымды Google Lens арқылы іздеу</translation>
 <translation id="8535393432370007982">Түс бойынша сұрыптау ретін қайтару</translation>
 <translation id="8536886494750559755">Quick Share параметрлерін көрсетеді. <ph name="TIME_REMAINING" /> бойы барлығына көрінеді</translation>
 <translation id="8539803091108018926">Мәтін буферге көшірілді.</translation>

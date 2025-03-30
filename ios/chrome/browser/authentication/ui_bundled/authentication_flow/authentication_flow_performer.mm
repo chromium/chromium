@@ -232,8 +232,7 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(
                        [](__typeof(_delegate) delegate) {
-                         [delegate didSwitchToProfileWithSuccess:false
-                                               newProfileBrowser:nullptr];
+                         [delegate didFailToSwitchToProfile];
                        },
                        weakDelegate));
     return;
@@ -250,8 +249,7 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
   OnProfileSwitchCompletion completion = base::BindOnce(
       [](__typeof(_delegate) delegate, bool success,
          Browser* new_profile_browser) {
-        [delegate didSwitchToProfileWithSuccess:success
-                              newProfileBrowser:new_profile_browser];
+        [delegate didSwitchToProfileWithNewProfileBrowser:new_profile_browser];
       },
       weakDelegate);
 

@@ -60,16 +60,16 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
     };
   }
 
-  tabs: Tab[] = [];
-  firstNewTabIndex: number = 0;
-  name: string = '';
-  organizationId: number = -1;
-  showReject: boolean = false;
+  accessor tabs: Tab[] = [];
+  accessor firstNewTabIndex: number = 0;
+  accessor name: string = '';
+  accessor organizationId: number = -1;
+  accessor showReject: boolean = false;
 
-  private lastFocusedIndex_: number = 0;
-  protected showInput_: boolean = false;
-  protected tabDatas_: TabData[] = [];
-  private changedName_: boolean = false;
+  private accessor lastFocusedIndex_: number = 0;
+  protected accessor showInput_: boolean = false;
+  protected accessor tabDatas_: TabData[] = [];
+  private accessor changedName_: boolean = false;
 
   static override get styles() {
     return getCss();

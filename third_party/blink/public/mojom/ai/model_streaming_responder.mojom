@@ -55,15 +55,6 @@ struct ModelExecutionContextInfo {
   uint64 current_tokens;
 };
 
-// The enum describes how the responder should handle the latest chunk of
-// data that is streamed back.
-enum ModelStreamingResponderAction {
-  // The data should completely replace the existing result.
-  kReplace = 0,
-  // The data should be appended to the existing result.
-  kAppend = 1,
-};
-
 // The responder provides methods for the session to return the execution
 // response in a streaming manner.
 // It will be passed to the AIManager by the built-in AI interfaces
@@ -72,17 +63,17 @@ enum ModelStreamingResponderAction {
 interface ModelStreamingResponder {
   // Called when the model execution encounters errors.
   OnError(ModelStreamingResponseStatus status);
+
   // Called when there is a new chunk of data available for streaming.
-  // Depending on the execution feature, the `text` may contain either the
-  // latest chunk of the data, or the latest full response. How the responder
-  // should handle the data will be indicated in the `action` field.
-  OnStreaming(string text, ModelStreamingResponderAction action);
+  OnStreaming(string text);
+
   // Called when the model execution completes. The optional `context_info`
   // contain information about the session like the current number of tokens
   // and if the context overflows.
   // It will only be set when necessary, for example, in the `AILanguageModel`
   // interface as it maintains the context of the past model execution.
   OnCompletion(ModelExecutionContextInfo? context_info);
+
   // Called when the `AILanguageModel` evicts some items from the context in
   // order to make space for the newly added items.
   // This might be called multiple times after prompting, but it won't happen

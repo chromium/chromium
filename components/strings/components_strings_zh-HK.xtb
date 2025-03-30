@@ -441,7 +441,6 @@
 <translation id="1734878702283171397">請嘗試聯絡系統管理員。</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />，<ph name="CARD_NETWORK_NAME" />，<ph name="CARD_LAST_FOUR_DIGITS" />，到期日係 <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">電腦</translation>
-<translation id="1739422091279046802">捲動和縮放</translation>
 <translation id="1741613555002899862">將 DnsOverHttpsMode 設定為 <ph name="SECURE_DNS_MODE_SECURE" /> 時，必須指定有效的字串。</translation>
 <translation id="1743393865165844832">床墊和寢具</translation>
 <translation id="1743892871127720056">比較表格標題，修改文字</translation>
@@ -2881,6 +2880,7 @@
 <translation id="6059925163896151826">USB 裝置</translation>
 <translation id="6060009363608157444">DnsOverHttps 模式無效。</translation>
 <translation id="6061154937977953833">摔角</translation>
+<translation id="6062405040252994646">工具</translation>
 <translation id="6062937464449575061">取消追蹤價格</translation>
 <translation id="6063415549109819824">住宅貸款</translation>
 <translation id="6070432475334343308">一個或多個檔案未能上載至「<ph name="CLOUD_PROVIDER" />」上的「<ph name="FOLDER_NAME" />」</translation>

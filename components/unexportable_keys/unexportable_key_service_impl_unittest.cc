@@ -21,7 +21,7 @@
 #include "components/unexportable_keys/scoped_mock_unexportable_key_provider.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -81,8 +81,8 @@ class UnexportableKeyServiceImplTest : public testing::Test {
       base::test::TaskEnvironment::ThreadPoolExecutionMode::
           QUEUED};  // QUEUED - tasks don't run until `RunUntilIdle()` is
                     // called.
-  // Provides a software-based key provider by default.
-  std::variant<crypto::ScopedMockUnexportableKeyProvider,
+  // Provides a fake key provider by default.
+  std::variant<crypto::ScopedFakeUnexportableKeyProvider,
                crypto::ScopedNullUnexportableKeyProvider,
                unexportable_keys::ScopedMockUnexportableKeyProvider>
       scoped_key_provider_;

@@ -878,6 +878,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     manager_->set_k_anonymity_manager_for_testing(
         std::make_unique<InterestGroupKAnonymityManager>(
             manager_.get(),
+            /*caching_storage=*/nullptr,
             base::BindLambdaForTesting([&]() -> KAnonymityServiceDelegate* {
               return &k_anon_delegate_;
             })));

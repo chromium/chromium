@@ -10,6 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -68,6 +69,8 @@ class GlicKeyedService : public KeyedService {
   // Shutdown, it doesn't unregister as the "active glic" with the profile
   // manager.
   void CloseUI();
+
+  void FocusUI();
 
   GlicEnabling& enabling() { return *enabling_.get(); }
 
@@ -180,6 +183,9 @@ class GlicKeyedService : public KeyedService {
     return page_handlers_;
   }
 
+  void OnMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel level);
+
  private:
   GlicPageHandler* GetPageHandler(const content::WebContents* webui_contents);
 
@@ -204,6 +210,7 @@ class GlicKeyedService : public KeyedService {
   base::OnceCallbackList<void()> web_client_created_callbacks_;
   // The set of live `GlicPageHandler`s.
   base::flat_set<raw_ptr<GlicPageHandler>> page_handlers_;
+  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 
   base::WeakPtrFactory<GlicKeyedService> weak_ptr_factory_{this};
 };

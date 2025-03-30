@@ -45,10 +45,12 @@ IN_PROC_BROWSER_TEST_F(ZeroStateSuggestionsPageDataBrowserTest, BasicFlow) {
             const auto* request = reinterpret_cast<
                 const optimization_guide::proto::ZeroStateSuggestionsRequest*>(
                 &request_metadata);
-            EXPECT_EQ("AaB Cb a2D", request->page_context().inner_text());
+            EXPECT_EQ("AB\n\np-tag\n\nCD",
+                      request->page_context().inner_text());
             EXPECT_EQ("title", request->page_context().title());
-            EXPECT_EQ("https://www.example.com/",
-                      request->page_context().url());
+            EXPECT_NE(std::string::npos,
+                      request->page_context().url().find(
+                          "/optimization_guide/zss_page.html"));
 
             optimization_guide::proto::ZeroStateSuggestionsResponse response;
             response.add_suggestions()->set_label("suggestion 1");
@@ -71,13 +73,15 @@ IN_PROC_BROWSER_TEST_F(ZeroStateSuggestionsPageDataBrowserTest, BasicFlow) {
   ASSERT_TRUE(embedded_test_server()->Start());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/inner_text/test1.html")));
+      browser(),
+      embedded_test_server()->GetURL("/optimization_guide/zss_page.html")));
 
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
 
   ZeroStateSuggestionsPageData::CreateForPage(
-      web_contents->GetPrimaryPage(), GURL("https://www.example.com/"), "title",
-      &fake_optimization_guide_keyed_service, future.GetCallback());
+      web_contents->GetPrimaryPage(), web_contents,
+      &fake_optimization_guide_keyed_service, /*is_fre=*/false,
+      future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ("suggestion 1", future.Get().value()[0]);
   EXPECT_EQ("suggestion 2", future.Get().value()[1]);

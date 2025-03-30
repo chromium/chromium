@@ -109,11 +109,6 @@ GetAllEeaRegionPrepopulatedEngines();
 // Returns the set of search engines that is used when the country is unknown.
 std::vector<std::unique_ptr<TemplateURLData>> GetDefaultPrepopulatedEngines();
 
-// Test Utilities -------------------------------------------------------------
-
-const std::vector<raw_ptr<const PrepopulatedEngine>>
-GetPrepopulationSetFromCountryIDForTesting(CountryId country_id);
-
 }  // namespace TemplateURLPrepopulateData
 
 #endif  // COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_PREPOPULATE_DATA_H_

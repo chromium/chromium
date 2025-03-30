@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">Vyžaduje sa overenie servera proxy</translation>
 <translation id="4594021849294327751">Vytvoriť prepis</translation>
 <translation id="4594541568452132351">Vyberte jazyk prepisu a stiahnite model</translation>
-<translation id="4607282946861182308">Obrázky tohto sa nedajú vytvoriť. Vyskúšajte iný pokyn.</translation>
 <translation id="4609350030397390689">Zníženie jasu klávesnice</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Tlačovú úlohu zrušíte stlačením klávesa Enter.</translation>
 <translation id="463791356324567266">Ruší sa skenovanie…</translation>
@@ -1659,6 +1658,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="8543574988889671960">Znova načítať kartu</translation>
 <translation id="8550364285433943656">Vložte ovládacie prvky do herných akcií a hrajte pomocou klávesov na klávesnici</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">Generatívna umelá inteligencia môže robiť chyby, napríklad aj v informáciách o ľuďoch, preto jej odpovede overujte.</translation>
 <translation id="8575298406870537639">Váš operátor môže túto možnosť vyžadovať na pripojenie k jeho sieti. Podrobnosti vám poskytne operátor.</translation>
 <translation id="8576249514688522074">Nespustené</translation>
 <translation id="8584654835905316966">Dokončenie inštalácie firmvéru zariadenia <ph name="DEVICE_NAME" /> na verziu <ph name="VERSION" /> vyžaduje reštart. Váš počítač sa môže niekoľkokrát reštartovať. Toto správanie je očakávané.</translation>
@@ -1673,7 +1673,6 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="8655295600908251630">Kanál</translation>
 <translation id="8655828773034788261">Webová adresa zdieľania:</translation>
 <translation id="8660881923941176839">libry</translation>
-<translation id="8670057600920888023">Generatívna umelá inteligencia je experimentálna a obsah môže byť nepresný, zavádzajúci alebo urážlivý.</translation>
 <translation id="8670574982334489519">vpravo</translation>
 <translation id="8675354002693747642">Predzdieľaný kľúč</translation>
 <translation id="8677859815076891398">Žiadne albumy Vytvorte album vo <ph name="LINK_BEGIN" />Fotkách Google<ph name="LINK_END" />.</translation>

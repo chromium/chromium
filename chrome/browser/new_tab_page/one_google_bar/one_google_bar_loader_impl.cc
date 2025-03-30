@@ -298,7 +298,11 @@ OneGoogleBarLoaderImpl::OneGoogleBarLoaderImpl(
       account_consistency_mirror_required_(account_consistency_mirror_required),
       async_bar_parts_(base::FeatureList::IsEnabled(
           ntp_features::kNtpOneGoogleBarAsyncBarParts)),
-      additional_query_params_({{"async", "fixed:0"}}) {}
+      additional_query_params_(
+          {{"async", base::FeatureList::IsEnabled(
+                         ntp_features::kNtpOneGoogleBarAsyncBarParts)
+                         ? "fixed:0,abp:1"
+                         : "fixed:0"}}) {}
 
 OneGoogleBarLoaderImpl::~OneGoogleBarLoaderImpl() = default;
 

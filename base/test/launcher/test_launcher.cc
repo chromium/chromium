@@ -2204,7 +2204,7 @@ void TestLauncher::RunTests() {
 }
 
 void TestLauncher::PrintFuzzyMatchingTestNames() {
-  for (auto filter : positive_test_filter_) {
+  for (const auto& filter : positive_test_filter_) {
     if (filter.empty()) {
       continue;
     }

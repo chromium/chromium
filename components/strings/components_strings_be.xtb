@@ -441,7 +441,6 @@
 <translation id="1734878702283171397">Звярніцеся да сістэмнага адміністратара.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, тэрмін дзеяння: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Камп’ютар</translation>
-<translation id="1739422091279046802">змяненне маштабу і прагортванне</translation>
 <translation id="1741613555002899862">Гэта значэнне павінна быць вызначана і ўяўляць сабой сапраўдны радок, калі для палітыкі DnsOverHttpsMode зададзены параметр "<ph name="SECURE_DNS_MODE_SECURE" />".</translation>
 <translation id="1743393865165844832">Пасцельная бялізна</translation>
 <translation id="1743892871127720056">Назва табліцы параўнання, змяніць тэкст</translation>
@@ -2881,6 +2880,7 @@
 <translation id="6059925163896151826">USB-прылады</translation>
 <translation id="6060009363608157444">Няправільны рэжым DnsOverHttps.</translation>
 <translation id="6061154937977953833">Барацьба</translation>
+<translation id="6062405040252994646">Інструмент</translation>
 <translation id="6062937464449575061">Перастаць адсочваць цану</translation>
 <translation id="6063415549109819824">Жыллёвае фінансаванне</translation>
 <translation id="6070432475334343308">Адзін ці некалькі файлаў не былі запампаваны ў папку "<ph name="FOLDER_NAME" />" (у воблаку "<ph name="CLOUD_PROVIDER" />")</translation>

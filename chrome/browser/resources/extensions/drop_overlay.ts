@@ -32,7 +32,7 @@ export class ExtensionsDropOverlayElement extends CrLitElement {
     };
   }
 
-  dragEnabled: boolean = false;
+  accessor dragEnabled: boolean = false;
   private dragWrapperHandler_: DragAndDropHandler;
 
   constructor() {

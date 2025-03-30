@@ -877,14 +877,14 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   [self cancelFlowWithReason:CancelationReason::kUserCanceled];
 }
 
-- (void)didSwitchToProfileWithSuccess:(BOOL)success
-                    newProfileBrowser:(Browser*)newProfileBrowser {
+- (void)didFailToSwitchToProfile {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
-  if (!success) {
-    NSError* error = ios::provider::CreateMissingIdentitySigninError();
-    [self handleAuthenticationError:error];
-    return;
-  }
+  NSError* error = ios::provider::CreateMissingIdentitySigninError();
+  [self handleAuthenticationError:error];
+}
+
+- (void)didSwitchToProfileWithNewProfileBrowser:(Browser*)newProfileBrowser {
+  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
   // With the profile switching `_browser` and `_presentingViewController` are
   // not valid anymore.
   _browser = nullptr;

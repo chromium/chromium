@@ -4802,6 +4802,8 @@ data/accessibility/html/ol-expected-mac.txt
 data/accessibility/html/ol-expected-uia-win.txt
 data/accessibility/html/ol-expected-win.txt
 data/accessibility/html/ol.html
+data/accessibility/html/on-screen-mode-expected-blink.txt
+data/accessibility/html/on-screen-mode.html
 data/accessibility/html/open-modal-expected-blink.txt
 data/accessibility/html/open-modal.html
 data/accessibility/html/optgroup-custom-menulist-expected-android-assist-data.txt
@@ -7383,6 +7385,7 @@ data/interest_group/autogenSchemaV31.sql
 data/interest_group/autogenSchemaV32.sql
 data/interest_group/autogenSchemaV33.sql
 data/interest_group/autogenSchemaV34.sql
+data/interest_group/autogenSchemaV35.sql
 data/interest_group/bidding_argument_validator.js
 data/interest_group/bidding_argument_validator.js.mock-http-headers
 data/interest_group/bidding_logic.js

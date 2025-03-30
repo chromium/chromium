@@ -40,7 +40,7 @@ found in the LICENSE file.
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <org.chromium.chrome.browser.ntp_customization.NtpCardsListContainerView
+    <org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsListContainerView
         android:id="@+id/ntp_cards_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -49,5 +49,5 @@ found in the LICENSE file.
         android:layout_marginHorizontal="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
         app:layout_constraintTop_toBottomOf="@id/bottom_sheet_title"
         app:layout_constraintStart_toStartOf="parent">
-    </org.chromium.chrome.browser.ntp_customization.NtpCardsListContainerView>
+    </org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsListContainerView>
 </androidx.constraintlayout.widget.ConstraintLayout>

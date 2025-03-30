@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">A jegyzékfájl érvénytelen</translation>
 <translation id="7217838517480956708">Az eszköz rendszergazdája megköveteli, hogy a(z) <ph name="EXTENSION_NAME" /> telepítve legyen. A bővítményt nem lehet eltávolítani vagy módosítani.</translation>
 <translation id="7612608473764576263">A privát kulcs beviteli értékét érvényes formátumban kell megadnia (PKCS#8 formátumú, PEM-kódolású RSA-kulcs).</translation>
+<translation id="7876803335449432072">A(z) „<ph name="RELATIVE_PATH" />” fájlt nem sikerült betölteni a tartalomszkripthez. A tartalomszkriptek stíluslapjait csak támogatott stíluslapfájlokból (például .css fájlokból) lehet betölteni.</translation>
 <translation id="7939686037314084444">Nem sikerült megfelelően betölteni a bővítményt. Előfordulhat, hogy nem tud hálózati kéréseket fogadni.</translation>
 <translation id="7972881773422714442">Lehetőségek: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Előlapi</translation>
 <translation id="8047248493720652249">Ez a bővítmény nem tudta elnevezni a(z) „<ph name="ATTEMPTED_FILENAME" />” letöltést, mert egy másik bővítmény (<ph name="EXTENSION_NAME" />) eltérő fájlnevet határozott meg: „<ph name="ACTUAL_FILENAME" />”.</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> (<ph name="VENDOR_NAME" />)</translation>
 <translation id="8517576857589387417">A jegyzékfájl hiányzik vagy nem olvasható</translation>
+<translation id="8621383749470166852">A(z) „<ph name="RELATIVE_PATH" />” fájlt nem sikerült betölteni a tartalomszkripthez. A tartalomszkripteket csak támogatott JavaScript-fájlokból (például .js fájlokból) lehet betölteni.</translation>
 <translation id="8636666366616799973">A csomag érvénytelen. Részletek: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">A(z) „<ph name="APP_NAME" />” alkalmazás hozzáférést kér egyik eszközéhez:</translation>
 <translation id="8885905466771744233">A megadott bővítményhez már létezik privát kulcs. Használja újra vagy előbb törölje azt.</translation>

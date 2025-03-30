@@ -12,8 +12,6 @@
 #include "third_party/abseil-cpp/absl/strings/has_absl_stringify.h"
 #include "third_party/abseil-cpp/absl/strings/has_ostream_operator.h"
 #include "third_party/abseil-cpp/absl/strings/str_cat.h"
-#include "third_party/webrtc/api/scoped_refptr.h"
-#include "third_party/webrtc/rtc_base/checks.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
 
 namespace webrtc {

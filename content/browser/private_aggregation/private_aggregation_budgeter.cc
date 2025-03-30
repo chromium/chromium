@@ -8,14 +8,19 @@
 
 #include <algorithm>
 #include <functional>
+#include <iterator>
 #include <memory>
+#include <numeric>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -28,6 +33,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_storage.h"
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
@@ -35,7 +41,9 @@
 #include "content/public/browser/private_aggregation_data_model.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -132,6 +140,12 @@ void ComputeAndRecordBudgetValidity(
   RecordBudgetValidity(status);
 }
 
+void RecordLockHoldDuration(base::TimeDelta lock_hold_duration) {
+  base::UmaHistogramTimes(
+      "PrivacySandbox.PrivateAggregation.Budgeter.LockHoldDuration",
+      lock_hold_duration);
+}
+
 google::protobuf::RepeatedPtrField<proto::PrivateAggregationBudgetEntry>*
 GetBudgetEntries(PrivateAggregationCallerApi caller_api,
                  proto::PrivateAggregationBudgets& budgets) {
@@ -186,27 +200,82 @@ int64_t CalculateEarliestWindowStartInScope(
          budget_scope_duration.InMicroseconds();
 }
 
-PrivateAggregationBudgeter::RequestResult TestBudgetUsageAgainstLimits(
+using RequestResult = PrivateAggregationBudgeter::RequestResult;
+
+RequestResult TestBudgetUsageAgainstLimits(
     base::CheckedNumeric<int> total_budget_used_smaller_scope,
     base::CheckedNumeric<int> total_budget_used_larger_scope) {
   if (!total_budget_used_smaller_scope.IsValid() ||
       !total_budget_used_larger_scope.IsValid()) {
-    return PrivateAggregationBudgeter::RequestResult::kBadValuesOnDisk;
+    return RequestResult::kBadValuesOnDisk;
   }
   if (total_budget_used_smaller_scope.ValueOrDie() >
       PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope) {
-    return PrivateAggregationBudgeter::RequestResult::
-        kInsufficientSmallerScopeBudget;
+    return RequestResult::kInsufficientSmallerScopeBudget;
   }
   if (total_budget_used_larger_scope.ValueOrDie() >
       PrivateAggregationBudgeter::kLargerScopeValues.max_budget_per_scope) {
-    return PrivateAggregationBudgeter::RequestResult::
-        kInsufficientLargerScopeBudget;
+    return RequestResult::kInsufficientLargerScopeBudget;
   }
   return PrivateAggregationBudgeter::RequestResult::kApproved;
 }
 
+void UpdateOverallResultWithNewResult(RequestResult& overall_result,
+                                      RequestResult new_result) {
+  // Fatal errors should have been processed before `QueryBudget()` calls this.
+  CHECK_LE(new_result, RequestResult::kRequestedMoreThanTotalBudget);
+
+  // Any budget failures override the initial/default `kApproved` state.
+  if (new_result == RequestResult::kApproved) {
+    return;
+  } else if (overall_result == RequestResult::kApproved) {
+    overall_result = new_result;
+    return;
+  }
+
+  // This failure case overrides all others.
+  if (new_result == RequestResult::kRequestedMoreThanTotalBudget) {
+    overall_result = new_result;
+  } else if (overall_result == RequestResult::kRequestedMoreThanTotalBudget) {
+    return;
+  }
+
+  // At this point, each result must be either `kInsufficientSmallerScopeBudget`
+  // or `kInsufficientLargerScopeBudget`. The results should agree as only one
+  // case should be triggered by a query.
+  CHECK_EQ(overall_result, new_result);
+}
+
 }  // namespace
+
+PrivateAggregationBudgeter::BudgetQueryResult::BudgetQueryResult(
+    RequestResult overall_result,
+    std::vector<ResultForContribution> result_for_each_contribution)
+    : overall_result(overall_result),
+      result_for_each_contribution(std::move(result_for_each_contribution)) {}
+
+PrivateAggregationBudgeter::BudgetQueryResult::BudgetQueryResult(
+    BudgetQueryResult&& other) = default;
+PrivateAggregationBudgeter::BudgetQueryResult&
+PrivateAggregationBudgeter::BudgetQueryResult::operator=(
+    BudgetQueryResult&& other) = default;
+PrivateAggregationBudgeter::BudgetQueryResult::~BudgetQueryResult() = default;
+
+PrivateAggregationBudgeter::InspectBudgetCallResult::InspectBudgetCallResult(
+    BudgetQueryResult query_result,
+    std::optional<Lock> lock,
+    PendingReportLimitResult pending_report_limit_result)
+    : query_result(std::move(query_result)),
+      lock(std::move(lock)),
+      pending_report_limit_result(pending_report_limit_result) {}
+
+PrivateAggregationBudgeter::InspectBudgetCallResult::InspectBudgetCallResult(
+    InspectBudgetCallResult&& other) = default;
+PrivateAggregationBudgeter::InspectBudgetCallResult&
+PrivateAggregationBudgeter::InspectBudgetCallResult::operator=(
+    InspectBudgetCallResult&& other) = default;
+PrivateAggregationBudgeter::InspectBudgetCallResult::
+    ~InspectBudgetCallResult() = default;
 
 PrivateAggregationBudgeter::PrivateAggregationBudgeter(
     scoped_refptr<base::UpdateableSequencedTaskRunner> db_task_runner,
@@ -227,6 +296,9 @@ PrivateAggregationBudgeter::~PrivateAggregationBudgeter() {
     // tasks can no longer be posted). We post the database deletion task now
     // instead.
     std::move(shutdown_initializing_storage_).Run();
+  }
+  if (IsBudgeterLocked()) {
+    RecordLockHoldDuration(locked_timer_->Elapsed());
   }
 }
 
@@ -258,6 +330,11 @@ void PrivateAggregationBudgeter::ConsumeBudget(
     const PrivateAggregationBudgetKey& budget_key,
     int minimum_value_for_metrics,
     base::OnceCallback<void(RequestResult)> on_done) {
+  CHECK(!base::FeatureList::IsEnabled(
+      blink::features::kPrivateAggregationApiErrorReporting));
+
+  // The budgeter can't be locked unless the error reporting feature is enabled.
+  CHECK(!IsBudgeterLocked());
   EnsureStorageInitializationBegun();
 
   if (storage_status_ == StorageStatus::kInitializing) {
@@ -274,6 +351,102 @@ void PrivateAggregationBudgeter::ConsumeBudget(
     ConsumeBudgetImpl(budget, budget_key, minimum_value_for_metrics,
                       std::move(on_done));
   }
+}
+
+bool PrivateAggregationBudgeter::IsBudgeterLocked() const {
+  return locked_timer_.has_value();
+}
+
+void PrivateAggregationBudgeter::InspectBudgetAndLock(
+    const std::vector<blink::mojom::AggregatableReportHistogramContribution>&
+        contributions,
+    const PrivateAggregationBudgetKey& budget_key,
+    base::OnceCallback<void(InspectBudgetCallResult)> result_callback) {
+  CHECK(base::FeatureList::IsEnabled(
+      blink::features::kPrivateAggregationApiErrorReporting));
+  EnsureStorageInitializationBegun();
+
+  if (storage_status_ == StorageStatus::kInitializing || IsBudgeterLocked()) {
+    if (pending_calls_.size() >= kMaxPendingCalls) {
+      std::move(result_callback)
+          .Run(InspectBudgetCallResult(
+              {RequestResult::kTooManyPendingCalls, {}}, std::nullopt,
+              PendingReportLimitResult::kAtLimit));
+      return;
+    }
+
+    // Determines whether this call will cause the limit to be reached.
+    PendingReportLimitResult pending_report_limit_result =
+        (pending_calls_.size() + 1 == kMaxPendingCalls)
+            ? PendingReportLimitResult::kAtLimit
+            : PendingReportLimitResult::kNotAtLimit;
+
+    // `base::Unretained` is safe as `pending_calls_` is owned by `this`.
+    // TODO(crbug.com/405772004): Consider ways to avoid copies of
+    // `contributions` and `budget_key`, especially if the storage layer is
+    // changed to be always asynchronous.
+    pending_calls_.push_back(base::BindOnce(
+        &PrivateAggregationBudgeter::InspectBudgetAndLockImpl,
+        base::Unretained(this), contributions, budget_key,
+        pending_report_limit_result, std::move(result_callback)));
+  } else {
+    InspectBudgetAndLockImpl(contributions, budget_key,
+                             PendingReportLimitResult::kNotAtLimit,
+                             std::move(result_callback));
+  }
+}
+
+void PrivateAggregationBudgeter::ConsumeBudget(
+    Lock lock,
+    const std::vector<blink::mojom::AggregatableReportHistogramContribution>&
+        contributions,
+    const PrivateAggregationBudgetKey& budget_key,
+    base::OnceCallback<void(BudgetQueryResult)> result_callback) {
+  CHECK(base::FeatureList::IsEnabled(
+      blink::features::kPrivateAggregationApiErrorReporting));
+
+  // If a lock was vended, initialization must be complete.
+  CHECK(DidStorageInitializationSucceed());
+  CHECK(IsBudgeterLocked());
+  RecordLockHoldDuration(locked_timer_->Elapsed());
+
+  BudgetQueryResult query_result =
+      QueryBudget(contributions, budget_key, /*consume_budget=*/true);
+
+  std::move(result_callback).Run(std::move(query_result));
+
+  locked_timer_ = std::nullopt;  // Unlocks budgeter.
+
+  ProcessAllPendingCalls();
+}
+
+void PrivateAggregationBudgeter::InspectBudgetAndLockImpl(
+    const std::vector<blink::mojom::AggregatableReportHistogramContribution>&
+        contributions,
+    const PrivateAggregationBudgetKey& budget_key,
+    PendingReportLimitResult pending_report_limit_result,
+    base::OnceCallback<void(InspectBudgetCallResult)> result_callback) {
+  if (!DidStorageInitializationSucceed()) {
+    std::move(result_callback)
+        .Run({{RequestResult::kStorageInitializationFailed, {}},
+              std::nullopt,
+              pending_report_limit_result});
+    return;
+  }
+
+  BudgetQueryResult query_results =
+      QueryBudget(contributions, budget_key, /*consume_budget=*/false);
+
+  std::move(result_callback)
+      .Run(InspectBudgetCallResult(std::move(query_results), VendLock(),
+                                   pending_report_limit_result));
+}
+
+PrivateAggregationBudgeter::Lock PrivateAggregationBudgeter::VendLock() {
+  CHECK(!IsBudgeterLocked());
+
+  locked_timer_ = base::ElapsedTimer();
+  return Lock();
 }
 
 void PrivateAggregationBudgeter::OnUserVisibleTaskStarted() {
@@ -296,7 +469,7 @@ void PrivateAggregationBudgeter::ClearData(
                         weak_factory_.GetWeakPtr())
              .Then(std::move(done));
 
-  if (storage_status_ == StorageStatus::kInitializing) {
+  if (storage_status_ == StorageStatus::kInitializing || IsBudgeterLocked()) {
     // To ensure that data deletion always succeeds, we don't check
     // `pending_calls.size()` here.
 
@@ -340,10 +513,29 @@ void PrivateAggregationBudgeter::OnStorageDoneInitializing(
 }
 
 void PrivateAggregationBudgeter::ProcessAllPendingCalls() {
-  for (base::OnceClosure& cb : pending_calls_) {
-    std::move(cb).Run();
+  CHECK(!IsBudgeterLocked());
+
+  // Avoid recursion.
+  if (process_all_pending_calls_in_progress_) {
+    return;
   }
-  pending_calls_.clear();
+  base::AutoReset<bool> auto_reset(&process_all_pending_calls_in_progress_,
+                                   true);
+
+  // Avoid a simple for loop in case the vector is mutated during the processing
+  // of one of the pending calls or its callback.
+  while (!pending_calls_.empty()) {
+    base::OnceClosure cb = std::move(pending_calls_.front());
+    pending_calls_.erase(pending_calls_.begin());
+
+    std::move(cb).Run();
+    // Executing an earlier pending `InspectBudgetAndLock()` call may have
+    // locked the budgeter. In this case, `ProcessAllPendingCalls()` will be run
+    // again after the corresponding `ConsumeBudget()` call.
+    if (IsBudgeterLocked()) {
+      return;
+    }
+  }
 }
 
 void PrivateAggregationBudgeter::GetAllDataKeys(
@@ -417,19 +609,78 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
     return;
   }
 
+  // This hack is used to avoid needing to copy all the values to a new vector
+  // when `kPrivateAggregationApiErrorReporting` is enabled.
+  // TODO(crbug.com/381788013): Remove this entire flow when the feature flag is
+  // removed after being fully launched.
+  std::vector<blink::mojom::AggregatableReportHistogramContribution>
+      fake_contribution_vector{
+          blink::mojom::AggregatableReportHistogramContribution(
+              /*bucket=*/0, /*value=*/int32_t{additional_budget},
+              /*filtering_id=*/0)};
+
+  BudgetQueryResult query_result =
+      QueryBudget(fake_contribution_vector, budget_key, /*consume_budget=*/true,
+                  minimum_value_for_metrics);
+
+  // We ignore the per-contribution result as provides no extra value given the
+  // contributions' values were summed before querying.
+  std::move(on_done).Run(query_result.overall_result);
+}
+
+PrivateAggregationBudgeter::BudgetQueryResult
+PrivateAggregationBudgeter::QueryBudget(
+    const std::vector<blink::mojom::AggregatableReportHistogramContribution>&
+        contributions,
+    const PrivateAggregationBudgetKey& budget_key,
+    bool consume_budget,
+    int minimum_value_for_metrics) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiErrorReporting)) {
+    // This argument should only be set for the non-error reporting flow.
+    CHECK_EQ(minimum_value_for_metrics, 0);
+  }
+
   static_assert(
       kSmallerScopeValues.max_budget_per_scope <
           kLargerScopeValues.max_budget_per_scope,
       "The larger scope must have a larger budget than the smaller scope.");
-  if (additional_budget > kSmallerScopeValues.max_budget_per_scope) {
-    std::move(on_done).Run(RequestResult::kRequestedMoreThanTotalBudget);
-    return;
+
+  if (contributions.empty()) {
+    return {RequestResult::kApproved, {}};
+  }
+
+  RequestResult overall_result = RequestResult::kApproved;
+
+  // Note: when `kPrivateAggregationApiErrorReporting` is disabled, a vector
+  // with one element is passed in, so the `CheckedNumeric` is superfluous.
+  base::CheckedNumeric<int> total_budget_needed = std::accumulate(
+      contributions.begin(), contributions.end(),
+      /*init=*/base::CheckedNumeric<int>(0), /*op=*/
+      [](base::CheckedNumeric<int> running_sum,
+         const blink::mojom::AggregatableReportHistogramContribution&
+             contribution) { return running_sum + contribution.value; });
+  if (!total_budget_needed.IsValid() ||
+      total_budget_needed.ValueOrDie() >
+          kSmallerScopeValues.max_budget_per_scope) {
+    UpdateOverallResultWithNewResult(
+        overall_result, RequestResult::kRequestedMoreThanTotalBudget);
+
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kPrivateAggregationApiErrorReporting)) {
+      // We early return as only the overall result will be used.
+      CHECK_EQ(contributions.size(), 1u);
+
+      return {overall_result, {}};
+    }
   }
 
   std::string site_key = net::SchemefulSite(budget_key.origin()).Serialize();
 
   // If there is no budget proto stored for this origin already, we use the
   // default initialization of `budgets` (untouched by `TryGetData()`).
+  // TODO(crbug.com/381788013): Consider caching this proto between calls to
+  // `InspectBudgetAndLock()` and `ConsumeBudget()`.
   proto::PrivateAggregationBudgets budgets;
   storage_->budgets_data()->TryGetData(site_key, &budgets);
 
@@ -468,8 +719,7 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
 
     // Protect against bad values on disk
     if (elem.budget_used() <= 0) {
-      std::move(on_done).Run(RequestResult::kBadValuesOnDisk);
-      return;
+      return {RequestResult::kBadValuesOnDisk, {}};
     }
 
     if (elem.entry_start_timestamp() >=
@@ -479,17 +729,52 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
     total_budget_used_larger_scope += elem.budget_used();
   }
 
-  RequestResult budget_increase_request_result = TestBudgetUsageAgainstLimits(
-      total_budget_used_smaller_scope + additional_budget,
-      total_budget_used_larger_scope + additional_budget);
+  base::CheckedNumeric<int> additional_budget = 0;
 
-  if (budget_increase_request_result == RequestResult::kApproved) {
+  // Note: when `kPrivateAggregationApiErrorReporting` is disabled,
+  // `request_results` will be equal to `{overall_result}`.
+  std::vector<ResultForContribution> request_results;
+  request_results.reserve(contributions.size());
+
+  std::ranges::transform(contributions, std::back_inserter(request_results),
+                         [&](auto& contribution) {
+                           CHECK_GE(contribution.value, 0);
+
+                           RequestResult budget_increase_request_result =
+                               TestBudgetUsageAgainstLimits(
+                                   total_budget_used_smaller_scope +
+                                       additional_budget + contribution.value,
+                                   total_budget_used_larger_scope +
+                                       additional_budget + contribution.value);
+
+                           bool was_approved = budget_increase_request_result ==
+                                               RequestResult::kApproved;
+                           if (was_approved) {
+                             additional_budget += contribution.value;
+
+                             // The budget test would've failed if the sum
+                             // exceeds limits.
+                             CHECK(additional_budget.IsValid());
+                           }
+                           UpdateOverallResultWithNewResult(
+                               overall_result, budget_increase_request_result);
+                           return was_approved
+                                      ? ResultForContribution::kApproved
+                                      : ResultForContribution::kDenied;
+                         });
+
+  if (!consume_budget) {
+    return {overall_result, std::move(request_results)};
+  }
+
+  if (additional_budget.ValueOrDie() > 0) {
     if (!window_for_key) {
       window_for_key = budget_entries->Add();
       window_for_key->set_entry_start_timestamp(current_window_start);
       window_for_key->set_budget_used(0);
     }
-    int budget_used_for_key = window_for_key->budget_used() + additional_budget;
+    int budget_used_for_key =
+        (window_for_key->budget_used() + additional_budget).ValueOrDie();
     CHECK_GT(budget_used_for_key, 0);
     CHECK_LE(budget_used_for_key, kSmallerScopeValues.max_budget_per_scope);
     window_for_key->set_budget_used(budget_used_for_key);
@@ -499,7 +784,7 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
       reporting_origins_for_deletion =
           budgets.mutable_reporting_origins_for_deletion();
 
-  if (budget_increase_request_result == RequestResult::kApproved) {
+  if (additional_budget.ValueOrDie() > 0) {
     std::string reporting_origin_serialized = budget_key.origin().Serialize();
     proto::ReportingOrigin* reporting_origin_entry = nullptr;
 
@@ -520,7 +805,9 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
     reporting_origin_entry->set_last_used_timestamp(current_window_start);
   }
 
-  if (budget_increase_request_result != RequestResult::kApproved) {
+  if (additional_budget.ValueOrDie() == 0 &&
+      !base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiErrorReporting)) {
     bool would_minimum_value_be_approved =
         TestBudgetUsageAgainstLimits(
             total_budget_used_smaller_scope + minimum_value_for_metrics,
@@ -538,9 +825,10 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
       reporting_origins_for_deletion->size());
 
   storage_->budgets_data()->UpdateData(site_key, budgets);
-  std::move(on_done).Run(budget_increase_request_result);
 
   CleanUpStaleDataSoon();
+
+  return {overall_result, std::move(request_results)};
 }
 
 void PrivateAggregationBudgeter::ClearDataImpl(

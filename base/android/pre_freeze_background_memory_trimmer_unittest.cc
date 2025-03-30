@@ -171,8 +171,9 @@ class PreFreezeSelfCompactionTest : public testing::Test {
   }
 
   // Returns a copy of the regions that have been allocated via |Map|.
-  std::vector<debug::MappedMemoryRegion> GetMappedMemoryRegions() const {
-    return mapped_regions_;
+  void GetMappedMemoryRegions(
+      std::vector<debug::MappedMemoryRegion>* regions) const {
+    *regions = mapped_regions_;
   }
 
   test::TaskEnvironment task_environment_{
@@ -849,10 +850,7 @@ TEST_F(PreFreezeSelfCompactionTest, Cancel) {
     ASSERT_NE(addrs[i], MAP_FAILED);
   }
 
-  std::vector<debug::MappedMemoryRegion> regions = GetMappedMemoryRegions();
   base::HistogramTester histograms;
-
-  ASSERT_EQ(regions.size(), 4u);
 
   // We should not record the metric here, because we are not currently
   // running.
@@ -867,15 +865,19 @@ TEST_F(PreFreezeSelfCompactionTest, Cancel) {
   task_environment_.FastForwardBy(base::Seconds(1));
 
   const auto triggered_at = base::TimeTicks::Now();
+  auto state =
+      std::make_unique<PreFreezeBackgroundMemoryTrimmer::CompactionState>(
+          task_environment_.GetMainThreadTaskRunner(), triggered_at, 1);
+  GetMappedMemoryRegions(&state->regions_);
+  ASSERT_EQ(state->regions_.size(), 4u);
+
   {
     base::AutoLock locker(PreFreezeBackgroundMemoryTrimmer::lock());
     PreFreezeBackgroundMemoryTrimmer::Instance().compaction_last_triggered_ =
         triggered_at;
   }
   PreFreezeBackgroundMemoryTrimmer::Instance().StartCompaction(
-      std::make_unique<PreFreezeBackgroundMemoryTrimmer::CompactionState>(
-          task_environment_.GetMainThreadTaskRunner(), std::move(regions),
-          triggered_at, 1));
+      std::move(state));
 
   EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 1u);
 
@@ -933,16 +935,15 @@ TEST_F(PreFreezeSelfCompactionTest, NotCanceled) {
     ASSERT_NE(addrs[i], MAP_FAILED);
   }
 
-  std::vector<debug::MappedMemoryRegion> regions = GetMappedMemoryRegions();
-
-  ASSERT_EQ(regions.size(), 4u);
-
   const auto triggered_at = base::TimeTicks::Now();
-  PreFreezeBackgroundMemoryTrimmer::Instance().StartCompaction(
+  auto state =
       std::make_unique<PreFreezeBackgroundMemoryTrimmer::CompactionState>(
+          task_environment_.GetMainThreadTaskRunner(), triggered_at, 1);
+  GetMappedMemoryRegions(&state->regions_);
+  ASSERT_EQ(state->regions_.size(), 4u);
 
-          task_environment_.GetMainThreadTaskRunner(), std::move(regions),
-          triggered_at, 1));
+  PreFreezeBackgroundMemoryTrimmer::Instance().StartCompaction(
+      std::move(state));
 
   // We should have 4 sections here, based on the sizes mapped above.
   // |StartCompaction| doesn't run right away, but rather schedules a task.

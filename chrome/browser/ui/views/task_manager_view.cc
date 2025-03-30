@@ -476,6 +476,8 @@ std::unique_ptr<views::View> TaskManagerView::CreateHeaderSeparatorUnderlay(
 }
 
 void TaskManagerView::PerformFilter(DisplayCategory category) {
+  SaveCategoryToLocalState(category);
+
   // When `select_on_remove_` is enabled, the selection will automatically jump
   // to some next/previous row if available. However, this setting needs to be
   // temporarily disabled during model updates to achieve the desired selection
@@ -690,6 +692,10 @@ void TaskManagerView::Init() {
   table_model_->RetrieveSavedColumnsSettingsAndUpdateTable(
       table_config_.sort_on_cpu_by_default);
 
+  if (table_config_.layout_refresh) {
+    RestoreSavedCategory();
+  }
+
   AddAccelerator(ui::Accelerator(ui::VKEY_W, ui::EF_CONTROL_DOWN));
   AddAccelerator(
       ui::Accelerator(ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN));
@@ -727,6 +733,51 @@ void TaskManagerView::RetrieveSavedAlwaysOnTopState() {
   const base::Value::Dict& dictionary =
       g_browser_process->local_state()->GetDict(GetWindowName());
   is_always_on_top_ = dictionary.FindBool("always_on_top").value_or(false);
+}
+
+void TaskManagerView::RestoreSavedCategory() {
+  if (!g_browser_process->local_state()) {
+    return;
+  }
+
+  int category =
+      g_browser_process->local_state()->GetInteger(prefs::kTaskManagerCategory);
+  int max = static_cast<int>(DisplayCategory::kMax);
+
+  // Bounds check the retrieved pref.
+  if (category < 0 || category > max) {
+    category = static_cast<int>(TaskManagerTableModel::kDefaultCategory);
+  }
+
+  const auto parsed_category = static_cast<DisplayCategory>(category);
+
+  // Finds the tab index of the category to restore, or does nothing if the
+  // category no longer exists as a tab.
+  for (size_t i = 0; i < kTabDefinitions.size(); ++i) {
+    if (kTabDefinitions[i].associated_category == parsed_category) {
+      tabs_->SelectTab(tabs_->GetTabAtIndex(i), /*animate=*/false);
+      break;
+    }
+  }
+}
+
+void TaskManagerView::SaveCategoryToLocalState(DisplayCategory category) {
+  PrefService* local_state = g_browser_process->local_state();
+  if (!local_state) {
+    return;
+  }
+
+  // Stores the current tab to be restored again at startup.
+  int category_to_save = static_cast<int>(category);
+  int max = static_cast<int>(DisplayCategory::kMax);
+  int default_category =
+      static_cast<int>(TaskManagerTableModel::kDefaultCategory);
+
+  // Bounds check to ensure that the category is set appropriately.
+  if (category_to_save < 0 || category_to_save > max) {
+    category_to_save = default_category;
+  }
+  local_state->SetInteger(prefs::kTaskManagerCategory, category_to_save);
 }
 
 void TaskManagerView::EndSelectedProcess() {

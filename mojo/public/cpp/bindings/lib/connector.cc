@@ -549,7 +549,8 @@ bool Connector::DispatchMessage(ScopedMessageHandle handle) {
             interface_name_);
 
         static const uint8_t* flow_enabled =
-            TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("toplevel.flow");
+            TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
+                "toplevel.flow,mojom.flow");
         if (!*flow_enabled)
           return;
 

@@ -9,20 +9,17 @@
 
 @implementation PedalSuggestionWrapper
 
+@synthesize pedal = _pedal;
+
 - (instancetype)initWithPedal:(id<OmniboxPedal, OmniboxIcon>)pedal {
   self = [super init];
   if (self) {
-    _innerPedal = pedal;
+    _pedal = pedal;
   }
   return self;
 }
 
 #pragma mark - AutocompleteSuggestion
-
-/// Do not expose any pedal, pretend that this is a normal suggestion.
-- (id<OmniboxPedal>)pedal {
-  return nil;
-}
 
 - (BOOL)supportsDeletion {
   return NO;
@@ -58,7 +55,7 @@
 
 - (NSAttributedString*)text {
   return [[NSAttributedString alloc]
-      initWithString:self.innerPedal.title
+      initWithString:self.pedal.title
           attributes:@{
             NSForegroundColorAttributeName :
                 [UIColor colorNamed:kTextPrimaryColor],
@@ -70,7 +67,7 @@
 
 - (NSAttributedString*)detailText {
   return [[NSAttributedString alloc]
-      initWithString:self.innerPedal.subtitle
+      initWithString:self.pedal.subtitle
           attributes:@{
             NSForegroundColorAttributeName :
                 [UIColor colorNamed:kTextSecondaryColor],
@@ -81,7 +78,7 @@
 }
 
 - (id<OmniboxIcon>)icon {
-  return self.innerPedal;
+  return self.pedal;
 }
 
 - (UIImage*)matchTypeIcon {

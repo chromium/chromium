@@ -111,6 +111,9 @@ class MODULES_EXPORT AIPageContentAgent final
 
     // The current depth of the tree being walked.
     int stack_depth_ = 0;
+
+    // Whether the stack depth has exceeded the max tree depth.
+    bool stack_depth_exceeded_ = false;
   };
 
   void Bind(mojo::PendingReceiver<mojom::blink::AIPageContentAgent> receiver);

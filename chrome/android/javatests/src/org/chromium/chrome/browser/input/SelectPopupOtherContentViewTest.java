@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -65,6 +66,7 @@ public class SelectPopupOtherContentViewTest {
     @Test
     @LargeTest
     @Feature({"Browser"})
+    @DisabledTest(message = "Flaky, crbug.com/407059641")
     public void testPopupNotClosedByOtherContentView() throws Exception, Throwable {
         // Load the test page.
         mActivityTestRule.startMainActivityWithURL(SELECT_URL);

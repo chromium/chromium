@@ -8,6 +8,7 @@
 <translation id="100323615638474026">USB デバイス（<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />）</translation>
 <translation id="1003917207516838287">最近のダウンロード履歴</translation>
 <translation id="1004218526896219317">サイトへのアクセス</translation>
+<translation id="1005230401424685968">YYYY</translation>
 <translation id="1005274289863221750">マイクとカメラを使用する</translation>
 <translation id="1005333234656240382">ADB デバッグを有効にしますか？</translation>
 <translation id="1005671386794704751">ローズ</translation>
@@ -1364,6 +1365,7 @@
 <translation id="193565226207940518">サポートツール</translation>
 <translation id="1935995810530254458">このままコピー</translation>
 <translation id="1936157145127842922">フォルダで表示</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{リーディング リストにページを追加しました}other{リーディング リストにページを追加しました}}</translation>
 <translation id="1936931585862840749">印刷部数を数値（1～<ph name="MAX_COPIES" />）で指定してください。</translation>
 <translation id="1937774647013465102">このデバイス（<ph name="ARCHITECTURE_DEVICE" />）でコンテナのアーキテクチャ タイプ <ph name="ARCHITECTURE_CONTAINER" /> をインポートできません。このコンテナを別のデバイスに復元できるかお試しださい。または、ファイルアプリを開いて、このコンテナ イメージ内のファイルにアクセスすることも可能です。</translation>
 <translation id="1938351510777341717">外部コマンド</translation>
@@ -1914,7 +1916,7 @@
 <translation id="2312219318583366810">ページの URL</translation>
 <translation id="2314165183524574721">現在の公開設定は非表示です</translation>
 <translation id="2314774579020744484">この言語を使用してページを翻訳します</translation>
-<translation id="2316129865977710310">いいえ</translation>
+<translation id="2316129865977710310">今はしない</translation>
 <translation id="2316433409811863464">アプリ ストリーミング</translation>
 <translation id="2316709634732130529">推奨されたパスワードを使用</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% 完了</translation>
@@ -3167,7 +3169,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         このカードからいつでも設定を管理できます。その他のオプションは [Chrome をカスタマイズ] を開きます。</translation>
-<translation id="3207437351138888228">フォームに入力すると、情報と入力先のページが Google に送信され、候補が生成されます</translation>
 <translation id="3207960819495026254">ブックマークしました</translation>
 <translation id="3208584281581115441">今すぐ確認</translation>
 <translation id="3208703785962634733">未確認</translation>
@@ -3212,6 +3213,7 @@
 <translation id="3242289508736283383">「kiosk_only」マニフェスト属性が指定されているアプリは、ChromeOS キオスクモードでインストールする必要があります。</translation>
 <translation id="3243017971870859287">ChromeOS Flex デバイスとコンポーネントのシリアル番号を読み取る</translation>
 <translation id="324366796737464147">ノイズ キャンセリング</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">音声のミュートを続行する</translation>
 <translation id="3247006341013237647">タブを整理しますか？</translation>
 <translation id="3247649647204519958">ここでは、表示しているサイトに対する拡張機能の権限を確認、管理できます</translation>
@@ -6073,7 +6075,6 @@
 <translation id="5267572070504076962">セーフ ブラウジングをオンにすると危険なサイトから保護されます</translation>
 <translation id="5269977353971873915">印刷の失敗</translation>
 <translation id="5271578170655641944">Google ドライブへのアクセスを削除しますか？</translation>
-<translation id="5271782684896713035">データは、該当の機能の改善のために人間のレビュアーによって確認される場合があります</translation>
 <translation id="5273806377963980154">サイトの URL を編集する</translation>
 <translation id="5275084684151588738">ユーザー辞書</translation>
 <translation id="5275338516105640560">保存されたタブグループのボタン</translation>

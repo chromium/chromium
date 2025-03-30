@@ -1085,6 +1085,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.DlcInstaller.InstallTime" units="ms"
+    expires_after="2026-03-24">
+  <owner>tinghaolin@google.com</owner>
+  <owner>chromeos-flex-eng@google.com</owner>
+  <summary>
+    The elapsed time between the arcvm image being installed via DLC service and
+    the completion of that installation. This downloading mechanism is enabled
+    on boards with the arcvm-dlc USE flag (currently, only the reven board).
+  </summary>
+</histogram>
+
 <histogram name="Arc.EngagementTime.ArcTotal" units="ms"
     expires_after="2025-09-14">
   <owner>mduggan@google.com</owner>

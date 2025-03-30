@@ -372,13 +372,9 @@ void OnDeviceModelServiceController::StartValidation() {
 
 void OnDeviceModelServiceController::FinishValidation(
     OnDeviceModelValidationResult result) {
-  if (!model_validator_) {
-    return;
-  }
-
+  DCHECK(model_validator_);
   base::UmaHistogramEnumeration(
       "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult", result);
-
   model_validator_ = nullptr;
   access_controller_->OnValidationFinished(result);
 }
@@ -414,14 +410,8 @@ void OnDeviceModelServiceController::OnServiceDisconnected(
 
 void OnDeviceModelServiceController::OnBaseModelDisconnected() {
   LOG(ERROR) << "Base model disconnected unexpectedly.";
-  // This could be either a true crash or just a failure to load the model,
-  // but we handle it the same way in either case.
-  // Explicitly reset to adaptations remotes to avoid receiving additional
-  // disconnect errors (though they may have already received them).
-  model_adaptation_controllers_.clear();
   base_model_remote_.reset();
   access_controller_->OnDisconnectedFromRemote();
-  FinishValidation(OnDeviceModelValidationResult::kServiceCrash);
 }
 
 void OnDeviceModelServiceController::OnBaseModelRemoteIdle() {
@@ -429,16 +419,6 @@ void OnDeviceModelServiceController::OnBaseModelRemoteIdle() {
   // reset the explicitly anyway.
   model_adaptation_controllers_.clear();
   base_model_remote_.reset();
-}
-
-void OnDeviceModelServiceController::OnModelAdaptationRemoteDisconnected() {
-  LOG(ERROR) << "Model adaptation disconnected unexpectedly.";
-  // In the event of a service crash, we expect that OnBaseModelDisconnected
-  // will usually be called first, and prevent this from firing, otherwise this
-  // may double count the crash.
-  // TODO: crbug.com/376063340 - Consider tracking these separately and not
-  // suppressing the disconnect errors.
-  access_controller_->OnDisconnectedFromRemote();
 }
 
 OnDeviceModelServiceController::OnDeviceModelClient::OnDeviceModelClient(

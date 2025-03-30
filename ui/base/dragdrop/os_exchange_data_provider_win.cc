@@ -29,6 +29,7 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/i18n/file_util_icu.h"
@@ -50,6 +51,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_win.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
@@ -256,28 +258,6 @@ FormatEtcEnumerator* FormatEtcEnumerator::CloneFromOther(
 // OSExchangeDataProviderWin, public:
 
 // static
-bool OSExchangeDataProviderWin::HasPlainTextURL(IDataObject* source) {
-  std::u16string plain_text;
-  return (clipboard_util::GetPlainText(source, &plain_text) &&
-          !plain_text.empty() && GURL(plain_text).is_valid());
-}
-
-// static
-bool OSExchangeDataProviderWin::GetPlainTextURL(IDataObject* source,
-                                                GURL* url) {
-  std::u16string plain_text;
-  if (clipboard_util::GetPlainText(source, &plain_text) &&
-      !plain_text.empty()) {
-    GURL gurl(plain_text);
-    if (gurl.is_valid()) {
-      *url = gurl;
-      return true;
-    }
-  }
-  return false;
-}
-
-// static
 DataObjectImpl* OSExchangeDataProviderWin::GetDataObjectImpl(
     const OSExchangeData& data) {
   return static_cast<const OSExchangeDataProviderWin*>(&data.provider())->
@@ -421,6 +401,28 @@ void OSExchangeDataProviderWin::SetFilenames(
 
   data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
       ClipboardFormatType::CFHDropType().ToFormatEtc(), storage));
+}
+
+bool OSExchangeDataProviderWin::HasPlainTextURL() const {
+  return GetPlainTextURL().has_value();
+}
+
+std::optional<GURL> OSExchangeDataProviderWin::GetPlainTextURL() const {
+  std::u16string plain_text;
+  if (clipboard_util::GetPlainText(source_object_.Get(), &plain_text) &&
+      !plain_text.empty()) {
+    GURL gurl(plain_text);
+    if (!gurl.is_valid()) {
+      return std::nullopt;
+    }
+    if (base::FeatureList::IsEnabled(
+            features::kDragDropOnlySynthesizeHttpOrHttpsUrlsFromText) &&
+        IsRendererTainted() && !gurl.SchemeIsHTTPOrHTTPS()) {
+      return std::nullopt;
+    }
+    return gurl;
+  }
+  return std::nullopt;
 }
 
 void OSExchangeDataProviderWin::SetVirtualFileContentsForTesting(
@@ -592,10 +594,12 @@ OSExchangeDataProviderWin::GetURLAndTitle(FilenameToURLPolicy policy) const {
           policy == FilenameToURLPolicy::CONVERT_FILENAMES ? true : false)) {
     DCHECK(url.is_valid());
     return UrlInfo{std::move(url), std::move(title)};
-  } else if (GetPlainTextURL(source_object_.Get(), &url)) {
-    DCHECK(url.is_valid());
-    title = net::GetSuggestedFilename(url, "", "", "", "", std::string());
-    return UrlInfo{std::move(url), std::move(title)};
+  } else if (std::optional<GURL> plaintext_url = GetPlainTextURL();
+             plaintext_url.has_value()) {
+    DCHECK(plaintext_url->is_valid());
+    title = net::GetSuggestedFilename(*plaintext_url, "", "", "", "",
+                                      std::string());
+    return UrlInfo{std::move(plaintext_url).value(), std::move(title)};
   }
   return std::nullopt;
 }
@@ -732,7 +736,7 @@ bool OSExchangeDataProviderWin::HasURL(FilenameToURLPolicy policy) const {
       clipboard_util::HasUrl(
           source_object_.Get(),
           policy == FilenameToURLPolicy::CONVERT_FILENAMES ? true : false) ||
-      HasPlainTextURL(source_object_.Get()));
+      HasPlainTextURL());
 }
 
 bool OSExchangeDataProviderWin::HasFile() const {

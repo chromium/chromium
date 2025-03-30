@@ -9,7 +9,7 @@
 
   // Start the test.
   const result = await bp.BluetoothEmulation.removeService(
-      {address: helper.peripheralAddress(), id: 'unknown service id'});
+      {address: helper.peripheralAddress(), serviceId: 'unknown service id'});
   testRunner.log(result);
 
   testRunner.completeTest();

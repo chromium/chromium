@@ -8,6 +8,7 @@
 <translation id="100323615638474026">Dispositivo USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Cronologia dei download recenti</translation>
 <translation id="1004218526896219317">Accesso al sito</translation>
+<translation id="1005230401424685968">AAAA</translation>
 <translation id="1005274289863221750">Utilizzo del microfono e della fotocamera</translation>
 <translation id="1005333234656240382">Attivare il debug ADB?</translation>
 <translation id="1005671386794704751">Rosa</translation>
@@ -3177,7 +3178,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
         <ph name="BREAK" />
         <ph name="BREAK" />
         Puoi gestire le impostazioni di questa scheda in qualsiasi momento o visualizzare altre opzioni in Personalizza Chrome.</translation>
-<translation id="3207437351138888228">Quando compili un modulo, le tue informazioni e la pagina da cui provengono sono inviate a Google per generare suggerimenti</translation>
 <translation id="3207960819495026254">Aggiunto ai preferiti</translation>
 <translation id="3208584281581115441">Controlla ora</translation>
 <translation id="3208703785962634733">Non confermato</translation>
@@ -3222,6 +3222,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3242289508736283383">L'app con l'attributo del file manifest "kiosk_only" deve essere installata in modalità kiosk di ChromeOS</translation>
 <translation id="3243017971870859287">Lettura dei numeri di serie del dispositivo ChromeOS Flex e dei componenti</translation>
 <translation id="324366796737464147">Cancellazione del rumore</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Continua a tenere l'audio disattivato</translation>
 <translation id="3247006341013237647">Vuoi organizzare le schede?</translation>
 <translation id="3247649647204519958">Qui puoi visualizzare e gestire le autorizzazioni delle estensioni per il sito in cui ti trovi</translation>
@@ -6088,7 +6089,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5267572070504076962">Attiva Navigazione sicura per proteggerti da siti pericolosi</translation>
 <translation id="5269977353971873915">Stampa non riuscita</translation>
 <translation id="5271578170655641944">Vuoi rimuovere l'accesso a Google Drive?</translation>
-<translation id="5271782684896713035">I dati potrebbero essere esaminati da revisori per migliorare questa funzionalità</translation>
 <translation id="5273806377963980154">Modifica l'URL del sito</translation>
 <translation id="5275084684151588738">Dizionari utente</translation>
 <translation id="5275338516105640560">Pulsante Gruppo di schede salvato</translation>

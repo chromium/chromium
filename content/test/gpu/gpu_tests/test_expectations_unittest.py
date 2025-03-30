@@ -103,15 +103,14 @@ def CheckTestExpectationsAreForExistingTests(
     test_expectations = expectations_parser.TestExpectations()
     test_expectations.parse_tagged_list(f.read(), f.name)
     broke_expectations = '\n'.join([
-        "\t- {0}:{1}: Expectation with pattern '{2}' does not match"
-        ' any tests in the {3} test suite'.format(f.name, exp.lineno, exp.test,
-                                                  test_class.Name())
+        f"\t- {f.name}:{exp.lineno}: Expectation with pattern '{exp.test}' "
+        f'does not match any tests in the {test_class.Name()} test suite'
         for exp in test_expectations.check_for_broken_expectations(test_names)
     ])
     unittest_testcase.assertEqual(
         broke_expectations, '',
-        'The following expectations were found to not apply to any tests in '
-        'the %s test suite:\n%s' % (test_class.Name(), broke_expectations))
+        f'The following expectations were found to not apply to any tests in '
+        f'the {test_class.Name()} test suite:\n{broke_expectations}')
 
 
 def CheckTestExpectationPatternsForConflicts(
@@ -149,8 +148,7 @@ class GpuTestExpectationsValidation(unittest.TestCase):
           webgl_version = 2
         _ = list(
             test_case.GenerateTestCases__RunGpuTest(
-                gpu_helper.GetMockArgs(webgl_version=('%d.0.0' %
-                                                      webgl_version))))
+                gpu_helper.GetMockArgs(webgl_version=(f'{webgl_version}.0.0'))))
         if test_case.ExpectationsFiles():
           with open(test_case.ExpectationsFiles()[0]) as f:
             errors += CheckTestExpectationPatternsForConflicts(
@@ -166,15 +164,13 @@ class GpuTestExpectationsValidation(unittest.TestCase):
           webgl_version = 2
         _ = list(
             test_case.GenerateTestCases__RunGpuTest(
-                gpu_helper.GetMockArgs(webgl_version=('%d.0.0' %
-                                                      webgl_version))))
+                gpu_helper.GetMockArgs(webgl_version=(f'{webgl_version}.0.0'))))
         if test_case.ExpectationsFiles():
           with open(test_case.ExpectationsFiles()[0]) as f:
             test_expectations = expectations_parser.TestExpectations()
             ret, err = test_expectations.parse_tagged_list(f.read(), f.name)
             self.assertEqual(
-                ret, 0,
-                'Error parsing %s:\n\t%s' % (os.path.basename(f.name), err))
+                ret, 0, f'Error parsing {os.path.basename(f.name)}:\n\t{err}')
 
   def testWebglTestPathsExist(self) -> None:
     def _CheckWebglConformanceTestPathIsValid(pattern: str) -> None:
@@ -182,7 +178,7 @@ class GpuTestExpectationsValidation(unittest.TestCase):
         full_path = os.path.normpath(
             os.path.join(webgl_test_util.conformance_path, pattern))
         self.assertTrue(os.path.exists(full_path),
-                        '%s does not exist' % full_path)
+                        f'{full_path} does not exist')
 
     webgl_test_classes = (
         webgl1_cit.WebGL1ConformanceIntegrationTest,
@@ -192,7 +188,7 @@ class GpuTestExpectationsValidation(unittest.TestCase):
       webgl_test_class = webgl_test_classes[webgl_version - 1]
       _ = list(
           webgl_test_class.GenerateTestCases__RunGpuTest(
-              gpu_helper.GetMockArgs(webgl_version='%d.0.0' % webgl_version)))
+              gpu_helper.GetMockArgs(webgl_version=f'{webgl_version}.0.0')))
       with open(webgl_test_class.ExpectationsFiles()[0], 'r') as f:
         expectations = expectations_parser.TestExpectations()
         expectations.parse_tagged_list(f.read())
@@ -271,9 +267,9 @@ class GpuTestExpectationsValidation(unittest.TestCase):
         if not reason:
           continue
         if not any(r.match(reason) for r in VALID_BUG_REGEXES):
-          self.fail('Bug string "%s" in expectation file %s is either not in a '
-                    'recognized format or references an unknown project.' %
-                    (reason, expectation_file))
+          self.fail(f'Bug string "{reason}" in expectation file '
+                    f'{expectation_file} is either not in a recognized format '
+                    f'or references an unknown project.')
 
   def testWebglTestExpectationsForDriverTags(self) -> None:
     webgl_test_classes = (
@@ -285,7 +281,7 @@ class GpuTestExpectationsValidation(unittest.TestCase):
       webgl_conformance_test_class = webgl_test_classes[webgl_version - 1]
       _ = list(
           webgl_conformance_test_class.GenerateTestCases__RunGpuTest(
-              gpu_helper.GetMockArgs(webgl_version=('%d.0.0' % webgl_version))))
+              gpu_helper.GetMockArgs(webgl_version=(f'{webgl_version}.0.0'))))
       with open(webgl_conformance_test_class.ExpectationsFiles()[0], 'r') as f:
         parser = expectations_parser.TestExpectations()
         parser.parse_tagged_list(f.read(), f.name)

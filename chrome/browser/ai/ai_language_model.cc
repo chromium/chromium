@@ -9,7 +9,6 @@
 #include <sstream>
 
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/notimplemented.h"
@@ -35,23 +34,6 @@
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
-namespace features {
-
-// Indicates the streaming behavior of this session.
-// If it's true, each streaming response will contain the full content that's
-// generated so far. e.g.
-// - This is
-// - This is a test
-// - This is a test response.
-// If it's false, the response will be streamed back chunk by chunk. e.g.
-// - This is
-// - a test
-// - response.
-BASE_FEATURE(kAILanguageModelForceStreamingFullResponse,
-             "AILanguageModelForceStreamingFullResponse",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-}  // namespace features
 namespace {
 
 using optimization_guide::MultimodalMessage;
@@ -278,10 +260,6 @@ AILanguageModel::AILanguageModel(
   receiver_.set_disconnect_handler(base::BindOnce(
       &AIContextBoundObject::RemoveFromSet, base::Unretained(this)));
 
-  auto metadata = ParseMetadata(session_->GetOnDeviceFeatureMetadata());
-  is_on_device_session_streaming_chunk_by_chunk_ =
-      metadata.is_streaming_chunk_by_chunk();
-
   if (context.has_value()) {
     // If the context is provided, it will be used in this session.
     context_ = std::make_unique<Context>(context.value());
@@ -401,30 +379,10 @@ void AILanguageModel::ModelExecutionCallback(
 
   auto response = optimization_guide::ParsedAnyMetadata<
       optimization_guide::proto::StringValue>(result.response->response);
-  std::string streaming_result = response->value();
-  bool should_stream_full_response = base::FeatureList::IsEnabled(
-      features::kAILanguageModelForceStreamingFullResponse);
-  if (is_on_device_session_streaming_chunk_by_chunk_) {
-    // We need this for the context adding.
-    current_response_ += response->value();
-    if (should_stream_full_response) {
-      // Adapting the chunk-by-chunk mode to the current-response mode.
-      streaming_result = current_response_;
-    }
-  } else {
-    if (!should_stream_full_response) {
-      // Adapting the current-response mode to the chunk-by-chunk mode.
-      streaming_result = response->value().substr(current_response_.size());
-    }
-    current_response_ = response->value();
-  }
-
   if (response->has_value()) {
-    responder->OnStreaming(
-        streaming_result,
-        should_stream_full_response
-            ? blink::mojom::ModelStreamingResponderAction::kReplace
-            : blink::mojom::ModelStreamingResponderAction::kAppend);
+    std::string chunk = response->value();
+    current_response_ += chunk;
+    responder->OnStreaming(chunk);
   }
 
   if (result.response->is_complete) {
@@ -523,12 +481,7 @@ AILanguageModel::MultimodalResponder::~MultimodalResponder() {
 void AILanguageModel::MultimodalResponder::OnResponse(
     on_device_model::mojom::ResponseChunkPtr chunk) {
   current_response_ += chunk->text;
-  bool should_stream_full_response = base::FeatureList::IsEnabled(
-      features::kAILanguageModelForceStreamingFullResponse);
-  responder_->OnStreaming(
-      chunk->text, should_stream_full_response
-                       ? blink::mojom::ModelStreamingResponderAction::kReplace
-                       : blink::mojom::ModelStreamingResponderAction::kAppend);
+  responder_->OnStreaming(chunk->text);
 }
 
 void AILanguageModel::MultimodalResponder::OnComplete(

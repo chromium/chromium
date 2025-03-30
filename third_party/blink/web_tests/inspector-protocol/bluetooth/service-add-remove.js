@@ -29,7 +29,7 @@
   };
 
   // Start the test.
-  const {result: {id: heartRateServiceId}} =
+  const {result: {serviceId: heartRateServiceId}} =
       await bp.BluetoothEmulation.addService({
         address: helper.peripheralAddress(),
         serviceUuid: BluetoothHelper.HEART_RATE_SERVICE_UUID,
@@ -37,7 +37,7 @@
   testRunner.log(`After adding heart rate service: ${
       await session.evaluateAsync(getPrimaryServices)}`);
 
-  const {result: {id: batteryServiceId}} =
+  const {result: {serviceId: batteryServiceId}} =
       await bp.BluetoothEmulation.addService({
         address: helper.peripheralAddress(),
         serviceUuid: BluetoothHelper.BATTERY_SERVICE_UUID,
@@ -47,14 +47,14 @@
 
   await bp.BluetoothEmulation.removeService({
     address: helper.peripheralAddress(),
-    id: batteryServiceId,
+    serviceId: batteryServiceId,
   });
   testRunner.log(`After removing battery service: ${
       await session.evaluateAsync(getPrimaryServices)}`);
 
   await bp.BluetoothEmulation.removeService({
     address: helper.peripheralAddress(),
-    id: heartRateServiceId,
+    serviceId: heartRateServiceId,
   });
   testRunner.log(`After removing heart rate service: ${
       await session.evaluateAsync(getPrimaryServices)}`);

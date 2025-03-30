@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">Godkjenning av mellomtjener kreves</translation>
 <translation id="4594021849294327751">Opprett en transkripsjon</translation>
 <translation id="4594541568452132351">Velg transkripsjonsspråk, og last ned modellen</translation>
-<translation id="4607282946861182308">Kan ikke lage bilder av dette. Prøv en annen forespørsel.</translation>
 <translation id="4609350030397390689">Tastaturlysstyrke ned</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> av <ph name="TOTAL_PAGE_NUMBER" />. Trykk på Enter for å avbryte utskriftsjobben.</translation>
 <translation id="463791356324567266">Avbryter skanningen …</translation>
@@ -1659,6 +1658,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8543574988889671960">Last inn fanen på nytt</translation>
 <translation id="8550364285433943656">Plasser kontroller på spillhandlinger for å spille med tastaturtaster</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">Generativ AI kan ta feil, blant annet om personer, så dobbeltsjekk svarene den gir.</translation>
 <translation id="8575298406870537639">Det kan hende operatøren din krever dette alternativet for at du skal kunne koble til nettverket deres Kontakt operatøren for mer informasjon.</translation>
 <translation id="8576249514688522074">Ikke initialisert</translation>
 <translation id="8584654835905316966">En omstart kreves for å fullføre installeringen av fastvareversjon <ph name="VERSION" /> for <ph name="DEVICE_NAME" />. Du kan oppleve at datamaskinen ser ut til å starte på nytt flere ganger. Dette er forventet.</translation>
@@ -1673,7 +1673,6 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">Del nettadressen:</translation>
 <translation id="8660881923941176839">pund</translation>
-<translation id="8670057600920888023">Generativ AI er på forsøksstadiet, og innholdet kan være unøyaktig, villedende eller støtende.</translation>
 <translation id="8670574982334489519">høyre</translation>
 <translation id="8675354002693747642">Forhåndsdelt nøkkel</translation>
 <translation id="8677859815076891398">Ingen album. Opprett et album i <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>

@@ -290,6 +290,7 @@ void ChromeExtensionsAPIClient::OpenFileUrl(
   Navigate(&navigate_params);
 }
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 AppViewGuestDelegate* ChromeExtensionsAPIClient::CreateAppViewGuestDelegate()
     const {
   return new ChromeAppViewGuestDelegate();
@@ -322,6 +323,7 @@ ChromeExtensionsAPIClient::CreateWebViewPermissionHelperDelegate(
     WebViewPermissionHelper* web_view_permission_helper) const {
   return new ChromeWebViewPermissionHelperDelegate(web_view_permission_helper);
 }
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
 #if BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<ConsentProvider>

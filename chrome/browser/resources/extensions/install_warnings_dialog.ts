@@ -36,7 +36,7 @@ class ExtensionsInstallWarningsDialogElement extends CrLitElement {
     };
   }
 
-  installWarnings: string[] = [];
+  accessor installWarnings: string[] = [];
 
   protected onOkClick_() {
     this.$.dialog.close();

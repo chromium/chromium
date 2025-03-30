@@ -33,6 +33,7 @@
 #include "content/browser/btm/btm_service_impl.h"
 #include "content/browser/btm/btm_utils.h"
 #include "content/browser/fingerprinting_protection/canvas_noise_token_data.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -614,11 +615,14 @@ void BrowsingDataRemoverImpl::RemoveImpl(
         // cache.
         web_contents->GetPrerenderHostRegistry()->CancelAllHosts(
             PrerenderFinalStatus::kBrowsingDataRemoved);
-        PrefetchService* prefetch_service =
-            BrowserContextImpl::From(browser_context_)->GetPrefetchService();
-        prefetch_service->EvictPrefetchesForBrowsingDataRemoval(
-            storage_key_filter,
-            PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved);
+        if (base::FeatureList::IsEnabled(
+                features::kPrefetchBrowsingDataRemoval)) {
+          PrefetchService* prefetch_service =
+              BrowserContextImpl::From(browser_context_)->GetPrefetchService();
+          prefetch_service->EvictPrefetchesForBrowsingDataRemoval(
+              storage_key_filter,
+              PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved);
+        }
       }
     }
   }

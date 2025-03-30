@@ -112,6 +112,7 @@
 <translation id="244264527810019436">Functies op bepaalde sites werken misschien niet in de incognitomodus</translation>
 <translation id="2442870161001914531">Altijd desktopsite aanvragen</translation>
 <translation id="2445311670906052406">Chrome deelt nu je recente tabbladen met je apparaat. Je ziet ze in de app-lijst en zoekresultaten van je apparaat. Je kunt dit altijd uitzetten in de Chrome-instellingen.</translation>
+<translation id="245322989586167203">Sites maken meestal verbinding met seriële poorten voor functies voor gegevensoverdracht zoals je netwerk instellen</translation>
 <translation id="2469312991797799607">Met deze actie verwijder je alle gegevens en cookies voor <ph name="ORIGIN" /> en alle onderliggende sites</translation>
 <translation id="2482878487686419369">Meldingen</translation>
 <translation id="2485422356828889247">Installatie ongedaan maken</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">Voorkomen dat sites weten wanneer je dit apparaat actief gebruikt</translation>
 <translation id="4412992751769744546">Cookies van derden toestaan</translation>
 <translation id="4419929467120297501">Chrome voorkomt dat sites cookies van derden gebruiken om je te volgen terwijl je browst. Ga naar Instellingen om <ph name="BEGIN_LINK" />de toegang tot cookies van derden te beheren<ph name="END_LINK" />.</translation>
+<translation id="443121186588148776">Seriële poort</translation>
 <translation id="4434045419905280838">Pop-ups en omleidingen</translation>
 <translation id="443552056913301231">Met deze actie worden alle lokale gegevens (waaronder cookies) verwijderd en worden alle rechten voor <ph name="ORIGIN" /> gereset</translation>
 <translation id="4468959413250150279">Geluid uitzetten voor een specifieke site.</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Eerst vragen</translation>
 <translation id="7423538860840206698">Lezen van het klembord geblokkeerd</translation>
 <translation id="7425915948813553151">Donker thema voor sites</translation>
+<translation id="7478658909253570368">Niet toestaan dat sites verbinding maken met seriële poorten</translation>
 <translation id="7488573225650545859">Tabbladen bekijken verbergen in je app-lijst</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Als deze optie aanstaat, kunnen sites inlogprompts tonen. Staat de optie uit, dan kunnen sites geen inlogprompts tonen.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Verbonden met een bluetooth-apparaat</translation>
 <translation id="7617547684249261169">Je kunt onder meer je geschiedenis, cookies en sitegegevens geheel of gedeeltelijk verwijderen</translation>
 <translation id="7649070708921625228">Hulp</translation>
+<translation id="7655411746932645568">Sites kunnen vragen of ze verbinding mogen maken met seriële poorten</translation>
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7667547420449112975">De tovenaar van Oz</translation>
 <translation id="7681597159868843240">Sites gebruiken de bewegingssensoren van je apparaat meestal voor functies zoals virtual reality of fitnesstracking</translation>

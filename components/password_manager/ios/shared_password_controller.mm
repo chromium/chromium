@@ -19,10 +19,12 @@
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#include "base/types/expected_macros.h"
 #import "base/values.h"
 #import "components/autofill/core/browser/filling/filling_product.h"
 #import "components/autofill/core/browser/form_structure.h"
@@ -100,6 +102,10 @@ namespace {
 
 // Password is considered not generated when user edits it below 4 characters.
 constexpr int kMinimumLengthForEditedPassword = 4;
+
+// Histogram for recording the status of retrieving FillData.
+constexpr char kFillDataRetrievalStatusHistogram[] =
+    "PasswordManager.iOS.FillDataRetrievalStatus";
 
 class PasswordAutofillAgentDelegateImpl
     : public autofill::PasswordAutofillAgentDelegate {
@@ -723,7 +729,8 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
       bool stateless = base::FeatureList::IsEnabled(
           password_manager::features::kIOSStatelessFillDataFlow);
 
-      std::unique_ptr<password_manager::FillData> fillData =
+      ASSIGN_OR_RETURN(
+          password_manager::FillDataRetrievalResult fill_data_result,
           stateless
               ? [self.suggestionHelper
                     passwordFillDataForUsername:username
@@ -735,14 +742,18 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                                                     ->field_renderer_id
                                         frameId:suggestion.params->frame_id]
               : [self.suggestionHelper passwordFillDataForUsername:username
-                                                        forFrameId:frameId];
+                                                        forFrameId:frameId],
+          [completion](auto e) {
+            base::UmaHistogramEnumeration(kFillDataRetrievalStatusHistogram, e);
+            completion();
+            return;
+          });
 
-      if (!fillData) {
-        completion();
-        return;
-      }
+      base::UmaHistogramEnumeration(
+          kFillDataRetrievalStatusHistogram,
+          password_manager::FillDataRetrievalStatus::kSuccess);
 
-      [self.formHelper fillPasswordFormWithFillData:*fillData
+      [self.formHelper fillPasswordFormWithFillData:*fill_data_result.value()
                                             inFrame:frame
                                    triggeredOnField:fieldRendererID
                                   completionHandler:^(BOOL success) {

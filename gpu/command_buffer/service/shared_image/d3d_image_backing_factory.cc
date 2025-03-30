@@ -564,7 +564,15 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     // If this trips, it means we're claiming support for SCANOUT when DComp
     // textures is not supported by the system, or an incompatible texture was
     // created above.
-    CHECK(DCompTextureIsSupported(desc));
+    if (!DCompTextureIsSupported(desc)) {
+      LOG(ERROR) << "Composition texture not supported for scanout usage";
+      SCOPED_CRASH_KEY_BOOL("d3d image backing", "dcomp tex support",
+                            gl::DirectCompositionTextureSupported());
+      SCOPED_CRASH_KEY_STRING256("d3d image backing", "dcomp tex desc",
+                                 D3D11TextureDescToString(desc));
+      base::debug::DumpWithoutCrashing();
+      return nullptr;
+    }
 
     Microsoft::WRL::ComPtr<IDCompositionDevice3> dcomp_device =
         gl::GetDirectCompositionDevice();

@@ -391,43 +391,6 @@ int ComputeMaxCaptureSize(Document& document,
   return std::min(max_bounds_based_on_viewport, max_texture_size_in_layout);
 }
 
-gfx::Transform ComputeViewportTransform(const LayoutObject& object) {
-  DCHECK(object.HasLayer());
-  DCHECK(!object.IsLayoutView());
-
-  auto& first_fragment = object.FirstFragment();
-  DCHECK(ToRoundedPoint(first_fragment.PaintOffset()).IsOrigin())
-      << first_fragment.PaintOffset();
-  auto paint_properties = first_fragment.LocalBorderBoxProperties();
-
-  auto& root_fragment = object.GetDocument().GetLayoutView()->FirstFragment();
-  const auto& root_properties = root_fragment.LocalBorderBoxProperties();
-
-  auto transform = GeometryMapper::SourceToDestinationProjection(
-      paint_properties.Transform(), root_properties.Transform());
-  if (auto* layout_inline = DynamicTo<LayoutInline>(object)) {
-    // The paint_properties we get from
-    // `first_fragment.LocalBorderBoxProperties()` correspond to the origin of
-    // the inline's container's border-box. So the transform from GeometryMapper
-    // maps a point from the viewport to the container's border-box origin. We
-    // need the extra translation to map from container's border box origin to
-    // inline's border box origin.
-    transform.Translate(
-        gfx::Vector2dF(layout_inline->PhysicalLinesBoundingBox().offset));
-  }
-
-  if (!transform.HasPerspective()) {
-    if (base::FeatureList::IsEnabled(
-            ::features::kViewTransitionFloorTransform)) {
-      transform.Floor2dTranslationComponents();
-    } else {
-      transform.Round2dTranslationComponents();
-    }
-  }
-
-  return transform;
-}
-
 gfx::Transform ConvertFromTopLeftToCenter(
     const gfx::Transform& transform_from_top_left,
     const PhysicalSize& box_size) {
@@ -1685,6 +1648,44 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
   container_properties = {
       PhysicalRect(offset_in_css_space, border_box_size_in_css_space),
       snapshot_matrix_in_css_space};
+}
+
+gfx::Transform ViewTransitionStyleTracker::ComputeViewportTransform(
+    const LayoutObject& object) const {
+  DCHECK(object.HasLayer());
+  DCHECK(!object.IsLayoutView());
+
+  auto& first_fragment = object.FirstFragment();
+  DCHECK(ToRoundedPoint(first_fragment.PaintOffset()).IsOrigin())
+      << first_fragment.PaintOffset();
+  auto paint_properties = first_fragment.LocalBorderBoxProperties();
+
+  auto& root_fragment = object.GetDocument().GetLayoutView()->FirstFragment();
+  const auto& root_properties = root_fragment.LocalBorderBoxProperties();
+
+  auto transform = GeometryMapper::SourceToDestinationProjection(
+      paint_properties.Transform(), root_properties.Transform());
+  if (auto* layout_inline = DynamicTo<LayoutInline>(object)) {
+    // The paint_properties we get from
+    // `first_fragment.LocalBorderBoxProperties()` correspond to the origin of
+    // the inline's container's border-box. So the transform from GeometryMapper
+    // maps a point from the viewport to the container's border-box origin. We
+    // need the extra translation to map from container's border box origin to
+    // inline's border box origin.
+    transform.Translate(
+        gfx::Vector2dF(layout_inline->PhysicalLinesBoundingBox().offset));
+  }
+
+  if (!transform.HasPerspective()) {
+    if (base::FeatureList::IsEnabled(
+            ::features::kViewTransitionFloorTransform)) {
+      transform.Floor2dTranslationComponents();
+    } else {
+      transform.Round2dTranslationComponents();
+    }
+  }
+
+  return transform;
 }
 
 bool ViewTransitionStyleTracker::HasActiveAnimations() const {

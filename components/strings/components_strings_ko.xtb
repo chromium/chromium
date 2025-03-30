@@ -441,7 +441,6 @@
 <translation id="1734878702283171397">시스템 관리자에게 문의하세요.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, 만료일: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">컴퓨터</translation>
-<translation id="1739422091279046802">스크롤 및 확대/축소</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode가 <ph name="SECURE_DNS_MODE_SECURE" />일 때 반드시 지정되어야 하며 유효한 문자열이어야 합니다.</translation>
 <translation id="1743393865165844832">침구</translation>
 <translation id="1743892871127720056">표 제목 비교, 텍스트 수정</translation>
@@ -2882,6 +2881,7 @@
 <translation id="6059925163896151826">USB 기기</translation>
 <translation id="6060009363608157444">잘못된 DnsOverHttps 모드입니다.</translation>
 <translation id="6061154937977953833">레슬링</translation>
+<translation id="6062405040252994646">도구</translation>
 <translation id="6062937464449575061">가격 추적 취소</translation>
 <translation id="6063415549109819824">주택담보대출</translation>
 <translation id="6070432475334343308"><ph name="CLOUD_PROVIDER" />의 <ph name="FOLDER_NAME" />에 하나 이상의 파일이 업로드되지 않았습니다.</translation>

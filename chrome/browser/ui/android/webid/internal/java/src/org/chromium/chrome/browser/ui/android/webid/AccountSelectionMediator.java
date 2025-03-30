@@ -721,7 +721,7 @@ class AccountSelectionMediator {
         mAccounts = accounts;
         mIdpDataListForShowAccounts = idpDataList;
         mIdpMetadataForLoginOrError = null;
-        mIsMultipleIdps = mIdpDataListForShowAccounts.size() > 1;
+        setIsMultipleIdps(mIdpDataListForShowAccounts.size() > 1);
         mIsAutoReauthn = isAutoReauthn;
         mRpContext = mIdpDataListForShowAccounts.get(0).getRpContext();
         mSelectedAccount = null;
@@ -1010,7 +1010,7 @@ class AccountSelectionMediator {
         for (Account account : accounts) {
             distinctIdps.add(account.getIdentityProviderData());
         }
-        mIsMultipleIdps = distinctIdps.size() > 1;
+        setIsMultipleIdps(distinctIdps.size() > 1);
         IdentityProviderData uniqueIdp =
                 distinctIdps.size() == 1 ? distinctIdps.iterator().next() : null;
 
@@ -1161,6 +1161,11 @@ class AccountSelectionMediator {
                                 || mHeaderType == HeaderType.VERIFY
                                 || mHeaderType == HeaderType.VERIFY_AUTO_REAUTHN));
 
+        // In passive mode, the dragbar visibility depends on whether there are multiple IDPs or
+        // not.
+        mModel.set(
+                ItemProperties.DRAGBAR_HANDLE_VISIBLE, mRpMode == RpMode.ACTIVE || mIsMultipleIdps);
+
         mBottomSheetController.expandSheet();
         // When a user opens a page that invokes the FedCM API in a new tab, the tab will be hidden
         // and we should not show the bottom sheet to avoid confusion.
@@ -1235,6 +1240,11 @@ class AccountSelectionMediator {
         accountModel.set(
                 AccountProperties.AVATAR,
                 new AccountProperties.Avatar(displayName, picture, mDesiredAvatarSize));
+    }
+
+    private void setIsMultipleIdps(boolean isMultipleIdps) {
+        mIsMultipleIdps = isMultipleIdps;
+        mBottomSheetContent.setIsMultipleIdps(isMultipleIdps);
     }
 
     boolean wasDismissed() {

@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">ਪ੍ਰੌਕਸੀ ਪ੍ਰਮਾਣੀਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="4594021849294327751">ਪ੍ਰਤੀਲਿਪੀ ਬਣਾਓ</translation>
 <translation id="4594541568452132351">ਪ੍ਰਤੀਲਿਪੀਕਰਨ ਭਾਸ਼ਾ ਅਤੇ ਡਾਊਨਲੋਡ ਮਾਡਲ ਚੁਣੋ</translation>
-<translation id="4607282946861182308">ਇਸਦੇ ਚਿੱਤਰ ਨਹੀਂ ਬਣਾ ਸਕਦੇ। ਕੋਈ ਹੋਰ ਉਤਪ੍ਰੇਰਕ ਅਜ਼ਮਾਓ।</translation>
 <translation id="4609350030397390689">ਕੀ-ਬੋਰਡ ਦੀ ਚਮਕ ਘਟਾਉਣ ਵਾਲੀ ਕੁੰਜੀ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> ਵਿੱਚੋਂ <ph name="PRINTED_PAGE_NUMBER" />। ਪ੍ਰਿੰਟ ਜੌਬ ਨੂੰ ਰੱਦ ਕਰਨ ਲਈ Enter ਦਬਾਓ।</translation>
 <translation id="463791356324567266">ਸਕੈਨਿੰਗ ਰੱਦ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
@@ -1540,6 +1539,7 @@
 <translation id="8010765388850538088">ਜਨਰੇਟਿਵ AI ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="8017679124341497925">ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="802154636333426148">ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਿਹਾ</translation>
+<translation id="8027467664787098346">ਚੁਣੇ ਗਏ ਵਾਲਪੇਪਰ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="8028993641010258682">ਆਕਾਰ</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ਸਵੈ-ਵਿਵਸਥਿਤ ਰੰਗ ਵਾਲੇ ਮੋਡ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
@@ -1658,6 +1658,7 @@
 <translation id="8543574988889671960">ਟੈਬ ਨੂੰ ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="8550364285433943656">ਕੀ-ਬੋਰਡ ਕੁੰਜੀਆਂ ਨਾਲ ਗੇਮ ਖੇਡਣ ਲਈ ਗੇਮ ਕਾਰਵਾਈਆਂ 'ਤੇ ਕੰਟਰੋਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">ਜਨਰੇਟਿਵ AI ਗਲਤੀਆਂ ਕਰ ਸਕਦਾ ਹੈ, ਜਿਸ ਵਿੱਚ ਲੋਕਾਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਵੀ ਸ਼ਾਮਲ ਹੈ, ਇਸ ਲਈ ਇਸ ਦੀ ਦੋਹਰੀ-ਜਾਂਚ ਕਰੋ।</translation>
 <translation id="8575298406870537639">ਤੁਹਾਡੇ ਕੈਰੀਅਰ ਨੂੰ ਆਪਣੇ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਇਸ ਵਿਕਲਪ ਦੀ ਲੋੜ ਹੋ ਸਕਦੀ ਹੈ। ਵੇਰਵਿਆਂ ਲਈ ਆਪਣੇ ਕੈਰੀਅਰ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="8576249514688522074">ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> ਦੇ ਲਈ <ph name="VERSION" /> ਵਰਜਨ 'ਤੇ ਫ਼ਰਮਵੇਅਰ ਦੀ ਸਥਾਪਨਾ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ, ਉਸਨੂੰ ਇੱਕ ਵਾਰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਲੋੜ ਹੈ। ਅਜਿਹਾ ਲੱਗ ਸਕਦਾ ਹੈ ਕਿ ਤੁਹਾਡਾ ਕੰਪਿਊਟਰ ਕਈ ਵਾਰ ਰੀਬੂਟ ਹੋ ਰਿਹਾ ਹੈ। ਅਜਿਹਾ ਹੋਣਾ ਆਮ ਗੱਲ ਹੈ।</translation>
@@ -1672,7 +1673,6 @@
 <translation id="8655295600908251630">ਚੈਨਲ</translation>
 <translation id="8655828773034788261">URL ਸਾਂਝਾ ਕਰੋ:</translation>
 <translation id="8660881923941176839">ਪੌਂਡ</translation>
-<translation id="8670057600920888023">ਜਨਰੇਟਿਵ AI ਪ੍ਰਯੋਗਮਈ ਹੈ ਅਤੇ ਸਮੱਗਰੀ ਗਲਤ, ਗੁੰਮਰਾਹਕੁੰਨ ਜਾਂ ਅਪਮਾਨਜਨਕ ਹੋ ਸਕਦੀ ਹੈ।</translation>
 <translation id="8670574982334489519">ਸੱਜੇ</translation>
 <translation id="8675354002693747642">ਪਹਿਲਾਂ ਤੋਂ ਸਾਂਝੀ ਕੀਤੀ ਗਈ ਕੁੰਜੀ</translation>
 <translation id="8677859815076891398">ਕੋਈ ਐਲਬਮ ਨਹੀਂ ਹੈ। <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> ਵਿੱਚ ਐਲਬਮ ਬਣਾਓ।</translation>

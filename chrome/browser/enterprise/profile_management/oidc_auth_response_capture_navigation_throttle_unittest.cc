@@ -245,7 +245,7 @@ class OidcAuthResponseCaptureNavigationThrottleTest
         GURL(kOidcEntraReprocessUrl), main_frame());
 
     EXPECT_CALL(*oidc_interceptor,
-                MaybeInterceptOidcAuthentication(_, _, _, _, _))
+                MaybeInterceptOidcAuthentication(_, _, _, _, _, _))
         .Times(0);
 
     auto throttle =
@@ -272,13 +272,14 @@ class OidcAuthResponseCaptureNavigationThrottleTest
   void ExpectOidcInterception(
       MockOidcAuthenticationSigninInterceptor* oidc_interceptor,
       ProfileManagementOidcTokens expected_oidc_tokens) {
-    EXPECT_CALL(*oidc_interceptor,
-                MaybeInterceptOidcAuthentication(
-                    web_contents(), _, kExampleIdIssuer, kExampleIdSubject, _))
+    EXPECT_CALL(*oidc_interceptor, MaybeInterceptOidcAuthentication(
+                                       web_contents(), _, kExampleIdIssuer,
+                                       kExampleIdSubject, _, _))
         .WillOnce([this, expected_oidc_tokens](
                       content::WebContents* intercepted_contents,
                       ProfileManagementOidcTokens oidc_tokens,
                       std::string issuer_id, std::string subject_id,
+                      std::string email,
                       OidcInterceptionCallback oidc_callback) {
           ValidateOidcTokens(oidc_tokens, expected_oidc_tokens);
           std::move(oidc_callback).Run();
@@ -343,7 +344,7 @@ class OidcAuthResponseCaptureNavigationThrottleTest
           ProfileManagementOidcTokens(auth_token, id_token, oidc_state));
     } else {
       EXPECT_CALL(*oidc_interceptor,
-                  MaybeInterceptOidcAuthentication(_, _, _, _, _))
+                  MaybeInterceptOidcAuthentication(_, _, _, _, _, _))
           .Times(0);
     }
 
@@ -402,7 +403,7 @@ class OidcAuthResponseCaptureNavigationThrottleTest
 
     auto* oidc_interceptor = GetMockOidcInterceptor();
     EXPECT_CALL(*oidc_interceptor,
-                MaybeInterceptOidcAuthentication(_, _, _, _, _))
+                MaybeInterceptOidcAuthentication(_, _, _, _, _, _))
         .Times(0);
 
     auto throttle =
@@ -497,7 +498,7 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
 
   auto* oidc_interceptor = GetMockOidcInterceptor();
   EXPECT_CALL(*oidc_interceptor,
-              MaybeInterceptOidcAuthentication(_, _, _, _, _))
+              MaybeInterceptOidcAuthentication(_, _, _, _, _, _))
       .Times(0);
 
   auto throttle =
@@ -820,7 +821,7 @@ TEST_P(OidcAuthNavigationThrottleGenericOidcTest, MissingRedirectionChain) {
                                                       /*state=*/std::string()));
   } else {
     EXPECT_CALL(*oidc_interceptor,
-                MaybeInterceptOidcAuthentication(_, _, _, _, _))
+                MaybeInterceptOidcAuthentication(_, _, _, _, _, _))
         .Times(0);
   }
 
@@ -913,7 +914,7 @@ TEST_P(OidcAuthNavigationThrottleProcessResponseTest,
                                                   main_frame());
   auto* oidc_interceptor = GetMockOidcInterceptor();
   EXPECT_CALL(*oidc_interceptor,
-              MaybeInterceptOidcAuthentication(_, _, _, _, _))
+              MaybeInterceptOidcAuthentication(_, _, _, _, _, _))
       .Times(0);
 
   auto throttle =
@@ -955,7 +956,7 @@ TEST_P(OidcAuthNavigationThrottleProcessResponseTest, ProcessResponse) {
         ProfileManagementOidcTokens(auth_token, id_token, /*state=*/""));
   } else {
     EXPECT_CALL(*oidc_interceptor,
-                MaybeInterceptOidcAuthentication(_, _, _, _, _))
+                MaybeInterceptOidcAuthentication(_, _, _, _, _, _))
         .Times(0);
   }
 

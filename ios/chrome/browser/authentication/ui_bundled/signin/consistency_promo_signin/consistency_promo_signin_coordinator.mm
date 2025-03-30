@@ -179,6 +179,10 @@
       base::RecordAction(
           base::UserMetricsAction("Signin_BottomSheet_ClosedBySignIn"));
       break;
+    case SigninCoordinatorProfileSwitch:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_BottomSheet_ClosedByProfileChange"));
+      break;
     case SigninCoordinatorResultDisabled:
     case SigninCoordinatorResultInterrupted:
       base::RecordAction(

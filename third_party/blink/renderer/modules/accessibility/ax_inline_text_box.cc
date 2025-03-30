@@ -624,4 +624,9 @@ AXObject* AXInlineTextBox::NeighboringOnLineWithAXBlockFlowIterator(
                                          : ParentObject()->PreviousOnLine();
 }
 
+bool AXInlineTextBox::ComputeIsOffScreen() const {
+  CHECK(parent_);
+  return parent_->ComputeIsOffScreen();
+}
+
 }  // namespace blink

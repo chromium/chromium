@@ -325,7 +325,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2527209463677295330">As jy meer van 'n bladsy se teks insluit, sal jy dalk beter resultate sien</translation>
 <translation id="2527779675047087889">Versteek knipbordinhoud</translation>
 <translation id="2532336938189706096">Webaansig</translation>
-<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> items is uitgevee</translation>
 <translation id="253498598929009420">Die werf sal jou skerm se inhoud kan sien</translation>
 <translation id="2536728043171574184">Bekyk tans 'n vanlyn kopie van hierdie bladsy</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, oortjie</translation>
@@ -365,7 +364,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2677748264148917807">Gaan uit</translation>
 <translation id="2687009626279857299">Het opgehou om op hierdie toestel te werk</translation>
 <translation id="2702516483241149200">Nuut: Deel 'n skakel wat na hierdie teks toe rollees</translation>
-<translation id="2705073298859543115">Skep opsomming</translation>
 <translation id="2708051474374549906">Intydse, proaktiewe beskerming teen gevaarlike werwe, aflaaie en uitbreidings wat gegrond is op blaaierdata wat na Google toe gestuur word</translation>
 <translation id="2708226184420201102">Maak in <ph name="PRODUCT_NAME" />-blaaier oop</translation>
 <translation id="271033894570825754">Nuut</translation>
@@ -677,6 +675,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="4195643157523330669">Maak in nuwe oortjie oop</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 oortjie op hierdie toestel}other{# oortjies op hierdie toestel}}</translation>
 <translation id="4198423547019359126">Geen beskikbare aflaailiggings nie</translation>
+<translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Jy het op hierdie werf gebruik</translation>
 <translation id="4214315110991671325">As jy webkoekies toelaat, kan Chrome hulle vir vooraflaai gebruik.</translation>
 <translation id="4216511743389425832">Luister na hierdie bladsy</translation>
 <translation id="4225725533026049334">Volg tans</translation>
@@ -1198,7 +1197,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6564820424018738527">Jou Android-toestel kan ’n soortgelyke instelling insluit. As advertensiemeting in Chrome en op jou Android-toestel aangeskakel is, kan ’n maatskappy dalk die doeltreffendheid van ’n advertensie meet op alle webwerwe wat jy besoek en apps wat jy gebruik.</translation>
 <translation id="6565959834589222080">Wi-fi word gebruik wanneer dit beskikbaar is</translation>
 <translation id="6569373978618239158">Jy sal nou stories van <ph name="SITE_NAME" /> af sien wanneer jy 'n nuwe oortjie oopmaak. Werwe wat jy volg, word in jou Google-rekening gestoor. Jy kan hulle bestuur in Ontdek-instellings.</translation>
-<translation id="6570116402456758630">Bladsy-opsomming</translation>
 <translation id="657177046675873214">Skakel “Boekmerke” in instellings aan om jou boekmerke op al jou toestelle te kry</translation>
 <translation id="6573096386450695060">Laat altyd toe</translation>
 <translation id="6573431926118603307">Oortjies wat jy op jou ander toestelle in Chrome oopgemaak het, sal hier verskyn.</translation>

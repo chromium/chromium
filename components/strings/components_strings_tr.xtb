@@ -441,7 +441,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1734878702283171397">Sistem yöneticisiyle iletişime geçmeyi deneyin.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, geçerlilik sonu <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Bilgisayar</translation>
-<translation id="1739422091279046802">kaydırma ve yakınlaştırma</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> olduğunda, DnsOverHttpsTemplate belirtilmeli ve geçerli bir dize olmalıdır.</translation>
 <translation id="1743393865165844832">Yatak Takımı ve Nevresimler</translation>
 <translation id="1743892871127720056">Tablo başlığını karşılaştırın, metni düzenleyin</translation>
@@ -1297,7 +1296,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3273757719652748628">IBAN'ı kaydet alt sayfası tam ekranda açıldı.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Yönetici politikası bu dosyayı <ph name="DESTINATION_NAME" /> hedefinde açmanızı önermiyor}other{Yönetici politikası bu dosyaları <ph name="DESTINATION_NAME" /> hedefinde açmanızı önermiyor}}</translation>
 <translation id="3282085321714087552">Kuruluşunuz (<ph name="ENROLLMENT_DOMAIN" />), aşağıdaki web sitelerine ayarlar ve politikalar gibi bazı bilgiler gönderdi.</translation>
-<translation id="3282568296779691940">Chrome'da oturum aç</translation>
+<translation id="3282568296779691940">Chrome'da Oturum Aç</translation>
 <translation id="3286372614333682499">dikey</translation>
 <translation id="3287510313208355388">Çevrimiçi olduğunda indir</translation>
 <translation id="3288238092761586174"><ph name="URL" />, ödemenizi onaylamak için ek adımlar uygulayabilir</translation>
@@ -2882,6 +2881,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6059925163896151826">USB cihazları</translation>
 <translation id="6060009363608157444">Geçersiz DnsOverHttps modu.</translation>
 <translation id="6061154937977953833">Güreş</translation>
+<translation id="6062405040252994646">Araç</translation>
 <translation id="6062937464449575061">Fiyat takibini bırak</translation>
 <translation id="6063415549109819824">Ev Finansmanı</translation>
 <translation id="6070432475334343308">Bir veya daha fazla dosya <ph name="CLOUD_PROVIDER" /> sağlayıcısında <ph name="FOLDER_NAME" /> klasörüne yüklenemedi.</translation>

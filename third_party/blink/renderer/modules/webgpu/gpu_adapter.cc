@@ -236,11 +236,7 @@ void GPUAdapter::OnRequestDeviceCallback(
     }
 
     case wgpu::RequestDeviceStatus::Error:
-#ifdef WGPU_BREAKING_CHANGE_INSTANCE_DROPPED_RENAME
     case wgpu::RequestDeviceStatus::CallbackCancelled:
-#else
-    case wgpu::RequestDeviceStatus::InstanceDropped:
-#endif  // WGPU_BREAKING_CHANGE_INSTANCE_DROPPED_RENAME
       if (dawn_device) {
         // A device provided with an error is already a lost device on the Dawn
         // side, reflect that by resolving the lost property immediately.

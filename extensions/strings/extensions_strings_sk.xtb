@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Súbor manifestu je neplatný</translation>
 <translation id="7217838517480956708">Správca tohto zariadenia vyžaduje inštaláciu rozšírenia <ph name="EXTENSION_NAME" />. Nemôže byť odstránené alebo upravené.</translation>
 <translation id="7612608473764576263">Vstupná hodnota pre súkromný kľúč musí mať platný formát (kľúč RSA vo formáte PKCS#8 so šifrovaním PEM).</translation>
+<translation id="7876803335449432072">Pre skript obsahu sa nepodarilo načítať súbor <ph name="RELATIVE_PATH" />. Šablóny kaskádových štýlov skriptu obsahu sa dajú načítať iba zo súborov podporovaných šablónami kaskádových štýlov, napríklad súborov .css.</translation>
 <translation id="7939686037314084444">Rozšírenie sa nepodarilo správne načítať. Môže sa stať, že nebude môcť zachytávať žiadosti siete.</translation>
 <translation id="7972881773422714442">Možnosti: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Nasmerovaný na používateľa</translation>
 <translation id="8047248493720652249">Tomuto rozšíreniu sa nepodarilo pomenovať stiahnutý súbor s názvom „<ph name="ATTEMPTED_FILENAME" />„, pretože ďalšie rozšírenie (<ph name="EXTENSION_NAME" />) určilo odlišný názov súboru „<ph name="ACTUAL_FILENAME" />“.</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> od dodávateľa <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Súbor manifestu chýba alebo je nečitateľný</translation>
+<translation id="8621383749470166852">Pre skript obsahu sa nepodarilo načítať súbor <ph name="RELATIVE_PATH" />. Skripty obsahu sa dajú načítať iba zo súborov podporovaných JavaScriptom, napríklad súborov .js.</translation>
 <translation id="8636666366616799973">Package is invalid. Details: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">Aplikácia <ph name="APP_NAME" /> žiada o prístup k jednému z vašich zariadení:</translation>
 <translation id="8885905466771744233">Pre určené rozšírenie už existuje súkromný kľúč. Použite ho znova, alebo ho najprv odstráňte.</translation>

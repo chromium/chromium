@@ -50,8 +50,8 @@
 #include "components/trusted_vault/command_line_switches.h"
 #include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/user_verifying_key.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
@@ -258,8 +258,8 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
                                             response->first);
           }
         }));
-    mock_hw_provider_ =
-        std::make_unique<crypto::ScopedMockUnexportableKeyProvider>();
+    fake_hw_provider_ =
+        std::make_unique<crypto::ScopedFakeUnexportableKeyProvider>();
   }
 
   ~EnclaveManagerTest() override {
@@ -478,7 +478,7 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
   GaiaId gaia_id_;
   std::unique_ptr<FakeSecurityDomainService> security_domain_service_;
   std::unique_ptr<FakeRecoveryKeyStore> recovery_key_store_;
-  std::unique_ptr<crypto::ScopedMockUnexportableKeyProvider> mock_hw_provider_;
+  std::unique_ptr<crypto::ScopedFakeUnexportableKeyProvider> fake_hw_provider_;
   EnclaveManager manager_;
 };
 
@@ -1500,7 +1500,7 @@ TEST_F(EnclaveManagerTest, LockPINThenChange) {
               GetAssertionResponseExpectation());
 }
 
-// Tests that rely on `ScopedMockUnexportableKeyProvider` only work on
+// Tests that rely on `ScopedFakeUnexportableKeyProvider` only work on
 // platforms where EnclaveManager uses `GetUnexportableKeyProvider`, as opposed
 // to `GetSoftwareUnsecureUnexportableKeyProvider`.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -1550,7 +1550,7 @@ TEST_F(EnclaveManagerTest, MAYBE_HardwareKeyLost) {
   task_env_.RunUntilQuit();
 #endif
 
-  mock_hw_provider_.reset();
+  fake_hw_provider_.reset();
   manager_.ClearCachedKeysForTesting();
 
   // Verify a UV key was created as well.

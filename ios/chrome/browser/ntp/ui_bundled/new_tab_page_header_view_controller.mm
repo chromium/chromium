@@ -944,7 +944,7 @@ const CGFloat kMarginMultiplier = 2;
 
   if (showSignInButtonWithoutAvatar) {
     identityAvatarPadding *= kMarginMultiplier;
-  } else if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+  } else if (IsIdentityDiscAccountMenuEnabled()) {
     dimension += ntp_home::kHeaderIconMargin;
     identityAvatarPadding -= ntp_home::kHeaderIconMargin / 2;
   }

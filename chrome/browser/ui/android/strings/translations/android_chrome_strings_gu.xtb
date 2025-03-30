@@ -307,6 +307,7 @@
 <translation id="2453860139492968684">સમાપ્ત</translation>
 <translation id="2461378706168271257">તમારા ટૅબ શોધો</translation>
 <translation id="2461822463642141190">વર્તમાન</translation>
+<translation id="2463770278804271243">પેજ</translation>
 <translation id="2468444275314013497">તમારા બ્રાઉઝરમાં બધું ઠીક લાગે છે</translation>
 <translation id="2472163211318554013">Chromeનો સૌથી વધુ લાભ મેળવવા માટે સાઇન ઇન કરો</translation>
 <translation id="247737702124049222">છબીના વર્ણનોની સુવિધા ચાલુ છે</translation>
@@ -325,7 +326,6 @@
 <translation id="2527209463677295330">પેજની વધુ ટેક્સ્ટને શામેલ કરીને, તમે કદાચ બહેતર પરિણામો જોઈ શકશો</translation>
 <translation id="2527779675047087889">ક્લિપબોર્ડ પરના કન્ટેન્ટ છુપાવો</translation>
 <translation id="2532336938189706096">વેબ દૃશ્ય</translation>
-<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> આઇટમ કાઢી નાખી</translation>
 <translation id="253498598929009420">સાઇટ તમારી સ્ક્રીન પરનું બધું કન્ટેન્ટ જોઈ શકશે</translation>
 <translation id="2536728043171574184">આ પેજની ઓફલાઇન કૉપિ જોઈ રહ્યા છે</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, ટૅબ</translation>
@@ -365,7 +365,6 @@
 <translation id="2677748264148917807">છોડો</translation>
 <translation id="2687009626279857299">આ ડિવાઇસ પર કામ કરવાનું બંધ કર્યું</translation>
 <translation id="2702516483241149200">નવું: આ ટેક્સ્ટ પર સ્ક્રોલ કરતી હોય એવી કોઈ લિંક શેર કરો</translation>
-<translation id="2705073298859543115">સારાંશ બનાવો</translation>
 <translation id="2708051474374549906">જોખમકારક સાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે રિઅલ-ટાઇમ સક્રિય સંરક્ષણ, જે Googleને મોકલવામાં આવતા તમારા બ્રાઉઝિંગ ડેટા પર આધારિત છે</translation>
 <translation id="2708226184420201102"><ph name="PRODUCT_NAME" />ના બ્રાઉઝરમાં ખોલો</translation>
 <translation id="271033894570825754">નવું</translation>
@@ -677,6 +676,7 @@
 <translation id="4195643157523330669">નવા ટૅબમાં ખોલો</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{આ ડિવાઇસ પર 1 ટૅબ}one{આ ડિવાઇસ પર # ટૅબ}other{આ ડિવાઇસ પર # ટૅબ}}</translation>
 <translation id="4198423547019359126">કોઈ ડાઉનલોડ સ્થાનો ઉપલબ્ધ નથી</translation>
+<translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • તમે આ સાઇટ પર ઉપયોગ કર્યો છે</translation>
 <translation id="4214315110991671325">જો તમે કુકીને મંજૂરી આપો, તો Chrome પહેલેથી લોડ કરવા માટે તેમનો ઉપયોગ કરી શકે છે.</translation>
 <translation id="4216511743389425832">આ પેજને સાંભળો</translation>
 <translation id="4225725533026049334">ફૉલો કરી રહ્યાં છો</translation>
@@ -1198,7 +1198,6 @@
 <translation id="6564820424018738527">તમારા Android ડિવાઇસમાં કદાચ આના જેવું કોઈ સેટિંગ શામેલ હોઈ શકે. જો Chromeમાં અને તમારા Android ડિવાઇસ પર જાહેરાત માપણીની સુવિધા ચાલુ કરેલી હોય, તો કંપની તમે મુલાકાત લો છો તેવી સમગ્ર વેબસાઇટ પર અને તમે ઉપયોગ કરો છો તેવી ઍપ પર જાહેરાતની અસરકારકતાની માપણી કરી શકે છે.</translation>
 <translation id="6565959834589222080">ઉપલબ્ધ હોય ત્યારે વાઇ-ફાઇનો ઉપયોગ કરવામાં આવે છે</translation>
 <translation id="6569373978618239158">હવે જ્યારે તમે નવી ટૅબ ખોલશો ત્યારે તમને <ph name="SITE_NAME" /> પરથી સ્ટોરી દેખાશે. તમે જે સાઇટ ફૉલો કરો છો તેને તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે. તમે તેમને Discoverના સેટિંગમાં મેનેજ કરી શકો છો.</translation>
-<translation id="6570116402456758630">પેજનો સારાંશ</translation>
 <translation id="657177046675873214">તમારા બધા ડિવાઇસ પર તમારા બુકમાર્ક મેળવવા માટે, સેટિંગમાં જઈને “બુકમાર્ક” ચાલુ કરો</translation>
 <translation id="6573096386450695060">હંમેશાં મંજૂરી આપો</translation>
 <translation id="6573431926118603307">તમારા અન્ય ઉપકરણો પર તમે Chrome માં ખોલેલા ટૅબ્સ અહીં દેખાશે.</translation>

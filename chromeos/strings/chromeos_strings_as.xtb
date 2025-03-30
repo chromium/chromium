@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">প্ৰ’ক্সী বিশ্বাসযোগ্যতাৰ প্ৰমাণীকৰণৰ আৱশ্যক</translation>
 <translation id="4594021849294327751">ট্ৰেন্সক্ৰিপ্ট সৃষ্টি কৰক</translation>
 <translation id="4594541568452132351">ট্ৰেন্সক্ৰিপশ্বনৰ ভাষা আৰু ডাউনল’ডৰ মডেল বাছনি কৰক</translation>
-<translation id="4607282946861182308">ইয়াৰ প্ৰতিচ্ছবি সৃষ্টি কৰিব নোৱাৰি। আন এটা প্ৰম্প্‌ট ব্যৱহাৰ কৰি চাওক।</translation>
 <translation id="4609350030397390689">কীব’ৰ্ডৰ উজ্জ্বলতা ডাউন</translation>
 <translation id="4627232916386272576"><ph name="TOTAL_PAGE_NUMBER" />ৰ ভিতৰত <ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />। প্ৰিণ্টৰ কাৰ্যটো বাতিল কৰিবলৈ এণ্টাৰ টিপক।</translation>
 <translation id="463791356324567266">স্কেন বাতিল কৰি থকা হৈছে…</translation>
@@ -1659,6 +1658,7 @@
 <translation id="8543574988889671960">টেব পুনৰ ল’ড কৰক</translation>
 <translation id="8550364285433943656">আপোনাৰ কীব’ৰ্ডৰ কীসমূহেৰে খেলিবলৈ গে’মৰ কাৰ্যত নিয়ন্ত্ৰণ ৰাখক</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">Generative AIএ লোকসকলৰ বিষয়ে তথ্যকে ধৰি ভুল কৰিব পাৰে, সেয়ে ইয়াক পুনৰ পৰীক্ষা কৰক।</translation>
 <translation id="8575298406870537639">আপোনাৰ বাহকৰ নেটৱৰ্কৰ সৈতে সংযুক্ত হ’বলৈ সেইটোক এই বিকল্পটোৰ আৱশ্যক হ’ব পাৰে। সবিশেষৰ বাবে আপোনাৰ বাহকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="8576249514688522074">আৰম্ভ কৰা হোৱা নাই</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" />ৰ <ph name="VERSION" /> সংস্কৰণত ফাৰ্মৱেৰ ইনষ্টল কৰাটো সম্পূৰ্ণ কৰিবলৈ এবাৰ ৰিষ্টাৰ্ট কৰাৰ আৱশ্যক। আপোনাৰ কম্পিউটাৰটো কেইবাবাৰো ৰিবুট কৰা হ’ব পাৰে। এনে আচৰণৰ আশংকা কৰা হৈছে।</translation>
@@ -1673,7 +1673,6 @@
 <translation id="8655295600908251630">চেনেল</translation>
 <translation id="8655828773034788261">URL শ্বেয়াৰ কৰক:</translation>
 <translation id="8660881923941176839">পাউণ্ড</translation>
-<translation id="8670057600920888023">Generative AI সম্পৰীক্ষামূলক আৰু সমল ভুল, বিভ্ৰান্তিকৰ বা আপত্তিজনক হ’ব পাৰে।</translation>
 <translation id="8670574982334489519">সোঁফালে</translation>
 <translation id="8675354002693747642">আগতীয়াকৈ শ্বেয়াৰ কৰা চাবি</translation>
 <translation id="8677859815076891398">কোনো এলবাম নাই। <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />ত এটা এলবাম সৃষ্টি কৰক।</translation>

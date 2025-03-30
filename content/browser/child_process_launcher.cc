@@ -283,6 +283,51 @@ ChildProcessLauncher::Client* ChildProcessLauncher::ReplaceClientForTest(
   return ret;
 }
 
+RenderProcessPriority::RenderProcessPriority(
+    bool visible,
+    bool has_media_stream,
+    bool has_immersive_xr_session,
+    bool has_foreground_service_worker,
+    unsigned int frame_depth,
+    bool intersects_viewport,
+    bool boost_for_pending_views,
+    bool boost_for_loading,
+    bool is_spare_renderer
+#if BUILDFLAG(IS_ANDROID)
+    ,
+    ChildProcessImportance importance
+#endif
+#if !BUILDFLAG(IS_ANDROID)
+    ,
+    std::optional<base::Process::Priority> priority_override
+#endif
+    )
+    : visible(visible),
+      has_media_stream(has_media_stream),
+      has_immersive_xr_session(has_immersive_xr_session),
+      has_foreground_service_worker(has_foreground_service_worker),
+      frame_depth(frame_depth),
+      intersects_viewport(intersects_viewport),
+      boost_for_pending_views(boost_for_pending_views),
+      boost_for_loading(boost_for_loading),
+      is_spare_renderer(is_spare_renderer)
+#if BUILDFLAG(IS_ANDROID)
+      ,
+      importance(importance)
+#endif
+#if !BUILDFLAG(IS_ANDROID)
+      ,
+      priority_override(priority_override)
+#endif
+{
+}
+
+RenderProcessPriority::RenderProcessPriority(const RenderProcessPriority&) =
+    default;
+
+RenderProcessPriority& RenderProcessPriority::operator=(
+    const RenderProcessPriority&) = default;
+
 bool RenderProcessPriority::is_background() const {
 #if !BUILDFLAG(IS_ANDROID)
   if (priority_override) {

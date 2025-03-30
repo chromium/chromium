@@ -10,6 +10,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -199,16 +200,6 @@ std::string GetProfileEmail(Profile* profile) {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   return email;
-}
-
-std::string GetProfileEmail(signin::IdentityManager* identity_manager) {
-  // If the profile is not signed in, GetPrimaryAccountInfo() returns an
-  // empty account info.
-  return identity_manager
-             ? identity_manager
-                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                   .email
-             : std::string();
 }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)

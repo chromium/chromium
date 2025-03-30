@@ -561,6 +561,11 @@ void ReadAnythingAppController::AccessibilityLocationChangesReceived(
 void ReadAnythingAppController::AccessibilityLocationChangesReceived(
     const ui::AXTreeID& tree_id,
     ui::AXLocationAndScrollUpdates& details) {
+  // If the AccessibilityLocationChangesReceived callback happens after
+  // the current active tree has been destroyed, do nothing.
+  if (model_.active_tree_id() == ui::AXTreeIDUnknown()) {
+    return;
+  }
   // Listen to location change notifications to update locations of the nodes
   // accordingly.
   for (auto& change : details.location_changes) {

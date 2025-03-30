@@ -88,6 +88,26 @@ export enum SubmitAccessCodeResult {
   INVALID_CODE = 2,
 }
 
+export enum StudentStatusDetail {
+  STUDENT_STATE_UNKNOWN = 0,
+
+  NOT_FOUND = 1,
+
+  ADDED = 2,
+
+  ACTIVE = 3,
+
+  REMOVED_BY_OTHER_SESSION = 4,
+
+  REMOVED_BY_BEING_TEACHER = 5,
+
+  REMOVED_BY_TEACHER = 6,
+
+  NOT_ADDED_CONFIGURED_AS_TEACHER = 7,
+
+  NOT_ADDED_NOT_CONFIGURED = 8,
+}
+
 /**
  * Declare network state enum type
  */
@@ -208,6 +228,7 @@ export declare interface Session {
  * Declare StudentActivity
  */
 export declare interface StudentActivity {
+  studentStatusDetail?: StudentStatusDetail;
   // Whether the student status have flipped from added to active in the
   // session.
   isActive: boolean;

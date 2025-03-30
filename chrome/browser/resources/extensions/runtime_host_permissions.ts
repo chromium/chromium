@@ -108,22 +108,22 @@ export class ExtensionsRuntimeHostPermissionsElement extends CrLitElement {
     };
   }
 
-  permissions: chrome.developerPrivate.RuntimeHostPermissions = {
+  accessor permissions: chrome.developerPrivate.RuntimeHostPermissions = {
     hasAllHosts: true,
     hostAccess: chrome.developerPrivate.HostAccess.ON_CLICK,
     hosts: [],
   };
-  itemId: string = '';
-  delegate: ItemDelegate = new DummyItemDelegate();
-  enableEnhancedSiteControls: boolean = false;
-  protected showHostDialog_: boolean = false;
-  protected showRemoveSiteDialog_: boolean = false;
-  protected hostDialogModel_: string|null = null;
-  private hostDialogAnchorElement_: HTMLElement|null = null;
-  private actionMenuModel_: string|null = null;
-  private actionMenuAnchorElement_: HTMLElement|null = null;
-  private oldHostAccess_: string|null = null;
-  private revertingHostAccess_: boolean = false;
+  accessor itemId: string = '';
+  accessor delegate: ItemDelegate = new DummyItemDelegate();
+  accessor enableEnhancedSiteControls: boolean = false;
+  protected accessor showHostDialog_: boolean = false;
+  protected accessor showRemoveSiteDialog_: boolean = false;
+  protected accessor hostDialogModel_: string|null = null;
+  private accessor hostDialogAnchorElement_: HTMLElement|null = null;
+  private accessor actionMenuModel_: string|null = null;
+  private accessor actionMenuAnchorElement_: HTMLElement|null = null;
+  private accessor oldHostAccess_: string|null = null;
+  private accessor revertingHostAccess_: boolean = false;
 
   getSelectMenu(): HTMLSelectElement {
     const selectMenuId =

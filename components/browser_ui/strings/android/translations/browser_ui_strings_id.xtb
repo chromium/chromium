@@ -112,6 +112,7 @@
 <translation id="244264527810019436">Fitur di beberapa situs mungkin tidak berfungsi dalam mode Samaran</translation>
 <translation id="2442870161001914531">Selalu minta situs desktop</translation>
 <translation id="2445311670906052406">Chrome kini membagikan tab terbaru ke perangkat Anda. Anda akan melihatnya di daftar aplikasi dan hasil penelusuran perangkat Anda. Anda dapat menonaktifkannya kapan saja di setelan Chrome.</translation>
+<translation id="245322989586167203">Situs biasanya terhubung ke port serial untuk fitur transfer data, seperti penyiapan jaringan Anda</translation>
 <translation id="2469312991797799607">Tindakan ini akan menghapus semua data dan cookie untuk <ph name="ORIGIN" /> dan semua situs di bawahnya</translation>
 <translation id="2482878487686419369">Notifikasi</translation>
 <translation id="2485422356828889247">Uninstal</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">Blokir situs agar tidak mengetahui saat Anda aktif menggunakan perangkat ini</translation>
 <translation id="4412992751769744546">Izinkan cookie pihak ketiga</translation>
 <translation id="4419929467120297501">Chrome memblokir situs agar tidak menggunakan cookie pihak ketiga untuk melacak Anda saat menjelajah. Buka setelan untuk <ph name="BEGIN_LINK" />mengelola akses ke cookie pihak ketiga<ph name="END_LINK" />.</translation>
+<translation id="443121186588148776">Port serial</translation>
 <translation id="4434045419905280838">Pop-up dan pengalihan</translation>
 <translation id="443552056913301231">Tindakan ini akan menghapus semua data lokal, termasuk cookie, dan mereset semua izin untuk <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Mematikan suara untuk situs tertentu.</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Tanyakan dulu</translation>
 <translation id="7423538860840206698">Diblokir agar tidak membaca papan klip</translation>
 <translation id="7425915948813553151">Tema gelap untuk situs</translation>
+<translation id="7478658909253570368">Jangan izinkan situs terhubung ke port serial</translation>
 <translation id="7488573225650545859">Sembunyikan Lihat tab di daftar aplikasi Anda</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Jika diaktifkan, situs dapat menampilkan perintah login. Jika dinonaktifkan, situs tidak dapat menampilkan perintah login.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Terhubung ke perangkat Bluetooth</translation>
 <translation id="7617547684249261169">Anda dapat menghapus sebagian atau semua histori, cookie, data situs, dan lainnya</translation>
 <translation id="7649070708921625228">Bantuan</translation>
+<translation id="7655411746932645568">Situs dapat meminta untuk terhubung ke port serial</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7667547420449112975">Penyihir Oz yang Menakjubkan</translation>
 <translation id="7681597159868843240">Situs biasanya menggunakan sensor gerakan perangkat Anda untuk fitur seperti virtual reality atau pelacak kebugaran</translation>

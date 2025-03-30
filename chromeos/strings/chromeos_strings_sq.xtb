@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">Kërkohet vërtetimi i serverit përfaqësues</translation>
 <translation id="4594021849294327751">Krijo transkriptin</translation>
 <translation id="4594541568452132351">Zgjidh gjuhën e transkriptit dhe shkarko modelin</translation>
-<translation id="4607282946861182308">Nuk mund të krijohen imazhe të kësaj. Provo një kërkesë tjetër.</translation>
 <translation id="4609350030397390689">Ulja e ndriçimit të tastierës</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> nga <ph name="TOTAL_PAGE_NUMBER" />. Shtyp Enter për të anuluar printimin.</translation>
 <translation id="463791356324567266">Skanimi po anulohet...</translation>
@@ -1540,6 +1539,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8010765388850538088">Mëso më shumë rreth IA-së gjeneruese</translation>
 <translation id="8017679124341497925">Shkurtorja u modifikua</translation>
 <translation id="802154636333426148">Shkarkimi dështoi</translation>
+<translation id="8027467664787098346">Mëso më shumë rreth imazhit të zgjedhur të sfondit</translation>
 <translation id="8028993641010258682">Madhësia</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Aktivizo modalitetin automatik të ngjyrave</translation>
@@ -1658,6 +1658,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8543574988889671960">Ringarko skedën</translation>
 <translation id="8550364285433943656">Vendos kontrollet për veprimet e lojës për të luajtur me tastet e tastierës</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">IA-ja gjeneruese mund të bëjë gabime, duke përfshirë edhe për njerëzit, prandaj kontrolloje përsëri.</translation>
 <translation id="8575298406870537639">Operatori celular mund të kërkojë këtë opsion për t'u lidhur me rrjetin e tij. Kontakto me operatorin celular për detaje.</translation>
 <translation id="8576249514688522074">E pafilluar</translation>
 <translation id="8584654835905316966">Kërkohet rinisja për të përfunduar instalimin e firmuerit për <ph name="DEVICE_NAME" /> në versionin <ph name="VERSION" />. Kompjuteri yt mund të rindizet disa herë. Kjo sjellje është e pritshme.</translation>
@@ -1672,7 +1673,6 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8655295600908251630">Kanali</translation>
 <translation id="8655828773034788261">Ndaj URL-në:</translation>
 <translation id="8660881923941176839">paundë</translation>
-<translation id="8670057600920888023">IA-ja gjeneruese është eksperimentale dhe përmbajtjet mund të jenë të pasakta, çorientuese ose fyese.</translation>
 <translation id="8670574982334489519">ana e djathtë</translation>
 <translation id="8675354002693747642">Çelës i ndarë paraprakisht</translation>
 <translation id="8677859815076891398">Nuk ka albume. Krijo një album te <ph name="LINK_BEGIN" />Fotografitë e Google<ph name="LINK_END" />.</translation>

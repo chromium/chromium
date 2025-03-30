@@ -169,7 +169,8 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
       break;
     }
     case SigninCoordinatorResultDisabled:
-    case SigninCoordinatorResultInterrupted: {
+    case SigninCoordinatorResultInterrupted:
+    case SigninCoordinatorProfileSwitch: {
       RecordConsistencyPromoUserAction(
           signin_metrics::AccountConsistencyPromoAction::DISMISSED_OTHER,
           _accessPoint);

@@ -115,11 +115,7 @@ uint32_t H264ToAnnexBBitstreamConverter::CalculateNeededOutputBufferSize(
     if (nal_unit_length == 0 || data_left == 0) {
       break;  // Signifies that no more data left in the buffer
     } else if (nal_unit_length > data_left) {
-      // NAL unit size exceeds the size of the given input buffer.
-      // crbug.com/403414998 This is an indication of either broken AVCC header
-      // or a truncated file. We try to recover by assuming this NAL takes all
-      // the space available in the buffer.
-      nal_unit_length = data_left;
+      return 0;  // Error: Not enough data for correct conversion
     }
     data_left -= nal_unit_length;
 
@@ -201,11 +197,8 @@ bool H264ToAnnexBBitstreamConverter::ConvertNalUnitStreamToByteStream(
     if (nal_unit_length == 0 || data_left == 0) {
       break;  // Successful conversion, end of buffer
     } else if (nal_unit_length > data_left) {
-      // NAL unit size exceeds the size of the given input buffer.
-      // crbug.com/403414998 This is an indication of either broken AVCC header
-      // or a truncated file. We try to recover by assuming this NAL takes all
-      // the space available in the buffer.
-      nal_unit_length = data_left;
+      *output_size = 0;
+      return false;  // Error: not enough data for correct conversion
     }
 
     // Five least significant bits of first NAL unit byte signify

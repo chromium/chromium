@@ -732,6 +732,7 @@ Annars aktiveras den inbyggda styrplattan igen om <ph name="TIMEOUT_SECONDS" />.
 <translation id="346243998268439747">Återställ zoomnivån</translation>
 <translation id="3465223694362104965">Ett annat tangentbord har anslutits till den här enheten sedan du loggade in senast. Försäkra dig om att det är ett tangentbord du litar på innan du använder det.</translation>
 <translation id="3465356146291925647">Hanteras av administratören</translation>
+<translation id="3470502288861289375">Kopierar ...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> följt av <ph name="KEY_TWO" /> eller <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Ctrl-Skift-Mellanslag</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /></translation>

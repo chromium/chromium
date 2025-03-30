@@ -91,6 +91,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1269405891096105529">Randtoestel word nie in Gasmodus gesteun nie</translation>
 <translation id="1270290102613614947">Opskerm-sleutelbord gedeaktiveer</translation>
 <translation id="1272079795634619415">Stop</translation>
+<translation id="12741168609094094">Kies enigiets op jou skerm om te soek, teks te kopieer en meer</translation>
 <translation id="1275285675049378717">Gee tans krag aan <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Gekies</translation>
 <translation id="1276975447697633661">Kies die lêer en druk <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1720230731642245863">Warmkol is af</translation>
 <translation id="1731815243805539470">Skakel oor na vorige gebruiker</translation>
 <translation id="1733996486177697563">Wissel tussen donker- en ligtema. Raak en hou op die werkskerm en kies dan Muurpapier en Styl.</translation>
+<translation id="1735992454301033090">Area is gekies, gebruik pylsleutels om te beweeg</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" is sigbaar vir Bluetooth-toestelle.</translation>
 <translation id="1737078180382804488">Maak die opstelling toe vir die bekyk van jou foon se kennisgewings</translation>
 <translation id="174102739345480129">Merker is af.</translation>
@@ -494,6 +496,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2683887737780133806">Verlede week <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2687510499067466116">Kortpadsleutels het verander</translation>
 <translation id="2689613560355655046">Lessenaar 8</translation>
+<translation id="2692092709110488417">Druk tab om die gekose area te fokus en te beweeg</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Wys sleutelbordinstellings. <ph name="KEYBOARD_NAME" /> is gekies.</translation>
 <translation id="2699913284398121653">Gebruik die Inhoudoordragapp om jou skoolrekeningdata na jou persoonlike rekening toe te skuif</translation>
@@ -729,6 +732,7 @@ Anders sal die ingeboude raakpaneel binne <ph name="TIMEOUT_SECONDS" /> geherakt
 <translation id="346243998268439747">Stel zoemvlak terug</translation>
 <translation id="3465223694362104965">Nog 'n sleutelbord is aan hierdie toestel gekoppel vandat jy laas aangemeld het. Maak seker jy vertrou hierdie sleutelbord voordat jy dit gebruik.</translation>
 <translation id="3465356146291925647">Deur jou administrateur bestuur</translation>
+<translation id="3470502288861289375">Kopieer tans …</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> dan <ph name="KEY_TWO" /> of <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1034,6 +1038,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4412698727486357573">Hulpsentrum</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is af.</translation>
 <translation id="4417647906073317561">Fokusinstellings Stel ’n afteller, taak en musiek om aan die gang te kom.</translation>
+<translation id="4418600384772451109">Maak paneel toe</translation>
 <translation id="4424159417645388645">Lessenaar 5</translation>
 <translation id="4426817706804363424">Goeie werk!</translation>
 <translation id="4430019312045809116">Volume</translation>
@@ -2230,6 +2235,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8287009018010202411">Produktiwiteit</translation>
 <translation id="828708037801473432">Af</translation>
 <translation id="8297006494302853456">Swak</translation>
+<translation id="8300451473979404345">Kies handvatsel, gebruik pylsleutels om te beweeg</translation>
 <translation id="8308637677604853869">Vorige kieslys</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Hoofletterslot is aan</translation>
@@ -2290,6 +2296,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="851458219935658693">Wys vensters van die huidige lessenaar af; radioknoppie is gekies</translation>
 <translation id="851660987304951246">Gebruik Help My Lees om inhoud vinnig op te som of om vrae te vra</translation>
 <translation id="8517041960877371778">Jou <ph name="DEVICE_TYPE" /> mag nie laai terwyl dit aangeskakel is nie.</translation>
+<translation id="8519329096920173967">Deursoek my skerm met Google Lens</translation>
 <translation id="8535393432370007982">Ontdoen sorteervolgorde volgens kleur</translation>
 <translation id="8536886494750559755">Wys Kitsdeel-instellings. Visible to everyone for <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Teks is na knipbord gekopieer</translation>

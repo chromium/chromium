@@ -128,6 +128,16 @@ void OrderChildWindow(NSWindow* child_window,
 - (BOOL)_isNonactivatingPanel;
 @end
 
+struct NSEdgeAndCornerThicknesses {
+  double top, topLeft, left, bottomLeft, bottom, bottomRight, right, topRight;
+};
+
+@interface NSWindow (NSWindowResizing)
++ (void)_getExteriorResizeEdgeThicknesses:
+            (NSEdgeAndCornerThicknesses*)outThicknesses
+                             forStyleMask:(NSWindowStyleMask)styleMask;
+@end
+
 // Private API as of at least macOS 13.
 @interface NSWindow (NSWindow_Theme)
 - (void)_regularMinimizeToDock;
@@ -423,6 +433,22 @@ void OrderChildWindow(NSWindow* child_window,
     return YES;
   }
   return [super _isNonactivatingPanel];
+}
+
++ (void)_getExteriorResizeEdgeThicknesses:
+            (NSEdgeAndCornerThicknesses*)outThicknesses
+                             forStyleMask:(NSWindowStyleMask)styleMask {
+  // Ensure non-titled resizable windows have a reasonable exterior resize area.
+  // By default, they might have none, making resizing difficult.
+  // Override to titled window's resize edge thickness (4px on macOS 15).
+  if (styleMask & NSWindowStyleMaskResizable) {
+    return [super
+        _getExteriorResizeEdgeThicknesses:outThicknesses
+                             forStyleMask:styleMask | NSWindowStyleMaskTitled];
+  }
+
+  return [super _getExteriorResizeEdgeThicknesses:outThicknesses
+                                     forStyleMask:styleMask];
 }
 
 // Ignore [super canBecome{Key,Main}Window]. The default is NO for windows with

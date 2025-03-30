@@ -680,7 +680,7 @@ suite('<settings-device-page>', () => {
           minOutputVolumePercent,
           audioPage.get('audioSystemProperties_').outputVolumePercent,
       );
-      assertEquals('settings20:volume-zero', outputMuteButton.ironIcon);
+      assertEquals('os-settings:volume-zero', outputMuteButton.ironIcon);
 
       // Test clicking to max volume case.
       const maxOutputVolumePercent = 100;
@@ -689,7 +689,7 @@ suite('<settings-device-page>', () => {
           maxOutputVolumePercent,
           audioPage.get('audioSystemProperties_').outputVolumePercent,
       );
-      assertEquals('settings20:volume-up', outputMuteButton.ironIcon);
+      assertEquals('os-settings:volume-up', outputMuteButton.ironIcon);
 
       // Test clicking to non-boundary volume case.
       const nonBoundaryOutputVolumePercent = 50;
@@ -698,7 +698,7 @@ suite('<settings-device-page>', () => {
           nonBoundaryOutputVolumePercent,
           audioPage.get('audioSystemProperties_').outputVolumePercent,
       );
-      assertEquals('settings20:volume-up', outputMuteButton.ironIcon);
+      assertEquals('os-settings:volume-up', outputMuteButton.ironIcon);
 
       // Ensure value clamps to min.
       outputSlider.value = -1;
@@ -708,7 +708,7 @@ suite('<settings-device-page>', () => {
       assertEquals(
           minOutputVolumePercent,
           audioPage.get('audioSystemProperties_').outputVolumePercent);
-      assertEquals('settings20:volume-zero', outputMuteButton.ironIcon);
+      assertEquals('os-settings:volume-zero', outputMuteButton.ironIcon);
 
       // Ensure value clamps to max.
       outputSlider.value = 101;
@@ -718,7 +718,7 @@ suite('<settings-device-page>', () => {
       assertEquals(
           maxOutputVolumePercent,
           audioPage.get('audioSystemProperties_').outputVolumePercent);
-      assertEquals('settings20:volume-up', outputMuteButton.ironIcon);
+      assertEquals('os-settings:volume-up', outputMuteButton.ironIcon);
 
       // Test clicking to a small icon volume case.
       const smallIconOutputVolumePercent = 10;
@@ -727,7 +727,7 @@ suite('<settings-device-page>', () => {
           smallIconOutputVolumePercent,
           audioPage.get('audioSystemProperties_').outputVolumePercent,
       );
-      assertEquals('settings20:volume-down', outputMuteButton.ironIcon);
+      assertEquals('os-settings:volume-down', outputMuteButton.ironIcon);
     });
 
     test('output mute state changes slider disabled state', async () => {
@@ -908,7 +908,7 @@ suite('<settings-device-page>', () => {
           crosAudioConfigMojom.MuteState.kMutedByUser,
           audioPage.get('audioSystemProperties_').outputMuteState);
       assertTrue(audioPage.get('isOutputMuted_'));
-      assertEquals('settings20:volume-up-off', outputMuteButton.ironIcon);
+      assertEquals('os-settings:volume-up-off', outputMuteButton.ironIcon);
 
       outputMuteButton.click();
       await flushTasks();

@@ -589,15 +589,6 @@ external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property
 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property-self.https.html
 external/wpt/html/cross-origin-opener-policy/reporting/document-reporting/reporting-redirect-with-unsafe-none.https.html
 external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-soap.https.html*
-external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-002b.html
-external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-002c.html
-external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-006a.html
-external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-006b.html
-external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-006c.html
-external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-009a.html
-external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-009b.html
-external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-009c.html
-external/wpt/html/dom/idlharness.https.html*
 external/wpt/html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-002.html
 external/wpt/html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-004.html
 external/wpt/html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-005.html

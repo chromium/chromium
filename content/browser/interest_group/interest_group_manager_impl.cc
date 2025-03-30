@@ -307,6 +307,7 @@ InterestGroupManagerImpl::InterestGroupManagerImpl(
       update_manager_(this, url_loader_factory),
       k_anonymity_manager_(std::make_unique<InterestGroupKAnonymityManager>(
           this,
+          &caching_storage_,
           std::move(k_anonymity_service_callback))),
       max_active_report_requests_(kMaxActiveReportRequests),
       max_report_queue_length_(kMaxReportQueueLength),

@@ -24,6 +24,13 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
 #endif //_WIN32
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+IDENTITY LIMITEDACCESSFEATURE {L"google-chrome_0qgpfzgh1edfy"}
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+IDENTITY LIMITEDACCESSFEATURE {L"google-chrome_0qgpfzgh1edfy"}
+#else
+IDENTITY LIMITEDACCESSFEATURE {L"chromium_b06a12530me7r"}
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 //

@@ -168,6 +168,7 @@
 #include "chrome/browser/metrics/cros_healthd_metrics_provider.h"
 #include "chrome/browser/metrics/cros_pre_consent_metrics_manager.h"
 #include "chrome/browser/metrics/family_user_metrics_provider.h"
+#include "chrome/browser/metrics/k12_age_classification_metrics_provider.h"
 #include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
 #include "chrome/browser/metrics/update_engine_metrics_provider.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_metrics_provider.h"
@@ -931,6 +932,12 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<WallpaperMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<arc::VmmMetricsProvider>());
+  if (base::FeatureList::IsEnabled(
+          ::features::kK12AgeClassificationMetricsProvider)) {
+    metrics_service_->RegisterMetricsProvider(
+        std::make_unique<K12AgeClassificationMetricsProvider>());
+  }
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_CHROMEOS)

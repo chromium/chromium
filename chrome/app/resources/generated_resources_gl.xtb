@@ -8,6 +8,7 @@
 <translation id="100323615638474026">Dispositivo USB (<ph name="VENDOR_ID" />: <ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Historial de descargas recente</translation>
 <translation id="1004218526896219317">Acceso a sitios</translation>
+<translation id="1005230401424685968">AAAA</translation>
 <translation id="1005274289863221750">Utilizar o micrófono e a cámara</translation>
 <translation id="1005333234656240382">Queres activar a depuración de ADB?</translation>
 <translation id="1005671386794704751">Rosa</translation>
@@ -1366,6 +1367,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="193565226207940518">Ferramenta de asistencia</translation>
 <translation id="1935995810530254458">Copiar igualmente</translation>
 <translation id="1936157145127842922">Mostrar no cartafol</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Engadiuse a páxina á lista de lectura}other{Engadíronse as páxinas á lista de lectura}}</translation>
 <translation id="1936931585862840749">Utiliza un número para indicar cantas copias se deben imprimir (de 1 a <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Non se pode importar a arquitectura do contedor de tipo <ph name="ARCHITECTURE_CONTAINER" /> con este dispositivo, que é <ph name="ARCHITECTURE_DEVICE" />. Podes tentar restaurar este contedor nun dispositivo diferente ou podes acceder aos ficheiros incluídos na imaxe deste contedor abrindo a aplicación Ficheiros.</translation>
 <translation id="1938351510777341717">Comando externo</translation>
@@ -2004,6 +2006,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2373666622366160481">Axustar ao papel</translation>
 <translation id="2375406435414127095">Conectarse ao teléfono</translation>
 <translation id="2376056713414548745">Ler en voz alta</translation>
+<translation id="2376122016044804363">Confirmacións de copia no portapapeis</translation>
 <translation id="2377667304966270281">Errores graves</translation>
 <translation id="237828693408258535">Queres traducir esta páxina?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Pode que esta extensión deixe de estar dispoñible dentro de pouco}other{Pode que estas extensións deixen de estar dispoñibles dentro de pouco}}</translation>
@@ -3158,6 +3161,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3192586965067888278">Describe detalladamente o problema. Os comentarios enviaranse a Google para unha revisión humana e poden usarse para mellorar ou desenvolver produtos e servizos de Google.</translation>
 <translation id="3192947282887913208">Ficheiros de audio</translation>
 <translation id="3193695589337931419">Utilidades de sinais do sistema</translation>
+<translation id="3194095220941877499">Mostrarase unha confirmación cando copies ligazóns, imaxes ou vídeos</translation>
 <translation id="3196912927885212665">Para levar a cabo a configuración co teu teléfono Android, o Bluetooth do Chromebook debe estar activado</translation>
 <translation id="3197453258332670132">Mostra información relacionada coa selección de texto ao mantela premida ou ao facer clic co botón dereito sobre ela</translation>
 <translation id="3199127022143353223">Servidores</translation>
@@ -3172,7 +3176,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
         <ph name="BREAK" />
         <ph name="BREAK" />
         Podes xestionar a configuración desta tarxeta cando queiras ou ver máis opcións en Personalizar Chrome</translation>
-<translation id="3207437351138888228">Cando completas un formulario, envíanse a Google a túa información e a páxina da que sae para xerar suxestións</translation>
 <translation id="3207960819495026254">Engadida a marcadores</translation>
 <translation id="3208584281581115441">Comprobar agora</translation>
 <translation id="3208703785962634733">Sen confirmar</translation>
@@ -3217,6 +3220,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3242289508736283383">É necesario instalar a aplicación co atributo de manifesto "kiosk_only" no modo de quiosco de Chrome OS</translation>
 <translation id="3243017971870859287">Ler números de serie dos compoñentes e dispositivos ChromeOS Flex</translation>
 <translation id="324366796737464147">Cancelación de ruído</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Continuar silenciando o son</translation>
 <translation id="3247006341013237647">Queres organizar as pestanas?</translation>
 <translation id="3247649647204519958">Desde aquí, podes ver e xestionar os permisos das extensións do sitio no que esteas</translation>
@@ -6087,7 +6091,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5267572070504076962">Activa Navegación segura para obter protección contra os sitios perigosos</translation>
 <translation id="5269977353971873915">Non se puido efectuar a impresión</translation>
 <translation id="5271578170655641944">Queres quitar o acceso a Google Drive?</translation>
-<translation id="5271782684896713035">Co fin de mellorar esta función, os datos poden someterse a un proceso de revisión por parte do noso equipo</translation>
 <translation id="5273806377963980154">Modificar URL do sitio</translation>
 <translation id="5275084684151588738">Dicionarios do usuario</translation>
 <translation id="5275338516105640560">Botón de grupo de pestanas gardado</translation>

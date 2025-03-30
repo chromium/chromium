@@ -4493,6 +4493,7 @@ ci.builder(
         targets = [
             "android_15_emulator_gtests",
             "android_rel_isolated_scripts",
+            "gtests_once",
         ],
         mixins = [
             "15-x64-emulator",

@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
@@ -881,8 +882,9 @@ public class FeedSurfaceCoordinator
                                 },
                                 gutterPadding));
             }
-            view.setBackground(
-                    AppCompatResources.getDrawable(mActivity, R.drawable.home_surface_background));
+
+            view.setBackgroundColor(
+                    ContextCompat.getColor(mActivity, R.color.home_surface_background_color));
 
             // Work around https://crbug.com/943873 where default focus highlight shows up after
             // toggling dark mode.
@@ -999,9 +1001,9 @@ public class FeedSurfaceCoordinator
             } else if (header == mSectionHeaderView) {
                 lateralPaddingsPx = 0;
                 if (!ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)) {
-                    mSectionHeaderView.setBackground(
-                            AppCompatResources.getDrawable(
-                                    mActivity, R.drawable.home_surface_background));
+                    mSectionHeaderView.setBackgroundColor(
+                            ContextCompat.getColor(
+                                    mActivity, R.color.home_surface_background_color));
                 }
             } else if (header == mSigninPromoView) {
                 hasSigninPromoView = true;

@@ -7,8 +7,10 @@
 #import "base/i18n/rtl.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_commands.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_data.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_mediator.h"
 #import "ios/chrome/browser/price_notifications/ui_bundled/cells/price_notifications_price_chip_view.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -57,6 +59,7 @@ const CGFloat kFaviconImageContainerTrailingCornerRadius = 8.0;
   if (!config) {
     return;
   }
+  [self addTapGestureRecognizer];
   _item = config;
 
   if (config.shopCardData.shopCardItemType ==
@@ -211,6 +214,17 @@ const CGFloat kFaviconImageContainerTrailingCornerRadius = 8.0;
   CAShapeLayer* mask = [CAShapeLayer layer];
   mask.path = bezierPath.CGPath;
   return mask;
+}
+
+- (void)addTapGestureRecognizer {
+  UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
+      initWithTarget:self
+              action:@selector(shopCardItemTapped:)];
+  [self addGestureRecognizer:tapRecognizer];
+}
+
+- (void)shopCardItemTapped:(UIGestureRecognizer*)sender {
+  [self.commandHandler openShopCardItem:_item];
 }
 
 @end

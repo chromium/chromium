@@ -1,7 +1,7 @@
 Name: Credentials Play Services Auth
 Short Name: credentials-play-services-auth
-URL: https://developer.android.com/jetpack/androidx/releases/credentials#1.5.0
-Version: 1.5.0
+URL: https://developer.android.com/jetpack/androidx/releases/credentials#1.6.0-SNAPSHOT
+Version: 1.6.0-SNAPSHOT
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

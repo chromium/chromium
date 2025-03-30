@@ -732,6 +732,7 @@
 <translation id="346243998268439747">重設縮放等級</translation>
 <translation id="3465223694362104965">自您上次登入以來，有另一個鍵盤連接到此裝置。請在使用前確定您信任此鍵盤。</translation>
 <translation id="3465356146291925647">由管理員管理</translation>
+<translation id="3470502288861289375">複製中…</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />，然後按<ph name="KEY_TWO" />或者<ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control + Shift + 空格鍵</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" /></translation>

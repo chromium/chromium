@@ -1418,6 +1418,9 @@
   <message name="IDS_OS_SETTINGS_TAG_A11Y_REDUCED_ANIMATIONS_ALT2" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable reduced animations. Alternate phrase for: 'Reduced animations'">
     Reduced movement on the screen
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_ALWAYS_SHOW_SCROLLBARS" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable always show scrollbars.">
+    Always show scrollbars
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_A11Y_KEYBOARD_AND_TEXT_INPUT_PAGE" desc="Text for search result item which, when clicked, navigates the user to display and magnification accessibility settings. Alternate phrase for: 'Low vision display tools'">
     Keyboard and text input
   </message>

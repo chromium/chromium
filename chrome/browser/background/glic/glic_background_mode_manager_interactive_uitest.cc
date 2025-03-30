@@ -208,11 +208,8 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, LaunchOnStartup) {
 }
 #endif
 
-// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
-// kGlicAlwaysDetached is now default true. Test that hotkey is logged when
-// pressed.
-IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest,
-                       DISABLED_HotkeyPressed) {
+// Test that hotkey is logged when pressed.
+IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, HotkeyPressed) {
   if (!IsHotkeySupported()) {
     GTEST_SKIP() << "Test does not apply to this platform.";
   }

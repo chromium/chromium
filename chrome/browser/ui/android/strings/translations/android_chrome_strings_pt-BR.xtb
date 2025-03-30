@@ -325,7 +325,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2527209463677295330">Ao incluir mais texto de uma página, você poderá ver resultados melhores</translation>
 <translation id="2527779675047087889">Ocultar conteúdo da área de transferência</translation>
 <translation id="2532336938189706096">Visualização na Web</translation>
-<translation id="2534155362429831547">Itens excluídos: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="253498598929009420">O site terá acesso ao conteúdo da sua tela</translation>
 <translation id="2536728043171574184">Vendo uma cópia off-line desta página</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" /> (guia)</translation>
@@ -365,7 +364,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2677748264148917807">Sair</translation>
 <translation id="2687009626279857299">Parou de funcionar neste dispositivo</translation>
 <translation id="2702516483241149200">Novo: compartilhe um link para este texto</translation>
-<translation id="2705073298859543115">Criar resumo</translation>
 <translation id="2708051474374549906">Proteção proativa em tempo real contra sites, extensões e downloads perigosos baseada nos dados de navegação enviados ao Google</translation>
 <translation id="2708226184420201102">Abrir no navegador <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">Novo</translation>
@@ -677,6 +675,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4195643157523330669">Abrir em uma nova guia</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 guia neste dispositivo}one{# guia neste dispositivo}other{# guias neste dispositivo}}</translation>
 <translation id="4198423547019359126">Não há locais de download disponíveis</translation>
+<translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Você usou neste site</translation>
 <translation id="4214315110991671325">Se você autorizar, o Chrome pode usar cookies no pré-carregamento.</translation>
 <translation id="4216511743389425832">Ouvir esta página</translation>
 <translation id="4225725533026049334">Seguindo</translation>
@@ -1199,7 +1198,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6564820424018738527">Seu dispositivo Android pode incluir uma configuração semelhante. Se a medição de anúncios estiver ativada no Chrome e no dispositivo Android, a empresa poderá medir a eficácia de um anúncio nos sites que você acessa e nos apps que usa.</translation>
 <translation id="6565959834589222080">O Wi-Fi será usado quando disponível</translation>
 <translation id="6569373978618239158">Agora, você encontrará stories do site <ph name="SITE_NAME" /> quando abrir uma nova guia. Os sites que você segue são armazenados na sua Conta do Google e podem ser gerenciados nas configurações do Discover.</translation>
-<translation id="6570116402456758630">Resumo da página</translation>
 <translation id="657177046675873214">Para acessar seus favoritos em todos os dispositivos, ative a opção "Favoritos" nas configurações</translation>
 <translation id="6573096386450695060">Sempre permitir</translation>
 <translation id="6573431926118603307">Aqui ficam as guias do Chrome que você abriu em outros dispositivos.</translation>
@@ -1652,7 +1650,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8446884382197647889">Saiba mais</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Permissões removidas de 1 site}one{Permissões removidas de # site}other{Permissões removidas de # sites}}</translation>
 <translation id="8453310803815879010">Iniciar jogo do dinossauro</translation>
-<translation id="8455675988389029454">Acessar favoritos, senhas e mais em todos os seus dispositivos</translation>
+<translation id="8455675988389029454">Acesse seus favoritos, senhas e mais em todos os dispositivos</translation>
 <translation id="84594714173170813">Continue usando os dados do Chrome na sua Conta do Google</translation>
 <translation id="8460448946170646641">Revise os principais controles de privacidade e segurança</translation>
 <translation id="8473863474539038330">Endereços e mais</translation>

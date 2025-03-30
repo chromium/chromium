@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/grit/components_resources.h"
+#include "components/security_interstitials/core/utils.h"
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
@@ -78,50 +79,54 @@ std::string BuildErrorPageHtml(bool allow_access_requests,
                                FilteringBehaviorReason reason,
                                const std::string& app_locale,
                                bool already_sent_remote_request,
-                               bool is_main_frame) {
-  base::Value::Dict strings;
-  strings.Set("blockPageTitle",
-              l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_TITLE));
-  strings.Set("allowAccessRequests", allow_access_requests);
+                               bool is_main_frame,
+                               std::optional<float> ios_font_size_multiplier) {
+  base::Value::Dict load_time_data;
+  load_time_data.Set("blockPageTitle",
+                     l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_TITLE));
+  load_time_data.Set("allowAccessRequests", allow_access_requests);
 
   if (custodian.has_value()) {
-    strings.Set("custodianName", custodian->GetName());
-    strings.Set("custodianEmail", custodian->GetEmailAddress());
-    strings.Set(
+    load_time_data.Set("custodianName", custodian->GetName());
+    load_time_data.Set("custodianEmail", custodian->GetEmailAddress());
+    load_time_data.Set(
         "avatarURL1x",
         BuildAvatarImageUrl(custodian->GetProfileImageUrl(), kAvatarSize1x));
-    strings.Set(
+    load_time_data.Set(
         "avatarURL2x",
         BuildAvatarImageUrl(custodian->GetProfileImageUrl(), kAvatarSize2x));
   } else {
     // empty custodianName denotes no custodian, see
     // components/supervised_user/core/browser/resources/supervised_user_block_interstitial_v2.js
-    strings.Set("custodianName", "");
+    load_time_data.Set("custodianName", "");
   }
 
   if (second_custodian.has_value()) {
-    strings.Set("secondCustodianName", second_custodian->GetName());
-    strings.Set("secondCustodianEmail", second_custodian->GetEmailAddress());
-    strings.Set("secondAvatarURL1x",
-                BuildAvatarImageUrl(second_custodian->GetProfileImageUrl(),
-                                    kAvatarSize1x));
-    strings.Set("secondAvatarURL2x",
-                BuildAvatarImageUrl(second_custodian->GetProfileImageUrl(),
-                                    kAvatarSize2x));
+    load_time_data.Set("secondCustodianName", second_custodian->GetName());
+    load_time_data.Set("secondCustodianEmail",
+                       second_custodian->GetEmailAddress());
+    load_time_data.Set(
+        "secondAvatarURL1x",
+        BuildAvatarImageUrl(second_custodian->GetProfileImageUrl(),
+                            kAvatarSize1x));
+    load_time_data.Set(
+        "secondAvatarURL2x",
+        BuildAvatarImageUrl(second_custodian->GetProfileImageUrl(),
+                            kAvatarSize2x));
   } else {
     // empty secondCustodianName denotes no second custodian, see
     // components/supervised_user/core/browser/resources/supervised_user_block_interstitial_v2.js
-    strings.Set("secondCustodianName", "");
+    load_time_data.Set("secondCustodianName", "");
   }
 
-  strings.Set("alreadySentRemoteRequest", already_sent_remote_request);
-  strings.Set("isMainFrame", is_main_frame);
+  load_time_data.Set("alreadySentRemoteRequest", already_sent_remote_request);
+  load_time_data.Set("isMainFrame", is_main_frame);
 
   bool local_web_approvals_enabled =
       (is_main_frame && supervised_user::IsLocalWebApprovalsEnabled()) ||
       (!is_main_frame &&
        supervised_user::IsLocalWebApprovalsEnabledForSubframes());
-  strings.Set("isLocalWebApprovalsEnabled", local_web_approvals_enabled);
+  load_time_data.Set("isLocalWebApprovalsEnabled", local_web_approvals_enabled);
 
   std::string block_page_header;
   std::string block_page_message;
@@ -135,36 +140,41 @@ std::string BuildErrorPageHtml(bool allow_access_requests,
         IDS_BLOCK_INTERSTITIAL_HEADER_ACCESS_REQUESTS_DISABLED);
   }
 
-  strings.Set("blockPageHeader", block_page_header);
-  strings.Set("blockPageMessage", block_page_message);
+  load_time_data.Set("blockPageHeader", block_page_header);
+  load_time_data.Set("blockPageMessage", block_page_message);
 
   if (!supervised_user::IsBlockInterstitialV3Enabled()) {
     // For the V2 interstitial, the filtering reason is displayed in a
     // separate UI component.
-    strings.Set("blockReasonMessage",
-                l10n_util::GetStringUTF8(GetBlockMessageID(
-                    reason, /*single_parent=*/!second_custodian.has_value())));
-    strings.Set("blockReasonHeader",
-                l10n_util::GetStringUTF8(IDS_SUPERVISED_USER_BLOCK_HEADER));
-    strings.Set("siteBlockHeader",
-                l10n_util::GetStringUTF8(IDS_GENERIC_SITE_BLOCK_HEADER));
-    strings.Set("showDetailsLink",
-                l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_SHOW_DETAILS));
-    strings.Set("hideDetailsLink",
-                l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_HIDE_DETAILS));
+    load_time_data.Set(
+        "blockReasonMessage",
+        l10n_util::GetStringUTF8(GetBlockMessageID(
+            reason, /*single_parent=*/!second_custodian.has_value())));
+    load_time_data.Set(
+        "blockReasonHeader",
+        l10n_util::GetStringUTF8(IDS_SUPERVISED_USER_BLOCK_HEADER));
+    load_time_data.Set("siteBlockHeader",
+                       l10n_util::GetStringUTF8(IDS_GENERIC_SITE_BLOCK_HEADER));
+    load_time_data.Set(
+        "showDetailsLink",
+        l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_SHOW_DETAILS));
+    load_time_data.Set(
+        "hideDetailsLink",
+        l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_HIDE_DETAILS));
   }
 
-  strings.Set(
+  load_time_data.Set(
       "remoteApprovalsButton",
       l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_ASK_IN_A_MESSAGE_BUTTON));
-  strings.Set("backButton", l10n_util::GetStringUTF8(IDS_REQUEST_SENT_OK));
+  load_time_data.Set("backButton",
+                     l10n_util::GetStringUTF8(IDS_REQUEST_SENT_OK));
 
-  strings.Set(
+  load_time_data.Set(
       "localApprovalsButton",
       l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_ASK_IN_PERSON_BUTTON));
-  strings.Set("localApprovalsRemoteRequestSentButton",
-              l10n_util::GetStringUTF8(
-                  IDS_BLOCK_INTERSTITIAL_ASK_IN_PERSON_INSTEAD_BUTTON));
+  load_time_data.Set("localApprovalsRemoteRequestSentButton",
+                     l10n_util::GetStringUTF8(
+                         IDS_BLOCK_INTERSTITIAL_ASK_IN_PERSON_INSTEAD_BUTTON));
 
   std::string request_sent_message;
   std::string request_failed_message;
@@ -180,17 +190,24 @@ std::string BuildErrorPageHtml(bool allow_access_requests,
           ? IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_SINGLE_PARENT
           : IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_MULTI_PARENT);
 
-  strings.Set("requestSentMessage", std::move(request_sent_message));
-  strings.Set("requestSentDescription", std::move(request_sent_description));
-  strings.Set("requestFailedMessage", std::move(request_failed_message));
-  webui::SetLoadTimeDataDefaults(app_locale, &strings);
+  load_time_data.Set("requestSentMessage", std::move(request_sent_message));
+  load_time_data.Set("requestSentDescription",
+                     std::move(request_sent_description));
+  load_time_data.Set("requestFailedMessage", std::move(request_failed_message));
+  webui::SetLoadTimeDataDefaults(app_locale, &load_time_data);
+
+  if (ios_font_size_multiplier) {
+    security_interstitials::AdjustFontSize(load_time_data,
+                                           ios_font_size_multiplier.value());
+  }
+
   std::string html =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           supervised_user::IsBlockInterstitialV3Enabled()
               ? IDR_SUPERVISED_USER_BLOCK_INTERSTITIAL_V3_HTML
               : IDR_SUPERVISED_USER_BLOCK_INTERSTITIAL_V2_HTML);
   webui::AppendWebUiCssTextDefaults(&html);
-  std::string error_html = webui::GetI18nTemplateHtml(html, strings);
+  std::string error_html = webui::GetI18nTemplateHtml(html, load_time_data);
   return error_html;
 }
 

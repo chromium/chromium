@@ -50,8 +50,9 @@ bool ShouldApplyNoise(CanvasRenderingContext* rendering_context,
         RuntimeEnabledFeatures::CanvasInterventionsOnCpuForTestingEnabled())) {
     return false;
   }
-  return execution_context->GetRuntimeFeatureStateOverrideContext()
-      ->IsCanvasInterventionsForceEnabled();
+  return execution_context &&
+         execution_context->GetRuntimeFeatureStateOverrideContext()
+             ->IsCanvasInterventionsForceEnabled();
 }
 
 }  // namespace

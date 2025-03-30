@@ -159,12 +159,14 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
     };
   }
 
-  delegate: ItemDelegate|null = null;
-  inDevMode: boolean = false;
-  mv2ExperimentStage: Mv2ExperimentStage = Mv2ExperimentStage.NONE;
-  safetyCheckShowing: boolean = false;
-  data: chrome.developerPrivate.ExtensionInfo = createDummyExtensionInfo();
-  private firstInspectView_?: chrome.developerPrivate.ExtensionView;
+  accessor delegate: ItemDelegate|null = null;
+  accessor inDevMode: boolean = false;
+  accessor mv2ExperimentStage: Mv2ExperimentStage = Mv2ExperimentStage.NONE;
+  accessor safetyCheckShowing: boolean = false;
+  accessor data: chrome.developerPrivate.ExtensionInfo =
+      createDummyExtensionInfo();
+  private accessor firstInspectView_: chrome.developerPrivate.ExtensionView|
+      undefined;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

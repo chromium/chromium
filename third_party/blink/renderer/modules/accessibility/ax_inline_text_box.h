@@ -89,6 +89,8 @@ class AXInlineTextBox final : public AXObject {
   bool CanHaveChildren() const override { return false; }
   void AddChildren() override {}
 
+  bool ComputeIsOffScreen() const override;
+
  private:
   enum class Direction { kNext, kPrevious };
   AXObject* NeighboringOnLine(const Direction direction) const;

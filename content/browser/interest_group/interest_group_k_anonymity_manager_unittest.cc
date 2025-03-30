@@ -4,6 +4,7 @@
 
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/files/scoped_temp_dir.h"
@@ -12,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -151,6 +153,7 @@ class InterestGroupKAnonymityManagerTest : public testing::Test {
 TEST_F(InterestGroupKAnonymityManagerTest,
        QueueUpdatePerformsQuerySetsForGroup) {
   auto manager = CreateManager();
+
   const GURL top_frame = GURL("https://www.example.com/foo");
   const url::Origin owner = url::Origin::Create(top_frame);
   const std::string name = "foo";
@@ -446,16 +449,37 @@ class MockAnonymityServiceDelegate : public KAnonymityServiceDelegate {
     return retval;
   }
 
+  void ReturnFalseForId(const std::string& id) {
+    ids_to_return_false_.insert(id);
+  }
+
+  void FailRequestNumber(size_t request_number) {
+    request_numbers_to_fail_.insert(request_number);
+  }
+
  private:
+  base::flat_set<std::string> ids_to_return_false_;
+  base::flat_set<size_t> request_numbers_to_fail_;
+
+  size_t next_request_number_ = 0;
   std::vector<std::string> joined_ids_;
   std::vector<std::vector<std::string>> query_ids_;
   base::TimeDelta query_sets_delay_;
 
   void QuerySetsCallback(std::vector<std::string> ids,
                          base::OnceCallback<void(std::vector<bool>)> callback) {
-    size_t num_ids = ids.size();
+    if (request_numbers_to_fail_.contains(next_request_number_++)) {
+      query_ids_.emplace_back(std::move(ids));
+      std::move(callback).Run(std::vector<bool>());
+      return;
+    }
+
+    std::vector<bool> is_kanon;
+    for (const std::string& id : ids) {
+      is_kanon.push_back(!ids_to_return_false_.contains(id));
+    }
     query_ids_.emplace_back(std::move(ids));
-    std::move(callback).Run(std::vector<bool>(num_ids, true));
+    std::move(callback).Run(std::move(is_kanon));
   }
 };
 
@@ -853,6 +877,92 @@ TEST_F(InterestGroupKAnonymityManagerTestWithMock, QuerySetShouldBatch) {
 }
 
 TEST_F(InterestGroupKAnonymityManagerTestWithMock,
+       FailedRequestsInABatchShouldStillUseCache) {
+  base::test::ScopedFeatureList scoped_feature_to_enable_kanon_cache;
+  scoped_feature_to_enable_kanon_cache.InitAndEnableFeatureWithParameters(
+      features::kFledgeCacheKAnonHashedKeys,
+      {{"CacheKAnonHashedKeysTtl", "4h"}});
+
+  auto manager = CreateManager();
+  const GURL top_frame = GURL("https://www.example.com/foo");
+  const url::Origin owner = url::Origin::Create(top_frame);
+
+  // Each ad creates 2 k-anon entries. We want enough ads to just exceed the
+  // batch size limit.
+  const size_t kNumAds = kQueryBatchSizeLimit / 2 + 1;
+
+  blink::InterestGroup group1 = MakeInterestGroup(owner, "foo");
+  group1.ads->clear();
+  for (size_t i = 0; i < kNumAds; i++) {
+    group1.ads->emplace_back(blink::InterestGroup::Ad(
+        GURL(base::StrCat(
+            {"https://www.foo.com/ad", base::NumberToString(i), ".html"})),
+        /*metadata=*/""));
+  }
+  // Join by itself triggers an update.
+  manager->JoinInterestGroup(group1, top_frame);
+
+  // No update has happened yet -- all keys are false.
+  {
+    auto maybe_group = GetGroup(manager.get(), owner, "foo");
+    ASSERT_TRUE(maybe_group);
+    EXPECT_THAT(maybe_group.value()->hashed_kanon_keys, testing::IsEmpty());
+  }
+
+  delegate()->FailRequestNumber(1);
+
+  // k-anonymity update happens here.
+  task_environment().FastForwardBy(base::Minutes(1));
+
+  // The queries should have been split into 1 group of the max size and 1 group
+  // of the remaining one.
+  {
+    std::vector<std::vector<std::string>> queried_batches =
+        delegate()->TakeQueryIDs();
+    ASSERT_THAT(queried_batches, testing::SizeIs(2u));
+    EXPECT_THAT(queried_batches[0], testing::SizeIs(kQueryBatchSizeLimit));
+    EXPECT_THAT(queried_batches[1], testing::SizeIs(2u));
+  }
+
+  // All keys are false because one of the requests failed.
+  {
+    auto maybe_group = GetGroup(manager.get(), owner, "foo");
+    ASSERT_TRUE(maybe_group);
+    EXPECT_THAT(maybe_group.value()->hashed_kanon_keys, testing::IsEmpty());
+  }
+
+  // Rejoin to trigger another update.
+  manager->JoinInterestGroup(group1, top_frame);
+
+  // No update has happened yet -- all keys are still false.
+  {
+    auto maybe_group = GetGroup(manager.get(), owner, "foo");
+    ASSERT_TRUE(maybe_group);
+    EXPECT_THAT(maybe_group.value()->hashed_kanon_keys, testing::IsEmpty());
+  }
+
+  // k-anonymity update happens here.
+  task_environment().FastForwardBy(base::Minutes(1));
+
+  // Because one request succeeded before, there were only a couple of keys
+  // left to query, so they fit in one batch.
+  {
+    std::vector<std::vector<std::string>> queried_batches =
+        delegate()->TakeQueryIDs();
+    ASSERT_THAT(queried_batches, testing::SizeIs(1u));
+    EXPECT_THAT(queried_batches[0], testing::SizeIs(2u));
+  }
+
+  // Finally, all keys have been successfully received and are now true.
+  {
+    auto maybe_group = GetGroup(manager.get(), owner, "foo");
+    ASSERT_TRUE(maybe_group);
+    // There are two k-anon keys per ad, one bidding key and one reporting key.
+    EXPECT_EQ(2 * kNumAds, maybe_group.value()->hashed_kanon_keys.size());
+  }
+}
+
+TEST_F(InterestGroupKAnonymityManagerTestWithMock,
        QuerySetDoesNotQueryUnlessQueryKAnonymityFeatureIsEnabled) {
   base::test::ScopedFeatureList disabled_feature_list;
   disabled_feature_list.InitAndDisableFeature(features::kFledgeQueryKAnonymity);
@@ -869,6 +979,88 @@ TEST_F(InterestGroupKAnonymityManagerTestWithMock,
   // JoinInterestGroup would normally trigger a Query for k-anon status, but
   // because queries below.
   EXPECT_THAT(delegate()->TakeQueryIDs(), testing::IsEmpty());
+}
+
+TEST_F(InterestGroupKAnonymityManagerTestWithMock,
+       QuerySetShouldUseKAnonCache) {
+  base::test::ScopedFeatureList scoped_feature_to_enable_kanon_cache;
+  scoped_feature_to_enable_kanon_cache.InitAndEnableFeatureWithParameters(
+      features::kFledgeCacheKAnonHashedKeys,
+      {{"CacheKAnonHashedKeysTtl", "4h"}});
+
+  auto manager = CreateManager(/*has_error=*/false);
+  const GURL top_frame = GURL("https://www.example.com/foo");
+  const url::Origin owner = url::Origin::Create(top_frame);
+
+  blink::InterestGroup group = MakeInterestGroup(owner, "foo");
+  blink::InterestGroupKey group_key(group.owner, group.name);
+
+  std::string adKAnonKey = blink::HashedKAnonKeyForAdBid(group, kAdURL);
+  std::string reportingIdsKAnonKey =
+      HashedKAnonKeyForAdNameReporting(group, group.ads->at(0), std::nullopt);
+
+  delegate()->ReturnFalseForId(reportingIdsKAnonKey);
+
+  // Rejoin the interest group and wait for the k-anonymity query triggered by
+  // that join to complete. Nothing is cached yet, so this does go to the k-anon
+  // service.
+  {
+    base::HistogramTester histograms;
+    manager->JoinInterestGroup(group, top_frame);
+    task_environment().FastForwardBy(base::Minutes(1));
+    EXPECT_THAT(delegate()->TakeQueryIDs(),
+                testing::ElementsAre(std::vector<std::string>(
+                    {adKAnonKey, reportingIdsKAnonKey})));
+    auto maybe_group = GetGroup(manager.get(), group.owner, group.name);
+    ASSERT_TRUE(maybe_group);
+    // One for the renderURL k-anon key, and one for the reporting IDs.
+    EXPECT_THAT(maybe_group.value()->hashed_kanon_keys,
+                testing::ElementsAre(adKAnonKey));
+    histograms.ExpectUniqueSample(
+        "Storage.InterestGroup.KAnonymityKeysCacheHitRate", 0, 1);
+  }
+
+  // Long enough has passed where the query interval has passed but not the TTL.
+  task_environment().FastForwardBy(1.5 * kQueryInterval);
+
+  // Rejoin the interest group and wait for the k-anonymity query triggered by
+  // that join to complete. This one is cached, so doesn't go to the k-anon
+  // service.
+  {
+    base::HistogramTester histograms;
+    manager->JoinInterestGroup(group, top_frame);
+    task_environment().FastForwardBy(base::Minutes(1));
+    EXPECT_THAT(delegate()->TakeQueryIDs(), testing::IsEmpty());
+    auto maybe_group = GetGroup(manager.get(), group.owner, group.name);
+    ASSERT_TRUE(maybe_group);
+    // One for the renderURL k-anon key, and one for the reporting IDs.
+    EXPECT_THAT(maybe_group.value()->hashed_kanon_keys,
+                testing::ElementsAre(adKAnonKey));
+    histograms.ExpectUniqueSample(
+        "Storage.InterestGroup.KAnonymityKeysCacheHitRate", 100, 1);
+  }
+
+  // Long enough has passed where the query interval has passed AND the TTL.
+  task_environment().FastForwardBy(1.5 * kQueryInterval);
+
+  // Rejoin the interest group and wait for the k-anonymity query triggered by
+  // that join to complete. This one is not cached, so it does go to the k-anon
+  // service.
+  {
+    base::HistogramTester histograms;
+    manager->JoinInterestGroup(group, top_frame);
+    task_environment().FastForwardBy(base::Minutes(1));
+    EXPECT_THAT(delegate()->TakeQueryIDs(),
+                testing::ElementsAre(std::vector<std::string>(
+                    {adKAnonKey, reportingIdsKAnonKey})));
+    auto maybe_group = GetGroup(manager.get(), group.owner, group.name);
+    ASSERT_TRUE(maybe_group);
+    // One for the renderURL k-anon key, and one for the reporting IDs.
+    EXPECT_THAT(maybe_group.value()->hashed_kanon_keys,
+                testing::ElementsAre(adKAnonKey));
+    histograms.ExpectUniqueSample(
+        "Storage.InterestGroup.KAnonymityKeysCacheHitRate", 0, 1);
+  }
 }
 
 }  // namespace content

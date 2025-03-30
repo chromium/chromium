@@ -2515,12 +2515,13 @@ class ComputedStyle final : public ComputedStyleBase {
 
   static bool IsDisplayReplacedType(EDisplay display) {
     return display == EDisplay::kInlineBlock ||
-           display == EDisplay::kInlineFlowRootListItem ||
-           display == EDisplay::kWebkitInlineBox ||
            display == EDisplay::kInlineFlex ||
-           display == EDisplay::kInlineTable ||
-           display == EDisplay::kInlineGrid || display == EDisplay::kMath ||
-           display == EDisplay::kInlineLayoutCustom;
+           display == EDisplay::kInlineFlowRootListItem ||
+           display == EDisplay::kInlineGrid ||
+           display == EDisplay::kInlineLayoutCustom ||
+           display == EDisplay::kInlineMasonry ||
+           display == EDisplay::kInlineTable || display == EDisplay::kMath ||
+           display == EDisplay::kWebkitInlineBox;
   }
 
   static bool IsDisplayInlineType(EDisplay display) {

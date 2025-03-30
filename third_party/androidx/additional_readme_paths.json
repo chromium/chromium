@@ -130,6 +130,7 @@
     "committed/libs/androidx_room_room_common_jvm",
     "committed/libs/androidx_room_room_runtime_android",
     "committed/libs/androidx_savedstate_savedstate_android",
+    "committed/libs/androidx_savedstate_savedstate_compose_android",
     "committed/libs/androidx_savedstate_savedstate_ktx",
     "committed/libs/androidx_slidingpanelayout_slidingpanelayout",
     "committed/libs/androidx_sqlite_sqlite_android",

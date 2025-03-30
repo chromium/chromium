@@ -280,6 +280,15 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testEnableDragResize) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testDisableDragResize) {
+  // Check the default resize setting here.
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents),
+                  ExpectUserCanResize(true));
+  ExecuteJsTest();
+  RunTestSequence(InAnyContext(ExpectUserCanResize(false)));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testInitiallyNotResizable) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest();

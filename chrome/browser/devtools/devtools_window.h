@@ -332,6 +332,7 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
     kFrontendNode,
     kFrontendRemote,
     kFrontendRemoteWorker,
+    kFrontendRemoteTab,
   };
 
   DevToolsWindow(FrontendType frontend_type,
