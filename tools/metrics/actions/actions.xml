@@ -24199,6 +24199,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileMenuNewTabGroup">
+  <owner>mfiaz@google.com</owner>
+  <description>
+    User pressed 'New Tab Group' in the mobile tab switcher.
+  </description>
+</action>
+
 <action name="MobileMenuNewWindow">
   <owner>jinsukkim@chromium.org</owner>
   <owner>twellington@chromium.org</owner>

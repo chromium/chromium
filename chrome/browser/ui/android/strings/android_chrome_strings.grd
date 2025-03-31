@@ -4325,6 +4325,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCESSIBILITY_INCOGNITO_TAB" desc="Content description for tabs that are in Incognito mode">
         Incognito Tab
       </message>
+      <message name="IDS_MENU_NEW_TAB_GROUP" desc="Menu item for opening a new tab group. [CHAR_LIMIT=27]">
+        New tab group
+      </message>
       <message name="IDS_MENU_ADD_TO_GROUP" desc="Menu item for adding a tab to a group. [CHAR_LIMIT=27]">
         Add to group
       </message>

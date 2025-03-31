@@ -238,9 +238,11 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsDialog;
 import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsHelper;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationUiFlow;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupMenuActionHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataManager;
+import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabModelNotificationDotManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneBase;
@@ -994,34 +996,42 @@ public class ChromeTabbedActivity extends ChromeActivity {
     }
 
     private Pane createTabSwitcherPane(boolean isIncognito) {
+        TabManagementDelegate delegate = TabManagementDelegateProvider.getDelegate();
+        TabGroupCreationUiFlow tabGroupCreationUiFlow =
+                delegate.createTabGroupCreationUiFlow(
+                        this,
+                        getModalDialogManager(),
+                        mHubManagerSupplier,
+                        mTabModelSelector
+                                .getTabGroupModelFilterProvider()
+                                .getCurrentTabGroupModelFilterSupplier());
         Pair<TabSwitcher, Pane> result =
-                TabManagementDelegateProvider.getDelegate()
-                        .createTabSwitcherPane(
-                                this,
-                                getLifecycleDispatcher(),
-                                getProfileProviderSupplier(),
-                                getTabModelSelector(),
-                                getTabContentManager(),
-                                getTabCreatorManagerSupplier().get(),
-                                getBrowserControlsManager(),
-                                getMultiWindowModeStateDispatcher(),
-                                mRootUiCoordinator.getScrimManager(),
-                                getSnackbarManager(),
-                                getModalDialogManager(),
-                                mRootUiCoordinator.getBottomSheetController(),
-                                mRootUiCoordinator.getDataSharingTabManager(),
-                                mRootUiCoordinator.getIncognitoReauthControllerSupplier(),
-                                mNewTabButtonClickListener,
-                                isIncognito,
-                                adaptOnToolbarAlphaChange(),
-                                mBackPressManager,
-                                mEdgeToEdgeControllerSupplier,
-                                mRootUiCoordinator.getDesktopWindowStateManager(),
-                                mTabModelNotificationDotManager
-                                        .getNotificationDotObservableSupplier(),
-                                getCompositorViewHolderSupplier(),
-                                getShareDelegateSupplier(),
-                                mTabBookmarkerSupplier);
+                delegate.createTabSwitcherPane(
+                        this,
+                        getLifecycleDispatcher(),
+                        getProfileProviderSupplier(),
+                        getTabModelSelector(),
+                        getTabContentManager(),
+                        getTabCreatorManagerSupplier().get(),
+                        getBrowserControlsManager(),
+                        getMultiWindowModeStateDispatcher(),
+                        mRootUiCoordinator.getScrimManager(),
+                        getSnackbarManager(),
+                        getModalDialogManager(),
+                        mRootUiCoordinator.getBottomSheetController(),
+                        mRootUiCoordinator.getDataSharingTabManager(),
+                        mRootUiCoordinator.getIncognitoReauthControllerSupplier(),
+                        mNewTabButtonClickListener,
+                        isIncognito,
+                        adaptOnToolbarAlphaChange(),
+                        mBackPressManager,
+                        mEdgeToEdgeControllerSupplier,
+                        mRootUiCoordinator.getDesktopWindowStateManager(),
+                        mTabModelNotificationDotManager.getNotificationDotObservableSupplier(),
+                        getCompositorViewHolderSupplier(),
+                        getShareDelegateSupplier(),
+                        mTabBookmarkerSupplier,
+                        tabGroupCreationUiFlow);
         if (didFinishNativeInitialization()) {
             result.first.initWithNative();
         }

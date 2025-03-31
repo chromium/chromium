@@ -189,6 +189,9 @@ found in the LICENSE file.
         <item android:id="@id/new_incognito_tab_menu_id"
             android:title="@string/menu_new_incognito_tab"
             android:icon="@drawable/ic_incognito" />
+        <item android:id="@+id/new_tab_group_menu_id"
+          android:title="@string/menu_new_tab_group"
+          android:icon="@drawable/ic_widgets" />
         <item android:id="@+id/close_all_tabs_menu_id"
             android:title="@string/menu_close_all_tabs"
             android:icon="@drawable/btn_close_white" />

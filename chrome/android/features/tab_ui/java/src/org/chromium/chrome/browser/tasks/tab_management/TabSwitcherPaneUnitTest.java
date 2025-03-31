@@ -153,6 +153,7 @@ public class TabSwitcherPaneUnitTest {
     @Mock private Runnable mRunnable;
     @Mock private Tab mTab;
     @Mock private SavedTabGroup mSavedTabGroup;
+    @Mock private TabGroupCreationUiFlow mUiFlow;
 
     @Captor private ArgumentCaptor<ObservableSupplier<Boolean>> mIsAnimatingSupplierCaptor;
 
@@ -264,7 +265,8 @@ public class TabSwitcherPaneUnitTest {
                         mOnAlphaChange,
                         mUserEducationHelper,
                         mEdgeToEdgeSupplier,
-                        mCompositorViewHolderSupplier);
+                        mCompositorViewHolderSupplier,
+                        mUiFlow);
         ShadowLooper.runUiThreadTasks();
         verify(mSharedPreferences)
                 .registerOnSharedPreferenceChangeListener(

@@ -692,6 +692,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 item.setVisible(isIncognito && isOverviewModeMenu);
                 item.setEnabled(hasIncognitoTabs);
             }
+            if (item.getItemId() == R.id.new_tab_group_menu_id) {
+                item.setVisible(ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled());
+            }
             if (item.getItemId() == R.id.quick_delete_menu_id) {
                 item.setVisible(!isIncognito);
             }

@@ -85,6 +85,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
     @Mock private DoubleConsumer mOnAlphaChange;
     @Mock private UserEducationHelper mUserEducationHelper;
     @Mock private Profile mProfile;
+    @Mock private TabGroupCreationUiFlow mUiFlow;
 
     @Captor private ArgumentCaptor<IncognitoTabModelObserver> mIncognitoTabModelObserverCaptor;
     @Captor private ArgumentCaptor<IncognitoReauthCallback> mIncognitoReauthCallbackCaptor;
@@ -151,7 +152,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
                         mOnAlphaChange,
                         mUserEducationHelper,
                         mEdgeToEdgeSupplier,
-                        mCompositorViewHolderSupplier);
+                        mCompositorViewHolderSupplier,
+                        mUiFlow);
     }
 
     @After
