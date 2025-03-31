@@ -13,16 +13,6 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="@dimen/custom_tabs_control_container_height">
 
-    <ViewStub
-        android:id="@+id/start_aligned_button_stub"
-        android:layout_gravity="center_vertical|start"
-        style="@style/ToolbarButton" />
-    <ViewStub
-        android:id="@+id/start_aligned_button_stub_two"
-        android:layout_gravity="center_vertical|start"
-        style="@style/ToolbarButton"
-        android:layout_marginStart="@dimen/toolbar_button_width"/>
-
     <FrameLayout
         android:id="@+id/location_bar_frame_layout"
         android:layout_width="match_parent"
@@ -100,22 +90,9 @@ found in the LICENSE file.
             android:inflatedId="@+id/branding_layout" />
     </FrameLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/action_buttons"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|end"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        style="@style/ToolbarButton" />
-    <ViewStub
-        android:id="@+id/end_aligned_button_stub_two"
-        android:layout_gravity="center_vertical|end"
-        android:layout_marginEnd="@dimen/toolbar_button_width"
-        style="@style/ToolbarButton" />
-    <ViewStub
-        android:id="@+id/end_aligned_button_stub"
-        android:layout_gravity="center_vertical|end"
-        style="@style/ToolbarButton" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar>
