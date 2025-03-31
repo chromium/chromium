@@ -199,7 +199,7 @@ BaseFetchContext::CanRequestInternal(
   // On navigation cases, Context().GetSecurityOrigin() may return nullptr, so
   // the request's origin may be nullptr.
   // TODO(yhirano): Figure out if it's actually fine.
-  DCHECK(request_mode == network::mojom::RequestMode::kNavigate || origin);
+  CHECK(request_mode == network::mojom::RequestMode::kNavigate || origin);
   if (request_mode != network::mojom::RequestMode::kNavigate &&
       !resource_request.CanDisplay(url)) {
     if (reporting_disposition == ReportingDisposition::kReport) {
