@@ -261,7 +261,10 @@ void ResumableUploadRequest::OnMetadataUploadCompleted(
 
   if (base::FeatureList::IsEnabled(
           enterprise_connectors::kEnableAsyncUploadAfterVerdict)) {
+    // TODO(329293309): Remove logging when rolled out to 100% Stable
+    VLOG(1) << "enterprise.asyncupload: feature enabled";
     if (headers->HasHeader(kUploadIntermediateHeader)) {
+      VLOG(1) << "enterprise.asyncupload: async upload";
       response_body = headers->GetNormalizedHeader(kUploadIntermediateHeader);
 
       std::string output;
@@ -275,6 +278,8 @@ void ResumableUploadRequest::OnMetadataUploadCompleted(
       std::move(verdict_received_callback_)
           .Run(IsSuccess(url_loader_->NetError(), response_code), response_code,
                output);
+    } else {
+      VLOG(1) << "enterprise.asyncupload: sync upload";
     }
   }
 
