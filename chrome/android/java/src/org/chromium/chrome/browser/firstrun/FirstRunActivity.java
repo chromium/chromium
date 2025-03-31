@@ -17,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -44,6 +45,7 @@ import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninMediator;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.metrics.LowEntropySource;
@@ -321,6 +323,21 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                     Color.BLACK);
         }
         super.onPreCreate();
+    }
+
+    @Override
+    protected void initializeSystemBarColors(
+            EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper) {
+        if (DialogWhenLargeContentLayout.shouldShowAsDialog(this)) {
+            @ColorInt
+            int backgroundColor = DialogWhenLargeContentLayout.getDialogBackgroundColor(this);
+
+            StatusBarColorController.setStatusBarColor(
+                    edgeToEdgeSystemBarColorHelper, getWindow(), backgroundColor);
+            edgeToEdgeSystemBarColorHelper.setNavigationBarColor(backgroundColor);
+        } else {
+            super.initializeSystemBarColors(edgeToEdgeSystemBarColorHelper);
+        }
     }
 
     @Override
