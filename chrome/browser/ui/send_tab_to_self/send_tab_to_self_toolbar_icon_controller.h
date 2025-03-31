@@ -42,10 +42,6 @@ class SendTabToSelfToolbarIconController
 
   const Profile* profile() const override;
 
-  void LogNotificationOpened();
-
-  void LogNotificationDismissed();
-
  private:
   void StorePendingEntry(
       const SendTabToSelfEntry* new_entry_pending_notification);

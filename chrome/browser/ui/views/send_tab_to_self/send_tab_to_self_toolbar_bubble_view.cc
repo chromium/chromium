@@ -138,7 +138,7 @@ void SendTabToSelfToolbarBubbleView::OpenInNewTab() {
   std::move(navigate_callback_).Run(&params);
 
   GetWidget()->Close();
-  LogNotificationOpened();
+  send_tab_to_self::RecordNotificationOpened();
 }
 
 void SendTabToSelfToolbarBubbleView::Timeout() {
@@ -148,7 +148,7 @@ void SendTabToSelfToolbarBubbleView::Timeout() {
 
 void SendTabToSelfToolbarBubbleView::Hide() {
   if (!opened_) {
-    LogNotificationDismissed();
+    send_tab_to_self::RecordNotificationDismissed();
   }
   send_tab_to_self::ReceivingUiHandlerRegistry::GetInstance()
       ->GetToolbarButtonControllerForProfile(browser_->profile())
@@ -173,18 +173,6 @@ void SendTabToSelfToolbarBubbleView::ReplaceEntry(
       IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_FROM_DEVICE,
       base::UTF8ToUTF16(new_entry.GetDeviceName())));
   guid_ = new_entry.GetGUID();
-}
-
-void SendTabToSelfToolbarBubbleView::LogNotificationOpened() {
-  send_tab_to_self::ReceivingUiHandlerRegistry::GetInstance()
-      ->GetToolbarButtonControllerForProfile(browser_->profile())
-      ->LogNotificationOpened();
-}
-
-void SendTabToSelfToolbarBubbleView::LogNotificationDismissed() {
-  send_tab_to_self::ReceivingUiHandlerRegistry::GetInstance()
-      ->GetToolbarButtonControllerForProfile(browser_->profile())
-      ->LogNotificationDismissed();
 }
 
 BEGIN_METADATA(SendTabToSelfToolbarBubbleView)
