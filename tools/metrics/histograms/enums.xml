@@ -21030,6 +21030,8 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Navigated Away Through Browser History"/>
 </enum>
 
+<!-- LINT.IfChange(OAuth2Response) -->
+
 <enum name="OAuth2Response">
   <int value="0" label="Unknown error"/>
   <int value="1" label="200 OK"/>
@@ -21047,6 +21049,8 @@ Called by update_net_error_codes.py.-->
   <int value="13" label="Admin Policy Enforced"/>
   <int value="14" label="Access Denied"/>
 </enum>
+
+<!-- LINT.ThenChange(//google_apis/gaia/oauth2_response.h:OAuth2Response) -->
 
 <enum name="OCSPResponseStatus">
   <int value="0" label="Not checked"/>

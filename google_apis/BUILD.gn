@@ -146,6 +146,7 @@ component("google_apis") {
     "gaia/oauth2_mint_access_token_fetcher_adapter.h",
     "gaia/oauth2_mint_token_flow.cc",
     "gaia/oauth2_mint_token_flow.h",
+    "gaia/oauth2_response.h",
     "gaia/oauth_multilogin_result.cc",
     "gaia/oauth_multilogin_result.h",
     "gaia/token_binding_response_encryption_error.h",
