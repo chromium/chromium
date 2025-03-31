@@ -1932,7 +1932,7 @@
     {
       name: "FedCmMultipleIdentityProviders",
       depends_on: ["FedCm"],
-      status: "experimental",
+      status: "stable",
       base_feature: "none",
       public: true,
       origin_trial_feature_name: "FedCmMultipleIdentityProviders",
