@@ -692,22 +692,8 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
   }
 
   if (IsCapturedSurfaceResolutionActive(platform_settings)) {
-    std::optional<float> ratio = platform_settings.device_scale_factor;
-    if (ratio) {
-      settings->setScreenPixelRatio(*ratio);
-    }
-
-    if (platform_settings.physical_frame_size) {
-      settings->setPhysicalWidth(
-          platform_settings.physical_frame_size->width());
-      settings->setPhysicalHeight(
-          platform_settings.physical_frame_size->height());
-      if (ratio) {
-        settings->setLogicalWidth(
-            platform_settings.physical_frame_size->width() / *ratio);
-        settings->setLogicalHeight(
-            platform_settings.physical_frame_size->height() / *ratio);
-      }
+    if (platform_settings.device_scale_factor) {
+      settings->setScreenPixelRatio(*platform_settings.device_scale_factor);
     }
   }
 
