@@ -311,7 +311,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   // Re-extract the active form and field only. All forms with at least one
   // input element are considered because key/value suggestions are offered
   // even on short forms.
-  driver->FetchFromsFilteredByName(
+  driver->FetchFormsFilteredByName(
       SysNSStringToUTF16(formQuery.formName),
       base::BindOnce(callback, self, formQuery, frame->AsWeakPtr(),
                      webState->GetWeakPtr(), completion));
@@ -861,7 +861,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       };
 
   // Extract the active form and field only.
-  driver->FetchFromsFilteredByName(
+  driver->FetchFormsFilteredByName(
       base::UTF8ToUTF16(params.form_name),
       base::BindOnce(callback, weakSelf, frame->AsWeakPtr(),
                      params.field_renderer_id));
