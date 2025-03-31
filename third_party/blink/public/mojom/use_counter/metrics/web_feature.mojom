@@ -4845,6 +4845,8 @@ enum WebFeature {
   kCrossOriginSameSiteCookieAccessViaStorageAccessAPI = 5459,
   kV8GPUAdapter_IsFallbackAdapter_AttributeGetter = 5460,
   kLanguageDetector_ExpectedInputLanguages = 5461,
+  kServiceWorkerPushEventListener = 5462,
+  kServiceWorkerPushSubscriptionChangeEventListener = 5463,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

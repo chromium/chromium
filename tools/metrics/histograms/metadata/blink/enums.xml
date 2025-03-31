@@ -6085,6 +6085,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5459" label="CrossOriginSameSiteCookieAccessViaStorageAccessAPI"/>
   <int value="5460" label="V8GPUAdapter_IsFallbackAdapter_AttributeGetter"/>
   <int value="5461" label="LanguageDetector_ExpectedInputLanguages"/>
+  <int value="5462" label="ServiceWorkerPushEventListener"/>
+  <int value="5463" label="ServiceWorkerPushSubscriptionChangeEventListener"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
