@@ -5,7 +5,8 @@
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {AnnotationText} from '../constants.js';
+import type {AnnotationText, TextStyles} from '../constants.js';
+import {TextAlignment, TextStyle} from '../constants.js';
 import {Ink2Manager} from '../ink2_manager.js';
 
 import {getCss} from './viewer_text_side_panel.css.js';
@@ -26,15 +27,25 @@ export class ViewerTextSidePanelElement extends CrLitElement {
 
   static override get properties() {
     return {
+      currentAlignment_: {type: String},
       currentFont_: {type: String},
       currentSize_: {type: Number},
+      currentStyles_: {type: Object},
       fonts_: {type: Array},
       sizes_: {type: Array},
     };
   }
 
+  protected currentAlignment_: TextAlignment = TextAlignment.LEFT;
   protected currentFont_: string = '';
   protected currentSize_: number = 0;
+  protected currentStyles_: TextStyles = {
+    [TextStyle.BOLD]: false,
+    [TextStyle.ITALIC]: false,
+    [TextStyle.UNDERLINE]: false,
+    [TextStyle.STRIKETHROUGH]: false,
+  };
+
   protected fonts_ = [
     'Roboto',
     'Serif',
@@ -64,6 +75,10 @@ export class ViewerTextSidePanelElement extends CrLitElement {
     this.tracker_.removeAll();
   }
 
+  protected getTextStyles_(): TextStyle[] {
+    return Object.values(TextStyle);
+  }
+
   protected isSelectedFont_(font: string) {
     return font === this.currentFont_;
   }
@@ -82,9 +97,31 @@ export class ViewerTextSidePanelElement extends CrLitElement {
     Ink2Manager.getInstance().setTextSize(newValue);
   }
 
+  protected onStyleButtonClick_(e: Event) {
+    const style = (e.target as HTMLElement).dataset['style'] as TextStyle;
+    const newStyles = Object.assign({}, this.currentStyles_);
+    newStyles[style] = !newStyles[style];
+    Ink2Manager.getInstance().setTextStyles(newStyles);
+  }
+
+  protected getActiveClass_(style: TextStyle) {
+    return this.currentStyles_[style] ? 'active' : '';
+  }
+
+  protected getAriaPressed_(style: TextStyle) {
+    return this.currentStyles_[style] ? 'true' : 'false';
+  }
+
+  protected onSelectedAlignmentChanged_(e: CustomEvent<{value: string}>) {
+    const newAlignment = e.detail.value as TextAlignment;
+    Ink2Manager.getInstance().setTextAlignment(newAlignment);
+  }
+
   private onTextChanged_(text: AnnotationText) {
     this.currentFont_ = text.font;
     this.currentSize_ = text.size;
+    this.currentStyles_ = text.styles;
+    this.currentAlignment_ = text.alignment;
   }
 }
 

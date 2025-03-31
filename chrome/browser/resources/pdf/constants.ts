@@ -41,12 +41,16 @@ export enum TextAlignment {
   JUSTIFY = 'JUSTIFY',
 }
 
-export interface TextStyles {
-  bold: boolean;
-  italic: boolean;
-  underline: boolean;
-  strikethrough: boolean;
+export enum TextStyle {
+  BOLD = 'bold',
+  ITALIC = 'italic',
+  UNDERLINE = 'underline',
+  STRIKETHROUGH = 'strikethrough',
 }
+
+export type TextStyles = {
+  [key in TextStyle]: boolean
+};
 
 export interface AnnotationText {
   font: string;
