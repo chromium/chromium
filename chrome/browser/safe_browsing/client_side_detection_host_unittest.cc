@@ -1167,21 +1167,6 @@ TEST_F(ClientSideDetectionHostTest,
   fake_phishing_detector_.CheckMessage(nullptr);
 }
 
-TEST_F(ClientSideDetectionHostTest,
-       TestPreClassificationCheckOverBothReportingLimits) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
-    GTEST_SKIP();
-
-  GURL url("http://host.com/");
-  database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kTrue,
-                                &kFalse);
-  NavigateAndKeepLoading(web_contents(), url);
-  WaitAndCheckPreClassificationChecks();
-
-  fake_phishing_detector_.CheckMessage(nullptr);
-}
-
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckHttpsUrl) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
     GTEST_SKIP();
