@@ -38,23 +38,6 @@ bool HasRemoveWhitespaceCommandLineFlag() {
   return command_line->HasSwitch(kRemoveWhitespaceForDataURLs);
 }
 
-// https://infra.spec.whatwg.org/#ascii-whitespace, which is referenced by
-// https://infra.spec.whatwg.org/#forgiving-base64, does not include \v in the
-// set of ASCII whitespace characters the way Unicode does.
-bool IsBase64Whitespace(char c) {
-  return c != '\v' && base::IsAsciiWhitespace(c);
-}
-
-// A data URL is ready for decode if it:
-//   - Doesn't need any extra padding.
-//   - Does not have any escaped characters.
-//   - Does not have any whitespace.
-bool IsDataURLReadyForDecode(std::string_view body) {
-  return (body.length() % 4) == 0 && std::ranges::none_of(body, [](char c) {
-           return c == '%' || IsBase64Whitespace(c);
-         });
-}
-
 bool IsFurtherOptimizeParsingDataUrlsEnabled() {
   static const bool further_optimize_parsing_enabled =
       base::FeatureList::IsEnabled(features::kFurtherOptimizeParsingDataUrls);
@@ -168,8 +151,7 @@ bool DataURL::Parse(const GURL& url,
               return false;
             }
           }
-        } else if (base::FeatureList::IsEnabled(
-                       features::kOptimizeParsingDataUrls)) {
+        } else {
           // Since whitespace and invalid characters in input will always cause
           // `Base64Decode` to fail, just handle unescaping the URL on failure.
           // This is not much slower than scanning the URL for being well formed
@@ -182,48 +164,18 @@ bool DataURL::Parse(const GURL& url,
               return false;
             }
           }
-        } else {
-          // If the data URL is well formed, we can decode it immediately.
-          if (IsDataURLReadyForDecode(raw_body)) {
-            if (!SimdutfBase64Decode(raw_body, data)) {
-              return false;
-            }
-          } else {
-            std::string unescaped_body =
-                base::UnescapeBinaryURLComponent(raw_body);
-            if (!SimdutfBase64Decode(unescaped_body, data,
-                                     base::Base64DecodePolicy::kForgiving)) {
-              return false;
-            }
-          }
         }
       } else {
-        if (base::FeatureList::IsEnabled(features::kOptimizeParsingDataUrls)) {
-          // Since whitespace and invalid characters in input will always cause
-          // `Base64Decode` to fail, just handle unescaping the URL on failure.
-          // This is not much slower than scanning the URL for being well formed
-          // first, even for input with whitespace.
-          if (!base::Base64Decode(raw_body, data)) {
-            std::string unescaped_body =
-                base::UnescapeBinaryURLComponent(raw_body);
-            if (!base::Base64Decode(unescaped_body, data,
-                                    base::Base64DecodePolicy::kForgiving)) {
-              return false;
-            }
-          }
-        } else {
-          // If the data URL is well formed, we can decode it immediately.
-          if (IsDataURLReadyForDecode(raw_body)) {
-            if (!base::Base64Decode(raw_body, data)) {
-              return false;
-            }
-          } else {
-            std::string unescaped_body =
-                base::UnescapeBinaryURLComponent(raw_body);
-            if (!base::Base64Decode(unescaped_body, data,
-                                    base::Base64DecodePolicy::kForgiving)) {
-              return false;
-            }
+        // Since whitespace and invalid characters in input will always cause
+        // `Base64Decode` to fail, just handle unescaping the URL on failure.
+        // This is not much slower than scanning the URL for being well formed
+        // first, even for input with whitespace.
+        if (!base::Base64Decode(raw_body, data)) {
+          std::string unescaped_body =
+              base::UnescapeBinaryURLComponent(raw_body);
+          if (!base::Base64Decode(unescaped_body, data,
+                                  base::Base64DecodePolicy::kForgiving)) {
+            return false;
           }
         }
       }
@@ -277,18 +229,11 @@ Error DataURL::BuildResponse(const GURL& url,
   std::string content_type = *mime_type;
   if (!charset->empty())
     content_type.append(";charset=" + *charset);
-  // The terminal double CRLF isn't needed by TryToCreate().
-  if (base::FeatureList::IsEnabled(features::kOptimizeParsingDataUrls)) {
-    *headers = HttpResponseHeaders::TryToCreateForDataURL(content_type);
-  } else {
-    *headers = HttpResponseHeaders::TryToCreate(
-        "HTTP/1.1 200 OK\r\n"
-        "Content-Type:" +
-        content_type);
-  }
-  // Above line should always succeed - TryToCreate() only fails when there are
-  // nulls in the string, and DataURL::Parse() can't return nulls in anything
-  // but the |data| argument.
+  // The terminal double CRLF isn't needed by TryToCreateForDataURL().
+  *headers = HttpResponseHeaders::TryToCreateForDataURL(content_type);
+  // Above line should always succeed - TryToCreateForDataURL() only fails when
+  // there are nulls in the string, and DataURL::Parse() can't return nulls in
+  // anything but the |data| argument.
   DCHECK(*headers);
 
   if (base::EqualsCaseInsensitiveASCII(method, "HEAD"))

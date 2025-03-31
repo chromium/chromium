@@ -29,7 +29,7 @@ struct ParseTestData {
 
 class DataURLTest
     : public testing::Test,
-      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   DataURLTest() {
     using FeatureList = std::vector<base::test::FeatureRef>;
@@ -38,17 +38,14 @@ class DataURLTest
     const auto feature_set = [&](bool flag_on) -> FeatureList& {
       return flag_on ? enabled_features : disabled_features;
     };
-    feature_set(OptimizedParsing())
-        .push_back(features::kOptimizeParsingDataUrls);
     feature_set(KeepWhitespace())
         .push_back(features::kKeepWhitespaceForDataUrls);
     feature_set(SimdutfSupport()).push_back(features::kSimdutfBase64Support);
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  bool OptimizedParsing() const { return std::get<0>(GetParam()); }
-  bool KeepWhitespace() const { return std::get<1>(GetParam()); }
-  bool SimdutfSupport() const { return std::get<2>(GetParam()); }
+  bool KeepWhitespace() const { return std::get<0>(GetParam()); }
+  bool SimdutfSupport() const { return std::get<1>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -57,7 +54,6 @@ class DataURLTest
 INSTANTIATE_TEST_SUITE_P(DataURLTest,
                          DataURLTest,
                          testing::Combine(
-                             /*optimize_parsing=*/testing::Bool(),
                              /*keep_whitespace=*/testing::Bool(),
                              /*simdutf_support=*/testing::Bool()));
 

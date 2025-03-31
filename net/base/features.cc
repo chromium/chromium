@@ -602,10 +602,6 @@ BASE_FEATURE(kReportingApiEnableEnterpriseCookieIssues,
              "ReportingApiEnableEnterpriseCookieIssues",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOptimizeParsingDataUrls,
-             "OptimizeParsingDataUrls",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSimdutfBase64Support,
              "SimdutfBase64Support",
              base::FEATURE_DISABLED_BY_DEFAULT);
