@@ -4,6 +4,8 @@
 
 #include "chrome/browser/password_manager/android/password_store_empty_backend.h"
 
+#include "components/password_manager/core/browser/password_store/password_data_type_controller_delegate_android.h"
+
 namespace password_manager {
 
 namespace {
@@ -105,7 +107,7 @@ SmartBubbleStatsStore* PasswordStoreEmptyBackend::GetSmartBubbleStatsStore() {
 
 std::unique_ptr<syncer::DataTypeControllerDelegate>
 PasswordStoreEmptyBackend::CreateSyncControllerDelegate() {
-  return nullptr;
+  return std::make_unique<PasswordDataTypeControllerDelegateAndroid>();
 }
 
 void PasswordStoreEmptyBackend::OnSyncServiceInitialized(
