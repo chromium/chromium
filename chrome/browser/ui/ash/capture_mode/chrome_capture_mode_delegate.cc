@@ -815,9 +815,13 @@ void ChromeCaptureModeDelegate::SendLensWebRegionSearch(
   on_text_detection_complete_callback_ = std::move(text_callback);
   on_error_callback_ = std::move(error_callback);
 
+  // Increment the `lens_request_id_` to represent a new request id.
+  ++lens_request_id_;
+
   GetPrimaryAccountAccessToken(base::BindRepeating(
       &ChromeCaptureModeDelegate::OnAccessTokenAvailableForImageSearch,
-      weak_ptr_factory_.GetWeakPtr(), image, is_standalone_session));
+      weak_ptr_factory_.GetWeakPtr(), image, is_standalone_session,
+      lens_request_id_));
 }
 
 void ChromeCaptureModeDelegate::SendRegionSearch(
@@ -1098,7 +1102,9 @@ void ChromeCaptureModeDelegate::PrimaryAccountAccessTokenAvailable(
   primary_account_token_fetcher_.reset();
 
   if (error.state() != GoogleServiceAuthError::NONE) {
-    std::move(on_error_callback_).Run();
+    if (on_error_callback_) {
+      std::move(on_error_callback_).Run();
+    }
     return;
   }
 
@@ -1109,10 +1115,13 @@ void ChromeCaptureModeDelegate::PrimaryAccountAccessTokenAvailable(
 void ChromeCaptureModeDelegate::OnAccessTokenAvailableForImageSearch(
     const gfx::Image& original_image,
     const bool is_standalone_session,
+    const int request_id,
     const std::string& access_token) {
   // If the access token is empty, let the user know that an error has occurred.
   if (access_token.empty()) {
-    std::move(on_error_callback_).Run();
+    if (on_error_callback_) {
+      std::move(on_error_callback_).Run();
+    }
     return;
   }
 
@@ -1213,15 +1222,18 @@ void ChromeCaptureModeDelegate::OnAccessTokenAvailableForImageSearch(
       base::BindOnce(
           &ChromeCaptureModeDelegate::OnDispatchCompleteForImageSearch,
           weak_ptr_factory_.GetWeakPtr(), simple_url_loader_ptr->GetWeakPtr(),
-          access_token));
+          access_token, request_id));
 }
 
 void ChromeCaptureModeDelegate::OnAccessTokenAvailableForCopyText(
     const std::string vsr_id,
+    const int request_id,
     const std::string& access_token) {
   // If the access token is empty, let the user know that an error has occurred.
   if (access_token.empty()) {
-    std::move(on_error_callback_).Run();
+    if (on_error_callback_) {
+      std::move(on_error_callback_).Run();
+    }
     return;
   }
 
@@ -1248,16 +1260,24 @@ void ChromeCaptureModeDelegate::OnAccessTokenAvailableForCopyText(
       url_loader_factory_.get(),
       base::BindOnce(&ChromeCaptureModeDelegate::OnDispatchCompleteForCopyText,
                      weak_ptr_factory_.GetWeakPtr(),
-                     simple_url_loader_ptr->GetWeakPtr(), access_token));
+                     simple_url_loader_ptr->GetWeakPtr(), access_token,
+                     request_id));
 }
 
 void ChromeCaptureModeDelegate::OnDispatchCompleteForImageSearch(
     base::WeakPtr<const network::SimpleURLLoader> url_loader,
     const std::string& access_token,
+    const int request_id,
     std::unique_ptr<std::string> response_body) {
   absl::Cleanup deferred_runner = [this, url_loader]() {
     uploads_in_progress_.remove_if(base::MatchesUniquePtr(url_loader.get()));
   };
+
+  // If the given `request_id` does not match the current request id, we should
+  // not run the callback, and just wait for the most recent request to resolve.
+  if (request_id != lens_request_id_) {
+    return;
+  }
 
   const network::SimpleURLLoader* simple_url_loader = url_loader.get();
   CHECK(simple_url_loader);
@@ -1273,14 +1293,18 @@ void ChromeCaptureModeDelegate::OnDispatchCompleteForImageSearch(
   // If the response code is not a success, return early and let the user know
   // an error has occurred.
   if (!network::IsSuccessfulStatus(response_code)) {
-    std::move(on_error_callback_).Run();
+    if (on_error_callback_) {
+      std::move(on_error_callback_).Run();
+    }
     return;
   }
 
   // Pass in an empty image, as the Lens Web API uses its own thumbnail from the
   // image we uploaded previously.
   const GURL final_url = simple_url_loader->GetFinalURL();
-  std::move(on_search_url_fetched_callback_).Run(final_url);
+  if (on_search_url_fetched_callback_) {
+    std::move(on_search_url_fetched_callback_).Run(final_url);
+  }
 
   // No other actions to take if we are not using the Lens Web API for Copy
   // Text.
@@ -1299,21 +1323,30 @@ void ChromeCaptureModeDelegate::OnDispatchCompleteForImageSearch(
   // the original expiring.
   GetPrimaryAccountAccessToken(base::BindRepeating(
       &ChromeCaptureModeDelegate::OnAccessTokenAvailableForCopyText,
-      weak_ptr_factory_.GetWeakPtr(), vsr_id));
+      weak_ptr_factory_.GetWeakPtr(), vsr_id, request_id));
 }
 
 void ChromeCaptureModeDelegate::OnDispatchCompleteForCopyText(
     base::WeakPtr<const network::SimpleURLLoader> url_loader,
     const std::string& access_token,
+    const int request_id,
     std::unique_ptr<std::string> response_body) {
   absl::Cleanup deferred_runner = [this, url_loader]() {
     uploads_in_progress_.remove_if(base::MatchesUniquePtr(url_loader.get()));
   };
 
+  // If the given `request_id` does not match the current request id, we should
+  // not run the callback, and just wait for the most recent request to resolve.
+  if (request_id != lens_request_id_) {
+    return;
+  }
+
   // If there is no response body, return early and let the user know an error
   // has occurred.
   if (!response_body) {
-    std::move(on_error_callback_).Run();
+    if (on_error_callback_) {
+      std::move(on_error_callback_).Run();
+    }
     return;
   }
 
@@ -1334,9 +1367,13 @@ void ChromeCaptureModeDelegate::OnJsonParsed(
   // Attempty to parse the JSON further to get the extracted text. If
   // unsuccessful, return early and let the user know an error has occurred.
   if (!ParseQueryFormulationMetadataResponse(result, extracted_text)) {
-    std::move(on_error_callback_).Run();
+    if (on_error_callback_) {
+      std::move(on_error_callback_).Run();
+    }
     return;
   }
 
-  std::move(on_text_detection_complete_callback_).Run(extracted_text);
+  if (on_text_detection_complete_callback_) {
+    std::move(on_text_detection_complete_callback_).Run(extracted_text);
+  }
 }
