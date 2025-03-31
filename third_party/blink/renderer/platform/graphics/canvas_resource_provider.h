@@ -347,10 +347,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
     scoped_refptr<CanvasResource> resource;
   };
 
-  // Visible for testing; should be protected.
-  const WTF::Vector<UnusedResource>& CanvasResources() const {
-    return canvas_resources_;
-  }
+  virtual bool HasUnusedResourcesForTesting() const { return false; }
   bool unused_resources_reclaim_timer_is_running_for_testing() const {
     return unused_resources_reclaim_timer_.IsRunning();
   }

@@ -287,6 +287,12 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     return shared_image_usage_flags_.Has(
         gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
   }
+  bool HasUnusedResourcesForTesting() const override {
+    if (IsSingleBuffered()) {
+      return false;
+    }
+    return !canvas_resources_.empty();
+  }
   scoped_refptr<gpu::ClientSharedImage>
   GetBackingClientSharedImageForExternalWrite(
       gpu::SyncToken* internal_access_sync_token,
