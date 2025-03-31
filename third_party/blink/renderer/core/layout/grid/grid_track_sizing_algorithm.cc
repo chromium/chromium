@@ -306,9 +306,9 @@ void GridTrackSizingAlgorithm::ComputeUsedTrackSizes(
 
   // 4. This step sizes flexible tracks using the largest value it can assign to
   // an 'fr' without exceeding the available space.
-  // if (track_collection.HasFlexibleTrack()) {
-  //   ExpandFlexibleTracks(sizing_subtree, track_direction, sizing_constraint);
-  // }
+  if (track_collection->HasFlexibleTrack()) {
+    ExpandFlexibleTracks(contribution_size, track_collection, grid_items);
+  }
 
   // 5. Stretch tracks with an 'auto' max track sizing function.
   StretchAutoTracks(track_collection);
@@ -1072,6 +1072,198 @@ void GridTrackSizingAlgorithm::StretchAutoTracks(
   for (auto* set : sets_to_grow) {
     set->IncreaseBaseSize(set->BaseSize() + set->item_incurred_increase);
   }
+}
+
+// https://drafts.csswg.org/css-grid-2/#algo-flex-tracks
+void GridTrackSizingAlgorithm::ExpandFlexibleTracks(
+    const ContributionSizeFunctionRef& contribution_size,
+    GridSizingTrackCollection* track_collection,
+    GridItems* grid_items) const {
+  const auto free_space = DetermineFreeSpace(*track_collection);
+
+  // If the free space is zero or if sizing the grid container under a
+  // min-content constraint, the used flex fraction is zero.
+  if (!free_space) {
+    return;
+  }
+
+  // https://drafts.csswg.org/css-grid-2/#algo-find-fr-size
+  GridSetPtrVector flexible_sets;
+  auto FindFrSize = [&](GridSizingTrackCollection::SetIterator set_iterator,
+                        LayoutUnit leftover_space) -> float {
+    ClampedFloat flex_factor_sum = 0;
+    wtf_size_t total_track_count = 0;
+    flexible_sets.Shrink(0);
+
+    while (!set_iterator.IsAtEnd()) {
+      auto& set = set_iterator.CurrentSet();
+
+      if (set.track_size.HasFlexMaxTrackBreadth() &&
+          !AreEqual<float>(set.FlexFactor(), 0)) {
+        flex_factor_sum += set.FlexFactor();
+        flexible_sets.push_back(&set);
+      } else {
+        leftover_space -= set.BaseSize();
+      }
+
+      total_track_count += set.track_count;
+      set_iterator.MoveToNextSet();
+    }
+
+    // Remove the gutters between spanned tracks.
+    leftover_space -= track_collection->GutterSize() * (total_track_count - 1);
+
+    if (leftover_space < 0 || flexible_sets.empty()) {
+      return 0;
+    }
+
+    // From css-grid-2 spec: "If the product of the hypothetical fr size and
+    // a flexible track’s flex factor is less than the track’s base size,
+    // restart this algorithm treating all such tracks as inflexible."
+    //
+    // We will process the same algorithm a bit different; since we define the
+    // hypothetical fr size as the leftover space divided by the flex factor
+    // sum, we can reinterpret the statement above as follows:
+    //
+    //   (leftover space / flex factor sum) * flexible set's flex factor <
+    //       flexible set's base size
+    //
+    // Reordering the terms of such expression we get:
+    //
+    //   leftover space / flex factor sum <
+    //       flexible set's base size / flexible set's flex factor
+    //
+    // The term on the right is constant for every flexible set, while the term
+    // on the left changes whenever we restart the algorithm treating some of
+    // those sets as inflexible. Note that, if the expression above is false for
+    // a given set, any other set with a lesser (base size / flex factor) ratio
+    // will also fail such expression.
+    //
+    // Based on this observation, we can process the sets in non-increasing
+    // ratio, when the current set does not fulfill the expression, no further
+    // set will fulfill it either (and we can return the hypothetical fr size).
+    // Otherwise, determine which sets should be treated as inflexible, exclude
+    // them from the leftover space and flex factor sum computation, and keep
+    // checking the condition for sets with lesser ratios.
+    auto CompareSetsByBaseSizeFlexFactorRatio = [](GridSet* lhs,
+                                                   GridSet* rhs) -> bool {
+      // Avoid divisions by reordering the terms of the comparison.
+      return lhs->BaseSize().RawValue() * rhs->FlexFactor() >
+             rhs->BaseSize().RawValue() * lhs->FlexFactor();
+    };
+    std::sort(flexible_sets.begin(), flexible_sets.end(),
+              CompareSetsByBaseSizeFlexFactorRatio);
+
+    auto current_set = base::span(flexible_sets).begin();
+    while (leftover_space > 0 && current_set != flexible_sets.end()) {
+      flex_factor_sum = base::ClampMax(flex_factor_sum, 1);
+
+      auto next_set = current_set;
+      while (next_set != flexible_sets.end() &&
+             (*next_set)->FlexFactor() * leftover_space.RawValue() <
+                 (*next_set)->BaseSize().RawValue() * flex_factor_sum) {
+        ++next_set;
+      }
+
+      // Any upcoming flexible set will receive a share of free space of at
+      // least their base size; return the current hypothetical fr size.
+      if (current_set == next_set) {
+        DCHECK(!AreEqual<float>(flex_factor_sum, 0));
+        return leftover_space.RawValue() / flex_factor_sum;
+      }
+
+      // Otherwise, treat all those sets that does not receive a share of free
+      // space of at least their base size as inflexible, effectively excluding
+      // them from the leftover space and flex factor sum computation.
+      for (auto it = current_set; it != next_set; ++it) {
+        flex_factor_sum -= (*it)->FlexFactor();
+        leftover_space -= (*it)->BaseSize();
+      }
+      current_set = next_set;
+    }
+    return 0;
+  };
+
+  float fr_size = 0;
+  const auto track_direction = track_collection->Direction();
+
+  if (free_space != kIndefiniteSize) {
+    // Otherwise, if the free space is a definite length, the used flex fraction
+    // is the result of finding the size of an fr using all of the grid tracks
+    // and a space to fill of the available grid space.
+    fr_size = FindFrSize(track_collection->GetSetIterator(),
+                         (track_direction == kForColumns)
+                             ? available_size_.inline_size
+                             : available_size_.block_size);
+  } else {
+    // Otherwise, if the free space is an indefinite length, the used flex
+    // fraction is the maximum of:
+    //   - For each grid item that crosses a flexible track, the result of
+    //   finding the size of an fr using all the grid tracks that the item
+    //   crosses and a space to fill of the item’s max-content contribution.
+    for (auto& grid_item : grid_items->IncludeSubgriddedItems()) {
+      if (!grid_item.IsSpanningFlexibleTrack(track_direction) ||
+          !grid_item.IsConsideredForSizing(track_direction)) {
+        continue;
+      }
+
+      const auto item_contribution_size = contribution_size(
+          GridItemContributionType::kForMaxContentMaximums, &grid_item);
+      fr_size =
+          std::max(fr_size, FindFrSize(grid_item.SetIterator(track_collection),
+                                       item_contribution_size));
+    }
+
+    //   - For each flexible track, if the flexible track’s flex factor is
+    //   greater than one, the result of dividing the track’s base size by its
+    //   flex factor; otherwise, the track’s base size.
+    for (auto set_iterator = track_collection->GetConstSetIterator();
+         !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
+      auto& set = set_iterator.CurrentSet();
+
+      if (!set.track_size.HasFlexMaxTrackBreadth()) {
+        continue;
+      }
+
+      DCHECK_GT(set.track_count, 0u);
+      float set_flex_factor = base::ClampMax(set.FlexFactor(), set.track_count);
+      fr_size = std::max(set.BaseSize().RawValue() / set_flex_factor, fr_size);
+    }
+  }
+
+  // Notice that the fr size multiplied by a set's flex factor can result in a
+  // non-integer size; since we floor the expanded size to fit in a LayoutUnit,
+  // when multiple sets lose the fractional part of the computation we may not
+  // distribute the entire free space. We fix this issue by accumulating the
+  // leftover fractional part from every flexible set.
+  float leftover_size = 0;
+
+  for (auto set_iterator = track_collection->GetSetIterator();
+       !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
+    auto& set = set_iterator.CurrentSet();
+
+    if (!set.track_size.HasFlexMaxTrackBreadth()) {
+      continue;
+    }
+
+    const ClampedFloat fr_share = fr_size * set.FlexFactor() + leftover_size;
+    // Add an epsilon to round up values very close to the next integer.
+    const auto expanded_size =
+        LayoutUnit::FromRawValue(fr_share + kFloatEpsilon);
+
+    if (!expanded_size.MightBeSaturated() && expanded_size >= set.BaseSize()) {
+      set.IncreaseBaseSize(expanded_size);
+      // The epsilon added above might make |expanded_size| greater than
+      // |fr_share|, in that case avoid a negative leftover by flooring to 0.
+      leftover_size = base::ClampMax(fr_share - expanded_size.RawValue(), 0);
+    }
+  }
+
+  // TODO(ethavar): If using this flex fraction would cause the grid to be
+  // smaller than the grid container’s min-width/height (or larger than the grid
+  // container’s max-width/height), then redo this step, treating the free space
+  // as definite and the available grid space as equal to the grid container’s
+  // inner size when it’s sized to its min-width/height (max-width/height).
 }
 
 // TODO(ikilpatrick): Determine if other uses of this method need to respect
