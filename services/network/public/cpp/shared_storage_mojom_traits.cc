@@ -54,9 +54,7 @@ bool StructTraits<
     return false;
   }
 
-  // TODO(crbug.com/404568020): Add validation when we switch to disallow the
-  // 'withLock' option for methods within batchUpdate().
-  return true;
+  return network::IsValidSharedStorageBatchUpdateMethodsArgument(*out_value);
 }
 
 }  // namespace mojo

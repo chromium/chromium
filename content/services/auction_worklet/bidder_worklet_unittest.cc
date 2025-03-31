@@ -11698,7 +11698,11 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
 }
 
 TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
-       SharedStorageBatchUpdate_Success) {
+       SharedStorageBatchUpdate_Legacy_Success) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      network::features::kSharedStorageTransactionalBatchUpdate);
+
   auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host;
 
   mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(
@@ -11753,6 +11757,115 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
           BatchRequest(std::move(batch_methods3),
                        /*with_lock=*/"lock3",
                        mojom::AuctionWorkletFunction::kBidderGenerateBid)));
+
+  v8_helpers_[0]->v8_runner()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](scoped_refptr<AuctionV8Helper> v8_helper) {
+                       v8::Isolate::Scope isolate_scope{v8_helper->isolate()};
+                       v8_helper->isolate()->RequestGarbageCollectionForTesting(
+                           v8::Isolate::kFullGarbageCollection);
+                     },
+                     v8_helpers_[0]));
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
+       SharedStorageBatchUpdate_Transactional_Success) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      network::features::kSharedStorageTransactionalBatchUpdate);
+
+  auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host;
+
+  mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(
+      &test_shared_storage_host);
+  shared_storage_hosts_[0] = receiver.BindNewPipeAndPassRemote();
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(
+          R"({ad: "ad", bid:1, render:"https://response.test/" })",
+          /*extra_code=*/R"(
+          sharedStorage.batchUpdate([]);
+
+          sharedStorage.batchUpdate([]);
+
+          sharedStorage.batchUpdate([
+              new SharedStorageSetMethod('a', 'b'),
+              new SharedStorageAppendMethod('c', 'd'),
+              new SharedStorageDeleteMethod('e'),
+              new SharedStorageClearMethod()
+            ], {withLock: 'lock3'});
+        )"),
+      /*expected_bids=*/
+      TestBidBuilder().SetAd("\"ad\"").Build());
+
+  // Make sure the shared storage mojom methods are invoked as they use a
+  // dedicated pipe.
+  task_environment_.RunUntilIdle();
+
+  using BatchRequest =
+      auction_worklet::TestAuctionSharedStorageHost::BatchRequest;
+
+  std::vector<content::MethodWithOptionsPtr> batch_methods1;
+  std::vector<content::MethodWithOptionsPtr> batch_methods2;
+  std::vector<content::MethodWithOptionsPtr> batch_methods3;
+  batch_methods3.push_back(MojomSetMethod(/*key=*/u"a",
+                                          /*value=*/u"b",
+                                          /*ignore_if_present=*/false));
+  batch_methods3.push_back(MojomAppendMethod(/*key=*/u"c",
+                                             /*value=*/u"d"));
+  batch_methods3.push_back(MojomDeleteMethod(/*key=*/u"e"));
+  batch_methods3.push_back(MojomClearMethod());
+
+  EXPECT_THAT(
+      test_shared_storage_host.observed_batch_requests(),
+      testing::ElementsAre(
+          BatchRequest(std::move(batch_methods1),
+                       /*with_lock=*/std::nullopt,
+                       mojom::AuctionWorkletFunction::kBidderGenerateBid),
+          BatchRequest(std::move(batch_methods2),
+                       /*with_lock=*/std::nullopt,
+                       mojom::AuctionWorkletFunction::kBidderGenerateBid),
+          BatchRequest(std::move(batch_methods3),
+                       /*with_lock=*/"lock3",
+                       mojom::AuctionWorkletFunction::kBidderGenerateBid)));
+
+  v8_helpers_[0]->v8_runner()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](scoped_refptr<AuctionV8Helper> v8_helper) {
+                       v8::Isolate::Scope isolate_scope{v8_helper->isolate()};
+                       v8_helper->isolate()->RequestGarbageCollectionForTesting(
+                           v8::Isolate::kFullGarbageCollection);
+                     },
+                     v8_helpers_[0]));
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
+       SharedStorageBatchUpdate_Transactional_HasInnerMethodLock_Failure) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      network::features::kSharedStorageTransactionalBatchUpdate);
+
+  auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host;
+  mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(
+      &test_shared_storage_host);
+  shared_storage_hosts_[0] = receiver.BindNewPipeAndPassRemote();
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(
+          R"({ad: "ad", bid:1, render:"https://response.test/" })",
+          /*extra_code=*/R"(
+          sharedStorage.batchUpdate([
+            new SharedStorageSetMethod("key0", "value0", {withLock: "lock1"})
+          ]);
+        )"),
+      /*expected_bids=*/nullptr,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/:6 Uncaught TypeError: sharedStorage.batchUpdate(): "
+       "The 'withLock' option is not allowed for methods within "
+       "batchUpdate()."});
 
   v8_helpers_[0]->v8_runner()->PostTask(
       FROM_HERE, base::BindOnce(

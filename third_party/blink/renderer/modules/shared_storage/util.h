@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_UTIL_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "services/network/public/mojom/shared_storage.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8-isolate.h"
@@ -53,6 +54,14 @@ bool StringFromV8(v8::Isolate* isolate,
 // Whether `lock_name` is a reserved lock resource name.
 // See https://w3c.github.io/web-locks/#resource-name
 bool IsReservedLockName(const String& lock_name);
+
+// Whether `methods_with_options` is a valid batchUpdate() argument: according
+// to the specification (https://wicg.github.io/shared-storage/#batch-update),
+// none of the inner methods should specify the `with_lock` option.
+bool IsValidSharedStorageBatchUpdateMethodsArgument(
+    const Vector<
+        network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr>&
+        methods_with_options);
 
 // Return if there is a valid browsing context associated with `script_state`.
 // Throw an error via `exception_state` if invalid.
