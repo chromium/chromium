@@ -407,6 +407,7 @@ chromium-metrics-reviews@google.com.
   <int value="47" label="Autofill others"/>
   <int value="48" label="StartWritingTools"/>
   <int value="49" label="ShowTextFormattingOptions"/>
+  <int value="50" label="ExplainWithGemini"/>
 </enum>
 
 <enum name="IOSEditMenuError">
