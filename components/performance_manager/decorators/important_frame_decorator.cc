@@ -34,33 +34,29 @@ bool IsImportant(const FrameNode* frame_node) {
     return true;
   }
 
-  std::optional<ViewportIntersection> viewport_intersection =
-      frame_node->GetViewportIntersection();
+  switch (frame_node->GetViewportIntersection()) {
+    case ViewportIntersection::kUnknown:
+      // Too early in the frame's lifecycle, don't know yet if it intersects
+      // with the viewport. Can't determine the importance. Default to
+      // important.
+      return true;
 
-  // Too early in the frame's lifecycle, don't know yet if it intersects with
-  // the viewport. Can't determine the importance. Default to important.
-  if (!viewport_intersection.has_value()) {
-    return true;
+    case ViewportIntersection::kNotIntersecting:
+      // A frame is not important if it doesn't intersect with the viewport.
+      return false;
+
+    case ViewportIntersection::kIntersecting:
+      // An intersecting frame is always important if it has same process as its
+      // ancestor frames.
+      if (!IsCrossProcessFrame(frame_node)) {
+        return true;
+      }
+
+      // The frame is important if it either intersects with a large area of the
+      // viewport or if the user interacted with it.
+      return frame_node->IsIntersectingLargeArea() ||
+             frame_node->HadUserActivation();
   }
-
-  // A frame is important if it intersects with a large area of the viewport.
-  if (viewport_intersection->is_intersecting_large_area()) {
-    return true;
-  }
-
-  // A frame is always important if it has same process as ancestor frames.
-  if (!IsCrossProcessFrame(frame_node)) {
-    return true;
-  }
-
-  // The frame does not intersect with the viewport.
-  if (!viewport_intersection->is_intersecting()) {
-    return false;
-  }
-
-  // The frame intersects with a non-large area of the viewport. Only important
-  // if the user interacted with it.
-  return frame_node->HadUserActivation();
 }
 
 }  // namespace
@@ -84,8 +80,6 @@ void ImportantFrameDecorator::OnBeforeFrameNodeAdded(
     const ProcessNode* pending_process_node,
     const FrameNode* pending_parent_or_outer_document_or_embedder) {
   CHECK(!frame_node->HadUserActivation());
-  CHECK(!frame_node->GetViewportIntersection() ||
-        frame_node->GetViewportIntersection()->is_intersecting_large_area());
   CHECK(IsImportant(frame_node));
 }
 
@@ -95,6 +89,11 @@ void ImportantFrameDecorator::OnHadUserActivationChanged(
 }
 
 void ImportantFrameDecorator::OnViewportIntersectionChanged(
+    const FrameNode* frame_node) {
+  FrameNodeImpl::FromNode(frame_node)->SetIsImportant(IsImportant(frame_node));
+}
+
+void ImportantFrameDecorator::OnIsIntersectingLargeAreaChanged(
     const FrameNode* frame_node) {
   FrameNodeImpl::FromNode(frame_node)->SetIsImportant(IsImportant(frame_node));
 }

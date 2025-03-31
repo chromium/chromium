@@ -267,7 +267,6 @@ static_library("performance_manager") {
     "v8_memory/web_memory_aggregator.h",
     "v8_memory/web_memory_impl.cc",
     "v8_memory/web_memory_impl.h",
-    "viewport_intersection.cc",
     "worker_watcher.cc",
     "worker_watcher.h",
   ]

@@ -26,8 +26,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/frame/lifecycle.mojom-forward.h"
-#include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -114,8 +112,9 @@ class FrameNodeImpl
   bool IsAudible() const override;
   bool IsCapturingMediaStream() const override;
   bool HasFreezingOriginTrialOptOut() const override;
-  std::optional<ViewportIntersection> GetViewportIntersection() const override;
+  ViewportIntersection GetViewportIntersection() const override;
   Visibility GetVisibility() const override;
+  bool IsIntersectingLargeArea() const override;
   bool IsImportant() const override;
   const RenderFrameHostProxy& GetRenderFrameHostProxy() const override;
   uint64_t GetResidentSetKbEstimate() const override;
@@ -146,11 +145,10 @@ class FrameNodeImpl
       bool is_holding_blocking_indexeddb_lock);
   void SetIsAudible(bool is_audible);
   void SetIsCapturingMediaStream(bool is_capturing_media_stream);
-  void SetViewportIntersection(const blink::mojom::ViewportIntersectionState&
-                                   viewport_intersection_state);
-  void SetViewportIntersection(blink::mojom::FrameVisibility frame_visibility);
+  void SetViewportIntersection(ViewportIntersection viewport_intersection);
   void SetInitialVisibility(Visibility visibility);
   void SetVisibility(Visibility visibility);
+  void SetIsIntersectingLargeArea(bool is_intersecting_large_area);
   void SetIsImportant(bool is_important);
   void SetResidentSetKbEstimate(uint64_t rss_estimate);
   void SetPrivateFootprintKbEstimate(uint64_t private_footprint_estimate);
@@ -192,12 +190,6 @@ class FrameNodeImpl
                        PageNodeImpl* page_node);
   void RemoveEmbeddedPage(base::PassKey<PageNodeImpl> key,
                           PageNodeImpl* page_node);
-
-  // Testing-only functions that allows setting the ViewportIntersection
-  // directly.
-  void SetViewportIntersectionForTesting(bool is_intersecting_viewport);
-  void SetViewportIntersectionForTesting(
-      ViewportIntersection viewport_intersection);
 
  private:
   friend class FrameNodeImplDescriber;
@@ -299,17 +291,10 @@ class FrameNodeImpl
   // result of this call.
   bool SetIsCurrent(bool is_current);
 
-  // Sets the viewport intersection on a non-local root frame. In this case, the
-  // area size of the viewport intersection is not known, and must be inherited
-  // from its parent.
-  void SetViewportIntersectionImpl(bool is_intersecting_viewport);
-
-  // Sets the ViewportIntersection for this frame.
-  void SetViewportIntersectionImpl(ViewportIntersection viewport_intersection);
-
-  // Updates the inherited `is_intersecting_large_area` bit of the
-  // ViewportIntersection of this frame.
+  // Updates the inherited `IsIntersectingLargeArea()` property of this frame.
   void SetInheritedIsIntersectingLargeArea(bool is_intersecting_large_area);
+
+  void SetIsIntersectingLargeAreaImpl(bool is_intersecting_large_area);
 
   mojo::Receiver<mojom::DocumentCoordinationUnit> receiver_{this};
 
@@ -416,14 +401,14 @@ class FrameNodeImpl
 
   // Indicates the intersection between the frame and the viewport.
   //
-  // Note that this property is always invalid for a main frame. This is because
-  // the main frame always occupies the entirety of the viewport so there is no
-  // point in tracking it. To avoid programming mistakes, it is forbidden to
-  // query this property for the main frame.
+  // Note that calling `GetViewportIntersection()` will always returns
+  // ViewportIntersection::kIntersecting for the outermost main frame. This is
+  // because it always occupies the entirety of the viewport, so there is no
+  // point in tracking it.
   ObservedProperty::NotifiesOnlyOnChanges<
-      std::optional<ViewportIntersection>,
+      ViewportIntersection,
       &FrameNodeObserver::OnViewportIntersectionChanged>
-      viewport_intersection_;
+      viewport_intersection_{ViewportIntersection::kUnknown};
 
   // Indicates if the frame is visible. This is maintained by the
   // FrameVisibilityDecorator.
@@ -433,15 +418,18 @@ class FrameNodeImpl
       &FrameNodeObserver::OnFrameVisibilityChanged>
       visibility_{Visibility::kUnknown};
 
+  // Indicates if this frame intersects with a large area of the viewport.
+  // Defaults to true when its value is unknown.
+  bool is_intersecting_large_area_ = true;
+
+  // Indicates that SetIsIntersectingLargeArea() was called for this frame. This
+  // is only called for local root frames and means this frame should not
+  // inherit the value of its parent.
+  bool has_is_intersecting_large_area_updates_ = false;
+
   ObservedProperty::
       NotifiesOnlyOnChanges<bool, &FrameNodeObserver::OnIsImportantChanged>
           is_important_{true};
-
-  // Indicates that SetViewportIntersection() was called with a
-  // blink::mojom::ViewportIntersectionState instance. This is only called for
-  // local root frames and take precedence over frame visibility updates. When
-  // true, frame visibility updates are ignored.
-  bool has_viewport_intersection_updates_ = false;
 
   base::WeakPtrFactory<FrameNodeImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};

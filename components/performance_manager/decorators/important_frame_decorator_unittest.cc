@@ -34,9 +34,8 @@ TEST_F(ImportantFrameDecoratorTest, HadUserActivation) {
   auto& frame_node = mock_graph.child_frame;
 
   // Intersects with a non-large area of the viewport. Not important.
-  frame_node->SetViewportIntersectionForTesting(
-      ViewportIntersection::CreateIntersecting(
-          /*is_intersecting_large_area*/ false));
+  frame_node->SetViewportIntersection(ViewportIntersection::kIntersecting);
+  frame_node->SetIsIntersectingLargeArea(false);
 
   // No user activation. Not important.
   EXPECT_FALSE(frame_node->HadUserActivation());
@@ -55,25 +54,35 @@ TEST_F(ImportantFrameDecoratorTest, ViewportIntersection) {
 
   EXPECT_FALSE(frame_node->HadUserActivation());
 
-  // No viewport intersection yet. Important is assumed.
-  EXPECT_EQ(frame_node->GetViewportIntersection(), std::nullopt);
+  // No viewport intersection yet. Important is assumed, regardless of the value
+  // of `IsIntersectingLargeArea`.
+  EXPECT_EQ(frame_node->GetViewportIntersection(),
+            ViewportIntersection::kUnknown);
+
+  frame_node->SetIsIntersectingLargeArea(false);
   EXPECT_TRUE(frame_node->IsImportant());
 
-  // Does not intersect with the viewport. Not important.
-  frame_node->SetViewportIntersectionForTesting(
-      /*intersects_with_viewport=*/false);
+  frame_node->SetIsIntersectingLargeArea(true);
+  EXPECT_TRUE(frame_node->IsImportant());
+
+  // Does not intersect with the viewport. Not important, regardless of the
+  // value of `IsIntersectingLargeArea`.
+  frame_node->SetViewportIntersection(ViewportIntersection::kNotIntersecting);
+
+  frame_node->SetIsIntersectingLargeArea(false);
   EXPECT_FALSE(frame_node->IsImportant());
 
-  // Intersects with a non-large area of the viewport. Not important.
-  frame_node->SetViewportIntersectionForTesting(
-      ViewportIntersection::CreateIntersecting(
-          /*is_intersecting_large_area*/ false));
+  frame_node->SetIsIntersectingLargeArea(true);
   EXPECT_FALSE(frame_node->IsImportant());
 
-  // Intersects with a large area of the viewport. Important.
-  frame_node->SetViewportIntersectionForTesting(
-      ViewportIntersection::CreateIntersecting(
-          /*is_intersecting_large_area*/ true));
+  // Intersects with the viewport. It'll be important if it intersects with a
+  // large area of the viewport.
+  frame_node->SetViewportIntersection(ViewportIntersection::kIntersecting);
+
+  frame_node->SetIsIntersectingLargeArea(false);
+  EXPECT_FALSE(frame_node->IsImportant());
+
+  frame_node->SetIsIntersectingLargeArea(true);
   EXPECT_TRUE(frame_node->IsImportant());
 }
 

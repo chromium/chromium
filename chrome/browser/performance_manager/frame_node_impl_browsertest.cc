@@ -102,8 +102,8 @@ class ViewportIntersectionStateChangedObserver : public GraphOwned,
     if (!frame_node_matcher_.Run(frame_node))
       return;
 
-    const bool is_intersecting =
-        frame_node->GetViewportIntersection()->is_intersecting();
+    const bool is_intersecting = frame_node->GetViewportIntersection() ==
+                                 ViewportIntersection::kIntersecting;
     EXPECT_EQ(expected_intersects_viewport_, is_intersecting);
     std::move(quit_closure_).Run();
   }

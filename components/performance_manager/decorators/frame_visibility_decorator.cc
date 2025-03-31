@@ -30,19 +30,20 @@ FrameNode::Visibility GetFrameNodeVisibility(FrameNodeImpl* frame_node,
     return FrameNode::Visibility::kNotVisible;
   }
 
-  // Too early in the frame's lifecycle, don't know yet if it intersects with
-  // the viewport. Can't determine the visibility.
-  if (!frame_node->GetViewportIntersection().has_value()) {
-    return FrameNode::Visibility::kUnknown;
-  }
+  switch (frame_node->GetViewportIntersection()) {
+    case ViewportIntersection::kUnknown:
+      // Too early in the frame's lifecycle, don't know yet if it intersects
+      // with the viewport. Can't determine the visibility.
+      return FrameNode::Visibility::kUnknown;
 
-  // The frame intersects with the viewport and is thus visible.
-  if (frame_node->GetViewportIntersection()->is_intersecting()) {
-    return FrameNode::Visibility::kVisible;
-  }
+    case ViewportIntersection::kNotIntersecting:
+      // Does not intersects with the viewport. The frame is not visible.
+      return FrameNode::Visibility::kNotVisible;
 
-  // Does not intersects with the viewport. The frame is not visible.
-  return FrameNode::Visibility::kNotVisible;
+    case ViewportIntersection::kIntersecting:
+      // The frame intersects with the viewport and is thus visible.
+      return FrameNode::Visibility::kVisible;
+  }
 }
 
 // Update a frame node's visibility and its children following a change in the
@@ -141,7 +142,8 @@ void FrameVisibilityDecorator::OnCurrentFrameChanged(
 void FrameVisibilityDecorator::OnViewportIntersectionChanged(
     const FrameNode* frame_node) {
   CHECK(frame_node->GetParentOrOuterDocumentOrEmbedder());
-  CHECK(frame_node->GetViewportIntersection().has_value());
+  CHECK_NE(frame_node->GetViewportIntersection(),
+           ViewportIntersection::kUnknown);
   OnFramePropertyChanged(frame_node);
 }
 
