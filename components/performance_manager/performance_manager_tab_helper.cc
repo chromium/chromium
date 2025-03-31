@@ -512,19 +512,15 @@ void PerformanceManagerTabHelper::TitleWasSet(content::NavigationEntry* entry) {
 void PerformanceManagerTabHelper::InnerWebContentsAttached(
     content::WebContents* inner_web_contents,
     content::RenderFrameHost* render_frame_host) {
-  // Note that we sometimes learn of contents creation at this point (before
-  // other helpers get a chance to attach), so we need to ensure our helper
-  // exists.
-  CreateForWebContents(inner_web_contents);
   auto* helper = FromWebContents(inner_web_contents);
-  DCHECK(helper);
+  CHECK(helper);
   auto* page = helper->page_node_.get();
-  DCHECK(page);
+  CHECK(page);
   auto* frame = GetFrameNode(render_frame_host);
 
   // For a guest view, the RFH should already have been seen.
   // Note that guest views can simultaneously have openers *and* be embedded.
-  DCHECK(frame);
+  CHECK(frame);
   page->SetEmbedderFrameNode(frame);
 }
 
