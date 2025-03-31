@@ -251,22 +251,23 @@
     // after the accounts menu was created.
     return;
   }
-  signin_metrics::ProfileSignout metricSignOut =
+  constexpr signin_metrics::ProfileSignout metricSignOut =
       signin_metrics::ProfileSignout::kUserClickedSignoutInAccountMenu;
+
+  __weak __typeof(self) weakSelf = self;
   _signoutActionSheetCoordinator = [[SignoutActionSheetCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:self.browser
                             rect:targetRect
                             view:_viewController.view
         forceSnackbarOverToolbar:YES
-                      withSource:metricSignOut];
-  __weak __typeof(self) weakSelf = self;
-  _signoutActionSheetCoordinator.signoutCompletion = ^(BOOL success) {
-    [weakSelf stopSignoutActionSheetCoordinator];
-    if (completion) {
-      completion(success);
-    }
-  };
+                      withSource:metricSignOut
+                      completion:^(BOOL success) {
+                        [weakSelf stopSignoutActionSheetCoordinator];
+                        if (completion) {
+                          completion(success);
+                        }
+                      }];
   [_signoutActionSheetCoordinator start];
 }
 

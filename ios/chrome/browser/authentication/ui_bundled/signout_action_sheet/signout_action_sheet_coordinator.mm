@@ -51,11 +51,13 @@ using signin_metrics::SignoutDataLossAlertReason;
   // View for the popovert alert.
   __weak UIView* _view;
   // Source of the sign-out action. For histogram if the sign-out occurs.
-  signin_metrics::ProfileSignout _signout_source_metric;
+  signin_metrics::ProfileSignout _signoutSourceMetric;
   // Show the snackbar above the snackbar.
   BOOL _forceSnackbarOverToolbar;
   // Signin and syncing state.
   SignedInUserState _signedInUserState;
+  // Completion callback.
+  signin_ui::SignoutCompletionCallback _signoutCompletion;
 }
 
 // Service for managing identity authentication.
@@ -70,19 +72,21 @@ using signin_metrics::SignoutDataLossAlertReason;
 
 @implementation SignoutActionSheetCoordinator
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                      rect:(CGRect)rect
-                                      view:(UIView*)view
-                  forceSnackbarOverToolbar:(BOOL)forceSnackbarOverToolbar
-                                withSource:(signin_metrics::ProfileSignout)
-                                               signout_source_metric {
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                          rect:(CGRect)rect
+                          view:(UIView*)view
+      forceSnackbarOverToolbar:(BOOL)forceSnackbarOverToolbar
+                    withSource:(signin_metrics::ProfileSignout)source
+                    completion:(signin_ui::SignoutCompletionCallback)block {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _rect = rect;
     _view = view;
-    _signout_source_metric = signout_source_metric;
+    _signoutSourceMetric = source;
     _forceSnackbarOverToolbar = forceSnackbarOverToolbar;
+    _signoutCompletion = block;
   }
   return self;
 }
@@ -90,7 +94,7 @@ using signin_metrics::SignoutDataLossAlertReason;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  DCHECK(self.signoutCompletion);
+  DCHECK(_signoutCompletion);
   DCHECK(self.authenticationService->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
   PrefService* profilePrefService = self.profile->GetPrefs();
@@ -242,7 +246,7 @@ using signin_metrics::SignoutDataLossAlertReason;
   MDCSnackbarMessage* snackbarMessage = [self signoutSnackbarMessage];
 
   __weak __typeof(self) weakSelf = self;
-  signin::MultiProfileSignOut(self.browser, _signout_source_metric,
+  signin::MultiProfileSignOut(self.browser, _signoutSourceMetric,
                               _forceSnackbarOverToolbar, snackbarMessage, ^{
                                 [weakSelf signOutDidFinish];
                               });
@@ -282,11 +286,11 @@ using signin_metrics::SignoutDataLossAlertReason;
 // Calls `self.signoutCompletion` if available, and sets it to `null` before the
 // call.
 - (void)callCompletionBlock:(BOOL)signedOut {
-  if (!self.signoutCompletion) {
+  if (!_signoutCompletion) {
     return;
   }
-  signin_ui::SignoutCompletionCallback completion = self.signoutCompletion;
-  self.signoutCompletion = nil;
+  signin_ui::SignoutCompletionCallback completion = _signoutCompletion;
+  _signoutCompletion = nil;
   completion(signedOut);
 }
 
