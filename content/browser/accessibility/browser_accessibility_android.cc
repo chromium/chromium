@@ -221,6 +221,7 @@ bool BrowserAccessibilityAndroid::IsCollection() const {
     case ax::mojom::Role::kTree:
     case ax::mojom::Role::kMenu:
     case ax::mojom::Role::kMenuBar:
+    case ax::mojom::Role::kMenuListPopup:
       return true;
     default:
       return ui::IsTableLike(GetRole());
@@ -236,6 +237,7 @@ bool BrowserAccessibilityAndroid::IsCollectionItem() const {
     case ax::mojom::Role::kMenuItem:
     case ax::mojom::Role::kMenuItemCheckBox:
     case ax::mojom::Role::kMenuItemRadio:
+    case ax::mojom::Role::kMenuListOption:
       return true;
     default:
       return ui::IsCellOrTableHeader(GetRole());
@@ -1793,14 +1795,15 @@ int BrowserAccessibilityAndroid::ColumnCount() const {
     return 0;
   }
 
-  // For <ol> and <ul> elements on Android (e.g. role kList, kListBox, kMenu and
-  // kMenuBar), the AX code will consider these 0 columns, but on Android they
-  // are 1.
+  // For <ol> and <ul> elements on Android (e.g. role kList, kListBox, kMenu,
+  // kMenuBar and kMenuListPopup), the AX code will consider these 0 columns,
+  // but on Android they are 1.
   int ax_cols = node()->GetTableColCount().value_or(0);
   if (GetRole() == ax::mojom::Role::kList ||
       GetRole() == ax::mojom::Role::kListBox ||
       GetRole() == ax::mojom::Role::kMenu ||
-      GetRole() == ax::mojom::Role::kMenuBar) {
+      GetRole() == ax::mojom::Role::kMenuBar ||
+      GetRole() == ax::mojom::Role::kMenuListPopup) {
     DCHECK_EQ(ax_cols, 0);
     ax_cols = 1;
   }
