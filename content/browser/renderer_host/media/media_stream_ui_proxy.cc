@@ -536,9 +536,9 @@ FakeMediaStreamUIProxy::FakeMediaStreamUIProxy(
 
 FakeMediaStreamUIProxy::~FakeMediaStreamUIProxy() = default;
 
-void FakeMediaStreamUIProxy::SetAvailableDevices(
+void FakeMediaStreamUIProxy::AddAvailableDevices(
     const blink::MediaStreamDevices& devices) {
-  devices_ = devices;
+  devices_.insert(devices_.end(), devices.begin(), devices.end());
 }
 
 void FakeMediaStreamUIProxy::SetMicAccess(bool access) {

@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "media/base/localized_strings.h"
@@ -20,6 +21,8 @@ const char AudioDeviceDescription::kLoopbackWithMuteDeviceId[] =
     "loopbackWithMute";
 const char AudioDeviceDescription::kLoopbackWithoutChromeId[] =
     "loopbackWithoutChrome";
+const char AudioDeviceDescription::kApplicationLoopbackDeviceId[] =
+    "applicationLoopback";
 
 namespace {
 // Sanitize names which are known to contain the user's name, such as AirPods'
@@ -67,7 +70,14 @@ bool AudioDeviceDescription::IsCommunicationsDevice(
 bool AudioDeviceDescription::IsLoopbackDevice(const std::string& device_id) {
   return device_id == kLoopbackInputDeviceId ||
          device_id == kLoopbackWithMuteDeviceId ||
-         device_id == kLoopbackWithoutChromeId;
+         device_id == kLoopbackWithoutChromeId ||
+         IsApplicationLoopbackDevice(device_id);
+}
+
+// static
+bool AudioDeviceDescription::IsApplicationLoopbackDevice(
+    const std::string& device_id) {
+  return base::StartsWith(device_id, kApplicationLoopbackDeviceId);
 }
 
 // static
