@@ -15259,6 +15259,12 @@ be describing additional metrics about the same event.
     happen multiple times within a navigation, and we may pass succeeding
     milestones after the last record.
   </summary>
+  <metric name="Category">
+    <summary>
+      An 8-bit integer that can be manually mapped to a specific URL param
+      &quot;category=&quot; value. Note that only the number is logged.
+    </summary>
+  </metric>
   <metric name="CommitReceivedTime">
     <summary>
       The time when the CommitNavigation IPC for the navigation is received in
