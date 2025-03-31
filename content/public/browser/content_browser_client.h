@@ -366,6 +366,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool IsBrowserStartupComplete();
 
   // Allows the embedder to control when to enable native ui task execution.
+  // This API is called at most once during browser process initialization when
+  // the BrowserTaskExecutor is created. It is not called if the ContentClient
+  // is not set at the time the BrowserTaskExecutor is created.
   virtual void OnUiTaskRunnerReady(
       base::OnceClosure enable_native_ui_task_execution_callback);
 
