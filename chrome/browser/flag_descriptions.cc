@@ -4391,6 +4391,11 @@ const char kAndroidTabDeclutterArchiveDuplicateTabsDescription[] =
     "Enables auto-archival of all duplicate tabs except the most recently used "
     "copy.";
 
+const char kAndroidTabDeclutterArchiveTabGroupsName[] =
+    "Archive all inactive tab groups.";
+const char kAndroidTabDeclutterArchiveTabGroupsDescription[] =
+    "Enables auto-archival of inactive tab groups and their inactive tabs.";
+
 const char kAndroidThemeModuleName[] = "Android Theme Module";
 const char kAndroidThemeModuleDescription[] =
     "Enables external theme overlays for Chrome activities when available.";

@@ -10480,6 +10480,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          chrome::android::kAndroidTabDeclutterArchiveDuplicateTabs)},
 
+    {"android-tab-declutter-archive-tab-groups",
+     flag_descriptions::kAndroidTabDeclutterArchiveTabGroupsName,
+     flag_descriptions::kAndroidTabDeclutterArchiveTabGroupsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidTabDeclutterArchiveTabGroups)},
+
     {"force-list-tab-switcher", flag_descriptions::kForceListTabSwitcherName,
      flag_descriptions::kForceListTabSwitcherDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kForceListTabSwitcher)},

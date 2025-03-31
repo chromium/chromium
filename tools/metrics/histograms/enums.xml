@@ -12520,6 +12520,7 @@ from previous Chrome versions.
   <int value="-661978438" label="enable-data-reduction-proxy-lo-fi"/>
   <int value="-660160292" label="enable-apps-show-on-first-paint"/>
   <int value="-659763527" label="AccessCodeCastTabSwitchingUI:disabled"/>
+  <int value="-658543308" label="AndroidTabDeclutterArchiveTabGroups:enabled"/>
   <int value="-658319177" label="VaapiAV1Decoder:disabled"/>
   <int value="-657808907" label="CopyLinkToText:disabled"/>
   <int value="-657656374" label="AppListBubble:disabled"/>
@@ -19566,6 +19567,7 @@ from previous Chrome versions.
   <int value="2053479012" label="PersistDeviceBoundSessions:disabled"/>
   <int value="2055184887" label="LocalHistoryZeroSuggestBeyondNTP:enabled"/>
   <int value="2056572020" label="EnableUsernameCorrection:disabled"/>
+  <int value="2057084644" label="AndroidTabDeclutterArchiveTabGroups:disabled"/>
   <int value="2057964838"
       label="AdjustCanCreateCanvas2dResourceProvider:enabled"/>
   <int value="2058148069" label="UseMessagesStagingUrl:enabled"/>
