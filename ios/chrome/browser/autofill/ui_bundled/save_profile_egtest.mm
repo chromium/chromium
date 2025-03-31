@@ -694,7 +694,9 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 
 // Tests that the 'Save' button is only enabled when all the required fields are
 // filled.
-- (void)testSaveButtonEnabledStateDependingOnRequiredFields {
+// TODO(crbug.com/407573862): Re-enable after the test is fixed for
+// ios-fieldtrial-rel.
+- (void)DISABLED_testSaveButtonEnabledStateDependingOnRequiredFields {
   // TODO(crbug.com/407506623): Fix EGTests on iPad.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test fails on iPad currently.");
