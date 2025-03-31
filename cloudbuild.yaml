@@ -133,7 +133,7 @@ steps:
         - '-c'
         - |
             set -e
-            cd /workspace
+            cd /workspace/hopium/src
             python3 hopium/tsec_branding/pre_rebrand.py -b totalbrowser
 
   - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.3'
