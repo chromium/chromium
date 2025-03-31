@@ -353,7 +353,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     InitTestApi(web_contents()->GetPrimaryMainFrame());
 
     // Inject service classes.
-    csd_service_ = std::make_unique<MockClientSideDetectionService>();
+    csd_service_ = std::make_unique<NiceMock<MockClientSideDetectionService>>();
     database_manager_ = new NiceMock<MockSafeBrowsingDatabaseManager>();
     ui_manager_ = new NiceMock<MockSafeBrowsingUIManager>();
 
@@ -487,7 +487,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
 
  protected:
   std::unique_ptr<ClientSideDetectionHost> csd_host_;
-  std::unique_ptr<MockClientSideDetectionService> csd_service_;
+  std::unique_ptr<NiceMock<MockClientSideDetectionService>> csd_service_;
   scoped_refptr<NiceMock<MockSafeBrowsingUIManager>> ui_manager_;
   scoped_refptr<NiceMock<MockSafeBrowsingDatabaseManager>> database_manager_;
   FakePhishingDetector fake_phishing_detector_;
