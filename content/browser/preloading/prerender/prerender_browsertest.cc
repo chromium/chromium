@@ -12475,9 +12475,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, VerifyPrerenderProcessVisibility) {
             base::Process::Priority::kBestEffort);
 }
 
-class PrerenderPurposePrefetchBrowserTest : public PrerenderBrowserTest {
+class PrerenderRequestHeadersBrowserTest : public PrerenderBrowserTest {
  public:
-  PrerenderPurposePrefetchBrowserTest() {
+  PrerenderRequestHeadersBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     // Explicitly enables blink::features::kSpeculationRulesTag to enable
     // SpeculationRulesTag.
@@ -12485,7 +12485,7 @@ class PrerenderPurposePrefetchBrowserTest : public PrerenderBrowserTest {
         blink::features::kSpeculationRulesTag, {}));
     feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
-  ~PrerenderPurposePrefetchBrowserTest() override = default;
+  ~PrerenderRequestHeadersBrowserTest() override = default;
 
   void SetUp() override {
     ssl_server().RegisterRequestHandler(
@@ -12549,7 +12549,7 @@ class PrerenderPurposePrefetchBrowserTest : public PrerenderBrowserTest {
 // Tests that a request for the initial prerender navigation has the
 // Purpose, Sec-Purpose, and Sec-Speculation-Tags headers.
 // TODO(nhiroki): Move this test to WPT.
-IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest, InitialNavigation) {
+IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest, InitialNavigation) {
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
 
@@ -12565,7 +12565,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest, InitialNavigation) {
 
 // Tests that a request for the initial prerender navigation has the
 // Purpose and Sec-Purpose headers, but not the Sec-Speculation-Tags header.
-IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest,
                        InitialNavigation_Embedder) {
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
@@ -12585,7 +12585,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest,
 // Tests that a redirected request for the initial prerender navigation has the
 // Purpose, Sec-Purpose, and Sec-Speculation-Tags headers.
 // TODO(nhiroki): Move this test to WPT.
-IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest,
                        RedirectionOnInitialNavigation) {
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
@@ -12614,7 +12614,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest,
 // Tests that requests from a prerendered page have the Purpose and
 // Sec-Purpose headers, but not the Sec-Speculation-Tags header.
 // TODO(nhiroki): Move this test to WPT.
-IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest, ResourceRequests) {
+IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest, ResourceRequests) {
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
 
@@ -12693,7 +12693,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest, ResourceRequests) {
 
 // Tests that a request for main frame navigation in a prerendered page has the
 // Purpose and Sec-Purpose headers, but not the Sec-Speculation-Tags header.
-IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest,
                        MainFrameNavigation) {
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
@@ -12721,7 +12721,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest,
   EXPECT_FALSE(HasSecSpeculationTagsHeader(next_url));
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest,
                        SpeculationRulesTagsMergingForEagerCandidates) {
   const GURL initial_url =
       GetUrl("/prerender/multiple_prerender_with_tags.html");
