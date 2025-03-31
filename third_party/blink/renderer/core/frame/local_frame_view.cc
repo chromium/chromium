@@ -2419,22 +2419,25 @@ bool LocalFrameView::RunViewTransitionSteps(
 
         DCHECK_GE(document->Lifecycle().GetState(),
                   DocumentLifecycle::kPrePaintClean);
-
-        if (target_state == DocumentLifecycle::kPaintClean) {
-          ViewTransitionUtils::ForEachTransition(
-              *document, [](ViewTransition& transition) {
+        bool frame_is_dirty = false;
+        ViewTransitionUtils::ForEachTransition(
+            *document, [&](ViewTransition& transition) {
+              if (frame_is_dirty) {
+                // If a view transition invalidated style/layout, we need to
+                // rerun the lifecycle before processing any more transitions
+                // in this document.
+                return;
+              }
+              if (target_state == DocumentLifecycle::kPaintClean) {
                 transition.RunViewTransitionStepsDuringMainFrame();
-              });
-        } else {
-          ViewTransitionUtils::ForEachTransition(
-              *document, [](ViewTransition& transition) {
+              } else {
                 transition.RunViewTransitionStepsOutsideMainFrame();
-              });
-        }
-
-        re_run_lifecycle |= document->Lifecycle().GetState() <
-                                DocumentLifecycle::kPrePaintClean ||
-                            frame_view.NeedsLayout();
+              }
+              frame_is_dirty = document->Lifecycle().GetState() <
+                                   DocumentLifecycle::kPrePaintClean ||
+                               frame_view.NeedsLayout();
+            });
+        re_run_lifecycle |= frame_is_dirty;
       });
 
   return re_run_lifecycle;
