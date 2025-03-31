@@ -19,7 +19,7 @@ found in the LICENSE file.
         <item name="colorOnSecondaryContainer">@color/baseline_secondary_90</item>
         <item name="android:colorBackground">@color/baseline_neutral_10</item>
         <item name="colorOnBackground">@color/baseline_neutral_90</item>
-        <item name="colorSurface">@color/baseline_neutral_10</item>
+        <item name="colorSurface">@color/gm3_baseline_surface_dark</item>
         <item name="colorOnSurface">@color/baseline_neutral_90</item>
         <item name="colorSurfaceVariant">@color/baseline_neutral_variant_30</item>
         <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_80</item>
@@ -45,7 +45,7 @@ found in the LICENSE file.
         <item name="colorOnSecondaryContainer">@color/baseline_secondary_90</item>
         <item name="android:colorBackground">@color/baseline_neutral_10</item>
         <item name="colorOnBackground">@color/baseline_neutral_90</item>
-        <item name="colorSurface">@color/baseline_neutral_10</item>
+        <item name="colorSurface">@color/gm3_baseline_surface_dark</item>
         <item name="colorOnSurface">@color/baseline_neutral_90</item>
         <item name="colorSurfaceVariant">@color/baseline_neutral_variant_30</item>
         <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_80</item>
@@ -71,7 +71,7 @@ found in the LICENSE file.
         <item name="colorOnSecondaryContainer">@color/baseline_secondary_90</item>
         <item name="android:colorBackground">@color/baseline_neutral_10</item>
         <item name="colorOnBackground">@color/baseline_neutral_90</item>
-        <item name="colorSurface">@color/baseline_neutral_10</item>
+        <item name="colorSurface">@color/gm3_baseline_surface_dark</item>
         <item name="colorOnSurface">@color/baseline_neutral_90</item>
         <item name="colorSurfaceVariant">@color/baseline_neutral_variant_30</item>
         <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_80</item>
