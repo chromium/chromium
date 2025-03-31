@@ -77,7 +77,7 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
       EXPECT_TRUE(use_software_renderer());
 
       return std::make_unique<ZeroCopyRasterBufferProvider>(
-          host_impl->layer_tree_frame_sink());
+          host_impl->layer_tree_frame_sink(), raster_caps);
     case TestRasterType::kGpu:
       EXPECT_TRUE(compositor_context_provider);
       EXPECT_TRUE(worker_context_provider);

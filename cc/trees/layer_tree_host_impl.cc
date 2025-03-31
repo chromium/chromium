@@ -4191,7 +4191,7 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
 
   if (!compositor_context_provider) {
     return std::make_unique<ZeroCopyRasterBufferProvider>(
-        layer_tree_frame_sink_);
+        layer_tree_frame_sink_, raster_caps_);
   }
 
   const gpu::Capabilities& caps =

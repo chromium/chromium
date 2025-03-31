@@ -201,7 +201,7 @@ class RasterBufferProviderTest
         CreateSoftwareResourceProvider();
         raster_buffer_provider_ =
             std::make_unique<ZeroCopyRasterBufferProvider>(
-                layer_tree_frame_sink_.get());
+                layer_tree_frame_sink_.get(), raster_caps);
         break;
     }
 

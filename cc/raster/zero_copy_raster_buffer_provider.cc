@@ -172,9 +172,11 @@ ZeroCopyRasterBufferProvider::ZeroCopyRasterBufferProvider(
       tile_format_(raster_caps.tile_format) {}
 
 ZeroCopyRasterBufferProvider::ZeroCopyRasterBufferProvider(
-    LayerTreeFrameSink* frame_sink)
+    LayerTreeFrameSink* frame_sink,
+    const RasterCapabilities& raster_caps)
     : is_software_(true),
-      shared_image_interface_(frame_sink->shared_image_interface()) {
+      shared_image_interface_(frame_sink->shared_image_interface()),
+      tile_format_(raster_caps.tile_format) {
   CHECK(shared_image_interface_)
       << "SharedImageInterface is null in ZeroCopyRasterBufferProvider ctor!";
 }
@@ -207,7 +209,7 @@ ZeroCopyRasterBufferProvider::AcquireBufferForRaster(
 void ZeroCopyRasterBufferProvider::Flush() {}
 
 viz::SharedImageFormat ZeroCopyRasterBufferProvider::GetFormat() const {
-  return (is_software_) ? viz::SinglePlaneFormat::kBGRA_8888 : tile_format_;
+  return tile_format_;
 }
 
 bool ZeroCopyRasterBufferProvider::IsResourcePremultiplied() const {
