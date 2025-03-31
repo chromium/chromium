@@ -7,10 +7,8 @@
 #include "base/functional/callback.h"
 #include "base/strings/string_util.h"
 #include "components/country_codes/country_codes.h"
-
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/variations/service/variations_service.h"
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -27,8 +25,8 @@
 using ::country_codes::CountryId;
 
 namespace regional_capabilities {
-#if BUILDFLAG(IS_CHROMEOS)
 namespace {
+#if BUILDFLAG(IS_CHROMEOS)
 std::optional<CountryId> GetVpdCountry() {
   using enum ChromeOSFallbackCountry;
 
@@ -68,25 +66,22 @@ std::optional<CountryId> GetVpdCountry() {
   base::UmaHistogramEnumeration(kCrOSMissingVariationData, kValidCountryCode);
   return country_code;
 }
-}  // namespace
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+}  // namespace
 
 RegionalCapabilitiesServiceClient::RegionalCapabilitiesServiceClient(
     variations::VariationsService* variations_service)
-    : variations_country_id_(variations_service
-                                 ? CountryId(base::ToUpperASCII(
-                                       variations_service->GetLatestCountry()))
-                                 : CountryId()) {}
-#else
-RegionalCapabilitiesServiceClient::RegionalCapabilitiesServiceClient() =
-    default;
-
-#endif
+    : variations_latest_country_id_(
+          variations_service ? CountryId(base::ToUpperASCII(
+                                   variations_service->GetLatestCountry()))
+                             : CountryId()) {}
 
 RegionalCapabilitiesServiceClient::~RegionalCapabilitiesServiceClient() =
     default;
+
+CountryId RegionalCapabilitiesServiceClient::GetVariationsLatestCountryId() {
+  return variations_latest_country_id_;
+}
 
 CountryId RegionalCapabilitiesServiceClient::GetFallbackCountryId() {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -115,7 +110,7 @@ void RegionalCapabilitiesServiceClient::FetchCountryId(
 #elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 void RegionalCapabilitiesServiceClient::FetchCountryId(
     CountryIdCallback on_country_id_fetched) {
-  std::move(on_country_id_fetched).Run(variations_country_id_);
+  std::move(on_country_id_fetched).Run(variations_latest_country_id_);
 }
 #else
 // On other platforms, defer to `GetCurrentCountryID()`.
@@ -140,10 +135,9 @@ void JNI_RegionalCapabilitiesServiceClientAndroid_ProcessDeviceCountryResponse(
   if (!j_device_country) {
     return;
   }
-  std::string device_country =
-      base::android::ConvertJavaStringToUTF8(env, j_device_country);
-  CountryId device_country_id(device_country);
-  std::move(*heap_callback).Run(device_country_id);
+  std::string device_country_code = base::ToUpperASCII(
+      base::android::ConvertJavaStringToUTF8(env, j_device_country));
+  std::move(*heap_callback).Run(CountryId(device_country_code));
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
