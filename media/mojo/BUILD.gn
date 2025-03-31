@@ -66,6 +66,7 @@ source_set("test_support") {
     "//media/mojo/common",
     "//media/mojo/mojom",
     "//media/mojo/mojom:test_interfaces",
+    "//media/mojo/mojom:test_support",
     "//media/mojo/services",
   ]
 }

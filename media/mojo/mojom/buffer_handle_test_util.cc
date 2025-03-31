@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/mojo/mojom/stable/mojom_traits_test_util.h"
+#include "media/mojo/mojom/buffer_handle_test_util.h"
 
 #include "base/memory/unsafe_shared_memory_region.h"
 

@@ -946,6 +946,20 @@ mojom("test_interfaces") {
   public_deps = [ ":mojom" ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (is_linux || is_chromeos) {
+    sources += [
+      "buffer_handle_test_util.cc",
+      "buffer_handle_test_util.h",
+    ]
+    deps += [ "//base/test:test_support" ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
 

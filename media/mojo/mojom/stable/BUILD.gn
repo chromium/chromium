@@ -43,14 +43,11 @@ mojom("native_pixmap_handle") {
 if (is_linux || is_chromeos) {
   source_set("unit_tests") {
     testonly = true
-    sources = [
-      "mojom_traits_test_util.cc",
-      "mojom_traits_test_util.h",
-      "native_pixmap_handle_mojom_traits_unittest.cc",
-    ]
+    sources = [ "native_pixmap_handle_mojom_traits_unittest.cc" ]
     deps = [
       ":native_pixmap_handle",
       "//base/test:test_support",
+      "//media/mojo/mojom:test_support",
       "//testing/gtest",
     ]
     if (use_vaapi) {
