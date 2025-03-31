@@ -37,6 +37,7 @@
 #import "ios/chrome/credential_provider_extension/ui/credential_response_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 #import "ios/chrome/credential_provider_extension/ui/generic_error_view_controller.h"
+#import "ios/chrome/credential_provider_extension/ui/multi_profile_passkey_creation_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/passkey_error_alert_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/passkey_welcome_screen_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/stale_credentials_view_controller.h"
@@ -77,6 +78,7 @@ enum class PasskeyCreationEligibility {
     CredentialResponseHandler,
     PasskeyKeychainProviderBridgeDelegate,
     PasskeyWelcomeScreenViewControllerDelegate,
+    MultiProfilePasskeyCreationViewControllerDelegate,
     SuccessfulReauthTimeAccessor,
     UIAdaptivePresentationControllerDelegate>
 
@@ -396,16 +398,9 @@ enum class PasskeyCreationEligibility {
       return;
     case PasskeyCreationEligibility::kCanCreateWithUserInteraction:
       if ([self isUsingMultiProfile]) {
-        __weak __typeof__(self) weakSelf = self;
-        auto completion = ^{
-          [weakSelf
-              validateUserAndCreatePasskeyWithDetails:passkeyRequestDetails
-                                                 gaia:gaia];
-        };
-
         [self showMultiProfilePasskeyCreationDialogWithDetails:
                   passkeyRequestDetails
-                                                    completion:completion];
+                                                          gaia:gaia];
         return;
       }
       break;
@@ -629,6 +624,30 @@ enum class PasskeyCreationEligibility {
     [self.passkeyNavigationController popViewControllerAnimated:YES];
   }
   [self exitWithErrorCode:ASExtensionErrorCodeUserCanceled];
+}
+
+#pragma mark - MultiProfilePasskeyCreationViewControllerDelegate
+
+- (void)multiProfilePasskeyCreationViewControllerShouldBeDismissed:
+    (MultiProfilePasskeyCreationViewController*)
+        multiProfilePasskeyCreationViewController {
+  [self exitWithErrorCode:ASExtensionErrorCodeUserCanceled];
+}
+
+// Attempts to create a passkey if validation succeeds. Exits with an error code
+// otherwise.
+- (void)validateUserAndCreatePasskeyWithDetails:
+            (PasskeyRequestDetails*)passkeyRequestDetails
+                                           gaia:(NSString*)gaia
+    API_AVAILABLE(ios(17.0)) {
+  __weak __typeof(self) weakSelf = self;
+  [self validateUserWithCompletion:^(BOOL userIsValid) {
+    if (!userIsValid) {
+      [weakSelf exitWithErrorCode:ASExtensionErrorCodeFailed];
+      return;
+    }
+    [weakSelf createPasskeyWithDetails:passkeyRequestDetails gaia:gaia];
+  }];
 }
 
 #pragma mark - SuccessfulReauthTimeAccessor
@@ -1001,26 +1020,22 @@ enum class PasskeyCreationEligibility {
 // Shows a confirmation dialog to the user before performing passkey creation.
 - (void)showMultiProfilePasskeyCreationDialogWithDetails:
             (PasskeyRequestDetails*)passkeyRequestDetails
-                                              completion:
-                                                  (ProceduralBlock)completion {
-  // TODO(crbug.com/382479915): Show the confirmation dialog.
-  completion();
-}
+                                                    gaia:(NSString*)gaia {
+  MultiProfilePasskeyCreationViewController*
+      multiProfilePasskeyCreationViewController =
+          [[MultiProfilePasskeyCreationViewController alloc]
+                      initWithDetails:passkeyRequestDetails
+                                 gaia:gaia
+                            userEmail:[self userEmail]
+              navigationItemTitleView:self.passkeyNavigationItemTitleView
+                             delegate:self];
 
-// Attempts to create a passkey if validation succeeds. Exits with an error code
-// otherwise.
-- (void)validateUserAndCreatePasskeyWithDetails:
-            (PasskeyRequestDetails*)passkeyRequestDetails
-                                           gaia:(NSString*)gaia
-    API_AVAILABLE(ios(17.0)) {
-  __weak __typeof(self) weakSelf = self;
-  [self validateUserWithCompletion:^(BOOL userIsValid) {
-    if (!userIsValid) {
-      [weakSelf exitWithErrorCode:ASExtensionErrorCodeFailed];
-      return;
-    }
-    [weakSelf createPasskeyWithDetails:passkeyRequestDetails gaia:gaia];
-  }];
+  [self.passkeyNavigationController
+      pushViewController:multiProfilePasskeyCreationViewController
+                animated:NO];
+  [self.presentingView presentViewController:self.passkeyNavigationController
+                                    animated:NO
+                                  completion:nil];
 }
 
 // Attempts to create a passkey.
