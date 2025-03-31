@@ -43,8 +43,8 @@ using FullscreenControllerTest = ExclusiveAccessTest;
 
 namespace {
 
-// In some environments (Lacros, Linux, Mac) the operation is finished
-// asynchronously and we have to wait until the state change has occurred.
+// In some environments (Linux and Mac) the operation is finished asynchronously
+// and we have to wait until the state change has occurred.
 void WaitForDisplayed(Browser* browser) {
   base::RunLoop outer_loop;
   auto wait_for_state = base::BindRepeating(
