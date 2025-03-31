@@ -2086,7 +2086,6 @@ CSSValue* ConsumeColorContrast(CSSParserTokenStream& stream,
 
     std::optional<double> target_contrast;
     if (ConsumeIdent<CSSValueID::kTo>(stream)) {
-      double target_contrast_temp;
       if (ConsumeIdent<CSSValueID::kAA>(stream)) {
         target_contrast = 4.5;
       } else if (ConsumeIdent<CSSValueID::kAALarge>(stream)) {
@@ -2095,9 +2094,15 @@ CSSValue* ConsumeColorContrast(CSSParserTokenStream& stream,
         target_contrast = 7;
       } else if (ConsumeIdent<CSSValueID::kAAALarge>(stream)) {
         target_contrast = 4.5;
-      } else if (ConsumeNumberRaw_DO_NOT_USE(stream, context,
-                                             target_contrast_temp)) {
-        target_contrast = target_contrast_temp;
+      } else if (const CSSPrimitiveValue* target_contrast_value = ConsumeNumber(
+                     stream, context, CSSPrimitiveValue::ValueRange::kAll)) {
+        target_contrast = target_contrast_value->GetValueIfKnown();
+        if (!target_contrast.has_value()) {
+          // TODO(crbug.com/40142548): Some calc() expressions can only be
+          // evaluated to a number at computed value time, such as
+          // sibling-index() and sign(1em - 20px).
+          return nullptr;
+        }
       } else {
         return nullptr;
       }
