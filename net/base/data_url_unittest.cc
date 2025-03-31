@@ -29,7 +29,7 @@ struct ParseTestData {
 
 class DataURLTest
     : public testing::Test,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   DataURLTest() {
     using FeatureList = std::vector<base::test::FeatureRef>;
@@ -41,11 +41,14 @@ class DataURLTest
     feature_set(KeepWhitespace())
         .push_back(features::kKeepWhitespaceForDataUrls);
     feature_set(SimdutfSupport()).push_back(features::kSimdutfBase64Support);
+    feature_set(FurtherOptimizeParsing())
+        .push_back(features::kFurtherOptimizeParsingDataUrls);
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   bool KeepWhitespace() const { return std::get<0>(GetParam()); }
   bool SimdutfSupport() const { return std::get<1>(GetParam()); }
+  bool FurtherOptimizeParsing() const { return std::get<2>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -55,7 +58,8 @@ INSTANTIATE_TEST_SUITE_P(DataURLTest,
                          DataURLTest,
                          testing::Combine(
                              /*keep_whitespace=*/testing::Bool(),
-                             /*simdutf_support=*/testing::Bool()));
+                             /*simdutf_support=*/testing::Bool(),
+                             /*further_optimize_parsing=*/testing::Bool()));
 
 TEST_P(DataURLTest, Parse) {
   const ParseTestData tests[] = {

@@ -166,16 +166,36 @@ bool DataURL::Parse(const GURL& url,
           }
         }
       } else {
-        // Since whitespace and invalid characters in input will always cause
-        // `Base64Decode` to fail, just handle unescaping the URL on failure.
-        // This is not much slower than scanning the URL for being well formed
-        // first, even for input with whitespace.
-        if (!base::Base64Decode(raw_body, data)) {
-          std::string unescaped_body =
-              base::UnescapeBinaryURLComponent(raw_body);
-          if (!base::Base64Decode(unescaped_body, data,
+        if (IsFurtherOptimizeParsingDataUrlsEnabled()) {
+          // Based on https://fetch.spec.whatwg.org/#data-url-processor, we can
+          // always use forgiving-base64 decode.
+          // Forgiving-base64 decode consists of 2 passes: removing all ASCII
+          // whitespace, then base64 decoding. For data URLs, it consists of 3
+          // passes: percent-decoding, removing all ASCII whitespace, then
+          // base64 decoding. To do this with as few passes as possible, we try
+          // base64 decoding without any modifications in the "happy path". If
+          // that fails, we percent-decode, then try the base64 decode again.
+          if (!base::Base64Decode(raw_body, data,
                                   base::Base64DecodePolicy::kForgiving)) {
-            return false;
+            std::string unescaped_body =
+                base::UnescapeBinaryURLComponent(raw_body);
+            if (!base::Base64Decode(unescaped_body, data,
+                                    base::Base64DecodePolicy::kForgiving)) {
+              return false;
+            }
+          }
+        } else {
+          // Since whitespace and invalid characters in input will always cause
+          // `Base64Decode` to fail, just handle unescaping the URL on failure.
+          // This is not much slower than scanning the URL for being well formed
+          // first, even for input with whitespace.
+          if (!base::Base64Decode(raw_body, data)) {
+            std::string unescaped_body =
+                base::UnescapeBinaryURLComponent(raw_body);
+            if (!base::Base64Decode(unescaped_body, data,
+                                    base::Base64DecodePolicy::kForgiving)) {
+              return false;
+            }
           }
         }
       }
