@@ -119,6 +119,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="File System Info"/>
   <int value="3" label="System Settings"/>
   <int value="4" label="Agent"/>
+  <int value="5" label="OS Signals"/>
+  <int value="6" label="Browser Context Signals"/>
 </enum>
 
 <enum name="DeviceSignalsUserPermission">
