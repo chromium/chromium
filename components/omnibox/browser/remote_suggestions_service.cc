@@ -4,12 +4,16 @@
 
 #include "components/omnibox/browser/remote_suggestions_service.h"
 
+#include <map>
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/base_search_provider.h"
@@ -50,6 +54,9 @@ std::string RequestTypeToString(RemoteRequestType request_type) {
   }
 }
 
+const char kResponseTimeHistogramName[] =
+    "Omnibox.SuggestRequestsSent.ResponseTime2.RequestState";
+
 std::string ResponseCodeToSuccessString(int response_code) {
   return response_code == 200 ? "Successful" : "Failed";
 }
@@ -67,9 +74,9 @@ void LogResponseCode(RemoteRequestType request_type, int response_code) {
       response_code);
 }
 
-void LogResponseTime(RemoteRequestType request_type,
-                     base::TimeDelta response_time,
-                     int response_code) {
+void LogResponseTimeAndCode(RemoteRequestType request_type,
+                            base::TimeDelta response_time,
+                            int response_code) {
   base::UmaHistogramTimes("Omnibox.SuggestRequestsSent.ResponseTime",
                           response_time);
   base::UmaHistogramTimes(
@@ -183,6 +190,48 @@ RemoteSuggestionsService::RemoteSuggestionsService(
 }
 
 RemoteSuggestionsService::~RemoteSuggestionsService() = default;
+
+// TODO(crbug.com/404591650): Create a struct to automate the lifecycle of
+//   `time_request_sent_`.
+void RemoteSuggestionsService::SetTimeRequestSent(
+    RemoteRequestType request_type,
+    base::TimeTicks time) {
+  time_request_sent_[request_type] = time;
+}
+
+void RemoteSuggestionsService::LogResponseTime(RemoteRequestType request_type,
+                                               bool interrupted) {
+  // Get time `request_type` was sent.
+  const auto time = time_request_sent_.find(request_type);
+  std::optional<base::TimeTicks> start_time =
+      time == time_request_sent_.end()
+          ? std::nullopt
+          : std::optional<base::TimeTicks>(time->second);
+
+  // `start_time` must be set for `request_type`
+  CHECK(start_time != std::nullopt);
+
+  const base::TimeDelta elapsed_time =
+      base::TimeTicks::Now() - start_time.value();
+  const std::string kEnterpriseRequestTypeString = RequestTypeToString(
+      RemoteRequestType::kEnterpriseSearchAggregatorSuggest);
+  if (interrupted) {
+    base::UmaHistogramTimes(
+        base::StringPrintf("%s.%s.Interrupted", kResponseTimeHistogramName,
+                           kEnterpriseRequestTypeString),
+        elapsed_time);
+  } else {
+    base::UmaHistogramTimes(
+        base::StringPrintf("%s.%s.Completed", kResponseTimeHistogramName,
+                           kEnterpriseRequestTypeString),
+        elapsed_time);
+  }
+  base::UmaHistogramTimes(
+      base::StringPrintf("%s.%s", kResponseTimeHistogramName,
+                         kEnterpriseRequestTypeString),
+      elapsed_time);
+  SetTimeRequestSent(request_type, base::TimeTicks());
+}
 
 // static
 GURL RemoteSuggestionsService::EndpointUrl(
@@ -576,7 +625,7 @@ void RemoteSuggestionsService::OnRequestCompleted(
   observers_.Notify(&Observer::OnRequestCompleted, request_id, response_code,
                     response_body);
   LogResponseCode(request_type, response_code);
-  LogResponseTime(request_type, request_timer.Elapsed(), response_code);
+  LogResponseTimeAndCode(request_type, request_timer.Elapsed(), response_code);
 
   // Call the completion callback or delegate it.
   if (delegate_) {

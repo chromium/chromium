@@ -452,6 +452,7 @@ void EnterpriseSearchAggregatorProvider::Stop(bool clear_cached_results,
     AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
     debouncer_->CancelRequest();
     if (loader_) {
+      LogResponseTime(true);
       loader_.reset();
     }
   }
@@ -515,6 +516,7 @@ void EnterpriseSearchAggregatorProvider::Run() {
 
 void EnterpriseSearchAggregatorProvider::RequestStarted(
     std::unique_ptr<network::SimpleURLLoader> loader) {
+  SetTimeRequestSent();
   loader_ = std::move(loader);
 }
 
@@ -524,7 +526,7 @@ void EnterpriseSearchAggregatorProvider::RequestCompleted(
     std::unique_ptr<std::string> response_body) {
   DCHECK(!done_);
   DCHECK_EQ(loader_.get(), source);
-
+  LogResponseTime(false);
   if (response_code == 200) {
     // Parse `response_body` in utility process if feature param is true.
     const std::string& json_data = SearchSuggestionParser::ExtractJsonData(
@@ -908,4 +910,17 @@ AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
   match.RecordAdditionalInfo("relevance rule", relevance_data.rule);
 
   return match;
+}
+
+void EnterpriseSearchAggregatorProvider::SetTimeRequestSent() {
+  client_->GetRemoteSuggestionsService(/*create_if_necessary=*/false)
+      ->SetTimeRequestSent(
+          RemoteRequestType::kEnterpriseSearchAggregatorSuggest,
+          base::TimeTicks::Now());
+}
+
+void EnterpriseSearchAggregatorProvider::LogResponseTime(bool interrupted) {
+  client_->GetRemoteSuggestionsService(/*create_if_necessary=*/false)
+      ->LogResponseTime(RemoteRequestType::kEnterpriseSearchAggregatorSuggest,
+                        interrupted);
 }
