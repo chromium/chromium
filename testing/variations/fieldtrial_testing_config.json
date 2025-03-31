@@ -8848,6 +8848,24 @@
             ]
         }
     ],
+    "EnableAsyncUploadAfterVerdict": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableAsyncUploadAfterVerdict"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableCertManagementUIV2": [
         {
             "platforms": [
