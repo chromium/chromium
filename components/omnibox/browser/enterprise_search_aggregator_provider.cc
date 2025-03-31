@@ -21,6 +21,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/json/json_reader.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -381,6 +382,34 @@ EnterpriseSearchAggregatorProvider::RelevanceData CalculateRelevanceData(
   return {relevance, strong_word_matches, weak_word_matches, "scored"};
 }
 
+void LogResultCounts(const base::Value::List* queryResults,
+                     const base::Value::List* peopleResults,
+                     const base::Value::List* contentResults) {
+  size_t query_count = (queryResults ? queryResults->size() : 0);
+  size_t people_count = (peopleResults ? peopleResults->size() : 0);
+  size_t content_count = (contentResults ? contentResults->size() : 0);
+
+  base::UmaHistogramExactLinear(
+      "Omnibox.SuggestRequestsSent.ResultCount."
+      "EnterpriseSearchAggregatorSuggest.Query",
+      query_count, 50);
+
+  base::UmaHistogramExactLinear(
+      "Omnibox.SuggestRequestsSent.ResultCount."
+      "EnterpriseSearchAggregatorSuggest.People",
+      people_count, 50);
+
+  base::UmaHistogramExactLinear(
+      "Omnibox.SuggestRequestsSent.ResultCount."
+      "EnterpriseSearchAggregatorSuggest.Content",
+      content_count, 50);
+
+  base::UmaHistogramExactLinear(
+      "Omnibox.SuggestRequestsSent.ResultCount."
+      "EnterpriseSearchAggregatorSuggest",
+      query_count + people_count + content_count, 150);
+}
+
 }  // namespace
 
 EnterpriseSearchAggregatorProvider::EnterpriseSearchAggregatorProvider(
@@ -607,6 +636,8 @@ void EnterpriseSearchAggregatorProvider::
   ParseResultList(input_words, contentResults,
                   /*suggestion_type=*/SuggestionType::CONTENT,
                   /*is_navigation=*/true);
+
+  LogResultCounts(queryResults, peopleResults, contentResults);
 
   // Limit low-quality suggestions. See comment for
   // `kScopedMaxLowQualityMatches`.

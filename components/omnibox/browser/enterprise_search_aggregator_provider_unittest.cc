@@ -1575,7 +1575,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Logging) {
   }
 
   {
-    SCOPED_TRACE("Case: Request is completed ");
+    SCOPED_TRACE("Case: Request complete ");
     base::HistogramTester histogram_tester;
     provider_->done_ = false;
     provider_->RequestStarted(nullptr);
@@ -1588,6 +1588,31 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Logging) {
     histogram_tester.ExpectTotalCount(
         "Omnibox.SuggestRequestsSent.ResponseTime2.RequestState."
         "EnterpriseSearchAggregatorSuggest.Completed",
+        1);
+  }
+
+  // The below test case checks that number of results logged is expected.
+  {
+    SCOPED_TRACE("Case: Parsing complete ");
+    base::HistogramTester histogram_tester;
+    provider_->done_ = false;
+    ParseResponse(kGoodJsonResponse);
+
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.SuggestRequestsSent.ResultCount."
+        "EnterpriseSearchAggregatorSuggest",
+        3, 1);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.SuggestRequestsSent.ResultCount."
+        "EnterpriseSearchAggregatorSuggest.Query",
+        1);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.SuggestRequestsSent.ResultCount."
+        "EnterpriseSearchAggregatorSuggest.People",
+        1);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.SuggestRequestsSent.ResultCount."
+        "EnterpriseSearchAggregatorSuggest.Content",
         1);
   }
 }

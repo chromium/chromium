@@ -2430,6 +2430,24 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <token key="RemoteRequestSuccess" variants="RemoteRequestSuccess"/>
 </histogram>
 
+<histogram
+    name="Omnibox.SuggestRequestsSent.ResultCount.EnterpriseSearchAggregatorSuggest{EnterpriseSuggestionType}"
+    units="count" expires_after="2025-08-10">
+  <owner>ananyaseelam@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The number of results returned for each suggestion of type
+    {EnterpriseSuggestionType} and the total number of suggestions. This is
+    logged for successful requests where the result is parsable.
+  </summary>
+  <token key="EnterpriseSuggestionType">
+    <variant name="" summary="Aggregated across all suggestion types"/>
+    <variant name=".Content" summary="Number of content suggestions"/>
+    <variant name=".People" summary="Number of people suggestions"/>
+    <variant name=".Query" summary="Number of query suggestions"/>
+  </token>
+</histogram>
+
 <histogram name="Omnibox.SuggestTiles.DeletedTileIndex" units="position"
     expires_after="2025-09-01">
   <owner>ender@google.com</owner>
