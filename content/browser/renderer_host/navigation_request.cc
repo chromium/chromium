@@ -155,6 +155,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/client_hints.h"
+#include "services/network/public/cpp/content_decoding_interceptor.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
@@ -5843,6 +5844,16 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
           frame_tree_node_->navigator().controller().GetBrowserContext();
       DownloadManagerImpl* download_manager = static_cast<DownloadManagerImpl*>(
           browser_context->GetDownloadManager());
+      if (!response_head_->client_side_content_decoding_types.empty()) {
+        CHECK(base::FeatureList::IsEnabled(
+            network::features::kRendererSideContentDecoding));
+        // If content decoding is required, perform the decoding in the network
+        // service.
+        network::ContentDecodingInterceptor::InterceptOnNetworkService(
+            *GetNetworkService(),
+            response_head_->client_side_content_decoding_types,
+            url_loader_client_endpoints_, response_body_);
+      }
       download_manager->InterceptNavigation(
           std::move(resource_request), redirect_chain_, response_head_.Clone(),
           std::move(response_body_), std::move(url_loader_client_endpoints_),
