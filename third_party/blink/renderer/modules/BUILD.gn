@@ -80,6 +80,7 @@ component("modules") {
     "//third_party/blink/renderer/modules/contacts_picker",
     "//third_party/blink/renderer/modules/content_extraction",
     "//third_party/blink/renderer/modules/content_index",
+    "//third_party/blink/renderer/modules/context_menu",
     "//third_party/blink/renderer/modules/cookie_store",
     "//third_party/blink/renderer/modules/credentialmanagement",
     "//third_party/blink/renderer/modules/crypto",

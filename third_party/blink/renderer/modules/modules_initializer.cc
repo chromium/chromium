@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/modules/content_extraction/ai_page_content_agent.h"
 #include "third_party/blink/renderer/modules/content_extraction/inner_html_agent.h"
 #include "third_party/blink/renderer/modules/content_extraction/inner_text_agent.h"
+#include "third_party/blink/renderer/modules/context_menu/context_menu.h"
 #include "third_party/blink/renderer/modules/csspaint/css_paint_image_generator_impl.h"
 #include "third_party/blink/renderer/modules/csspaint/nativepaint/background_color_paint_image_generator_impl.h"
 #include "third_party/blink/renderer/modules/csspaint/nativepaint/clip_path_paint_image_generator_impl.h"
@@ -281,6 +282,7 @@ void ModulesInitializer::InstallSupplements(LocalFrame& frame) const {
   DCHECK(WebLocalFrameImpl::FromFrame(&frame)->Client());
   InspectorAccessibilityAgent::ProvideTo(&frame);
   ImageDownloaderImpl::ProvideTo(frame);
+  ContextMenu::ProvideTo(frame);
   AudioRendererSinkCache::InstallWindowObserver(*frame.DomWindow());
 }
 

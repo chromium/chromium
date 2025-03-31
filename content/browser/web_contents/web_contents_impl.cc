@@ -2497,6 +2497,13 @@ void WebContentsImpl::SetDisplayCutoutSafeArea(gfx::Insets insets) {
   }
 }
 
+void WebContentsImpl::SetContextMenuInsets(gfx::Rect safe_area) {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SetContextMenuInsets");
+  if (auto* rwhv = GetRenderWidgetHostView()) {
+    rwhv->NotifyContextMenuInsetsObservers(safe_area);
+  }
+}
+
 #endif
 
 const std::u16string& WebContentsImpl::GetTitle() {
