@@ -3436,6 +3436,7 @@ test("content_unittests") {
   if (is_android) {
     sources += [
       "../browser/android/android_overlay_provider_impl_unittest.cc",
+      "../browser/android/battery_metrics_unittest.cc",
       "../browser/android/java/gin_java_method_invocation_helper_unittest.cc",
       "../browser/android/java/java_type_unittest.cc",
       "../browser/android/message_payload_unittest.cc",
