@@ -152,11 +152,8 @@ bool FedCmAccountSelectionView::Show(
   rp_icon_ = rp_data.rp_icon;
 
   size_t accounts_or_mismatches_size = accounts.size();
-  bool supports_add_account = false;
   blink::mojom::RpContext rp_context = blink::mojom::RpContext::kSignIn;
   for (const auto& identity_provider : idp_list) {
-    supports_add_account |=
-        identity_provider->idp_metadata.supports_add_account;
     // If `identity_provider` has a login status mismatch, we show the login
     // button for it. In this case, there should be no accounts from that
     // provider.
@@ -218,7 +215,7 @@ bool FedCmAccountSelectionView::Show(
     }
     ShowVerifyingSheet(accounts[0]);
   } else if (!new_accounts.empty()) {
-    // When we just logged in to an account that is not a single returning
+    // When we just logged in to an account that   not a single returning
     // account: on the modal, we'd show all the accounts and on the bubble, we'd
     // show only the new accounts.
     const content::IdentityProviderData& new_idp_data =
@@ -271,6 +268,10 @@ bool FedCmAccountSelectionView::Show(
     } else {
       if (new_accounts_.size() == 1u) {
         state_ = State::SINGLE_ACCOUNT_PICKER;
+        bool supports_add_account =
+            rp_mode == blink::mojom::RpMode::kActive &&
+            new_accounts_[0]
+                ->identity_provider->idp_metadata.supports_add_account;
         account_selection_view_->ShowSingleAccountConfirmDialog(
             new_accounts_[0],
             /*show_back_button=*/accounts_or_mismatches_size > 1u ||
@@ -286,8 +287,7 @@ bool FedCmAccountSelectionView::Show(
       }
     }
   } else if (idp_list_.size() == 1u && accounts_or_mismatches_size == 1u) {
-    if (dialog_type_ == DialogType::BUBBLE &&
-        (supports_add_account || has_filtered_out_accounts)) {
+    if (dialog_type_ == DialogType::BUBBLE && has_filtered_out_accounts) {
       // The logic to support add account is in ShowMultiAccountPicker for the
       // bubble dialog.
       ShowMultiAccountPicker(accounts_, idp_list_, rp_icon_,

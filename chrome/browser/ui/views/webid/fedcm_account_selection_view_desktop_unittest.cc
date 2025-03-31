@@ -2076,7 +2076,9 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, SupportAddAccount) {
     // Single account passive mode.
     std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
         accounts_, SignInMode::kExplicit, blink::mojom::RpMode::kPassive);
-    EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+    // We do not support add account on passive mode, so should show single
+    // account dialog.
+    EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
               controller->GetTestView()->sheet_type_);
   }
   {
@@ -2102,38 +2104,6 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, SupportAddAccount) {
     EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
               controller->GetTestView()->sheet_type_);
   }
-}
-
-// Tests that when adding accounts is supported, the back button is shown even
-// if there is a single account after logging in.
-TEST_F(FedCmAccountSelectionViewDesktopTest,
-       IdpSigninStatusMismatchToAccountChooserWithSupportAddAccount) {
-  std::unique_ptr<TestFedCmAccountSelectionView> controller =
-      CreateAndShowMismatchDialog();
-
-  EXPECT_EQ(TestAccountSelectionView::SheetType::kFailure,
-            controller->GetTestView()->sheet_type_);
-
-  idp_data_->idp_metadata.supports_add_account = true;
-
-  Show(*controller, accounts_, SignInMode::kExplicit,
-       blink::mojom::RpMode::kPassive, new_accounts_);
-
-  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
-            controller->GetTestView()->sheet_type_);
-  ASSERT_TRUE(controller->GetTestView()->show_back_button_);
-  controller->OnBackButtonClicked();
-  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
-            controller->GetTestView()->sheet_type_);
-
-  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
-  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
-            controller->GetTestView()->sheet_type_);
-  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
-  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
-            controller->GetTestView()->sheet_type_);
-
-  EXPECT_EQ(1u, controller->num_dialogs_);
 }
 
 // Tests that the correct account chooser result metrics are recorded.
