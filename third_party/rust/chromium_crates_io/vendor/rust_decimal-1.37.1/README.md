@@ -32,6 +32,12 @@ Alternatively, you can edit your `Cargo.toml` directly and run `cargo update`:
 rust_decimal = "1.37"
 ```
 
+To enable macro support, you can enable the `macros` feature:
+
+```sh
+$ cargo add rust_decimal --features macros
+```
+
 ## Usage
 
 Decimal numbers can be created in a few distinct ways. The easiest and most efficient method of creating a Decimal is to
@@ -106,6 +112,7 @@ assert_eq!(total, dec!(27.26));
 * [borsh](#borsh)
 * [c-repr](#c-repr)
 * [legacy-ops](#legacy-ops)
+* [macros](#macros)
 * [maths](#maths)
 * [ndarray](#ndarray)
 * [rkyv](#rkyv)
@@ -161,6 +168,21 @@ Enable [`diesel`](https://diesel.rs) MySQL support.
 As of `1.10` the algorithms used to perform basic operations have changed which has benefits of significant speed
 improvements.
 To maintain backwards compatibility this can be opted out of by enabling the `legacy-ops` feature.
+
+### `macros`
+
+The `macros` feature enables a compile time macro `dec` to be available at both the crate root, and via prelude.
+
+This parses the input at compile time and converts it to an optimized `Decimal` representation. Invalid inputs will
+cause a compile time error.
+
+Any Rust number format is supported, including scientific notation and alternate bases.
+
+```rust
+use rust_decimal::prelude::*;
+
+assert_eq!(dec!(1.23), Decimal::new(123, 2));
+```
 
 ### `maths`
 

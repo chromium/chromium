@@ -1967,7 +1967,7 @@ dependencies = [
 
 [[package]]
 name = "rust_decimal"
-version = "1.37.0"
+version = "1.37.1"
 dependencies = [
  "arbitrary",
  "arrayvec",
@@ -1998,9 +1998,9 @@ dependencies = [
 
 [[package]]
 name = "rust_decimal_macros"
-version = "1.37.0"
+version = "1.37.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0dde81640648b810262386d671ad939ca2b138c89e5cf5d91af31f17c9832e8d"
+checksum = "f6268b74858287e1a062271b988a0c534bf85bbeb567fe09331bf40ed78113d5"
 dependencies = [
  "quote",
  "syn 2.0.98",
