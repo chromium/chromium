@@ -59,7 +59,10 @@ steps:
             set -e
             mkdir /workspace/hopium
             cd /workspace/hopium
-            ~/workspace/depot_tools/gclient config --unmanaged --name src --custom-var build_with_hopium=True --custom-var checkout_pgo_profiles=True git@github.com:protectednet/hopium.git
+            /workspace/depot_tools/gclient config --unmanaged --name src \
+            --custom-var build_with_hopium=True \
+            --custom-var checkout_pgo_profiles=True \
+            git@github.com:protectednet/hopium.git
 
   - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.3'
     id: 'sync-deps'
