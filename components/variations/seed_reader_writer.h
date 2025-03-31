@@ -41,6 +41,14 @@ struct StoredSeed {
   std::string_view data;
 };
 
+// TODO(crbug.com/380465790): Represents the seed and other related info.
+// This info will be stored together in the SeedFile. Once all the seed-related
+// info is stored in the struct, change it to a proto and use it to serialize
+// and deserialize the data.
+struct SeedInfo {
+  std::string data;
+};
+
 // Handles reading and writing seeds to disk.
 class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
     : public base::ImportantFileWriter::BackgroundDataSerializer {
@@ -102,7 +110,7 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   void DeleteSeedFile();
 
   // Reads seed data from a seed file, and if the read is successful,
-  // populates `seed_data_`. May also schedule a seed file write for some
+  // populates `seed_info_`. May also schedule a seed file write for some
   // clients on the first run and for clients that are in the seed file
   // experiment's treatment group for the first time. If `seed_pref_` is present
   // in `local state_`, additionally clears it.
@@ -124,9 +132,10 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Helper for safely writing a seed. Null if a seed file path is not given.
   std::unique_ptr<base::ImportantFileWriter> seed_writer_;
 
-  // The compressed seed data. Used to store a seed applied during field trial
-  // setup or a seed fetched from a variations server.
-  std::string seed_data_;
+  // Stored seed info. Used to store a seed applied during field trial
+  // setup or a seed fetched from a variations server. Also stores other
+  // seed-related info.
+  SeedInfo seed_info_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
