@@ -83,8 +83,6 @@ struct LineLogicalBoxSides {
 // inset), in the physical coordinate space. Note that all sides are set to true
 // initially.
 struct PhysicalBoxSides {
-  STACK_ALLOCATED();
-
  public:
   bool top = true;
   bool right = true;
@@ -141,6 +139,11 @@ struct PhysicalBoxSides {
       std::swap(logical.inline_start, logical.inline_end);
     }
     return logical;
+  }
+
+  bool operator==(const PhysicalBoxSides& other) const {
+    return top == other.top && right == other.right && bottom == other.bottom &&
+           left == other.left;
   }
 
   bool IsEmpty() const { return !top && !right && !bottom && !left; }
