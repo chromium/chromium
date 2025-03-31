@@ -913,6 +913,22 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
           requires_distillation_ = true;
         }
         break;
+      case ui::AXEventGenerator::Event::COLLAPSED:
+        if (features::IsReadAnythingReadAloudEnabled()) {
+          ResetSelection();
+          requires_post_process_selection_ = false;
+          redraw_required_ = true;
+        }
+        break;
+      case ui::AXEventGenerator::Event::EXPANDED:
+        if (features::IsReadAnythingReadAloudEnabled()) {
+          if (base::Contains(content_node_ids_, event.node_id)) {
+            redraw_required_ = true;
+          } else {
+            requires_distillation_ = true;
+          }
+        }
+        break;
       // After the user finishes typing something we wait for a timer and redraw
       // to capture the input.
       case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
@@ -936,13 +952,11 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::CHECKED_STATE_CHANGED:
       case ui::AXEventGenerator::Event::CHECKED_STATE_DESCRIPTION_CHANGED:
       case ui::AXEventGenerator::Event::CHILDREN_CHANGED:
-      case ui::AXEventGenerator::Event::COLLAPSED:
       case ui::AXEventGenerator::Event::CONTROLS_CHANGED:
       case ui::AXEventGenerator::Event::DETAILS_CHANGED:
       case ui::AXEventGenerator::Event::DESCRIBED_BY_CHANGED:
       case ui::AXEventGenerator::Event::DESCRIPTION_CHANGED:
       case ui::AXEventGenerator::Event::ENABLED_CHANGED:
-      case ui::AXEventGenerator::Event::EXPANDED:
       case ui::AXEventGenerator::Event::FOCUS_CHANGED:
       case ui::AXEventGenerator::Event::FLOW_FROM_CHANGED:
       case ui::AXEventGenerator::Event::FLOW_TO_CHANGED:
@@ -967,8 +981,8 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::MULTISELECTABLE_STATE_CHANGED:
         break;
       case ui::AXEventGenerator::Event::NAME_CHANGED:
-        // TODO(francisjp): Determine if this logic should be specific to gmail.
-        if (last_expanded_node_id_ == event.node_id) {
+        if (!features::IsReadAnythingReadAloudEnabled() &&
+            last_expanded_node_id_ == event.node_id) {
           ResetSelection();
           requires_post_process_selection_ = false;
           reset_last_expanded_node_id();

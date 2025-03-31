@@ -465,7 +465,7 @@ void ReadAnythingAppController::OnNodeDataChanged(
     ui::AXTree* tree,
     const ui::AXNodeData& old_node_data,
     const ui::AXNodeData& new_node_data) {
-  if (tree->GetAXTreeID() == model_.active_tree_id()) {
+  if (!IsReadAloudEnabled() && tree->GetAXTreeID() == model_.active_tree_id()) {
     if (old_node_data.HasState(ax::mojom::State::kExpanded) !=
             new_node_data.HasState(ax::mojom::State::kExpanded) ||
         old_node_data.HasState(ax::mojom::State::kCollapsed) !=
