@@ -13,7 +13,7 @@ export function getHtml(this: ViewerSidePanelElement) {
         @current-type-changed="${this.onCurrentTypeChanged}">
     </ink-brush-selector>
     ${this.shouldShowBrushOptions_() ? html`
-      <div id="brush-options">
+      <div id="brush-options" class="side-panel-content">
         <h2>$i18n{ink2Size}</h2>
         <ink-size-selector .currentSize="${this.currentSize}"
             .currentType="${this.currentType}"

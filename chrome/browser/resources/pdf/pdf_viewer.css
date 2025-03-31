@@ -28,7 +28,6 @@ viewer-toolbar {
 <if expr="enable_pdf_ink2">
 #side-panel {
   border-inline-start: 1px solid var(--viewer-border-color);
-  padding-top: 8px;
 }
 </if>
 

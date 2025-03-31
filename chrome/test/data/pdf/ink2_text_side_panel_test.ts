@@ -1,0 +1,89 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {AnnotationMode, Ink2Manager, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {setupMockMetricsPrivate} from './test_util.js';
+
+const viewer = document.body.querySelector('pdf-viewer')!;
+
+chrome.test.runTests([
+  // Test that toggling annotation mode opens the side panel. Must be run first,
+  // as other tests expect to already be in annotation mode.
+  async function testOpenSidePanel() {
+    const mockMetricsPrivate = setupMockMetricsPrivate();
+
+    // Enable text annotations.
+    loadTimeData.overrideValues({'pdfTextAnnotationsEnabled': true});
+    viewer.$.toolbar.strings = Object.assign({}, viewer.$.toolbar.strings);
+    await microtasksFinished();
+
+    viewer.$.toolbar.setAnnotationMode(AnnotationMode.TEXT);
+    await microtasksFinished();
+
+    chrome.test.assertEq(AnnotationMode.TEXT, viewer.$.toolbar.annotationMode);
+    chrome.test.assertTrue(
+        isVisible(viewer.shadowRoot.querySelector('viewer-text-side-panel')));
+    mockMetricsPrivate.assertCount(UserAction.OPEN_INK2_SIDE_PANEL, 1);
+    mockMetricsPrivate.assertCount(UserAction.OPEN_INK2_BOTTOM_TOOLBAR, 0);
+    chrome.test.succeed();
+  },
+
+  // Test that the font can be selected.
+  async function testSelectFont() {
+    chrome.test.assertEq(AnnotationMode.TEXT, viewer.$.toolbar.annotationMode);
+    const sidePanel = viewer.shadowRoot.querySelector('viewer-text-side-panel');
+    assert(sidePanel);
+
+    // Font is the first select.
+    const fontSelect = sidePanel.shadowRoot.querySelector('select');
+    assert(fontSelect);
+    const initialFont = Ink2Manager.getInstance().getCurrentText().font;
+    chrome.test.assertEq(initialFont, fontSelect.value);
+    chrome.test.assertEq(initialFont, fontSelect.style.fontFamily);
+
+    const whenChanged =
+        eventToPromise('text-changed', Ink2Manager.getInstance());
+    const newValue = 'Serif';
+    fontSelect.focus();
+    fontSelect.value = newValue;
+    fontSelect.dispatchEvent(new CustomEvent('change'));
+    const changedEvent = await whenChanged;
+    chrome.test.assertEq(newValue, changedEvent.detail.font);
+    await microtasksFinished();
+    chrome.test.assertEq(newValue, fontSelect.value);
+    chrome.test.assertEq(newValue, fontSelect.style.fontFamily);
+
+    chrome.test.succeed();
+  },
+
+  // Test that the size can be selected.
+  async function testSelectSize() {
+    chrome.test.assertEq(AnnotationMode.TEXT, viewer.$.toolbar.annotationMode);
+    const sidePanel = viewer.shadowRoot.querySelector('viewer-text-side-panel');
+    assert(sidePanel);
+
+    // Size is the second select.
+    const selects = sidePanel.shadowRoot.querySelectorAll('select');
+    chrome.test.assertEq(2, selects.length);
+    const sizeSelect = selects[1]!;
+    const initialSize = Ink2Manager.getInstance().getCurrentText().size;
+    chrome.test.assertEq(initialSize.toString(), sizeSelect.value);
+
+    const whenChanged =
+        eventToPromise('text-changed', Ink2Manager.getInstance());
+    sizeSelect.focus();
+    sizeSelect.value = '20';
+    sizeSelect.dispatchEvent(new CustomEvent('change'));
+    const changedEvent = await whenChanged;
+    chrome.test.assertEq(20, changedEvent.detail.size);
+    await microtasksFinished();
+    chrome.test.assertEq('20', sizeSelect.value);
+
+    chrome.test.succeed();
+  },
+]);
