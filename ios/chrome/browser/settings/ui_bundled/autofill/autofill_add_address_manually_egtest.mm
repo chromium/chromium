@@ -22,6 +22,7 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::SettingsToolbarAddButton;
+using chrome_test_util::SettingsToolbarEditButton;
 
 namespace {
 
@@ -180,6 +181,31 @@ void OpenAddressSettings() {
 - (void)testCancelButton {
   // TODO(crbug.com/406799169): EGTest for checking if the `Cancel` button works
   // as expected.
+}
+
+// Tests that the toolbar is visible after saving an address manually through
+// settings.
+- (void)testToolbarVisibility {
+  OpenAddressSettings();
+
+  // Tap the "Add" button.
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
+      performAction:grey_tap()];
+
+  // Fill the required fields.
+  [self fillRequiredFields];
+
+  // Save the profile.
+  [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
+      performAction:grey_tap()];
+
+  // Ensure "Add" button is visible.
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Ensure "Edit" button is visible.
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarEditButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end
