@@ -61,6 +61,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_mime_type.h:LensOverlayMimeType) -->
 
+<histogram name="Lens.BottomSheet.PositionAfterSwipe"
+    enum="SheetDimensionState" expires_after="2026-03-26">
+  <owner>stkhapugin@google.com</owner>
+  <owner>radunitescu@google.com</owner>
+  <summary>
+    Logged when the user swiped the sheet, resulting in a change of dimension.
+    Only logged on iOS.
+  </summary>
+</histogram>
+
 <histogram name="Lens.ImageClassification.ClassificationTime.EarlyTerminatedMs"
     units="ms" expires_after="2022-07-31">
   <owner>yusuyoutube@google.com</owner>

@@ -514,7 +514,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   // different tab. In this case mark the stale tab helper as not shown.
   if (_associatedTabHelper) {
     _associatedTabHelper->SetLensOverlayUIAttachedAndAlive(false);
-    _associatedTabHelper->RecordSheetDimensionState(SheetDimensionStateHidden);
+    _associatedTabHelper->RecordSheetDimensionState(
+        SheetDimensionState::kHidden);
     _associatedTabHelper->ClearViewportSnapshot();
     _associatedTabHelper->UpdateSnapshot();
     if (self.browser &&
@@ -669,15 +670,15 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   }
 
   switch (state) {
-    case SheetDimensionStateHidden:
+    case SheetDimensionState::kHidden:
       [self destroyLensUI:YES
                    reason:lens::LensOverlayDismissalSource::
                               kBottomSheetDismissed];
       break;
-    case SheetDimensionStateLarge:
+    case SheetDimensionState::kLarge:
       [self disableSelectionInteraction:YES];
       break;
-    case SheetDimensionStateConsent:
+    case SheetDimensionState::kConsent:
       break;
     default:
       [self disableSelectionInteraction:NO];
@@ -1280,8 +1281,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
   SheetDimensionState restoredSheetState =
       _associatedTabHelper->GetRecordedSheetDimensionState();
-  BOOL isStateRestoration = restoredSheetState != SheetDimensionStateHidden;
-  BOOL maximizeSheet = restoredSheetState == SheetDimensionStateLarge;
+  BOOL isStateRestoration = restoredSheetState != SheetDimensionState::kHidden;
+  BOOL maximizeSheet = restoredSheetState == SheetDimensionState::kLarge;
   [_resultsPagePresenter
       presentResultsPageAnimated:!isStateRestoration
                    maximizeSheet:maximizeSheet
