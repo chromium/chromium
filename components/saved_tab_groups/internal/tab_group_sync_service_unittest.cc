@@ -878,6 +878,34 @@ TEST_F(TabGroupSyncServiceTest, CleanUpHiddenSavedTabGroupsOnStartup) {
   ASSERT_TRUE(model_->Contains(shared_group.saved_guid()));
 }
 
+TEST_F(TabGroupSyncServiceTest,
+       RestoreHiddenOriginatingSavedGroupOnRemoteSharingFailure) {
+  // Simulate a remote transition of `group_1_` to a shared tab group.
+  ASSERT_THAT(tab_group_sync_service_->GetAllGroups(),
+              Contains(HasGuid(group_1_.saved_guid())));
+
+  SavedTabGroup shared_group =
+      group_1_.CloneAsSharedTabGroup(CollaborationId(kCollaborationId));
+  shared_group.MarkTransitionedToShared();
+  ASSERT_FALSE(shared_group.saved_tabs().empty());
+  model_->AddedFromSync(shared_group);
+  WaitForPostedTasks();
+
+  // Only `shared_group` should be available in the service.
+  ASSERT_THAT(tab_group_sync_service_->GetAllGroups(),
+              Contains(HasGuid(shared_group.saved_guid())));
+  ASSERT_THAT(tab_group_sync_service_->GetAllGroups(),
+              Not(Contains(HasGuid(group_1_.saved_guid()))));
+
+  // Simulate a remote deletion of `shared_group`.
+  model_->RemovedFromSync(shared_group.saved_guid());
+  WaitForPostedTasks();
+
+  // The originating saved tab group should be restored and available.
+  EXPECT_THAT(tab_group_sync_service_->GetAllGroups(),
+              Contains(HasGuid(group_1_.saved_guid())));
+}
+
 TEST_F(TabGroupSyncServiceTest, NavigateTab) {
   base::HistogramTester histogram_tester;
   auto local_tab_id_2 = test::GenerateRandomTabID();
