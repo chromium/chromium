@@ -16,7 +16,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IDP_BRAND_ICON;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HEADER_ICON;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_BRAND_ICON;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.TYPE;
 
@@ -58,8 +58,7 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
                     Arrays.asList(mNewUserAccount),
                     Arrays.asList(mIdpData),
                     /* isAutoReauthn= */ false,
-                    /* newAccounts= */ Collections.EMPTY_LIST,
-                    /* favicon= */ null);
+                    /* newAccounts= */ Collections.EMPTY_LIST);
             mMediator.showVerifySheet(mAnaAccount);
 
             assertEquals(1, mSheetAccountItems.size());
@@ -82,8 +81,7 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
                     Arrays.asList(mAnaAccount),
                     Arrays.asList(mIdpData),
                     /* isAutoReauthn= */ true,
-                    /* newAccounts= */ Collections.EMPTY_LIST,
-                    /* favicon= */ null);
+                    /* newAccounts= */ Collections.EMPTY_LIST);
 
             assertEquals(1, mSheetAccountItems.size());
             assertEquals(
@@ -101,12 +99,11 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
                 Arrays.asList(mAnaAccountWithoutBrandIcons),
                 Arrays.asList(mIdpDataWithoutIcons),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
 
         assertNull(mModel.get(ItemProperties.HEADER).get(RP_BRAND_ICON));
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
-        assertNull(headerModel.get(IDP_BRAND_ICON));
+        assertNull(headerModel.get(HEADER_ICON));
     }
 
     @Test

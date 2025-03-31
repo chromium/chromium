@@ -63,7 +63,10 @@ bool IdentityDialogController::ShowAccountsDialog(
   }
   favicon::FaviconDriver* favicon_driver =
       favicon::ContentFaviconDriver::FromWebContents(rp_web_contents_);
-  if (favicon_driver) {
+  // Currently, FaviconIsValid() is never true on Android, and GetFavicon()
+  // returns the default favicon, so we will not use this result and instead
+  // obtain the favicon from the Java code.
+  if (favicon_driver && favicon_driver->FaviconIsValid()) {
     rp_data.rp_icon = favicon_driver->GetFavicon();
   }
   return account_view_->Show(rp_data, identity_provider_data, accounts,

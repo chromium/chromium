@@ -271,15 +271,10 @@ bool AccountSelectionViewAndroid::Show(
   ScopedJavaLocalRef<jobjectArray> identity_providers_list =
       ConvertToJavaIdentityProvidersList(env, identity_providers_map);
 
-  ScopedJavaLocalRef<jobject> java_rp_icon = nullptr;
-  if (!rp_data.rp_icon.IsEmpty()) {
-    java_rp_icon = gfx::ConvertToJavaBitmap(*rp_data.rp_icon.ToSkBitmap());
-  }
-
   return Java_AccountSelectionBridge_showAccounts(
       env, java_object_internal_, rp_data.rp_for_display, accounts_obj,
       identity_providers_list, sign_in_mode == Account::SignInMode::kAuto,
-      new_accounts_obj, java_rp_icon);
+      new_accounts_obj);
 }
 
 bool AccountSelectionViewAndroid::ShowFailureDialog(
