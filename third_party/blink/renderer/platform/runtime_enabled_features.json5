@@ -2626,9 +2626,6 @@
       name: "LayoutIgnoreMarginsForSticky",
     },
     {
-      name: "LayoutImageForceAspectRatioOfOneOnError",
-    },
-    {
       name: "LayoutImageRevalidationCheckForSvgImages",
     },
     {

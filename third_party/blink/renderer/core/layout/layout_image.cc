@@ -355,17 +355,6 @@ PhysicalNaturalSizingInfo LayoutImage::GetNaturalDimensions() const {
     if (StyleRef().GetObjectFit() == EObjectFit::kScaleDown) {
       natural_dimensions.size.Scale(1 / ImageDevicePixelRatio());
     }
-  } else if (RuntimeEnabledFeatures::
-                 LayoutImageForceAspectRatioOfOneOnErrorEnabled()) {
-    // Don't compute an intrinsic ratio to preserve historical WebKit behavior
-    // if we're painting alt text and/or a broken image.
-    // Video is excluded from this behavior because video elements have a
-    // default aspect ratio that a failed poster image load should not
-    // override.
-    if (image_resource_->ErrorOccurred() && !IsA<LayoutVideo>(this)) {
-      natural_dimensions.aspect_ratio =
-          PhysicalSize(LayoutUnit(1), LayoutUnit(1));
-    }
   }
   return natural_dimensions;
 }
