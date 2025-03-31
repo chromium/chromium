@@ -75,7 +75,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       const gfx::Size& size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
-      sk_sp<SkColorSpace> sk_color_space,
+      const gfx::ColorSpace& color_space,
       base::OnceCallback<void(const gpu::SyncToken&)> release_callback);
 
   bool CurrentFrameKnownToBeOpaque() override;
