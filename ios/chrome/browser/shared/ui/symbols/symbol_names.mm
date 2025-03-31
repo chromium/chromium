@@ -284,6 +284,8 @@ NSString* const kIPhoneAndArrowForwardSymbol = @"iphone.and.arrow.forward";
 NSString* const kPersonPlusSymbol = @"person.crop.circle.badge.plus";
 NSString* const kArrowUpTrashSymbol = @"arrow.up.trash";
 NSString* const kRectangleGroupBubble = @"rectangle.3.group.bubble";
+NSString* const kHomeSymbol = @"house";
+NSString* const kWorkSymbol = @"case";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.
