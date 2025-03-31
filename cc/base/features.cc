@@ -233,7 +233,7 @@ BASE_FEATURE(kViewTransitionCaptureAndDisplay,
 // UKMs calculated by the DroppedFrameCounter.
 BASE_FEATURE(kStopExportDFCMetrics,
              "StopExportDFCMetrics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool StopExportDFCMetrics() {
   return base::FeatureList::IsEnabled(features::kStopExportDFCMetrics);
 }
