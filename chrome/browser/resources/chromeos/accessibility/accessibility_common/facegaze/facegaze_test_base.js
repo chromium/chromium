@@ -557,6 +557,11 @@ FaceGazeTestBase = class extends E2ETestBase {
     });
   }
 
+  /** @return {string} */
+  getDefaultBubbleText() {
+    return 'Face control active';
+  }
+
   /** @return {string|undefined} */
   getBubbleText() {
     return this.mockAccessibilityPrivate.getFaceGazeBubbleText();

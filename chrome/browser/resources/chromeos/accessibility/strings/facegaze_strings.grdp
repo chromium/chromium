@@ -174,4 +174,7 @@
   <message name="IDS_FACEGAZE_STATE_PRECISION_ACTIVE" desc="A message displayed in the FaceGaze bubble UI informing the user that precision click is currently active.">
     Mouse speed reduced, <ph name="gesture">$1<ex>Smile</ex></ph> again to click
   </message>
+  <message name="IDS_FACEGAZE_ACTIVE" desc="A message displayed in the FaceGaze bubble UI informing the user that FaceGaze is active. This is meant to be informational text that is shown when nothing else populates the bubble UI.">
+    Face control active
+  </message>
 </grit-part>

@@ -832,6 +832,10 @@ class ASH_EXPORT AccessibilityController
                                      const std::string& behavior_pref,
                                      bool dialog_accepted);
 
+  // Will set kAccessibilityFaceGazeEnabledSentinel to false, which will show a
+  // confirmation dialog asking if the user wants to turn off FaceGaze.
+  void RequestDisableFaceGaze();
+
   void RecordSelectToSpeakSpeechDuration(SelectToSpeakState old_state,
                                          SelectToSpeakState new_state);
 
