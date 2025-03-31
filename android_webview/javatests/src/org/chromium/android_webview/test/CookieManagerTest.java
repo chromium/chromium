@@ -1324,7 +1324,7 @@ public class CookieManagerTest extends AwParameterizedTest {
             Assert.assertEquals(
                     interceptRequestFailureMessage,
                     expectedCookies,
-                    interceptedRequest.requestHeaders.get("Cookie"));
+                    interceptedRequest.getRequestHeaders().get("Cookie"));
 
             expectedCookies = "partitioned_cookie=foo";
             failureMessage = "Partitioned cookies should be returned when 3PCs are disabled";
@@ -1344,7 +1344,7 @@ public class CookieManagerTest extends AwParameterizedTest {
             Assert.assertEquals(
                     interceptRequestFailureMessage,
                     expectedCookies,
-                    interceptedRequest.requestHeaders.get("Cookie"));
+                    interceptedRequest.getRequestHeaders().get("Cookie"));
 
             failureMessage = "No cookies should be returned when all cookies are disabled";
             blockAllCookies();
@@ -1358,7 +1358,9 @@ public class CookieManagerTest extends AwParameterizedTest {
             interceptedRequest =
                     shouldInterceptRequestHelper.getRequestsForUrl(iframeUrl + "path_to_intercept");
             Assert.assertEquals(
-                    failureMessage, false, interceptedRequest.requestHeaders.containsKey("Cookie"));
+                    failureMessage,
+                    false,
+                    interceptedRequest.getRequestHeaders().containsKey("Cookie"));
 
         } finally {
             webServer.shutdown();

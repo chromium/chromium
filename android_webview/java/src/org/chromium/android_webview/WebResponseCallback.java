@@ -40,7 +40,7 @@ public final class WebResponseCallback {
     public void intercept(WebResourceResponseInfo response) {
         if (mAwContentsClient != null) {
             if (response == null) {
-                mAwContentsClient.getCallbackHelper().postOnLoadResource(mRequest.url);
+                mAwContentsClient.getCallbackHelper().postOnLoadResource(mRequest.getUrl());
             }
             if (response != null && response.getData() == null) {
                 // In this case the intercepted URLRequest job will simulate an empty response
@@ -87,7 +87,7 @@ public final class WebResponseCallback {
                 Log.e(
                         TAG,
                         "Client's shouldInterceptRequestAsync implementation did not respond for "
-                                + mRequest.url);
+                                + mRequest.getUrl());
                 clientRaisedException();
             }
         } finally {

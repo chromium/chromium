@@ -3459,7 +3459,7 @@ public class AwSettingsTest {
                     @Override
                     public WebResourceResponseInfo shouldInterceptRequest(
                             AwWebResourceRequest request) {
-                        if (request.url.equals(defaultVideoPosterUrl)) {
+                        if (request.getUrl().equals(defaultVideoPosterUrl)) {
                             videoPosterAccessedCallbackHelper.notifyCalled();
                         }
                         return null;
