@@ -6,6 +6,8 @@ assert(is_chromeos)
 
 source_set("session_api") {
   sources = [
+    "add_students_request.cc",
+    "add_students_request.h",
     "constants.h",
     "create_session_request.cc",
     "create_session_request.h",
@@ -45,6 +47,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "add_students_request_unittest.cc",
     "create_session_request_unittest.cc",
     "get_session_request_unittest.cc",
     "join_session_request_unittest.cc",
