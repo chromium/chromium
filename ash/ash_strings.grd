@@ -8056,7 +8056,7 @@ New install
         No internet. Connect to the internet and try again.
       </message>
       <message name="IDS_LOBSTER_CONTROVERSIAL_RESPONSE_ERROR_MESSAGE" desc="The error message displayed when image candidates are unsafe and filtered out.">
-        Can’t create images of this right now. Try rephrasing your description.
+        Can’t create images of this right now. Try rephrasing your description. Keep in mind you can't create images of people, harmful, or explicit content.
       </message>
       <message name="IDS_LOBSTER_OUT_OF_RESOURCE_ERROR_MESSAGE" desc="The error message displayed when server does not have enough resources handle the request, for example, when it is too busy to handle other requests or when the user has reached their allowed quota.">
         At capacity right now. Come back soon.
