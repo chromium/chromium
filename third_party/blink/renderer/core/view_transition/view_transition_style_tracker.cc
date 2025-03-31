@@ -1318,9 +1318,22 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
   DCHECK(IsTransitionPseudoElement(pseudo_id));
   DCHECK(pseudo_id == kPseudoIdViewTransition || view_transition_name);
 
-  bool is_generated_name =
-      view_transition_name &&
-      element_data_map_.find(view_transition_name)->value->is_generated_name;
+  bool is_generated_name = false;
+  if (view_transition_name) {
+    auto it = element_data_map_.find(view_transition_name);
+    if (RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()) {
+      if (it == element_data_map_.end()) {
+        // TODO(crbug.com/405117185): This is only possible because view
+        // transition names are still tracked globally in StyleEngine.
+        // Once that's fixed, we should enforce that the name passed to this
+        // method exists in element_data_map_.
+        return nullptr;
+      }
+    } else {
+      DCHECK(it != element_data_map_.end());
+    }
+    is_generated_name = it->value->is_generated_name;
+  }
 
   switch (pseudo_id) {
     case kPseudoIdViewTransition:
