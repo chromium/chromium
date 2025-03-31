@@ -56,6 +56,7 @@ GlicWidget::GlicWidget(ThemeService* theme_service, InitParams params)
 
 GlicWidget::~GlicWidget() = default;
 
+// static
 gfx::Size GlicWidget::GetInitialSize() {
   return {features::kGlicInitialWidth.Get(),
           features::kGlicInitialHeight.Get()};
@@ -78,7 +79,7 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
   // Don't change this name. This is used by other code to identify the glic
   // window. See b/404947780.
   params.name = "GlicWidget";
-  params.corner_radius = kCornerRadius;
+  params.corner_radius = kGlicDesiredCornerRadius;
 #if BUILDFLAG(IS_MAC)
   params.animation_enabled = true;
 #endif

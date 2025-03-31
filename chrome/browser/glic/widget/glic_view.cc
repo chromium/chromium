@@ -70,11 +70,11 @@ void GlicView::SetWebContents(content::WebContents* web_contents) {
 void GlicView::UpdateBackgroundColor() {
   std::optional<SkColor> client_background = GetClientBackgroundColor();
   if (client_background) {
-    SetBackground(
-        views::CreateRoundedRectBackground(*client_background, kCornerRadius));
+    SetBackground(views::CreateRoundedRectBackground(*client_background,
+                                                     kGlicViewCornerRadius));
   } else {
     SetBackground(views::CreateRoundedRectBackground(kColorGlicBackground,
-                                                     kCornerRadius));
+                                                     kGlicViewCornerRadius));
   }
 }
 
