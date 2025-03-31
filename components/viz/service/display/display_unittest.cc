@@ -33,6 +33,7 @@
 #include "cc/base/math_util.h"
 #include "cc/test/scheduler_test_common.h"
 #include "components/viz/common/features.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -239,7 +240,8 @@ class DisplayTest : public testing::Test {
 
   bool ShouldSendBeginFrame(CompositorFrameSinkSupport* support,
                             base::TimeTicks frame_time) {
-    return support->ShouldSendBeginFrame(frame_time, base::Seconds(0));
+    return support->ShouldSendBeginFrame(BeginFrameId(999, 999), frame_time,
+                                         base::Seconds(0));
   }
 
   void UpdateBeginFrameTime(CompositorFrameSinkSupport* support,

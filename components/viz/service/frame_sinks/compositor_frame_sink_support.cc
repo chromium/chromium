@@ -25,6 +25,7 @@
 #include "components/input/utils.h"
 #include "components/viz/common/constants.h"
 #include "components/viz/common/features.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
@@ -1189,7 +1190,8 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
   }
   SetLastKnownVsync(args.interval);
   const bool should_send_begin_frame =
-      ShouldSendBeginFrame(adjusted_args.frame_time, args.interval) &&
+      ShouldSendBeginFrame(args.frame_id, adjusted_args.frame_time,
+                           args.interval) &&
       (client_ || layer_context_);
   if (should_send_begin_frame) {
     if (last_activated_surface_id_.is_valid())
@@ -1497,8 +1499,17 @@ const char* CompositorFrameSinkSupport::GetSubmitResultAsString(
 }
 
 bool CompositorFrameSinkSupport::ShouldSendBeginFrame(
+    BeginFrameId frame_id,
     base::TimeTicks frame_time,
     base::TimeDelta vsync_interval) {
+  // Don't send the same BeginFrameId to a client twice. This could otherwise
+  // happen if the client removes and then immediately re-adds a
+  // BeginFrameObserver before the next BeginFrame arrives. See
+  // https://crbug.com/40286473.
+  if (frame_id == last_begin_frame_args_.frame_id) {
+    return RecordShouldSendBeginFrame("DuplicateFrameId", false);
+  }
+
   // We should throttle OnBeginFrame() if it has been less than
   // |begin_frame_interval_| since the last one was sent because clients have
   // requested to update at such rate.
