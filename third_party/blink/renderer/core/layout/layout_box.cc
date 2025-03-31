@@ -150,7 +150,7 @@ static constexpr int kAutoscrollBeltSizeBottom = 20;
 static const unsigned kBackgroundObscurationTestMaxDepth = 4;
 
 struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
-  LayoutPoint frame_location_;
+  DeprecatedLayoutPoint frame_location_;
   PhysicalSize frame_size_;
   PhysicalSize previous_size;
   MinMaxSizes intrinsic_logical_widths;

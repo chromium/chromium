@@ -68,7 +68,7 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
   AffineTransform LocalToSVGParentTransform() const override;
 
   // LayoutBox override:
-  LayoutPoint LocationInternal() const override;
+  DeprecatedLayoutPoint LocationInternal() const override;
   PaintLayerType LayerTypeRequired() const override;
   bool CreatesNewFormattingContext() const override;
 
@@ -82,7 +82,7 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
   // Override of LayoutBox::frame_location_.
   // A physical fragment for <foreignObject> doesn't have the owner
   // PhysicalFragmentLink.
-  LayoutPoint overridden_location_;
+  DeprecatedLayoutPoint overridden_location_;
 };
 
 template <>

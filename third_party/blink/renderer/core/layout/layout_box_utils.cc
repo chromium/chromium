@@ -57,7 +57,7 @@ LayoutUnit BoxTotalBlockSize(const LayoutBox& box) {
   return total_block_size;
 }
 
-LayoutPoint ComputeBoxLocation(
+DeprecatedLayoutPoint ComputeBoxLocation(
     const PhysicalBoxFragment& child_fragment,
     PhysicalOffset offset,
     const PhysicalBoxFragment& container_fragment,
@@ -84,7 +84,7 @@ LayoutPoint ComputeBoxLocation(
     }
   }
 
-  return offset.ToLayoutPoint();
+  return offset.FaultyToDeprecatedLayoutPoint();
 }
 
 }  // namespace blink

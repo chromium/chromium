@@ -1418,7 +1418,7 @@ void BlockNode::CopyChildFragmentPosition(
 
   DCHECK(layout_box->Parent()) << "Should be called on children only.";
 
-  LayoutPoint point =
+  DeprecatedLayoutPoint point =
       ComputeBoxLocation(child_fragment, offset, container_fragment,
                          previous_container_break_token);
   layout_box->SetLocation(point);
@@ -1482,7 +1482,8 @@ void BlockNode::CopyFragmentItemsToLayoutBox(
           maybe_flipped_offset.top += previously_consumed_block_size;
         else
           maybe_flipped_offset.left += previously_consumed_block_size;
-        layout_box->SetLocation(maybe_flipped_offset.ToLayoutPoint());
+        layout_box->SetLocation(
+            maybe_flipped_offset.FaultyToDeprecatedLayoutPoint());
         if (layout_box->HasSelfPaintingLayer()) [[unlikely]] {
           layout_box->Layer()->SetNeedsVisualOverflowRecalc();
         }

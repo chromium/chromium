@@ -20,7 +20,6 @@ class String;
 
 namespace blink {
 
-class LayoutPoint;
 struct LogicalOffset;
 struct PhysicalSize;
 
@@ -93,12 +92,14 @@ struct CORE_EXPORT PhysicalFixedOffset {
 
   // Conversions from/to existing code. New code prefers type safety for
   // logical/physical distinctions.
-  constexpr explicit PhysicalFixedOffset(const LayoutPoint& point)
+  constexpr explicit PhysicalFixedOffset(const DeprecatedLayoutPoint& point)
       : left(point.X()), top(point.Y()) {}
 
   // Conversions from/to existing code. New code prefers type safety for
   // logical/physical distinctions.
-  constexpr LayoutPoint ToLayoutPoint() const { return {left, top}; }
+  constexpr DeprecatedLayoutPoint FaultyToDeprecatedLayoutPoint() const {
+    return {left, top};
+  }
 
   explicit PhysicalFixedOffset(const gfx::Point& point)
       : left(point.x()), top(point.y()) {}
