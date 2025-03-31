@@ -36,6 +36,7 @@ import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
+import type {PrefsState} from '../common/types.js';
 import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 
@@ -170,7 +171,7 @@ export class OsSettingsSyncSubpageElement extends
     ];
   }
 
-  prefs: {[key: string]: any};
+  prefs: PrefsState;
   private pageStatus_: PageStatus;
   syncPrefs?: SyncPrefs;
   syncStatus: SyncStatus;

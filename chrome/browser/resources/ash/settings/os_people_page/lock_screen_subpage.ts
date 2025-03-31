@@ -39,6 +39,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import type {PrefsState} from '../common/types.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {LockStateMixin} from '../lock_state_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -63,7 +64,10 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
 
   static get properties() {
     return {
-      prefs: {type: Object},
+      prefs: {
+        type: Object,
+        notify: true,
+      },
 
       /**
        * Authentication token provided by lock-screen-password-prompt-dialog.
@@ -177,7 +181,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     };
   }
 
-  prefs: Object;
+  prefs: PrefsState;
   authToken: string|undefined;
   private fingerprintUnlockEnabled_: boolean;
   private numFingerprints_: number;
