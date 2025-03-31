@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
@@ -26,7 +27,7 @@ class CanvasNoiseTokenDataBrowserTest : public content::ContentBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kCanvasInterventions};
+      fingerprinting_protection_interventions::features::kCanvasNoise};
 };
 
 IN_PROC_BROWSER_TEST_F(CanvasNoiseTokenDataBrowserTest,

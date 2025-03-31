@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/fingerprinting_protection_filter/interventions/browser/interventions_features.h"
+#include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 
 #include "base/feature_list.h"
 

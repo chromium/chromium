@@ -725,6 +725,7 @@
       // process.
       name: "CanvasInterventions",
       browser_process_read_write_access: true,
+      base_feature: "none",
     },
     {
       // This allows testing the canvas noise interventions in tests (which in

@@ -1,0 +1,18 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+# For this component iOS is explicitly not supported.
+if (use_blink) {
+  component("features") {
+    output_name = "fingerprinting_protection_interventions_features"
+    defines = [ "IS_FINGERPRINTING_PROTECTION_INTERVENTIONS_FEATURES_IMPL" ]
+    sources = [
+      "interventions_features.cc",
+      "interventions_features.h",
+    ]
+    deps = [ "//base" ]
+  }
+}
