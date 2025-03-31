@@ -38,7 +38,7 @@ class Extension;
 //   TODO(devlin): My suspicion is that this is almost always less readable and
 //   useful, but it came first and is used in many places. It'd be nice to maybe
 //   get rid of it.
-// These are not interchangable - calling SetManifest() with aided manifest
+// These are not interchangeable - calling SetManifest() with aided manifest
 // construction or e.g. AddAPIPermissions() with custom manifest construction
 // will crash.
 class ExtensionBuilder {
