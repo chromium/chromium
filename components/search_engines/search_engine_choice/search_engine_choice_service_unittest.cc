@@ -53,7 +53,7 @@
 
 using ::country_codes::CountryId;
 using ::search_engines::RepromptResult;
-using ::search_engines::WipeSearchEngineChoiceReason;
+using ::search_engines::SearchEngineChoiceWipeReason;
 using ::testing::NiceMock;
 
 namespace search_engines {
@@ -260,7 +260,7 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_ByLocation) {
             kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
         SearchEngineType::SEARCH_ENGINE_GOOGLE, expected_v2_records);
     WipeSearchEngineChoicePrefs(*pref_service(),
-                                WipeSearchEngineChoiceReason::kCommandLineFlag);
+                                SearchEngineChoiceWipeReason::kCommandLineFlag);
   }
 }
 
@@ -775,7 +775,7 @@ TEST_F(SearchEngineChoiceServiceTest, RepromptForMissingChoiceVersion) {
       prefs::kDefaultSearchProviderChoiceScreenCompletionVersion));
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceWipeReasonHistogram,
-      WipeSearchEngineChoiceReason::kMissingChoiceVersion, 1);
+      SearchEngineChoiceWipeReason::kMissingChoiceVersion, 1);
   histogram_tester_.ExpectTotalCount(
       search_engines::kSearchEngineChoiceRepromptSpecificCountryHistogram, 0);
   histogram_tester_.ExpectTotalCount(
@@ -786,7 +786,7 @@ TEST_F(SearchEngineChoiceServiceTest, RepromptForMissingChoiceVersion) {
 
 struct RepromptTestParam {
   // Whether the user should be reprompted or not.
-  std::optional<WipeSearchEngineChoiceReason> wipe_reason;
+  std::optional<SearchEngineChoiceWipeReason> wipe_reason;
   // Internal results of the reprompt computation.
   std::optional<RepromptResult> wildcard_result;
   std::optional<RepromptResult> country_result;
@@ -893,37 +893,37 @@ TEST_P(SearchEngineChoiceUtilsParamTest, Reprompt) {
 
 constexpr RepromptTestParam kRepromptTestParams[] = {
     // Reprompt all countries with the wildcard.
-    {WipeSearchEngineChoiceReason::kReprompt, RepromptResult::kReprompt,
+    {SearchEngineChoiceWipeReason::kReprompt, RepromptResult::kReprompt,
      RepromptResult::kNoDictionaryKey, "1.0.0.0", R"( {"*":"1.0.0.1"} )"},
     // Reprompt works with all version components.
-    {WipeSearchEngineChoiceReason::kReprompt, RepromptResult::kReprompt,
+    {SearchEngineChoiceWipeReason::kReprompt, RepromptResult::kReprompt,
      RepromptResult::kNoDictionaryKey, "1.0.0.100", R"( {"*":"1.0.1.0"} )"},
-    {WipeSearchEngineChoiceReason::kReprompt, RepromptResult::kReprompt,
+    {SearchEngineChoiceWipeReason::kReprompt, RepromptResult::kReprompt,
      RepromptResult::kNoDictionaryKey, "1.0.200.0", R"( {"*":"1.1.0.0"} )"},
-    {WipeSearchEngineChoiceReason::kReprompt, RepromptResult::kReprompt,
+    {SearchEngineChoiceWipeReason::kReprompt, RepromptResult::kReprompt,
      RepromptResult::kNoDictionaryKey, "1.300.0.0", R"( {"*":"2.0.0.0"} )"},
-    {WipeSearchEngineChoiceReason::kReprompt, RepromptResult::kReprompt,
+    {SearchEngineChoiceWipeReason::kReprompt, RepromptResult::kReprompt,
      RepromptResult::kNoDictionaryKey, "10.10.1.1",
      R"( {"*":"30.45.678.9100"} )"},
     // Reprompt a specific country.
-    {WipeSearchEngineChoiceReason::kReprompt, std::nullopt,
+    {SearchEngineChoiceWipeReason::kReprompt, std::nullopt,
      RepromptResult::kReprompt, "1.0.0.0", R"( {"BE":"1.0.0.1"} )"},
     // Reprompt for params inclusive of current version
-    {WipeSearchEngineChoiceReason::kReprompt, std::nullopt,
+    {SearchEngineChoiceWipeReason::kReprompt, std::nullopt,
      RepromptResult::kReprompt, "1.0.0.0", R"( {"BE":"CURRENT_VERSION"} )"},
     // Reprompt when the choice version is malformed.
-    {WipeSearchEngineChoiceReason::kInvalidChoiceVersion, std::nullopt,
+    {SearchEngineChoiceWipeReason::kInvalidChoiceVersion, std::nullopt,
      std::nullopt, "Blah", ""},
     // Reprompt when both the country and the wild card are specified, as long
     // as one of them qualifies.
-    {WipeSearchEngineChoiceReason::kReprompt, std::nullopt,
+    {SearchEngineChoiceWipeReason::kReprompt, std::nullopt,
      RepromptResult::kReprompt, "1.0.0.0",
      R"( {"*":"1.0.0.1","BE":"1.0.0.1"} )"},
-    {WipeSearchEngineChoiceReason::kReprompt, std::nullopt,
+    {SearchEngineChoiceWipeReason::kReprompt, std::nullopt,
      RepromptResult::kReprompt, "1.0.0.0",
      R"( {"*":"FUTURE_VERSION","BE":"1.0.0.1"} )"},
     // Still works with irrelevant parameters for other countries.
-    {WipeSearchEngineChoiceReason::kReprompt, std::nullopt,
+    {SearchEngineChoiceWipeReason::kReprompt, std::nullopt,
      RepromptResult::kReprompt, "1.0.0.0",
      R"(
        {

@@ -35,9 +35,9 @@ namespace {
 
 using country_codes::CountryId;
 using search_engines::SearchEngineChoiceScreenConditions;
+using search_engines::SearchEngineChoiceWipeReason;
 using search_engines::SearchEnginesTestEnvironment;
 using search_engines::WipeSearchEngineChoicePrefs;
-using search_engines::WipeSearchEngineChoiceReason;
 using TemplateURLPrepopulateData::PrepopulatedEngine;
 
 class KeywordsDatabaseHolder {

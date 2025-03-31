@@ -144,7 +144,7 @@ enum class SearchEngineChoiceScreenEvents {
 // metrics.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class WipeSearchEngineChoiceReason {
+enum class SearchEngineChoiceWipeReason {
   kProfileWipe = 0,
   kMissingChoiceVersion = 1,
   kInvalidChoiceVersion = 2,
@@ -283,7 +283,7 @@ void RecordUnexpectedSearchProvider(const TemplateURLData& data);
 // Clears the search engine choice prefs, such as the timestamp and the Chrome
 // version, to ensure the choice screen is shown again.
 void WipeSearchEngineChoicePrefs(PrefService& profile_prefs,
-                                 WipeSearchEngineChoiceReason reason);
+                                 SearchEngineChoiceWipeReason reason);
 
 // Returns the timestamp of search engine choice screen. No value if no choice
 // has been made.
