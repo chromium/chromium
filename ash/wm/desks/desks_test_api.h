@@ -69,10 +69,6 @@ class DesksTestApi {
   // Waits for `desk_bar_view` to finish its UI update.
   static void WaitForDeskBarUiUpdate(DeskBarViewBase* desk_bar_view);
 
-  // Invoke `done` when `desk_bar_view` finishes its UI updates.
-  static void SetDeskBarUiUpdateCallback(DeskBarViewBase* desk_bar_view,
-                                         base::OnceClosure done);
-
   // Desk context menu related. `GetContextMenuForDesk()` and
   // `GetContextMenuModelForDesk()` open a context menu.
   static DeskActionContextMenu* GetContextMenuForDesk(
