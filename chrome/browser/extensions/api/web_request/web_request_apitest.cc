@@ -3190,8 +3190,10 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          WebUiNtpInterceptionWebRequestAPITest,
                          ::testing::Values(ContextType::kServiceWorker));
 
+// TODO(https://crbug.com/407399340): Failing on various bots;
+// msan, asan, dbg, code coverage, chromeos-rel.
 IN_PROC_BROWSER_TEST_P(WebUiNtpInterceptionWebRequestAPITest,
-                       OneGoogleBarRequestsHidden) {
+                       DISABLED_OneGoogleBarRequestsHidden) {
   // Loads an extension which tries to intercept requests to the OneGoogleBar.
   ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
   const Extension* extension =
