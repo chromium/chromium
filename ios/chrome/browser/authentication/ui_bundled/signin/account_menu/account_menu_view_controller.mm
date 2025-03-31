@@ -31,10 +31,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-const char kEditAccountListIdentifier[] = "kEditAccountListIdentifier";
-const char kManageYourGoogleAccountIdentifier[] =
-    "kManageYourGoogleAccountIdentifier";
-
 namespace {
 
 // The margin between the cell and the sheet.
@@ -289,8 +285,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
               IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_GOOGLE_ACCOUNT_ITEM)
                 image:DefaultSymbolWithConfiguration(@"arrow.up.right.square",
                                                      symbolConfiguration)
-           identifier:base::SysUTF8ToNSString(
-                          kManageYourGoogleAccountIdentifier)
+           identifier:kAccountMenuManageYourGoogleAccountId
               handler:^(UIAction* action) {
                 base::RecordAction(base::UserMetricsAction(
                     "Signin_AccountMenu_ManageAccount"));
@@ -304,7 +299,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
                           IDS_IOS_ACCOUNT_MENU_EDIT_ACCOUNT_LIST)
                 image:DefaultSymbolWithConfiguration(@"pencil",
                                                      symbolConfiguration)
-           identifier:base::SysUTF8ToNSString(kEditAccountListIdentifier)
+           identifier:kAccountMenuEditAccountListId
               handler:^(UIAction* action) {
                 base::RecordAction(base::UserMetricsAction(
                     "Signin_AccountMenu_EditAccountList"));
