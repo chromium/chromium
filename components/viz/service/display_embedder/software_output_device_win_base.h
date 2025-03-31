@@ -31,8 +31,15 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDeviceWinBase
   SkCanvas* BeginPaint(const gfx::Rect& damage_rect) override;
   void EndPaint() override;
 
-  // Called from Resize() if |viewport_pixel_size_| has changed.
-  virtual void ResizeDelegated() = 0;
+ protected:
+  // Notifies the `OutputDeviceBacking` that its client has resized. This
+  // function is called after `viewport_pixel_size_` has been updated since the
+  // backing uses it when deciding to vacate the staging texture.
+  virtual void NotifyClientResized() {}
+
+  // Called from Resize() if |viewport_pixel_size_| has changed. Returns whether
+  // the resize was successful.
+  virtual bool ResizeDelegated(const gfx::Size& viewport_pixel_size) = 0;
 
   // Called from BeginPaint() and should return an SkCanvas.
   virtual SkCanvas* BeginPaintDelegated() = 0;

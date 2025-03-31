@@ -26,6 +26,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/display_embedder/compositor_gpu_thread.h"
+#include "components/viz/service/gl/exit_code.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/common/shm_count.h"
@@ -95,13 +96,6 @@ namespace viz {
 
 class VulkanContextProvider;
 class MetalContextProvider;
-
-enum class ExitCode {
-  // Matches service_manager::ResultCode::RESULT_CODE_NORMAL_EXIT
-  RESULT_CODE_NORMAL_EXIT = 0,
-  // Matches chrome::ResultCode::RESULT_CODE_GPU_EXIT_ON_CONTEXT_LOST
-  RESULT_CODE_GPU_EXIT_ON_CONTEXT_LOST = 34,
-};
 
 // This runs in the GPU process, and communicates with the gpu host (which is
 // the window server) over the mojom APIs. This is responsible for setting up
