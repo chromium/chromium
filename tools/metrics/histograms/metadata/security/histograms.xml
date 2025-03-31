@@ -719,29 +719,33 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptOut.DroppedDueToLogNotFound"
-    enum="Boolean" expires_after="2024-05-26">
+    enum="Boolean" expires_after="2026-04-01">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
     Records whether a hashdance report was dropped due to not finding the log
     metadata for the selected SCT. Recorded once when creating a new auditing
     report, but before the report is sampled or deduplicated.
+
+    Note: This histogram was expired from 2024-05-26 through 2025-03-31.
   </summary>
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptOut.LookupQueryResult"
-    enum="SCTLookupQueryResult" expires_after="2024-07-28">
+    enum="SCTLookupQueryResult" expires_after="2026-04-01">
   <owner>cthomp@chromium.org</owner>
   <owner>nsatragno@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
     Records the result of a hashdance lookup query. Recorded once per query
     regardless of whether the query succeeded, failed, or is a retry.
+
+    Note: This histogram was expired from 2024-05-26 through 2025-03-31.
   </summary>
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptOut.PopularSCTSkipped" enum="Boolean"
-    expires_after="2024-05-26">
+    expires_after="2026-04-01">
   <owner>cthomp@chromium.org</owner>
   <owner>nsatragno@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
@@ -749,11 +753,13 @@ chromium-metrics-reviews@google.com.
     Records whether an SCT selected for a hashdance lookup query was skipped
     because it was found on the Popular SCTs list. Recorded once when creating a
     new auditing report, but before the report is sampled or deduplicated.
+
+    Note: This histogram was expired from 2024-05-26 through 2025-03-31.
   </summary>
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptOut.ReportCount" units="reports"
-    expires_after="2024-05-26">
+    expires_after="2026-04-01">
   <owner>cthomp@chromium.org</owner>
   <owner>jdeblasio@chromium.org</owner>
   <summary>
@@ -764,6 +770,8 @@ chromium-metrics-reviews@google.com.
     the SCT auditing code, after sampling is performed, and only once per report
     (including across browser restarts). This metric is only emitted for SCT
     auditing hashdance users.
+
+    Note: This histogram was expired from 2024-05-26 through 2025-03-31.
   </summary>
 </histogram>
 
