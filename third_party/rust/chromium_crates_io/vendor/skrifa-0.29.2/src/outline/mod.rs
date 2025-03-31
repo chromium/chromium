@@ -395,7 +395,7 @@ impl<'a> OutlineGlyph<'a> {
         pen: &mut impl OutlinePen,
     ) -> Result<AdjustedMetrics, DrawError> {
         let ppem = size.ppem();
-        let coords = location.into().coords();
+        let coords = location.into().effective_coords();
         match &self.kind {
             OutlineKind::Glyf(glyf, outline) => {
                 with_glyf_memory(outline, Hinting::None, user_memory, |buf| {
@@ -446,7 +446,7 @@ impl<'a> OutlineGlyph<'a> {
         user_memory: Option<&mut [u8]>,
         sink: &mut impl unscaled::UnscaledOutlineSink,
     ) -> Result<i32, DrawError> {
-        let coords = location.into().coords();
+        let coords = location.into().effective_coords();
         let ppem = None;
         match &self.kind {
             OutlineKind::Glyf(glyf, outline) => {

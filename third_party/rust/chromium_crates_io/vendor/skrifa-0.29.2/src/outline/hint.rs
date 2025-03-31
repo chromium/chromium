@@ -329,7 +329,8 @@ impl HintingInstance {
     ) -> Result<(), DrawError> {
         self.size = size;
         self.coords.clear();
-        self.coords.extend_from_slice(location.into().coords());
+        self.coords
+            .extend_from_slice(location.into().effective_coords());
         let options = options.into();
         self.target = options.target;
         let engine = options.engine.resolve_auto_fallback(outlines);

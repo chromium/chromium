@@ -106,7 +106,7 @@ impl Metrics {
             units_per_em: head.map(|head| head.units_per_em()).unwrap_or_default(),
             ..Default::default()
         };
-        let coords = location.into().coords();
+        let coords = location.into().effective_coords();
         let scale = size.linear_scale(metrics.units_per_em);
         if let Ok(head) = font.head() {
             metrics.bounds = Some(BoundingBox {
@@ -237,7 +237,7 @@ impl<'a> GlyphMetrics<'a> {
             .map(|head| head.units_per_em())
             .unwrap_or_default();
         let fixed_scale = FixedScaleFactor(size.fixed_linear_scale(upem));
-        let coords = location.into().coords();
+        let coords = location.into().effective_coords();
         let (h_metrics, default_advance_width, lsbs) = font
             .hmtx()
             .map(|hmtx| {

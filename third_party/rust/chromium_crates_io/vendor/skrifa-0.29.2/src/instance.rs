@@ -103,6 +103,28 @@ impl<'a> LocationRef<'a> {
     pub fn coords(&self) -> &'a [NormalizedCoord] {
         self.0
     }
+
+    /// Returns true if this represents the default location in variation
+    /// space.
+    ///
+    /// This is represented a set of normalized coordinates that is either
+    /// empty or contains all zeroes.
+    pub fn is_default(&self) -> bool {
+        self.0.is_empty() || self.0.iter().all(|coord| *coord == NormalizedCoord::ZERO)
+    }
+
+    /// Returns the underlying coordinate array if any of the entries are
+    /// non-zero. Otherwise returns the empty slice.
+    ///
+    /// This allows internal routines to bypass expensive variation code
+    /// paths by just checking for an empty slice.
+    pub(crate) fn effective_coords(&self) -> &'a [NormalizedCoord] {
+        if self.is_default() {
+            &[]
+        } else {
+            self.0
+        }
+    }
 }
 
 impl<'a> From<&'a [NormalizedCoord]> for LocationRef<'a> {
@@ -197,5 +219,30 @@ impl<'a> IntoIterator for &'a mut Location {
 
     fn into_iter(self) -> Self::IntoIter {
         self.coords_mut().iter_mut()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{FontRef, MetadataProvider};
+
+    #[test]
+    fn effective_coords() {
+        let font = FontRef::new(font_test_data::AVAR2_CHECKER).unwrap();
+        let location = font.axes().location([("AVAR", 50.0), ("AVWK", 75.0)]);
+        let loc_ref = LocationRef::from(&location);
+        assert!(!loc_ref.is_default());
+        assert_eq!(loc_ref.effective_coords().len(), 2);
+    }
+
+    #[test]
+    fn effective_coords_for_default() {
+        let font = FontRef::new(font_test_data::AVAR2_CHECKER).unwrap();
+        let location = font.axes().location([("AVAR", 0.0), ("AVWK", 0.0)]);
+        let loc_ref = LocationRef::from(&location);
+        assert!(loc_ref.is_default());
+        assert_eq!(loc_ref.effective_coords().len(), 0);
+        assert_eq!(loc_ref.coords().len(), 2);
     }
 }

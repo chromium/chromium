@@ -202,10 +202,15 @@ impl Iterator for Mappings<'_> {
     type Item = (u32, GlyphId);
 
     fn next(&mut self) -> Option<Self::Item> {
-        match &mut self.0 {
-            MappingsInner::None => None,
-            MappingsInner::Format4(iter) => iter.next(),
-            MappingsInner::Format12(iter) => iter.next(),
+        loop {
+            let item = match &mut self.0 {
+                MappingsInner::None => None,
+                MappingsInner::Format4(iter) => iter.next(),
+                MappingsInner::Format12(iter) => iter.next(),
+            }?;
+            if item.1 != GlyphId::NOTDEF {
+                return Some(item);
+            }
         }
     }
 }
@@ -268,10 +273,11 @@ impl CodepointSubtable<'_> {
     }
 
     fn map_impl(&self, codepoint: u32) -> Option<GlyphId> {
-        match &self.subtable {
+        let gid = match &self.subtable {
             SupportedSubtable::Format4(subtable) => subtable.map_codepoint(codepoint),
             SupportedSubtable::Format12(subtable) => subtable.map_codepoint(codepoint),
-        }
+        }?;
+        (gid != GlyphId::NOTDEF).then_some(gid)
     }
 }
 
@@ -502,6 +508,11 @@ mod tests {
             let font = FontRef::new(font_data).unwrap();
             let charmap = font.charmap();
             for (codepoint, glyph_id) in charmap.mappings() {
+                assert_ne!(
+                    glyph_id,
+                    GlyphId::NOTDEF,
+                    "we should never encounter notdef glyphs"
+                );
                 assert_eq!(charmap.map(codepoint), Some(glyph_id));
             }
         }

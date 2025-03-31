@@ -14,13 +14,24 @@ use super::{
 
 use crate::decycler::{Decycler, DecyclerError};
 
-use alloc::vec::Vec;
-
 #[cfg(feature = "libm")]
 #[allow(unused_imports)]
 use core_maths::*;
 
 pub(crate) type PaintDecycler = Decycler<usize, MAX_TRAVERSAL_DEPTH>;
+
+// Avoid heap allocations for any gradient with <= 32 color stops. This number
+// was chosen to keep stack size < 512 bytes.
+//
+// The largest gradient in Noto Color Emoji has 13 stops.
+//
+// Only one ColorStopVec will be created per paint graph traversal.
+//
+// Usage of SmallVec as a response to Behdad's wonderful memory usage analysis:
+// <https://docs.google.com/document/d/1S47f3E--yqvFdG7lmmufxRoFi_wMzotC03v8UvS_p54/edit?tab=t.0#heading=h.bfj7urloz3oe>
+const MAX_INLINE_COLOR_STOPS: usize = 32;
+
+pub(crate) type ColorStopVec = crate::collections::SmallVec<ColorStop, MAX_INLINE_COLOR_STOPS>;
 
 impl From<DecyclerError> for PaintError {
     fn from(value: DecyclerError) -> Self {
@@ -59,11 +70,17 @@ impl From<ResolvedColorStop> for ColorStop {
     }
 }
 
-fn make_sorted_resolved_stops(stops: &ColorStops, instance: &ColrInstance) -> Vec<ColorStop> {
+fn make_sorted_resolved_stops(
+    stops: &ColorStops,
+    instance: &ColrInstance,
+    out_stops: &mut ColorStopVec,
+) {
     let color_stop_iter = stops.resolve(instance).map(|stop| stop.into());
-    let mut collected: Vec<ColorStop> = color_stop_iter.collect();
-    collected.sort_by(|a, b| a.offset.partial_cmp(&b.offset).unwrap_or(Ordering::Equal));
-    collected
+    out_stops.clear();
+    for stop in color_stop_iter {
+        out_stops.push(stop);
+    }
+    out_stops.sort_by(|a, b| a.offset.partial_cmp(&b.offset).unwrap_or(Ordering::Equal));
 }
 
 struct CollectFillGlyphPainter<'a> {
@@ -138,6 +155,7 @@ pub(crate) fn traverse_with_callbacks(
     instance: &ColrInstance,
     painter: &mut impl ColorPainter,
     decycler: &mut PaintDecycler,
+    resolved_stops: &mut ColorStopVec,
     recurse_depth: usize,
 ) -> Result<(), PaintError> {
     if recurse_depth >= MAX_TRAVERSAL_DEPTH {
@@ -154,6 +172,7 @@ pub(crate) fn traverse_with_callbacks(
                     instance,
                     painter,
                     &mut cycle_guard,
+                    resolved_stops,
                     recurse_depth + 1,
                 )?;
             }
@@ -195,7 +214,7 @@ pub(crate) fn traverse_with_callbacks(
                 point_normalized
             };
 
-            let mut resolved_stops = make_sorted_resolved_stops(color_stops, instance);
+            make_sorted_resolved_stops(color_stops, instance, resolved_stops);
 
             // If p0p1 or p0p2 are degenerate probably nothing should be drawn.
             // If p0p1 and p0p2 are parallel then one side is the first color and the other side is
@@ -241,7 +260,7 @@ pub(crate) fn traverse_with_callbacks(
                     // the p0-p3 axis and result in specifying non-normalized color stops to the shader.
 
                     if color_stop_range == 0.0 && extend == &Extend::Pad {
-                        let mut extra_stop = last_stop.clone();
+                        let mut extra_stop = last_stop;
                         extra_stop.offset += 1.0;
                         resolved_stops.push(extra_stop);
 
@@ -261,7 +280,7 @@ pub(crate) fn traverse_with_callbacks(
                         let scale_factor = 1.0 / color_stop_range;
                         let start_offset = first_stop.offset;
 
-                        for stop in &mut resolved_stops {
+                        for stop in resolved_stops.iter_mut() {
                             stop.offset = (stop.offset - start_offset) * scale_factor;
                         }
                     }
@@ -292,7 +311,7 @@ pub(crate) fn traverse_with_callbacks(
             let mut radius0 = *radius0;
             let mut radius1 = *radius1;
 
-            let mut resolved_stops = make_sorted_resolved_stops(color_stops, instance);
+            make_sorted_resolved_stops(color_stops, instance, resolved_stops);
 
             match (
                 resolved_stops.first().cloned(),
@@ -310,7 +329,7 @@ pub(crate) fn traverse_with_callbacks(
                     // insert a color stop at the end. See LinearGradient for more details.
 
                     if color_stop_range == 0.0 && extend == &Extend::Pad {
-                        let mut extra_stop = last_stop.clone();
+                        let mut extra_stop = last_stop;
                         extra_stop.offset += 1.0;
                         resolved_stops.push(extra_stop);
                         color_stop_range = 1.0;
@@ -337,7 +356,7 @@ pub(crate) fn traverse_with_callbacks(
                         radius1 = radius0 + radius_diff * last_stop.offset;
                         radius0 += radius_diff * first_stop.offset;
 
-                        for stop in &mut resolved_stops {
+                        for stop in resolved_stops.iter_mut() {
                             stop.offset = (stop.offset - stops_start_offset) * scale_factor;
                         }
                     }
@@ -373,7 +392,7 @@ pub(crate) fn traverse_with_callbacks(
 
             let sector_angle = end_angle - start_angle;
 
-            let mut resolved_stops = make_sorted_resolved_stops(color_stops, instance);
+            make_sorted_resolved_stops(color_stops, instance, resolved_stops);
             if resolved_stops.is_empty() {
                 return Ok(());
             }
@@ -403,7 +422,7 @@ pub(crate) fn traverse_with_callbacks(
                     // the last color. Not adding this stop will skip the projection and result in
                     // specifying non-normalized color stops to the shader.
                     if color_stop_range == 0.0 && extend == &Extend::Pad {
-                        let mut offset_last = last_stop.clone();
+                        let mut offset_last = last_stop;
                         offset_last.offset += 1.0;
                         resolved_stops.push(offset_last);
                         color_stop_range = 1.0;
@@ -413,7 +432,7 @@ pub(crate) fn traverse_with_callbacks(
 
                     let scale_factor = 1.0 / color_stop_range;
 
-                    for shift_stop in &mut resolved_stops {
+                    for shift_stop in resolved_stops.iter_mut() {
                         shift_stop.offset = (shift_stop.offset - start_offset) * scale_factor;
                     }
 
@@ -432,7 +451,7 @@ pub(crate) fn traverse_with_callbacks(
                         (start_angle_scaled, end_angle_scaled) =
                             (end_angle_scaled, start_angle_scaled);
                         resolved_stops.reverse();
-                        for stop in &mut resolved_stops {
+                        for stop in resolved_stops.iter_mut() {
                             stop.offset = 1.0 - stop.offset;
                         }
                     }
@@ -464,6 +483,7 @@ pub(crate) fn traverse_with_callbacks(
                 instance,
                 &mut optimizer,
                 decycler,
+                resolved_stops,
                 recurse_depth + 1,
             );
 
@@ -475,6 +495,7 @@ pub(crate) fn traverse_with_callbacks(
                     instance,
                     painter,
                     decycler,
+                    resolved_stops,
                     recurse_depth + 1,
                 );
                 painter.pop_clip();
@@ -502,6 +523,7 @@ pub(crate) fn traverse_with_callbacks(
                                 instance,
                                 painter,
                                 &mut cycle_guard,
+                                resolved_stops,
                                 recurse_depth + 1,
                             );
                             if clipbox.is_some() {
@@ -535,6 +557,7 @@ pub(crate) fn traverse_with_callbacks(
                 instance,
                 painter,
                 decycler,
+                resolved_stops,
                 recurse_depth + 1,
             );
             painter.pop_transform();
@@ -551,6 +574,7 @@ pub(crate) fn traverse_with_callbacks(
                 instance,
                 painter,
                 decycler,
+                resolved_stops,
                 recurse_depth + 1,
             );
             result?;
@@ -560,10 +584,11 @@ pub(crate) fn traverse_with_callbacks(
                 instance,
                 painter,
                 decycler,
+                resolved_stops,
                 recurse_depth + 1,
             );
-            painter.pop_layer();
-            painter.pop_layer();
+            painter.pop_layer_with_mode(*mode);
+            painter.pop_layer_with_mode(CompositeMode::SrcOver);
             result
         }
     }

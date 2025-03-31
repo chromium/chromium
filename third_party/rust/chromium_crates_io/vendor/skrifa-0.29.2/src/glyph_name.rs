@@ -93,6 +93,10 @@ impl<'a> GlyphNames<'a> {
                 .and_then(|sid| GlyphName::from_cff_sid(cff, sid)),
             _ => None,
         };
+        // If name is empty string, synthesize it
+        if name.as_ref().is_none_or(|s| s.is_empty()) {
+            return Some(GlyphName::synthesize(glyph_id));
+        }
         Some(name.unwrap_or_else(|| GlyphName::synthesize(glyph_id)))
     }
 
@@ -277,6 +281,7 @@ impl Iterator for Iter<'_> {
 
     fn next(&mut self) -> Option<Self::Item> {
         match self.next_name()? {
+            Ok((gid, name)) if name.is_empty() => Some((gid, GlyphName::synthesize(gid))),
             Ok(gid_name) => Some(gid_name),
             Err(gid) => Some((gid, GlyphName::synthesize(gid))),
         }
@@ -286,6 +291,7 @@ impl Iterator for Iter<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use raw::{FontData, FontRead};
 
     #[test]
     fn synthesized_glyph_names() {
@@ -299,6 +305,23 @@ mod tests {
             assert!(name.is_synthesized())
         }
         check_names(&names, &expected_names, GlyphNameSource::Synthesized);
+    }
+
+    #[test]
+    fn synthesize_for_empty_names() {
+        let mut post_data = font_test_data::post::SIMPLE.to_vec();
+        // last name in this post data is "hola" so pop 5 bytes and then
+        // push a 0 to simulate an empty name
+        post_data.truncate(post_data.len() - 5);
+        post_data.push(0);
+        let post = Post::read(FontData::new(&post_data)).unwrap();
+        let gid = GlyphId::new(9);
+        assert!(post.glyph_name(gid.try_into().unwrap()).unwrap().is_empty());
+        let names = GlyphNames {
+            inner: Inner::Post(post, 10),
+        };
+        assert_eq!(names.get(gid).unwrap(), "gid9");
+        assert_eq!(names.iter().last().unwrap().1, "gid9");
     }
 
     #[test]
