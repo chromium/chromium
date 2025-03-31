@@ -676,12 +676,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Omnibox.ClipboardSuggestionShownWithCurrentURL"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="OutOfRaster" separator=".">
-  <suffix name="OutOfRaster"
-      label="Task was not performed as part of a raster task."/>
-  <affected-histogram name="Renderer4.GpuImageDecodeState.FirstLockWasted"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="PageLoadBackgrounded2" separator=".">
   <suffix name="Background"
       label="The page was backgrounded at least once from navigation start to
@@ -1439,32 +1433,6 @@ chromium-metrics-reviews@google.com.
       name="Net.QuicSession.ConnectRandomPortRequiringConfirmation"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="RasterTaskSchedulingDelayNoAtRasterDecodesType"
-    separator=".">
-  <suffix name="All"
-      label="This metric applies to all raster work that doesn't depend on
-             at-raster image decodes."/>
-  <suffix name="TilesWithJpegHwDecodeCandidates"
-      label="This metric applies only to raster work that depends on JPEGs
-             that are candidates for hardware decode acceleration (and that
-             doesn't depend on at-raster image decodes)."/>
-  <suffix name="TilesWithWebPHwDecodeCandidates"
-      label="This metric applies only to raster work that depends on WebPs
-             that are candidates for hardware decode acceleration (and that
-             doesn't depend on at-raster image decodes)."/>
-  <affected-histogram
-      name="Renderer4.Browser.RasterTaskSchedulingDelayNoAtRasterDecodes"/>
-  <affected-histogram
-      name="Renderer4.Renderer.RasterTaskSchedulingDelayNoAtRasterDecodes"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="RasterTaskTypeGpu" separator=".">
-  <suffix name="Gpu" label="This metric is for only gpu raster."/>
-  <suffix name="Oop" label="This metric is for only oop raster."/>
-  <affected-histogram name="Renderer4.Browser.RasterTaskTotalDuration"/>
-  <affected-histogram name="Renderer4.Renderer.RasterTaskTotalDuration"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="SafetyTip" separator=".">
   <suffix name="SafetyTip_BadReputation" label="Bad reputation Safety Tip"/>
   <suffix name="SafetyTip_BadReputationIgnored"
@@ -1481,12 +1449,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Security.SafetyTips.Interaction"/>
   <affected-histogram name="Security.SiteEngagement"/>
   <affected-histogram name="Security.TimeOnPage2"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ScrollSourceDevice" separator=".">
-  <suffix name="Touch" label="Touch"/>
-  <suffix name="Wheel" label="Wheel"/>
-  <affected-histogram name="Renderer4.ScrollingThread"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="SearchEnginePromoOrdering" separator="."
