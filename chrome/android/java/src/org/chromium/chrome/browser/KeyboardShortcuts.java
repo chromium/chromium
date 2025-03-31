@@ -29,6 +29,7 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.device.gamepad.GamepadList;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -681,6 +682,19 @@ public class KeyboardShortcuts {
                 KeyEvent.KEYCODE_SLASH,
                 ctrlShift);
         shortcutGroups.add(webpageShortcutGroup);
+
+        if (DeviceFormFactor.isDesktop()) {
+            KeyboardShortcutGroup developerShortcutGroup =
+                    new KeyboardShortcutGroup(
+                            context.getString(R.string.keyboard_shortcut_developer_group_header));
+            addShortcut(
+                    context,
+                    developerShortcutGroup,
+                    R.string.keyboard_shortcut_developer_tools,
+                    KeyEvent.KEYCODE_I,
+                    ctrlShift);
+            shortcutGroups.add(developerShortcutGroup);
+        }
 
         return shortcutGroups;
     }
