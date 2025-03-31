@@ -4047,11 +4047,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enable-tab-resumption-module",
-    "owners": ["clank-start@chromium.org","hanxi@chromium.org","huangs@chromium.org"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-tabstate-flatbuffer",
     "owners": [ "chrome-shopping@google.com" ],
     "expiry_milestone": 138

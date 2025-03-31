@@ -5416,57 +5416,6 @@
             ]
         }
     ],
-    "ClankTabResumpton": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledV2",
-                    "params": {
-                        "disable_blend": "true",
-                        "enable_v2": "true",
-                        "show_see_more": "true",
-                        "show_tabs_in_one_module": "true",
-                        "use_default_app_filter": "true",
-                        "use_salient_image": "true"
-                    },
-                    "enable_features": [
-                        "TabResumptionModuleAndroid"
-                    ]
-                },
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "max_tiles_number": "1",
-                        "show_see_more": "true",
-                        "show_tabs_in_one_module": "true",
-                        "use_default_app_filter": "true",
-                        "use_salient_image": "true"
-                    },
-                    "enable_features": [
-                        "TabResumptionModuleAndroid"
-                    ]
-                },
-                {
-                    "name": "EnabledML",
-                    "params": {
-                        "enable_v2": "true",
-                        "fetch_history_backend": "true",
-                        "fetch_local_tabs_backend": "true",
-                        "show_see_more": "true",
-                        "show_tabs_in_one_module": "true",
-                        "use_default_app_filter": "true",
-                        "use_salient_image": "true"
-                    },
-                    "enable_features": [
-                        "TabResumptionModuleAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClearBrowsingDataAndroidSurvey": [
         {
             "platforms": [

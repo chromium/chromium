@@ -1089,15 +1089,6 @@
       <message name="IDS_TAB_RESUMPTION_MODULE_SEE_MORE" desc="Text of a link shown beside the title of the module. Clicking the link launches the &quot;Recent tabs&quot; page.">
         See more
       </message>
-      <message name="IDS_TAB_RESUMPTION_MODULE_DOMAIN_URL_AND_DEVICE_NAME" desc="The domain URL and device name shown on the tab resumption module.">
-        <ph name="DOMAIN_URL">%1$s<ex>wikipedia.org</ex></ph> <ph name="SEPARATOR1">•</ph> <ph name="DEVICE_NAME">%2$s<ex>My Pixel 7</ex></ph>
-      </message>
-      <message name="IDS_TAB_RESUMPTION_MODULE_OTHER_DEVICES_NAME" desc="The name of feature to show suggested tabs from other devices in the tab resumption module, to appear, e.g., on the Settings page to toggle the feature.">
-        Tabs from other devices
-      </message>
-      <message name="IDS_TAB_RESUMPTION_MODULE_DEFAULT_REASON" desc="The string for a default reason why a Tab is chosen to show on the tab resumption module.">
-        You visited <ph name="RECENCY">%1$s<ex>1 hr ago</ex></ph>
-      </message>
 
       <message name="IDS_ACCESSIBILITY_EXPANDED" is_accessibility_with_no_ui="true" desc="Content description when the search resumption module is expanded.">
         Expanded

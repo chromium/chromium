@@ -817,11 +817,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(TAB_CLOSURE_METHOD_REFACTOR, false);
     public static final CachedFlag sTabGroupPaneAndroid =
             newCachedFlag(TAB_GROUP_PANE_ANDROID, /* defaultValue= */ true);
-    public static final CachedFlag sTabResumptionModuleAndroid =
-            newCachedFlag(
-                    TAB_RESUMPTION_MODULE_ANDROID,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
     public static final CachedFlag sTabStateFlatBuffer =
             newCachedFlag(
                     TAB_STATE_FLAT_BUFFER,
@@ -944,7 +939,6 @@ public abstract class ChromeFeatureList {
                     sStartSurfaceReturnTime,
                     sTabClosureMethodRefactor,
                     sTabGroupPaneAndroid,
-                    sTabResumptionModuleAndroid,
                     sTabStateFlatBuffer,
                     sTabStripGroupCollapse,
                     sTabStripIncognitoMigration,
@@ -1355,28 +1349,6 @@ public abstract class ChromeFeatureList {
                     START_SURFACE_RETURN_TIME,
                     "start_surface_return_time_on_tablet_seconds",
                     14400); // 4 hours
-    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidShowDefaultReason =
-            newBooleanCachedFeatureParam(
-                    TAB_RESUMPTION_MODULE_ANDROID, "show_default_reason", false);
-    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidFetchHistoryBackend =
-            newBooleanCachedFeatureParam(
-                    TAB_RESUMPTION_MODULE_ANDROID, "fetch_history_backend", false);
-    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidDisableBlend =
-            newBooleanCachedFeatureParam(TAB_RESUMPTION_MODULE_ANDROID, "disable_blend", false);
-    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidUseDefaultAppFilter =
-            newBooleanCachedFeatureParam(
-                    TAB_RESUMPTION_MODULE_ANDROID, "use_default_app_filter", false);
-    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidShowSeeMore =
-            newBooleanCachedFeatureParam(TAB_RESUMPTION_MODULE_ANDROID, "show_see_more", false);
-    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidUseSalientImage =
-            newBooleanCachedFeatureParam(TAB_RESUMPTION_MODULE_ANDROID, "use_salient_image", false);
-    public static final IntCachedFeatureParam sTabResumptionModuleAndroidMaxTilesNumber =
-            newIntCachedFeatureParam(TAB_RESUMPTION_MODULE_ANDROID, "max_tiles_number", 2);
-    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidEnableV2 =
-            newBooleanCachedFeatureParam(TAB_RESUMPTION_MODULE_ANDROID, "enable_v2", false);
-    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidCombineTabs =
-            newBooleanCachedFeatureParam(
-                    TAB_RESUMPTION_MODULE_ANDROID, "show_tabs_in_one_module", false);
     public static final BooleanCachedFeatureParam sTabStateFlatBufferMigrateStaleTabs =
             newBooleanCachedFeatureParam(TAB_STATE_FLAT_BUFFER, "migrate_stale_tabs", true);
     public static final IntCachedFeatureParam
@@ -1457,15 +1429,6 @@ public abstract class ChromeFeatureList {
                     sSearchinCctApplyReferrerId,
                     sSearchinCctOmniboxAllowedPackageNames,
                     sStartSurfaceReturnTimeTabletSecs,
-                    sTabResumptionModuleAndroidShowDefaultReason,
-                    sTabResumptionModuleAndroidFetchHistoryBackend,
-                    sTabResumptionModuleAndroidDisableBlend,
-                    sTabResumptionModuleAndroidUseDefaultAppFilter,
-                    sTabResumptionModuleAndroidShowSeeMore,
-                    sTabResumptionModuleAndroidUseSalientImage,
-                    sTabResumptionModuleAndroidMaxTilesNumber,
-                    sTabResumptionModuleAndroidEnableV2,
-                    sTabResumptionModuleAndroidCombineTabs,
                     sTabStateFlatBufferMigrateStaleTabs,
                     sTabWindowManagerReportIndicesMismatchTimeDiffThresholdMs,
                     sUseChimeAndroidSdkAlwaysRegister,

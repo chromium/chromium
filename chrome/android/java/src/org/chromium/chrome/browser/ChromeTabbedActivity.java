@@ -211,7 +211,6 @@ import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabModelObserver;
 import org.chromium.chrome.browser.tab_group_suggestion.GroupSuggestionsPromotionCoordinator;
 import org.chromium.chrome.browser.tab_group_suggestion.SuggestionEventObserver;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
-import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleBuilder;
 import org.chromium.chrome.browser.tab_ui.TabGridIphDialogCoordinator;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
@@ -2593,16 +2592,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                     new PriceChangeModuleBuilder(
                             this, getProfileProviderSupplier(), mTabModelSelector);
             moduleRegistry.registerModule(ModuleType.PRICE_CHANGE, priceChangeModuleBuilder);
-        }
-
-        if (ChromeFeatureList.sTabResumptionModuleAndroid.isEnabled()) {
-            TabResumptionModuleBuilder tabResumptionModuleBuilder =
-                    new TabResumptionModuleBuilder(
-                            this,
-                            mTabModelProfileSupplier,
-                            getTabModelSelectorSupplier(),
-                            getTabContentManagerSupplier());
-            moduleRegistry.registerModule(ModuleType.TAB_RESUMPTION, tabResumptionModuleBuilder);
         }
 
         if (ChromeFeatureList.sSafetyHubMagicStack.isEnabled()) {

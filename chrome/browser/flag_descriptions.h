@@ -2195,9 +2195,6 @@ extern const char kTabSearchPositionSettingDescription[];
 extern const char kTearOffWebAppAppTabOpensWebAppWindowName[];
 extern const char kTearOffWebAppAppTabOpensWebAppWindowDescription[];
 
-extern const char kTabResumptionModuleAndroidName[];
-extern const char kTabResumptionModuleAndroidDescription[];
-
 extern const char kTextBasedAudioDescriptionName[];
 extern const char kTextBasedAudioDescriptionDescription[];
 

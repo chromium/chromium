@@ -336,7 +336,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabGroupEntryPointsAndroid,
     &kTabGroupParityBottomSheetAndroid,
     &kToolbarPhoneCleanup,
-    &kTabResumptionModuleAndroid,
     &kTabStateFlatBuffer,
     &kTabStripContextMenuAndroid,
     &kTabStripGroupCollapseAndroid,
@@ -1185,10 +1184,6 @@ BASE_FEATURE(kSearchResumptionModuleAndroid,
 BASE_FEATURE(kStartSurfaceReturnTime,
              "StartSurfaceReturnTime",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabResumptionModuleAndroid,
-             "TabResumptionModuleAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, keep logging and reporting UMA while chrome is backgrounded.
 BASE_FEATURE(kUmaBackgroundSessions,
