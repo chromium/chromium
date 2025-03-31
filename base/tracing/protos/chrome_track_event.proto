@@ -1985,7 +1985,7 @@ message CompositorTimingHistoryV2 {
 }
 
 message WebViewStartup {
-  optional bool from_ui_thread = 1;
+  optional bool from_ui_thread = 1 [deprecated = true];
   // This enum must be kept in sync with WebViewChromiumAwInit.CallSite
   enum CallSite {
     GET_AW_TRACING_CONTROLLER = 0;
@@ -2000,7 +2000,19 @@ message WebViewStartup {
     GET_TRACING_CONTROLLER = 9;
     ASYNC_WEBVIEW_STARTUP = 10;
   }
-  optional CallSite call_site = 2;
+
+  // LINT.IfChange(WebViewChromiumStartupMode)
+  enum StartupMode {
+    FULLY_SYNC = 0;
+    FULLY_ASYNC = 1;
+    PARTIAL_ASYNC_THEN_SYNC = 2;
+    ASYNC_BUT_FULLY_SYNC = 3;
+  }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:WebViewChromiumStartupMode)
+
+  optional CallSite start_call_site = 2;
+  optional CallSite finish_call_site = 3;
+  optional StartupMode startup_mode = 4;
 }
 
 message AnimationFrameTimingInfo {

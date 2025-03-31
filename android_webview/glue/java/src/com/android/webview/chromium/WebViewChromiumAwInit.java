@@ -215,6 +215,8 @@ public class WebViewChromiumAwInit {
     private final WebViewChromiumRunQueue mWebViewStartUpCallbackRunQueue =
             new WebViewChromiumRunQueue();
 
+    private final AtomicInteger mChromiumFirstStartupRequestMode =
+            new AtomicInteger(StartupTasksRunner.UNSET);
     // Only accessed from the UI thread
     private StartupTasksRunner mStartupTasksRunner;
     private boolean mIsStartupTaskExperimentEnabled;
@@ -493,31 +495,62 @@ public class WebViewChromiumAwInit {
     }
 
     private void recordStartupMetrics(
-            @CallSite int callSite,
-            boolean triggeredFromUIThread,
+            @CallSite int startCallSite,
+            @CallSite int finishCallSite,
             long startTimeMs,
             long totalTimeTakenMs,
-            long longestUiBlockingTaskTimeMs) {
+            long longestUiBlockingTaskTimeMs,
+            @StartupTasksRunner.StartupMode int startupMode) {
+        // Record asyncStartup API metrics
         mWebViewStartUpDiagnostics.setTotalTimeUiThreadChromiumInitMillis(totalTimeTakenMs);
         mWebViewStartUpDiagnostics.setMaxTimePerTaskUiThreadChromiumInitMillis(
                 longestUiBlockingTaskTimeMs);
         mWebViewStartUpCallbackRunQueue.notifyChromiumStarted();
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.WebView.Startup.CreationTime.InitReason", callSite, CallSite.COUNT);
+
+        // Record histograms
+        String startupModeString =
+                switch (startupMode) {
+                    case StartupTasksRunner.StartupMode.FULLY_SYNC -> ".FullySync";
+                    case StartupTasksRunner.StartupMode.FULLY_ASYNC -> ".FullyAsync";
+                    case StartupTasksRunner.StartupMode
+                            .ASYNC_BUT_FULLY_SYNC -> ".AsyncButFullySync";
+                    case StartupTasksRunner.StartupMode
+                            .PARTIAL_ASYNC_THEN_SYNC -> ".PartialAsyncThenSync";
+                    default -> ".Unknown";
+                };
         RecordHistogram.recordTimesHistogram(
                 "Android.WebView.Startup.CreationTime.StartChromiumLocked", totalTimeTakenMs);
         RecordHistogram.recordTimesHistogram(
+                "Android.WebView.Startup.CreationTime.StartChromiumLocked" + startupModeString,
+                totalTimeTakenMs);
+        RecordHistogram.recordTimesHistogram(
                 "Android.WebView.Startup.ChromiumInitTime.LongestUiBlockingTaskTime",
                 longestUiBlockingTaskTimeMs);
-        // TODO(crbug.com/397372092): Update this trace event for the startup tasks experiment and
-        // add more async startup metrics
-        if (!mIsStartupTaskExperimentEnabled) {
-            TraceEvent.webViewStartupStartChromiumLocked(
-                    startTimeMs,
-                    totalTimeTakenMs,
-                    /* callSite= */ callSite,
-                    /* fromUIThread= */ triggeredFromUIThread);
+        RecordHistogram.recordTimesHistogram(
+                "Android.WebView.Startup.ChromiumInitTime.LongestUiBlockingTaskTime"
+                        + startupModeString,
+                longestUiBlockingTaskTimeMs);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.Startup.ChromiumInitTime.StartupMode",
+                startupMode,
+                StartupTasksRunner.StartupMode.COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.Startup.CreationTime.InitReason", startCallSite, CallSite.COUNT);
+        if (startupMode == StartupTasksRunner.StartupMode.ASYNC_BUT_FULLY_SYNC
+                || startupMode == StartupTasksRunner.StartupMode.PARTIAL_ASYNC_THEN_SYNC) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.WebView.Startup.ChromiumInitTime.AsyncToSyncSwitchReason",
+                    finishCallSite,
+                    CallSite.COUNT);
         }
+
+        // Record traces
+        TraceEvent.webViewStartupStartChromiumLocked(
+                startTimeMs,
+                totalTimeTakenMs,
+                /* startCallSite= */ startCallSite,
+                /* finishCallSite= */ finishCallSite,
+                /* startupMode= */ startupMode);
         // Also create the trace events for the earlier WebViewChromiumFactoryProvider init, which
         // happens before tracing is ready.
         TraceEvent.webViewStartupTotalFactoryInit(
@@ -638,6 +671,11 @@ public class WebViewChromiumAwInit {
 
         maybeSetChromiumUiThread(fromThreadSafeFunction);
 
+        mChromiumFirstStartupRequestMode.compareAndSet(
+                StartupTasksRunner.UNSET,
+                ThreadUtils.runningOnUiThread()
+                        ? StartupTasksRunner.SYNC
+                        : StartupTasksRunner.ASYNC);
         if (ThreadUtils.runningOnUiThread()) {
             mWebViewStartUpDiagnostics.setSynchronousChromiumInitLocation(
                     new Throwable(
@@ -886,13 +924,41 @@ public class WebViewChromiumAwInit {
         private boolean mAsyncHasBeenTriggered;
         private long mLongestUiBlockingTaskTimeMs;
         private long mTotalTimeTakenMs;
-        private boolean mStartupTriggered;
+        private boolean mStartupStarted;
+        private @CallSite int mStartCallSite = CallSite.COUNT;
+        private @CallSite int mFinishCallSite = CallSite.COUNT;
+        private boolean mFirstTaskFromSynchronousCall;
 
-        // TODO(crbug.com/397372092): Currently, these two fields are stored here for the sake of
-        // tracing. The associated traces are currently not relevant for async run. We plan to
-        // revisit these when we add async relevant metrics.
-        private boolean mTriggeredFromUIThread;
-        private @CallSite int mCallSite = CallSite.COUNT;
+        private static final int UNSET = 0;
+        private static final int SYNC = 1;
+        private static final int ASYNC = 2;
+
+        // LINT.IfChange(WebViewChromiumStartupMode)
+        @IntDef({
+            StartupMode.FULLY_SYNC,
+            StartupMode.FULLY_ASYNC,
+            StartupMode.PARTIAL_ASYNC_THEN_SYNC,
+            StartupMode.ASYNC_BUT_FULLY_SYNC,
+            StartupMode.COUNT,
+        })
+        @interface StartupMode {
+            // Startup was triggered on the UI thread and completed synchronously
+            int FULLY_SYNC = 0;
+            // Startup was triggered on a background thread and completed asynchronously
+            int FULLY_ASYNC = 1;
+            // Startup was triggered on a background thread, some tasks ran asynchronously. Then
+            // another init call on the UI thread preempted the async run and startup completed
+            // synchronously
+            int PARTIAL_ASYNC_THEN_SYNC = 2;
+            // Startup was triggered on a background thread, the posted task was not run yet. Then
+            // another init call on the UI thread was started before the posted task and startup
+            // fully completed synchronously
+            int ASYNC_BUT_FULLY_SYNC = 3;
+            // Remember to update WebViewStartupMode in enums.xml when adding new values here.
+            int COUNT = 4;
+        };
+
+        // LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:WebViewChromiumStartupMode)
 
         StartupTasksRunner(ArrayDeque<Runnable> tasks) {
             mQueue = tasks;
@@ -902,14 +968,14 @@ public class WebViewChromiumAwInit {
         void run(@CallSite int callSite, boolean triggeredFromUIThread) {
             assert ThreadUtils.runningOnUiThread();
 
-            if (!mStartupTriggered) {
-                mStartupTriggered = true;
-                mCallSite = callSite;
-                mTriggeredFromUIThread = triggeredFromUIThread;
-
-                if (mCallSite == CallSite.GET_STATICS) {
+            if (!mStartupStarted) {
+                mStartupStarted = true;
+                mFirstTaskFromSynchronousCall = triggeredFromUIThread;
+                mStartCallSite = callSite;
+                if (mStartCallSite == CallSite.GET_STATICS) {
                     SharedStatics.setStartupTriggered();
                 }
+                mFinishCallSite = callSite;
             }
 
             // Early return to avoid repeating the return call within sync and async blocks
@@ -927,6 +993,9 @@ public class WebViewChromiumAwInit {
                 mAsyncHasBeenTriggered = true;
                 runAsyncStartupTaskAndPostNext(/* taskNum= */ 1);
             } else {
+                // This lets us track the reason for a sync finish, especially relevant if we
+                // started off asynchronously.
+                mFinishCallSite = callSite;
                 try (ScopedSysTraceEvent event =
                         ScopedSysTraceEvent.scoped(
                                 "WebViewChromiumAwInit.startChromiumLockedSync")) {
@@ -935,7 +1004,8 @@ public class WebViewChromiumAwInit {
                                 while (!mQueue.isEmpty()) {
                                     mQueue.poll().run();
                                 }
-                            });
+                            },
+                            SYNC);
                 }
             }
         }
@@ -954,7 +1024,7 @@ public class WebViewChromiumAwInit {
                                     "WebViewChromiumAwInit.startChromiumLockedAsync_task%d/%d",
                                     taskNum,
                                     mNumTasks))) {
-                timedRunWithExceptionHandling(mQueue.poll());
+                timedRunWithExceptionHandling(mQueue.poll(), ASYNC);
             }
 
             if (!mQueue.isEmpty()) { // Avoids unnecessarily posting to the UI thread
@@ -964,7 +1034,7 @@ public class WebViewChromiumAwInit {
         }
 
         // Runs the startup task while keeping track of metrics and dealing with exceptions
-        private void timedRunWithExceptionHandling(Runnable task) {
+        private void timedRunWithExceptionHandling(Runnable task, int runMode) {
             assert ThreadUtils.runningOnUiThread();
 
             try {
@@ -977,11 +1047,12 @@ public class WebViewChromiumAwInit {
                 if (mQueue.isEmpty()) {
                     // We are done running all the tasks, so record the metrics.
                     recordStartupMetrics(
-                            mCallSite,
-                            mTriggeredFromUIThread,
+                            mStartCallSite,
+                            mFinishCallSite,
                             /* startTimeMs= */ startTimeMs,
                             /* totalTimeTakenMs= */ mTotalTimeTakenMs,
-                            /* longestUiBlockingTaskTimeMs= */ mLongestUiBlockingTaskTimeMs);
+                            /* longestUiBlockingTaskTimeMs= */ mLongestUiBlockingTaskTimeMs,
+                            calculateStartupMode(runMode));
                 }
             } catch (RuntimeException | Error e) {
                 Log.e(TAG, "WebView chromium startup failed", e);
@@ -992,6 +1063,26 @@ public class WebViewChromiumAwInit {
                 }
                 throw e;
             }
+        }
+
+        // To determine the startup mode, we track:
+        // 1. Whether the initial startup request was synchronous or asynchronous.
+        // 2. Whether the first task ran synchronously or asynchronously.
+        // 3. Whether the last task ran synchronously or asynchronously.
+        private @StartupMode int calculateStartupMode(int lastTaskRunMode) {
+            // The control arm of our experiment runs fully synchronously.
+            if (!mIsStartupTaskExperimentEnabled) {
+                return StartupMode.FULLY_SYNC;
+            }
+
+            if (mFirstTaskFromSynchronousCall) {
+                return mChromiumFirstStartupRequestMode.get() == SYNC
+                        ? StartupMode.FULLY_SYNC
+                        : StartupMode.ASYNC_BUT_FULLY_SYNC;
+            }
+            return lastTaskRunMode == SYNC
+                    ? StartupMode.PARTIAL_ASYNC_THEN_SYNC
+                    : StartupMode.FULLY_ASYNC;
         }
     }
 }

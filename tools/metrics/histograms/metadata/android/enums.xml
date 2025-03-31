@@ -2179,6 +2179,17 @@ chromium-metrics-reviews@google.com.
   <int value="39" label="WebViewClient.onScaleChanged"/>
 </enum>
 
+<!-- LINT.IfChange(WebViewChromiumStartupMode) -->
+
+<enum name="WebViewChromiumStartupMode">
+  <int value="0" label="FULLY_SYNC"/>
+  <int value="1" label="FULLY_ASYNC"/>
+  <int value="2" label="PARTIAL_ASYNC_THEN_SYNC"/>
+  <int value="3" label="ASYNC_BUT_FULLY_SYNC"/>
+</enum>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/android/histograms.xml:WebViewChromiumStartupMode) -->
+
 <enum name="WebViewClientMethod">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="boolean shouldOverrideUrlLoading(WebView, String)"/>
