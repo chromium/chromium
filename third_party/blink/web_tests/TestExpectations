@@ -9090,3 +9090,6 @@ crbug.com/375515693 http/tests/devtools/resource-har-conversion.js [ Failure Pas
 crbug.com/375515693 http/tests/devtools/resource-har-headers.js [ Failure Pass ]
 crbug.com/375515693 http/tests/devtools/resource-parameters-ipv6.js [ Crash Failure Pass ]
 crbug.com/375515693 http/tests/devtools/resource-parameters.js [ Failure Pass ]
+
+# Gardener 2025-03-31
+crbug.com/407374335 [ Debug ] virtual/scalefactor200/external/wpt/largest-contentful-paint/animated/observe-cross-origin-tao-animated-image.tentative.html [ Failure Pass ]
