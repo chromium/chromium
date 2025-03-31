@@ -6779,6 +6779,30 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_SELECTED_DRAG_HANDLE_ACCESSIBLE_TITLE" desc="The accessible name of a drag handle that can be used to adjust the selected region in capture mode.">
         Selected handle, use arrow keys to move
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_TOP_LEFT_ACCESSIBLE_NAME" desc="The accessible name of the top left drag handle that can be used to adjust the selected region in capture mode.">
+        Selected top left handle, use arrow keys to move
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_TOP_RIGHT_ACCESSIBLE_NAME" desc="The accessible name of the top right drag handle that can be used to adjust the selected region in capture mode.">
+        Selected top right handle, use arrow keys to move
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_BOTTOM_RIGHT_ACCESSIBLE_NAME" desc="The accessible name of the bottom right drag handle that can be used to adjust the selected region in capture mode.">
+        Selected bottom right handle, use arrow keys to move
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_BOTTOM_LEFT_ACCESSIBLE_NAME" desc="The accessible name of the bottom left drag handle that can be used to adjust the selected region in capture mode.">
+        Selected bottom left handle, use arrow keys to move
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_TOP_EDGE_ACCESSIBLE_NAME" desc="The accessible name of the top edge drag handle that can be used to adjust the selected region in capture mode.">
+        Selected top edge handle, use arrow keys to move
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_RIGHT_EDGE_ACCESSIBLE_NAME" desc="The accessible name of the right edge drag handle that can be used to adjust the selected region in capture mode.">
+        Selected right edge handle, use arrow keys to move
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_BOTTOM_EDGE_ACCESSIBLE_NAME" desc="The accessible name of the bottom edge drag handle that can be used to adjust the selected region in capture mode.">
+        Selected bottom edge handle, use arrow keys to move
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_LEFT_EDGE_ACCESSIBLE_NAME" desc="The accessible name of the left edge drag handle that can be used to adjust the selected region in capture mode.">
+        Selected left edge handle, use arrow keys to move
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_SELECT_TYPE_IMAGE" desc="Alert spoken by screen readers on selecting screenshot mode.">
         Screenshot mode selected
       </message>

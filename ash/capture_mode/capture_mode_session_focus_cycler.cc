@@ -276,10 +276,44 @@ bool IsCaptureWindowSelectable(aura::Window* window) {
 
 std::u16string GetA11yNameForFineTunePosition(
     FineTunePosition fine_tune_position) {
-  return l10n_util::GetStringUTF16(
-      fine_tune_position == FineTunePosition::kCenter
-          ? IDS_ASH_SCREEN_CAPTURE_SELECTED_AREA_ACCESSIBLE_NAME
-          : IDS_ASH_SCREEN_CAPTURE_SELECTED_DRAG_HANDLE_ACCESSIBLE_TITLE);
+  int message_id;
+  switch (fine_tune_position) {
+    case FineTunePosition::kCenter:
+      message_id = IDS_ASH_SCREEN_CAPTURE_SELECTED_AREA_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kTopLeftVertex:
+      message_id = IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_TOP_LEFT_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kTopRightVertex:
+      message_id = IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_TOP_RIGHT_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kBottomRightVertex:
+      message_id =
+          IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_BOTTOM_RIGHT_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kBottomLeftVertex:
+      message_id =
+          IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_BOTTOM_LEFT_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kTopEdge:
+      message_id = IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_TOP_EDGE_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kRightEdge:
+      message_id =
+          IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_RIGHT_EDGE_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kBottomEdge:
+      message_id =
+          IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_BOTTOM_EDGE_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kLeftEdge:
+      message_id = IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_LEFT_EDGE_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kNone:
+      return u"";
+  }
+
+  return l10n_util::GetStringUTF16(message_id);
 }
 
 }  // namespace
