@@ -1235,7 +1235,8 @@ void D3DImageBacking::CheckForDawnDeviceLoss(
       dxgi_shared_handle_state_->EraseDawnSharedTextureMemory(device);
     }
 
-    if (persistent_graphite_dawn_access_->IsGraphiteDevice(device)) {
+    if (persistent_graphite_dawn_access_ &&
+        persistent_graphite_dawn_access_->IsGraphiteDevice(device)) {
       persistent_graphite_dawn_access_.reset();
     }
   }
