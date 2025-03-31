@@ -255,7 +255,7 @@ void ChromeExtensionRegistrarDelegate::LoadExtensionForReload(
   std::optional<ExtensionInfo> installed_extension(
       extension_prefs_->GetInstalledExtensionInfo(extension_id));
   if (installed_extension && installed_extension->extension_manifest.get()) {
-    InstalledLoader(extension_service_).Load(*installed_extension, false);
+    InstalledLoader(profile_).Load(*installed_extension, false);
   } else {
     // Otherwise, the extension is unpacked (location LOAD). We must load it
     // from the path.

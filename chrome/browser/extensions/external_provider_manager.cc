@@ -18,10 +18,10 @@
 #include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_error_controller.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_install_manager.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/extensions/external_provider_manager_factory.h"
+#include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/installed_loader.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
@@ -36,6 +36,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/external_install_info.h"
+#include "extensions/browser/management_policy.h"
 #include "extensions/browser/updater/extension_cache.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -295,9 +296,6 @@ bool ExternalProviderManager::OnExternalExtensionFileFound(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // no client (silent install)
-  ExtensionService* service =
-      ExtensionSystem::Get(context_)->extension_service();
-  DCHECK(service);
   scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(context_));
   installer->AddInstallerCallback(base::BindOnce(
       &ExternalProviderManager::InstallationFromExternalFileFinished,
@@ -359,9 +357,6 @@ bool ExternalProviderManager::OnExternalExtensionUpdateUrlFound(
     // priority than |info.download_location|, and we aren't doing a
     // reinstall of a corrupt policy force-installed extension.
     ManifestLocation current = extension->location();
-    ExtensionService* service =
-        ExtensionSystem::Get(context_)->extension_service();
-    DCHECK(service);
     if (!CorruptedExtensionReinstaller::Get(context_)
              ->IsReinstallForCorruptionExpected(info.extension_id) &&
         current == Manifest::GetHigherPriorityLocation(
@@ -386,7 +381,8 @@ bool ExternalProviderManager::OnExternalExtensionUpdateUrlFound(
       installed_extension->extension_location = info.download_location;
 
       // Load the extension with the new install location
-      InstalledLoader(service).Load(*installed_extension, false);
+      Profile* profile = Profile::FromBrowserContext(context_);
+      InstalledLoader(profile).Load(*installed_extension, false);
       // Update the install location in the prefs.
       extension_prefs_->SetInstallLocation(info.extension_id,
                                            info.download_location);

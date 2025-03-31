@@ -131,7 +131,7 @@ void InstalledLoaderUnitTest::RunHostPermissionsMetricsTest(
   }
 
   base::HistogramTester histograms;
-  InstalledLoader loader(service());
+  InstalledLoader loader(profile());
   loader.RecordExtensionsMetricsForTesting();
 
   histograms.ExpectUniqueSample(kGrantedAccessHistogram,
@@ -163,7 +163,7 @@ void InstalledLoaderUnitTest::RunEmitUserHistogramsTest(
     int nonuser_expected_total_count,
     int user_expected_total_count) {
   base::HistogramTester histograms;
-  InstalledLoader loader(service());
+  InstalledLoader loader(profile());
   loader.RecordExtensionsIncrementedMetricsForTesting(profile());
 
   histograms.ExpectTotalCount("Extensions.LoadAllTime2", 1);
@@ -186,7 +186,7 @@ TEST_F(InstalledLoaderUnitTest,
   AddExtension({"<all_urls>"}, kManifestInternal);
 
   base::HistogramTester histograms;
-  InstalledLoader loader(service());
+  InstalledLoader loader(profile());
   loader.RecordExtensionsMetricsForTesting();
 
   // The extension didn't have withheld hosts, so a single `false` record
@@ -204,7 +204,7 @@ TEST_F(InstalledLoaderUnitTest,
       .SetWithholdHostPermissions(true);
 
   base::HistogramTester histograms;
-  InstalledLoader loader(service());
+  InstalledLoader loader(profile());
   loader.RecordExtensionsMetricsForTesting();
 
   // The extension had withheld hosts, so a single `true` record should be
@@ -226,7 +226,7 @@ TEST_F(InstalledLoaderUnitTest,
   modifier.GrantHostPermission(GURL("https://chromium.org/"));
 
   base::HistogramTester histograms;
-  InstalledLoader loader(service());
+  InstalledLoader loader(profile());
   loader.RecordExtensionsMetricsForTesting();
 
   histograms.ExpectUniqueSample(kHasWithheldHostsHistogram, true, 1);

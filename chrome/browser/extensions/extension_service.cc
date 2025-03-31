@@ -114,7 +114,6 @@
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "extensions/common/manifest_url_handlers.h"
 #include "extensions/common/permissions/api_permission.h"
-#include "extensions/common/permissions/permission_message_provider.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
 
@@ -347,7 +346,7 @@ void ExtensionService::Init() {
   }
 #endif
   if (load_saved_extensions) {
-    InstalledLoader(this).LoadAllExtensions();
+    InstalledLoader(profile_).LoadAllExtensions();
   }
 
   CheckManagementPolicy();
@@ -587,39 +586,6 @@ void ExtensionService::UnblockAllExtensions() {
   external_install_manager_->UpdateExternalExtensionAlert();
 }
 
-// static
-void ExtensionService::RecordPermissionMessagesHistogram(
-    const Extension* extension,
-    const char* histogram_basename,
-    bool log_user_profile_histograms) {
-  PermissionIDSet permissions =
-      PermissionMessageProvider::Get()->GetAllPermissionIDs(
-          extension->permissions_data()->active_permissions(),
-          extension->GetType());
-  base::UmaHistogramBoolean(
-      base::StringPrintf("Extensions.HasPermissions_%s3", histogram_basename),
-      !permissions.empty());
-
-  std::string permissions_histogram_name =
-      base::StringPrintf("Extensions.Permissions_%s3", histogram_basename);
-  for (const PermissionID& id : permissions) {
-    base::UmaHistogramEnumeration(permissions_histogram_name, id.id());
-  }
-
-  if (log_user_profile_histograms) {
-    base::UmaHistogramBoolean(
-        base::StringPrintf("Extensions.HasPermissions_%s4", histogram_basename),
-        !permissions.empty());
-
-    std::string permissions_histogram_name_incremented =
-        base::StringPrintf("Extensions.Permissions_%s4", histogram_basename);
-    for (const PermissionID& id : permissions) {
-      base::UmaHistogramEnumeration(permissions_histogram_name_incremented,
-                                    id.id());
-    }
-  }
-}
-
 content::BrowserContext* ExtensionService::GetBrowserContext() const {
   // Implemented in the .cc file to avoid adding a profile.h dependency to
   // extension_service.h.
@@ -831,7 +797,7 @@ void ExtensionService::ReloadExtensionsForTest() {
   // warning about calling test code in production.
   UnloadAllExtensionsInternal();
   component_loader_->LoadAll();
-  InstalledLoader(this).LoadAllExtensions();
+  InstalledLoader(profile_).LoadAllExtensions();
   OnInstalledExtensionsLoaded();
   // Don't call SetReadyAndNotifyListeners() since tests call this multiple
   // times.
@@ -986,7 +952,8 @@ void ExtensionService::OnExtensionInstalled(
     }
     // TODO(crbug.com/40878021): Address Install metrics below in a follow-up
     // CL.
-    RecordPermissionMessagesHistogram(extension, "Install", is_user_profile);
+    InstalledLoader::RecordPermissionMessagesHistogram(extension, "Install",
+                                                       is_user_profile);
   }
 
   allowlist()->OnExtensionInstalled(id, install_flags);
