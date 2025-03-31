@@ -143,7 +143,7 @@ void ClearUserPolicyPrefs() {
 }
 
 id<GREYMatcher> ManagedProfileCreationTitleMatcher() {
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (![SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
     return grey_text(l10n_util::GetNSString(IDS_IOS_MANAGED_SIGNIN_TITLE));
   }
   return grey_accessibilityLabel(
@@ -151,7 +151,7 @@ id<GREYMatcher> ManagedProfileCreationTitleMatcher() {
 }
 
 id<GREYMatcher> ManagedProfileCreationSubtitleMatcher() {
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (![SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
     return grey_text(l10n_util::GetNSStringF(
         IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_SUBTITLE,
         base::UTF8ToUTF16(
@@ -210,7 +210,7 @@ void WaitForVisibleChromeManagementURL() {
 
 // Returns a matcher for the sign-in screen "Cancel" button.
 id<GREYMatcher> DeclineManagementButtonMatcher() {
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (![SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
     return grey_allOf(
         grey_accessibilityID(@"CancelAlertAction"),
         [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:IDS_CANCEL],
@@ -507,7 +507,7 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
 - (void)testSigninFlowConfirmationDialogNotShownWhenAlreadyBrowserPolicies {
   // With multi profile, the dialog is not shown at all, another screen is shown
   // that screen will be shown even if the browser is already managed.
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
     return;
   }
 
