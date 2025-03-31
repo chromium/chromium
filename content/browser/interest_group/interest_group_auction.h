@@ -713,10 +713,9 @@ class CONTENT_EXPORT InterestGroupAuction
 
   // Retrieves all requests with non-reserved event type to the Private
   // Aggregation API returned by GenerateBid(). The return value is keyed by
-  // event type of the associated requests. May only be called by external
-  // consumers after an auction has failed (on success, used internally to pass
-  // them to the InterestGroupAuctionReporter). May only be called once, since
-  // it takes ownership of stored reporting URLs.
+  // event type of the associated requests. Used internally to pass them to the
+  // InterestGroupAuctionReporter. May only be called once, since it takes
+  // ownership of stored reporting URLs.
   std::map<std::string, PrivateAggregationRequests>
   TakeNonReservedPrivateAggregationRequests();
 
