@@ -631,6 +631,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_ariaLabelWithVisualContent() {
+        performAriaTest("aria-label-with-visual-content.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaLabelAugmentInnerText() {
         performAriaTest("aria-label-augment-inner-text.html");
     }
