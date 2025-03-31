@@ -71,6 +71,11 @@ class HashPrefixMap::BufferedFileWriter {
         buffer_size_(buffer_size),
         file_(path_, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE),
         has_error_(!file_.IsValid()) {
+    if (has_error_) {
+      base::UmaHistogramExactLinear("SafeBrowsing.V4StoreFileOpenError",
+                                    -file_.error_details(),
+                                    -base::File::FILE_ERROR_MAX);
+    }
     buffer_.reserve(buffer_size);
   }
 
@@ -119,8 +124,18 @@ class HashPrefixMap::BufferedFileWriter {
     if (has_error_ || data.empty())
       return;
 
-    if (!file_.WriteAtCurrentPosAndCheck(base::as_byte_span(data))) {
-      has_error_ = true;
+    size_t bytes_written = 0;
+    while (bytes_written < data.size()) {
+      std::optional<size_t> result = file_.WriteAtCurrentPos(
+          base::as_byte_span(data.substr(bytes_written)));
+      if (!result.has_value()) {
+        has_error_ = true;
+        base::UmaHistogramExactLinear("SafeBrowsing.V4StoreFileWriteError",
+                                      -base::File::GetLastFileError(),
+                                      -base::File::FILE_ERROR_MAX);
+        break;
+      }
+      bytes_written += *result;
     }
   }
 
