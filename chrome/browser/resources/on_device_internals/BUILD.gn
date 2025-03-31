@@ -22,6 +22,7 @@ build_webui("build") {
   static_files = [ "on_device_internals.html" ]
 
   web_component_files = [ "tools.ts" ]
+  html_to_wrapper_template = "detect"
 
   non_web_component_files = [
     "app.html.ts",
@@ -37,6 +38,7 @@ build_webui("build") {
     "app.css",
     "event_log.css",
     "model_status.css",
+    "tools.css",
   ]
 
   ts_deps = [
