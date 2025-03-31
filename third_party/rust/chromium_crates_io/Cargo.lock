@@ -120,6 +120,7 @@ dependencies = [
  "qr_code",
  "quote",
  "rand",
+ "rand_core 0.9.3",
  "rand_pcg",
  "read-fonts",
  "rustc-demangle-capi",
@@ -1008,7 +1009,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "libc",
  "rand_chacha",
- "rand_core",
+ "rand_core 0.6.4",
 ]
 
 [[package]]
@@ -1017,7 +1018,7 @@ version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "ppv-lite86",
- "rand_core",
+ "rand_core 0.6.4",
 ]
 
 [[package]]
@@ -1029,11 +1030,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "rand_core"
+version = "0.9.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
 name = "rand_pcg"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "rand_core",
+ "rand_core 0.6.4",
 ]
 
 [[package]]
