@@ -59,7 +59,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.ClockSkew.ExpiredWithoutSkew" enum="Boolean"
-    expires_after="2025-04-01">
+    expires_after="2026-03-31">
   <owner>kyraseevers@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>
@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.ClockSkew.{SkewDirection}.Subsampled" units="minutes"
-    expires_after="2025-07-27">
+    expires_after="2026-03-31">
   <owner>kyraseevers@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>
