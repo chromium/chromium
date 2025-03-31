@@ -11,8 +11,11 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/public/shared_crd_session.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/start_crd_session_job_delegate.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
+#include "remoting/host/chromeos/chromeos_enterprise_params.h"
 
 namespace policy {
 
@@ -62,6 +65,18 @@ const char* CrdSessionTypeToString(CrdSessionType value);
 using ManagedEnvironmentResultCallback = base::OnceCallback<void(bool)>;
 void CalculateIsInManagedEnvironmentAsync(
     ManagedEnvironmentResultCallback result_callback);
+
+// Convert from `StartCrdSessionJobDelegate::RequestOrigin` to
+// `remoting::ChromeOsEnterpriseRequestOrigin`.
+remoting::ChromeOsEnterpriseRequestOrigin
+ConvertToChromeOsEnterpriseRequestOrigin(
+    StartCrdSessionJobDelegate::RequestOrigin request_origin);
+
+// Convert from `SharedCrdSession::RequestOrigin` to
+// `StartCrdSessionJobDelegate::RequestOrigin`.
+StartCrdSessionJobDelegate::RequestOrigin
+ConvertToStartCrdSessionJobDelegateRequestOrigin(
+    SharedCrdSession::RequestOrigin request_origin);
 
 }  // namespace policy
 

@@ -26,6 +26,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/public/crd_session_result_codes.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/start_crd_session_job_delegate.h"
 #include "chrome/browser/ui/ash/login/mock_login_display_host.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -39,6 +40,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/chromeos/features.h"
 #include "remoting/host/mojom/remote_support.mojom.h"
 #include "remoting/protocol/errors.h"
@@ -604,6 +606,44 @@ TEST_F(CrdAdminSessionControllerTest, ShouldPassAdminEmailToRemotingService) {
                                     session_finished_callback());
 
   EXPECT_EQ(actual_parameters->authorized_helper, "the.admin@email.com");
+}
+
+TEST_F(CrdAdminSessionControllerTest,
+       ShouldPassEnterpriseAdminRequestOriginToRemotingService) {
+  InitWithNoReconnectableSession(session_controller());
+  SessionParameters parameters;
+  parameters.request_origin =
+      StartCrdSessionJobDelegate::RequestOrigin::kEnterpriseAdmin;
+
+  remoting::ChromeOsEnterpriseParams actual_parameters;
+  EXPECT_CALL(remoting_service(), StartSession)
+      .WillOnce(SaveParamAndInvokeCallback(&actual_parameters));
+
+  delegate().StartCrdHostAndGetCode(parameters, success_callback(),
+                                    error_callback(),
+                                    session_finished_callback());
+
+  EXPECT_EQ(actual_parameters.request_origin,
+            remoting::ChromeOsEnterpriseRequestOrigin::kEnterpriseAdmin);
+}
+
+TEST_F(CrdAdminSessionControllerTest,
+       ShouldPassClassManagementRequestOriginToRemotingService) {
+  InitWithNoReconnectableSession(session_controller());
+  SessionParameters parameters;
+  parameters.request_origin =
+      StartCrdSessionJobDelegate::RequestOrigin::kClassManagement;
+
+  remoting::ChromeOsEnterpriseParams actual_parameters;
+  EXPECT_CALL(remoting_service(), StartSession)
+      .WillOnce(SaveParamAndInvokeCallback(&actual_parameters));
+
+  delegate().StartCrdHostAndGetCode(parameters, success_callback(),
+                                    error_callback(),
+                                    session_finished_callback());
+
+  EXPECT_EQ(actual_parameters.request_origin,
+            remoting::ChromeOsEnterpriseRequestOrigin::kClassManagement);
 }
 
 TEST_P(CrdAdminSessionControllerTestWithBoolParams,

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_PUBLIC_SHARED_CRD_SESSION_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/public/crd_session_result_codes.h"
@@ -24,6 +25,13 @@ class SharedCrdSession {
       base::OnceCallback<void(ExtendedStartCrdSessionResultCode,
                               const std::string&)>;
 
+  // The caller who initiated the request.
+  // This should match `StartCrdSessionJobDelegate::RequestOrigin`.
+  enum class RequestOrigin {
+    kEnterpriseAdmin,
+    kClassManagement,
+  };
+
   // Session parameters used to start the CRD host.
   // This is a subset of the parameters inside of
   // `StartCrdSessionJobDelegate::SessionParameters`.
@@ -36,6 +44,7 @@ class SharedCrdSession {
     SessionParameters(SessionParameters&&);
     SessionParameters& operator=(SessionParameters&&);
 
+    RequestOrigin request_origin;
     std::optional<std::string> viewer_email;
     bool terminate_upon_input = false;
     bool show_confirmation_dialog = false;
