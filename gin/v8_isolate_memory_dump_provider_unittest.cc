@@ -38,6 +38,15 @@ class V8MemoryDumpProviderWorkerTest : public V8MemoryDumpProviderTest {
   }
 };
 
+class V8MemoryDumpProviderBackgroundModeTest
+    : public V8MemoryDumpProviderTest,
+      public ::testing::WithParamInterface<IsolateHolder::IsolateType> {
+  std::unique_ptr<IsolateHolder> CreateIsolateHolder() const override {
+    return std::make_unique<gin::IsolateHolder>(
+        base::SingleThreadTaskRunner::GetCurrentDefault(), GetParam());
+  }
+};
+
 // Checks if the dump provider runs without crashing and dumps root objects.
 TEST_F(V8MemoryDumpProviderTest, DumpStatistics) {
   base::trace_event::MemoryDumpArgs dump_args = {
@@ -212,5 +221,23 @@ TEST_F(V8MemoryDumpProviderTest, Deterministic) {
   // GC reclaimed the object.
   ASSERT_TRUE(weak_ref.IsEmpty());
 }
+
+TEST_P(V8MemoryDumpProviderBackgroundModeTest, AllowList) {
+  // Things that are dumped at the background mode level of detail must be
+  // in the allowlist in base/trace_event/memory_infra_background_allowlist.cc
+  base::trace_event::MemoryDumpArgs dump_args = {
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground};
+  std::unique_ptr<base::trace_event::ProcessMemoryDump> process_memory_dump(
+      new base::trace_event::ProcessMemoryDump(dump_args));
+  instance_->isolate_memory_dump_provider_for_testing()->OnMemoryDump(
+      dump_args, process_memory_dump.get());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no label */,
+    V8MemoryDumpProviderBackgroundModeTest,
+    testing::Values(IsolateHolder::IsolateType::kBlinkMainThread,
+                    IsolateHolder::IsolateType::kBlinkWorkerThread,
+                    IsolateHolder::IsolateType::kUtility));
 
 }  // namespace gin
