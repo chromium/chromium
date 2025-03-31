@@ -1344,6 +1344,7 @@ data/accessibility/aria/aria-paragraph-expected-auralinux.txt
 data/accessibility/aria/aria-paragraph-expected-mac.txt
 data/accessibility/aria/aria-paragraph-expected-win.txt
 data/accessibility/aria/aria-paragraph.html
+data/accessibility/aria/aria-posinset-expected-android-external.txt
 data/accessibility/aria/aria-posinset-expected-android.txt
 data/accessibility/aria/aria-posinset-expected-auralinux.txt
 data/accessibility/aria/aria-posinset-expected-blink.txt

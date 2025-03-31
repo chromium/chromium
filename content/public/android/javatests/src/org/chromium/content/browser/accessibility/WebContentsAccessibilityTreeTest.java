@@ -870,6 +870,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_ariaPosinset() {
+        performAriaTest("aria-posinset.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaPresentation() {
         performAriaTest("aria-presentation.html");
     }
