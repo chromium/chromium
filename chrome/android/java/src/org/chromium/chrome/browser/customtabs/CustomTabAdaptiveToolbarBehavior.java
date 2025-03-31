@@ -99,7 +99,9 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
             }
         }
 
-        for (int result : segmentationResults) {
+        // Try the next best one if the top one is not available.
+        for (int i = 0; i < Math.min(segmentationResults.size(), 2); ++i) {
+            int result = segmentationResults.get(i);
             if (!mValidButtons.contains(result)) continue;
             if ((OPEN_IN_BROWSER == result && hasCustomOpenInBrowser)
                     || (SHARE == result && hasCustomShare)) {
