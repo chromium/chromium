@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -37,6 +38,7 @@
 namespace glic {
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSettingsTab);
 std::vector<std::string> GetTestSuiteNames() {
   return {
       "GlicApiTest",
@@ -187,14 +189,19 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testAllTestsAreRegistered) {
 
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testCreateTab) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+                                 GlicInstrumentMode::kHostAndContents),
+                  CheckTabCount(1));
   ExecuteJsTest();
-  // TODO(harringtond): Add assertions to verify a tab was created.
+  RunTestSequence(CheckTabCount(2));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testOpenGlicSettingsPage) {
   ExecuteJsTest();
-  // TODO(harringtond): Add assertions to verify the settings page opened.
+
+  RunTestSequence(
+      InstrumentTab(kSettingsTab),
+      WaitForWebContentsReady(
+          kSettingsTab, chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage)));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testClosePanel) {

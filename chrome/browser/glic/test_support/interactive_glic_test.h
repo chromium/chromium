@@ -367,6 +367,16 @@ class InteractiveGlicTestT : public T {
         expect_resize, "ExpectUserCanResize");
   }
 
+  auto CheckTabCount(int expected_count) {
+    return Api::CheckResult(
+        [this] {
+          return InProcessBrowserTest::browser()
+              ->tab_strip_model()
+              ->GetTabCount();
+        },
+        expected_count, "CheckTabCount");
+  }
+
   glic::GlicTestEnvironment& glic_test_environment() {
     return *glic_test_environment_;
   }
