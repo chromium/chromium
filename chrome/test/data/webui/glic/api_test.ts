@@ -484,6 +484,13 @@ class ApiTests extends ApiTestFixtureBase {
     await this.host.setWindowDraggableAreas([]);
   }
 
+  async testSetMinimumWidgetSize() {
+    assertTrue(!!this.host.setMinimumWidgetSize);
+    const minSize = {width: 200, height: 100};
+    await this.host.setMinimumWidgetSize(minSize.width, minSize.height);
+    await this.advanceToNextStep(minSize);
+  }
+
   private async waitForPanelState(kind: PanelStateKind): Promise<void> {
     assertTrue(!!this.host.getPanelState);
     const sequence = observeSequence(this.host.getPanelState());
@@ -700,3 +707,4 @@ function sleep(timeoutMs: number) {
 }
 
 main();
+

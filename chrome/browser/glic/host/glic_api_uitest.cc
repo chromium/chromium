@@ -477,5 +477,16 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
       CheckPointIsWithinDraggableArea(gfx::Point(x + width, y), false),
       CheckPointIsWithinDraggableArea(gfx::Point(x, y + height), false));
 }
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testSetMinimumWidgetSize) {
+  ExecuteJsTest();
+  ASSERT_TRUE(step_data()->is_dict());
+  const auto& min_size = step_data()->GetDict();
+  const int width = min_size.FindInt("width").value();
+  const int height = min_size.FindInt("height").value();
+
+  RunTestSequence(CheckWidgetMinimumSize(gfx::Size(width, height)));
+  ContinueJsTest();
+}
 }  // namespace
 }  // namespace glic

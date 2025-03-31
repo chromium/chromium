@@ -21,6 +21,7 @@
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/glic/widget/glic_view.h"
+#include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -342,6 +343,17 @@ class InteractiveGlicTestT : public T {
     return Api::CheckResult(
         [this] { return window_controller().attached_browser(); }, new_browser,
         "attached to the other browser");
+  }
+
+  auto CheckWidgetMinimumSize(const gfx::Size& size) {
+    // Size can't be smaller than the initial size.
+    auto expected_size = glic::GlicWidget::GetInitialSize();
+    expected_size.SetToMax(size);
+    return Api::CheckResult(
+        [this]() {
+          return window_controller().GetGlicWidget()->GetMinimumSize();
+        },
+        expected_size, "CheckWidgetMinimumSize");
   }
 
   auto ExpectUserCanResize(bool expect_resize) {
