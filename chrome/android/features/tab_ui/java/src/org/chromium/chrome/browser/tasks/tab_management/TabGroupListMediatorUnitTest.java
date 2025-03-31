@@ -38,7 +38,6 @@ import static org.chromium.components.tab_group_sync.SyncedGroupTestHelper.SYNC_
 import android.content.Context;
 import android.view.ContextThemeWrapper;
 
-import androidx.core.util.Pair;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -68,6 +67,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.MaybeBlockingResult;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
@@ -234,7 +234,9 @@ public class TabGroupListMediatorUnitTest {
         assertEquals(1, mModelList.size());
 
         PropertyModel model = mModelList.get(0).model;
-        assertEquals(new Pair<>("Title", 1), model.get(TITLE_DATA));
+        assertEquals(
+                new TabGroupRowViewTitleData("Title", 1, R.string.tab_group_row_accessibility_text),
+                model.get(TITLE_DATA));
         assertEquals(TabGroupColorId.BLUE, model.get(COLOR_INDEX));
     }
 
@@ -256,11 +258,15 @@ public class TabGroupListMediatorUnitTest {
         assertEquals(2, mModelList.size());
 
         PropertyModel barModel = mModelList.get(0).model;
-        assertEquals(new Pair<>("Bar", 3), barModel.get(TITLE_DATA));
+        assertEquals(
+                new TabGroupRowViewTitleData("Bar", 3, R.string.tab_group_row_accessibility_text),
+                barModel.get(TITLE_DATA));
         assertEquals(TabGroupColorId.RED, barModel.get(COLOR_INDEX));
 
         PropertyModel fooModel = mModelList.get(1).model;
-        assertEquals(new Pair<>("Foo", 2), fooModel.get(TITLE_DATA));
+        assertEquals(
+                new TabGroupRowViewTitleData("Foo", 2, R.string.tab_group_row_accessibility_text),
+                fooModel.get(TITLE_DATA));
         assertEquals(TabGroupColorId.BLUE, fooModel.get(COLOR_INDEX));
     }
 
@@ -333,9 +339,15 @@ public class TabGroupListMediatorUnitTest {
 
         assertEquals(2, mModelList.size());
         PropertyModel model1 = mModelList.get(0).model;
-        assertEquals(new Pair<>("in current", 1), model1.get(TITLE_DATA));
+        assertEquals(
+                new TabGroupRowViewTitleData(
+                        "in current", 1, R.string.tab_group_row_accessibility_text),
+                model1.get(TITLE_DATA));
         PropertyModel model2 = mModelList.get(1).model;
-        assertEquals(new Pair<>("hidden", 1), model2.get(TITLE_DATA));
+        assertEquals(
+                new TabGroupRowViewTitleData(
+                        "hidden", 1, R.string.tab_group_row_accessibility_text),
+                model2.get(TITLE_DATA));
     }
 
     @Test
@@ -847,11 +859,15 @@ public class TabGroupListMediatorUnitTest {
         assertEquals(MESSAGE, model1.get(CARD_TYPE));
 
         PropertyModel barModel = mModelList.get(1).model;
-        assertEquals(new Pair<>("Bar", 3), barModel.get(TITLE_DATA));
+        assertEquals(
+                new TabGroupRowViewTitleData("Bar", 3, R.string.tab_group_row_accessibility_text),
+                barModel.get(TITLE_DATA));
         assertEquals(TabGroupColorId.RED, barModel.get(COLOR_INDEX));
 
         PropertyModel fooModel = mModelList.get(2).model;
-        assertEquals(new Pair<>("Foo", 2), fooModel.get(TITLE_DATA));
+        assertEquals(
+                new TabGroupRowViewTitleData("Foo", 2, R.string.tab_group_row_accessibility_text),
+                fooModel.get(TITLE_DATA));
         assertEquals(TabGroupColorId.BLUE, fooModel.get(COLOR_INDEX));
     }
 
@@ -891,11 +907,15 @@ public class TabGroupListMediatorUnitTest {
                         MESSAGE_ID2, Optional.of(PersistentNotificationType.TOMBSTONED));
 
         PropertyModel barModel = mModelList.get(0).model;
-        assertEquals(new Pair<>("Bar", 3), barModel.get(TITLE_DATA));
+        assertEquals(
+                new TabGroupRowViewTitleData("Bar", 3, R.string.tab_group_row_accessibility_text),
+                barModel.get(TITLE_DATA));
         assertEquals(TabGroupColorId.RED, barModel.get(COLOR_INDEX));
 
         PropertyModel fooModel = mModelList.get(1).model;
-        assertEquals(new Pair<>("Foo", 2), fooModel.get(TITLE_DATA));
+        assertEquals(
+                new TabGroupRowViewTitleData("Foo", 2, R.string.tab_group_row_accessibility_text),
+                fooModel.get(TITLE_DATA));
         assertEquals(TabGroupColorId.BLUE, fooModel.get(COLOR_INDEX));
     }
 

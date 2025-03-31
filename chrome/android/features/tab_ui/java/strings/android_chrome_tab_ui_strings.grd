@@ -1076,6 +1076,9 @@
       <message name="IDS_TAB_GROUP_LIST_BOTTOM_SHEET_CLOSED" desc="The accessibility announcement made when the bottom sheet containing a list of tab groups is closed.">
         Tab group list closed
       </message>
+      <message name="IDS_TAB_GROUP_BOTTOM_SHEET_ROW_ACCESSIBILITY_TEXT" desc="Content description for accessibility to describe action of tapping on a tab group row on the bottom sheet.">
+        Add to <ph name="TITLE_OF_GROUP">%s<ex>shopping</ex></ph>
+      </message>
     </messages>
   </release>
 </grit>
