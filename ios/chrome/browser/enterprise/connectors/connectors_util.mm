@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_util.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_util.h"
 
 #import <optional>
 

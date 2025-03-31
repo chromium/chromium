@@ -42,6 +42,25 @@ source_set("interstitials") {
   ]
 }
 
+source_set("util") {
+  sources = [
+    "connectors_util.h",
+    "connectors_util.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/enterprise",
+    "//components/enterprise/connectors/core",
+    "//components/policy/core/common",
+    "//components/profile_metrics",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/web/common:user_agent",
+    "//ios/web/public",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
