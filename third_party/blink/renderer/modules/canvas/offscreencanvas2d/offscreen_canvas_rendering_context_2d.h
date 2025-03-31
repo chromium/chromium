@@ -60,9 +60,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   V8RenderingContext* AsV8RenderingContext() final;
   V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
   void Stop() final { NOTREACHED(); }
-  void ClearRect(double x, double y, double width, double height) override {
-    BaseRenderingContext2D::clearRect(x, y, width, height);
-  }
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) final;
   void Reset() override;
   // CanvasRenderingContext - ActiveScriptWrappable

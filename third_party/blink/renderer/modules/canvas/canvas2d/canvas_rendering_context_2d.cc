@@ -461,13 +461,6 @@ void CanvasRenderingContext2D::ScrollPathIntoViewInternal(const Path& path) {
           mojom::blink::ScrollBehavior::kAuto));
 }
 
-void CanvasRenderingContext2D::clearRect(double x,
-                                         double y,
-                                         double width,
-                                         double height) {
-  BaseRenderingContext2D::clearRect(x, y, width, height);
-}
-
 sk_sp<PaintFilter> CanvasRenderingContext2D::StateGetFilter() {
   HTMLCanvasElement* const element = canvas();
   return GetState().GetFilter(element, element->Size(), this);

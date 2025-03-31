@@ -128,12 +128,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   V8RenderingContext* AsV8RenderingContext() final;
 
   bool ShouldAntialias() const;
-  void SetShouldAntialias(bool) override;
-
-  void clearRect(double x, double y, double width, double height);
-  void ClearRect(double x, double y, double width, double height) override {
-    clearRect(x, y, width, height);
-  }
+  void SetShouldAntialias(bool);
 
   void setFontForTesting(const String& new_font) override;
 
