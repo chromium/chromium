@@ -156,6 +156,10 @@ class Speedometer30Story(_Speedometer3Story):
   NAME = 'Speedometer30'
 
 
+class Speedometer31Story(_Speedometer3Story):
+  NAME = 'Speedometer31'
+
+
 class Speedometer3Story(Speedometer30Story):
   NAME = 'Speedometer3'
 
