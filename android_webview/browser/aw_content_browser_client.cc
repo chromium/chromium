@@ -843,6 +843,14 @@ bool AwContentBrowserClient::ShouldOverrideUrlLoading(
       request_headers, ignore_navigation);
 }
 
+bool AwContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync() {
+  // WebView allows the embedder to override navigation in such a way that
+  // might trigger reentrancy if this returned true. See comments in
+  // `ContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync()` for
+  // more details.
+  return false;
+}
+
 bool AwContentBrowserClient::ShouldAllowSameSiteRenderFrameHostChange(
     const content::RenderFrameHost& rfh) {
   if (!base::FeatureList::IsEnabled(features::kWebViewRenderDocument)) {
