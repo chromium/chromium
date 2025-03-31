@@ -481,6 +481,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       AutofillEditProfileButtonFooterCell* buttonFooter =
           base::apple::ObjCCastStrict<AutofillEditProfileButtonFooterCell>(
               footer);
+      // TODO(crbug.com/407279413): Use the button footer item to change the
+      // state and remove the cell's `updateButtonColorBasedOnStatus` method.
       buttonFooter.button.enabled = enabled;
       [buttonFooter updateButtonColorBasedOnStatus];
 
@@ -679,6 +681,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
         update ? IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL
                : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
   }
+  // TODO:(crbug.com/393353721): Set button enabled state.
   return buttonFooter;
 }
 
