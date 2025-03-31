@@ -2739,7 +2739,11 @@ BASE_FEATURE_PARAM(bool,
 // handle any necessary resampling, potentially reducing latency and overhead.
 BASE_FEATURE(kWebAudioRemoveAudioDestinationResampler,
              "WebAudioRemoveAudioDestinationResampler",
+#if BUILDFLAG(IS_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 /// Enables cache-aware WebFonts loading. See https://crbug.com/570205.
 // The feature is disabled on Android for WebView API issue discussed at
