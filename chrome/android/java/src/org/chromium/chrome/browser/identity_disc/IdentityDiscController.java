@@ -122,7 +122,7 @@ public class IdentityDiscController
                         /* isEnabled= */ true,
                         AdaptiveToolbarButtonVariant.UNKNOWN,
                         /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* showHoverhighlight= */ true);
+                        /* showBackgroundHighlight= */ true);
     }
 
     /** Registers itself to observe sign-in and sync status events. */
@@ -192,7 +192,7 @@ public class IdentityDiscController
                 AdaptiveToolbarButtonVariant.UNKNOWN,
                 buttonSpec.getActionChipLabelResId(),
                 buttonSpec.getHoverTooltipTextId(),
-                buttonSpec.getShouldShowHoverHighlight(),
+                buttonSpec.shouldShowBackgroundHighlight(),
                 /* hasErrorBadge= */ mIdentityError != SyncError.NO_ERROR);
     }
 

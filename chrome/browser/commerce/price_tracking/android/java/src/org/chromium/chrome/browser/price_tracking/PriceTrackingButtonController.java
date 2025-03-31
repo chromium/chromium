@@ -72,7 +72,7 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
                 /* iphCommandBuilder= */ null,
                 AdaptiveToolbarButtonVariant.PRICE_TRACKING,
                 /* tooltipTextResId= */ Resources.ID_NULL,
-                /* showHoverHighlight= */ false);
+                /* showBackgroundHighlight= */ false);
         mSnackbarManager = snackbarManager;
         mTabBookmarkerSupplier = tabBookmarkerSupplier;
         mBottomSheetController = bottomSheetController;
@@ -96,7 +96,7 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
                         /* buttonVariant= */ AdaptiveToolbarButtonVariant.PRICE_TRACKING,
                         /* actionChipLabelResId= */ Resources.ID_NULL,
                         /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* showHoverHighlight= */ false,
+                        /* showBackgroundHighlight= */ false,
                         /* hasErrorBadge= */ false);
 
         mBottomSheetObserver =
