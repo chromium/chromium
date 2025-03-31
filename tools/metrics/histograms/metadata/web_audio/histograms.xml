@@ -155,6 +155,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="WebAudio.AudioContext.MediaPlaybackWhileNotVisible.InterruptionType"
+    enum="AudioContextInterruptionType" expires_after="2025-08-12">
+  <owner>mjwilson@chromium.org</owner>
+  <owner>hongchan@chromium.org</owner>
+  <owner>gabrielbrito@microsoft.com</owner>
+  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
+  <summary>
+    Tracks the reason for the AudioContext being interrupted when the frame is
+    being controlled by the MediaPlaybackWhileNotVisible permission policy and
+    the frame is not visible.
+  </summary>
+</histogram>
+
 <histogram name="WebAudio.AudioContext.Operation"
     enum="WebAudioContextOperation" expires_after="2025-09-14">
   <owner>mjwilson@chromium.org</owner>

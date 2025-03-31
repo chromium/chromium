@@ -4847,6 +4847,7 @@ enum WebFeature {
   kLanguageDetector_ExpectedInputLanguages = 5461,
   kServiceWorkerPushEventListener = 5462,
   kServiceWorkerPushSubscriptionChangeEventListener = 5463,
+  kMediaPlaybackWhileNotVisiblePermissionPolicy = 5464,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

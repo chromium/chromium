@@ -83,10 +83,23 @@ enum class AudioContextOperation {
   kMaxValue = kDelete
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AudioContextInterruptionType {
+  kPlayAttemptWhileFrameHidden = 0,
+  kFrameHiddenWhilePlaying = 1,
+  kMaxValue = kFrameHiddenWhilePlaying
+};
+
 void RecordAudioContextOperation(AudioContextOperation operation) {
   base::UmaHistogramEnumeration("WebAudio.AudioContext.Operation", operation);
 }
 
+void RecordMediaPlaybackInterruptionType(AudioContextInterruptionType type) {
+  base::UmaHistogramEnumeration(
+      "WebAudio.AudioContext.MediaPlaybackWhileNotVisible.InterruptionType",
+      type);
+}
 const char* LatencyCategoryToString(
     WebAudioLatencyHint::AudioContextLatencyCategory category) {
   switch (category) {
@@ -268,19 +281,25 @@ AudioContext::AudioContext(LocalDOMWindow& window,
       media_device_service_(&window),
       media_device_service_receiver_(this, &window),
       should_interrupt_when_frame_is_hidden_(
-          RuntimeEnabledFeatures::
-              MediaPlaybackWhileNotVisiblePermissionPolicyEnabled() &&
           RuntimeEnabledFeatures::AudioContextInterruptedStateEnabled() &&
-          !GetExecutionContext()->IsFeatureEnabled(
-              network::mojom::PermissionsPolicyFeature::
-                  kMediaPlaybackWhileNotVisible,
-              ReportOptions::kDoNotReport)),
+          !CanPlayWhileHidden()),
       player_id_(GetNextMediaPlayerId()),
       media_player_host_(&window),
       media_player_receiver_(this, &window),
       media_player_observer_(&window) {
   RecordAudioContextOperation(AudioContextOperation::kCreate);
   SendLogMessage(__func__, GetAudioContextLogString(latency_hint, sample_rate));
+
+  if (should_interrupt_when_frame_is_hidden_) {
+    // The "media-playback-while-not-visible" permission policy default value
+    // was overridden, which means that either this frame or an ancestor frame
+    // changed the permission policy's default value. This should only happen if
+    // the MediaPlaybackWhileNotVisiblePermissionPolicyEnabled runtime flag is
+    // enabled.
+    UseCounter::Count(
+        GetExecutionContext(),
+        WebFeature::kMediaPlaybackWhileNotVisiblePermissionPolicy);
+  }
 
   destination_node_ = RealtimeAudioDestinationNode::Create(
       this, sink_descriptor_, latency_hint, sample_rate,
@@ -453,6 +472,8 @@ ScriptPromise<IDLUndefined> AudioContext::resumeContext(
                           DOMExceptionCode::kInvalidStateError,
                           "Cannot resume an interrupted AudioContext."));
   } else if (is_frame_hidden_ && should_interrupt_when_frame_is_hidden_) {
+    RecordMediaPlaybackInterruptionType(
+        AudioContextInterruptionType::kPlayAttemptWhileFrameHidden);
     StartContextInterruption();
   }
 
@@ -1281,6 +1302,8 @@ void AudioContext::FrameVisibilityChanged(
   }
 
   if (is_frame_hidden_) {
+    RecordMediaPlaybackInterruptionType(
+        AudioContextInterruptionType::kFrameHiddenWhilePlaying);
     // The frame is not rendered, so the audio context should be suspended.
     StartContextInterruption();
   } else {
@@ -1483,6 +1506,13 @@ void AudioContext::OnMediaPlayerDisconnect() {
   media_player_host_.reset();
   media_player_observer_.reset();
   volume_multiplier_ = 1.0;
+}
+
+bool AudioContext::CanPlayWhileHidden() const {
+  return GetExecutionContext()->IsFeatureEnabled(
+      network::mojom::blink::PermissionsPolicyFeature::
+          kMediaPlaybackWhileNotVisible,
+      ReportOptions::kDoNotReport);
 }
 
 }  // namespace blink
