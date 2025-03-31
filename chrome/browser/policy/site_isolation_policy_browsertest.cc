@@ -280,8 +280,9 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationPolicyBrowserTest, NoPolicyNoTrialsFlags) {
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kDisableSiteIsolationForPolicy));
-  EXPECT_EQ(content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites(),
-            base::FeatureList::IsEnabled(features::kSitePerProcess));
+  EXPECT_FALSE(base::FeatureList::IsEnabled(features::kSitePerProcess));
+  EXPECT_FALSE(
+      content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
 #else
   EXPECT_TRUE(content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
 #endif  // BUILDFLAG(IS_ANDROID)
