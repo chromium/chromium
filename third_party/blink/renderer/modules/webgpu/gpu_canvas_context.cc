@@ -432,6 +432,10 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
     // BGRA8Unorm is not natively supported by Android's compositor.
     copy_to_swap_texture_required_ = true;
   }
+  if ((texture_descriptor_.usage & wgpu::TextureUsage::StorageBinding) != 0) {
+    // Storage images are not supported on some AHB/gralloc versions.
+    copy_to_swap_texture_required_ = true;
+  }
 #endif
 #if BUILDFLAG(IS_MAC)
   if (texture_descriptor_.format == wgpu::TextureFormat::RGBA8Unorm) {
