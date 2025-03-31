@@ -7734,7 +7734,7 @@ std::optional<Color> Document::ThemeColor() {
     }
     Color color;
     if (CSSParser::ParseColor(
-            color, element->Content().GetString().StripWhiteSpace(), true)) {
+            color, element->Content().GetString().StripWhiteSpace())) {
       return color;
     }
   }

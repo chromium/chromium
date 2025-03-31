@@ -612,7 +612,7 @@ std::optional<RGBA32> ManifestParser::ParseColor(const JSONObject* object,
   }
 
   Color color;
-  if (!CSSParser::ParseColor(color, *parsed_color, true)) {
+  if (!CSSParser::ParseColor(color, *parsed_color)) {
     AddErrorInfo("property '" + key + "' ignored, '" + *parsed_color +
                  "' is not a " + "valid color.");
     return std::nullopt;
