@@ -12479,6 +12479,22 @@
             ]
         }
     ],
+    "IOSReaderModeMetrics": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableReaderModeDistiller",
+                        "EnableReaderModeDistillerHeuristic"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSSaveToPhotosImprovements": [
         {
             "platforms": [
