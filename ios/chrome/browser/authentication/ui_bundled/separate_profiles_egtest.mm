@@ -247,7 +247,7 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
       performAction:grey_tap()];
 
   // Wait for the profile to finish loading again.
-  // TODO(crbug.com/331783685): Find a better way to wait for this.
+  // TODO(crbug.com/399033938): Find a better way to wait for this.
   GREYWaitForAppToIdle(@"App failed to idle");
 
   // Use should be signed in without having to see the managed profile
@@ -351,7 +351,7 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
       performAction:grey_tap()];
 
   // Wait for the profile to finish loading again.
-  // TODO(crbug.com/331783685): Find a better way to wait for this.
+  // TODO(crbug.com/399033938): Find a better way to wait for this.
   GREYWaitForAppToIdle(@"App failed to idle");
 
   // Use should be signed in without having to see the managed profile
