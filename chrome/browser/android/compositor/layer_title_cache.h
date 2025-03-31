@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/resources/ui_resource_client.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -71,7 +72,7 @@ class LayerTitleCache {
   // information.
   void UpdateGroupLayer(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj,
-                        jint group_root_id,
+                        const base::android::JavaParamRef<jobject>& group_token,
                         jint title_resource_id,
                         jint avatar_resource_id,
                         jint avatar_padding,
@@ -96,9 +97,11 @@ class LayerTitleCache {
   // Returns NULL if no layer can be found.
   DecorationTabTitle* GetTitleLayer(int tab_id);
 
-  // Returns the layer that represents the title of group of group_root_id.
+  // Returns the layer that represents the title of group of group_token.
   // Returns NULL if no layer can be found.
-  DecorationIconTitle* GetGroupTitleLayer(int group_root_id, bool incognito);
+  DecorationIconTitle* GetGroupTitleLayer(
+      const tab_groups::TabGroupId& group_token,
+      bool incognito);
 
  private:
   const int kEmptyWidth = 0;
@@ -106,7 +109,10 @@ class LayerTitleCache {
   virtual ~LayerTitleCache();
 
   base::IDMap<std::unique_ptr<DecorationTabTitle>> layer_cache_;
-  base::IDMap<std::unique_ptr<DecorationIconTitle>> group_layer_cache_;
+  std::unordered_map<tab_groups::TabGroupId,
+                     std::unique_ptr<DecorationIconTitle>,
+                     tab_groups::TabGroupIdHash>
+      group_layer_cache_;
 
   JavaObjectWeakGlobalRef weak_java_title_cache_;
   int fade_width_;
