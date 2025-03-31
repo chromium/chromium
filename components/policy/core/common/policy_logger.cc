@@ -145,19 +145,16 @@ void PolicyLogger::LogHelper::StreamLog() const {
 
   // Check for verbose logging.
   if (log_verbosity_ != policy::PolicyLogger::LogHelper::kNoVerboseLog) {
-    LAZY_STREAM(
-        ::logging::LogMessage(file_.data(), line_, -(log_verbosity_)).stream(),
-        log_verbosity_ <=
-            ::logging::GetVlogLevelHelper(file_.data(), file_.size()))
+    LAZY_STREAM(::logging::LogMessage(file_, line_, -(log_verbosity_)).stream(),
+                log_verbosity_ <= ::logging::GetVlogLevelHelper(file_))
         << message_buffer_.str();
     return;
   }
 
   int log_severity_int = GetLogSeverityInt(log_severity_);
 
-  LAZY_STREAM(
-      ::logging::LogMessage(file_.data(), line_, log_severity_int).stream(),
-      ::logging::ShouldCreateLogMessage(log_severity_int))
+  LAZY_STREAM(::logging::LogMessage(file_, line_, log_severity_int).stream(),
+              ::logging::ShouldCreateLogMessage(log_severity_int))
       << message_buffer_.str();
 }
 
