@@ -408,6 +408,6 @@ found in the LICENSE file.
 
     <!-- tab strip context menu-->
     <dimen name="tab_strip_group_context_menu_max_width">392dp</dimen>
-    <dimen name="tab_strip_context_menu_min_width">112dp</dimen>
+    <dimen name="tab_strip_context_menu_min_width">200dp</dimen>
     <dimen name="tab_strip_context_menu_max_width">300dp</dimen>
 </resources>
