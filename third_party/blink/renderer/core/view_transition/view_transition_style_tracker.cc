@@ -1584,7 +1584,7 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
   // scaling more generally might use some improvements.
   // https://crbug.com/1416951.
   auto snapshot_matrix_in_layout_space =
-      ComputeViewportTransform(layout_object);
+      ComputeTransformForParticipant(layout_object);
 
   // The FixedToSnapshot offset below takes points from the fixed
   // viewport into the snapshot viewport. However, the transform is
@@ -1663,7 +1663,7 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
       snapshot_matrix_in_css_space};
 }
 
-gfx::Transform ViewTransitionStyleTracker::ComputeViewportTransform(
+gfx::Transform ViewTransitionStyleTracker::ComputeTransformForParticipant(
     const LayoutObject& object) const {
   DCHECK(object.HasLayer());
   DCHECK(!object.IsLayoutView());
@@ -1673,11 +1673,19 @@ gfx::Transform ViewTransitionStyleTracker::ComputeViewportTransform(
       << first_fragment.PaintOffset();
   auto paint_properties = first_fragment.LocalBorderBoxProperties();
 
-  auto& root_fragment = object.GetDocument().GetLayoutView()->FirstFragment();
-  const auto& root_properties = root_fragment.LocalBorderBoxProperties();
+  LayoutBox* scope_box = object.GetDocument().GetLayoutView();
+  if (RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()) {
+    auto* scope = OriginatingElement();
+    scope_box = scope->IsDocumentElement()
+                    ? scope->GetDocument().GetLayoutView()
+                    : DynamicTo<LayoutBox>(scope->GetLayoutObject());
+    CHECK(scope_box);
+  }
+  auto& scope_fragment = scope_box->FirstFragment();
+  const auto& scope_properties = scope_fragment.LocalBorderBoxProperties();
 
   auto transform = GeometryMapper::SourceToDestinationProjection(
-      paint_properties.Transform(), root_properties.Transform());
+      paint_properties.Transform(), scope_properties.Transform());
   if (auto* layout_inline = DynamicTo<LayoutInline>(object)) {
     // The paint_properties we get from
     // `first_fragment.LocalBorderBoxProperties()` correspond to the origin of
@@ -1687,6 +1695,17 @@ gfx::Transform ViewTransitionStyleTracker::ComputeViewportTransform(
     // inline's border box origin.
     transform.Translate(
         gfx::Vector2dF(layout_inline->PhysicalLinesBoundingBox().offset));
+  }
+
+  if (RuntimeEnabledFeatures::ScopedViewTransitionsEnabled() &&
+      !scope_box->IsLayoutView()) {
+    // TODO(crbug.com/394052227): Should we force compositing on the scope?
+    // If we do, its paint offset will always be zero.
+    transform.Translate(-gfx::Vector2dF(scope_fragment.PaintOffset()));
+
+    // Adjust for the scope element's borders and scrollbars.
+    // TODO(crbug.com/394052227): Is this correct in RTL / all writing modes?
+    transform.Translate(-scope_box->ClientLeft(), -scope_box->ClientTop());
   }
 
   if (!transform.HasPerspective()) {

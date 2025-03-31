@@ -355,7 +355,10 @@ class ViewTransitionStyleTracker
       PhysicalRect& visual_overflow_rect_in_layout_space,
       std::optional<gfx::RectF>& captured_rect_in_layout_space) const;
 
-  gfx::Transform ComputeViewportTransform(const LayoutObject&) const;
+  // Computes a transform for the participant's border box relative to the
+  // viewport in the case of a document transition, or the padding box rect of
+  // the scope element in the case of a scoped transition.
+  gfx::Transform ComputeTransformForParticipant(const LayoutObject&) const;
 
   viz::ViewTransitionElementResourceId GenerateResourceId(
       bool for_subframe_snapshot = false) const;
