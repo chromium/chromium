@@ -308,6 +308,8 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
   bool use_webview_context = Java_AwBrowserMainParts_getUseWebViewContext(env);
   bool partitioned_cookies_enablement_state =
       Java_AwBrowserMainParts_getPartitionedCookiesDefaultState(env);
+  bool webview_startup_tasks_experiment_enabled =
+      isWebViewStartupTasksExperimentEnabled();
   AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       metrics, "WebViewSeparateResourceContextMetrics",
       use_webview_context ? "Enabled" : "Control",
@@ -315,6 +317,10 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
   AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       metrics, "WebViewPartitionedCookiesMetrics",
       partitioned_cookies_enablement_state ? "Control" : "Disabled",
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
+  AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      metrics, "WebViewStartupTasksMetrics",
+      webview_startup_tasks_experiment_enabled ? "Enabled" : "Control",
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 

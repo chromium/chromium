@@ -462,6 +462,9 @@ public class WebViewChromiumAwInit {
                                                 AwFeatures.WEBVIEW_SEPARATE_RESOURCE_CONTEXT));
                                 mFactory.setWebViewDisableCHIPSExperimentValue(
                                         AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_DISABLE_CHIPS));
+                                mFactory.setWebViewUseStartupTasksExperimentValue(
+                                        AwFeatureMap.isEnabled(
+                                                AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC));
                             });
 
                     if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_PREFETCH_NATIVE_LIBRARY)

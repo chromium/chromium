@@ -436,6 +436,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Disable Safe Browsing"/>
   <int value="7" label="Reset Component Updater"/>
   <int value="8" label="Disable Supervision Checks"/>
+  <int value="9" label="Disable Startup Tasks Logic"/>
 <!-- LINT.ThenChange(/android_webview/java/src/org/chromium/android_webview/common/SafeModeActionIds.java:SafeModeActionIds) -->
 
 </enum>

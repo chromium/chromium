@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.android_webview;
+package org.chromium.android_webview.safe_mode;
 
 import org.chromium.android_webview.autofill.AndroidAutofillSafeModeAction;
 import org.chromium.android_webview.common.Lifetime;
@@ -32,5 +32,6 @@ public final class BrowserSafeModeActionList {
         new AwSafeBrowsingSafeModeAction(),
         new DisableOriginTrialsSafeModeAction(),
         new AwSupervisedUserSafeModeAction(),
+        new DisableStartupTasksSafeModeAction(),
     };
 }
