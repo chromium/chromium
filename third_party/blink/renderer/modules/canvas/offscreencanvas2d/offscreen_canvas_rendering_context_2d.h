@@ -21,7 +21,6 @@
 
 namespace blink {
 
-class CanvasRenderingContext2DSettings;
 class CanvasResourceProvider;
 class ExceptionState;
 
@@ -60,25 +59,12 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   bool IsComposited() const override { return false; }
   V8RenderingContext* AsV8RenderingContext() final;
   V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
-  void PageVisibilityChanged() override {}
   void Stop() final { NOTREACHED(); }
   void ClearRect(double x, double y, double width, double height) override {
     BaseRenderingContext2D::clearRect(x, y, width, height);
   }
-  SkAlphaType GetAlphaType() const override {
-    return color_params_.GetAlphaType();
-  }
-  viz::SharedImageFormat GetSharedImageFormat() const override {
-    return color_params_.GetSharedImageFormat();
-  }
-  gfx::ColorSpace GetColorSpace() const override {
-    return color_params_.GetGfxColorSpace();
-  }
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) final;
   void Reset() override;
-  void RestoreCanvasMatrixClipStack(cc::PaintCanvas* c) const override {
-    RestoreMatrixClipStack(c);
-  }
   // CanvasRenderingContext - ActiveScriptWrappable
   // This method will avoid this class to be garbage collected, as soon as
   // HasPendingActivity returns true.
@@ -89,8 +75,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
     return static_cast<OffscreenCanvas*>(Host())->HasPlaceholderCanvas() &&
            !dirty_rect_for_commit_.isEmpty();
   }
-
-  CanvasRenderingContext2DSettings* getContextAttributes() const;
 
   // BaseRenderingContext2D implementation
   bool OriginClean() const final;
@@ -162,9 +146,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   OffscreenCanvas* HostAsOffscreenCanvas() const final;
   UniqueFontSelector* GetFontSelector() const final;
 
-  PredefinedColorSpace GetDefaultImageDataColorSpace() const final {
-    return color_params_.ColorSpace();
-  }
   bool WritePixels(const SkImageInfo& orig_info,
                    const void* pixels,
                    size_t row_bytes,
@@ -188,8 +169,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   SkIRect dirty_rect_for_commit_;
 
   bool is_valid_size_ = false;
-
-  Canvas2DColorParams color_params_;
 };
 
 }  // namespace blink

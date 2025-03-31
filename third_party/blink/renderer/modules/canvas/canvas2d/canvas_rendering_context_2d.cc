@@ -171,8 +171,7 @@ CanvasRenderingContext2D::CanvasRenderingContext2D(
           canvas,
           attrs,
           canvas->GetDocument().GetTaskRunner(TaskType::kInternalDefault)),
-      should_prune_local_font_cache_(false),
-      color_params_(attrs.color_space, attrs.pixel_format, attrs.alpha) {
+      should_prune_local_font_cache_(false) {
   identifiability_study_helper_.SetExecutionContext(
       canvas->GetTopExecutionContext());
   if (canvas->GetDocument().GetSettings() &&
@@ -387,16 +386,6 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
 
   return host->ResourceProvider()->WritePixels(orig_info, pixels, row_bytes, x,
                                                y);
-}
-
-void CanvasRenderingContext2D::Reset() {
-  // This is a multiple inheritance bootstrap
-  BaseRenderingContext2D::ResetInternal();
-}
-
-void CanvasRenderingContext2D::RestoreCanvasMatrixClipStack(
-    cc::PaintCanvas* c) const {
-  RestoreMatrixClipStack(c);
 }
 
 bool CanvasRenderingContext2D::ShouldAntialias() const {
@@ -1022,11 +1011,6 @@ cc::Layer* CanvasRenderingContext2D::CcLayer() const {
   }
 
   return canvas()->GetOrCreateCcLayerIfNeeded();
-}
-
-CanvasRenderingContext2DSettings*
-CanvasRenderingContext2D::getContextAttributes() const {
-  return ToCanvasRenderingContext2DSettings(CreationAttributes());
 }
 
 void CanvasRenderingContext2D::drawFocusIfNeeded(Element* element) {

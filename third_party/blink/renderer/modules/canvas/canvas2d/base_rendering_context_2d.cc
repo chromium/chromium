@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_2d_recorder_context.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
+#include "third_party/blink/renderer/modules/canvas/htmlcanvas/canvas_context_creation_attributes_helpers.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_enum_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu.h"
@@ -129,7 +130,8 @@ BaseRenderingContext2D::BaseRenderingContext2D(
       try_restore_context_event_timer_(
           task_runner,
           this,
-          &BaseRenderingContext2D::TryRestoreContextEvent) {}
+          &BaseRenderingContext2D::TryRestoreContextEvent),
+      color_params_(attrs.color_space, attrs.pixel_format, attrs.alpha) {}
 
 void BaseRenderingContext2D::OnPlaceElementStateChanged(Element& element) {
   element.SetNeedsStyleRecalc(
@@ -154,6 +156,11 @@ void BaseRenderingContext2D::ResetInternal() {
     webgpu_access_texture_->destroy();
     webgpu_access_texture_ = nullptr;
   }
+}
+
+CanvasRenderingContext2DSettings* BaseRenderingContext2D::getContextAttributes()
+    const {
+  return ToCanvasRenderingContext2DSettings(CreationAttributes());
 }
 
 void BaseRenderingContext2D::placeElement(Element* element,
@@ -730,6 +737,15 @@ void BaseRenderingContext2D::Trace(Visitor* visitor) const {
   visitor->Trace(placed_elements_);
   CanvasRenderingContext::Trace(visitor);
   Canvas2DRecorderContext::Trace(visitor);
+}
+
+void BaseRenderingContext2D::RestoreCanvasMatrixClipStack(
+    cc::PaintCanvas* c) const {
+  RestoreMatrixClipStack(c);
+}
+
+void BaseRenderingContext2D::Reset() {
+  ResetInternal();
 }
 
 void BaseRenderingContext2D::WillUseCurrentFont() const {

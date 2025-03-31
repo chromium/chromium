@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_fill_rule.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_smoothing_quality.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_2d_recorder_context.h"
@@ -43,10 +44,15 @@ class Rect;
 class Vector2d;
 }  // namespace gfx
 
+namespace viz {
+class SharedImageFormat;
+}
+
 namespace blink {
 
 class Canvas2dGPUTransferOption;
 class CanvasContextCreationAttributesCore;
+class CanvasRenderingContext2DSettings;
 class ExceptionState;
 class GPUTexture;
 class ImageData;
@@ -62,6 +68,7 @@ class V8CanvasDirection;
 class V8CanvasFontKerning;
 class V8CanvasFontVariantCaps;
 class V8GPUTextureFormat;
+enum class PredefinedColorSpace;
 
 class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
                                               public Canvas2DRecorderContext {
@@ -77,6 +84,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   BaseRenderingContext2D& operator=(const BaseRenderingContext2D&) = delete;
 
   void ResetInternal() override;
+
+  CanvasRenderingContext2DSettings* getContextAttributes() const;
 
   // https://github.com/WICG/canvas-place-element
   void placeElement(Element* element,
@@ -199,6 +208,20 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
 
   void Trace(Visitor*) const override;
 
+  // Implementing methods from CanvasRenderingContext
+  SkAlphaType GetAlphaType() const final {
+    return color_params_.GetAlphaType();
+  }
+  viz::SharedImageFormat GetSharedImageFormat() const final {
+    return color_params_.GetSharedImageFormat();
+  }
+  gfx::ColorSpace GetColorSpace() const final {
+    return color_params_.GetGfxColorSpace();
+  }
+  void PageVisibilityChanged() override {}
+  void RestoreCanvasMatrixClipStack(cc::PaintCanvas* c) const final;
+  void Reset() override;
+
   HeapTaskRunnerTimer<BaseRenderingContext2D>
       dispatch_context_lost_event_timer_;
   HeapTaskRunnerTimer<BaseRenderingContext2D>
@@ -225,6 +248,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
                            int x,
                            int y) {
     NOTREACHED();
+  }
+
+  PredefinedColorSpace GetDefaultImageDataColorSpace() const final {
+    return color_params_.ColorSpace();
   }
 
   virtual void DispatchContextLostEvent(TimerBase*);
@@ -278,6 +305,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   unsigned read_count_ = 0;
   Member<GPUTexture> webgpu_access_texture_ = nullptr;
   std::unique_ptr<CanvasResourceProvider> resource_provider_from_webgpu_access_;
+  Canvas2DColorParams color_params_;
 };
 
 }  // namespace blink

@@ -100,8 +100,7 @@ OffscreenCanvasRenderingContext2D::OffscreenCanvasRenderingContext2D(
     : BaseRenderingContext2D(canvas,
                              attrs,
                              canvas->GetTopExecutionContext()->GetTaskRunner(
-                                 TaskType::kInternalDefault)),
-      color_params_(attrs.color_space, attrs.pixel_format, attrs.alpha) {
+                                 TaskType::kInternalDefault)) {
   identifiability_study_helper_.SetExecutionContext(
       canvas->GetTopExecutionContext());
   is_valid_size_ = IsValidImageSize(Host()->Size());
@@ -137,11 +136,6 @@ void OffscreenCanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
   if (!GetOrCreateCanvasResourceProvider())
     return;
   Host()->FlushRecording(reason);
-}
-
-CanvasRenderingContext2DSettings*
-OffscreenCanvasRenderingContext2D::getContextAttributes() const {
-  return ToCanvasRenderingContext2DSettings(CreationAttributes());
 }
 
 // BaseRenderingContext2D implementation
