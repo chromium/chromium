@@ -330,7 +330,13 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
       syncer::UserSelectableType::kAutofill));
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, EntityInstances) {
+// TODO(crbug.com/40759629): Fix and re-enable this test.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_EntityInstances DISABLED_EntityInstances
+#else
+#define MAYBE_EntityInstances EntityInstances
+#endif
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, MAYBE_EntityInstances) {
   // Test that loading, adding, editing and deleting entity instances works.
   ASSERT_TRUE(RunAutofillSubtest("loadEmptyEntityInstancesList"));
   ASSERT_TRUE(RunAutofillSubtest("addEntityInstance"));
