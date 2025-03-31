@@ -322,6 +322,11 @@ public class TabGroupUiMediator implements BackPressHandler {
                     public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
                         resetTabStrip();
                     }
+
+                    @Override
+                    public void didMergeTabToGroup(Tab movedTab) {
+                        resetTabStrip();
+                    }
                 };
 
         var filterProvider = mTabModelSelector.getTabGroupModelFilterProvider();

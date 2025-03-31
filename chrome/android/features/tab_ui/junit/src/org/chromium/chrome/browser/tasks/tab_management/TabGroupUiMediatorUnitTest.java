@@ -950,6 +950,28 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     @Test
+    public void uiVisibleAfterMergeCurrentTabToGroup() {
+        initAndAssertProperties(mTab1);
+
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        doReturn(tabs).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
+        doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(mTab1);
+        doReturn(new Token(1L, TAB2_ROOT_ID)).when(mTab1).getTabGroupId();
+        mTabGroupModelFilterObserverArgumentCaptor.getValue().didMergeTabToGroup(mTab1);
+
+        verifyResetStrip(true, tabs);
+    }
+
+    @Test
+    public void uiNotVisibleAfterMergeNonCurrentTabToGroup() {
+        initAndAssertProperties(mTab1);
+
+        mTabGroupModelFilterObserverArgumentCaptor.getValue().didMergeTabToGroup(mTab3);
+
+        verify(mResetHandler, never()).resetGridWithListOfTabs(any());
+    }
+
+    @Test
     public void backButtonPress_ShouldHandle() {
         initAndAssertProperties(mTab1);
         mDialogControllerSupplier.get();
