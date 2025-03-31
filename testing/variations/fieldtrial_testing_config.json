@@ -12289,6 +12289,21 @@
             ]
         }
     ],
+    "IOSManageAccountStorage": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20250328",
+                    "enable_features": [
+                        "IOSManageAccountStorage"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSManualLogUploadsInTheFRE": [
         {
             "platforms": [
