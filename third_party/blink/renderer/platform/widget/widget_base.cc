@@ -1653,8 +1653,11 @@ void WidgetBase::OnImeEventGuardFinish(ImeEventGuard* guard) {
 void WidgetBase::RequestAnimationAfterDelay(const base::TimeDelta& delay,
                                             bool urgent) {
   if (delay.is_zero()) {
+    // See the comment in MainThreadEventQueue::QueueEvent() explaining why we
+    // use "IsEligibleForThrottleMainFrameTo60Hz()".
     bool urgent_for_input =
         input_handler_.handling_input_event() &&
+        ::features::IsEligibleForThrottleMainFrameTo60Hz() &&
         base::FeatureList::IsEnabled(features::kUrgentMainFrameForInput);
     client_->ScheduleAnimation(urgent || urgent_for_input);
     return;

@@ -4,12 +4,17 @@
 
 #include "cc/base/features.h"
 
+#include <atomic>
 #include <string>
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
 
 namespace features {
+
+namespace {
+std::atomic<bool> s_is_eligible_for_throttle_main_frame_to_60hz = false;
+}  // namespace
 
 // When enabled, this forces composited textures for SurfaceLayerImpls to be
 // aligned to the pixel grid. Lack of alignment can lead to blur, noticeably so
@@ -209,6 +214,16 @@ BASE_FEATURE(kDynamicSafeAreaInsetsSupportedByCC,
 BASE_FEATURE(kThrottleMainFrameTo60Hz,
              "ThrottleMainFrameTo60Hz",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+void SetIsEligibleForThrottleMainFrameTo60Hz(bool is_eligible) {
+  s_is_eligible_for_throttle_main_frame_to_60hz.store(
+      true, std::memory_order_relaxed);
+}
+
+bool IsEligibleForThrottleMainFrameTo60Hz() {
+  return s_is_eligible_for_throttle_main_frame_to_60hz.load(
+      std::memory_order_relaxed);
+}
 
 BASE_FEATURE(kViewTransitionCaptureAndDisplay,
              "ViewTransitionCaptureAndDisplay",
