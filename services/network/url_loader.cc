@@ -1698,8 +1698,16 @@ int URLLoader::ProcessAcceptCHFrameOnConnected(
   if (!hints.empty()) {
     // `accept_ch_frame_observer_` is owned by `this`, so passing in
     // `callback` is safe.
+    auto record = [](net::CompletionOnceCallback callback,
+                     base::TimeTicks call_time, int status) {
+      base::UmaHistogramMicrosecondsTimes(
+          "Net.URLLoader.AcceptCH.RoundTripTime",
+          base::TimeTicks::Now() - call_time);
+      std::move(callback).Run(status);
+    };
     accept_ch_frame_observer_->OnAcceptCHFrameReceived(
-        url::Origin::Create(url_request->url()), hints, std::move(callback));
+        url::Origin::Create(url_request->url()), hints,
+        base::BindOnce(record, std::move(callback), base::TimeTicks::Now()));
     return net::ERR_IO_PENDING;
   }
   return net::OK;

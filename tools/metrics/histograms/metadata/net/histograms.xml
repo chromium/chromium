@@ -6996,6 +6996,23 @@ chromium-metrics-reviews@google.com.
   <summary>The time spent in closesocket call in UDPSocketWin::Close.</summary>
 </histogram>
 
+<histogram name="Net.URLLoader.AcceptCH.RoundTripTime" units="microseconds"
+    expires_after="2025-09-27">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the IPC round trip time to handle the AcceptCH frame in the browser
+    process. It is recorded if there are hints in the ACCEPT_CH frame that were
+    not included in the original request during URLLoader to handle a
+    connection. It is time just before the OnAcceptCHFrameReceived() IPC call
+    until the IPC callback is called. Refer
+    URLLoader::ProcessAcceptCHFrameOnConnected() for details.
+
+    Note: The metrics is reported from all clients. Some of clients may not have
+    high resolution timer that can send metrics with microseconds precision.
+  </summary>
+</histogram>
+
 <histogram name="Net.URLLoaderThrottle.OnReceiveResponseTime" units="ms"
     expires_after="2025-08-24">
   <owner>nidhijaju@chromium.org</owner>
