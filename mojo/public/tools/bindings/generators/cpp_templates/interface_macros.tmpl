@@ -16,11 +16,25 @@ base::OnceCallback<void(
 )>
 {%- endmacro -%}
 
+{%- macro declare_result_callback(method) -%}
+base::OnceCallback<void({{result_response_to_expected(method.result_response)}})>
+{%- endmacro -%}
+
+{% macro result_response_to_expected(result_response) -%}
+base::expected<
+  {{result_response.success_kind|cpp_wrapper_type}},
+  {{result_response.failure_kind|cpp_wrapper_type}}>
+{%- endmacro -%}
+
 {%- macro declare_request_params(prefix, method, allow_non_const_ref=False) -%}
 {{declare_params(prefix, method.parameters, allow_non_const_ref=allow_non_const_ref)}}
 {%-   if method.response_parameters != None -%}
 {%-     if method.parameters %}, {% endif -%}
+{%-     if method.result_response != None -%}
+{{method.name}}ResultCallback callback
+{%-     else -%}
 {{method.name}}Callback callback
+{%-     endif -%}
 {%-   endif -%}
 {%- endmacro -%}
 

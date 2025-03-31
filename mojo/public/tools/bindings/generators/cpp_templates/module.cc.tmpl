@@ -144,7 +144,8 @@ void {{interface.name}}InterceptorForTesting::{{method.name}}({{interface_macros
 
 {{interface.name}}AsyncWaiter::~{{interface.name}}AsyncWaiter() = default;
 
-{%  for method in interface.methods if method.response_parameters != None -%}
+{# TODO(crbug.com/404343228): add AsyncWaiter support for result types. #}
+{%  for method in interface.methods if (method.response_parameters != None and method.result_response == None) -%}
 void {{interface.name}}AsyncWaiter::{{method.name}}(
     {{interface_macros.declare_sync_method_params("", method)}}) {
   base::RunLoop loop;
@@ -176,7 +177,7 @@ void {{interface.name}}AsyncWaiter::{{method.name}}(
   loop.Run();
 }
 
-{%   if method.response_parameters|length == 1 -%}
+{%   if method.response_parameters|length == 1 and method.result_response == None -%}
 {%-     set response_kind = method.response_parameters[0].kind -%}
 {%-     set response_type = response_kind|cpp_wrapper_call_type -%}
 {{response_type}} {{interface.name}}AsyncWaiter::{{method.name}}(

@@ -100,6 +100,9 @@ class {{export_attribute|append_space_if_nonempty}}{{interface.name}}
 {%-     endif %}
 
   using {{method.name}}Callback = {{interface_macros.declare_callback(method, for_blink)}};
+{%-     if method.result_response != None %}
+  using {{method.name}}ResultCallback = {{interface_macros.declare_result_callback(method)}};
+{%-     endif -%}
 {%-   endif %}
   {{ kythe_annotation("%s.%s"|format(interface_prefix, method.name)) }}
   virtual void {{method.name}}({{interface_macros.declare_request_params("", method)}}) = 0;

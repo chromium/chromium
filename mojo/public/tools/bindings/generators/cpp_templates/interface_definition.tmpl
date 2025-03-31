@@ -211,7 +211,11 @@ class {{class_name}}_{{method.name}}_ForwardToCallback
     : public mojo::MessageReceiver {
  public:
   {{class_name}}_{{method.name}}_ForwardToCallback(
+{%-     if method.result_response != None %}
+      {{class_name}}::{{method.name}}ResultCallback callback
+{%-     else %}
       {{class_name}}::{{method.name}}Callback callback
+{%-     endif %}
       ) : callback_(std::move(callback)) {
   }
 
@@ -220,7 +224,11 @@ class {{class_name}}_{{method.name}}_ForwardToCallback
 
   bool Accept(mojo::Message* message) override;
  private:
+{%-     if method.result_response != None %}
+  {{class_name}}::{{method.name}}ResultCallback callback_;
+{%-     else %}
   {{class_name}}::{{method.name}}Callback callback_;
+{%-     endif %}
 };
 {%-   endif %}
 {%- endfor %}
@@ -372,6 +380,25 @@ void {{proxy_name}}::{{method.name}}(
             "%s_%s_Response_Message"|format(interface.name, method.name) %}
 class {{class_name}}_{{method.name}}_ProxyToResponder : public ::mojo::internal::ProxyToResponder {
  public:
+{%-      if method.result_response != None -%}
+{%        set response_type = method.response_parameters[0].kind %}
+  static {{class_name}}::{{method.name}}ResultCallback CreateCallback(
+      ::mojo::Message& message,
+      std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
+    std::unique_ptr<{{class_name}}_{{method.name}}_ProxyToResponder> proxy(
+        new {{class_name}}_{{method.name}}_ProxyToResponder(
+            message, std::move(responder)));
+    return base::BindOnce(&Transform)
+      .Then(base::BindOnce(&{{class_name}}_{{method.name}}_ProxyToResponder::Run,
+                          std::move(proxy)));
+  }
+
+  static {{response_type|cpp_wrapper_call_type}} Transform({{interface_macros.result_response_to_expected(method.result_response)}} in) {
+    return in.has_value() ? {{response_type|get_qualified_name_for_kind}}::NewSuccess(std::move(in.value())) :
+                            {{response_type|get_qualified_name_for_kind}}::NewFailure(std::move(in.error()));
+  }
+
+{%      else %}
   static {{class_name}}::{{method.name}}Callback CreateCallback(
       ::mojo::Message& message,
       std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
@@ -381,6 +408,7 @@ class {{class_name}}_{{method.name}}_ProxyToResponder : public ::mojo::internal:
     return base::BindOnce(&{{class_name}}_{{method.name}}_ProxyToResponder::Run,
                           std::move(proxy));
   }
+{%-      endif %}
 
   ~{{class_name}}_{{method.name}}_ProxyToResponder() {
 #if DCHECK_IS_ON()
@@ -429,8 +457,17 @@ bool {{class_name}}_{{method.name}}_ForwardToCallback::Accept(
 
 {%-     set desc = class_name~"::"~method.name~" response" %}
   {{alloc_params(method.response_param_struct, "params", "message", method.sequential_ordinal, "true")}}
-  if (!callback_.is_null())
+  if (!callback_.is_null()) {
+{%-     if method.result_response != None %}
+    if (p_result->is_success()) {
+      std::move(callback_).Run(base::ok(std::move(p_result->get_success())));
+    } else {
+      std::move(callback_).Run(base::unexpected(std::move(p_result->get_failure())));
+    }
+{%-     else %}
     std::move(callback_).Run({{pass_params(method.response_parameters)}});
+{%-     endif %}
+  }
   return true;
 }
 
@@ -552,7 +589,7 @@ bool {{class_name}}StubDispatch::AcceptWithResponder(
 {%-       set desc = class_name~"::"~method.name %}
       {{alloc_params(method.param_struct, "params", "message", method.sequential_ordinal, "false")|
           indent(4)}}
-      {{class_name}}::{{method.name}}Callback callback =
+      auto callback =
           {{class_name}}_{{method.name}}_ProxyToResponder::CreateCallback(
               *message, std::move(responder));
       // A null |impl| means no implementation was bound.

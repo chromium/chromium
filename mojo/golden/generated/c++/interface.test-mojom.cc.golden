@@ -235,9 +235,10 @@ bool IFace_Method_ForwardToCallback::Accept(
         IFace::Name_, 0, true);
     return false;
   }
-  if (!callback_.is_null())
+  if (!callback_.is_null()) {
     std::move(callback_).Run(
 std::move(p_result));
+  }
   return true;
 }
 
@@ -338,7 +339,7 @@ bool IFaceStubDispatch::AcceptWithResponder(
             IFace::Name_, 0, false);
         return false;
       }
-      IFace::MethodCallback callback =
+      auto callback =
           IFace_Method_ProxyToResponder::CreateCallback(
               *message, std::move(responder));
       // A null |impl| means no implementation was bound.
