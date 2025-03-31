@@ -5,13 +5,18 @@
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ASCIIToUTF16;
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
+using testing::ElementsAre;
+using testing::Pointer;
 
 namespace {
 
@@ -146,6 +151,128 @@ TEST(BookmarkEditorTest, ApplyEditsWithURLsAndNestedFolders) {
   EXPECT_EQ(nested_folder_title_2,
             bookmarkbar->children()[2]->children()[3]->GetTitle());
   EXPECT_EQ(url_title_1, bookmarkbar->children()[2]->children()[4]->GetTitle());
+}
+
+TEST(BookmarkEditorTest, ApplyEditsMoveBookmarks) {
+  base::test::ScopedFeatureList override_features{
+      switches::kSyncEnableBookmarksInTransportMode};
+
+  std::unique_ptr<BookmarkModel> model =
+      bookmarks::TestBookmarkClient::CreateModel();
+  model->CreateAccountPermanentFolders();
+
+  const BookmarkNode* local_node = model->AddURL(
+      model->bookmark_bar_node(), 0, u"title", GURL("chrome://newtab"));
+  const BookmarkNode* account_node = model->AddURL(
+      model->account_bookmark_bar_node(), 0, u"title", GURL("chrome://newtab"));
+
+  ASSERT_THAT(model->bookmark_bar_node()->children(),
+              ElementsAre(Pointer(local_node)));
+  ASSERT_THAT(model->account_bookmark_bar_node()->children(),
+              ElementsAre(Pointer(account_node)));
+
+  BookmarkEditor::EditDetails detail(
+      BookmarkEditor::EditDetails::MoveNodes({local_node, account_node}));
+  BookmarkEditor::ApplyEdits(model.get(), model->account_other_node(), detail,
+                             std::u16string(), GURL());
+
+  EXPECT_TRUE(model->bookmark_bar_node()->children().empty());
+  EXPECT_TRUE(model->account_bookmark_bar_node()->children().empty());
+  EXPECT_THAT(model->account_other_node()->children(),
+              ElementsAre(Pointer(local_node), Pointer(account_node)));
+}
+
+TEST(BookmarkEditorTest, ApplyEditsMoveAccountBookmarks) {
+  base::test::ScopedFeatureList override_features{
+      switches::kSyncEnableBookmarksInTransportMode};
+
+  std::unique_ptr<BookmarkModel> model =
+      bookmarks::TestBookmarkClient::CreateModel();
+  model->CreateAccountPermanentFolders();
+
+  const BookmarkNode* folder =
+      model->AddFolder(model->account_bookmark_bar_node(), 0, u"folder");
+  const BookmarkNode* node = model->AddURL(
+      model->account_bookmark_bar_node(), 1, u"title", GURL("chrome://newtab"));
+
+  ASSERT_THAT(model->account_bookmark_bar_node()->children(),
+              ElementsAre(Pointer(folder), Pointer(node)));
+
+  BookmarkEditor::EditDetails detail(
+      BookmarkEditor::EditDetails::MoveNodes({folder, node}));
+  BookmarkEditor::ApplyEdits(model.get(), model->other_node(), detail,
+                             std::u16string(), GURL());
+
+  EXPECT_TRUE(model->account_bookmark_bar_node()->children().empty());
+  EXPECT_THAT(model->other_node()->children(),
+              ElementsAre(Pointer(folder), Pointer(node)));
+}
+
+TEST(BookmarkEditorTest, ApplyEditsMoveLocalBookmarks) {
+  std::unique_ptr<BookmarkModel> model =
+      bookmarks::TestBookmarkClient::CreateModel();
+
+  const BookmarkNode* folder =
+      model->AddFolder(model->bookmark_bar_node(), 0, u"folder");
+  const BookmarkNode* node = model->AddURL(model->bookmark_bar_node(), 1,
+                                           u"title", GURL("chrome://newtab"));
+
+  ASSERT_THAT(model->bookmark_bar_node()->children(),
+              ElementsAre(Pointer(folder), Pointer(node)));
+
+  BookmarkEditor::EditDetails detail(
+      BookmarkEditor::EditDetails::MoveNodes({folder, node}));
+  BookmarkEditor::ApplyEdits(model.get(), model->other_node(), detail,
+                             std::u16string(), GURL());
+
+  EXPECT_TRUE(model->bookmark_bar_node()->children().empty());
+  EXPECT_THAT(model->other_node()->children(),
+              ElementsAre(Pointer(folder), Pointer(node)));
+}
+
+TEST(BookmarkEditorTest, ApplyEditsPersistOrderAfterMove) {
+  base::test::ScopedFeatureList override_features{
+      switches::kSyncEnableBookmarksInTransportMode};
+
+  std::unique_ptr<BookmarkModel> model =
+      bookmarks::TestBookmarkClient::CreateModel();
+  model->CreateAccountPermanentFolders();
+
+  const BookmarkNode* local_node1 = model->AddURL(
+      model->bookmark_bar_node(), 0, u"title", GURL("chrome://newtab"));
+  const BookmarkNode* local_node2 = model->AddURL(
+      model->bookmark_bar_node(), 1, u"title", GURL("chrome://newtab"));
+  const BookmarkNode* local_node3 = model->AddURL(
+      model->bookmark_bar_node(), 2, u"title", GURL("chrome://newtab"));
+
+  const BookmarkNode* account_node1 = model->AddURL(
+      model->account_other_node(), 0, u"title", GURL("chrome://newtab"));
+  const BookmarkNode* account_node2 = model->AddURL(
+      model->account_other_node(), 1, u"title", GURL("chrome://newtab"));
+  const BookmarkNode* account_node3 = model->AddURL(
+      model->account_other_node(), 2, u"title", GURL("chrome://newtab"));
+
+  ASSERT_THAT(model->bookmark_bar_node()->children(),
+              ElementsAre(Pointer(local_node1), Pointer(local_node2),
+                          Pointer(local_node3)));
+  ASSERT_THAT(model->account_other_node()->children(),
+              ElementsAre(Pointer(account_node1), Pointer(account_node2),
+                          Pointer(account_node3)));
+
+  // Make the selection in a random order. The order after moving should however
+  // remain the same as in the initial parent node.
+  BookmarkEditor::EditDetails detail(BookmarkEditor::EditDetails::MoveNodes(
+      {account_node2, local_node1, local_node3, account_node3, account_node1,
+       local_node2}));
+  BookmarkEditor::ApplyEdits(model.get(), model->other_node(), detail,
+                             std::u16string(), GURL());
+
+  // Since the account nodes were added more recently, they should be rowed
+  // last.
+  EXPECT_THAT(model->other_node()->children(),
+              ElementsAre(Pointer(local_node1), Pointer(local_node2),
+                          Pointer(local_node3), Pointer(account_node1),
+                          Pointer(account_node2), Pointer(account_node3)));
 }
 
 }  // namespace
