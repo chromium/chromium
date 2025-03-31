@@ -1873,6 +1873,19 @@ chromium-metrics-reviews@google.com.
   <token key="SyncErrorReason" variants="SyncErrorReason"/>
 </histogram>
 
+<histogram name="Sync.SyncErrorInfobarDismissed" enum="SyncErrorInfobarTypes"
+    expires_after="2025-08-10">
+  <owner>rgod@google.com</owner>
+  <owner>ylahodiuk@google.com</owner>
+  <summary>
+    Records whenever user dismisses a sync error infobar displayed for a
+    specific error. iOS only.
+
+    Note: Recorded from M135. Keep in mind when comparing with
+    Sync.SyncErrorInfobarDisplayed histogram that was introduced much earlier.
+  </summary>
+</histogram>
+
 <histogram name="Sync.SyncErrorInfobarDisplayed" enum="SyncErrorInfobarTypes"
     expires_after="2025-08-10">
   <owner>jlebel@chromium.org</owner>

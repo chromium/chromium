@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 
-#import "base/metrics/histogram_macros.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -45,6 +45,31 @@ enum InfobarSyncError : uint8_t {
   kMaxValue = SYNC_TRUSTED_VAULT_RECOVERABILITY_DEGRADED,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncErrorInfobarTypes)
+
+// Converts `syncer::SyncService::UserActionableError` to `InfobarSyncError`.
+// Returns `std::nullopt` when the error is `kNone`.
+std::optional<InfobarSyncError> InfobarSyncErrorFromUserActionableError(
+    syncer::SyncService::UserActionableError error) {
+  switch (error) {
+    case syncer::SyncService::UserActionableError::kNone:
+      return std::nullopt;
+    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
+      return SYNC_SIGN_IN_NEEDS_UPDATE;
+    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
+      return SYNC_NEEDS_PASSPHRASE;
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForPasswords:
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForEverything:
+      return SYNC_NEEDS_TRUSTED_VAULT_KEY;
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForPasswords:
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForEverything:
+      return SYNC_TRUSTED_VAULT_RECOVERABILITY_DEGRADED;
+  }
+  NOTREACHED();
+}
 
 // Gets the the title of the identity error info bar for the given `error`.
 std::u16string GetIdentityErrorInfoBarTitle(
@@ -280,36 +305,30 @@ bool DisplaySyncErrors(ProfileIOS* profile,
     }
   }
 
-  // Logs when an infobar is shown to user. See crbug/265352.
-  InfobarSyncError loggedErrorState;
-  switch (syncService->GetUserActionableError()) {
-    case syncer::SyncService::UserActionableError::kNone:
-      // Not an actual error, no need to do anything.
-      return false;
-    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
-      loggedErrorState = SYNC_SIGN_IN_NEEDS_UPDATE;
-      break;
-    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
-      loggedErrorState = SYNC_NEEDS_PASSPHRASE;
-      break;
-    case syncer::SyncService::UserActionableError::
-        kNeedsTrustedVaultKeyForPasswords:
-    case syncer::SyncService::UserActionableError::
-        kNeedsTrustedVaultKeyForEverything:
-      loggedErrorState = SYNC_NEEDS_TRUSTED_VAULT_KEY;
-      break;
-    case syncer::SyncService::UserActionableError::
-        kTrustedVaultRecoverabilityDegradedForPasswords:
-    case syncer::SyncService::UserActionableError::
-        kTrustedVaultRecoverabilityDegradedForEverything:
-      loggedErrorState = SYNC_TRUSTED_VAULT_RECOVERABILITY_DEGRADED;
-      break;
+  std::optional<InfobarSyncError> infobarSyncError =
+      InfobarSyncErrorFromUserActionableError(
+          syncService->GetUserActionableError());
+  if (!infobarSyncError.has_value()) {
+    return false;
   }
-  UMA_HISTOGRAM_ENUMERATION("Sync.SyncErrorInfobarDisplayed", loggedErrorState);
+
+  // Logs when an infobar is shown to user. See crbug.com/265352.
+  base::UmaHistogramEnumeration("Sync.SyncErrorInfobarDisplayed",
+                                *infobarSyncError);
 
   DCHECK(web_state);
   infobars::InfoBarManager* infoBarManager =
       InfoBarManagerImpl::FromWebState(web_state);
   DCHECK(infoBarManager);
   return SyncErrorInfoBarDelegate::Create(infoBarManager, profile, presenter);
+}
+
+void LogSyncErrorInfobarDismissed(
+    syncer::SyncService::UserActionableError error) {
+  std::optional<InfobarSyncError> infobarSyncError =
+      InfobarSyncErrorFromUserActionableError(error);
+  if (infobarSyncError.has_value()) {
+    base::UmaHistogramEnumeration("Sync.SyncErrorInfobarDismissed",
+                                  *infobarSyncError);
+  }
 }
