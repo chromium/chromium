@@ -256,7 +256,8 @@
     return;
   }
   AccountErrorUIInfo* newError = GetAccountErrorUIInfo(_syncService);
-  if (newError == _error) {
+  if (_error == newError || [newError isEqual:_error]) {
+    // The first disjunct is necessary for the case when both values are `nil`.
     return;
   }
   _error = newError;
