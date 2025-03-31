@@ -948,7 +948,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackPress.Intercept.CustomTab{Task}"
-    enum="BackPressConsumer" expires_after="2025-05-15">
+    enum="BackPressConsumer" expires_after="M143">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/chrome/browser/back_press/android/OWNERS</owner>
   <summary>
@@ -987,8 +987,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.BackPress.MinimizeAppAndCloseTab.CustomTab.{Task}"
-    enum="MinimizeAppAndCloseTabType" expires_after="2025-05-15">
+<histogram name="Android.BackPress.MinimizeAppAndCloseTab.CustomTab{Task}"
+    enum="MinimizeAppAndCloseTabType" expires_after="M143">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/chrome/browser/back_press/android/OWNERS</owner>
   <summary>
