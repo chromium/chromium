@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.2.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v3.1.0...chromium-bidi-v3.2.0) (2025-03-31)
+
+
+### Features
+
+* support UserContext in setViewport ([#3262](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3262)) ([aa01302](https://github.com/GoogleChromeLabs/chromium-bidi/commit/aa0130294710faee22bfae8a0069b976532a072d))
+
 ## [3.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v3.0.0...chromium-bidi-v3.1.0) (2025-03-27)
 
 
