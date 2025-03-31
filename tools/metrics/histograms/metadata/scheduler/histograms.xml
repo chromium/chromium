@@ -285,7 +285,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Scheduling.ThreadController.ActiveOffCpuVsWallTimePercentage.CrGpuMain"
-    units="%" expires_after="2025-05-07">
+    units="%" expires_after="2026-05-07">
   <owner>henrika@google.com</owner>
   <owner>handellm@google.com</owner>
   <summary>
@@ -306,7 +306,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Scheduling.ThreadController.ActiveOnCpuVsWallTimePercentage.CrGpuMain"
-    units="%" expires_after="2025-05-07">
+    units="%" expires_after="2026-05-07">
   <owner>henrika@google.com</owner>
   <owner>handellm@google.com</owner>
   <summary>
@@ -327,7 +327,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Scheduling.ThreadController.ActiveVsWallTimePercentage.CrGpuMain"
-    units="%" expires_after="2025-05-07">
+    units="%" expires_after="2026-05-07">
   <owner>henrika@google.com</owner>
   <owner>handellm@google.com</owner>
   <summary>
