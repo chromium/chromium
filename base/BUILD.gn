@@ -4958,6 +4958,7 @@ if (is_android) {
       ":base_switches_java",
       ":command_line_java",
       ":log_java",
+      ":resetters_java",
       ":tasks_java",
       "//base/version_info/android:version_constants_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
