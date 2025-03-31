@@ -250,8 +250,8 @@ export class CdpTarget {
           flatten: true,
         }),
         this.#updateWindowId(),
-        this.#initAndEvaluatePreloadScripts(),
         this.#setUserContextConfig(),
+        this.#initAndEvaluatePreloadScripts(),
         this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
         // Resume tab execution as well if it was paused by the debugger.
         this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
