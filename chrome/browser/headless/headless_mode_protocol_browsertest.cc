@@ -240,6 +240,9 @@ HEADLESS_MODE_PROTOCOL_TEST(DISABLED_FocusBlurNotifications,
 HEADLESS_MODE_PROTOCOL_TEST(MAYBE_InputClipboardOps,
                             "input/input-clipboard-ops.js")
 
+HEADLESS_MODE_PROTOCOL_TEST(DocumentFocusOnLoad,
+                            "input/document-focus-on-load.js")
+
 class HeadlessModeInputSelectFileDialogTest
     : public HeadlessModeProtocolBrowserTest {
  public:
