@@ -17,7 +17,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_tree_update.h"
-#include "ui/accessibility/ax_updates_and_events.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -25,18 +24,19 @@
 
 namespace tree_fixing {
 
-AXTreeFixingServicesRouter::WebContentsObserver::WebContentsObserver(
-    content::WebContents& web_contents)
+AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
+    AXTreeFixingWebContentsObserver(content::WebContents& web_contents)
     : content::WebContentsObserver(&web_contents) {}
 
-AXTreeFixingServicesRouter::WebContentsObserver::~WebContentsObserver() =
-    default;
+AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
+    ~AXTreeFixingWebContentsObserver() = default;
 
-void AXTreeFixingServicesRouter::WebContentsObserver::
-    AccessibilityEventReceived(const ui::AXUpdatesAndEvents& details) {
+void AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
+    DidStopLoading() {
   if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
     return;
   }
+
   // TODO(crbug.com/401308988): Run fixes here using details.updates.
 }
 
@@ -176,7 +176,7 @@ void AXTreeFixingServicesRouter::ToggleEnabledState() {
       continue;
     }
     web_contents_observers_.push_back(
-        std::make_unique<WebContentsObserver>(*web_contents));
+        std::make_unique<AXTreeFixingWebContentsObserver>(*web_contents));
   }
 }
 

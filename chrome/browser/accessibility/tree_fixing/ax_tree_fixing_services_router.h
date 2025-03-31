@@ -42,7 +42,6 @@ class WebContents;
 
 namespace ui {
 struct AXTreeUpdate;
-struct AXUpdatesAndEvents;
 }  // namespace ui
 
 namespace tree_fixing {
@@ -62,18 +61,21 @@ class AXTreeFixingServicesRouter
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 {
  public:
-  class WebContentsObserver : public content::WebContentsObserver {
+  class AXTreeFixingWebContentsObserver : public content::WebContentsObserver {
    public:
-    explicit WebContentsObserver(content::WebContents& web_contents);
-    WebContentsObserver(WebContentsObserver&&) = delete;
-    WebContentsObserver(const WebContentsObserver&) = delete;
-    WebContentsObserver& operator=(WebContentsObserver&&) = delete;
-    WebContentsObserver& operator=(const WebContentsObserver&) = delete;
-    ~WebContentsObserver() override;
+    explicit AXTreeFixingWebContentsObserver(
+        content::WebContents& web_contents);
+    AXTreeFixingWebContentsObserver(AXTreeFixingWebContentsObserver&&) = delete;
+    AXTreeFixingWebContentsObserver(const AXTreeFixingWebContentsObserver&) =
+        delete;
+    AXTreeFixingWebContentsObserver& operator=(
+        AXTreeFixingWebContentsObserver&&) = delete;
+    AXTreeFixingWebContentsObserver& operator=(
+        const AXTreeFixingWebContentsObserver&) = delete;
+    ~AXTreeFixingWebContentsObserver() override;
 
     // content::WebContentsObserver:
-    void AccessibilityEventReceived(
-        const ui::AXUpdatesAndEvents& details) override;
+    void DidStopLoading() override;
   };
 
   explicit AXTreeFixingServicesRouter(Profile* profile);
@@ -118,7 +120,8 @@ class AXTreeFixingServicesRouter
 
   void ToggleEnabledState();
 
-  std::vector<std::unique_ptr<WebContentsObserver>> web_contents_observers_;
+  std::vector<std::unique_ptr<AXTreeFixingWebContentsObserver>>
+      web_contents_observers_;
   const raw_ptr<Profile> profile_;
   PrefChangeRegistrar pref_change_registrar_;
 
