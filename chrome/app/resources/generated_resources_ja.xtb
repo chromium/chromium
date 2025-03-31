@@ -2976,6 +2976,7 @@
 <translation id="3045447014237878114">このサイトで複数のファイルが自動的にダウンロードされました</translation>
 <translation id="3046178388369461825">Linux ディスクの空き容量が非常に少なくなっています</translation>
 <translation id="304644035656848980">マイクのプレビュー</translation>
+<translation id="3046892784550338476">バージョン <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />（<ph name="PRODUCT_CHANNEL" />）<ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">ウェブページ、完全</translation>
 <translation id="304747341537320566">読み上げエンジン</translation>
 <translation id="3047678109605649715">デバイスに <ph name="LANGUAGE" /> の音声がありません。デバイスで容量を確保してから、もう一度お試しください。</translation>

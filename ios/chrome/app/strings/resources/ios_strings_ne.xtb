@@ -440,6 +440,7 @@
 <translation id="2783161812871838616">डेस्कटप साइट देखाउन अनुरोध गर्नुहोस्</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{यो पासवर्ड तपाईंको Google खाता {EMAIL} मा सेभ गरिएको छ}other{यी पासवर्ड तपाईंको Google खाता {EMAIL} मा सेभ गरिएका छन्}}</translation>
 <translation id="2791174088547598693">पासवर्ड हाल्नुहोस्…</translation>
+<translation id="2793703503584038325">कुनै पासवर्ड चयन गर्नुहोस् र "सेयर गर्नुहोस्" आइकनमा ट्याप गर्नुहोस्</translation>
 <translation id="2797302972324086597">देशको कोड</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} फाइल}other{{COUNT} वटा फाइल}}</translation>
 <translation id="2816489851009559785">मेनु → सेटिङहरू → डिफल्ट ब्राउजर</translation>
@@ -579,6 +580,7 @@
 <translation id="35083190962747987">${url} खोल्नुहोस्</translation>
 <translation id="3511519535430890904">"ब्राउजिङ सुरक्षा" अन गर्नुहोस्</translation>
 <translation id="3517216995152707259">तपाईंले आफ्नो ब्राउजिङ डेटा मेटाए पनि तपाईं आफ्नो Google खाताबाट साइन आउट हुनु हुने छैन। त्यसो गर्न <ph name="BEGIN_LINK" />Chrome बाट साइन आउट गर्नुहोस्<ph name="END_LINK" />।</translation>
+<translation id="3519792890877853853">यो कार्डमा तपाईंका खुला ट्याबहरूमा भएका उत्पादनहरूका रिभ्यू देखाइन्छ</translation>
 <translation id="3519905498307021260">{count,plural, =1{यो ट्याब खोल्नुहोस्}other{{count} वटा ट्याब खोल्नुहोस्}}</translation>
 <translation id="3523513363815970085">"तपाईंले सबैभन्दा धेरै पटक खोलेका साइटहरू" लुकाउनुहोस्</translation>
 <translation id="3523789730715594198">तपाईं जुनसुकै बेला सेटिङमा गई सिंक गर्ने कार्य रोक्न सक्नुहुन्छ। Google ले तपाईंले विगतमा हेरेका वेबपेजका आधारमा Search र अन्य सेवाहरू पर्सनलाइज गर्न सक्छ।</translation>
@@ -819,6 +821,7 @@
 <translation id="4565377596337484307">पासवर्ड लुकाउनुहोस्</translation>
 <translation id="4568230126482344545">"हालसालैका ट्याबहरू" लुकाउनुहोस्</translation>
 <translation id="4578835633387306383">अन गर्नुहोस्…</translation>
+<translation id="4580716718466706433">"पासवर्ड म्यानेजर" मा जानुहोस्</translation>
 <translation id="4587589328781138893">साइटहरू</translation>
 <translation id="4592672037257622855">{count,plural, =1{यो पेज पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हालिएको छ}other{{count} वटा पेज पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हालिएका छन्}}</translation>
 <translation id="459644946100970322">"भाडादरसम्बन्धी अलर्ट" अन गर्ने हो?</translation>
@@ -858,6 +861,7 @@
 <translation id="4717844083556844785">हालको वेबपेज इन्कोग्निटो मोडमा खुलेको छ</translation>
 <translation id="4719927025381752090">अनुवादको गर्न प्रस्ताव गर्नुहोस्</translation>
 <translation id="4720530280568305198">तपाईंले चयन गर्नुभएको मेनु नयाँ ट्याबमा खोलिएको छ</translation>
+<translation id="472259426228234149">मूल्य $१०० देखि $१८०</translation>
 <translation id="473775607612524610">अपडेट गर्नुहोस्</translation>
 <translation id="474209246745757965">आफ्नो क्यामेरा प्रयोग गरी किनमेल तथा अनुवाद गर्नुहोस्</translation>
 <translation id="4742407542027196863">पासवर्डहरूको व्यवस्थापन गर्नुहोस्…</translation>

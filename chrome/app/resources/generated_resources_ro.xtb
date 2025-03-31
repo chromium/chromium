@@ -2983,6 +2983,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3045447014237878114">Acest site a descărcat automat mai multe fișiere</translation>
 <translation id="3046178388369461825">Spațiul de pe discul Linux este foarte redus</translation>
 <translation id="304644035656848980">Previzualizarea microfonului</translation>
+<translation id="3046892784550338476">Versiunea <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Pagina web, completă</translation>
 <translation id="304747341537320566">Motoare de vorbire</translation>
 <translation id="3047678109605649715">Nu există voci în <ph name="LANGUAGE" /> pe dispozitiv. Eliberează spațiu pe dispozitiv și încearcă din nou.</translation>

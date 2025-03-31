@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">ਮੈਨੀਫ਼ੈਸਟ ਫ਼ਾਈਲ ਅਵੈਧ ਹੈ</translation>
 <translation id="7217838517480956708">ਇਸ ਮਸ਼ੀਨ ਦੇ ਪ੍ਰਬੰਧਕ ਨੂੰ <ph name="EXTENSION_NAME" /> ਇੰਸਟੌਲ ਕੀਤੇ ਜਾਣ ਦੀ ਲੋੜ ਹੈ। ਇਸਨੂੰ ਹਟਾਇਆ ਜਾਂ ਸੰਸ਼ੋਧਿਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
 <translation id="7612608473764576263">ਪ੍ਰਾਈਵੇਟ ਕੁੰਜੀ ਲਈ ਇਨਪੁੱਟ ਮੁੱਲ ਵੈਧ ਫਾਰਮੈਟ ਵਿੱਚ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ (PKCS#8-ਫਾਰਮੈਟ PEM-ਇਨਕੋਡ ਕੀਤੀ ਗਈ RSA ਕੁੰਜੀ)।</translation>
+<translation id="7876803335449432072">ਸਮੱਗਰੀ ਸਕ੍ਰਿਪਟ ਲਈ '<ph name="RELATIVE_PATH" />' ਫ਼ਾਈਲ ਨੂੰ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ, ਸਮੱਗਰੀ ਸਕ੍ਰਿਪਟ ਸਟਾਈਲ ਸ਼ੀਟਾਂ ਨੂੰ ਸਿਰਫ਼ ਸਮਰਥਿਤ ਸਟਾਈਲ ਸ਼ੀਟ ਫ਼ਾਈਲਾਂ ਜਿਵੇਂ ਕਿ .CSS ਫ਼ਾਈਲਾਂ ਤੋਂ ਲੋਡ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="7939686037314084444">ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਸਹੀ ਢੰਗ ਨਾਲ ਲੋਡ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ। ਇਸ ਲਈ ਸ਼ਾਇਦ ਇਹ ਐਕਸਟੈਂਸ਼ਨ ਨੈੱਟਵਰਕ ਬੇਨਤੀਆਂ ਨੂੰ ਨਾ ਰੋਕ ਸਕੇ।</translation>
 <translation id="7972881773422714442">ਚੋਣਾਂ: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">ਅਗਲਾ ਕੈਮਰਾ</translation>
 <translation id="8047248493720652249">ਇਹ ਐਕਸਟੈਂਸ਼ਨ ਡਾਊਨਲੋਡ "<ph name="ATTEMPTED_FILENAME" />" ਨੂੰ ਨਾਮ ਦੇਣ ਵਿੱਚ ਅਸਫਲ ਰਹੀ ਕਿਉਂਕਿ ਦੂਜੀ ਐਕਸਟੈਂਸ਼ਨ (<ph name="EXTENSION_NAME" />) ਨੇ ਇੱਕ ਵੱਖ ਫ਼ਾਈਲਨਾਮ "<ph name="ACTUAL_FILENAME" />" ਨਿਰਧਾਰਤ ਕੀਤਾ।</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> ਤੋਂ <ph name="PRODUCT_NAME" /></translation>
 <translation id="8517576857589387417">ਮੈਨੀਫ਼ੈਸਟ ਫ਼ਾਈਲ ਮੌਜੂਦ ਨਹੀਂ ਹੈ ਜਾਂ ਪੜ੍ਹਨਯੋਗ ਨਹੀਂ ਹੈ</translation>
+<translation id="8621383749470166852">ਸਮੱਗਰੀ ਸਕ੍ਰਿਪਟ ਲਈ '<ph name="RELATIVE_PATH" />' ਫ਼ਾਈਲ ਨੂੰ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ, ਸਮੱਗਰੀ ਸਕ੍ਰਿਪਟਾਂ ਨੂੰ ਸਿਰਫ਼ ਸਮਰਥਿਤ JavaScript ਫ਼ਾਈਲਾਂ ਜਿਵੇਂ ਕਿ .js ਫ਼ਾਈਲਾਂ ਤੋਂ ਲੋਡ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="8636666366616799973">ਪੈਕੇਜ ਅਵੈਧ ਹੈ। ਵੇਰਵੇ: '<ph name="ERROR_MESSAGE" />'।</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" ਵੱਲੋਂ ਤੁਹਾਡੀਆਂ ਡੀਵਾਈਸਾਂ ਵਿੱਚੋਂ ਇੱਕ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ:</translation>
 <translation id="8885905466771744233">ਨਿਸ਼ਚਿਤ ਐਕਸਟੈਂਸ਼ਨ ਲਈ ਇੱਕ ਨਿੱਜੀ ਕੁੰਜੀ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ। ਉਹ ਕੁੰਜੀ ਦੁਬਾਰਾ ਵਰਤੋ ਜਾਂ ਪਹਿਲਾਂ ਇਸਨੂੰ ਮਿਟਾਓ।</translation>

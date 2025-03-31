@@ -91,6 +91,7 @@
 <translation id="3054480780637153380">‏פותחים את הגדרות Chromium ב-iOS, לוחצים על 'אפליקציית ברירת המחדל לדפדפן' ובוחרים ב-Chromium.</translation>
 <translation id="3102849287235003384">‏כדי לצאת מחשבון Google שלך בכל האתרים, עליך <ph name="BEGIN_LINK" />לצאת מ-Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">‏להגדיר את Chromium כדפדפן ברירת המחדל?</translation>
+<translation id="3180939591219927904">‏מפעילים את האפשרות "נעילת הכרטיסיות הפרטיות כשסוגרים את Chromium"</translation>
 <translation id="3242612358525156339">‏בהגדרות המכשיר, פותחים את '<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />' ובוחרים ב-Chromium</translation>
 <translation id="328933489847748230">{count,plural, =1{‏כרגע מוצג חלון Chromium אחד}one{‏כרגע מוצגים {count} חלונות Chromium}two{‏כרגע מוצגים {count} חלונות Chromium}other{‏כרגע מוצגים {count} חלונות Chromium}}</translation>
 <translation id="3344973607274501920">‏Chromium לא הצליח לבדוק את הסיסמאות שלך. יש לבדוק את החיבור לאינטרנט.</translation>
@@ -260,6 +261,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">‏הנתונים שבחרת הוסרו מ-Chromium ומהמכשירים המסונכרנים. ייתכן שבכתובת history.google.com יהיה אפשר לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google, כמו חיפושים ופעילות משירותי Google אחרים.</translation>
 <translation id="7395825497086981028">הסיסמה תישמר במנהל הסיסמאות עבור <ph name="EMAIL" />.</translation>
+<translation id="7504829997542308412">‏פתיחת Chromium</translation>
 <translation id="7531461704633548377">‏מ-Chromium</translation>
 <translation id="7554983317097061001">‏טיפ ל-Chromium: כדאי להעביר את Chromium ל-Dock</translation>
 <translation id="7576863740961052505">‏ניהול של הגדרות Chromium</translation>

@@ -105,6 +105,7 @@
 <translation id="1411386976162024013">Carian visual Lens</translation>
 <translation id="1417474386970818917">Log Keluar dan Padam</translation>
 <translation id="1426410128494586442">Ya</translation>
+<translation id="1429187656584513419">Buka Kata Laluan</translation>
 <translation id="1430915738399379752">Cetak</translation>
 <translation id="1436671784520050284">Teruskan persediaan</translation>
 <translation id="143681031165817424">Alamat disimpan pada peranti ini sahaja</translation>
@@ -590,6 +591,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3530206579861815432">Cari tab terbuka dan baru ditutup dengan pantas di seluruh peranti anda yang disegerakkan.</translation>
 <translation id="3530767473765895035">Urus akaun pada peranti ini…</translation>
 <translation id="3533436815740441613">Tab Baharu</translation>
+<translation id="3533860663366814939">Buka tetapan Autolengkap &amp; Kata laluan</translation>
 <translation id="3547356470684043247">Baca penilaian pelanggan tentang produk, perkhidmatan atau pengalaman untuk membantu anda membuat keputusan berdasarkan ulasan</translation>
 <translation id="3557336313807607643">Tambahkan pada kenalan</translation>
 <translation id="355765753469272474">Buat asal</translation>
@@ -1512,6 +1514,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7431851541687113774">Matikan pengesanan alamat</translation>
 <translation id="7431991332293347422">Kawal cara sejarah penyemakan imbas anda digunakan untuk memperibadikan Carian dan pelbagai lagi</translation>
 <translation id="7435356471928173109">Dimatikan oleh pentadbir anda</translation>
+<translation id="7437712592381799950">Anda boleh meleret ke atas untuk melihat lebih banyak kandungan yang disesuaikan untuk anda.</translation>
 <translation id="7438481509621345350">Kini anda akan melihat cerita daripada <ph name="CHANNEL_NAME" /> apabila anda membuka tab baharu.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Penanda halaman disimpan pada "{title}"}other{Penanda halaman disimpan pada "{title}"}}</translation>
 <translation id="7451404862887877229">Ketik "Privasi dan Keselamatan", kemudian "Penyemakan Imbas Selamat"</translation>
@@ -1614,6 +1617,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="784934925303690534">Julat masa</translation>
 <translation id="7851858861565204677">Peranti lain</translation>
 <translation id="7853202427316060426">Aktiviti</translation>
+<translation id="7854006015462979438">Buka Umum</translation>
 <translation id="7859988229622350291">Jangan terjemah</translation>
 <translation id="7863211248337747225">Dapatkan apl</translation>
 <translation id="7865127013871431856">Pilihan Translate</translation>

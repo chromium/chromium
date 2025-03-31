@@ -70,7 +70,6 @@
 <translation id="1122714970786750095">電子機器、電気機器</translation>
 <translation id="1123753900084781868">自動字幕起こしは現在ご利用いただけません</translation>
 <translation id="1125453215844207206">ラベルのないグラフィックです。Google AI を使用してテキストを抽出しています</translation>
-<translation id="1125573121925420732">ウェブサイトのセキュリティ更新中は警告メッセージが表示されることがあります。これはまもなく改善される予定です。</translation>
 <translation id="112840717907525620">ポリシー キャッシュは正常です</translation>
 <translation id="1131264053432022307">コピーした画像</translation>
 <translation id="1138458427267715730">値下げしたウェブサイトがあった場合にアラートを受け取ります</translation>
@@ -568,6 +567,7 @@
 <translation id="1975584088563498795">用紙受け 10</translation>
 <translation id="1978555033938440688">ファームウェアのバージョン</translation>
 <translation id="1979156660928743046">メディア情報</translation>
+<translation id="1987486584747170374">検索語句、最も一致した結果とそのページの内容が Google に送信されます。AI を改善するために、送信された情報が人間のレビュアーによって使用されることはありません。組織はこれらの設定をいつでも変更できます。</translation>
 <translation id="1988881251331415125">タイプミスでない場合は、<ph name="BEGIN_LINK" />接続診断をお試しください<ph name="END_LINK" />。</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> から、ローカルのパソコンに大きなデータを永続的に保存する許可を求められています</translation>
@@ -763,6 +763,7 @@
 <translation id="2301098101308036335">アクセスしたウェブサイトとその日時が表示されます。</translation>
 <translation id="230286397113210245">[シークレット ウィンドウを開く] ボタンです。実行すると、新しいシークレット ウィンドウを開いてシークレット モードでブラウジングできます</translation>
 <translation id="2306124309679506798">没入型エクスペリエンスを許可しますか？</translation>
+<translation id="2307711332257985952">Chrome で自宅と職場の住所を使用できるようになりました</translation>
 <translation id="2312234273148520048">調味料、ドレッシング</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> 未満。サイトによっては、次回アクセスする際に読み込みに時間がかかる可能性があります。</translation>
 <translation id="2316159751672436664">ChromeOS の設定でユーザー補助ツールをカスタマイズします</translation>
@@ -1178,6 +1179,7 @@
 <translation id="3102312643185441063">普通預金</translation>
 <translation id="3103188521861412364">株式、債券</translation>
 <translation id="3103535543639438037">類似の商品を並べて比較</translation>
+<translation id="3103993932858740905">後払いする場合は、1 回限りの仮想カード番号が入力されます。この番号は、今回の購入にのみ使用されます。</translation>
 <translation id="3105172416063519923">アセット ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />セキュア DNS の設定を確認する<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">中央トレイ</translation>

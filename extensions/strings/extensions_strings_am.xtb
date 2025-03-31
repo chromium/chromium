@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">የዝርዝር ሰነድ ፋይሉ ልክ ያልሆነ ነው</translation>
 <translation id="7217838517480956708">የዚህ ማሽን አስተዳዳሪ <ph name="EXTENSION_NAME" /> እንዲጫን ይፈልጋል። ሊወገድ ወይም ሊቀየር አይችልም።</translation>
 <translation id="7612608473764576263">የግል ቁልፍ የግቤት እሴት የሚሠራ ቅርጸት (PKCS#8-format በPEM-የተመሠጠረ የRSA ቁልፍ) መሆን አለበት።</translation>
+<translation id="7876803335449432072">ለይዘት ስክሪፕት «<ph name="RELATIVE_PATH" />» ፋይልን መጫን አልተቻለም፣ የይዘት ስክሪፕቶች መጫን የሚችሉት እንደ .css ፋይሎች ካሉ የሚደገፉ የቅጥ ሉህ ፋይሎች ላይ ብቻ ነው።</translation>
 <translation id="7939686037314084444">ቅጥያው በአግባቡ ሊጫን አልቻለም። የአውታረ መረብ ጥያቄዎችን መጥለፍ ላይችል ይችላል።</translation>
 <translation id="7972881773422714442">አማራጮች፦ <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">ተጠቃሚውን የሚመለከት</translation>
 <translation id="8047248493720652249">ይህ ቅጥያ የወረደውን «<ph name="ATTEMPTED_FILENAME" />» ብሎ መሰየም አልተሳካለትም፣ ምክንያቱም ሌላ ቅጥያ (<ph name="EXTENSION_NAME" />) ሌላ የፋይል ስም «<ph name="ACTUAL_FILENAME" />» ስለወሰነ ነው።</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> ከ<ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">የዝርዝር ሰነድ ፋይሉ ጠፍቷል ወይም ተነባቢ አይደለም</translation>
+<translation id="8621383749470166852">ለይዘት ስክሪፕት «<ph name="RELATIVE_PATH" />» ፋይልን መጫን አልተቻለም፣ የይዘት ስክሪፕቶች መጫን የሚችሉት እንደ .js ፋይሎች ካሉ የሚደገፉ ጃቫስክሪፕት ፋይሎች ላይ ብቻ ነው።</translation>
 <translation id="8636666366616799973">ጥቅሉ ልክ አይደለም። ዝርዝሮች፦ «<ph name="ERROR_MESSAGE" />»።</translation>
 <translation id="8761756413268424715">«<ph name="APP_NAME" />» የአንዱ መሣሪያዎ መዳረሻ እየጠየቀ ነው።</translation>
 <translation id="8885905466771744233">ለተጠቀሰው ቅጥያ ቀድሞውንም ግላዊ ቁልፍ አለ። ይህን ቁልፍ ዳግም ይጠቀሙ ወይም  ይሰርዙት።</translation>

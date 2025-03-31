@@ -91,6 +91,7 @@
 <translation id="3054480780637153380">Ανοίξτε τις ρυθμίσεις του Chromium σε iOS, πατήστε Προεπιλεγμένη εφαρμογή προγράμματος περιήγησης και επιλέξτε το Chromium.</translation>
 <translation id="3102849287235003384">Για να αποσυνδεθείτε από τον Λογαριασμό σας Google σε όλους τους ιστοτόπους, <ph name="BEGIN_LINK" />αποσυνδεθείτε από το Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Ορισμός Chromium ως προεπιλεγμένου προγράμματος περιήγησης;</translation>
+<translation id="3180939591219927904">Ενεργοποιήστε την επιλογή Κλείδωμα καρτελών ανώνυμης περιήγησης κατά το κλείσιμο του Chromium</translation>
 <translation id="3242612358525156339">Από τις Ρυθμίσεις της συσκευής σας, ανοίξτε το στοιχείο <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> και επιλέξτε Chromium</translation>
 <translation id="328933489847748230">{count,plural, =1{Εμφανίζεται 1 παράθυρο του Chromium}other{Εμφανίζονται {count} παράθυρα του Chromium}}</translation>
 <translation id="3344973607274501920">Το Chromium δεν μπόρεσε να ελέγξει τους κωδικούς πρόσβασής σας. Δοκιμάστε να ελέγξετε τη σύνδεσή σας στο διαδίκτυο.</translation>
@@ -260,6 +261,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Τα επιλεγμένα δεδομένα καταργήθηκαν από το Chromium και από τις συγχρονισμένες συσκευές. Ο Λογαριασμός σας Google ενδέχεται να διαθέτει άλλες μορφές ιστορικού περιήγησης, όπως αναζητήσεις και δραστηριότητα από άλλες υπηρεσίες Google στη διεύθυνση history.google.com.</translation>
 <translation id="7395825497086981028">Ο κωδικός πρόσβασης θα αποθηκευτεί στον Διαχειριστή κωδικών πρόσβασης για τον λογαριασμό <ph name="EMAIL" />.</translation>
+<translation id="7504829997542308412">Ανοίξτε το Chromium</translation>
 <translation id="7531461704633548377">Από το Chromium</translation>
 <translation id="7554983317097061001">Συμβουλή για το Chromium: Μετακινήστε το Chromium στο dock</translation>
 <translation id="7576863740961052505">Διαχείριση ρυθμίσεων Chromium</translation>

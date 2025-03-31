@@ -2997,6 +2997,7 @@
 <translation id="3045447014237878114">이 사이트에서 여러 파일을 자동으로 다운로드함</translation>
 <translation id="3046178388369461825">Linux 디스크 공간이 매우 부족함</translation>
 <translation id="304644035656848980">마이크 미리보기</translation>
+<translation id="3046892784550338476">버전 <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />(<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">웹페이지, 전부</translation>
 <translation id="304747341537320566">음성 엔진</translation>
 <translation id="3047678109605649715">기기에 <ph name="LANGUAGE" /> 음성이 없습니다. 기기 공간을 확보한 다음 다시 시도하세요.</translation>

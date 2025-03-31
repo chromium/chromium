@@ -440,6 +440,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="2783161812871838616">Anmod om computerwebsite</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Adgangskoden er gemt på din Google-konto, {EMAIL}}one{Adgangskoden er gemt på din Google-konto, {EMAIL}}other{Adgangskoderne er gemt på din Google-konto, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Tilføj adgangskode…</translation>
+<translation id="2793703503584038325">Vælg en adgangskode, og tryk på delingsikonet</translation>
 <translation id="2797302972324086597">Landekode</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} fil}one{{COUNT} fil}other{{COUNT} filer}}</translation>
 <translation id="2816489851009559785">Menu → Indstillinger → Standardbrowser</translation>
@@ -579,6 +580,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="35083190962747987">Åbn ${url}</translation>
 <translation id="3511519535430890904">Tilføj browserbeskyttelse</translation>
 <translation id="3517216995152707259">Du bliver ikke logget ud af din Google-konto, når du sletter dine browserdata. Du skal <ph name="BEGIN_LINK" />logge ud af Chrome<ph name="END_LINK" /> for at logge ud af din konto.</translation>
+<translation id="3519792890877853853">Dette kort viser anmeldelser af produkter på dine åbne faner</translation>
 <translation id="3519905498307021260">{count,plural, =1{Åbn fanen}one{Åbn {count} fane}other{Åbn {count} faner}}</translation>
 <translation id="3523513363815970085">Skjul "Dine mest besøgte websites"</translation>
 <translation id="3523789730715594198">Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
@@ -819,6 +821,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4565377596337484307">Skjul adgangskode</translation>
 <translation id="4568230126482344545">Skjul seneste faner</translation>
 <translation id="4578835633387306383">Aktivér…</translation>
+<translation id="4580716718466706433">Gå til "Adgangskodeadministrator"</translation>
 <translation id="4587589328781138893">Websites</translation>
 <translation id="4592672037257622855">{count,plural, =1{Siden blev føjet til din læseliste}one{{count} side blev føjet til din læseliste}other{{count} sider blev føjet til din læseliste}}</translation>
 <translation id="459644946100970322">Vil du aktivere prisunderretninger?</translation>
@@ -858,6 +861,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4717844083556844785">Den aktuelle webside er i inkognitotilstand</translation>
 <translation id="4719927025381752090">Tilbyd at oversætte</translation>
 <translation id="4720530280568305198">Dit valg blev åbnet i en ny fane</translation>
+<translation id="472259426228234149">Pris: 1000-1800 DKK</translation>
 <translation id="473775607612524610">Opdater</translation>
 <translation id="474209246745757965">Shop og oversæt med dit kamera</translation>
 <translation id="4742407542027196863">Administrer adgangskoder…</translation>

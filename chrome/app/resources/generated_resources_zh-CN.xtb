@@ -2974,6 +2974,7 @@
 <translation id="3045447014237878114">此网站已自动下载多个文件</translation>
 <translation id="3046178388369461825">Linux 磁盘空间严重不足</translation>
 <translation id="304644035656848980">麦克风音频流预览</translation>
+<translation id="3046892784550338476">版本 <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />（<ph name="PRODUCT_CHANNEL" />）<ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">网页，全部</translation>
 <translation id="304747341537320566">语音引擎</translation>
 <translation id="3047678109605649715">您的设备上没有<ph name="LANGUAGE" />语音包。请释放出设备空间，然后重试。</translation>
