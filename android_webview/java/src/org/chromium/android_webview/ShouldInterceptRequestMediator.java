@@ -36,16 +36,20 @@ public abstract class ShouldInterceptRequestMediator {
 
     // Used to record Android.WebView.ShouldInterceptRequest.DidOverride.
     @IntDef({
-        ShouldInterceptRequestOverridden.NOT_OVERRIDDEN,
-        ShouldInterceptRequestOverridden.OVERRIDDEN,
-        ShouldInterceptRequestOverridden.ERROR,
+        ShouldInterceptRequestOverridden.AW_CONTENTS_NOT_OVERRIDDEN,
+        ShouldInterceptRequestOverridden.AW_CONTENTS_OVERRIDDEN,
+        ShouldInterceptRequestOverridden.AW_CONTENTS_ERROR,
+        ShouldInterceptRequestOverridden.SERVICE_WORKER_NULL,
+        ShouldInterceptRequestOverridden.SERVICE_WORKER_NON_NULL,
         ShouldInterceptRequestOverridden.COUNT
     })
     private @interface ShouldInterceptRequestOverridden {
-        int NOT_OVERRIDDEN = 0;
-        int OVERRIDDEN = 1;
-        int ERROR = 2;
-        int COUNT = 3;
+        int AW_CONTENTS_NOT_OVERRIDDEN = 0;
+        int AW_CONTENTS_OVERRIDDEN = 1;
+        int AW_CONTENTS_ERROR = 2;
+        int SERVICE_WORKER_NULL = 3;
+        int SERVICE_WORKER_NON_NULL = 4;
+        int COUNT = 5;
     }
 
     @Nullable private volatile AsyncShouldInterceptRequestCallback mAsyncCallback;
@@ -85,16 +89,37 @@ public abstract class ShouldInterceptRequestMediator {
             boolean overrides = overridesShouldInterceptRequest(client);
             recordOverridden(
                     overrides
-                            ? ShouldInterceptRequestOverridden.OVERRIDDEN
-                            : ShouldInterceptRequestOverridden.NOT_OVERRIDDEN);
+                            ? ShouldInterceptRequestOverridden.AW_CONTENTS_OVERRIDDEN
+                            : ShouldInterceptRequestOverridden.AW_CONTENTS_NOT_OVERRIDDEN);
             mCanSkipSyncShouldInterceptRequest = !overrides;
         } catch (NoSuchMethodException e) {
             // If something goes wrong, default to `false` because the consequences of wrongly being
             // false is suboptimal performance, whereas the consequences of wrongly being true is
             // correctness issues (shouldInterceptRequest not being called when it should be).
-            recordOverridden(ShouldInterceptRequestOverridden.ERROR);
+            recordOverridden(ShouldInterceptRequestOverridden.AW_CONTENTS_ERROR);
             mCanSkipSyncShouldInterceptRequest = false;
         }
+    }
+
+    @AnyThread
+    public void onServiceWorkerClientUpdated(@Nullable AwServiceWorkerClient client) {
+        // Figuring out whether the developer has overridden
+        // ServiceWorkerClient#shouldInterceptRequest is tricky because they may be using
+        // ServiceWorkerClientCompat from the support library, which in turn has two issues:
+        //
+        // - On Android N+, it will be implemented as a FrameworkServiceWorkerClient, which
+        //   overrides shouldInterceptRequest, but doesn't necessarily do anything.
+        // - On Android pre-N, it will be based on Boundary Interfaces, which make checking if it
+        //   has been overridden more involved.
+        //
+        // Seeing as the only method on ServiceWorkerClient is shouldInterceptRequest, we're going
+        // to assume that anyone providing a ServiceWorkerClient has overridden it.
+
+        mCanSkipSyncShouldInterceptRequest = (client == null);
+        recordOverridden(
+                mCanSkipSyncShouldInterceptRequest
+                        ? ShouldInterceptRequestOverridden.SERVICE_WORKER_NULL
+                        : ShouldInterceptRequestOverridden.SERVICE_WORKER_NON_NULL);
     }
 
     @AnyThread

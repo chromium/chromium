@@ -2334,9 +2334,14 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="WebViewShouldInterceptRequestOverridden">
-  <int value="0" label="shouldInterceptRequest is not overridden."/>
-  <int value="1" label="shouldInterceptRequest is overridden."/>
-  <int value="2" label="Error while determining if it was overridden."/>
+  <int value="0"
+      label="shouldInterceptRequest is not overridden by WebViewClient."/>
+  <int value="1"
+      label="shouldInterceptRequest is overridden by WebViewClient."/>
+  <int value="2"
+      label="Error while determining if it was overridden by WebViewClient."/>
+  <int value="3" label="ServiceWorkerClient is null."/>
+  <int value="4" label="ServiceWorkerClient is non-null."/>
 </enum>
 
 <enum name="WebViewStartupCallSite">
