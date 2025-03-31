@@ -859,6 +859,28 @@ TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_GoodRemoteConsent) {
       OAuth2MintTokenApiCallResult::kRemoteConsentSuccess, 1);
 }
 
+TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_RemoteConsentNoCookies) {
+  constexpr std::string_view kValidRemoteConsentResponseNoCookies = R"(
+      {
+        "issueAdvice": "remoteConsent",
+        "resolutionData": {
+          "resolutionApproach": "resolveInBrowser",
+          "resolutionUrl": "https://admin.google.com/ServiceNotAllowed"
+      }
+    })";
+
+  CreateClientFlow(/*bound_oauth_token=*/std::string());
+  RemoteConsentResolutionData resolution_data;
+  resolution_data.url = GURL("https://admin.google.com/ServiceNotAllowed");
+  EXPECT_CALL(delegate_, OnRemoteConsentSuccess(Eq(ByRef(resolution_data))));
+  ProcessApiCallSuccess(
+      head_200_.get(),
+      std::make_unique<std::string>(kValidRemoteConsentResponseNoCookies));
+  histogram_tester_.ExpectUniqueSample(
+      kOAuth2MintTokenApiCallResultHistogram,
+      OAuth2MintTokenApiCallResult::kRemoteConsentSuccess, 1);
+}
+
 TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_RemoteConsentFailure) {
   CreateFlow(OAuth2MintTokenFlow::MODE_ISSUE_ADVICE);
   EXPECT_CALL(delegate_, OnMintTokenFailure(_));
