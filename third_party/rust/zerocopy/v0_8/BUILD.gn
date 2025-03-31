@@ -13,31 +13,32 @@ cargo_crate("lib") {
   epoch = "0.8"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.23/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.24/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.23/src/byte_slice.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.23/src/byteorder.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.23/src/deprecated.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.23/src/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.23/src/impls.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.23/src/layout.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.23/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.23/src/macros.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.23/src/pointer/inner.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.23/src/pointer/invariant.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.23/src/pointer/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.23/src/pointer/ptr.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.23/src/ref.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.23/src/util/macro_util.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.23/src/util/macros.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.23/src/util/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.23/src/wrappers.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.24/src/byte_slice.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.24/src/byteorder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.24/src/deprecated.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.24/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.24/src/impls.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.24/src/layout.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.24/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.24/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.24/src/pointer/inner.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.24/src/pointer/invariant.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.24/src/pointer/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.24/src/pointer/ptr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.24/src/pointer/transmute.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.24/src/ref.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.24/src/util/macro_util.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.24/src/util/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.24/src/util/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.24/src/wrappers.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.8.23"
+  cargo_pkg_version = "0.8.24"
   cargo_pkg_authors = "Joshua Liebow-Feeser <joshlf@google.com>, Jack Wrenn <jswrenn@amazon.com>"
   cargo_pkg_name = "zerocopy"
   cargo_pkg_description = "Zerocopy makes zero-cost memory manipulation effortless. We write \"unsafe\" so you don't have to."
@@ -50,9 +51,9 @@ cargo_crate("lib") {
   proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
   features = [ "simd" ]
   build_root =
-      "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.23/build.rs"
+      "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.24/build.rs"
   build_sources = [
-    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.23/build.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.24/build.rs",
   ]
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates
