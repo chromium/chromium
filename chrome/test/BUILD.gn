@@ -8802,6 +8802,7 @@ test("unit_tests") {
     sources += [
       "../browser/extensions/extension_install_prompt_unittest.cc",
       "../browser/extensions/install_tracker_unittest.cc",
+      "../browser/extensions/installed_loader_unittest.cc",
       "../common/extensions/chrome_manifest_url_handlers_unittest.cc",
       "../common/extensions/manifest_handlers/automation_unittest.cc",
       "../common/extensions/manifest_handlers/content_scripts_manifest_unittest.cc",
@@ -8998,7 +8999,6 @@ test("unit_tests") {
       "../browser/extensions/forced_extensions/force_installed_test_base.h",
       "../browser/extensions/forced_extensions/force_installed_tracker_unittest.cc",
       "../browser/extensions/install_verifier_unittest.cc",
-      "../browser/extensions/installed_loader_unittest.cc",
       "../browser/extensions/manifest_v2_experiment_manager_unittest.cc",
       "../browser/extensions/menu_manager_unittest.cc",
       "../browser/extensions/mv2_deprecation_impact_checker_unittest.cc",

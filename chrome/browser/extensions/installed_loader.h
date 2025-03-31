@@ -18,6 +18,8 @@ class Extension;
 class ExtensionPrefs;
 class ExtensionRegistry;
 struct ExtensionInfo;
+class ExtensionManagement;
+class ManagementPolicy;
 
 // Used in histogram Extensions.HostPermissions.GrantedAccess,
 // Extensions.HostPermissions.GrantedAccessForBroadRequests and
@@ -77,10 +79,23 @@ class InstalledLoader {
   // installed. This causes incremented histograms to emit.
   void RecordExtensionsMetrics(Profile* profile, bool is_user_profile);
 
+  // Handles a load request for a corrupted extension.
+  void HandleCorruptExtension(const Extension& extension,
+                              const ManagementPolicy& policy);
+
+  // Returns true if this extension's update URL is from webstore, including any
+  // policy overrides.
+  bool UpdatesFromWebstore(const Extension& extension);
+
   raw_ptr<Profile> profile_;
   raw_ptr<ExtensionRegistry> extension_registry_;
 
   raw_ptr<ExtensionPrefs> extension_prefs_;
+
+  // ExtensionManager pointer is cached for performance as we loop through
+  // extensions.
+  // TODO(crbug.com/394876083): Port ExtensionManagement to desktop Android.
+  raw_ptr<ExtensionManagement> extension_management_ = nullptr;
 
   // Paths to invalid extension manifests, which should not be loaded.
   std::set<base::FilePath> invalid_extensions_;
