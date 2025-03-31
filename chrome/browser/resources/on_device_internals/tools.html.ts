@@ -1,3 +1,14 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {ToolsElement} from './tools.js';
+
+export function getHtml(this: ToolsElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <div class="performance-class">
   Device performance class: <strong>${this.performanceClassText_}</strong>
 </div>
@@ -118,3 +129,6 @@ ${this.responses_.map(item => html`
     <div class="${item.responseClass}">${item.response}</div>
   </div>
 `)}
+<!--_html_template_end_-->`;
+  // clang-format on
+}

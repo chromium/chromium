@@ -74,10 +74,10 @@ function textToInputPieces(text: string): InputPiece[] {
     } else if (piece === '$END') {
       input.push({token: Token.kEnd});
     } else if (
-        input.length === 0 || input[input.length - 1].text === undefined) {
+        input.length === 0 || input[input.length - 1]!.text === undefined) {
       input.push({text: piece});
     } else {
-      input[input.length - 1].text += '\n' + piece;
+      input[input.length - 1]!.text += '\n' + piece;
     }
   }
   return input;
@@ -123,24 +123,24 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
   private capabilities_: Capabilities = {imageInput: false, audioInput: false};
   protected contextExpanded_: boolean = false;
   protected contextLength_: number = 0;
-  protected contextText_: string;
+  protected contextText_: string = '';
   protected currentResponse_: Response|null = null;
   protected error_: string = '';
-  protected imageError_: string;
-  private loadModelDuration_: number;
+  protected imageError_: string = '';
+  private loadModelDuration_: number = -1;
   private loadModelStart_: number = 0;
   private modelPath_: string = '';
   protected model_: OnDeviceModelRemote|null = null;
   protected performanceClassText_: string = 'Loading...';
   protected responses_: Response[] = [];
   protected temperature_: number = 0;
-  protected text_: string;
+  protected text_: string = '';
   protected topK_: number = 1;
   protected imageFile_: File|null = null;
   protected audioFile_: File|null = null;
-  protected audioError_: string;
+  protected audioError_: string = '';
   protected performanceHint_: string = 'kHighestQuality';
-  private loadedPerformanceHint_: ModelPerformanceHint|null;
+  private loadedPerformanceHint_: ModelPerformanceHint|null = null;
 
   private session_: SessionRemote|null = null;
   private proxy_: BrowserProxy = BrowserProxy.getInstance();
