@@ -17,6 +17,7 @@
 #import "google_apis/gaia/core_account_id.h"
 #import "google_apis/gaia/gaia_auth_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
@@ -71,6 +72,8 @@ void UserPolicySigninService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   if (IsSignoutEvent(event)) {
     ShutdownCloudPolicyManager();
+  } else if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    TryInitialize();
   }
 }
 

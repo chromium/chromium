@@ -286,7 +286,12 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   // Sign in with managed account to fetch user policies.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    [SigninEarlGrey
+        signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
+  } else {
+    [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
+  }
 
   VerifyThatPoliciesAreSet();
 }
@@ -296,7 +301,12 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   // Sign in with managed account to fetch user policies.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    [SigninEarlGrey
+        signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
+  } else {
+    [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
+  }
   VerifyThatPoliciesAreSet();
 
   // Verify that the policies are cleared on sign out.
@@ -310,7 +320,12 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   // Sign in with managed account to fetch user policies.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    [SigninEarlGrey
+        signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
+  } else {
+    [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
+  }
 
   VerifyThatPoliciesAreSet();
 
@@ -400,7 +415,12 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   // Sign in with the managed account. This won't trigger the user policy fetch.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
-  [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    [SigninEarlGrey
+        signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
+  } else {
+    [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
+  }
 
   // Restart the browser while keeping sign-in by preserving the identity of the
   // managed account.

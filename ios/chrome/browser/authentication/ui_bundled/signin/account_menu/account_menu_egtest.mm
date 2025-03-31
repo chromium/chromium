@@ -425,7 +425,12 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 // Tests that tapping on an account button causes the managed account to sign
 // out with a sign-out confirmation dialog.
 - (void)testSwitchFromManagedAccount {
-  [SigninEarlGrey signinWithFakeIdentity:kManagedIdentity1];
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    [SigninEarlGrey
+        signinWithFakeManagedIdentityInPersonalProfile:kManagedIdentity1];
+  } else {
+    [SigninEarlGrey signinWithFakeIdentity:kManagedIdentity1];
+  }
   [ChromeEarlGreyUI waitForAppToIdle];
   [SigninEarlGrey addFakeIdentity:kPrimaryIdentity];
   [self selectIdentityDisc];
@@ -433,14 +438,16 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
                                           kAccountMenuSecondaryAccountButtonId)]
       performAction:grey_tap()];
 
-  // Confirm "Delete and Switch" when alert dialog that data will be cleared is
-  // shown.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(chrome_test_util::AlertAction(l10n_util::GetNSString(
-                         IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BUTTON)),
-                     grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
+  // Confirm "Delete and Switch" when alert dialog that data will be cleared
+  // is shown. This dialog is only shown when multi profiles are not available.
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_allOf(chrome_test_util::AlertAction(l10n_util::GetNSString(
+                           IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BUTTON)),
+                       grey_sufficientlyVisible(), nil)]
+        performAction:grey_tap()];
+  }
 
   [self assertSnackbarShownAndDismissItWithIdentity:kPrimaryIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:kPrimaryIdentity];
@@ -474,7 +481,12 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 }
 
 - (void)testSwitchFromManagedAccountToManagedAccount {
-  [SigninEarlGrey signinWithFakeIdentity:kManagedIdentity1];
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    [SigninEarlGrey
+        signinWithFakeManagedIdentityInPersonalProfile:kManagedIdentity1];
+  } else {
+    [SigninEarlGrey signinWithFakeIdentity:kManagedIdentity1];
+  }
   [ChromeEarlGreyUI waitForAppToIdle];
   [SigninEarlGrey addFakeIdentity:kManagedIdentity2];
   [self selectIdentityDisc];
@@ -482,15 +494,16 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
                                           kAccountMenuSecondaryAccountButtonId)]
       performAction:grey_tap()];
 
-  // Confirm "Delete and Switch" when alert dialog that data will be cleared is
-  // shown.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(chrome_test_util::AlertAction(l10n_util::GetNSString(
-                         IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BUTTON)),
-                     grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
-
+  // Confirm "Delete and Switch" when alert dialog that data will be cleared
+  // is shown. This dialog is only shown when multi profiles are not available.
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_allOf(chrome_test_util::AlertAction(l10n_util::GetNSString(
+                           IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BUTTON)),
+                       grey_sufficientlyVisible(), nil)]
+        performAction:grey_tap()];
+  }
   // Tap on Continue button to acknowledge signing in with a managed account.
   [[EarlGrey
       selectElementWithMatcher:
