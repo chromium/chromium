@@ -632,10 +632,9 @@ void FederatedAuthRequestImpl::RequestToken(
     std::vector<IdentityProviderGetParametersPtr> idp_get_params_ptrs,
     MediationRequirement requirement,
     RequestTokenCallback callback) {
-  // idp_get_params_ptrs should never be empty since it is the renderer-side
-  // code which populates it.
-  if (idp_get_params_ptrs.empty()) {
-    ReportBadMessageAndDeleteThis("idp_get_params_ptrs is empty.");
+  // idp_get_params_ptrs sent from the renderer should be of size 1.
+  if (idp_get_params_ptrs.size() != 1u) {
+    ReportBadMessageAndDeleteThis("idp_get_params_ptrs should be of size 1.");
     return;
   }
   // This could only happen with a compromised renderer process. We ensure that
@@ -644,6 +643,11 @@ void FederatedAuthRequestImpl::RequestToken(
   for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
     if (idp_get_params_ptr->providers.size() == 0) {
       ReportBadMessageAndDeleteThis("The provider list should not be empty.");
+      return;
+    }
+    if (idp_get_params_ptr->providers.size() > 10u) {
+      ReportBadMessageAndDeleteThis(
+          "The provider list should not be greater than 10.");
       return;
     }
     if (idp_get_params_ptr->mode == RpMode::kActive &&
