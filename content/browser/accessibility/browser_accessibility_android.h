@@ -286,6 +286,13 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   void AppendTextToString(std::u16string extra_text,
                           std::u16string* string) const;
 
+  // Returns true if the node has int attribute of kDefaultActionVerb and the
+  // default action verb is kSelect.
+  bool HasSelectActionVerb() const;
+
+  // Returns tree if any child has kSelect action verb.
+  bool HasSelectActionVerbChildren() const;
+
   std::u16string cached_text_;
   std::u16string old_value_;
   std::u16string new_value_;

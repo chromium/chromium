@@ -1440,13 +1440,30 @@ int BrowserAccessibilityAndroid::GetSelectedItemCount() const {
 int BrowserAccessibilityAndroid::GetSelectionMode() const {
   if (IsMultiselectable()) {
     return ANDROID_VIEW_ACCESSIBILITY_SELECTION_MODE_MULTIPLE;
-  } else if (HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb) &&
-             (GetData().GetDefaultActionVerb() ==
-              ax::mojom::DefaultActionVerb::kSelect)) {
+  } else if (HasSelectActionVerbChildren()) {
     return ANDROID_VIEW_ACCESSIBILITY_SELECTION_MODE_SINGLE;
   } else {
     return ANDROID_VIEW_ACCESSIBILITY_SELECTION_MODE_NONE;
   }
+}
+
+bool BrowserAccessibilityAndroid::HasSelectActionVerb() const {
+  return HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb) &&
+         (GetData().GetDefaultActionVerb() ==
+          ax::mojom::DefaultActionVerb::kSelect);
+}
+
+bool BrowserAccessibilityAndroid::HasSelectActionVerbChildren() const {
+  // This is called from IsLeaf, so don't call PlatformChildCount
+  // from within this!
+  for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
+    BrowserAccessibilityAndroid* child =
+        static_cast<BrowserAccessibilityAndroid*>(it.get());
+    if (child->HasSelectActionVerb()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool BrowserAccessibilityAndroid::CanScrollForward() const {
