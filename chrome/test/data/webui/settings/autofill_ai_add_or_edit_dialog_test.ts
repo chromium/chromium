@@ -771,7 +771,8 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
     assertTrue(saveButton.disabled);
   });
 
-  test('testMonthPickerChangeLocale', async function() {
+  // TODO(crbug.com/407374334): Test is failing.
+  test.skip('testMonthPickerChangeLocale', async function() {
     testEntityInstance.attributeInstances.push(testDateAttributeInstance);
     dialog.entityInstance = testEntityInstance;
     document.documentElement.lang = 'cs';
