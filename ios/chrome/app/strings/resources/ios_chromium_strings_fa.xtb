@@ -91,6 +91,7 @@
 <translation id="3054480780637153380">‏تنظیمات Chromium را در iOS باز کنید، سپس روی «برنامه مرورگر پیش‌فرض» تک‌ضرب بزنید و Chromium را انتخاب کنید.</translation>
 <translation id="3102849287235003384">‏برای خارج شدن از سیستم «حساب Google» خود در همه وب‌سایت‌ها، <ph name="BEGIN_LINK" />از سیستم Chromium خارج شوید<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">‏آیا Chromium مرورگر پیش‌فرض شود؟</translation>
+<translation id="3180939591219927904">‏«قفل کردن برگه‌های ناشناس هنگام بستن Chromium» را روشن کنید</translation>
 <translation id="3242612358525156339">‏در تنظیمات دستگاه، «<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />» را باز کنید و «Chromium» را انتخاب کنید</translation>
 <translation id="328933489847748230">{count,plural, =1{‏اکنون ۱ پنجره Chromium درحال نمایش است}one{‏اکنون {count} پنجره Chromium درحال نمایش است}other{‏اکنون {count} پنجره Chromium درحال نمایش است}}</translation>
 <translation id="3344973607274501920">‏Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند. اتصال اینترنت را بررسی کنید.</translation>
@@ -260,6 +261,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">‏داده‌های انتخاب‌‌شده از Chromium و دستگاه‌های همگام‌سازی‌شده حذف شده‌اند. ممکن است اشکال دیگری از سابقه مرورتان (مانند جستجو‌ها و فعالیت دیگر سرویس‌های Google در history.google.com) در حساب Google شما وجود داشته باشد.</translation>
 <translation id="7395825497086981028">گذرواژه‌تان در «مدیر گذرواژه» برای <ph name="EMAIL" /> ذخیره خواهد شد.</translation>
+<translation id="7504829997542308412">‏‫Chromium را باز کنید</translation>
 <translation id="7531461704633548377">‏از Chromium</translation>
 <translation id="7554983317097061001">‏نکته Chromium: برنامه Chromium را به جایگاه انتقال دهید</translation>
 <translation id="7576863740961052505">‏مدیریت کردن تنظیمات Chromium</translation>

@@ -440,6 +440,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2783161812871838616">Request desktop site</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Password saved in your Google Account, {EMAIL}}other{Passwords saved in your Google Account, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Add password…</translation>
+<translation id="2793703503584038325">Select a password and tap the 'share' icon</translation>
 <translation id="2797302972324086597">Country code</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} file}other{{COUNT} files}}</translation>
 <translation id="2816489851009559785">Menu → Settings → Default browser</translation>
@@ -579,6 +580,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="35083190962747987">Open ${url}</translation>
 <translation id="3511519535430890904">Add browsing protection</translation>
 <translation id="3517216995152707259">Deleting your browsing data doesn't sign you out of your Google Account. To do so, <ph name="BEGIN_LINK" />sign out of Chrome<ph name="END_LINK" />.</translation>
+<translation id="3519792890877853853">This card shows reviews for products in your open tabs</translation>
 <translation id="3519905498307021260">{count,plural, =1{Open the tab}other{Open {count} tabs}}</translation>
 <translation id="3523513363815970085">Hide 'Your top sites'</translation>
 <translation id="3523789730715594198">You can stop syncing at any time in Settings. Google may personalise Search and other services based on your history.</translation>
@@ -819,6 +821,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4565377596337484307">Hide password</translation>
 <translation id="4568230126482344545">Hide Recent tabs</translation>
 <translation id="4578835633387306383">Turn on…</translation>
+<translation id="4580716718466706433">Go to 'Password Manager'</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4592672037257622855">{count,plural, =1{Page added to your reading list}other{{count} pages added to your reading list}}</translation>
 <translation id="459644946100970322">Turn on price alerts?</translation>
@@ -858,6 +861,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4717844083556844785">Current web page is on Incognito</translation>
 <translation id="4719927025381752090">Offer to translate</translation>
 <translation id="4720530280568305198">Your selection opened in a new tab</translation>
+<translation id="472259426228234149">Price $100–$180</translation>
 <translation id="473775607612524610">Update</translation>
 <translation id="474209246745757965">Shop and translate with your camera</translation>
 <translation id="4742407542027196863">Manage passwords…</translation>

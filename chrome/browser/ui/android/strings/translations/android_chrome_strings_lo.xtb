@@ -17,6 +17,7 @@
 <translation id="1052842760770519282">ລະຫັດຜ່ານບາງລາຍການຂອງທ່ານບໍ່ສາມາດເຂົ້າເຖິງໄດ້</translation>
 <translation id="1058669287135776095">ທ່ານອອບລາຍຢູ່. ກະລຸນາກວດສອບການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານແລ້ວລອງໃໝ່.</translation>
 <translation id="10614374240317010">ຢ່າ​ບັນທຶກ</translation>
+<translation id="1070689840697074178">ທ່ານສາມາດດາວໂຫຼດ PDF ໄດ້ບ່ອນນີ້</translation>
 <translation id="107147699690128016">ຖ້າທ່ານປ່ຽນແປງນາມສະກຸນໄຟລ໌, ໄຟລ໌ອາດຈະເປີດໃນແອັບພລິເຄຊັນອື່ນ ແລະ ເປັນໄປໄດ້ວ່າອາດຈະເປັນອັນຕະລາຍຕໍ່ກັບອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="1080365971383768617">ລະຫັດຜ່ານຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ</translation>
 <translation id="1087176310396019910">ອາດເປັນສະແປມ</translation>
@@ -960,6 +961,7 @@
 <translation id="5456381639095306749">ໜ້າການດາວໂຫຼດ</translation>
 <translation id="5458366071038729214">ທ່ານຈະພົບເວັບໄຊທີ່ທ່ານຕິດຕາມຢູ່ບ່ອນນີ້</translation>
 <translation id="5468068603361015296">ທ່ານຕ້ອງການຢືນຢັນການດາວໂຫຼດ <ph name="FILE_NAME" /> ບໍ?</translation>
+<translation id="5471273988133666918">ບໍ່ສາມາດຍ້າຍແຖບ <ph name="TAB_TITLE" /> ໄດ້</translation>
 <translation id="548278423535722844">ເປີດໃນແອັບແຜນທີ່</translation>
 <translation id="5492637351392383067">ການເຂົ້າລະຫັດຢູ່ອຸປະກອນ</translation>
 <translation id="549660026907543296">ເຂົ້າຮ່ວມເປັນ <ph name="MEMBER_FULL_NAME" /></translation>

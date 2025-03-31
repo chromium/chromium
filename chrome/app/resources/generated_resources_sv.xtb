@@ -2995,6 +2995,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3045447014237878114">Den här webbplatsen laddade ned flera filer automatiskt</translation>
 <translation id="3046178388369461825">Mycket ont om utrymme på Linux-disken</translation>
 <translation id="304644035656848980">Förhandsgranskning av mikrofonen</translation>
+<translation id="3046892784550338476">Version <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Webbsida, komplett</translation>
 <translation id="304747341537320566">Talmotorer</translation>
 <translation id="3047678109605649715">Det finns inga <ph name="LANGUAGE" /> röster på enheten. Frigör utrymme på enheten och försök igen.</translation>

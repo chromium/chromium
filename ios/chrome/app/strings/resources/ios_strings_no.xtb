@@ -440,6 +440,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="2783161812871838616">Be om datamaskinversjonen av nettstedet</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Passordet er lagret i Google-kontoen din, {EMAIL}}other{Passordene er lagret i Google-kontoen din, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Legg til passord…</translation>
+<translation id="2793703503584038325">Velg et passord, og trykk på «del»-ikonet</translation>
 <translation id="2797302972324086597">Landskode</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} fil}other{{COUNT} filer}}</translation>
 <translation id="2816489851009559785">Meny → Innstillinger → Standardnettleser</translation>
@@ -579,6 +580,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="35083190962747987">Åpne ${url}</translation>
 <translation id="3511519535430890904">Legg til nettleserbeskyttelse</translation>
 <translation id="3517216995152707259">Du blir ikke logget av Google-kontoen din selv om du sletter nettlesingsdataene dine. For å gjøre det, <ph name="BEGIN_LINK" />logg av Chrome<ph name="END_LINK" />.</translation>
+<translation id="3519792890877853853">Dette kortet viser anmeldelser for produkter på de åpne fanene dine</translation>
 <translation id="3519905498307021260">{count,plural, =1{Åpne fanen}other{Åpne {count} faner}}</translation>
 <translation id="3523513363815970085">Skjul «Nettstedene du besøker mest»</translation>
 <translation id="3523789730715594198">Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
@@ -819,6 +821,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4565377596337484307">Skjul passord</translation>
 <translation id="4568230126482344545">Skjul nylige faner</translation>
 <translation id="4578835633387306383">Slå på…</translation>
+<translation id="4580716718466706433">Gå til «Passordlagring»</translation>
 <translation id="4587589328781138893">Nettsteder</translation>
 <translation id="4592672037257622855">{count,plural, =1{Siden er lagt til på leselisten din}other{{count} sider er lagt til på leselisten din}}</translation>
 <translation id="459644946100970322">Vil du slå på prisvarsler?</translation>
@@ -858,6 +861,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4717844083556844785">Den gjeldende nettsiden er i Inkognito</translation>
 <translation id="4719927025381752090">Tilby å oversette</translation>
 <translation id="4720530280568305198">Valget ditt ble åpnet på en ny fane</translation>
+<translation id="472259426228234149">Pris USD 100–USD 180</translation>
 <translation id="473775607612524610">Oppdater</translation>
 <translation id="474209246745757965">Handle og oversett med kameraet</translation>
 <translation id="4742407542027196863">Administrer passord…</translation>

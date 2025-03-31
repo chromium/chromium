@@ -1016,6 +1016,7 @@
 <translation id="2742870351467570537">ເອົາ​ລາ​​ຍ​ການ​ທີ່​ເລືອກອອກ</translation>
 <translation id="2743512410823092182">ແຫຼ່ງຂໍ້ມູນ ແລະ ອຸປະກອນສຳລັບດີເຈ</translation>
 <translation id="2743934314332613923">ອັບເດດໃບອະນຸຍາດຂັບຂີ່ບໍ?</translation>
+<translation id="2759299890026163685">ກວດສອບວ່າທ່ານມີການເຊື່ອມຕໍ່ອິນເຕີເນັດທີ່ສະຖຽນກ່ອນລອງໃໝ່</translation>
 <translation id="2759825833388495838">ຕື່ມລະຫັດຂອງທ່ານໃສ່ <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">ກາຕູນ</translation>
 <translation id="2765217105034171413">ນ້ອຍ</translation>
@@ -1280,6 +1281,7 @@
 <translation id="323107829343500871">ປ້ອນ CVC ສຳລັບ <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">ກວດ​ຫາ​ເນື້ອ​ໃນ​ສຳ​ຄັນ​ຢູ່​ເທິງ​ເວັບ​ໄຊ​ທ໌​ນີ້​ທຸກ​ຄັ້ງ</translation>
 <translation id="323585066388831737">ສີແດງອ່ອນ</translation>
+<translation id="3235902901585019063">ລະບົບຈະລຶບໄຟລ໌ໃນເຄື່ອງໃນວັນທີ <ph name="DATE_TIME" />. ກວດສອບວ່າມີການຈັດເກັບຂໍ້ມູນທຸລະກິດ ຫຼື ຂໍ້ມູນສ່ວນຕົວທີ່ສຳຄັນໃດໆໄວ້ພາຍນອກແລ້ວ.</translation>
 <translation id="3236212803136366317">ສິດທິປະໂຫຍດບັດ</translation>
 <translation id="3238395604961564389">ເປີດລິ້ງໃນໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ tab ຈາກນັ້ນກົດ Enter ເພື່ອປັບແຕ່ງໜ້າຕາຂອງໂປຣແກຣມທ່ອງເວັບທ່ານ</translation>
@@ -1758,6 +1760,7 @@
 <translation id="4031179711345676612">ອະນຸຍາດໄມໂຄຣໂຟນແລ້ວ</translation>
 <translation id="4036753017940930924">ຕອນດິນ ແລະ ທີ່ດິນ</translation>
 <translation id="4039506337798853114">ເພື່ອສະແດງເຄີເຊີຂອງທ່ານ, ໃຫ້ກົດ |<ph name="ACCELERATOR" />|</translation>
+<translation id="4045226534284799755">ເຂົ້າສູ່ລະບົບບັນຊີ Microsoft ຂອງທ່ານກ່ອນລອງໃໝ່</translation>
 <translation id="4045441967987592849">ເປີດຄືນໃໝ່</translation>
 <translation id="4047351652147966654">18 x 24 ນິ້ວ</translation>
 <translation id="404831776305217138">ອັບເດດ URL ສຳລັບສ່ວນຂະຫຍາຍທີ່ມີ ID "<ph name="EXTENSION_ID" />" ບໍ່ຖືກຕ້ອງ ຫຼື ໃຊ້ຮູບແບບທີ່ບໍ່ຮອງຮັບ. ຮູບແບບທີ່ຮອງຮັບແມ່ນ: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> ແລະ <ph name="FILE_SCHEME" />.</translation>
@@ -1778,6 +1781,7 @@
 <translation id="4073797364926776829">ເບິ່ງບັດ</translation>
 <translation id="4075732493274867456">ລູກຂ່າຍ ແລະ ເຊີບເວີບໍ່ຮອງຮັບເວີຊັນໂປຣໂຕຄໍ ຫຼື ຊຸດລະຫັດລັບ SSL ທົ່ວໄປ.</translation>
 <translation id="4079302484614802869">ການ​ປັບ​ຕັ້ງ​ຄ່າພຣັອກຊີຕັ້ງຂຶ້ນເພື່ອໃຊ້  URL ຕົວຂຽນ .pac, ບໍ່ແມ່ນເຊີບເວີພຣັອກຊີທີ່ກໍານົດໄວ້.</translation>
+<translation id="4080855220442581440">ການເລື່ອນ ແລະ ການຊູມແຖບທີ່ແບ່ງປັນ</translation>
 <translation id="4082333119419111506">ເຈ້ຍ (ພິມລ່ວງໜ້າ)</translation>
 <translation id="4082393374666368382">ການຕັ້ງຄ່າ - ການຈັດການ</translation>
 <translation id="4084219288110917128">Envelope C1</translation>
@@ -2211,6 +2215,7 @@
 <translation id="4834250788637067901">ວິທີການຈ່າຍເງິນ, ຂໍ້ສະເໜີ ແລະ ທີ່ຢູ່ໂດຍໃຊ້ Google Pay</translation>
 <translation id="4840250757394056958">ເບິ່ງປະຫວັດ Chrome ຂອງທ່ານ</translation>
 <translation id="484462545196658690">ອັດຕະໂນມັດ</translation>
+<translation id="4844937814014739139">ການເລື່ອນ ແລະ ການຊູມແຖບທີ່ແບ່ງປັນ</translation>
 <translation id="484671803914931257">ຮັບສ່ວນຫຼຸດຢູ່ <ph name="MERCHANT_NAME" /> ແລະ ອື່ນໆ</translation>
 <translation id="484988093836683706">ໃຊ້ການປົດລັອກອຸປະກອນ</translation>
 <translation id="4850886885716139402">ເບິ່ງ</translation>
@@ -2504,6 +2509,7 @@
 <translation id="5344522958567249764">ຈັດການຄວາມເປັນສ່ວນຕົວກ່ຽວກັບໂຄສະນາ</translation>
 <translation id="5344579389779391559">ໜ້ານີ້ອາດຈະພະຍາຍາມຮຽກເກັບເງິນນຳທ່ານ</translation>
 <translation id="5345249337934847112">ເຈ້ຍ (ເຄືອບໜາ)</translation>
+<translation id="5348330584842140856">ບໍ່ໄດ້ຍ້າຍໄຟລ໌ນີ້ເນື່ອງຈາກບໍ່ມີຢູ່ແລ້ວ</translation>
 <translation id="5349543692327946794">ປ້າຍ (Inkjet)</translation>
 <translation id="5351548097010183514">ວັດສະດຸກໍ່ສ້າງ ແລະ ເຄື່ອງໃຊ້</translation>
 <translation id="5354143049423063163">ກອງທຶນບໍລິຫານຄວາມສ່ຽງ</translation>
@@ -2768,6 +2774,7 @@
 <translation id="5826507051599432481">ຊື່ທົ່ວໄປ (CN)</translation>
 <translation id="5830698870816298009">ກ້ອງ ແລະ ການເຄື່ອນໄຫວ</translation>
 <translation id="583281660410589416">ບໍ່​ຮູ້ຈັກ</translation>
+<translation id="5837220895135257862">ເພີ່ມພື້ນທີ່ຫວ່າງໃນ <ph name="CLOUD_PROVIDER" /> ກ່ອນແລ້ວລອງໃໝ່</translation>
 <translation id="5838278095973806738">ທ່ານບໍ່ຄວນປ້ອນຂໍ້ມູນທີ່ອ່ອນໄຫວໃດໆໃສ່ເວັບໄຊນີ້ (ຕົວຢ່າງ: ລະຫັດຜ່ານ ຫຼື ເລກບັດເຄຣດິດ), ເພາະວ່າມັນອາດຈະຖືກລັກໂດຍຜູ້ໂຈມຕີໄດ້.</translation>
 <translation id="5838732667866024867">ທ່ານສາມາດໃຊ້ລູກສອນຊ້າຍ/ຂວາເພື່ອກວດສອບການປ່ຽນແປງລາຄາຢູ່ກຣາບໄດ້</translation>
 <translation id="5840318881868981258">ໃນບັນຊີ Google ຂອງທ່ານ, <ph name="ACCOUNT" /></translation>
@@ -4028,6 +4035,7 @@
 <translation id="799149739215780103">ຫບິບເຫຼັ້ມ</translation>
 <translation id="7992044431894087211">ສືບຕໍ່ການແບ່ງປັນໜ້າຈໍກັບ <ph name="APPLICATION_TITLE" /> ແລ້ວ</translation>
 <translation id="7995512525968007366">ບໍ່​ໄດ້ລະ​ບຸ</translation>
+<translation id="7997855386298213183">ແຖບທີ່ແບ່ງປັນ</translation>
 <translation id="800218591365569300">ລອງປິດແຖບ ຫຼື ໂປຣແກຣມອື່ນເພື່ອຂະຫຍາຍຄວາມຈຳ.</translation>
 <translation id="8002230960325005199">ເບິ່ງເວັບໄຊທີ່ກ່ຽວຂ້ອງໃນແຖບໃໝ່</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>

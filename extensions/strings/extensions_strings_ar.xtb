@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">ملف البيان غير صالح</translation>
 <translation id="7217838517480956708">يطلب مشرف هذا الجهاز تثبيت <ph name="EXTENSION_NAME" />. لا يمكن إزالتها أو تعديلها.</translation>
 <translation id="7612608473764576263">‏يجب أن تكون قيمة الإدخال للمفتاح الخاص تنسيقًا صالحًا (PKCS#8-format مفتاح RSA بتنسيق PEM).</translation>
+<translation id="7876803335449432072">‏تعذّر تحميل الملف "<ph name="RELATIVE_PATH" />" للنص البرمجي الخاص بالمحتوى، ولا يمكن تحميل أوراق أنماط النص البرمجي الخاص بالمحتوى إلا من ملفات أوراق الأنماط المتوافقة، مثل "ملفات css.".</translation>
 <translation id="7939686037314084444">تعذّر تحميل الإضافة بشكلٍ صحيح. وقد لا تتمكن الإضافة من اعتراض طلبات الشبكة.</translation>
 <translation id="7972881773422714442">الخيارات: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">الكاميرا الأمامية للمستخدم</translation>
 <translation id="8047248493720652249">تعذّرت هذه الإضافة في تسمية التنزيل "<ph name="ATTEMPTED_FILENAME" />" نظرًا لأن هناك إضافة أخرى (<ph name="EXTENSION_NAME" />) قد حددت اسم ملف آخر "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> من <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">ملف البيان مفقود أو غير قابل للقراءة</translation>
+<translation id="8621383749470166852">‏تعذّر تحميل الملف "<ph name="RELATIVE_PATH" />" للنص البرمجي الخاص بالمحتوى، ولا يمكن تحميل النصوص البرمجية للمحتوى إلا من ملفات JavaScript المتوافقة، مثل "ملفات js.".</translation>
 <translation id="8636666366616799973">الحزمة غير صالحة. التفاصيل: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">يطلب تطبيق "<ph name="APP_NAME" />" الدخول إلى جهاز من أجهزتك:</translation>
 <translation id="8885905466771744233">يوجد مفتاح خاص للإضافة المحددة. أعد استخدام هذا المفتاح أو احذفه أولاً.</translation>

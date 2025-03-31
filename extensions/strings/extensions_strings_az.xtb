@@ -50,12 +50,14 @@
 <translation id="7217838517480956708">Bu cihazın administratoru <ph name="EXTENSION_NAME" /> artırmasının quraşdırılmasını tələb edir.</translation>
 <translation id="7612608473764576263">Şəxsi açar üçün giriş dəyəri düzgün format olmalıdır.
 (PKCS#8-format PEM-encoded RSA key).</translation>
+<translation id="7876803335449432072">Kontent skripti üçün "<ph name="RELATIVE_PATH" />" faylını yükləmək mümkün olmadı. Kontent skripti üzrə üslub cədvəlləri yalnız .css faylları kimi dəstəklənən üslüb cədvəllərindən yüklənə bilər.</translation>
 <translation id="7939686037314084444">Bu artırma düzgün yüklənmədi. Şəbəkə sorğusuna cavab verə bilmədi.</translation>
 <translation id="7972881773422714442">Variantlar: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Ön kamera</translation>
 <translation id="8047248493720652249">Bu artırma "<ph name="ATTEMPTED_FILENAME" />" endirə bilmədi, çünki digər artırma (<ph name="EXTENSION_NAME" />) fərqli fayl adı "<ph name="ACTUAL_FILENAME" />" bəlirlədi.</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> vendorundan <ph name="PRODUCT_NAME" /> məhsulu</translation>
 <translation id="8517576857589387417">Manifest faylı yoxdur və ya oxunmur</translation>
+<translation id="8621383749470166852">Kontent skripti üçün "<ph name="RELATIVE_PATH" />" faylını yükləmək mümkün olmadı, kontent skriptlərini yalnız .js faylları kimi dəstəklənən JavaScript fayllarından yükləmək mümkündür.</translation>
 <translation id="8636666366616799973">Paket yanlışdır. Detallar: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" cihazdan birinə giriş tələb edir:</translation>
 <translation id="8885905466771744233">Göstərilən artırma üçün şəxsi açar artıq mövcuddur. Ya o açarı yenidən işlədin, ya da ilk olaraq onu silin.</translation>
