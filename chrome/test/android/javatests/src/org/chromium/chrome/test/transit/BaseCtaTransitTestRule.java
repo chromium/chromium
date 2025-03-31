@@ -9,6 +9,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -121,5 +122,26 @@ class BaseCtaTransitTestRule {
 
     public KeyboardVisibilityDelegate getKeyboardDelegate() {
         return mActivityTestRule.getKeyboardDelegate();
+    }
+
+    public AppMenuCoordinator getAppMenuCoordinator() {
+        return mActivityTestRule.getAppMenuCoordinator();
+    }
+
+    // TODO(crbug.com/406324209): Support tracking pause/resume state in Public Transit.
+    public void resumeMainActivityFromLauncher() throws Exception {
+        mActivityTestRule.resumeMainActivityFromLauncher();
+    }
+
+    // TODO(crbug.com/406324209): Most of these checks are done in Public Transit as part of
+    // PageStation, TabSwitcherStation and subclasses. Audit each case, add any checks missed in the
+    // Stations, and remove these calls.
+    public void waitForActivityCompletelyLoaded() {
+        mActivityTestRule.waitForActivityCompletelyLoaded();
+    }
+
+    // TODO(crbug.com/406324209): Support recreate() in Public Transit.
+    public void recreateActivity() {
+        mActivityTestRule.recreateActivity();
     }
 }
