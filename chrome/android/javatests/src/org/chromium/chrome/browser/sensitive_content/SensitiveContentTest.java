@@ -138,6 +138,7 @@ public class SensitiveContentTest {
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
     @Mock private TabWindowManager mTabWindowManager;
     @Mock private ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    @Mock private ObservableSupplier<Boolean> mScrimVisibilitySupplier;
     @Mock private ToolbarManager mToolbarManager;
     @Mock private ViewGroup mContentView;
 
@@ -707,7 +708,8 @@ public class SensitiveContentTest {
                         mHubLayoutDependencyHolder,
                         mCompositorViewHolderSupplier,
                         mContentView,
-                        mToolbarManager);
+                        mToolbarManager,
+                        mScrimVisibilitySupplier);
 
         tabContentManagerSupplier.set(tabContentManager);
         CompositorAnimationHandler.setTestingMode(true);
