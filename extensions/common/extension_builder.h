@@ -129,7 +129,7 @@ class ExtensionBuilder {
   // Shortcuts to setting values on the manifest dictionary without needing to
   // go all the way through MergeManifest(). Sample usage:
   // ExtensionBuilder("name").SetManifestKey("version", "0.2").Build();
-  // Can be used in conjuction with chained base::Value::List and
+  // Can be used in conjunction with chained base::Value::List and
   // base::Value::Dict to create complex values.
   template <typename T>
   ExtensionBuilder& SetManifestKey(std::string_view key, T&& value) {
