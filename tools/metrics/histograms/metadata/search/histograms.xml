@@ -288,6 +288,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.AuxiliarySearch.TopSites.ExpirationDuration" units="ms"
+    expires_after="2025-09-15">
+  <owner>hanxi@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the expiration duration of the lastest fetch results of the most
+    visited sites. The histogram is logged when Chrome is paused and a set of
+    documents are built to donate for the auxiliary search. Android-only.
+  </summary>
+</histogram>
+
 <histogram name="Search.ChoiceDebug.ScrollStateWithMoreButtonClick"
     enum="SearchEngineChoiceScrollState" expires_after="2025-08-24">
   <owner>jyammine@google.com</owner>

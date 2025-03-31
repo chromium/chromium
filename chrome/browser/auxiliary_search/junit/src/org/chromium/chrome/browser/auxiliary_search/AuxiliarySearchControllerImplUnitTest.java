@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.auxiliary_search;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -18,6 +19,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
+import android.text.format.DateUtils;
 
 import androidx.test.filters.SmallTest;
 
@@ -507,6 +509,48 @@ public class AuxiliarySearchControllerImplUnitTest {
         Mockito.reset(mAuxiliarySearchProvider);
         mAuxiliarySearchControllerImpl.onDeferredStartup();
         verify(mAuxiliarySearchProvider, never()).setObserver(eq(mAuxiliarySearchControllerImpl));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetMergedList() {
+        long now = TimeUtils.uptimeMillis();
+        // Verifies the case that both history data list and most visited sites list are null.
+        List<AuxiliarySearchDataEntry> mergedList =
+                mAuxiliarySearchControllerImpl.getMergedList(null);
+        assertNull(mergedList);
+
+        // Verifies the case that the most visited sites list is null.
+        List<AuxiliarySearchDataEntry> historyEntryList =
+                AuxiliarySearchTestHelper.createAuxiliarySearchDataEntries(now);
+        mergedList = mAuxiliarySearchControllerImpl.getMergedList(historyEntryList);
+        assertEquals(historyEntryList, mergedList);
+
+        // Verifies the case that the history data list is null.
+        List<AuxiliarySearchDataEntry> mvtList =
+                AuxiliarySearchTestHelper.createAuxiliarySearchDataEntries_TopSite(now);
+        mAuxiliarySearchControllerImpl.onSiteSuggestionsAvailable(mvtList);
+        mergedList = mAuxiliarySearchControllerImpl.getMergedList(null);
+        assertEquals(mvtList, mergedList);
+
+        // Verifies the case that both history data list and most visited sites list aren't null.
+        mergedList = mAuxiliarySearchControllerImpl.getMergedList(historyEntryList);
+        assertEquals(4, mergedList.size());
+        assertEquals(mvtList.get(0), mergedList.get(0));
+        assertEquals(historyEntryList.get(0), mergedList.get(1));
+        assertEquals(historyEntryList.get(1), mergedList.get(2));
+        assertEquals(mvtList.get(1), mergedList.get(3));
+
+        // Verifies the case that most visited sites list expired.
+        long timeDelta = DateUtils.DAY_IN_MILLIS + 1;
+        mFakeTime.advanceMillis(timeDelta);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Search.AuxiliarySearch.TopSites.ExpirationDuration")
+                        .build();
+        mergedList = mAuxiliarySearchControllerImpl.getMergedList(historyEntryList);
+        assertEquals(historyEntryList, mergedList);
+        histogramWatcher.assertExpected();
     }
 
     private void createController() {
