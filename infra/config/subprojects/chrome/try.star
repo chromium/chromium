@@ -177,6 +177,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "cronet-arm64-gn2bp-debug",
+)
+
+chrome_internal_verifier(
     builder = "chromeos-reven-chrome",
 )
 
