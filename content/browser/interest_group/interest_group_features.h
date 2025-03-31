@@ -41,9 +41,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
     int,
     kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit);
-CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kFledgeSelectableBuyerAndSellerReportingIdsTruncateToKAnonLimit);
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeQueryKAnonymity);
 
