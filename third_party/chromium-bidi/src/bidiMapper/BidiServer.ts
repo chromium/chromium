@@ -92,10 +92,10 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     );
     this.#transport = bidiTransport;
     this.#transport.setOnMessage(this.#handleIncomingMessage);
-    const userUserContextStorage = new UserContextStorage(browserCdpClient);
+    const userContextStorage = new UserContextStorage(browserCdpClient);
     this.#eventManager = new EventManager(
       this.#browsingContextStorage,
-      userUserContextStorage,
+      userContextStorage,
     );
     const networkStorage = new NetworkStorage(
       this.#eventManager,
@@ -116,7 +116,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       this.#preloadScriptStorage,
       networkStorage,
       this.#bluetoothProcessor,
-      userUserContextStorage,
+      userContextStorage,
       parser,
       async (options: MapperOptions) => {
         // This is required to ignore certificate errors when service worker is fetched.
@@ -132,6 +132,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
           selfTargetId,
           this.#eventManager,
           this.#browsingContextStorage,
+          userContextStorage,
           this.#realmStorage,
           networkStorage,
           this.#bluetoothProcessor,

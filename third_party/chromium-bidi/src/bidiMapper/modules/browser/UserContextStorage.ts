@@ -21,8 +21,11 @@ import {
   type Browser,
 } from '../../../protocol/protocol.js';
 
+import {UserContextConfig} from './UserContextConfig.js';
+
 export class UserContextStorage {
   #browserClient: CdpClient;
+  #userConfigMap = new Map<string, UserContextConfig>();
 
   constructor(browserClient: CdpClient) {
     this.#browserClient = browserClient;
@@ -44,6 +47,14 @@ export class UserContextStorage {
         };
       }),
     ];
+  }
+
+  getConfig(userContextId: string): UserContextConfig {
+    const userContextConfig =
+      this.#userConfigMap.get(userContextId) ??
+      new UserContextConfig(userContextId);
+    this.#userConfigMap.set(userContextId, userContextConfig);
+    return userContextConfig;
   }
 
   async verifyUserContextIdList(userContextIds: Browser.UserContext[]) {

@@ -24,9 +24,9 @@ import {
   type EmptyResult,
   NoSuchUserContextException,
   NoSuchAlertException,
-  UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
 import {CdpErrorConstants} from '../../../utils/cdpErrorConstants.js';
+import type {UserContextStorage} from '../browser/UserContextStorage';
 import type {EventManager} from '../session/EventManager.js';
 
 import type {BrowsingContextImpl} from './BrowsingContextImpl.js';
@@ -36,11 +36,15 @@ export class BrowsingContextProcessor {
   readonly #browserCdpClient: CdpClient;
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #eventManager: EventManager;
+  readonly #userContextStorage: UserContextStorage;
+
   constructor(
     browserCdpClient: CdpClient,
     browsingContextStorage: BrowsingContextStorage,
+    userContextStorage: UserContextStorage,
     eventManager: EventManager,
   ) {
+    this.#userContextStorage = userContextStorage;
     this.#browserCdpClient = browserCdpClient;
     this.#browsingContextStorage = browsingContextStorage;
     this.#eventManager = eventManager;
@@ -196,27 +200,79 @@ export class BrowsingContextProcessor {
   async setViewport(
     params: BrowsingContext.SetViewportParameters,
   ): Promise<EmptyResult> {
-    if (params.userContexts === undefined && params.context === undefined) {
+    const impactedTopLevelContexts =
+      await this.#getRelatedTopLevelBrowsingContexts(
+        params.context,
+        params.userContexts,
+      );
+
+    for (const userContextId of params.userContexts ?? []) {
+      const userContextConfig =
+        this.#userContextStorage.getConfig(userContextId);
+
+      // `undefined` means not changes should be done to the config.
+      if (params.devicePixelRatio !== undefined) {
+        userContextConfig.devicePixelRatio = params.devicePixelRatio;
+      }
+      if (params.viewport !== undefined) {
+        userContextConfig.viewport = params.viewport;
+      }
+    }
+
+    await Promise.all(
+      impactedTopLevelContexts.map((context) =>
+        context.setViewport(params.viewport, params.devicePixelRatio),
+      ),
+    );
+
+    return {};
+  }
+
+  /**
+   * Returns a list of top-level browsing context ids.
+   */
+  async #getRelatedTopLevelBrowsingContexts(
+    browsingContextId?: string,
+    userContextIds?: string[],
+  ): Promise<BrowsingContextImpl[]> {
+    if (browsingContextId === undefined && userContextIds === undefined) {
       throw new InvalidArgumentException(
         'Either userContexts or context must be provided',
       );
     }
-    if (params.userContexts !== undefined && params.context !== undefined) {
+
+    if (browsingContextId !== undefined && userContextIds !== undefined) {
       throw new InvalidArgumentException(
         'userContexts and context are mutually exclusive',
       );
     }
-    if (params.userContexts !== undefined) {
-      throw new UnsupportedOperationException('userContexts is not supported');
+
+    if (browsingContextId !== undefined) {
+      const context =
+        this.#browsingContextStorage.getContext(browsingContextId);
+      if (!context.isTopLevelContext()) {
+        throw new InvalidArgumentException(
+          'Emulating viewport is only supported on the top-level context',
+        );
+      }
+      return [context];
     }
-    const context = this.#browsingContextStorage.getContext(params.context!);
-    if (!context.isTopLevelContext()) {
-      throw new InvalidArgumentException(
-        'Emulating viewport is only supported on the top-level context',
-      );
+
+    // Verify that all user contexts exist.
+    await this.#userContextStorage.verifyUserContextIdList(userContextIds!);
+
+    const result = [];
+    for (const userContextId of userContextIds!) {
+      const topLevelBrowsingContexts = this.#browsingContextStorage
+        .getTopLevelContexts()
+        .filter(
+          (browsingContext) => browsingContext.userContext === userContextId,
+        );
+      result.push(...topLevelBrowsingContexts);
     }
-    await context.setViewport(params.viewport, params.devicePixelRatio);
-    return {};
+    // Remove duplicates. Compare `BrowsingContextImpl` by reference is correct here, as
+    // `browsingContextStorage` returns the same instance for the same id.
+    return [...new Set(result).values()];
   }
 
   async traverseHistory(

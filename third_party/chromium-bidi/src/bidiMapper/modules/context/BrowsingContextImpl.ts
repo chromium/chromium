@@ -65,8 +65,6 @@ export class BrowsingContextImpl {
    */
   #loaderId?: Protocol.Network.LoaderId;
   #parentId: BrowsingContext.BrowsingContext | null = null;
-  // Keeps track of the previously set viewport.
-  #previousViewport: {width: number; height: number} = {width: 0, height: 0};
   #originalOpener?: string;
 
   #lifecycle = {
@@ -1002,48 +1000,8 @@ export class BrowsingContextImpl {
     viewport?: BrowsingContext.Viewport | null,
     devicePixelRatio?: number | null,
   ) {
-    if (viewport === null && devicePixelRatio === null) {
-      await this.#cdpTarget.cdpClient.sendCommand(
-        'Emulation.clearDeviceMetricsOverride',
-      );
-    } else {
-      try {
-        let appliedViewport;
-        if (viewport === undefined) {
-          appliedViewport = this.#previousViewport;
-        } else if (viewport === null) {
-          appliedViewport = {
-            width: 0,
-            height: 0,
-          };
-        } else {
-          appliedViewport = viewport;
-        }
-        this.#previousViewport = appliedViewport;
-        await this.#cdpTarget.cdpClient.sendCommand(
-          'Emulation.setDeviceMetricsOverride',
-          {
-            width: this.#previousViewport.width,
-            height: this.#previousViewport.height,
-            deviceScaleFactor: devicePixelRatio ? devicePixelRatio : 0,
-            mobile: false,
-            dontSetVisibleSize: true,
-          },
-        );
-      } catch (err) {
-        if (
-          (err as Error).message.startsWith(
-            // https://crsrc.org/c/content/browser/devtools/protocol/emulation_handler.cc;l=257;drc=2f6eee84cf98d4227e7c41718dd71b82f26d90ff
-            'Width and height values must be positive',
-          )
-        ) {
-          throw new UnsupportedOperationException(
-            'Provided viewport dimensions are not supported',
-          );
-        }
-        throw err;
-      }
-    }
+    // Set the target's viewport.
+    await this.cdpTarget.setViewport(viewport, devicePixelRatio);
   }
 
   async handleUserPrompt(accept?: boolean, userText?: string): Promise<void> {

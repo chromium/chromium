@@ -21,6 +21,7 @@ import type {CdpConnection} from '../../../cdp/CdpConnection.js';
 import type {Browser, Session} from '../../../protocol/protocol.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {BluetoothProcessor} from '../bluetooth/BluetoothProcessor.js';
+import type {UserContextStorage} from '../browser/UserContextStorage';
 import {
   BrowsingContextImpl,
   serializeOrigin,
@@ -50,6 +51,7 @@ export class CdpTargetManager {
 
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #networkStorage: NetworkStorage;
+  readonly #userContextStorage: UserContextStorage;
   readonly #bluetoothProcessor: BluetoothProcessor;
   readonly #preloadScriptStorage: PreloadScriptStorage;
   readonly #realmStorage: RealmStorage;
@@ -65,6 +67,7 @@ export class CdpTargetManager {
     selfTargetId: string,
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
+    userContextStorage: UserContextStorage,
     realmStorage: RealmStorage,
     networkStorage: NetworkStorage,
     bluetoothProcessor: BluetoothProcessor,
@@ -74,6 +77,7 @@ export class CdpTargetManager {
     unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn,
   ) {
+    this.#userContextStorage = userContextStorage;
     this.#cdpConnection = cdpConnection;
     this.#browserCdpClient = browserCdpClient;
     this.#targetKeysToBeIgnoredByAutoAttach.add(selfTargetId);
@@ -353,6 +357,7 @@ export class CdpTargetManager {
       this.#browsingContextStorage,
       this.#networkStorage,
       this.#prerenderingDisabled,
+      this.#userContextStorage.getConfig(userContext),
       this.#unhandledPromptBehavior,
       this.#logger,
     );

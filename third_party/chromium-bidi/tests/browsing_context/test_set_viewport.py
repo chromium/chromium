@@ -14,79 +14,195 @@
 # limitations under the License.
 
 import pytest
-from test_helpers import execute_command, goto_url
+from anys import ANY_LIST
+from test_helpers import execute_command
+
+CUSTOM_WIDTH = 345
+CUSTOM_HEIGHT = 456
+CUSTOM_DPR = 4
+
+
+async def get_viewport(websocket, context_id):
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "(["
+                              "window.innerWidth,"
+                              "window.innerHeight,"
+                              "window.devicePixelRatio"
+                              "])",
+                "target": {
+                    "context": context_id
+                },
+                "resultOwnership": "none",
+                "awaitPromise": True
+            }
+        })
+
+    return {
+        "width": result["result"]["value"][0]["value"],
+        "height": result["result"]["value"][1]["value"],
+        "devicePixelRatio": result["result"]["value"][2]["value"]
+    }
+
+
+async def assert_viewport(websocket, context_id, expected_viewport):
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "({"
+                              "'width': window.innerWidth, "
+                              "'height': window.innerHeight, "
+                              "'devicePixelRatio': window.devicePixelRatio"
+                              "})",
+                "target": {
+                    "context": context_id
+                },
+                "resultOwnership": "none",
+                "awaitPromise": True
+            }
+        })
+
+    expected_result = [
+        (["width", {
+            "value": expected_viewport["width"],
+            "type": "number"
+        }] if "width" in expected_viewport else ANY_LIST),
+        (["height", {
+            "value": expected_viewport["height"],
+            "type": "number"
+        }] if "height" in expected_viewport else ANY_LIST),
+        ([
+            "devicePixelRatio", {
+                "value": expected_viewport["devicePixelRatio"],
+                "type": "number"
+            }
+        ] if "devicePixelRatio" in expected_viewport else ANY_LIST),
+    ]
+
+    assert expected_result == result["result"]["value"]
 
 
 @pytest.mark.asyncio
-async def test_set_viewport(websocket, context_id, html):
-    await goto_url(websocket, context_id, html())
-
+async def test_set_viewport_width_height(websocket, context_id, html):
     await execute_command(
         websocket, {
             "method": "browsingContext.setViewport",
             "params": {
                 "context": context_id,
                 "viewport": {
-                    "width": 300,
-                    "height": 300,
+                    "width": CUSTOM_WIDTH,
+                    "height": CUSTOM_HEIGHT,
                 },
                 "devicePixelRatio": None
             }
         })
 
-    result = await execute_command(
+    await assert_viewport(websocket, context_id, {
+        "width": CUSTOM_WIDTH,
+        "height": CUSTOM_HEIGHT,
+    })
+
+
+@pytest.mark.asyncio
+async def test_set_viewport_for_default_user_context(websocket, context_id,
+                                                     another_context_id, html,
+                                                     create_context,
+                                                     user_context_id):
+
+    context_in_another_user_context = await create_context(user_context_id)
+    another_viewport = await get_viewport(websocket,
+                                          context_in_another_user_context)
+
+    # Change viewport of the default user context.
+    await execute_command(
         websocket, {
-            "method": "script.evaluate",
+            "method": "browsingContext.setViewport",
             "params": {
-                "expression": "({'width': window.innerWidth, 'height': window.innerHeight})",
-                "target": {
-                    "context": context_id
+                "userContexts": ["default"],
+                "viewport": {
+                    "width": CUSTOM_WIDTH,
+                    "height": CUSTOM_HEIGHT,
                 },
-                "resultOwnership": "none",
-                "awaitPromise": True
+                "devicePixelRatio": CUSTOM_DPR
             }
         })
 
-    assert [["width", {
-        "type": "number",
-        "value": 300
-    }], ["height", {
-        "type": "number",
-        "value": 300
-    }]] == result["result"]["value"]
+    # Assert default user context's viewports are changed.
+    await assert_viewport(
+        websocket, context_id, {
+            "width": CUSTOM_WIDTH,
+            "height": CUSTOM_HEIGHT,
+            "devicePixelRatio": CUSTOM_DPR
+        })
+    await assert_viewport(
+        websocket, another_context_id, {
+            "width": CUSTOM_WIDTH,
+            "height": CUSTOM_HEIGHT,
+            "devicePixelRatio": CUSTOM_DPR
+        })
+    # Assert another user context's viewports is untouched.
+    await assert_viewport(websocket, context_in_another_user_context,
+                          another_viewport)
+
+
+@pytest.mark.asyncio
+async def test_set_viewport_for_custom_user_context(websocket, context_id,
+                                                    html, create_context,
+                                                    user_context_id):
+
+    context_in_another_user_context = await create_context(user_context_id)
+    another_context_in_another_user_context = await create_context(
+        user_context_id)
+    default_viewport = await get_viewport(websocket, context_id)
+
+    # Change viewport of the new user context.
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.setViewport",
+            "params": {
+                "userContexts": [user_context_id],
+                "viewport": {
+                    "width": CUSTOM_WIDTH,
+                    "height": CUSTOM_HEIGHT,
+                },
+                "devicePixelRatio": CUSTOM_DPR
+            }
+        })
+
+    # Assert new user context's viewports is untouched.
+    await assert_viewport(
+        websocket, context_in_another_user_context, {
+            "width": CUSTOM_WIDTH,
+            "height": CUSTOM_HEIGHT,
+            "devicePixelRatio": CUSTOM_DPR
+        })
+    await assert_viewport(
+        websocket, another_context_in_another_user_context, {
+            "width": CUSTOM_WIDTH,
+            "height": CUSTOM_HEIGHT,
+            "devicePixelRatio": CUSTOM_DPR
+        })
+    # Assert default user context's viewports are changed.
+    await assert_viewport(websocket, context_id, default_viewport)
 
 
 @pytest.mark.asyncio
 async def test_set_viewport_dpr(websocket, context_id, html):
-    await goto_url(websocket, context_id, html())
-
     await execute_command(
         websocket, {
             "method": "browsingContext.setViewport",
             "params": {
                 "context": context_id,
                 "viewport": None,
-                "devicePixelRatio": 4,
+                "devicePixelRatio": CUSTOM_DPR,
             }
         })
 
-    result = await execute_command(
-        websocket, {
-            "method": "script.evaluate",
-            "params": {
-                "expression": "({'devicePixelRatio': window.devicePixelRatio})",
-                "target": {
-                    "context": context_id
-                },
-                "resultOwnership": "none",
-                "awaitPromise": True
-            }
-        })
-
-    assert [["devicePixelRatio", {
-        "type": "number",
-        "value": 4
-    }]] == result["result"]["value"]
+    await assert_viewport(websocket, context_id,
+                          {"devicePixelRatio": CUSTOM_DPR})
 
 
 @pytest.mark.asyncio
@@ -102,8 +218,6 @@ async def test_set_viewport_dpr(websocket, context_id, html):
                          ])
 async def test_set_viewport_unsupported(websocket, context_id, html, width,
                                         height):
-    await goto_url(websocket, context_id, html())
-
     with pytest.raises(
             Exception,
             match=str({

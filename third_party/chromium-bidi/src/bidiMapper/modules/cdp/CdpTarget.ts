@@ -19,11 +19,17 @@ import type {Protocol} from 'devtools-protocol';
 
 import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {Bluetooth} from '../../../protocol/chromium-bidi.js';
-import {type ChromiumBidi, Session} from '../../../protocol/protocol.js';
+import {
+  type BrowsingContext,
+  type ChromiumBidi,
+  Session,
+  UnsupportedOperationException,
+} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/Deferred.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import {LogType} from '../../../utils/log.js';
 import type {Result} from '../../../utils/result.js';
+import type {UserContextConfig} from '../browser/UserContextConfig.js';
 import {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import {LogManager} from '../log/LogManager.js';
@@ -50,10 +56,15 @@ export class CdpTarget {
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #prerenderingDisabled: boolean;
   readonly #networkStorage: NetworkStorage;
+  readonly #userContextConfig: UserContextConfig;
 
   readonly #unblocked = new Deferred<Result<void>>();
   readonly #unhandledPromptBehavior?: Session.UserPromptHandler;
   readonly #logger: LoggerFn | undefined;
+
+  // Keeps track of the previously set viewport.
+  #previousViewport: {width: number; height: number} = {width: 0, height: 0};
+
   /**
    * Target's window id. Is filled when the CDP target is created and do not reflect
    * moving targets from one window to another. The actual values
@@ -80,6 +91,7 @@ export class CdpTarget {
     browsingContextStorage: BrowsingContextStorage,
     networkStorage: NetworkStorage,
     prerenderingDisabled: boolean,
+    userContextConfig: UserContextConfig,
     unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn,
   ): CdpTarget {
@@ -94,6 +106,7 @@ export class CdpTarget {
       browsingContextStorage,
       networkStorage,
       prerenderingDisabled,
+      userContextConfig,
       unhandledPromptBehavior,
       logger,
     );
@@ -120,9 +133,11 @@ export class CdpTarget {
     browsingContextStorage: BrowsingContextStorage,
     networkStorage: NetworkStorage,
     prerenderingDisabled: boolean,
+    userContextConfig: UserContextConfig,
     unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn,
   ) {
+    this.#userContextConfig = userContextConfig;
     this.#id = targetId;
     this.#cdpClient = cdpClient;
     this.#browserCdpClient = browserCdpClient;
@@ -236,6 +251,7 @@ export class CdpTarget {
         }),
         this.#updateWindowId(),
         this.#initAndEvaluatePreloadScripts(),
+        this.#setUserContextConfig(),
         this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
         // Resume tab execution as well if it was paused by the debugger.
         this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
@@ -560,6 +576,68 @@ export class CdpTarget {
           return script.initInTarget(this, true);
         }),
     );
+  }
+
+  async setViewport(
+    viewport?: BrowsingContext.Viewport | null,
+    devicePixelRatio?: number | null,
+  ) {
+    if (viewport === null && devicePixelRatio === null) {
+      await this.cdpClient.sendCommand('Emulation.clearDeviceMetricsOverride');
+      return;
+    }
+
+    // CDP's `viewport` is required, so provide either new value, 0 for disabling, or
+    // previous viewport to keep it unchanged.
+    let newViewport;
+    if (viewport === undefined) {
+      // Set previously set viewport, effectively
+      newViewport = this.#previousViewport;
+    } else if (viewport === null) {
+      // Disable override.
+      newViewport = {
+        width: 0,
+        height: 0,
+      };
+    } else {
+      // Set the provided viewport
+      newViewport = viewport;
+    }
+
+    try {
+      await this.cdpClient.sendCommand('Emulation.setDeviceMetricsOverride', {
+        width: newViewport.width,
+        height: newViewport.height,
+        deviceScaleFactor: devicePixelRatio ? devicePixelRatio : 0,
+        mobile: false,
+        dontSetVisibleSize: true,
+      });
+      this.#previousViewport = newViewport;
+    } catch (err) {
+      if (
+        (err as Error).message.startsWith(
+          // https://crsrc.org/c/content/browser/devtools/protocol/emulation_handler.cc;l=257;drc=2f6eee84cf98d4227e7c41718dd71b82f26d90ff
+          'Width and height values must be positive',
+        )
+      ) {
+        throw new UnsupportedOperationException(
+          'Provided viewport dimensions are not supported',
+        );
+      }
+      throw err;
+    }
+  }
+
+  async #setUserContextConfig() {
+    if (
+      this.#userContextConfig.viewport !== undefined ||
+      this.#userContextConfig.devicePixelRatio !== undefined
+    ) {
+      await this.setViewport(
+        this.#userContextConfig.viewport,
+        this.#userContextConfig.devicePixelRatio,
+      );
+    }
   }
 
   get topLevelId() {
