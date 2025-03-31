@@ -83,7 +83,9 @@ class CORE_EXPORT SVGLength final : public SVGListablePropertyBase {
   Length ConvertToLength(const SVGLengthConversionData&) const;
   float Value(const SVGLengthConversionData&, float dimension) const;
   float Value(const SVGLengthContext&) const;
-  float ValueInSpecifiedUnits() const { return value_->GetFloatValue(); }
+  float ValueInSpecifiedUnits() const {
+    return To<CSSNumericLiteralValue>(*value_).GetFloatValue();
+  }
 
   void SetValueAsNumber(float);
   void SetValueInSpecifiedUnits(float value);
