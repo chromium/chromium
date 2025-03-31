@@ -8,8 +8,8 @@
 #include <memory>
 #include <optional>
 
+#include "chrome/browser/ui/tabs/tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
-#include "components/tab_collections/public/tab_collection.h"
 
 namespace tab_groups {
 class TabGroupId;

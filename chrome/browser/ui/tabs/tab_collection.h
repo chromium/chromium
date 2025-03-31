@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_TAB_COLLECTIONS_PUBLIC_TAB_COLLECTION_H_
-#define COMPONENTS_TAB_COLLECTIONS_PUBLIC_TAB_COLLECTION_H_
+#ifndef CHROME_BROWSER_UI_TABS_TAB_COLLECTION_H_
+#define CHROME_BROWSER_UI_TABS_TAB_COLLECTION_H_
 
 #include <cstddef>
 #include <memory>
@@ -106,4 +106,4 @@ class TabCollection {
 
 }  // namespace tabs
 
-#endif  // COMPONENTS_TAB_COLLECTIONS_PUBLIC_TAB_COLLECTION_H_
+#endif  // CHROME_BROWSER_UI_TABS_TAB_COLLECTION_H_
