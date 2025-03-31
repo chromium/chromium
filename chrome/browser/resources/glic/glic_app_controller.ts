@@ -123,6 +123,9 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
         break;
       case 'regular':
         $.guestPanel.classList.toggle('show-header', false);
+        if (this.state === WebUiState.kReady) {
+          this.setState(WebUiState.kBeginLoad);
+        }
         break;
     }
   }
