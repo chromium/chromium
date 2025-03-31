@@ -125,7 +125,9 @@ class PLATFORM_EXPORT MediaStreamDescriptor final
   bool active_;
 };
 
-typedef HeapVector<Member<MediaStreamDescriptor>> MediaStreamDescriptorVector;
+using MediaStreamDescriptorVector = HeapVector<Member<MediaStreamDescriptor>>;
+using GCedMediaStreamDescriptorVector =
+    GCedHeapVector<Member<MediaStreamDescriptor>>;
 
 }  // namespace blink
 

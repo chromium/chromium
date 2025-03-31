@@ -220,7 +220,7 @@ class MODULES_EXPORT UserMediaRequest final
   // Completes the re-creation of the transferred MediaStreamTrack by
   // constructing the MediaStreamTrackImpl object.
   void FinalizeTransferredTrackInitialization(
-      const MediaStreamDescriptorVector& streams_descriptors);
+      const GCedMediaStreamDescriptorVector& streams_descriptors);
 
   void Trace(Visitor*) const override;
 
