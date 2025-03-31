@@ -11,7 +11,6 @@
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_logging.h"
-#include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_uma_logger.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/start_crd_session_job_delegate.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
@@ -66,9 +65,6 @@ void SharedCrdSessionImpl::StartCrdHost(const SessionParameters& parameters,
   session_parameters.show_confirmation_dialog =
       parameters.show_confirmation_dialog;
   session_parameters.terminate_upon_input = parameters.terminate_upon_input;
-  session_parameters.request_origin =
-      ConvertToStartCrdSessionJobDelegateRequestOrigin(
-          parameters.request_origin);
 
   CRD_VLOG(1) << "Starting CRD host and retrieving CRD access code";
   delegate_->StartCrdHostAndGetCode(

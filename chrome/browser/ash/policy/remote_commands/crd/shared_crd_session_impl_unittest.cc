@@ -9,11 +9,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/fake_start_crd_session_job_delegate.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/public/crd_session_result_codes.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/public/shared_crd_session.h"
-#include "chrome/browser/ash/policy/remote_commands/crd/start_crd_session_job_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -75,8 +73,6 @@ TEST_F(SharedCrdSessionImplTest, StartCrdHostShouldStartSharedSession) {
   input_parameters.allow_file_transfer = false;
   input_parameters.show_confirmation_dialog = false;
   input_parameters.terminate_upon_input = false;
-  input_parameters.request_origin =
-      SharedCrdSession::RequestOrigin::kEnterpriseAdmin;
 
   ASSERT_FALSE(delegate().HasActiveSession());
   shared_crd_session_->StartCrdHost(input_parameters,
@@ -93,9 +89,6 @@ TEST_F(SharedCrdSessionImplTest, StartCrdHostShouldStartSharedSession) {
             output_parameters.show_confirmation_dialog);
   ASSERT_EQ(input_parameters.terminate_upon_input,
             output_parameters.terminate_upon_input);
-  ASSERT_EQ(ConvertToStartCrdSessionJobDelegateRequestOrigin(
-                input_parameters.request_origin),
-            output_parameters.request_origin);
   ASSERT_EQ("robot@account.com", output_parameters.user_name);
 }
 
@@ -103,13 +96,10 @@ TEST_F(SharedCrdSessionImplTest, StartCrdHostFailureShouldHaveErrorCode) {
   TestFuture<const std::string&> access_code_future;
   TestFuture<ExtendedStartCrdSessionResultCode, const std::string&>
       error_callback_future;
-  SharedCrdSession::SessionParameters input_parameters;
-  input_parameters.request_origin =
-      SharedCrdSession::RequestOrigin::kEnterpriseAdmin;
 
   delegate().FailWithError(
       ExtendedStartCrdSessionResultCode::kFailureCrdHostError);
-  shared_crd_session_->StartCrdHost(input_parameters,
+  shared_crd_session_->StartCrdHost(SharedCrdSession::SessionParameters(),
                                     access_code_future.GetCallback(),
                                     error_callback_future.GetCallback());
   ASSERT_TRUE(error_callback_future.Wait());

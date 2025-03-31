@@ -5,7 +5,6 @@
 #include "remoting/host/it2me/it2me_host.h"
 
 #include <cstddef>
-#include <cstring>
 #include <memory>
 #include <optional>
 #include <string>
@@ -93,15 +92,6 @@ typedef ValidatingAuthenticator::ResultCallback ValidationResultCallback;
 // the network, such as the signal strategy. This delay ensures there is time
 // for messages (such as session-terminate) to be sent.
 constexpr base::TimeDelta kDestroyMessagingObjectDelay = base::Seconds(2);
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Enabled value for ClassManagementEnabled when host belongs to a student and
-// their screen can be viewed by a teacher.
-constexpr char kClassManagementStudent[] = "student";
-// Enabled value for ClassManagementEnabled when host belongs to a teacher and
-// they would like to access their host via another device.
-constexpr char kClassManagementTeacher[] = "teacher";
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // STL containers do not have a defined destruction orders for their elements.
 // Post(Delayed)Task relies on these containers so the destruction order is also
@@ -516,7 +506,7 @@ void It2MeHost::OnPolicyUpdate(base::Value::Dict policies) {
   // it until after we've finished reading the rest of the policies and started
   // the connection process.
   remote_support_connections_allowed_ =
-      RemoteSupportConnectionsAllowed(policies);
+      policies.FindBool(GetRemoteSupportPolicyKey()).value_or(true);
 
   const base::Value::List* host_domain_list =
       policies.FindList(policy::key::kRemoteAccessHostDomainList);
@@ -937,38 +927,19 @@ void It2MeHost::OnConfirmationResult(ValidationResultCallback result_callback,
   }
 }
 
-bool It2MeHost::RemoteSupportConnectionsAllowed(
-    const base::Value::Dict& policies) {
+const char* It2MeHost::GetRemoteSupportPolicyKey() const {
 #if BUILDFLAG(IS_CHROMEOS)
   // The policy to disallow remote support connections
   // (RemoteAccessHostAllowRemoteSupportConnections) does not apply to support
-  // sessions initiated by the enterprise admin via a RemoteCommand or by Class
-  // tools. These two cases are handled specifically by the policy to disallow
-  // enterprise remote support connections
-  // (RemoteAccessHostAllowEnterpriseRemoteSupportConnections) and the policy
-  // to disallow teachers from viewing student screens
-  // (ClassManagementEnabled).
+  // sessions initiated by the enterprise admin via a RemoteCommand. This case
+  // is handled specifically by the policy to disallow enterprise remote support
+  // connections (RemoteAccessHostAllowEnterpriseRemoteSupportConnections).
   if (is_enterprise_session()) {
-    switch (chrome_os_enterprise_params_->request_origin) {
-      case remoting::ChromeOsEnterpriseRequestOrigin::kClassManagement:
-        if (const std::string* class_management_enabled_value =
-                policies.FindString(policy::key::kClassManagementEnabled)) {
-          return *class_management_enabled_value == kClassManagementStudent ||
-                 *class_management_enabled_value == kClassManagementTeacher;
-        }
-        return false;
-      case remoting::ChromeOsEnterpriseRequestOrigin::kEnterpriseAdmin:
-        return policies
-            .FindBool(
-                policy::key::
-                    kRemoteAccessHostAllowEnterpriseRemoteSupportConnections)
-            .value_or(true);
-    }
+    return policy::key::
+        kRemoteAccessHostAllowEnterpriseRemoteSupportConnections;
   }
 #endif
-  return policies
-      .FindBool(policy::key::kRemoteAccessHostAllowRemoteSupportConnections)
-      .value_or(true);
+  return policy::key::kRemoteAccessHostAllowRemoteSupportConnections;
 }
 
 It2MeHostFactory::It2MeHostFactory() = default;
