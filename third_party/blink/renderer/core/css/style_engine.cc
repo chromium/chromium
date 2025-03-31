@@ -3264,9 +3264,6 @@ void StyleEngine::NodeWillBeRemoved(Node& node) {
           tree->RemoveScopeForElement(*element);
         }
       }
-      if (!style->ScrollMarkerContainNone()) {
-        GetDocument().SetNeedsScrollMarkerGroupRelationsUpdate();
-      }
     }
     pending_invalidations_.RescheduleSiblingInvalidationsAsDescendants(
         *element);
