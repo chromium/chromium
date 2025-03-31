@@ -1174,7 +1174,8 @@ void OmniboxEditModel::OnSetFocus(bool control_down) {
   if (omnibox_feature_configs::HappinessTrackingSurveyForOmniboxOnFocusZps::
           Get()
               .enabled) {
-    controller_->client()->MaybeShowOnFocusHatsSurvey();
+    controller_->client()->MaybeShowOnFocusHatsSurvey(
+        autocomplete_controller()->autocomplete_provider_client(), GetText());
   }
 }
 

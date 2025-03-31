@@ -240,8 +240,9 @@ void MostVisitedSitesProvider::Start(const AutocompleteInput& input,
                                      bool minimal_changes) {
   Stop(true, false);
 
-  if (!AllowMostVisitedSitesSuggestions(input))
+  if (!AllowMostVisitedSitesSuggestions(client_, input)) {
     return;
+  }
 
   scoped_refptr<history::TopSites> top_sites = client_->GetTopSites();
   if (!top_sites)
@@ -291,7 +292,7 @@ void MostVisitedSitesProvider::StartPrefetch(const AutocompleteInput& input) {
 
   TRACE_EVENT0("omnibox", "MostVisitedProvider::StartPrefetch");
 
-  if (!AllowMostVisitedSitesSuggestions(input)) {
+  if (!AllowMostVisitedSitesSuggestions(client_, input)) {
     return;
   }
 
@@ -361,8 +362,10 @@ void MostVisitedSitesProvider::OnMostVisitedUrlsFromHistoryAvailable(
   }
 }
 
+// static
 bool MostVisitedSitesProvider::AllowMostVisitedSitesSuggestions(
-    const AutocompleteInput& input) const {
+    const AutocompleteProviderClient* client,
+    const AutocompleteInput& input) {
   const auto& page_url = input.current_url();
   const auto page_class = input.current_page_classification();
   const auto input_type = input.type();
@@ -371,8 +374,9 @@ bool MostVisitedSitesProvider::AllowMostVisitedSitesSuggestions(
     return false;
   }
 
-  if (client_->IsOffTheRecord())
+  if (client->IsOffTheRecord()) {
     return false;
+  }
 
   // Check whether current context is one that supports MV tiles.
   // Any context other than those listed below will be rejected.
@@ -395,7 +399,7 @@ bool MostVisitedSitesProvider::AllowMostVisitedSitesSuggestions(
          (page_url.scheme() == url::kHttpsScheme) ||
          (page_url.scheme() == url::kAboutScheme) ||
          (page_url.scheme() ==
-          client_->GetEmbedderRepresentationOfAboutScheme())))) {
+          client->GetEmbedderRepresentationOfAboutScheme())))) {
     return false;
   }
 

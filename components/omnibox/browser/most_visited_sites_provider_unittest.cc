@@ -408,31 +408,32 @@ TEST_F(MostVisitedSitesProviderTest, TestMostVisitedNavigateToSearchPage) {
 
 TEST_F(MostVisitedSitesProviderTest, AllowMostVisitedSitesSuggestions) {
   // MostVisited should never deal with prefix suggestions.
-  EXPECT_FALSE(
-      provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
-          WEB_URL, WEB_URL, OEP::OTHER, OFT::INTERACTION_DEFAULT)));
+  EXPECT_FALSE(provider_->AllowMostVisitedSitesSuggestions(
+      &client_, BuildAutocompleteInput(WEB_URL, WEB_URL, OEP::OTHER,
+                                       OFT::INTERACTION_DEFAULT)));
 
   // This should always be true, as otherwise we will break MostVisited.
-  EXPECT_TRUE(
-      provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
-          WEB_URL, WEB_URL, OEP::OTHER, OFT::INTERACTION_FOCUS)));
+  EXPECT_TRUE(provider_->AllowMostVisitedSitesSuggestions(
+      &client_, BuildAutocompleteInput(WEB_URL, WEB_URL, OEP::OTHER,
+                                       OFT::INTERACTION_FOCUS)));
 
   // Verifies that non-permitted schemes are rejected.
-  EXPECT_FALSE(
-      provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
-          FTP_URL, FTP_URL, OEP::OTHER, OFT::INTERACTION_FOCUS)));
+  EXPECT_FALSE(provider_->AllowMostVisitedSitesSuggestions(
+      &client_, BuildAutocompleteInput(FTP_URL, FTP_URL, OEP::OTHER,
+                                       OFT::INTERACTION_FOCUS)));
 
   // Offer MV sites when the User is visiting a website and deletes text.
-  EXPECT_TRUE(
-      provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
-          WEB_URL, WEB_URL, OEP::OTHER, OFT::INTERACTION_FOCUS)));
+  EXPECT_TRUE(provider_->AllowMostVisitedSitesSuggestions(
+      &client_, BuildAutocompleteInput(WEB_URL, WEB_URL, OEP::OTHER,
+                                       OFT::INTERACTION_FOCUS)));
 }
 
 TEST_F(MostVisitedSitesProviderTest, NoSRPCoverage) {
-  EXPECT_FALSE(
-      provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
-          WEB_URL, WEB_URL, OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-          OFT::INTERACTION_FOCUS)));
+  EXPECT_FALSE(provider_->AllowMostVisitedSitesSuggestions(
+      &client_,
+      BuildAutocompleteInput(WEB_URL, WEB_URL,
+                             OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+                             OFT::INTERACTION_FOCUS)));
 }
 
 TEST_F(MostVisitedSitesProviderTest, TestCreateMostVisitedMatch) {
@@ -582,12 +583,12 @@ TEST_F(MostVisitedSitesProviderTest, DesktopProviderDoesNotAllowChromeSites) {
 
   // Verifies that non-permitted schemes are rejected.
   EXPECT_TRUE(provider_->AllowMostVisitedSitesSuggestions(
-      BuildAutocompleteInputForWebOnFocus()));
+      &client_, BuildAutocompleteInputForWebOnFocus()));
 
   // Verifies that non-permitted schemes are rejected.
-  EXPECT_FALSE(
-      provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
-          chrome_url, chrome_url, OEP::OTHER, OFT::INTERACTION_FOCUS)));
+  EXPECT_FALSE(provider_->AllowMostVisitedSitesSuggestions(
+      &client_, BuildAutocompleteInput(chrome_url, chrome_url, OEP::OTHER,
+                                       OFT::INTERACTION_FOCUS)));
 }
 
 TEST_F(MostVisitedSitesProviderTest, TestDesktopQueryingHistoryService) {
