@@ -292,7 +292,7 @@
 //! configured in your `Cargo.toml`.
 //!
 //! * `std` allows use of `std` crate instead of the default `core`. Enables using `std::error` and
-//! `set_boxed_logger` functionality.
+//!   `set_boxed_logger` functionality.
 //! * `serde` enables support for serialization and deserialization of `Level` and `LevelFilter`.
 //!
 //! ```toml
@@ -344,7 +344,7 @@
 #![doc(
     html_logo_url = "https://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png",
     html_favicon_url = "https://www.rust-lang.org/favicon.ico",
-    html_root_url = "https://docs.rs/log/0.4.26"
+    html_root_url = "https://docs.rs/log/0.4.27"
 )]
 #![warn(missing_docs)]
 #![deny(missing_debug_implementations, unconditional_recursion)]
@@ -1035,7 +1035,7 @@ impl<'a> RecordBuilder<'a> {
     }
 }
 
-impl<'a> Default for RecordBuilder<'a> {
+impl Default for RecordBuilder<'_> {
     fn default() -> Self {
         Self::new()
     }
@@ -1164,7 +1164,7 @@ impl<'a> MetadataBuilder<'a> {
     }
 }
 
-impl<'a> Default for MetadataBuilder<'a> {
+impl Default for MetadataBuilder<'_> {
     fn default() -> Self {
         Self::new()
     }
@@ -1204,7 +1204,7 @@ pub trait Log: Sync + Send {
     fn flush(&self);
 }
 
-// Just used as a dummy initial value for LOGGER
+/// A dummy initial value for LOGGER.
 struct NopLogger;
 
 impl Log for NopLogger {

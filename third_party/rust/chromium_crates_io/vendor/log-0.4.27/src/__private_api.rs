@@ -1,7 +1,7 @@
 //! WARNING: this is not part of the crate's public API and is subject to change at any time
 
 use self::sealed::KVs;
-use crate::{Level, Metadata, Record};
+use crate::{logger, Level, Log, Metadata, Record};
 use std::fmt::Arguments;
 use std::panic::Location;
 pub use std::{format_args, module_path, stringify};
@@ -34,7 +34,27 @@ impl<'a> KVs<'a> for () {
 
 // Log implementation.
 
-fn log_impl(
+/// The global logger proxy.
+#[derive(Debug)]
+pub struct GlobalLogger;
+
+impl Log for GlobalLogger {
+    fn enabled(&self, metadata: &Metadata) -> bool {
+        logger().enabled(metadata)
+    }
+
+    fn log(&self, record: &Record) {
+        logger().log(record)
+    }
+
+    fn flush(&self) {
+        logger().flush()
+    }
+}
+
+// Split from `log` to reduce generics and code size
+fn log_impl<L: Log>(
+    logger: L,
     args: Arguments,
     level: Level,
     &(target, module_path, loc): &(&str, &'static str, &'static Location),
@@ -58,22 +78,30 @@ fn log_impl(
     #[cfg(feature = "kv")]
     builder.key_values(&kvs);
 
-    crate::logger().log(&builder.build());
+    logger.log(&builder.build());
 }
 
-pub fn log<'a, K>(
+pub fn log<'a, K, L>(
+    logger: L,
     args: Arguments,
     level: Level,
     target_module_path_and_loc: &(&str, &'static str, &'static Location),
     kvs: K,
 ) where
     K: KVs<'a>,
+    L: Log,
 {
-    log_impl(args, level, target_module_path_and_loc, kvs.into_kvs())
+    log_impl(
+        logger,
+        args,
+        level,
+        target_module_path_and_loc,
+        kvs.into_kvs(),
+    )
 }
 
-pub fn enabled(level: Level, target: &str) -> bool {
-    crate::logger().enabled(&Metadata::builder().level(level).target(target).build())
+pub fn enabled<L: Log>(logger: L, level: Level, target: &str) -> bool {
+    logger.enabled(&Metadata::builder().level(level).target(target).build())
 }
 
 #[track_caller]
