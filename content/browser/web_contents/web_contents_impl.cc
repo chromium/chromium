@@ -388,8 +388,7 @@ bool AreValidRegisterProtocolHandlerArguments(
     return false;
   }
 
-  blink::URLSyntaxErrorCode code =
-      blink::IsValidCustomHandlerURLSyntax(url, url.spec());
+  blink::URLSyntaxErrorCode code = blink::IsValidCustomHandlerURLSyntax(url);
   if (code != blink::URLSyntaxErrorCode::kNoError) {
     return false;
   }
