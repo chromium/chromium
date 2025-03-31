@@ -55,7 +55,9 @@ AutofillEntityDataManagerFactory::~AutofillEntityDataManagerFactory() = default;
 std::unique_ptr<KeyedService>
 AutofillEntityDataManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillAiCreateEntityDataManager) &&
+      !base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);
