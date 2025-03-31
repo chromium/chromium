@@ -1015,7 +1015,12 @@ BASE_FEATURE(kHardwareMediaKeyHandling,
 // decoders over software decoders or vice-versa.
 BASE_FEATURE(kResolutionBasedDecoderPriority,
              "ResolutionBasedDecoderPriority",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // Allows the AutoPictureInPictureTabHelper to automatically enter
 // picture-in-picture for websites with video playback (instead of only websites

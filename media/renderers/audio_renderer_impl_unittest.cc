@@ -673,8 +673,7 @@ TEST_F(AudioRendererImplTest, ReinitializeForDifferentStream) {
 
   // Prepare a new demuxer stream.
   MockDemuxerStream new_stream(DemuxerStream::AUDIO);
-  EXPECT_CALL(new_stream, SupportsConfigChanges())
-      .WillRepeatedly(Return(false));
+  EXPECT_CALL(new_stream, SupportsConfigChanges()).WillOnce(Return(false));
   AudioDecoderConfig audio_config(kCodec, kSampleFormat, kChannelLayout,
                                   kInputSamplesPerSecond, EmptyExtraData(),
                                   EncryptionScheme::kUnencrypted);
