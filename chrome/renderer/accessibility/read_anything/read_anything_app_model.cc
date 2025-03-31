@@ -203,8 +203,11 @@ bool ReadAnythingAppModel::PostProcessSelection() {
 
   // Update selection.
   ResetSelection();
-  if (const ui::AXSelection selection =
-          GetTreeFromId(active_tree_id_)->GetUnignoredSelection();
+  ui::AXSerializableTree* tree = GetTreeFromId(active_tree_id_);
+  if (!tree) {
+    return false;
+  }
+  if (const ui::AXSelection selection = tree->GetUnignoredSelection();
       selection.anchor_object_id != ui::kInvalidAXNodeID &&
       selection.focus_object_id != ui::kInvalidAXNodeID &&
       !selection.IsCollapsed()) {
@@ -238,7 +241,8 @@ bool ReadAnythingAppModel::PostProcessSelection() {
   // The main panel selection contains content outside of the distilled content.
   // Find the selected nodes to display instead of the distilled content.
   if (const ui::AXNode *node = GetAXNode(start_.id), *end = GetAXNode(end_.id);
-      !node->IsInvisibleOrIgnored() && !end->IsInvisibleOrIgnored()) {
+      node && end && !node->IsInvisibleOrIgnored() &&
+      !end->IsInvisibleOrIgnored()) {
     // Add all ancestor ids of start node, including the start node itself.
     for (base::queue<ui::AXNode*> ancestors =
              node->GetAncestorsCrossingTreeBoundaryAsQueue();
@@ -387,8 +391,16 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
 
 ui::AXSerializableTree* ReadAnythingAppModel::GetTreeFromId(
     const ui::AXTreeID& tree_id) const {
+  // If the tree id is unknown or not associated with a tree, fail on DCHECK
+  // builds. On live builds, fail gracefully, since reading mode can sometimes
+  // get into a state with invalid data, and failing gracefully is preferable
+  // to crashing.
   DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
   DCHECK(ContainsTree(tree_id));
+
+  if (!ContainsTree(tree_id) || tree_id == ui::AXTreeIDUnknown()) {
+    return nullptr;
+  }
   return static_cast<ui::AXSerializableTree*>(
       tree_infos_.at(tree_id)->manager->ax_tree());
 }
@@ -663,6 +675,9 @@ void ReadAnythingAppModel::SetNumSelections(int num_selections) {
 ui::AXNode* ReadAnythingAppModel::GetAXNode(
     const ui::AXNodeID& ax_node_id) const {
   ui::AXSerializableTree* tree = GetTreeFromId(active_tree_id_);
+  if (!tree) {
+    return nullptr;
+  }
   return tree->GetFromId(ax_node_id);
 }
 
@@ -724,8 +739,11 @@ void ReadAnythingAppModel::OnSelection(ax::mojom::EventFrom event_from) {
   // the selection in RM.
   bool is_click_and_drag_selection = false;
   if (ContainsTree(active_tree_id_)) {
-    ui::AXSelection selection =
-        GetTreeFromId(active_tree_id_)->GetUnignoredSelection();
+    ui::AXSerializableTree* tree = GetTreeFromId(active_tree_id_);
+    if (!tree) {
+      return;
+    }
+    ui::AXSelection selection = tree->GetUnignoredSelection();
     const SelectionEndpoint anchor(selection,
                                    SelectionEndpoint::Source::kAnchor);
     const SelectionEndpoint focus(selection, SelectionEndpoint::Source::kFocus);
