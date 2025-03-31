@@ -411,7 +411,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
         kSegmentationPlatformAndroidHomeModuleRanker,
     &segmentation_platform::features::
         kSegmentationPlatformAndroidHomeModuleRankerV2,
-    &send_tab_to_self::kSendTabToSelfV2,
     &sensitive_content::features::kSensitiveContent,
     &sensitive_content::features::kSensitiveContentWhileSwitchingTabs,
     &switches::kForceStartupSigninPromo,

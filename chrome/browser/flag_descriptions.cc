@@ -4868,11 +4868,6 @@ const char kSecurePaymentConfirmationAndroidName[] =
 const char kSecurePaymentConfirmationAndroidDescription[] =
     "Enables Secure Payment Confirmation on Android.";
 
-const char kSendTabToSelfV2Name[] = "Send tab to self 2.0";
-const char kSendTabToSelfV2Description[] =
-    "Enables new received tab "
-    "UI shown next to the profile icon instead of using system notifications.";
-
 const char kSetMarketUrlForTestingName[] = "Set market URL for testing";
 const char kSetMarketUrlForTestingDescription[] =
     "When enabled, sets the market URL for use in testing the update menu "

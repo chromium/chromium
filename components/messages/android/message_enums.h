@@ -91,7 +91,7 @@ enum class MessageIdentifier {
   SAVE_ADDRESS_PROFILE = 6,
   MERCHANT_TRUST = 7,
   // Removed: ADD_TO_HOMESCREEN_IPH = 8,
-  SEND_TAB_TO_SELF = 9,
+  // Removed: SEND_TAB_TO_SELF = 9,
   READER_MODE = 10,
   CHROME_SURVEY = 11,
   SAVE_CARD = 12,

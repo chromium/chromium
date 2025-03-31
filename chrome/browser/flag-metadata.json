@@ -8190,11 +8190,6 @@
     "expiry_milestone": 137
   },
   {
-    "name": "send-tab-to-self-v2",
-    "owners": ["ellyjones@chromium.org", "jeffreycohen@chromium.org", "chrome-with-friends-robots@google.com"],
-    "expiry_milestone": 119
-  },
-  {
     "name": "sensitive-content",
     "owners": ["theocristea@google.com", "jkeitel@google.com"],
     "expiry_milestone": 145

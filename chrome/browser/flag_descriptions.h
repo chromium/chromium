@@ -2865,9 +2865,6 @@ extern const char kShowNewTabAnimationsDescription[];
 extern const char kShowReadyToPayDebugInfoName[];
 extern const char kShowReadyToPayDebugInfoDescription[];
 
-extern const char kSendTabToSelfV2Name[];
-extern const char kSendTabToSelfV2Description[];
-
 extern const char kSetMarketUrlForTestingName[];
 extern const char kSetMarketUrlForTestingDescription[];
 

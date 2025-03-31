@@ -1114,7 +1114,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="SafetyTip"/>
   <int value="6" label="SaveAddressProfile"/>
   <int value="7" label="MerchantTrust"/>
-  <int value="9" label="SendTabToSelf"/>
+  <int value="9" label="(obsolete) SendTabToSelf"/>
   <int value="10" label="ReaderMode"/>
   <int value="11" label="ChromeSurvey"/>
   <int value="12" label="SaveCard"/>
