@@ -7,6 +7,8 @@ package org.chromium.chrome.browser;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.TabbedMismatchedIndicesHandler.HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build.VERSION_CODES;
@@ -55,6 +57,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
+import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -399,13 +402,12 @@ public class ChromeTabbedActivityTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecordTimes(
-                                ChromeTabbedActivity
-                                        .HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA,
-                                1)
+                                HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA, 1)
                         .build();
         // Create two new ChromeTabbedActivity's.
         ChromeTabbedActivity activity1 = createActivityForMismatchedIndicesTest();
         ChromeTabbedActivity activity2 = createActivityForMismatchedIndicesTest();
+        MismatchedIndicesHandler handler2 = activity2.getMismatchedIndicesHandlerForTesting();
 
         // Assume that activity1 is going to finish().
         activity1.finish();
@@ -414,7 +416,7 @@ public class ChromeTabbedActivityTest {
         // instance.
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        activity2.handleMismatchedIndices(
+                        handler2.handleMismatchedIndices(
                                 activity1,
                                 /* isActivityInAppTasks= */ true,
                                 /* isActivityInSameTask= */ false));
@@ -434,20 +436,19 @@ public class ChromeTabbedActivityTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecordTimes(
-                                ChromeTabbedActivity
-                                        .HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA,
-                                1)
+                                HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA, 1)
                         .build();
 
         // Create two new ChromeTabbedActivity's.
         ChromeTabbedActivity activity1 = createActivityForMismatchedIndicesTest();
         ChromeTabbedActivity activity2 = createActivityForMismatchedIndicesTest();
+        MismatchedIndicesHandler handler2 = activity2.getMismatchedIndicesHandlerForTesting();
 
         // Trigger mismatched indices handling assuming that activity1 and activity2 are in the same
         // task, this should destroy activity1's tab persistent store instance.
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        activity2.handleMismatchedIndices(
+                        handler2.handleMismatchedIndices(
                                 activity1,
                                 /* isActivityInAppTasks= */ true,
                                 /* isActivityInSameTask= */ true));
@@ -471,20 +472,19 @@ public class ChromeTabbedActivityTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecordTimes(
-                                ChromeTabbedActivity
-                                        .HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA,
-                                1)
+                                HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA, 1)
                         .build();
 
         // Create two new ChromeTabbedActivity's.
         ChromeTabbedActivity activity1 = createActivityForMismatchedIndicesTest();
         ChromeTabbedActivity activity2 = createActivityForMismatchedIndicesTest();
+        MismatchedIndicesHandler handler2 = activity2.getMismatchedIndicesHandlerForTesting();
 
         // Trigger mismatched indices handling assuming that activity1 is not in AppTasks, this
         // should destroy activity1's tab persistent store instance.
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        activity2.handleMismatchedIndices(
+                        handler2.handleMismatchedIndices(
                                 activity1,
                                 /* isActivityInAppTasks= */ false,
                                 /* isActivityInSameTask= */ false));

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser;
 import static org.chromium.chrome.browser.tabmodel.TabWindowManager.INVALID_WINDOW_ID;
 import static org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutManager;
@@ -311,7 +310,7 @@ import java.util.function.DoubleConsumer;
  * This is the main activity for ChromeMobile when not running in document mode. All the tabs are
  * accessible via a chrome specific tab switching UI.
  */
-public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIndicesHandler {
+public class ChromeTabbedActivity extends ChromeActivity {
     private static final String TAG = "ChromeTabbedActivity";
 
     protected static final String WINDOW_INDEX = "window_index";
@@ -343,9 +342,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                     MAIN_LAUNCHER_ACTIVITY_NAME);
 
     private static final String TAG_MULTI_INSTANCE = "MultiInstance";
-
-    static final String HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA =
-            "Android.MultiWindowMode.MismatchedIndices.ActivityCreationTimeDelta";
 
     public static final String HISTOGRAM_DRAGGED_TAB_OPENED_NEW_WINDOW =
             "Android.MultiWindowMode.DraggedTabOpenedNewWindow";
@@ -532,6 +528,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
                 RecordUserAction.record("MobileNewTabOpened");
             };
+    private final MismatchedIndicesHandler mMismatchedIndicesHandler =
+            new TabbedMismatchedIndicesHandler(this::getOnCreateTimestampMs);
 
     // Manager for tab group visual data lifecycle updates.
     private TabGroupVisualDataManager mTabGroupVisualDataManager;
@@ -2741,7 +2739,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                         getProfileProviderSupplier(),
                         this,
                         mNextTabPolicySupplier,
-                        this,
+                        mMismatchedIndicesHandler,
                         mWindowId);
         if (!tabModelWasCreated) {
             finishAndRemoveTask();
@@ -3983,56 +3981,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 isIncognito ? "new-incognito-tab-shortcut" : "new-tab-shortcut");
     }
 
-    @Override
-    public boolean handleMismatchedIndices(
-            Activity activityAtRequestedIndex,
-            boolean isActivityInAppTasks,
-            boolean isActivityInSameTask) {
-        boolean shouldHandleMismatch =
-                activityAtRequestedIndex.isFinishing()
-                        || isActivityInSameTask
-                        || !isActivityInAppTasks;
-
-        if (!shouldHandleMismatch
-                || !(activityAtRequestedIndex
-                        instanceof ChromeTabbedActivity tabbedActivityAtRequestedIndex)) {
-            return false;
-        }
-
-        // Destroy the TabPersistentStore instance maintained by the activity at the requested
-        // index. Save the tab state first to align with the current flow of execution when the
-        // store is destroyed.
-        var tabModelOrchestrator =
-                tabbedActivityAtRequestedIndex.getTabModelOrchestratorSupplier().get();
-        // If the two activities launched within a short span, simply destroy the persistent store
-        // instance of the activity at the requested index, assuming no changes have been made to
-        // the tab state during this time.
-        long onCreateTimeDeltaMs =
-                getOnCreateTimestampMs() - tabbedActivityAtRequestedIndex.getOnCreateTimestampMs();
-        RecordHistogram.recordTimesHistogram(
-                HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA, onCreateTimeDeltaMs);
-        boolean shouldSaveState =
-                tabbedActivityAtRequestedIndex.getLifecycleDispatcher().getCurrentActivityState()
-                        < ActivityLifecycleDispatcher.ActivityState.STOPPED_WITH_NATIVE;
-        if (shouldSaveState
-                && onCreateTimeDeltaMs
-                        > ChromeFeatureList
-                                .sTabWindowManagerReportIndicesMismatchTimeDiffThresholdMs
-                                .getValue()) {
-            // Save state only if #onStopWithNative() that invokes this, has not run yet.
-            tabModelOrchestrator.getTabPersistentStore().saveState();
-        }
-        tabModelOrchestrator.destroyTabPersistentStore();
-
-        // If the activity at the requested index is not finishing already, explicitly finish it.
-        if (!activityAtRequestedIndex.isFinishing()) {
-            activityAtRequestedIndex.finish();
-        }
-        return true;
-    }
-
     public MultiInstanceManager getMultiInstanceMangerForTesting() {
         return mMultiInstanceManager;
+    }
+
+    public MismatchedIndicesHandler getMismatchedIndicesHandlerForTesting() {
+        return mMismatchedIndicesHandler;
     }
 
     @VisibleForTesting
