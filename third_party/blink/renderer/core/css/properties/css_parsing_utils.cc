@@ -793,15 +793,13 @@ CSSFunctionValue* ConsumeFilterFunction(CSSParserTokenStream& stream,
         // and will be clamped in
         // FilterOperationResolver::ResolveNumericArgumentForFunction() instead,
         // when we can resolve e.g. length units.
-        if (parsed_value &&
-            !To<CSSPrimitiveValue>(parsed_value)->IsCalculated() &&
-            filter_type != CSSValueID::kSaturate &&
+        if (auto* literal_value =
+                DynamicTo<CSSNumericLiteralValue>(parsed_value);
+            literal_value && filter_type != CSSValueID::kSaturate &&
             filter_type != CSSValueID::kContrast) {
-          bool is_percentage =
-              To<CSSPrimitiveValue>(parsed_value)->IsPercentage();
+          bool is_percentage = literal_value->IsPercentage();
           double max_allowed = is_percentage ? 100.0 : 1.0;
-          if (To<CSSPrimitiveValue>(parsed_value)->GetDoubleValue() >
-              max_allowed) {
+          if (literal_value->GetDoubleValue() > max_allowed) {
             parsed_value = CSSNumericLiteralValue::Create(
                 max_allowed, is_percentage
                                  ? CSSPrimitiveValue::UnitType::kPercentage
