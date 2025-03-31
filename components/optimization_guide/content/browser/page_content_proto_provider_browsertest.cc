@@ -190,6 +190,12 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, AIPageContent) {
             window_bounds.width());
   EXPECT_EQ(root_geometry.visible_bounding_box().height(),
             window_bounds.height());
+
+  EXPECT_EQ(page_content().viewport_geometry().x(), 0);
+  EXPECT_EQ(page_content().viewport_geometry().y(), 0);
+  EXPECT_EQ(page_content().viewport_geometry().width(), window_bounds.width());
+  EXPECT_EQ(page_content().viewport_geometry().height(),
+            window_bounds.height());
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, Selection) {
@@ -744,10 +750,9 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
       ukm::builders::OptimizationGuide_AIPageContentAgent::kEntryName);
   EXPECT_EQ(1u, entries.size());
   auto* entry = entries[0].get();
-  EXPECT_EQ(
-      1, *ukm_recorder.GetEntryMetric(
-             entry, ukm::builders::OptimizationGuide_AIPageContentAgent::
-                        kNodeDepthLimitExceededName));
+  EXPECT_EQ(1, *ukm_recorder.GetEntryMetric(
+                   entry, ukm::builders::OptimizationGuide_AIPageContentAgent::
+                              kNodeDepthLimitExceededName));
 }
 
 IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
@@ -771,6 +776,39 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::OptimizationGuide_AIPageContentAgent::kEntryName);
   EXPECT_EQ(0u, entries.size());
+}
+
+class ScaledPageContentProtoProviderBrowserTest
+    : public PageContentProtoProviderBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    content::ContentBrowserTest::SetUpCommandLine(command_line);
+
+    // HTTPS server only serves a valid cert for localhost, so this is needed
+    // to load pages from other hosts without an error.
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+
+    command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "2.0");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ScaledPageContentProtoProviderBrowserTest, ScaleSizes) {
+  const gfx::Size window_bounds(web_contents()->GetSize());
+  LoadPage(https_server()->GetURL("/simple.html"));
+
+  EXPECT_EQ(page_content().version(),
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+  EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
+  AssertHasText(page_content().root_node(), "Non empty simple page\n\n");
+  EXPECT_FALSE(
+      page_content().root_node().content_attributes().has_interaction_info());
+
+  // The viewport geometry should be scaled by the device scale factor.
+  EXPECT_EQ(page_content().viewport_geometry().x(), 0);
+  EXPECT_EQ(page_content().viewport_geometry().y(), 0);
+  EXPECT_EQ(page_content().viewport_geometry().width(), window_bounds.width());
+  EXPECT_EQ(page_content().viewport_geometry().height(),
+            window_bounds.height());
 }
 
 }  // namespace
