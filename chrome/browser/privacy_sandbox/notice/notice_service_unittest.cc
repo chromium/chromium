@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/privacy_sandbox/notice/notice_framework.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_service.h"
 
-#include "chrome/browser/privacy_sandbox/notice/framework_features.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_features.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_profile.h"
@@ -18,48 +18,50 @@ namespace {
 
 using privacy_sandbox::notice::mojom::PrivacySandboxNotice;
 
-class NoticeFrameworkTest : public testing::Test,
-                            public testing::WithParamInterface<NoticeId> {
+class NoticeServiceTest : public testing::Test,
+                          public testing::WithParamInterface<NoticeId> {
  public:
-  NoticeFrameworkTest() {
+  NoticeServiceTest() {
     profile_ = IdentityTestEnvironmentProfileAdaptor::
         CreateProfileForIdentityTestEnvironment();
-    framework_ =
-        std::make_unique<PrivacySandboxNoticeFramework>(profile_.get());
+    notice_service_ =
+        std::make_unique<PrivacySandboxNoticeService>(profile_.get());
   }
 
  protected:
-  PrivacySandboxNoticeFramework* framework() { return framework_.get(); }
+  PrivacySandboxNoticeService* notice_service() {
+    return notice_service_.get();
+  }
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<PrivacySandboxNoticeFramework> framework_;
+  std::unique_ptr<PrivacySandboxNoticeService> notice_service_;
 };
 
-TEST_P(NoticeFrameworkTest, EventOccurredRegisteredInNoticeStorage) {
+TEST_P(NoticeServiceTest, EventOccurredRegisteredInNoticeStorage) {
   NoticeId notice_id = GetParam();
 
-  framework()->EventOccurred(notice_id, NoticeEvent::kShown);
-  framework()->EventOccurred(notice_id, NoticeEvent::kAck);
+  notice_service()->EventOccurred(notice_id, NoticeEvent::kShown);
+  notice_service()->EventOccurred(notice_id, NoticeEvent::kAck);
 
-  std::string_view notice_name = framework()
+  std::string_view notice_name = notice_service()
                                      ->GetCatalog()
                                      ->GetNoticeMap()
                                      .find(notice_id)
                                      ->second->GetFeature()
                                      ->name;
   // Pref
-  auto actual = framework()->GetNoticeStorage()->ReadNoticeData(
-      framework()->GetPrefService(), notice_name);
+  auto actual = notice_service()->GetNoticeStorage()->ReadNoticeData(
+      notice_service()->GetPrefService(), notice_name);
   EXPECT_EQ(actual->GetNoticeActionTakenForFirstShownFromEvents()->first,
             privacy_sandbox::NoticeEvent::kAck);
   EXPECT_EQ(actual->GetNoticeEvents().size(), 2u);
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    NoticeFrameworkTest,
-    NoticeFrameworkTest,
+    NoticeServiceTest,
+    NoticeServiceTest,
     testing::Values(
         std::make_pair(PrivacySandboxNotice::kTopicsConsentNotice,
                        SurfaceType::kDesktopNewTab),

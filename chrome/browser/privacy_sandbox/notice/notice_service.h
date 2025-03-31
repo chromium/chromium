@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_FRAMEWORK_H_
-#define CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_FRAMEWORK_H_
+#ifndef CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_SERVICE_H_
+#define CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_SERVICE_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
@@ -20,10 +20,10 @@ namespace privacy_sandbox {
 // 3. Determine which views are required to get them to the latest API version
 // 4. Keeps an internal registry to keep track of when notices were shown,
 // what actions were taken on them and how
-class PrivacySandboxNoticeFramework : public KeyedService {
+class PrivacySandboxNoticeService : public KeyedService {
  public:
-  explicit PrivacySandboxNoticeFramework(Profile* profile);
-  ~PrivacySandboxNoticeFramework() override;
+  explicit PrivacySandboxNoticeService(Profile* profile);
+  ~PrivacySandboxNoticeService() override;
 
   std::vector<notice::mojom::PrivacySandboxNotice> GetRequiredNotices(
       SurfaceType surface);
@@ -47,4 +47,4 @@ class PrivacySandboxNoticeFramework : public KeyedService {
 
 }  // namespace privacy_sandbox
 
-#endif  // CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_FRAMEWORK_H_
+#endif  // CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_SERVICE_H_

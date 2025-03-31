@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/privacy_sandbox/notice/notice_framework.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_service.h"
 
-#include "chrome/browser/privacy_sandbox/notice/framework_features.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_features.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
@@ -73,7 +73,7 @@ void PopulateNoticeCatalog(std::unique_ptr<NoticeCatalog>& catalog) {
 }
 }  // namespace
 
-PrivacySandboxNoticeFramework::PrivacySandboxNoticeFramework(Profile* profile)
+PrivacySandboxNoticeService::PrivacySandboxNoticeService(Profile* profile)
     : profile_(profile) {
   notice_storage_ = std::make_unique<PrivacySandboxNoticeStorage>();
   catalog_ = std::make_unique<NoticeCatalog>();
@@ -84,16 +84,16 @@ PrivacySandboxNoticeFramework::PrivacySandboxNoticeFramework(Profile* profile)
   PopulateNoticeCatalog(catalog_);
 }
 
-PrivacySandboxNoticeFramework::~PrivacySandboxNoticeFramework() = default;
+PrivacySandboxNoticeService::~PrivacySandboxNoticeService() = default;
 
-void PrivacySandboxNoticeFramework::Shutdown() {
+void PrivacySandboxNoticeService::Shutdown() {
   profile_ = nullptr;
   notice_storage_ = nullptr;
   catalog_ = nullptr;
 }
 
-void PrivacySandboxNoticeFramework::EventOccurred(NoticeId notice_id,
-                                                  NoticeEvent event) {
+void PrivacySandboxNoticeService::EventOccurred(NoticeId notice_id,
+                                                NoticeEvent event) {
   // Crash if notice_id could not be found.
   auto it = catalog_->GetNoticeMap().find(notice_id);
   CHECK(it != catalog_->GetNoticeMap().end())
@@ -120,15 +120,15 @@ std::vector<PrivacySandboxNotice> GetRequiredNotices(SurfaceType surface) {
   return required_notices;
 }
 
-PrivacySandboxNoticeStorage* PrivacySandboxNoticeFramework::GetNoticeStorage() {
+PrivacySandboxNoticeStorage* PrivacySandboxNoticeService::GetNoticeStorage() {
   return notice_storage_.get();
 }
 
-PrefService* PrivacySandboxNoticeFramework::GetPrefService() {
+PrefService* PrivacySandboxNoticeService::GetPrefService() {
   return profile_->GetPrefs();
 }
 
-NoticeCatalog* PrivacySandboxNoticeFramework::GetCatalog() {
+NoticeCatalog* PrivacySandboxNoticeService::GetCatalog() {
   return catalog_.get();
 }
 
