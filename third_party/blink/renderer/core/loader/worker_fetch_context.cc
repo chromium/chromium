@@ -247,7 +247,9 @@ void WorkerFetchContext::ModifyRequestForMixedContentUpgrade(
 
 void WorkerFetchContext::PopulateResourceRequestBeforeCacheAccess(
     const ResourceLoaderOptions& options,
-    ResourceRequest& request) {
+    ResourceRequest& request,
+    FetchParameters::HasPreloadedResponseCandidate
+        has_preloaded_response_candidate) {
   if (!RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled()) {
     ModifyRequestForMixedContentUpgrade(request);
   }
