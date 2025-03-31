@@ -81,20 +81,6 @@ class BinaryBasedOnUint8Vector : public Binary::Impl {
   Vector<uint8_t> values_;
 };
 
-class BinaryBasedOnCharVector : public Binary::Impl {
- public:
-  explicit BinaryBasedOnCharVector(Vector<char> values)
-      : values_(std::move(values)) {}
-
-  const uint8_t* data() const override {
-    return reinterpret_cast<const uint8_t*>(values_.data());
-  }
-  size_t size() const override { return values_.size(); }
-
- private:
-  Vector<char> values_;
-};
-
 class BinaryBasedOnCachedData : public Binary::Impl {
  public:
   explicit BinaryBasedOnCachedData(
@@ -120,9 +106,9 @@ String Binary::toBase64() const {
 
 // static
 Binary Binary::fromBase64(const String& base64, bool* success) {
-  Vector<char> out;
+  Vector<uint8_t> out;
   *success = WTF::Base64Decode(base64, out);
-  return Binary(base::AdoptRef(new BinaryBasedOnCharVector(std::move(out))));
+  return Binary(base::AdoptRef(new BinaryBasedOnUint8Vector(std::move(out))));
 }
 
 // static
