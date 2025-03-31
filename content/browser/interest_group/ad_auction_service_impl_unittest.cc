@@ -11717,32 +11717,32 @@ TEST_F(AdAuctionServiceImplTest,
       }));
   run_loop.Run();
   std::string expected_a =
-      "AgAAAainZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
+      "AgAAAaSnZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
       "MC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOibmh0dHBzOi8v"
-      "YS50ZXN0WHMfiwgAAAAAAAAAHcgxDoJgDAZQPBLIDZhMIA4Ozj9tA0X8SlqQuMlduKI7CW98"
-      "206JY+O8uJaM9Bam5IHWbQ3xh3ZIY+x9q1zZgjnrJ5fPUxE/"
-      "HUxx5kVdSEDfJrK4oTIb2VbcvTZ62TL/"
-      "DxMSQbVlAAAAbmh0dHBzOi8vYi50ZXN0WHYfiwgAAAAAAAAAHchNDoJADAZQPJLoDViZQFy4"
-      "cD0zbaAyfjUtP3HH3IUjegAT3vKVPQXyQuf6ciWEN3OUkR3RdHW2h/QI2fchCjU6Y6qGj/"
-      "HyFPgmLxUceRLjxEjfziu/"
-      "oVHNpCvu1moadZ5+"
-      "f28Ar5pmAAAAcnJlcXVlc3RUaW1lc3RhbXBNcwBzSW5Db29sZG93bk9yTG9ja291dPV0ZW5h"
-      "YmxlRGVidWdSZXBvcnRpbmf1AAAAAAAAAAAAAAAAAAA";
+      "YS50ZXN0WHEfiwgAAAAAAAAAHcgxDoJQDABQPBLoDVghDAzOpW2kgK1pgR83/"
+      "l24orvRN758IlBkKqvrjRSeTAgeOrilYO/"
+      "lobDEOQ5CtW26FuPLeb+"
+      "LxiGTif7zIs7Iiu82ividLWRJO28MZ9vWzxcYQr2vZQAAAG5odHRwczovL2IudGVzdFh0H4s"
+      "IAAAAAAAAAB3IsRHCMAwAwDASIRvQwlFQUNuWDis2Eic5yaWLd/"
+      "GIDMAlX35twYFVOPeXAdh9ED0lNPYqi6E+6c0uW4ue4CoTly5+"
+      "FecXsW00CvGRJ1IMyGG9W2f7SQZZ+"
+      "KE3CUmm8vsDZFBTgGYAAABycmVxdWVzdFRpbWVzdGFtcE1zAHNpbkNvb2xkb3duT3JMb2Nrb"
+      "3V09XRlbmFibGVEZWJ1Z1JlcG9ydGluZ/UAAAAAAAAAAAAAAAAAAAAA";
   EXPECT_THAT(base::Base64Encode(msg_a), testing::StartsWith(expected_a));
   EXPECT_EQ(5u * 1024u - kEncryptionOverhead, msg_a.size());
 
   std::string expected_b =
-      "AgAAAainZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
+      "AgAAAaSnZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
       "MC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOibmh0dHBzOi8v"
-      "YS50ZXN0WHMfiwgAAAAAAAAAHcgxDoJgDAZQPBLIDZhMIA4Ozj9tA0X8SlqQuMlduKI7CW98"
-      "206JY+O8uJaM9Bam5IHWbQ3xh3ZIY+x9q1zZgjnrJ5fPUxE/"
-      "HUxx5kVdSEDfJrK4oTIb2VbcvTZ62TL/"
-      "DxMSQbVlAAAAbmh0dHBzOi8vYi50ZXN0WHYfiwgAAAAAAAAAHchNDoJADAZQPJLoDViZQFy4"
-      "cD0zbaAyfjUtP3HH3IUjegAT3vKVPQXyQuf6ciWEN3OUkR3RdHW2h/QI2fchCjU6Y6qGj/"
-      "HyFPgmLxUceRLjxEjfziu/"
-      "oVHNpCvu1moadZ5+"
-      "f28Ar5pmAAAAcnJlcXVlc3RUaW1lc3RhbXBNcwBzSW5Db29sZG93bk9yTG9ja291dPR0ZW5h"
-      "YmxlRGVidWdSZXBvcnRpbmf1AAAAAAAAAAAAAAAAAAA";
+      "YS50ZXN0WHEfiwgAAAAAAAAAHcgxDoJQDABQPBLoDVghDAzOpW2kgK1pgR83/"
+      "l24orvRN758IlBkKqvrjRSeTAgeOrilYO/"
+      "lobDEOQ5CtW26FuPLeb+"
+      "LxiGTif7zIs7Iiu82ividLWRJO28MZ9vWzxcYQr2vZQAAAG5odHRwczovL2IudGVzdFh0H4s"
+      "IAAAAAAAAAB3IsRHCMAwAwDASIRvQwlFQUNuWDis2Eic5yaWLd/"
+      "GIDMAlX35twYFVOPeXAdh9ED0lNPYqi6E+6c0uW4ue4CoTly5+"
+      "FecXsW00CvGRJ1IMyGG9W2f7SQZZ+"
+      "KE3CUmm8vsDZFBTgGYAAABycmVxdWVzdFRpbWVzdGFtcE1zAHNpbkNvb2xkb3duT3JMb2Nrb"
+      "3V09HRlbmFibGVEZWJ1Z1JlcG9ydGluZ/UAAAAAAAAAAAAAAAAAAAAA";
   EXPECT_NE(expected_a, expected_b);
   EXPECT_THAT(base::Base64Encode(msg_b), testing::StartsWith(expected_b));
   EXPECT_EQ(5u * 1024u - kEncryptionOverhead, msg_b.size());
@@ -12784,7 +12784,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
   EXPECT_THAT(
       got_str,
       testing::EndsWith(
-          R"(, "InCooldownOrLockout": false, "enableDebugReporting": true})"));
+          R"(, "inCooldownOrLockout": false, "enableDebugReporting": true})"));
 }
 
 // Similar to _DebugReportNotInLockoutOrCooldown, but the browser is in lockout.
@@ -12845,7 +12845,7 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload_DebugReportInLockout) {
   EXPECT_THAT(
       got_str,
       testing::EndsWith(
-          R"(, "InCooldownOrLockout": true, "enableDebugReporting": false})"));
+          R"(, "inCooldownOrLockout": true, "enableDebugReporting": false})"));
 }
 
 // Similar to DebugReportNotInLockoutOrCooldown, but the seller is in cooldown.
@@ -12906,7 +12906,7 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload_DebugReportInCooldown) {
   EXPECT_THAT(
       got_str,
       testing::EndsWith(
-          R"(, "InCooldownOrLockout": true, "enableDebugReporting": true})"));
+          R"(, "inCooldownOrLockout": true, "enableDebugReporting": true})"));
 }
 
 TEST_F(AdAuctionServiceImplBAndATest,
