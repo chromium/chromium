@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<title>Prefetch request's Sec-Speculation-Tags request headers</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="/common/utils.js"></script>
+<script src="../resources/utils.js"></script>
+<script src="resources/utils.sub.js"></script>
+<script src="resources/speculation-tags-utils.js"></script>
+<script>
+"use strict";
+
+setup(() => assertSpeculationRulesIsSupported());
+
+// https://wicg.github.io/nav-speculation/speculation-rules.html#collect-tags-for-matching-speculative-load-candidates
+// https://wicg.github.io/nav-speculation/prefetch.html#sec-speculation-tags-header
+
+const R = String.raw;
+
+// Valid tag cases.
+testRulesetTag('my-rules', '"my-rules"', "string tag");
+testRulesetTag('null', '"null"', "'null' string tag");
+testRulesetTag('', '""', "empty string tag");
+testRulesetTag(' ', '" "', "single space tag");
+testRulesetTag('"', R`"\""`, "double quote tag");
+testRulesetTag('"""', R`"\"\"\""`, "double quotes tag");
+testRulesetTag('\\', R`"\\"`, "backslash tag");
+testRulesetTag('\\\\\\', R`"\\\\\\"`, "backslashes tag");
+</script>

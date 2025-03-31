@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<title>Prefetch request's Sec-Speculation-Tags request headers</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="/common/utils.js"></script>
+<script src="../resources/utils.js"></script>
+<script src="resources/utils.sub.js"></script>
+<script src="resources/speculation-tags-utils.js"></script>
+<script>
+"use strict";
+
+setup(() => assertSpeculationRulesIsSupported());
+
+// https://wicg.github.io/nav-speculation/speculation-rules.html#collect-tags-for-matching-speculative-load-candidates
+// https://wicg.github.io/nav-speculation/prefetch.html#sec-speculation-tags-header
+
+// Invalid (null) tag cases.
+testRulesetTag(123, 'null', "integer tag");
+testRulesetTag({a: "1"}, 'null', "object tag");
+testRulesetTag(null, 'null', "null value tag");
+testRulesetTag(undefined, 'null', "undefined value tag");
+testRulesetTag('\n', 'null', "non-printable character tag");
+testRulesetTag('my\nrules', 'null', "string with non-printable character tag");
+testRulesetTag('マイルール', 'null', "non-ascii string tag");
+
+// Boundary checks: the tag allows only printable ascii characters between 0x20
+// and 0x7E, inclusive.
+testRulesetTag('\x19', 'null', "0x19 tag");
+testRulesetTag('\x20', '" "', "0x20 tag");
+testRulesetTag('\x7E', '"~"', "0x7E tag");
+testRulesetTag('\x7F', 'null', "0x7F tag");
+</script>
