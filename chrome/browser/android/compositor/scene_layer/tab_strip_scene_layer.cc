@@ -5,7 +5,6 @@
 #include "chrome/browser/android/compositor/scene_layer/tab_strip_scene_layer.h"
 
 #include "base/android/jni_android.h"
-#include "base/android/token_android.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
 #include "cc/slim/ui_resource_layer.h"
@@ -469,7 +468,7 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
     jboolean foreground,
     jboolean show_reorder_background,
     jboolean show_bubble,
-    const base::android::JavaParamRef<jobject>& jgroup_token,
+    jint id,
     jint tint,
     jint reorder_background_tint,
     jint bubble_tint,
@@ -501,12 +500,9 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
     }
   }
 
-  const tab_groups::TabGroupId& group_token =
-      tab_groups::TabGroupId::FromRawToken(
-          base::android::TokenAndroid::FromJavaToken(env, jgroup_token));
   layer->SetProperties(
-      group_token, tint, reorder_background_tint, bubble_tint, incognito,
-      foreground, show_bubble, show_reorder_background, x, y, width, height,
+      id, tint, reorder_background_tint, bubble_tint, incognito, foreground,
+      show_bubble, show_reorder_background, x, y, width, height,
       title_start_padding, title_end_padding, corner_radius,
       bottom_indicator_width, bottom_indicator_height, bubble_padding,
       bubble_size, tab_strip_layer_->bounds().height());

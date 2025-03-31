@@ -18,12 +18,10 @@ import android.util.Log;
 import android.view.InflateException;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
@@ -173,15 +171,13 @@ public class TitleBitmapFactory {
      *
      * @param filter To fetch tab information from.
      * @param context The current Android's context.
-     * @param groupId The group ID.
+     * @param rootId The root ID of the group.
      * @param title The title of the group.
-     * @return The Bitmap with the title. {@code null} if it cannot be generated.
+     * @return The Bitmap with the title.
      */
-    public @Nullable Bitmap getGroupTitleBitmap(
-            TabGroupModelFilter filter, Context context, Token groupId, String title) {
-        if (!filter.tabGroupExists(groupId)) return null;
-        @TabGroupColorId
-        int colorId = filter.getTabGroupColor(filter.getRootIdFromTabGroupId(groupId));
+    public Bitmap getGroupTitleBitmap(
+            TabGroupModelFilter filter, Context context, int rootId, String title) {
+        @TabGroupColorId int colorId = filter.getTabGroupColor(rootId);
         @ColorInt
         int color =
                 ColorPickerUtils.getTabGroupColorPickerItemTextColor(context, colorId, mIncognito);
