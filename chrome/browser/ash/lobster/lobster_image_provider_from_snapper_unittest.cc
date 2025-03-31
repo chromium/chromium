@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/lobster/lobster_image_provider_from_snapper.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/protobuf_matchers.h"
@@ -16,6 +17,7 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -176,7 +178,9 @@ TEST_F(
   EXPECT_FALSE(future.Get().has_value());
   EXPECT_EQ(
       future.Get().error(),
-      ash::LobsterError(ash::LobsterErrorCode::kUnknown, "generic error"));
+      ash::LobsterError(ash::LobsterErrorCode::kUnknown,
+                        l10n_util::GetStringUTF8(
+                            IDS_LOBSTER_NO_SERVER_RESPONSE_ERROR_MESSAGE)));
 }
 
 }  // namespace

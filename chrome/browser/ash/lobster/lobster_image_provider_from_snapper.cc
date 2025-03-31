@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/lobster/lobster_result.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/barrier_callback.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
@@ -124,6 +125,37 @@ ash::LobsterErrorCode MantaToLobsterStatusCode(
   }
 }
 
+std::string GetErrorMessage(ash::LobsterErrorCode lobster_error_code) {
+  switch (lobster_error_code) {
+    case ash::LobsterErrorCode::kNoInternetConnection:
+      return l10n_util::GetStringUTF8(IDS_LOBSTER_NO_INTERNET_ERROR_MESSAGE);
+    case ash::LobsterErrorCode::kBlockedOutputs:
+      return l10n_util::GetStringUTF8(
+          IDS_LOBSTER_CONTROVERSIAL_RESPONSE_ERROR_MESSAGE);
+    case ash::LobsterErrorCode::kUnknown:
+      return l10n_util::GetStringUTF8(
+          IDS_LOBSTER_NO_SERVER_RESPONSE_ERROR_MESSAGE);
+    case ash::LobsterErrorCode::kResourceExhausted:
+      return l10n_util::GetStringUTF8(
+          IDS_LOBSTER_OUT_OF_RESOURCE_ERROR_MESSAGE);
+    case ash::LobsterErrorCode::kInvalidArgument:
+      return l10n_util::GetStringUTF8(
+          IDS_LOBSTER_NO_SERVER_RESPONSE_ERROR_MESSAGE);
+    case ash::LobsterErrorCode::kBackendFailure:
+      return l10n_util::GetStringUTF8(
+          IDS_LOBSTER_NO_SERVER_RESPONSE_ERROR_MESSAGE);
+    case ash::LobsterErrorCode::kUnsupportedLanguage:
+      return l10n_util::GetStringUTF8(
+          IDS_LOBSTER_UNSUPPORTED_LANGUAGE_ERROR_MESSAGE);
+    case ash::LobsterErrorCode::kRestrictedRegion:
+      return l10n_util::GetStringUTF8(
+          IDS_LOBSTER_NO_SERVER_RESPONSE_ERROR_MESSAGE);
+    case ash::LobsterErrorCode::kContainsPeople:
+      return l10n_util::GetStringUTF8(
+          IDS_LOBSTER_CONTAINS_PERSON_ERROR_MESSAGE);
+  }
+}
+
 std::optional<ash::LobsterImageCandidate> ToLobsterImageCandidate(
     uint32_t id,
     uint32_t seed,
@@ -200,10 +232,11 @@ void LobsterImageProviderFromSnapper::RequestMultipleCandidates(
     ash::RequestCandidatesCallback callback) {
   if (provider_ == nullptr) {
     LOG(ERROR) << "Provider is not available";
+    ash::LobsterErrorCode status_code =
+        MantaToLobsterStatusCode(manta::MantaStatusCode::kGenericError);
     std::move(callback).Run(base::unexpected(ash::LobsterError(
-        /*status_code=*/MantaToLobsterStatusCode(
-            manta::MantaStatusCode::kGenericError),
-        /*message=*/"Provider is not available")));
+        /*status_code=*/status_code,
+        /*message=*/GetErrorMessage(status_code))));
     return;
   }
 
@@ -223,10 +256,11 @@ void LobsterImageProviderFromSnapper::RequestSingleCandidateWithSeed(
     ash::RequestCandidatesCallback callback) {
   if (provider_ == nullptr) {
     LOG(ERROR) << "Provider is not available";
+    ash::LobsterErrorCode status_code =
+        MantaToLobsterStatusCode(manta::MantaStatusCode::kGenericError);
     std::move(callback).Run(base::unexpected(ash::LobsterError(
-        /*status_code=*/MantaToLobsterStatusCode(
-            manta::MantaStatusCode::kGenericError),
-        /*message=*/"Provider is not available")));
+        /*status_code=*/status_code,
+        /*message=*/GetErrorMessage(status_code))));
     return;
   }
 
@@ -246,9 +280,11 @@ void LobsterImageProviderFromSnapper::OnCandidatesRequested(
     std::unique_ptr<manta::proto::Response> response,
     manta::MantaStatus status) {
   if (status.status_code != manta::MantaStatusCode::kOk) {
-    std::move(callback).Run(base::unexpected(ash::LobsterError(
-        /*status_code=*/MantaToLobsterStatusCode(status.status_code),
-        /*message=*/status.message)));
+    ash::LobsterErrorCode error_code =
+        MantaToLobsterStatusCode(status.status_code);
+    std::move(callback).Run(base::unexpected(
+        ash::LobsterError(error_code,
+                          /*message=*/GetErrorMessage(error_code))));
     return;
   }
 
@@ -297,8 +333,8 @@ void LobsterImageProviderFromSnapper::OnImagesSanitized(
           filtered_datum.additional_reasons().end()) {
         std::move(callback).Run(base::unexpected(ash::LobsterError(
             /*status_code=*/ash::LobsterErrorCode::kContainsPeople,
-            /*message=*/l10n_util::GetStringUTF8(
-                IDS_CHROMEOS_LOBSTER_CONTAINS_PERSON_ERROR_RESPONSE))));
+            /*message=*/GetErrorMessage(
+                ash::LobsterErrorCode::kContainsPeople))));
         return;
       }
     }
@@ -306,5 +342,5 @@ void LobsterImageProviderFromSnapper::OnImagesSanitized(
   // All the images were filtered out due to our safety filters.
   std::move(callback).Run(base::unexpected(ash::LobsterError(
       /*status_code=*/ash::LobsterErrorCode::kBlockedOutputs,
-      "the output is blocked")));
+      GetErrorMessage(ash::LobsterErrorCode::kBlockedOutputs))));
 }
