@@ -170,7 +170,7 @@ TEST_F(ValuableSyncBridgeTest, MergeFullSyncData) {
   EXPECT_CALL(mock_processor(), Delete).Times(0);
   EXPECT_CALL(backend(), CommitChanges);
   EXPECT_CALL(backend(),
-              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_LOYALTY_CARD));
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE));
 
   EXPECT_TRUE(StartSyncing({remote1, remote2}));
 
@@ -184,7 +184,7 @@ TEST_F(ValuableSyncBridgeTest, MergeFullSyncData_ReplacePreviousData) {
 
   EXPECT_CALL(backend(), CommitChanges).Times(2);
   EXPECT_CALL(backend(),
-              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_LOYALTY_CARD))
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE))
       .Times(2);
 
   EXPECT_TRUE(StartSyncing({remote1}));
@@ -211,7 +211,7 @@ TEST_F(ValuableSyncBridgeDeathTest, ApplyIncrementalSyncChanges) {
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(backend(), CommitChanges());
   EXPECT_CALL(backend(),
-              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_LOYALTY_CARD));
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE));
 
   ASSERT_TRUE(StartSyncing(/*loyalty_cards=*/{remote1}));
   EXPECT_THAT(GetAllDataFromTable(), ElementsAre(remote1));
@@ -253,7 +253,7 @@ TEST_F(ValuableSyncBridgeTest, ApplyDisableSyncChanges) {
 
   EXPECT_CALL(backend(), CommitChanges());
   EXPECT_CALL(backend(),
-              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_LOYALTY_CARD));
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE));
 
   bridge().ApplyDisableSyncChanges(bridge().CreateMetadataChangeList());
 
