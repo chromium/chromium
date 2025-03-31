@@ -715,6 +715,9 @@ std::pair<bool, bool> PreloadingDecider::MaybePrerender(
     PreloadingConfidence confidence) {
   std::pair<bool, bool> result{false, false};
   SpeculationCandidateKey key{url, blink::mojom::SpeculationAction::kPrerender};
+  std::vector<std::optional<std::string>> merged_tags =
+      GetMergedSpeculationTagsFromSuitableCandidates(key, enacting_predictor,
+                                                     confidence);
   std::optional<std::pair<PreloadingDecider::SpeculationCandidateKey,
                           blink::mojom::SpeculationCandidatePtr>>
       matched_candidate_pair =
@@ -724,6 +727,7 @@ std::pair<bool, bool> PreloadingDecider::MaybePrerender(
   }
 
   key = matched_candidate_pair.value().first;
+  matched_candidate_pair.value().second->tags = merged_tags;
   blink::mojom::SpeculationCandidatePtr candidate =
       std::move(matched_candidate_pair.value().second);
   result.first =

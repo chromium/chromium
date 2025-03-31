@@ -854,9 +854,128 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     return content_preloading_predictor::kSpeculationRules;
   }
 
+  void ResetPointerPosition() {
+#if !BUILDFLAG(IS_ANDROID)
+    InputEventAckWaiter waiter(
+        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+        blink::WebInputEvent::Type::kMouseMove);
+    SimulateMouseEvent(web_contents(), blink::WebMouseEvent::Type::kMouseMove,
+                       blink::WebMouseEvent::Button::kNoButton,
+                       gfx::Point(0, 0));
+    waiter.Wait();
+#else
+    // TODO(crbug.com/40269669): Simulate |WebGestureEvent| to make this
+    // function work for Android.
+#endif  // !BUILDFLAG(IS_ANDROID)
+  }
+
+  void PointerHoverToAnchor(const GURL& url) {
+    ResetPointerPosition();
+
+#if !BUILDFLAG(IS_ANDROID)
+    const auto point = CalculateCenterPointOfAnchorElement(url);
+    InputEventAckWaiter waiter(
+        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+        blink::WebInputEvent::Type::kMouseMove);
+    SimulateMouseEvent(web_contents(), blink::WebMouseEvent::Type::kMouseMove,
+                       blink::WebMouseEvent::Button::kNoButton, point);
+    waiter.Wait();
+#else
+    // TODO(crbug.com/40269669): Simulate |WebGestureEvent| to make this
+    // function work for Android.
+#endif  // !BUILDFLAG(IS_ANDROID)
+  }
+
+  void PointerDownToAnchor(const GURL& url) {
+    ResetPointerPosition();
+
+#if !BUILDFLAG(IS_ANDROID)
+    const auto point = CalculateCenterPointOfAnchorElement(url);
+    InputEventAckWaiter waiter(
+        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+        blink::WebInputEvent::Type::kMouseDown);
+    SimulateMouseEventForClick(blink::WebMouseEvent::Type::kMouseDown,
+                               blink::WebMouseEvent::Button::kLeft, point);
+    waiter.Wait();
+#else
+    // TODO(crbug.com/40269669): Simulate |WebGestureEvent| to make this
+    // function work for Android.
+#endif  // !BUILDFLAG(IS_ANDROID)
+  }
+
+  void PointerUpToAnchor(const GURL& url) {
+#if !BUILDFLAG(IS_ANDROID)
+    const auto point = CalculateCenterPointOfAnchorElement(url);
+    InputEventAckWaiter waiter(
+        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+        blink::WebInputEvent::Type::kMouseUp);
+    SimulateMouseEventForClick(blink::WebMouseEvent::Type::kMouseUp,
+                               blink::WebMouseEvent::Button::kLeft, point);
+    waiter.Wait();
+#else
+    // TODO(crbug.com/40269669): Simulate |WebGestureEvent| to make this
+    // function work for Android.
+#endif  // !BUILDFLAG(IS_ANDROID)
+  }
+
+  void InsertAnchor(const GURL url) {
+    const std::string script = R"(
+      const anchor = document.createElement('a');
+      anchor.href = $1;
+      anchor.text = $1;
+      document.body.appendChild(anchor);
+    )";
+    ASSERT_TRUE(ExecJs(web_contents(), JsReplace(script, url.spec())));
+  }
+
+  void ClickAnchor(const GURL url) {
+    PointerDownToAnchor(url);
+    PointerUpToAnchor(url);
+  }
+
  private:
   void DidStartNavigation(NavigationHandle* handle) override {
     navigation_ids_.push_back(handle->GetNavigationId());
+  }
+
+  void SimulateMouseEventForClick(blink::WebInputEvent::Type type,
+                                  blink::WebMouseEvent::Button button,
+                                  const gfx::Point& point) {
+    auto* web_contents_impl = static_cast<WebContentsImpl*>(web_contents());
+    auto* rwhvb = static_cast<RenderWidgetHostViewBase*>(
+        web_contents()->GetRenderWidgetHostView());
+    blink::WebMouseEvent mouse_event(type, 0, ui::EventTimeForNow());
+    mouse_event.button = button;
+    mouse_event.SetPositionInWidget(point.x(), point.y());
+    // Mac needs positionInScreen for events to plugins.
+    gfx::Rect offset = web_contents()->GetContainerBounds();
+    mouse_event.SetPositionInScreen(point.x() + offset.x(),
+                                    point.y() + offset.y());
+    mouse_event.click_count = 1;
+
+    web_contents_impl->GetInputEventRouter()->RouteMouseEvent(
+        rwhvb, &mouse_event, ui::LatencyInfo());
+  }
+
+  gfx::Point CalculateCenterPointOfAnchorElement(const GURL& url) {
+    const std::string script_get_x = R"(
+      const anchor = document.querySelector('a[href=$1]');
+      const bounds = anchor.getBoundingClientRect();
+      Math.floor(bounds.left + bounds.width / 2);
+    )";
+
+    const std::string script_get_y = R"(
+      const anchor = document.querySelector('a[href=$1]');
+      const bounds = anchor.getBoundingClientRect();
+      Math.floor(bounds.top + bounds.height / 2);
+    )";
+
+    const float x = EvalJs(web_contents(), JsReplace(script_get_x, url.spec()))
+                        .ExtractDouble();
+    const float y = EvalJs(web_contents(), JsReplace(script_get_y, url.spec()))
+                        .ExtractDouble();
+
+    return gfx::ToFlooredPoint(gfx::PointF(x, y));
   }
 
   base::ScopedMockElapsedTimersForTest scoped_test_timer_;
@@ -10067,126 +10186,6 @@ class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
     GTEST_SKIP();
 #endif  // BUILDFLAG(IS_ANDROID)
   }
-
-  void InsertAnchor(const GURL url) {
-    const std::string script = R"(
-      const anchor = document.createElement('a');
-      anchor.href = $1;
-      anchor.text = $1;
-      document.body.appendChild(anchor);
-    )";
-    ASSERT_TRUE(ExecJs(web_contents(), JsReplace(script, url.spec())));
-  }
-
-  void ResetPointerPosition() {
-#if !BUILDFLAG(IS_ANDROID)
-    InputEventAckWaiter waiter(
-        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
-        blink::WebInputEvent::Type::kMouseMove);
-    SimulateMouseEvent(web_contents(), blink::WebMouseEvent::Type::kMouseMove,
-                       blink::WebMouseEvent::Button::kNoButton,
-                       gfx::Point(0, 0));
-    waiter.Wait();
-#else
-    // TODO(crbug.com/40269669): Simulate |WebGestureEvent| to make this
-    // function work for Android.
-#endif  // !BUILDFLAG(IS_ANDROID)
-  }
-
-  void PointerHoverToAnchor(const GURL& url) {
-    ResetPointerPosition();
-
-#if !BUILDFLAG(IS_ANDROID)
-    const auto point = CalculateCenterPointOfAnchorElement(url);
-    InputEventAckWaiter waiter(
-        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
-        blink::WebInputEvent::Type::kMouseMove);
-    SimulateMouseEvent(web_contents(), blink::WebMouseEvent::Type::kMouseMove,
-                       blink::WebMouseEvent::Button::kNoButton, point);
-    waiter.Wait();
-#else
-    // TODO(crbug.com/40269669): Simulate |WebGestureEvent| to make this
-    // function work for Android.
-#endif  // !BUILDFLAG(IS_ANDROID)
-  }
-
-  void PointerDownToAnchor(const GURL& url) {
-    ResetPointerPosition();
-
-#if !BUILDFLAG(IS_ANDROID)
-    const auto point = CalculateCenterPointOfAnchorElement(url);
-    InputEventAckWaiter waiter(
-        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
-        blink::WebInputEvent::Type::kMouseDown);
-    SimulateMouseEventForClick(blink::WebMouseEvent::Type::kMouseDown,
-                               blink::WebMouseEvent::Button::kLeft, point);
-    waiter.Wait();
-#else
-    // TODO(crbug.com/40269669): Simulate |WebGestureEvent| to make this
-    // function work for Android.
-#endif  // !BUILDFLAG(IS_ANDROID)
-  }
-
-  void PointerUpToAnchor(const GURL& url) {
-#if !BUILDFLAG(IS_ANDROID)
-    const auto point = CalculateCenterPointOfAnchorElement(url);
-    InputEventAckWaiter waiter(
-        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
-        blink::WebInputEvent::Type::kMouseUp);
-    SimulateMouseEventForClick(blink::WebMouseEvent::Type::kMouseUp,
-                               blink::WebMouseEvent::Button::kLeft, point);
-    waiter.Wait();
-#else
-    // TODO(crbug.com/40269669): Simulate |WebGestureEvent| to make this
-    // function work for Android.
-#endif  // !BUILDFLAG(IS_ANDROID)
-  }
-
-  void ClickAnchor(const GURL url) {
-    PointerDownToAnchor(url);
-    PointerUpToAnchor(url);
-  }
-
- private:
-  void SimulateMouseEventForClick(blink::WebInputEvent::Type type,
-                                  blink::WebMouseEvent::Button button,
-                                  const gfx::Point& point) {
-    auto* web_contents_impl = static_cast<WebContentsImpl*>(web_contents());
-    auto* rwhvb = static_cast<RenderWidgetHostViewBase*>(
-        web_contents()->GetRenderWidgetHostView());
-    blink::WebMouseEvent mouse_event(type, 0, ui::EventTimeForNow());
-    mouse_event.button = button;
-    mouse_event.SetPositionInWidget(point.x(), point.y());
-    // Mac needs positionInScreen for events to plugins.
-    gfx::Rect offset = web_contents()->GetContainerBounds();
-    mouse_event.SetPositionInScreen(point.x() + offset.x(),
-                                    point.y() + offset.y());
-    mouse_event.click_count = 1;
-
-    web_contents_impl->GetInputEventRouter()->RouteMouseEvent(
-        rwhvb, &mouse_event, ui::LatencyInfo());
-  }
-
-  gfx::Point CalculateCenterPointOfAnchorElement(const GURL& url) {
-    const std::string script_get_x = R"(
-      const anchor = document.querySelector('a[href=$1]');
-      const bounds = anchor.getBoundingClientRect();
-      Math.floor(bounds.left + bounds.width / 2);
-    )";
-
-    const std::string script_get_y = R"(
-      const anchor = document.querySelector('a[href=$1]');
-      const bounds = anchor.getBoundingClientRect();
-      Math.floor(bounds.top + bounds.height / 2);
-    )";
-
-    const float x = EvalJs(web_contents(), JsReplace(script_get_x, url.spec()))
-                        .ExtractDouble();
-    const float y = EvalJs(web_contents(), JsReplace(script_get_y, url.spec()))
-                        .ExtractDouble();
-
-    return gfx::ToFlooredPoint(gfx::PointF(x, y));
-  }
 };
 
 namespace {
@@ -12797,6 +12796,57 @@ IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest, Prefetch) {
   } else {
     EXPECT_FALSE(HasSecSpeculationTagsHeader(prefetch_url));
   }
+}
+
+// Test that there is no tags merging if both of the candidates are enacted.
+IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
+                       SpeculationRulesTagsMergingForNonEagerCandidates) {
+#if !BUILDFLAG(IS_ANDROID)
+  const GURL initial_url = GetUrl(
+      "/prerender/multiple_prerender_with_tags_and_different_eagerness.html");
+  const GURL prerender_url = GetUrl("/prerender/empty.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  InsertAnchor(prerender_url);
+  PointerDownToAnchor(prerender_url);
+  WaitForPrerenderLoadCompletion(prerender_url);
+
+  if (IsSpeculationRulesTagsEnabled()) {
+    EXPECT_TRUE(HasSecSpeculationTagsHeader(prerender_url));
+    EXPECT_EQ(GetSecSpeculationTagsHeader(prerender_url),
+              "\"conservative\", \"moderate\"");
+  } else {
+    EXPECT_FALSE(HasSecSpeculationTagsHeader(prerender_url));
+  }
+#else
+  // Android doesn't support pointer interaction.
+  GTEST_SKIP();
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+// Test that there is no tags merging if only one of the candidates is enacted.
+IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
+                       SpeculationRulesTagsNoMergingForNonEagerCandidates) {
+#if !BUILDFLAG(IS_ANDROID)
+  const GURL initial_url = GetUrl(
+      "/prerender/multiple_prerender_with_tags_and_different_eagerness.html");
+  const GURL prerender_url = GetUrl("/prerender/empty.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  InsertAnchor(prerender_url);
+  PointerHoverToAnchor(prerender_url);
+  WaitForPrerenderLoadCompletion(prerender_url);
+
+  if (IsSpeculationRulesTagsEnabled()) {
+    EXPECT_TRUE(HasSecSpeculationTagsHeader(prerender_url));
+    EXPECT_EQ(GetSecSpeculationTagsHeader(prerender_url), "\"moderate\"");
+  } else {
+    EXPECT_FALSE(HasSecSpeculationTagsHeader(prerender_url));
+  }
+#else
+  // Android doesn't support pointer interaction.
+  GTEST_SKIP();
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, EnterFullscreen) {
