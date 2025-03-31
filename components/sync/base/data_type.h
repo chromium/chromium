@@ -273,7 +273,7 @@ enum class DataTypeForHistograms {
   kProductComparison = 66,
   kCookies = 67,
   kPlusAddressSettings = 68,
-  kAutofillLoyaltyCard = 69,
+  kAutofillValuable = 69,
   kSharedTabGroupAccountData = 70,
   kMaxValue = kSharedTabGroupAccountData,
 };

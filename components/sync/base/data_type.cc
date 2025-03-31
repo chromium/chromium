@@ -976,8 +976,7 @@ DataTypeForHistograms DataTypeHistogramValue(DataType data_type) {
     case PLUS_ADDRESS_SETTING:
       return DataTypeForHistograms::kPlusAddressSettings;
     case AUTOFILL_VALUABLE:
-      // TODO(b/393119606): Rename to kAutofillValuable.
-      return DataTypeForHistograms::kAutofillLoyaltyCard;
+      return DataTypeForHistograms::kAutofillValuable;
     case SHARED_TAB_GROUP_ACCOUNT_DATA:
       return DataTypeForHistograms::kSharedTabGroupAccountData;
     case NIGORI:
