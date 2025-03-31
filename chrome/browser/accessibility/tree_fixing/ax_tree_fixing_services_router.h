@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <queue>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -103,11 +104,17 @@ class AXTreeFixingServicesRouter
                             int request_id) override;
   void OnServiceStateChanged(bool service_ready) override;
 
+  void MakeMainNodeRequestToScreenAI(const ui::AXTreeUpdate& ax_tree,
+                                     MainNodeIdentificationCallback callback);
+
   // ScreenAI related objects: service instance, and a list of callbacks/ids.
   std::unique_ptr<AXTreeFixingScreenAIService> screen_ai_service_;
   std::list<std::pair<int, MainNodeIdentificationCallback>> pending_callbacks_;
   int next_request_id_ = 0;
   bool can_make_main_node_identification_requests_ = false;
+  using QueuedRequest =
+      std::tuple<ui::AXTreeUpdate, MainNodeIdentificationCallback>;
+  std::queue<QueuedRequest> request_queue_;
 
   void ToggleEnabledState();
 
