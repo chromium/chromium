@@ -1401,24 +1401,6 @@ chromium-metrics-reviews@google.com.
       name="Net.QuicSession.ConnectRandomPortRequiringConfirmation"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SafetyTip" separator=".">
-  <suffix name="SafetyTip_BadReputation" label="Bad reputation Safety Tip"/>
-  <suffix name="SafetyTip_BadReputationIgnored"
-      label="Bad reputation ignored by user"/>
-  <suffix name="SafetyTip_Lookalike" label="Lookalike Safety Tip"/>
-  <suffix name="SafetyTip_LookalikeIgnored"
-      label="Lookalike Safety Tip ignored by user"/>
-  <suffix name="SafetyTip_None" label="No Safety Tip"/>
-  <suffix name="SafetyTip_Unknown" label="Unknown Safety Tip status"/>
-  <affected-histogram name="Security.PageEndReason"/>
-  <affected-histogram name="Security.PageInfo.TimeOpen"/>
-  <affected-histogram name="Security.PageInfo.TimeOpen.Action"/>
-  <affected-histogram name="Security.PageInfo.TimeOpen.NoAction"/>
-  <affected-histogram name="Security.SafetyTips.Interaction"/>
-  <affected-histogram name="Security.SiteEngagement"/>
-  <affected-histogram name="Security.TimeOnPage2"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="SearchEnginePromoOrdering" separator="."
     ordering="prefix,2">
   <suffix name="First" label=""/>

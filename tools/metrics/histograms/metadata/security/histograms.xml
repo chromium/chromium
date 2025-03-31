@@ -22,6 +22,17 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="SafetyTip">
+  <variant name=".SafetyTip_BadReputation" summary="Bad reputation Safety Tip"/>
+  <variant name=".SafetyTip_BadReputationIgnored"
+      summary="Bad reputation ignored by user"/>
+  <variant name=".SafetyTip_Lookalike" summary="Lookalike Safety Tip"/>
+  <variant name=".SafetyTip_LookalikeIgnored"
+      summary="Lookalike Safety Tip ignored by user"/>
+  <variant name=".SafetyTip_None" summary="No Safety Tip"/>
+  <variant name=".SafetyTip_Unknown" summary="Unknown Safety Tip status"/>
+</variants>
+
 <histogram name="Security.DataDecoder.Image.DecodingTime" units="ms"
     expires_after="2025-09-14">
   <owner>lukasza@chromium.org</owner>
@@ -366,13 +377,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Security.PageEndReason" enum="PageEndReason"
+<histogram name="Security.PageEndReason{SafetyTip}" enum="PageEndReason"
     expires_after="2025-08-24">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
     Records the reason the page visit ended (e.g., reload, tab closed, new
-    navigation, etc.) for page loads that committed.
+    navigation, etc.) for page loads that committed. {SafetyTip}
   </summary>
 </histogram>
 
@@ -468,34 +479,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Security.PageInfo.TimeOpen" units="ms"
-    expires_after="2023-11-12">
-  <owner>cthomp@chromium.org</owner>
-  <owner>security-enamel@chromium.org</owner>
-  <summary>
-    Records the amount of time the Page Info bubble is open before the user
-    closes it or takes an action which closes it.
-  </summary>
-</histogram>
-
-<histogram name="Security.PageInfo.TimeOpen.Action" units="ms"
+<histogram name="Security.PageInfo.TimeOpen.Action{SafetyTip}" units="ms"
     expires_after="2025-02-10">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
     Records the amount of time the Page Info bubble is open before the user
     closes it, for cases where the user has performed an action inside it.
+    {SafetyTip}
   </summary>
+  <token key="SafetyTip" variants="SafetyTip">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Security.PageInfo.TimeOpen.NoAction" units="ms"
+<histogram name="Security.PageInfo.TimeOpen.NoAction{SafetyTip}" units="ms"
     expires_after="2024-10-20">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
     Records the amount of time the Page Info bubble is open before the user
     closes it, for cases where the user performed no action inside it.
+    {SafetyTip}
   </summary>
+  <token key="SafetyTip" variants="SafetyTip">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Security.PageInfo.TimeOpen{SafetyTip}" units="ms"
+    expires_after="2023-11-12">
+  <owner>cthomp@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Records the amount of time the Page Info bubble is open before the user
+    closes it or takes an action which closes it. {SafetyTip}
+  </summary>
+  <token key="SafetyTip" variants="SafetyTip">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Security.PrivateNetworkAccess.CheckResult"
@@ -586,16 +608,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Security.SafetyTips.Interaction" enum="SafetyTipInteraction"
-    expires_after="2023-06-18">
+<histogram name="Security.SafetyTips.Interaction{SafetyTip}"
+    enum="SafetyTipInteraction" expires_after="2023-06-18">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
     Records a user's interaction with a Safety Tip. Recorded every time a user
     uses one of the Safety Tip's buttons or dismisses it explicitly. Can be
     normalized against Security.SafetyTips.SafetyTipShown, filtered to users
-    with the feature enabled to show the UI.
+    with the feature enabled to show the UI. {SafetyTip}
   </summary>
+  <token key="SafetyTip" variants="SafetyTip">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Security.SafetyTips.SafetyTipIgnoredPageLoad"
@@ -839,17 +864,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Security.SiteEngagement" units="units"
+<histogram name="Security.SiteEngagement{SafetyTip}" units="units"
     expires_after="2023-11-12">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
     The final Site Engagement score (0 to 100) of a URL during a visit to a
     page. Recorded when the user closes the page or initiates a new navigation.
+    {SafetyTip}
   </summary>
 </histogram>
 
-<histogram base="true" name="Security.TimeOnPage2" units="ms"
+<histogram name="Security.TimeOnPage2{SafetyTip}" units="ms"
     expires_after="2025-01-26">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
@@ -858,7 +884,7 @@ chromium-metrics-reviews@google.com.
     foreground from the start of the navigation to the page visit completing due
     to a new navigation or the tab being closed). This aggregates all foreground
     time over the entire visit (multiple times in the foreground are added
-    together).
+    together). {SafetyTip}
   </summary>
 </histogram>
 
