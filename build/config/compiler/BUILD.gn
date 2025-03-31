@@ -2003,13 +2003,6 @@ config("default_warnings") {
         # annotation completeness, this warning exception can be removed.
         "-Wno-nullability-completeness",
       ]
-
-      if (!is_nacl) {
-        cflags_cc += [
-          # TODO(crbug.com/41486292): Fix and re-enable.
-          "-Wno-c++11-narrowing-const-reference",
-        ]
-      }
     }
 
     if (is_wasm) {
