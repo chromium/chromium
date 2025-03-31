@@ -915,3 +915,48 @@ class ChromeScrollJankStdlib(TestSuite):
         "input_reader_processing_start_ts","input_reader_processing_end_ts","input_reader_utid","input_dispatcher_processing_start_ts","input_dispatcher_processing_end_ts","input_dispatcher_utid","deliver_input_event_start_ts","deliver_input_event_end_ts","deliver_input_event_utid"
         1295608261171203,1295608261380838,1404,1295608261495462,1295608262021300,1403,1295608261771463,1295608262613138,7
         """))
+
+  # A trace from M132 has the necessary events/arguments
+  # (including the ones from the 'input' atrace category).
+  def test_chrome_scroll_update_info_with_android_input(self):
+        # Verify that non-fling scrolls have correct durations
+        # of the InputReader and InputDispatcher steps.
+        return DiffTestBlueprint(
+        trace=DataPath('scroll_m132_with_atrace.pftrace'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
+
+        SELECT
+          id,
+          generation_ts,
+          input_reader_dur,
+          input_dispatcher_dur
+        FROM chrome_scroll_update_info
+        WHERE is_inertial = 0
+        ORDER BY id
+        LIMIT 21
+        """,
+        out=Csv("""
+        "id","generation_ts","input_reader_dur","input_dispatcher_dur"
+        -2143831735395287020,1295608313715311,2742879,267253
+        -2143831735395286976,1295608252970311,3011805,381673
+        -2143831735395286972,1295608247373311,2943603,400350
+        -2143831735395286968,1295608264067311,3100067,367757
+        -2143831735395286964,1295608258514311,2866527,640462
+        -2143831735395286960,1295608230831311,3102099,374756
+        -2143831735395286956,1295608225265311,3291593,62704
+        -2143831735395286952,1295608241858311,3352524,372721
+        -2143831735395286948,1295608236300311,2890993,244059
+        -2143831735395286944,1295608297200311,3230902,946411
+        -2143831735395286940,1295608291623311,2690104,263183
+        -2143831735395286936,1295608308272311,2702277,358317
+        -2143831735395286932,1295608302693311,2806342,253500
+        -2143831735395286928,1295608275152311,2834891,342692
+        -2143831735395286924,1295608269601311,2828437,251953
+        -2143831735395286920,1295608286154311,3032435,552002
+        -2143831735395286916,1295608280594311,2720935,251831
+        -2143831735395286880,1295608208699311,3202971,492513
+        -2143831735395286875,1295608203149311,2611288,106893
+        -2143831735395286872,1295608219756311,3484716,372803
+        -2143831735395286868,1295608214189311,3303262,529785
+        """))
