@@ -167,7 +167,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."iana-time-zone-haiku:0.1.2"]
 criteria = []
 
-[policy."iana-time-zone:0.1.61"]
+[policy."iana-time-zone:0.1.62"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."icu_calendar:2.0.0-beta2"]

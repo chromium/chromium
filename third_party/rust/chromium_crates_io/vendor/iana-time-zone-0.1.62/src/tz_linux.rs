@@ -89,7 +89,7 @@ mod openwrt {
             }
         }
 
-        timezone.ok_or_else(|| crate::GetTimezoneError::OsError)
+        timezone.ok_or(crate::GetTimezoneError::OsError)
     }
 
     #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]

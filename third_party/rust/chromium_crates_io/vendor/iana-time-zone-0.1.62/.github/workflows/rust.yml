@@ -5,38 +5,38 @@ on:
     branches:
       - main
   pull_request:
-    branches: [ '**' ]
+    branches: ["**"]
   schedule:
     # At 23:25 on Thursday.
     - cron: "25 23 * * 4"
+  workflow_dispatch:
+
+permissions: {}
 
 jobs:
   test:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ubuntu-20.04, windows-2022, macos-12]
+        runs-on: [ubuntu-22.04, windows-2022, macos-13]
         toolchain:
-          - "1.48"
+          - "1.61"
           - stable
           - nightly
         versions:
           - ""
           - "-Zminimal-versions"
         exclude:
-          # `windows-core >= 0.51` uses `edition = "2021"`, but users of the library can can use
-          # `windows-core == 0.50` to be rust 1.48 compatible.
-          - runs-on: windows-2022
-            toolchain: "1.48"
+          # package `regex v1.11.1` cannot be built because it requires rustc
+          # 1.65 or newer, while the currently active rustc version is 1.61.0
+          - toolchain: "1.61"
             versions: ""
     runs-on: ${{ matrix.runs-on }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: maxim-lobanov/setup-xcode@v1
-        if: matrix.runs-on == 'macos-12' && matrix.toolchain == '1.48'
         with:
-          xcode-version: "13.4.1"
+          persist-credentials: false
       - name: Install Rust
         run: |
           rustup toolchain install ${{ matrix.toolchain }} --profile minimal --no-self-update
@@ -61,11 +61,13 @@ jobs:
         include:
           # Without `-Zminimal-versions` a too recent bumpalo version is selected. Newer versions use `edition = "2021"`.
           - versions: "-Zminimal-versions"
-          - toolchain: "1.48"
+          - toolchain: "1.61"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Install Rust
         run: |
           rustup toolchain install ${{ matrix.toolchain }} --profile minimal --no-self-update --target wasm32-unknown-unknown
@@ -80,9 +82,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        versions:
-          - ""
-          - "-Zminimal-versions"
         toolchain:
           - stable
           - nightly
@@ -90,6 +89,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Install Rust
         run: |
           rustup toolchain install ${{ matrix.toolchain }} --profile minimal --no-self-update --target wasm32-unknown-unknown
@@ -97,15 +98,11 @@ jobs:
       - name: Install Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: "lts/*"
       - name: Install "wasm-pack"
         uses: taiki-e/install-action@v2
         with:
           tool: wasm-pack
-      - name: Update lockfile
-        run: cargo generate-lockfile ${{ matrix.versions }}
-        env:
-          RUSTC_BOOTSTRAP: 1
       - run: wasm-pack test --node
 
   build-cross:
@@ -115,8 +112,11 @@ jobs:
         target:
           - x86_64-unknown-freebsd
           - x86_64-unknown-illumos
-          - x86_64-unknown-netbsd
-          - sparcv9-sun-solaris
+          # # NetBSD disabled waiting for release with fix from
+          # # https://github.com/cross-rs/cross/issues/1345
+          # - x86_64-unknown-netbsd
+          # # Solaris disabled while https://github.com/cross-rs/cross/issues/1599 is open
+          # - sparcv9-sun-solaris
         versions:
           - ""
           - "-Zminimal-versions"
@@ -124,6 +124,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Install Rust
         run: |
           rustup toolchain install stable --profile minimal --no-self-update --target ${{ matrix.target }}
@@ -144,6 +146,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Install Rust
         run: rustup toolchain install stable --profile minimal --no-self-update
       - name: Add Rust components
@@ -182,7 +186,7 @@ jobs:
       fail-fast: false
       matrix:
         toolchain:
-          - "1.48"
+          - "1.61"
           - stable
         target:
           - x86_64-apple-ios
@@ -190,13 +194,16 @@ jobs:
           - ""
           - "-Zminimal-versions"
         exclude:
-          # Support for this target was added quite recently.
-          - target: aarch64-apple-ios-sim
-          - toolchain: "1.48"
-    runs-on: macos-12
+          # package `regex v1.11.1` cannot be built because it requires rustc
+          # 1.65 or newer, while the currently active rustc version is 1.61.0
+          - toolchain: "1.61"
+            versions: ""
+    runs-on: macos-13
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Install Rust
         run: |
           rustup toolchain install ${{ matrix.toolchain }} --profile minimal --no-self-update --target ${{ matrix.target }}
@@ -214,12 +221,17 @@ jobs:
       fail-fast: false
       matrix:
         toolchain:
-          - "1.48"
+          - "1.61"
           - stable
           - nightly
         versions:
           - ""
           - "-Zminimal-versions"
+        exclude:
+          # package `cc v1.2.17` cannot be built because it requires rustc 1.63
+          # or newer, while the currently active rustc version is 1.61.0
+          - toolchain: "1.61"
+            versions: ""
     runs-on: ubuntu-latest
     env:
       RUSTFLAGS: -D warnings
@@ -227,6 +239,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Install Rust
         run: |
           rustup toolchain install ${{ matrix.toolchain }} --profile minimal --no-self-update --component clippy
@@ -243,6 +257,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Install Rust
         run: |
           rustup toolchain install nightly --profile minimal --no-self-update --component rust-src
@@ -254,6 +270,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Install Rust
         run: |
           rustup toolchain install nightly --profile minimal --no-self-update
@@ -265,16 +283,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Audit
-        uses: rustsec/audit-check@v1.4.1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: false
+      - uses: EmbarkStudios/cargo-deny-action@v2
 
   fallback:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Install Rust
         run: |
           rustup toolchain install stable --profile minimal --no-self-update --target x86_64-fortanix-unknown-sgx
@@ -289,11 +308,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js runtime
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: "lts/*"
       - name: Install npm
         run: npm i -f -g npm@8.16.0
 
@@ -304,7 +325,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ubuntu-20.04, windows-2022, macos-12]
+        runs-on: [ubuntu-22.04, windows-2022, macos-13]
         toolchain:
           - stable
         versions:
@@ -316,6 +337,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Install Rust
         run: |
           rustup toolchain install ${{ matrix.toolchain }} --profile minimal --no-self-update --target x86_64-fortanix-unknown-sgx
@@ -343,6 +366,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Install Rust
         run: |
           rustup toolchain install ${{ matrix.toolchain }} --profile minimal --no-self-update --component clippy
@@ -358,10 +383,12 @@ jobs:
         working-directory: haiku
 
   check-all-versions:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Install Rust
         run: |
@@ -373,16 +400,43 @@ jobs:
         with:
           tool: cargo-hack
 
-      - run: cargo hack check --version-range 1.36.. --version-step 2 --clean-per-version --clean-per-run
+      - run: cargo hack check --version-range .. --version-step 2 --clean-per-version --clean-per-run
 
   generate-windows-bindings:
     name: Generate windows-core bindings with windows-bindgen
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Clean
         run: rm -rf src/Windows.rs
       - name: Generate
         run: cargo r --manifest-path=api_gen/Cargo.toml
       - name: Diff generated Rust code
         run: test -z "$(git status --porcelain)" || (echo "::error::Generated files are different, please regenerate with cargo run --manifest-path=api_gen/Cargo.toml!"; git status; false)
+
+  typos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: crate-ci/typos@master
+
+  devskim:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Run DevSkim scanner
+        uses: microsoft/DevSkim-Action@v1
+      - name: Upload DevSkim scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: devskim-results.sarif

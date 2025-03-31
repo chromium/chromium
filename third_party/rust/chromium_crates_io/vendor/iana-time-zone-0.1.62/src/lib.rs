@@ -25,17 +25,22 @@
 //! The resulting string can be parsed to a
 //! [`chrono-tz::Tz`](https://docs.rs/chrono-tz/latest/chrono_tz/enum.Tz.html)
 //! variant like this:
-//! ```ignore
+//! ```rust
 //! let tz_str = iana_time_zone::get_timezone()?;
 //! let tz: chrono_tz::Tz = tz_str.parse()?;
+//! # Ok::<(), Box<dyn std::error::Error>>(())
 //! ```
 
 #[allow(dead_code)]
 mod ffi_utils;
 
-#[cfg_attr(any(target_os = "linux", target_os = "hurd"), path = "tz_linux.rs")]
+#[cfg_attr(
+    any(all(target_os = "linux", not(target_env = "ohos")), target_os = "hurd"),
+    path = "tz_linux.rs"
+)]
+#[cfg_attr(all(target_os = "linux", target_env = "ohos"), path = "tz_ohos.rs")]
 #[cfg_attr(target_os = "windows", path = "tz_windows.rs")]
-#[cfg_attr(any(target_os = "macos", target_os = "ios"), path = "tz_macos.rs")]
+#[cfg_attr(target_vendor = "apple", path = "tz_darwin.rs")]
 #[cfg_attr(
     all(target_arch = "wasm32", target_os = "unknown"),
     path = "tz_wasm32_unknown.rs"

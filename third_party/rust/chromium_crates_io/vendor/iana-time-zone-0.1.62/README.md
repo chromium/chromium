@@ -5,9 +5,11 @@
 [![Crate License](https://img.shields.io/crates/l/iana-time-zone.svg)](https://crates.io/crates/iana-time-zone)
 [![build](https://github.com/strawlab/iana-time-zone/actions/workflows/rust.yml/badge.svg)](https://github.com/strawlab/iana-time-zone/actions?query=branch%3Amain)
 
-This small utility crate gets the IANA time zone for the current system.
-This is also known the [tz database](https://en.wikipedia.org/wiki/Tz_database),
-tzdata, the zoneinfo database, and the Olson database.
+This small utility crate gets the IANA time zone for the current system. This is
+also known as the [tz database], tzdata, the zoneinfo database, and the Olson
+database.
+
+[tz database]: https://en.wikipedia.org/wiki/Tz_database
 
 Example:
 
@@ -25,19 +27,21 @@ cargo run --example get_timezone
 
 ## Minimum supported rust version policy
 
-This crate has a minimum supported rust version (MSRV) of 1.48
-for [Tier 1](https://doc.rust-lang.org/1.63.0/rustc/platform-support.html) platforms.
+This crate has a minimum supported rust version (MSRV) of 1.61.0 for [Tier 1]
+platforms.
 
-Updates to the MSRV are sometimes necessary due to the MSRV of dependencies. MSRV updates will
-not be indicated as a breaking change to the semver version.
+[tier 1]: https://doc.rust-lang.org/1.61.0/rustc/platform-support.html
+
+Updates to the MSRV are sometimes necessary due to the MSRV of dependencies.
+MSRV updates will not be indicated as a breaking change to the semver version.
 
 ## License
 
 Licensed under either of
 
-* Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or
+- Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or
   <http://www.apache.org/licenses/LICENSE-2.0>)
-* MIT license ([LICENSE-MIT](LICENSE-MIT) or
+- MIT license ([LICENSE-MIT](LICENSE-MIT) or
   <http://opensource.org/licenses/MIT>)
 
 at your option.
