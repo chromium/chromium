@@ -204,7 +204,7 @@ InputEvent::InputType InputTypeFromCommandType(EditingCommandType command_type,
   }
 }
 
-StaticRangeVector* RangesFromCurrentSelectionOrExtendCaret(
+GCedStaticRangeVector* RangesFromCurrentSelectionOrExtendCaret(
     const LocalFrame& frame,
     SelectionModifyDirection direction,
     TextGranularity granularity) {
@@ -225,7 +225,7 @@ StaticRangeVector* RangesFromCurrentSelectionOrExtendCaret(
     selection_modifier.Modify(SelectionModifyAlteration::kExtend, direction,
                               granularity);
   }
-  StaticRangeVector* ranges = MakeGarbageCollected<StaticRangeVector>();
+  GCedStaticRangeVector* ranges = MakeGarbageCollected<GCedStaticRangeVector>();
   // We only supports single selections.
   if (selection_modifier.Selection().IsNone()) {
     return ranges;
@@ -959,7 +959,7 @@ static bool ExecuteTranspose(LocalFrame& frame,
   if (DispatchBeforeInputInsertText(EventTargetNodeForDocument(document),
                                     transposed,
                                     InputEvent::InputType::kInsertTranspose,
-                                    MakeGarbageCollected<StaticRangeVector>(
+                                    MakeGarbageCollected<GCedStaticRangeVector>(
                                         1, StaticRange::Create(range))) !=
       DispatchEventResult::kNotCanceled) {
     return false;
@@ -2219,7 +2219,7 @@ int EditorCommand::IdForHistogram() const {
   return IsSupported() ? static_cast<int>(command_->command_type) : 0;
 }
 
-const StaticRangeVector* EditorCommand::GetTargetRanges() const {
+const GCedStaticRangeVector* EditorCommand::GetTargetRanges() const {
   const Node* target = EventTargetNodeForDocument(frame_->GetDocument());
   if (!IsSupported() || !frame_ || !target || !IsRichlyEditable(*target)) {
     return nullptr;
