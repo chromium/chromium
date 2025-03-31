@@ -818,7 +818,6 @@ class COMPONENT_EXPORT(SQL) Database {
   FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, ComputeMmapSizeForOpenAltStatus);
   FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, OnMemoryDump);
   FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, RegisterIntentToUpload);
-  FRIEND_TEST_ALL_PREFIXES(SQLiteFeaturesTest, FTS3_Prefix);
   FRIEND_TEST_ALL_PREFIXES(SQLiteFeaturesTest, WALNoClose);
   FRIEND_TEST_ALL_PREFIXES(SQLEmptyPathDatabaseTest, EmptyPathTest);
 
@@ -1045,9 +1044,6 @@ class COMPONENT_EXPORT(SQL) Database {
   bool GetMmapAltStatus(int64_t* status);
   bool SetMmapAltStatus(int64_t status);
 
-  // sqlite3_prepare_v3() flags for this database.
-  int SqlitePrepareFlags() const;
-
   // Returns a SQLite VFS interface pointer to the file storing database pages.
   //
   // Returns null if the database is not backed by a VFS file. This is always
@@ -1074,10 +1070,6 @@ class COMPONENT_EXPORT(SQL) Database {
   // based on its histogram tag.
   perfetto::NamedTrack GetTracingNamedTrack() const;
 
-  void SetEnableVirtualTablesForTesting(bool enable) {
-    enable_virtual_tables_ = enable;
-  }
-
   // Will eventually be checked on all methods. See https://crbug.com/1306694
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -1087,10 +1079,6 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // Immutable options for the database.
   const DatabaseOptions options_;
-
-  // TODO(crbug.com/340805983): Remove this once virtual tables are no longer needed for
-  // WebSQL, which requires them for fts3 support.
-  bool enable_virtual_tables_ = false;
 
   // Holds references to all cached statements so they remain active.
   //
