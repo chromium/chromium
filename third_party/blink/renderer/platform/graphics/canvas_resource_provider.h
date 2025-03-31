@@ -291,10 +291,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // are modified externally from the provider's SkSurface.
   virtual void NotifyTexParamsModified(const CanvasResource* resource) {}
 
-  size_t cached_resources_count_for_testing() const {
-    return canvas_resources_.size();
-  }
-
   FlushReason printing_fallback_reason() { return printing_fallback_reason_; }
 
   void RestoreBackBuffer(const cc::PaintImage&);
