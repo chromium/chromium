@@ -91,6 +91,12 @@ import java.util.Set;
  */
 public class LayoutManagerImpl
         implements ManagedLayoutManager, LayoutUpdateHost, LayoutProvider, BackPressHandler {
+
+    /** Returns the {@link StripLayoutHelperManager} managed by this class. */
+    public @Nullable StripLayoutHelperManager getStripLayoutHelperManager() {
+        return null;
+    }
+
     /** Sampling at 60 fps. */
     private static final long FRAME_DELTA_TIME_MS = 16;
 
