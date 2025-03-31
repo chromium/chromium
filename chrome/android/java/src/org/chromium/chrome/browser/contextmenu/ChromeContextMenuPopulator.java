@@ -285,7 +285,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     boolean shouldShowEmptySpaceContextMenu() {
         return DeviceFormFactor.isDesktop()
                 && DeviceInput.supportsAlphabeticKeyboard()
-                && DeviceInput.supportsPrecisionPointer();
+                && DeviceInput.supportsPrecisionPointer()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE);
     }
 
     @Override

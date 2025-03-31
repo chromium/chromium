@@ -378,6 +378,8 @@ static_library("browser") {
     "content_index/content_index_provider_factory.h",
     "content_index/content_index_provider_impl.cc",
     "content_index/content_index_provider_impl.h",
+    "contextmenu/context_menu_features.cc",
+    "contextmenu/context_menu_features.h",
     "custom_handlers/chrome_protocol_handler_registry_delegate.cc",
     "custom_handlers/chrome_protocol_handler_registry_delegate.h",
     "custom_handlers/protocol_handler_registry_factory.cc",

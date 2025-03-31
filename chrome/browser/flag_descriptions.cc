@@ -1123,6 +1123,13 @@ const char kCompressionDictionaryTransportRequireKnownRootCertDescription[] =
     "when the connection is using a well known root cert or when the server is "
     "a localhost.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kContextMenuEmptySpaceName[] = "Context menu at empty space";
+const char kContextMenuEmptySpaceDescription[] =
+    "When this is enabled, on right click (or equivalent gestures) at empty "
+    "space, a context menu containing page-related items will be shown.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 const char kContextualCueingName[] = "Contextual cueing";
 const char kContextualCueingDescription[] =
