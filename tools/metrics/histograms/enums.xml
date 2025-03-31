@@ -7316,8 +7316,8 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
 <enum name="KioskLaunchType">
   <int value="0" label="Enterprise auto launch"/>
   <int value="1" label="Enterprise manual launch"/>
-  <int value="2" label="Consumer auto launch"/>
-  <int value="3" label="Consumer manual launch"/>
+  <int value="2" label="Consumer auto launch (deprecated in M136)"/>
+  <int value="3" label="Consumer manual launch (deprecated in M136)"/>
 </enum>
 
 <enum name="KioskLowDiskSeverity">

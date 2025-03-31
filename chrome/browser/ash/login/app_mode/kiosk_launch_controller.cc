@@ -73,25 +73,29 @@ using kiosk::LoadProfileResult;
 
 namespace {
 
-// Enum types for Kiosk.LaunchType UMA so don't change its values.
-// KioskLaunchType in histogram.xml must be updated when making changes here.
+// Must be kept in sync with the `Kiosk.KioskLaunchType` UMA variants in
+// kiosk/histograms.xml and enums.xml.
 enum KioskLaunchType {
   KIOSK_LAUNCH_ENTERPRISE_AUTO_LAUNCH = 0,
   KIOKS_LAUNCH_ENTERPRISE_MANUAL_LAUNCH = 1,
-  KIOSK_LAUNCH_CONSUMER_AUTO_LAUNCH = 2,
-  KIOSK_LAUNCH_CONSUMER_MANUAL_LAUNCH = 3,
+  DEPRECATED_KIOSK_LAUNCH_CONSUMER_AUTO_LAUNCH = 2,
+  DEPRECATED_KIOSK_LAUNCH_CONSUMER_MANUAL_LAUNCH = 3,
   KIOSK_LAUNCH_TYPE_COUNT  // This must be the last entry.
 };
 
 void RecordKioskLaunchUMA(bool is_auto_launch) {
   bool is_enterprise_managed =
       ash::InstallAttributes::Get()->IsEnterpriseManaged();
+
+  // TODO(crbug.com/407487338) Remove or upgrade to CHECK.
+  DUMP_WILL_BE_CHECK(is_enterprise_managed);
+
   const KioskLaunchType launch_type =
       is_enterprise_managed
           ? (is_auto_launch ? KIOSK_LAUNCH_ENTERPRISE_AUTO_LAUNCH
                             : KIOKS_LAUNCH_ENTERPRISE_MANUAL_LAUNCH)
-          : (is_auto_launch ? KIOSK_LAUNCH_CONSUMER_AUTO_LAUNCH
-                            : KIOSK_LAUNCH_CONSUMER_MANUAL_LAUNCH);
+          : (is_auto_launch ? DEPRECATED_KIOSK_LAUNCH_CONSUMER_AUTO_LAUNCH
+                            : DEPRECATED_KIOSK_LAUNCH_CONSUMER_MANUAL_LAUNCH);
 
   UMA_HISTOGRAM_ENUMERATION("Kiosk.LaunchType", launch_type,
                             KIOSK_LAUNCH_TYPE_COUNT);
