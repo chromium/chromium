@@ -20,6 +20,11 @@ BASE_FEATURE_PARAM(std::string,
                    &kGlicActionAllowlist,
                    "allowlist",
                    "");
+BASE_FEATURE_PARAM(std::string,
+                   kAllowlistExact,
+                   &kGlicActionAllowlist,
+                   "allowlist_exact",
+                   "");
 BASE_FEATURE_PARAM(bool,
                    kAllowlistOnly,
                    &kGlicActionAllowlist,
