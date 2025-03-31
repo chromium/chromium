@@ -441,7 +441,6 @@
 <translation id="1734878702283171397">கணினி நிர்வாகியைத் தொடர்புகொள்ளவும்</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, காலாவதித் தேதி: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">கம்ப்யூட்டர்</translation>
-<translation id="1739422091279046802">ஸ்க்ரோல் செய்தல் &amp; அளவை மாற்றுதல்</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> ஆக இருக்கும்போது குறிப்பிடப்பட வேண்டும். அத்துடன் சரியான சரமாகவும் இருக்க வேண்டும்.</translation>
 <translation id="1743393865165844832">படுக்கைகள் &amp; படுக்கை விரிப்புகள்</translation>
 <translation id="1743892871127720056">அட்டவணைத் தலைப்பை ஒப்பிடலாம், வார்த்தைகளைத் திருத்தலாம்.</translation>
@@ -1565,6 +1564,7 @@
 <translation id="3715016660240337709">{0,plural, =1{ஃபைலைப் பதிவேற்றுவது தடுக்கப்பட்டது}other{<ph name="FILE_COUNT" /> ஃபைல்களைப் பதிவேற்றுவது தடுக்கப்பட்டது}}</translation>
 <translation id="3715597595485130451">வைஃபையுடன் இணைத்தல்</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />ப்ராக்ஸி, ஃபயர்வால் மற்றும் DNS உள்ளமைவைச் சரிபார்த்தல்<ph name="END_LINK" /></translation>
+<translation id="3723316892512143176">IBAN</translation>
 <translation id="3723663469265383848">புதுப்பிக்கப்படும்போது 10 நிமிடங்கள் வரை உங்களால் சாதனத்தைப் பயன்படுத்த முடியாது.</translation>
 <translation id="372429172604983730">வைரஸ்தடுப்பு, ஃபயர்வால், இணைய வடிப்பான் அல்லது ப்ராக்ஸி மென்பொருள் உள்ளிட்ட ஆப்ஸ்கள் இந்தப் பிழையை ஏற்படுத்தக்கூடும்.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Slidesஸில் புதிய Google விளக்கக்காட்சியை விரைவாக உருவாக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
@@ -2491,6 +2491,7 @@
 <translation id="5379618281582508161">இந்தக் கடவுச்சொல்லை உங்கள் சாதனங்கள் அனைத்திலும் பெற, இது நீங்கள்தான் என்பதை உறுதிப்படுத்தவும்</translation>
 <translation id="5380953781541843508">ஏறுவரிசையில்</translation>
 <translation id="5381318171304904246">தொடர்ந்தால் உங்கள் பேங்க்கின் இணையதளத்திற்குச் செல்வீர்கள். சரிபார்க்கப்பட்ட பிறகு உங்கள் பர்ச்சேஸை நிறைவுசெய்யத் தானாகவே திருப்பிவிடப்படுவீர்கள்.</translation>
+<translation id="5381952079334035181">“<ph name="WEBSITE_TITLE" />” பக்கத்தை <ph name="MEMBER_FIRST_NAME" /> மாற்றியுள்ளார்</translation>
 <translation id="5383478552402031184">ஃபுளோரிங்</translation>
 <translation id="5385857628869214740">நகைச்சுவை</translation>
 <translation id="5385966243497224160">HTTPS அல்லாத URLலின் மாதிரிக்காட்சியைப் பார்க்க முடியாது</translation>
@@ -2876,6 +2877,7 @@
 <translation id="6059925163896151826">USB சாதனங்கள்</translation>
 <translation id="6060009363608157444">தவறான DnsOverHttps பயன்முறை.</translation>
 <translation id="6061154937977953833">மல்யுத்தம்</translation>
+<translation id="6062405040252994646">கருவி</translation>
 <translation id="6062937464449575061">விலையைக் கண்காணிப்பதை நிறுத்து</translation>
 <translation id="6063415549109819824">வீட்டுக் கடன்</translation>
 <translation id="6070432475334343308">ஒன்று அல்லது அதற்கும் மேற்பட்ட ஃபைல்கள் <ph name="CLOUD_PROVIDER" /> இல் உள்ள <ph name="FOLDER_NAME" /> ஃபோல்டருக்குப் பதிவேற்றப்படவில்லை</translation>
@@ -3922,6 +3924,7 @@
 <translation id="787226752901403048">பக்கக் குழுக்களைப் பகிர, அவற்றில் சேர மற்றும் யோசனைகளில் இணைந்து பணியாற்ற Chromeமில் உள்நுழையுங்கள்</translation>
 <translation id="7877007680666472091">பாதுகாக்கப்பட்ட உள்ளடக்க ஐடிக்கள்</translation>
 <translation id="7878562273885520351">உங்கள் கடவுச்சொல் திருடப்பட்டிருக்கலாம்</translation>
+<translation id="7881044256965445977">உங்கள் லோக்கல் நெட்வொர்க்கில் உள்ள எந்தவொரு சாதனத்தையும் தேடி இணைக்க விரும்புகிறது</translation>
 <translation id="7882421473871500483">பழுப்பு</translation>
 <translation id="7886897188117641322">விளம்பரங்களைப் பிரத்தியேகமாக்க உதவுவதற்குப் பயன்படுத்தக்கூடிய பரவலான தலைப்பு வகைகளைத் தேர்வுசெய்யலாம்</translation>
 <translation id="7887683347370398519">CVCஐச் சோதித்து, மீண்டும் முயற்சிக்கவும்</translation>
@@ -4680,6 +4683,7 @@
 <translation id="94613679163347541"><ph name="CATEGORY" /> ஐ ஒப்பிட வேண்டுமா?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sitesஸில் புதிய தளத்தை விரைவாக உருவாக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome இன்று குக்கீகளை மீண்டும் கட்டுப்படுத்தும்}=1{Chrome நாளை குக்கீகளை மீண்டும் கட்டுப்படுத்தும்}other{Chrome இன்னும் # நாட்களில் குக்கீகளை மீண்டும் கட்டுப்படுத்தும்}}</translation>
+<translation id="949026252328034572"><ph name="MEMBER_COUNT" /> உறுப்பினர்கள் "<ph name="GROUP_NAME" />" பக்கக் குழுவில் சேர்ந்துள்ளனர்</translation>
 <translation id="949314938206378263">இந்தத் தளத்தைப் பார்வையிட வேண்டும் எனக் கேட்டுள்ளீர்கள். Family Link மூலம் உங்கள் பெற்றோர் பதிலளிக்கலாம்.</translation>
 <translation id="950736567201356821">டிரிப்பில் பஞ்ச் டாப்</translation>
 <translation id="950926967802086924">கடவுச்சாவி • Google Password Manager</translation>

@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">Потрібна автентифікація проксі-сервера</translation>
 <translation id="4594021849294327751">Створити текстову версію</translation>
 <translation id="4594541568452132351">Виберіть мову транскрипції і завантажте модель</translation>
-<translation id="4607282946861182308">Не вдалося створити зображення за цим запитом. Спробуйте інший.</translation>
 <translation id="4609350030397390689">Зменшити яскравість клавіатури</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> з <ph name="TOTAL_PAGE_NUMBER" />. Натисніть Enter, щоб скасувати завдання друку.</translation>
 <translation id="463791356324567266">Сканування скасовується…</translation>
@@ -1540,6 +1539,7 @@
 <translation id="8010765388850538088">Докладніше про генеративний штучний інтелект</translation>
 <translation id="8017679124341497925">Ярлик змінено</translation>
 <translation id="802154636333426148">Не вдалося завантажити</translation>
+<translation id="8027467664787098346">Докладніше про вибраний фоновий малюнок</translation>
 <translation id="8028993641010258682">Розмір</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Увімкнути режим автоматичного вибору кольору</translation>
@@ -1658,6 +1658,7 @@
 <translation id="8543574988889671960">Оновити вкладку</translation>
 <translation id="8550364285433943656">Виберіть клавіші для дій, щоб грати за допомогою клавіатури</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">Генеративний ШІ може припускатися помилок (зокрема щодо людей), тому радимо ретельно перевіряти його відповіді.</translation>
 <translation id="8575298406870537639">Можливо, вам доведеться ввімкнути це налаштування, щоб підключитися до мережі. Щоб дізнатися більше, зверніться до свого оператора.</translation>
 <translation id="8576249514688522074">Не ініціалізовано</translation>
 <translation id="8584654835905316966">Щоб завершити оновлення мікропрограми пристрою <ph name="DEVICE_NAME" /> до версії <ph name="VERSION" />, потрібно перезапустити пристрій. Ваш комп’ютер може перезапуститися кілька разів. Це нормально.</translation>
@@ -1672,7 +1673,6 @@
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655828773034788261">Надіслати URL-адресу:</translation>
 <translation id="8660881923941176839">фунт.</translation>
-<translation id="8670057600920888023">Генеративний ШІ є експериментальною функцією, тому контент може бути неточним, оманливим або образливим.</translation>
 <translation id="8670574982334489519">праворуч</translation>
 <translation id="8675354002693747642">Спільний ключ</translation>
 <translation id="8677859815076891398">Немає альбомів. Створіть їх у <ph name="LINK_BEGIN" />Google Фото<ph name="LINK_END" />.</translation>

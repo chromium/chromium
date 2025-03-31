@@ -441,7 +441,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1734878702283171397">Probeer om die stelseladministrateur te kontak.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, verval <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Rekenaar</translation>
-<translation id="1739422091279046802">rollees en zoem</translation>
 <translation id="1741613555002899862">Moet gespesifseer en 'n geldige string wees wanneer DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> is.</translation>
 <translation id="1743393865165844832">Beddegoed en -linne</translation>
 <translation id="1743892871127720056">Vergelykingtabeltitel, wysig teks</translation>
@@ -1569,6 +1568,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3715016660240337709">{0,plural, =1{Lêer kan weens blokkering nie opgelaai word nie}other{<ph name="FILE_COUNT" /> lêers kan weens blokkering nie opgelaai word nie}}</translation>
 <translation id="3715597595485130451">Koppel aan Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Die instaanbediener, brandmuur en DNS-opstelling nagaan<ph name="END_LINK" /></translation>
+<translation id="3723316892512143176">Iban</translation>
 <translation id="3723663469265383848">Tydens die opdatering sal jy jou toestel vir tot 10 minute lank nie kan gebruik nie.</translation>
 <translation id="372429172604983730">Programme wat hierdie fout kan veroorsaak, sluit in teenvirus-, brandmuur- en webfiltrering- of instaanbedienersagteware.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Oortjie en dan Enter om vinnig 'n nuwe Google-aanbieding in Skyfies te skep</translation>
@@ -2495,6 +2495,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5379618281582508161">Verifieer dat dit jy is sodat jy hierdie wagwoord op al jou toestelle kan kry</translation>
 <translation id="5380953781541843508">in stygende volgorde</translation>
 <translation id="5381318171304904246">Wanneer jy voortgaan, sal jy na jou bank se webwerf geneem word. Jy sal outomaties terugkeer om jou aankoop te voltooi nadat jy geverifieer het.</translation>
+<translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> het “<ph name="WEBSITE_TITLE" />”-oortjie opgedateer</translation>
 <translation id="5383478552402031184">Vloermateriaaldienste</translation>
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5385966243497224160">Kan nie nie-HTTPS URL voorbeskou nie</translation>
@@ -2880,6 +2881,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6059925163896151826">USB-toestelle</translation>
 <translation id="6060009363608157444">Ongeldige DnsOverHttps-modus.</translation>
 <translation id="6061154937977953833">Stoei</translation>
+<translation id="6062405040252994646">Nutsding</translation>
 <translation id="6062937464449575061">Stop prysnasporing</translation>
 <translation id="6063415549109819824">Huisfinansiering</translation>
 <translation id="6070432475334343308">Een of meer lêers is nie na <ph name="FOLDER_NAME" /> op <ph name="CLOUD_PROVIDER" /> opgelaai nie</translation>
@@ -3926,6 +3928,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="787226752901403048">Meld by Chrome aan om oortjiegroepe te deel en daarby aan te sluit, en saam te werk aan idees</translation>
 <translation id="7877007680666472091">ID's van beskermde inhoud</translation>
 <translation id="7878562273885520351">Jou wagwoord is dalk in gevaar</translation>
+<translation id="7881044256965445977">Soek en koppel aan enige toestel op jou plaaslike netwerk</translation>
 <translation id="7882421473871500483">Bruin</translation>
 <translation id="7886897188117641322">Kies watter breë kategorieë onderwerpe gebruik kan word om te help om advertensies te personaliseer</translation>
 <translation id="7887683347370398519">Gaan jou CVC na en probeer weer</translation>
@@ -4683,6 +4686,7 @@ Bykomende besonderhede:
 <translation id="94613679163347541">Vergelyk <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om vinnig 'n nuwe werf in Google Sites te skep</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome sal vandag weer webkoekies beperk}=1{Chrome sal môre weer webkoekies beperk}other{# dae totdat Chrome weer webkoekies beperk}}</translation>
+<translation id="949026252328034572"><ph name="MEMBER_COUNT" /> lede het by “<ph name="GROUP_NAME" />”-oortjiegroep aangesluit</translation>
 <translation id="949314938206378263">Jy het gevra om hierdie werf te besoek. Jou ouer kan in Family Link antwoord.</translation>
 <translation id="950736567201356821">Tripelpons bo</translation>
 <translation id="950926967802086924">Toegangsleutel • Google Wagwoordbestuurder</translation>

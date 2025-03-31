@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">ପ୍ରକ୍ସି ପ୍ରାମାଣିକତା ଆବଶ୍ୟକ</translation>
 <translation id="4594021849294327751">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="4594541568452132351">ଟ୍ରାନ୍ସକ୍ରିପସନର ଭାଷା ଚୟନ କରି ମଡେଲ ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
-<translation id="4607282946861182308">ଏହାର ଇମେଜ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ। ଅନ୍ୟ ଏକ ପ୍ରମ୍ପ୍ଟ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4609350030397390689">କୀବୋର୍ଡର ଉଜ୍ଜ୍ୱଳତା କମ୍ କରନ୍ତୁ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />ଟି ମଧ୍ୟରୁ <ph name="PRINTED_PAGE_NUMBER" /> ନମ୍ବର ପୃଷ୍ଠା। ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟ ବାତିଲ୍ କରିବାକୁ Enter ଦବାନ୍ତୁ।</translation>
 <translation id="463791356324567266">ସ୍କାନିଂ ବାତିଲ୍ କରାଯାଉଛି...</translation>
@@ -1540,6 +1539,7 @@
 <translation id="8010765388850538088">ଜେନେରେଟିଭ AI ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="8017679124341497925">ସର୍ଟକଟ୍ ଏଡିଟ୍ କରାଯାଇଛି</translation>
 <translation id="802154636333426148">ଡାଉନ୍‌ଲୋଡ୍ ବିଫଳ ହୋଇଛି</translation>
+<translation id="8027467664787098346">ଚୟନିତ ୱାଲପେପର ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="8028993641010258682">ଆକାର</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ଅଟୋ କଲର ମୋଡକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
@@ -1658,6 +1658,7 @@
 <translation id="8543574988889671960">ଟାବକୁ ପୁଣି ଲୋଡ କରନ୍ତୁ</translation>
 <translation id="8550364285433943656">ଆପଣଙ୍କ କୀବୋର୍ଡ କୀ ମାଧ୍ୟମରେ ପ୍ଲେ କରିବା ପାଇଁ ଗେମ ଆକ୍ସନରେ ନିୟନ୍ତ୍ରଣ ଲାଗୁ କରନ୍ତୁ</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">ଜେନେରେଟିଭ AI ଭୁଲ କରିପାରେ, ଯେଉଁଥିରେ ଲୋକମାନଙ୍କ ବିଷୟରେ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ, ତେଣୁ ଏହାକୁ ଦୁଇଥର-ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="8575298406870537639">ଆପଣଙ୍କ କ୍ୟାରିଅର୍ ଏହାର ନେଟୱାର୍କ ସହ ସଂଯୋଗ କରିବାକୁ ଏହି ବିକଳ୍ପ ଆବଶ୍ୟକ କରିପାରେ। ବିବରଣୀ ପାଇଁ ଆପଣଙ୍କ କ୍ୟାରିଅର୍ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="8576249514688522074">ଆରମ୍ଭ କରାଯାଇନାହିଁ</translation>
 <translation id="8584654835905316966"><ph name="VERSION" />ଭର୍ସନରେ <ph name="DEVICE_NAME" /> ପାଇଁ ଫାର୍ମୱେର ଇନଷ୍ଟଲେସନ ସମ୍ପୂର୍ଣ୍ଣ କରିବାକୁ ଏହାକୁ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ। ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର ଅନେକ ଥର ରିବୁଟ ହୋଇପାରେ। ଏହି ଆଚରଣ ଆଶା କରାଯାଏ।</translation>
@@ -1672,7 +1673,6 @@
 <translation id="8655295600908251630">ଚ୍ୟାନେଲ୍</translation>
 <translation id="8655828773034788261">URL ସେୟାର କରନ୍ତୁ:</translation>
 <translation id="8660881923941176839">ପାଉଣ୍ଡ</translation>
-<translation id="8670057600920888023">ଜେନେରେଟିଭ AI ପରୀକ୍ଷାମୂଳକ ଅଟେ ଏବଂ ବିଷୟବସ୍ତୁ ଭୁଲ, ବିଭ୍ରାନ୍ତିକର କିମ୍ବା ଅପମାନଜନକ ହୋଇପାରେ।</translation>
 <translation id="8670574982334489519">ଡାହାଣ</translation>
 <translation id="8675354002693747642">ପୂର୍ବରୁ-ସେୟାର୍ କରାଯାଇଥିବା କୀ</translation>
 <translation id="8677859815076891398">କୌଣସି ଆଲବମ୍ ନାହିଁ। <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />ରେ ଏକ ଆଲବମ୍ ତିଆରି କରନ୍ତୁ।</translation>

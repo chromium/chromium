@@ -441,7 +441,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1734878702283171397">Provo të kontaktosh me administratorin e sistemit.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, skadon më <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Kompjuter</translation>
-<translation id="1739422091279046802">lëvizja dhe zmadhimi</translation>
 <translation id="1741613555002899862">Duhet të jetë e specifikuar dhe një varg i vlefshëm kur DnsOverHttpsMode është <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Çarçafë dhe mbulesa krevati</translation>
 <translation id="1743892871127720056">Krahaso titullin e tabelës, redakto tekstin</translation>
@@ -1569,6 +1568,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3715016660240337709">{0,plural, =1{Ngarkimi i skedarit është bllokuar}other{Ngarkimi i <ph name="FILE_COUNT" /> skedarëve është bllolkuar}}</translation>
 <translation id="3715597595485130451">Lidhu me Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Të kontrollosh përfaqësuesin, murin mbrojtës dhe konfigurimin e DNS-së<ph name="END_LINK" /></translation>
+<translation id="3723316892512143176">IBAN</translation>
 <translation id="3723663469265383848">Gjatë përditësimit, nuk do të mund ta përdorësh pajisjen tënde për deri në 10 minuta.</translation>
 <translation id="372429172604983730">Aplikacionet që mund ta shkaktojnë këtë gabim përfshijnë softuerë antivirusi, murin mbrojtës, si dhe softuerë filtrimi uebi ose ndërmjetësues.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të krijuar shpejt një prezantim të ri të Google në "Diapozitivat e Google"</translation>
@@ -2495,6 +2495,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5379618281582508161">Verifiko që je ti për ta marrë këtë fjalëkalim në të gjitha pajisjet e tua</translation>
 <translation id="5380953781541843508">në rend rritës</translation>
 <translation id="5381318171304904246">Kur të vazhdosh, do të drejtohesh tek uebsajti i bankës. Pasi të verifikohesh, do të kthehesh automatikisht për të përfunduar blerjen.</translation>
+<translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> përditësoi skedën “<ph name="WEBSITE_TITLE" />”</translation>
 <translation id="5383478552402031184">Dysheme</translation>
 <translation id="5385857628869214740">Humori</translation>
 <translation id="5385966243497224160">URL-të jo HTTPS nuk mund të shikohen paraprakisht</translation>
@@ -2880,6 +2881,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6059925163896151826">Pajisjet USB</translation>
 <translation id="6060009363608157444">Modalitet i pavlefshëm DnsOverHttps.</translation>
 <translation id="6061154937977953833">Mundja</translation>
+<translation id="6062405040252994646">Vegla</translation>
 <translation id="6062937464449575061">Anulo monitorimin e çmimeve</translation>
 <translation id="6063415549109819824">Financimi i shtëpisë</translation>
 <translation id="6070432475334343308">Një ose disa skedarë nuk u ngarkuan në "<ph name="FOLDER_NAME" />" te "<ph name="CLOUD_PROVIDER" />"</translation>
@@ -3925,6 +3927,7 @@ Detaje shtesë:
 <translation id="787226752901403048">Identifikohu në Chrome për të ndarë dhe për t'u bashkuar në grupet e skedave dhe për të punuar së bashku për ide të ndryshme</translation>
 <translation id="7877007680666472091">ID-të e përmbajtjeve të mbrojtura</translation>
 <translation id="7878562273885520351">Fjalëkalimet e tua mund të jenë kompromentuar</translation>
+<translation id="7881044256965445977">Kërko dhe lidhu me çdo pajisje në rrjetin tënd lokal</translation>
 <translation id="7882421473871500483">Kafe</translation>
 <translation id="7886897188117641322">Zgjidh se cilat kategori të gjera të temave mund të përdoren për të ndihmuar në personalizimin e reklamave</translation>
 <translation id="7887683347370398519">Kontrollo CVC-në tënde dhe provo përsëri</translation>
@@ -4682,6 +4685,7 @@ Detaje shtesë:
 <translation id="94613679163347541">Të krahasohen "<ph name="CATEGORY" />"?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />,shtyp Tab pastaj Enter për të krijuar shpejt një sajt të ri në Google Sites</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome do t'i kufizojë kukit përsëri sot}=1{Chrome do t'i kufizojë kukit përsëri nesër}other{# ditë derisa Chrome t'i kufizojë përsëri kukit}}</translation>
+<translation id="949026252328034572"><ph name="MEMBER_COUNT" /> anëtarë u bashkuan në grupin e skedave "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">Ti kërkove që të vizitoje këtë sajt. Prindi yt mund të përgjigjet në Family Link.</translation>
 <translation id="950736567201356821">Tri shpime lart</translation>
 <translation id="950926967802086924">Çelësi i kalimit • Menaxheri i fjalëkalimeve i Google</translation>

@@ -91,6 +91,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1269405891096105529">Välisseadet külalisrežiimis ei toetata</translation>
 <translation id="1270290102613614947">Ekraanil kuvatav klaviatuur on keelatud</translation>
 <translation id="1272079795634619415">Peata</translation>
+<translation id="12741168609094094">Valige ekraanikuval midagi, et otsida, teksti kopeerida ja muud teha</translation>
 <translation id="1275285675049378717">Toide: <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Valitud</translation>
 <translation id="1276975447697633661">Valige fail ja vajutage klahvi <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1720230731642245863">Kuumkoht on väljas</translation>
 <translation id="1731815243805539470">Aktiveeri eelmine kasutaja</translation>
 <translation id="1733996486177697563">Vahetage tumeda ja heleda teema vahel. Puudutage pikalt töölauda ning tehke valik Taustapilt ja stiil.</translation>
+<translation id="1735992454301033090">Valitud ala, teisaldamiseks kasutage nooleklahve</translation>
 <translation id="1736898441010944794">„<ph name="NAME" />“ on Bluetooth-seadmetele nähtav.</translation>
 <translation id="1737078180382804488">Teie telefoni märguannete kuvamise seadistamisest loobumine</translation>
 <translation id="174102739345480129">Marker on välja lülitatud.</translation>
@@ -494,6 +496,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2683887737780133806">Eelmise nädala <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2687510499067466116">Klaviatuuri otseteed on muudetud</translation>
 <translation id="2689613560355655046">Töölaud 8</translation>
+<translation id="2692092709110488417">Fokuseerimiseks ja valitud ala teisaldamiseks vajutage tabulaatorit</translation>
 <translation id="2695305337569143674">veeb</translation>
 <translation id="2697697418792422688">Klaviatuuriseadete kuvamine. <ph name="KEYBOARD_NAME" /> on valitud.</translation>
 <translation id="2699913284398121653">Kasutage koolikonto andmete ülekandmiseks oma isiklikule kontole rakendust Sisuedastus</translation>
@@ -729,6 +732,7 @@ Muidu lubatakse sisseehitatud puuteplaat uuesti pärast ajavahemikku <ph name="T
 <translation id="346243998268439747">Suumimistaseme lähtestamine</translation>
 <translation id="3465223694362104965">Pärast teie viimast sisselogimist lõi muu klaviatuur seadmega ühenduse. Enne klaviatuuri kasutamist veenduge, et see oleks usaldusväärne.</translation>
 <translation id="3465356146291925647">Võrku haldab teie administraator</translation>
+<translation id="3470502288861289375">Kopeerimine ...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, seejärel <ph name="KEY_TWO" /> või <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Ctrl + Tõstuklahv + Tühik</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1034,6 +1038,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4412698727486357573">Abikeskus</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> on väljas.</translation>
 <translation id="4417647906073317561">Keskendumise režiimi seaded. Määrake keskendumiseks taimer, ülesanne ja muusika.</translation>
+<translation id="4418600384772451109">Sule paneel</translation>
 <translation id="4424159417645388645">Töölaud 5</translation>
 <translation id="4426817706804363424">Tubli!</translation>
 <translation id="4430019312045809116">Helitugevus</translation>
@@ -2230,6 +2235,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8287009018010202411">Produktiivsus</translation>
 <translation id="828708037801473432">Väljas</translation>
 <translation id="8297006494302853456">Nõrk</translation>
+<translation id="8300451473979404345">Valitud käepide, teisaldamiseks kasutage nooleklahve</translation>
 <translation id="8308637677604853869">Eelmine menüü</translation>
 <translation id="830868413617744215">Beeta</translation>
 <translation id="8314772463905284467">Suurtähelukk on sisse lülitatud</translation>
@@ -2290,6 +2296,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="851458219935658693">Valitud on raadionupp Näita praeguse töölaua aknaid</translation>
 <translation id="851660987304951246">Sisust kiiresti kokkuvõtte tegemiseks või küsimuste esitamiseks kasutage funktsiooni Aita mul lugeda</translation>
 <translation id="8517041960877371778">Kui seade <ph name="DEVICE_TYPE" /> on sisse lülitatud, ei pruugita seda laadida.</translation>
+<translation id="8519329096920173967">Ekraanikuvalt otsimine Google Lensiga</translation>
 <translation id="8535393432370007982">Võta värvi järgi sortimine tagasi</translation>
 <translation id="8536886494750559755">Saate kuvada kiirjagamise seaded. Kõigile nähtav <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Tekst kopeeriti lõikelauale</translation>

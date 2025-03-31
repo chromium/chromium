@@ -8,6 +8,7 @@
 <translation id="100323615638474026">USB төхөөрөмж (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Сүүлийн үеийн таталтын түүх</translation>
 <translation id="1004218526896219317">Сайтын хандалт</translation>
+<translation id="1005230401424685968">ЖЖЖЖ</translation>
 <translation id="1005274289863221750">Микрофон болон камераа ашиглана уу</translation>
 <translation id="1005333234656240382">ADB алдаа засахыг идэвхжүүлэх үү?</translation>
 <translation id="1005671386794704751">Сарнай</translation>
@@ -1373,6 +1374,7 @@
 <translation id="193565226207940518">Тусламжийн хэрэгсэл</translation>
 <translation id="1935995810530254458">Ямартай ч хуулах</translation>
 <translation id="1936157145127842922">Хавтсан дотор харуулах</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Хуудсыг унших жагсаалтад нэмсэн}other{Хуудаснуудыг унших жагсаалтад нэмсэн}}</translation>
 <translation id="1936931585862840749">Тоо ашиглан хэдэн хувь хэвлэхийг заана уу (1-ээс <ph name="MAX_COPIES" /> хүртэл).</translation>
 <translation id="1937774647013465102">Контейнерын архитектурын төрөл болох<ph name="ARCHITECTURE_CONTAINER" />-г энэ төхөөрөмж буюу <ph name="ARCHITECTURE_DEVICE" />-р импорт хийх боломжгүй байна. Та энэ контейнерыг өөр төхөөрөмжид сэргээхээр оролдох эсвэл Файлс аппыг нээж, энэ контейнерын зураг дахь файлд хандах боломжтой.</translation>
 <translation id="1938351510777341717">Гадаад тушаал</translation>
@@ -3184,7 +3186,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Та энэ картаас тохиргоог хүссэн үедээ удирдах эсвэл Chrome-г өөрчлөх хэсэгт бусад сонголтыг харах боломжтой.</translation>
-<translation id="3207437351138888228">Таныг маягт бөглөхөд таны мэдээлэл болон уг мэдээллийг илгээсэн хуудсыг зөвлөмж үүсгэхийн тулд Google-д илгээдэг</translation>
 <translation id="3207960819495026254">Хавчуурга хадгалагдсан</translation>
 <translation id="3208584281581115441">Одоо шалгах</translation>
 <translation id="3208703785962634733">Баталгаажуулаагүй</translation>
@@ -3229,6 +3230,7 @@
 <translation id="3242289508736283383">'Kiosk_only' тодорхойлогч атрибуттай аппыг ChromeOS-н kiosk горимд суулгах ёстой</translation>
 <translation id="3243017971870859287">ChromeOS Flex төхөөрөмж болон бүрэлдэхүүн хэсгийн серийн дугаарыг унших</translation>
 <translation id="324366796737464147">Шуугиан хасалт</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Дууг үргэлжлүүлэн хаах</translation>
 <translation id="3247006341013237647">Табуудыг цэгцлэх үү?</translation>
 <translation id="3247649647204519958">Эндээс та байгаа сайтынхаа өргөтгөлийн зөвшөөрлийг харах болон удирдах боломжтой</translation>
@@ -6095,7 +6097,6 @@
 <translation id="5267572070504076962">Аюултай сайтуудын эсрэг хамгаалалт авахын тулд Safe Browsing-г асаана уу</translation>
 <translation id="5269977353971873915">Хэвлэх үйлдэл амжилтгүй болсон байна</translation>
 <translation id="5271578170655641944">Google Драйвын хандалтыг хасах уу?</translation>
-<translation id="5271782684896713035">Энэ онцлогийг сайжруулахын тулд өгөгдлийг хянагч хүмүүс харж магадгүй</translation>
 <translation id="5273806377963980154">Сайтын URL-г засах</translation>
 <translation id="5275084684151588738">Хэрэглэгчийн толь бичиг</translation>
 <translation id="5275338516105640560">Хадгалсан табын бүлгийн товчлуур</translation>

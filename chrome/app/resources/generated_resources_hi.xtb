@@ -8,6 +8,7 @@
 <translation id="100323615638474026">यूएसबी डिवाइस (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">डाउनलोड का हाल ही का इतिहास</translation>
 <translation id="1004218526896219317">साइट ऐक्सेस</translation>
+<translation id="1005230401424685968">YYYY</translation>
 <translation id="1005274289863221750">अपना माइक्रोफ़ोन और कैमरा उपयोग करें</translation>
 <translation id="1005333234656240382">ADB डीबग करने की सुविधा चालू करें?</translation>
 <translation id="1005671386794704751">रोज़</translation>
@@ -1378,6 +1379,7 @@
 <translation id="193565226207940518">सहायता टूल</translation>
 <translation id="1935995810530254458">फिर भी कॉपी करें</translation>
 <translation id="1936157145127842922">फ़ोल्डर में दिखाएं</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{पेज को रीडिंग लिस्ट में जोड़ा गया}one{पेज को रीडिंग लिस्ट में जोड़ा गया}other{पेज, रीडिंग लिस्ट में जोड़े गए}}</translation>
 <translation id="1936931585862840749">बताएं कि आपको कितनी कॉपी प्रिंट करनी है (1 से <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">कंटेनर संरचना प्रकार <ph name="ARCHITECTURE_CONTAINER" /> को इस डिवाइस <ph name="ARCHITECTURE_DEVICE" />के साथ इंपोर्ट नहीं किया जा सकता. आप इस कंटेनर को किसी दूसरे डिवाइस में बहाल करके देख सकते हैं या फिर आप फ़ाइल ऐप्लिकेशन खोलकर इस कंटेनर में मौजूद फ़ाइलें ऐक्सेस कर सकते हैं.</translation>
 <translation id="1938351510777341717">बाहरी निर्देश</translation>
@@ -3189,7 +3191,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         इस कार्ड की सेटिंग को किसी भी समय मैनेज किया जा सकता है. इसके अलावा, 'Chrome को पसंद के मुताबिक बनाएं' सेक्शन में ज़्यादा विकल्प देखे जा सकते हैं.</translation>
-<translation id="3207437351138888228">फ़ॉर्म भरते समय, सुझाव पाने के लिए Google को आपकी जानकारी और जिस पेज से यह जानकारी ली गई है उसकी जानकारी भेजी जाती है</translation>
 <translation id="3207960819495026254">बुकमार्क किया गया</translation>
 <translation id="3208584281581115441">अभी देखें</translation>
 <translation id="3208703785962634733">पुष्टि न की गई</translation>
@@ -3234,6 +3235,7 @@
 <translation id="3242289508736283383">'kiosk_only' मेनिफ़ेस्ट एट्रिब्यूट वाला ऐप्लिकेशन ChromeOS कीऑस्क मोड में इंस्टॉल किया जाना चाहिए</translation>
 <translation id="3243017971870859287">ChromeOS Flex वाले डिवाइस और उसके कॉम्पोनेंट के सीरियल नंबर पढ़ता है</translation>
 <translation id="324366796737464147">ग़ैर-ज़रूरी आवाज़ें कम करने की सुविधा</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">आवाज़ बंद रखें</translation>
 <translation id="3247006341013237647">क्या आपको टैब व्यवस्थित करने हैं?</translation>
 <translation id="3247649647204519958">यहां से, जिस साइट पर आप हैं उसके लिए एक्सटेंशन की अनुमतियों को देखा और मैनेज किया जा सकता है</translation>
@@ -6099,7 +6101,6 @@
 <translation id="5267572070504076962">खतरनाक साइटों से बचने के लिए, सुरक्षित ब्राउज़िंग की सुविधा को चालू करें</translation>
 <translation id="5269977353971873915">प्रिंट विफल</translation>
 <translation id="5271578170655641944">क्या Google Drive का ऐक्सेस हटाना है?</translation>
-<translation id="5271782684896713035">समीक्षा करने वाले लोग यह डेटा देख सकते हैं, ताकि इस सुविधा को बेहतर बनाया जा सके</translation>
 <translation id="5273806377963980154">साइट के यूआरएल में बदलाव करें</translation>
 <translation id="5275084684151588738">उपयोगकर्ता की बनाई डिक्शनरी</translation>
 <translation id="5275338516105640560">सेव किए गए टैब ग्रुप का बटन</translation>

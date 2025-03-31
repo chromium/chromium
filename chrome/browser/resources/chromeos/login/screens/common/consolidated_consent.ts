@@ -527,10 +527,15 @@ export class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     arcTosLink.onclick = () => this.onArcTosLinkClick();
   }
 
-  private getSubtitleArcEnabled(locale: string): TrustedHTML {
+  private getSubtitleArcEnabled(locale: string, isDemo: boolean): TrustedHTML {
     const subtitle = document.createElement('div');
-    subtitle.innerHTML = this.i18nAdvancedDynamic(
-        locale, 'consolidatedConsentSubheader', {attrs: ['id']});
+    if (isDemo) {
+      subtitle.innerHTML = this.i18nAdvancedDynamic(
+          locale, 'consolidatedConsentSubheaderDemoMode', {attrs: ['id']});
+    } else {
+      subtitle.innerHTML = this.i18nAdvancedDynamic(
+          locale, 'consolidatedConsentSubheader', {attrs: ['id']});
+    }
 
     const privacyPolicyLink = subtitle.querySelector('#privacyPolicyLink');
     assert(privacyPolicyLink);
@@ -585,8 +590,14 @@ export class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
         description.innerHTML, {tags: ['a'], attrs: ['id', 'is', 'class']});
   }
 
-  private getTitle(locale: string, isTosHidden: boolean,
-      isChildAccount: boolean): TrustedHTML {
+  private getTitle(
+      locale: string, isTosHidden: boolean, isChildAccount: boolean,
+      isDemo: boolean): TrustedHTML {
+    if (isDemo) {
+      return this.i18nAdvancedDynamic(
+          locale, 'consolidatedConsentHeaderDemoMode');
+    }
+
     if (isTosHidden) {
       return this.i18nAdvancedDynamic(
           locale, 'consolidatedConsentHeaderManaged');
@@ -597,6 +608,14 @@ export class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     }
 
     return this.i18nAdvancedDynamic(locale, 'consolidatedConsentHeader');
+  }
+
+  private getUsageOptIn(locale: string, isDemo: boolean): TrustedHTML {
+    if (isDemo) {
+      return this.i18nAdvancedDynamic(
+          locale, 'consolidatedConsentUsageOptInDemoMode');
+    }
+    return this.i18nAdvancedDynamic(locale, 'consolidatedConsentUsageOptIn');
   }
 
   private getUsageLearnMoreText(locale: string, isChildAccount: boolean,

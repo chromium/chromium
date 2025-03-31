@@ -441,7 +441,6 @@
 <translation id="1734878702283171397">Προσπαθήστε να επικοινωνήσετε με το διαχειριστή συστήματος.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, λήγει <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Υπολογιστής</translation>
-<translation id="1739422091279046802">κύλιση και εστίαση</translation>
 <translation id="1741613555002899862">Θα πρέπει να καθοριστεί μια έγκυρη συμβολοσειρά όταν η πολιτική DnsOverHttpsMode είναι <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Κλινοσκεπάσματα και λευκά είδη κλινών</translation>
 <translation id="1743892871127720056">Τίτλος συγκριτικού πίνακα, επεξεργασία κειμένου</translation>

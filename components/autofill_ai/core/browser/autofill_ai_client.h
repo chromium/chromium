@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 
 namespace autofill_ai {
 
@@ -71,6 +72,10 @@ class AutofillAiClient {
   // found or if the driver is not available.
   virtual autofill::FormStructure* GetCachedFormStructure(
       const autofill::FormGlobalId& form_id) = 0;
+
+  // Returns the service used in order to log metrics into MQLS.
+  virtual optimization_guide::ModelQualityLogsUploaderService*
+  GetMqlsUploadService() = 0;
 
   // Shows a bubble asking whether the user wants to save or update Autofill AI
   // data. `old_entity` is present in the update cases. It is used to give users

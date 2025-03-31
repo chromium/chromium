@@ -8,6 +8,7 @@
 <translation id="100323615638474026">USB-enhet (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Senaste nedladdningshistoriken</translation>
 <translation id="1004218526896219317">Tillgång till webbplatsen</translation>
+<translation id="1005230401424685968">ÅÅÅÅ</translation>
 <translation id="1005274289863221750">Använd mikrofonen och kameran</translation>
 <translation id="1005333234656240382">Vill du aktivera felsökning med ADB?</translation>
 <translation id="1005671386794704751">Ros</translation>
@@ -1377,6 +1378,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="193565226207940518">Supportverktyg</translation>
 <translation id="1935995810530254458">Kopiera ändå</translation>
 <translation id="1936157145127842922">Visa i mapp</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Sidan har lagts till i läslistan}other{Sidor har lagts till i läslistan}}</translation>
 <translation id="1936931585862840749">Använd ett nummer som anger hur många kopior som ska skrivas ut (1 till <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Det går inte att importera en behållararkitektur av typen <ph name="ARCHITECTURE_CONTAINER" /> med den här enheten, som är en <ph name="ARCHITECTURE_DEVICE" />. Du kan testa att återställa behållaren till en annan enhet, eller så kan du öppna filerna i behållarbilden via appen Filer.</translation>
 <translation id="1938351510777341717">Extern kommandotangent</translation>
@@ -3188,7 +3190,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
         <ph name="BREAK" />
         <ph name="BREAK" />
         Du kan hantera inställningarna från det här kortet när som helst eller visa fler alternativ i Anpassa Chrome.</translation>
-<translation id="3207437351138888228">När du fyller i ett formulär skickas dina uppgifter och sidan de kommer från till Google för att generera förslag</translation>
 <translation id="3207960819495026254">Bokmärkt</translation>
 <translation id="3208584281581115441">Kontrollera nu</translation>
 <translation id="3208703785962634733">Obekräftade</translation>
@@ -3233,6 +3234,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3242289508736283383">En app med manifestattributet kiosk_only måste installeras i kioskläget i ChromeOS</translation>
 <translation id="3243017971870859287">Läsa serienummer för ChromeOS Flex-enheter och komponenter</translation>
 <translation id="324366796737464147">Brusreducering</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Ljud fortsatt av</translation>
 <translation id="3247006341013237647">Vill du organisera flikar?</translation>
 <translation id="3247649647204519958">Härifrån kan du se och hantera tilläggsbehörigheter för webbplatsen som du besöker</translation>
@@ -6100,7 +6102,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5267572070504076962">Aktivera Säker webbsökning för skydd mot farliga webbplatser</translation>
 <translation id="5269977353971873915">Det gick inte att skriva ut dokumentet</translation>
 <translation id="5271578170655641944">Ta bort åtkomst till Google Drive?</translation>
-<translation id="5271782684896713035">Mänskliga granskare kan se denna data för att förbättra den här funktionen</translation>
 <translation id="5273806377963980154">Redigera webbadress</translation>
 <translation id="5275084684151588738">Egna ordlistor</translation>
 <translation id="5275338516105640560">Knapp för sparad flikgrupp</translation>

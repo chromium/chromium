@@ -30,7 +30,7 @@ Matcher<SelectOption> IsOption(const SelectOption& option) {
 }
 
 Matcher<DatePartRange> IsDatePartRange(base::span<const SelectOption> options,
-                                       uint32_t value_offset) {
+                                       uint32_t first_value) {
   std::vector<Matcher<SelectOption>> matchers;
   matchers.reserve(options.size());
   for (const SelectOption& option : options) {
@@ -38,12 +38,12 @@ Matcher<DatePartRange> IsDatePartRange(base::span<const SelectOption> options,
   }
   return AllOf(
       Field("options", &DatePartRange::options, ElementsAreArray(matchers)),
-      Field("value_offset", &DatePartRange::value_offset, value_offset));
+      Field("first_value", &DatePartRange::first_value, first_value));
 }
 
 Matcher<DatePartRange> IsEmptyDatePartRange() {
   return AllOf(Field("options", &DatePartRange::options, IsEmpty()),
-               Field("value_offset", &DatePartRange::value_offset,
+               Field("first_value", &DatePartRange::first_value,
                      std::numeric_limits<uint32_t>::max()));
 }
 

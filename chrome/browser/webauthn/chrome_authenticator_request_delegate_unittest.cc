@@ -45,7 +45,7 @@
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/web_contents_tester.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/discoverable_credential_metadata.h"
@@ -784,11 +784,11 @@ TEST_F(EnclaveAuthenticatorRequestDelegateTest,
         syncer::UserSelectableType::kPasswords, test.is_syncing_passwords);
 
     std::variant<crypto::ScopedNullUnexportableKeyProvider,
-                 crypto::ScopedMockUnexportableKeyProvider>
+                 crypto::ScopedFakeUnexportableKeyProvider>
         unexportable_key_provider;
     if (test.has_unexportable_keys) {
       unexportable_key_provider
-          .emplace<crypto::ScopedMockUnexportableKeyProvider>();
+          .emplace<crypto::ScopedFakeUnexportableKeyProvider>();
     }
 
     base::test::TestFuture<bool> future;
@@ -809,7 +809,7 @@ TEST_F(EnclaveAuthenticatorRequestDelegateTest,
       SyncServiceFactory::GetInstance()->GetForProfile(profile()));
   test_sync_service->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, true);
-  crypto::ScopedMockUnexportableKeyProvider unexportable_key_provider;
+  crypto::ScopedFakeUnexportableKeyProvider unexportable_key_provider;
 
   {
     base::test::TestFuture<bool> future;
@@ -849,7 +849,7 @@ TEST_F(EnclaveAuthenticatorRequestDelegateTest,
   test_sync_service->SetSignedIn(signin::ConsentLevel::kSignin);
   test_sync_service->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, true);
-  crypto::ScopedMockUnexportableKeyProvider unexportable_key_provider;
+  crypto::ScopedFakeUnexportableKeyProvider unexportable_key_provider;
 
   base::test::TestFuture<bool> future;
   ChromeWebAuthenticationDelegate delegate;

@@ -112,6 +112,7 @@
 <translation id="244264527810019436">Bazı sitelerdeki özellikler Gizli modda çalışmayabilir</translation>
 <translation id="2442870161001914531">Her zaman masaüstü sitesini iste</translation>
 <translation id="2445311670906052406">Chrome artık son sekmelerinizi cihazınızla paylaşıyor. Bu sekmeleri cihazınızın uygulama listesinde ve arama sonuçlarında görebilirsiniz. Bu özelliği Chrome ayarlarından istediğiniz zaman kapatabilirsiniz.</translation>
+<translation id="245322989586167203">Ağınızı ayarlama gibi veri aktarımı özelliklerinin kullanılması için siteler genellikle seri bağlantı noktalarına bağlanır</translation>
 <translation id="2469312991797799607">Bu işlem, <ph name="ORIGIN" /> ve altındaki tüm sitelere ait verilerin ve çerezlerin tamamını temizler</translation>
 <translation id="2482878487686419369">Bildirimler</translation>
 <translation id="2485422356828889247">Kaldır</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">Bu cihazı etkin olarak kullandığınızda sitelerin bunu bilmesi engellenir</translation>
 <translation id="4412992751769744546">Üçüncü taraf çerezlerine izin ver</translation>
 <translation id="4419929467120297501">Chrome, sitelerin internette gezinirken sizi izlemek için üçüncü taraf çerezlerini kullanmasını engeller. <ph name="BEGIN_LINK" />Üçüncü taraf çerezlerine erişimi yönetmek<ph name="END_LINK" /> için ayarlara gidin.</translation>
+<translation id="443121186588148776">Seri bağlantı noktası</translation>
 <translation id="4434045419905280838">Pop-up'lar ve yönlendirmeler</translation>
 <translation id="443552056913301231">Bu işlem, çerezler de dahil olmak üzere yerel verilerin tamamını temizler ve tüm <ph name="ORIGIN" /> izinlerini siler</translation>
 <translation id="4468959413250150279">Belirli bir site için sesi kapatın.</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Önce sor</translation>
 <translation id="7423538860840206698">Pano okuma engellendi</translation>
 <translation id="7425915948813553151">Siteler için koyu tema</translation>
+<translation id="7478658909253570368">Sitelerin seri bağlantı noktalarına bağlanmasına izin verme</translation>
 <translation id="7488573225650545859">Uygulama listenizdeki sekmeleri görüntüle seçeneğini gizle</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Bu düğme açıkken siteler oturum açma istemleri gösterebilir. Düğme kapalıyken siteler oturum açma istemleri gösteremez.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Bir Bluetooth aygıtına bağlı</translation>
 <translation id="7617547684249261169">Geçmişiniz, çerezleriniz, site verileriniz ve diğer öğelerinizin bir kısmını veya tamamını silebilirsiniz</translation>
 <translation id="7649070708921625228">Yardım</translation>
+<translation id="7655411746932645568">Siteler seri bağlantı noktalarına bağlanmak isteyebilir</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7667547420449112975">Muhteşem Oz Büyücüsü</translation>
 <translation id="7681597159868843240">Sanal gerçeklik veya fitness takibi gibi özelliklerin kullanılması için siteler genellikle cihazınızın hareket sensörlerini kullanır</translation>

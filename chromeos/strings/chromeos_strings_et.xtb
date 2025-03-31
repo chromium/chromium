@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">Vajalik on puhverserveri autentimine</translation>
 <translation id="4594021849294327751">Loo transkriptsioon</translation>
 <translation id="4594541568452132351">Valige transkriptsiooni keel ja laadige alla mudel</translation>
-<translation id="4607282946861182308">Ei saa selle kohta pilte luua. Proovige muud päringut.</translation>
 <translation id="4609350030397390689">Klaviatuuri ereduse vähendamine</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Prinditöö tühistamiseks vajutage sisestusklahvi.</translation>
 <translation id="463791356324567266">Skannimise tühistamine …</translation>
@@ -1540,6 +1539,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8010765388850538088">Lisateave generatiivse AI kohta</translation>
 <translation id="8017679124341497925">Otsetee on muudetud</translation>
 <translation id="802154636333426148">Allalaadimine ebaõnnestus</translation>
+<translation id="8027467664787098346">Lisateave valitud tausapildi kohta</translation>
 <translation id="8028993641010258682">Suurus</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Luba automaatne värvirežiim</translation>
@@ -1658,6 +1658,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8543574988889671960">Laadi vaheleht uuesti</translation>
 <translation id="8550364285433943656">Klaviatuuriklahvidega mängimiseks lisage mängutegevusse nupud</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">Generatiivne AI võib anda ebatäpset teavet, sealhulgas inimeste kohta, seega kontrollige selle vastused üle.</translation>
 <translation id="8575298406870537639">Teie operaator võib võrguga ühendamiseks seda valikut nõuda. Lisateavet küsige operaatorilt.</translation>
 <translation id="8576249514688522074">Lähtestamata</translation>
 <translation id="8584654835905316966">Seadme <ph name="DEVICE_NAME" /> püsivara versiooni <ph name="VERSION" /> installimiseks on vajalik taaskäivitamine. Teie arvuti võib mitu korda taaskäivituda. See on ootuspärane käitumine.</translation>
@@ -1672,7 +1673,6 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">Jaga URL:</translation>
 <translation id="8660881923941176839">naela</translation>
-<translation id="8670057600920888023">Generatiivne AI on katsejärgus ja selle sisu võib olla ebatäpne, eksitav või solvav.</translation>
 <translation id="8670574982334489519">parem</translation>
 <translation id="8675354002693747642">Eeljagatud võti</translation>
 <translation id="8677859815076891398">Albumeid pole. Looge album teenuses <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>

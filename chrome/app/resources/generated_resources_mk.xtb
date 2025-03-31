@@ -8,6 +8,7 @@
 <translation id="100323615638474026">USB-уред (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Неодамнешна историја на преземања</translation>
 <translation id="1004218526896219317">Пристап до сајтови</translation>
+<translation id="1005230401424685968">YYYY</translation>
 <translation id="1005274289863221750">Користете ги микрофонот и фотоапаратот</translation>
 <translation id="1005333234656240382">Да се овозможи отстранување грешки на ADB?</translation>
 <translation id="1005671386794704751">Rose</translation>
@@ -1378,6 +1379,7 @@
 <translation id="193565226207940518">Алатка за поддршка</translation>
 <translation id="1935995810530254458">Сепак копирај</translation>
 <translation id="1936157145127842922">Покажи во папка</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Страницата е додадена во „Списокот за читање“}one{Страниците се додадени во „Списокот за читање“}other{Страниците се додадени во „Списокот за читање“}}</translation>
 <translation id="1936931585862840749">Употребете број за да назначите колку примероци да се испечатат (од 1 до <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Не може да се увезе тип архитектура на контејнер <ph name="ARCHITECTURE_CONTAINER" /> со уред којшто е <ph name="ARCHITECTURE_DEVICE" />. Може да се обидете да го вратите овој контејнер во различен уред или може да пристапите до датотеките во оваа слика на контејнер, така што ќе ја отворите апликацијата Files.</translation>
 <translation id="1938351510777341717">Надворешна наредба</translation>
@@ -3189,7 +3191,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Може да управувате со поставките од оваа картичка во секое време или да гледате повеќе опции во „Приспособување на Chrome“.</translation>
-<translation id="3207437351138888228">Кога пополнувате формулар, вашите податоци и страницата од каде што потекнуваат се испраќаат до Google за да се генерираат предлози</translation>
 <translation id="3207960819495026254">Обележано</translation>
 <translation id="3208584281581115441">Провери сега</translation>
 <translation id="3208703785962634733">Непотврдена</translation>
@@ -3234,6 +3235,7 @@
 <translation id="3242289508736283383">Апликацијата со атрибут на манифестот „kiosk_only“ мора да се инсталира во режим на киоск на Chrome OS</translation>
 <translation id="3243017971870859287">да чита сериски броеви на уред со ChromeOS Flex и на компоненти</translation>
 <translation id="324366796737464147">Исклучи бучава</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Остави го звукот исклучен</translation>
 <translation id="3247006341013237647">Да се организираат картичките?</translation>
 <translation id="3247649647204519958">Одовде, може да ги гледате и да управувате со дозволите на екстензиите за сајтот што сте го отвориле</translation>
@@ -6101,7 +6103,6 @@
 <translation id="5267572070504076962">Вклучете го „Безбедното прелистување“ за да се заштитите од опасни сајтови</translation>
 <translation id="5269977353971873915">Печатењето не успеа</translation>
 <translation id="5271578170655641944">Да се отстрани пристапот до Google Drive?</translation>
-<translation id="5271782684896713035">За да се подобри функцијава, податоците може да ги гледаат прегледувачи</translation>
 <translation id="5273806377963980154">Изменете ја URL-адресата на сајтот</translation>
 <translation id="5275084684151588738">Речници на корисникот</translation>
 <translation id="5275338516105640560">Копче за зачувана група картички</translation>

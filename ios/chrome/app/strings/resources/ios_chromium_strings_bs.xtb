@@ -91,6 +91,7 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromiumu id
 <translation id="3054480780637153380">Otvorite postavke Chromiuma u iOS-u, a zatim dodirnite "Zadana aplikacija preglednika" i odaberite Chromium.</translation>
 <translation id="3102849287235003384">Da se odjavite s Google računa na svim web lokacijama, <ph name="BEGIN_LINK" />odjavite se iz Chromiuma<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Postaviti Chromium kao zadani preglednik?</translation>
+<translation id="3180939591219927904">Uključite opciju Zaključaj anonimne kartice pri zatvaranju Chromiuma</translation>
 <translation id="3242612358525156339">U postavkama uređaja otvorite "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" i odaberite "Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{Trenutno se prikazuje 1 prozor Chromiuma}one{Trenutno se prikazuje {count} prozor Chromiuma}few{Trenutno se prikazuju {count} prozora Chromiuma}other{Trenutno se prikazuje {count} prozora Chromiuma}}</translation>
 <translation id="3344973607274501920">Chromium nije mogao provjeriti vaše lozinke. Predlažemo da provjerite internetsku vezu.</translation>
@@ -260,6 +261,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Odabrani podaci su uklonjeni iz Chromiuma i sinhroniziranih uređaja. Vaš Google uređaj može imati druge oblike historije pregledanja kao što su pretraživanja i aktivnosti s drugih Googleovih usluga na history.google.com.</translation>
 <translation id="7395825497086981028">Vaša lozinka će se sačuvati u Upravitelj lozinki za račun <ph name="EMAIL" />.</translation>
+<translation id="7504829997542308412">Otvorite Chromium</translation>
 <translation id="7531461704633548377">Iz Chromiuma</translation>
 <translation id="7554983317097061001">Savjet za Chromium: premjestite Chromium na donju traku</translation>
 <translation id="7576863740961052505">Upravljanje postavkama Chromiuma</translation>

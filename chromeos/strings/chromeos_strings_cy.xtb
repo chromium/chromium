@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">Mae angen dilysu dirprwy weinydd</translation>
 <translation id="4594021849294327751">Creu trawsgrifiad</translation>
 <translation id="4594541568452132351">Dewiswch iaith trawsgrifio a model lawrlwytho</translation>
-<translation id="4607282946861182308">Methu â chreu lluniau o hyn. Rhowch gynnig ar anogwr arall.</translation>
 <translation id="4609350030397390689">Disgleirdeb y bysellfwrdd i lawr</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> allan o <ph name="TOTAL_PAGE_NUMBER" />. Pwyswch Enter i ganslo'r dasg argraffu hon.</translation>
 <translation id="463791356324567266">Wrthi'n canslo sganio...</translation>
@@ -1659,6 +1658,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8543574988889671960">Ail-lwytho'r tab</translation>
 <translation id="8550364285433943656">Gosod rheolyddion ar weithredoedd gêm i'w chwarae gydag allweddi bysellfwrdd</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">Gall AI cynhyrchiol wneud camgymeriadau, gan gynnwys am bobl, felly gwiriwch ef ddwywaith.</translation>
 <translation id="8575298406870537639">Mae'n bosib y bydd eich cludwr yn gofyn am gysylltu â'ch rhwydwaith. Cysylltwch â'ch cludwr am fanylion.</translation>
 <translation id="8576249514688522074">Heb ei gychwyn</translation>
 <translation id="8584654835905316966">Mae angen ailgychwyn i gwblhau gosod cadarnwedd ar gyfer <ph name="DEVICE_NAME" /> i fersiwn <ph name="VERSION" />. Mae'n bosib y bydd eich cyfrifiadur yn ailgychwyn sawl gwaith. Disgwylir yr ymddygiad hwn.</translation>
@@ -1673,7 +1673,6 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8655295600908251630">Sianel</translation>
 <translation id="8655828773034788261">Rhannu URL:</translation>
 <translation id="8660881923941176839">pwysau</translation>
-<translation id="8670057600920888023">Mae AI cynhyrchiol yn arbrofol a gall y cynnwys fod yn anghywir, yn gamarweiniol neu'n sarhaus.</translation>
 <translation id="8670574982334489519">dde</translation>
 <translation id="8675354002693747642">Allwedd a rannwyd ymlaen llaw</translation>
 <translation id="8677859815076891398">Dim albymau. Creu albwm yn <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>

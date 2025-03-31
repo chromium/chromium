@@ -91,6 +91,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1269405891096105529">O periférico não é compatível com o modo visitante</translation>
 <translation id="1270290102613614947">Teclado na tela desativado</translation>
 <translation id="1272079795634619415">Parar</translation>
+<translation id="12741168609094094">Selecione qualquer coisa na tela para pesquisar, copiar texto e muito mais</translation>
 <translation id="1275285675049378717">Conectando <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Linha selecionada</translation>
 <translation id="1276975447697633661">Selecione o arquivo e pressione <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1720230731642245863">O ponto de acesso está desativado</translation>
 <translation id="1731815243805539470">Mudar para o usuário anterior</translation>
 <translation id="1733996486177697563">Escolha entre o tema claro ou escuro. Toque na área de trabalho e a mantenha pressionada. Depois, selecione a opção "Plano de fundo e estilo".</translation>
+<translation id="1735992454301033090">Área selecionada, use as teclas de seta para mover</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" visível para dispositivos Bluetooth.</translation>
 <translation id="1737078180382804488">Dispensar configuração de visualização de notificações do smartphone</translation>
 <translation id="174102739345480129">O marcador está desativado.</translation>
@@ -494,6 +496,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> da semana passada</translation>
 <translation id="2687510499067466116">O atalho do teclado foi editado</translation>
 <translation id="2689613560355655046">Espaço de trabalho 8</translation>
+<translation id="2692092709110488417">Pressione Tab para focar e mover a área selecionada</translation>
 <translation id="2695305337569143674">Web</translation>
 <translation id="2697697418792422688">Mostrar configurações do teclado. O <ph name="KEYBOARD_NAME" /> está selecionado.</translation>
 <translation id="2699913284398121653">Use o app Transferência de conteúdo para mover os dados da sua conta escolar para a pessoal</translation>
@@ -729,6 +732,7 @@ Caso contrário, o touchpad integrado será reativado em <ph name="TIMEOUT_SECON
 <translation id="346243998268439747">Redefinir nível de zoom</translation>
 <translation id="3465223694362104965">Outro teclado foi conectado a este dispositivo desde seu último acesso. Verifique se esse teclado é confiável antes de usá-lo.</translation>
 <translation id="3465356146291925647">Gerenciado pelo seu administrador</translation>
+<translation id="3470502288861289375">Copiando...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY_ONE" /> e depois <ph name="KEY_TWO" /> ou <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control-Shift-Espaço</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1033,6 +1037,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4412698727486357573">Central de Ajuda</translation>
 <translation id="4412944820643904175">O recurso <ph name="FEATURE_NAME" /> está desativado.</translation>
 <translation id="4417647906073317561">Configurações de foco. Defina um timer, uma tarefa e uma música para entrar no ritmo.</translation>
+<translation id="4418600384772451109">Fechar painel</translation>
 <translation id="4424159417645388645">Espaço de trabalho 5</translation>
 <translation id="4426817706804363424">Parabéns!</translation>
 <translation id="4430019312045809116">Volume</translation>
@@ -2229,6 +2234,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8287009018010202411">Produtividade</translation>
 <translation id="828708037801473432">Desativada</translation>
 <translation id="8297006494302853456">Fraco</translation>
+<translation id="8300451473979404345">Alça selecionada, use as teclas de seta para mover</translation>
 <translation id="8308637677604853869">Menu anterior</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock está ativado</translation>
@@ -2289,6 +2295,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="851458219935658693">Mostrar janelas do espaço de trabalho atual, botão de opção selecionado</translation>
 <translation id="851660987304951246">Use o recurso "Quero ajuda para ler" para resumir rapidamente o conteúdo ou fazer perguntas</translation>
 <translation id="8517041960877371778">Seu <ph name="DEVICE_TYPE" /> pode não ser carregado enquanto estiver ligado.</translation>
+<translation id="8519329096920173967">Pesquisar o que aparece na tela com o Google Lens</translation>
 <translation id="8535393432370007982">Desfazer ordem de classificação por cor</translation>
 <translation id="8536886494750559755">Mostrar configurações do Quick Share. Visível para todos por <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Texto copiado para a área de transferência</translation>

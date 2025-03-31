@@ -8,6 +8,7 @@
 <translation id="100323615638474026">USB cihazı (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Son endirmə tarixçəsi</translation>
 <translation id="1004218526896219317">Sayt girişi</translation>
+<translation id="1005230401424685968">YYYY</translation>
 <translation id="1005274289863221750">Mikrofonunuzu və kameranızı istifadə edin</translation>
 <translation id="1005333234656240382">ADB sazlaması aktivləşdirilsin?</translation>
 <translation id="1005671386794704751">Qızılgül</translation>
@@ -1363,6 +1364,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="193565226207940518">Dəstək aləti</translation>
 <translation id="1935995810530254458">İstənilən halda kopyalayın</translation>
 <translation id="1936157145127842922">Qovluqda göstərin</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Səhifə oxu siyahısına əlavə edildi}other{Səhifələr oxu siyahısına əlavə edildi}}</translation>
 <translation id="1936931585862840749">Neçə nüsxə çap etmək istədiyinizi rəqəm ilə (1-<ph name="MAX_COPIES" /> arasında) göstərin</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_CONTAINER" /> konteyner forma növü <ph name="ARCHITECTURE_DEVICE" /> cihazı ilə import edilə bilməz. Bu konteyneri fərqli cihaza bərpa edə, yaxud onu Fayl tətbiqində açaraq konteyner şəklin daxilindəki faylları əldə edə bilərsiniz.</translation>
 <translation id="1938351510777341717">Xarici Əmr</translation>
@@ -3174,7 +3176,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
         <ph name="BREAK" />
         <ph name="BREAK" />
         Bu kartda ayarları idarə edə, yaxud "Chrome-u fərdiləşdirin" bölməsində digər seçimlərə baxa bilərsiniz.</translation>
-<translation id="3207437351138888228">Formanı doldurduğunuz zaman məlumatlar və formanın gəldiyi səhifə təkliflər yaratmaq üçün Google-a göndərilir</translation>
 <translation id="3207960819495026254">Əlfəcinlənib</translation>
 <translation id="3208584281581115441">İndi yoxlayın</translation>
 <translation id="3208703785962634733">Təsdiq olunmadı</translation>
@@ -3219,6 +3220,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3242289508736283383">"Yalnız_kiosk" funksiyası olan tətbiqlər ChromeOS kiosk rejimində quraşdırılmalıdır</translation>
 <translation id="3243017971870859287">ChromeOS Flex cihaz və komponent seriya nömrələrini oxumaq</translation>
 <translation id="324366796737464147">Səs-küyün əngəllənməsi</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Səssiz etməyə davam edin</translation>
 <translation id="3247006341013237647">Tablar nizamlansın?</translation>
 <translation id="3247649647204519958">Burada sayt üzrə artırma icazələrinə baxa və onları idarə edə bilərsiniz</translation>
@@ -6084,7 +6086,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5267572070504076962">Təhlükəli saytlardan qorunmaq üçün Güvənli Baxışı aktiv edin</translation>
 <translation id="5269977353971873915">Çap alınmadı</translation>
 <translation id="5271578170655641944">Google Diskə giriş silinsin?</translation>
-<translation id="5271782684896713035">Bu funksiyanı təkmilləşdirmək üçün insan redaktorlar dataya baxa bilər</translation>
 <translation id="5273806377963980154">Sayt keçidini redaktə edin</translation>
 <translation id="5275084684151588738">İstifadəçi Lüğətləri</translation>
 <translation id="5275338516105640560">Saxlanmış Tab Qrupu düyməsi</translation>

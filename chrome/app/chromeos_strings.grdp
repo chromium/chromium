@@ -4361,6 +4361,9 @@
   <message name="IDS_CONSOLIDATED_CONSENT_HEADER_CHILD" desc="Title of the consolidated consent screen for child account.">
     Review these terms and control your child's data
   </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_HEADER_DEMO_MODE" desc="Title of the consolidated consent screen for demo mode.">
+    Review these terms
+  </message>
   <message name="IDS_CONSOLIDATED_CONSENT_HEADER_MANAGED" desc="Title of the consolidated consent screen for managed accounts.">
     Control your data
   </message>
@@ -4369,6 +4372,9 @@
   </message>
   <message name="IDS_CONSOLIDATED_CONSENT_SUBHEADER" desc="Subtitle of the consolidated consent screen.">
     You can control what data is shared with Google. You can change this anytime in Settings. Data will be used according to Google's <ph name="BEGIN_LINK">&lt;a id="privacyPolicyLink"&gt;</ph>Privacy Policy<ph name="END_LINK">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_SUBHEADER_DEMO_MODE" desc="Subtitle of the consolidated consent screen in demo mode.">
+    All data collected will be used according to Google's <ph name="BEGIN_LINK">&lt;a id="privacyPolicyLink"&gt;</ph>Privacy Policy<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_CONSOLIDATED_CONSENT_TERMS_TITLE" desc="Title of the main terms and conditions to be accepted in the consolidated consent screen">
     Terms and conditions
@@ -4384,6 +4390,9 @@
   </message>
   <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_OWNER" desc="Message in the consolidated consent screen to opt-in for metrics when the user is the device owner.">
     Help improve Chrome and ChromeOS features and performance by automatically sending crash reports as well as diagnostic and usage data to Google.
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_DEMO_MODE" desc="Message in the consolidated consent screen to opt-in for metrics in demo mode.">
+    Demo Mode devices automatically send crash reports as well as diagnostic and usage data to Google, to help improve features and performance.
   </message>
   <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_LINK" desc="Learn more about usage opt in">
     Learn more about diagnostic and usage data

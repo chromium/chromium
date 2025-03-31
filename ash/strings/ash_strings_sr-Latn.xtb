@@ -732,6 +732,7 @@ U suprotnom će ugrađeni tačped biti ponovo omogućen za <ph name="TIMEOUT_S
 <translation id="346243998268439747">Resetujte nivo zumiranja</translation>
 <translation id="3465223694362104965">Još jedna tastatura je povezana sa ovim uređajem otkad ste se poslednji put prijavili. Uverite se da je u pitanju pouzdana tastatura pre nego što je koristite.</translation>
 <translation id="3465356146291925647">Upravlja administrator</translation>
+<translation id="3470502288861289375">Kopiranje...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, pa <ph name="KEY_TWO" /> ili <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" /></translation>

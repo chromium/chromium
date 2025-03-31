@@ -8,6 +8,7 @@
 <translation id="100323615638474026">የዩኤስቢ መሣሪያ (<ph name="VENDOR_ID" />፦<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">የቅርብ ጊዜ የውርድ ታሪክ</translation>
 <translation id="1004218526896219317">የጣቢያ መዳረሻ</translation>
+<translation id="1005230401424685968">ዓዓዓዓ</translation>
 <translation id="1005274289863221750">ማይክሮፎንዎን እና ካሜራዎን ይጠቀማል</translation>
 <translation id="1005333234656240382">የADB ስህተት ማረሚያ ይንቃ?</translation>
 <translation id="1005671386794704751">ሮዝ</translation>
@@ -1375,6 +1376,7 @@
 <translation id="193565226207940518">የድጋፍ መሣሪያ</translation>
 <translation id="1935995810530254458">ለማንኛውም ቅዳ</translation>
 <translation id="1936157145127842922">በአቃፊ አሳይ</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{ገፅ ወደ የንባብ ዝርዝር ታክሏል}one{ገፅ ወደ የንባብ ዝርዝር ታክሏል}other{ገፆች ወደ የንባብ ዝርዝር ታክለዋል}}</translation>
 <translation id="1936931585862840749">ስንት ቅጂዎች መታተም እንዳለባቸው ለማመላከት ቁጥር ይጠቀሙ (ከ1 እስከ <ph name="MAX_COPIES" />)።</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> በሆነው በዚህ መሣሪያ የመያዣ ኪነ ህንፃ ዓይነት <ph name="ARCHITECTURE_CONTAINER" />ን ማስመጣት አይቻልም። ይህን መያዣ በተለየ መሣሪያ ወደነበረበት ለመመለስ መሞከር፣ ወይም ደግሞ በፋይሎች መተግበሪያ ውስጥ በመክፈት በዚህ መያዣ ውስጥ ይያሉ ፋይሎችን መድረስ ይችላሉ።</translation>
 <translation id="1938351510777341717">ውጫዊ ትዕዛዝ</translation>
@@ -3184,7 +3186,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         ቅንብሮችን በማንኛውም ጊዜ ከዚህ ካርድ ማስተዳደር ወይም በChrome አብጅ ውስጥ ተጨማሪ አማራጮችን ማየት ይችላሉ።</translation>
-<translation id="3207437351138888228">ቅጹን ሲሞሉ፣ የእርስዎ መረጃ እና የመጣው ገፅ ጥቆማዎችን ለማመንጨት ወደ Google ይላካሉ</translation>
 <translation id="3207960819495026254">ዕልባት ተደርጎበታል</translation>
 <translation id="3208584281581115441">አሁን ፈትሽ</translation>
 <translation id="3208703785962634733">ያልተረጋገጠ</translation>
@@ -3229,6 +3230,7 @@
 <translation id="3242289508736283383">የ«kiosk_only» ዝርዝር ሰነድ አይነታ ያለው መተግበሪያ በChromeOS የሱቅ ሁኔታ ላይ መጫን አለበት።</translation>
 <translation id="3243017971870859287">የChromeOS Flex መሣሪያ እና የክፍለ-አካል መለያ ቁጥሮችን ያንብቡ</translation>
 <translation id="324366796737464147">ጫጫታ ማስወገጃ</translation>
+<translation id="3244271242291266297">ወወ</translation>
 <translation id="3244294424315804309">ድምጽን መዝጋቱ ቀጥል</translation>
 <translation id="3247006341013237647">ትሮችን ያደራጁ?</translation>
 <translation id="3247649647204519958">ከዚህ፣ ላሉበት ጣቢያ የቅጥያ ፈቃዶችን ማየት እና ማስተዳደር ይችላሉ</translation>
@@ -6094,7 +6096,6 @@
 <translation id="5267572070504076962">ከአደገኛ ጣቢያዎች ጥበቃ ለማግኘት ደህንነቱ የተጠበቀ አሰሳን ያብሩ</translation>
 <translation id="5269977353971873915">ማተም አልተሳካም</translation>
 <translation id="5271578170655641944">የGoogle Drive መድረሻ ይወገድ?</translation>
-<translation id="5271782684896713035">ይህን ባህሪ ለማሻሻል ውሂብ የሰው ገምጋሚዎች ሊታይ ይችላል</translation>
 <translation id="5273806377963980154">የጣቢያ ዩአርኤል ያርትዑ</translation>
 <translation id="5275084684151588738">የተጠቃሚ መዝገበ ቃላት</translation>
 <translation id="5275338516105640560">የተቀመጠ የትር ቡድን አዝራር</translation>

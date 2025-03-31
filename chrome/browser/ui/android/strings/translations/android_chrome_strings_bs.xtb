@@ -307,6 +307,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2453860139492968684">Završi</translation>
 <translation id="2461378706168271257">Pretražite kartice</translation>
 <translation id="2461822463642141190">Trenutno</translation>
+<translation id="2463770278804271243">STRANICA</translation>
 <translation id="2468444275314013497">Izgleda da je vaš preglednik siguran</translation>
 <translation id="2472163211318554013">Prijavite se da iskoristite prednosti Chromea</translation>
 <translation id="247737702124049222">Opisi slika su uključeni</translation>
@@ -325,7 +326,6 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2527209463677295330">Ako obuhvatite više teksta stranice, možda ćete dobiti bolje rezultate</translation>
 <translation id="2527779675047087889">Sakrijte sadržaj međumemorije</translation>
 <translation id="2532336938189706096">Web prikaz</translation>
-<translation id="2534155362429831547">Broj izbrisanih stavki: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="253498598929009420">Web lokacija će moći vidjeti sadržaje ekrana</translation>
 <translation id="2536728043171574184">Gledate kopiju ove stranice van mreže</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, kartica</translation>
@@ -365,7 +365,6 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2677748264148917807">Napusti</translation>
 <translation id="2687009626279857299">Prestalo je funkcionirati na ovom uređaju</translation>
 <translation id="2702516483241149200">Novo: dijelite link koji kliže do ovog teksta</translation>
-<translation id="2705073298859543115">Kreiraj sažetak</translation>
 <translation id="2708051474374549906">Proaktivna zaštita od opasnih web lokacija, preuzimanja i ekstenzija u stvarnom vremenu koja se zasniva na vašim podacima o pregledanju koji se šalju Googleu</translation>
 <translation id="2708226184420201102">Otvori u pregledniku <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">Novo</translation>
@@ -677,7 +676,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="4195643157523330669">Otvori u novoj kartici</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 kartica na uređaju}one{# kartica na uređaju}few{# kartice na uređaju}other{# kartica na uređaju}}</translation>
 <translation id="4198423547019359126">Nema dostupnih lokacija za preuzimanje</translation>
-<translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Upotrijebili ste na ovoj web-lokaciji</translation>
+<translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Koristili ste na ovoj web lokaciji</translation>
 <translation id="4214315110991671325">Ako dozvolite kolačiće, Chrome ih može koristiti za predučitavanje.</translation>
 <translation id="4216511743389425832">Poslušajte ovu stranicu</translation>
 <translation id="4225725533026049334">Pratite</translation>
@@ -1199,7 +1198,6 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6564820424018738527">Android uređaj može sadržavati sličnu postavku. Ako je mjerenje oglasa uključeno u Chromeu i na Android uređaju, kompanija će možda moći izmjeriti učinkovitost oglasa na web lokacijama koje posjećujete i u aplikacijama koje koristite.</translation>
 <translation id="6565959834589222080">WiFi mreža se koristi kada je dostupna</translation>
 <translation id="6569373978618239158">Sada ćete vidjeti priče s web lokacije <ph name="SITE_NAME" /> kada otvorite novu karticu. Web lokacije koje pratite se pohranjuju na vaš Google račun. Njima možete upravljati u postavkama Discovera.</translation>
-<translation id="6570116402456758630">Sažetak stranice</translation>
 <translation id="657177046675873214">Da dobijete oznake na svim uređajima, uključite "Oznake" u postavkama</translation>
 <translation id="6573096386450695060">Uvijek dozvoli</translation>
 <translation id="6573431926118603307">Kartice koje ste otvorili u Chromeu na drugim uređajima prikazat će se ovdje.</translation>

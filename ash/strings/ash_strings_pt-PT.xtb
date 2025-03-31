@@ -732,6 +732,7 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="346243998268439747">Repor o nível de zoom</translation>
 <translation id="3465223694362104965">Foi ligado outro teclado a este dispositivo desde o seu último acesso. Certifique-se de que confia neste teclado antes de o utilizar.</translation>
 <translation id="3465356146291925647">Gerida pelo administrador</translation>
+<translation id="3470502288861289375">A copiar...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> e, em seguida, <ph name="KEY_TWO" /> ou <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control-Shift-Espaço</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" /></translation>

@@ -307,6 +307,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="2453860139492968684">Maliza</translation>
 <translation id="2461378706168271257">Tafuta kwenye vichupo</translation>
 <translation id="2461822463642141190">Ya sasa</translation>
+<translation id="2463770278804271243">UKURASA</translation>
 <translation id="2468444275314013497">Kivinjari chako kinaonekana kuwa salama</translation>
 <translation id="2472163211318554013">Ingia katika akaunti ili unufaike zaidi kutokana na Chrome</translation>
 <translation id="247737702124049222">Kipengele cha maelezo ya picha kimewashwa</translation>
@@ -325,7 +326,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="2527209463677295330">Ukijumuisha maandishi zaidi ya ukurasa, huenda ukaona matokeo bora zaidi</translation>
 <translation id="2527779675047087889">Ficha yaliyomo kwenye ubao wa kunakili</translation>
 <translation id="2532336938189706096">Mwonekano wa Wavuti</translation>
-<translation id="2534155362429831547">Umefuta vipengee <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="253498598929009420">Tovuti hii itaweza kuangalia maudhui yaliyo kwenye skrini yako</translation>
 <translation id="2536728043171574184">Unaangalia nakala ya nje ya mtandao ya ukurasa huu</translation>
 <translation id="2542548955756682219">Kichupo, <ph name="TAB_TITLE" /></translation>
@@ -365,7 +365,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="2677748264148917807">Ondoka</translation>
 <translation id="2687009626279857299">Kimeacha kufanya kazi kwenye kifaa hiki</translation>
 <translation id="2702516483241149200">Mpya: shiriki kiungo kinachoenda kwenye maandishi haya</translation>
-<translation id="2705073298859543115">Tayarisha muhtasari</translation>
 <translation id="2708051474374549906">Ulinzi wa muda halisi na wa mapema dhidi ya tovuti, vipakuliwa na viendelezi hatari kulingana na data yako ya kuvinjari inayotumwa kwa Google</translation>
 <translation id="2708226184420201102">Fungua katika kivinjari cha <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">Mpya</translation>
@@ -677,6 +676,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="4195643157523330669">Fungua katika kichupo kipya</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Kichupo 1 kwenye kifaa hiki}other{Vichupo # kwenye kifaa hiki}}</translation>
 <translation id="4198423547019359126">Hakuna maeneno ya upakuaji</translation>
+<translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Ulitumia kwenye tovuti hii</translation>
 <translation id="4214315110991671325">Ukiruhusu vidakuzi, huenda Chrome ikavitumia wakati wa kupakia mapema.</translation>
 <translation id="4216511743389425832">Sikiliza maandishi ya ukurasa huu</translation>
 <translation id="4225725533026049334">Unafuatilia</translation>
@@ -1198,7 +1198,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6564820424018738527">Kifaa chako cha Android kinaweza kujumuisha mipangilio inayofanana. Ikiwa upimaji wa matangazo umewashwa kwenye Chrome na katika kifaa chako cha Android, kampuni inaweza kupima ufanisi wa tangazo kwenye tovuti unazotembelea na programu unazotumia.</translation>
 <translation id="6565959834589222080">Wi-Fi hutumika inapopatikana</translation>
 <translation id="6569373978618239158">Sasa utaona hadithi kutoka <ph name="SITE_NAME" /> unapofungua kichupo kipya. Tovuti unazofuatilia huhifadhiwa katika akaunti yako ya Google. Unaweza kuzidhibiti katika mipangilio ya Dokezo.</translation>
-<translation id="6570116402456758630">Muhtasari wa ukurasa</translation>
 <translation id="657177046675873214">Ili upate alamisho zako kwenye vifaa vyako vyote, washa “Alamisho” kwenye mipangilio</translation>
 <translation id="6573096386450695060">Ruhusu kila wakati</translation>
 <translation id="6573431926118603307">Vichupo ulivyofungua katika Chrome kwenye vifaa vyako vingine vitaonekana hapa.</translation>

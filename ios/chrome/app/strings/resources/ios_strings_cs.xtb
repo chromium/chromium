@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">Odebrat</translation>
 <translation id="1190609913194133056">Centrum oznámení</translation>
 <translation id="1201402288615127009">Další</translation>
-<translation id="1202892408424955784">Sledované produkty</translation>
 <translation id="1204075260022434100">{count,plural, =1{Záložka byla uložena do složky „{title}“ ve vašem účtu {email}}few{Do složky „{title}“ ve vašem účtu {email} byly uloženy {count} záložky}many{Do složky „{title}“ ve vašem účtu {email} bylo uloženo {count} záložky}other{Do složky „{title}“ ve vašem účtu {email} bylo uloženo {count} záložek}}</translation>
 <translation id="120431140543679678">Sledovat</translation>
 <translation id="1207493287814084192">17:30</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">nová položka</translation>
 <translation id="2049727122989709386">V následujícím počtu účtů používáte stejné heslo <ph name="COUNT" /></translation>
 <translation id="2059166748188874810">Samosprávná oblast</translation>
-<translation id="2060114494785549741">Za měsíc smazat</translation>
 <translation id="2060638295449304809">Tahle adresa je uložená jen na tomhle zařízení. Pokud ji chcete používat i na jiných zařízeních, uložte ji do svého účtu Google <ph name="USER_EMAIL" />.</translation>
 <translation id="20638360198452347">Výběr typu jednotek</translation>
 <translation id="2067852168641682340">Pokaždé uložit do tohoto účtu</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">Skrýt kartu Sledovat cenu</translation>
 <translation id="2216366330550244277">Přejděte na stránku produktu</translation>
 <translation id="2220529011494928058">Nahlásit problém</translation>
-<translation id="2220887224562128152">Po naplánování smazání už soubor nebude možné obnovit.</translation>
 <translation id="2223461067862937305">Vytvořit QR kód</translation>
 <translation id="2229345671837147090">Mřížka vzdálených karet</translation>
 <translation id="2230173723195178503">Webová stránka byla načtena</translation>
@@ -493,7 +490,6 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="3059270601560379555">Nové vyhledávání</translation>
 <translation id="3064547930554042309">Správa stažených souborů</translation>
 <translation id="3072279342064724558">Heslo už existuje</translation>
-<translation id="3074862506644936708">Zapnout automatické mazání</translation>
 <translation id="3076846064362030967">Z účtu Google odhlášeni nebudete. <ph name="BEGIN_LINK" />Další typy aktivity<ph name="END_LINK" /> se mohou ukládat do vašeho účtu Google, když jste přihlášeni. Můžete je kdykoli smazat.
 
 
@@ -912,6 +908,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4896467949657706481">Karty byly zavřeny a byli jste odhlášeni</translation>
 <translation id="4913626501929406101">Kopii svého hesla můžete bezpečně sdílet s někým ve vaší rodinné skupině. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Přijmout</translation>
+<translation id="4930714375720679147">Zapnout</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4936354130727646074">Nikdy nepřesouvat</translation>
 <translation id="4937410517508563815">Uložení hesel do účtu</translation>
@@ -1147,7 +1144,6 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5899314093904173337">Chcete-li obsah sdílet s lidmi z okolí, nechte je naskenovat tento QR kód (pomocí fotoaparátu nebo aplikace na skenování QR kódů)</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} nová karta}few{{count} nové karty}many{{count} nové karty}other{{count} nových karet}}</translation>
 <translation id="5911030830365207728">Překladač Google</translation>
-<translation id="5917913282764181683">Automatické mazání stažených souborů</translation>
 <translation id="5922999516621365983">Pokud kartu chcete připnout, přetáhněte ji sem</translation>
 <translation id="5936006948844852401">Spravovat úložiště</translation>
 <translation id="5936065461722368675">Přeložit celou stránku</translation>
@@ -1506,7 +1502,6 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="741204030948306876">Ano</translation>
 <translation id="7417689656810783109">Přejmenovat skupinu</translation>
 <translation id="7419565702166471774">Vždy používat zabezpečená připojení</translation>
-<translation id="742001653298797675">Naplánujte smazání všech stažených souborů po jednom měsíci, abyste ušetřili místo v telefonu a ochránili své soukromí.</translation>
 <translation id="7425053386765766120">Přidat platební metodu…</translation>
 <translation id="7425346204213733349">Změny záložek, historie, hesel a dalších nastavení se již nebudou synchronizovat do vašeho účtu Google. Vaše existující data však v účtu Google uložena zůstanou.</translation>
 <translation id="742664698522525515">Zachovat skupinu?</translation>

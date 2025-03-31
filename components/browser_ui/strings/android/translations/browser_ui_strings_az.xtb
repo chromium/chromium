@@ -112,6 +112,7 @@
 <translation id="244264527810019436">Bəzi saytlardakı funksiyalar Anonim rejimdə işləməyə bilər</translation>
 <translation id="2442870161001914531">Həmişə masaüstü saytını tələb edin</translation>
 <translation id="2445311670906052406">Chrome artıq son tabları cihazla paylaşır. Onları cihazın tətbiq siyahısında və axtarış nəticələrində görəcəksiniz. Bunu istənilən vaxt Chrome ayarlarında deaktiv edə bilərsiniz.</translation>
+<translation id="245322989586167203">Saytlar adətən şəbəkəni ayarlamaq kimi datanın ötürülməsi funksiyaları üçün ardıcıl portlara qoşulur</translation>
 <translation id="2469312991797799607">Bu əməliyyat ilə <ph name="ORIGIN" /> və ona aid saytların data və kukiləri silinəcək</translation>
 <translation id="2482878487686419369">Bildirişlər</translation>
 <translation id="2485422356828889247">Sistemdən silin</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">Saytların bu cihazdan nə zaman aktiv şəkildə istifadə etdiyinizi bilməsini bloklayın</translation>
 <translation id="4412992751769744546">Üçüncü tərəf kukilərinə icazə verin</translation>
 <translation id="4419929467120297501">Chrome saytların baxış zamanı sizi izləmək üçün üçüncü tərəf kukilərindən istifadəsini bloklayır. <ph name="BEGIN_LINK" />Üçüncü tərəf kukilərinə girişi idarə etmək<ph name="END_LINK" /> üçün Ayarlara keçin.</translation>
+<translation id="443121186588148776">Ardıcıl port</translation>
 <translation id="4434045419905280838">Popap və yönləndirmələr</translation>
 <translation id="443552056913301231">Bu əməliyyat ilə kukilər daxil olmaqla bütün lokal data silinəcək və <ph name="ORIGIN" /> icazələri sıfırlanacaq</translation>
 <translation id="4468959413250150279">Xüsusi saytı səsiz rejimə keçirin.</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Öncə soruşun</translation>
 <translation id="7423538860840206698">Buferdə oxu girişi blok edildi</translation>
 <translation id="7425915948813553151">Saytlar üçün tünd tema</translation>
+<translation id="7478658909253570368">Saytlara ardıcıl portlara qoşulmaq icazəsi verməyin</translation>
 <translation id="7488573225650545859">Tətbiq siyahısındakı Baxış tablarını gizlədin</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Aktiv ediləndə saytlar giriş sorğularını göstərə bilər. Deaktiv ediləndə saytlar giriş sorğularını göstərə bilməz.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Bluetooth cihazına qoşulub</translation>
 <translation id="7617547684249261169">Tarixçə, kukilər, sayt məlumatları və digərlərinin bir qismini və ya hamısını silə bilərsiniz</translation>
 <translation id="7649070708921625228">Yardım</translation>
+<translation id="7655411746932645568">Saytlar ardıcıl portlara qoşulmaq üçün icazə istəyə bilər</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
 <translation id="7667547420449112975">Ozlu Heyrətamiz Sehrbaz</translation>
 <translation id="7681597159868843240">Saytlar, adətən, virtual reallıq və ya fitnes izləmə kimi xüsusiyyətlər üçün cihazınızın hərəkət sensorlarından istifadə edir</translation>

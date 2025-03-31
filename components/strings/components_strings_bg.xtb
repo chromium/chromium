@@ -441,7 +441,6 @@
 <translation id="1734878702283171397">Свържете се със системния администратор.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, изтича на <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Компютър</translation>
-<translation id="1739422091279046802">превъртане и промяна на мащаба</translation>
 <translation id="1741613555002899862">Трябва да бъде посочено посредством валиден низ, когато за правилото DnsOverHttpsMode е зададено <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Спален текстил и спално бельо</translation>
 <translation id="1743892871127720056">Сравняване на заглавието на таблица, редактиране на текста</translation>
@@ -1569,6 +1568,7 @@
 <translation id="3715016660240337709">{0,plural, =1{Качването на файла е блокирано}other{Качването на <ph name="FILE_COUNT" /> файла е блокирано}}</translation>
 <translation id="3715597595485130451">Свързване с Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Проверете конфигурацията на прокси сървъра, защитната стена и DNS<ph name="END_LINK" />.</translation>
+<translation id="3723316892512143176">IBAN</translation>
 <translation id="3723663469265383848">По време на актуализацията няма да можете да използвате устройството си за период до 10 минути.</translation>
 <translation id="372429172604983730">Тази грешка може да се дължи на приложение, като например антивирусна програма или софтуер за защитна стена или за филтриране на съдържание в мрежата.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да създадете бързо презентация в Google Презентации</translation>
@@ -2495,6 +2495,7 @@
 <translation id="5379618281582508161">Потвърдете самоличността си, за да получите тази парола на всичките си устройства</translation>
 <translation id="5380953781541843508">във възходящ ред</translation>
 <translation id="5381318171304904246">Ако продължите, ще бъдете пренасочени към уебсайта на банката ви. След като потвърдите, ще бъдете автоматично върнати, за да завършите покупката си.</translation>
+<translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> актуализира раздела „<ph name="WEBSITE_TITLE" />“</translation>
 <translation id="5383478552402031184">Подови настилки</translation>
 <translation id="5385857628869214740">Хумор</translation>
 <translation id="5385966243497224160">Не може да се визуализира URL адрес без HTTPS</translation>
@@ -2880,6 +2881,7 @@
 <translation id="6059925163896151826">USB устройства</translation>
 <translation id="6060009363608157444">Невалиден режим за DnsOverHttps.</translation>
 <translation id="6061154937977953833">Борба</translation>
+<translation id="6062405040252994646">Инструмент</translation>
 <translation id="6062937464449575061">Спиране на проследяването на цената</translation>
 <translation id="6063415549109819824">Жилищно финансиране</translation>
 <translation id="6070432475334343308">Един или повече файлове не бяха качени в папката „<ph name="FOLDER_NAME" />“ в(ъв) <ph name="CLOUD_PROVIDER" /></translation>
@@ -3927,6 +3929,7 @@
 <translation id="787226752901403048">Влезте в профила си в Chrome, за да споделяте и да се присъединявате към групи раздели и да работите заедно по идеи</translation>
 <translation id="7877007680666472091">идентификатори на защитено съдържание</translation>
 <translation id="7878562273885520351">Възможно е паролата ви да е компрометирана</translation>
+<translation id="7881044256965445977">Търсене и свързване с устройства в локалната ви мрежа</translation>
 <translation id="7882421473871500483">кафяво</translation>
 <translation id="7886897188117641322">Изберете кои широки категории теми могат да се използват за персонализиране на рекламите</translation>
 <translation id="7887683347370398519">Прегледайте кода за проверка и опитайте отново</translation>
@@ -4684,6 +4687,7 @@
 <translation id="94613679163347541">Да се извърши ли сравнение за <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да създадете бързо сайт в Google Сайтове</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome ще ограничи „бисквитките“ отново днес}=1{Chrome ще ограничи „бисквитките“ отново утре}other{# дни, докато Chrome ограничи „бисквитките“ отново}}</translation>
+<translation id="949026252328034572"><ph name="MEMBER_COUNT" /> членове се присъединиха към групата раздели „<ph name="GROUP_NAME" />“</translation>
 <translation id="949314938206378263">Поискахте да посетите този сайт. Родителят ви може да отговори във Family Link.</translation>
 <translation id="950736567201356821">Тройно перфориране в горната част</translation>
 <translation id="950926967802086924">Ключ за достъп • Google Мениджър на пароли</translation>

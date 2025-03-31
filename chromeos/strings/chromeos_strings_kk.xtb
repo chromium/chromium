@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">Прокси растауы талап етіледі.</translation>
 <translation id="4594021849294327751">Транскрипция жасау</translation>
 <translation id="4594541568452132351">Транскрипция тілін таңдаңыз және үлгіні жүктеп алыңыз</translation>
-<translation id="4607282946861182308">Мұндай сурет жасау мүмкін емес. Басқа нұсқау жазып көріңіз.</translation>
 <translation id="4609350030397390689">Пернетақта жарықтығын азайту</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Басып шығарудан бас тарту үшін "Enter" пернесін басыңыз.</translation>
 <translation id="463791356324567266">Сканерлеу тоқтатылуда…</translation>
@@ -1540,6 +1539,7 @@
 <translation id="8010765388850538088">Жасампаз жасанды интеллект туралы толық ақпарат</translation>
 <translation id="8017679124341497925">Таңбаша өзгерді</translation>
 <translation id="802154636333426148">Жүктеу сәтсіз аяқталды</translation>
+<translation id="8027467664787098346">Таңдалған тұсқағаз туралы толық ақпарат</translation>
 <translation id="8028993641010258682">Көлемі</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Автобаланс режимін қосу</translation>
@@ -1658,6 +1658,7 @@
 <translation id="8543574988889671960">Қойындыны қайта жүктеу</translation>
 <translation id="8550364285433943656">Пернетақта пернелерімен ойнау үшін басқару элементтерін ойын әрекеттеріне қойыңыз</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">Жасампаз жасанды интеллект қателесуі (соның ішінде адамдар туралы) мүмкін, сол себепті жақсылап тексеріңіз.</translation>
 <translation id="8575298406870537639">Желіге қосылу үшін оператор осы опцияны талап етуі мүмкін. Мәліметтер алу үшін операторыңызға хабарласыңыз.</translation>
 <translation id="8576249514688522074">Бастаудан бас тартылды</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> құрылғысына арналған микробағдарламаны <ph name="VERSION" /> нұсқасына орнату үшін құрылғыны өшіріп қосу қажет. Компьютер бірнеше рет өшіп қосылуы мүмкін. Бұл — қалыпты жағдай.</translation>
@@ -1672,7 +1673,6 @@
 <translation id="8655295600908251630">Арна</translation>
 <translation id="8655828773034788261">URL мекенжайын бөлісу:</translation>
 <translation id="8660881923941176839">фунт</translation>
-<translation id="8670057600920888023">Жасампаз AI – эксперименттік жүйе, ол жасаған контент қате, жалған немесе намысқа тиетін болуы мүмкін.</translation>
 <translation id="8670574982334489519">оң жақ</translation>
 <translation id="8675354002693747642">Алдын ала бөлісілген код</translation>
 <translation id="8677859815076891398">Альбомдар жоқ. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> қызметінде альбом жасаңыз.</translation>

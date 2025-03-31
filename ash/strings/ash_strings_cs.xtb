@@ -91,6 +91,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1269405891096105529">Periferní zařízení není v režimu hosta podporováno</translation>
 <translation id="1270290102613614947">Softwarová klávesnice je deaktivována</translation>
 <translation id="1272079795634619415">Zastavit</translation>
+<translation id="12741168609094094">Výběrem obsahu na obrazovce můžete vyhledávat, kopírovat text a provádět další akce</translation>
 <translation id="1275285675049378717">Napájení: <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Vybráno</translation>
 <translation id="1276975447697633661">Vyberte soubor a stiskněte <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1720230731642245863">Hotspot je vypnutý</translation>
 <translation id="1731815243805539470">Přepnout na předchozího uživatele</translation>
 <translation id="1733996486177697563">Přepínejte mezi tmavým a světlým motivem. Podržte plochu a poté vyberte Tapeta a styl.</translation>
+<translation id="1735992454301033090">Vybraná oblast, pomocí kláves se šipkami ji přesunete</translation>
 <translation id="1736898441010944794">Adaptér <ph name="NAME" /> je viditelný pro zařízení Bluetooth.</translation>
 <translation id="1737078180382804488">Zavřít nastavení zobrazování oznámení z telefonu</translation>
 <translation id="174102739345480129">Popisovač je vypnutý.</translation>
@@ -494,6 +496,7 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> minulý den</translation>
 <translation id="2687510499067466116">Klávesová zkratka se změnila</translation>
 <translation id="2689613560355655046">Plocha 8</translation>
+<translation id="2692092709110488417">Pokud chcete vybranou oblast aktivovat a posouvat, stiskněte tabulátor</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Zobrazit nastavení klávesnice. Je vybrán řádek <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">Pomocí aplikace Přenos obsahu přesuňte data ze svého školního účtu na osobní</translation>
@@ -729,6 +732,7 @@ Když to neuděláte, vestavěný touchpad se za <ph name="TIMEOUT_SECONDS" /> z
 <translation id="346243998268439747">Resetovat úroveň přiblížení</translation>
 <translation id="3465223694362104965">K tomuto zařízení je připojena jiná klávesnice než při vašem posledním přihlášení. Před použitím této klávesnice se ujistěte, že jí můžete důvěřovat.</translation>
 <translation id="3465356146291925647">Spravováno vaším administrátorem</translation>
+<translation id="3470502288861289375">Kopírování...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> a poté <ph name="KEY_TWO" /> nebo <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control + Shift + mezerník</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1033,6 +1037,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4412698727486357573">Centrum nápovědy</translation>
 <translation id="4412944820643904175">Funkce <ph name="FEATURE_NAME" /> je vypnutá.</translation>
 <translation id="4417647906073317561">Nastavení soustředění. Nastavte si časovač, úkol a hudbu, aby vás nic nerozptylovalo.</translation>
+<translation id="4418600384772451109">Zavřít panel</translation>
 <translation id="4424159417645388645">Plocha 5</translation>
 <translation id="4426817706804363424">Tak to má být!</translation>
 <translation id="4430019312045809116">Hlasitost</translation>
@@ -2228,6 +2233,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8287009018010202411">Produktivita</translation>
 <translation id="828708037801473432">Vypnuto</translation>
 <translation id="8297006494302853456">Slabý</translation>
+<translation id="8300451473979404345">Vybraný úchyt, pomocí kláves se šipkami ho přesunete</translation>
 <translation id="8308637677604853869">Předchozí nabídka</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock je zapnutý</translation>
@@ -2288,6 +2294,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="851458219935658693">Zobrazit okna z aktuální plochy, je vybrán přepínač</translation>
 <translation id="851660987304951246">Pomocí funkce Pomoz mi číst si můžete nechat rychle shrnout obsah nebo se na něco zeptat</translation>
 <translation id="8517041960877371778">Je možné, že když bude zařízení <ph name="DEVICE_TYPE" /> zapnuté, nebude se nabíjet.</translation>
+<translation id="8519329096920173967">Prohledat obrazovku pomocí Google Lens</translation>
 <translation id="8535393432370007982">Zrušit řazení podle barvy</translation>
 <translation id="8536886494750559755">Zobrazit nastavení funkce Quick Share. Viditelné všem na <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Text byl zkopírován do schránky</translation>

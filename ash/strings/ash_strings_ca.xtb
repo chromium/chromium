@@ -91,6 +91,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1269405891096105529">Aquest perifèric no s'admet en mode de convidat</translation>
 <translation id="1270290102613614947">Teclat en pantalla desactivat</translation>
 <translation id="1272079795634619415">Atura</translation>
+<translation id="12741168609094094">Selecciona qualsevol element de la pantalla per cercar, copiar text i més</translation>
 <translation id="1275285675049378717">S'està alimentant el <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Seleccionada</translation>
 <translation id="1276975447697633661">Selecciona el fitxer i, a continuació, prem <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1720230731642245863">El punt d'accés Wi‐Fi està desactivat</translation>
 <translation id="1731815243805539470">Canvia a l'usuari anterior</translation>
 <translation id="1733996486177697563">Canvia entre els temes clar i fosc. Mantén premut l'escriptori i, a continuació, selecciona Estil i fons de pantalla.</translation>
+<translation id="1735992454301033090">Àrea seleccionada; utilitza les tecles de fletxa per moure-la</translation>
 <translation id="1736898441010944794"><ph name="NAME" /> és visible per als dispositius Bluetooth.</translation>
 <translation id="1737078180382804488">Ignora la configuració de visualització de les notificacions del telèfon</translation>
 <translation id="174102739345480129">El marcador està desactivat.</translation>
@@ -494,6 +496,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2683887737780133806">El <ph name="DAY_OF_WEEK" /> de la setmana passada</translation>
 <translation id="2687510499067466116">La tecla de drecera ha canviat</translation>
 <translation id="2689613560355655046">Escriptori 8</translation>
+<translation id="2692092709110488417">Prem el tabulador per posar el focus en l'àrea seleccionada i moure-la</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Mostra la configuració del teclat. S'ha seleccionat <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">Utilitza l'aplicació Transferència de contingut per moure les dades del teu compte de centre educatiu al teu compte personal</translation>
@@ -729,6 +732,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="346243998268439747">Restableix el nivell de zoom</translation>
 <translation id="3465223694362104965">Des del darrer inici de sessió, s'ha connectat un altre teclat a aquest dispositiu. Abans d'utilitzar-lo, assegura't que hi confies.</translation>
 <translation id="3465356146291925647">Gestionada per l'administrador</translation>
+<translation id="3470502288861289375">S'està copiant...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> i després <ph name="KEY_TWO" /> o <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control+Maj+espai</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal</translation>
@@ -1033,6 +1037,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4412698727486357573">Centre d'ajuda</translation>
 <translation id="4412944820643904175">La funció <ph name="FEATURE_NAME" /> està desactivada.</translation>
 <translation id="4417647906073317561">Configuració de Sense distraccions. Defineix un temporitzador, una tasca i música per concentrar-te.</translation>
+<translation id="4418600384772451109">Tanca el tauler</translation>
 <translation id="4424159417645388645">Escriptori 5</translation>
 <translation id="4426817706804363424">Bona feina!</translation>
 <translation id="4430019312045809116">Volum</translation>
@@ -2229,6 +2234,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8287009018010202411">Productivitat</translation>
 <translation id="828708037801473432">Desactivada</translation>
 <translation id="8297006494302853456">Feble</translation>
+<translation id="8300451473979404345">Ansa seleccionada; utilitza les tecles de fletxa per moure-la</translation>
 <translation id="8308637677604853869">Menú anterior</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Bloq Maj està activat</translation>
@@ -2289,6 +2295,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="851458219935658693">Mostra les finestres de l'escriptori actual amb el botó d'opció seleccionat</translation>
 <translation id="851660987304951246">Utilitza Ajuda'm a llegir per resumir contingut o fer preguntes ràpidament</translation>
 <translation id="8517041960877371778">És possible que el dispositiu <ph name="DEVICE_TYPE" /> no es carregui mentre està encès.</translation>
+<translation id="8519329096920173967">Cerca a la pantalla amb Google Lens</translation>
 <translation id="8535393432370007982">Desfés l'ordenació per color</translation>
 <translation id="8536886494750559755">Mostra la configuració de Quick Share. Visible per a tothom durant <ph name="TIME_REMAINING" />.</translation>
 <translation id="8539803091108018926">S'ha copiat el text al porta-retalls</translation>

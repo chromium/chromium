@@ -8,6 +8,7 @@
 <translation id="100323615638474026">USB устройство (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">История на скорошните изтегляния</translation>
 <translation id="1004218526896219317">Достъп до сайтове</translation>
+<translation id="1005230401424685968">ГГГГ</translation>
 <translation id="1005274289863221750">Използване на микрофона и камерата ви</translation>
 <translation id="1005333234656240382">Да се активира ли отстраняването на грешки през ADB?</translation>
 <translation id="1005671386794704751">розово</translation>
@@ -1373,6 +1374,7 @@
 <translation id="193565226207940518">Инструмент за поддръжка</translation>
 <translation id="1935995810530254458">Копиране въпреки това</translation>
 <translation id="1936157145127842922">Показване в папката</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Страницата е добавена към списъка за четене}other{Страниците са добавени към списъка за четене}}</translation>
 <translation id="1936931585862840749">Въведете число между 1 и <ph name="MAX_COPIES" />, за да укажете колко копия да се отпечатат .</translation>
 <translation id="1937774647013465102">Архитектурата на контейнера е от тип <ph name="ARCHITECTURE_CONTAINER" /> и не може да се импортира в това устройство, което е от тип <ph name="ARCHITECTURE_DEVICE" />. Можете да опитате да възстановите контейнера на друго устройство или да използвате файловете в образа му, като го отворите в приложението „Файлове“.</translation>
 <translation id="1938351510777341717">Външен клавиш Command</translation>
@@ -2014,6 +2016,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2373666622366160481">Уеднаквяване с размера на хартията</translation>
 <translation id="2375406435414127095">Свързване с телефона ви</translation>
 <translation id="2376056713414548745">Четене на глас</translation>
+<translation id="2376122016044804363">Потвърждения за копиране в буферната памет</translation>
 <translation id="2377667304966270281">Съществени грешки</translation>
 <translation id="237828693408258535">Да се преведе ли тази страница?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Възможно е това разширение скоро да спре да се поддържа}other{Възможно е тези разширения скоро да спрат да се поддържат}}</translation>
@@ -3168,6 +3171,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3192586965067888278">Опишете проблема подробно. Отзивите ще бъдат изпратени до Google за преглед от човек и може да се използват за подобряване или разработване на продуктите и услугите ни.</translation>
 <translation id="3192947282887913208">Аудиофайлове</translation>
 <translation id="3193695589337931419">Помощно приложение за сигнали за системата</translation>
+<translation id="3194095220941877499">Показва потвърждение, когато копирате връзки, изображения или видеоклипове</translation>
 <translation id="3196912927885212665">За да настроите чрез телефона си с Android, функцията за Bluetooth на вашия Chromebook трябва да е включена</translation>
 <translation id="3197453258332670132">Показване на сродна информация за избрания от вас текст посредством кликване с десния бутон или продължително натискане</translation>
 <translation id="3199127022143353223">Сървъри</translation>
@@ -3182,7 +3186,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
         <ph name="BREAK" />
         <ph name="BREAK" />
         Можете да управлявате настройките от тази карта по всяко време или да видите още опции в „Персонализиране на Chrome“.</translation>
-<translation id="3207437351138888228">Когато попълвате формуляр, информацията ви и страницата, от която идва тя, се изпращат до Google, за да се генерират предложения</translation>
 <translation id="3207960819495026254">С отметка</translation>
 <translation id="3208584281581115441">Проверка сега</translation>
 <translation id="3208703785962634733">Непотвърдено</translation>
@@ -3227,6 +3230,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3242289508736283383">Приложенията с атрибут kiosk_only в манифеста трябва да бъдат инсталирани в павилионния режим на Chrome OS</translation>
 <translation id="3243017971870859287">Четене на серийните номера на компонентите и устройството с ChromeOS Flex</translation>
 <translation id="324366796737464147">Потискане на шума</translation>
+<translation id="3244271242291266297">ММ</translation>
 <translation id="3244294424315804309">Продължаване без звук</translation>
 <translation id="3247006341013237647">Да се организират ли разделите?</translation>
 <translation id="3247649647204519958">Оттук можете да преглеждате и управлявате разрешенията за разширенията за сайта, който сте отворили</translation>
@@ -6095,7 +6099,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5267572070504076962">Включете Безопасно сърфиране, за да получите защита срещу опасни сайтове</translation>
 <translation id="5269977353971873915">Отпечатването не бе успешно</translation>
 <translation id="5271578170655641944">Искате ли да премахнете достъпа до Google Диск?</translation>
-<translation id="5271782684896713035">Данните може да бъдат видени от проверяващи лица с цел подобряване на тази функция</translation>
 <translation id="5273806377963980154">Редактиране на URL адреса на сайта</translation>
 <translation id="5275084684151588738">Потребителски речници</translation>
 <translation id="5275338516105640560">Бутон за запазената група раздели</translation>

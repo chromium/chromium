@@ -441,7 +441,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1734878702283171397">Rhowch gynnig ar gysylltu â gweinyddwr y system.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, yn darfod <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Cyfrifiadur</translation>
-<translation id="1739422091279046802">sgrolio a chwyddo</translation>
 <translation id="1741613555002899862">Rhaid iddo wedi'i nodi ac iddo fod yn llinyn dilys pan fydd DnsOverHttpsMode yn <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Dillad Gwely</translation>
 <translation id="1743892871127720056">Cymharu teitl y tabl, golygu testun</translation>
@@ -2882,6 +2881,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6059925163896151826">Dyfeisiau USB</translation>
 <translation id="6060009363608157444">Modd DnsOverHttps annilys.</translation>
 <translation id="6061154937977953833">Reslo</translation>
+<translation id="6062405040252994646">Offeryn</translation>
 <translation id="6062937464449575061">Olrhain Prisiau</translation>
 <translation id="6063415549109819824">Ariannu Cartref</translation>
 <translation id="6070432475334343308">Ni uwchlwythwyd un neu fwy o ffeiliau i <ph name="FOLDER_NAME" /> ar <ph name="CLOUD_PROVIDER" /></translation>

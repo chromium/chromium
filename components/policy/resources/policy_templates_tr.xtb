@@ -386,15 +386,6 @@ Güvenli içerikler hakkında daha fazla bilgi için Secure Contexts sayfasına 
 <translation id="1305400589435476516">Politika, Etkin değerine ayarlanırsa cihazda veri dolaşımına izin verilir.
 
       Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa veri dolaşımı kullanılamaz.</translation>
-<translation id="1308526987406924874">Politikayı ayarlamak, kullanıcılardan bir seri bağlantı noktasına erişme izni vermelerini isteyemeyecek siteleri belirten bir URL kalıpları listesi yapmanıza olanak tanır.
-
-      Politika ayarlanmadan bırakılırsa <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (etkinse) bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
-
-      <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> politikasıyla eşleşmeyen URL kalıpları için (eşleşme varsa), <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (etkinse) veya kullanıcıların kişisel ayarları öncelikli olur (bu sırayla).
-
-      URL kalıpları, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> ile çakışamaz. Bir URL her ikisiyle de eşleşirse politikaların ikisinin de diğeri üzerinde önceliği olmaz.
-
-      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
 <translation id="1309259005392595570">TLS'de etkinleştirilen kuantum sonrası anahtar anlaşmasını devre dışı bırak</translation>
 <translation id="1309465583050255779"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> açıksa <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> protokolünün ayarlanması, varsayılan arama sağlayıcının adını belirtir.
 
@@ -2860,15 +2851,6 @@ Not: Daha ayrıntılı örnekler için Chromium Projeleri'ni ziyaret edin (https
           Bu politika isteğe bağlıdır. Ayarlanmadan bırakılırsa, hiçbir arama terimi değişikliği yapılmaz.
 
           Bu politika ancak 'DefaultSearchProviderEnabled' politikası etkinleştirilirse dikkate alınır.</translation>
-<translation id="3049115011983576556">Politikayı ayarlamak, kullanıcılardan bir seri bağlantı noktasına erişme izni vermelerini isteyebilen siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
-
-      Politika ayarlanmadan bırakılırsa <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (etkinse) bütün siteler için geçerli olur. Etkin değilse kullanıcının ayarları geçerlidir.
-
-      <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> politikasıyla eşleşmeyen URL kalıpları için (eşleşme varsa), <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (etkinse) veya kullanıcıların kişisel ayarları öncelikli olur (bu sırayla).
-
-      URL kalıpları, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> ile çakışmamalıdır. Bir URL her ikisiyle de eşleşirse politikaların ikisinin de diğeri üzerinde önceliği olmaz.
-
-      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
 <translation id="305106159605171619">Kullanıcı aracısı kısaltma özelliği devre dışı bırakılmış ve alan denemeleri ya da kaynak denemeleri ile etkinleştirilmemiş.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3057459316145779761">Chrome for Testing'in kullanılmasına izin verme</translation>
@@ -4586,6 +4568,27 @@ Politikayı ayarlamadan bırakırsanız <ph name="ASK_GEOLOCATION_POLICY_NAME" /
 <translation id="4311195029067684288">Tam</translation>
 <translation id="4311662690937656540">Giriş ve kilit ekranlarında çevrimiçi girişleri zorunlu kıl</translation>
 <translation id="4313767483634435271">Cihazın atanmış yuva MAC adresi</translation>
+<translation id="4313778862255986189">Bu bir beta özelliktir. Güvenilir test kullanıcılarımız tarafından kullanılabilen bu özellik geliştirme aşamasında olduğu için özellikte değişiklik ve güncelleme yapılabileceğini hatırlatırız.
+
+Bu politikayla yöneticiler, belirli bir anahtar kelimeyle tetiklendiğinde adres çubuğunda arama önerileri ve sonuçlar gösteren bir kurumsal arama toplayıcı belirleyebilir. Kullanıcılar adres çubuğuna <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> alanında belirtilen anahtar kelimeyi başına @ ekleyerek veya eklemeden (ör. <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) yazıp Boşluk veya Sekme tuşuna basarak arama başlatabilir.
+
+Şu alanlar gereklidir: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
+
+<ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> alanı, adres çubuğunda kullanıcıya gösterilen arama motoru adına karşılık gelir.
+
+<ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> alanı, kullanıcının aramayı tetiklemek için girdiği anahtar kelimeye karşılık gelir. Kısayol düz kelimeler ve karakterler içerebilir, ancak boşluk içeremez veya @ sembolüyle başlayamaz. Kısayollar benzersiz olmalıdır.
+
+<ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> alanı, aramanın yapılacağı URL'yi belirtir. Arama motoru sonuç sayfasının web adresini girin ve sorgu alanında <ph name="SEARCH_TERM_MARKER" /> öğesini kullanın.
+
+<ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> alanı, arama önerileri sağlayan URL'yi belirtir. <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_TERM_MARKER" /> öğesini içeriyorsa Chrome, <ph name="SEARCH_TERM_MARKER" /> yerine kullanıcının arama sorgusunu koyarak URL'ye bir GET isteği yapıp arama önerileri elde eder. Aksi takdirde POST isteği yapılır ve kullanıcının sorgusu, <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" /> anahtarının altındaki POST parametrelerinde iletilir.
+
+<ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> alanı, arama önerilerinde kullanılacak resmin URL'sini belirtir. Bu alan ayarlanmadığında varsayılan simge kullanılır. Site simgesi (ör. <ph name="ICON_URL_EXAMPLE" />) kullanılması önerilir. Desteklenen resim dosyası biçimleri: JPEG, PNG ve ICO.
+
+<ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> alanı, arama önerilerini görmek için adres çubuğunun (<ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />) gerekli olup olmadığını belirtir. Bu alan ayarlanmazsa adres çubuğu (<ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />) gerekli değildir.
+
+<ph name="MS_WIN_NAME" /> işletim sisteminde bu politika yalnızca bir <ph name="MS_AD_NAME" /> veya "<ph name="MS_AAD_NAME" />" alan adına katılmış ya da "<ph name="CHROME_ENTERPRISE_CORE_NAME" />" öğesine kaydolmuş örneklerde kullanılabilir.
+
+<ph name="MAC_OS_NAME" /> işletim sisteminde bu politika yalnızca MDM ile çalışan, MCX aracılığıyla bir alan adına katılmış veya <ph name="CHROME_ENTERPRISE_CORE_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.</translation>
 <translation id="4314538398999793073">Kerberos kimlik doğrulaması sırasında CNAME aramasını devre dışı bırak</translation>
 <translation id="4320592646346933548">Kablosuz</translation>
 <translation id="43213511254881626">Bu politika yerleşik şifre yöneticisinin, şifresi çözülemeyen şifreleri veritabanından silip silemeyeceğini kontrol eder. Bu, yerleşik şifre yöneticisinin tam işlevini geri yüklemek için gereklidir ancak kalıcı veri kaybına neden olabilir. Şifresi çözülemeyen şifre değerleri kendiliğinden şifresi çözülebilir hale gelmez ve düzeltilmeleri mümkünse genellikle karmaşık kullanıcı işlemleri yapılması gerekir.
@@ -4653,8 +4656,6 @@ Not: Bu politika ile birlikte <ph name="ARC_GLS_POLICY_NAME" /> politikasının 
 <translation id="4380159792986204036">Web kiosk'un, herhangi bir ekranda birden fazla tarayıcı penceresi açmasına izin ver</translation>
 <translation id="4381227367939912539">Dinozor paskalya yumurtası oyununu devre dışı bırak</translation>
 <translation id="4382413175336720282">Gerçek zamanlı URL kontrolü devre dışı bırakıldı.</translation>
-<translation id="4384480363454039240">Politika ayarlanmaz veya Etkin değerine ayarlanırsa kullanıcılar, kargolarını <ph name="PRODUCT_NAME" /> hizmetindeki yeni sekme sayfasından takip edebilir.
-Politika, Devre Dışı değerine ayarlanırsa kullanıcılar, kargolarını <ph name="PRODUCT_NAME" /> hizmetindeki yeni sekme sayfasından takip edemez.</translation>
 <translation id="4387741272680827493">Politika ayarlanırsa önceden yüklenmiş HSTS'lerin http'den https'ye geçirilmelerini atlayan ana makine adlarının bir listesi belirtilir.
 
       Bu politikada yalnızca tek etiketli ana makine adlarına izin verilir. Bu politika, yalnızca "statik" HSTS-önceden yüklenmiş öğeler için (örneğin, <ph name="EXAMPLE_HSTS_PRELOAD_TLDS" />) geçerlidir. Bu politika, <ph name="HSTS_HEADER_NAME" /> yanıt başlığı kullanarak "dinamik" olarak HSTS sürümüne geçiş isteğinde bulunmuş sunucular için HSTS geçişlerini engellemez.

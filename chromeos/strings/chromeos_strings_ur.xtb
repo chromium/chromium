@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">پراکسی کی تصدیق درکار ہے</translation>
 <translation id="4594021849294327751">ٹرانسکرپٹ بنائیں</translation>
 <translation id="4594541568452132351">ٹرانسکرپشن کی زبان منتخب کریں اور ماڈل ڈاؤن لوڈ کریں</translation>
-<translation id="4607282946861182308">اس کی تصاویر نہیں بنا سکتے۔ کوئی اور پرامپٹ آزمائیں۔</translation>
 <translation id="4609350030397390689">کی بورڈ کی چمک کم کرنے کی کلید</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="TOTAL_PAGE_NUMBER" /> میں سے <ph name="PRINTED_PAGE_NUMBER" />۔ براہ کرم پرنٹ جاب منسوخ کرنے کے لیے enter دبائیں۔</translation>
 <translation id="463791356324567266">اسکین کا عمل منسوخ کیا جا رہا ہے...</translation>
@@ -1659,6 +1658,7 @@
 <translation id="8543574988889671960">ٹیب دوبارہ لوڈ کریں</translation>
 <translation id="8550364285433943656">کی بورڈ کلیدوں کے ساتھ کھیلنے کے لیے گیم ایکشنز پر کنٹرول رکھیں</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">‏تخلیق کر سکنے والا AI غلطیاں کر سکتا ہے، بشمول لوگوں کے بارے میں، لہذا اسے دوبارہ چیک کریں۔</translation>
 <translation id="8575298406870537639">آپ کے کیریئر کو اپنے نیٹ ورک سے منسلک ہونے کیلئے اس اختیار کی ضرورت پڑ سکتی ہے۔ تفصیلات کیلئے اپنے کیریئر سے رابطہ کریں۔</translation>
 <translation id="8576249514688522074">شروع نہیں کیا گیا</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> کے لیے ورزن <ph name="VERSION" /> پر فرم ویئر کی انسٹالیشن مکمل کرنے کے لیے ری اسٹارٹ کرنے کی ضرورت ہے۔ آپ کا کمپیوٹر کئی بار ریبوٹ ہوتا ہوا نظر آ سکتا ہے۔ یہ برتاؤ متوقع ہے۔</translation>
@@ -1673,7 +1673,6 @@
 <translation id="8655295600908251630">چینل</translation>
 <translation id="8655828773034788261">‏URL کا اشتراک کریں:</translation>
 <translation id="8660881923941176839">پاؤنڈز</translation>
-<translation id="8670057600920888023">‏تخلیق کر سکنے والا AI تجرباتی ہے اور مواد غلط، گمراہ کن یا جارحانہ ہو سکتا ہے۔</translation>
 <translation id="8670574982334489519">دائیں</translation>
 <translation id="8675354002693747642">پہلے سے اشتراک کردہ کلید</translation>
 <translation id="8677859815076891398">‏کوئی البم نہیں ہے۔ <ph name="LINK_BEGIN" />Google تصاویر<ph name="LINK_END" /> میں ایک البم تخلیق کریں۔</translation>

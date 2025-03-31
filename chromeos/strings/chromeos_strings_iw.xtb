@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">‏יש צורך באימות שרת ה-proxy</translation>
 <translation id="4594021849294327751">יצירת תמליל</translation>
 <translation id="4594541568452132351">בחירת שפת התמלול והורדת המודל</translation>
-<translation id="4607282946861182308">לא ניתן ליצור תמונות של מה שביקשת. אפשר לנסות הנחיה אחרת.</translation>
 <translation id="4609350030397390689">הפחתת הבהירות של המקלדת</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> מתוך <ph name="TOTAL_PAGE_NUMBER" />. ניתן להקיש על Enter כדי לבטל את משימת ההדפסה.</translation>
 <translation id="463791356324567266">הסריקה מתבטלת...</translation>
@@ -1659,6 +1658,7 @@
 <translation id="8543574988889671960">טעינה מחדש של הכרטיסייה</translation>
 <translation id="8550364285433943656">הגדרת אמצעי בקרה לפעולות במשחק כדי לשחק באמצעות המקלדת</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">בינה מלאכותית גנרטיבית עלולה לטעות, גם לגבי אנשים, אז כדאי לבדוק היטב את התשובות.</translation>
 <translation id="8575298406870537639">ייתכן שהספק שלך ידרוש את האפשרות הזו כדי להתחבר לרשת שלו. למידע נוסף, ניתן לפנות לספק.</translation>
 <translation id="8576249514688522074">לא מאותחלת</translation>
 <translation id="8584654835905316966">נדרשת הפעלה מחדש כדי להשלים את התקנת הקושחה של <ph name="DEVICE_NAME" /> לגרסה <ph name="VERSION" />. יכול להיות שייראה כאילו המחשב מופעל מחדש כמה פעמים. זו התנהגות רגילה.</translation>
@@ -1673,7 +1673,6 @@
 <translation id="8655295600908251630">ערוץ</translation>
 <translation id="8655828773034788261">‏שיתוף כתובת ה-URL:</translation>
 <translation id="8660881923941176839">פאונד</translation>
-<translation id="8670057600920888023">‏‫AI גנרטיבי הוא ניסיוני. התוכן עשוי להיות לא מדויק, מטעה או פוגעני.</translation>
 <translation id="8670574982334489519">ימין</translation>
 <translation id="8675354002693747642">מפתח משותף מראש</translation>
 <translation id="8677859815076891398">‏אין אלבומים. ניתן ליצור אלבום ב<ph name="LINK_BEGIN" />תמונות Google<ph name="LINK_END" />.</translation>

@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">Proxy authentication required</translation>
 <translation id="4594021849294327751">Create transcript</translation>
 <translation id="4594541568452132351">Select transcription language and download model</translation>
-<translation id="4607282946861182308">Can't create images of this. Try another prompt.</translation>
 <translation id="4609350030397390689">Keyboard brightness down</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> out of <ph name="TOTAL_PAGE_NUMBER" />. Press Enter to cancel the print job.</translation>
 <translation id="463791356324567266">Cancelling scanning...</translation>
@@ -1540,6 +1539,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8010765388850538088">Learn more about Generative AI</translation>
 <translation id="8017679124341497925">Shortcut edited</translation>
 <translation id="802154636333426148">Download failed</translation>
+<translation id="8027467664787098346">Learn more about the selected wallpaper</translation>
 <translation id="8028993641010258682">Size</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Enable auto colour mode</translation>
@@ -1658,6 +1658,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8543574988889671960">Reload tab</translation>
 <translation id="8550364285433943656">Place controls on game actions to play with keyboard keys</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">Generative AI can make mistakes, including about people, so double-check it.</translation>
 <translation id="8575298406870537639">Your operator may require this option to connect to their network. Contact your operator for details.</translation>
 <translation id="8576249514688522074">Uninitialised</translation>
 <translation id="8584654835905316966">A restart is required to complete the installation of firmware for <ph name="DEVICE_NAME" /> to version <ph name="VERSION" />. Your computer may appear to reboot several times. This behaviour is expected.</translation>
@@ -1672,7 +1673,6 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8655295600908251630">Channel</translation>
 <translation id="8655828773034788261">Share URL:</translation>
 <translation id="8660881923941176839">pounds</translation>
-<translation id="8670057600920888023">Generative AI is experimental and content may be inaccurate, misleading or offensive.</translation>
 <translation id="8670574982334489519">right</translation>
 <translation id="8675354002693747642">Pre-shared key</translation>
 <translation id="8677859815076891398">No albums. Create an album in <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>

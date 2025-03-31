@@ -33,6 +33,9 @@ class AutofillAiUkmLogger {
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  // This represents the events for which we want to record metrics. It is
+  // assumed that these events can only happen when the user is opted-in for
+  // Autofill AI.
   enum class EventType {
     kSuggestionShown = 0,
     kSuggestionFilled = 1,
@@ -45,7 +48,7 @@ class AutofillAiUkmLogger {
                      EventType event_type);
 
  private:
-  bool CanLog(ukm::SourceId ukm_source_id) const;
+  bool CanLogUkm(ukm::SourceId ukm_source_id) const;
 
   // Stores the number of FieldEvent's that were logged for each processed form.
   std::map<autofill::FormGlobalId, size_t> field_event_count_per_form_;

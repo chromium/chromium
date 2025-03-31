@@ -11794,7 +11794,7 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
   PrerenderAttributes attributes(
       prerendering_url, trigger_type, embedder_histogram_suffix,
       /*speculation_rules_params=*/std::nullopt, content::Referrer(),
-      std::move(no_vary_search_hint),
+      no_vary_search_hint,
       /*initiator_render_frame_host=*/nullptr, GetWeakPtr(), page_transition,
       should_warm_up_compositor, should_prepare_paint_tree,
       std::move(url_match_predicate),
@@ -11816,7 +11816,7 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
   if (frame_tree_node_id) {
     return std::make_unique<PrerenderHandleImpl>(
         GetPrerenderHostRegistry()->GetWeakPtr(), frame_tree_node_id,
-        prerendering_url);
+        prerendering_url, std::move(no_vary_search_hint));
   }
   return nullptr;
 }

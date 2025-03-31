@@ -213,6 +213,9 @@ class DISPLAY_EXPORT Screen {
   virtual std::optional<float> GetPreferredScaleFactorForView(
       gfx::NativeView view) const;
 
+  // Returns true when running in headless mode.
+  virtual bool IsHeadless() const;
+
 #if BUILDFLAG(IS_CHROMEOS)
   // Returns tablet state.
   virtual TabletState GetTabletState() const;

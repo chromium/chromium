@@ -441,7 +441,6 @@
 <translation id="1734878702283171397">Системийн админтай холбоо барина уу.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, хугацаа нь <ph name="CARD_EXPIRATION" />-д дуусна</translation>
 <translation id="1736420071277903564">Компьютер</translation>
-<translation id="1739422091279046802">гүйлгэж, томруулах</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode-г <ph name="SECURE_DNS_MODE_SECURE" /> байх үед тодорхойлогдсон бөгөөд хүчинтэй стринг байх ёстой.</translation>
 <translation id="1743393865165844832">Орны хэрэгсэл болон орны цагаан хэрэгслүүд</translation>
 <translation id="1743892871127720056">Хүснэгтийн нэрийг харьцуулах, текстийг засах</translation>
@@ -2883,6 +2882,7 @@
 <translation id="6059925163896151826">USB төхөөрөмж</translation>
 <translation id="6060009363608157444">DnsOverHttps горим буруу байна.</translation>
 <translation id="6061154937977953833">Бөх</translation>
+<translation id="6062405040252994646">Хэрэгсэл</translation>
 <translation id="6062937464449575061">Үнэ хянахаа болих</translation>
 <translation id="6063415549109819824">Орон сууцны санхүүжилт</translation>
 <translation id="6070432475334343308">Нэг эсвэл түүнээс олон файлыг <ph name="CLOUD_PROVIDER" /> дээрх <ph name="FOLDER_NAME" />-д байршуулаагүй</translation>

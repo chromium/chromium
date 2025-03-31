@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 
 #include <vector>
 
@@ -12,7 +12,7 @@ namespace crypto {
 
 namespace {
 
-std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderMock() {
+std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderFake() {
   return GetSoftwareUnsecureUnexportableKeyProvider();
 }
 
@@ -22,12 +22,12 @@ std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderNull() {
 
 }  // namespace
 
-ScopedMockUnexportableKeyProvider::ScopedMockUnexportableKeyProvider() {
+ScopedFakeUnexportableKeyProvider::ScopedFakeUnexportableKeyProvider() {
   internal::SetUnexportableKeyProviderForTesting(
-      GetUnexportableKeyProviderMock);
+      GetUnexportableKeyProviderFake);
 }
 
-ScopedMockUnexportableKeyProvider::~ScopedMockUnexportableKeyProvider() {
+ScopedFakeUnexportableKeyProvider::~ScopedFakeUnexportableKeyProvider() {
   internal::SetUnexportableKeyProviderForTesting(nullptr);
 }
 

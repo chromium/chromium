@@ -112,6 +112,7 @@
 <translation id="244264527810019436">Features on some sites may not work in Incognito mode</translation>
 <translation id="2442870161001914531">Always request desktop site</translation>
 <translation id="2445311670906052406">Chrome now shares your recent tabs with your device. You'll see them in your device's app list and search results. You can turn this off at any time in Chrome settings.</translation>
+<translation id="245322989586167203">Sites usually connect to serial ports for data transfer features, like setting up your network</translation>
 <translation id="2469312991797799607">This action will clear all data and cookies for <ph name="ORIGIN" /> and all sites under it</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2485422356828889247">Uninstall</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">Block sites from knowing when you're actively using this device</translation>
 <translation id="4412992751769744546">Allow third-party cookies</translation>
 <translation id="4419929467120297501">Chrome blocks sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK" />manage access to third-party cookies<ph name="END_LINK" />.</translation>
+<translation id="443121186588148776">Serial port</translation>
 <translation id="4434045419905280838">Pop-ups and redirects</translation>
 <translation id="443552056913301231">This action will delete all local data, including cookies, and reset all permissions for <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Mute sound for a specific site.</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Ask first</translation>
 <translation id="7423538860840206698">Blocked from reading clipboard</translation>
 <translation id="7425915948813553151">Dark theme for sites</translation>
+<translation id="7478658909253570368">Don't allow sites to connect to serial ports</translation>
 <translation id="7488573225650545859">Hide View tabs in your app list</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">When on, sites can show sign-in prompts. When off, sites can't show sign-in prompts.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Connected to a Bluetooth device</translation>
 <translation id="7617547684249261169">You can delete some or all of your history, cookies, site data and more</translation>
 <translation id="7649070708921625228">Help</translation>
+<translation id="7655411746932645568">Sites can ask to connect to serial ports</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>
 <translation id="7681597159868843240">Sites usually use your device's motion sensors for features like virtual reality or fitness tracking</translation>

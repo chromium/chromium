@@ -307,6 +307,7 @@
 <translation id="2453860139492968684">Dokončiť</translation>
 <translation id="2461378706168271257">Hľadajte v kartách</translation>
 <translation id="2461822463642141190">Aktuálna</translation>
+<translation id="2463770278804271243">STRÁNKA</translation>
 <translation id="2468444275314013497">Váš prehliadač je v poriadku</translation>
 <translation id="2472163211318554013">Prihláste sa, aby ste mohli Chrome využívať naplno</translation>
 <translation id="247737702124049222">Popisy obrázkov sú zapnuté</translation>
@@ -325,7 +326,6 @@
 <translation id="2527209463677295330">Ak zahrniete viac textu stránky, môžu sa vám zobraziť lepšie výsledky</translation>
 <translation id="2527779675047087889">Skryť obsah schránky</translation>
 <translation id="2532336938189706096">Webové zobrazenie</translation>
-<translation id="2534155362429831547">Odstránené položky: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="253498598929009420">Tento web bude vidieť obsah vašej obrazovky</translation>
 <translation id="2536728043171574184">Zobrazuje sa offline kópia tejto stránky</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, karta</translation>
@@ -365,7 +365,6 @@
 <translation id="2677748264148917807">Odísť</translation>
 <translation id="2687009626279857299">Prestal fungovať v tomto zariadení</translation>
 <translation id="2702516483241149200">Novinka: zdieľajte odkaz, ktorý posunie zobrazenie na tento text</translation>
-<translation id="2705073298859543115">Vytvoriť súhrn</translation>
 <translation id="2708051474374549906">Proaktívna ochrana v reálnom čase proti nebezpečným webom, stiahnutým súborom a rozšíreniam, ktorá je založená na odosielaní vašich dát prehliadania Googlu</translation>
 <translation id="2708226184420201102">Otvoriť v prehliadači <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">Nové</translation>
@@ -1199,7 +1198,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6564820424018738527">Vaše zariadenie s Androidom môže mať podobné nastavenie. Ak máte v Chrome a zariadení s Androidom zapnuté meranie reklám, príslušná firma môže merať účinnosť reklamy na weboch, ktoré navštevujete, aj v aplikáciách, ktoré používate.</translation>
 <translation id="6565959834589222080">Wi-Fi sa použije, keď bude k dispozícii</translation>
 <translation id="6569373978618239158">Keď teraz otvoríte novú kartu, budú sa vám zobrazovať príbehy z webu <ph name="SITE_NAME" />. Weby, ktoré sledujete, sa ukladajú do vášho účtu Google. Môžete ich spravovať v nastaveniach kanála Objaviť.</translation>
-<translation id="6570116402456758630">Zhrnutie stránky</translation>
 <translation id="657177046675873214">Ak chcete mať záložky vo všetkých zariadeniach, zapnite v nastaveniach Záložky</translation>
 <translation id="6573096386450695060">Vždy povoliť</translation>
 <translation id="6573431926118603307">Tu sa zobrazia karty, ktoré ste otvorili v Chrome na iných zariadeniach.</translation>

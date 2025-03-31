@@ -91,6 +91,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1269405891096105529">Gailu periferikoa ez da bateragarria gonbidatu moduarekin</translation>
 <translation id="1270290102613614947">Pantailako teklatua desgaitu egin da</translation>
 <translation id="1272079795634619415">Gelditu</translation>
+<translation id="12741168609094094">Hautatu pantailako edozer gauza bilatzeko, testua kopiatzeko eta abar</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> gailuari energia ematen</translation>
 <translation id="1275718070701477396">Hautatua</translation>
 <translation id="1276975447697633661">Hautatu fitxategia eta, gero, sakatu <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1720230731642245863">Wifi-gunea desaktibatuta dago</translation>
 <translation id="1731815243805539470">Aldatu aurreko erabiltzailera</translation>
 <translation id="1733996486177697563">Aldatu gai ilunetik gai argira, eta alderantziz. Eduki sakatuta mahaigaina eta hautatu Horma-papera eta estiloa.</translation>
+<translation id="1735992454301033090">Hautatutako eremua. Mugitzeko, erabili gezi-teklak.</translation>
 <translation id="1736898441010944794">Ezarri da ikusgai "<ph name="NAME" />" Bluetooth bidezko gailuetarako.</translation>
 <translation id="1737078180382804488">Baztertu telefonoko jakinarazpenak ikusteko aukera konfiguratzeko prozesua</translation>
 <translation id="174102739345480129">Markatzailea desaktibatuta dago.</translation>
@@ -494,6 +496,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2683887737780133806">Joan den asteko <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2687510499067466116">Lasterbidea aldatu egin da</translation>
 <translation id="2689613560355655046">8. lan-eremua</translation>
+<translation id="2692092709110488417">Sakatu tabuladorea hautatutako eremua fokuratzeko eta mugitzeko</translation>
 <translation id="2695305337569143674">sarea</translation>
 <translation id="2697697418792422688">Erakutsi teklatuaren ezarpenak. <ph name="KEYBOARD_NAME" /> dago hautatuta.</translation>
 <translation id="2699913284398121653">Erabili Eduki-transferentzia aplikazioa zure ikastetxeko kontuko datuak zure kontu pertsonalera eramateko</translation>
@@ -729,6 +732,7 @@ Bestela, <ph name="TIMEOUT_SECONDS" /> barru gaituko da berriro ukipen-panel int
 <translation id="346243998268439747">Berrezarri zoom-maila</translation>
 <translation id="3465223694362104965">Beste teklatu bat konektatu da gailu honetara saioa hasi zenuen azken alditik. Teklatua erabili aurretik, ziurtatu fidagarria dela.</translation>
 <translation id="3465356146291925647">Administratzaileak kudeatua</translation>
+<translation id="3470502288861289375">Kopiatzen…</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />; ondoren, <ph name="KEY_TWO" /> edo <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Kontrol + Maius + zuriunea</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />. <ph name="CONNECTION_STATUS" />. Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />.</translation>
@@ -1034,6 +1038,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="4412698727486357573">Laguntza-zentroa</translation>
 <translation id="4412944820643904175">Desaktibatuta dago <ph name="FEATURE_NAME" />.</translation>
 <translation id="4417647906073317561">Kontzentratzeko moduaren ezarpenak. Kontzentratzeko saioari ekiteko, ezarri tenporizadorea, zeregina eta musika.</translation>
+<translation id="4418600384772451109">Itxi panela</translation>
 <translation id="4424159417645388645">5. lan-eremua</translation>
 <translation id="4426817706804363424">Primeran!</translation>
 <translation id="4430019312045809116">Bolumena</translation>
@@ -2230,6 +2235,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8287009018010202411">Produktibitatea</translation>
 <translation id="828708037801473432">Desaktibatuta</translation>
 <translation id="8297006494302853456">Ahula</translation>
+<translation id="8300451473979404345">Hautatutako kontrol-puntua. Mugitzeko, erabili gezi-teklak.</translation>
 <translation id="8308637677604853869">Aurreko menua</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Maiuskulen blokeoa aktibatuta dago</translation>
@@ -2290,6 +2296,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="851458219935658693">Erakutsi lan-eremu honetan dauden leihoak, aukera-botoia hautatuta dago</translation>
 <translation id="851660987304951246">Erabili Irakurtzeko laguntza edukia bizkor laburbiltzeko edo galderak egiteko</translation>
 <translation id="8517041960877371778">Baliteke <ph name="DEVICE_TYPE" /> gailua ez kargatzea piztuta dagoen bitartean.</translation>
+<translation id="8519329096920173967">Bilatu pantailako edukia Google Lens bidez</translation>
 <translation id="8535393432370007982">Desegin kolorearen arabera ordenatzeko irizpidea ezartzeko aukera</translation>
 <translation id="8536886494750559755">Erakutsi Quick Share-ren ezarpenak. Denentzat ikusgai egongo diren denbora: <ph name="TIME_REMAINING" />.</translation>
 <translation id="8539803091108018926">Kopiatu da testua arbelean</translation>

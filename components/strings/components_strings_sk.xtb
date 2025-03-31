@@ -441,7 +441,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1734878702283171397">Skúste kontaktovať správcu systému.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, vyprší <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Počítač</translation>
-<translation id="1739422091279046802">posúvanie a priblíženie</translation>
 <translation id="1741613555002899862">Keď je pravidlo DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />, musíte ho špecifikovať a uviesť platný reťazec.</translation>
 <translation id="1743393865165844832">Posteľná bielizeň</translation>
 <translation id="1743892871127720056">Názov tabuľky porovnania, upraviť text</translation>
@@ -569,6 +568,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1975584088563498795">Poštová schránka č. 10</translation>
 <translation id="1978555033938440688">Verzia firmvéru</translation>
 <translation id="1979156660928743046">Informácie z médií</translation>
+<translation id="1987486584747170374">Vaše vyhľadávania, najlepšie zhody a obsah ich stránok sa odosielajú Googlu. Kontrolóri nebudú pomocou týchto informácií zlepšovať umelú inteligenciu. Vaša organizácia môže tieto nastavenia kedykoľvek zmeniť.</translation>
 <translation id="1988881251331415125">Ak je pravopis správny, <ph name="BEGIN_LINK" />skúste spustiť nástroj Connectivity Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> chce natrvalo ukladať veľké množstvo dát vo vašom počítači</translation>
@@ -764,6 +764,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2301098101308036335">Ktoré weby sú navštívené a kedy.</translation>
 <translation id="230286397113210245">Tlačidlo Otvoriť okno inkognito, ktorého aktivovaním otvoríte okno inkognito na anonymné prehliadanie</translation>
 <translation id="2306124309679506798">Chcete povoliť imerzívne prostredie?</translation>
+<translation id="2307711332257985952">Vaše adresy domova a práce sú teraz k dispozícii v Chrome</translation>
 <translation id="2312234273148520048">Prísady do jedál a dresingy</translation>
 <translation id="2316087952091171402">Menej ako <ph name="UPPER_ESTIMATE" />. Pri vašej ďalšej návšteve sa môžu niektoré weby načítať pomalšie.</translation>
 <translation id="2316159751672436664">Prispôsobiť nástroje dostupnosti v nastaveniach systému Chrome OS</translation>
@@ -1179,6 +1180,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3102312643185441063">Sporiaci účet</translation>
 <translation id="3103188521861412364">Akcie a dlhopisy</translation>
 <translation id="3103535543639438037">Porovnajte podobné výrobky vedľa seba</translation>
+<translation id="3103993932858740905">Keď budete platiť postupne, vyplní sa číslo jednorazovej virtuálnej karty. Toto číslo je určené iba pre tento nákup.</translation>
 <translation id="3105172416063519923">Identifikátor obsahu:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Skontrolovať konfiguráciu zabezpečeného servera DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Stredný zásobník</translation>
@@ -2878,6 +2880,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6059925163896151826">Zariadenia USB</translation>
 <translation id="6060009363608157444">Neplatný režim DnsOverHttps.</translation>
 <translation id="6061154937977953833">Zápasenie</translation>
+<translation id="6062405040252994646">Nástroj</translation>
 <translation id="6062937464449575061">Prestať sledovať cenu</translation>
 <translation id="6063415549109819824">Hypotéky</translation>
 <translation id="6070432475334343308">Minimálne jeden súbor nebol nahraný do priečinka <ph name="FOLDER_NAME" /> služby <ph name="CLOUD_PROVIDER" /></translation>

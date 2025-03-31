@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">Välityspalvelimen todennus vaaditaan</translation>
 <translation id="4594021849294327751">Luo transkriptio</translation>
 <translation id="4594541568452132351">Valitse transkriptiokieli ja lataa malli</translation>
-<translation id="4607282946861182308">Tästä ei voi luoda kuvia. Kokeile toista kehotetta.</translation>
 <translation id="4609350030397390689">Vähennä näppäimistön kirkkautta</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> Peru tulostustyö painamalla Enter.</translation>
 <translation id="463791356324567266">Perutaan skannausta…</translation>
@@ -1540,6 +1539,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8010765388850538088">Lue lisää generatiivisesta tekoälystä</translation>
 <translation id="8017679124341497925">Pikanäppäintä muokattu</translation>
 <translation id="802154636333426148">Lataus epäonnistui.</translation>
+<translation id="8027467664787098346">Lue lisää valitusta taustakuvasta</translation>
 <translation id="8028993641010258682">Koko</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Ota automaattinen väritila käyttöön</translation>
@@ -1658,6 +1658,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8543574988889671960">Päivitä välilehti</translation>
 <translation id="8550364285433943656">Aseta ohjaimet pelitoiminnoille, jotta voit pelata näppäimistön näppäimillä</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">Generatiivinen tekoäly voi tehdä virheitä, myös ihmisiin liittyviä, joten tarkista sen vastaukset.</translation>
 <translation id="8575298406870537639">Operaattorisi saattaa vaatia tätä asetusta operaattorin verkkoon yhdistämistä varten. Lisätietoja saat operaattoriltasi.</translation>
 <translation id="8576249514688522074">Ei ole alustettu</translation>
 <translation id="8584654835905316966">Laiteohjelmiston (<ph name="DEVICE_NAME" />) asennuksen viimeisteleminen versioon <ph name="VERSION" /> edellyttää uudelleenkäynnistystä. Tietokoneesi saattaa käynnistyä uudelleen useita kertoja. Tämä on normaalia.</translation>
@@ -1672,7 +1673,6 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8655295600908251630">Kanava</translation>
 <translation id="8655828773034788261">Jaa URL-osoite:</translation>
 <translation id="8660881923941176839">paunaa</translation>
-<translation id="8670057600920888023">Generatiivinen tekoäly on kokeellinen, ja sisältö voi olla epätarkkaa, harhaanjohtavaa tai loukkaavaa.</translation>
 <translation id="8670574982334489519">oikea</translation>
 <translation id="8675354002693747642">Esijaettu avain</translation>
 <translation id="8677859815076891398">Albumeja ei ole. Luo albumi <ph name="LINK_BEGIN" />Google Kuvissa<ph name="LINK_END" />.</translation>

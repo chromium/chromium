@@ -8,6 +8,7 @@
 <translation id="100323615638474026">Naprava USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Nedavna zgodovina prenosov</translation>
 <translation id="1004218526896219317">Dostop do spletnih mest</translation>
+<translation id="1005230401424685968">LLLL</translation>
 <translation id="1005274289863221750">Uporabite mikrofon in kamero</translation>
 <translation id="1005333234656240382">Želite omogočiti odpravljanje napak z mostom za odpravljanje težav s sistemom Android (ADB)?</translation>
 <translation id="1005671386794704751">Rožnata</translation>
@@ -1380,6 +1381,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="193565226207940518">Orodje za podporo</translation>
 <translation id="1935995810530254458">Vseeno kopiraj</translation>
 <translation id="1936157145127842922">Pokaži v mapi</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Stran je bila dodana na bralni seznam}one{Strani so bile dodane na bralni seznam}two{Strani so bile dodane na bralni seznam}few{Strani so bile dodane na bralni seznam}other{Strani so bile dodane na bralni seznam}}</translation>
 <translation id="1936931585862840749">Vnesite število izvodov, ki jih želite natisniti (od 1 do <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Vsebnika z arhitekturo tipa <ph name="ARCHITECTURE_CONTAINER" /> ni mogoče uvoziti v to napravo z arhitekturo <ph name="ARCHITECTURE_DEVICE" />. Poskusite lahko obnoviti ta vsebnik v drugi napravi ali dostopate do datotek v sliki vsebnika tako, da jo odprete v aplikaciji Datoteke.</translation>
 <translation id="1938351510777341717">Zunanji ukaz</translation>
@@ -3191,7 +3193,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
         <ph name="BREAK" />
         <ph name="BREAK" />
         Kadar koli lahko upravljate nastavitve te kartice ali si ogledate več možnosti v razdelku za prilagajanje Chroma.</translation>
-<translation id="3207437351138888228">Ko izpolnite obrazec, se vaši podatki in stran, s katere izvirajo, pošljejo Googlu zaradi generiranja predlogov</translation>
 <translation id="3207960819495026254">Dodano med zaznamke</translation>
 <translation id="3208584281581115441">Preveri</translation>
 <translation id="3208703785962634733">Nepotrjeno</translation>
@@ -3236,6 +3237,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3242289508736283383">Aplikacijo z atributom manifesta »kiosk_only« je treba namestiti v načinu kioska sistema Chrome OS</translation>
 <translation id="3243017971870859287">Branje serijskih številk naprav in komponent s sistemom ChromeOS Flex.</translation>
 <translation id="324366796737464147">Izločanje hrupa</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Zvok naj bo še naprej izklopljen</translation>
 <translation id="3247006341013237647">Želite organizirati zavihke?</translation>
 <translation id="3247649647204519958">Tukaj si lahko ogledate in upravljate dovoljenja za razširitve za spletno mesto, na katerem ste</translation>
@@ -6103,7 +6105,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5267572070504076962">Vklopite Varno brskanje, da si zagotovite zaščito pred nevarnimi spletnimi mesti</translation>
 <translation id="5269977353971873915">Tiskanje ni uspelo</translation>
 <translation id="5271578170655641944">Želite odstraniti dostop do Googla Drive?</translation>
-<translation id="5271782684896713035">Podatke bodo morda videli pregledovalci zaradi izboljšanja te funkcije</translation>
 <translation id="5273806377963980154">Urejanje URL-ja spletnega mesta</translation>
 <translation id="5275084684151588738">Uporabniški slovarji</translation>
 <translation id="5275338516105640560">Gumb za shranjeno skupino zavihkov</translation>

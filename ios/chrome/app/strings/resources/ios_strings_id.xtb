@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">Hapus</translation>
 <translation id="1190609913194133056">Pusat Notifikasi</translation>
 <translation id="1201402288615127009">Berikutnya</translation>
-<translation id="1202892408424955784">Produk yang dipantau</translation>
 <translation id="1204075260022434100">{count,plural, =1{Bookmark disimpan ke "{title}" di akun Anda, {email}}other{{count} bookmark disimpan ke "{title}" di akun Anda, {email}}}</translation>
 <translation id="120431140543679678">Ikuti</translation>
 <translation id="1207493287814084192">17.30</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">item baru</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> akun menggunakan sandi yang sama</translation>
 <translation id="2059166748188874810">Kotamadya</translation>
-<translation id="2060114494785549741">Hapus dalam 1 bulan</translation>
 <translation id="2060638295449304809">Alamat ini hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan alamat di Akun Google Anda, <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Pemilih jenis satuan</translation>
 <translation id="2067852168641682340">Selalu simpan ke akun ini</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">Sembunyikan kartu pantau harga</translation>
 <translation id="2216366330550244277">Buka halaman produk</translation>
 <translation id="2220529011494928058">Laporkan masalah</translation>
-<translation id="2220887224562128152">Setelah dijadwalkan untuk dihapus, file tidak dapat dipulihkan.</translation>
 <translation id="2223461067862937305">Buat Kode QR</translation>
 <translation id="2229345671837147090">Petak tab jarak jauh</translation>
 <translation id="2230173723195178503">Halaman web dimuat</translation>
@@ -384,7 +381,6 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2539748786028143624">Aktifkan Perlindungan yang Ditingkatkan…</translation>
 <translation id="2540111494300686866">Sembunyikan dialog</translation>
 <translation id="2542268842667970959">Sembunyikan "Pemeriksaan Keamanan"</translation>
-<translation id="2543870349255816922">Kartu ini menampilkan penurunan harga pada produk yang dipantau dari salah satu perangkat yang disinkronkan</translation>
 <translation id="2547458583188611426">Sinkronisasi tidak berfungsi. Untuk memulai sinkronisasi, masukkan frasa sandi.</translation>
 <translation id="2551153019974022505">Error akun</translation>
 <translation id="2559843230610279254">Grup tab, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> tab.</translation>
@@ -494,7 +490,6 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="3059270601560379555">Penelusuran baru</translation>
 <translation id="3064547930554042309">Kelola Download</translation>
 <translation id="3072279342064724558">Sandi sudah ada</translation>
-<translation id="3074862506644936708">Aktifkan hapus otomatis</translation>
 <translation id="3076846064362030967">Anda tidak akan logout dari Akun Google Anda. <ph name="BEGIN_LINK" />Bentuk aktivitas lainnya<ph name="END_LINK" /> dapat disimpan di Akun Google Anda saat login. Anda dapat menghapusnya kapan saja.
 
 
@@ -913,6 +908,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4896467949657706481">Tab ditutup; Anda telah logout</translation>
 <translation id="4913626501929406101">Anda dapat membagikan salinan sandi Anda dengan aman kepada seseorang dalam grup keluarga Anda. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Terima</translation>
+<translation id="4930714375720679147">Aktifkan</translation>
 <translation id="4932733599132424254">Tanggal</translation>
 <translation id="4936354130727646074">Jangan pindahkan</translation>
 <translation id="4937410517508563815">Simpan sandi di akun</translation>
@@ -1148,7 +1144,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5899314093904173337">Untuk berbagi dengan orang-orang di sekitar, izinkan mereka memindai kode QR ini dengan kamera atau aplikasi pemindai QR</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} tab baru}other{{count} tab baru}}</translation>
 <translation id="5911030830365207728">Google Terjemahan</translation>
-<translation id="5917913282764181683">Hapus otomatis download Anda</translation>
 <translation id="5922999516621365983">Tarik tab ke sini untuk menyematkannya.</translation>
 <translation id="5936006948844852401">Kelola penyimpanan</translation>
 <translation id="5936065461722368675">Terjemahkan seluruh halaman</translation>
@@ -1507,7 +1502,6 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="741204030948306876">Ya, saya setuju</translation>
 <translation id="7417689656810783109">Ganti Nama Grup</translation>
 <translation id="7419565702166471774">Selalu gunakan koneksi aman</translation>
-<translation id="742001653298797675">Jadwalkan penghapusan semua download Anda setelah satu bulan untuk menghemat ruang penyimpanan di ponsel dan melindungi privasi Anda.</translation>
 <translation id="7425053386765766120">Tambahkan metode pembayaran…</translation>
 <translation id="7425346204213733349">Perubahan pada bookmark, histori, sandi, dan setelan lainnya tidak akan disinkronkan lagi dengan Akun Google. Namun, data yang sudah ada akan tetap disimpan di Akun Google Anda.</translation>
 <translation id="742664698522525515">Simpan grup?</translation>

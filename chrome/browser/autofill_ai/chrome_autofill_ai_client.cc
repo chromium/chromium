@@ -10,6 +10,8 @@
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/autofill_ai/autofill_ai_util.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -95,4 +97,16 @@ autofill::FormStructure* ChromeAutofillAiClient::GetCachedFormStructure(
     return nullptr;
   }
   return driver->GetAutofillManager().FindCachedFormById(form_id);
+}
+
+optimization_guide::ModelQualityLogsUploaderService*
+ChromeAutofillAiClient::GetMqlsUploadService() {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  OptimizationGuideKeyedService* optimization_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  if (!optimization_guide_keyed_service) {
+    return nullptr;
+  }
+  return optimization_guide_keyed_service->GetModelQualityLogsUploaderService();
 }

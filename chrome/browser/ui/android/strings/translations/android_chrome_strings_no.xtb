@@ -325,7 +325,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2527209463677295330">Hvis du inkluderer mer av teksten på siden, kan det hende du får bedre resultater</translation>
 <translation id="2527779675047087889">Skjul innholdet på utklippstavlen</translation>
 <translation id="2532336938189706096">Nettvisning</translation>
-<translation id="2534155362429831547">Slettet <ph name="NUMBER_OF_ITEMS" /> elementer</translation>
 <translation id="253498598929009420">Nettstedet kan se innholdet på skjermen din</translation>
 <translation id="2536728043171574184">Ser på en lokalt lagret versjon av denne siden</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" /> – fane</translation>
@@ -365,7 +364,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2677748264148917807">Gå ut</translation>
 <translation id="2687009626279857299">Har sluttet å fungere på denne enheten</translation>
 <translation id="2702516483241149200">Ny: del en link som ruller til denne teksten</translation>
-<translation id="2705073298859543115">Opprett et sammendrag</translation>
 <translation id="2708051474374549906">Proaktiv sanntidsbeskyttelse mot farlige nettsteder, nedlastinger og utvidelser, som fungerer ved at nettlesingsdataene dine sendes til Google</translation>
 <translation id="2708226184420201102">Åpne i <ph name="PRODUCT_NAME" />-nettleseren</translation>
 <translation id="271033894570825754">Ny</translation>
@@ -1199,7 +1197,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6564820424018738527">Android-enheten din har muligens en lignende innstilling. Hvis måling av annonser er slått på i Chrome og på Android-enheten din, kan selskaper måle effektiviteten til annonser på alle nettsteder du besøker, og i alle apper du bruker.</translation>
 <translation id="6565959834589222080">Wifi brukes når det er tilgjengelig</translation>
 <translation id="6569373978618239158">Nå ser du artikler fra <ph name="SITE_NAME" /> når du åpner nye faner. Nettstedene du følger, lagres i Google-kontoen din. Du kan administrere dem i innstillingene for Discover.</translation>
-<translation id="6570116402456758630">Sidesammendrag</translation>
 <translation id="657177046675873214">For å få bokmerkene dine på alle enhetene dine, slå på «Bokmerker» i innstillingene</translation>
 <translation id="6573096386450695060">Tillat alltid</translation>
 <translation id="6573431926118603307">Faner du har åpnet i Chrome på de andre enhetene dine, vises her.</translation>
