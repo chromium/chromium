@@ -2020,6 +2020,20 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     @CalledByNative
+    @SuppressLint("WrongConstant")
+    protected void handleMenuOpened(int virtualViewId) {
+        if (isAccessibilityEnabled()) {
+            AccessibilityEvent event =
+                    AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
+            if (event == null) return;
+
+            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE);
+            event.setSource(mView, virtualViewId);
+            requestSendAccessibilityEvent(event);
+        }
+    }
+
+    @CalledByNative
     private void handleNavigate(int newRootId) {
         mAccessibilityFocusId = View.NO_ID;
         mLastAccessibilityFocusId = View.NO_ID;

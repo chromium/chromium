@@ -314,6 +314,10 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       }
       break;
     }
+    case ui::AXEventGenerator::Event::MENU_POPUP_START: {
+      wcax->HandleMenuOpened(android_node->GetUniqueId());
+      break;
+    }
     case ui::AXEventGenerator::Event::NAME_CHANGED: {
       // Clear node from cache whenever the name changes to ensure fresh data.
       wcax->ClearNodeInfoCacheForGivenId(android_node->GetUniqueId());
@@ -392,7 +396,6 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::LIVE_RELEVANT_CHANGED:
     case ui::AXEventGenerator::Event::LIVE_STATUS_CHANGED:
     case ui::AXEventGenerator::Event::MENU_POPUP_END:
-    case ui::AXEventGenerator::Event::MENU_POPUP_START:
     case ui::AXEventGenerator::Event::MENU_ITEM_SELECTED:
     case ui::AXEventGenerator::Event::MULTILINE_STATE_CHANGED:
     case ui::AXEventGenerator::Event::MULTISELECTABLE_STATE_CHANGED:
