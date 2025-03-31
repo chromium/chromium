@@ -59,10 +59,7 @@ steps:
             set -e
             mkdir /workspace/hopium
             cd /workspace/hopium
-            /workspace/depot_tools/gclient config --unmanaged --name src \
-            --custom-var build_with_hopium=True \
-            --custom-var checkout_pgo_profiles=True \
-            git@github.com:protectednet/hopium.git
+            ~/workspace/depot_tools/gclient config --unmanaged --name src --custom-var build_with_hopium=True --custom-var checkout_pgo_profiles=True git@github.com:protectednet/hopium.git
 
   - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.3'
     id: 'sync-deps'
@@ -126,8 +123,26 @@ steps:
             EOF
 
   - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.3'
+    id: 'verify-files'
+    waitFor: ['configure-build']
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        set -e
+        echo "Listing all files in /workspace/hopium/src:"
+        ls -R /workspace/hopium/src
+        echo "---"
+        echo "Attempting to find pre_rebrand.py recursively (for debugging):"
+        find /workspace/hopium/src -name 'pre_rebrand.py' -ls || echo "pre_rebrand.py not found anywhere in /workspace/hopium/src"
+        echo "---"
+        echo "Checking specifically for the required file at the expected location:"
+        ls -lh /workspace/hopium/src/hopium/tsec_branding/pre_rebrand.py
+        echo "Verification step completed."
+
+  - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.3'
     id: 'branding-script'
-    waitFor: [ 'configure-build' ]
+    waitFor: [ 'verify-files' ]
     entrypoint: 'bash'
     args:
         - '-c'
