@@ -1256,7 +1256,9 @@ class HTTPCacheSearchPreloadUnifiedBrowserTest
         },
         // Disable BackForwardCache to ensure that the page is not restored from
         // the cache.
-        /*disabled_features=*/{features::kBackForwardCache});
+        /*disabled_features=*/{features::kBackForwardCache,
+                               net::features::kHttpCacheNoVarySearch,
+                               kSearchPrefetchWithNoVarySearchDiskCache});
   }
 
  private:
