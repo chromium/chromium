@@ -38,6 +38,14 @@ const SkBitmap* PaymentApp::icon_bitmap() const {
   return nullptr;
 }
 
+const SkBitmap* PaymentApp::issuer_bitmap() const {
+  return nullptr;
+}
+
+const SkBitmap* PaymentApp::network_bitmap() const {
+  return nullptr;
+}
+
 std::string PaymentApp::GetApplicationIdentifierToHide() const {
   return std::string();
 }

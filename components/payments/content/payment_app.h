@@ -94,6 +94,8 @@ class PaymentApp {
 
   // Returns the icon bitmap or null.
   virtual const SkBitmap* icon_bitmap() const;
+  virtual const SkBitmap* issuer_bitmap() const;
+  virtual const SkBitmap* network_bitmap() const;
 
   // Returns the identifier for another payment app that should be hidden when
   // this payment app is present.

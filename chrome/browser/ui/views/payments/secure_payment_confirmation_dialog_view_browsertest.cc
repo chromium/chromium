@@ -126,12 +126,15 @@ class SecurePaymentConfirmationDialogViewTest
     model_.set_network_label(l10n_util::GetStringUTF16(
         IDS_SECURE_PAYMENT_CONFIRMATION_NETWORK_LABEL));
     model_.set_network_value(u"MasterCard");
-    model_.set_network_icon(CreateMaxSizeIcon(SK_ColorGREEN));
+    network_icon_ =
+        std::make_unique<SkBitmap>(CreateMaxSizeIcon(SK_ColorGREEN));
+    model_.set_network_icon(network_icon_.get());
 
     model_.set_issuer_label(l10n_util::GetStringUTF16(
         IDS_SECURE_PAYMENT_CONFIRMATION_ISSUER_LABEL));
     model_.set_issuer_value(u"ScotiaBank");
-    model_.set_issuer_icon(CreateMaxSizeIcon(SK_ColorRED));
+    issuer_icon_ = std::make_unique<SkBitmap>(CreateMaxSizeIcon(SK_ColorRED));
+    model_.set_issuer_icon(issuer_icon_.get());
   }
 
   void InvokeSecurePaymentConfirmationUI() {
@@ -327,11 +330,13 @@ class SecurePaymentConfirmationDialogViewTest
   void OnOptOutClicked() override { opt_out_clicked_ = true; }
 
  protected:
+  std::unique_ptr<SkBitmap> instrument_icon_;
+  std::unique_ptr<SkBitmap> network_icon_;
+  std::unique_ptr<SkBitmap> issuer_icon_;
+
   SecurePaymentConfirmationModel model_;
   std::unique_ptr<TestSecurePaymentConfirmationPaymentRequestDelegate>
       test_delegate_;
-
-  std::unique_ptr<SkBitmap> instrument_icon_;
 
   bool dialog_closed_ = false;
   bool confirm_pressed_ = false;
@@ -468,6 +473,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   InvokeSecurePaymentConfirmationUI();
   ExpectViewMatchesModel();
 
+  // Avoid a dangling when replacing with a different icon.
+  model_.set_instrument_icon(nullptr);
+
   // Change the bitmap pointer
   instrument_icon_ =
       std::make_unique<SkBitmap>(CreateMaxSizeIcon(SK_ColorGREEN));
@@ -507,6 +515,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
                        DefaultInstrumentIcon) {
   CreateModel();
+
+  // Avoid a dangling when replacing with a different icon.
+  model_.set_instrument_icon(nullptr);
 
   instrument_icon_ = std::make_unique<SkBitmap>();
   ASSERT_TRUE(instrument_icon_->drawsNothing());
@@ -703,7 +714,8 @@ IN_PROC_BROWSER_TEST_F(
     SecurePaymentConfirmationDialogViewNetworkAndIssuerIconsTest,
     NetworkRowNotShownIfIconNotPresent) {
   CreateModel();
-  model_.set_network_icon(SkBitmap());
+  SkBitmap network_icon = SkBitmap();
+  model_.set_network_icon(&network_icon);
   InvokeSecurePaymentConfirmationUI();
 
   ASSERT_FALSE(GetViewByID(
@@ -719,7 +731,8 @@ IN_PROC_BROWSER_TEST_F(
     SecurePaymentConfirmationDialogViewNetworkAndIssuerIconsTest,
     IssuerRowNotShownIfIconNotPresent) {
   CreateModel();
-  model_.set_issuer_icon(SkBitmap());
+  SkBitmap issuer_icon = SkBitmap();
+  model_.set_issuer_icon(&issuer_icon);
   InvokeSecurePaymentConfirmationUI();
 
   ASSERT_FALSE(GetViewByID(
@@ -803,7 +816,8 @@ IN_PROC_BROWSER_TEST_F(
     NetworkIconNotShownIfNotPresent) {
   CreateModel();
 
-  model_.set_network_icon(SkBitmap());
+  SkBitmap network_icon = SkBitmap();
+  model_.set_network_icon(&network_icon);
   InvokeSecurePaymentConfirmationUI();
 
   // The title should still be present.
@@ -824,7 +838,8 @@ IN_PROC_BROWSER_TEST_F(
     IssuerIconNotShownIfNotPresent) {
   CreateModel();
 
-  model_.set_issuer_icon(SkBitmap());
+  SkBitmap issuer_icon = SkBitmap();
+  model_.set_issuer_icon(&issuer_icon);
   InvokeSecurePaymentConfirmationUI();
 
   // The title should still be present.

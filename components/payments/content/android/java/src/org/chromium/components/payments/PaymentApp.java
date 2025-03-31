@@ -4,6 +4,7 @@
 
 package org.chromium.components.payments;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
 import org.chromium.base.task.PostTask;
@@ -285,5 +286,19 @@ public abstract class PaymentApp extends EditableOption {
      */
     public PaymentResponse setAppSpecificResponseFields(PaymentResponse response) {
         return response;
+    }
+
+    /**
+     * @return The bitmap icon for the issuer (Secure Payment Confirmation specific).
+     */
+    public @Nullable Bitmap getIssuerIcon() {
+        return null;
+    }
+
+    /**
+     * @return The bitmap icon for the network (Secure Payment Confirmation specific).
+     */
+    public @Nullable Bitmap getNetworkIcon() {
+        return null;
     }
 }
