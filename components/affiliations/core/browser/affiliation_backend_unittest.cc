@@ -175,7 +175,7 @@ class AffiliationBackendTest : public testing::Test {
   }
 
   size_t backend_facet_manager_count() {
-    return backend()->facet_manager_count_for_testing();
+    return backend()->facet_manager_count();
   }
 
   bool IsCachedDataFreshForFacetURI(const FacetURI& facet_uri) {
