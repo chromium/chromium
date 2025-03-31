@@ -812,13 +812,6 @@ const char kAutofillPaymentsFieldSwappingDescription[] =
     "When enabled, swapping autofilled payment suggestions would result"
     "in overriding all of the payments fields with the swapped profile data";
 
-const char kAutofillRemovePaymentsButterDropdownName[] =
-    "Remove \"Show cards from your Google Account\" dropdown";
-const char kAutofillRemovePaymentsButterDropdownDescription[] =
-    "When enabled, the \"Show cards from your Google Account\" Autofill "
-    "suggestion will not be displayed, and Autofill will work as if it had "
-    "been selected.";
-
 const char kAutofillSharedStorageServerCardDataName[] =
     "Enable storing autofill server card data in the shared storage database";
 const char kAutofillSharedStorageServerCardDataDescription[] =

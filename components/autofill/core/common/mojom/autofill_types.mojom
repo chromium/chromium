@@ -607,10 +607,7 @@ enum AutofillSuggestionTriggerSource {
   // skipped, to make them behave more like a <select>.
   // TODO(crbug.com/40100455): It's unclear if this is still necessary.
   kOpenTextDataListChooser = 6,
-  // Credit card suggestions offer users with Sync transport eligiblity an
-  // option to display cards from their account. This causes the suggestions to
-  // update. The updated suggested are considered to have this trigger source.
-  kShowCardsFromAccount = 7,
+  // kShowCardsFromAccount = 7 is deprecated
   // The suggestion triggering logic through Blink events (e.g.
   // `kFormControlElementClicked`) is shared with the password manager. However,
   // the trigger source is not propagated to the password manager specific

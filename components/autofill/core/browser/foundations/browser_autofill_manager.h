@@ -121,18 +121,6 @@ class BrowserAutofillManager : public AutofillManager {
   virtual bool ShouldShowScanCreditCard(const FormData& form,
                                         const FormFieldData& field);
 
-  // Handlers for the "Show Cards From Account" row. This row should be shown to
-  // users who have cards in their account and can use Sync Transport. Clicking
-  // the row records the user's consent to see these cards on this device, and
-  // refreshes the popup.
-  virtual bool ShouldShowCardsFromAccountOption(
-      const FormData& form,
-      const FieldGlobalId& field_id,
-      AutofillSuggestionTriggerSource trigger_source) const;
-  virtual void OnUserAcceptedCardsFromAccountOption();
-  virtual void RefetchCardsAndUpdatePopup(const FormData& form,
-                                          const FormFieldData& field);
-
   // Fills or previews `form` with the information in `credit_card`. `field_id`
   // is the ID of the field that triggered the filling operation.
   // `trigger_source` is the reason for triggering the filling operation.

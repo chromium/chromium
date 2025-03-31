@@ -411,14 +411,6 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Check whether a card is a server card or has a duplicated server card.
   bool IsServerCard(const CreditCard* credit_card) const;
 
-  // Returns whether a row to give the option of showing cards from the user's
-  // account should be shown in the dropdown.
-  virtual bool ShouldShowCardsFromAccountOption() const;
-
-  // Triggered when a user selects the option to see cards from their account.
-  // Records the sync transport consent.
-  void OnUserAcceptedCardsFromAccountOption();
-
   // Records the sync transport consent if the user is in sync transport mode.
   virtual void OnUserAcceptedUpstreamOffer();
 

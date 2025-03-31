@@ -50,8 +50,6 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kAllSavedPasswordsEntry";
     case SuggestionType::kGeneratePasswordEntry:
       return "kGeneratePasswordEntry";
-    case SuggestionType::kShowAccountCards:
-      return "kShowAccountCards";
     case SuggestionType::kAccountStoragePasswordEntry:
       return "kAccountStoragePasswordEntry";
     case SuggestionType::kPasswordFieldByFieldFilling:

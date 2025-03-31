@@ -474,9 +474,6 @@ extern const char kAutofillEnableVerveCardSupportDescription[];
 extern const char kAutofillImprovedLabelsName[];
 extern const char kAutofillImprovedLabelsDescription[];
 
-extern const char kAutofillRemovePaymentsButterDropdownName[];
-extern const char kAutofillRemovePaymentsButterDropdownDescription[];
-
 extern const char kAutofillSharedStorageServerCardDataName[];
 extern const char kAutofillSharedStorageServerCardDataDescription[];
 

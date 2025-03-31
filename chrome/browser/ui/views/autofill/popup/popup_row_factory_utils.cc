@@ -89,8 +89,7 @@ constexpr auto kPopupItemTypesUsingLeadingIcons = DenseSet<SuggestionType>(
     {SuggestionType::kAllSavedPasswordsEntry, SuggestionType::kManageAddress,
      SuggestionType::kManageAutofillAi, SuggestionType::kManageCreditCard,
      SuggestionType::kManageIban, SuggestionType::kManagePlusAddress,
-     SuggestionType::kShowAccountCards, SuggestionType::kUndoOrClear,
-     SuggestionType::kViewPasswordDetails,
+     SuggestionType::kUndoOrClear, SuggestionType::kViewPasswordDetails,
      SuggestionType::kPendingStateSignin});
 
 // Max width for the username and masked password.

@@ -10911,15 +10911,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(language::kTranslateOpenSettings)},
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"autofill-remove-payments-butter-dropdown",
-     flag_descriptions::kAutofillRemovePaymentsButterDropdownName,
-     flag_descriptions::kAutofillRemovePaymentsButterDropdownDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillRemovePaymentsButterDropdown)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
     {"language-detection-api", flag_descriptions::kLanguageDetectionAPIName,
      flag_descriptions::kLanguageDetectionAPIDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kLanguageDetectionAPI)},
