@@ -1880,6 +1880,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
       should_exclude_component_ad_due_to_kanon,
       should_exclude_reporting_id_set_due_to_kanon);
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "fillInInterestGroupV8Argument",
+                                    trace_id);
   v8::LocalVector<v8::Value> args(isolate);
   v8::Local<v8::Object> interest_group_object = v8::Object::New(isolate);
   gin::Dictionary interest_group_dict(isolate, interest_group_object);
@@ -1912,6 +1914,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
   }
 
   args.push_back(std::move(interest_group_object));
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "fillInInterestGroupV8Argument",
+                                  trace_id);
 
   if (!AppendJsonValueOrNull(v8_helper_.get(), context, auction_signals_json,
                              &args) ||
@@ -1920,6 +1924,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
     return std::nullopt;
   }
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "fillInTrustedSignalsV8Argument",
+                                    trace_id);
   v8::Local<v8::Value> trusted_signals;
   SignalsOriginRelation trusted_signals_relation = ClassifyTrustedSignals(
       script_source_url_, trusted_bidding_signals_origin_);
@@ -1941,6 +1947,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
   } else {
     args.push_back(v8::Null(isolate));
   }
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "fillInTrustedSignalsV8Argument",
+                                  trace_id);
 
   std::optional<uint32_t> bidding_signals_data_version;
   if (trusted_bidding_signals_result) {
@@ -1948,6 +1956,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
         trusted_bidding_signals_result->GetDataVersion();
   }
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "fillInBrowserSignalsV8Argument",
+                                    trace_id);
   v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
   gin::Dictionary browser_signals_dict(isolate, browser_signals);
   // TODO(crbug.com/336164429): Construct the fields of browser signals lazily.
@@ -2022,6 +2032,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
   }
 
   args.push_back(browser_signals);
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "fillInBrowserSignalsV8Argument",
+                                  trace_id);
 
   v8::Local<v8::Object> direct_from_seller_signals = v8::Object::New(isolate);
   gin::Dictionary direct_from_seller_signals_dict(isolate,
@@ -2212,6 +2224,8 @@ BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
     return nullptr;
   }
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "addBindingsToContextRecycler",
+                                    trace_id);
   context_recycler->AddForDebuggingOnlyBindings();
   context_recycler->AddPrivateAggregationBindings(
       permissions_policy_state_->private_aggregation_allowed,
@@ -2232,6 +2246,8 @@ BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
   context_recycler->AddSetPrioritySignalsOverrideBindings();
   context_recycler->AddInterestGroupLazyFiller();
   context_recycler->AddBiddingBrowserSignalsLazyFiller();
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "addBindingsToContextRecycler",
+                                  trace_id);
 
   if (should_deep_freeze && !DeepFreezeContext(context, errors_out)) {
     return nullptr;
