@@ -1288,6 +1288,19 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.Extensions.ExplicitSigninFromExtensionInstallBubble"
+    enum="BooleanIsNewOptIn" expires_after="2026-04-11">
+  <owner>kelvinjiang@chromium.org</owner>
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records whether the user explicitly signed in through the extension install
+    bubble entry point for the first time or if they have previously done so
+    before in the same profile. Recorded upon signing in through the extension
+    install bubble entry point only.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Extensions.GaiaRemoteConsentFlowResult"
     enum="GaiaRemoteConsentFlowResult" expires_after="2025-06-05">
   <owner>alexilin@chromium.org</owner>
