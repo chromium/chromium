@@ -221,7 +221,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
       scoped_refptr<CanvasResource>&&) {}
   virtual void SetResourceRecyclingEnabled(bool) {}
 
-  void ClearRecycledResources();
+  void ClearUnusedResources();
 
   SkSurface* GetSkSurface() const;
   bool IsGpuContextLost() const;

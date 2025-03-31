@@ -542,7 +542,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
         // If this resource has become unusable, all cached resources have also
         // become unusable. Drop them to ensure that a new usable resource gets
         // created in the below call to NewOrRecycledResource().
-        ClearRecycledResources();
+        ClearUnusedResources();
       }
       resource_ = NewOrRecycledResource();
       DCHECK(IsResourceUsable(resource_.get()));
@@ -784,7 +784,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   void SetResourceRecyclingEnabled(bool value) override {
     resource_recycling_enabled_ = value;
     if (!resource_recycling_enabled_) {
-      ClearRecycledResources();
+      ClearUnusedResources();
     }
   }
 
@@ -947,7 +947,7 @@ class CanvasResourceProviderPassThrough final : public CanvasResourceProvider {
     resource_ = resource;
 
     // Drop a previously-imported resource (if any), as it is now stale.
-    ClearRecycledResources();
+    ClearUnusedResources();
     RegisterUnusedResource(resource_);
   }
 
@@ -1959,7 +1959,7 @@ cc::ImageDecodeCache* CanvasResourceProvider::ImageDecodeCacheF16() {
   return &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
 }
 
-void CanvasResourceProvider::ClearRecycledResources() {
+void CanvasResourceProvider::ClearUnusedResources() {
   canvas_resources_.clear();
 }
 

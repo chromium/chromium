@@ -1489,7 +1489,7 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
 
   // The user isn't obligated to ever transfer back, which means this resource
   // provider might stick around for while. Jettison any unnecessary resources.
-  resource_provider_from_webgpu_access_->ClearRecycledResources();
+  resource_provider_from_webgpu_access_->ClearUnusedResources();
 
   WillDraw(SkIRect::MakeXYWH(0, 0, Width(), Height()),
            CanvasPerformanceMonitor::DrawType::kOther);
