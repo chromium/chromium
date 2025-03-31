@@ -35,9 +35,9 @@ namespace {
 
 NSString* const kGroupTitle = @"shared group";
 
-// Adds a shared tab group. User's role depends on its fake identity.
-void AddSharedGroup() {
-  [TabGroupAppInterface prepareFakeSharedTabGroups:1];
+// Adds a shared tab group and sets the user as `owner` or not of the group.
+void AddSharedGroup(BOOL owner) {
+  [TabGroupAppInterface prepareFakeSharedTabGroups:1 asOwner:owner];
   [ChromeEarlGreyUI openTabGrid];
   // Wait for the group cell to appear.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
@@ -75,11 +75,6 @@ void AddSharedGroup() {
 
   // `fakeIdentity2` joins shared groups as member.
   FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
-  if ([self
-          isRunningTest:@selector(testSharedTabGroupsPanelDeleteSharedGroup)]) {
-    // `fakeIdentity2` joins shared groups as owner.
-    identity = [FakeSystemIdentity fakeIdentity2];
-  }
   [SigninEarlGreyUI signinWithFakeIdentity:identity enableHistorySync:YES];
 }
 
@@ -95,7 +90,7 @@ void AddSharedGroup() {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
   }
-  AddSharedGroup();
+  AddSharedGroup(/*owner=*/YES);
 
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
@@ -137,7 +132,7 @@ void AddSharedGroup() {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
   }
-  AddSharedGroup();
+  AddSharedGroup(/*owner=*/NO);
 
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];

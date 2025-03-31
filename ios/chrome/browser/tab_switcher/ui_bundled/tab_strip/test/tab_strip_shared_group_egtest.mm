@@ -52,9 +52,9 @@ id<GREYMatcher> TabStripGroupCellMatcher(NSString* title) {
                     grey_sufficientlyVisible(), nil);
 }
 
-// Adds a shared tab group. User's role depends on its fake identity.
-void AddSharedGroup() {
-  [TabGroupAppInterface prepareFakeSharedTabGroups:1];
+// Adds a shared tab group and sets the user as `owner` or not of the group.
+void AddSharedGroup(BOOL owner) {
+  [TabGroupAppInterface prepareFakeSharedTabGroups:1 asOwner:owner];
   // Sleep for 1 second to make sure that the shared group data are correctly
   // fetched.
   base::PlatformThread::Sleep(base::Seconds(1));
@@ -92,13 +92,6 @@ void AddSharedGroup() {
 
   // `fakeIdentity2` joins shared groups as member.
   FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
-  if ([self
-          isRunningTest:@selector(testTabStripSharedGroupDeleteSharedGroup)] ||
-      [self isRunningTest:@selector
-            (testTabStripLastTabCloseInSharedGroupAlertAsOwner)]) {
-    // `fakeIdentity2` joins shared groups as owner.
-    identity = [FakeSystemIdentity fakeIdentity2];
-  }
   [SigninEarlGreyUI signinWithFakeIdentity:identity enableHistorySync:YES];
 }
 
@@ -117,7 +110,7 @@ void AddSharedGroup() {
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
-  AddSharedGroup();
+  AddSharedGroup(/*owner=*/YES);
 
   // Long press the group.
   [[EarlGrey selectElementWithMatcher:TabStripGroupCellMatcher(kGroupTitle)]
@@ -155,7 +148,7 @@ void AddSharedGroup() {
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
-  AddSharedGroup();
+  AddSharedGroup(/*owner=*/NO);
 
   // Long press the group.
   [[EarlGrey selectElementWithMatcher:TabStripGroupCellMatcher(kGroupTitle)]
@@ -195,7 +188,7 @@ void AddSharedGroup() {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
 
-  AddSharedGroup();
+  AddSharedGroup(/*owner=*/NO);
 
   // Open the tab in shared group.
   [[EarlGrey
@@ -276,7 +269,7 @@ void AddSharedGroup() {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
 
-  AddSharedGroup();
+  AddSharedGroup(/*owner=*/YES);
 
   // Open the tab in shared group.
   [[EarlGrey

@@ -109,9 +109,9 @@ void ShareGroupAtIndex(unsigned int index) {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGridDoneButton()];
 }
 
-// Adds a shared tab group. User's role depends on its fake identity.
-void AddSharedGroup() {
-  [TabGroupAppInterface prepareFakeSharedTabGroups:1];
+// Adds a shared tab group and sets the user as `owner` or not of the group.
+void AddSharedGroup(BOOL owner) {
+  [TabGroupAppInterface prepareFakeSharedTabGroups:1 asOwner:owner];
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           TabGridCloseButtonForCellAtIndex(0)]
@@ -161,14 +161,6 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
   // `fakeIdentity2` joins shared groups as member.
   FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
-  if ([self isRunningTest:@selector(testLastTabClosedOwnerAlert)] ||
-      [self
-          isRunningTest:@selector(testShareGroupAndDeleteUsingContextMenus)] ||
-      [self isRunningTest:@selector
-            (testShareGroupAndDeleteFromGroupViewUsingContextMenus)]) {
-    // `fakeIdentity2` joins shared groups as owner.
-    identity = [FakeSystemIdentity fakeIdentity2];
-  }
   [SigninEarlGreyUI signinWithFakeIdentity:identity enableHistorySync:YES];
 }
 
@@ -381,8 +373,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 }
 
 // Checks that the user with JoinOnly can trigger the Join flow.
-// TODO(crbug.com/381444321): This test is failing on most configurations.
-- (void)DISABLED_testJoinGroup {
+- (void)testJoinGroup {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
@@ -459,7 +450,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
   }
-  AddSharedGroup();
+  AddSharedGroup(/*owner=*/YES);
 
   // Long press the group.
   LongPressTabGroupCellAtIndex(0);
@@ -486,7 +477,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
   }
-  AddSharedGroup();
+  AddSharedGroup(/*owner=*/NO);
 
   // Long press the group.
   LongPressTabGroupCellAtIndex(0);
@@ -514,7 +505,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
   }
-  AddSharedGroup();
+  AddSharedGroup(/*owner=*/YES);
 
   // Open the group view.
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
@@ -549,7 +540,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
   }
-  AddSharedGroup();
+  AddSharedGroup(/*owner=*/NO);
 
   // Open the group view.
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
@@ -584,7 +575,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
   }
-  [TabGroupAppInterface prepareFakeSharedTabGroups:3];
+  [TabGroupAppInterface prepareFakeSharedTabGroups:3 asOwner:NO];
 
   [ChromeEarlGreyUI openTabGrid];
 
@@ -629,7 +620,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
   }
-  AddSharedGroup();
+  AddSharedGroup(/*owner=*/YES);
 
   // Open the group view.
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
@@ -694,7 +685,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
   }
-  AddSharedGroup();
+  AddSharedGroup(/*owner=*/NO);
 
   // Open the group view.
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
@@ -749,7 +740,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
   }
-  AddSharedGroup();
+  AddSharedGroup(/*owner=*/NO);
 
   // Open the group view.
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
@@ -782,7 +773,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
   }
   // Loads regular tab 1 on the first window.
-  AddSharedGroup();
+  AddSharedGroup(/*owner=*/NO);
   [ChromeEarlGrey waitForMainTabCount:1 inWindowWithNumber:0];
 
   // Opens a second window.
@@ -839,7 +830,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
   }
-  AddSharedGroup();
+  AddSharedGroup(/*owner=*/NO);
   [ChromeEarlGrey waitForMainTabCount:1];
 
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
@@ -901,8 +892,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 }
 
 // Checks that the user with JoinOnly can trigger the Join flow.
-// TODO(crbug.com/381444321): This test is failing on most configurations.
-- (void)DISABLED_testJoinGroup {
+- (void)testJoinGroup {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
