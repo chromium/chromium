@@ -155,9 +155,6 @@ class POLICY_EXPORT UserPolicySigninServiceBase
   // platforms for network efficiency.
   virtual void UpdateLastPolicyCheckTime();
 
-  // Gets the sign-in consent level required to perform registration.
-  virtual signin::ConsentLevel GetConsentLevelForRegistration();
-
   // Gets the delay before the next registration.
   virtual base::TimeDelta GetTryRegistrationDelay();
 

@@ -91,15 +91,14 @@ void UserPolicySigninService::TryInitialize() {
     ShutdownCloudPolicyManager();
     return;
   }
-  AccountId account_id =
-      AccountIdFromAccountInfo(identity_manager()->GetPrimaryAccountInfo(
-          GetConsentLevelForRegistration()));
+  AccountId account_id = AccountIdFromAccountInfo(
+      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   InitializeForSignedInUser(account_id, system_url_loader_factory());
 }
 
 bool UserPolicySigninService::CanApplyPolicies(bool check_for_refresh_token) {
   return CanApplyPoliciesForSignedInUser(check_for_refresh_token,
-                                         GetConsentLevelForRegistration(),
+                                         signin::ConsentLevel::kSignin,
                                          identity_manager());
 }
 
@@ -116,10 +115,6 @@ void UserPolicySigninService::ProhibitSignoutIfNeeded() {}
 
 void UserPolicySigninService::UpdateLastPolicyCheckTime() {
   UpdateLastPolicyCheckTimeInPrefs(pref_service_);
-}
-
-signin::ConsentLevel UserPolicySigninService::GetConsentLevelForRegistration() {
-  return signin::ConsentLevel::kSignin;
 }
 
 void UserPolicySigninService::OnUserPolicyNotificationSeen() {
