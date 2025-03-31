@@ -447,38 +447,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram base="true" name="Startup.Android.FeedContentFirstLoadedTime"
-    units="ms" expires_after="2024-09-15">
-  <owner>hanxi@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Records the time duration from a cold start till the Feeds articles are
-    first loaded on the StartSurface. This histogram is only recorded when
-    StartSurface is shown at launch due to &quot;return to tab switcher&quot;
-    feature.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Startup.Android.FeedStreamCreatedTime" units="ms"
-    expires_after="2024-09-15">
-  <owner>hanxi@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Records the time duration from a cold start till the Feeds stream is created
-    on the StartSurface. This histogram is only recorded when StartSurface is
-    shown at launch due to &quot;return to tab switcher&quot; feature.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Startup.Android.FirstDrawCompletedTime" units="ms"
-    expires_after="2024-09-15">
-  <owner>hanxi@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Records the time duration from a cold start till the first draw completes.
-  </summary>
-</histogram>
-
 <histogram name="Startup.Android.GURLEnsureMainDexInitialized" units="ms"
     expires_after="2025-08-24">
   <owner>mthiesse@chromium.org</owner>
@@ -578,18 +546,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Startup.Android.SingleTabTitleAvailableTime"
-    units="ms" expires_after="2024-09-15">
-  <owner>hanxi@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Records the time duration from a cold start till the title of the single Tab
-    is shown on the StartSurface. This histogram is only recorded when
-    StartSurface is shown at launch due to &quot;return to tab switcher&quot;
-    feature.
-  </summary>
-</histogram>
-
 <histogram name="Startup.Android.Warm.MainIntentTimeToFirstDraw" units="ms"
     expires_after="2025-08-10">
   <owner>nafisabedin@google.com</owner>
@@ -597,16 +553,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time duration from a warm, main intent launch until the first
     draw completes.
-  </summary>
-</histogram>
-
-<histogram name="Startup.BlockForCrashpadHandlerStartupTime" units="ms"
-    expires_after="M85">
-  <owner>mark@chromium.org</owner>
-  <owner>crashpad-dev@chromium.org</owner>
-  <summary>
-    The amount of time that elapsed during in
-    crash_report::BlockUntilHandlerStarted().
   </summary>
 </histogram>
 
