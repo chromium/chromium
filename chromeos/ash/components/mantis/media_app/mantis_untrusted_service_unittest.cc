@@ -99,6 +99,11 @@ class MockMojoMantisProcessor : public mantis::mojom::MantisProcessor {
                uint32_t seed,
                InpaintingCallback callback),
               (override));
+  MOCK_METHOD(void,
+              InferSegmentationMode,
+              (std::vector<mantis::mojom::TouchPointPtr> gesture,
+               InferSegmentationModeCallback callback),
+              (override));
 
  private:
   mojo::Receiver<mantis::mojom::MantisProcessor> receiver_;
