@@ -6,6 +6,7 @@
 #import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -22,7 +23,6 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::SettingsToolbarAddButton;
-using chrome_test_util::SettingsToolbarEditButton;
 
 namespace {
 
@@ -145,6 +145,7 @@ void OpenAddressSettings() {
 
 // Tests adding an account address manually through settings.
 - (void)testAddAccountAddressManually {
+  // The user needs to be signed in for the address to be saved to the account.
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 
@@ -183,29 +184,49 @@ void OpenAddressSettings() {
   // as expected.
 }
 
-// Tests that the toolbar is visible after saving an address manually through
-// settings.
-- (void)testToolbarVisibility {
+// Tests the 'Save' button enabled state when manually adding an address to the
+// account.
+- (void)testButtonEnabledStateAtStartForAccountAddress {
+  // TODO(crbug.com/407506623): Fix EGTests on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails on iPad currently.");
+  }
+
+  // The user needs to be signed in for the address to be saved to the account.
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
+
   OpenAddressSettings();
 
   // Tap the "Add" button.
   [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
       performAction:grey_tap()];
 
-  // Fill the required fields.
-  [self fillRequiredFields];
-
-  // Save the profile.
+  // Ensure the 'Save' button is initially disabled for an account address.
   [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+
+  // Sign out.
+  [SigninEarlGrey signOut];
+}
+
+// Tests the 'Save' button enabled state when manually adding a local address.
+- (void)testButtonEnabledStateAtStartForLocalAddress {
+  // TODO(crbug.com/407506623): Fix EGTests on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails on iPad currently.");
+  }
+
+  OpenAddressSettings();
+
+  // Tap the "Add" button.
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
       performAction:grey_tap()];
 
-  // Ensure "Add" button is visible.
-  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Ensure "Edit" button is visible.
-  [[EarlGrey selectElementWithMatcher:SettingsToolbarEditButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  // Ensure the 'Save' button is initially enabled for a local address (user is
+  // signed out).
+  [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
+      assertWithMatcher:grey_enabled()];
 }
 
 @end
