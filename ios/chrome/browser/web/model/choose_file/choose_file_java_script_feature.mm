@@ -11,6 +11,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_event.h"
+#import "ios/chrome/browser/web/model/choose_file/choose_file_event_holder.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
 
@@ -168,11 +169,14 @@ void ChooseFileJavaScriptFeature::ScriptMessageReceived(
         body_dict, "fileExtensions", ParseAcceptAttributeFileExtensions);
     std::vector<std::string> accept_mime_types = ParseAttributeFromValue(
         body_dict, "mimeTypes", ParseAcceptAttributeMimeTypes);
-    base::UmaHistogramBoolean("IOS.Web.FileInput.EventDropped",
-                              last_choose_file_event_.has_value());
-    last_choose_file_event_ = std::make_optional<ChooseFileEvent>(
-        *has_multiple, *has_selected_file, std::move(accept_file_extensions),
-        std::move(accept_mime_types), web_state);
+    base::UmaHistogramBoolean(
+        "IOS.Web.FileInput.EventDropped",
+        ChooseFileEventHolder::GetInstance()->HasLastChooseFileEvent());
+    ChooseFileEvent event{*has_multiple, *has_selected_file,
+                          std::move(accept_file_extensions),
+                          std::move(accept_mime_types), web_state};
+    ChooseFileEventHolder::GetInstance()->SetLastChooseFileEvent(
+        std::move(event));
   }
 }
 
@@ -189,5 +193,5 @@ void ChooseFileJavaScriptFeature::LogChooseFileEvent(int accept_type,
 
 std::optional<ChooseFileEvent>
 ChooseFileJavaScriptFeature::ResetLastChooseFileEvent() {
-  return std::exchange(last_choose_file_event_, std::nullopt);
+  return ChooseFileEventHolder::GetInstance()->ResetLastChooseFileEvent();
 }
