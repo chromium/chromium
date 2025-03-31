@@ -31,9 +31,10 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 
 /** Instrumentation tests for Share intents. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -41,12 +42,13 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 @Batch(Batch.PER_CLASS)
 public class ShareIntentTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Test
     @LargeTest
     public void testDirectShareIntent() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
 
         ComponentName target = new ComponentName("test.package", "test.activity");
         ActivityMonitor monitor =
@@ -71,15 +73,16 @@ public class ShareIntentTest {
 
     @Test
     @LargeTest
-    public void testReceiveShareIntent() throws Exception {
+    public void testReceiveShareIntent() {
         String url = mActivityTestRule.getTestServer().getURL("/content/test/data/hello.html");
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_TEXT, "This is a share:\n" + url);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
-        mActivityTestRule.startActivityCompletely(intent);
-        ChromeTabUtils.waitForTabPageLoaded(mActivityTestRule.getActivity().getActivityTab(), url);
+        mActivityTestRule.startWithIntent(
+                intent,
+                WebPageStation.newBuilder().withEntryPoint().withExpectedUrlSubstring(url).build());
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(

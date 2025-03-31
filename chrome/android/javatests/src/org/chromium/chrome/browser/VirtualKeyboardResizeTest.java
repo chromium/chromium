@@ -9,14 +9,12 @@ import static org.hamcrest.Matchers.lessThanOrEqualTo;
 
 import android.util.JsonReader;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,14 +33,14 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 
 import java.io.IOException;
@@ -58,22 +56,14 @@ import java.util.concurrent.TimeUnit;
 @Batch(Batch.PER_CLASS)
 public class VirtualKeyboardResizeTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String TEXTFIELD_DOM_ID = "inputElement";
     private static final int TEST_TIMEOUT = 10000;
 
-    private EmbeddedTestServer mTestServer;
-
     private static PrefService getPrefService() {
         return UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
-    }
-
-    @Before
-    public void setUp() {
-        mTestServer =
-                EmbeddedTestServer.createAndStartServer(
-                        ApplicationProvider.getApplicationContext());
     }
 
     @After
@@ -86,8 +76,8 @@ public class VirtualKeyboardResizeTest {
     }
 
     private void startMainActivityWithURL(String url) throws Throwable {
-        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
-        mActivityTestRule.waitForActivityNativeInitializationComplete();
+        mActivityTestRule.startOnTestServerUrl(url);
+        mActivityTestRule.getActivityTestRule().waitForActivityNativeInitializationComplete();
 
         // Ensure a compositor commit has occurred. This ensures that browser
         // controls shown state is synced to Blink before we start querying
@@ -109,11 +99,11 @@ public class VirtualKeyboardResizeTest {
     }
 
     private void navigateToURL(String url) {
-        mActivityTestRule.loadUrl(mTestServer.getURL(url));
+        mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(url));
     }
 
     private void openInNewTab(String url) {
-        mActivityTestRule.loadUrlInNewTab(mTestServer.getURL(url));
+        mActivityTestRule.loadUrlInNewTab(mActivityTestRule.getTestServer().getURL(url));
     }
 
     private void assertWaitForKeyboardStatus(final boolean show) {
