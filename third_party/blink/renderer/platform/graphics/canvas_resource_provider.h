@@ -220,8 +220,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual void OnResourceReturnedFromCompositor(
       scoped_refptr<CanvasResource>&&) {}
   virtual void SetResourceRecyclingEnabled(bool) {}
-
-  void ClearUnusedResources();
+  virtual void ClearUnusedResources() {}
 
   SkSurface* GetSkSurface() const;
   bool IsGpuContextLost() const;
@@ -411,9 +410,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   // TODO(crbug.com/352263194): Move these fields inside of
   // CanvasResourceProviderSharedImage.
-  // When and if |resource_recycling_enabled_| is false, |canvas_resources_|
-  // will only hold one CanvasResource at most.
-  WTF::Vector<UnusedResource> canvas_resources_;
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
   base::OneShotTimer unused_resources_reclaim_timer_;

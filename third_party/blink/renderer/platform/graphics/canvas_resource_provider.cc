@@ -812,6 +812,13 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     }
   }
 
+  void ClearUnusedResources() override { canvas_resources_.clear(); }
+
+  void RegisterUnusedResource(scoped_refptr<CanvasResource>&& resource) {
+    CHECK(IsResourceUsable(resource.get()));
+    canvas_resources_.emplace_back(base::TimeTicks::Now(), std::move(resource));
+  }
+
   void MaybePostUnusedResourcesReclaimTask() {
     if (!base::FeatureList::IsEnabled(kCanvas2DReclaimUnusedResources)) {
       return;
@@ -906,6 +913,9 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   // recycling.
   static constexpr int kMaxRecycledCanvasResources = 3;
 
+  // When and if |resource_recycling_enabled_| is false, |canvas_resources_|
+  // will only hold one CanvasResource at most.
+  WTF::Vector<UnusedResource> canvas_resources_;
   bool resource_recycling_enabled_ = true;
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
       shared_image_interface_provider_;
@@ -951,10 +961,6 @@ class CanvasResourceProviderPassThrough final : public CanvasResourceProvider {
   void ImportResource(
       scoped_refptr<ExternalCanvasResource>&& resource) override {
     resource_ = resource;
-
-    // Drop a previously-imported resource (if any), as it is now stale.
-    ClearUnusedResources();
-    RegisterUnusedResource(resource_);
   }
 
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) final {
@@ -1005,7 +1011,6 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
         size, format, alpha_type, color_space, ContextProviderWrapper(),
         CreateWeakPtr());
     CHECK(resource_);
-    RegisterUnusedResource(resource_);
   }
   ~CanvasResourceProviderSwapChain() override = default;
 
@@ -1965,18 +1970,8 @@ cc::ImageDecodeCache* CanvasResourceProvider::ImageDecodeCacheF16() {
   return &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
 }
 
-void CanvasResourceProvider::ClearUnusedResources() {
-  canvas_resources_.clear();
-}
-
 void CanvasResourceProvider::OnDestroyResource() {
   --num_inflight_resources_;
-}
-
-void CanvasResourceProvider::RegisterUnusedResource(
-    scoped_refptr<CanvasResource>&& resource) {
-  CHECK(IsResourceUsable(resource.get()));
-  canvas_resources_.emplace_back(base::TimeTicks::Now(), std::move(resource));
 }
 
 void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {
