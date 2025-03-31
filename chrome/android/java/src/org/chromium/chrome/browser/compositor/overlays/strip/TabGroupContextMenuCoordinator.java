@@ -343,7 +343,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                             R.drawable.material_ic_delete_24dp,
                             /* enabled= */ true));
         }
-        setListViewHeightBasedOnChildren();
     }
 
     @Override
@@ -383,11 +382,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                             R.drawable.material_ic_delete_24dp,
                             /* enabled= */ true));
         }
-
-        // Manually set the ListView height after adding items, as it's nested in a ScrollView. The
-        // menu must be resized explicitly after new items are added since the ListView height
-        // are set after data change.
-        setListViewHeightBasedOnChildren();
         resizeMenu();
     }
 
@@ -396,7 +390,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
      * ListView behaves like a LinearLayout and relies on the ScrollView for proper scrolling to
      * ensure scrolling for the custom views.
      */
-    private void setListViewHeightBasedOnChildren() {
+    @Override
+    protected void afterCreate() {
         assert mContentView != null : "Menu view should not be null";
 
         ListView listView = mContentView.findViewById(R.id.tab_group_action_menu_list);

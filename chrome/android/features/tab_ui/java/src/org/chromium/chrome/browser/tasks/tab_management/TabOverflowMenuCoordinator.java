@@ -34,12 +34,12 @@ import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
+import org.chromium.ui.listmenu.ListMenuItemAdapter;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuItemViewBinder;
 import org.chromium.ui.listmenu.ListSectionDividerViewBinder;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
@@ -70,7 +70,6 @@ public abstract class TabOverflowMenuCoordinator<T> {
         private static final int INVALID_ITEM_ID = -1;
         private final Context mContext;
         private final View mContentView;
-        private final ModelList mModelList = new ModelList();
         private final ComponentCallbacks mComponentCallbacks;
         private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
         private AnchoredPopupWindow mMenuWindow;
@@ -83,6 +82,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
                 @HorizontalOrientation int horizontalOrientation,
                 @LayoutRes int menuLayout,
                 Drawable menuBackground,
+                @NonNull ModelList modelList,
                 OnItemClickedCallback<T> onItemClickedCallback,
                 T id,
                 @Nullable String collaborationId,
@@ -106,8 +106,8 @@ public abstract class TabOverflowMenuCoordinator<T> {
             mContentView = LayoutInflater.from(mContext).inflate(menuLayout, null);
 
             ListView listView = mContentView.findViewById(R.id.tab_group_action_menu_list);
-            ModelListAdapter adapter =
-                    new ModelListAdapter(mModelList) {
+            ListMenuItemAdapter adapter =
+                    new ListMenuItemAdapter(modelList) {
                         @Override
                         public long getItemId(int position) {
                             ListItem item = (ListItem) getItem(position);
@@ -171,10 +171,6 @@ public abstract class TabOverflowMenuCoordinator<T> {
                         }
                         destroy();
                     });
-        }
-
-        ModelList getModelList() {
-            return mModelList;
         }
 
         View getContentView() {
@@ -261,6 +257,11 @@ public abstract class TabOverflowMenuCoordinator<T> {
     protected void buildCollaborationMenuItems(ModelList itemList, @MemberRole int memberRole) {}
 
     /**
+     * A function to run after the menu is created but before it is shown, to make any adjustments.
+     */
+    protected void afterCreate() {}
+
+    /**
      * Concrete class required to get a specific menu width for the menu pop up window.
      *
      * @param anchorViewWidthPx The width of the anchor view, in px.
@@ -318,6 +319,14 @@ public abstract class TabOverflowMenuCoordinator<T> {
         boolean isIncognito = mTabModelSupplier.get().isIncognitoBranded();
         @Nullable String collaborationId = getCollaborationIdOrNull(id);
         Drawable menuBackground = getMenuBackground(activity, isIncognito);
+        // Initialize the model before creating the adapter so that
+        // ListMenuItemAdapter#areAllItemsEnabled returns the correct result instead of receiving an
+        // empty model list.
+        // If the model list is empty, then areAllItemsEnabled will return true and will not be
+        // updated after items are added. Then, keyboard focus will visit all items, including
+        // dividers.
+        ModelList modelList = new ModelList();
+        configureMenuItems(modelList, id);
         mMenuHolder =
                 new OverflowMenuHolder<>(
                         anchorViewRectProvider,
@@ -327,6 +336,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
                         horizontalOrientation,
                         mMenuLayout,
                         menuBackground,
+                        modelList,
                         mOnItemClickedCallback,
                         id,
                         collaborationId,
@@ -334,7 +344,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
                         this::onDismiss,
                         activity);
         buildCustomView(mMenuHolder.getContentView(), isIncognito);
-        configureMenuItems(mMenuHolder.getModelList(), id);
+        afterCreate();
         mMenuHolder.show();
     }
 
