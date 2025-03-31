@@ -30,6 +30,7 @@
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
+#include "chromeos/ash/components/boca/session_api/add_students_request.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/session_api/create_session_request.h"
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
@@ -204,6 +205,10 @@ class MockSessionClientImpl : public SessionClientImpl {
               (std::unique_ptr<RemoveStudentRequest>),
               (override));
   MOCK_METHOD(void,
+              AddStudents,
+              (std::unique_ptr<AddStudentsRequest>),
+              (override));
+  MOCK_METHOD(void,
               JoinSession,
               (std::unique_ptr<JoinSessionRequest>),
               (override));
@@ -238,6 +243,7 @@ class MockSessionManager : public BocaSessionManager {
               (std::unique_ptr<::boca::Session>, bool),
               (override));
   MOCK_METHOD((::boca::Session*), GetCurrentSession, (), (override));
+  MOCK_METHOD(void, LoadCurrentSession, (bool), (override));
   MOCK_METHOD(void, ToggleAppStatus, (bool), (override));
   MOCK_METHOD(void, NotifyAppReload, (), (override));
   ~MockSessionManager() override = default;
@@ -1724,6 +1730,83 @@ TEST_F(BocaAppPageHandlerTest, RemoveStudentWithNonActiveSession) {
   boca_app_handler()->RemoveStudent("any", future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_EQ(mojom::RemoveStudentError::kInvalid, future_1.Get().value());
+}
+
+TEST_F(BocaAppPageHandlerTest, AddStudentsSucceedAlsoTriggerSessionReload) {
+  const auto* session_id = "123";
+  const auto* group_id = "groupId";
+  auto session = std::make_unique<::boca::Session>();
+  session->set_session_state(::boca::Session::ACTIVE);
+  auto* roster = session->mutable_roster();
+  auto* student_groups = roster->mutable_student_groups()->Add();
+  student_groups->set_student_group_id(group_id);
+  auto* student_1 = student_groups->mutable_students()->Add();
+  student_1->set_gaia_id("2");
+
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(session.get()));
+
+  // Page handler callback.
+  base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::AddStudentsError>> future_1;
+
+  AddStudentsRequest request(nullptr, kTestUrlBase, kGaiaId, session_id,
+                             future.GetCallback());
+
+  EXPECT_CALL(*session_client_impl(), AddStudents(_))
+      .WillOnce(WithArg<0>(
+          // Unique pointer have ownership issue, have to do manual deep copy
+          // here instead of using SaveArg.
+          Invoke([&](auto request) {
+            ASSERT_EQ(kGaiaId, request->gaia_id());
+            ASSERT_EQ(2u, request->student_ids().size());
+            ASSERT_EQ(group_id, request->student_group_id());
+            request->callback().Run(true);
+          })));
+  EXPECT_CALL(*session_manager(), LoadCurrentSession(/*from_polling=*/false))
+      .Times(1);
+  boca_app_handler()->AddStudents({"4", "5"}, future_1.GetCallback());
+  ::testing::Mock::VerifyAndClearExpectations(session_client_impl());
+  ::testing::Mock::VerifyAndClearExpectations(session_manager());
+
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_FALSE(future_1.Get().has_value());
+}
+
+TEST_F(BocaAppPageHandlerTest, AddStudentsWithHTTPFailure) {
+  auto* session_id = "123";
+  auto session = std::make_unique<::boca::Session>();
+  session->set_session_state(::boca::Session::ACTIVE);
+
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(session.get()));
+
+  // Page handler callback.
+  base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::AddStudentsError>> future_1;
+
+  AddStudentsRequest request(nullptr, kTestUrlBase, kGaiaId, session_id,
+                             future.GetCallback());
+
+  EXPECT_CALL(*session_client_impl(), AddStudents(_))
+      .WillOnce(WithArg<0>(
+          // Unique pointer have ownership issue, have to do manual deep copy
+          // here instead of using SaveArg.
+          Invoke([&](auto request) {
+            ASSERT_EQ(kGaiaId, request->gaia_id());
+            ASSERT_EQ(2u, request->student_ids().size());
+            request->callback().Run(
+                base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
+          })));
+  EXPECT_CALL(*session_manager(), LoadCurrentSession(/*from_polling=*/false))
+      .Times(0);
+  boca_app_handler()->AddStudents({"4", "5"}, future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_TRUE(future_1.Get().has_value());
 }
 
 TEST_F(BocaAppPageHandlerTest, OnSessionSessionStartedSucceed) {

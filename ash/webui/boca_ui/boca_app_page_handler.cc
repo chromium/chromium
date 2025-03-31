@@ -27,11 +27,13 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
+#include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/boca_session_util.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
+#include "chromeos/ash/components/boca/session_api/add_students_request.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/session_api/create_session_request.h"
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
@@ -446,6 +448,28 @@ void BocaAppHandler::RemoveStudent(const std::string& id,
   session_client_impl_->RemoveStudent(std::move(request));
 }
 
+void BocaAppHandler::AddStudents(const std::vector<std::string>& ids,
+                                 AddStudentsCallback callback) {
+  auto* session =
+      BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
+  if (!session || session->session_state() != ::boca::Session::ACTIVE) {
+    receiver_.ReportBadMessage("Extend session with invalid input.");
+    return;
+  }
+
+  std::unique_ptr<AddStudentsRequest> request =
+      std::make_unique<AddStudentsRequest>(
+          session_client_impl_->sender(), base_url_,
+          GaiaId(user_identity_.gaia_id()), session->session_id(),
+          base::BindOnce(&BocaAppHandler::OnStudentsAdded,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                         session));
+
+  request->set_student_ids(std::move(ids));
+  request->set_student_group_id(GetStudentGroupIdSafe(session));
+  session_client_impl_->AddStudents(std::move(request));
+}
+
 void BocaAppHandler::UpdateOnTaskConfig(mojom::OnTaskConfigPtr config,
                                         UpdateOnTaskConfigCallback callback) {
   auto* session =
@@ -821,6 +845,20 @@ void BocaAppHandler::OnStudentRemoved(
       }
     }
   }
+}
+
+void BocaAppHandler::OnStudentsAdded(
+    AddStudentsCallback callback,
+    ::boca::Session* current_session,
+    base::expected<bool, google_apis::ApiErrorCode> result) {
+  if (!result.has_value()) {
+    std::move(callback).Run(mojom::AddStudentsError::kHTTPError);
+    return;
+  }
+
+  std::move(callback).Run(std::nullopt);
+  BocaAppClient::Get()->GetSessionManager()->LoadCurrentSession(
+      /*from_polling=*/false);
 }
 
 void BocaAppHandler::OnAccessCodeSubmitted(

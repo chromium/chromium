@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ClientDelegateFactory, getNetworkInfoMojomToUI, getSessionConfigMojomToUI, getStudentActivityMojomToUI} from 'chrome-untrusted://boca-app/app/client_delegate.js';
-import type {Assignment, BocaValidPref, CaptionConfig, Config, Course, EndViewScreenSessionError, Identity, OnTaskConfig, Permission, PermissionSetting, RemoveStudentError, SessionResult, SetViewScreenSessionActiveError, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
+import type {AddStudentsError, Assignment, BocaValidPref, CaptionConfig, Config, Course, EndViewScreenSessionError, Identity, OnTaskConfig, Permission, PermissionSetting, RemoveStudentError, SessionResult, SetViewScreenSessionActiveError, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import {PageHandlerRemote, SubmitAccessCodeError} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import type {TimeDelta} from 'chrome-untrusted://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import type {Value} from 'chrome-untrusted://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
@@ -275,6 +275,13 @@ class MockRemoteHandler extends PageHandlerRemote {
     id;
     return Promise.resolve({error: null});
   }
+
+  override addStudents(ids: string[]):
+      Promise<{error: AddStudentsError | null}> {
+    ids;
+    return Promise.resolve({error: null});
+  }
+
   override setFloatMode(isFloatMode: boolean): Promise<{success: boolean}> {
     isFloatMode;
     return Promise.resolve({success: true});
@@ -655,6 +662,12 @@ suite('ClientDelegateTest', function() {
 
   test('client delegate should translate data for remove student', async () => {
     const result = await clientDelegateImpl.getInstance().removeStudent('1');
+    assertTrue(result);
+  });
+
+  test('client delegate should translate data for add students', async () => {
+    const result =
+        await clientDelegateImpl.getInstance().addStudents(['1', '2']);
     assertTrue(result);
   });
 
