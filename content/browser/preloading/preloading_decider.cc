@@ -517,6 +517,33 @@ void PreloadingDecider::UpdateSpeculationCandidates(
   // processed.
   std::erase_if(candidates, should_mark_as_on_standby);
 
+  // TODO(crbug.com/381687257): Combine all speculation rules tags merging logic
+  // in PreloadingDecider to reduce code redundancy.
+  // Aggregate all tags for eager candidates.
+  std::map<SpeculationCandidateKey, std::vector<std::optional<std::string>>>
+      tags_map_for_eager_preloading;
+  for (auto& candidate : candidates) {
+    if (candidate->eagerness != blink::mojom::SpeculationEagerness::kEager) {
+      continue;
+    }
+
+    SpeculationCandidateKey key{candidate->url, candidate->action};
+    for (const auto& tag : candidate->tags) {
+      tags_map_for_eager_preloading[key].push_back(tag);
+    }
+  }
+
+  for (auto& candidate : candidates) {
+    if (candidate->eagerness != blink::mojom::SpeculationEagerness::kEager) {
+      continue;
+    }
+
+    SpeculationCandidateKey key{candidate->url, candidate->action};
+    if (tags_map_for_eager_preloading.count(key) != 0) {
+      candidate->tags = tags_map_for_eager_preloading[key];
+    }
+  }
+
   prefetcher_.ProcessCandidatesForPrefetch(candidates);
 
   prerenderer_->ProcessCandidatesForPrerender(candidates);

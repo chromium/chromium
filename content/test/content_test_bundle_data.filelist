@@ -7832,6 +7832,7 @@ data/prerender/doc-with-display-none-iframe.html
 data/prerender/duplicate_prerenders.html
 data/prerender/empty.html
 data/prerender/image_loading_lazy.html
+data/prerender/multiple_prerender_with_tags.html
 data/prerender/origin_trial_initiator.html
 data/prerender/page-with-embedded-plugin.html
 data/prerender/page-with-object-plugin.html

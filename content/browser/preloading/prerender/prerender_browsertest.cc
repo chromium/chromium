@@ -12477,7 +12477,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, VerifyPrerenderProcessVisibility) {
 
 class PrerenderPurposePrefetchBrowserTest : public PrerenderBrowserTest {
  public:
-  PrerenderPurposePrefetchBrowserTest() = default;
+  PrerenderPurposePrefetchBrowserTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    // Explicitly enables blink::features::kSpeculationRulesTag to enable
+    // SpeculationRulesTag.
+    enabled_features.push_back(base::test::FeatureRefAndParams(
+        blink::features::kSpeculationRulesTag, {}));
+    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+  }
   ~PrerenderPurposePrefetchBrowserTest() override = default;
 
   void SetUp() override {
@@ -12534,6 +12541,9 @@ class PrerenderPurposePrefetchBrowserTest : public PrerenderBrowserTest {
     EXPECT_TRUE(headers.contains(blink::kSecSpeculationTagsHeaderName));
     return headers[blink::kSecSpeculationTagsHeaderName];
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that a request for the initial prerender navigation has the
@@ -12709,6 +12719,20 @@ IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest,
   // the Sec-Speculation-Tags header.
   EXPECT_TRUE(TestPurposePrefetchHeader(next_url));
   EXPECT_FALSE(HasSecSpeculationTagsHeader(next_url));
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest,
+                       SpeculationRulesTagsMergingForEagerCandidates) {
+  const GURL initial_url =
+      GetUrl("/prerender/multiple_prerender_with_tags.html");
+  const GURL prerender_url = GetUrl("/prerender/empty.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  WaitForPrerenderLoadCompletion(prerender_url);
+
+  EXPECT_TRUE(HasSecSpeculationTagsHeader(prerender_url));
+  EXPECT_EQ(GetSecSpeculationTagsHeader(prerender_url), "\"tag1\", \"tag2\"");
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, EnterFullscreen) {
