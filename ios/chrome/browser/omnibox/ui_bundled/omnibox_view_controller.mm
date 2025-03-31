@@ -221,13 +221,12 @@ using base::UserMetricsAction;
 }
 
 - (void)prepareOmniboxForScribble {
-  [self.textField exitPreEditState];
-  [self.textField setText:[[NSAttributedString alloc] initWithString:@""]
-           userTextLength:0];
+  [self.mutator prepareForScribble];
   self.textField.placeholder = nil;
 }
 
 - (void)cleanupOmniboxAfterScribble {
+  [self.mutator cleanupAfterScribble];
   self.textField.placeholder = [self placeholderText];
 }
 
@@ -650,23 +649,12 @@ using base::UserMetricsAction;
 
 - (void)scribbleInteractionWillBeginWriting:
     (UIScribbleInteraction*)interaction {
-  if (self.textField.isPreEditing) {
-    [self.textField exitPreEditState];
-    [self.textField setText:[[NSAttributedString alloc] initWithString:@""]
-             userTextLength:0];
-  }
-
-  [self.textField clearAutocompleteText];
+  [self.mutator prepareForScribble];
 }
 
 - (void)scribbleInteractionDidFinishWriting:
     (UIScribbleInteraction*)interaction {
   [self cleanupOmniboxAfterScribble];
-
-  // Dismiss any inline autocomplete. The user expectation is to not have it.
-  [self.textField clearAutocompleteText];
-
-  [self.mutator removeAdditionalText];
 }
 
 /// Handles interaction with the thumbnail button. (tap or keyboard delete)
