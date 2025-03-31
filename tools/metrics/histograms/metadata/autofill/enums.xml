@@ -2747,6 +2747,9 @@ Called by update_autofill_enums.py.-->
   <int value="18" label="DOM_MUTATION_AFTER_AUTOFILL: Null"/>
   <int value="19" label="DOM_MUTATION_AFTER_AUTOFILL: Extracted"/>
   <int value="20" label="DOM_MUTATION_AFTER_AUTOFILL: Cached"/>
+  <int value="21" label="TOTAL: Null"/>
+  <int value="22" label="TOTAL: Extracted"/>
+  <int value="23" label="TOTAL: Cached"/>
 </enum>
 
 <enum name="AutofillSubmittedServerCardExpirationStatus">

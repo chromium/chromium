@@ -6043,6 +6043,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="SubmissionComponent">
     <variant name="AutofillAgent"/>
     <variant name="FormTracker"/>
+    <variant name="PasswordAutofillAgent"/>
   </token>
 </histogram>
 
