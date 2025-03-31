@@ -32,6 +32,7 @@ import androidx.test.filters.SmallTest;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,6 +43,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -67,6 +70,7 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("DoNotMock") // Mock ListenableFuture.
 public class AuxiliarySearchDonorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
 
     private static final int DEFAULT_TAB_TTL_HOURS = 168;
     private static final int DEFAULT_HISTORY_TTL_HOURS = 24;
@@ -89,6 +93,11 @@ public class AuxiliarySearchDonorUnitTest {
 
         AuxiliarySearchDonor.setSkipInitializationForTesting(true);
         createAndInitAuxiliarySearchDonor();
+    }
+
+    @After
+    public void tearDown() {
+        mFakeTime.resetTimes();
     }
 
     @Test
@@ -135,13 +144,40 @@ public class AuxiliarySearchDonorUnitTest {
 
     @Test
     @SmallTest
+    public void testCalculateDocumentTtlMs() {
+        long creationTime = 10;
+        long currentTime = 100;
+        long expectedTtl = currentTime + DEFAULT_TAB_TTL_HOURS * 60 * 60 * 1000 - creationTime;
+        assertEquals(
+                expectedTtl,
+                mAuxiliarySearchDonor.calculateDocumentTtlMs(
+                        /* isTab= */ true, creationTime, currentTime));
+
+        creationTime = 1743083874549L;
+        expectedTtl = currentTime + DEFAULT_TAB_TTL_HOURS * 60 * 60 * 1000 - creationTime;
+        assertEquals(
+                expectedTtl,
+                mAuxiliarySearchDonor.calculateDocumentTtlMs(
+                        /* isTab= */ true, creationTime, currentTime));
+
+        expectedTtl = currentTime + DEFAULT_HISTORY_TTL_HOURS * 60 * 60 * 1000 - creationTime;
+        assertEquals(
+                expectedTtl,
+                mAuxiliarySearchDonor.calculateDocumentTtlMs(
+                        /* isTab= */ false, creationTime, currentTime));
+    }
+
+    @Test
+    @SmallTest
     public void testBuildDocument_Tab() {
         int id = 10;
         int type = AuxiliarySearchEntryType.TAB;
         GURL url = JUnitTestGURLs.URL_1;
         String title = "Title";
         long lastAccessTimeStamp = 100;
-        long documentTtl = TimeUnit.HOURS.toMillis(DEFAULT_TAB_TTL_HOURS);
+        long currentTime = TimeUtils.currentTimeMillis();
+        long documentTtl =
+                currentTime + TimeUnit.HOURS.toMillis(DEFAULT_TAB_TTL_HOURS) - lastAccessTimeStamp;
         int[] counts = new int[AuxiliarySearchEntryType.MAX_VALUE + 1];
 
         Tab tab = mock(Tab.class);
@@ -159,7 +195,8 @@ public class AuxiliarySearchDonorUnitTest {
                 id,
                 documentTtl,
                 /* score= */ 0,
-                counts);
+                counts,
+                currentTime);
         assertEquals(1, counts[type]);
     }
 
@@ -171,7 +208,10 @@ public class AuxiliarySearchDonorUnitTest {
         String url = "Url";
         String title = "Title";
         long lastAccessTimeStamp = 100;
-        long documentTtl = TimeUnit.HOURS.toMillis(DEFAULT_TAB_TTL_HOURS);
+        long currentTime = TimeUtils.currentTimeMillis();
+
+        long documentTtl =
+                currentTime + TimeUnit.HOURS.toMillis(DEFAULT_TAB_TTL_HOURS) - lastAccessTimeStamp;
         int[] counts = new int[AuxiliarySearchEntryType.MAX_VALUE + 1];
 
         var builder =
@@ -191,7 +231,8 @@ public class AuxiliarySearchDonorUnitTest {
                 id,
                 documentTtl,
                 /* score= */ 0,
-                counts);
+                counts,
+                currentTime);
         assertEquals(1, counts[type]);
     }
 
@@ -202,8 +243,13 @@ public class AuxiliarySearchDonorUnitTest {
         GURL url = JUnitTestGURLs.URL_1;
         String title = "Title";
         long lastAccessTimeStamp = 100;
-        long tabDocumentTtl = TimeUnit.HOURS.toMillis(DEFAULT_TAB_TTL_HOURS);
-        long historyDocumentTtl = TimeUnit.HOURS.toMillis(DEFAULT_HISTORY_TTL_HOURS);
+        long currentTime = TimeUtils.currentTimeMillis();
+        long tabDocumentTtl =
+                currentTime + TimeUnit.HOURS.toMillis(DEFAULT_TAB_TTL_HOURS) - lastAccessTimeStamp;
+        long historyDocumentTtl =
+                currentTime
+                        + TimeUnit.HOURS.toMillis(DEFAULT_HISTORY_TTL_HOURS)
+                        - lastAccessTimeStamp;
         int[] counts = new int[AuxiliarySearchEntryType.MAX_VALUE + 1];
 
         int type = AuxiliarySearchEntryType.TAB;
@@ -253,7 +299,8 @@ public class AuxiliarySearchDonorUnitTest {
                 id,
                 tabDocumentTtl,
                 /* score= */ 0,
-                counts);
+                counts,
+                currentTime);
         testBuildDocumentImplAndVerify(
                 entry2,
                 type2,
@@ -263,7 +310,8 @@ public class AuxiliarySearchDonorUnitTest {
                 visitId,
                 historyDocumentTtl,
                 /* score= */ 0,
-                counts);
+                counts,
+                currentTime);
         testBuildDocumentImplAndVerify(
                 entry3,
                 type3,
@@ -273,7 +321,8 @@ public class AuxiliarySearchDonorUnitTest {
                 visitId3,
                 historyDocumentTtl,
                 AuxiliarySearchTestHelper.SCORE_1,
-                counts);
+                counts,
+                currentTime);
         assertEquals(1, counts[type]);
         assertEquals(1, counts[type2]);
         assertEquals(1, counts[type3]);
@@ -288,11 +337,12 @@ public class AuxiliarySearchDonorUnitTest {
             int id,
             long documentTtlMs,
             int score,
-            int[] counts) {
+            int[] counts,
+            long currentTime) {
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Config.RGB_565);
         String documentId = AuxiliarySearchDonor.getDocumentId(type, id);
 
-        WebPage webPage = mAuxiliarySearchDonor.buildDocument(entry, bitmap, counts);
+        WebPage webPage = mAuxiliarySearchDonor.buildDocument(entry, bitmap, counts, currentTime);
 
         assertEquals(documentId, webPage.getId());
         assertEquals(url, webPage.getUrl());
