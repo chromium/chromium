@@ -3,19 +3,19 @@ PRAGMA foreign_keys=OFF;
 BEGIN TRANSACTION;
 
 CREATE TABLE meta(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value LONGVARCHAR);
-INSERT INTO meta VALUES('version','3');
-INSERT INTO meta VALUES('last_compatible_version','2');
+INSERT INTO meta VALUES('version','4');
+INSERT INTO meta VALUES('last_compatible_version','3');
 
 CREATE TABLE tokens (
 version INTEGER NOT NULL,
 u BLOB NOT NULL,
 e BLOB NOT NULL,
-epoch_id BLOB NOT NULL,
+epoch_id INTEGER NOT NULL,
 expiration INTEGER NOT NULL,
 num_tokens_with_signal INTEGER NOT NULL,
-public_key BLOB NOT NULL
+public_key TEXT NOT NULL
 );
 
-INSERT INTO tokens VALUES (1, 'u', 'e', 'epoch_id', 123, 100, 'public_key');
+INSERT INTO tokens VALUES (1, 'u', 'e', 321, 123, 100, 'public_key');
 
 COMMIT;
