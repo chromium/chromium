@@ -24,11 +24,13 @@ class BoundSessionCookieRefreshServiceFactory
 
  private:
   friend base::NoDestructor<BoundSessionCookieRefreshServiceFactory>;
+  friend class BoundSessionCookieRefreshServiceFactoryTest;
 
   BoundSessionCookieRefreshServiceFactory();
   ~BoundSessionCookieRefreshServiceFactory() override;
 
   // ProfileKeyedServiceFactory:
+  bool ServiceIsNULLWhileTesting() const override;
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   void RegisterProfilePrefs(

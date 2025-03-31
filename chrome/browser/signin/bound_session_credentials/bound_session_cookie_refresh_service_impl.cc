@@ -150,14 +150,17 @@ BoundSessionCookieRefreshServiceImpl::BoundSessionCookieRefreshServiceImpl(
     std::unique_ptr<BoundSessionParamsStorage> session_params_storage,
     content::StoragePartition* storage_partition,
     network::NetworkConnectionTracker* network_connection_tracker,
+    const PrefService* profile_prefs,
     bool is_off_the_record_profile)
     : key_service_(key_service),
       session_params_storage_(std::move(session_params_storage)),
       storage_partition_(storage_partition),
       network_connection_tracker_(network_connection_tracker),
+      profile_prefs_(profile_prefs),
       is_off_the_record_profile_(is_off_the_record_profile) {
   CHECK(session_params_storage_);
   CHECK(storage_partition_);
+  CHECK(profile_prefs_);
   data_removal_observation_.Observe(storage_partition_);
 }
 
@@ -174,7 +177,8 @@ void BoundSessionCookieRefreshServiceImpl::Initialize() {
       "Signin.BoundSessionCredentials.SessionCountOnInit",
       bound_session_params.size(), kMaxSessionsForMetrics);
 
-  if (bound_session_params.empty()) {
+  if (bound_session_params.empty() ||
+      !switches::IsBoundSessionCredentialsEnabled(profile_prefs_)) {
     return;
   }
 
@@ -186,6 +190,8 @@ void BoundSessionCookieRefreshServiceImpl::Initialize() {
 
 void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
     const bound_session_credentials::BoundSessionParams& params) {
+  CHECK(switches::IsBoundSessionCredentialsEnabled(profile_prefs_));
+
   if (!session_params_storage_->SaveParams(params)) {
     DVLOG(1) << "Invalid session params or failed to serialize session params.";
     return;
@@ -332,6 +338,10 @@ void BoundSessionCookieRefreshServiceImpl::HandleRequestBlockedOnCookie(
 
 void BoundSessionCookieRefreshServiceImpl::CreateRegistrationRequest(
     BoundSessionRegistrationFetcherParam registration_params) {
+  if (!switches::IsBoundSessionCredentialsEnabled(profile_prefs_)) {
+    return;
+  }
+
   // Guardrail against registering non-SIDTS DBSC sessions while the client
   // lacks support for running multiple sessions at the same time. Can be
   // overridden with a Finch config parameter.
@@ -478,6 +488,7 @@ BoundSessionCookieRefreshServiceImpl::CreateBoundSessionCookieController(
 
 void BoundSessionCookieRefreshServiceImpl::InitializeBoundSession(
     const bound_session_credentials::BoundSessionParams& bound_session_params) {
+  CHECK(switches::IsBoundSessionCredentialsEnabled(profile_prefs_));
   std::unique_ptr<BoundSessionCookieController> controller =
       CreateBoundSessionCookieController(bound_session_params,
                                          is_off_the_record_profile_);

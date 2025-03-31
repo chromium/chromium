@@ -117,6 +117,11 @@ bool IsChromeRefreshTokenBindingEnabled(const PrefService* profile_prefs) {
 
   return base::FeatureList::IsEnabled(kEnableChromeRefreshTokenBinding);
 }
+
+// Allows to disable the bound session credentials code in case of emergency.
+BASE_FEATURE(kBoundSessionCredentialsKillSwitch,
+             "BoundSessionCredentialsKillSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kEnablePreferencesAccountStorage,

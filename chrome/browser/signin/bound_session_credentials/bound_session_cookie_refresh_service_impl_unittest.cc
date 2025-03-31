@@ -35,6 +35,7 @@
 #include "chrome/browser/signin/bound_session_credentials/fake_bound_session_refresh_cookie_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/rotation_debug_info.pb.h"
 #include "chrome/common/renderer_configuration.mojom.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unexportable_keys/fake_unexportable_key_service.h"
@@ -472,6 +473,7 @@ class BoundSessionCookieRefreshServiceImplTestBase : public testing::Test {
             fake_unexportable_key_service_,
             BoundSessionParamsStorage::CreatePrefsStorageForTesting(prefs_),
             &storage_partition_, content::GetNetworkConnectionTracker(),
+            &pref_service_,
             /*is_off_the_record_profile=*/false);
     cookie_refresh_service->set_controller_factory_for_testing(
         base::BindRepeating(&BoundSessionCookieRefreshServiceImplTestBase::
@@ -490,12 +492,15 @@ class BoundSessionCookieRefreshServiceImplTestBase : public testing::Test {
     return cookie_refresh_service;
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kEnableBoundSessionCredentials};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   std::unique_ptr<BoundSessionParamsStorage> test_storage_;
   content::TestStoragePartition storage_partition_;
+  TestingPrefServiceSimple pref_service_;
   ::testing::StrictMock<MockObserver> mock_observer_;
   std::unique_ptr<BoundSessionCookieRefreshServiceImpl> cookie_refresh_service_;
   unexportable_keys::FakeUnexportableKeyService fake_unexportable_key_service_;
@@ -1214,7 +1219,8 @@ class BoundSessionCookieRefreshServiceImplMultiSessionTest
 
   void VerifyBoundSessions(
       const std::vector<bound_session_credentials::BoundSessionParams>&
-          all_expected_params) {
+          all_expected_params,
+      bool verify_storage = true) {
     CHECK(cookie_refresh_service());
 
     // Verify throttler params.
@@ -1222,9 +1228,11 @@ class BoundSessionCookieRefreshServiceImplMultiSessionTest
                 UnorderedPointwise(IsThrottlerParams(), all_expected_params));
 
     // Verify storage.
-    EXPECT_THAT(
-        storage()->ReadAllParamsAndCleanStorageIfNecessary(),
-        UnorderedPointwise(base::test::EqualsProto(), all_expected_params));
+    if (verify_storage) {
+      EXPECT_THAT(
+          storage()->ReadAllParamsAndCleanStorageIfNecessary(),
+          UnorderedPointwise(base::test::EqualsProto(), all_expected_params));
+    }
 
     // Verify controllers.
     EXPECT_THAT(cookie_controllers_,
@@ -1647,4 +1655,36 @@ TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest, ReportsCountUma) {
   histogram_tester.ExpectUniqueSample(
       "Signin.BoundSessionCredentials.SessionCountOnInit", all_params.size(),
       /*expected_bucket_count=*/1);
+}
+
+class BoundSessionCookieRefreshServiceImplFeatureDisabledTest
+    : public BoundSessionCookieRefreshServiceImplMultiSessionTest {
+ public:
+  BoundSessionCookieRefreshServiceImplFeatureDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        switches::kEnableBoundSessionCredentials);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(BoundSessionCookieRefreshServiceImplFeatureDisabledTest, Initialize) {
+  std::vector<bound_session_credentials::BoundSessionParams> all_params = {
+      CreateBoundSessionParams(kGoogleSessionKeyOne, {"cookieA", "cookieB"}),
+      CreateBoundSessionParams(kGoogleSessionKeyTwo, {"cookieC"}),
+      CreateBoundSessionParams(kYoutubeSessionKeyOne, {"cookieA"})};
+  for (const auto& params : all_params) {
+    ASSERT_TRUE(storage()->SaveParams(params));
+  }
+  GetCookieRefreshServiceImpl();
+  VerifyBoundSessions({}, /*verify_storage=*/false);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplFeatureDisabledTest,
+       CreateRegistrationRequest) {
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  service->CreateRegistrationRequest(
+      CreateTestRegistrationFetcherParams("/RegisterSession"));
+  EXPECT_THAT(registration_fetchers(), IsEmpty());
 }
