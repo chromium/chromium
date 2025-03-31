@@ -144,6 +144,14 @@ using AttributionReportingOsRegistrar =
     content::ContentBrowserClient::AttributionReportingOsRegistrar;
 
 namespace android_webview {
+
+AwContentBrowserClient::AfterStartupTask::AfterStartupTask() = default;
+AwContentBrowserClient::AfterStartupTask::~AfterStartupTask() = default;
+AwContentBrowserClient::AfterStartupTask::AfterStartupTask(
+    AfterStartupTask&& other) = default;
+AwContentBrowserClient::StartupInfo::StartupInfo() = default;
+AwContentBrowserClient::StartupInfo::~StartupInfo() = default;
+
 namespace {
 #if DCHECK_IS_ON()
 // A boolean value to determine if the NetworkContext has been created yet. This
@@ -322,6 +330,63 @@ AwBrowserContext* AwContentBrowserClient::InitBrowserContext() {
 std::unique_ptr<content::BrowserMainParts>
 AwContentBrowserClient::CreateBrowserMainParts(bool /* is_integration_test */) {
   return std::make_unique<AwBrowserMainParts>(this);
+}
+
+bool IsStartupTaskExperimentEnabled() {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  return AwBrowserMainParts::isWebViewStartupTasksExperimentEnabled() ||
+         command_line->HasSwitch(switches::kWebViewUseStartupTasksLogic);
+}
+
+void AwContentBrowserClient::PostAfterStartupTask(
+    const base::Location& from_here,
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+    base::OnceClosure task) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!IsStartupTaskExperimentEnabled()) {
+    task_runner->PostTask(from_here, std::move(task));
+    return;
+  }
+
+  if (startup_info_.startup_complete) {
+    task_runner->PostTask(from_here, std::move(task));
+    return;
+  }
+
+  AfterStartupTask task_info;
+  task_info.from_here = from_here;
+  task_info.task_runner = task_runner;
+  task_info.task = std::move(task);
+  startup_info_.after_startup_tasks.push_back(std::move(task_info));
+}
+
+void AwContentBrowserClient::OnStartupComplete() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(!startup_info_.startup_complete);
+
+  startup_info_.startup_complete = true;
+  // if the native ui task execution isn't enabled already, enable it.
+  if (!startup_info_.enable_native_task_execution_callback.is_null()) {
+    std::move(startup_info_.enable_native_task_execution_callback).Run();
+  }
+
+  auto& tasks_queue = startup_info_.after_startup_tasks;
+  for (AfterStartupTask& after_startup_task : tasks_queue) {
+    after_startup_task.task_runner->PostTask(
+        after_startup_task.from_here, std::move(after_startup_task.task));
+  }
+  tasks_queue.clear();
+}
+
+void AwContentBrowserClient::OnUiTaskRunnerReady(
+    base::OnceClosure enable_native_task_execution_callback) {
+  if (!IsStartupTaskExperimentEnabled()) {
+    std::move(enable_native_task_execution_callback).Run();
+    return;
+  }
+
+  startup_info_.enable_native_task_execution_callback =
+      std::move(enable_native_task_execution_callback);
 }
 
 std::unique_ptr<content::WebContentsViewDelegate>

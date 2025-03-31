@@ -173,8 +173,7 @@ int AwBrowserMainParts::PreEarlyInitialization() {
         base::MessagePumpType::UI);
   }
 
-  browser_process_ = std::make_unique<AwBrowserProcess>(
-      browser_client_->aw_feature_list_creator());
+  browser_process_ = std::make_unique<AwBrowserProcess>(browser_client_);
 
   auto* origin_trials_settings_storage =
       browser_process_->GetOriginTrialsSettingsStorage();
@@ -356,6 +355,11 @@ void AwBrowserMainParts::PostCreateThreads() {
   tracing::SetupPresetTracingFromFieldTrial();
   base::trace_event::EmitNamedTrigger(
       base::trace_event::kStartupTracingTriggerName);
+}
+
+bool AwBrowserMainParts::isWebViewStartupTasksExperimentEnabled() {
+  return Java_AwBrowserMainParts_isWebViewStartupTasksLogicEnabled(
+      base::android::AttachCurrentThread());
 }
 
 }  // namespace android_webview

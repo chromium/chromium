@@ -80,6 +80,12 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
           cert_verifier_creation_params) override;
   std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
       bool is_integration_test) override;
+  void PostAfterStartupTask(
+      const base::Location& from_here,
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+      base::OnceClosure task) override;
+  void OnUiTaskRunnerReady(
+      base::OnceClosure enable_native_task_execution_callback) override;
   std::unique_ptr<content::WebContentsViewDelegate> GetWebContentsViewDelegate(
       content::WebContents* web_contents) override;
   void RenderProcessWillLaunch(content::RenderProcessHost* host) override;
@@ -332,6 +338,8 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
     return aw_feature_list_creator_;
   }
 
+  void OnStartupComplete();
+
  private:
   scoped_refptr<safe_browsing::UrlCheckerDelegate>
   GetSafeBrowsingUrlCheckerDelegate();
@@ -343,6 +351,27 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
 
   // The AwFeatureListCreator is owned by AwMainDelegate.
   const raw_ptr<AwFeatureListCreator> aw_feature_list_creator_;
+
+  struct AfterStartupTask {
+    AfterStartupTask();
+    AfterStartupTask(AfterStartupTask&& other);
+    ~AfterStartupTask();
+
+    base::Location from_here;
+    scoped_refptr<base::SequencedTaskRunner> task_runner;
+    base::OnceClosure task;
+  };
+
+  struct StartupInfo {
+    StartupInfo();
+    ~StartupInfo();
+
+    bool startup_complete = false;
+    base::OnceClosure enable_native_task_execution_callback;
+    base::circular_deque<AfterStartupTask> after_startup_tasks;
+  };
+
+  StartupInfo startup_info_;
 };
 
 }  // namespace android_webview

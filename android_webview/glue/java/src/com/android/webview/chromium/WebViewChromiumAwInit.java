@@ -320,6 +320,14 @@ public class WebViewChromiumAwInit {
         ArrayDeque<Runnable> tasks = new ArrayDeque<>();
         tasks.addLast(
                 () -> {
+                    if (mIsStartupTaskExperimentEnabled) {
+                        // Disable java-side PostTask scheduling. The native-side task runners are
+                        // also disabled in the native code. The unscheduled prenative tasks are
+                        // migrated to the native task runner. The native task runner is enabled
+                        // when we are done with startup.
+                        PostTask.disablePreNativeUiTasks(true);
+                    }
+
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         TrackExitReasons.startTrackingStartup();
                     }
@@ -474,6 +482,11 @@ public class WebViewChromiumAwInit {
                     // This runs all the pending tasks queued for after Chromium init is
                     // finished, so should run after `mInitState` is `INIT_FINISHED`.
                     mFactory.getRunQueue().notifyChromiumStarted();
+                    if (mIsStartupTaskExperimentEnabled) {
+                        // Re-enables the taskrunners
+                        PostTask.disablePreNativeUiTasks(false);
+                        AwBrowserProcess.onStartupComplete();
+                    }
                 });
 
         return new StartupTasksRunner(tasks);
