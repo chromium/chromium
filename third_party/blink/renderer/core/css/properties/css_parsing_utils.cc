@@ -400,30 +400,33 @@ CSSValue* ConsumeSteps(CSSParserTokenStream& stream,
 CSSValue* ConsumeCubicBezier(CSSParserTokenStream& stream,
                              const CSSParserContext& context) {
   DCHECK_EQ(stream.Peek().FunctionId(), CSSValueID::kCubicBezier);
-  CSSValue* result = nullptr;
-  {
-    CSSParserTokenStream::RestoringBlockGuard guard(stream);
-    stream.ConsumeWhitespace();
+  std::array<double, 4> args;
+  CSSParserTokenStream::RestoringBlockGuard guard(stream);
+  stream.ConsumeWhitespace();
 
-    double x1, y1, x2, y2;
-    if (ConsumeNumberRaw_DO_NOT_USE(stream, context, x1) && x1 >= 0 &&
-        x1 <= 1 && ConsumeCommaIncludingWhitespace(stream) &&
-        ConsumeNumberRaw_DO_NOT_USE(stream, context, y1) &&
-        ConsumeCommaIncludingWhitespace(stream) &&
-        ConsumeNumberRaw_DO_NOT_USE(stream, context, x2) && x2 >= 0 &&
-        x2 <= 1 && ConsumeCommaIncludingWhitespace(stream) &&
-        ConsumeNumberRaw_DO_NOT_USE(stream, context, y2) && stream.AtEnd()) {
-      guard.Release();
-      result =
-          MakeGarbageCollected<cssvalue::CSSCubicBezierTimingFunctionValue>(
-              x1, y1, x2, y2);
+  for (size_t i = 0; i < 4; i++) {
+    CSSPrimitiveValue* number_value =
+        ConsumeNumber(stream, context, CSSPrimitiveValue::ValueRange::kAll);
+    bool consumed_trail =
+        i < 3 ? ConsumeCommaIncludingWhitespace(stream) : stream.AtEnd();
+    if (!number_value || !consumed_trail) {
+      return nullptr;
     }
+    // TODO(crbug.com/407420298): Support element-dependent calc() expressions
+    // as numeric arguments.
+    std::optional<double> number = number_value->GetValueIfKnown();
+    if (!number.has_value()) {
+      return nullptr;
+    }
+    args[i] = number.value();
   }
-  if (result) {
-    stream.ConsumeWhitespace();
+  if (args[0] < 0 || args[0] > 1 || args[2] < 0 || args[2] > 1) {
+    return nullptr;
   }
-
-  return result;
+  guard.Release();
+  stream.ConsumeWhitespace();
+  return MakeGarbageCollected<cssvalue::CSSCubicBezierTimingFunctionValue>(
+      args[0], args[1], args[2], args[3]);
 }
 
 CSSIdentifierValue* ConsumeBorderImageRepeatKeyword(
