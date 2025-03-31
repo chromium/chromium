@@ -101,8 +101,7 @@ const base::FeatureParam<EnableBoundSessionCredentialsDiceSupport>
 // Set to an empty string to remove the restriction.
 const base::FeatureParam<std::string>
     kEnableBoundSessionCredentialsExclusiveRegistrationPath{
-        &kEnableBoundSessionCredentials, "exclusive-registration-path",
-        "/RegisterSession"};
+        &kEnableBoundSessionCredentials, "exclusive-registration-path", ""};
 
 // Enables Chrome refresh tokens binding to a device.
 BASE_FEATURE(kEnableChromeRefreshTokenBinding,

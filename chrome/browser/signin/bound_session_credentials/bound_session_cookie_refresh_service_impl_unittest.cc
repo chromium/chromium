@@ -1122,10 +1122,13 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, CreateRegistrationRequest) {
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
        CreateRegistrationRequestNonDefaultPath) {
+  const std::string kNonDefaultRegistrationPath = "/NonDefaultPath";
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   service->CreateRegistrationRequest(
-      CreateTestRegistrationFetcherParams("/NonDefaultPath"));
-  EXPECT_FALSE(registration_fetcher());
+      CreateTestRegistrationFetcherParams(kNonDefaultRegistrationPath));
+  ASSERT_TRUE(registration_fetcher());
+  EXPECT_THAT(registration_fetcher(), IsBoundSessionRegistrationFetcher(
+                                          kNonDefaultRegistrationPath, true));
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
