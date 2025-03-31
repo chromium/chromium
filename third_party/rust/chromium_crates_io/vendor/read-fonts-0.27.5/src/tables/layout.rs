@@ -11,6 +11,9 @@ pub use script::{ScriptTags, SelectedScript, UNICODE_TO_NEW_OPENTYPE_SCRIPT_TAGS
 
 use super::variations::DeltaSetIndex;
 
+#[cfg(feature = "std")]
+use crate::collections::IntSet;
+
 #[cfg(test)]
 #[path = "../tests/layout.rs"]
 mod spec_tests;
@@ -170,6 +173,15 @@ impl<'a> CoverageTable<'a> {
             CoverageTable::Format2(sub) => sub.get(gid),
         }
     }
+
+    /// Returns if this table contains at least one glyph in the 'glyphs' set.
+    #[cfg(feature = "std")]
+    pub fn intersects(&self, glyphs: &IntSet<GlyphId>) -> bool {
+        match self {
+            CoverageTable::Format1(sub) => sub.intersects(glyphs),
+            CoverageTable::Format2(sub) => sub.intersects(glyphs),
+        }
+    }
 }
 
 impl CoverageFormat1<'_> {
@@ -181,6 +193,20 @@ impl CoverageFormat1<'_> {
             .binary_search(&be_glyph)
             .ok()
             .map(|idx| idx as _)
+    }
+
+    /// Returns if this table contains at least one glyph in the 'glyphs' set.
+    #[cfg(feature = "std")]
+    pub fn intersects(&self, glyphs: &IntSet<GlyphId>) -> bool {
+        let glyph_count = self.glyph_count() as u32;
+        let num_bits = 32 - glyph_count.leading_zeros();
+        if glyph_count > (glyphs.len() as u32) * num_bits / 2 {
+            glyphs.iter().any(|g| self.get(g).is_some())
+        } else {
+            self.glyph_array()
+                .iter()
+                .any(|g| glyphs.contains(GlyphId::from(g.get())))
+        }
     }
 }
 
@@ -204,11 +230,33 @@ impl CoverageFormat2<'_> {
                 rec.start_coverage_index() + gid.to_u16() - rec.start_glyph_id().to_u16()
             })
     }
+
+    /// Returns if this table contains at least one glyph in the 'glyphs' set.
+    #[cfg(feature = "std")]
+    pub fn intersects(&self, glyphs: &IntSet<GlyphId>) -> bool {
+        let range_count = self.range_count() as u32;
+        let num_bits = 32 - range_count.leading_zeros();
+        if range_count > (glyphs.len() as u32) * num_bits / 2 {
+            glyphs.iter().any(|g| self.get(g).is_some())
+        } else {
+            self.range_records()
+                .iter()
+                .any(|record| record.intersects(glyphs))
+        }
+    }
 }
 
 impl RangeRecord {
     fn iter(&self) -> impl Iterator<Item = GlyphId16> + '_ {
         (self.start_glyph_id().to_u16()..=self.end_glyph_id().to_u16()).map(GlyphId16::new)
+    }
+
+    /// Returns if this table contains at least one glyph in the 'glyphs' set.
+    #[cfg(feature = "std")]
+    pub fn intersects(&self, glyphs: &IntSet<GlyphId>) -> bool {
+        glyphs.intersects_range(
+            GlyphId::from(self.start_glyph_id())..=GlyphId::from(self.end_glyph_id()),
+        )
     }
 }
 

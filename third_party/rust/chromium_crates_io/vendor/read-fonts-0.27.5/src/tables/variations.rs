@@ -1240,6 +1240,9 @@ impl ItemVariationStore<'_> {
         index: DeltaSetIndex,
         coords: &[F2Dot14],
     ) -> Result<i32, ReadError> {
+        if coords.is_empty() {
+            return Ok(0);
+        }
         let data = match self.item_variation_data().get(index.outer as usize) {
             Some(data) => data?,
             None => return Ok(0),
@@ -1270,6 +1273,9 @@ impl ItemVariationStore<'_> {
         index: DeltaSetIndex,
         coords: &[F2Dot14],
     ) -> Result<FloatItemDelta, ReadError> {
+        if coords.is_empty() {
+            return Ok(FloatItemDelta::ZERO);
+        }
         let data = match self.item_variation_data().get(index.outer as usize) {
             Some(data) => data?,
             None => return Ok(FloatItemDelta::ZERO),
@@ -1468,6 +1474,9 @@ pub(crate) fn advance_delta(
     glyph_id: GlyphId,
     coords: &[F2Dot14],
 ) -> Result<Fixed, ReadError> {
+    if coords.is_empty() {
+        return Ok(Fixed::ZERO);
+    }
     let gid = glyph_id.to_u32();
     let ix = match dsim {
         Some(Ok(dsim)) => dsim.get(gid)?,
@@ -1485,6 +1494,9 @@ pub(crate) fn item_delta(
     glyph_id: GlyphId,
     coords: &[F2Dot14],
 ) -> Result<Fixed, ReadError> {
+    if coords.is_empty() {
+        return Ok(Fixed::ZERO);
+    }
     let gid = glyph_id.to_u32();
     let ix = match dsim {
         Some(Ok(dsim)) => dsim.get(gid)?,

@@ -172,11 +172,6 @@ impl Iterator for Cmap4Iter<'_> {
                 ) else {
                     continue;
                 };
-                // The table might explicitly map some codepoints to 0. Avoid
-                // returning those here.
-                if glyph_id == GlyphId::NOTDEF {
-                    continue;
-                }
                 return Some((codepoint, glyph_id));
             } else {
                 self.cur_range_ix += 1;
@@ -357,11 +352,6 @@ impl Iterator for Cmap12Iter<'_> {
                     group.start_code,
                     group.start_glyph_id,
                 );
-                // The table might explicitly map some codepoints to 0. Avoid
-                // returning those here.
-                if glyph_id == GlyphId::NOTDEF {
-                    continue;
-                }
                 return Some((codepoint, glyph_id));
             } else {
                 self.cur_group_ix += 1;
@@ -671,7 +661,7 @@ mod tests {
             assert_eq!(cmap4.map_codepoint(codepoint), Some(glyph_id));
             count += 1;
         }
-        assert_eq!(count, 3);
+        assert_eq!(count, 4);
         let font = FontRef::new(font_test_data::SIMPLE_GLYF).unwrap();
         let cmap4 = find_cmap4(&font.cmap().unwrap()).unwrap();
         let mut count = 0;
@@ -679,7 +669,19 @@ mod tests {
             assert_eq!(cmap4.map_codepoint(codepoint), Some(glyph_id));
             count += 1;
         }
-        assert_eq!(count, 2);
+        assert_eq!(count, 3);
+    }
+
+    #[test]
+    fn cmap4_iter_explicit_notdef() {
+        let font = FontRef::new(font_test_data::VAZIRMATN_VAR).unwrap();
+        let cmap4 = find_cmap4(&font.cmap().unwrap()).unwrap();
+        let mut notdef_count = 0;
+        for (_, glyph_id) in cmap4.iter() {
+            notdef_count += (glyph_id == GlyphId::NOTDEF) as i32;
+        }
+        assert!(notdef_count > 0);
+        assert_eq!(cmap4.map_codepoint(0xFFFF_u32), Some(GlyphId::NOTDEF));
     }
 
     // Make sure we don't bail early when iterating ranges with holes.
@@ -717,7 +719,7 @@ mod tests {
             .iter()
             .map(|(ch, gid)| (ch, gid.to_u32()))
             .collect::<Vec<_>>();
-        assert_eq!(mappings, &[(259, 236), (262, 326)]);
+        assert_eq!(mappings, &[(259, 236), (262, 326), (65535, 0)]);
     }
 
     #[test]
@@ -842,6 +844,25 @@ mod tests {
             ..Default::default()
         };
         assert!(cmap12.iter_with_limits(limits).count() <= char::MAX as usize + 1);
+    }
+
+    #[test]
+    fn cmap12_iter_explicit_notdef() {
+        let data = be_buffer! {
+            12u16,      // format
+            0u16,       // reserved, set to 0
+            0u32,       // length, ignored
+            0u32,       // language, ignored
+            1u32,       // numGroups
+            // groups: [startCode, endCode, startGlyphID]
+            [0_u32, 1_u32, 0] // group 0
+        };
+        let cmap12 = Cmap12::read(data.data().into()).unwrap();
+        for (i, (codepoint, glyph_id)) in cmap12.iter().enumerate() {
+            assert_eq!(codepoint as usize, i);
+            assert_eq!(glyph_id.to_u32() as usize, i);
+        }
+        assert_eq!(cmap12.iter().next().unwrap().1, GlyphId::NOTDEF);
     }
 
     #[test]

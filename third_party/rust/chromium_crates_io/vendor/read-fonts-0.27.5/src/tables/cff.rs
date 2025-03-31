@@ -104,6 +104,13 @@ impl<'a> Cff<'a> {
                         .count() as u32,
                     );
                 }
+                // The ROS operator signifies a CID-keyed font and the charset
+                // maps to CIDs rather than SIDs which we don't parse for
+                // glyph names.
+                // <https://adobe-type-tools.github.io/font-tech-notes/pdfs/5176.CFF.pdf#page=28>
+                Ok(dict::Entry::Ros { .. }) => {
+                    return Ok(None);
+                }
                 _ => {}
             }
         }

@@ -1038,7 +1038,7 @@ dependencies = [
 
 [[package]]
 name = "read-fonts"
-version = "0.27.3"
+version = "0.27.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bytemuck",

@@ -37,7 +37,7 @@ impl Colr<'_> {
             };
             let start = record.first_layer_index() as usize;
             let end = start + record.num_layers() as usize;
-            for layer_index in start..=end {
+            for layer_index in start..end {
                 if let Ok((_gid, palette_id)) = self.v0_layer(layer_index) {
                     palette_indices.insert(palette_id);
                 }
@@ -52,7 +52,6 @@ impl Colr<'_> {
         layer_indices: &mut IntSet<u32>,
         palette_indices: &mut IntSet<u16>,
         variation_indices: &mut IntSet<u32>,
-        delta_set_indices: &mut IntSet<u32>,
     ) {
         if self.version() < 1 {
             return;
@@ -82,18 +81,6 @@ impl Colr<'_> {
                 clip_record.v1_closure(&mut c, &clip_list);
             }
         }
-
-        //when a DeltaSetIndexMap is included, collected variation indices are actually delta set indices, we need to map them into variation indices
-        if let Some(Ok(var_index_map)) = self.var_index_map() {
-            delta_set_indices.extend(variation_indices.iter());
-            variation_indices.clear();
-            for idx in delta_set_indices.iter() {
-                if let Ok(var_idx) = var_index_map.get(idx) {
-                    let var_idx = ((var_idx.outer as u32) << 16) + var_idx.inner as u32;
-                    variation_indices.insert(var_idx);
-                }
-            }
-        }
     }
 
     /// Collect the transitive closure of V0 glyphs needed for all of the input glyphs set
@@ -116,7 +103,7 @@ impl Colr<'_> {
             };
             let start = record.first_layer_index() as usize;
             let end = start + record.num_layers() as usize;
-            for layer_index in start..=end {
+            for layer_index in start..end {
                 if let Ok((gid, _palette_id)) = self.v0_layer(layer_index) {
                     glyphset_colrv0.insert(GlyphId::from(gid));
                 }
@@ -677,14 +664,12 @@ mod tests {
         let mut layer_indices = IntSet::empty();
         let mut palette_indices = IntSet::empty();
         let mut variation_indices = IntSet::empty();
-        let mut delta_set_indices = IntSet::empty();
 
         colr.v1_closure(
             &mut glyph_set,
             &mut layer_indices,
             &mut palette_indices,
             &mut variation_indices,
-            &mut delta_set_indices,
         );
 
         assert_eq!(glyph_set.len(), 6);
@@ -707,7 +692,6 @@ mod tests {
         assert!(layer_indices.contains(1));
 
         assert!(variation_indices.is_empty());
-        assert!(delta_set_indices.is_empty());
     }
 
     #[test]
@@ -721,14 +705,12 @@ mod tests {
         let mut layer_indices = IntSet::empty();
         let mut palette_indices = IntSet::empty();
         let mut variation_indices = IntSet::empty();
-        let mut delta_set_indices = IntSet::empty();
 
         colr.v1_closure(
             &mut glyph_set,
             &mut layer_indices,
             &mut palette_indices,
             &mut variation_indices,
-            &mut delta_set_indices,
         );
 
         assert_eq!(glyph_set.len(), 2);
@@ -741,20 +723,12 @@ mod tests {
 
         assert!(layer_indices.is_empty());
 
-        assert_eq!(delta_set_indices.len(), 6);
-        assert!(delta_set_indices.contains(51));
-        assert!(delta_set_indices.contains(52));
-        assert!(delta_set_indices.contains(53));
-        assert!(delta_set_indices.contains(54));
-        assert!(delta_set_indices.contains(55));
-        assert!(delta_set_indices.contains(56));
-
         assert_eq!(variation_indices.len(), 6);
-        assert!(variation_indices.contains(0x160000_u32));
-        assert!(variation_indices.contains(0x170000_u32));
-        assert!(variation_indices.contains(0x180000_u32));
-        assert!(variation_indices.contains(0x190000_u32));
-        assert!(variation_indices.contains(0x1A0000_u32));
-        assert!(variation_indices.contains(0x1B0000_u32));
+        assert!(variation_indices.contains(51));
+        assert!(variation_indices.contains(52));
+        assert!(variation_indices.contains(53));
+        assert!(variation_indices.contains(54));
+        assert!(variation_indices.contains(55));
+        assert!(variation_indices.contains(56));
     }
 }

@@ -359,7 +359,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."rand_pcg:0.3.1"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."read-fonts:0.27.3"]
+[policy."read-fonts:0.27.5"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."regex-automata:0.4.9"]
