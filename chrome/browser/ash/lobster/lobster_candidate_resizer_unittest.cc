@@ -53,7 +53,8 @@ TEST_F(LobsterCandidateResizerTest, InflateImageCallsSnapperProvider) {
                /*query=*/"a nice strawberry",
                /*seed=*/kFakeBaseGenerationSeed, /*size=*/
                gfx::Size(kFullImageDimensionLength, kFullImageDimensionLength),
-               /*num_outputs=*/1, /*use_query_rewriter=*/false)),
+               /*num_outputs=*/1, /*use_query_rewriter=*/false,
+               /*use_i18n=*/false)),
            testing::_, testing::_))
       .WillOnce(testing::Invoke(
           [](const manta::proto::Request& request,
@@ -100,7 +101,8 @@ TEST_F(LobsterCandidateResizerTest,
                /*query=*/"a nice strawberry",
                /*seed=*/kFakeBaseGenerationSeed, /*size=*/
                gfx::Size(kFullImageDimensionLength, kFullImageDimensionLength),
-               /*num_outputs=*/1, /*use_query_rewriter=*/false)),
+               /*num_outputs=*/1, /*use_query_rewriter=*/false,
+               /*use_i18n=*/false)),
            testing::_, testing::_))
       .WillOnce(testing::Invoke(
           [](const manta::proto::Request& request,
@@ -144,7 +146,8 @@ TEST_F(LobsterCandidateResizerTest,
                /*query=*/"a nice strawberry",
                /*seed=*/kFakeBaseGenerationSeed, /*size=*/
                gfx::Size(kFullImageDimensionLength, kFullImageDimensionLength),
-               /*num_outputs=*/1, /*use_query_rewriter=*/false)),
+               /*num_outputs=*/1, /*use_query_rewriter=*/false,
+               /*use_i18n=*/false)),
            testing::_, testing::_))
       .WillOnce(testing::Invoke(
           [](const manta::proto::Request& request,

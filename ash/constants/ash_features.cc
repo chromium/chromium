@@ -1783,6 +1783,9 @@ BASE_FEATURE(kLobsterForManagedUsers,
              "LobsterForManagedUsers",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables lobster i18n response.
+BASE_FEATURE(kLobsterI18n, "LobsterI18n", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables lobster entry point in quick insert zero state.
 BASE_FEATURE(kLobsterQuickInsertZeroState,
              "LobsterQuickInsertZeroState",
@@ -4028,6 +4031,10 @@ bool IsLobsterDisabledByInvalidIME() {
 
 bool IsLobsterUseRewrittenQuery() {
   return base::FeatureList::IsEnabled(kLobsterUseRewrittenQuery);
+}
+
+bool IsLobsterI18nEnabled() {
+  return base::FeatureList::IsEnabled(kLobsterI18n);
 }
 
 bool IsLobsterAlwaysShowDisclaimerForTesting() {

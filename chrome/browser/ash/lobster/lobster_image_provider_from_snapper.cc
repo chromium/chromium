@@ -31,6 +31,7 @@ namespace {
 constexpr gfx::Size kPreviewImageSize = gfx::Size(512, 512);
 constexpr gfx::Size kFullImageSize = gfx::Size(1024, 1024);
 constexpr char kLobsterUseQueryRewriterFlag[] = "use_query_rewrite";
+constexpr char kLobsterI18nFlag[] = "use_i18n";
 constexpr auto kLobsterTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("chromeos_inline_image_request", R"(
       semantics {
@@ -92,6 +93,11 @@ manta::proto::Request CreateMantaRequest(std::string_view query,
   query_rewritter_input_data.set_tag(kLobsterUseQueryRewriterFlag);
   query_rewritter_input_data.set_text(
       ash::features::IsLobsterUseRewrittenQuery() ? "true" : "false");
+
+  manta::proto::InputData& i18n_flag_input_data = *request.add_input_data();
+  i18n_flag_input_data.set_tag(kLobsterI18nFlag);
+  i18n_flag_input_data.set_text(
+      ash::features::IsLobsterI18nEnabled() ? "true" : "false");
 
   return request;
 }
