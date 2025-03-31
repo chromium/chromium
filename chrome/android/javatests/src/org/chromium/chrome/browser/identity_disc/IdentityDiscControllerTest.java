@@ -47,13 +47,11 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameterBefore;
-import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -71,7 +69,6 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
-import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
@@ -89,7 +86,6 @@ import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.common.ContentUrlConstants;
-import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -97,7 +93,6 @@ import java.io.IOException;
 
 /** Instrumentation test for Identity Disc. */
 @RunWith(ParameterizedRunner.class)
-@UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IdentityDiscControllerTest {
     private static final String EMAIL = "email@gmail.com";
@@ -243,13 +238,12 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    // Specifies the test to run only with the GMS Core version greater than or equal to 22w30 which
-    // is the min version that supports the account UPM backend, to avoid
-    // SyncError.UPM_BACKEND_OUTDATED.
-    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30)
-    public void testIdentityDiscSignedIn() {
+    public void testIdentityDiscWithSignin() {
         // Identity Disc should be shown on sign-in state change with a NTP refresh.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        // TODO(crbug.com/40721874): Remove the reload once the sign-in without sync observer
+        //  is implemented.
+        ThreadUtils.runOnUiThreadBlocking(mTab::reload);
         String expectedContentDescription =
                 mActivityTestRule
                         .getActivity()
@@ -275,90 +269,17 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    // Specifies the test to run only with the GMS Core version greater than or equal to 22w30 which
-    // is the min version that supports the account UPM backend, to avoid
-    // SyncError.UPM_BACKEND_OUTDATED.
-    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30)
-    public void testIdentityDiscSignedIn_nonDisplayableEmail() {
+    public void testIdentityDiscWithSignin_nonDisplayableEmail() {
         // Identity Disc should be shown on sign-in state change with a NTP refresh.
         AccountInfo accountInfo = addAndSigninAccountWithNonDisplayableEmail();
+        // TODO(crbug.com/40721874): Remove the reload once the sign-in without sync observer
+        //  is implemented.
+        ThreadUtils.runOnUiThreadBlocking(mTab::reload);
         String expectedContentDescription =
                 mActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.accessibility_toolbar_btn_identity_disc_with_name,
-                                accountInfo.getFullName());
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        isDisplayed(),
-                        withContentDescription(expectedContentDescription)));
-
-        mSigninTestRule.forceSignOut();
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        isDisplayed(),
-                        withContentDescription(
-                                R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
-    public void testIdentityDiscWithErrorBadgeSignedIn() {
-        // Fake an identity error.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
-                    SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
-                    fakeSyncServiceImpl.setRequiresClientUpgrade(true);
-                });
-
-        // Identity Disc should be shown on sign-in state change with a NTP refresh.
-        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
-        String expectedContentDescription =
-                mActivityTestRule
-                        .getActivity()
-                        .getString(
-                                R.string
-                                        .accessibility_toolbar_btn_identity_disc_error_with_name_and_email,
-                                TestAccounts.ACCOUNT1.getFullName(),
-                                TestAccounts.ACCOUNT1.getEmail());
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        isDisplayed(),
-                        withContentDescription(expectedContentDescription)));
-
-        mSigninTestRule.signOut();
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        isDisplayed(),
-                        withContentDescription(
-                                R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
-    public void testIdentityDiscWithErrorBadgeSignedIn_nonDisplayableEmail() {
-        // Fake an identity error.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
-                    SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
-                    fakeSyncServiceImpl.setRequiresClientUpgrade(true);
-                });
-
-        // Identity Disc should be shown on sign-in state change with a NTP refresh.
-        AccountInfo accountInfo = addAndSigninAccountWithNonDisplayableEmail();
-        String expectedContentDescription =
-                mActivityTestRule
-                        .getActivity()
-                        .getString(
-                                R.string.accessibility_toolbar_btn_identity_disc_error_with_name,
                                 accountInfo.getFullName());
         ViewUtils.waitForVisibleView(
                 allOf(
@@ -485,10 +406,6 @@ public class IdentityDiscControllerTest {
     @MediumTest
     @Feature("RenderTest")
     @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    // Specifies the test to run only with the GMS Core version greater than or equal to 22w30 which
-    // is the min version that supports the account UPM backend, to avoid
-    // SyncError.UPM_BACKEND_OUTDATED.
-    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30)
     public void testIdentityDisc_signedIn(boolean nightModeEnabled) throws IOException {
         // Sign-in and wait for the user profile image to appear.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
@@ -518,10 +435,6 @@ public class IdentityDiscControllerTest {
     @Feature("RenderTest")
     @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
-    // Specifies the test to run only with the GMS Core version greater than or equal to 22w30 which
-    // is the min version that supports the account UPM backend, to avoid
-    // SyncError.UPM_BACKEND_OUTDATED.
-    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30)
     public void testIdentityDisc_signedIn_unoPhase2FollowUpEnabled_noIdentityError(
             boolean nightModeEnabled) throws IOException {
         // Sign-in and wait for the user profile image to appear.
@@ -555,12 +468,14 @@ public class IdentityDiscControllerTest {
     public void testIdentityDisc_signedIn_unoPhase2FollowUpEnabled_identityErrorExist(
             boolean nightModeEnabled) throws IOException {
         // Fake an identity error.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
-                    SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
-                    fakeSyncServiceImpl.setRequiresClientUpgrade(true);
-                });
+        FakeSyncServiceImpl fakeSyncService =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
+                            SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
+                            return fakeSyncServiceImpl;
+                        });
+        fakeSyncService.setRequiresClientUpgrade(true);
 
         // Sign-in and wait for the user profile image to appear.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
@@ -569,7 +484,7 @@ public class IdentityDiscControllerTest {
                         .getActivity()
                         .getString(
                                 R.string
-                                        .accessibility_toolbar_btn_identity_disc_error_with_name_and_email,
+                                        .accessibility_toolbar_btn_identity_disc_with_name_and_email,
                                 TestAccounts.ACCOUNT1.getFullName(),
                                 TestAccounts.ACCOUNT1.getEmail());
         ViewUtils.waitForVisibleView(
