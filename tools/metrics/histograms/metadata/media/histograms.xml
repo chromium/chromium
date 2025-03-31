@@ -3464,16 +3464,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.FrameInfo.GuessedCodedSizeChangeSuccess"
-    enum="BooleanSuccess" expires_after="2025-05-11">
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Indicates if the guessed coded size matched the real coded size. Recorded on
-    each resolution change where we had to guess a coded size.
-  </summary>
-</histogram>
-
 <histogram name="Media.FrameInfo.GuessedInitialCodedSizeSuccess"
     enum="BooleanSuccess" expires_after="2025-07-13">
   <owner>dalecurtis@chromium.org</owner>
