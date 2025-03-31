@@ -177,20 +177,23 @@ void BoundSessionCookieRefreshServiceImpl::Initialize() {
       "Signin.BoundSessionCredentials.SessionCountOnInit",
       bound_session_params.size(), kMaxSessionsForMetrics);
 
-  if (bound_session_params.empty() ||
-      !switches::IsBoundSessionCredentialsEnabled(profile_prefs_)) {
+  if (bound_session_params.empty()) {
     return;
   }
 
   for (const auto& params : bound_session_params) {
-    InitializeBoundSession(params);
+    if (switches::IsBoundSessionCredentialsEnabled(profile_prefs_) ||
+        params.is_wsbeta()) {
+      InitializeBoundSession(params);
+    }
   }
   UpdateAllRenderers();
 }
 
 void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
     const bound_session_credentials::BoundSessionParams& params) {
-  CHECK(switches::IsBoundSessionCredentialsEnabled(profile_prefs_));
+  CHECK(switches::IsBoundSessionCredentialsEnabled(profile_prefs_) ||
+        params.is_wsbeta());
 
   if (!session_params_storage_->SaveParams(params)) {
     DVLOG(1) << "Invalid session params or failed to serialize session params.";
@@ -338,7 +341,8 @@ void BoundSessionCookieRefreshServiceImpl::HandleRequestBlockedOnCookie(
 
 void BoundSessionCookieRefreshServiceImpl::CreateRegistrationRequest(
     BoundSessionRegistrationFetcherParam registration_params) {
-  if (!switches::IsBoundSessionCredentialsEnabled(profile_prefs_)) {
+  if (!switches::IsBoundSessionCredentialsEnabled(profile_prefs_) &&
+      !registration_params.is_wsbeta()) {
     return;
   }
 
@@ -488,7 +492,8 @@ BoundSessionCookieRefreshServiceImpl::CreateBoundSessionCookieController(
 
 void BoundSessionCookieRefreshServiceImpl::InitializeBoundSession(
     const bound_session_credentials::BoundSessionParams& bound_session_params) {
-  CHECK(switches::IsBoundSessionCredentialsEnabled(profile_prefs_));
+  CHECK(switches::IsBoundSessionCredentialsEnabled(profile_prefs_) ||
+        bound_session_params.is_wsbeta());
   std::unique_ptr<BoundSessionCookieController> controller =
       CreateBoundSessionCookieController(bound_session_params,
                                          is_off_the_record_profile_);
