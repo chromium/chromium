@@ -327,6 +327,17 @@ class InteractiveGlicTestT : public T {
         mode, "CheckControllerWidgetMode");
   }
 
+  auto CheckPointIsWithinDraggableArea(const gfx::Point& point,
+                                       bool expect_within_area) {
+    return Api::CheckResult(
+        [this, point]() {
+          return window_controller().GetGlicView()->IsPointWithinDraggableArea(
+              point);
+        },
+        expect_within_area,
+        "CheckPointIsWithinDraggableArea_" + point.ToString());
+  }
+
   auto CheckIfAttachedToBrowser(Browser* new_browser) {
     return Api::CheckResult(
         [this] { return window_controller().attached_browser(); }, new_browser,

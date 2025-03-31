@@ -336,11 +336,10 @@ class ApiTests extends ApiTestFixtureBase {
     // Check metadata.
     assertTrue(!!result.annotatedPageData.metadata);
     assertTrue(!!result.annotatedPageData.metadata.frameMetadata);
-    assertEquals(
-        result.annotatedPageData.metadata.frameMetadata.length, 1);
+    assertEquals(result.annotatedPageData.metadata.frameMetadata.length, 1);
     const frameMetadata = result.annotatedPageData.metadata.frameMetadata[0];
     assertTrue(!!frameMetadata);
-    const url:URL = new URL(frameMetadata.url);
+    const url: URL = new URL(frameMetadata.url);
     assertEquals(url.pathname, '/glic/test.html');
     assertEquals(frameMetadata.metaTags.length, 1);
     const metaTag = frameMetadata.metaTags[0];
@@ -469,6 +468,20 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(!!this.host.setSyntheticExperimentState);
     this.host.setSyntheticExperimentState('TestTrial', 'Group1');
     this.host.setSyntheticExperimentState('TestTrial', 'Group2');
+  }
+
+  async testSetWindowDraggableAreas() {
+    const draggableAreas = [{x: 10, y: 20, width: 30, height: 40}];
+    assertTrue(!!this.host.setWindowDraggableAreas);
+    await this.host.setWindowDraggableAreas(
+        draggableAreas,
+    );
+    await this.advanceToNextStep(draggableAreas);
+  }
+
+  async testSetWindowDraggableAreasDefault() {
+    assertTrue(!!this.host.setWindowDraggableAreas);
+    await this.host.setWindowDraggableAreas([]);
   }
 
   private async waitForPanelState(kind: PanelStateKind): Promise<void> {
