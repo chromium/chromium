@@ -1403,8 +1403,16 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
   stop_waiter.Run();
 }
 
+// TODO(crbug.com/407463723): Fix and re-enable.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_AccessibilityServiceAsksClientToLoadAFile \
+  DISABLED_AccessibilityServiceAsksClientToLoadAFile
+#else
+#define MAYBE_AccessibilityServiceAsksClientToLoadAFile \
+  AccessibilityServiceAsksClientToLoadAFile
+#endif
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
-                       AccessibilityServiceAsksClientToLoadAFile) {
+                       MAYBE_AccessibilityServiceAsksClientToLoadAFile) {
   TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
   base::RunLoop loop;
   fake_service_->RequestLoadFile(
