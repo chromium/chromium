@@ -291,7 +291,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': '7bad2c89a0a31b0ad51237f98a0d24ba44e10693',
+  'src_internal_revision': '1dbaec8506b8eb9e069d4c89af53c2c7541495b2',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
