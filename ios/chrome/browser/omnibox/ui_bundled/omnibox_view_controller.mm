@@ -448,10 +448,6 @@ using base::UserMetricsAction;
   self.lensImageEnabled = lensImageSupported;
 }
 
-- (void)updateText:(NSAttributedString*)text {
-  [self.textField setText:text userTextLength:text.length];
-}
-
 - (void)setThumbnailImage:(UIImage*)image {
   [self.view setThumbnailImage:image];
   // Cancel any pending image removal if a new selection is made.
