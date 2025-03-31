@@ -134,6 +134,13 @@ bool IsStateless() {
   return base::FeatureList::IsEnabled(kStatelessFormSuggestionController);
 }
 
+// Returns true if deduping requests is allowed.
+bool IsRequestDedupingAllowed() {
+  return !IsStateless() ||
+         base::FeatureList::IsEnabled(
+             kStatelessFormSuggestionControllerWithRequestDeduping);
+}
+
 }  // namespace
 
 @interface FormSuggestionController () {
@@ -295,9 +302,9 @@ bool IsStateless() {
 
   // Once a provider is found, use it to retrieve suggestions.
   PipelineCompletionBlock completion = ^(NSUInteger providerIndex) {
-    // Ignore outdated results. As `_requestIdentifier` is useless when the
-    // suggestion controller is stateless, complete all requests.
-    if (weakSelf.requestIdentifier != requestIdentifier && !IsStateless()) {
+    // Ignore outdated results if allowed.
+    if (weakSelf.requestIdentifier != requestIdentifier &&
+        IsRequestDedupingAllowed()) {
       return;
     }
     if (providerIndex == NSNotFound) {

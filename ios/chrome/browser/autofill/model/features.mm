@@ -10,6 +10,10 @@ BASE_FEATURE(kStatelessFormSuggestionController,
              "StatelessFormSuggestionController",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kStatelessFormSuggestionControllerWithRequestDeduping,
+             "StatelessFormSuggestionControllerWithRequestDeduping",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kThrottleFormInputAccessorySuggestionRefresh,
              "ThrottleFormInputAccessorySuggestionRefresh",
              base::FEATURE_ENABLED_BY_DEFAULT);
