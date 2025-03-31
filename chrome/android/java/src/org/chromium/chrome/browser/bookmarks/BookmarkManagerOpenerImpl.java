@@ -54,8 +54,7 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
         }
 
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)) {
-            showBookmarkManagerOnTablet(
-                    activity, activity.getComponentName(), url, profile.isOffTheRecord());
+            showBookmarkManagerOnTablet(activity, activity.getComponentName(), url);
         } else {
             showBookmarkManagerOnPhone(activity, url, profile);
         }
@@ -142,12 +141,8 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
     }
 
     private void showBookmarkManagerOnTablet(
-            Context context,
-            @Nullable ComponentName componentName,
-            String url,
-            boolean isIncognito) {
+            Context context, @Nullable ComponentName componentName, String url) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        intent.putExtra(IntentHandler.EXTRA_INCOGNITO_MODE, isIncognito);
         intent.putExtra(
                 Browser.EXTRA_APPLICATION_ID, context.getApplicationContext().getPackageName());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
