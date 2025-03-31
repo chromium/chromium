@@ -38,12 +38,11 @@ std::optional<SkColor> ColorVariant::GetSkColor() const {
 
 SkColor ColorVariant::ConvertToSkColor(
     const ColorProvider* color_provider) const {
-  CHECK(color_provider);
-
   if (auto color = GetSkColor()) {
     return color.value();
   }
 
+  CHECK(color_provider);
   return color_provider->GetColor(GetColorId().value());
 }
 
