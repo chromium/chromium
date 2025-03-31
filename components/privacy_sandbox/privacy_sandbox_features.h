@@ -319,6 +319,10 @@ BASE_DECLARE_FEATURE(kPrivacySandboxEqualizedPromptButtons);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxMigratePrefsToSchemaV2);
 
+// If true, show the V2 of the Privacy Sandbox first time notice.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxFirstTimeNoticeV2);
+
 }  // namespace privacy_sandbox
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_FEATURES_H_

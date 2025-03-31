@@ -284,4 +284,8 @@ BASE_FEATURE(kPrivacySandboxEqualizedPromptButtons,
 BASE_FEATURE(kPrivacySandboxMigratePrefsToSchemaV2,
              "PrivacySandboxMigratePrefsToSchemaV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPrivacySandboxFirstTimeNoticeV2,
+             "PrivacySandboxFirstTimeNoticeV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace privacy_sandbox
