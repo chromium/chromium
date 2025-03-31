@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_test_utils.h"
@@ -15,6 +16,7 @@
 #include "read_anything_test_utils.h"
 #include "services/strings/grit/services_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_node_id_forward.h"
@@ -69,6 +71,10 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
                                speech_playing);
   }
 
+  void EnableReadAloud() {
+    scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingReadAloud);
+  }
+
   void AccessibilityEventReceived(const ui::AXTreeID& tree_id,
                                   const std::vector<ui::AXTreeUpdate>& updates,
                                   bool speech_playing = false) {
@@ -103,6 +109,7 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
 
  private:
   std::unique_ptr<ReadAnythingAppModel> model_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ReadAnythingAppModelTest, IsDocs_FalseBeforeTreeInitialization) {
@@ -1741,7 +1748,31 @@ TEST_F(ReadAnythingAppModelTest, LastExpandedNodeNamedChanged_TriggersRedraw) {
   EXPECT_TRUE(model().selection_node_ids().empty());
 }
 
+// The read aloud flag is already enabled on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ReadAnythingAppModelTest, ContentEditableValueChanged_ResetsDrawTimer) {
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  ui::AXNodeData node1;
+  static constexpr int kId = 1;
+  node1.id = kId;
+  update.nodes = {std::move(node1)};
+  std::vector<ui::AXTreeUpdate> updates = {std::move(update)};
+
+  ui::AXEvent event;
+  event.id = kId;
+  event.event_type = ax::mojom::Event::kValueChanged;
+  std::vector<ui::AXEvent> events = {std::move(event)};
+  // This update changes the structure of the tree. When the controller receives
+  // it in AccessibilityEventReceived, it will re-distill the tree.
+  model().AccessibilityEventReceived(tree_id_, updates, events, false);
+  EXPECT_TRUE(model().reset_draw_timer());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(ReadAnythingAppModelTest,
+       ContentEditableValueChanged_ReadAloudEnabled_ResetsDrawTimer) {
+  EnableReadAloud();
   // Create a tree with a text field.
   ui::AXNodeData root;
   root.id = 1;
