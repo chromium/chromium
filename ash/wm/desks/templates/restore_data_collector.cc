@@ -116,8 +116,9 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
   }
 
   // Do not create a saved desk if the desk is empty or only contains
-  // unsupported apps.
-  if (!has_supported_apps) {
+  // unsupported apps, unless it's a Floating Workspace desk.
+  if (!has_supported_apps &&
+      template_type != DeskTemplateType::kFloatingWorkspace) {
     calls_.erase(current_serial);
     std::move(callback).Run(nullptr);
     return;
