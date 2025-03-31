@@ -61,6 +61,11 @@ export interface EntityDataManagerProxy {
       listener: EntityInstancesChangedListener): void;
 
   /**
+   * Gets the opt-in status for AutofillAi for the current user.
+   */
+  getOptInStatus(): Promise<boolean>;
+
+  /**
    * Sets the opt-in status for AutofillAi for the current user.
    */
   setOptInStatus(optedIn: boolean): void;
@@ -99,6 +104,10 @@ export class EntityDataManagerProxyImpl implements EntityDataManagerProxy {
   removeEntityInstancesChangedListener(
       listener: EntityInstancesChangedListener) {
     chrome.autofillPrivate.onEntityInstancesChanged.removeListener(listener);
+  }
+
+  getOptInStatus() {
+    return chrome.autofillPrivate.getAutofillAiOptInStatus();
   }
 
   setOptInStatus(optedIn: boolean) {

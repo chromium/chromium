@@ -358,16 +358,22 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, SetAutofillAiOptIn) {
   autofill_client()->SetUpPrefsAndIdentityForAutofillAi();
   EXPECT_TRUE(autofill::SetAutofillAiOptInStatus(*autofill_client(), false));
   EXPECT_FALSE(autofill::GetAutofillAiOptInStatus(*autofill_client()));
+  EXPECT_TRUE(RunAutofillSubtest("verifyUserOptedOutOfAutofillAi"));
 
   base::test::TestFuture<autofill::AutofillClient::IphFeature>
       feature_used_future;
   autofill_client()->set_notify_iph_feature_used_mock_callback(
       feature_used_future.GetRepeatingCallback());
 
-  ASSERT_TRUE(RunAutofillSubtest("optIntoAutofillAi"));
+  EXPECT_TRUE(RunAutofillSubtest("optIntoAutofillAi"));
   EXPECT_EQ(feature_used_future.Get(),
             autofill::AutofillClient::IphFeature::kAutofillAi);
   EXPECT_TRUE(autofill::GetAutofillAiOptInStatus(*autofill_client()));
+  EXPECT_TRUE(RunAutofillSubtest("verifyUserOptedIntoAutofillAi"));
+
+  EXPECT_TRUE(RunAutofillSubtest("optOutOfAutofillAi"));
+  EXPECT_FALSE(autofill::GetAutofillAiOptInStatus(*autofill_client()));
+  EXPECT_TRUE(RunAutofillSubtest("verifyUserOptedOutOfAutofillAi"));
 }
 
 }  // namespace

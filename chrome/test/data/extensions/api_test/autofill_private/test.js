@@ -1334,6 +1334,23 @@ var availableTests = [
     await chrome.autofillPrivate.setAutofillAiOptInStatus(true);
     chrome.test.succeed();
   },
+
+  async function optOutOfAutofillAi() {
+    await chrome.autofillPrivate.setAutofillAiOptInStatus(false);
+    chrome.test.succeed();
+  },
+
+  async function verifyUserOptedIntoAutofillAi() {
+    chrome.test.assertEq(
+        true, await chrome.autofillPrivate.getAutofillAiOptInStatus());
+    chrome.test.succeed();
+  },
+
+  async function verifyUserOptedOutOfAutofillAi() {
+    chrome.test.assertEq(
+        false, await chrome.autofillPrivate.getAutofillAiOptInStatus());
+    chrome.test.succeed();
+  },
 ];
 
 /** @const */
@@ -1392,6 +1409,9 @@ var TESTS_FOR_CONFIG = {
   'testExpectedLabelsAreGenerated': ['testExpectedLabelsAreGenerated'],
   'getEmptyPayOverTimeIssuerList': ['getEmptyPayOverTimeIssuerList'],
   'optIntoAutofillAi': ['optIntoAutofillAi'],
+  'optOutOfAutofillAi': ['optOutOfAutofillAi'],
+  'verifyUserOptedIntoAutofillAi': ['verifyUserOptedIntoAutofillAi'],
+  'verifyUserOptedOutOfAutofillAi': ['verifyUserOptedOutOfAutofillAi'],
 };
 
 var testConfig = window.location.search.substring(1);

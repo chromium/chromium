@@ -33,7 +33,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import {loadTimeData} from '../i18n_setup.js';
 import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
 import {getTemplate} from './autofill_ai_section.html.js';
@@ -164,9 +163,8 @@ export class SettingsAutofillAiSectionElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    this.set(
-        'optedIn_.value',
-        !this.ineligibleUser && loadTimeData.getBoolean('autofillAiOptedIn'));
+    this.entityDataManager_.getOptInStatus().then(
+        optedIn => this.set('optedIn_.value', !this.ineligibleUser && optedIn));
 
     this.entityInstancesChangedListener_ =
         (entityInstances => this.entityInstances_ = entityInstances);
