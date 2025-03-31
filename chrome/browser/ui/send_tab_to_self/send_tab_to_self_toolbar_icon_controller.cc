@@ -131,10 +131,6 @@ void SendTabToSelfToolbarIconController::ShowToolbarButton(
   send_tab_to_self::RecordNotificationShown();
 }
 
-const Profile* SendTabToSelfToolbarIconController::profile() const {
-  return profile_;
-}
-
 SendTabToSelfToolbarIconController::~SendTabToSelfToolbarIconController() =
     default;
 

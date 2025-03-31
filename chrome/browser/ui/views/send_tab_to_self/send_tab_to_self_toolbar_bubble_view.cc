@@ -6,7 +6,8 @@
 
 #include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/send_tab_to_self/receiving_ui_handler_registry.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
@@ -150,8 +151,8 @@ void SendTabToSelfToolbarBubbleView::Hide() {
   if (!opened_) {
     send_tab_to_self::RecordNotificationDismissed();
   }
-  send_tab_to_self::ReceivingUiHandlerRegistry::GetInstance()
-      ->GetToolbarButtonControllerForProfile(browser_->profile())
+  SendTabToSelfClientServiceFactory::GetForProfile(browser_->profile())
+      ->GetReceivingUiHandler()
       ->DismissEntries(std::vector<std::string>({guid_}));
   auto* container = BrowserView::GetBrowserViewForBrowser(browser_)
                         ->toolbar()

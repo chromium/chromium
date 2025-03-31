@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
-#include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/messages/android/message_enums.h"
@@ -21,7 +20,6 @@
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
-#include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -62,8 +60,9 @@ void LogDismissReason(messages::DismissReason dismiss_reason) {
 
 }  // namespace
 
-AndroidNotificationHandler::AndroidNotificationHandler(Profile* profile)
-    : profile_(profile) {}
+AndroidNotificationHandler::AndroidNotificationHandler(
+    SendTabToSelfModel* send_tab_to_self_model)
+    : send_tab_to_self_model_((send_tab_to_self_model)) {}
 
 AndroidNotificationHandler::~AndroidNotificationHandler() {
   while (!queued_messages_.empty()) {
@@ -129,9 +128,7 @@ void AndroidNotificationHandler::OnMessageOpened(GURL url, std::string guid) {
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
   params.should_replace_current_entry = false;
   web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
-  auto* model = SendTabToSelfSyncServiceFactory::GetForProfile(profile_)
-                    ->GetSendTabToSelfModel();
-  model->DismissEntry(guid);
+  send_tab_to_self_model_->DismissEntry(guid);
 }
 
 void AndroidNotificationHandler::OnMessageDismissed(
@@ -145,16 +142,10 @@ void AndroidNotificationHandler::OnMessageDismissed(
   for (unsigned int i = 0; i < queued_messages_.size(); i++) {
     if (queued_messages_.at(i).get() == message) {
       queued_messages_.erase(queued_messages_.begin() + i);
-      auto* model = SendTabToSelfSyncServiceFactory::GetForProfile(profile_)
-                        ->GetSendTabToSelfModel();
-      model->DismissEntry(guid);
+      send_tab_to_self_model_->DismissEntry(guid);
       LogDismissReason(dismiss_reason);
     }
   }
-}
-
-const Profile* AndroidNotificationHandler::profile() const {
-  return profile_;
 }
 
 void AndroidNotificationHandler::UpdateWebContents(

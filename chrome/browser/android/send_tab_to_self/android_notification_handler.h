@@ -18,21 +18,20 @@ class WebContents;
 }
 
 class GURL;
-class Profile;
 
 namespace send_tab_to_self {
 
 class SendTabToSelfEntry;
+class SendTabToSelfModel;
 
 // Responsible for displaying notifications on Android. Overrides
 // ReceivingUIHandler so that it is called for all updates to share
 // entries.
 class AndroidNotificationHandler : public ReceivingUiHandler {
  public:
-  explicit AndroidNotificationHandler(Profile* profile);
+  explicit AndroidNotificationHandler(
+      SendTabToSelfModel* send_tab_to_self_model);
   ~AndroidNotificationHandler() override;
-
-  const Profile* profile() const override;
 
   void UpdateWebContents(content::WebContents* web_contents);
 
@@ -59,7 +58,7 @@ class AndroidNotificationHandler : public ReceivingUiHandler {
   // messages::MessageDispatcherBridge.
   std::vector<std::unique_ptr<messages::MessageWrapper>> queued_messages_;
 
-  raw_ptr<Profile> profile_;
+  const raw_ptr<SendTabToSelfModel> send_tab_to_self_model_;
 
   base::WeakPtr<content::WebContents> web_contents_;
   base::WeakPtrFactory<AndroidNotificationHandler> weak_factory_{this};

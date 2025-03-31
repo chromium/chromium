@@ -1397,8 +1397,6 @@ static_library("browser") {
     "segmentation_platform/ukm_database_client.cc",
     "segmentation_platform/ukm_database_client.h",
     "send_tab_to_self/receiving_ui_handler.h",
-    "send_tab_to_self/receiving_ui_handler_registry.cc",
-    "send_tab_to_self/receiving_ui_handler_registry.h",
     "send_tab_to_self/send_tab_to_self_client_service.cc",
     "send_tab_to_self/send_tab_to_self_client_service.h",
     "send_tab_to_self/send_tab_to_self_client_service_factory.cc",
