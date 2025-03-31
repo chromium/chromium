@@ -199,7 +199,10 @@ void GlicFreController::DismissFre() {
 
 void GlicFreController::PrepareForClient(
     base::OnceCallback<void(bool)> callback) {
-  auth_controller_.CheckAuthBeforeLoad(std::move(callback));
+  auth_controller_.CheckAuthBeforeLoad(
+      base::BindOnce([](mojom::PrepareForClientResult result) {
+        return result == mojom::PrepareForClientResult::kSuccess;
+      }).Then(std::move(callback)));
 }
 
 void GlicFreController::OnLinkClicked(const GURL& url) {

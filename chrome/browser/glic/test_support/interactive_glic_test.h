@@ -11,6 +11,7 @@
 
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
@@ -375,6 +376,19 @@ class InteractiveGlicTestT : public T {
               ->GetTabCount();
         },
         expected_count, "CheckTabCount");
+  }
+
+  auto Wait(base::TimeDelta timeout) {
+    auto observer = std::make_unique<internal::WaitingStateObserver>();
+    auto observer_ptr = observer.get();
+    return Api::Steps(
+        Api::Do(base::BindRepeating(
+            [](internal::WaitingStateObserver* observer,
+               base::TimeDelta timeout) { observer->Start(timeout); },
+            base::Unretained(observer_ptr), timeout)),
+        Api::ObserveState(glic::test::internal::kDelayState,
+                          std::move(observer)),
+        Api::WaitForState(glic::test::internal::kDelayState, true));
   }
 
   glic::GlicTestEnvironment& glic_test_environment() {

@@ -7,6 +7,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class Profile;
@@ -44,7 +46,8 @@ class AuthController : public signin::IdentityManager::Observer {
   // Called before the glic web client is loaded. Tries to sync cookies to the
   // webview partition, and then calls `callback`. Informs the caller whether
   // cookies could be synced.
-  void CheckAuthBeforeLoad(base::OnceCallback<void(bool)> callback);
+  void CheckAuthBeforeLoad(
+      base::OnceCallback<void(mojom::PrepareForClientResult)> callback);
 
   // Called before the glic window is shown. Checks status of sign-in state and
   // webview cookies. See `BeforeShowResult` for result detail.
@@ -53,6 +56,18 @@ class AuthController : public signin::IdentityManager::Observer {
 
   // Sync cookies, even if it appears as though a sync is not required.
   void ForceSyncCookies(base::OnceCallback<void(bool)> callback);
+
+  // Show the sign-in page. `after_signin` will be called after the user has
+  // signed in. It will not be called if the user cancels the sign-in, or the
+  // sign-in doesn't happen before:
+  // * ShowReauthForAccount is called again
+  // * CheckAuthBeforeShow is called
+  // * The AuthController is destroyed
+  // * Too much time has passed (5 minutes).
+  // * OnGlicWindowOpened is called.
+  // TODO(crbug.com/406529330): Track sign-in flow correctly.
+  void ShowReauthForAccount(base::OnceClosure after_signin);
+  void OnGlicWindowOpened();
 
   void SetCookieSynchronizerForTesting(
       std::unique_ptr<GlicCookieSynchronizer> synchronizer);
@@ -73,6 +88,12 @@ class AuthController : public signin::IdentityManager::Observer {
       const CoreAccountInfo& account_info) override;
 
  private:
+  enum class TokenState {
+    kUnknownError,
+    kRequiresSignIn,
+    kOk,
+  };
+  TokenState GetTokenState() const;
   void DoFallback(FallbackBehavior fallback_behavior,
                   base::OnceCallback<void(BeforeShowResult)> callback,
                   bool sync_success);
@@ -82,8 +103,13 @@ class AuthController : public signin::IdentityManager::Observer {
   void SyncCookiesIfRequired(base::OnceCallback<void(bool)> callback);
   void CookieSyncDone(base::OnceCallback<void(bool)> callback,
                       bool sync_success);
+  void CookieSyncBeforeLoadDone(
+      base::OnceCallback<void(mojom::PrepareForClientResult)> callback,
+      bool sync_success);
 
   raw_ptr<Profile> profile_;
+  base::OnceClosure after_signin_callback_;
+  base::TimeTicks after_signin_callback_expiration_time_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   std::optional<base::TimeTicks> last_cookie_sync_time_;
   std::unique_ptr<GlicCookieSynchronizer> cookie_synchronizer_;

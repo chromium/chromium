@@ -81,39 +81,6 @@ class GlicWindowController : public views::WidgetObserver,
     virtual void WebUiStateChanged(mojom::WebUiState state) = 0;
   };
 
-  // Logs in to the account and then re-opens the glic widget after reauth.
-  class LogInAndOpen {
-   public:
-    LogInAndOpen();
-    ~LogInAndOpen();
-    LogInAndOpen(const LogInAndOpen&) = delete;
-    LogInAndOpen& operator=(const LogInAndOpen&) = delete;
-
-    enum class State {
-      // Indicates that the user needs to log in.
-      kLogIn,
-      // The user is logged in.
-      kPostLogIn,
-    };
-
-    void set_state(State state) { state_ = state; }
-
-    State state() { return state_; }
-
-    void set_attached_browser(base::WeakPtr<Browser> browser) {
-      attached_browser_ = browser;
-    }
-
-    Browser* attached_browser() { return attached_browser_.get(); }
-
-   private:
-    // The current login status. Defaulted to logged in.
-    State state_ = State::kPostLogIn;
-
-    // The browser to invoke the widget from (if the glic button was clicked).
-    base::WeakPtr<Browser> attached_browser_;
-  };
-
   GlicWindowController(const GlicWindowController&) = delete;
   GlicWindowController& operator=(const GlicWindowController&) = delete;
 
@@ -128,6 +95,11 @@ class GlicWindowController : public views::WidgetObserver,
   void Toggle(BrowserWindowInterface* browser,
               bool prevent_close,
               mojom::InvocationSource source);
+
+  // If the panel is opened, but sign-in is required, we provide a sign-in
+  // button which closes the panel. This is called after the user signs in to
+  // open the panel again.
+  void ShowAfterSignIn();
 
   // Handle Toggle when AlwaysDetached is true.
   void ToggleWhenNotAlwaysDetached(Browser* new_attached_browser,
@@ -294,8 +266,6 @@ class GlicWindowController : public views::WidgetObserver,
 
   GlicWindowAnimator* window_animator() { return glic_window_animator_.get(); }
 
-  LogInAndOpen& log_in_and_open() { return log_in_and_open_; }
-
   Profile* profile() { return profile_; }
 
   // Helper function to get the always detached flag.
@@ -411,9 +381,6 @@ class GlicWindowController : public views::WidgetObserver,
   // Returns true if a browser is occluded at point in screen coordinates.
   bool IsBrowserOccludedAtPoint(Browser* browser, gfx::Point point);
 
-  // Called anytime GlicEnabling::IsEnabled() may have changed value.
-  void EnableChanged();
-
   // Return the last size Resize() was called with, or the default initial size
   // if Resize() hasn't been called. The return value is clamped to fit between
   // the minimum and maximum sizes (max height is calculated from
@@ -482,10 +449,6 @@ class GlicWindowController : public views::WidgetObserver,
   class AnchorObserver;
   std::unique_ptr<AnchorObserver> anchor_observer_;
 
-  // This class tracks when the user needs to login and opens the glic widget
-  // after logging back in from a paused profile.
-  LogInAndOpen log_in_and_open_;
-
   // True while RunMoveLoop() has been called on a widget.
   bool in_move_loop_ = false;
 
@@ -510,7 +473,10 @@ class GlicWindowController : public views::WidgetObserver,
   mojom::WebUiState webui_state_ = mojom::WebUiState::kUninitialized;
   base::ObserverList<WebUiStateObserver> webui_state_observers_;
 
-  // The invocation source requesting the opening of the web client.
+  // The invocation source requesting the opening of the web client. Note that
+  // this value is retained until it is consumed by the web client. Because
+  // opening the glic window may not actually load the client, there's no
+  // guarantee that this value is sent to the web client.
   std::optional<mojom::InvocationSource> opening_source_;
 
   std::unique_ptr<ScopedGlicButtonIndicator> scoped_glic_button_indicator_;
@@ -521,9 +487,6 @@ class GlicWindowController : public views::WidgetObserver,
 
   raw_ptr<GlicKeyedService> glic_service_;  // Owns this.
   raw_ptr<GlicEnabling> enabling_;
-
-  // Holds subscriptions for callbacks.
-  std::vector<base::CallbackListSubscription> subscriptions_;
 
   base::WeakPtrFactory<GlicWindowController> weak_ptr_factory_{this};
 };
