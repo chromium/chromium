@@ -391,15 +391,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   CanvasResourceHost* resource_host() { return resource_host_; }
 
-  // Returns whether `resource` is usable. Returns true by default, but
-  // subclasses may override this to do implementation-specific checks.
-  // Unusable resources will be dropped when returned rather than put back into
-  // the cache.
-  virtual bool IsResourceUsable(CanvasResource* resource) { return true; }
-
-  // IsResourceUsable() must be true for `resource`.
-  void RegisterUnusedResource(scoped_refptr<CanvasResource>&& resource);
-
   // TODO(crbug.com/352263194): Move these fields inside of
   // CanvasResourceProviderSharedImage.
   int num_inflight_resources_ = 0;

@@ -874,7 +874,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     return resource;
   }
 
-  bool IsResourceUsable(CanvasResource* resource) final {
+  bool IsResourceUsable(CanvasResource* resource) {
     // The only resources that should be coming in here are
     // CanvasResourceSharedImage instances, since that is the only type of
     // resource that this class creates.
