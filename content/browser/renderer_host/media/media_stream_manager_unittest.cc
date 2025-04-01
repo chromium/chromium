@@ -337,8 +337,7 @@ class TestMediaStreamDispatcherHost
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void SendWheel(const base::UnguessableToken& device_id,
-                 blink::mojom::CapturedWheelActionPtr action,
-                 SendWheelCallback callback) override {}
+                 blink::mojom::CapturedWheelActionPtr action) override {}
   void UpdateZoomLevel(const base::UnguessableToken& device_id,
                        ZoomLevelAction action,
                        UpdateZoomLevelCallback callback) override {}

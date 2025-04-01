@@ -573,11 +573,8 @@ void CaptureController::SendWheel(double relative_x,
   }
 
   GetMediaStreamDispatcherHost()->SendWheel(
-      *session_id,
-      blink::mojom::blink::CapturedWheelAction::New(
-          relative_x, relative_y, wheel_delta_x, wheel_delta_y),
-      // TODO(crbug.com/40276312): Remove this callback.
-      WTF::BindOnce([](CapturedSurfaceControlResult) {}));
+      *session_id, blink::mojom::blink::CapturedWheelAction::New(
+                       relative_x, relative_y, wheel_delta_x, wheel_delta_y));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
