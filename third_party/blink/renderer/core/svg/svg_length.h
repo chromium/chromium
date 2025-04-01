@@ -116,8 +116,6 @@ class CORE_EXPORT SVGLength final : public SVGListablePropertyBase {
 
   bool IsNegativeNumericLiteral() const;
 
-  static SVGLengthMode LengthModeForAnimatedLengthAttribute(
-      const QualifiedName&);
   static bool NegativeValuesForbiddenForAnimatedLengthAttribute(
       const QualifiedName&);
 

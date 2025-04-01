@@ -4793,9 +4793,6 @@
       name: "WarnOnContentVisibilityRenderAccess",
     },
     {
-      name: "WebAnimationsSVG"
-    },
-    {
       name: "WebAppInstallation",
       status: "experimental",
     },

@@ -16,14 +16,11 @@ namespace blink {
 // An implementation of Keyframe specifically for CSS Transitions.
 //
 // TransitionKeyframes are a simple form of keyframe, which only have one
-// (property, value) pair. CSS Transitions do not support SVG attributes, so the
-// property will always be a CSSPropertyID (for CSS properties and presentation
-// attributes) or an AtomicString (for custom CSS properties).
+// (property, value) pair.
 class CORE_EXPORT TransitionKeyframe : public Keyframe {
  public:
-  TransitionKeyframe(const PropertyHandle& property) : property_(property) {
-    DCHECK(!property.IsSVGAttribute());
-  }
+  explicit TransitionKeyframe(const PropertyHandle& property)
+      : property_(property) {}
 
   TransitionKeyframe(const TransitionKeyframe& copy_from)
       : Keyframe(copy_from.offset_,

@@ -200,7 +200,6 @@ class CORE_EXPORT Keyframe : public GarbageCollected<Keyframe> {
         const = 0;
 
     virtual bool IsCSSPropertySpecificKeyframe() const { return false; }
-    virtual bool IsSVGPropertySpecificKeyframe() const { return false; }
     virtual bool IsTransitionPropertySpecificKeyframe() const { return false; }
 
     virtual PropertySpecificKeyframe* NeutralKeyframe(

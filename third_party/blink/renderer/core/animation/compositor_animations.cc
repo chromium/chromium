@@ -1180,8 +1180,9 @@ CompositorAnimations::FailureReasons
 CompositorAnimations::CheckCanStartSVGElementOnCompositor(
     const SVGElement& svg_element) {
   FailureReasons reasons = kNoFailure;
-  if (svg_element.HasNonCSSPropertyAnimations())
+  if (svg_element.HasSMILAnimations()) {
     reasons |= kTargetHasIncompatibleAnimations;
+  }
   if (!svg_element.InstancesForElement().empty()) {
     // TODO(crbug.com/785246): Currently when an SVGElement has svg:use
     // instances, each instance gets style from the original element, using

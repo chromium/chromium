@@ -91,11 +91,6 @@ void SVGAnimatedPropertyBase::BaseValueChanged(
   context_element_->BaseValueChanged(*this);
 }
 
-void SVGAnimatedPropertyBase::EnsureAnimValUpdated() {
-  DCHECK(context_element_);
-  context_element_->EnsureAttributeAnimValUpdated();
-}
-
 bool SVGAnimatedPropertyBase::IsSpecified() const {
   return HasContentAttribute() || IsAnimating();
 }
