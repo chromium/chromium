@@ -70,9 +70,11 @@ class VirtualCardEnrollmentManager;
 
 namespace payments {
 
+struct BnplIssuerContext;
 class BnplManager;
 class MandatoryReauthManager;
 class PaymentsWindowManager;
+class SelectBnplIssuerDialogControllerImpl;
 
 // Chrome implementation of PaymentsAutofillClient. Used for Chrome Desktop
 // and Clank. Owned by the ChromeAutofillClient. Created lazily in the
@@ -206,6 +208,12 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   payments::BnplManager* GetPaymentsBnplManager() override;
   PaymentsDataManager& GetPaymentsDataManager() final;
   void ShowCreditCardSaveAndFillDialog() override;
+  void ShowSelectBnplIssuerDialog(
+      std::vector<BnplIssuerContext> bnpl_issuer_context,
+      std::string app_locale,
+      base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+      base::OnceClosure cancel_callback) override;
+  void DismissSelectBnplIssuerDialog() override;
 
 #if BUILDFLAG(IS_ANDROID)
   // The AutofillMessageController is used to show a message notification
@@ -322,6 +330,9 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 
   std::unique_ptr<SaveAndFillDialogControllerImpl>
       save_and_fill_dialog_controller_;
+
+  std::unique_ptr<SelectBnplIssuerDialogControllerImpl>
+      select_bnpl_issuer_dialog_controller_;
 
   // Used to cache client side risk data. The cache is invalidated when the
   // chrome browser tab is closed.

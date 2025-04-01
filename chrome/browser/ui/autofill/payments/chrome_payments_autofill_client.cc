@@ -59,6 +59,8 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_view.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -949,6 +951,30 @@ void ChromePaymentsAutofillClient::ShowCreditCardSaveAndFillDialog() {
 #else
   NOTIMPLEMENTED();
 #endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+void ChromePaymentsAutofillClient::ShowSelectBnplIssuerDialog(
+    std::vector<BnplIssuerContext> bnpl_issuer_context,
+    std::string app_locale,
+    base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+    base::OnceClosure cancel_callback) {
+#if !BUILDFLAG(IS_ANDROID)
+  select_bnpl_issuer_dialog_controller_ =
+      std::make_unique<SelectBnplIssuerDialogControllerImpl>();
+  select_bnpl_issuer_dialog_controller_->ShowDialog(
+      base::BindOnce(&CreateAndShowBnplIssuerSelectionDialog,
+                     select_bnpl_issuer_dialog_controller_->GetWeakPtr(),
+                     base::Unretained(web_contents())),
+      std::move(bnpl_issuer_context), std::move(app_locale),
+      std::move(selected_issuer_callback), std::move(cancel_callback));
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+void ChromePaymentsAutofillClient::DismissSelectBnplIssuerDialog() {
+  if (select_bnpl_issuer_dialog_controller_) {
+    select_bnpl_issuer_dialog_controller_->Dismiss();
+    select_bnpl_issuer_dialog_controller_.reset();
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)

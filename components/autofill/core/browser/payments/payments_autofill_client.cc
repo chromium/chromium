@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
+#include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller.h"
 
 #if !BUILDFLAG(IS_IOS)
 #include "components/webauthn/core/browser/internal_authenticator.h"
@@ -247,5 +248,13 @@ payments::BnplManager* PaymentsAutofillClient::GetPaymentsBnplManager() {
 }
 
 void PaymentsAutofillClient::ShowCreditCardSaveAndFillDialog() {}
+
+void PaymentsAutofillClient::ShowSelectBnplIssuerDialog(
+    std::vector<BnplIssuerContext> bnpl_issuer_context,
+    std::string app_locale,
+    base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+    base::OnceClosure cancel_callback) {}
+
+void PaymentsAutofillClient::DismissSelectBnplIssuerDialog() {}
 
 }  // namespace autofill::payments

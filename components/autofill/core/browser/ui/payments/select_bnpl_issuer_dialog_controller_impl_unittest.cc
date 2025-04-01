@@ -8,6 +8,7 @@
 #include "base/test/mock_callback.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_view.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -29,8 +30,9 @@ class SelectBnplIssuerDialogControllerImplTest : public testing::Test {
   ~SelectBnplIssuerDialogControllerImplTest() override = default;
 
   void InitController() {
-    controller_ = std::make_unique<SelectBnplIssuerDialogControllerImpl>(
-        issuer_contexts_, /*app_locale=*/"en-US",
+    controller_ = std::make_unique<SelectBnplIssuerDialogControllerImpl>();
+    controller_->ShowDialog(
+        create_view_callback_.Get(), issuer_contexts_, /*app_locale=*/"en-US",
         selected_issuer_callback_.Get(), cancel_callback_.Get());
   }
 
@@ -41,7 +43,10 @@ class SelectBnplIssuerDialogControllerImplTest : public testing::Test {
  protected:
   std::unique_ptr<SelectBnplIssuerDialogControllerImpl> controller_;
   std::vector<BnplIssuerContext> issuer_contexts_;
-  base::MockOnceCallback<void(const std::string&)> selected_issuer_callback_;
+  base::MockCallback<
+      base::OnceCallback<std::unique_ptr<SelectBnplIssuerView>()>>
+      create_view_callback_;
+  base::MockOnceCallback<void(BnplIssuer)> selected_issuer_callback_;
   base::MockOnceClosure cancel_callback_;
 };
 
@@ -51,9 +56,8 @@ TEST_F(SelectBnplIssuerDialogControllerImplTest, Getters) {
                          BnplIssuerEligibilityForPage::kIsEligible)});
   InitController();
   EXPECT_EQ(controller_->GetIssuerContexts(), issuer_contexts_);
-  EXPECT_CALL(selected_issuer_callback_,
-              Run(issuer_contexts_[0].issuer.issuer_id()));
-  controller_->OnIssuerSelected(issuer_contexts_[0].issuer.issuer_id());
+  EXPECT_CALL(selected_issuer_callback_, Run(issuer_contexts_[0].issuer));
+  controller_->OnIssuerSelected(issuer_contexts_[0].issuer);
   EXPECT_CALL(cancel_callback_, Run());
   controller_->OnUserCancelled();
 }

@@ -176,7 +176,7 @@ void BnplIssuerView::AddedToWidget() {
 void BnplIssuerView::IssuerSelected(BnplIssuer issuer, const ui::Event& event) {
   if (controller_) {
     issuer_dialog_->DisplayThrobber();
-    controller_->OnIssuerSelected(std::string(issuer.issuer_id()));
+    controller_->OnIssuerSelected(std::move(issuer));
   }
 }
 
