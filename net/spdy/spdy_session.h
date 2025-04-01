@@ -307,6 +307,9 @@ class NET_EXPORT SpdySession
       public HigherLayeredPool,
       public NetworkChangeNotifier::DefaultNetworkActiveObserver {
  public:
+  static constexpr inline std::string_view kHTTP11RequiredErrorMessage =
+      "HTTP/1.x is required.";
+
   // TODO(akalin): Use base::TickClock when it becomes available.
   typedef base::TimeTicks (*TimeFunc)();
 
@@ -520,10 +523,13 @@ class NET_EXPORT SpdySession
   // be destroyed right away, e.g. when a SpdySession function is
   // present in the call stack.)
   //
-  // |err| should be < ERR_IO_PENDING; this function is intended to be
+  // `err` should be < ERR_IO_PENDING; this function is intended to be
   // called on error.
-  // |description| indicates the reason for the error.
-  void CloseSessionOnError(Error err, const std::string& description);
+  // `description` indicates the reason for the error.
+  // `force_send_go_away` forces sending GOAWAY.
+  void CloseSessionOnError(Error err,
+                           const std::string& description,
+                           bool force_send_go_away = false);
 
   // Mark this session as unavailable, meaning that it will not be used to
   // service new streams. Unlike when a GOAWAY frame is received, this function
@@ -851,7 +857,9 @@ class NET_EXPORT SpdySession
 
   // If the session is already draining, does nothing. Otherwise, moves
   // the session to the draining state.
-  void DoDrainSession(Error err, const std::string& description);
+  void DoDrainSession(Error err,
+                      const std::string& description,
+                      bool force_send_go_away = false);
 
   // Called right before closing a (possibly-inactive) stream for a
   // reason other than being requested to by the stream.

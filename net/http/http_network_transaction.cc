@@ -387,6 +387,7 @@ void HttpNetworkTransaction::PrepareForAuthRestart(HttpAuth::Target target) {
 
     session_->http_server_properties()->SetHTTP11Required(
         url::SchemeHostPort(rewritten_url), network_anonymization_key_);
+    stream_->SetHTTP11Required();
   }
 
   bool keep_alive = false;
