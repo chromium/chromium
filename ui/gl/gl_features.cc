@@ -7,9 +7,12 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
-#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_switches.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
