@@ -1961,7 +1961,7 @@ class TabListMediator implements TabListNotificationHandler {
                                 ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
                                         colorId);
                         String colorDesc = res.getString(colorDescRes);
-                        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+                        if (TabUiUtils.isDataSharingFunctionalityEnabled()
                                 && hasCollaboration(tab)) {
                             contentDescriptionString =
                                     title.isEmpty()
@@ -2706,8 +2706,7 @@ class TabListMediator implements TabListNotificationHandler {
                     descriptionTitle =
                             TabGroupTitleUtils.getDefaultTitle(mActivity, numOfRelatedTabs);
                 }
-                if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
-                        || !hasCollaboration(tab)) {
+                if (!TabUiUtils.isDataSharingFunctionalityEnabled() || !hasCollaboration(tab)) {
                     return res.getString(
                             R.string
                                     .accessibility_open_tab_group_overflow_menu_with_group_name_with_color,

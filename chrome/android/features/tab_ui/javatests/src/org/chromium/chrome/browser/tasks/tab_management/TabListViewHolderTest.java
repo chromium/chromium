@@ -117,6 +117,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @EnableFeatures(ChromeFeatureList.PRICE_ANNOTATIONS)
+@DisableFeatures(ChromeFeatureList.DATA_SHARING_JOIN_ONLY)
 @Batch(Batch.UNIT_TESTS)
 public class TabListViewHolderTest {
     private static final int TAB1_ID = 456;
