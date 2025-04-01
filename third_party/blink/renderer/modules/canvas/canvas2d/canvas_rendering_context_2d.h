@@ -136,7 +136,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void drawFocusIfNeeded(Path2D*, Element*);
 
   void LoseContext(LostContextMode) override;
-  void RestoreProviderAndContextIfPossible() override;
+  void RestoreFromInvalidSizeIfNeeded() override;
 
   // TaskObserver implementation
   void DidProcessTask(const base::PendingTask&) final;

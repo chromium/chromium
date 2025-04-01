@@ -1182,8 +1182,9 @@ void HTMLCanvasElement::SetSurfaceSize(gfx::Size size) {
   CanvasResourceHost::SetSize(size);
   did_fail_to_create_resource_provider_ = false;
   DiscardResourceProvider();
-  if (IsRenderingContext2D() && context_->isContextLost())
-    context_->RestoreProviderAndContextIfPossible();
+  if (IsRenderingContext2D() && context_->isContextLost()) {
+    context_->RestoreFromInvalidSizeIfNeeded();
+  }
   if (frame_dispatcher_)
     frame_dispatcher_->Reshape(Size());
 }
@@ -1600,7 +1601,7 @@ Canvas2DLayerBridge* HTMLCanvasElement::GetOrCreateCanvas2DLayerBridge() {
   if (!IsValidImageSize(Size())) {
     did_fail_to_create_resource_provider_ = true;
     if (!Size().IsEmpty() && context_) {
-      context_->LoseContext(CanvasRenderingContext::kSyntheticLostContext);
+      context_->LoseContext(CanvasRenderingContext::kInvalidCanvasSize);
     }
     return nullptr;
   }
@@ -2145,7 +2146,7 @@ CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider(
       if (!IsValidImageSize(Size())) {
         did_fail_to_create_resource_provider_ = true;
         if (!Size().IsEmpty() && context_) {
-          context_->LoseContext(CanvasRenderingContext::kSyntheticLostContext);
+          context_->LoseContext(CanvasRenderingContext::kInvalidCanvasSize);
         }
         return nullptr;
       }

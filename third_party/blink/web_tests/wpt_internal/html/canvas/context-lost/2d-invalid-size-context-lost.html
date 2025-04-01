@@ -1,0 +1,84 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/html/canvas/resources/canvas-promise-test.js"></script>
+<script>
+
+/**
+ * Tests that canvas 2d context can be lost by setting an invalid canvas size
+ * and can be restored by later setting a valid size.
+ */
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d', {
+    // Stay on GPU acceleration despite read-backs.
+    willReadFrequently: false,
+  });
+
+  let contextLostEventInvoked = false;
+  let contextRestoredEventInvoked = false;
+  let contextLost = new Promise(resolve => {
+    canvas.oncontextlost = () => {
+      contextLostEventInvoked = true;
+      resolve();
+    }
+  });
+  let contextRestored = new Promise(resolve => {
+    canvas.oncontextrestored = () => {
+      contextRestoredEventInvoked = true;
+      resolve();
+    }
+  });
+
+  // Make sure the canvas is fully initialized.
+  ctx.fillStyle = 'red';
+  ctx.fillRect(0, 0, 100, 100);
+  ctx.getImageData(1, 1, 1, 1);
+
+  // Setting an invalid size discard the resource provider, but the context loss
+  // is only detected when we try to recreate it the first time it's used after.
+  assert_false(ctx.isContextLost(),
+               `Canvas shouldn't be lost before setting invalid size.`);
+  canvas.width = 100000000;
+  assert_false(ctx.isContextLost(),
+               `Context shouldn't be detected until the canvas is used.`);
+
+  // Use the canvas so it tries (and fails) to allocate a surface.
+  ctx.fillStyle = 'blue';
+  ctx.fillRect(0, 0, 100, 100);
+  assert_array_equals(
+      ctx.getImageData(1, 1, 1, 1).data, [0, 0, 0, 0],
+      'Canvas should stay blank after setting an invalid size.');
+  assert_true(ctx.isContextLost(),
+              'Context lost should be detected when the canvas is used.');
+
+  // The oncontextlost event is called in next task.
+  assert_false(contextLostEventInvoked,
+               `oncontextlost shouldn't be invoked in the same task.`);
+  await contextLost;
+  assert_true(contextLostEventInvoked,
+              'oncontextlost should be invoked in the next task.');
+
+  // Setting a valid context size queues a restore in a new task.
+  assert_true(ctx.isContextLost(),
+              `Context shouldn't be restored before setting a valid size.`);
+  canvas.width = 200;
+  assert_true(ctx.isContextLost(),
+              'Contest should only be restored after oncontextrestored.');
+
+  // The oncontextrestored event is called in next task.
+  assert_false(contextRestoredEventInvoked,
+               `oncontextrestored shouldn't be invoked in the same task.`);
+  await contextRestored;
+  assert_true(contextRestoredEventInvoked,
+              'oncontextrestored should be invoked in the next task.');
+
+  ctx.fillStyle = 'lime';
+  ctx.fillRect(0, 0, 100, 100);
+  assert_array_equals(
+      ctx.getImageData(1, 1, 1, 1).data, [0, 255, 0, 255],
+      `The canvas should be usable after it's restored.`);
+
+}, 'Test losing and restoring a 2D context by setting an invalid canvas size.',
+   {testTypes: HTML_CANVAS_ELEMENT_TEST_TYPES});
+
+</script>

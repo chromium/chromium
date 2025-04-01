@@ -248,6 +248,9 @@ class CORE_EXPORT CanvasRenderingContext
 
     // Lost context occurred due to internal implementation reasons.
     kSyntheticLostContext,
+
+    // Lost because an invalid canvas size was used.
+    kInvalidCanvasSize,
   };
   virtual void LoseContext(LostContextMode) {}
   virtual void SendContextLostEventIfNeeded() {}
@@ -264,7 +267,7 @@ class CORE_EXPORT CanvasRenderingContext
   // Canvas2D-specific interface
   virtual void RestoreCanvasMatrixClipStack(cc::PaintCanvas*) const {}
   virtual void Reset() {}
-  virtual void RestoreProviderAndContextIfPossible() {}
+  virtual void RestoreFromInvalidSizeIfNeeded() {}
   virtual void StyleDidChange(const ComputedStyle* old_style,
                               const ComputedStyle& new_style) {}
   virtual void LangAttributeChanged() {}

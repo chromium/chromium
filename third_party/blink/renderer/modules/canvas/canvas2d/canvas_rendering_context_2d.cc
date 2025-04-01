@@ -234,15 +234,15 @@ void CanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   needs_context_lost_event_ = true;
 }
 
-void CanvasRenderingContext2D::RestoreProviderAndContextIfPossible() {
-  if (!context_restorable_)
+void CanvasRenderingContext2D::RestoreFromInvalidSizeIfNeeded() {
+  HTMLCanvasElement* element = canvas();
+  if (!context_restorable_ || context_lost_mode_ != kInvalidCanvasSize ||
+      !element) {
     return;
-  // This code path is for restoring from an eviction
-  // Restoring from surface failure is handled internally
-  DCHECK(context_lost_mode_ != kNotLostContext &&
-         !canvas()->ResourceProvider());
+  }
+  DCHECK(!element->ResourceProvider());
 
-  if (CanCreateCanvas2dResourceProvider()) {
+  if (IsValidImageSize(element->Size())) {
     dispatch_context_restored_event_timer_.StartOneShot(base::TimeDelta(),
                                                         FROM_HERE);
   }
