@@ -6195,6 +6195,141 @@ TEST_F(BidderWorkletTest, GenerateBidWithInvalidSelectedReportingId) {
        "reporting id"});
 }
 
+TEST_F(BidderWorkletTest, GenerateBidWithTruncatedSelectableReportingIds) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kFledgeAuctionDealSupport, {}},
+       {blink::features::
+            kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon,
+        {
+            {"SelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit", "1"},
+        }},
+       {blink::features::
+            kFledgeTruncateSelectableBuyerAndSellerReportingIdsToKAnonLimit,
+        {}}},
+      {});
+
+  const char kScript[] = R"(
+    function generateBid(interestGroup) {
+      return {
+          ad: ["ad"],
+          bid: interestGroup.ads[0].selectableBuyerAndSellerReportingIds.length,
+          render: interestGroup.ads[0].renderURL,
+          selectedBuyerAndSellerReportingId:
+              interestGroup.ads[0].selectableBuyerAndSellerReportingIds[0],
+      };
+    }
+  )";
+
+  interest_group_ads_.clear();
+  interest_group_ads_.emplace_back(
+      GURL("https://response.test/"),
+      /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/std::nullopt,
+      /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/
+      std::vector<std::string>{"selected-id", "truncated-selected-id"});
+
+  std::vector<mojom::BidderWorkletBidPtr> expected;
+  expected.push_back(TestBidBuilder()
+                         .SetAd(R"(["ad"])")
+                         .SetBid(1)
+                         .SetSelectedBuyerAndSellerReportingId("selected-id")
+                         .Build());
+  RunGenerateBidWithJavascriptExpectingResult(kScript, std::move(expected));
+}
+
+TEST_F(BidderWorkletTest,
+       GenerateBidAttemptsToReturnTruncatedSelectedReportingId) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kFledgeAuctionDealSupport, {}},
+       {blink::features::
+            kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon,
+        {
+            {"SelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit", "1"},
+        }},
+       {blink::features::
+            kFledgeTruncateSelectableBuyerAndSellerReportingIdsToKAnonLimit,
+        {}}},
+      {});
+
+  const char kScript[] = R"(
+    function generateBid(interestGroup) {
+      return {
+          ad: ["ad"],
+          bid: interestGroup.ads[0].selectableBuyerAndSellerReportingIds.length,
+          render: interestGroup.ads[0].renderURL,
+          selectedBuyerAndSellerReportingId: "truncated-selected-id",
+      };
+    }
+  )";
+
+  interest_group_ads_.clear();
+  interest_group_ads_.emplace_back(
+      GURL("https://response.test/"),
+      /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/std::nullopt,
+      /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/
+      std::vector<std::string>{"selected-id", "truncated-selected-id"});
+
+  std::vector<mojom::BidderWorkletBidPtr> expected;
+  RunGenerateBidWithJavascriptExpectingResult(
+      kScript, std::move(expected),
+      /*expected_data_version=*/std::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() Invalid selected buyer and seller "
+       "reporting id"});
+}
+
+// This test has a larger limit than the number of
+// `selectable_buyer_and_seller_reporting_ids`, so nothing is truncated.
+TEST_F(BidderWorkletTest, GenerateBidWithUntruncatedSelectableReportingIds) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kFledgeAuctionDealSupport, {}},
+       {blink::features::
+            kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon,
+        {
+            {"SelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit", "3"},
+        }},
+       {blink::features::
+            kFledgeTruncateSelectableBuyerAndSellerReportingIdsToKAnonLimit,
+        {}}},
+      {});
+
+  const char kScript[] = R"(
+    function generateBid(interestGroup) {
+      return {
+          ad: ["ad"],
+          bid: interestGroup.ads[0].selectableBuyerAndSellerReportingIds.length,
+          render: interestGroup.ads[0].renderURL,
+          selectedBuyerAndSellerReportingId:
+              interestGroup.ads[0].selectableBuyerAndSellerReportingIds[
+                  interestGroup.ads[0].
+                      selectableBuyerAndSellerReportingIds.length - 1],
+      };
+    }
+  )";
+
+  interest_group_ads_.clear();
+  interest_group_ads_.emplace_back(
+      GURL("https://response.test/"),
+      /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/std::nullopt,
+      /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/
+      std::vector<std::string>{"selected-id-1", "selected-id-2"});
+
+  std::vector<mojom::BidderWorkletBidPtr> expected;
+  expected.push_back(TestBidBuilder()
+                         .SetAd(R"(["ad"])")
+                         .SetBid(2)
+                         .SetSelectedBuyerAndSellerReportingId("selected-id-2")
+                         .Build());
+  RunGenerateBidWithJavascriptExpectingResult(kScript, std::move(expected));
+}
+
 // Verify generateBid cannot see the reporting Ids when
 // `selectable_buyer_and_seller_reporting_ids` is not present.
 TEST_F(BidderWorkletTest, GenerateBidAdsWithoutReportingIds) {

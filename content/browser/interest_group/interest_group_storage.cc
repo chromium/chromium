@@ -853,15 +853,15 @@ std::set<std::string> GetAllKanonKeys(
         size_t num_selectable_kanon_keys =
             ad.selectable_buyer_and_seller_reporting_ids->size();
         if (base::FeatureList::IsEnabled(
-                features::
+                blink::features::
                     kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon) &&
-            features::
+            blink::features::
                     kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit
                         .Get() >= 0) {
           num_selectable_kanon_keys = std::min(
               num_selectable_kanon_keys,
               static_cast<size_t>(
-                  features::
+                  blink::features::
                       kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit
                           .Get()));
         }

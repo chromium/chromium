@@ -104,20 +104,6 @@ BASE_FEATURE(kFledgeModifyInterestGroupPolicyCheckOnOwner,
              "FledgeModifyInterestGroupPolicyCheckOnOwner",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Provides a configurable limit on the number of
-// `selectableBuyerAndSellerReportingIds` for which the browser fetches k-anon
-// keys. If the `SelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit` is
-// negative, no limit is enforced.
-BASE_FEATURE(kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon,
-             "FledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(
-    int,
-    kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit,
-    &kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon,
-    "SelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit",
-    -1);
-
 // Turning on kFledgeQueryKAnonymity loads k-anonymity status at interest group
 // join and update time. kFledgeQueryKAnonymity is enabled by default. It may
 // be reasonable to disable kFledgeQueryKAnonymity on clients on which

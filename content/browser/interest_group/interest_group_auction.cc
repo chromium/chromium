@@ -172,15 +172,40 @@ bool IsKAnon(const base::flat_set<std::string>& kanon_keys,
   return kanon_keys.contains(key);
 }
 
-// Verifies if the selectedBuyerAndSellerReportingId is present within the
-// matching ad's selectableBuyerAndSellerReportingId array.
+// Verifies that the `selectedBuyerAndSellerReportingId` is present within the
+// matching ad's `selectableBuyerAndSellerReportingIds` array.
+//
+// Also, for on-device bids, if there's a limit on the number of
+// `selectableBuyerAndSellerReportingIds` fetched from the k-anonymity server,
+// and the `selectableBuyerAndSellerReportingIds` passed to `generateBid()` are
+// truncated to that limit -- that the `selectedBuyerAndSellerReportingId` is
+// within that truncated list. This limit doesn't apply to B&A auctions.
 bool IsSelectedReportingIdValid(
     base::optional_ref<const std::vector<std::string>> selectable_ids,
-    const std::string& selected_id) {
+    const std::string& selected_id,
+    bool limit_to_truncated_selected_reporting_ids) {
   if (!selectable_ids.has_value()) {
     return false;
   }
-  return base::Contains(*selectable_ids, selected_id);
+  auto iter =
+      std::find(selectable_ids->begin(), selectable_ids->end(), selected_id);
+  if (iter == selectable_ids->end()) {
+    return false;
+  }
+  if (limit_to_truncated_selected_reporting_ids &&
+      base::FeatureList::IsEnabled(
+          blink::features::
+              kFledgeTruncateSelectableBuyerAndSellerReportingIdsToKAnonLimit) &&
+      blink::features::
+              kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit
+                  .Get() >= 0 &&
+      std::distance(selectable_ids->begin(), iter) >=
+          blink::features::
+              kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit
+                  .Get()) {
+    return false;
+  }
+  return true;
 }
 
 std::vector<auction_worklet::mojom::KAnonKeyPtr> KAnonKeysToMojom(
@@ -1970,7 +1995,8 @@ class InterestGroupAuction::BuyerHelper
     if (selected_buyer_and_seller_reporting_id.has_value() &&
         !IsSelectedReportingIdValid(
             matching_ad->selectable_buyer_and_seller_reporting_ids,
-            *selected_buyer_and_seller_reporting_id)) {
+            *selected_buyer_and_seller_reporting_id,
+            /*limit_to_truncated_selected_reporting_ids*/ false)) {
       return nullptr;
     }
     if (buyer_and_seller_reporting_id &&
@@ -2918,7 +2944,8 @@ class InterestGroupAuction::BuyerHelper
     if (mojo_bid->selected_buyer_and_seller_reporting_id.has_value() &&
         !IsSelectedReportingIdValid(
             matching_ad->selectable_buyer_and_seller_reporting_ids,
-            *mojo_bid->selected_buyer_and_seller_reporting_id)) {
+            *mojo_bid->selected_buyer_and_seller_reporting_id,
+            /*limit_to_truncated_selected_reporting_ids*/ true)) {
       generate_bid_client_receiver_set_.ReportBadMessage(
           "Invalid selected buyer and seller reporting id");
       return nullptr;
