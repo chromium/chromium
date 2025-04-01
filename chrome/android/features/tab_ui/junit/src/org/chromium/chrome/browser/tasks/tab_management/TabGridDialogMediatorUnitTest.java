@@ -305,11 +305,13 @@ public class TabGridDialogMediatorUnitTest {
 
         mModel.get(TabGridDialogProperties.SHARE_BUTTON_CLICK_LISTENER).onClick(null);
         verify(mDataSharingTabManager)
-                .createOrManageFlow(eq(mActivity), eq(null), eq(LOCAL_TAB_GROUP_ID), any());
+                .createOrManageFlow(
+                        eq(mActivity), eq(null), eq(LOCAL_TAB_GROUP_ID), anyInt(), any());
 
         mModel.get(TabGridDialogProperties.SHARE_IMAGE_TILES_CLICK_LISTENER).onClick(null);
         verify(mDataSharingTabManager, times(2))
-                .createOrManageFlow(eq(mActivity), eq(null), eq(LOCAL_TAB_GROUP_ID), any());
+                .createOrManageFlow(
+                        eq(mActivity), eq(null), eq(LOCAL_TAB_GROUP_ID), anyInt(), any());
 
         mModel.get(TabGridDialogProperties.SEND_FEEDBACK_RUNNABLE).run();
         ArgumentCaptor<String> categoryCaptor = ArgumentCaptor.forClass(String.class);
@@ -1505,7 +1507,7 @@ public class TabGridDialogMediatorUnitTest {
         mMediator.onToolbarMenuItemClick(R.id.manage_sharing, TAB_GROUP_ID, COLLABORATION_ID1);
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.ManageSharing"));
         verify(mDataSharingTabManager)
-                .createOrManageFlow(any(), eq(null), eq(LOCAL_TAB_GROUP_ID), eq(null));
+                .createOrManageFlow(any(), eq(null), eq(LOCAL_TAB_GROUP_ID), anyInt(), eq(null));
     }
 
     @Test

@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.InstantMessage;
 import org.chromium.components.collaboration.messaging.InstantNotificationLevel;
@@ -355,6 +356,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                             activity,
                             syncId,
                             new LocalTabGroupId(localId),
+                            CollaborationServiceShareOrManageEntryPoint.ANDROID_MESSAGE,
                             /* createGroupFinishedCallback= */ null);
                 };
 
