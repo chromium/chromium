@@ -11,9 +11,11 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.os.Looper;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
@@ -27,7 +29,11 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.MockTab;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -42,6 +48,9 @@ public class ReloadButtonMediatorTest {
     private static final String RELOAD_TOAST_MSG = "Reload";
     private static final int RELOAD_LEVEL = 0;
     private static final int STOP_LEVEL = 1;
+    private static final int TAB_ID = 0;
+    private static final int ANOTHER_TAB_ID = 1;
+    private static final int NTP_ID = 2;
 
     @Rule public MockitoRule mockitoTestRule = MockitoJUnit.rule();
 
@@ -50,6 +59,11 @@ public class ReloadButtonMediatorTest {
     @Mock public ThemeColorProvider mThemeColorProvider;
 
     @Mock public Resources mResources;
+    @Mock public Profile mProfile;
+    private MockTab mTab;
+    private MockTab mNtpTab;
+    private ObservableSupplierImpl<Tab> mTabSupplier;
+    private ObservableSupplierImpl<Boolean> mNtpLoadingSupplier;
     private PropertyModel mModel;
     private ReloadButtonMediator mMediator;
 
@@ -66,10 +80,47 @@ public class ReloadButtonMediatorTest {
         when(mThemeColorProvider.getBrandedColorScheme())
                 .thenReturn(BrandedColorScheme.APP_DEFAULT);
 
+        mTab = new MockTab(TAB_ID, mProfile);
+        mNtpTab = new MockTab(NTP_ID, mProfile);
+        mNtpTab.setIsNativePage(true);
+
+        mTabSupplier = new ObservableSupplierImpl<>(mTab);
+        mNtpLoadingSupplier = new ObservableSupplierImpl<>();
         mModel = new PropertyModel.Builder(ReloadButtonProperties.ALL_KEYS).build();
         mMediator =
                 new ReloadButtonMediator(
-                        mModel, mDelegate, mThemeColorProvider, mShowToastCallback, mResources);
+                        mModel,
+                        mDelegate,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mNtpLoadingSupplier,
+                        mShowToastCallback,
+                        mResources);
+
+        // supplier will try to notify observers initially, need to wait for updates.
+        shadowOf(Looper.getMainLooper()).idle();
+    }
+
+    private static void verifyStopLoadingState(PropertyModel model) {
+        assertEquals(
+                "Reload icon should be stop",
+                STOP_LEVEL,
+                model.get(ReloadButtonProperties.DRAWABLE_LEVEL));
+        assertEquals(
+                "Content description should be stop",
+                STOP_LOADING_DESCRIPTION,
+                model.get(ReloadButtonProperties.CONTENT_DESCRIPTION));
+    }
+
+    private static void verifyStartLoadingState(PropertyModel model) {
+        assertEquals(
+                "Reload icon should be reload",
+                RELOAD_LEVEL,
+                model.get(ReloadButtonProperties.DRAWABLE_LEVEL));
+        assertEquals(
+                "Content description should be reload",
+                RELOAD_DESCRIPTION,
+                model.get(ReloadButtonProperties.CONTENT_DESCRIPTION));
     }
 
     @Test
@@ -92,36 +143,8 @@ public class ReloadButtonMediatorTest {
     }
 
     @Test
-    public void testReloadingActive_setButtonToStop() {
-        mMediator.setReloading(true);
-
-        assertEquals(
-                "Reload icon should be stop reloading",
-                STOP_LEVEL,
-                mModel.get(ReloadButtonProperties.DRAWABLE_LEVEL));
-        assertEquals(
-                "Content description should be stop reloading",
-                STOP_LOADING_DESCRIPTION,
-                mModel.get(ReloadButtonProperties.CONTENT_DESCRIPTION));
-    }
-
-    @Test
-    public void testStopReloading_setButtonToReload() {
-        mMediator.setReloading(false);
-
-        assertEquals(
-                "Reload icon should be reload",
-                RELOAD_LEVEL,
-                mModel.get(ReloadButtonProperties.DRAWABLE_LEVEL));
-        assertEquals(
-                "Content description should be reload",
-                RELOAD_DESCRIPTION,
-                mModel.get(ReloadButtonProperties.CONTENT_DESCRIPTION));
-    }
-
-    @Test
     public void testLongClickReloading_showStopToast() {
-        mMediator.setReloading(true);
+        mTab.onLoadStarted(/* toDifferentDocument= */ true);
 
         mModel.get(ReloadButtonProperties.LONG_CLICK_LISTENER).run();
         verify(mShowToastCallback).onResult(STOP_TOAST_MSG);
@@ -129,8 +152,6 @@ public class ReloadButtonMediatorTest {
 
     @Test
     public void testLongClickIdle_showReloadToast() {
-        mMediator.setReloading(false);
-
         mModel.get(ReloadButtonProperties.LONG_CLICK_LISTENER).run();
         verify(mShowToastCallback).onResult(RELOAD_TOAST_MSG);
     }
@@ -219,6 +240,74 @@ public class ReloadButtonMediatorTest {
                 "Background ripple effect should be incognito",
                 mModel.get(ReloadButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE),
                 R.drawable.default_icon_background_baseline);
+    }
+
+    @Test
+    public void testInitialTabSet_shouldSetStoppedState() {
+        verifyStartLoadingState(mModel);
+    }
+
+    @Test
+    public void testTabStartedLoading_shouldSetReloadingState() {
+        mTab.onLoadStarted(/* toDifferentDocument= */ true);
+        verifyStopLoadingState(mModel);
+    }
+
+    @Test
+    public void testTabStartedLoadingToSameDocument_shouldKeepStoppedState() {
+        mTab.onLoadStarted(/* toDifferentDocument= */ false);
+        verifyStartLoadingState(mModel);
+    }
+
+    @Test
+    public void testTabStartStopLoading_shouldSetLoadingThenStopped() {
+        mTab.onLoadStarted(/* toDifferentDocument= */ true);
+        verifyStopLoadingState(mModel);
+
+        mTab.onLoadStopped();
+        verifyStartLoadingState(mModel);
+    }
+
+    @Test
+    public void testTabCrashDuringLoading_shouldSetStoppedState() {
+        mTab.onLoadStarted(/* toDifferentDocument= */ true);
+        verifyStopLoadingState(mModel);
+
+        mTab.handleTabCrash();
+        verifyStartLoadingState(mModel);
+    }
+
+    @Test
+    public void testNewStoppedTabChangesWhileLoadingCurrent_shouldSetStoppedState() {
+        mTab.onLoadStarted(/* toDifferentDocument= */ true);
+        verifyStopLoadingState(mModel);
+
+        var newTab = new MockTab(ANOTHER_TAB_ID, mProfile);
+        mTabSupplier.set(newTab);
+        verifyStartLoadingState(mModel);
+    }
+
+    @Test
+    public void testPageTabWithNtpReloading_shouldNotChangeFromStop() {
+        mNtpLoadingSupplier.set(true);
+        verifyStartLoadingState(mModel);
+    }
+
+    @Test
+    public void testSwapToNtpAndStartLoading_shouldBeInStopLoadingState() {
+        mTabSupplier.set(mNtpTab);
+        mNtpLoadingSupplier.set(true);
+        verifyStopLoadingState(mModel);
+    }
+
+    @Test
+    public void testNtpStopLoading_shouldBeInStartLoadingState() {
+        mTabSupplier.set(mNtpTab);
+        mNtpLoadingSupplier.set(true);
+        verifyStopLoadingState(mModel);
+
+        mNtpLoadingSupplier.set(false);
+        verifyStartLoadingState(mModel);
     }
 
     @Test

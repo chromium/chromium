@@ -14,7 +14,12 @@ import android.view.View;
 import androidx.annotation.DrawableRes;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.SadTab;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSupplierObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -32,25 +37,38 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
     private final Resources mResources;
     private final Callback<String> mShowToastCallback;
     private final ThemeColorProvider mThemeColorProvider;
+    private final TabSupplierObserver mTabObserver;
+    private final ObservableSupplier<Boolean> mNtpLoadingSupplier;
+    private final Callback<Boolean> mNtpLoadingObserver;
     private boolean mIsShiftDownForReload;
     private boolean mIsReloading;
+    private @Nullable Tab mCurrentTab;
 
     /**
      * Create an instance of {@link ReloadButtonMediator}.
      *
      * @param model a properties model that encapsulates reload button state.
-     * @param delegate a callback to stop or reload current tab
+     * @param delegate a callback to stop or reload current tab.
+     * @param themeColorProvider a provider that notifies of tint changes.
+     * @param tabSupplier a supplier that notifies of tab changes.
+     * @param ntpLoadingSupplier a supplier that provides loading state of content inside NTP, e.g.
+     *     feed, this is not a reload state of the whole tab.
+     * @param showToast a callback that allows to show toast anchored to the current view.
+     * @param resources Android resources.
      */
     ReloadButtonMediator(
             PropertyModel model,
             ReloadButtonCoordinator.Delegate delegate,
             ThemeColorProvider themeColorProvider,
+            ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<Boolean> ntpLoadingSupplier,
             Callback<String> showToast,
             Resources resources) {
         mModel = model;
         mResources = resources;
         mShowToastCallback = showToast;
         mThemeColorProvider = themeColorProvider;
+        mNtpLoadingSupplier = ntpLoadingSupplier;
 
         Callback<MotionEvent> onTouchListener =
                 (event) ->
@@ -64,6 +82,40 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
 
         updateBackgroundHighlight(mThemeColorProvider.getBrandedColorScheme());
         mThemeColorProvider.addTintObserver(this);
+
+        mNtpLoadingObserver =
+                (isLoading) -> {
+                    if (mCurrentTab != null && mCurrentTab.isNativePage()) {
+                        setReloading(isLoading);
+                    }
+                };
+        mNtpLoadingSupplier.addObserver(mNtpLoadingObserver);
+
+        mTabObserver =
+                new TabSupplierObserver(tabSupplier, /* shouldTrigger= */ true) {
+                    @Override
+                    protected void onObservingDifferentTab(Tab tab) {
+                        mCurrentTab = tab;
+                        updateReloadingState(tab);
+                    }
+
+                    @Override
+                    public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
+                        if (!toDifferentDocument) return;
+                        updateReloadingState(tab);
+                    }
+
+                    @Override
+                    public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
+                        if (!toDifferentDocument) return;
+                        updateReloadingState(tab);
+                    }
+
+                    @Override
+                    public void onCrash(Tab tab) {
+                        updateReloadingState(tab);
+                    }
+                };
     }
 
     private void showActionToastOnReloadButton() {
@@ -72,6 +124,11 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
         } else {
             mShowToastCallback.onResult(mResources.getString(R.string.refresh));
         }
+    }
+
+    private void updateReloadingState(Tab tab) {
+        final boolean isReloading = tab != null && !SadTab.isShowing(tab) && tab.isLoading();
+        setReloading(isReloading);
     }
 
     @Override
@@ -103,12 +160,7 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
                 mModel, ReloadButtonProperties.ALPHA, shouldShow ? 1f : 0f);
     }
 
-    /**
-     * Changes reload button state to reload or stopped.
-     *
-     * @param isReloading indicates whether current page is reloading.
-     */
-    public void setReloading(boolean isReloading) {
+    private void setReloading(boolean isReloading) {
         mIsReloading = isReloading;
 
         final int level;
@@ -159,5 +211,7 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
         mModel.set(ReloadButtonProperties.KEY_LISTENER, null);
 
         mThemeColorProvider.removeTintObserver(this);
+        mNtpLoadingSupplier.removeObserver(mNtpLoadingObserver);
+        mTabObserver.destroy();
     }
 }
