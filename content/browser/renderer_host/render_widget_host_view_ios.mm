@@ -259,15 +259,6 @@ void RenderWidgetHostViewIOS::RenderProcessGone() {
 void RenderWidgetHostViewIOS::ShowWithVisibility(
     PageVisibilityState page_visibility) {
   if (IsTesting() && !is_visible_) {
-    // There is some circularity in how UpdateScreenInfo works. The base class
-    // sets up some state needed by the browser compositor. The base class also
-    // depends on an update from the browser compositor. In practice this is a
-    // non issue because the function is called many times and values converge,
-    // but this is not necessarily the case in tests. This could be resolved
-    // by rewriting UpdateScreenInfo to interleave the work (see the mac
-    // implementation, eg), but for now we will simply may another call to the
-    // base class.
-    RenderWidgetHostViewBase::UpdateScreenInfo();
     UpdateScreenInfo();
   }
   is_visible_ = true;
@@ -412,12 +403,52 @@ RenderWidgetHostViewIOS::CollectSurfaceIdsForEviction() {
 }
 
 void RenderWidgetHostViewIOS::UpdateScreenInfo() {
+  if (host()->delegate()) {
+    host()->delegate()->SendScreenRects();
+  }
+
+  auto* display_screen = display::Screen::GetScreen();
+  display::ScreenInfos new_screen_infos =
+      display_screen->GetScreenInfosNearestDisplay(
+          display_screen->GetPrimaryDisplay().id());
+
+  UIScreen* ui_screen = ui_view_->view_.window.windowScene.screen;
+  new_screen_infos.mutable_current().device_scale_factor = [ui_screen scale];
+  // TODO(crbug.com/406204353): The screen's rect should remain unadjusted. We
+  // will want to adjust the available_rect based on the safe viewport settings.
+  new_screen_infos.mutable_current().rect =
+      new_screen_infos.mutable_current().available_rect =
+          gfx::Rect([ui_view_->view_ bounds]);
+
+  if (screen_infos_ == new_screen_infos) {
+    return;
+  }
+
   if (!IsTesting()) {
     browser_compositor_->UpdateSurfaceFromUIView(
         gfx::Rect([ui_view_->view_ bounds]).size());
   }
-  RenderWidgetHostViewBase::UpdateScreenInfo();
   ComputeDisplayFeature();
+
+  // We need to look at `orientation_type` which is marked as kUndefined at
+  // startup. Unlike `orientation_angle` that uses 0 degrees as the default.
+  // This accounts for devices which have a default landscape orientation, such
+  // as tablets. We do not want the first UpdateScreenInfo to be treated as a
+  // rotation.
+  const bool has_rotation_changed =
+      screen_infos_.current().orientation_type !=
+          display::mojom::ScreenOrientation::kUndefined &&
+      screen_infos_.current().orientation_type !=
+          new_screen_infos.current().orientation_type;
+  screen_infos_ = std::move(new_screen_infos);
+
+  // Notify the associated RenderWidgetHostImpl when screen info has changed.
+  // That will synchronize visual properties needed for frame tree rendering
+  // and for web platform APIs that expose screen and window info and events.
+  if (host()) {
+    OnSynchronizedDisplayPropertiesChanged(has_rotation_changed);
+    host()->NotifyScreenInfoChanged();
+  }
 }
 
 void RenderWidgetHostViewIOS::OnSynchronizedDisplayPropertiesChanged(
