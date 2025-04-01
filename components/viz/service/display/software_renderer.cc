@@ -103,6 +103,36 @@ class AnimatedImagesProvider : public cc::ImageProvider {
   raw_ptr<const PictureDrawQuad::ImageAnimationMap> image_animation_map_;
 };
 
+gfx::RectF QuadVertexRect() {
+  return gfx::RectF(-0.5f, -0.5f, 1.f, 1.f);
+}
+
+void QuadRectTransform(gfx::Transform* quad_rect_transform,
+                       const gfx::Transform& quad_transform,
+                       const gfx::RectF& quad_rect) {
+  *quad_rect_transform = quad_transform;
+  quad_rect_transform->Translate(0.5 * quad_rect.width() + quad_rect.x(),
+                                 0.5 * quad_rect.height() + quad_rect.y());
+  quad_rect_transform->Scale(quad_rect.width(), quad_rect.height());
+}
+
+// This takes a rounded rect and a rect that it lives in, and returns an
+// equivalent rounded rect in the space -0.5->0.5.
+bool GetScaledRRectF(const gfx::Rect& space,
+                     const gfx::RRectF& rect,
+                     gfx::RRectF* scaled_rect) {
+  float x_scale = 1.0f / space.width();
+  float y_scale = 1.0f / space.height();
+  float new_x = (rect.rect().x() - space.x()) * x_scale - 0.5f;
+  float new_y = (rect.rect().y() - space.y()) * y_scale - 0.5f;
+  *scaled_rect = rect;
+  scaled_rect->Scale(x_scale, y_scale);
+  scaled_rect->Offset(-scaled_rect->rect().origin().x(),
+                      -scaled_rect->rect().origin().y());
+  scaled_rect->Offset(new_x, new_y);
+  return true;
+}
+
 }  // namespace
 
 SoftwareRenderer::SoftwareRenderer(
