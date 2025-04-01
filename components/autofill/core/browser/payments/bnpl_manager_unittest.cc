@@ -160,29 +160,25 @@ class BnplManagerTest : public Test {
   }
 
   // Sets up the PersonalDataManager with a unlinked bnpl issuer.
-  // TODO(crbug.com/406337040): take price ranges in micro for readability.
-  void SetUpUnlinkedBnplIssuer(uint64_t price_lower_bound,
-                               uint64_t price_higher_bound,
+  void SetUpUnlinkedBnplIssuer(uint64_t price_lower_bound_in_micros,
+                               uint64_t price_higher_bound_in_micros,
                                const std::string& issuer_id) {
     std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
-    eligible_price_ranges.emplace_back(kCurrency,
-                                       price_lower_bound * kMicrosPerDollar,
-                                       price_higher_bound * kMicrosPerDollar);
+    eligible_price_ranges.emplace_back(kCurrency, price_lower_bound_in_micros,
+                                       price_higher_bound_in_micros);
     test_api(autofill_client_->GetPersonalDataManager().payments_data_manager())
         .AddBnplIssuer(BnplIssuer(std::nullopt, issuer_id,
                                   std::move(eligible_price_ranges)));
   }
 
   // Sets up the PersonalDataManager with a linked bnpl issuer.
-  // TODO(crbug.com/406337040): take price ranges in micro for readability.
-  void SetUpLinkedBnplIssuer(uint64_t price_lower_bound,
-                             uint64_t price_higher_bound,
+  void SetUpLinkedBnplIssuer(uint64_t price_lower_bound_in_micros,
+                             uint64_t price_higher_bound_in_micros,
                              const std::string& issuer_id,
                              const int64_t instrument_id) {
     std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
-    eligible_price_ranges.emplace_back(kCurrency,
-                                       price_lower_bound * kMicrosPerDollar,
-                                       price_higher_bound * kMicrosPerDollar);
+    eligible_price_ranges.emplace_back(kCurrency, price_lower_bound_in_micros,
+                                       price_higher_bound_in_micros);
 
     test_api(autofill_client_->GetPersonalDataManager().payments_data_manager())
         .AddBnplIssuer(BnplIssuer(instrument_id, issuer_id,
@@ -986,8 +982,13 @@ TEST_F(BnplManagerTest,
 TEST_F(BnplManagerTest,
        AddBnplSuggestion_SuggestionShownFirstThenAmountExtractionReturned) {
   // Add one linked issuer and one unlinked issuer to payments data manager.
-  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
-  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        std::string(kBnplAffirmIssuerId),
+                        /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          std::string(kBnplZipIssuerId));
 
   base::MockCallback<UpdateSuggestionsCallback> callback;
   std::vector<Suggestion> suggestions = {
@@ -1006,8 +1007,13 @@ TEST_F(BnplManagerTest,
 TEST_F(BnplManagerTest,
        AddBnplSuggestion_AmountExtractionReturnedFirstThenSuggestionShown) {
   // Add one linked issuer and one unlinked issuer to payments data manager.
-  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
-  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        std::string(kBnplAffirmIssuerId),
+                        /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          std::string(kBnplZipIssuerId));
 
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/true,
@@ -1018,8 +1024,13 @@ TEST_F(BnplManagerTest,
 // extraction engine fails to pass in an valid value.
 TEST_F(BnplManagerTest, AddBnplSuggestion_NoAmountPassedIn) {
   // Add one linked issuer and one unlinked issuer to payments data manager.
-  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
-  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        std::string(kBnplAffirmIssuerId),
+                        /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          std::string(kBnplZipIssuerId));
 
   TriggerBnplUpdateSuggestionsFlow(/*expect_suggestions_are_updated=*/false,
                                    /*extracted_amount=*/std::nullopt);
@@ -1058,8 +1069,13 @@ TEST_F(BnplManagerTest,
 // amount is not supported by available BNPL issuers.
 TEST_F(BnplManagerTest, AddBnplSuggestion_AmountNotSupported) {
   // Add one linked issuer and one unlinked issuer to payments data manager.
-  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
-  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        std::string(kBnplAffirmIssuerId),
+                        /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          std::string(kBnplZipIssuerId));
 
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/false,
@@ -1141,8 +1157,13 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_BnplFeatureDisabled) {
       /*disabled_features=*/{features::kAutofillEnableBuyNowPayLater});
 
   // Add one linked issuer and one unlinked issuer to payments data manager.
-  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
-  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        std::string(kBnplAffirmIssuerId),
+                        /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          std::string(kBnplZipIssuerId));
 
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/false,
@@ -1158,8 +1179,13 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_BnplSyncFeatureDisabled) {
       /*disabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing});
 
   // Add one linked issuer and one unlinked issuer to payments data manager.
-  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
-  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        std::string(kBnplAffirmIssuerId),
+                        /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          std::string(kBnplZipIssuerId));
 
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/false,
@@ -1172,8 +1198,13 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_BnplPrefDisabled) {
   prefs::SetAutofillBnplEnabled(autofill_client_->GetPrefs(), false);
 
   // Add one linked issuer and one unlinked issuer to payments data manager.
-  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
-  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        std::string(kBnplAffirmIssuerId),
+                        /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          std::string(kBnplZipIssuerId));
 
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/false,
@@ -1185,8 +1216,13 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_BnplPrefDisabled) {
 // enabled.
 TEST_F(BnplManagerTest, AddBnplSuggestion_AmountSupportedByAffirm) {
   // Add one linked issuer and one unlinked issuer to payments data manager.
-  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
-  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        std::string(kBnplAffirmIssuerId),
+                        /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          std::string(kBnplZipIssuerId));
 
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/true,
@@ -1197,8 +1233,13 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_AmountSupportedByAffirm) {
 // amount is only supported by Zip, and the feature flag for BNPL is enabled.
 TEST_F(BnplManagerTest, AddBnplSuggestion_AmountSupportedByZip) {
   // Add one linked issuer and one unlinked issuer to payments data manager.
-  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
-  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        std::string(kBnplAffirmIssuerId),
+                        /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          std::string(kBnplZipIssuerId));
 
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/true,
@@ -1209,8 +1250,13 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_AmountSupportedByZip) {
 // suggestions already contains a BNPL entry.
 TEST_F(BnplManagerTest, AddBnplSuggestion_SuggestionShownWithBnplEntry) {
   // Add one linked issuer and one unlinked issuer to payments data manager.
-  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
-  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        std::string(kBnplAffirmIssuerId),
+                        /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          std::string(kBnplZipIssuerId));
 
   base::MockCallback<UpdateSuggestionsCallback> callback;
   std::vector<Suggestion> suggestions = {
@@ -1229,8 +1275,13 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_SuggestionShownWithBnplEntry) {
 // does not know suggestion generation started.
 TEST_F(BnplManagerTest, AddBnplSuggestion_BnplManagerNotNotified) {
   // Add one linked issuer and one unlinked issuer to payments data manager.
-  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
-  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        std::string(kBnplAffirmIssuerId),
+                        /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          std::string(kBnplZipIssuerId));
 
   base::MockCallback<UpdateSuggestionsCallback> callback;
   std::vector<Suggestion> suggestions = {
@@ -1246,8 +1297,13 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_BnplManagerNotNotified) {
 // feature flags are disabled.
 TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_BnplFeatureDisabled) {
   // Add one linked issuer and one unlinked issuer to payments data manager.
-  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
-  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        std::string(kBnplAffirmIssuerId),
+                        /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          std::string(kBnplZipIssuerId));
 
   // Enable `HasSeenBnpl` flag by generating BNPL suggestion.
   TriggerBnplUpdateSuggestionsFlow(
@@ -1269,8 +1325,13 @@ TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_BnplFeatureDisabled) {
 // issuer feature flags are disabled.
 TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_BnplIssuerFeaturesDisabled) {
   // Add one linked issuer and one unlinked issuer to payments data manager.
-  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
-  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        std::string(kBnplAffirmIssuerId),
+                        /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          std::string(kBnplZipIssuerId));
 
   // Enable `HasSeenBnpl` flag by generating BNPL suggestion.
   TriggerBnplUpdateSuggestionsFlow(
@@ -1291,8 +1352,13 @@ TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_BnplIssuerFeaturesDisabled) {
 // have been generated before.
 TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_HasSeenBnpl) {
   // Add one linked issuer and one unlinked issuer to payments data manager.
-  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
-  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        std::string(kBnplAffirmIssuerId),
+                        /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          std::string(kBnplZipIssuerId));
 
   EXPECT_FALSE(autofill_client_->GetPersonalDataManager()
                    .payments_data_manager()
@@ -1378,35 +1444,43 @@ TEST_F(BnplManagerTest, CreateBnplPaymentInstrument_Failure) {
 // unlinked & uneligible.
 TEST_F(BnplManagerTest, GetSortedBnplIssuerContext) {
   // Unlinked issuer + eligibility: kIsEligible.
-  SetUpUnlinkedBnplIssuer(/*price_lower_bound=*/10, /*price_higher_bound=*/1000,
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/10'000'000,
+                          /*price_higher_bound_in_micros=*/1'000'000'000,
                           /*issuer_id=*/"merchant_supported_unlinked_issuer_1");
   // Unlinked issuer + eligibility: kNotEligibleIssuerDoesNotSupportMerchant.
   // Checkout amount is lower than supported range, but merchant not supported
   // should take priority.
   SetUpUnlinkedBnplIssuer(
-      /*price_lower_bound=*/20, /*price_higher_bound=*/2000,
+      /*price_lower_bound_in_micros=*/20'000'000,
+      /*price_higher_bound_in_micros=*/2'000'000'000,
       /*issuer_id=*/"merchant_not_supported_unlinked_issuer_2");
   // Unlinked issuer + eligibility: kIsEligible.
-  SetUpUnlinkedBnplIssuer(/*price_lower_bound=*/2, /*price_higher_bound=*/30,
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/2'000'000,
+                          /*price_higher_bound_in_micros=*/30'000'000,
                           /*issuer_id=*/"merchant_supported_unlinked_issuer_3");
   // Unlinked issuer + eligibility: kNotEligibleCheckoutAmountTooLow.
   SetUpUnlinkedBnplIssuer(
-      /*price_lower_bound=*/200, /*price_higher_bound=*/2000,
+      /*price_lower_bound_in_micros=*/200'000'000,
+      /*price_higher_bound_in_micros=*/2'000'000'000,
       /*issuer_id=*/"merchant_supported_unlinked_issuer_4");
   // Linked issuer + eligibility: kIsEligible.
-  SetUpLinkedBnplIssuer(/*price_lower_bound=*/10, /*price_higher_bound=*/3000,
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/10'000'000,
+                        /*price_higher_bound_in_micros=*/3'000'000'000,
                         /*issuer_id=*/"merchant_supported_linked_issuer_1",
                         /*instrument_id=*/1);
   // Linked issuer + eligibility: kNotEligibleCheckoutAmountTooHigh.
-  SetUpLinkedBnplIssuer(/*price_lower_bound=*/1, /*price_higher_bound=*/10,
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000,
+                        /*price_higher_bound_in_micros=*/10'000'000,
                         /*issuer_id=*/"merchant_supported_linked_issuer_2",
                         /*instrument_id=*/2);
   // Linked issuer + eligibility: kIsEligible.
-  SetUpLinkedBnplIssuer(/*price_lower_bound=*/5, /*price_higher_bound=*/2000,
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/5'000'000,
+                        /*price_higher_bound_in_micros=*/2'000'000'000,
                         /*issuer_id=*/"merchant_supported_linked_issuer_3",
                         /*instrument_id=*/3);
   // Linked issuer + eligibility: kNotEligibleIssuerDoesNotSupportMerchant.
-  SetUpLinkedBnplIssuer(/*price_lower_bound=*/10, /*price_higher_bound=*/200,
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/10'000'000,
+                        /*price_higher_bound_in_micros=*/200'000'000,
                         /*issuer_id=*/"merchant_not_supported_linked_issuer_4",
                         /*instrument_id=*/4);
 
@@ -1460,7 +1534,8 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext) {
 // Test that `GetSortedBnplIssuerContext` returns eligible BNPL Issuer with
 // eligibility `BnplIssuerEligibilityForPage::kIsEligible`.
 TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_IsEligible) {
-  SetUpUnlinkedBnplIssuer(/*price_lower_bound=*/10, /*price_higher_bound=*/1000,
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/10'000'000,
+                          /*price_higher_bound_in_micros=*/1'000'000'000,
                           /*issuer_id=*/"unlinked");
   ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
               autofill_client_->GetAutofillOptimizationGuide()),
@@ -1483,7 +1558,8 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_IsEligible) {
 // Issuer and
 // `BnplIssuerEligibilityForPage::kNotEligibleIssuerDoesNotSupportMerchant`.
 TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_NotSupportedMerchant) {
-  SetUpUnlinkedBnplIssuer(/*price_lower_bound=*/10, /*price_higher_bound=*/1000,
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/10'000'000,
+                          /*price_higher_bound_in_micros=*/1'000'000'000,
                           /*issuer_id=*/"unlinked");
 
   ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
@@ -1507,7 +1583,8 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_NotSupportedMerchant) {
 // `GetSortedBnplIssuerContext` will returns BnplIssuerContext contains the
 // Issuer and `BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooHigh`.
 TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_CheckoutAmountTooHigh) {
-  SetUpUnlinkedBnplIssuer(/*price_lower_bound=*/10, /*price_higher_bound=*/1000,
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/10'000'000,
+                          /*price_higher_bound_in_micros=*/1'000'000'000,
                           /*issuer_id=*/"unlinked");
 
   ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
@@ -1532,8 +1609,8 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_CheckoutAmountTooHigh) {
 // `GetSortedBnplIssuerContext` will returns BnplIssuerContext contains the
 // Issuer and `BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow`
 TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_CheckoutAmountTooLow) {
-  SetUpUnlinkedBnplIssuer(/*price_lower_bound=*/1002,
-                          /*price_higher_bound=*/2000,
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'002'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
                           /*issuer_id=*/"unlinked");
 
   ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
