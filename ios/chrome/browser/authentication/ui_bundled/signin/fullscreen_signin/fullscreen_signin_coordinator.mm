@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/signin/forced_signin/forced_signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/fullscreen_signin/fullscreen_signin_coordinator.h"
 
 #import <UIKit/UIKit.h>
 
@@ -21,18 +21,18 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 
-@interface ForcedSigninCoordinator () <FirstRunScreenDelegate>
+@interface FullscreenSigninCoordinator () <FirstRunScreenDelegate>
 
 @property(nonatomic, strong) ScreenProvider* screenProvider;
 @property(nonatomic, strong)
     ChromeCoordinator<InterruptibleChromeCoordinator>* childCoordinator;
 
-// The view controller used by ForcedSigninCoordinator.
+// The view controller used by FullscreenSigninCoordinator.
 @property(nonatomic, strong) UINavigationController* navigationController;
 
 @end
 
-@implementation ForcedSigninCoordinator
+@implementation FullscreenSigninCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
@@ -121,8 +121,7 @@
           initWithBaseNavigationController:self.navigationController
                                    browser:self.browser
                                   delegate:self
-                               accessPoint:signin_metrics::AccessPoint::
-                                               kForcedSignin
+                               accessPoint:self.accessPoint
                                promoAction:signin_metrics::PromoAction::
                                                PROMO_ACTION_NO_SIGNIN_PROMO];
     case kHistorySync:

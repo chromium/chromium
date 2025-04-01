@@ -2,10 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("forced_signin") {
+source_set("fullscreen_signin") {
   sources = [
-    "forced_signin_coordinator.h",
-    "forced_signin_coordinator.mm",
+    "fullscreen_signin_coordinator.h",
+    "fullscreen_signin_coordinator.mm",
   ]
   deps = [
     "//base",

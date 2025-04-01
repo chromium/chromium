@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_FORCED_SIGNIN_FORCED_SIGNIN_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_FORCED_SIGNIN_FORCED_SIGNIN_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_FULLSCREEN_SIGNIN_FULLSCREEN_SIGNIN_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_FULLSCREEN_SIGNIN_FULLSCREEN_SIGNIN_COORDINATOR_H_
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 
 @class ScreenProvider;
 
-// Coordinator to present first run screens.
-@interface ForcedSigninCoordinator : SigninCoordinator
+// Coordinator to present a fullscreen sign-in promo.
+@interface FullscreenSigninCoordinator : SigninCoordinator
 
 // Initiate the coordinator.
 // `browser` used for authentication. It must not be off the record (incognito).
@@ -30,4 +30,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_FORCED_SIGNIN_FORCED_SIGNIN_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_FULLSCREEN_SIGNIN_FULLSCREEN_SIGNIN_COORDINATOR_H_
