@@ -602,7 +602,7 @@ TEST_F(MostVisitedSitesProviderTest, TestDesktopQueryingHistoryService) {
   scoped_config.Get().enabled = true;
   scoped_config.Get().most_visited_recency_window = 4;
   scoped_config.Get().most_visited_recency_factor =
-      history::kMvtScoringParamRecencyFactor_Default;
+      history::kMvtScoringParamRecencyFactor_Classic;
   scoped_config.Get().max_suggestions = 8;
   scoped_config.Get().prefetch_most_visited_sites = false;
 
@@ -620,7 +620,7 @@ TEST_F(MostVisitedSitesProviderTest, TestDesktopQueryingHistoryService) {
         EXPECT_EQ(static_cast<int>(provider_->GetRequestedResultSize(input)),
                   result_count);
         EXPECT_TRUE(recency_factor_name.has_value());
-        EXPECT_EQ(history::kMvtScoringParamRecencyFactor_Default,
+        EXPECT_EQ(history::kMvtScoringParamRecencyFactor_Classic,
                   recency_factor_name.value());
         EXPECT_TRUE(recency_window_days.has_value());
         EXPECT_EQ(4u, recency_window_days.value());

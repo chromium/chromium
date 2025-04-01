@@ -1540,24 +1540,26 @@ const FeatureEntry::FeatureVariation kMlUrlSearchBlendingVariations[] = {
      std::size(kMlUrlSearchBlendingMappedAggressiveUrls), nullptr},
 };
 
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kMostVitedTilesNewScoring_DecayStaircaseCap10[] = {
-        {history::kMvtScoringParamRecencyFactor,
+        {history::kMvtScoringParamRecencyFactor.name,
          history::kMvtScoringParamRecencyFactor_DecayStaircase},
-        {history::kMvtScoringParamDailyVisitCountCap, "10"},
+        {history::kMvtScoringParamDailyVisitCountCap.name, "10"},
 };
-const FeatureEntry::FeatureParam kMostVitedTilesNewScoring_DecayCap1[] = {
-    {history::kMvtScoringParamRecencyFactor,
+constexpr FeatureEntry::FeatureParam kMostVitedTilesNewScoring_DecayCap1[] = {
+    {history::kMvtScoringParamRecencyFactor.name,
      history::kMvtScoringParamRecencyFactor_Decay},
     // exp(-1.0 / 11).
-    {history::kMvtScoringParamDecayPerDay, "0.9131007162822623"},
-    {history::kMvtScoringParamDailyVisitCountCap, "1"},
+    {history::kMvtScoringParamDecayPerDay.name, "0.9131007162822623"},
+    {history::kMvtScoringParamDailyVisitCountCap.name, "1"},
 };
-const FeatureEntry::FeatureVariation kMostVisitedTilesNewScoringVariations[] = {
-    {"Decay Staircase, Cap 10", kMostVitedTilesNewScoring_DecayStaircaseCap10,
-     std::size(kMostVitedTilesNewScoring_DecayStaircaseCap10), nullptr},
-    {"Decay, Cap 1", kMostVitedTilesNewScoring_DecayCap1,
-     std::size(kMostVitedTilesNewScoring_DecayCap1), nullptr},
+constexpr FeatureEntry::FeatureVariation
+    kMostVisitedTilesNewScoringVariations[] = {
+        {"Decay Staircase, Cap 10",
+         kMostVitedTilesNewScoring_DecayStaircaseCap10,
+         std::size(kMostVitedTilesNewScoring_DecayStaircaseCap10), nullptr},
+        {"Decay, Cap 1", kMostVitedTilesNewScoring_DecayCap1,
+         std::size(kMostVitedTilesNewScoring_DecayCap1), nullptr},
 };
 
 const FeatureEntry::FeatureVariation kUrlScoringModelVariations[] = {

@@ -3256,7 +3256,7 @@ TEST_F(HistoryBackendDBTest,
 
   std::vector<std::unique_ptr<PageUsageData>> results = db_->QuerySegmentUsage(
       /*max_result_count=*/5, base::NullCallback(),
-      /*recency_factor_name=*/kMvtScoringParamRecencyFactor_Default,
+      /*recency_factor_name=*/kMvtScoringParamRecencyFactor_Classic,
       /*recency_window_days=*/0);
 
   ASSERT_EQ(5u, results.size());
