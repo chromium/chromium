@@ -1390,12 +1390,8 @@ split_tabs::SplitTabData* TabStripModel::GetSplitData(
   return split_tab_data_map_[split_id].get();
 }
 
-bool TabStripModel::IsIndexValid(int index) {
-  return index >= 0 && index < count();
-}
-
 bool TabStripModel::InsertionIndexBreakSplitContiguity(int index) {
-  return IsIndexValid(index - 1) && IsIndexValid(index) &&
+  return ContainsIndex(index - 1) && ContainsIndex(index) &&
          GetTabAtIndex(index - 1)->IsSplit() &&
          GetTabAtIndex(index - 1)->GetSplit() ==
              GetTabAtIndex(index)->GetSplit();
