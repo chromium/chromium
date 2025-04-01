@@ -998,7 +998,7 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
   visual_utils::CanExtractVisualFeaturesResult
       can_extract_visual_features_result =
           visual_utils::CanExtractVisualFeatures(
-              IsExtendedReportingEnabled(*delegate_->GetPrefs()),
+              IsEnhancedProtectionEnabled(*delegate_->GetPrefs()),
               web_contents()->GetBrowserContext()->IsOffTheRecord(), size);
 #else
   gfx::Size size;
@@ -1010,7 +1010,7 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
   visual_utils::CanExtractVisualFeaturesResult
       can_extract_visual_features_result =
           visual_utils::CanExtractVisualFeatures(
-              IsExtendedReportingEnabled(*delegate_->GetPrefs()),
+              IsEnhancedProtectionEnabled(*delegate_->GetPrefs()),
               web_contents()->GetBrowserContext()->IsOffTheRecord(), size,
               zoom::ZoomController::GetZoomLevelForWebContents(web_contents()));
 #endif

@@ -1777,14 +1777,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="2" label="Cache miss"/>
 </enum>
 
-<enum name="CanExtractVisualFeaturesResult">
-  <int value="0" label="Can extract visual features"/>
-  <int value="1" label="User is not subscribed to SBER"/>
-  <int value="2" label="User is off the record"/>
-  <int value="3" label="Frame is below minimal width and/or height"/>
-  <int value="4" label="Zoom level is above maximum value"/>
-</enum>
-
 <enum name="CanvasRenderingAPI">
   <int value="0" label="2d"/>
   <int value="1" label="webgl"/>
