@@ -497,7 +497,8 @@ impl Transliterator {
             ),
             "any-null" => Some(Ok(InternalTransliterator::Null)),
             "any-remove" => Some(Ok(InternalTransliterator::Remove)),
-            "any-lower" => Some(Err(DataError::custom("any-lower not implemented"))),
+            // Comment out any-lower to allow adding any-lower
+            // "any-lower" => Some(Err(DataError::custom("any-lower not implemented"))),
             "any-upper" => Some(Err(DataError::custom("any-upper not implemented"))),
             "any-title" => Some(Err(DataError::custom("any-title not implemented"))),
             "any-hex/unicode" => Some(Ok(InternalTransliterator::Hex(

@@ -84,6 +84,9 @@ declare_args() {
   # only supported on iOS 64-bit architecture, but some project build //base
   # for 32-bit architecture.
   ios_stack_profiler_enabled = true
+
+  # Set to true to enable icu4x transliterator
+  enable_rust_translit = false
 }
 
 # Mutex priority inheritance is disabled by default due to security
@@ -2807,6 +2810,34 @@ static_library("base_static") {
   }
 }
 
+buildflag_header("i18n_transliterator") {
+  header = "transliterator_buildflags.h"
+  header_dir = "base/i18n"
+  flags = [ "BUILD_RUST_TRANSLIT=$enable_rust_translit" ]
+}
+
+if (enable_rust_translit) {
+  rust_static_library("i18n_transliterator_ffi") {
+    allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
+    crate_root = "i18n/transliterator.rs"
+    sources = [
+      "i18n/translit/custom_transliterator.rs",
+      "i18n/translit/mod.rs",
+      "i18n/transliterator.rs",
+    ]
+    cxx_bindings = [ "i18n/transliterator.rs" ]
+    visibility = [ ":i18n" ]
+    deps = [
+      "//third_party/rust/icu_casemap/v2:lib",
+      "//third_party/rust/icu_experimental/v0_3:lib",
+      "//third_party/rust/icu_locale_core/v2:lib",
+      "//third_party/rust/icu_normalizer/v2:lib",
+      "//third_party/rust/icu_properties/v2:lib",
+      "//third_party/rust/icu_provider/v2:lib",
+    ]
+  }
+}
+
 component("i18n") {
   output_name = "base_i18n"
   sources = [
@@ -2860,8 +2891,14 @@ component("i18n") {
     "//third_party/ced",
     "//third_party/icu",
   ]
-  deps = [ "//build:chromecast_buildflags" ]
+  deps = [
+    ":i18n_transliterator",
+    "//build:chromecast_buildflags",
+  ]
 
+  if (enable_rust_translit) {
+    deps += [ ":i18n_transliterator_ffi" ]
+  }
   if (!is_debug) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]

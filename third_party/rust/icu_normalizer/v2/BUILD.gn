@@ -51,5 +51,9 @@ cargo_crate("lib") {
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use
   # it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
+  visibility = [
+    "//base:i18n_transliterator_ffi",
+    "//base:i18n_transliterator_ffi_cxx_generated",
+    "//third_party/rust/*",
+  ]
 }

@@ -400,7 +400,8 @@ impl<'a, 'p> Pass2<'a, 'p> {
                 | "any-nfkd"
                 | "any-null"
                 | "any-remove"
-                | "any-lower"
+                // Comment out any-lower to allow adding any-lower
+                // | "any-lower"
                 | "any-upper"
                 | "any-title"
                 | "any-hex/unicode"
