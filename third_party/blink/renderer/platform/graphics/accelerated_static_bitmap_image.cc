@@ -178,19 +178,6 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
   if (!IsValid())
     return false;
 
-  auto source_origin = IsOriginTopLeft() ? kTopLeft_GrSurfaceOrigin
-                                         : kBottomLeft_GrSurfaceOrigin;
-
-  // If source is not in a top left coordinate space, flip this rect to match
-  // texture orientation.
-  auto source_sub_rectangle = src_rect;
-  if (source_origin == kBottomLeft_GrSurfaceOrigin) {
-    source_sub_rectangle.set_y(Size().height() - source_sub_rectangle.bottom());
-  }
-
-  // If origin doesn't match, we need to flip.
-  bool unpack_flip_y = source_origin != destination_origin;
-
   // This method should only be used for cross-context copying, otherwise it's
   // wasting overhead.
   DCHECK(mailbox_ref_->is_cross_thread() ||
@@ -204,6 +191,18 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
                                  unpack_premultiply_alpha == true;
   const bool do_alpha_unmultiply = GetAlphaType() == kPremul_SkAlphaType &&
                                    unpack_premultiply_alpha == false;
+
+  // `src_rect` here is always in top-left coordinate space, but
+  // CopySubTextureCHROMIUM source rect is in texture coordinate space, so we
+  // need to adjust.
+  auto source_sub_rectangle = src_rect;
+  if (shared_image_->surface_origin() == kBottomLeft_GrSurfaceOrigin) {
+    source_sub_rectangle.set_y(Size().height() - source_sub_rectangle.bottom());
+  }
+
+  // If source origin doesn't match destination, we need to flip.
+  bool unpack_flip_y = shared_image_->surface_origin() != destination_origin;
+
   dest_gl->CopySubTextureCHROMIUM(
       source_scoped_si_access->texture_id(), 0, dest_target, dest_texture_id,
       dest_level, dest_point.x(), dest_point.y(), source_sub_rectangle.x(),
