@@ -464,6 +464,17 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="User signed in before and after iOS device restore"/>
 </enum>
 
+<!-- LINT.IfChange(IOSHostedDomainFetchEvent) -->
+
+<enum name="IOSHostedDomainFetchEvent">
+  <int value="0" label="Started"/>
+  <int value="1" label="Finished with success"/>
+  <int value="2" label="Finished with error, will retry"/>
+  <int value="3" label="Finished with error, giving up"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/signin/model/account_profile_mapper.mm:IOSHostedDomainFetchEvent) -->
+
 <enum name="IOSIdentityAvailableInProfile">
   <int value="0"
       label="The identity is not available in AccountProfileMapper and

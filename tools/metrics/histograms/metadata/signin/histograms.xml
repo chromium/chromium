@@ -1862,6 +1862,20 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.IOSHostedDomainFetchEvent"
+    enum="IOSHostedDomainFetchEvent" expires_after="2026-03-01">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Records when fetching the hosted domain for an account starts or finishes,
+    while determining which profile to assign the account into. A fetch is
+    started as soon as an account is detected (i.e. independent of Chrome signin
+    state), if the hosted domain isn't locally cached already. Only recorded if
+    kSeparateProfilesForManagedAccounts is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Signin.IOSIdentityAvailableInProfile"
     enum="IOSIdentityAvailableInProfile" expires_after="2026-02-11">
   <owner>jlebel@chromium.org</owner>
