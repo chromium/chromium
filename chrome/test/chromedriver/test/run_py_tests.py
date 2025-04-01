@@ -6575,7 +6575,10 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
           _DISABLE_MV2_EXPERIMENTS_SWITCH,
           'load-extension=' + crx_unpacked
         ])
-    time.sleep(0.3)
+
+    # Wait for extension window to be open.
+    self.WaitForCondition(lambda: len(driver.GetWindowHandles()) > 1)
+
     handles = driver.GetWindowHandles()
     self.assertEqual(len(handles), 2)
     for handle in handles:
