@@ -17,6 +17,7 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
+#include "net/base/features.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_params.h"
 #include "net/cookies/cookie_constants.h"
