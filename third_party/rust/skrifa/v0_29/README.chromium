@@ -3,7 +3,7 @@ URL: https://crates.io/crates/skrifa
 Version: 0.29.2
 Revision: e64b757b887b020868c11d85d36e5cee2e30f86e
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/skrifa-0.29.2/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes
 

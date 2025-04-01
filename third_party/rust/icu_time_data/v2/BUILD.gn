@@ -12,18 +12,21 @@ cargo_crate("lib") {
   crate_name = "icu_time_data"
   epoch = "2"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/icu_time_data-2.0.0-beta2/src/lib.rs"
-  sources = [ "//third_party/rust/chromium_crates_io/vendor/icu_time_data-2.0.0-beta2/src/lib.rs" ]
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/icu_time_data-v2/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/icu_time_data-v2/src/lib.rs",
+  ]
   inputs = [
-    "//third_party/rust/chromium_crates_io/vendor/icu_time_data-2.0.0-beta2/src/../data/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_time_data-2.0.0-beta2/src/../data/time_zone_iana_map_v1.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_time_data-2.0.0-beta2/src/../data/time_zone_iana_map_v1.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_time_data-2.0.0-beta2/src/../data/time_zone_iana_names_v1.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_time_data-2.0.0-beta2/src/../data/time_zone_iana_names_v1.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_time_data-2.0.0-beta2/src/../data/time_zone_offsets_v1.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_time_data-2.0.0-beta2/src/../data/time_zone_offsets_v1.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_time_data-2.0.0-beta2/src/../data/time_zone_windows_v1.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_time_data-2.0.0-beta2/src/../data/time_zone_windows_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_time_data-v2/src/../data/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_time_data-v2/src/../data/time_zone_iana_map_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_time_data-v2/src/../data/time_zone_iana_map_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_time_data-v2/src/../data/time_zone_iana_names_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_time_data-v2/src/../data/time_zone_iana_names_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_time_data-v2/src/../data/time_zone_offsets_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_time_data-v2/src/../data/time_zone_offsets_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_time_data-v2/src/../data/time_zone_windows_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_time_data-v2/src/../data/time_zone_windows_v1.rs.data",
   ]
 
   build_native_rust_unit_tests = false

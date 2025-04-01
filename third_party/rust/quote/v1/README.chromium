@@ -3,7 +3,7 @@ URL: https://crates.io/crates/quote
 Version: 1.0.40
 Revision: ab1e92c27a492e6077e203a6f85496bb4b1522e8
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/quote-1.0.40/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/quote-v1/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes
 

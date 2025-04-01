@@ -3,7 +3,7 @@ URL: https://crates.io/crates/flate2
 Version: 1.1.0
 Revision: 70de9df4f09f9505624a02e7440656293fc2de2c
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/flate2-1.1.0/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/flate2-v1/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes
 

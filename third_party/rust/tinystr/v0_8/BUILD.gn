@@ -13,18 +13,18 @@ cargo_crate("lib") {
   epoch = "0.8"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.1/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/tinystr-v0_8/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.1/src/ascii.rs",
-    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.1/src/asciibyte.rs",
-    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.1/src/databake.rs",
-    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.1/src/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.1/src/int_ops.rs",
-    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.1/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.1/src/macros.rs",
-    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.1/src/serde.rs",
-    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.1/src/ule.rs",
-    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.1/src/unvalidated.rs",
+    "//third_party/rust/chromium_crates_io/vendor/tinystr-v0_8/src/ascii.rs",
+    "//third_party/rust/chromium_crates_io/vendor/tinystr-v0_8/src/asciibyte.rs",
+    "//third_party/rust/chromium_crates_io/vendor/tinystr-v0_8/src/databake.rs",
+    "//third_party/rust/chromium_crates_io/vendor/tinystr-v0_8/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/tinystr-v0_8/src/int_ops.rs",
+    "//third_party/rust/chromium_crates_io/vendor/tinystr-v0_8/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/tinystr-v0_8/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/tinystr-v0_8/src/serde.rs",
+    "//third_party/rust/chromium_crates_io/vendor/tinystr-v0_8/src/ule.rs",
+    "//third_party/rust/chromium_crates_io/vendor/tinystr-v0_8/src/unvalidated.rs",
   ]
   inputs = []
 

@@ -3,7 +3,7 @@ URL: https://crates.io/crates/ryu
 Version: 1.0.20
 Revision: 02237f8751db162e9ed0f5bd3e7135d1b256822e
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/ryu-1.0.20/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/ryu-v1/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes
 

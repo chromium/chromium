@@ -12,20 +12,20 @@ cargo_crate("lib") {
   crate_name = "temporal_capi"
   epoch = "0.0"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_0/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/calendar.rs",
-    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/duration.rs",
-    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/instant.rs",
-    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/iso.rs",
-    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/options.rs",
-    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/plain_date.rs",
-    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/plain_date_time.rs",
-    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/plain_month_day.rs",
-    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/plain_time.rs",
-    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/plain_year_month.rs",
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_0/src/calendar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_0/src/duration.rs",
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_0/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_0/src/instant.rs",
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_0/src/iso.rs",
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_0/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_0/src/options.rs",
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_0/src/plain_date.rs",
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_0/src/plain_date_time.rs",
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_0/src/plain_month_day.rs",
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_0/src/plain_time.rs",
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_0/src/plain_year_month.rs",
   ]
   inputs = []
 

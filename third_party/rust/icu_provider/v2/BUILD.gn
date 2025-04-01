@@ -12,24 +12,25 @@ cargo_crate("lib") {
   crate_name = "icu_provider"
   epoch = "2"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/icu_provider-2.0.0-beta2/src/lib.rs"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/icu_provider-v2/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/icu_provider-2.0.0-beta2/src/buf.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_provider-2.0.0-beta2/src/buf/serde.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_provider-2.0.0-beta2/src/constructors.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_provider-2.0.0-beta2/src/data_provider.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_provider-2.0.0-beta2/src/dynutil.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_provider-2.0.0-beta2/src/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_provider-2.0.0-beta2/src/export/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_provider-2.0.0-beta2/src/export/payload.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_provider-2.0.0-beta2/src/fallback.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_provider-2.0.0-beta2/src/hello_world.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_provider-2.0.0-beta2/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_provider-2.0.0-beta2/src/marker.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_provider-2.0.0-beta2/src/request.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_provider-2.0.0-beta2/src/response.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_provider-2.0.0-beta2/src/serde_borrow_de_utils.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_provider-2.0.0-beta2/src/varule_traits.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_provider-v2/src/buf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_provider-v2/src/buf/serde.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_provider-v2/src/constructors.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_provider-v2/src/data_provider.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_provider-v2/src/dynutil.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_provider-v2/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_provider-v2/src/export/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_provider-v2/src/export/payload.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_provider-v2/src/fallback.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_provider-v2/src/hello_world.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_provider-v2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_provider-v2/src/marker.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_provider-v2/src/request.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_provider-v2/src/response.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_provider-v2/src/serde_borrow_de_utils.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_provider-v2/src/varule_traits.rs",
   ]
   inputs = []
 

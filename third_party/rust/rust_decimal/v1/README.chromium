@@ -3,7 +3,7 @@ URL: https://crates.io/crates/rust_decimal
 Version: 1.37.1
 Revision: cf829e7922fdc6ddeec81bed4507a676cda8de7f
 License: MIT
-License File: //third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/LICENSE
+License File: //third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/LICENSE
 Shipped: yes
 Security Critical: yes
 

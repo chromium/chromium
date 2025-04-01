@@ -3,7 +3,7 @@ URL: https://crates.io/crates/itoa
 Version: 1.0.15
 Revision: e2766b868e4ac1ae2bf5bea1ac43d4c0da23b899
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/itoa-1.0.15/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/itoa-v1/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes
 
