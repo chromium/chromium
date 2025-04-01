@@ -486,7 +486,7 @@ TEST_F(HostContentSettingsMapTest, Origins) {
 TEST_F(HostContentSettingsMapTest, Observer) {
   TestingProfile profile;
   // Use ScopedMapNoFactoryTester in order to enable the test to ignore
-  // UnusedSitePermissionsService and
+  // RevokedPermissionsService and
   // ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS.
   ScopedMapNoFactoryTester map_tester(profile);
   HostContentSettingsMap* host_content_settings_map = map_tester.map.get();

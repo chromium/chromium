@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_SERVICE_H_
-#define CHROME_BROWSER_UI_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_SERVICE_H_
+#ifndef CHROME_BROWSER_UI_SAFETY_HUB_REVOKED_PERMISSIONS_SERVICE_H_
+#define CHROME_BROWSER_UI_SAFETY_HUB_REVOKED_PERMISSIONS_SERVICE_H_
 
 #include <list>
 #include <map>
@@ -36,7 +36,7 @@
 class PrefChangeRegistrar;
 class PrefService;
 
-constexpr char kUnusedSitePermissionsResultKey[] = "permissions";
+constexpr char kRevokedPermissionsResultKey[] = "permissions";
 
 namespace url {
 class Origin;
@@ -61,10 +61,11 @@ struct PermissionsData {
   content_settings::ContentSettingConstraints abusive_revocation_constraints;
 };
 
-// This class keeps track of unused permissions, updates their last_visit date
-// on navigations and clears them periodically.
-class UnusedSitePermissionsService final : public SafetyHubService,
-                                           public content_settings::Observer {
+// This class keeps track of revoked permissions, including unused permissions,
+// abusive and disruptive notifications. For unused permissions, it updates
+// their last_visit date on navigations and clears them periodically.
+class RevokedPermissionsService final : public SafetyHubService,
+                                        public content_settings::Observer {
  public:
   struct ContentSettingEntry {
     ContentSettingsType type;
@@ -74,15 +75,15 @@ class UnusedSitePermissionsService final : public SafetyHubService,
   // The result of the periodic update of unused site permissions contains
   // the permissions that have been revoked. These revoked permissions will be
   // stored until the clean-up threshold has been reached.
-  class UnusedSitePermissionsResult : public SafetyHubService::Result {
+  class RevokedPermissionsResult : public SafetyHubService::Result {
    public:
-    UnusedSitePermissionsResult();
+    RevokedPermissionsResult();
 
-    UnusedSitePermissionsResult(const UnusedSitePermissionsResult&);
-    UnusedSitePermissionsResult& operator=(const UnusedSitePermissionsResult&) =
+    RevokedPermissionsResult(const RevokedPermissionsResult&);
+    RevokedPermissionsResult& operator=(const RevokedPermissionsResult&) =
         default;
 
-    ~UnusedSitePermissionsResult() override;
+    ~RevokedPermissionsResult() override;
 
     std::unique_ptr<SafetyHubService::Result> Clone() const override;
 
@@ -136,23 +137,22 @@ class UnusedSitePermissionsService final : public SafetyHubService,
    private:
     explicit TabHelper(
         content::WebContents* web_contents,
-        UnusedSitePermissionsService* unused_site_permission_service);
+        RevokedPermissionsService* unused_site_permission_service);
 
-    base::WeakPtr<UnusedSitePermissionsService> unused_site_permission_service_;
+    base::WeakPtr<RevokedPermissionsService> unused_site_permission_service_;
 
     friend class content::WebContentsUserData<TabHelper>;
     WEB_CONTENTS_USER_DATA_KEY_DECL();
   };
 
-  explicit UnusedSitePermissionsService(
-      content::BrowserContext* browser_context,
-      PrefService* prefs);
+  explicit RevokedPermissionsService(content::BrowserContext* browser_context,
+                                     PrefService* prefs);
 
-  UnusedSitePermissionsService(const UnusedSitePermissionsService&) = delete;
-  UnusedSitePermissionsService& operator=(const UnusedSitePermissionsService&) =
+  RevokedPermissionsService(const RevokedPermissionsService&) = delete;
+  RevokedPermissionsService& operator=(const RevokedPermissionsService&) =
       delete;
 
-  ~UnusedSitePermissionsService() override;
+  ~RevokedPermissionsService() override;
 
   // content_settings::Observer implementation.
   void OnContentSettingChanged(
@@ -184,7 +184,7 @@ class UnusedSitePermissionsService final : public SafetyHubService,
       const PermissionsData& permission_data);
 
   // Returns the list of all permissions that have been revoked.
-  std::unique_ptr<UnusedSitePermissionsResult> GetRevokedPermissions();
+  std::unique_ptr<RevokedPermissionsResult> GetRevokedPermissions();
 
   // Stops or restarts permissions autorevocation upon the pref change.
   void OnPermissionsAutorevocationControlChanged();
@@ -215,7 +215,7 @@ class UnusedSitePermissionsService final : public SafetyHubService,
   base::WeakPtr<SafetyHubService> GetAsWeakRef() override;
 
   // TabHelper needs a weak pointer to the implementation type.
-  base::WeakPtr<UnusedSitePermissionsService> AsWeakPtr() {
+  base::WeakPtr<RevokedPermissionsService> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
@@ -227,17 +227,17 @@ class UnusedSitePermissionsService final : public SafetyHubService,
       std::map<std::string, std::list<ContentSettingEntry>>;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(UnusedSitePermissionsServiceTest,
+  FRIEND_TEST_ALL_PREFIXES(RevokedPermissionsServiceTest,
                            UpdateIntegerValuesToGroupName_AllContentSettings);
   FRIEND_TEST_ALL_PREFIXES(
-      UnusedSitePermissionsServiceTest,
+      RevokedPermissionsServiceTest,
       UpdateIntegerValuesToGroupName_SubsetOfContentSettings);
   FRIEND_TEST_ALL_PREFIXES(
-      UnusedSitePermissionsServiceTest,
+      RevokedPermissionsServiceTest,
       UpdateIntegerValuesToGroupName_UnknownContentSettings);
-  FRIEND_TEST_ALL_PREFIXES(UnusedSitePermissionsServiceTest,
+  FRIEND_TEST_ALL_PREFIXES(RevokedPermissionsServiceTest,
                            UpdateIntegerValuesToGroupName_OnStartUp);
-  FRIEND_TEST_ALL_PREFIXES(UnusedSitePermissionsServiceTest,
+  FRIEND_TEST_ALL_PREFIXES(RevokedPermissionsServiceTest,
                            UpdateIntegerValuesToGroupName_MixedKeys);
   // Called by TabHelper when a URL was visited.
   void OnPageVisited(const url::Origin& origin);
@@ -329,7 +329,7 @@ class UnusedSitePermissionsService final : public SafetyHubService,
   // decide whether to clean up revoked permission data.
   bool is_unused_site_revocation_running = false;
 
-  base::WeakPtrFactory<UnusedSitePermissionsService> weak_factory_{this};
+  base::WeakPtrFactory<RevokedPermissionsService> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_SERVICE_H_
+#endif  // CHROME_BROWSER_UI_SAFETY_HUB_REVOKED_PERMISSIONS_SERVICE_H_

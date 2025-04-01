@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,9 +16,9 @@
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/safety_hub/mock_safe_browsing_database_manager.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -42,9 +42,9 @@ const char histogram_name[] =
 
 }  // namespace
 
-class UnusedSitePermissionsServiceBrowserTest : public InProcessBrowserTest {
+class RevokedPermissionsServiceBrowserTest : public InProcessBrowserTest {
  public:
-  UnusedSitePermissionsServiceBrowserTest() {
+  RevokedPermissionsServiceBrowserTest() {
     feature_list.InitWithFeatures(
         /*enabled_features=*/
         {content_settings::features::kSafetyCheckUnusedSitePermissions},
@@ -66,12 +66,12 @@ class UnusedSitePermissionsServiceBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list;
 };
 
-IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
+IN_PROC_BROWSER_TEST_F(RevokedPermissionsServiceBrowserTest,
                        TestNavigationUpdatesLastUsedDate) {
   auto* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   auto* service =
-      UnusedSitePermissionsServiceFactory::GetForProfile(browser()->profile());
+      RevokedPermissionsServiceFactory::GetForProfile(browser()->profile());
   GURL url = embedded_test_server()->GetURL("/title1.html");
 
   // Create content setting 20 days in the past.
@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
   map->SetContentSettingDefaultScope(url, url, ContentSettingsType::GEOLOCATION,
                                      CONTENT_SETTING_ALLOW, constraints);
   clock.SetNow(now);
-  safety_hub_test_util::UpdateUnusedSitePermissionsServiceAsync(service);
+  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
   ASSERT_EQ(service->GetTrackedUnusedPermissionsForTesting().size(), 1u);
   ASSERT_EQ(GetRevokedUnusedPermissions(map).size(), 0u);
 
@@ -113,21 +113,21 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
 }
 
 // Test that navigations work fine in incognito mode.
-IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
+IN_PROC_BROWSER_TEST_F(RevokedPermissionsServiceBrowserTest,
                        TestIncognitoProfile) {
   GURL url = embedded_test_server()->GetURL("/title1.html");
   auto* otr_browser = OpenURLOffTheRecord(browser()->profile(), url);
-  ASSERT_FALSE(UnusedSitePermissionsServiceFactory::GetForProfile(
-      otr_browser->profile()));
+  ASSERT_FALSE(
+      RevokedPermissionsServiceFactory::GetForProfile(otr_browser->profile()));
 }
 
 // Test that revocation is happen correctly when auto-revoke is on.
-IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
+IN_PROC_BROWSER_TEST_F(RevokedPermissionsServiceBrowserTest,
                        TestRevokeUnusedPermissions) {
   auto* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   auto* service =
-      UnusedSitePermissionsServiceFactory::GetForProfile(browser()->profile());
+      RevokedPermissionsServiceFactory::GetForProfile(browser()->profile());
   GURL url = embedded_test_server()->GetURL("/title1.html");
 
   // Create content setting 20 days in the past.
@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
   clock.SetNow(now);
 
   // Check if the content setting is still ALLOW, before auto-revocation.
-  safety_hub_test_util::UpdateUnusedSitePermissionsServiceAsync(service);
+  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
   ASSERT_EQ(service->GetTrackedUnusedPermissionsForTesting().size(), 1u);
   ASSERT_EQ(GetRevokedUnusedPermissions(map).size(), 0u);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
   clock.Advance(base::Days(40));
 
   // Check if the content setting turn to ASK, when auto-revocation happens.
-  safety_hub_test_util::UpdateUnusedSitePermissionsServiceAsync(service);
+  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
   ASSERT_EQ(service->GetTrackedUnusedPermissionsForTesting().size(), 0u);
   ASSERT_EQ(GetRevokedUnusedPermissions(map).size(), 1u);
   EXPECT_EQ(CONTENT_SETTING_ASK,
@@ -165,12 +165,12 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
 }
 
 // Test that revocation happens correctly for all content setting types.
-IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
+IN_PROC_BROWSER_TEST_F(RevokedPermissionsServiceBrowserTest,
                        RevokeAllContentSettingTypes) {
   auto* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   auto* service =
-      UnusedSitePermissionsServiceFactory::GetForProfile(browser()->profile());
+      RevokedPermissionsServiceFactory::GetForProfile(browser()->profile());
 
   base::Time time;
   ASSERT_TRUE(base::Time::FromString("2022-09-07 13:00", &time));
@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
 
   // Travel through time for 70 days to make permissions be revoked.
   clock.Advance(base::Days(70));
-  safety_hub_test_util::UpdateUnusedSitePermissionsServiceAsync(service);
+  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
 
   // Assert there are revoked permission only for one origin.
   ContentSettingsForOneType revoked_permissions =
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
 
   for (int i = 0; i < (int)revoked_permission_types.size(); i++) {
     ContentSettingsType revoked_permission_type =
-        UnusedSitePermissionsService::ConvertKeyToContentSettingsType(
+        RevokedPermissionsService::ConvertKeyToContentSettingsType(
             revoked_permission_types[i].GetString());
     EXPECT_EQ(allowed_permission_types[i], revoked_permission_type);
   }
@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
 }
 
 class AbusiveNotificationPermissionsRevocationBrowserTest
-    : public UnusedSitePermissionsServiceBrowserTest {
+    : public RevokedPermissionsServiceBrowserTest {
  public:
   AbusiveNotificationPermissionsRevocationBrowserTest() {
     safe_browsing_factory_ =
@@ -316,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
   auto* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   auto* service =
-      UnusedSitePermissionsServiceFactory::GetForProfile(browser()->profile());
+      RevokedPermissionsServiceFactory::GetForProfile(browser()->profile());
   const GURL url("https://example1.com");
   AddDangerousUrl(url);
   base::HistogramTester histogram_tester;
@@ -329,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
       0u);
 
   // Check if the content setting turn to ASK, when auto-revocation happens.
-  safety_hub_test_util::UpdateUnusedSitePermissionsServiceAsync(service);
+  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
   ASSERT_EQ(
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(map).size(),
       1u);
@@ -354,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
   auto* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   auto* service =
-      UnusedSitePermissionsServiceFactory::GetForProfile(browser()->profile());
+      RevokedPermissionsServiceFactory::GetForProfile(browser()->profile());
   // Test cases where there is a single URL which is both abusive and unused,
   // then when there are separate abusive and unused URLs.
   for (const auto& [abusive_url, unused_url] :
@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
     clock.SetNow(now);
 
     // Check if the content setting is still ALLOW, before auto-revocation.
-    safety_hub_test_util::UpdateUnusedSitePermissionsServiceAsync(service);
+    safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
     ASSERT_EQ(GetRevokedUnusedPermissions(map).size(), 0u);
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               map->GetContentSetting(unused_url, unused_url,
@@ -388,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
     clock.Advance(base::Days(40));
 
     // Check if the content setting turn to ASK, when auto-revocation happens.
-    safety_hub_test_util::UpdateUnusedSitePermissionsServiceAsync(service);
+    safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
     ASSERT_EQ(GetRevokedUnusedPermissions(map).size(), 1u);
     EXPECT_EQ(CONTENT_SETTING_ASK,
               map->GetContentSetting(unused_url, unused_url,
@@ -400,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
     map->SetContentSettingDefaultScope(abusive_url, abusive_url,
                                        ContentSettingsType::NOTIFICATIONS,
                                        CONTENT_SETTING_ALLOW);
-    safety_hub_test_util::UpdateUnusedSitePermissionsServiceAsync(service);
+    safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
     ASSERT_GT(
         safety_hub_util::GetRevokedAbusiveNotificationPermissions(map).size(),
         0u);
@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
   auto* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   auto* service =
-      UnusedSitePermissionsServiceFactory::GetForProfile(browser()->profile());
+      RevokedPermissionsServiceFactory::GetForProfile(browser()->profile());
 
   // Test cases where there is a single URL which is both abusive and unused,
   // then when there are separate abusive and unused URLs.
@@ -452,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
     clock.SetNow(now);
 
     // Check if the content setting is still ALLOW, before auto-revocation.
-    safety_hub_test_util::UpdateUnusedSitePermissionsServiceAsync(service);
+    safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
     ASSERT_LT(GetRevokedUnusedPermissions(map).size(), 2u);
     EXPECT_FALSE(safety_hub_test_util::IsUrlInSettingsList(
         GetRevokedUnusedPermissions(map), unused_url));
@@ -466,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
     map->SetContentSettingDefaultScope(abusive_url, abusive_url,
                                        ContentSettingsType::NOTIFICATIONS,
                                        CONTENT_SETTING_ALLOW);
-    safety_hub_test_util::UpdateUnusedSitePermissionsServiceAsync(service);
+    safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
     ASSERT_LT(GetRevokedUnusedPermissions(map).size(), 2u);
     EXPECT_FALSE(safety_hub_test_util::IsUrlInSettingsList(
         GetRevokedUnusedPermissions(map), unused_url));
@@ -486,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
     // Travel through time for 20 days to make unused permissions revoked.
     // Abusive permission is still revoked.
     clock.Advance(base::Days(20));
-    safety_hub_test_util::UpdateUnusedSitePermissionsServiceAsync(service);
+    safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
     ASSERT_GT(GetRevokedUnusedPermissions(map).size(), 0u);
     EXPECT_TRUE(safety_hub_test_util::IsUrlInSettingsList(
         GetRevokedUnusedPermissions(map), unused_url));
@@ -534,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(
   auto* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   auto* service =
-      UnusedSitePermissionsServiceFactory::GetForProfile(browser()->profile());
+      RevokedPermissionsServiceFactory::GetForProfile(browser()->profile());
   const GURL url("https://example1.com");
   AddDangerousUrl(url);
 
@@ -547,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Check if the content setting is still ALLOW and that auto-revocation does
   // not happen.
-  safety_hub_test_util::UpdateUnusedSitePermissionsServiceAsync(service);
+  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
   ASSERT_EQ(
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(map).size(),
       0u);
@@ -557,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 class DisruptiveNotificationPermissionsRevocationBrowserTest
-    : public UnusedSitePermissionsServiceBrowserTest {
+    : public RevokedPermissionsServiceBrowserTest {
  public:
   DisruptiveNotificationPermissionsRevocationBrowserTest() {
     feature_list_.InitWithFeatures(
@@ -576,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(DisruptiveNotificationPermissionsRevocationBrowserTest,
   auto* hcsm =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   auto* service =
-      UnusedSitePermissionsServiceFactory::GetForProfile(browser()->profile());
+      RevokedPermissionsServiceFactory::GetForProfile(browser()->profile());
   GURL url = embedded_test_server()->GetURL("/title1.html");
 
   // Set up a disruptive notification permission.
@@ -587,7 +587,7 @@ IN_PROC_BROWSER_TEST_F(DisruptiveNotificationPermissionsRevocationBrowserTest,
           browser()->profile());
   notifications_engagement_service->RecordNotificationDisplayed(url, 50);
 
-  safety_hub_test_util::UpdateUnusedSitePermissionsServiceAsync(service);
+  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
 
   // The url was stored in the disruptive notification content setting.
   base::Value stored_value = hcsm->GetWebsiteSetting(

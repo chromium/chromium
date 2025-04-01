@@ -2,35 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 
 // static
-UnusedSitePermissionsServiceFactory*
-UnusedSitePermissionsServiceFactory::GetInstance() {
-  static base::NoDestructor<UnusedSitePermissionsServiceFactory> instance;
+RevokedPermissionsServiceFactory*
+RevokedPermissionsServiceFactory::GetInstance() {
+  static base::NoDestructor<RevokedPermissionsServiceFactory> instance;
   return instance.get();
 }
 
 // static
-UnusedSitePermissionsService*
-UnusedSitePermissionsServiceFactory::GetForProfile(Profile* profile) {
-  return static_cast<UnusedSitePermissionsService*>(
+RevokedPermissionsService* RevokedPermissionsServiceFactory::GetForProfile(
+    Profile* profile) {
+  return static_cast<RevokedPermissionsService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
-UnusedSitePermissionsServiceFactory::UnusedSitePermissionsServiceFactory()
+RevokedPermissionsServiceFactory::RevokedPermissionsServiceFactory()
     : ProfileKeyedServiceFactory(
-          "UnusedSitePermissionsService",
+          "RevokedPermissionsService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               // TODO(crbug.com/41488885): Check if this service is needed for
@@ -41,17 +41,16 @@ UnusedSitePermissionsServiceFactory::UnusedSitePermissionsServiceFactory()
   DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
 }
 
-UnusedSitePermissionsServiceFactory::~UnusedSitePermissionsServiceFactory() =
-    default;
+RevokedPermissionsServiceFactory::~RevokedPermissionsServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
-UnusedSitePermissionsServiceFactory::BuildServiceInstanceForBrowserContext(
+RevokedPermissionsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<UnusedSitePermissionsService>(
+  return std::make_unique<RevokedPermissionsService>(
       context, Profile::FromBrowserContext(context)->GetPrefs());
 }
 
-bool UnusedSitePermissionsServiceFactory::ServiceIsCreatedWithBrowserContext()
+bool RevokedPermissionsServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
 #if BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(features::kSafetyHub) ||

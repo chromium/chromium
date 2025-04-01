@@ -214,7 +214,7 @@
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 #include "chrome/browser/ui/tabs/pinned_tab_service_factory.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
@@ -1340,10 +1340,10 @@ void ChromeBrowserMainExtraPartsProfiles::
   if (base::FeatureList::IsEnabled(features::kSafetyHub) ||
       base::FeatureList::IsEnabled(
           safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
-    UnusedSitePermissionsServiceFactory::GetInstance();
+    RevokedPermissionsServiceFactory::GetInstance();
   }
 #else
-  UnusedSitePermissionsServiceFactory::GetInstance();
+  RevokedPermissionsServiceFactory::GetInstance();
 #endif
   UrlLanguageHistogramFactory::GetInstance();
   UsbChooserContextFactory::GetInstance();

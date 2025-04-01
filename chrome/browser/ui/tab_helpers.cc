@@ -91,8 +91,8 @@
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt_helper.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 #include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_dialogs.h"
@@ -563,17 +563,17 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(web_contents);
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kSafetyHub)) {
-    auto* service = UnusedSitePermissionsServiceFactory::GetForProfile(profile);
+    auto* service = RevokedPermissionsServiceFactory::GetForProfile(profile);
     if (service) {
-      UnusedSitePermissionsService::TabHelper::CreateForWebContents(
-          web_contents, service);
+      RevokedPermissionsService::TabHelper::CreateForWebContents(web_contents,
+                                                                 service);
     }
   }
 #else   // BUILDFLAG(IS_ANDROID)
-  auto* service = UnusedSitePermissionsServiceFactory::GetForProfile(profile);
+  auto* service = RevokedPermissionsServiceFactory::GetForProfile(profile);
   if (service) {
-    UnusedSitePermissionsService::TabHelper::CreateForWebContents(web_contents,
-                                                                  service);
+    RevokedPermissionsService::TabHelper::CreateForWebContents(web_contents,
+                                                               service);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
   ukm::InitializeSourceUrlRecorderForWebContents(web_contents);
