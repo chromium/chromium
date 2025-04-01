@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
-#include "pdf/buildflags.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -23,22 +22,6 @@ class FileSystemURL;
 }
 
 namespace file_manager::util {
-
-// List of file extensions viewable in the browser.
-inline constexpr const base::FilePath::CharType*
-    kFileExtensionsViewableInBrowser[] = {
-        FILE_PATH_LITERAL(".bmp"),   FILE_PATH_LITERAL(".ico"),
-        FILE_PATH_LITERAL(".jpg"),   FILE_PATH_LITERAL(".jpeg"),
-        FILE_PATH_LITERAL(".png"),   FILE_PATH_LITERAL(".webp"),
-        FILE_PATH_LITERAL(".gif"),   FILE_PATH_LITERAL(".txt"),
-        FILE_PATH_LITERAL(".html"),  FILE_PATH_LITERAL(".htm"),
-        FILE_PATH_LITERAL(".mhtml"), FILE_PATH_LITERAL(".mht"),
-        FILE_PATH_LITERAL(".xhtml"), FILE_PATH_LITERAL(".xht"),
-        FILE_PATH_LITERAL(".shtml"), FILE_PATH_LITERAL(".svg"),
-#if BUILDFLAG(ENABLE_PDF)
-        FILE_PATH_LITERAL(".pdf"),
-#endif  // BUILDFLAG(ENABLE_PDF)
-};
 
 using LaunchAppCallback =
     base::OnceCallback<void(std::optional<apps::LaunchResult::State>)>;

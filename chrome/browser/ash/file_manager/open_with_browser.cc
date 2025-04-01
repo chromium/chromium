@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
-#include "chrome/browser/ash/file_manager/open_with_browser.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/hats_office_trigger.h"
@@ -44,6 +43,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "net/base/filename_util.h"
+#include "pdf/buildflags.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 using content::BrowserThread;
@@ -51,6 +51,22 @@ using content::BrowserThread;
 namespace file_manager::util {
 
 namespace {
+
+// List of file extensions viewable in the browser.
+constexpr const base::FilePath::CharType* kFileExtensionsViewableInBrowser[] = {
+    FILE_PATH_LITERAL(".bmp"),   FILE_PATH_LITERAL(".ico"),
+    FILE_PATH_LITERAL(".jpg"),   FILE_PATH_LITERAL(".jpeg"),
+    FILE_PATH_LITERAL(".png"),   FILE_PATH_LITERAL(".webp"),
+    FILE_PATH_LITERAL(".gif"),   FILE_PATH_LITERAL(".txt"),
+    FILE_PATH_LITERAL(".html"),  FILE_PATH_LITERAL(".htm"),
+    FILE_PATH_LITERAL(".mhtml"), FILE_PATH_LITERAL(".mht"),
+    FILE_PATH_LITERAL(".xhtml"), FILE_PATH_LITERAL(".xht"),
+    FILE_PATH_LITERAL(".shtml"), FILE_PATH_LITERAL(".svg"),
+#if BUILDFLAG(ENABLE_PDF)
+    FILE_PATH_LITERAL(".pdf"),
+#endif  // BUILDFLAG(ENABLE_PDF)
+};
+
 // Returns true if |file_path| is viewable in the browser (ex. HTML file).
 bool IsViewableInBrowser(const base::FilePath& file_path) {
   for (size_t i = 0; i < std::size(kFileExtensionsViewableInBrowser); i++) {
@@ -220,7 +236,7 @@ bool OpenFileWithAppOrBrowser(Profile* profile,
           path, base::BindOnce(&OpenEncryptedDriveFsFile, file_path));
       return true;
     }
-    LOG(WARNING) << "Failed to open file: " << file_path.value()
+    LOG(WARNING) << "Failed to open file (extension): " << file_path.Extension()
                  << ": no connection to integration service";
     return false;
   }
@@ -254,7 +270,8 @@ bool OpenFileWithAppOrBrowser(Profile* profile,
   // For things supported natively by the browser, we should open it in a tab.
   if (!(action_id == "view-pdf" || action_id == "view-in-browser")) {
     // Failed to open the file of unknown type.
-    LOG(WARNING) << "Unknown file type: " << file_path.value();
+    LOG(WARNING) << "Unknown file type (extension): " << file_path.Extension()
+                 << " action: " << action_id;
     return false;
   }
 
@@ -282,8 +299,8 @@ bool OpenFileWithAppOrBrowser(Profile* profile,
           OpenNewTab(page_url);
           return;
         }
-        LOG(ERROR) << "Not viewable in browser: MIME: " << mime
-                   << " action: " << action_id;
+        LOG(WARNING) << "Not viewable in browser: MIME: " << mime
+                     << " action: " << action_id;
       },
       std::move(callback), file_path, file_system_url, action_id,
       base::Owned(mime_type_collector));
