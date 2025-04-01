@@ -1,7 +1,0 @@
-{
-  "Mac Builder reclient staging untrusted": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  }
-}

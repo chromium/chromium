@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Android arm64 Builder (dbg)",
-              "project": "chromium"
+              "project": "chromium-m136"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -41,7 +41,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Oreo Phone Tester",
-              "project": "chromium"
+              "project": "chromium-m136"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -69,7 +69,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Android arm64 Builder (dbg)",
-                "project": "chromium"
+                "project": "chromium-m136"
               }
             }
           }
@@ -79,14 +79,14 @@
         {
           "bucket": "ci",
           "builder": "Android arm64 Builder (dbg)",
-          "project": "chromium"
+          "project": "chromium-m136"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Oreo Phone Tester",
-          "project": "chromium"
+          "project": "chromium-m136"
         }
       ],
       "targets_spec_directory": "src/infra/config/generated/builders/try/android-oreo-arm64-dbg/targets"

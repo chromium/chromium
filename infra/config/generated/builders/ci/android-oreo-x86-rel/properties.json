@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-oreo-x86-rel",
-              "project": "chromium"
+              "project": "chromium-m136"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -42,14 +42,10 @@
         {
           "bucket": "ci",
           "builder": "android-oreo-x86-rel",
-          "project": "chromium"
+          "project": "chromium-m136"
         }
       ],
       "mirroring_builder_group_and_names": [
-        {
-          "builder": "android-oreo-x86-rel",
-          "group": "tryserver.chromium.android"
-        },
         {
           "builder": "android-x86-rel",
           "group": "tryserver.chromium.android"
@@ -79,10 +75,10 @@
   },
   "builder_group": "chromium.android",
   "gardener_rotations": [
-    "android"
+    "chrome_browser_release"
   ],
   "recipe": "chromium",
   "sheriff_rotations": [
-    "android"
+    "chrome_browser_release"
   ]
 }
