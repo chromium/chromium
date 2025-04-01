@@ -983,6 +983,7 @@ experimental domain Audits
       TypeNotMatching
       UiDismissedNoEmbargo
       CorsError
+      SuppressedBySegmentationPlatform
 
   type FederatedAuthUserInfoRequestIssueDetails extends object
     properties

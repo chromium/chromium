@@ -304,6 +304,7 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     case FederatedAuthRequestResult::kTypeNotMatching:
     case FederatedAuthRequestResult::kUiDismissedNoEmbargo:
     case FederatedAuthRequestResult::kCorsError:
+    case FederatedAuthRequestResult::kSuppressedBySegmentationPlatform:
     case FederatedAuthRequestResult::kError: {
       return RequestTokenStatus::kError;
     }
@@ -378,7 +379,8 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
     case FederatedAuthRequestResult::kIdpNotPotentiallyTrustworthy:
     case FederatedAuthRequestResult::kError:
     case FederatedAuthRequestResult::kSilentMediationFailure:
-    case FederatedAuthRequestResult::kTypeNotMatching: {
+    case FederatedAuthRequestResult::kTypeNotMatching:
+    case FederatedAuthRequestResult::kSuppressedBySegmentationPlatform: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::kOther;
     }
   }
@@ -2644,15 +2646,25 @@ void FederatedAuthRequestImpl::OnDialogDismissed(
     api_permission_delegate_->RecordDismissAndEmbargo(GetEmbeddingOrigin());
   }
 
+  TokenStatus token_status;
+  FederatedAuthRequestResult result;
+  if (should_embargo) {
+    token_status = TokenStatus::kShouldEmbargo;
+    result = FederatedAuthRequestResult::kShouldEmbargo;
+  } else if (dismiss_reason ==
+             IdentityRequestDialogController::DismissReason::kSuppressed) {
+    token_status = TokenStatus::kNotSelectAccount;
+    result = FederatedAuthRequestResult::kSuppressedBySegmentationPlatform;
+  } else {
+    token_status = TokenStatus::kNotSelectAccount;
+    result = FederatedAuthRequestResult::kUiDismissedNoEmbargo;
+  }
+
   // Reject the promise immediately if the UI is dismissed without selecting
   // an account. Meanwhile, we fuzz the rejection time for other failures to
   // make it indistinguishable.
-  CompleteRequestWithError(
-      should_embargo ? FederatedAuthRequestResult::kShouldEmbargo
-                     : FederatedAuthRequestResult::kUiDismissedNoEmbargo,
-      should_embargo ? TokenStatus::kShouldEmbargo
-                     : TokenStatus::kNotSelectAccount,
-      /*should_delay_callback=*/false);
+  CompleteRequestWithError(result, token_status,
+                           /*should_delay_callback=*/false);
 }
 
 void FederatedAuthRequestImpl::ShowModalDialog(DialogType dialog_type,

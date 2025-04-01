@@ -318,6 +318,11 @@ std::string GetConsoleErrorMessageFromResult(
     case FederatedAuthRequestResult::kCorsError: {
       return "Server did not send the correct CORS headers.";
     }
+    case FederatedAuthRequestResult::kSuppressedBySegmentationPlatform: {
+      return "Dialog is suppressed because historical data shows that the user "
+             "is not interested in FedCM on this RP. For testing purposes, "
+             "disable the #fedcm-segmentation-platform flag.";
+    }
     case FederatedAuthRequestResult::kSuccess: {
       // Should not be called with success, as we should not add a console
       // message for success.
