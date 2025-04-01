@@ -19,6 +19,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
+import androidx.browser.trusted.LaunchHandlerClientMode;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode;
 import androidx.browser.trusted.sharing.ShareData;
 import androidx.browser.trusted.sharing.ShareTarget;
@@ -682,5 +683,10 @@ public abstract class BrowserServicesIntentDataProvider {
     /** Return the https redirect URL path for AuthTab. */
     public @Nullable String getAuthRedirectPath() {
         return null;
+    }
+
+    /** Return the client mode for Launch Handler API. */
+    public @LaunchHandlerClientMode.ClientMode int getLaunchHandlerClientMode() {
+        return LaunchHandlerClientMode.AUTO;
     }
 }
