@@ -23,7 +23,6 @@ import '../simple_confirmation_dialog.js';
 import './autofill_ai_add_or_edit_dialog.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
@@ -43,21 +42,16 @@ type EntityInstance = chrome.autofillPrivate.EntityInstance;
 type EntityInstanceWithLabels = chrome.autofillPrivate.EntityInstanceWithLabels;
 type EntityType = chrome.autofillPrivate.EntityType;
 
-// browser_element_identifiers constants
-const AUTOFILL_AI_HEADER_ELEMENT_ID =
-    'SettingsUI::kAutofillPredictionImprovementsHeaderElementId';
-
 export interface SettingsAutofillAiSectionElement {
   $: {
     actionMenu: CrLazyRenderElement<CrActionMenuElement>,
     addMenu: CrLazyRenderElement<CrActionMenuElement>,
-    entriesHeaderTitle: HTMLElement,
     prefToggle: SettingsToggleButtonElement,
   };
 }
 
 const SettingsAutofillAiSectionElementBase =
-    I18nMixin(HelpBubbleMixin(PrefsMixin(PolymerElement)));
+    I18nMixin(PrefsMixin(PolymerElement));
 
 export class SettingsAutofillAiSectionElement extends
     SettingsAutofillAiSectionElementBase {
@@ -179,11 +173,6 @@ export class SettingsAutofillAiSectionElement extends
     this.entityDataManager_.loadEntityInstances().then(
         (entityInstances: EntityInstanceWithLabels[]) => this.entityInstances_ =
             entityInstances);
-
-    // TODO(crbug.com/393318914): Remove this help bubble, which was introduced
-    // in crrev.com/c/5939704.
-    this.registerHelpBubble(
-        AUTOFILL_AI_HEADER_ELEMENT_ID, this.$.entriesHeaderTitle);
   }
 
   override disconnectedCallback() {
