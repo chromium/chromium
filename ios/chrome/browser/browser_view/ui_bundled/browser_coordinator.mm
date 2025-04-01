@@ -844,6 +844,7 @@ enum class ToolbarKind {
   _countryCodePickerCoordinator = nil;
 
   [self hideGoogleOne];
+  [self updateLensUIForBackground];
 
   [self dismissLensPromo];
   [self dismissEnhancedSafeBrowsingPromo];
@@ -858,6 +859,25 @@ enum class ToolbarKind {
 }
 
 #pragma mark - Private
+
+// The Lens UI takes the necessary steps before being backgrounded.
+- (void)updateLensUIForBackground {
+  web::WebState* activeWebState = self.activeWebState;
+  if (!activeWebState) {
+    return;
+  }
+
+  LensOverlayTabHelper* lensOverlayTabHelper =
+      LensOverlayTabHelper::FromWebState(activeWebState);
+  bool isLensOverlayAvailable =
+      IsLensOverlayAvailable(self.profile->GetPrefs()) && lensOverlayTabHelper;
+
+  if (isLensOverlayAvailable &&
+      lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive()) {
+    [HandlerForProtocol(_dispatcher, LensOverlayCommands)
+        prepareLensUIForBackgroundTabChange];
+  }
+}
 
 // Returns whether overscroll actions should be allowed. When screeen size is
 // not regular, they should be enabled.
