@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <title>Prefetch request's Sec-Speculation-Tags request headers</title>
+<meta name="variant" content="?tag-level=ruleset">
+<meta name="variant" content="?tag-level=rule">
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -19,12 +21,12 @@ setup(() => assertSpeculationRulesIsSupported());
 const R = String.raw;
 
 // Valid tag cases.
-testRulesetTag('my-rules', '"my-rules"', "string tag");
-testRulesetTag('null', '"null"', "'null' string tag");
-testRulesetTag('', '""', "empty string tag");
-testRulesetTag(' ', '" "', "single space tag");
-testRulesetTag('"', R`"\""`, "double quote tag");
-testRulesetTag('"""', R`"\"\"\""`, "double quotes tag");
-testRulesetTag('\\', R`"\\"`, "backslash tag");
-testRulesetTag('\\\\\\', R`"\\\\\\"`, "backslashes tag");
+testTag('my-rules', '"my-rules"', "string tag");
+testTag('null', '"null"', "'null' string tag");
+testTag('', '""', "empty string tag");
+testTag(' ', '" "', "single space tag");
+testTag('"', R`"\""`, "double quote tag");
+testTag('"""', R`"\"\"\""`, "double quotes tag");
+testTag('\\', R`"\\"`, "backslash tag");
+testTag('\\\\\\', R`"\\\\\\"`, "backslashes tag");
 </script>
