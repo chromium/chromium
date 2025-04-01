@@ -501,7 +501,7 @@
 <translation id="2705001408393684014">开启/关闭麦克风。<ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">向上箭头键</translation>
 <translation id="2710984741481549981">锁定窗口</translation>
-<translation id="2718395828230677721">护眼模式</translation>
+<translation id="2718395828230677721">夜间光效</translation>
 <translation id="2726420622004325180">您的手机必须有移动数据网络，才能提供热点</translation>
 <translation id="2727175239389218057">回复</translation>
 <translation id="2727977024730340865">已插入低功率充电器；可能无法保证充电成功。</translation>
@@ -1504,6 +1504,7 @@
 <translation id="595202126637698455">已启用性能跟踪</translation>
 <translation id="5955304353782037793">应用</translation>
 <translation id="5958529069007801266">受监管用户</translation>
+<translation id="596035801491797438">关闭人脸操控</translation>
 <translation id="5960410286721553511">查看手机中近期拍摄的照片和播放的媒体</translation>
 <translation id="5965524703725988602">开启/关闭深色主题。<ph name="STATE_TEXT" />。</translation>
 <translation id="5975235751479998104">正向浏览各个窗口</translation>
