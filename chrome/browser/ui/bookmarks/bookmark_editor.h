@@ -64,8 +64,10 @@ class BookmarkEditor {
     static EditDetails EditNode(const bookmarks::BookmarkNode* node);
 
     // Returns an EditDetails instance for the user moving the given selection
-    // of bookmarks.
+    // of bookmarks. The initial parent node will be computed based on the
+    // `nodes` storages and their parents similarity.
     static EditDetails MoveNodes(
+        bookmarks::BookmarkModel* model,
         const std::vector<
             raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes);
 

@@ -171,8 +171,8 @@ TEST(BookmarkEditorTest, ApplyEditsMoveBookmarks) {
   ASSERT_THAT(model->account_bookmark_bar_node()->children(),
               ElementsAre(Pointer(account_node)));
 
-  BookmarkEditor::EditDetails detail(
-      BookmarkEditor::EditDetails::MoveNodes({local_node, account_node}));
+  BookmarkEditor::EditDetails detail(BookmarkEditor::EditDetails::MoveNodes(
+      model.get(), {local_node, account_node}));
   BookmarkEditor::ApplyEdits(model.get(), model->account_other_node(), detail,
                              std::u16string(), GURL());
 
@@ -199,7 +199,7 @@ TEST(BookmarkEditorTest, ApplyEditsMoveAccountBookmarks) {
               ElementsAre(Pointer(folder), Pointer(node)));
 
   BookmarkEditor::EditDetails detail(
-      BookmarkEditor::EditDetails::MoveNodes({folder, node}));
+      BookmarkEditor::EditDetails::MoveNodes(model.get(), {folder, node}));
   BookmarkEditor::ApplyEdits(model.get(), model->other_node(), detail,
                              std::u16string(), GURL());
 
@@ -221,13 +221,81 @@ TEST(BookmarkEditorTest, ApplyEditsMoveLocalBookmarks) {
               ElementsAre(Pointer(folder), Pointer(node)));
 
   BookmarkEditor::EditDetails detail(
-      BookmarkEditor::EditDetails::MoveNodes({folder, node}));
+      BookmarkEditor::EditDetails::MoveNodes(model.get(), {folder, node}));
   BookmarkEditor::ApplyEdits(model.get(), model->other_node(), detail,
                              std::u16string(), GURL());
 
   EXPECT_TRUE(model->bookmark_bar_node()->children().empty());
   EXPECT_THAT(model->other_node()->children(),
               ElementsAre(Pointer(folder), Pointer(node)));
+}
+
+TEST(BookmarkEditorTest, MoveNodesDefaultLocation) {
+  base::test::ScopedFeatureList features(
+      switches::kSyncEnableBookmarksInTransportMode);
+
+  std::unique_ptr<BookmarkModel> model(
+      bookmarks::TestBookmarkClient::CreateModel());
+  model->CreateAccountPermanentFolders();
+
+  // Bookmark tree will have the following structure:
+  //  LocalBookmarkBar
+  //    local_folder
+  //      local_nested_node
+  //    local_node
+  //  AccountBookmarkBar
+  //    account_folder
+  //      account_nested_node
+  //    account_node
+  const BookmarkNode* local_folder =
+      model->AddFolder(model->bookmark_bar_node(), 0, u"folder");
+  const BookmarkNode* local_node = model->AddURL(
+      model->bookmark_bar_node(), 0, u"title", GURL(u"chrome://newtab"));
+  const BookmarkNode* local_nested_node =
+      model->AddURL(local_folder, 0, u"title", GURL(u"chrome://newtab"));
+
+  const BookmarkNode* account_folder =
+      model->AddFolder(model->account_bookmark_bar_node(), 0, u"folder");
+  const BookmarkNode* account_node =
+      model->AddURL(model->account_bookmark_bar_node(), 0, u"title",
+                    GURL(u"chrome://newtab"));
+  const BookmarkNode* account_nested_node =
+      model->AddURL(account_folder, 0, u"title", GURL(u"chrome://newtab"));
+
+  // Move nodes with the same local parent.
+  {
+    BookmarkEditor::EditDetails detail(BookmarkEditor::EditDetails::MoveNodes(
+        model.get(), {local_folder, local_node}));
+    EXPECT_EQ(model->bookmark_bar_node(), detail.parent_node);
+  }
+
+  // Move nodes with the same account parent.
+  {
+    BookmarkEditor::EditDetails detail(BookmarkEditor::EditDetails::MoveNodes(
+        model.get(), {account_folder, account_node}));
+    EXPECT_EQ(model->account_bookmark_bar_node(), detail.parent_node);
+  }
+
+  // Move only local nodes.
+  {
+    BookmarkEditor::EditDetails detail(BookmarkEditor::EditDetails::MoveNodes(
+        model.get(), {local_node, local_nested_node}));
+    EXPECT_EQ(model->other_node(), detail.parent_node);
+  }
+
+  // Move only account nodes.
+  {
+    BookmarkEditor::EditDetails detail(BookmarkEditor::EditDetails::MoveNodes(
+        model.get(), {account_node, account_nested_node}));
+    EXPECT_EQ(model->account_other_node(), detail.parent_node);
+  }
+
+  // Move both local and account nodes.
+  {
+    BookmarkEditor::EditDetails detail(BookmarkEditor::EditDetails::MoveNodes(
+        model.get(), {local_node, account_nested_node}));
+    EXPECT_EQ(model->account_other_node(), detail.parent_node);
+  }
 }
 
 TEST(BookmarkEditorTest, ApplyEditsPersistOrderAfterMove) {
@@ -262,8 +330,8 @@ TEST(BookmarkEditorTest, ApplyEditsPersistOrderAfterMove) {
   // Make the selection in a random order. The order after moving should however
   // remain the same as in the initial parent node.
   BookmarkEditor::EditDetails detail(BookmarkEditor::EditDetails::MoveNodes(
-      {account_node2, local_node1, local_node3, account_node3, account_node1,
-       local_node2}));
+      model.get(), {account_node2, local_node1, local_node3, account_node3,
+                    account_node1, local_node2}));
   BookmarkEditor::ApplyEdits(model.get(), model->other_node(), detail,
                              std::u16string(), GURL());
 

@@ -645,7 +645,8 @@ TEST_F(BookmarkEditorViewTest,
        MoveDialog_SaveButtonDisabledForDescendingNodes) {
   const BookmarkNode* F1 = model()->bookmark_bar_node()->children()[1].get();
   ASSERT_EQ(u"F1", F1->GetTitle());
-  CreateEditor(profile_.get(), BookmarkEditor::EditDetails::MoveNodes({F1}),
+  CreateEditor(profile_.get(),
+               BookmarkEditor::EditDetails::MoveNodes(model(), {F1}),
                BookmarkEditorView::SHOW_TREE);
   ASSERT_TRUE(editor());
 

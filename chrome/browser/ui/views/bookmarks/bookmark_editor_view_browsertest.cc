@@ -113,10 +113,10 @@ class BookmarkEditorViewBrowserTestMoveDialog
   // Shows the dialog for moving one or multiple bookmarks. This shows a
   // BookmarkEditorView dialog with a tree view.
   void ShowUi(const std::string& name) override {
-    BookmarkEditor::Show(browser()->window()->GetNativeWindow(),
-                         browser()->profile(),
-                         BookmarkEditor::EditDetails::MoveNodes(nodes_),
-                         BookmarkEditor::SHOW_TREE);
+    BookmarkEditor::Show(
+        browser()->window()->GetNativeWindow(), browser()->profile(),
+        BookmarkEditor::EditDetails::MoveNodes(bookmark_model(), nodes_),
+        BookmarkEditor::SHOW_TREE);
   }
 
   void set_nodes(const std::vector<raw_ptr<const bookmarks::BookmarkNode,
@@ -158,7 +158,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkEditorViewBrowserTestMoveDialog,
                                 GURL("http://www.google.com"))});
 
   auto editor = std::make_unique<BookmarkEditorView>(
-      browser()->profile(), BookmarkEditor::EditDetails::MoveNodes(nodes),
+      browser()->profile(),
+      BookmarkEditor::EditDetails::MoveNodes(bookmark_model(), nodes),
       BookmarkEditor::SHOW_TREE, base::DoNothing());
   editor_raw = editor.get();
   editor->Show(browser()->window()->GetNativeWindow());

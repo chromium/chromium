@@ -69,6 +69,38 @@ const BookmarkNode* CreateNewNode(BookmarkModel* model,
   return node;
 }
 
+const BookmarkNode* GetParentNodeForMove(
+    bookmarks::BookmarkModel* model,
+    const std::vector<
+        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes) {
+  CHECK(!nodes.empty());
+  const BookmarkNode* first_parent = nodes[0].get()->parent();
+
+  bool same_parent = std::ranges::all_of(nodes, [&first_parent](auto node) {
+    return node->parent() == first_parent;
+  });
+
+  // Default to the parent node if all of the nodes have the same parent.
+  if (same_parent) {
+    return first_parent;
+  }
+
+  // If the nodes do not have the same parent, but at least one of them is
+  // saved to account storage, default to the account other node.
+  if (model->account_other_node()) {
+    bool only_local_nodes = std::ranges::all_of(
+        nodes, [&model](auto node) { return model->IsLocalOnlyNode(*node); });
+
+    if (!only_local_nodes) {
+      return model->account_other_node();
+    }
+  }
+
+  // If the nodes are all saved to local storage or sync is enabled, default
+  // to the local other node.
+  return model->other_node();
+}
+
 }  // namespace
 
 BookmarkEditor::EditDetails::BookmarkData::BookmarkData() = default;
@@ -149,6 +181,7 @@ BookmarkEditor::EditDetails BookmarkEditor::EditDetails::AddFolder(
 }
 
 BookmarkEditor::EditDetails BookmarkEditor::EditDetails::MoveNodes(
+    bookmarks::BookmarkModel* model,
     const std::vector<
         raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes) {
   EditDetails details(MOVE);
@@ -156,11 +189,8 @@ BookmarkEditor::EditDetails BookmarkEditor::EditDetails::MoveNodes(
   details.existing_nodes_to_move = base::MakeFlatSet<
       raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>(nodes);
 
-  // TODO(crbug.com/405376829): Replace this with a more sensible default
-  // location.
-  if (!nodes.empty() && nodes[0]) {
-    details.parent_node = nodes[0]->parent();
-  }
+  details.parent_node = GetParentNodeForMove(model, nodes);
+
   return details;
 }
 

@@ -357,7 +357,8 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       base::RecordAction(UserMetricsAction("BookmarkBar_ContextMenu_Move"));
 
       BookmarkEditor::Show(parent_window_, profile_,
-                           BookmarkEditor::EditDetails::MoveNodes(selection_),
+                           BookmarkEditor::EditDetails::MoveNodes(
+                               bookmark_service_->bookmark_model(), selection_),
                            BookmarkEditor::SHOW_TREE);
       break;
 
