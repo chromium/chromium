@@ -425,22 +425,7 @@ void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
 
   DCHECK(context_lost_mode_ != kWebGLLoseContextLostContext);
 
-  RestoreGuard context_is_being_restored(*this);
-
-  if (context_lost_mode_ == kSyntheticLostContext) {
-    // If lost mode is |kSyntheticLostContext| and |context_restorable_| is set
-    // to true, it means context is forced to be lost for testing purpose.
-    // Restore the context.
-    CanvasResourceProvider* provider = GetOrCreateCanvasResourceProvider();
-    if (provider) {
-      try_restore_context_event_timer_.Stop();
-      DispatchContextRestoredEvent(nullptr);
-      return;
-    }
-  } else if (context_lost_mode_ == kRealLostContext) {
-    // If lost mode is |kRealLostContext|, it means the context was not lost due
-    // to surface failure but rather due to a an eviction, which means image
-    // buffer exists.
+  if (context_lost_mode_ == kRealLostContext) {
     if (SharedGpuContext::IsGpuCompositingEnabled()) {
       if (!SharedGpuContext::SharedImageInterfaceProvider()) {
         return;
@@ -450,12 +435,13 @@ void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
         return;
       }
     }
+  }
 
-    if (GetOrCreateCanvasResourceProvider()) {
-      try_restore_context_event_timer_.Stop();
-      DispatchContextRestoredEvent(nullptr);
-      return;
-    }
+  RestoreGuard context_is_being_restored(*this);
+  if (GetOrCreateCanvasResourceProvider()) {
+    try_restore_context_event_timer_.Stop();
+    DispatchContextRestoredEvent(nullptr);
+    return;
   }
 
   // It gets here if lost mode is |kRealLostContext| and it fails to create a
