@@ -6588,6 +6588,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_GROUP_NEW_ACTIVITY_LABEL_TEXT" desc="Text in the new activity label on a shared tab group cell in the tab grid.">
         New activity
       </message>
+      <message name="IDS_IOS_TAB_GROUP_RECENT_ACTIVITY_SHEET_EMPTY_MESSAGE" desc="Message displayed when the recent activity sheet is empty.">
+        No recent activity
+      </message>
       <message name="IDS_IOS_TAB_GROUP_RECENT_ACTIVITY_SHEET_TITLE" desc="Title of a half sheet for recent activity logs in a shared tab group.">
         Recent activity
       </message>
