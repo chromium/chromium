@@ -10,14 +10,21 @@
 # http://go/autospan-tracker
 # ----------------------------------------------------------------------------
 
+from datetime import datetime
+import getpass
 import os
 import random
-import shutil
-import subprocess
-import getpass
-import sys
 import re
-from datetime import datetime
+import subprocess
+import sys
+
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+from googleapiclient.http import MediaFileUpload
+
 
 # To install the required dependencies to interact with the Google Sheets API:
 # ```
@@ -32,12 +39,6 @@ from datetime import datetime
 # argument which will set the limit of patches to evaluate. Default is 100.
 # ```
 
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-from googleapiclient.http import MediaFileUpload
 
 def run(command, error_message=None, exit_on_error=True):
     """
@@ -174,6 +175,24 @@ def writeCommonArgs(f):
     f.write("force_enable_raw_ptr_exclusion = true\n")
 
 
+def ReportCaseResult(scratch_dir, result, spreadsheet, today, index, patches,
+                     user, error_msg, diff, final_file):
+    with open(scratch_dir + "/evaluation.csv", "a") as f:
+        f.write(f"{index}, {result}, {error_msg}\n")
+
+    appendRow(spreadsheet, [
+        today,
+        index,
+        len(patches),
+        result,
+        error_msg,
+        diff,
+        user,
+    ])
+    with open(scratch_dir + f"/patch_{index}.{result}", "w+") as f:
+        f.write(final_file)
+
+
 today = datetime.now().strftime("%Y/%m/%d")
 today_underscore = today.replace("/", "_")
 scratch_dir = os.path.expanduser("~/scratch")
@@ -181,6 +200,14 @@ creds = getGoogleCreds()
 spreadsheet = getSpreadsheet(creds)
 user = getpass.getuser()
 
+# Curry ReportCaseResult to use the variables above to simplify the code below.
+# Preventing code duplication and mistakes.
+report_success = lambda error_msg, diff, final_file: ReportCaseResult(
+        scratch_dir, "pass", spreadsheet, today, index, patches, user,
+        error_msg, diff, final_file)
+report_failure = lambda error_msg, diff, final_file: ReportCaseResult(
+        scratch_dir, "fail", spreadsheet, today, index, patches, user,
+        error_msg, diff, final_file)
 
 print("Running evaluate_patches.py...")
 
@@ -275,26 +302,15 @@ try:
         except subprocess.CalledProcessError as e:
             error_msg = ("\"" + str(e) + " !!! exception(stderr): " +
                          str(e.stderr) + "\"")
-            with open(scratch_dir + "/evaluation.csv", "a") as f:
-                f.write(f"{index}, fail, {error_msg}\n")
 
             run(f"git diff  > ~/scratch/patch_{index}.diff")
             diff = open(scratch_dir + f"/patch_{index}.diff").read()
 
-            appendRow(spreadsheet, [
-                today,
-                index,
-                len(patches),
-                "fail",
-                error_msg,
-                diff,
-                user,
-            ])
-            run("git restore .", "Failed to restore after failed patch.")
+            final_file = str(e.stderr) + "\n" + str(e.stdout)
 
-            with open(scratch_dir + f"/patch_{index}.fail", "w+") as f:
-                f.write(str(e.stderr))
-                f.write(str(e.stdout))
+            report_failure(error_msg, diff, final_file)
+
+            run("git restore .", "Failed to restore after failed patch.")
             continue
 
         run("git cl format")
@@ -308,21 +324,10 @@ try:
         # Sometimes we generate patches that apply_edits will skip (for example
         # third_party) thus don't treat failure to commit as an error.
         if not run("git commit -F commit_message.txt", exit_on_error=False):
-            with open(scratch_dir + "/evaluation.csv", "a") as f:
-                f.write(f"{index}, fail, {error_msg}\n")
-
             # We fail when there is no diff get the replacements instead.
             diff = open(scratch_dir + f"/patch_{index}.txt").read()
 
-            appendRow(spreadsheet, [
-                today,
-                index,
-                len(patches),
-                "fail",
-                "Failed to commit diff",
-                diff,
-                user,
-            ])
+            report_failure("Failed to commit diff", diff, "")
             continue
 
         # Serialize changes
@@ -340,6 +345,7 @@ try:
         print(result.stdout)
         print(result.stderr)
 
+        final_file = result.stderr + "\n" + result.stdout
         with open(scratch_dir + f"/patch_{index}.out", "w+") as f:
             f.write(result.stderr)
             f.write(result.stdout)
@@ -355,53 +361,13 @@ try:
                     error_msg = match.group(4)
                     break
 
-            with open(scratch_dir + "/evaluation.csv", "a") as f:
-                f.write(f"{index}, fail, {error_msg}\n")
-
-            appendRow(spreadsheet, [
-                today,
-                index,
-                len(patches),
-                "fail",
-                error_msg,
-                diff,
-                user,
-            ])
-
-            shutil.copy(scratch_dir + f"/patch_{index}.out",
-                        scratch_dir + f"/patch_{index}.fail")
+            report_failure(error_msg, diff, final_file)
         elif not run('gn check out/linux', exit_on_error=False):
             error_msg = "failed gn check"
-            with open(scratch_dir + "/evaluation.csv", "a") as f:
-                f.write(f"{index}, fail, {error_msg}\n")
-
-            appendRow(spreadsheet, [
-                today,
-                index,
-                len(patches),
-                "fail",
-                error_msg,
-                diff,
-                user,
-            ])
-
-            shutil.copy(scratch_dir + f"/patch_{index}.out",
-                        scratch_dir + f"/patch_{index}.fail")
+            report_failure(error_msg, diff, final_file)
             continue
         else:
-            with open(scratch_dir + "/evaluation.csv", "a") as f:
-                f.write(f"{index}, pass, \"\"\n")
-            appendRow(spreadsheet, [
-                today,
-                index,
-                len(patches),
-                "pass",
-                "",
-                diff,
-                user,
-            ])
-            shutil.copy(scratch_dir + f"/patch_{index}.out",
-                        scratch_dir + f"/patch_{index}.pass")
+            report_success("", diff, final_file)
 finally:
     # Regardless of success or failure we want to upload the scratch directory
     # to the shared google drive for easy debugging of either compile errors or
