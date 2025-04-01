@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/gpu/windows/d3d11_copying_texture_wrapper.h"
+
 #include <string.h>
 
 #include <utility>
@@ -9,12 +11,12 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "media/gpu/windows/d3d11_copying_texture_wrapper.h"
 #include "media/gpu/windows/d3d11_picture_buffer.h"
 #include "media/gpu/windows/d3d11_texture_wrapper.h"
 #include "media/gpu/windows/d3d11_video_processor_proxy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/color_space.h"
 
 using ::testing::_;
 using ::testing::Bool;
@@ -205,8 +207,9 @@ TEST_P(D3D11CopyingTexture2DWrapperTest,
   MockVideoProcessorProxy* processor_raw = processor.get();
   auto texture_wrapper = ExpectTextureWrapper();
   MockTexture2DWrapper* texture_wrapper_raw = texture_wrapper.get();
+  gfx::ColorSpace output_color_space = gfx::ColorSpace::CreateHDR10();
   auto wrapper = std::make_unique<CopyingTexture2DWrapper>(
-      size, std::move(texture_wrapper), processor, nullptr);
+      size, output_color_space, std::move(texture_wrapper), processor, nullptr);
 
   // TODO: check |gpu_task_runner_|.
 
@@ -233,7 +236,7 @@ TEST_P(D3D11CopyingTexture2DWrapperTest,
     EXPECT_TRUE(processor_raw->last_stream_color_space_);
     EXPECT_EQ(*processor_raw->last_stream_color_space_, input_color_space);
     EXPECT_TRUE(processor_raw->last_output_color_space_);
-    EXPECT_EQ(*processor_raw->last_output_color_space_, input_color_space);
+    EXPECT_EQ(*processor_raw->last_output_color_space_, output_color_space);
   }
 
   // TODO: verify that these aren't sent multiple times, unless they change.

@@ -10,11 +10,13 @@
 #include <vector>
 
 #include "base/task/single_thread_task_runner.h"
+#include "media/base/video_types.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_texture_wrapper.h"
 #include "media/gpu/windows/d3d11_video_processor_proxy.h"
 #include "media/gpu/windows/d3d_com_defs.h"
+#include "ui/gfx/color_space.h"
 
 namespace media {
 
@@ -25,6 +27,7 @@ class MEDIA_GPU_EXPORT CopyingTexture2DWrapper : public Texture2DWrapper {
   // |output_wrapper| must wrap a Texture2D which is a single-entry Texture,
   // while |input_texture| may have multiple entries.
   CopyingTexture2DWrapper(const gfx::Size& size,
+                          const gfx::ColorSpace& color_space,
                           std::unique_ptr<Texture2DWrapper> output_wrapper,
                           scoped_refptr<VideoProcessorProxy> processor,
                           ComD3D11Texture2D output_texture);
@@ -45,7 +48,8 @@ class MEDIA_GPU_EXPORT CopyingTexture2DWrapper : public Texture2DWrapper {
                        picture_buffer_gpu_resource_init_done_cb) override;
 
  private:
-  gfx::Size size_;
+  const gfx::Size size_;
+  const gfx::ColorSpace output_color_space_;
   scoped_refptr<VideoProcessorProxy> video_processor_;
   std::unique_ptr<Texture2DWrapper> output_texture_wrapper_;
   ComD3D11Texture2D output_texture_;
