@@ -396,7 +396,7 @@ class BidderWorkletTest : public testing::Test {
     trusted_signals_cache_key_.reset();
     kanon_keys_.clear();
     kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kNone;
-    bid_is_kanon_ = false;
+    kanon_status_ = auction_worklet::mojom::KAnonymityStatus::kBelowThreshold;
     provide_direct_from_seller_signals_late_ = false;
 
     update_url_.reset();
@@ -659,9 +659,8 @@ class BidderWorkletTest : public testing::Test {
         direct_from_seller_per_buyer_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
         direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
-        kanon_mode_, bid_is_kanon_, browser_signal_render_url_,
-        browser_signal_bid_, browser_signal_bid_currency_,
-        browser_signal_highest_scoring_other_bid_,
+        kanon_status_, browser_signal_render_url_, browser_signal_bid_,
+        browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
         browser_signal_highest_scoring_other_bid_currency_,
         browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
         browser_signal_modeling_signals_, browser_signal_join_count_,
@@ -1088,7 +1087,8 @@ class BidderWorkletTest : public testing::Test {
   mojom::TrustedSignalsCacheKeyPtr trusted_signals_cache_key_;
   auction_worklet::mojom::KAnonymityBidMode kanon_mode_ =
       auction_worklet::mojom::KAnonymityBidMode::kNone;
-  bool bid_is_kanon_;
+  auction_worklet::mojom::KAnonymityStatus kanon_status_ =
+      auction_worklet::mojom::KAnonymityStatus::kBelowThreshold;
   std::optional<GURL> update_url_;
   std::optional<GURL> interest_group_trusted_bidding_signals_url_;
   std::optional<std::vector<std::string>>
@@ -6544,9 +6544,8 @@ TEST_F(BidderWorkletTest, WasmReportWin) {
       direct_from_seller_per_buyer_signals_header_ad_slot_,
       direct_from_seller_auction_signals_,
       direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
-      kanon_mode_, bid_is_kanon_, browser_signal_render_url_,
-      browser_signal_bid_, browser_signal_bid_currency_,
-      browser_signal_highest_scoring_other_bid_,
+      kanon_status_, browser_signal_render_url_, browser_signal_bid_,
+      browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
       browser_signal_highest_scoring_other_bid_currency_,
       browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
       browser_signal_modeling_signals_, browser_signal_join_count_,
@@ -8264,9 +8263,8 @@ TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
       direct_from_seller_per_buyer_signals_header_ad_slot_,
       direct_from_seller_auction_signals_,
       direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
-      kanon_mode_, bid_is_kanon_, browser_signal_render_url_,
-      browser_signal_bid_, browser_signal_bid_currency_,
-      browser_signal_highest_scoring_other_bid_,
+      kanon_status_, browser_signal_render_url_, browser_signal_bid_,
+      browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
       browser_signal_highest_scoring_other_bid_currency_,
       browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
       browser_signal_modeling_signals_, browser_signal_join_count_,
@@ -8322,8 +8320,8 @@ TEST_F(BidderWorkletTest, ReportWinParallel) {
           direct_from_seller_per_buyer_signals_header_ad_slot_,
           direct_from_seller_auction_signals_,
           direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
-          kanon_mode_, bid_is_kanon_, browser_signal_render_url_,
-          browser_signal_bid_, browser_signal_bid_currency_,
+          kanon_status_, browser_signal_render_url_, browser_signal_bid_,
+          browser_signal_bid_currency_,
           browser_signal_highest_scoring_other_bid_,
           browser_signal_highest_scoring_other_bid_currency_,
           browser_signal_made_highest_scoring_other_bid_,
@@ -8382,9 +8380,8 @@ TEST_F(BidderWorkletTest, ReportWinParallelLoadFails) {
         direct_from_seller_per_buyer_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
         direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
-        kanon_mode_, bid_is_kanon_, browser_signal_render_url_,
-        browser_signal_bid_, browser_signal_bid_currency_,
-        browser_signal_highest_scoring_other_bid_,
+        kanon_status_, browser_signal_render_url_, browser_signal_bid_,
+        browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
         browser_signal_highest_scoring_other_bid_currency_,
         browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
         browser_signal_modeling_signals_, browser_signal_join_count_,
@@ -8893,47 +8890,29 @@ TEST_F(BidderWorkletTest, ReportWinNoBrowserSignalRecencyForAdditionalBid) {
 }
 
 TEST_F(BidderWorkletTest, KAnonStatusExposesInReportWinBrowserSignals) {
-  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kEnforce;
-  bid_is_kanon_ = true;
+  kanon_status_ = auction_worklet::mojom::KAnonymityStatus::kUnknown;
   RunReportWinWithFunctionBodyExpectingResult(
-      R"(if (browserSignals.kAnonStatus === "passedAndEnforced")
-        sendReportTo("https://passedAndEnforced.test"))",
-      GURL("https://passedAndEnforced.test"));
+      R"(if (browserSignals.kAnonStatus === "notCalculated")
+        sendReportTo("https://notCalculated.test"))",
+      GURL("https://notCalculated.test"));
 
-  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kEnforce;
-  bid_is_kanon_ = false;
-  RunReportWinWithFunctionBodyExpectingResult(
-      R"(if (browserSignals.kAnonStatus === "passedAndEnforced")
-        sendReportTo("https://passedAndEnforced.test"))",
-      GURL("https://passedAndEnforced.test"));
-
-  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kSimulate;
-  bid_is_kanon_ = true;
-  RunReportWinWithFunctionBodyExpectingResult(
-      R"(if (browserSignals.kAnonStatus === "passedNotEnforced")
-        sendReportTo("https://passedNotEnforced.test"))",
-      GURL("https://passedNotEnforced.test"));
-
-  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kSimulate;
-  bid_is_kanon_ = false;
+  kanon_status_ = auction_worklet::mojom::KAnonymityStatus::kBelowThreshold;
   RunReportWinWithFunctionBodyExpectingResult(
       R"(if (browserSignals.kAnonStatus === "belowThreshold")
         sendReportTo("https://belowThreshold.test"))",
       GURL("https://belowThreshold.test"));
 
-  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kNone;
-  bid_is_kanon_ = true;
+  kanon_status_ = auction_worklet::mojom::KAnonymityStatus::kPassingNotEnforced;
   RunReportWinWithFunctionBodyExpectingResult(
-      R"(if (browserSignals.kAnonStatus === "notCalculated")
-        sendReportTo("https://notCalculated.test"))",
-      GURL("https://notCalculated.test"));
+      R"(if (browserSignals.kAnonStatus === "passedNotEnforced")
+        sendReportTo("https://passedNotEnforced.test"))",
+      GURL("https://passedNotEnforced.test"));
 
-  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kNone;
-  bid_is_kanon_ = false;
+  kanon_status_ = auction_worklet::mojom::KAnonymityStatus::kPassingAndEnforced;
   RunReportWinWithFunctionBodyExpectingResult(
-      R"(if (browserSignals.kAnonStatus === "notCalculated")
-        sendReportTo("https://notCalculated.test"))",
-      GURL("https://notCalculated.test"));
+      R"(if (browserSignals.kAnonStatus === "passedAndEnforced")
+        sendReportTo("https://passedAndEnforced.test"))",
+      GURL("https://passedAndEnforced.test"));
 }
 
 // Subsequent runs of the same script should not affect each other. Same is true
@@ -8985,9 +8964,8 @@ TEST_P(BidderWorkletMultiThreadingTest, ScriptIsolation) {
         direct_from_seller_per_buyer_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
         direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
-        kanon_mode_, bid_is_kanon_, browser_signal_render_url_,
-        browser_signal_bid_, browser_signal_bid_currency_,
-        browser_signal_highest_scoring_other_bid_,
+        kanon_status_, browser_signal_render_url_, browser_signal_bid_,
+        browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
         browser_signal_highest_scoring_other_bid_currency_,
         browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
         browser_signal_modeling_signals_, browser_signal_join_count_,
@@ -10778,9 +10756,8 @@ TEST_F(BidderWorkletTest, CancelationDtor) {
       direct_from_seller_per_buyer_signals_header_ad_slot_,
       direct_from_seller_auction_signals_,
       direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
-      kanon_mode_, bid_is_kanon_, browser_signal_render_url_,
-      browser_signal_bid_, browser_signal_bid_currency_,
-      browser_signal_highest_scoring_other_bid_,
+      kanon_status_, browser_signal_render_url_, browser_signal_bid_,
+      browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
       browser_signal_highest_scoring_other_bid_currency_,
       browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
       browser_signal_modeling_signals_, browser_signal_join_count_,
@@ -13981,9 +13958,8 @@ TEST_F(BidderWorkletLatenciesTest, ReportWinFetchMetrics) {
       direct_from_seller_per_buyer_signals_header_ad_slot_,
       direct_from_seller_auction_signals_,
       direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
-      kanon_mode_, bid_is_kanon_, browser_signal_render_url_,
-      browser_signal_bid_, browser_signal_bid_currency_,
-      browser_signal_highest_scoring_other_bid_,
+      kanon_status_, browser_signal_render_url_, browser_signal_bid_,
+      browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
       browser_signal_highest_scoring_other_bid_currency_,
       browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
       browser_signal_modeling_signals_, browser_signal_join_count_,

@@ -252,8 +252,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       const url::Origin& frame_origin,
       network::mojom::ClientSecurityStatePtr client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      auction_worklet::mojom::KAnonymityBidMode kanon_mode,
-      bool bid_is_kanon,
+      auction_worklet::mojom::KAnonymityStatus kanon_status,
       WinningBidInfo winning_bid_info,
       SellerWinningBidInfo top_level_seller_winning_bid_info,
       std::optional<SellerWinningBidInfo> component_seller_winning_bid_info,
@@ -509,8 +508,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   const network::mojom::ClientSecurityStatePtr client_security_state_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  const auction_worklet::mojom::KAnonymityBidMode kanon_mode_;
-  const bool bid_is_kanon_;
+  const auction_worklet::mojom::KAnonymityStatus kanon_status_;
 
   const WinningBidInfo winning_bid_info_;
   const SellerWinningBidInfo top_level_seller_winning_bid_info_;

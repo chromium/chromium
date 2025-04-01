@@ -172,6 +172,22 @@ bool IsKAnon(const base::flat_set<std::string>& kanon_keys,
   return kanon_keys.contains(key);
 }
 
+bool IsBidKAnon(const InterestGroupAuction::Bid& bid) {
+  if (!IsKAnon(bid.bid_state->kanon_keys,
+               blink::HashedKAnonKeyForAdBid(*bid.interest_group,
+                                             bid.ad_descriptor))) {
+    return false;
+  }
+  for (const auto& component : bid.selected_ad_components) {
+    if (!IsKAnon(
+            bid.bid_state->kanon_keys,
+            blink::HashedKAnonKeyForAdComponentBid(component.ad_descriptor))) {
+      return false;
+    }
+  }
+  return true;
+}
+
 // Verifies that the `selectedBuyerAndSellerReportingId` is present within the
 // matching ad's `selectableBuyerAndSellerReportingIds` array.
 //
@@ -2223,9 +2239,6 @@ class InterestGroupAuction::BuyerHelper
   base::flat_set<std::string> ComputeKAnon(
       const SingleStorageInterestGroup& storage_interest_group,
       auction_worklet::mojom::KAnonymityBidMode kanon_mode) {
-    if (kanon_mode == auction_worklet::mojom::KAnonymityBidMode::kNone) {
-      return {};
-    }
 
     // k-anon cache is always checked against the same time, to avoid weird
     // behavior of validity changing in the middle of the auction.
@@ -3703,21 +3716,37 @@ InterestGroupAuction::CreateReporter(
 
   CollectBiddingAndScoringPhaseReports();
 
-  bool bid_is_kanon;
+  auction_worklet::mojom::KAnonymityStatus kanon_status;
   switch (kanon_mode_) {
     case auction_worklet::mojom::KAnonymityBidMode::kSimulate:
       // Check if the winner was k-anon, since we use the non-kanonymous winner
       // in simulate mode.
-      bid_is_kanon = NonKAnonWinnerIsKAnon();
+      if (NonKAnonWinnerIsKAnon()) {
+        kanon_status =
+            auction_worklet::mojom::KAnonymityStatus::kPassingNotEnforced;
+      } else {
+        kanon_status =
+            auction_worklet::mojom::KAnonymityStatus::kBelowThreshold;
+      }
       break;
     case auction_worklet::mojom::KAnonymityBidMode::kEnforce:
       // We always have a winner when we get here.
-      bid_is_kanon = true;
+      kanon_status =
+          auction_worklet::mojom::KAnonymityStatus::kPassingAndEnforced;
       break;
     case auction_worklet::mojom::KAnonymityBidMode::kNone:
-      // Set to false due to enforcement is completely off.
-      bid_is_kanon = false;
+      // Calculate k-anonymity since hasn't been calculated yet.
+      if (base::FeatureList::IsEnabled(features::kFledgeQueryKAnonymity)) {
+        kanon_status =
+            IsBidKAnon(*winner->bid)
+                ? auction_worklet::mojom::KAnonymityStatus::kPassingNotEnforced
+                : auction_worklet::mojom::KAnonymityStatus::kBelowThreshold;
+      } else {
+        kanon_status = auction_worklet::mojom::KAnonymityStatus::kUnknown;
+      }
       break;
+    default:
+      NOTREACHED();
   }
 
   auto result = std::make_unique<InterestGroupAuctionReporter>(
@@ -3726,9 +3755,8 @@ InterestGroupAuction::CreateReporter(
       maybe_log_private_aggregation_web_features_callback_,
       std::move(ad_auction_page_data_callback), std::move(auction_config),
       devtools_auction_id_, main_frame_origin, frame_origin,
-      std::move(client_security_state), url_loader_factory_, kanon_mode_,
-      bid_is_kanon, std::move(winning_bid_info),
-      std::move(top_level_seller_winning_bid_info),
+      std::move(client_security_state), url_loader_factory_, kanon_status,
+      std::move(winning_bid_info), std::move(top_level_seller_winning_bid_info),
       std::move(component_seller_winning_bid_info),
       std::move(interest_groups_that_bid), TakeDebugWinReportUrls(),
       TakeDebugLossReportUrls(), GetKAnonKeysToJoin(),
