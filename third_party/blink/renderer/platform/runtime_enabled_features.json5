@@ -2805,12 +2805,6 @@
       name: "MediaQueryNavigationControls",
     },
     {
-      // This uses media::VideoEncoder implementation in MediaRecorder API
-      // instead of using MediaRecorder own video encoder implementation.
-      name: "MediaRecorderUseMediaVideoEncoder",
-      status: "stable",
-    },
-    {
       name: "MediaSession",
       public: true,
       status: "stable",

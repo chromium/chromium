@@ -67,6 +67,7 @@ using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::Return;
 using ::testing::SaveArg;
+using ::testing::Test;
 using ::testing::TestWithParam;
 using ::testing::ValuesIn;
 using ::testing::WithArg;
@@ -506,27 +507,24 @@ TEST_F(VideoTrackRecorderTestWithAllCodecs, NoCrashInConfigureEncoder) {
 }
 
 class VideoTrackRecorderTestWithCodec
-    : public TestWithParam<testing::tuple<VideoTrackRecorder::CodecId, bool>>,
-      public VideoTrackRecorderTest,
-      public ScopedMediaRecorderUseMediaVideoEncoderForTest {
+    : public TestWithParam<VideoTrackRecorder::CodecId>,
+      public VideoTrackRecorderTest {
  public:
-  VideoTrackRecorderTestWithCodec()
-      : ScopedMediaRecorderUseMediaVideoEncoderForTest(
-            testing::get<1>(GetParam())) {}
+  VideoTrackRecorderTestWithCodec() = default;
   ~VideoTrackRecorderTestWithCodec() override = default;
 };
 
 // Construct and destruct all objects, in particular |video_track_recorder_| and
 // its inner object(s). This is a non trivial sequence.
 TEST_P(VideoTrackRecorderTestWithCodec, ConstructAndDestruct) {
-  InitializeRecorder(testing::get<0>(GetParam()));
+  InitializeRecorder(GetParam());
 }
 
 // Initializes an encoder with very large frame that causes an error on the
 // initialization. Check if the error is reported via OnVideoEncodingError().
 TEST_P(VideoTrackRecorderTestWithCodec,
        SoftwareEncoderInitializeErrorWithLargeFrame) {
-  const VideoTrackRecorder::CodecId codec_id = testing::get<0>(GetParam());
+  const VideoTrackRecorder::CodecId codec_id = GetParam();
   if (codec_id == VideoTrackRecorder::CodecId::kVp9
 #if BUILDFLAG(ENABLE_LIBAOM)
       || codec_id == VideoTrackRecorder::CodecId::kAv1
@@ -552,8 +550,7 @@ TEST_P(VideoTrackRecorderTestWithCodec,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          VideoTrackRecorderTestWithCodec,
-                         ::testing::Combine(ValuesIn(kTrackRecorderTestCodec),
-                                            ::testing::Bool()));
+                         ValuesIn(kTrackRecorderTestCodec));
 
 // TODO(crbug/1177593): refactor the test parameter space to something more
 // reasonable. Many tests below ignore parts of the space leading to too much
@@ -562,14 +559,10 @@ class VideoTrackRecorderTestParam
     : public TestWithParam<testing::tuple<VideoTrackRecorder::CodecId,
                                           gfx::Size,
                                           bool,
-                                          TestFrameType,
-                                          bool>>,
-      public VideoTrackRecorderTest,
-      public ScopedMediaRecorderUseMediaVideoEncoderForTest {
+                                          TestFrameType>>,
+      public VideoTrackRecorderTest {
  public:
-  VideoTrackRecorderTestParam()
-      : ScopedMediaRecorderUseMediaVideoEncoderForTest(
-            testing::get<4>(GetParam())) {}
+  VideoTrackRecorderTestParam() = default;
   ~VideoTrackRecorderTestParam() override = default;
 };
 
@@ -697,12 +690,7 @@ TEST_P(VideoTrackRecorderTestParam, ConfigureEncoderWithScreenContent) {
   run_loop1.Run();
 
   EXPECT_TRUE(HasEncoderInstance());
-
-  // MediaRecorderEncoderWrapper is configured with a screen content hint.
-  const bool is_media_recorder_encoder_wrapper =
-      testing::get<4>(GetParam()) ||
-      testing::get<0>(GetParam()) == VideoTrackRecorder::CodecId::kAv1;
-  EXPECT_EQ(is_media_recorder_encoder_wrapper, IsScreenContentEncoding());
+  EXPECT_TRUE(IsScreenContentEncoding());
   Mock::VerifyAndClearExpectations(this);
 }
 
@@ -729,12 +717,6 @@ TEST_P(VideoTrackRecorderTestParam, CheckMetricsProviderInVideoEncoding) {
   media::MockVideoEncoderMetricsProvider* mock_metrics_provider =
       metrics_provider.get();
   int initialize_time = 1;
-  if (encode_alpha_channel &&
-      (video_codec_profile == media::VideoCodecProfile::VP8PROFILE_ANY ||
-       video_codec_profile == media::VideoCodecProfile::VP9PROFILE_PROFILE0) &&
-      !testing::get<4>(GetParam())) {
-    initialize_time = 2;
-  }
 
   base::RunLoop run_loop1;
   InSequence s;
@@ -989,11 +971,10 @@ TEST_P(VideoTrackRecorderTestParam, UsesFrameTimestampsIfProvided) {
 }
 
 std::string PrintTestParams(
-    const testing::TestParamInfo<testing::tuple<VideoTrackRecorder::CodecId,
-                                                gfx::Size,
-                                                bool,
-                                                TestFrameType,
-                                                bool>>& info) {
+    const testing::TestParamInfo<
+        testing::
+            tuple<VideoTrackRecorder::CodecId, gfx::Size, bool, TestFrameType>>&
+        info) {
   std::stringstream ss;
   ss << "codec ";
   switch (testing::get<0>(info.param)) {
@@ -1032,8 +1013,6 @@ std::string PrintTestParams(
       ss << "I420";
       break;
   }
-  ss << " mediaVideoEncoder "
-     << (testing::get<4>(info.param) ? "true" : "false");
 
   std::string out;
   base::ReplaceChars(ss.str(), " ", "_", &out);
@@ -1045,21 +1024,17 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Combine(ValuesIn(kTrackRecorderTestCodec),
                                             ValuesIn(kTrackRecorderTestSize),
                                             ::testing::Bool(),
-                                            ValuesIn(kTestFrameTypes),
-                                            ::testing::Bool()),
+                                            ValuesIn(kTestFrameTypes)),
                          PrintTestParams);
 
-class VideoTrackRecorderTestMediaVideoEncoderParam
-    : public ::testing::TestWithParam<bool>,
-      public VideoTrackRecorderTest,
-      public ScopedMediaRecorderUseMediaVideoEncoderForTest {
+class VideoTrackRecorderTestNoParam : public ::testing::Test,
+                                      public VideoTrackRecorderTest {
  public:
-  VideoTrackRecorderTestMediaVideoEncoderParam()
-      : ScopedMediaRecorderUseMediaVideoEncoderForTest(GetParam()) {}
-  ~VideoTrackRecorderTestMediaVideoEncoderParam() override = default;
+  VideoTrackRecorderTestNoParam() = default;
+  ~VideoTrackRecorderTestNoParam() override = default;
 };
 
-TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam, RelaysReadyStateEnded) {
+TEST_F(VideoTrackRecorderTestNoParam, RelaysReadyStateEnded) {
   InitializeRecorder(VideoTrackRecorder::CodecId::kVp8);
   base::RunLoop run_loop;
   EXPECT_CALL(*mock_callback_interface_, OnSourceReadyStateChanged)
@@ -1070,8 +1045,7 @@ TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam, RelaysReadyStateEnded) {
 
 // Inserts an opaque frame followed by two transparent frames and expects the
 // newly introduced transparent frame to force keyframe output.
-TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam,
-       ForceKeyframeOnAlphaSwitch) {
+TEST_F(VideoTrackRecorderTestNoParam, ForceKeyframeOnAlphaSwitch) {
   InitializeRecorder(VideoTrackRecorder::CodecId::kVp8);
 
   const gfx::Size& frame_size = kTrackRecorderTestSize[0];
@@ -1124,7 +1098,7 @@ TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam,
 }
 
 // Inserts an OnError() call between sent frames.
-TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam, HandlesOnError) {
+TEST_F(VideoTrackRecorderTestNoParam, HandlesOnError) {
   InitializeRecorder(VideoTrackRecorder::CodecId::kVp8);
 
   const gfx::Size& frame_size = kTrackRecorderTestSize[0];
@@ -1154,14 +1128,7 @@ TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam, HandlesOnError) {
 }
 
 // Hardware encoder fails and fallbacks a software encoder.
-TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam,
-       HandleSoftwareEncoderFallback) {
-  // Skip this test case with VEAEncoder.
-  // VEAEncoder drops frames until RequireBitstreamBufferReady() is dropped.
-  // It is tricky to pass this test with VEAEncoder due to the issue.
-  if (!GetParam()) {
-    GTEST_SKIP();
-  }
+TEST_F(VideoTrackRecorderTestNoParam, HandleSoftwareEncoderFallback) {
   auto sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
   sii->UseTestGMBInSharedImageCreationWithBufferUsage();
   media::MockGpuVideoAcceleratorFactories mock_gpu_factories(sii.get());
@@ -1210,8 +1177,7 @@ TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam,
   Mock::VerifyAndClearExpectations(this);
 }
 
-TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam,
-       RespectsEncoderFrameDelay) {
+TEST_F(VideoTrackRecorderTestNoParam, RespectsEncoderFrameDelay) {
   auto shared_image_interface =
       base::MakeRefCounted<gpu::TestSharedImageInterface>();
   shared_image_interface->UseTestGMBInSharedImageCreationWithBufferUsage();
@@ -1272,7 +1238,7 @@ TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam,
 }
 
 // Inserts a frame for encode and makes sure that it is released.
-TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam, ReleasesFrame) {
+TEST_F(VideoTrackRecorderTestNoParam, ReleasesFrame) {
   InitializeRecorder(VideoTrackRecorder::CodecId::kVp8);
 
   const gfx::Size& frame_size = kTrackRecorderTestSize[0];
@@ -1289,7 +1255,7 @@ TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam, ReleasesFrame) {
 
 // Waits for HW encoder support to be enumerated before setting up and
 // performing an encode.
-TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam, WaitForEncoderSupport) {
+TEST_F(VideoTrackRecorderTestNoParam, WaitForEncoderSupport) {
   media::MockGpuVideoAcceleratorFactories mock_gpu_factories(nullptr);
   EXPECT_CALL(*platform_, GetGpuFactories())
       .WillRepeatedly(Return(&mock_gpu_factories));
@@ -1310,7 +1276,7 @@ TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam, WaitForEncoderSupport) {
   run_loop.Run();
 }
 
-TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam, RequiredRefreshRate) {
+TEST_F(VideoTrackRecorderTestNoParam, RequiredRefreshRate) {
   // |RequestRefreshFrame| will be called first by |AddSink| and the second time
   // by the refresh timer using the required min fps.
   EXPECT_CALL(*mock_source_, OnRequestRefreshFrame).Times(2);
@@ -1322,10 +1288,6 @@ TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam, RequiredRefreshRate) {
 
   test::RunDelayedTasks(base::Seconds(1));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         VideoTrackRecorderTestMediaVideoEncoderParam,
-                         ::testing::Bool());
 
 class VideoTrackRecorderPassthroughTest
     : public TestWithParam<VideoTrackRecorder::CodecId>,

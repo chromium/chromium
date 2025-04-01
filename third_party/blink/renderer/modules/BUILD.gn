@@ -671,10 +671,6 @@ source_set("unit_tests") {
     ]
   }
 
-  if (media_use_openh264) {
-    sources += [ "mediarecorder/h264_encoder_unittest.cc" ]
-  }
-
   configs += [
     "//third_party/blink/renderer:config",
     "//third_party/blink/renderer:inside_blink",
