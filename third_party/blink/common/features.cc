@@ -1151,7 +1151,10 @@ BASE_FEATURE(kHiddenSelectionBounds,
 
 BASE_FEATURE(kIgnoreInputWhileHidden,
              "IgnoreInputWhileHidden",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             // TODO(crbug.com/407265465) Some Accessibility tools on Windows
+             // appear to mark the Renderer as Hidden. This feature currently
+             // breaks them. Disabling until the root cause can be identified.
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kImageLoadingPrioritizationFix,
              "ImageLoadingPrioritizationFix",
