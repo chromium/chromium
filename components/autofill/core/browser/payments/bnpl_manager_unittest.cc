@@ -5,12 +5,14 @@
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/bnpl_manager_test_api.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -897,8 +899,7 @@ TEST_F(BnplManagerTest,
   bnpl_manager_->NotifyOfSuggestionGeneration(
       AutofillSuggestionTriggerSource::kUnspecified);
   bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
-  bnpl_manager_->OnAmountExtractionReturned(
-      std::optional<uint64_t>{1'234'560'000ULL});
+  bnpl_manager_->OnAmountExtractionReturned(1'234'560'000ULL);
 }
 
 // Tests that update suggestions callback is called when suggestions are shown
@@ -911,7 +912,7 @@ TEST_F(BnplManagerTest,
 
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/true,
-      /*extracted_amount=*/std::optional<uint64_t>{1'234'560'000ULL});
+      /*extracted_amount=*/1'234'560'000ULL);
 }
 
 // Tests that update suggestions callback will not be called if the amount
@@ -925,6 +926,35 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_NoAmountPassedIn) {
                                    /*extracted_amount=*/std::nullopt);
 }
 
+// Tests that BnplSuggestionNotShownReason will be logged once if the amount
+// extraction engine fails to pass in a valid value.
+TEST_F(BnplManagerTest,
+       AddBnplSuggestion_NoAmountPassedIn_BnplSuggestionNotShownReasonLogged) {
+  base::HistogramTester histogram_tester;
+
+  // Add one linked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(
+      /*price_lower_bound=*/40,
+      /*price_higher_bound=*/1000, std::string(kBnplAffirmIssuerId),
+      /*instrument_id=*/1234);
+
+  TriggerBnplUpdateSuggestionsFlow(/*expect_suggestions_are_updated=*/false,
+                                   /*extracted_amount=*/std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionNotShownReason",
+      autofill_metrics::BnplSuggestionNotShownReason::kAmountExtractionFailure,
+      1);
+
+  // Test that BnplSuggestionNotShownReason is logged only once even if BNPL
+  // flow is triggered and not shown more than once on the same page.
+  TriggerBnplUpdateSuggestionsFlow(/*expect_suggestions_are_updated=*/false,
+                                   /*extracted_amount=*/std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionNotShownReason",
+      autofill_metrics::BnplSuggestionNotShownReason::kAmountExtractionFailure,
+      1);
+}
+
 // Tests that update suggestions callback will not be called if the extracted
 // amount is not supported by available BNPL issuers.
 TEST_F(BnplManagerTest, AddBnplSuggestion_AmountNotSupported) {
@@ -934,7 +964,73 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_AmountNotSupported) {
 
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/false,
-      /*extracted_amount=*/std::optional<uint64_t>{30'000'000ULL});
+      /*extracted_amount=*/30'000'000ULL);
+}
+
+// Tests that BnplSuggestionNotShownReason will be logged once if the extracted
+// amount is too high and is not supported by available BNPL issuers.
+TEST_F(BnplManagerTest,
+       AddBnplSuggestion_AmountTooHigh_BnplSuggestionNotShownReasonLogged) {
+  base::HistogramTester histogram_tester;
+
+  // Add one linked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(
+      /*price_lower_bound=*/40,
+      /*price_higher_bound=*/1000, std::string(kBnplAffirmIssuerId),
+      /*instrument_id=*/1234);
+
+  TriggerBnplUpdateSuggestionsFlow(
+      /*expect_suggestions_are_updated=*/false,
+      /*extracted_amount=*/30'000'000ULL);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionNotShownReason",
+      autofill_metrics::BnplSuggestionNotShownReason::
+          kCheckoutAmountNotSupported,
+      1);
+
+  // Test that BnplSuggestionNotShownReason is logged only once even if BNPL
+  // flow is triggered and not shown more than once on the same page.
+  TriggerBnplUpdateSuggestionsFlow(
+      /*expect_suggestions_are_updated=*/false,
+      /*extracted_amount=*/30'000'000ULL);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionNotShownReason",
+      autofill_metrics::BnplSuggestionNotShownReason::
+          kCheckoutAmountNotSupported,
+      1);
+}
+
+// Tests that BnplSuggestionNotShownReason will be logged once if the extracted
+// amount is too low and is not supported by available BNPL issuers.
+TEST_F(BnplManagerTest,
+       AddBnplSuggestion_AmountTooLow_BnplSuggestionNotShownReasonLogged) {
+  base::HistogramTester histogram_tester;
+
+  // Add one linked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(
+      /*price_lower_bound=*/40,
+      /*price_higher_bound=*/1000, std::string(kBnplAffirmIssuerId),
+      /*instrument_id=*/1234);
+
+  TriggerBnplUpdateSuggestionsFlow(
+      /*expect_suggestions_are_updated=*/false,
+      /*extracted_amount=*/20ULL);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionNotShownReason",
+      autofill_metrics::BnplSuggestionNotShownReason::
+          kCheckoutAmountNotSupported,
+      1);
+
+  // Test that BnplSuggestionNotShownReason is logged only once even if BNPL
+  // flow is triggered and not shown more than once on the same page.
+  TriggerBnplUpdateSuggestionsFlow(
+      /*expect_suggestions_are_updated=*/false,
+      /*extracted_amount=*/20ULL);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionNotShownReason",
+      autofill_metrics::BnplSuggestionNotShownReason::
+          kCheckoutAmountNotSupported,
+      1);
 }
 
 // Tests that update suggestions callback will not be called if the BNPL
@@ -951,7 +1047,7 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_BnplFeatureDisabled) {
 
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/false,
-      /*extracted_amount=*/std::optional<uint64_t>{1'234'560'000ULL});
+      /*extracted_amount=*/1'234'560'000ULL);
 }
 
 // Tests that update suggestions callback will not be called if the BNPL
@@ -968,7 +1064,7 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_BnplSyncFeatureDisabled) {
 
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/false,
-      /*extracted_amount=*/std::optional<uint64_t>{1'234'560'000ULL});
+      /*extracted_amount=*/1'234'560'000ULL);
 }
 
 // Tests that update suggestions callback will not be called if the BNPL
@@ -982,7 +1078,7 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_BnplPrefDisabled) {
 
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/false,
-      /*extracted_amount=*/std::optional<uint64_t>{1'234'560'000ULL});
+      /*extracted_amount=*/1'234'560'000ULL);
 }
 
 // Tests that update suggestions callback will be called if the extracted
@@ -995,7 +1091,7 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_AmountSupportedByAffirm) {
 
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/true,
-      /*extracted_amount=*/std::optional<uint64_t>{50'000'000ULL});
+      /*extracted_amount=*/50'000'000ULL);
 }
 
 // Tests that update suggestions callback will be called if the extracted
@@ -1007,7 +1103,7 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_AmountSupportedByZip) {
 
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/true,
-      /*extracted_amount=*/std::optional<uint64_t>{1'234'560'000ULL});
+      /*extracted_amount=*/1'234'560'000ULL);
 }
 
 // Tests that update suggestions callback is not called when the showing
@@ -1027,8 +1123,7 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_SuggestionShownWithBnplEntry) {
   bnpl_manager_->NotifyOfSuggestionGeneration(
       AutofillSuggestionTriggerSource::kUnspecified);
   bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
-  bnpl_manager_->OnAmountExtractionReturned(
-      std::optional<uint64_t>{1'234'560'000ULL});
+  bnpl_manager_->OnAmountExtractionReturned(1'234'560'000ULL);
 }
 
 // Tests that update suggestions callback is not called when the BNPL manager
@@ -1045,8 +1140,7 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_BnplManagerNotNotified) {
   EXPECT_CALL(callback, Run).Times(0);
 
   bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
-  bnpl_manager_->OnAmountExtractionReturned(
-      std::optional<uint64_t>{1'234'560'000ULL});
+  bnpl_manager_->OnAmountExtractionReturned(1'234'560'000ULL);
 }
 
 // Tests that BNPL settings toggle should not be shown if all BNPL
@@ -1059,7 +1153,7 @@ TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_BnplFeatureDisabled) {
   // Enable `HasSeenBnpl` flag by generating BNPL suggestion.
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/true,
-      /*extracted_amount=*/std::optional<uint64_t>{1'234'560'000ULL});
+      /*extracted_amount=*/1'234'560'000ULL);
 
   EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettings());
 
@@ -1082,7 +1176,7 @@ TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_BnplIssuerFeaturesDisabled) {
   // Enable `HasSeenBnpl` flag by generating BNPL suggestion.
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/true,
-      /*extracted_amount=*/std::optional<uint64_t>{1'234'560'000ULL});
+      /*extracted_amount=*/1'234'560'000ULL);
 
   EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettings());
 
@@ -1109,7 +1203,7 @@ TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_HasSeenBnpl) {
   // Enable `HasSeenBnpl` flag by generating BNPL suggestion.
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/true,
-      /*extracted_amount=*/std::optional<uint64_t>{1'234'560'000ULL});
+      /*extracted_amount=*/1'234'560'000ULL);
 
   EXPECT_TRUE(autofill_client_->GetPersonalDataManager()
                   .payments_data_manager()

@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
@@ -109,6 +110,13 @@ void BnplManager::OnAmountExtractionReturned(
     const std::optional<uint64_t>& extracted_amount) {
   if (update_suggestions_barrier_callback_.has_value()) {
     update_suggestions_barrier_callback_->Run(extracted_amount);
+  }
+
+  if (!extracted_amount && !has_logged_bnpl_suggestion_not_shown_reason_) {
+    LogBnplSuggestionNotShownReason(
+        autofill_metrics::BnplSuggestionNotShownReason::
+            kAmountExtractionFailure);
+    has_logged_bnpl_suggestion_not_shown_reason_ = true;
   }
 }
 
@@ -410,6 +418,12 @@ void BnplManager::MaybeUpdateSuggestionsWithBnpl(
                    })) {
     // If the extracted amount is not supported by any issuer, no need to update
     // the suggestion list.
+    if (!has_logged_bnpl_suggestion_not_shown_reason_) {
+      LogBnplSuggestionNotShownReason(
+          autofill_metrics::BnplSuggestionNotShownReason::
+              kCheckoutAmountNotSupported);
+      has_logged_bnpl_suggestion_not_shown_reason_ = true;
+    }
     return;
   }
 

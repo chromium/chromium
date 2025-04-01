@@ -93,6 +93,30 @@ TEST_F(BnplMetricsTest, LogBnplTosDialogShownAfterpay) {
                                       /*expected_bucket_count=*/1);
 }
 
+TEST_F(BnplMetricsTest,
+       LogBnplSuggestionNotShownReason_AmountExtractionFailure) {
+  base::HistogramTester histogram_tester;
+
+  LogBnplSuggestionNotShownReason(
+      BnplSuggestionNotShownReason::kAmountExtractionFailure);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionNotShownReason",
+      BnplSuggestionNotShownReason::kAmountExtractionFailure, 1);
+}
+
+TEST_F(BnplMetricsTest,
+       LogBnplSuggestionNotShownReason_CheckoutAmountNotSupported) {
+  base::HistogramTester histogram_tester;
+
+  LogBnplSuggestionNotShownReason(
+      BnplSuggestionNotShownReason::kCheckoutAmountNotSupported);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Bnpl.SuggestionNotShownReason",
+      BnplSuggestionNotShownReason::kCheckoutAmountNotSupported, 1);
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
