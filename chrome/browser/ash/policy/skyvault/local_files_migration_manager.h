@@ -91,6 +91,12 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
       base::WeakPtr<chromeos::FilesCleanupHandler> cleanup_handler);
 
  private:
+  // Called after the preferences have been loaded.
+  void OnPrefsInitialized(bool success);
+
+  // Initializes this instance, after the preferences have been loaded.
+  void InitializeFromPrefs();
+
   // policy::local_user_files::Observer overrides:
   void OnLocalUserFilesPolicyChanged() override;
 

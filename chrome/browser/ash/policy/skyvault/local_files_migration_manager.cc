@@ -205,6 +205,70 @@ LocalFilesMigrationManager::~LocalFilesMigrationManager() = default;
 void LocalFilesMigrationManager::Initialize() {
   Profile* profile = Profile::FromBrowserContext(context_);
   PrefService* pref_service = profile->GetPrefs();
+
+  if (pref_service->GetInitializationStatus() ==
+      PrefService::INITIALIZATION_STATUS_WAITING) {
+    pref_service->AddPrefInitObserver(
+        base::BindOnce(&LocalFilesMigrationManager::OnPrefsInitialized,
+                       weak_factory_.GetWeakPtr()));
+  } else {
+    InitializeFromPrefs();
+  }
+}
+
+void LocalFilesMigrationManager::Shutdown() {
+  weak_factory_.InvalidateWeakPtrs();
+}
+
+void LocalFilesMigrationManager::AddObserver(Observer* observer) {
+  CHECK(observer);
+  observers_.AddObserver(observer);
+
+  if (state_ == State::kCompleted) {
+    observer->OnMigrationSucceeded();
+  }
+}
+
+void LocalFilesMigrationManager::RemoveObserver(Observer* observer) {
+  CHECK(observer);
+  observers_.RemoveObserver(observer);
+}
+
+base::Time LocalFilesMigrationManager::GetMigrationStartTime() const {
+  return migration_start_time_;
+}
+
+void LocalFilesMigrationManager::SetNotificationManagerForTesting(
+    MigrationNotificationManager* notification_manager) {
+  CHECK_IS_TEST();
+  notification_manager_ = notification_manager;
+}
+
+void LocalFilesMigrationManager::SetCoordinatorForTesting(
+    std::unique_ptr<MigrationCoordinator> coordinator) {
+  CHECK_IS_TEST();
+  coordinator_ = std::move(coordinator);
+}
+
+void LocalFilesMigrationManager::SetCleanupHandlerForTesting(
+    base::WeakPtr<chromeos::FilesCleanupHandler> cleanup_handler) {
+  CHECK_IS_TEST();
+  cleanup_handler_for_testing_ = cleanup_handler;
+}
+
+void LocalFilesMigrationManager::OnPrefsInitialized(bool success) {
+  if (!success) {
+    LOG(ERROR) << "Initializing preferences failed. Migration/deletion will be "
+                  "retried in the next session.";
+    return;
+  }
+
+  InitializeFromPrefs();
+}
+
+void LocalFilesMigrationManager::InitializeFromPrefs() {
+  Profile* profile = Profile::FromBrowserContext(context_);
+  PrefService* pref_service = profile->GetPrefs();
   state_ = static_cast<State>(
       pref_service->GetInteger(prefs::kSkyVaultMigrationState));
 
@@ -270,46 +334,6 @@ void LocalFilesMigrationManager::Initialize() {
       FROM_HERE, {base::MayBlock()}, base::BindOnce(&IsMyFilesEmpty, profile),
       base::BindOnce(&LocalFilesMigrationManager::OnMyFilesChecked,
                      weak_factory_.GetWeakPtr()));
-}
-
-void LocalFilesMigrationManager::Shutdown() {
-  weak_factory_.InvalidateWeakPtrs();
-}
-
-void LocalFilesMigrationManager::AddObserver(Observer* observer) {
-  CHECK(observer);
-  observers_.AddObserver(observer);
-
-  if (state_ == State::kCompleted) {
-    observer->OnMigrationSucceeded();
-  }
-}
-
-void LocalFilesMigrationManager::RemoveObserver(Observer* observer) {
-  CHECK(observer);
-  observers_.RemoveObserver(observer);
-}
-
-base::Time LocalFilesMigrationManager::GetMigrationStartTime() const {
-  return migration_start_time_;
-}
-
-void LocalFilesMigrationManager::SetNotificationManagerForTesting(
-    MigrationNotificationManager* notification_manager) {
-  CHECK_IS_TEST();
-  notification_manager_ = notification_manager;
-}
-
-void LocalFilesMigrationManager::SetCoordinatorForTesting(
-    std::unique_ptr<MigrationCoordinator> coordinator) {
-  CHECK_IS_TEST();
-  coordinator_ = std::move(coordinator);
-}
-
-void LocalFilesMigrationManager::SetCleanupHandlerForTesting(
-    base::WeakPtr<chromeos::FilesCleanupHandler> cleanup_handler) {
-  CHECK_IS_TEST();
-  cleanup_handler_for_testing_ = cleanup_handler;
 }
 
 void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
