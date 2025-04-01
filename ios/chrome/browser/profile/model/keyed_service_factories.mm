@@ -104,6 +104,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_profile_service_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_download_service_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
+#import "ios/chrome/browser/safe_browsing/model/chrome_enterprise_url_lookup_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_password_protection_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/hash_realtime_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/ohttp_key_service_factory.h"
@@ -233,6 +234,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   ios::WebHistoryServiceFactory::GetInstance();
   ios::ZeroSuggestCacheServiceFactory::GetInstance();
   policy::UserPolicySigninServiceFactory::GetInstance();
+  safe_browsing::ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetInstance();
   segmentation_platform::SegmentationPlatformServiceFactory::GetInstance();
   tab_groups::TabGroupSyncServiceFactory::GetInstance();
   translate::TranslateRankerFactory::GetInstance();
