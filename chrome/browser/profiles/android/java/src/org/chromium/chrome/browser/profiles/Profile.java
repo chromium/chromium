@@ -64,13 +64,6 @@ public class Profile implements BrowserContextHandle {
     }
 
     public Profile getOriginalProfile() {
-        // TODO(crbug.com/403140230): Remove this once the culprit that is calling this after a
-        // profile has been destroyed is found and fixed.
-        if (mNativeProfile == 0) {
-            throw new IllegalStateException(
-                    "getOriginalProfile() called on a destroyed profile. Is OTR? "
-                            + isOffTheRecord());
-        }
         return ProfileJni.get().getOriginalProfile(mNativeProfile);
     }
 
