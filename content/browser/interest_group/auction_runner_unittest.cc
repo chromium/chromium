@@ -52,6 +52,7 @@
 #include "content/browser/interest_group/auction_nonce_manager.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
+#include "content/browser/interest_group/data_decoder_manager.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 #include "content/browser/interest_group/debuggable_auction_worklet_tracker.h"
 #include "content/browser/interest_group/interest_group_auction.h"
@@ -1833,8 +1834,9 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
     }
   };
 
-  MockTrustedSignalsCacheImpl()
+  explicit MockTrustedSignalsCacheImpl(DataDecoderManager* data_decoder_manager)
       : TrustedSignalsCacheImpl(
+            data_decoder_manager,
             base::BindRepeating(
                 &MockTrustedSignalsCacheImpl::GetCoordinatorKeyCallback,
                 base::Unretained(this))) {}
@@ -1919,6 +1921,7 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
     ~MockTrustedSignalsFetcher() override = default;
 
     void FetchBiddingSignals(
+        DataDecoderManager& data_decoder_manager,
         network::mojom::URLLoaderFactory* url_loader_factory,
         FrameTreeNodeId /*frame_tree_node_id*/,
         base::flat_set<std::string> /*devtools_auction_ids*/,
@@ -1956,6 +1959,7 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
     }
 
     void FetchScoringSignals(
+        DataDecoderManager& data_decoder_manager,
         network::mojom::URLLoaderFactory* url_loader_factory,
         FrameTreeNodeId /*frame_tree_node_id*/,
         base::flat_set<std::string> /*devtools_auction_ids*/,
@@ -3753,7 +3757,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   // auction.
   virtual std::unique_ptr<TrustedSignalsCacheImpl> GetTrustedSignalsCache() {
     // Use one by default. This should fail the test if it's unexpected used.
-    return std::make_unique<MockTrustedSignalsCacheImpl>();
+    return std::make_unique<MockTrustedSignalsCacheImpl>(
+        &data_decoder_manager_);
   }
 
   data_decoder::test::InProcessDataDecoder data_decoder_;
@@ -3888,6 +3893,11 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   // Delay between joining interest groups and starting the auction.
   base::TimeDelta between_join_run_auction_delay_;
 
+  // Tests often create and configure false responses in the TrustedSignalsCache
+  // before creating the InterestGroupManager, so a DataDecoderManager is needed
+  // other than the one created by the IntersetGroupManager.
+  DataDecoderManager data_decoder_manager_;
+
   network::TestURLLoaderFactory url_loader_factory_;
 
   // ScopedURLLoaderFactory used for reports. The FencedFrameReporter is never
@@ -3979,7 +3989,8 @@ class AuctionRunnerTrustedSignalsTest
       return std::move(trusted_signals_cache_impl_);
     }
 
-    return std::make_unique<MockTrustedSignalsCacheImpl>();
+    return std::make_unique<MockTrustedSignalsCacheImpl>(
+        &data_decoder_manager_);
   }
 
   // Populates `trusted_signals_cache_impl_`, if needed, and adds the specified
@@ -3991,7 +4002,7 @@ class AuctionRunnerTrustedSignalsTest
     CHECK(UsingKVv2Signals());
     if (!trusted_signals_cache_impl_) {
       trusted_signals_cache_impl_ =
-          std::make_unique<MockTrustedSignalsCacheImpl>();
+          std::make_unique<MockTrustedSignalsCacheImpl>(&data_decoder_manager_);
     }
     trusted_signals_cache_impl_->AddBidderSignalsResult(
         std::move(bidder_request_info), std::move(signals_fetch_result));
@@ -4056,7 +4067,7 @@ class AuctionRunnerTrustedSignalsTest
     CHECK(UsingKVv2Signals());
     if (!trusted_signals_cache_impl_) {
       trusted_signals_cache_impl_ =
-          std::make_unique<MockTrustedSignalsCacheImpl>();
+          std::make_unique<MockTrustedSignalsCacheImpl>(&data_decoder_manager_);
     }
     trusted_signals_cache_impl_->AddSellerSignalsResult(
         std::move(seller_request_info), std::move(signals_fetch_result));
@@ -27466,7 +27477,8 @@ TEST_P(
   // Manually set up trusted signals cache, and retain raw pointer. This test
   // can't use the AddScoringSignalsCacheResult() helper used by most tests,
   // since it only adds a result after starting the auction.
-  trusted_signals_cache_impl_ = std::make_unique<MockTrustedSignalsCacheImpl>();
+  trusted_signals_cache_impl_ =
+      std::make_unique<MockTrustedSignalsCacheImpl>(&data_decoder_manager_);
   raw_ptr<MockTrustedSignalsCacheImpl> trusted_signals_cache_impl =
       trusted_signals_cache_impl_.get();
 

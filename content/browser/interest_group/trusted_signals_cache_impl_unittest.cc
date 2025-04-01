@@ -26,6 +26,7 @@
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
+#include "content/browser/interest_group/data_decoder_manager.h"
 #include "content/browser/interest_group/trusted_signals_fetcher.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
@@ -227,6 +228,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
 
    private:
     void FetchBiddingSignals(
+        DataDecoderManager& data_decoder_manager,
         network::mojom::URLLoaderFactory* url_loader_factory,
         FrameTreeNodeId frame_tree_node_id,
         base::flat_set<std::string> devtools_auction_ids,
@@ -267,6 +269,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     }
 
     void FetchScoringSignals(
+        DataDecoderManager& data_decoder_manager,
         network::mojom::URLLoaderFactory* url_loader_factory,
         FrameTreeNodeId frame_tree_node_id,
         base::flat_set<std::string> devtools_auction_ids,
@@ -312,8 +315,9 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     base::WeakPtrFactory<TestTrustedSignalsFetcher> weak_ptr_factory_{this};
   };
 
-  TestTrustedSignalsCache()
+  explicit TestTrustedSignalsCache(DataDecoderManager* data_decoder_manager)
       : TrustedSignalsCacheImpl(
+            data_decoder_manager,
             // The use of base::Unretained here means that all async calls must
             // be accounted for before a test completes. The base class always
             // invokes this
@@ -795,7 +799,8 @@ class TrustedSignalsCacheTest : public testing::Test {
   ~TrustedSignalsCacheTest() override = default;
 
   void CreateCache() {
-    trusted_signals_cache_ = std::make_unique<TestTrustedSignalsCache>();
+    trusted_signals_cache_ =
+        std::make_unique<TestTrustedSignalsCache>(&data_decoder_manager_);
     cache_mojo_pipe_.reset();
     other_cache_mojo_pipe_.reset();
     // This is a little awkward, but works for both bidders and sellers.
@@ -1360,6 +1365,7 @@ class TrustedSignalsCacheTest : public testing::Test {
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           /*factory_ptr=*/nullptr);
 
+  DataDecoderManager data_decoder_manager_;
   std::unique_ptr<TestTrustedSignalsCache> trusted_signals_cache_;
   mojo::Remote<auction_worklet::mojom::TrustedSignalsCache> cache_mojo_pipe_;
   // Some test cases need a second Mojo pipe for use with a second script
