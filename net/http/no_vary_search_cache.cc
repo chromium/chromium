@@ -488,12 +488,12 @@ void NoVarySearchCache::ReplayInsert(std::string base_url_cache_key,
   if (query && query->find('#') != std::string::npos) {
     return;
   }
-  const GURL url = ReconstructOriginalURLFromQuery(base_url, query);
 
   // To be extra careful to avoid re-entrancy, explicitly set `observer` to
   // nullptr so that no notification is fired for this insertion.
-  DoInsert(url, base_url, std::move(base_url_cache_key), std::move(nvs_data),
-           query, update_time, /*observer=*/nullptr);
+  ReconstructURLAndDoInsert(base_url, std::move(base_url_cache_key),
+                            std::move(nvs_data), std::move(query), update_time,
+                            /*observer=*/nullptr);
 }
 
 void NoVarySearchCache::ReplayErase(const std::string& base_url_cache_key,
@@ -526,6 +526,31 @@ void NoVarySearchCache::ReplayErase(const std::string& base_url_cache_key,
   // case when the map keys need to be deleted since we have `map_it` and
   // `data_it` already available.
   EraseQuery(query_string);
+}
+
+void NoVarySearchCache::MergeFrom(const NoVarySearchCache& newer) {
+  // We cannot use ForEachQueryString() here as we need to iterate through the
+  // `lru_` linked list in reverse order.
+  const auto& newer_lru = newer.lru_;
+  for (auto* node = newer_lru.tail(); node != newer_lru.end();
+       node = node->previous()) {
+    QueryString* query_string = node->value()->ToQueryString();
+    const auto& query_string_list = query_string->query_string_list_ref();
+    std::string base_url_cache_key(*query_string_list.key_ref);
+    const HttpNoVarySearchData& nvs_data = *query_string_list.nvs_data_ref;
+    const std::string base_url_string =
+        HttpCache::GetResourceURLFromHttpCacheKey(base_url_cache_key);
+    const GURL base_url(base_url_string);
+    CHECK(BaseURLIsAcceptable(base_url));
+    std::optional<std::string> query = query_string->query();
+    CHECK(!query || query->find('#') == std::string::npos);
+
+    // Set `observer` to nullptr so no notification is fired for this
+    // insertion.
+    ReconstructURLAndDoInsert(base_url, std::move(base_url_cache_key), nvs_data,
+                              std::move(query), query_string->update_time(),
+                              /*observer=*/nullptr);
+  }
 }
 
 // This is out-of-line to discourage inlining so the bots can detect if it is
@@ -648,6 +673,18 @@ void NoVarySearchCache::DoInsert(const GURL& url,
       QueryString::CreateAndInsert(query, query_strings, lru_, update_time);
   call_observer(query_string);
   EvictIfOverfull();
+}
+
+void NoVarySearchCache::ReconstructURLAndDoInsert(
+    const GURL& base_url,
+    std::string base_url_cache_key,
+    HttpNoVarySearchData nvs_data,
+    std::optional<std::string> query,
+    base::Time update_time,
+    Observer* observer) {
+  const GURL url = ReconstructOriginalURLFromQuery(base_url, query);
+  DoInsert(url, base_url, std::move(base_url_cache_key), std::move(nvs_data),
+           std::move(query), update_time, observer);
 }
 
 // static

@@ -196,6 +196,12 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
                    const HttpNoVarySearchData& nvs_data,
                    const std::optional<std::string>& query);
 
+  // Merge entries from `newer` in order from the least-recently-used to the
+  // most-recently-used, treating them as newly used. Less recently-used entries
+  // will be evicted if necessary to avoid exceeding the maximum size. Observer
+  // methods are not called.
+  void MergeFrom(const NoVarySearchCache& newer);
+
   // Returns the size (number of stored original query strings) of the cache.
   size_t GetSizeForTesting() const;
 
@@ -269,6 +275,15 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
                 std::optional<std::string_view> query,
                 base::Time update_time,
                 Observer* observer);
+
+  // A convenience method for callers that do not have the original URL handy.
+  // Reconstructs the original URL and then calls DoInsert().
+  void ReconstructURLAndDoInsert(const GURL& base_url,
+                                 std::string base_url_cache_key,
+                                 HttpNoVarySearchData nvs_data,
+                                 std::optional<std::string> query,
+                                 base::Time update_time,
+                                 Observer* observer);
 
   // Scans all the QueryStrings in `data_map` to find ones in the range
   // [delete_begin, delete_end) and appends them to `matches`. `data_map` is

@@ -1255,6 +1255,90 @@ TEST_P(NoVarySearchCacheTest, ReplayEraseMismatchedQuery) {
   EXPECT_EQ(cache().GetSizeForTesting(), 1u);
 }
 
+// This test doesn't actually cover the Replay methods, but uses the same data
+// set for convenience.
+TEST_P(NoVarySearchCacheReplayTest, MergeFrom) {
+  const auto test_cases = ReplayTestCases();
+
+  for (const auto& [description, to_insert, no_vary_search_value, to_lookup] :
+       test_cases) {
+    cache().MaybeInsert(to_insert, TestHeaders(no_vary_search_value));
+  }
+
+  NoVarySearchCache target(kMaxSize);
+  target.MergeFrom(cache());
+
+  EXPECT_EQ(cache().GetSizeForTesting(), target.GetSizeForTesting());
+
+  for (const auto& [description, to_insert, no_vary_search_value, to_lookup] :
+       test_cases) {
+    SCOPED_TRACE(description);
+    auto source_lookup_result = cache().Lookup(to_lookup);
+    auto target_lookup_result = target.Lookup(to_lookup);
+
+    ASSERT_TRUE(source_lookup_result);
+    ASSERT_TRUE(target_lookup_result);
+    EXPECT_EQ(source_lookup_result->original_url,
+              target_lookup_result->original_url);
+  }
+}
+
+TEST_P(NoVarySearchCacheReplayTest, MergeFromTargetQueriesConsideredOlder) {
+  const auto query = QueryWithIParameter;
+  NoVarySearchCache target(kMaxSize);
+
+  // Fill the target cache.
+  for (size_t i = 0; i < kMaxSize; ++i) {
+    target.MaybeInsert(TestRequest(query(i)), TestHeaders(kVaryOnIParameter));
+  }
+
+  // Put one entry in the source cache.
+  cache().MaybeInsert(TestRequest(query(kMaxSize)),
+                      TestHeaders(kVaryOnIParameter));
+
+  target.MergeFrom(cache());
+
+  EXPECT_EQ(target.GetSizeForTesting(), kMaxSize);
+
+  // i=0 has been evicted.
+  EXPECT_FALSE(target.Lookup(TestRequest(query(0u))));
+}
+
+TEST_P(NoVarySearchCacheReplayTest, LRUOrderPreserved) {
+  const auto query = QueryWithIParameter;
+  NoVarySearchCache target(kMaxSize);
+
+  // Fill the source cache.
+  for (size_t i = 0; i < kMaxSize; ++i) {
+    Insert(query(i), kVaryOnIParameter);
+  }
+
+  // Make i=1 be most recently used.
+  EXPECT_TRUE(Exists(query(1u)));
+
+  // Merge to target cache.
+  target.MergeFrom(cache());
+
+  int next_i = kMaxSize;
+  const auto expect_to_evict = [&](size_t i) {
+    target.MaybeInsert(TestRequest(query(next_i)),
+                       TestHeaders(kVaryOnIParameter));
+    EXPECT_FALSE(target.Lookup(TestRequest(query(i))));
+    ++next_i;
+  };
+
+  // Evict i=0.
+  expect_to_evict(0u);
+
+  // Evict i=2 to i=kMaxSize-1.
+  for (size_t i = 2; i < kMaxSize; ++i) {
+    expect_to_evict(i);
+  }
+
+  // Evict i=1.
+  expect_to_evict(1u);
+}
+
 // TODO(https://crbug.com/390216627): Test the various experiments that affect
 // the cache key and make sure they also affect NoVarySearchCache.
 
