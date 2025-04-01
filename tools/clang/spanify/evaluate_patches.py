@@ -117,7 +117,7 @@ def appendRow(spreadsheet, values):
                 "values": [values]
             },
             valueInputOption="USER_ENTERED",
-        ).execute()
+        ).execute(num_retries=5)
 
     except HttpError as err:
         print(f"appendRow failed: {err}", file=sys.stderr)
@@ -179,16 +179,34 @@ def ReportCaseResult(scratch_dir, result, spreadsheet, today, index, patches,
                      user, error_msg, diff, final_file):
     with open(scratch_dir + "/evaluation.csv", "a") as f:
         f.write(f"{index}, {result}, {error_msg}\n")
+    try:
+        appendRow(spreadsheet, [
+            today,
+            index,
+            len(patches),
+            result,
+            error_msg,
+            diff,
+            user,
+        ])
+    except Exception as e:
+        try:
+            appendRow(spreadsheet, [
+                today,
+                index,
+                len(patches),
+                result,
+                f"\"Failed to upload to spreadsheet: {str(e)}\"",
+                f"diff_len: {len(diff)} error_msg_len: {len(error_msg)}",
+                user,
+            ])
+        except Exception as err:
+            print(f"Failed to appendRow for simplified data spreadsheet: {err}",
+                  file=sys.stderr)
 
-    appendRow(spreadsheet, [
-        today,
-        index,
-        len(patches),
-        result,
-        error_msg,
-        diff,
-        user,
-    ])
+        print(f"Failed to appendRow but uploaded error to spreadsheet: {e}",
+              file=sys.stderr)
+
     with open(scratch_dir + f"/patch_{index}.{result}", "w+") as f:
         f.write(final_file)
 
