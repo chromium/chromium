@@ -32,9 +32,10 @@ export function getHtml(this: ViewerBottomToolbarElement) {
       <viewer-bottom-toolbar-dropdown id="color"
           .buttonTitle="${this.getColorTitle_()}">
         <div slot="icon" id="color-chip"></div>
-        <ink-color-selector slot="menu" .currentColor="${this.currentColor}"
-            @current-color-changed="${this.onCurrentColorChanged}"
-            .currentType="${this.currentType}"></ink-color-selector>
+        <ink-color-selector slot="menu" .colors="${this.availableBrushColors()}"
+            .currentColor="${this.currentColor}"
+            @current-color-changed="${this.onCurrentColorChanged}">
+        </ink-color-selector>
       </viewer-bottom-toolbar-dropdown>` : ''}
   `;
   // clang-format on

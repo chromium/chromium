@@ -23,9 +23,10 @@ export {Attachment, FittingType, FormFieldFocusType, Point, Rect, SaveRequestTyp
 export {PluginController} from './controller.js';
 // <if expr="enable_pdf_ink2">
 export {PluginControllerEventType} from './controller.js';
+export {HIGHLIGHTER_COLORS, InkAnnotationBrushMixin, PEN_COLORS} from './elements/ink_annotation_brush_mixin.js';
 export {InkBrushSelectorElement} from './elements/ink_brush_selector.js';
-export {InkColorSelectorElement, PEN_COLORS} from './elements/ink_color_selector.js';
-export {InkSizeSelectorElement, PEN_SIZES} from './elements/ink_size_selector.js';
+export {InkColorSelectorElement} from './elements/ink_color_selector.js';
+export {InkSizeSelectorElement, HIGHLIGHTER_SIZES, PEN_SIZES} from './elements/ink_size_selector.js';
 export {SelectableIconButtonElement} from './elements/selectable_icon_button.js';
 // </if>
 export {ViewerAttachmentElement} from './elements/viewer_attachment.js';

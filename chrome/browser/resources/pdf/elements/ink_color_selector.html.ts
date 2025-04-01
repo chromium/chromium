@@ -13,11 +13,11 @@ export function getHtml(this: InkColorSelectorElement) {
     <cr-grid role="radiogroup" columns="5" focus-selector=".color-chip"
         aria-label="$i18n{ink2Color}"
         @cr-grid-focus-changed="${this.onCrGridFocusChanged_}">
-      ${this.getCurrentBrushColors_().map(item => html`
+      ${this.colors.map(item => html`
         <label class="color-item">
-          <input type="radio" class="color-chip"
-              name="${this.getColorName_()}" .value="${item.color}"
-              .style="--item-color: ${this.getVisibleColor_(item.color)}"
+          <input type="radio" class="color-chip ${this.getBlendedClass_(item)}"
+              name="color" .value="${item.color}"
+              .style="--item-color: ${item.color}"
               aria-label="${this.i18n(item.label)}"
               tabindex="${this.getTabIndex_(item.color)}"
               title="${this.i18n(item.label)}"
