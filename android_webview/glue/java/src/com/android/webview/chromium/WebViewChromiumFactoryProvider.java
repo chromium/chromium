@@ -43,6 +43,7 @@ import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserMainParts;
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContentsStatics;
+import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.AwServiceWorkerController;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.ManifestMetadataUtil;
@@ -584,7 +585,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             // otherwise our metrics could be misleading.
             AwBrowserMainParts.setPartitionedCookiesDefaultState(partitionedCookies);
             if (!partitionedCookies) {
-                CommandLine.getInstance().appendSwitch("disable-partitioned-cookies");
+                AwCookieManager.disablePartitionedCookiesGlobal();
                 Log.d(TAG, "CHIPS Disabled");
             } else {
                 Log.d(TAG, "CHIPS Enabled");
