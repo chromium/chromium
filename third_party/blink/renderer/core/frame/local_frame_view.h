@@ -504,13 +504,13 @@ class CORE_EXPORT LocalFrameView final
   void AddAnimatingScrollableArea(PaintLayerScrollableArea*);
   void RemoveAnimatingScrollableArea(PaintLayerScrollableArea*);
 
-  // Used when UnifiedScrollableAreas is disabled.
+  // Used when ScrollableAreaOptimization is disabled.
   void AddUserScrollableArea(PaintLayerScrollableArea&);
   void RemoveUserScrollableArea(PaintLayerScrollableArea&);
-  // Used when UnifiedScrollableAreas is enabled.
+  // Used when ScrollableAreaOptimization is enabled.
   void AddScrollableArea(PaintLayerScrollableArea&);
   // Removes the scrollable area from all scrollable area sets/maps.
-  // Used regardless of UnifiedScrollableAreas.
+  // Used regardless of ScrollableAreaOptimization.
   void RemoveScrollableArea(PaintLayerScrollableArea&);
   const ScrollableAreaMap& ScrollableAreas() const { return scrollable_areas_; }
 
@@ -1126,7 +1126,7 @@ class CORE_EXPORT LocalFrameView final
   ScrollableAreaSet scroll_anchoring_scrollable_areas_;
   ScrollableAreaSet animating_scrollable_areas_;
   // All scrollable areas in the frame's document,
-  // or user-scrollable ones if UnifiedScrollableAreas is disabled.
+  // or user-scrollable ones if ScrollableAreaOptimization is disabled.
   ScrollableAreaMap scrollable_areas_;
   ScrollableAreaSet scrollable_areas_with_scroll_node_;
 
