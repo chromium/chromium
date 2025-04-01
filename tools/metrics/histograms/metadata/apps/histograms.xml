@@ -2479,7 +2479,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.FullRestoreTabCount" units="count"
     expires_after="2025-10-15">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
@@ -2490,7 +2490,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.FullRestoreWindowCount2" units="count"
     expires_after="2025-10-15">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
@@ -2805,7 +2805,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.RestoreBrowserResult" enum="RestoreTabResult"
     expires_after="2025-10-15">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
@@ -2816,7 +2816,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.RestoredAppLaunch" enum="AppType"
     expires_after="2025-10-15">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
@@ -2827,7 +2827,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.RestoreForCrashNotification" enum="RestoreAction"
     expires_after="2025-10-15">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
@@ -2838,7 +2838,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.RestoreInitSetting" enum="RestoreSetting"
     expires_after="2025-10-15">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
@@ -2850,7 +2850,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Apps.RestoreNotification" enum="RestoreAction"
     expires_after="2025-09-14">
   <owner>nancylingwang@chromium.org</owner>
-  <owner>sammiequon@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
   <summary>
     Records user actions on the full restore notification, when the notification
     is closed.
@@ -2859,7 +2859,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.RestoreSetting" enum="RestoreSetting"
     expires_after="2025-10-15">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
@@ -2951,7 +2951,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.SessionRestoreExitResult" enum="SessionRestoreExitResult"
     expires_after="2025-10-15">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
@@ -2962,7 +2962,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.SessionRestoreWindowCount"
     enum="SessionRestoreWindowCount" expires_after="2025-10-15">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
