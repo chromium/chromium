@@ -26,6 +26,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_align.h"
@@ -234,6 +235,13 @@ void BaseRenderingContext2D::placeElement(Element* element,
 
 
 void BaseRenderingContext2D::DispatchContextLostEvent(TimerBase*) {
+  // If `need_dispatch_context_restored_` is `true`, the context has been
+  // restored already (e.g. by fixing a `kInvalidCanvasSize` context loss), but
+  // the oncontextrestored event was postponed until the oncontextlost event was
+  // dispatched first. This is happening now, so irrespective of how this
+  // function returns, `need_dispatch_context_restored_` should be cleared.
+  absl::Cleanup cleanup = [this] { need_dispatch_context_restored_ = false; };
+
   Event* event = Event::CreateCancelable(event_type_names::kContextlost);
   GetCanvasRenderingContextHost()->HostDispatchEvent(event);
 
@@ -243,9 +251,20 @@ void BaseRenderingContext2D::DispatchContextLostEvent(TimerBase*) {
     context_restorable_ = false;
   }
 
-  if (context_restorable_ &&
-      (context_lost_mode_ == CanvasRenderingContext::kRealLostContext ||
-       context_lost_mode_ == CanvasRenderingContext::kSyntheticLostContext)) {
+  if (!context_restorable_) {
+    return;
+  }
+
+  if (need_dispatch_context_restored_) {
+    // The context is already restored (an invalid canvas size was probably
+    // fixed). We can send the restored event right away.
+    dispatch_context_restored_event_timer_.StartOneShot(base::TimeDelta(),
+                                                        FROM_HERE);
+    return;
+  }
+
+  if (context_lost_mode_ == CanvasRenderingContext::kRealLostContext ||
+      context_lost_mode_ == CanvasRenderingContext::kSyntheticLostContext) {
     try_restore_context_attempt_count_ = 0;
     try_restore_context_event_timer_.StartRepeating(kTryRestoreContextInterval,
                                                     FROM_HERE);
@@ -329,8 +348,16 @@ void BaseRenderingContext2D::RestoreFromInvalidSizeIfNeeded() {
   DCHECK(!host->ResourceProvider());
 
   if (IsValidImageSize(host->Size())) {
-    dispatch_context_restored_event_timer_.StartOneShot(base::TimeDelta(),
-                                                        FROM_HERE);
+    if (dispatch_context_lost_event_timer_.IsActive()) {
+      // An oncontextlost event is still pending. We can't send the
+      // oncontextrestored right away because the oncontextlost callback could
+      // choose to prevent restoration. Thus, we need to delay queuing the
+      // restored event to after the lost event completed.
+      need_dispatch_context_restored_ = true;
+    } else {
+      dispatch_context_restored_event_timer_.StartOneShot(base::TimeDelta(),
+                                                          FROM_HERE);
+    }
   }
 }
 

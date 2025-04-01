@@ -308,6 +308,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   Member<GPUTexture> webgpu_access_texture_ = nullptr;
   std::unique_ptr<CanvasResourceProvider> resource_provider_from_webgpu_access_;
   Canvas2DColorParams color_params_;
+  bool need_dispatch_context_restored_ = false;
 };
 
 }  // namespace blink
