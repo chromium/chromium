@@ -10,7 +10,6 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -130,8 +129,6 @@ class AppMenuModelInteractiveTest : public InteractiveBrowserTest {
       return new_browser->profile()->IsGuestSession();
     }));
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, PerformanceNavigation) {
@@ -204,13 +201,6 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest,
 class ExtensionsMenuVisitChromeWebstoreModelInteractiveTest
     : public AppMenuModelInteractiveTest {
  public:
-  ExtensionsMenuVisitChromeWebstoreModelInteractiveTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kExtensionsMenuInAppMenu};
-    std::vector<base::test::FeatureRef> disabled_features{};
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
