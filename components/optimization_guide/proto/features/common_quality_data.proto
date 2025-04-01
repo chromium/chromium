@@ -508,7 +508,7 @@ message IframeData {
 
 // The data for a frame in the web page. This is the common data structure for
 // both the root frame and embedded iframes.
-// Next ID: 6
+// Next ID: 8
 message FrameData {
   // The security origin of the frame.
   SecurityOrigin security_origin = 1;
@@ -528,11 +528,24 @@ message FrameData {
   // Information about paid content in the frame.  Only set
   // if paid content was checked.
   PaidContentMetadata paid_content_metadata = 6;
-}
 
-message PaidContentMetadata {
-  // Whether the frame contains paid content.
-  bool contains_paid_content = 1;
+  // The ordered list of DOM nodes which are eligible for hit testing in the
+  // viewport. This list is ordered back-to-front, i.e., in the given list :
+  // [0, 1], node 1 draws on top of node 0.
+  //
+  // Each frame provides its own list of hit test nodes. Since all content
+  // within a frame is rendered as a single layer, nodes behind the iframe in
+  // the embedder draw behind all nodes inside the iframe (similar for nodes on
+  // top of the iframe node).
+  //
+  // The set of nodes in this list may or may not generate a ContentNode:
+  // 1. If a node is not eligible for hit testing, for example with
+  //    `pointer-events: none`, it won't be in this list but could generate a
+  //    ContentNode.
+  // 2. If a node is eligible for hit testing and is in the viewport, but
+  //    isn't actionable or satisfies any other criteria for generating a
+  //    ContentNode, it will still be in this list.
+  repeated HitTestNode hit_test_nodes = 7;
 }
 
 // The interaction information for the frame. This is for interactions that
@@ -571,6 +584,27 @@ message DocumentIdentifier {
   // A unique identifier for the frame that is not stable across APC
   // calls/pages. Caller can map these to a client side frame id.
   string serialized_token = 1;
+}
+
+// Metadata about paid content in the frame.
+// Next ID: 2
+message PaidContentMetadata {
+  // Whether the frame contains paid content.
+  bool contains_paid_content = 1;
+}
+
+// Represents a DOM node which is eligible for hit testing.
+message HitTestNode {
+  // The ID to uniquely identify this node. If the DOM node generates a
+  // ContentNode, this ID is consisted with the ContentNode's ID.
+  int32 dom_node_id = 1;
+
+  // Denotes which subset of this node is visible, in the page coordinate
+  // system.
+  // Note: We currently provide the smallest axis aligned bounding box that
+  // contains this node's hit testable area. A future improvement could be to
+  // provide a quad.
+  BoundingRect visible_bounding_box = 2;
 }
 
 message TableRowData {
