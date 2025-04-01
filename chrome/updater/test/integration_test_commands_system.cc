@@ -463,8 +463,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                base::NumberToString(expected_exit_code))});
   }
 
-  void ExpectLegacyPolicyStatusSucceeds() const override {
-    RunCommand("expect_legacy_policy_status_succeeds");
+  void ExpectLegacyPolicyStatusSucceeds(
+      const base::Version& updater_version) const override {
+    RunCommand("expect_legacy_policy_status_succeeds",
+               {Param("updater_version", updater_version.GetString())});
   }
 
   void LegacyInstallApp(const std::string& app_id,

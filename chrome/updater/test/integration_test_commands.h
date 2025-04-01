@@ -172,7 +172,8 @@ class IntegrationTestCommands
       const std::string& command_id,
       const base::Value::List& parameters,
       int expected_exit_code) const = 0;
-  virtual void ExpectLegacyPolicyStatusSucceeds() const = 0;
+  virtual void ExpectLegacyPolicyStatusSucceeds(
+      const base::Version& updater_version) const = 0;
   virtual void LegacyInstallApp(const std::string& app_id,
                                 const base::Version& version) const = 0;
   virtual void RunUninstallCmdLine() const = 0;

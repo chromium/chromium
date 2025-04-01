@@ -357,7 +357,9 @@ void AppTestHelper::FirstTaskRun() {
                                   WithSystemScope(Wrap(
                                       &ExpectLegacyAppCommandWebSucceeds))))))},
           {"expect_legacy_policy_status_succeeds",
-           WithSystemScope(Wrap(&ExpectLegacyPolicyStatusSucceeds))},
+           WithSwitch(
+               "updater_version",
+               WithSystemScope(Wrap(&ExpectLegacyPolicyStatusSucceeds)))},
           {"legacy_install_app",
            WithSwitch(
                "app_version",

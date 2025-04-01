@@ -430,8 +430,9 @@ class IntegrationTest : public ::testing::Test {
         app_id, command_id, parameters, expected_exit_code);
   }
 
-  void ExpectLegacyPolicyStatusSucceeds() {
-    test_commands_->ExpectLegacyPolicyStatusSucceeds();
+  void ExpectLegacyPolicyStatusSucceeds(
+      const base::Version& updater_version = base::Version(kUpdaterVersion)) {
+    test_commands_->ExpectLegacyPolicyStatusSucceeds(updater_version);
   }
 
   void LegacyInstallApp(const std::string& app_id,
@@ -4591,23 +4592,24 @@ TEST_P(IntegrationLegacyProcessLauncherTest, Test) {
   ASSERT_NO_FATAL_FAILURE(ExpectLegacyProcessLauncherSucceeds());
 }
 
-TEST_F(IntegrationTest, LegacyPolicyStatus) {
-  ScopedServer test_server(test_commands_);
-  ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
+class IntegrationLegacyPolicyStatusTest
+    : public IntegrationLegacyAppCommandWebTest {};
 
+INSTANTIATE_TEST_SUITE_P(IntegrationLegacyPolicyStatusTestCases,
+                         IntegrationLegacyPolicyStatusTest,
+                         ::testing::ValuesIn(GetRealUpdaterVersions()));
+
+TEST_P(IntegrationLegacyPolicyStatusTest, Test) {
   const std::string kAppId("test");
   ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
   base::Version v1("1");
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
-      &test_server, kAppId, "", UpdateService::Priority::kBackground,
-      base::Version("0.1"), v1));
-  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+      test_server_.get(), kAppId, "", UpdateService::Priority::kBackground,
+      base::Version("0.1"), v1, {}, {}, GetParam().version));
+  ASSERT_NO_FATAL_FAILURE(RunWake(0, GetParam().version));
   ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
 
-  ASSERT_NO_FATAL_FAILURE(ExpectLegacyPolicyStatusSucceeds());
-
-  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
-  ASSERT_NO_FATAL_FAILURE(Uninstall());
+  ASSERT_NO_FATAL_FAILURE(ExpectLegacyPolicyStatusSucceeds(GetParam().version));
 }
 
 TEST_F(IntegrationTest, UninstallCmdLine) {
