@@ -902,42 +902,6 @@ ci.builder(
     ),
 )
 
-ci.builder(
-    name = "linux-rr-orchestrator-fyi",
-    description_html = (
-        "The orchestrator to schedules child builds of rr test launcher, and" +
-        " these child builds run top flaky tests using the rr tool and" +
-        " upload recorded traces."
-    ),
-    executable = "recipe:chromium_rr/orchestrator",
-    schedule = "with 3h interval",
-    triggered_by = [],
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "linux",
-        short_name = "rr",
-    ),
-    contact_team_email = "chrome-browser-infra-team@google.com",
-)
-
-ci.builder(
-    name = "linux-rr-test-launcher-fyi",
-    description_html = (
-        "The rr test launcher compiles input test suites, run" +
-        " input tests using the rr tool and upload recorded traces."
-    ),
-    executable = "recipe:chromium_rr/test_launcher",
-    schedule = "triggered",
-    triggered_by = [],
-    builderless = False,
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "linux",
-        short_name = "rr",
-    ),
-    contact_team_email = "chrome-browser-infra-team@google.com",
-)
-
 fyi_mac_builder(
     name = "mac-perfetto-rel",
     schedule = "triggered",
