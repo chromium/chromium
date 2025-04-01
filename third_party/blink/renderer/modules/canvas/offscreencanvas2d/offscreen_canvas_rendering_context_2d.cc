@@ -333,6 +333,7 @@ void OffscreenCanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   if (context_lost_mode_ != kNotLostContext)
     return;
   context_lost_mode_ = lost_mode;
+  ResetInternal();
   if (CanvasRenderingContextHost* host = Host()) [[likely]] {
     host->DiscardResourceProvider();
     host->DiscardResourceDispatcher();
@@ -398,12 +399,6 @@ bool OffscreenCanvasRenderingContext2D::IsCanvas2DBufferValid() const {
   if (IsPaintable())
     return GetCanvasResourceProvider()->IsValid();
   return false;
-}
-
-void OffscreenCanvasRenderingContext2D::DispatchContextLostEvent(
-    TimerBase* time) {
-  ResetInternal();
-  BaseRenderingContext2D::DispatchContextLostEvent(time);
 }
 
 std::optional<cc::PaintRecord> OffscreenCanvasRenderingContext2D::FlushCanvas(
