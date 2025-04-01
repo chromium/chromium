@@ -270,10 +270,6 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
     return String(*this);
   }
 
-  String AsString8() const {
-    return String::Make8BitFrom16BitSource(base::span(*this));
-  }
-
   AtomicString AsAtomicString() const {
     return AtomicString(*this, Is8Bit()
                                    ? WTF::AtomicStringUCharEncoding::kIs8Bit
