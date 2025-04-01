@@ -535,7 +535,12 @@ CanvasResourceDispatcher* OffscreenCanvas::GetOrCreateResourceDispatcher() {
 }
 
 CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
-  if (ResourceProvider() && !restoring_gpu_context_) {
+  if (!context_ ||
+      (context_->isContextLost() && !context_->IsContextBeingRestored())) {
+    return nullptr;
+  }
+
+  if (ResourceProvider()) {
     return ResourceProvider();
   }
 
@@ -695,6 +700,7 @@ void OffscreenCanvas::CheckForGpuContextLost() {
       ResourceProvider()->IsAccelerated() &&
       ResourceProvider()->IsGpuContextLost()) {
     set_context_lost(true);
+    ReplaceResourceProvider(nullptr);
     NotifyGpuContextLost();
   }
 
@@ -702,6 +708,7 @@ void OffscreenCanvas::CheckForGpuContextLost() {
   if (!shared_bitmap_gpu_channel_lost() && ResourceProvider() &&
       ResourceProvider()->IsSoftwareSharedImageGpuChannelLost()) {
     set_shared_bitmap_gpu_channel_lost(true);
+    ReplaceResourceProvider(nullptr);
     NotifyGpuContextLost();
   }
 }
