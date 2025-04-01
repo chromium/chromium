@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -778,7 +779,11 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
 
  private:
   // BitmapGpuChannelLostObserver implementation.
-  void OnGpuChannelLost() override { resource_host()->NotifyGpuContextLost(); }
+  void OnGpuChannelLost() override {
+    if (notify_context_lost_in_new_task_) {
+      std::move(notify_context_lost_in_new_task_).Run();
+    }
+  }
 
   void OnResourceReturnedFromCompositor(
       scoped_refptr<CanvasResource>&& resource) override {
@@ -936,6 +941,13 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   scoped_refptr<CanvasResource> resource_;
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
   PaintImage::ContentId cached_content_id_ = PaintImage::kInvalidContentId;
+
+  // Callback that notifies owners of this resource provider that the GPU
+  // context was lost. The call is done in a separate task, so that owners could
+  // delete this resource provider if needed.
+  base::OnceClosure notify_context_lost_in_new_task_ = base::BindPostTask(
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindOnce(&NotifyGpuContextLostTask, CreateWeakPtr()));
 };
 
 // This ResourceProvider is meant to be used with an imported external
@@ -1915,6 +1927,16 @@ bool CanvasResourceProvider::IsGpuContextLost() const {
 
 bool CanvasResourceProvider::IsSoftwareSharedImageGpuChannelLost() const {
   return false;
+}
+
+void CanvasResourceProvider::NotifyGpuContextLostTask(
+    base::WeakPtr<CanvasResourceProvider> provider) {
+  if (provider && provider->resource_host()) {
+    // Move `provider` as hint that it shouldn't be reused after this point.
+    // The `resource_host` owns the provider and can delete it in
+    // `NotifyGpuContextLost()`.
+    std::move(provider)->resource_host()->NotifyGpuContextLost();
+  }
 }
 
 bool CanvasResourceProvider::WritePixels(const SkImageInfo& orig_info,
