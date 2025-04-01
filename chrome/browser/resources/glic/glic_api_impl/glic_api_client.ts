@@ -94,7 +94,7 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
   }
 
   glicWebClientPanelStateChanged(payload: {panelState: PanelState}): void {
-    this.host.getPanelState().assignAndSignal(payload.panelState);
+    this.host.getPanelState?.().assignAndSignal(payload.panelState);
   }
 
   glicWebClientCanAttachStateChanged(payload: {canAttach: boolean}): void {
@@ -314,11 +314,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return this.sender.requestWithResponse('glicBrowserClosePanel', undefined);
   }
 
-  attachPanel(): void {
+  attachPanel?(): void {
     this.sender.requestNoResponse('glicBrowserAttachPanel', undefined);
   }
 
-  detachPanel(): void {
+  detachPanel?(): void {
     this.sender.requestNoResponse('glicBrowserDetachPanel', undefined);
   }
 
@@ -333,8 +333,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return convertTabContextResultFromPrivate(context.tabContextResult);
   }
 
-  async actInFocusedTab(
-      actInFocusedTabParams: ActInFocusedTabParams):
+  async actInFocusedTab?(actInFocusedTabParams: ActInFocusedTabParams):
       Promise<ActInFocusedTabResult> {
     const context = await this.sender.requestWithResponse(
         'glicBrowserActInFocusedTab', {actInFocusedTabParams});
@@ -349,7 +348,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         'glicBrowserResizeWindow', {size: {width, height}, options});
   }
 
-  enableDragResize(enabled: boolean): Promise<void> {
+  enableDragResize?(enabled: boolean): Promise<void> {
     return this.sender.requestWithResponse(
         'glicBrowserEnableDragResize', {enabled});
   }
@@ -370,7 +369,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         'glicBrowserSetMinimumWidgetSize', {size: {width, height}});
   }
 
-  getPanelState(): ObservableValueImpl<PanelState> {
+  getPanelState?(): ObservableValueImpl<PanelState> {
     return this.panelState;
   }
 
@@ -378,7 +377,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return this.panelActiveValue;
   }
 
-  canAttachPanel(): ObservableValue<boolean> {
+  canAttachPanel?(): ObservableValue<boolean> {
     return this.canAttachPanelValue;
   }
 
@@ -458,7 +457,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return this.metrics;
   }
 
-  scrollTo(params: ScrollToParams): Promise<void> {
+  scrollTo?(params: ScrollToParams): Promise<void> {
     return this.sender.requestWithResponse('glicBrowserScrollTo', {params});
   }
 
@@ -467,7 +466,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         'glicBrowserSetSyntheticExperimentState', {trialName, groupName});
   }
 
-  openOsPermissionSettingsMenu(permission: string): void {
+  openOsPermissionSettingsMenu?(permission: string): void {
     this.sender.requestNoResponse(
         'glicBrowserOpenOsPermissionSettingsMenu', {permission});
   }
