@@ -44,6 +44,8 @@ class MostVisitedSitesProvider : public AutocompleteProvider {
       const AutocompleteProviderClient* client,
       const AutocompleteInput& input);
 
+  size_t GetRequestedResultSize(const AutocompleteInput& input) const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest, NoSRPCoverage);
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest,
@@ -52,6 +54,7 @@ class MostVisitedSitesProvider : public AutocompleteProvider {
                            PrefetchingUpdatesCachedSites);
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest,
                            StartDoesNotUpdateMatchesWhenPrefetchEnabled);
+  FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest, BlocklistedURLs);
 
   ~MostVisitedSitesProvider() override;
 
