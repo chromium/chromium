@@ -552,9 +552,9 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
     return;
   }
 
-  bool hasResourceProvider = CanCreateCanvas2dResourceProvider();
-  if (!hasResourceProvider)
+  if (isContextLost() || !CanCreateCanvas2dResourceProvider()) [[unlikely]] {
     return;
+  }
 
   if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(
