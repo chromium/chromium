@@ -454,14 +454,11 @@ GpuServiceImpl::~GpuServiceImpl() {
     base::WaitableEvent wait;
     auto destroy_receiver_task = base::BindOnce(
         [](mojo::Receiver<mojom::GpuService>* receiver,
-           std::unordered_map<int, std::unique_ptr<ClientGmbInterfaceImpl>>
-               client_gmb_interface_impl,
            base::WaitableEvent* wait) {
           receiver->reset();
-          client_gmb_interface_impl.clear();
           wait->Signal();
         },
-        &receiver_, std::move(gmb_clients_), base::Unretained(&wait));
+        &receiver_, base::Unretained(&wait));
     if (io_runner_->PostTask(FROM_HERE, std::move(destroy_receiver_task)))
       wait.Wait();
   }
@@ -1190,7 +1187,6 @@ void GpuServiceImpl::EstablishGpuChannel(int32_t client_id,
       // We are already exiting so there is no point in responding. Close the
       // receiver so we can safely drop the callback.
       receiver_.reset();
-      gmb_clients_.clear();
       return;
     }
 
@@ -1651,146 +1647,6 @@ bool GpuServiceImpl::IsNativeBufferSupported(gfx::BufferFormat format,
              usage, format)) != supported_gmb_configurations_.end();
 }
 
-GpuServiceImpl::ClientGmbInterfaceImpl::PendingBufferInfo::PendingBufferInfo() =
-    default;
-GpuServiceImpl::ClientGmbInterfaceImpl::PendingBufferInfo::PendingBufferInfo(
-    PendingBufferInfo&&) = default;
-GpuServiceImpl::ClientGmbInterfaceImpl::PendingBufferInfo::
-    ~PendingBufferInfo() = default;
-
-GpuServiceImpl::ClientGmbInterfaceImpl::ClientGmbInterfaceImpl(
-    int client_id,
-    mojo::PendingReceiver<gpu::mojom::ClientGmbInterface> pending_receiver,
-    raw_ptr<GpuServiceImpl> gpu_service,
-    scoped_refptr<base::SingleThreadTaskRunner> io_runner)
-    : client_id_(client_id), gpu_service_(gpu_service) {
-  receiver_.Bind(std::move(pending_receiver));
-  receiver_.set_disconnect_handler(
-      base::BindOnce(&GpuServiceImpl::ClientGmbInterfaceImpl::OnConnectionError,
-                     base::Unretained(this)));
-  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-      this, "GpuServiceImpl::ClientGmbInterfaceImpl", std::move(io_runner));
-  weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
-}
-
-GpuServiceImpl::ClientGmbInterfaceImpl::~ClientGmbInterfaceImpl() {
-  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
-      this);
-}
-
-void GpuServiceImpl::ClientGmbInterfaceImpl::CreateGpuMemoryBuffer(
-    gfx::GpuMemoryBufferId id,
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    gpu::SurfaceHandle surface_handle,
-    CreateGpuMemoryBufferCallback callback) {
-  if (!gpu::GpuMemoryBufferSupport::IsSizeValid(size)) {
-    receiver_.ReportBadMessage("Invalid GMB size");
-    std::move(callback).Run(gfx::GpuMemoryBufferHandle());
-    return;
-  }
-
-  // Ensure that the buffer corresponding to this id is not already pending or
-  // allocated.
-  if ((pending_buffers_.find(id) != pending_buffers_.end()) ||
-      (allocated_buffers_.find(id) != allocated_buffers_.end())) {
-    DLOG(ERROR) << "Allocation request for this buffer is either pending or "
-                   "have already completed. Hence not allocating a new buffer.";
-    std::move(callback).Run(gfx::GpuMemoryBufferHandle());
-    return;
-  }
-
-  PendingBufferInfo pending_buffer_info;
-  pending_buffer_info.size = size;
-  pending_buffer_info.format = format;
-  pending_buffer_info.callback = std::move(callback);
-  pending_buffers_.emplace(id, std::move(pending_buffer_info));
-  gpu_service_->CreateGpuMemoryBuffer(
-      id, size, format, usage, client_id_, surface_handle,
-      base::BindOnce(
-          &GpuServiceImpl::ClientGmbInterfaceImpl::OnGpuMemoryBufferAllocated,
-          weak_ptr_, id));
-}
-
-void GpuServiceImpl::ClientGmbInterfaceImpl::DestroyGpuMemoryBuffer(
-    gfx::GpuMemoryBufferId id) {
-  // Check if the id is present in the allocated_buffers.
-  auto allocated_buffer = allocated_buffers_.find(id);
-  if (allocated_buffer == allocated_buffers_.end()) {
-    DLOG(ERROR) << "Can not find GpuMemoryBuffer to destroy";
-    return;
-  }
-  DCHECK_NE(gfx::EMPTY_BUFFER, allocated_buffer->second.type());
-  if (allocated_buffer->second.type() != gfx::SHARED_MEMORY_BUFFER) {
-    gpu_service_->DestroyGpuMemoryBuffer(id, client_id_);
-  }
-  allocated_buffers_.erase(allocated_buffer);
-}
-
-void GpuServiceImpl::ClientGmbInterfaceImpl::CopyGpuMemoryBuffer(
-    gfx::GpuMemoryBufferHandle buffer_handle,
-    base::UnsafeSharedMemoryRegion shared_memory,
-    CopyGpuMemoryBufferCallback callback) {
-  gpu_service_->CopyGpuMemoryBuffer(
-      std::move(buffer_handle), std::move(shared_memory), std::move(callback));
-}
-
-bool GpuServiceImpl::ClientGmbInterfaceImpl::OnMemoryDump(
-    const base::trace_event::MemoryDumpArgs& args,
-    base::trace_event::ProcessMemoryDump* pmd) {
-  uint64_t client_tracing_process_id =
-      base::trace_event::MemoryDumpManager::GetInstance()
-          ->GetTracingProcessId();
-  for (const auto& allocated_buffer : allocated_buffers_) {
-    auto& buffer_info = allocated_buffer.second;
-    if (!buffer_info.OnMemoryDump(pmd, client_id_, client_tracing_process_id)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-void GpuServiceImpl::ClientGmbInterfaceImpl::OnConnectionError() {
-  // Destroy all the GMBs corresponding to this client.
-  DestroyAllGpuMemoryBuffers();
-
-  // Note that this method destroys the current ClientGmbInterfaceImpl object.
-  // So it is not safe to use this pointer after below line.
-  gpu_service_->RemoveGmbClient(client_id_);
-}
-
-void GpuServiceImpl::ClientGmbInterfaceImpl::OnGpuMemoryBufferAllocated(
-    gfx::GpuMemoryBufferId id,
-    gfx::GpuMemoryBufferHandle handle) {
-  auto pending_buffer = pending_buffers_.find(id);
-  auto pending_buffer_info = std::move(pending_buffer->second);
-  pending_buffers_.erase(pending_buffer);
-  if (!handle.is_null()) {
-    CHECK(handle.id == id);
-    gpu::AllocatedBufferInfo buffer_info(handle, pending_buffer_info.size,
-                                         pending_buffer_info.format);
-    allocated_buffers_.emplace(id, buffer_info);
-  }
-  std::move(pending_buffer_info.callback).Run(std::move(handle));
-}
-
-void GpuServiceImpl::ClientGmbInterfaceImpl::DestroyAllGpuMemoryBuffers() {
-  for (const auto& allocated_buffer : allocated_buffers_) {
-    DCHECK_NE(gfx::EMPTY_BUFFER, allocated_buffer.second.type());
-    if (allocated_buffer.second.type() != gfx::SHARED_MEMORY_BUFFER) {
-      gpu_service_->DestroyGpuMemoryBuffer(allocated_buffer.first, client_id_);
-    }
-  }
-  allocated_buffers_.clear();
-
-  // Run all pending_buffers callback with null handle.
-  for (auto& pending_buffer : pending_buffers_) {
-    std::move(pending_buffer.second.callback).Run(gfx::GpuMemoryBufferHandle());
-  }
-  pending_buffers_.clear();
-}
-
 void GpuServiceImpl::GetDawnInfo(bool collect_metrics,
                                  GetDawnInfoCallback callback) {
   DCHECK(io_runner_->BelongsToCurrentThread());
@@ -1840,14 +1696,6 @@ void GpuServiceImpl::GetDawnInfoOnMain(bool collect_metrics,
 
   io_runner_->PostTask(FROM_HERE,
                        base::BindOnce(std::move(callback), dawn_info_list));
-}
-
-void GpuServiceImpl::RemoveGmbClient(int client_id) {
-  CHECK(io_runner_->BelongsToCurrentThread());
-  auto it = gmb_clients_.find(client_id);
-  if (it != gmb_clients_.end()) {
-    gmb_clients_.erase(it);
-  }
 }
 
 #if BUILDFLAG(IS_ANDROID)
