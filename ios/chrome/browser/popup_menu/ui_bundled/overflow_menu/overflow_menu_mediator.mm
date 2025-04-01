@@ -821,9 +821,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Creates the "Set a Reminder" action for the overflow menu.
 // This action allows users to set a reminder for a tab.
 - (OverflowMenuAction*)newSetTabReminderAction {
-  CHECK(
-      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
-
   NSString* hideItemText = l10n_util::GetNSString(
       IDS_IOS_REMINDER_NOTIFICATIONS_HIDE_SET_A_REMINDER);
 
@@ -2055,7 +2052,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     case overflow_menu::ActionType::AIPrototype:
       return self.AIPrototypeAction;
     case overflow_menu::ActionType::SetTabReminder:
-      return self.setTabReminderAction;
+      return send_tab_to_self::
+                     IsSendTabIOSPushNotificationsEnabledWithTabReminders()
+                 ? self.setTabReminderAction
+                 : nil;
   }
 }
 
