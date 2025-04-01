@@ -179,9 +179,6 @@ bool AreInOrder(const Node& start, const Node& end) {
   while (node && !node->isSameNode(&end)) {
     node = FlatTreeTraversal::Next(*node);
   }
-  if (!node) {
-    return false;
-  }
   return node->isSameNode(&end);
 }
 
@@ -403,15 +400,6 @@ void FindBuffer::CollectTextUntilBlockBoundary(
   if (!node || !node->isConnected())
     return;
 
-  // Make sure the node stays within the range.
-  Node* end_node = range.EndPosition().NodeAsRangeLastNode();
-  // TODO(crbug.com/399672833): |AreInOrder| can result in linearly walking the
-  // rest of the DOM tree so we should use a more efficient comparison.
-  if (!end_node || (RuntimeEnabledFeatures::RangeBasedTextFindEnabled() &&
-                    !AreInOrder(*node, *end_node))) {
-    return;
-  }
-
   const Node& block_ancestor = GetFirstBlockLevelAncestorInclusive(*node);
   const Node* just_after_block = FlatTreeTraversal::Next(
       FlatTreeTraversal::LastWithinOrSelf(block_ancestor));
@@ -424,6 +412,9 @@ void FindBuffer::CollectTextUntilBlockBoundary(
 
   // Used for checking if we reached a new block.
   Node* last_added_text_node = nullptr;
+
+  // We will also stop if we encountered/passed |end_node|.
+  Node* end_node = range.EndPosition().NodeAsRangeLastNode();
 
   if (ruby_support == RubySupport::kEnabledForcefully ||
       (ruby_support == RubySupport::kEnabledIfNecessary &&
