@@ -6525,11 +6525,14 @@
                     "min_os_version": "16151.0.0",
                     "hardware_classes": [
                         "brask",
+                        "brox",
                         "brya",
                         "corsola",
                         "geralt",
                         "nissa",
-                        "rex"
+                        "rauru",
+                        "rex",
+                        "staryu"
                     ]
                 }
             ]
