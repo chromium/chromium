@@ -39,6 +39,8 @@
 #import "ui/gfx/ios/NSString+CrStringDrawing.h"
 #import "ui/gfx/scoped_cg_context_save_gstate_mac.h"
 
+using enum OmniboxKeyboardAction;
+
 namespace {
 
 /// The default omnibox text color (used while editing).
@@ -621,17 +623,13 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   // Arrow keys are handled by OmniboxKeyboardDelegates, if they don't handle
   // them, default behavior of UITextField applies.
   if (action == @selector(forwardKeyCommandUp)) {
-    return [self.omniboxKeyboardDelegate
-        canPerformKeyboardAction:OmniboxKeyboardActionUpArrow];
+    return [self.omniboxKeyboardDelegate canPerformKeyboardAction:kUpArrow];
   } else if (action == @selector(forwardKeyCommandDown)) {
-    return [self.omniboxKeyboardDelegate
-        canPerformKeyboardAction:OmniboxKeyboardActionDownArrow];
+    return [self.omniboxKeyboardDelegate canPerformKeyboardAction:kDownArrow];
   } else if (action == @selector(forwardKeyCommandLeft)) {
-    return [self.omniboxKeyboardDelegate
-        canPerformKeyboardAction:OmniboxKeyboardActionLeftArrow];
+    return [self.omniboxKeyboardDelegate canPerformKeyboardAction:kLeftArrow];
   } else if (action == @selector(forwardKeyCommandRight)) {
-    return [self.omniboxKeyboardDelegate
-        canPerformKeyboardAction:OmniboxKeyboardActionRightArrow];
+    return [self.omniboxKeyboardDelegate canPerformKeyboardAction:kRightArrow];
   }
 
   // Handle pre-edit shortcuts.
@@ -722,23 +720,19 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 #pragma mark Key Command Forwarding
 
 - (void)forwardKeyCommandUp {
-  [self.omniboxKeyboardDelegate
-      performKeyboardAction:OmniboxKeyboardActionUpArrow];
+  [self.omniboxKeyboardDelegate performKeyboardAction:kUpArrow];
 }
 
 - (void)forwardKeyCommandDown {
-  [self.omniboxKeyboardDelegate
-      performKeyboardAction:OmniboxKeyboardActionDownArrow];
+  [self.omniboxKeyboardDelegate performKeyboardAction:kDownArrow];
 }
 
 - (void)forwardKeyCommandLeft {
-  [self.omniboxKeyboardDelegate
-      performKeyboardAction:OmniboxKeyboardActionLeftArrow];
+  [self.omniboxKeyboardDelegate performKeyboardAction:kLeftArrow];
 }
 
 - (void)forwardKeyCommandRight {
-  [self.omniboxKeyboardDelegate
-      performKeyboardAction:OmniboxKeyboardActionRightArrow];
+  [self.omniboxKeyboardDelegate performKeyboardAction:kRightArrow];
 }
 
 // Arrow keys are forwarded to the main OmniboxKeyboardDelegate that will
@@ -788,15 +782,15 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
       // handling of up/down arrow key. The standard behavior is to go to the
       // beginning/end of the text. Remove this behavior to avoid inconsistent
       // behavior when popup can and cannot move up and down.
-    case OmniboxKeyboardActionUpArrow:
-    case OmniboxKeyboardActionDownArrow:
+    case kUpArrow:
+    case kDownArrow:
       return YES;
       // React to left and right keys when in preedit state to exit preedit and
       // put cursor to the beginning/end of the textfield; or if there is inline
       // suggestion displayed, accept it and put the cursor before/after the
       // suggested text.
-    case OmniboxKeyboardActionLeftArrow:
-    case OmniboxKeyboardActionRightArrow:
+    case kLeftArrow:
+    case kRightArrow:
       return ([self isPreEditing] || [self hasAutocompleteText] ||
               [self hasAdditionalText]);
   }
@@ -805,15 +799,15 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 - (void)performKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
   DCHECK([self canPerformKeyboardAction:keyboardAction]);
   switch (keyboardAction) {
-    case OmniboxKeyboardActionUpArrow:
-    case OmniboxKeyboardActionDownArrow:
+    case kUpArrow:
+    case kDownArrow:
       // Up and down arrow do nothing instead of standard behavior. The standard
       // behavior is to go to the beginning/end of the text.
       break;
-    case OmniboxKeyboardActionLeftArrow:
+    case kLeftArrow:
       [self keyCommandLeft];
       break;
-    case OmniboxKeyboardActionRightArrow:
+    case kRightArrow:
       [self keyCommandRight];
       break;
   }

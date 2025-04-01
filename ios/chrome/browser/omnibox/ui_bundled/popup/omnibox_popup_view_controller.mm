@@ -416,12 +416,13 @@ const CGFloat kHeaderTopPadding = 16.0f;
     }
   }
 
+  using enum OmniboxKeyboardAction;
   switch (keyboardAction) {
-    case OmniboxKeyboardActionUpArrow:
-    case OmniboxKeyboardActionDownArrow:
+    case kUpArrow:
+    case kDownArrow:
       return YES;
-    case OmniboxKeyboardActionLeftArrow:
-    case OmniboxKeyboardActionRightArrow:
+    case kLeftArrow:
+    case kRightArrow:
       if (self.carouselCell.isHighlighted) {
         return [self.carouselCell canPerformKeyboardAction:keyboardAction];
       }
@@ -449,15 +450,16 @@ const CGFloat kHeaderTopPadding = 16.0f;
     }
   }
 
+  using enum OmniboxKeyboardAction;
   switch (keyboardAction) {
-    case OmniboxKeyboardActionUpArrow:
+    case kUpArrow:
       [self highlightPreviousSuggestion];
       break;
-    case OmniboxKeyboardActionDownArrow:
+    case kDownArrow:
       [self highlightNextSuggestion];
       break;
-    case OmniboxKeyboardActionLeftArrow:
-    case OmniboxKeyboardActionRightArrow:
+    case kLeftArrow:
+    case kRightArrow:
       if (self.carouselCell.isHighlighted) {
         DCHECK(self.highlightedIndexPath.section ==
                [self.tableView indexPathForCell:self.carouselCell].section);
