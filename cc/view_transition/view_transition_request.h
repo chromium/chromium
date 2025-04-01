@@ -85,8 +85,6 @@ class CC_EXPORT ViewTransitionRequest {
 
   const blink::ViewTransitionToken& token() { return transition_token_; }
 
-  bool HasSubframeSnapshot() const;
-
  private:
   ViewTransitionRequest(
       Type type,

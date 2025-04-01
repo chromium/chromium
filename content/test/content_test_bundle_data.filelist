@@ -8364,6 +8364,7 @@ data/unload.html
 data/view_transitions/basic-vt-opt-in.html
 data/view_transitions/capture-style.css
 data/view_transitions/green.html
+data/view_transitions/parent-child-opacity-iframe.html
 data/view_transitions/parent-child-opacity.html
 data/view_transitions/parent-child.html
 data/view_transitions/red_jank_second_pageshow.html
