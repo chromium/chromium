@@ -22,7 +22,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/functional/function_ref.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -362,9 +361,7 @@ bool InvokeGoogleUpdateForRename() {
       LOG(ERROR) << "app_command_web->execute failed; hr = " << std::hex << hr;
       return false;
     }
-  }
 
-  {
     UINT status = 0;
     for (const auto deadline = base::TimeTicks::Now() + base::Seconds(60);
          base::TimeTicks::Now() < deadline;
