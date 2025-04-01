@@ -10,15 +10,13 @@ import * as PumpkinConstants from './pumpkin/pumpkin_constants.js';
  */
 class SandboxedPumpkinTagger {
   constructor() {
-    /** @private {?speech.pumpkin.api.js.PumpkinTagger.PumpkinTagger} */
-    this.pumpkinTagger_ = null;
-    /** @private {?PumpkinConstants.PumpkinData} */
-    this.pumpkinData_ = null;
     this.init_();
   }
 
-  /** @private */
-  init_() {
+  private pumpkinTagger_: speech.pumpkin.api.js.PumpkinTagger|null = null;
+  private pumpkinData_: PumpkinConstants.PumpkinData|null = null;
+
+  private init_(): void {
     globalThis.addEventListener(
         'message', (message) => this.onMessage_(message));
     this.sendToBackground_(
@@ -28,65 +26,52 @@ class SandboxedPumpkinTagger {
   /**
    * Called when the background context posts a message to
    * SandboxedPumpkinTagger's web worker.
-   * @param {!Event} message
-   * @private
    */
-  onMessage_(message) {
-    const command =
-        /** @type {!PumpkinConstants.ToPumpkinTagger} */ (message.data);
+  private onMessage_(message: MessageEvent): void {
+    const command: PumpkinConstants.ToPumpkinTagger = message.data;
     switch (command.type) {
       case PumpkinConstants.ToPumpkinTaggerCommand.LOAD:
-        const pumpkinData =
-            /** @type {!PumpkinConstants.PumpkinData} */ (command.pumpkinData);
-        const locale =
-            /** @type {!PumpkinConstants.PumpkinLocale} */ (command.locale);
-        this.load_(pumpkinData, locale);
+        if (!command.pumpkinData) {
+          throw new Error(`Can't load pumpkin tagger from empty data`);
+        }
+        if (!command.locale) {
+          throw new Error(`Can't load pumpkin tagger from empty locale`);
+        }
+        this.load_(command.pumpkinData, command.locale);
         return;
       case PumpkinConstants.ToPumpkinTaggerCommand.TAG:
-        const text = /** @type {string} */ (command.text);
-        const numResults = /** @type {number} */ (command.numResults);
-        this.tagAndGetNBestHypotheses_(text, numResults);
+        // TODO(crbug.com/314203187): Not null asserted, check that this is
+        // correct.
+        this.tagAndGetNBestHypotheses_(command.text!, command.numResults!);
         return;
       case PumpkinConstants.ToPumpkinTaggerCommand.REFRESH:
-        this.refresh_(
-            /** @type {!PumpkinConstants.PumpkinLocale} */ (command.locale));
+        if (!command.locale) {
+          throw new Error(`Can't load pumpkin tagger from empty locale`);
+        }
+        this.refresh_(command.locale);
         return;
+      default:
+        throw new Error(
+            `Unrecognized message received in SandboxedPumpkinTagger: ${
+                command.type}`);
     }
-
-    throw new Error(`Unrecognized message received in SandboxedPumpkinTagger: ${
-        command.type}`);
   }
 
-  /**
-   * @param {!PumpkinConstants.FromPumpkinTagger} command
-   * @private
-   */
-  sendToBackground_(command) {
+  private sendToBackground_(command: PumpkinConstants.FromPumpkinTagger): void {
     postMessage(command);
   }
 
-  /**
-   * @param {string} text
-   * @param {number} numResults
-   * @private
-   */
-  tagAndGetNBestHypotheses_(text, numResults) {
+  private tagAndGetNBestHypotheses_(text: string, numResults: number): void {
+    // TODO(crbug.com/314203187): Not null asserted, check that this is correct.
     const results =
-        this.pumpkinTagger_.tagAndGetNBestHypotheses(text, numResults);
+        this.pumpkinTagger_!.tagAndGetNBestHypotheses(text, numResults);
     this.sendToBackground_(
         {type: PumpkinConstants.FromPumpkinTaggerCommand.TAG_RESULTS, results});
   }
 
-  /**
-   * @param {!PumpkinConstants.PumpkinData} data
-   * @param {!PumpkinConstants.PumpkinLocale} locale
-   * @private
-   */
-  async load_(data, locale) {
-    if (!data) {
-      throw new Error(`Can't load pumpkin tagger from empty data`);
-    }
-
+  private async load_(
+      data: PumpkinConstants.PumpkinData,
+      locale: PumpkinConstants.PumpkinLocale) {
     this.pumpkinData_ = data;
     // Unpack the PumpkinTagger JS.
     const pumpkinTaggerBytes = data.js_pumpkin_tagger_bin_js;
@@ -111,10 +96,9 @@ class SandboxedPumpkinTagger {
     // lives in the same directory as it. However, since none of these files
     // live in the extension directory, we need to override the fetch method
     // so that it returns the wasm file bytes from `data` when requested.
-    globalThis.fetch = async (fileName) => {
+    globalThis.fetch = async () => {
       return new Promise(resolve => {
         const response = new Response(null, {
-          ok: true,
           status: 200,
         });
         response.arrayBuffer = async () => {
@@ -132,8 +116,8 @@ class SandboxedPumpkinTagger {
     }
     const taggerWasmJsFile = new TextDecoder().decode(taggerWasmBytes);
     // A promise that resolves once the web assembly module loads.
-    const wasmLoadPromise = new Promise((resolve) => {
-      globalThis['goog']['global']['Module'] = {
+    const wasmLoadPromise = new Promise<void>(resolve => {
+      (globalThis as any)['goog']['global']['Module'] = {
         onRuntimeInitialized() {
           resolve();
         },
@@ -157,9 +141,8 @@ class SandboxedPumpkinTagger {
 
   /**
    * Refreshes SandboxedPumpkinTagger in a new locale.
-   * @param {!PumpkinConstants.PumpkinLocale} locale
    */
-  refresh_(locale) {
+  refresh_(locale: PumpkinConstants.PumpkinLocale): void {
     if (!this.pumpkinTagger_) {
       throw new Error(
           'SandboxedPumpkinTagger must be initialized before calling refresh');
@@ -173,33 +156,32 @@ class SandboxedPumpkinTagger {
     });
   }
 
-  /**
-   * @param {!PumpkinConstants.PumpkinLocale} locale
-   * @return {!{pumpkinConfig: !ArrayBuffer, actionConfig: !ArrayBuffer}}
-   */
-  getConfigsForLocale(locale) {
+  getConfigsForLocale(locale: PumpkinConstants.PumpkinLocale):
+      {pumpkinConfig: ArrayBuffer; actionConfig: ArrayBuffer} {
     let pumpkinConfig;
     let actionConfig;
+    // TODO(crbug.com/314203187): Not null asserted, check that this is
+    // correct.
     switch (locale) {
       case PumpkinConstants.PumpkinLocale.EN_US:
-        pumpkinConfig = this.pumpkinData_.en_us_pumpkin_config_binarypb;
-        actionConfig = this.pumpkinData_.en_us_action_config_binarypb;
+        pumpkinConfig = this.pumpkinData_!.en_us_pumpkin_config_binarypb;
+        actionConfig = this.pumpkinData_!.en_us_action_config_binarypb;
         break;
       case PumpkinConstants.PumpkinLocale.FR_FR:
-        pumpkinConfig = this.pumpkinData_.fr_fr_pumpkin_config_binarypb;
-        actionConfig = this.pumpkinData_.fr_fr_action_config_binarypb;
+        pumpkinConfig = this.pumpkinData_!.fr_fr_pumpkin_config_binarypb;
+        actionConfig = this.pumpkinData_!.fr_fr_action_config_binarypb;
         break;
       case PumpkinConstants.PumpkinLocale.IT_IT:
-        pumpkinConfig = this.pumpkinData_.it_it_pumpkin_config_binarypb;
-        actionConfig = this.pumpkinData_.it_it_action_config_binarypb;
+        pumpkinConfig = this.pumpkinData_!.it_it_pumpkin_config_binarypb;
+        actionConfig = this.pumpkinData_!.it_it_action_config_binarypb;
         break;
       case PumpkinConstants.PumpkinLocale.DE_DE:
-        pumpkinConfig = this.pumpkinData_.de_de_pumpkin_config_binarypb;
-        actionConfig = this.pumpkinData_.de_de_action_config_binarypb;
+        pumpkinConfig = this.pumpkinData_!.de_de_pumpkin_config_binarypb;
+        actionConfig = this.pumpkinData_!.de_de_action_config_binarypb;
         break;
       case PumpkinConstants.PumpkinLocale.ES_ES:
-        pumpkinConfig = this.pumpkinData_.es_es_pumpkin_config_binarypb;
-        actionConfig = this.pumpkinData_.es_es_action_config_binarypb;
+        pumpkinConfig = this.pumpkinData_!.es_es_pumpkin_config_binarypb;
+        actionConfig = this.pumpkinData_!.es_es_action_config_binarypb;
         break;
       default:
         throw new Error(
