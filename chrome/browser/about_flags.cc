@@ -11244,15 +11244,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableCardBenefitsIphDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardBenefitsIph)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"enable-automotive-fullscreen-toolbar-improvements",
-     flag_descriptions::kAutomotiveFullscreenToolbarImprovementsName,
-     flag_descriptions::kAutomotiveFullscreenToolbarImprovementsDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kAutomotiveFullscreenToolbarImprovements)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"privacy-sandbox-privacy-policy",
      flag_descriptions::kPrivacySandboxPrivacyPolicyName,
      flag_descriptions::kPrivacySandboxPrivacyPolicyDescription, kOsAll,

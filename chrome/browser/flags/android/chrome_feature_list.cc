@@ -203,7 +203,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAppSpecificHistory,
     &kAsyncNotificationManager,
     &kAsyncNotificationManagerForDownload,
-    &kAutomotiveFullscreenToolbarImprovements,
     &kAuxiliarySearchDonation,
     &kAvoidSelectedTabFocusOnLayoutDoneShowing,
     &kBackgroundThreadPool,
@@ -591,10 +590,6 @@ BASE_FEATURE(kAsyncNotificationManager,
 BASE_FEATURE(kAsyncNotificationManagerForDownload,
              "AsyncNotificationManagerForDownload",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAutomotiveFullscreenToolbarImprovements,
-             "AutomotiveFullscreenToolbarImprovements",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAuxiliarySearchDonation,
              "AuxiliarySearchDonation",

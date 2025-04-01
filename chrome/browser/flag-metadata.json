@@ -2540,11 +2540,6 @@
     "expiry_milestone": 138
   },
   {
-    "name": "enable-automotive-fullscreen-toolbar-improvements",
-    "owners": [ "jtanaristy@google.com", "wenyufu@google.com" ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "enable-ax-tree-fixing",
     "owners": [ "mschillaci@chromium.org", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 150

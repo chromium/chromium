@@ -194,12 +194,6 @@ const char kAutomaticUsbDetachName[] =
 const char kAutomaticUsbDetachDescription[] =
     "Automatically detach kernel drivers when a USB interface is busy.";
 
-const char kAutomotiveFullscreenToolbarImprovementsName[] =
-    "Enable automotive fullscreen toolbar improvements.";
-const char kAutomotiveFullscreenToolbarImprovementsDescription[] =
-    "In automotive, hides the toolbar when entering fullscreen mode. Swipe on"
-    "edge to reshow the toolbar.";
-
 const char kAuxiliarySearchDonationName[] = "Auxiliary Search Donation";
 const char kAuxiliarySearchDonationDescription[] =
     "If enabled, override Auxiliary Search donation cap.";

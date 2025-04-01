@@ -134,9 +134,6 @@ extern const char kAriaElementReflectionDescription[];
 extern const char kAutomaticUsbDetachName[];
 extern const char kAutomaticUsbDetachDescription[];
 
-extern const char kAutomotiveFullscreenToolbarImprovementsName[];
-extern const char kAutomotiveFullscreenToolbarImprovementsDescription[];
-
 extern const char kAuxiliarySearchDonationName[];
 extern const char kAuxiliarySearchDonationDescription[];
 

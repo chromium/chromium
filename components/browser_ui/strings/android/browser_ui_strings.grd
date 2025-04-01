@@ -924,9 +924,6 @@
       <message name="IDS_IMMERSIVE_FULLSCREEN_GESTURE_NAVIGATION_MODE_API_NOTIFICATION" desc="Notification message when a site has entered immersive fullscreen and the directions of how to exit when the system gesture navigation mode is on.">
         Drag from top and swipe from the left or right edge to exit full screen.
       </message>
-      <message name="IDS_IMMERSIVE_FULLSCREEN_API_NOTIFICATION_AUTOMOTIVE" desc="Notification message when a site has entered immersive fullscreen and the directions of how to exit.">
-        Press the back button to exit full screen.
-      </message>
       <message name="IDS_IMMERSIVE_FULLSCREEN_AUTOMOTIVE_TOOLBAR_IMPROVEMENTS" desc="Notification message when a site has entered immersive fullscreen and the directions of how to exit by swiping left.">
         Drag from the side of the screen to exit full screen.
       </message>
