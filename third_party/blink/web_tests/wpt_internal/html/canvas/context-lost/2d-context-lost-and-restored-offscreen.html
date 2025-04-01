@@ -4,10 +4,23 @@
 <script src="./2d-context-lost-and-restored-impl.js"></script>
 <script>
 
-promise_test(async () => {
-  const canvas = new OffscreenCanvas(300, 150);
-  await Test2dContextLostAndRestored(canvas);
-}, 'Accelerated OffscreenCanvas should lose and restore 2d context when ' +
-    'the GPU process is terminated.');
+assert_true(!!window.internals, 'This test requires window.internals.');
+
+if (internals.runtimeFlags.accelerated2dCanvasEnabled) {
+
+  promise_test(async () => {
+    const canvas = new OffscreenCanvas(300, 150);
+    await Test2dContextLostAndRestored(canvas);
+  }, 'Accelerated OffscreenCanvas should lose and restore 2d context when ' +
+     'the GPU process is terminated.');
+
+} else {
+
+  promise_test(async (t) => {
+    const canvas = new OffscreenCanvas(300, 150);
+    await Test2dContextNeverLost(t, canvas);
+  }, 'Unaccelerated OffscreenCanvas should not lose their 2d context when ' +
+     'the GPU process is terminated.');
+}
 
 </script>

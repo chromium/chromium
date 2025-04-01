@@ -307,32 +307,21 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
 bool CanvasRenderingContext2D::Restore() {
   CanvasRenderingContextHost* host = Host();
   CHECK(host);
-  if (host->GetRasterMode() == RasterMode::kCPU) {
-    return false;
-  }
-
   DCHECK(!host->ResourceProvider());
 
   host->ClearLayerTexture();
 
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
-      SharedGpuContext::ContextProviderWrapper();
-
-  if (!context_provider_wrapper->ContextProvider().IsContextLost()) {
-    CanvasResourceProvider* resource_provider =
-        host->GetOrCreateResourceProviderWithCurrentRasterModeHint();
-
-    // The current paradigm does not support switching from accelerated to
-    // non-accelerated, which would be tricky due to changes to the layer tree,
-    // which can only happen at specific times during the document lifecycle.
-    // Therefore, we can only accept the restored surface if it is accelerated.
-    if (resource_provider && host->GetRasterMode() == RasterMode::kCPU) {
-      host->ReplaceResourceProvider(nullptr);
-      // FIXME: draw sad canvas picture into new buffer crbug.com/243842
+  if (SharedGpuContext::IsGpuCompositingEnabled()) {
+    if (!SharedGpuContext::SharedImageInterfaceProvider()) {
+      return false;
+    }
+  } else {
+    if (!SharedGpuContext::ContextProviderWrapper()) {
+      return false;
     }
   }
 
-  return host->ResourceProvider();
+  return !!host->GetOrCreateResourceProviderWithCurrentRasterModeHint();
 }
 
 void CanvasRenderingContext2D::WillDrawImage(CanvasImageSource* source) const {

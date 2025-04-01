@@ -50,3 +50,38 @@ async function Test2dContextLostAndRestored(canvas,
       ctx.getImageData(2, 2, 1, 1).data, [0, 255, 0, 255],
       `The canvas should be usable after it's restored.`);
 }
+
+// Tests that the canvas is not lost after the GPU process is terminated.
+async function Test2dContextNeverLost(t, canvas,
+                                      {desynchronized = false} = {}) {
+  const ctx = canvas.getContext('2d', {
+    // Stay on GPU acceleration despite read-backs.
+    willReadFrequently: false,
+    desynchronized: desynchronized,
+  });
+
+  canvas.oncontextlost = t.step_func(() => {
+    assert_unreached('The context should not have been lost.');
+  });
+
+  // Draw something and crash the GPU process.
+  ctx.fillStyle = 'red';
+  ctx.fillRect(0, 0, 100, 100);
+
+  chrome.gpuBenchmarking.terminateGpuProcessNormally();
+
+  // The canvas should still be alive.
+  assert_false(ctx.isContextLost());
+  assert_array_equals(
+      ctx.getImageData(2, 2, 1, 1).data, [255, 0, 0, 255],
+      'The canvas should still be healthy after the GPU process died.');
+
+  // Wait for a few frames and check that the canvas is still healthy.
+  for (let i = 0; i < 10; ++i) {
+    await new Promise(resolve => requestAnimationFrame(resolve));
+  }
+  assert_false(ctx.isContextLost());
+  assert_array_equals(
+    ctx.getImageData(2, 2, 1, 1).data, [255, 0, 0, 255],
+    'The canvas should still be healthy a while after the GPU process died.');
+}

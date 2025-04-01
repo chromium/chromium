@@ -111,6 +111,19 @@
     "args": ["--enable-accelerated-2d-canvas"],
     "expires": "never"
   },
+  "This never expires because it tests a shipping configuration",
+  {
+    "prefix": "cpu-compositing",
+    "owners": ["fserb@chromium.org", "jpgravel@chromium.org"],
+    "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
+    "bases": ["wpt_internal/html/canvas/context-lost"],
+    "exclusive_tests": ["wpt_internal/html/canvas/context-lost"],
+    "args": [
+      "--disable-gpu-compositing",
+      "--enable-threaded-compositing"
+    ],
+    "expires": "never"
+  },
 
   "The threaded virtual suite tests with threaded compositing, which is the",
   "configuration that we ship.  Because this is testing what we ship (in a way",
