@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FingerprintingProtection.IndexRuleset.Verify.Status"
-    enum="SubresourceFilterVerifyStatus" expires_after="2025-07-26">
+    enum="SubresourceFilterVerifyStatus" expires_after="2025-09-28">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FingerprintingProtection.IndexRuleset.Verify2.WallDuration"
-    units="ms" expires_after="2025-07-26">
+    units="ms" expires_after="2025-09-28">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>

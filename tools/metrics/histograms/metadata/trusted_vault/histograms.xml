@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedVault.FileReadStatus{SecurityDomainId}"
-    enum="TrustedVaultFileReadStatus" expires_after="2025-07-27">
+    enum="TrustedVaultFileReadStatus" expires_after="2025-09-28">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>Recorded when reading local trusted vault file.</summary>
