@@ -177,6 +177,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             Action.SAVE_PAGE,
             Action.SHARE_PAGE,
             Action.PRINT_PAGE,
+            Action.BACK,
+            Action.FORWARD,
+            Action.RELOAD,
         })
         @Retention(RetentionPolicy.SOURCE)
         public @interface Action {
@@ -224,7 +227,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int SAVE_PAGE = 41;
             int SHARE_PAGE = 42;
             int PRINT_PAGE = 43;
-            int NUM_ENTRIES = 44;
+            int BACK = 44;
+            int FORWARD = 45;
+            int RELOAD = 46;
+            int NUM_ENTRIES = 47;
         }
     }
 
@@ -296,6 +302,15 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         List<Pair<Integer, ModelList>> groupedItems = new ArrayList<>();
 
         if (mParams.isPage() && shouldShowEmptySpaceContextMenu()) {
+            ModelList pageNavigationGroup = new ModelList();
+            pageNavigationGroup.add(
+                    createListItem(Item.BACK, false, mItemDelegate.canCurrentTabGoBack()));
+            pageNavigationGroup.add(
+                    createListItem(Item.FORWARD, false, mItemDelegate.canCurrentTabGoForward()));
+            pageNavigationGroup.add(createListItem(Item.RELOAD, false, true));
+            groupedItems.add(
+                    new Pair<>(R.string.contextmenu_page_navigation_title, pageNavigationGroup));
+
             ModelList pageGroup = new ModelList();
             // TODO(crbug.com/405842034): investigate supporting downloads in incognito mode.
             if (!mItemDelegate.isIncognito()
@@ -311,7 +326,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             }
             groupedItems.add(new Pair<>(R.string.contextmenu_page_title, pageGroup));
         }
-
         if (mParams.isAnchor()) {
             ModelList linkGroup = new ModelList();
             if (FirstRunStatus.getFirstRunFlowComplete()
@@ -541,7 +555,16 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     @Override
     public boolean onItemSelected(int itemId) {
-        if (itemId == R.id.contextmenu_open_in_new_tab) {
+        if (itemId == R.id.contextmenu_back) {
+            recordContextMenuSelection(ContextMenuUma.Action.BACK);
+            mItemDelegate.onCurrentTabGoBack();
+        } else if (itemId == R.id.contextmenu_forward) {
+            recordContextMenuSelection(ContextMenuUma.Action.FORWARD);
+            mItemDelegate.onCurrentTabGoForward();
+        } else if (itemId == R.id.contextmenu_reload) {
+            recordContextMenuSelection(ContextMenuUma.Action.RELOAD);
+            mItemDelegate.onReloadCurrentTab();
+        } else if (itemId == R.id.contextmenu_open_in_new_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_NEW_TAB);
             mItemDelegate.onOpenInNewTab(
                     mParams.getUrl(),
