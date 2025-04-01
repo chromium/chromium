@@ -28,9 +28,23 @@
 #include "components/soda/soda_util.h"
 
 namespace {
-// Returns a boolean indicating whether the language is enabled.
+// Returns a boolean indicating whether the language is both enabled and not
+// already installed.
 bool IsLanguageInstallable(const std::string& language_code,
                            bool is_soda_binary_installed) {
+  if (is_soda_binary_installed) {
+    // Check if the language pack is already installed if the SODA binary was
+    // already installed. If the SODA binary has not been installed,
+    // `prefs::kSodaRegisteredLanguagePacks` will contain the default language
+    // pack which may not exist on the device.
+    for (const auto& language : g_browser_process->local_state()->GetList(
+             prefs::kSodaRegisteredLanguagePacks)) {
+      if (language.GetString() == language_code) {
+        return false;
+      }
+    }
+  }
+
   return base::Contains(
       speech::SodaInstaller::GetInstance()->GetLiveCaptionEnabledLanguages(),
       language_code);
@@ -41,17 +55,7 @@ bool IsLanguageInstallable(const std::string& language_code,
 
 namespace speech {
 
-OnDeviceSpeechRecognitionImpl::~OnDeviceSpeechRecognitionImpl() {
-#if !BUILDFLAG(IS_ANDROID)
-  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  // `soda_installer` is not guaranteed to be valid, since it's possible for
-  // this class to out-live it. This means that this class cannot use
-  // ScopedObservation and needs to manage removing the observer itself.
-  if (soda_installer) {
-    soda_installer->RemoveObserver(this);
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
-}
+OnDeviceSpeechRecognitionImpl::~OnDeviceSpeechRecognitionImpl() = default;
 
 void OnDeviceSpeechRecognitionImpl::Bind(
     mojo::PendingReceiver<media::mojom::OnDeviceSpeechRecognition> receiver) {
@@ -75,7 +79,6 @@ void OnDeviceSpeechRecognitionImpl::InstallOnDeviceSpeechRecognition(
         callback) {
 #if BUILDFLAG(IS_ANDROID)
   std::move(callback).Run(false);
-}
 #else
   std::optional<speech::SodaLanguagePackComponentConfig> language_config =
       speech::GetLanguageComponentConfigMatchingLanguageSubtag(language);
@@ -96,7 +99,6 @@ void OnDeviceSpeechRecognitionImpl::InstallOnDeviceSpeechRecognition(
     return;
   }
 
-  language_installation_callbacks_[language].push_back(std::move(callback));
   // `InstallSoda` will only install the SODA binary if it is not already
   // installed.
   speech::SodaInstaller::GetInstance()->InstallSoda(
@@ -106,21 +108,9 @@ void OnDeviceSpeechRecognitionImpl::InstallOnDeviceSpeechRecognition(
   // installed.
   speech::SodaInstaller::GetInstance()->InstallLanguage(
       language_config.value().language_name, g_browser_process->local_state());
+  std::move(callback).Run(true);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
-
-void OnDeviceSpeechRecognitionImpl::OnSodaInstalled(
-    speech::LanguageCode language_code) {
-  RunAndRemoveInstallationCallbacks(GetLanguageName(language_code),
-                                    /*installation_success=*/true);
-}
-
-void OnDeviceSpeechRecognitionImpl::OnSodaInstallError(
-    speech::LanguageCode language_code,
-    speech::SodaInstaller::ErrorCode error_code) {
-  RunAndRemoveInstallationCallbacks(GetLanguageName(language_code),
-                                    /*installation_success=*/false);
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 OnDeviceSpeechRecognitionImpl::OnDeviceSpeechRecognitionImpl(
     content::RenderFrameHost* frame_host)
@@ -129,14 +119,7 @@ OnDeviceSpeechRecognitionImpl::OnDeviceSpeechRecognitionImpl(
                         frame_host->GetProcess()->GetBrowserContext())
                         ->GetPrefs()),
       language_prefs_(
-          std::make_unique<language::LanguagePrefs>(pref_service_)) {
-#if !BUILDFLAG(IS_ANDROID)
-  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  if (soda_installer) {
-    soda_installer->AddObserver(this);
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
-}
+          std::make_unique<language::LanguagePrefs>(pref_service_)) {}
 
 bool OnDeviceSpeechRecognitionImpl::CanInstallWithoutUserConsent(
     const std::string& language) {
@@ -159,22 +142,6 @@ bool OnDeviceSpeechRecognitionImpl::CanInstallWithoutUserConsent(
   return false;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-void OnDeviceSpeechRecognitionImpl::RunAndRemoveInstallationCallbacks(
-    const std::string& language,
-    bool installation_success) {
-  auto it = language_installation_callbacks_.find(language);
-  if (it != language_installation_callbacks_.end()) {
-    std::list<InstallOnDeviceSpeechRecognitionCallback>& callbacks = it->second;
-    for (auto callback_iterator = callbacks.begin();
-         callback_iterator != callbacks.end();) {
-      std::move(*callback_iterator).Run(installation_success);
-      callback_iterator = callbacks.erase(callback_iterator);
-    }
-    language_installation_callbacks_.erase(it);
-  }
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 DOCUMENT_USER_DATA_KEY_IMPL(OnDeviceSpeechRecognitionImpl);
 
 }  // namespace speech
