@@ -265,6 +265,9 @@ class CORE_EXPORT CanvasRenderingContext
 
     // Lost because an invalid canvas size was used.
     kInvalidCanvasSize,
+
+    // Lost because the canvas is being disposed.
+    kCanvasDisposed,
   };
   virtual void LoseContext(LostContextMode) {}
   virtual void SendContextLostEventIfNeeded() {}

@@ -205,7 +205,7 @@ void CanvasRenderingContext2D::Stop() {
     // Stop any pending restoration.
     try_restore_context_event_timer_.Stop();
   } else {
-    LoseContext(kSyntheticLostContext);
+    LoseContext(kCanvasDisposed);
   }
 }
 
