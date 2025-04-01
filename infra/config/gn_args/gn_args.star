@@ -94,6 +94,14 @@ gn_args.config(
     },
 )
 
+# This will not be the default anymore so must explicitly be set on bots.
+gn_args.config(
+    name = "android_with_static_analysis",
+    args = {
+        "android_static_analysis": "on",
+    },
+)
+
 gn_args.config(
     name = "android_low_end_secondary_toolchain",
     args = {
