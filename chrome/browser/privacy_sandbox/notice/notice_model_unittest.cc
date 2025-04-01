@@ -158,8 +158,8 @@ TEST_F(NoticeCatalogNoticeTest, RegisterNewNoticeSuccessfully) {
   Notice* notice = catalog
                        .RegisterAndRetrieveNewNotice<Notice>(
                            {PrivacySandboxNotice::kTopicsConsentNotice,
-                            SurfaceType::kDesktopNewTab},
-                           &privacy_sandbox::kTopicsConsentDesktopModalFeature)
+                            SurfaceType::kDesktopNewTab})
+                       ->SetFeature(&kTopicsConsentDesktopModalFeature)
                        ->SetTargetApis({target_api})
                        ->SetPreReqApis({pre_req_api});
 
@@ -170,8 +170,7 @@ TEST_F(NoticeCatalogNoticeTest, RegisterNewNoticeSuccessfully) {
   EXPECT_THAT(notice->GetNoticeId().second, SurfaceType::kDesktopNewTab);
   EXPECT_THAT(notice->GetTargetApis(), Contains(target_api));
   EXPECT_THAT(notice->GetPreReqApis(), Contains(pre_req_api));
-  EXPECT_THAT(notice->GetFeature(),
-              &privacy_sandbox::kTopicsConsentDesktopModalFeature);
+  EXPECT_THAT(notice->GetFeature(), &kTopicsConsentDesktopModalFeature);
 }
 
 TEST_F(NoticeCatalogNoticeTest, RegisterNewNoticeGroupSuccessfully) {
@@ -182,26 +181,24 @@ TEST_F(NoticeCatalogNoticeTest, RegisterNewNoticeGroupSuccessfully) {
   notice_catalog()->RegisterNoticeGroup<Consent>(
       {{{PrivacySandboxNotice::kTopicsConsentNotice,
          SurfaceType::kDesktopNewTab},
-        &privacy_sandbox::kTopicsConsentDesktopModalFeature},
+        &kTopicsConsentDesktopModalFeature},
        {{PrivacySandboxNotice::kTopicsConsentNotice, SurfaceType::kClankBrApp},
-        &privacy_sandbox::kTopicsConsentModalClankBrAppFeature},
+        &kTopicsConsentModalClankBrAppFeature},
        {{PrivacySandboxNotice::kTopicsConsentNotice,
          SurfaceType::kClankCustomTab},
-        &privacy_sandbox::kTopicsConsentModalClankCCTFeature}},
+        &kTopicsConsentModalClankCCTFeature}},
       {target_api});
 
   notice_catalog()->RegisterNoticeGroup<Notice>(
       {{{PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
          SurfaceType::kDesktopNewTab},
-        &privacy_sandbox::kProtectedAudienceMeasurementNoticeModalFeature},
+        &kProtectedAudienceMeasurementNoticeModalFeature},
        {{PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
          SurfaceType::kClankBrApp},
-        &privacy_sandbox::
-            kProtectedAudienceMeasurementNoticeModalClankBrAppFeature},
+        &kProtectedAudienceMeasurementNoticeModalClankBrAppFeature},
        {{PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
          SurfaceType::kClankCustomTab},
-        &privacy_sandbox::
-            kProtectedAudienceMeasurementNoticeModalClankCCTFeature}},
+        &kProtectedAudienceMeasurementNoticeModalClankCCTFeature}},
       {target_api}, {pre_req_api});
 
   const auto& notice_map = notice_catalog()->GetNoticeMap();
@@ -232,12 +229,12 @@ TEST_F(NoticeCatalogNoticeTest,
   notice_catalog()->RegisterNoticeGroup<Consent>(
       {{{PrivacySandboxNotice::kTopicsConsentNotice,
          SurfaceType::kDesktopNewTab},
-        &privacy_sandbox::kTopicsConsentDesktopModalFeature},
+        &kTopicsConsentDesktopModalFeature},
        {{PrivacySandboxNotice::kTopicsConsentNotice, SurfaceType::kClankBrApp},
-        &privacy_sandbox::kTopicsConsentModalClankBrAppFeature},
+        &kTopicsConsentModalClankBrAppFeature},
        {{PrivacySandboxNotice::kTopicsConsentNotice,
          SurfaceType::kClankCustomTab},
-        &privacy_sandbox::kTopicsConsentModalClankCCTFeature}},
+        &kTopicsConsentModalClankCCTFeature}},
       {target_api});
 
   const auto& notice_map = notice_catalog()->GetNoticeMap();
@@ -248,21 +245,21 @@ TEST_F(NoticeCatalogNoticeTest,
                                SurfaceType::kDesktopNewTab))
           ->second.get();
   EXPECT_THAT(topics_desktop_notice->GetFeature(),
-              &privacy_sandbox::kTopicsConsentDesktopModalFeature);
+              &kTopicsConsentDesktopModalFeature);
   Notice* topics_brapp_notice =
       notice_map
           .find(std::make_pair(PrivacySandboxNotice::kTopicsConsentNotice,
                                SurfaceType::kClankBrApp))
           ->second.get();
   EXPECT_THAT(topics_brapp_notice->GetFeature(),
-              &privacy_sandbox::kTopicsConsentModalClankBrAppFeature);
+              &kTopicsConsentModalClankBrAppFeature);
   Notice* topics_cct_notice =
       notice_map
           .find(std::make_pair(PrivacySandboxNotice::kTopicsConsentNotice,
                                SurfaceType::kClankCustomTab))
           ->second.get();
   EXPECT_THAT(topics_cct_notice->GetFeature(),
-              &privacy_sandbox::kTopicsConsentModalClankCCTFeature);
+              &kTopicsConsentModalClankCCTFeature);
 }
 }  // namespace
 }  // namespace privacy_sandbox
