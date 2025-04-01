@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_IPH_FOR_NEW_CHROME_USER_MODEL_UTILS_H_
-#define IOS_CHROME_BROWSER_IPH_FOR_NEW_CHROME_USER_MODEL_UTILS_H_
+#ifndef IOS_CHROME_BROWSER_BUBBLE_MODEL_UTILS_H_
+#define IOS_CHROME_BROWSER_BUBBLE_MODEL_UTILS_H_
 
 namespace segmentation_platform {
 class DeviceSwitcherResultDispatcher;
 }
-
-namespace iph_for_new_chrome_user {
 
 // Returns eligibility of seeing the IPH for Safari Switcher for new chrome
 // users. The critieria: 1. device switcher classifies it as the first syncing
@@ -18,6 +16,4 @@ namespace iph_for_new_chrome_user {
 bool IsUserNewSafariSwitcher(
     segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher);
 
-}  // namespace iph_for_new_chrome_user
-
-#endif  // IOS_CHROME_BROWSER_IPH_FOR_NEW_CHROME_USER_MODEL_UTILS_H_
+#endif  // IOS_CHROME_BROWSER_BUBBLE_MODEL_UTILS_H_

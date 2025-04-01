@@ -414,9 +414,6 @@ extern const char kIOSReactivationNotificationsDescription[];
 extern const char kIOSProvidesAppNotificationSettingsName[];
 extern const char kIOSProvidesAppNotificationSettingsDescription[];
 
-extern const char kIPHForSafariSwitcherName[];
-extern const char kIPHForSafariSwitcherDescription[];
-
 extern const char
     kLensBlockFetchObjectsInteractionRPCsOnSeparateHandshakeName[];
 extern const char

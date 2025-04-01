@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
+#import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
 
 #import "base/check.h"
 #import "components/bookmarks/browser/bookmark_model.h"

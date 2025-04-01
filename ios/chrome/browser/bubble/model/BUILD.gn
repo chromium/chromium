@@ -10,7 +10,6 @@ source_set("model") {
     "utils.mm",
   ]
   deps = [
-    ":features",
     "//base",
     "//components/bookmarks/browser",
     "//components/feature_engagement/public",
@@ -31,16 +30,5 @@ source_set("model") {
     "//ios/chrome/common/ui/util",
     "//ios/web/public/navigation",
     "//ios/web/public/ui",
-  ]
-}
-
-source_set("features") {
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/chrome/browser/shared/public/features:system_flags",
   ]
 }

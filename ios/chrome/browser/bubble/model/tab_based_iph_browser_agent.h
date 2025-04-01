@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_IPH_FOR_NEW_CHROME_USER_MODEL_TAB_BASED_IPH_BROWSER_AGENT_H_
-#define IOS_CHROME_BROWSER_IPH_FOR_NEW_CHROME_USER_MODEL_TAB_BASED_IPH_BROWSER_AGENT_H_
+#ifndef IOS_CHROME_BROWSER_BUBBLE_MODEL_TAB_BASED_IPH_BROWSER_AGENT_H_
+#define IOS_CHROME_BROWSER_BUBBLE_MODEL_TAB_BASED_IPH_BROWSER_AGENT_H_
 
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
@@ -183,4 +183,4 @@ class TabBasedIPHBrowserAgent : public bookmarks::BaseBookmarkModelObserver,
   BROWSER_USER_DATA_KEY_DECL();
 };
 
-#endif  // IOS_CHROME_BROWSER_IPH_FOR_NEW_CHROME_USER_MODEL_TAB_BASED_IPH_BROWSER_AGENT_H_
+#endif  // IOS_CHROME_BROWSER_BUBBLE_MODEL_TAB_BASED_IPH_BROWSER_AGENT_H_

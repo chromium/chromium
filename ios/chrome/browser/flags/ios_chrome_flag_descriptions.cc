@@ -715,10 +715,6 @@ const char kIOSProvidesAppNotificationSettingsName[] =
 const char kIOSProvidesAppNotificationSettingsDescription[] =
     "Enabled integration with iOS's ProvidesAppNotificationSettings feature.";
 
-const char kIPHForSafariSwitcherName[] = "IPH for Safari Switcher";
-const char kIPHForSafariSwitcherDescription[] =
-    "Enables displaying IPH for users who are considered Safari Switcher";
-
 extern const char
     kLensBlockFetchObjectsInteractionRPCsOnSeparateHandshakeName[] =
         "Lens blocks fetch objects interaction RPCs on separate handshake";

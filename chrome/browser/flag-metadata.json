@@ -5452,11 +5452,6 @@
     "expiry_milestone": 137
   },
   {
-    "name": "ios-iph-for-safari-switcher",
-    "owners": [ "huitingyu@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 121
-  },
-  {
     "name": "ios-keyboard-accessory-upgrade-for-ipad",
     "owners": [ "sugoi@chromium.org", "tmartino@chromium.org", "bling-integrations-team@google.com" ],
     "expiry_milestone": 145
