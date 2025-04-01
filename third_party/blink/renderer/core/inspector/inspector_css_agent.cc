@@ -2015,9 +2015,10 @@ InspectorCSSAgent::AnimationsForNode(Element* element,
         protocol::CSS::Value::create()
             .setText(css_keyframes_rule->name())
             .build();
-    if (source_data)
+    if (source_data) {
       name->setRange(inspector_style_sheet->BuildSourceRangeObject(
           source_data->rule_header_range));
+    }
     css_keyframes_rules->emplace_back(protocol::CSS::CSSKeyframesRule::create()
                                           .setAnimationName(std::move(name))
                                           .setKeyframes(std::move(keyframes))
@@ -2778,9 +2779,10 @@ protocol::Response InspectorCSSAgent::setMediaText(
   if (success) {
     CSSMediaRule* rule = InspectorCSSAgent::AsCSSMediaRule(action->TakeRule());
     String source_url = rule->parentStyleSheet()->Contents()->BaseURL();
-    if (source_url.empty())
+    if (source_url.empty()) {
       source_url = InspectorDOMAgent::DocumentURLString(
           rule->parentStyleSheet()->OwnerDocument());
+    }
     *result = BuildMediaObject(rule->media(), kMediaListSourceMediaRule,
                                source_url, rule->parentStyleSheet());
   }
@@ -3229,9 +3231,10 @@ void InspectorCSSAgent::CollectMediaQueriesFromRule(
 
   if (parent_style_sheet) {
     source_url = parent_style_sheet->Contents()->BaseURL();
-    if (source_url.empty())
+    if (source_url.empty()) {
       source_url = InspectorDOMAgent::DocumentURLString(
           parent_style_sheet->OwnerDocument());
+    }
   } else {
     source_url = "";
   }
@@ -3701,9 +3704,10 @@ String InspectorCSSAgent::UnbindStyleSheet(
     InspectorStyleSheet* inspector_style_sheet) {
   String id = inspector_style_sheet->Id();
   id_to_inspector_style_sheet_.erase(id);
-  if (inspector_style_sheet->PageStyleSheet())
+  if (inspector_style_sheet->PageStyleSheet()) {
     css_style_sheet_to_inspector_style_sheet_.erase(
         inspector_style_sheet->PageStyleSheet());
+  }
   return id;
 }
 
@@ -3716,9 +3720,10 @@ InspectorStyleSheet* InspectorCSSAgent::InspectorStyleSheetForRule(
   // pointers if they are coming from user agent stylesheets. To work around
   // this issue, we use CSSOM wrapper created by inspector.
   if (!rule->parentStyleSheet()) {
-    if (!inspector_user_agent_style_sheet_)
+    if (!inspector_user_agent_style_sheet_) {
       inspector_user_agent_style_sheet_ = MakeGarbageCollected<CSSStyleSheet>(
           CSSDefaultStyleSheets::Instance().DefaultStyleSheet());
+    }
     rule->SetParentStyleSheet(inspector_user_agent_style_sheet_.Get());
   }
   return BindStyleSheet(rule->parentStyleSheet());
@@ -3981,7 +3986,8 @@ InspectorCSSAgent::BuildArrayForCSSAnimationStyleList(Element* element) {
             KeyframeEffect::Priority::kDefaultPriority, property_pass_filter,
             effect);
 
-    PropertyHandleSet animation_properties = effect->Model()->Properties();
+    PropertyHandleSet animation_properties =
+        effect->Model()->Properties().UniqueProperties();
     MutableCSSPropertyValueSet* property_values =
         MakeGarbageCollected<MutableCSSPropertyValueSet>(
             CSSParserMode::kHTMLStandardMode);

@@ -8,26 +8,48 @@
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_value.h"
 #include "third_party/blink/renderer/core/animation/keyframe.h"
+#include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/animation/typed_interpolation_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
 // An implementation of Keyframe specifically for CSS Transitions.
 //
 // TransitionKeyframes are a simple form of keyframe, which only have one
-// (property, value) pair.
+// (property, value) pair. CSS Transitions do not support SVG attributes, so the
+// property will always be a CSSPropertyID (for CSS properties and presentation
+// attributes) or an AtomicString (for custom CSS properties).
 class CORE_EXPORT TransitionKeyframe : public Keyframe {
  public:
+  class CORE_EXPORT IterableTransitionKeyframeProperty
+      : public Keyframe::IterableProperties {
+   public:
+    explicit IterableTransitionKeyframeProperty(const PropertyHandle& property)
+        : property_(property) {}
+    ~IterableTransitionKeyframeProperty() override = default;
+    PropertyIteratorWrapper begin() const override;
+    size_t size() const override { return 1u; }
+    bool IsTransitionProperties() const override { return true; }
+
+   private:
+    friend class TransitionKeyframe;
+
+    const PropertyHandle property_;
+  };
+
   explicit TransitionKeyframe(const PropertyHandle& property)
-      : property_(property) {}
+      : Keyframe(MakeGarbageCollected<IterableTransitionKeyframeProperty>(
+            property)) {}
 
   TransitionKeyframe(const TransitionKeyframe& copy_from)
-      : Keyframe(copy_from.offset_,
+      : Keyframe(MakeGarbageCollected<IterableTransitionKeyframeProperty>(
+                     copy_from.Property()),
+                 copy_from.offset_,
                  copy_from.timeline_offset_,
                  copy_from.composite_,
                  copy_from.easing_),
-        property_(copy_from.property_),
         value_(copy_from.value_->Clone()),
         compositor_value_(copy_from.compositor_value_) {}
 
@@ -41,8 +63,6 @@ class CORE_EXPORT TransitionKeyframe : public Keyframe {
     value_ = value;
   }
   void SetCompositorValue(CompositorKeyframeValue*);
-  PropertyHandleSet Properties() const final;
-
   void AddKeyframePropertiesToV8Object(V8ObjectBuilder&,
                                        Element*) const override;
 
@@ -97,6 +117,10 @@ class CORE_EXPORT TransitionKeyframe : public Keyframe {
  private:
   bool IsTransitionKeyframe() const final { return true; }
 
+  const PropertyHandle& Property() const {
+    return To<IterableTransitionKeyframeProperty>(&Properties())->property_;
+  }
+
   Keyframe* Clone() const final {
     return MakeGarbageCollected<TransitionKeyframe>(*this);
   }
@@ -106,7 +130,6 @@ class CORE_EXPORT TransitionKeyframe : public Keyframe {
       EffectModel::CompositeOperation effect_composite,
       double offset) const final;
 
-  PropertyHandle property_;
   Member<TypedInterpolationValue> value_;
   Member<CompositorKeyframeValue> compositor_value_;
 };
@@ -124,6 +147,12 @@ template <>
 struct DowncastTraits<TransitionPropertySpecificKeyframe> {
   static bool AllowFrom(const Keyframe::PropertySpecificKeyframe& value) {
     return value.IsTransitionPropertySpecificKeyframe();
+  }
+};
+template <>
+struct DowncastTraits<TransitionKeyframe::IterableTransitionKeyframeProperty> {
+  static bool AllowFrom(const Keyframe::IterableProperties& properties) {
+    return properties.IsTransitionProperties();
   }
 };
 

@@ -1253,7 +1253,7 @@ TEST_P(AnimationCompositorAnimationsTest,
       *effect1->GetPropertySpecificKeyframes(target_property1h);
   EXPECT_EQ(2u, keyframes1.size());
   EXPECT_FALSE(keyframes1[0]->GetCompositorKeyframeValue());
-  EXPECT_EQ(1u, effect1->Properties().size());
+  EXPECT_EQ(1u, effect1->Properties().UniqueProperties().size());
   EXPECT_TRUE(CheckCanStartEffectOnCompositor(timing_, *element_.Get(),
                                               animation1, *effect1) &
               CompositorAnimations::kUnsupportedCSSProperty);
@@ -1276,7 +1276,7 @@ TEST_P(AnimationCompositorAnimationsTest,
       *effect2->GetPropertySpecificKeyframes(target_property2h);
   EXPECT_EQ(2u, keyframes2.size());
   EXPECT_TRUE(keyframes2[0]->GetCompositorKeyframeValue());
-  EXPECT_EQ(1u, effect2->Properties().size());
+  EXPECT_EQ(1u, effect2->Properties().UniqueProperties().size());
   EXPECT_TRUE(CheckCanStartEffectOnCompositor(timing_, *inline_.Get(),
                                               animation2, *effect2) &
               CompositorAnimations::
@@ -1302,7 +1302,7 @@ TEST_P(AnimationCompositorAnimationsTest,
       *effect3->GetPropertySpecificKeyframes(target_property3h);
   EXPECT_EQ(2u, keyframes3.size());
   EXPECT_TRUE(keyframes3[0]->GetCompositorKeyframeValue());
-  EXPECT_EQ(1u, effect3->Properties().size());
+  EXPECT_EQ(1u, effect3->Properties().UniqueProperties().size());
   EXPECT_TRUE(CheckCanStartEffectOnCompositor(timing_, *element_.Get(),
                                               animation3, *effect3) &
               CompositorAnimations::kUnsupportedCSSProperty);

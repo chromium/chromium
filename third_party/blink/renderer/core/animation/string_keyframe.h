@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_STRING_KEYFRAME_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_STRING_KEYFRAME_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/animation/keyframe.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -26,8 +27,39 @@ class StyleSheetContents;
 //
 class CORE_EXPORT StringKeyframe : public Keyframe {
  public:
+  class PropertyIterator : public VirtualPropertyIterator {
+   public:
+    explicit PropertyIterator(const StringKeyframe* keyframe);
+    ~PropertyIterator() override = default;
+    void Advance(const Keyframe* keyframe) override;
+    PropertyHandle Deref(const Keyframe* keyframe) const override;
+    bool AtEnd(const Keyframe* keyframe) const override;
+
+   private:
+    base::span<const CSSPropertyValue> css_properties_;
+  };
+
+  class CORE_EXPORT IterableStringKeyframeProperties
+      : public Keyframe::IterableProperties {
+   public:
+    explicit IterableStringKeyframeProperties(const StringKeyframe* keyframe)
+        : keyframe_(keyframe) {}
+    ~IterableStringKeyframeProperties() override = default;
+    PropertyIteratorWrapper begin() const override;
+    size_t size() const override;
+
+    void Trace(Visitor* visitor) const override {
+      Keyframe::IterableProperties::Trace(visitor);
+      visitor->Trace(keyframe_);
+    }
+
+   private:
+    Member<const StringKeyframe> keyframe_;
+  };
+
   explicit StringKeyframe(const TreeScope* tree_scope = nullptr)
-      : tree_scope_(tree_scope) {}
+      : Keyframe(MakeGarbageCollected<IterableStringKeyframeProperties>(this)),
+        tree_scope_(tree_scope) {}
   StringKeyframe(const StringKeyframe& copy_from);
 
   MutableCSSPropertyValueSet::SetResult SetCSSPropertyValue(
@@ -59,8 +91,6 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
         .Value()
         .EnsureScopedValue(tree_scope_.Get());
   }
-
-  PropertyHandleSet Properties() const override;
 
   bool HasCssProperty() const;
 
@@ -182,6 +212,8 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
   };
 
  private:
+  friend class PropertyIterator;
+
   Keyframe::PropertySpecificKeyframe* CreatePropertySpecificKeyframe(
       const PropertyHandle&,
       EffectModel::CompositeOperation effect_composite,
