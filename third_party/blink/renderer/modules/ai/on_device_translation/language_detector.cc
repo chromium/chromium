@@ -100,10 +100,8 @@ class LanguageDetectorCreateTask
       Cleanup();
       return;
     }
-    // TODO (crbug.com/383022111): Pass the real download progress rather
-    // than mocking one.
     if (monitor_) {
-      monitor_->OnDownloadProgressUpdate(0, kNormalizedDownloadProgressMax);
+      // Ensure that a download completion event is sent.
       monitor_->OnDownloadProgressUpdate(kNormalizedDownloadProgressMax,
                                          kNormalizedDownloadProgressMax);
     }
