@@ -13361,6 +13361,29 @@ experimental domain BluetoothEmulation
       string serviceId
       string characteristicId
 
+  # Adds a descriptor with |descriptorUuid| to the characteristic respresented
+  # by |characteristicId| in the service represented by |serviceId| of the
+  # peripheral with |address|.
+  command addDescriptor
+    parameters
+      string address
+      string serviceId
+      string characteristicId
+      string descriptorUuid
+    returns
+      # An identifier that uniquely represents this descriptor.
+      string descriptorId
+
+  # Removes the descriptor with |descriptorId| from the characteristic
+  # respresented by |characteristicId| in the service represented by |serviceId|
+  # of the peripheral with |address|.
+  command removeDescriptor
+    parameters
+      string address
+      string serviceId
+      string characteristicId
+      string descriptorId
+
   # Event for when a GATT operation of |type| to the peripheral with |address|
   # happened.
   event gattOperationReceived
