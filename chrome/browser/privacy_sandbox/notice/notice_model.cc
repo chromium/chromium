@@ -9,7 +9,6 @@ namespace privacy_sandbox {
 
 // NoticeApi class definitions.
 NoticeApi::NoticeApi() = default;
-NoticeApi::NoticeApi(const NoticeApi& other) = default;
 NoticeApi::~NoticeApi() = default;
 
 void NoticeApi::CanBeFulfilledBy(Notice* notice) {
@@ -18,6 +17,42 @@ void NoticeApi::CanBeFulfilledBy(Notice* notice) {
 
 const std::vector<Notice*>& NoticeApi::GetLinkedNotices() {
   return linked_notices_;
+}
+
+NoticeApi* NoticeApi::SetEligibilityCallback(
+    base::RepeatingCallback<EligibilityLevel()> callback) {
+  eligibility_callback_ = std::move(callback);
+  return this;
+}
+
+NoticeApi* NoticeApi::SetResultCallback(
+    base::OnceCallback<void(bool)> callback) {
+  result_callback_ = std::move(callback);
+  return this;
+}
+
+EligibilityLevel NoticeApi::GetEligibilityLevel() {
+  return !eligibility_callback_.is_null() ? eligibility_callback_.Run()
+                                          : EligibilityLevel::kNotEligible;
+}
+
+void NoticeApi::UpdateResult(bool enabled) {
+  if (!result_callback_.is_null()) {
+    std::move(result_callback_).Run(enabled);
+  }
+}
+
+bool NoticeApi::IsFulfilled() {
+  EligibilityLevel eligibility = GetEligibilityLevel();
+
+  for (Notice* notice : linked_notices_) {
+    if (eligibility == EligibilityLevel::kEligibleConsent &&
+        notice->GetNoticeType() == NoticeType::kNotice) {
+      continue;
+    }
+    return notice->WasFulfilled();
+  }
+  return false;
 }
 
 // Notice class definitions.
@@ -57,24 +92,75 @@ const base::Feature* Notice::GetFeature() {
   return feature_;
 }
 
-std::vector<NoticeEvent> Notice::FulfillmentEvents() const {
-  return {NoticeEvent::kAck, NoticeEvent::kSettings};
+bool Notice::WasFulfilled() {
+  // TODO(crbug.com/392612108): Check if an action was taken on this notice, if
+  // it was check if it was one of the fulfillment actions.
+  return false;
+}
+
+bool Notice::IsFulfillmentEvent(NoticeEvent event) {
+  const std::set<NoticeEvent>& enabled_set = EnablementFulfillEvents();
+  const std::set<NoticeEvent>& disabled_set = DisablementFulfillEvents();
+  if (enabled_set.find(event) != enabled_set.end()) {
+    return true;
+  }
+  if (disabled_set.find(event) != disabled_set.end()) {
+    return true;
+  }
+  return false;
+}
+
+void Notice::UpdateTargetApiResults(NoticeEvent event) {
+  if (!IsFulfillmentEvent(event)) {
+    return;
+  }
+  const std::set<NoticeEvent>& enabled_set = EnablementFulfillEvents();
+  const std::set<NoticeEvent>& disabled_set = DisablementFulfillEvents();
+  for (NoticeApi* api : target_apis_) {
+    if (enabled_set.find(event) != enabled_set.end()) {
+      api->UpdateResult(true);
+      continue;
+    }
+    if (disabled_set.find(event) != disabled_set.end()) {
+      api->UpdateResult(false);
+      continue;
+    }
+  }
 }
 
 NoticeType Notice::GetNoticeType() {
   return NoticeType::kNotice;
 }
 
+const std::set<NoticeEvent>& Notice::EnablementFulfillEvents() {
+  static base::NoDestructor<std::set<NoticeEvent>> enabled_set{
+      {NoticeEvent::kAck, NoticeEvent::kSettings}};
+  return *enabled_set;
+}
+
+const std::set<NoticeEvent>& Notice::DisablementFulfillEvents() {
+  static base::NoDestructor<std::set<NoticeEvent>> disabled_set{{}};
+  return *disabled_set;
+}
+
 // Consent class definitions.
 Consent::Consent(NoticeId notice_id, const base::Feature* feature)
     : Notice(notice_id, feature) {}
 
-std::vector<NoticeEvent> Consent::FulfillmentEvents() const {
-  return {NoticeEvent::kOptIn, NoticeEvent::kOptOut};
-}
-
 NoticeType Consent::GetNoticeType() {
   return NoticeType::kConsent;
+}
+
+const std::set<NoticeEvent>& Consent::EnablementFulfillEvents() {
+  static base::NoDestructor<std::set<NoticeEvent>> enabled_set{
+      {NoticeEvent::kOptIn}};
+  return *enabled_set;
+}
+
+const std::set<NoticeEvent>& Consent::DisablementFulfillEvents() {
+  static base::NoDestructor<std::set<NoticeEvent>> disabled_set{
+      {NoticeEvent::kOptOut}};
+  return *disabled_set;
 }
 
 // Notice catalog class definitions.
@@ -82,7 +168,7 @@ NoticeCatalog::NoticeCatalog() = default;
 NoticeCatalog::~NoticeCatalog() = default;
 
 NoticeApi* NoticeCatalog::RegisterAndRetrieveNewApi() {
-  apis_.push_back(std::make_unique<NoticeApi>(NoticeApi()));
+  apis_.push_back(std::make_unique<NoticeApi>());
   return apis_.back().get();
 }
 

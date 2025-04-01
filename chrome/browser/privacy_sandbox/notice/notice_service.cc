@@ -17,6 +17,7 @@ using privacy_sandbox::notice::mojom::PrivacySandboxNotice;
 
 // Defines all existing notices and populates the notice catalog.
 void PopulateNoticeCatalog(std::unique_ptr<NoticeCatalog>& catalog) {
+  // TODO(crbug.com/392612108): Add all eligibility and result callbacks.
   // Define APIs.
   NoticeApi* topics = catalog->RegisterAndRetrieveNewApi();
   NoticeApi* fledge = catalog->RegisterAndRetrieveNewApi();
@@ -112,6 +113,8 @@ void PrivacySandboxNoticeService::EventOccurred(NoticeId notice_id,
     GetNoticeStorage()->SetNoticeActionTaken(GetPrefService(), name, event,
                                              base::Time::Now());
   }
+
+  notice->UpdateTargetApiResults(event);
 }
 
 // TODO(crbug.com/392612108): Implement this function.
