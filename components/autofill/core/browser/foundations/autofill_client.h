@@ -593,7 +593,8 @@ class AutofillClient {
   // instead of the `PersonalDataManager`.
   virtual void set_test_addresses(std::vector<AutofillProfile> test_addresses);
 
-  virtual base::span<const AutofillProfile> GetTestAddresses() const;
+  virtual base::span<const AutofillProfile> GetTestAddresses() const
+      LIFETIME_BOUND;
 
   // Returns the heuristics predictions for the renderer form to which
   // `field_id` belongs inside the form with `form_id`. The browser form with
