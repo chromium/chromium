@@ -832,6 +832,77 @@ suite('SidePanelPowerBookmarksListTest', () => {
         ActionSource.kBookmark, bookmarksApi.getArgs('contextMenuEdit')[0][1]);
   });
 
+  test('MoveBookmarksWithBookmarksInTransportModeDisabled', async () => {
+    // Disable the feature flag.
+    loadTimeData.overrideValues({isBookmarksInTransportModeEnabled: false});
+    await initializeUI();
+
+    const bookmarks = [getBookmarkWithId('3')!, getBookmarkWithId('5')!];
+    const contextMenu = powerBookmarksList.$.contextMenu;
+    const editClicked = eventToPromise('edit-clicked', contextMenu);
+
+    // Open the context menu.
+    contextMenu.showAtPosition(
+        new MouseEvent('click'), bookmarks, false, false);
+    await waitAfterNextRender(contextMenu);
+
+    // Get the move option in the menu.
+    const menuItems =
+        contextMenu.shadowRoot!.querySelectorAll('.dropdown-item');
+    assertEquals(
+        menuItems[4]!.textContent!.includes(
+            loadTimeData.getString('tooltipMove')),
+        true);
+    const moveItem = contextMenu.shadowRoot!.querySelectorAll<HTMLElement>(
+        '.dropdown-item')[4]!;
+
+    // Click on move and wait for the call to propagate.
+    moveItem.click();
+    await editClicked;
+    await flushTasks();
+
+    // The edit dialog is opened.
+    const editDialog = powerBookmarksList.$.editDialog;
+    assertTrue(editDialog.$.dialog.open);
+  });
+
+  test('MoveBookmarksWithBookmarksInTransportModeEnabled', async () => {
+    // Enable the feature flag.
+    loadTimeData.overrideValues({isBookmarksInTransportModeEnabled: true});
+    await initializeUI();
+
+    const bookmarkId = '3';
+    const bookmarks = [getBookmarkWithId(bookmarkId)!, getBookmarkWithId('5')!];
+    const contextMenu = powerBookmarksList.$.contextMenu;
+    const editClicked = eventToPromise('edit-clicked', contextMenu);
+
+    // Open the context menu.
+    contextMenu.showAtPosition(
+        new MouseEvent('click'), bookmarks, false, false);
+    await waitAfterNextRender(contextMenu);
+
+    // Get the move option in the menu.
+    const menuItems =
+        contextMenu.shadowRoot!.querySelectorAll('.dropdown-item');
+    assertEquals(
+        menuItems[4]!.textContent!.includes(
+            loadTimeData.getString('tooltipMove')),
+        true);
+    const moveItem = contextMenu.shadowRoot!.querySelectorAll<HTMLElement>(
+        '.dropdown-item')[4]!;
+
+    // Click on move and wait for the call to propagate.
+    moveItem.click();
+    await editClicked;
+    await flushTasks();
+
+    // The native move dialog is opened.
+    assertEquals(1, bookmarksApi.getCallCount('contextMenuMove'));
+    assertEquals(bookmarkId, bookmarksApi.getArgs('contextMenuMove')[0][0][0]);
+    assertEquals(
+        ActionSource.kBookmark, bookmarksApi.getArgs('contextMenuMove')[0][1]);
+  });
+
   test('LogsBookmarkCountMetric', async () => {
     // Initially should have 4 bookmarks shown.
     assertEquals(
