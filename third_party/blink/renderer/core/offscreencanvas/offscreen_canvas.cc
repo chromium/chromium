@@ -503,7 +503,7 @@ CanvasResourceDispatcher* OffscreenCanvas::GetOrCreateResourceDispatcher() {
   DCHECK(HasPlaceholderCanvas());
   // If we don't have a valid placeholder_canvas_id_, then this is a standalone
   // OffscreenCanvas, and it should not have a placeholder.
-  if (frame_dispatcher_ == nullptr || restoring_gpu_context_) {
+  if (frame_dispatcher_ == nullptr) {
     scoped_refptr<base::SingleThreadTaskRunner>
         agent_group_scheduler_compositor_task_runner;
     scoped_refptr<base::SingleThreadTaskRunner> dispatcher_task_runner;
@@ -516,8 +516,8 @@ CanvasResourceDispatcher* OffscreenCanvas::GetOrCreateResourceDispatcher() {
     }
 
     // The frame dispatcher connects the current thread of OffscreenCanvas
-    // (either main or worker) to the browser process and remains unchanged
-    // throughout the lifetime of this OffscreenCanvas.
+    // (either main or worker) to the GPU process and will have to be recreated
+    // if the GPU channel is lost.
     frame_dispatcher_ = std::make_unique<CanvasResourceDispatcher>(
         this, std::move(dispatcher_task_runner),
         std::move(agent_group_scheduler_compositor_task_runner), client_id_,

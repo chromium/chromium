@@ -335,6 +335,7 @@ void OffscreenCanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   context_lost_mode_ = lost_mode;
   if (CanvasRenderingContextHost* host = Host()) [[likely]] {
     host->DiscardResourceProvider();
+    host->DiscardResourceDispatcher();
   }
   uint32_t delay = base::RandInt(1, kMaxIframeContextLoseDelay);
   dispatch_context_lost_event_timer_.StartOneShot(base::Milliseconds(delay),
@@ -432,13 +433,7 @@ void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
     // If lost mode is |kRealLostContext|, it means the context was not lost due
     // to surface failure but rather due to a an eviction, which means image
     // buffer exists.
-    OffscreenCanvas* const canvas = HostAsOffscreenCanvas();
-    CHECK(canvas != nullptr);
-    // Let the OffscreenCanvas know that it should attempt to recreate the
-    // resource dispatcher in order to restore the context.
-    canvas->SetRestoringGpuContext(true);
     CanvasResourceProvider* provider = GetOrCreateCanvasResourceProvider();
-    canvas->SetRestoringGpuContext(false);
     if (provider) {
       try_restore_context_event_timer_.Stop();
       DispatchContextRestoredEvent(nullptr);
