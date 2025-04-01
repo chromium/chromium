@@ -68,12 +68,8 @@ bool ObjectValuePresentAndFalse(const JSONObject* object, const String& key) {
 
 }  // namespace
 
-PaidContent::PaidContent() {
-  paid_elements_ = MakeGarbageCollected<HeapVector<Member<Element>>>();
-}
-
 bool PaidContent::IsPaidElement(const Element* element) const {
-  for (const auto& paid_element : *paid_elements_) {
+  for (const auto& paid_element : paid_elements_) {
     if (element == paid_element) {
       return true;
     }
@@ -154,7 +150,7 @@ bool PaidContent::QueryPaidElements(Document& document) {
 
     if (elements) {
       for (unsigned j = 0; j < elements->length(); j++) {
-        paid_elements_->push_back(elements->item(j));
+        paid_elements_.push_back(elements->item(j));
       }
     }
     return paid_content_present;
@@ -174,7 +170,7 @@ void PaidContent::AppendHasPartElements(Document& document,
           document.QuerySelectorAll(AtomicString(selector));
       if (elements) {
         for (unsigned j = 0; j < elements->length(); j++) {
-          paid_elements_->push_back(elements->item(j));
+          paid_elements_.push_back(elements->item(j));
         }
       }
     }
