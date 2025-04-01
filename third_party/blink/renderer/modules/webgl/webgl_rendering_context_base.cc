@@ -5919,7 +5919,6 @@ void WebGLRenderingContextBase::TexImageViaGPU(
   if (!texture)
     return;
 
-  GrSurfaceOrigin source_origin = kTopLeft_GrSurfaceOrigin;
   gfx::Size source_size;
   // Only one of `source_image` and `source_canvas_webgl_context` may be
   // specified.
@@ -5927,9 +5926,6 @@ void WebGLRenderingContextBase::TexImageViaGPU(
     DCHECK(source_image->IsTextureBacked());
     DCHECK(!source_canvas_webgl_context);
     source_size = source_image->Size();
-    source_origin = source_image->IsOriginTopLeft()
-                        ? kTopLeft_GrSurfaceOrigin
-                        : kBottomLeft_GrSurfaceOrigin;
   }
   if (source_canvas_webgl_context) {
     DCHECK(!source_image);
@@ -5940,10 +5936,6 @@ void WebGLRenderingContextBase::TexImageViaGPU(
       return;
     }
     source_size = source_canvas_webgl_context->GetDrawingBuffer()->Size();
-    source_origin =
-        source_canvas_webgl_context->GetDrawingBuffer()->IsOriginTopLeft()
-            ? kTopLeft_GrSurfaceOrigin
-            : kBottomLeft_GrSurfaceOrigin;
   }
   if (!params.width)
     params.width = source_size.width();
@@ -5986,30 +5978,20 @@ void WebGLRenderingContextBase::TexImageViaGPU(
     // This rect is always in a top-left coordinate space.
     gfx::Rect source_sub_rectangle = params.GetSourceRect(source_size);
 
-    // If source is not in a top left coordinate space, flip this rect to match
-    // texture orientation.
-    if (source_origin == kBottomLeft_GrSurfaceOrigin) {
-      source_sub_rectangle.set_y(source_size.height() -
-                                 source_sub_rectangle.bottom());
-    }
-
-    // If origin doesn't match, we need to flip.
-    bool flip_y = source_origin != params.GetDestinationOrigin();
-
     // glCopyTextureCHROMIUM has a DRAW_AND_READBACK path which will call
     // texImage2D. So, reset unpack buffer parameters before that.
     ScopedUnpackParametersResetRestore temporaryResetUnpack(this);
     if (source_image) {
       source_image->CopyToTexture(
           ContextGL(), params.target, target_texture, params.level,
-          params.unpack_premultiply_alpha, flip_y,
+          params.unpack_premultiply_alpha, params.GetDestinationOrigin(),
           gfx::Point(params.xoffset, params.yoffset), source_sub_rectangle);
     } else {
       WebGLRenderingContextBase* gl = source_canvas_webgl_context;
       ScopedTexture2DRestorer inner_restorer(gl);
       if (!gl->GetDrawingBuffer()->CopyToPlatformTexture(
               ContextGL(), params.target, target_texture, params.level,
-              params.unpack_premultiply_alpha, flip_y,
+              params.unpack_premultiply_alpha, params.GetDestinationOrigin(),
               gfx::Point(params.xoffset, params.yoffset), source_sub_rectangle,
               kBackBuffer)) {
         NOTREACHED();

@@ -1100,9 +1100,9 @@ bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
                                           GLuint dst_texture,
                                           GLint dst_level,
                                           bool premultiply_alpha,
-                                          bool flip_y,
+                                          GrSurfaceOrigin destination_origin,
                                           const gfx::Point& dst_texture_offset,
-                                          const gfx::Rect& src_sub_rectangle,
+                                          const gfx::Rect& src_rect,
                                           SourceDrawingBuffer src_buffer) {
   if (!Extensions3DUtil::CanUseCopyTextureCHROMIUM(dst_texture_target))
     return false;
@@ -1111,6 +1111,19 @@ bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
       [&](scoped_refptr<gpu::ClientSharedImage> src_shared_image,
           const gpu::SyncToken& produce_sync_token, SkAlphaType src_alpha_type,
           const gfx::Size&) -> std::optional<gpu::SyncToken> {
+    auto source_origin = IsOriginTopLeft() ? kTopLeft_GrSurfaceOrigin
+                                           : kBottomLeft_GrSurfaceOrigin;
+
+    // If origin doesn't match, we need to flip.
+    bool flip_y = source_origin != destination_origin;
+
+    // If source is not in a top left coordinate space, flip this rect to match
+    // texture orientation.
+    auto src_sub_rectangle = src_rect;
+    if (source_origin == kBottomLeft_GrSurfaceOrigin) {
+      src_sub_rectangle.set_y(Size().height() - src_sub_rectangle.bottom());
+    }
+
     GLboolean unpack_premultiply_alpha_needed = GL_FALSE;
     GLboolean unpack_unpremultiply_alpha_needed = GL_FALSE;
     if (src_alpha_type == kPremul_SkAlphaType && !premultiply_alpha) {

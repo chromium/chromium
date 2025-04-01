@@ -171,12 +171,25 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
     GLuint dest_texture_id,
     GLint dest_level,
     bool unpack_premultiply_alpha,
-    bool unpack_flip_y,
+    GrSurfaceOrigin destination_origin,
     const gfx::Point& dest_point,
-    const gfx::Rect& source_sub_rectangle) {
+    const gfx::Rect& src_rect) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!IsValid())
     return false;
+
+  auto source_origin = IsOriginTopLeft() ? kTopLeft_GrSurfaceOrigin
+                                         : kBottomLeft_GrSurfaceOrigin;
+
+  // If source is not in a top left coordinate space, flip this rect to match
+  // texture orientation.
+  auto source_sub_rectangle = src_rect;
+  if (source_origin == kBottomLeft_GrSurfaceOrigin) {
+    source_sub_rectangle.set_y(Size().height() - source_sub_rectangle.bottom());
+  }
+
+  // If origin doesn't match, we need to flip.
+  bool unpack_flip_y = source_origin != destination_origin;
 
   // This method should only be used for cross-context copying, otherwise it's
   // wasting overhead.
