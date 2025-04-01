@@ -792,7 +792,6 @@ void GlicWindowController::WaitForGlicToLoad() {
 }
 
 void GlicWindowController::GlicLoaded(mojom::OpenPanelInfoPtr open_info) {
-  // TODO: Use `starting_mode` to log latency metrics.
   DVLOG(1) << "GlicLoaded with " << open_info->web_client_mode;
   glic_service_->metrics()->set_starting_mode(open_info->web_client_mode);
   if (open_info->panelSize.has_value()) {
