@@ -1375,12 +1375,6 @@ const char kUpdatedFRESequenceDescription[] =
     "Updates the sequence of the FRE screens to show the DB promo first, "
     "remove the Sin-In & Sync screens, or both.";
 
-const char kUseAccountListFromIdentityManagerName[] =
-    "Get the list of accounts from IdentityManager";
-const char kUseAccountListFromIdentityManagerDescription[] =
-    "If enabled, UIs query the list of accounts from IdentityManager instead "
-    "of from ChromeAccountManagerService.";
-
 const char kWaitThresholdMillisecondsForCapabilitiesApiName[] =
     "Maximum wait time (in seconds) for a response from the Account "
     "Capabilities API";

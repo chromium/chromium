@@ -813,9 +813,6 @@ extern const char kTabResumptionImagesDescription[];
 extern const char kUpdatedFRESequenceName[];
 extern const char kUpdatedFRESequenceDescription[];
 
-extern const char kUseAccountListFromIdentityManagerName[];
-extern const char kUseAccountListFromIdentityManagerDescription[];
-
 extern const char kWaitThresholdMillisecondsForCapabilitiesApiName[];
 extern const char kWaitThresholdMillisecondsForCapabilitiesApiDescription[];
 

@@ -2443,10 +2443,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::
              kAutofillEnableAllowlistForBmoCardCategoryBenefits)},
-    {"use-account-list-from-identity-manager",
-     flag_descriptions::kUseAccountListFromIdentityManagerName,
-     flag_descriptions::kUseAccountListFromIdentityManagerDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kUseAccountListFromIdentityManager)},
     {"fullscreen-transition", flag_descriptions::kFullscreenTransitionName,
      flag_descriptions::kFullscreenTransitionDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kFullscreenTransition,

@@ -155,7 +155,6 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
   config.features_enabled.push_back(kIdentityDiscAccountMenu);
-  config.features_enabled.push_back(kUseAccountListFromIdentityManager);
   config.features_enabled.push_back(kSeparateProfilesForManagedAccounts);
 
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
@@ -1030,7 +1029,6 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
   config.features_enabled.push_back(kIdentityDiscAccountMenu);
-  config.features_enabled.push_back(kUseAccountListFromIdentityManager);
   config.features_enabled.push_back(kSeparateProfilesForManagedAccounts);
   // Note: Can't use the actual feature definition, because its build target
   // depends on a bunch of stuff that mustn't make it into the EG test target.

@@ -63,16 +63,6 @@ namespace {
 constexpr base::TimeDelta kShowSigninUpgradePromoMaxDelay =
     base::Milliseconds(200);
 
-// Converts an array of identities to a set of gaia ids.
-NSSet<NSString*>* GaiaIdSetWithIdentities(
-    NSArray<id<SystemIdentity>>* identities) {
-  NSMutableSet* gaia_id_set = [NSMutableSet set];
-  for (id<SystemIdentity> identity in identities) {
-    [gaia_id_set addObject:identity.gaiaID];
-  }
-  return [gaia_id_set copy];
-}
-
 // Converts an array of AccountInfos to a set of gaia ids.
 NSSet<NSString*>* GaiaIdSetWithAccountInfos(
     const std::vector<AccountInfo>& account_infos) {
@@ -217,18 +207,10 @@ bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
   // Don't show the promo if there are no identities. This should be tested
   // before ForceStartupSigninPromo() to avoid any DCHECK failures if
   // ForceStartupSigninPromo() returns true.
-  NSSet<NSString*>* identities_on_device_gaia_ids;
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile);
-    identities_on_device_gaia_ids =
-        GaiaIdSetWithAccountInfos(identity_manager->GetAccountsOnDevice());
-  } else {
-    ChromeAccountManagerService* account_manager_service =
-        ChromeAccountManagerServiceFactory::GetForProfile(profile);
-    identities_on_device_gaia_ids =
-        GaiaIdSetWithIdentities(account_manager_service->GetAllIdentities());
-  }
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  NSSet<NSString*>* identities_on_device_gaia_ids =
+      GaiaIdSetWithAccountInfos(identity_manager->GetAccountsOnDevice());
   if (identities_on_device_gaia_ids.count == 0) {
     return false;
   }
@@ -351,16 +333,10 @@ void RecordUpgradePromoSigninStarted(
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   [defaults setObject:base::SysUTF8ToNSString(current_version.GetString())
                forKey:kDisplayedSSORecallForMajorVersionKey];
-  NSSet<NSString*>* gaia_id_on_device_set;
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
-    std::vector<AccountInfo> account_infos =
-        identity_manager->GetAccountsOnDevice();
-    gaia_id_on_device_set = GaiaIdSetWithAccountInfos(account_infos);
-  } else {
-    NSArray<id<SystemIdentity>>* identities =
-        account_manager_service->GetAllIdentities();
-    gaia_id_on_device_set = GaiaIdSetWithIdentities(identities);
-  }
+  std::vector<AccountInfo> account_infos =
+      identity_manager->GetAccountsOnDevice();
+  NSSet<NSString*>* gaia_id_on_device_set =
+      GaiaIdSetWithAccountInfos(account_infos);
   [defaults setObject:gaia_id_on_device_set.allObjects
                forKey:kLastShownAccountGaiaIdVersionKey];
   NSInteger display_count =
@@ -384,9 +360,6 @@ Tribool TriboolFromCapabilityResult(SystemIdentityCapabilityResult result) {
 NSArray<id<SystemIdentity>>* GetIdentitiesOnDevice(
     signin::IdentityManager* identityManager,
     ChromeAccountManagerService* accountManagerService) {
-  if (!IsUseAccountListFromIdentityManagerEnabled()) {
-    return accountManagerService->GetAllIdentities();
-  }
   std::vector<AccountInfo> accountInfos =
       identityManager->GetAccountsOnDevice();
   return accountManagerService->GetIdentitiesOnDeviceWithGaiaIDs(accountInfos);

@@ -265,16 +265,10 @@ enum class SignInHistorySyncStep {
 - (SignInHistorySyncStep)nextStep {
   switch (_currentStep) {
     case SignInHistorySyncStep::kStart: {
-      bool hasIdentitiesOnDevice = false;
-      if (IsUseAccountListFromIdentityManagerEnabled()) {
-        signin::IdentityManager* identityManager =
-            IdentityManagerFactory::GetForProfile(self.profile);
-        hasIdentitiesOnDevice = !identityManager->GetAccountsOnDevice().empty();
-      } else {
-        ChromeAccountManagerService* accountManagerService =
-            ChromeAccountManagerServiceFactory::GetForProfile(self.profile);
-        hasIdentitiesOnDevice = accountManagerService->HasIdentities();
-      }
+      signin::IdentityManager* identityManager =
+          IdentityManagerFactory::GetForProfile(self.profile);
+      bool hasIdentitiesOnDevice =
+          !identityManager->GetAccountsOnDevice().empty();
       if (_fullscreenPromo) {
         return SignInHistorySyncStep::kFullscreenSignin;
       } else if (hasIdentitiesOnDevice) {

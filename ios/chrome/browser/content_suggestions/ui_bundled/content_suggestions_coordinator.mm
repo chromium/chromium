@@ -1470,14 +1470,9 @@ using segmentation_platform::TipIdentifier;
 #pragma mark - Helpers
 
 - (bool)hasIdentitiesOnDevice {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
-    return !IdentityManagerFactory::GetForProfile(self.profile)
-                ->GetAccountsOnDevice()
-                .empty();
-  } else {
-    return ChromeAccountManagerServiceFactory::GetForProfile(self.profile)
-        ->HasIdentities();
-  }
+  return !IdentityManagerFactory::GetForProfile(self.profile)
+              ->GetAccountsOnDevice()
+              .empty();
 }
 
 - (void)showMagicStackRecentTabs {
