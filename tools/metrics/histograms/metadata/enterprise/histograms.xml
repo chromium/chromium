@@ -3168,20 +3168,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Enterprise.SkyVault.Migration.{CloudProvider}.WrongStateContext"
-    enum="EnterpriseSkyVaultMigrationStateErrorContext"
-    expires_after="2025-10-01">
-  <owner>aidazolic@google.com</owner>
-  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
-  <summary>
-    Recorded when an unexpected state transition happens during SkyVault
-    migration of local files to {CloudProvider}. Records the context in which
-    the wrong state error occurred.
-  </summary>
-  <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
-</histogram>
-
-<histogram
     name="Enterprise.SkyVault.Migration.{MigrationDestination}.CleanupError"
     enum="Boolean" expires_after="2025-10-01">
   <owner>aidazolic@google.com</owner>
@@ -3260,6 +3246,21 @@ chromium-metrics-reviews@google.com.
     Recorded when an unexpected state transition happens during SkyVault
     migration to {MigrationDestination} or deletion of local files. Records the
     unexpected state value.
+  </summary>
+  <token key="MigrationDestination"
+      variants="Enterprise_SkyVaultMigrationDestination"/>
+</histogram>
+
+<histogram
+    name="Enterprise.SkyVault.Migration.{MigrationDestination}.WrongStateContext"
+    enum="EnterpriseSkyVaultMigrationStateErrorContext"
+    expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Recorded when an unexpected state transition happens during SkyVault
+    migration to {MigrationDestination} or deletion of local files. Records the
+    context in which the wrong state error occurred.
   </summary>
   <token key="MigrationDestination"
       variants="Enterprise_SkyVaultMigrationDestination"/>
