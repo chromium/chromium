@@ -313,5 +313,23 @@ fn main(@location(0) fragUV : vec2<f32>) -> @location(0) vec4<f32> {
       passEncoder.end();
       device.queue.submit([commandEncoder.finish()]);
     },
+
+    solidColorTest: function(device, context, color) {
+      const renderPassDescriptor = {
+        colorAttachments: [
+          {
+            view: context.getCurrentTexture().createView(),
+            loadOp: 'clear',
+            storeOp: 'store',
+            clearValue: color,
+          },
+        ],
+      };
+
+      const commandEncoder = device.createCommandEncoder();
+      const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
+      passEncoder.end();
+      device.queue.submit([commandEncoder.finish()]);
+    },
   };
 }();

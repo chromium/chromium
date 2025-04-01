@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>WebGPU Canvas Last Presented Image Test</title>
+  <style type="text/css">
+    .nomargin {
+      margin: 0px auto;
+    }
+  </style>
+  <script type="text/javascript" src="pixel_webgpu_util.js"></script>
+  <script type="text/javascript" src="pixel_destroyed_webgpu_canvas.js"></script>
+</head>
+
+<!--
+Each test sets up two source WebGPU canvases, one opaque and one transparent,
+as sources.
+Each test issues two frame (ensure by RAF) and do:
+- First frame cleard source canvas to GREEN
+- Second frame cleard source canvas to RED and then destroy device.
+
+The first readback happens immediately after device.destroy() is called.
+The second readback happens after the device.lost rpomise resolves.
+
+If there are three images, they are the source canvas, and two readbacks.
+If there are two images, they are the two readbacks.
+
+The source canvas including onscreen canvas, offscreen canvas and
+onscreen canvas that transferred control to OffScreenCanvas object.
+
+The source canvas should be either green/red or blank.
+Both readbacks should always be blank.
+
+"Blank" depends on the alpha mode: either opaque BLACK, or transparent
+black(showing the GRAY background). One exception is readback by
+MediaStream::requestFrame(), the <video> element is always opaque BLACK.
+-->
+
+<body onload="setup()">
+  <div id="opaque"></div>
+  <div id="transparent"></div>
+</body>
+
+</html>

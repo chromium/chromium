@@ -7041,6 +7041,8 @@ data/gpu/pixel_canvas_low_latency_webgl_draw_image.html
 data/gpu/pixel_canvas_low_latency_webgl_occluded.html
 data/gpu/pixel_canvas_low_latency_webgl_rounded_corners.html
 data/gpu/pixel_css3d.html
+data/gpu/pixel_destroyed_webgpu_canvas.html
+data/gpu/pixel_destroyed_webgpu_canvas.js
 data/gpu/pixel_media_foundation_clear_dcomp.html
 data/gpu/pixel_media_recorder_from_canvas_2d.html
 data/gpu/pixel_media_recorder_from_video_element.html

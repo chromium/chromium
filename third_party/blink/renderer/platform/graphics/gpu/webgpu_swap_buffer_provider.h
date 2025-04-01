@@ -43,6 +43,12 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
     virtual void OnTextureTransferred() = 0;
     virtual void InitializeLayer(cc::Layer* layer) = 0;
     virtual void SetNeedsCompositingUpdate() = 0;
+    // Check whether GPUDevice is destroyed. wgpu::Device doesn't have interface
+    // to check device destroyed state.
+    // TODO(crbug.com/370694819): Move device destroy fallback logics from
+    // renderer process to gpu process so that we can detect device destroy
+    // immediately.
+    virtual bool IsGPUDeviceDestroyed() = 0;
   };
 
   WebGPUSwapBufferProvider(
