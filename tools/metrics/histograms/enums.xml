@@ -16645,6 +16645,7 @@ from previous Chrome versions.
   <int value="951133343" label="UseSharedImagesForPepperVideo:disabled"/>
   <int value="951338017" label="SidePanelJourneysQueryless:enabled"/>
   <int value="952085142" label="AndroidThemeModule:enabled"/>
+  <int value="952504626" label="ProcessRankPolicyAndroid:disabled"/>
   <int value="952558794" label="enable-remote-assistance"/>
   <int value="952625847"
       label="AboutThisSitePersistentSidePanelEntry:disabled"/>
@@ -16653,6 +16654,7 @@ from previous Chrome versions.
   <int value="955340765" label="ChromeHomeOptOutSnackbar:enabled"/>
   <int value="955425932" label="EnterpriseReportingInChromeOS:enabled"/>
   <int value="955901619" label="EmojiSuggestAddition:disabled"/>
+  <int value="956587578" label="ProcessRankPolicyAndroid:enabled"/>
   <int value="956709316"
       label="HappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSite:disabled"/>
   <int value="956716414" label="GlobalMediaControlsPictureInPicture:disabled"/>

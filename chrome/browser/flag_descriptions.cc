@@ -4794,6 +4794,12 @@ const char kPaymentLinkDetectionName[] = "Enable payment link detection";
 const char kPaymentLinkDetectionDescription[] =
     "Enables payment link detection in the DOM.";
 
+const char kProcessRankPolicyAndroidName[] =
+    "Enable performance manager rank policy for Android";
+const char kProcessRankPolicyAndroidDescription[] =
+    "Enables performance manager ranking policy to update memory priority of "
+    "renderer processes";
+
 const char kReadAloudName[] = "Read Aloud";
 const char kReadAloudDescription[] = "Controls the Read Aloud feature";
 

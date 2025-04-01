@@ -10738,6 +10738,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"payment-link-detection", flag_descriptions::kPaymentLinkDetectionName,
      flag_descriptions::kPaymentLinkDetectionDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kPaymentLinkDetection)},
+
+    {"process-rank-policy-android",
+     flag_descriptions::kProcessRankPolicyAndroidName,
+     flag_descriptions::kProcessRankPolicyAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kProcessRankPolicyAndroid)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

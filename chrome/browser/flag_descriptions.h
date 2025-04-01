@@ -2819,6 +2819,9 @@ extern const char kOmniboxShortcutsAndroidDescription[];
 extern const char kPaymentLinkDetectionName[];
 extern const char kPaymentLinkDetectionDescription[];
 
+extern const char kProcessRankPolicyAndroidName[];
+extern const char kProcessRankPolicyAndroidDescription[];
+
 extern const char kReadAloudName[];
 extern const char kReadAloudDescription[];
 extern const char kReadAloudBackgroundPlaybackName[];
