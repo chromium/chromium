@@ -30,6 +30,7 @@ include_rules = [
   "+chrome/browser/error_reporting",
   "+chrome/browser/extensions/component_loader.h",
   "+chrome/browser/extensions/extension_tab_util.h",
+  "+chrome/browser/extensions/scoped_test_mv2_enabler.h",
   "+chrome/browser/file_system_access",
   "+chrome/browser/lifetime",
   "+chrome/browser/media/webrtc",
