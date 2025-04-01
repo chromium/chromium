@@ -308,13 +308,6 @@ void BaseRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
     return;
   }
 
-  if (context_lost_mode_ == CanvasRenderingContext::kNotLostContext) {
-    // Canvas was already restored (possibly thanks to a resize), so stop
-    // trying.
-    try_restore_context_event_timer_.Stop();
-    return;
-  }
-
   DCHECK(context_lost_mode_ !=
          CanvasRenderingContext::kWebGLLoseContextLostContext);
 
