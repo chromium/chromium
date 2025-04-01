@@ -1,7 +1,0 @@
-{
-  "extends": "./tsconfig_base_polymer.json",
-  "compilerOptions": {
-    "target": "ES2024",
-    "lib": ["ES2024", "DOM", "DOM.Iterable"]
-  }
-}
