@@ -265,6 +265,8 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
 
   DCHECK(context_lost_mode_ != kWebGLLoseContextLostContext);
 
+  RestoreGuard context_is_being_restored(*this);
+
   // If lost mode is |kSyntheticLostContext| and |context_restorable_| is set to
   // true, it means context is forced to be lost for testing purpose. Restore
   // the context.
