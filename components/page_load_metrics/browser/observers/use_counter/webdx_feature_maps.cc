@@ -513,7 +513,8 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
             {CSSSampleId::kViewTransitionClass,
              WebDXFeature::kViewTransitionClass},
             {CSSSampleId::kScrollMarkerGroup, WebDXFeature::kScrollMarkers},
-            {CSSSampleId::kInteractivity, WebDXFeature::kInteractivity}}};
+            {CSSSampleId::kInteractivity, WebDXFeature::kInteractivity},
+            {CSSSampleId::kReadingFlow, WebDXFeature::kReadingFlow}}};
 
   return *kMap;
 }
