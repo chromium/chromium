@@ -868,15 +868,13 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
       new net::NetworkChangeNotifierFactoryAndroid());
 #endif
 
-  if (base::FeatureList::IsEnabled(
-          features::kWriteBasicSystemProfileToPersistentHistogramsFile)) {
-    bool record = true;
+  bool record = true;
 #if BUILDFLAG(IS_ANDROID)
-    record =
-        base::FeatureList::IsEnabled(chrome::android::kUmaBackgroundSessions);
+  record =
+      base::FeatureList::IsEnabled(chrome::android::kUmaBackgroundSessions);
 #endif
-    if (record)
-      chrome_content_browser_client_->startup_data()->RecordCoreSystemProfile();
+  if (record) {
+    chrome_content_browser_client_->startup_data()->RecordCoreSystemProfile();
   }
 
 #if BUILDFLAG(IS_ANDROID)

@@ -1599,12 +1599,6 @@ BASE_FEATURE(kWin10AcceleratedDefaultBrowserFlow,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
-// Enables writing basic system profile to the persistent histograms files
-// earlier.
-BASE_FEATURE(kWriteBasicSystemProfileToPersistentHistogramsFile,
-             "WriteBasicSystemProfileToPersistentHistogramsFile",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS)
 bool IsParentAccessCodeForReauthEnabled() {
   return !base::FeatureList::IsEnabled(kSkipParentAccessCodeForReauth);
