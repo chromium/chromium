@@ -199,9 +199,12 @@ bool CanvasRenderingContext2D::IsComposited() const {
 }
 
 void CanvasRenderingContext2D::Stop() {
-  if (!isContextLost()) [[likely]] {
-    // Never attempt to restore the context because the page is being torn down.
-    context_restorable_ = false;
+  // Never attempt to restore the context because the page is being torn down.
+  context_restorable_ = false;
+  if (isContextLost()) [[unlikely]] {
+    // Stop any pending restoration.
+    try_restore_context_event_timer_.Stop();
+  } else {
     LoseContext(kSyntheticLostContext);
   }
 }
