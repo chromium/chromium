@@ -575,4 +575,151 @@ TEST_F(ElementRuleCollectorTest, FindStyleRuleWithNesting) {
   EXPECT_EQ("& > .b", DynamicTo<CSSStyleRule>(bar_css_rule_1)->selectorText());
 }
 
+TEST_F(ElementRuleCollectorTest, FirstLineUseCounted) {
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kFirstLinePseudoElement));
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div::first-line {
+        text-decoration: underline;
+      }
+    </style>
+    <div>Some text</div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kFirstLinePseudoElement));
+}
+
+TEST_F(ElementRuleCollectorTest, FirstLetterUseCounted) {
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kFirstLetterPseudoElement));
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div::first-letter {
+        text-decoration: underline;
+      }
+    </style>
+    <div>Some text</div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kFirstLetterPseudoElement));
+}
+
+TEST_F(ElementRuleCollectorTest, CheckMarkAndPickerIconUseCounted) {
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kCheckMarkPseudoElement));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kPickerIconPseudoElement));
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      select::picker(select) {
+        appearance: base-select;
+      }
+    </style>
+    <select aria-label="Pets">
+      <option>Dog</option>
+      <option>Cat</option>
+      <option>Donkey</option>
+    </select>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCheckMarkPseudoElement));
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kPickerIconPseudoElement));
+}
+
+TEST_F(ElementRuleCollectorTest, BeforeAfterUseCounted) {
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kBeforePseudoElement));
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kAfterPseudoElement));
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      p::before {
+        content: "Before";
+      }
+      p::after {
+        content: "After";
+      }
+    </style>
+    <p>Some text</p>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kBeforePseudoElement));
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kAfterPseudoElement));
+}
+
+TEST_F(ElementRuleCollectorTest, MarkerUseCounted) {
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kMarkerPseudoElement));
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      ::marker {
+        color: green;
+      }
+    </style>
+    <ul>
+      <li>Some text</li>
+    </ul>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kMarkerPseudoElement));
+}
+
+TEST_F(ElementRuleCollectorTest, BackdropUseCounted) {
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kBackdropPseudoElement));
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      ::backdrop {
+        background-color: green;
+      }
+    </style>
+    <p>Some text</p>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kBackdropPseudoElement));
+}
+
+TEST_F(ElementRuleCollectorTest, HighlightsUseCounted) {
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kSelectionPseudoElement));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kSearchTextPseudoElement));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kTargetTextPseudoElement));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kCustomHighlightPseudoElement));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kSpellingErrorPseudoElement));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kGrammarErrorPseudoElement));
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      ::selection {
+        background-color: green;
+      }
+      ::search-text {
+        background-color: blue;
+      }
+      ::target-text {
+        background-color: red;
+      }
+      ::highlight(foo) {
+        background-color: purple;
+      }
+      ::spelling-error {
+        background-color: yellow;
+      }
+      ::grammar-error {
+        background-color: cyan;
+      }
+    </style>
+    <p>Some text</p>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kSelectionPseudoElement));
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kSearchTextPseudoElement));
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kTargetTextPseudoElement));
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kCustomHighlightPseudoElement));
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kSpellingErrorPseudoElement));
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kGrammarErrorPseudoElement));
+}
+
 }  // namespace blink
