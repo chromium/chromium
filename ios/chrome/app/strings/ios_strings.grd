@@ -3562,6 +3562,15 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_NEW_TAB_RECENT_TABS" desc="The header of the panel containing the list of recently closed tabs and the tabs synced from other devices.[Length: 17em]">
         Recent tabs
       </message>
+      <message name="IDS_IOS_NON_MODAL_SIGNIN_PROMO_ADD_BOOKMARK" desc="Infobar subtitle for non modal signin promo when user adds a bookmark.">
+        Sign in to get your bookmarks and more on all your devices
+      </message>
+      <message name="IDS_IOS_NON_MODAL_SIGNIN_PROMO_SAVE_PASSWORD" desc="Infobar subtitle for non modal signin promo when user saves a password.">
+        Sign in to get your passwords and more on all your devices
+      </message>
+      <message name="IDS_IOS_NON_MODAL_SIGNIN_PROMO_SIGNIN_BUTTON" desc="Sign in button text for non modal signin promo.">
+        Sign in
+      </message>
       <message name="IDS_IOS_NOTIFICATIONS_ALERT_CANCEL" desc="The label for the alert's cancel button">
         No, thanks
       </message>
