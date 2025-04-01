@@ -1335,6 +1335,9 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   if (_associatedTabHelper) {
     _associatedTabHelper->ClearViewportSnapshot();
   }
+
+  CGFloat guidanceRestHeight = _resultsPagePresenter.presentedResultsPageHeight;
+  [_selectionViewController setGuidanceRestHeight:guidanceRestHeight];
 }
 
 @end

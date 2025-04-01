@@ -61,4 +61,8 @@
   return CGRectZero;
 }
 
+- (void)setGuidanceRestHeight:(CGFloat)height {
+  // NO-OP
+}
+
 @end

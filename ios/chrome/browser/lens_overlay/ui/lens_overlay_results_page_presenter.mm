@@ -326,6 +326,8 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
   CGFloat bottomOffset = MIN(sheetHeight, maximumOffset);
 
   _visibleAreaBottomConstraint.constant = -bottomOffset;
+
+  _presentedResultsPageHeight = sheetHeight;
 }
 
 - (void)adjustSelectionOcclusionInsets {
