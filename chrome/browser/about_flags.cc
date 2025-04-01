@@ -11589,13 +11589,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(kWindowsSystemTracing)},
 #endif  // BUILDFLAG(IS_WIN)
 
-    {"privacy-sandbox-equalized-prompt-buttons",
-     flag_descriptions::kPrivacySandboxEqualizedPromptButtonsName,
-     flag_descriptions::kPrivacySandboxEqualizedPromptButtonsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         privacy_sandbox::kPrivacySandboxEqualizedPromptButtons)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"move-theme-prefs-to-specifics",
      flag_descriptions::kMoveThemePrefsToSpecificsName,
