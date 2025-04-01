@@ -151,14 +151,12 @@ void ZeroCopyRasterBufferImpl::Playback(
     return;
   }
 
-  size_t stride = is_software_ ? 0u : mapping->Stride(0);
-
   // TODO(danakj): Implement partial raster with raster_dirty_rect for GPU
   // compositing.
   RasterBufferProvider::PlaybackToMemory(
       mapping->GetMemoryForPlane(0).data(), backing_->format(),
-      backing_->size(), stride, raster_source, raster_full_rect, playback_rect,
-      transform, backing_->color_space(), playback_settings);
+      backing_->size(), mapping->Stride(0), raster_source, raster_full_rect,
+      playback_rect, transform, backing_->color_space(), playback_settings);
 }
 
 bool ZeroCopyRasterBufferImpl::SupportsBackgroundThreadPriority() const {
