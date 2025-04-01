@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Pointer capture state should be updated before `pointerrawupdate`
+  assert_equals: expected "pointerrawupdate@target, pointermove@target, pointerdown@target, gotpointercapture@target, pointerrawupdate@target, pointermove@target, pointerup@target, lostpointercapture@target, pointerover@dest" but got "pointerrawupdate@target, pointermove@target, pointerdown@target, pointerrawupdate@target, gotpointercapture@target, pointermove@target, pointerup@target, lostpointercapture@target, pointerover@dest"
+Harness: the test ran to completion.
+

@@ -85685,7 +85685,59 @@
         ]
        ],
        "corner-shape-render-fuzzy.html": [
-        "5c276b6d5ac1190cf3c1332f7ec7449286b6bea1",
+        "afd590461801bf82c73f6e79f73008e22777c5f9",
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-fuzzy.html?border-radius=30%&corner-shape=superellipse(0.4)&box-shadow=10px%2010px%200%2010px%20black",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?border-radius=30%&corner-shape=superellipse(0.4)&box-shadow=10px%2010px%200%2010px%20black",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              550
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-fuzzy.html?border-radius=40%&corner-shape=notch&box-shadow=10px%2010px%200%2010px%20yellow",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?border-radius=40%&corner-shape=notch&box-shadow=10px%2010px%200%2010px%20yellow",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              550
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
         [
          "css/css-borders/tentative/corner-shape/corner-shape-render-fuzzy.html?corner-shape=scoop&border-radius=20%&border-width=20px",
          [
@@ -85921,6 +85973,32 @@
          }
         ],
         [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-fuzzy.html?corner-shape=superellipse(8)&border-radius=40px&box-shadow=10px 10px 0 10px black",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(8)&border-radius=40px&box-shadow=10px 10px 0 10px black",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              550
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
          "css/css-borders/tentative/corner-shape/corner-shape-render-fuzzy.html?corner-top-left-shape=bevel&border-radius=40px&border-width=10px",
          [
           [
@@ -86104,7 +86182,59 @@
         ]
        ],
        "corner-shape-render-precise.html": [
-        "81cb56d341fafc714c318ad337807c428312b60b",
+        "e7a3353db866500f0227aee98eca5fe539b6bf1c",
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?border-radius=50%&corner-shape=bevel&box-shadow=10px%2010px%200%2010px%20black",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?border-radius=50%&corner-shape=bevel&box-shadow=10px%2010px%200%2010px%20black",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              350
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?border-top-left-radius=50%&corner-shape=superellipse(1.4)&border-left-width=30px&border-top-width=30px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?border-top-left-radius=50%&corner-shape=superellipse(1.4)&border-left-width=30px&border-top-width=30px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              350
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
         [
          "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-bottom-left-shape=bevel&border-bottom-left-radius=30px",
          [
@@ -86344,32 +86474,6 @@
          [
           [
            "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(5.2)&border-radius=40%",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              180
-             ],
-             [
-              0,
-              350
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-shape=superellipse(8)&border-radius=10px&box-shadow=10px 10px 0 10px black",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(8)&border-radius=10px&box-shadow=10px 10px 0 10px black",
            "=="
           ]
          ],
@@ -144957,7 +145061,7 @@
       ]
      ],
      "conic-gradient-angle-negative.html": [
-      "5a7030d0ff098d020864ccd16856119026322369",
+      "faf9a2d20336159b7cd0ae0d552a9392eea21287",
       [
        null,
        [
@@ -144972,11 +145076,11 @@
           null,
           [
            [
-            1,
+            0,
             1
            ],
            [
-            40000,
+            0,
             40000
            ]
           ]
@@ -144986,7 +145090,7 @@
       ]
      ],
      "conic-gradient-angle.html": [
-      "ba37ec15e1e4ad6651a5b8e039884d0980d897ca",
+      "500d39366c9f39e63632f46de3f7637194799a14",
       [
        null,
        [
@@ -145001,11 +145105,11 @@
           null,
           [
            [
-            1,
+            0,
             1
            ],
            [
-            40000,
+            0,
             40000
            ]
           ]
@@ -145015,7 +145119,7 @@
       ]
      ],
      "conic-gradient-center.html": [
-      "7e810270567dc7ec63157054d6d6415d38d415e4",
+      "fb2fcd994c4799e5436b93df091aef72aa86e355",
       [
        null,
        [
@@ -145030,11 +145134,11 @@
           null,
           [
            [
-            1,
+            0,
             1
            ],
            [
-            40000,
+            0,
             40000
            ]
           ]
@@ -145771,6 +145875,19 @@
         [
          [
           "/css/css-images/gradient/gradient-infinity-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "gradient-infinity-003.html": [
+       "74008e416912c8fd1d65a4f37e6f046ffd39846a",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/gradient-infinity-003-ref.html",
           "=="
          ]
         ],
@@ -148369,7 +148486,7 @@
       ]
      ],
      "multiple-position-color-stop-conic.html": [
-      "41aa505c879562f90658f0f8fd83f597a62d44d8",
+      "50ec959e221fa4648ecd16b83c19c7da17e889cd",
       [
        null,
        [
@@ -148384,11 +148501,11 @@
           null,
           [
            [
-            1,
+            0,
             1
            ],
            [
-            10000,
+            0,
             10000
            ]
           ]
@@ -148466,7 +148583,7 @@
       ]
      ],
      "normalization-conic-2.html": [
-      "9856f6b8f2c1472330a97cf79b553e7703cb1df5",
+      "a42829537adea01832a84a97446be73a0e7de520",
       [
        null,
        [
@@ -148481,11 +148598,11 @@
           null,
           [
            [
-            1,
+            0,
             1
            ],
            [
-            10000,
+            0,
             10000
            ]
           ]
@@ -148495,7 +148612,7 @@
       ]
      ],
      "normalization-conic-degenerate.html": [
-      "6905c39ef9d2c2c92c8ad2b1029ae1feb6e4f2e5",
+      "047aaecd46fd3384f465e4b2ed2863804d9e2462",
       [
        null,
        [
@@ -148510,11 +148627,11 @@
           null,
           [
            [
-            1,
+            0,
             1
            ],
            [
-            10000,
+            0,
             10000
            ]
           ]
@@ -148524,7 +148641,7 @@
       ]
      ],
      "normalization-conic.html": [
-      "21fb8bae8a62043ca63b60006443a558c42f6dee",
+      "3631c8e0df346c64ae9570debc9eb582e668da25",
       [
        null,
        [
@@ -148539,11 +148656,11 @@
           null,
           [
            [
-            1,
+            0,
             1
            ],
            [
-            10000,
+            0,
             10000
            ]
           ]
@@ -151724,7 +151841,7 @@
       ]
      ],
      "out-of-range-color-stop-conic.html": [
-      "1fe59a5a6b917062b834ef898345ace2a0c90217",
+      "16bdccb948ce5bb0011e83022c550cb8015f4c9b",
       [
        null,
        [
@@ -151739,11 +151856,11 @@
           null,
           [
            [
-            1,
+            0,
             1
            ],
            [
-            40000,
+            0,
             40000
            ]
           ]
@@ -151860,7 +151977,7 @@
       ]
      ],
      "tiled-conic-gradients.html": [
-      "eab48b83e92572f3936bd9601876633c47d4bf48",
+      "c5902c07c9afc0d070405b414456f0d763657038",
       [
        null,
        [
@@ -151875,11 +151992,11 @@
           null,
           [
            [
-            1,
+            0,
             1
            ],
            [
-            40000,
+            0,
             40000
            ]
           ]
@@ -251643,7 +251760,7 @@
       ]
      ],
      "inline-with-offset-from-containing-block.html": [
-      "6bbb8b49392c84adecf32f972e4889f2ba356968",
+      "31f8449ff630fe6844eb16b46e445ec840d550d8",
       [
        null,
        [
@@ -254770,7 +254887,7 @@
       ]
      ],
      "pseudo-with-classes-match-multiple.html": [
-      "7ff42edf366d8f97cb53961c00b84bb9feac66ec",
+      "f5c060c20953c84a6a0a0d623e9890b5fe3b1ef1",
       [
        null,
        [
@@ -254796,7 +254913,7 @@
       ]
      ],
      "pseudo-with-classes-match-wildcard.html": [
-      "f777e245ba68f2c06440372bbcb671e09982c419",
+      "11bdcbc12cbadd810ac05bab78fca00000a75f52",
       [
        null,
        [
@@ -254848,7 +254965,7 @@
       ]
      ],
      "pseudo-with-classes-multiple-vt-classes.html": [
-      "fa7ae4eeb15f1df1366069d7fa7cdf4a3c30947f",
+      "c28d6f90dfe109a299213ae488c3bda12ba96eea",
       [
        null,
        [
@@ -331827,11 +331944,11 @@
        ],
        "resources": {
         "corner-shape.js": [
-         "de471f95dfc4de0d58f8a0c63b510da92d90f476",
+         "1e242e607a0d63d1d9152e445672c703aeab5c95",
          []
         ],
         "corner-utils.js": [
-         "bacaaa8a6e4ae7f68bab460e8e98b292d103bb69",
+         "b62fd21501bfa0316864de9186b5d9095fc19304",
          []
         ],
         "resolve-corner-style.js": [
@@ -348796,6 +348913,10 @@
       ],
       "gradient-infinity-002-ref.html": [
        "30857abd9a1532e4b9ff0e6f20ce54145e29b8a8",
+       []
+      ],
+      "gradient-infinity-003-ref.html": [
+       "798df7bbbb6f867b8e9b5f8a4aab7346d109cc5d",
        []
       ],
       "gradient-longer-hue-hsl-001-ref.html": [
@@ -413854,6 +413975,10 @@
      "629baaba8c5990e4d847014619a9d1d6f5e98d1c",
      []
     ],
+    "pointerevent_boundary_events_before_pointerrawupdate.https-expected.txt": [
+     "53c06b6443b553a17dc85314f1669d3dcae695d5",
+     []
+    ],
     "pointerevent_click_on_chorded_mouse_button.tentative-expected.txt": [
      "3bb3a28474d7045d37d88aeda9c822b684367408",
      []
@@ -413876,6 +414001,14 @@
     ],
     "pointerevent_pointerout_no_pointer_movement-expected.txt": [
      "896c84eff0ff75e9ad3ee041c8ed86e136cf4fd3",
+     []
+    ],
+    "pointerevent_pointerrawupdate_flush_pointercapture.https-expected.txt": [
+     "9cdf228ea2c1b889ad58bb80f2e0274f13e031ae",
+     []
+    ],
+    "pointerevent_pointerrawupdate_remove_target.https-expected.txt": [
+     "9b2ccd8a286bf536bdc454123e275aad3251e0f3",
      []
     ],
     "pointerevent_styles.css": [
@@ -485165,7 +485298,7 @@
       ]
      ],
      "partitioned-cookies-parallel-iframes.embed.tentative.https.html": [
-      "68de567afee135e0e75e2e97c869005163eada8e",
+      "e92a15bcc29435c5bc7ab6d6bae77fe724a2a2e2",
       [
        null,
        {
@@ -590731,6 +590864,13 @@
       {}
      ]
     ],
+    "focus-double-sync-calls.tentative.html": [
+     "6dbfa71e735204281eef031f169c2fdac580d12e",
+     [
+      null,
+      {}
+     ]
+    ],
     "focus-event-after-focusing-iframes.html": [
      "f2aa2233e560eb6e73b20fe753386ef74ac282e7",
      [
@@ -678551,6 +678691,15 @@
       }
      ]
     ],
+    "pointerevent_boundary_events_before_pointerrawupdate.https.html": [
+     "4de52758126e26089954a51804afaf411c38b290",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "pointerevent_boundary_events_in_capturing.html": [
      "b3a3fe7fe1245369124395ea5494cf2064290a73",
      [
@@ -679148,6 +679297,42 @@
     ],
     "pointerevent_pointerrawupdate.https.html": [
      "74c14d932ff583b0a418ad38c9fda4e35e3555d4",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "pointerevent_pointerrawupdate_after_adoption_from_child.https.html": [
+     "9b67f776d046a1cce50ac10ab18d9de6932c86ca",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "pointerevent_pointerrawupdate_after_adoption_from_parent.https.html": [
+     "132be023178c4f18c94e4e0ebfe0bcbfe25f1493",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "pointerevent_pointerrawupdate_flush_pointercapture.https.html": [
+     "1d444c75097c4adf1f60b7356bb5d09de546c416",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "pointerevent_pointerrawupdate_remove_target.https.html": [
+     "2a7af77af0de42db600d5a4db2d5956c0b5e64cf",
      [
       null,
       {
@@ -694902,6 +695087,20 @@
       }
      ]
     ],
+    "post-task-multiple-scheduler-order.window.js": [
+     "14c7013d5267c058937017be88f62f08405ea0f3",
+     [
+      "scheduler/post-task-multiple-scheduler-order.window.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Scheduler: Tasks run order when multiple scheduler interfere the same event loop"
+        ]
+       ]
+      }
+     ]
+    ],
     "post-task-result-success.any.js": [
      "dd73c148e903258ff77862be81ae89505ffe9356",
      [
@@ -696289,7 +696488,7 @@
     "tentative": {
      "yield": {
       "yield-abort.any.js": [
-       "94a8b2cb2b8f842bff780e3d169f148b6dc78136",
+       "d5119b1c1638ecfcd1b861332b5de8e370529c67",
        [
         "scheduler/tentative/yield/yield-abort.any.html",
         {}
