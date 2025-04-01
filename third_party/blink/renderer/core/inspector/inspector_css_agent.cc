@@ -2104,20 +2104,24 @@ protocol::Response InspectorCSSAgent::getComputedStyleForNode(
 }
 
 // Resolve percentages in the context of the given element values for margin,
-// padding, inset, width and height properties, return an empty string if
+// padding, inset, sizing properties. Return `original_value` string if
 // there was an error during percentage resolution. Returns null string if the
-// value doesn't have percentages and for all other properties that don't
-// support percentage resolution.
+// value doesn't have percentages or `property_name` is not margin,
+// padding, inset or sizing property.
 String InspectorCSSAgent::ResolvePercentagesValues(
     Element* element,
     CSSPropertyName property_name,
-    const CSSValue* value) {
+    const CSSValue* parsed_value,
+    const String& original_value) {
   CHECK(!element->GetDocument().View()->NeedsLayout());
   if (!IsMarginPaddingProperty(property_name) &&
       !IsInsetProperty(property_name) && !IsSizingProperty(property_name)) {
     return g_null_atom;
   }
-  auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
+  if (!parsed_value) {
+    return g_null_atom;
+  }
+  auto* primitive_value = DynamicTo<CSSPrimitiveValue>(parsed_value);
   if (!primitive_value) {
     return g_null_atom;
   }
@@ -2139,7 +2143,7 @@ String InspectorCSSAgent::ResolvePercentagesValues(
 
   if (auto* box = DynamicTo<LayoutBox>(element->GetLayoutObject())) {
     if (!box->GetLayoutResults().size()) {
-      return g_empty_string;
+      return original_value;
     }
     // Using the first LayoutResult is okay, as all fragments have the same
     // percentage resolution sizes.
@@ -2153,7 +2157,7 @@ String InspectorCSSAgent::ResolvePercentagesValues(
         percentage_resolution_size, property_name.Id(),
         element->GetComputedStyle()->GetWritingDirection());
     if (percentage_resolution_value == kIndefiniteSize) {
-      return g_empty_string;
+      return original_value;
     }
     LayoutUnit resolved_percentage_value =
         MinimumValueForLength(length_value, percentage_resolution_value);
@@ -2164,7 +2168,7 @@ String InspectorCSSAgent::ResolvePercentagesValues(
     return builder.ToString();
   }
 
-  return g_empty_string;
+  return original_value;
 }
 
 protocol::Response InspectorCSSAgent::resolveValues(
@@ -2190,6 +2194,11 @@ protocol::Response InspectorCSSAgent::resolveValues(
     return protocol::Response::ServerError("Node is not an element.");
   }
 
+  if (!element->GetComputedStyle()) {
+    return protocol::Response::ServerError(
+        "Computed style of element is null.");
+  }
+
   Document& document = element->GetDocument();
   document.UpdateStyleAndLayoutForNode(element,
                                        DocumentUpdateReason::kInspector);
@@ -2210,31 +2219,29 @@ protocol::Response InspectorCSSAgent::resolveValues(
     }
   }
 
-  std::optional<CSSPropertyName> property_name;
   const AtomicString custom_property_name(
       ("--" + base::UnguessableToken::Create().ToString()).c_str());
   std::optional<AutoRegistration> auto_registration;
+  CSSSyntaxDefinition syntax_definition = CreateCombinedSyntax();
+  PropertyRegistration* property_registration =
+      MakeGarbageCollected<PropertyRegistration>(
+          custom_property_name, syntax_definition, /* inherits */ false,
+          /* initial */ nullptr);
+  // Temporary register property with combined syntax.
+  auto_registration.emplace(document, custom_property_name,
+                            *property_registration);
+  CustomProperty temporary_custom_property(custom_property_name, document);
 
+  std::optional<CSSPropertyName> property_name =
+      CSSPropertyName(custom_property_name);
   if (property_name_str.has_value()) {
     property_name =
         CSSPropertyName::From(execution_context, *property_name_str);
-
     if (!property_name.has_value()) {
       return protocol::Response::ServerError(
           "Could not resolve property name.");
     }
-  } else {
-    property_name = CSSPropertyName(custom_property_name);
-    CSSSyntaxDefinition syntax_definition = CreateCombinedSyntax();
-    PropertyRegistration* property_registration =
-        MakeGarbageCollected<PropertyRegistration>(
-            custom_property_name, syntax_definition, /* inherits */ false,
-            /* initial */ nullptr);
-    // Temporary register property with combined syntax.
-    auto_registration.emplace(document, custom_property_name,
-                              *property_registration);
   }
-  DCHECK(property_name.has_value());
 
   if (CSSProperty::Get(property_name->Id()).IsShorthand()) {
     return protocol::Response::ServerError(
@@ -2243,37 +2250,31 @@ protocol::Response InspectorCSSAgent::resolveValues(
 
   *results = std::make_unique<protocol::Array<String>>();
   for (auto value : *values) {
-    const CSSValue* parsed_value = nullptr;
-    if (property_name->IsCustomProperty()) {
-      CustomProperty custom_property(property_name->ToAtomicString(), document);
-      auto local_context = CSSParserLocalContext();
-      parsed_value =
-          custom_property.Parse(value, *parser_context, local_context);
+    const CSSValue* computed_value = nullptr;
+    const CSSValue* parsed_value =
+        CSSParser::ParseSingleValue(property_name->Id(), value, parser_context);
+    if (parsed_value) {
+      computed_value =
+          StyleResolver::ComputeValue(element, *property_name, *parsed_value);
+      if (String resolved_value = ResolvePercentagesValues(
+              element, *property_name, computed_value, value)) {
+        (*results)->emplace_back(resolved_value);
+        continue;
+      }
     } else {
-      parsed_value = CSSParser::ParseSingleValue(property_name->Id(), value,
-                                                 parser_context);
+      auto local_context = CSSParserLocalContext();
+      parsed_value = temporary_custom_property.Parse(value, *parser_context,
+                                                     local_context);
+      if (!parsed_value) {
+        (*results)->emplace_back(value);
+        continue;
+      }
+      computed_value = StyleResolver::ComputeValue(
+          element, CSSPropertyName(custom_property_name), *parsed_value);
     }
-
-    if (!parsed_value) {
-      (*results)->emplace_back(String());
-      continue;
-    }
-
-    if (!element->GetComputedStyle()) {
-      continue;
-    }
-
-    const CSSValue* computed_value =
-        StyleResolver::ComputeValue(element, *property_name, *parsed_value);
 
     if (!computed_value) {
-      (*results)->emplace_back(String());
-      continue;
-    }
-
-    if (String resolved_value =
-            ResolvePercentagesValues(element, *property_name, computed_value)) {
-      (*results)->emplace_back(resolved_value);
+      (*results)->emplace_back(value);
       continue;
     }
 
