@@ -139,7 +139,7 @@ class PrinterSettingsIntegrationTest : public AshIntegrationTest {
 
   PrinterSettingsIntegrationTest() {
     feature_list_.InitAndEnableFeature(
-        printing::features::kAddPrinterViaPrintscanmgr);
+        ::printing::features::kAddPrinterViaPrintscanmgr);
     // Keep test running after dismissing login screen.
     set_exit_when_last_browser_closes(false);
     login_mixin().SetMode(ChromeOSIntegrationLoginMixin::Mode::kTestLogin);
