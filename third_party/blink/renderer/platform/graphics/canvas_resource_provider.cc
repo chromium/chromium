@@ -913,6 +913,14 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   // recycling.
   static constexpr int kMaxRecycledCanvasResources = 3;
 
+  struct UnusedResource {
+    UnusedResource(base::TimeTicks last_use,
+                   scoped_refptr<CanvasResource> resource)
+        : last_use(last_use), resource(std::move(resource)) {}
+    base::TimeTicks last_use;
+    scoped_refptr<CanvasResource> resource;
+  };
+
   // When and if |resource_recycling_enabled_| is false, |canvas_resources_|
   // will only hold one CanvasResource at most.
   WTF::Vector<UnusedResource> canvas_resources_;
