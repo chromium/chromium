@@ -132,6 +132,8 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   // resource provider did not exist at all, it may be created.
   virtual bool EnableAcceleration() = 0;
 
+  bool IsContextLost() const override;
+
  protected:
   ~CanvasRenderingContextHost() override = default;
 

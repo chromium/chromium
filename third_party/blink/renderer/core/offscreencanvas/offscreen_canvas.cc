@@ -511,11 +511,6 @@ CanvasResourceDispatcher* OffscreenCanvas::GetOrCreateResourceDispatcher() {
       agent_group_scheduler_compositor_task_runner =
           top_execution_context->GetAgentGroupSchedulerCompositorTaskRunner();
 
-      // AgentGroupSchedulerCompositorTaskRunner will be null for
-      // SharedWorkers, but for windows and other workers it should be non-null.
-      DCHECK(top_execution_context->IsSharedWorkerGlobalScope() ||
-             agent_group_scheduler_compositor_task_runner);
-
       dispatcher_task_runner =
           top_execution_context->GetTaskRunner(TaskType::kInternalDefault);
     }
@@ -690,26 +685,6 @@ void OffscreenCanvas::NotifyGpuContextLost() {
     // restored in order to reestablish the compositor frame sink mojo
     // channel.
     frame_dispatcher_ = nullptr;
-  }
-}
-
-void OffscreenCanvas::CheckForGpuContextLost() {
-  // If the GPU has crashed, it is necessary to notify the OffscreenCanvas so
-  // the context can be recovered.
-  if (!context_lost() && ResourceProvider() &&
-      ResourceProvider()->IsAccelerated() &&
-      ResourceProvider()->IsGpuContextLost()) {
-    set_context_lost(true);
-    ReplaceResourceProvider(nullptr);
-    NotifyGpuContextLost();
-  }
-
-  // For software rendering.
-  if (!shared_bitmap_gpu_channel_lost() && ResourceProvider() &&
-      ResourceProvider()->IsSoftwareSharedImageGpuChannelLost()) {
-    set_shared_bitmap_gpu_channel_lost(true);
-    ReplaceResourceProvider(nullptr);
-    NotifyGpuContextLost();
   }
 }
 

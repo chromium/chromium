@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -23,6 +24,8 @@
 #include "cc/paint/decode_stashing_image_provider.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/tiles/software_image_decode_cache.h"
+#include "components/viz/common/gpu/context_lost_observer.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
@@ -188,6 +191,7 @@ class CanvasResourceProviderBitmap : public CanvasResourceProvider {
 // * Renders to a SharedImage, which manages memory internally.
 // * Layers may be overlay candidates.
 class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
+                                          public viz::ContextLostObserver,
                                           public BitmapGpuChannelLostObserver {
  public:
   CanvasResourceProviderSharedImage(
@@ -234,12 +238,20 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
                                color_space,
                                std::move(context_provider_wrapper),
                                resource_host),
+        raster_context_provider_(
+            base::WrapRefCounted(ContextProviderWrapper()
+                                     ->ContextProvider()
+                                     .RasterContextProvider())),
         is_accelerated_(is_accelerated),
         shared_image_usage_flags_(shared_image_usage_flags),
         use_oop_rasterization_(is_accelerated && ContextProviderWrapper()
                                                      ->ContextProvider()
                                                      .GetCapabilities()
                                                      .gpu_rasterization) {
+    if (raster_context_provider_) {
+      raster_context_provider_->AddObserver(this);
+    }
+
     resource_ = NewOrRecycledResource();
     GetFlushForImageListener()->AddObserver(this);
 
@@ -253,6 +265,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
         shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
       }
       return;
+    }
+
+    if (raster_context_provider_) {
+      raster_context_provider_->RemoveObserver(this);
     }
 
     GetFlushForImageListener()->RemoveObserver(this);
@@ -778,6 +794,13 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   }
 
  private:
+  // `viz::ContextLostObserver` implementation.
+  void OnContextLost() override {
+    if (notify_context_lost_in_new_task_) {
+      std::move(notify_context_lost_in_new_task_).Run();
+    }
+  }
+
   // BitmapGpuChannelLostObserver implementation.
   void OnGpuChannelLost() override {
     if (notify_context_lost_in_new_task_) {
@@ -930,6 +953,13 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   // will only hold one CanvasResource at most.
   WTF::Vector<UnusedResource> canvas_resources_;
   bool resource_recycling_enabled_ = true;
+
+  // `raster_context_provider_` holds a reference on the shared
+  // `RasterContextProvider`, to keep it alive until it notifies us after the
+  // GPU context is lost. Without this, no `CanvasResourceProvider` would get
+  // notified after the shared `WebGraphicsContext3DProviderWrapper` instance is
+  // recreated.
+  scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
       shared_image_interface_provider_;
   const bool is_accelerated_;

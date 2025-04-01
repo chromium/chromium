@@ -221,9 +221,7 @@ void CanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   ResetInternal();
   HTMLCanvasElement* const element = canvas();
   if (element != nullptr) [[likely]] {
-    if (context_lost_mode_ == kSyntheticLostContext) {
-      element->DiscardResourceProvider();
-    }
+    element->DiscardResourceProvider();
 
     if (element->IsPageVisible()) {
       dispatch_context_lost_event_timer_.StartOneShot(base::TimeDelta(),
@@ -279,7 +277,6 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
   }
 
   if (context_lost_mode_ == kRealLostContext && Restore()) {
-    Host()->set_context_lost(false);
     try_restore_context_event_timer_.Stop();
     DispatchContextRestoredEvent(nullptr);
     return;
@@ -305,7 +302,6 @@ bool CanvasRenderingContext2D::Restore() {
     return false;
   }
 
-  CHECK(host->context_lost());
   DCHECK(!host->ResourceProvider());
 
   host->ClearLayerTexture();

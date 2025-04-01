@@ -193,7 +193,6 @@ class CORE_EXPORT OffscreenCanvas final
   bool IsWebGL2Enabled() const override { return true; }
   bool IsWebGLBlocked() const override { return false; }
 
-  void CheckForGpuContextLost();
   void SetRestoringGpuContext(bool restoring_gpu_context) {
     restoring_gpu_context_ = restoring_gpu_context;
   }

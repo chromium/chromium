@@ -2081,7 +2081,7 @@ void HTMLCanvasElement::ReplaceExistingResourceProviderFor2DContext() {
   ReplaceResourceProvider(nullptr);
 
   // Bail out if the context is lost.
-  if (context_lost() && !context_->IsContextBeingRestored()) {
+  if (context_->isContextLost() && !context_->IsContextBeingRestored()) {
     return;
   }
 
@@ -2128,7 +2128,7 @@ CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider(
     }
 
     CanvasResourceProvider* resource_provider = ResourceProvider();
-    if (context_lost() && !context_->IsContextBeingRestored()) {
+    if (context_->isContextLost() && !context_->IsContextBeingRestored()) {
       DCHECK(!resource_provider);
       return nullptr;
     }

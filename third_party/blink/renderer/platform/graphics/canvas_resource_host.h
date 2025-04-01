@@ -47,6 +47,12 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
       viz::ReleaseCallback* out_release_callback) override;
 
   virtual void NotifyGpuContextLost() = 0;
+  // TODO(crbug.com/399587138): Delete once `cc::Layer` related code is moved to
+  // `CanvasRenderingContext2D`. `IsContextLost()` is only needed by
+  // `IsResourceValid()`, which is needed by `PrepareTransferableResource()`,
+  // which is needed by cc_layer_, which is only used by
+  // CanvasRenderingContext2D.
+  virtual bool IsContextLost() const = 0;
   virtual void SetNeedsCompositingUpdate() = 0;
   virtual void InitializeForRecording(cc::PaintCanvas* canvas) const = 0;
   virtual void UpdateMemoryUsage() = 0;
@@ -121,17 +127,6 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
   void DoPaintInvalidation(const gfx::Rect& dirty_rect);
   void SetOpacityMode(OpacityMode opacity_mode);
 
-  // Temporary, for canvas_2d_layer_bridge use.
-  bool context_lost() { return context_lost_; }
-  void set_context_lost(bool value) { context_lost_ = value; }
-
-  bool shared_bitmap_gpu_channel_lost() const {
-    return shared_bitmap_gpu_channel_lost_;
-  }
-  void set_shared_bitmap_gpu_channel_lost(bool value) {
-    shared_bitmap_gpu_channel_lost_ = value;
-  }
-
   virtual void SetTransferToGPUTextureWasInvoked() {}
   virtual bool TransferToGPUTextureWasInvoked() { return false; }
 
@@ -141,8 +136,6 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
 
  private:
   bool is_displayed_ = false;
-  bool context_lost_ = false;
-  bool shared_bitmap_gpu_channel_lost_ = false;
   bool is_opaque_ = false;
   unsigned frames_since_last_commit_ = 0;
   std::unique_ptr<SharedContextRateLimiter> rate_limiter_;

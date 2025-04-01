@@ -171,7 +171,6 @@ OffscreenCanvasRenderingContext2D::GetOrCreateCanvasResourceProvider() const {
   if (host == nullptr) [[unlikely]] {
     return nullptr;
   }
-  host->CheckForGpuContextLost();
   return host->GetOrCreateResourceProvider();
 }
 
@@ -334,9 +333,7 @@ void OffscreenCanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   if (context_lost_mode_ != kNotLostContext)
     return;
   context_lost_mode_ = lost_mode;
-  if (CanvasRenderingContextHost* host = Host();
-      host != nullptr && context_lost_mode_ == kSyntheticLostContext)
-      [[unlikely]] {
+  if (CanvasRenderingContextHost* host = Host()) [[likely]] {
     host->DiscardResourceProvider();
   }
   uint32_t delay = base::RandInt(1, kMaxIframeContextLoseDelay);
