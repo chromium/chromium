@@ -202,8 +202,8 @@ void TraceEventTestFixture::OnTraceDataCollected(
   trace_buffer_.AddFragment(events_str->as_string());
   trace_buffer_.Finish();
 
-  std::optional<Value> root = base::JSONReader::Read(
-      json_output_.json_output, JSON_PARSE_RFC | JSON_ALLOW_CONTROL_CHARS);
+  std::optional<Value> root =
+      base::JSONReader::Read(json_output_.json_output, JSON_PARSE_RFC);
 
   if (!root.has_value()) {
     LOG(ERROR) << json_output_.json_output;
