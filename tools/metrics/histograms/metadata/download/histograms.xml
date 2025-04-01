@@ -985,16 +985,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Download.Service.Finish.Time" units="ms"
-    expires_after="M85">
-<!-- Name completed by histogram_suffixes
-     name="Download.Service.CompletionType" -->
-
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>The time to complete the download in download service.</summary>
-</histogram>
-
 <histogram name="Download.Service.Finish.Type"
     enum="Download.Service.CompletionType" expires_after="2023-08-27">
   <owner>shaktisahu@chromium.org</owner>
