@@ -95,6 +95,8 @@ optimization_guide::proto::AnnotatedRole ConvertAnnotatedRole(
       return optimization_guide::proto::ANNOTATED_ROLE_FOOTER;
     case blink::mojom::AIPageContentAnnotatedRole::kContentHidden:
       return optimization_guide::proto::ANNOTATED_ROLE_CONTENT_HIDDEN;
+    case blink::mojom::AIPageContentAnnotatedRole::kPaidContent:
+      return optimization_guide::proto::ANNOTATED_ROLE_PAID_CONTENT;
   }
   NOTREACHED();
 }
@@ -515,6 +517,13 @@ void ConvertFrameData(
   AddDocumentIdentifier(render_frame_info.global_frame_token, frame_token_set,
                         render_frame_info.serialized_server_token,
                         proto_frame_data);
+
+  if (mojom_frame_data.contains_paid_content) {
+    auto* paid_content_metadata =
+        proto_frame_data->mutable_paid_content_metadata();
+    paid_content_metadata->set_contains_paid_content(
+        mojom_frame_data.contains_paid_content.value());
+  }
 }
 
 // `mojom_iframe_data` holds information about the iframe provided by the

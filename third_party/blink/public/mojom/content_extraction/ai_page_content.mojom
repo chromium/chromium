@@ -53,6 +53,7 @@ enum AIPageContentAnnotatedRole {
   kAside,
   kFooter,
   kContentHidden,
+  kPaidContent,
 };
 
 struct AIPageContentGeometry {
@@ -210,6 +211,10 @@ struct AIPageContentFrameData {
 
   // The title of the document.
   string? title;
+
+  // Whether the frame contains paid content. The value exists
+  // if the document was checked.
+  bool? contains_paid_content;
 };
 
 // Provides metadata for frames (local and remote) accessible from the

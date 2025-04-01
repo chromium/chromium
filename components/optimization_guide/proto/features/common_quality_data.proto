@@ -524,6 +524,15 @@ message FrameData {
 
   // The title of the frame.
   string title = 5;
+
+  // Information about paid content in the frame.  Only set
+  // if paid content was checked.
+  PaidContentMetadata paid_content_metadata = 6;
+}
+
+message PaidContentMetadata {
+  // Whether the frame contains paid content.
+  bool contains_paid_content = 1;
 }
 
 // The interaction information for the frame. This is for interactions that
@@ -1711,7 +1720,7 @@ enum TableRowType {
 // role, the html tag, or are assumed from some properties of the page.
 // When adding new roles, please also update AIPageContentAnnotatedRole in
 // third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.
-// Next ID: 14
+// Next ID: 15
 enum AnnotatedRole {
   ANNOTATED_ROLE_UNKNOWN = 0;
 
@@ -1742,6 +1751,12 @@ enum AnnotatedRole {
   // for nodes in a hidden subtree may be non-empty, depending on whether the
   // content would be in the viewport if the user searched for it.
   ANNOTATED_ROLE_CONTENT_HIDDEN = 13;
+
+  // Indicates that the subtree for this ContentNode contains content marked as
+  // isAccessibleForFree=false by a schema.org CreativeWork declaration, as
+  // described at
+  // https://developers.google.com/search/docs/appearance/structured-data/paywalled-content.
+  ANNOTATED_ROLE_PAID_CONTENT = 14;
 
   reserved 1 to 4;
 }

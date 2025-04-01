@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table_row.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -173,59 +174,6 @@ bool IsGenericContainer(
   }
 
   return false;
-}
-
-void AddAnnotatedRoles(
-    const LayoutObject& object,
-    Vector<mojom::blink::AIPageContentAnnotatedRole>& annotated_roles) {
-  const auto& style = object.StyleRef();
-  if (style.ContentVisibility() == EContentVisibility::kHidden) {
-    annotated_roles.push_back(
-        mojom::blink::AIPageContentAnnotatedRole::kContentHidden);
-  }
-
-  // Element specific roles below.
-  const auto* element = DynamicTo<HTMLElement>(object.GetNode());
-  if (!element) {
-    return;
-  }
-  if (element->HasTagName(html_names::kHeaderTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "banner") {
-    annotated_roles.push_back(
-        mojom::blink::AIPageContentAnnotatedRole::kHeader);
-  }
-  if (element->HasTagName(html_names::kNavTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "navigation") {
-    annotated_roles.push_back(mojom::blink::AIPageContentAnnotatedRole::kNav);
-  }
-  if (element->HasTagName(html_names::kSearchTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "search") {
-    annotated_roles.push_back(
-        mojom::blink::AIPageContentAnnotatedRole::kSearch);
-  }
-  if (element->HasTagName(html_names::kMainTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "main") {
-    annotated_roles.push_back(mojom::blink::AIPageContentAnnotatedRole::kMain);
-  }
-  if (element->HasTagName(html_names::kArticleTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "article") {
-    annotated_roles.push_back(
-        mojom::blink::AIPageContentAnnotatedRole::kArticle);
-  }
-  if (element->HasTagName(html_names::kSectionTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "region") {
-    annotated_roles.push_back(
-        mojom::blink::AIPageContentAnnotatedRole::kSection);
-  }
-  if (element->HasTagName(html_names::kAsideTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "complementary") {
-    annotated_roles.push_back(mojom::blink::AIPageContentAnnotatedRole::kAside);
-  }
-  if (element->HasTagName(html_names::kFooterTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "contentinfo") {
-    annotated_roles.push_back(
-        mojom::blink::AIPageContentAnnotatedRole::kFooter);
-  }
 }
 
 std::optional<DOMNodeId> GetDomNodeId(const LayoutObject& object) {
@@ -685,8 +633,7 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
   page_content->root_node = std::move(root_node);
 
   if (stack_depth_exceeded_) {
-    ukm::builders::OptimizationGuide_AIPageContentAgent(
-        document.UkmSourceID())
+    ukm::builders::OptimizationGuide_AIPageContentAgent(document.UkmSourceID())
         .SetNodeDepthLimitExceeded(true)
         .Record(document.UkmRecorder());
   }
@@ -936,6 +883,63 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
   return content_node;
 }
 
+void AIPageContentAgent::ContentBuilder::AddAnnotatedRoles(
+    const LayoutObject& object,
+    Vector<mojom::blink::AIPageContentAnnotatedRole>& annotated_roles) const {
+  const auto& style = object.StyleRef();
+  if (style.ContentVisibility() == EContentVisibility::kHidden) {
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kContentHidden);
+  }
+
+  // Element specific roles below.
+  const auto* element = DynamicTo<HTMLElement>(object.GetNode());
+  if (!element) {
+    return;
+  }
+  if (element->HasTagName(html_names::kHeaderTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "banner") {
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kHeader);
+  }
+  if (element->HasTagName(html_names::kNavTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "navigation") {
+    annotated_roles.push_back(mojom::blink::AIPageContentAnnotatedRole::kNav);
+  }
+  if (element->HasTagName(html_names::kSearchTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "search") {
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kSearch);
+  }
+  if (element->HasTagName(html_names::kMainTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "main") {
+    annotated_roles.push_back(mojom::blink::AIPageContentAnnotatedRole::kMain);
+  }
+  if (element->HasTagName(html_names::kArticleTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "article") {
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kArticle);
+  }
+  if (element->HasTagName(html_names::kSectionTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "region") {
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kSection);
+  }
+  if (element->HasTagName(html_names::kAsideTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "complementary") {
+    annotated_roles.push_back(mojom::blink::AIPageContentAnnotatedRole::kAside);
+  }
+  if (element->HasTagName(html_names::kFooterTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "contentinfo") {
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kFooter);
+  }
+  if (paid_content_.IsPaidElement(element)) {
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kPaidContent);
+  }
+}
+
 void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
     const LayoutObject& object,
     mojom::blink::AIPageContentAttributes& attributes) const {
@@ -1000,6 +1004,12 @@ void AIPageContentAgent::ContentBuilder::AddFrameData(
   frame_data.title = frame.GetDocument()->title();
   AddFrameInteractionInfo(frame, *frame_data.frame_interaction_info);
   AddMetaData(frame, frame_data.meta_data);
+
+  if (RuntimeEnabledFeatures::AIPageContentPaidContentAnnotationEnabled()) {
+    if (paid_content_.QueryPaidElements(*frame.GetDocument())) {
+      frame_data.contains_paid_content = true;
+    }
+  }
 }
 
 void AIPageContentAgent::ContentBuilder::AddFrameInteractionInfo(

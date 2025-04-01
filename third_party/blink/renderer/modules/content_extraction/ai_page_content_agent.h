@@ -6,12 +6,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CONTENT_EXTRACTION_AI_PAGE_CONTENT_AGENT_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/stack_allocated.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/lib/validation_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/modules/content_extraction/paid_content.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
@@ -64,13 +66,13 @@ class MODULES_EXPORT AIPageContentAgent final
 
   // Synchronously services a single request.
   class ContentBuilder {
+    STACK_ALLOCATED();
+
    public:
     explicit ContentBuilder(const mojom::blink::AIPageContentOptions& options);
     ~ContentBuilder();
 
     mojom::blink::AIPageContentPtr Build(LocalFrame& frame);
-
-    void Trace(Visitor* visitor) const;
 
    private:
     // Returns true if any descendant of `object` has a computed value of
@@ -100,6 +102,9 @@ class MODULES_EXPORT AIPageContentAgent final
     void AddNodeGeometry(
         const LayoutObject& object,
         mojom::blink::AIPageContentAttributes& attributes) const;
+    void AddAnnotatedRoles(const LayoutObject& object,
+                           Vector<mojom::blink::AIPageContentAnnotatedRole>&
+                               annotated_roles) const;
 
     void AddInteractiveNode(DOMNodeId dom_node_id);
 
@@ -114,6 +119,9 @@ class MODULES_EXPORT AIPageContentAgent final
 
     // Whether the stack depth has exceeded the max tree depth.
     bool stack_depth_exceeded_ = false;
+
+    // List of nodes marked as isAccessibleForFree=false.
+    PaidContent paid_content_;
   };
 
   void Bind(mojo::PendingReceiver<mojom::blink::AIPageContentAgent> receiver);
