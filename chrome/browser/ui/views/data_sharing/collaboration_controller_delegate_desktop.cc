@@ -295,7 +295,9 @@ void CollaborationControllerDelegateDesktop::OnBrowserClosing(
 }
 
 void CollaborationControllerDelegateDesktop::OnJoinDialogClosing(
-    ResultCallback result) {
+    ResultCallback result,
+    std::optional<data_sharing::mojom::GroupAction> action,
+    std::optional<data_sharing::mojom::GroupActionProgress> progress) {
   // Joins flow should end when the shared tab group is open after join
   // or cancel without joining.
   // TODO(crbug.org/380287432): Only cancel the flow if user doesn't join the

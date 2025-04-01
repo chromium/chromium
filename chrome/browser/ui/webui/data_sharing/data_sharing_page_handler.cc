@@ -208,3 +208,9 @@ void DataSharingPageHandler::ReadGroupWithToken(
   CHECK(api_initialized_);
   page_->ReadGroupWithToken(std::move(param), std::move(callback));
 }
+
+void DataSharingPageHandler::OnGroupAction(
+    data_sharing::mojom::GroupAction action,
+    data_sharing::mojom::GroupActionProgress progress) {
+  webui_controller_->OnGroupAction(action, progress);
+}

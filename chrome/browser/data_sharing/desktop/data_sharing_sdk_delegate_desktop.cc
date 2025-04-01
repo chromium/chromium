@@ -187,6 +187,12 @@ void DataSharingSDKDelegateDesktop::OnShareLinkRequested(
   // No-op for this class.
 }
 
+void DataSharingSDKDelegateDesktop::OnGroupAction(
+    data_sharing::mojom::GroupAction action,
+    data_sharing::mojom::GroupActionProgress progress) {
+  // No-op for this class.
+}
+
 void DataSharingSDKDelegateDesktop::Shutdown() {
   // Since WebContents depends on BrowserContext, it needs to be destroyed
   // before the BrowserContext is destroyed.
