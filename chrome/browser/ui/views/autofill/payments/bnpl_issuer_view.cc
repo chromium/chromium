@@ -90,6 +90,9 @@ BnplIssuerView::BnplIssuerView(
                             views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
                         layout_provider->GetDistanceMetric(
                             views::DISTANCE_RELATED_LABEL_HORIZONTAL))));
+    issuer_button->SetFocusRingCornerRadius(corner_radius);
+    issuer_button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+    issuer_button->SetInstallFocusRingOnFocus(true);
     // Make the highlight with rounded corners per the mocks.
     if (auto* ink_drop = views::InkDrop::Get(issuer_button.get())) {
       ink_drop->SetCreateHighlightCallback(base::BindRepeating(
