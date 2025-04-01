@@ -125,10 +125,12 @@ void ComputeUnclampedIMCBInOneAxis(
     const LayoutUnit available_size,
     const std::optional<LayoutUnit>& inset_start,
     const std::optional<LayoutUnit>& inset_end,
+    bool is_static_alignment_parallel,
     const LayoutUnit static_position_offset,
     InsetBias static_position_inset_bias,
     InsetBias alignment_inset_bias,
     const std::optional<InsetBias>& safe_inset_bias,
+    const std::optional<InsetBias>& alt_safe_inset_bias,
     const std::optional<InsetBias>& default_inset_bias,
     LayoutUnit* imcb_start_out,
     LayoutUnit* imcb_end_out,
@@ -166,6 +168,8 @@ void ComputeUnclampedIMCBInOneAxis(
         break;
     }
     *imcb_inset_bias_out = static_position_inset_bias;
+    *safe_inset_bias_out =
+        is_static_alignment_parallel ? safe_inset_bias : alt_safe_inset_bias;
   } else {
     // Otherwise we just resolve auto to 0.
     *imcb_start_out = inset_start.value_or(LayoutUnit());
@@ -217,19 +221,23 @@ InsetModifiedContainingBlock ComputeUnclampedIMCB(
                             /* is_justify_axis */ !is_parallel,
                             &block_safe_inset_bias, &block_default_inset_bias);
 
+  const bool is_static_alignment_parallel =
+      static_position.align_self_direction ==
+      LogicalStaticPosition::LogicalAlignmentDirection::kBlock;
+
   ComputeUnclampedIMCBInOneAxis(
       available_size.inline_size, insets.inline_start, insets.inline_end,
-      static_position.offset.inline_offset,
+      is_static_alignment_parallel, static_position.offset.inline_offset,
       GetStaticPositionInsetBias(static_position.inline_edge),
       inline_alignment_inset_bias, inline_safe_inset_bias,
-      inline_default_inset_bias, &imcb.inline_start, &imcb.inline_end,
-      &imcb.inline_inset_bias, &imcb.inline_safe_inset_bias,
+      block_safe_inset_bias, inline_default_inset_bias, &imcb.inline_start,
+      &imcb.inline_end, &imcb.inline_inset_bias, &imcb.inline_safe_inset_bias,
       &imcb.inline_default_inset_bias);
   ComputeUnclampedIMCBInOneAxis(
       available_size.block_size, insets.block_start, insets.block_end,
-      static_position.offset.block_offset,
+      is_static_alignment_parallel, static_position.offset.block_offset,
       GetStaticPositionInsetBias(static_position.block_edge),
-      block_alignment_inset_bias, block_safe_inset_bias,
+      block_alignment_inset_bias, block_safe_inset_bias, inline_safe_inset_bias,
       block_default_inset_bias, &imcb.block_start, &imcb.block_end,
       &imcb.block_inset_bias, &imcb.block_safe_inset_bias,
       &imcb.block_default_inset_bias);
