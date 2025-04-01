@@ -346,8 +346,10 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
 // Delays handling an unsafe redirect for a keepalive ping until after the page
 // making the keepalive ping has been unloaded.
 // The browser must ensure the unsafe redirect is not followed.
+// TODO(crbug.com/407716208): Broken by crrev.com/c/6039011. Fix and re-enable
+// this test.
 IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
-                       ReceiveUnSafeRedirectAfterPageUnload) {
+                       DISABLED_ReceiveUnSafeRedirectAfterPageUnload) {
   const std::string method = GetParam();
   const char unsafe_redirect_target[] = "chrome://settings";
   auto request_handler =
