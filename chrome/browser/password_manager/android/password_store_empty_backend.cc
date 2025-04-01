@@ -98,7 +98,10 @@ void PasswordStoreEmptyBackend::RemoveLoginsCreatedBetweenAsync(
 void PasswordStoreEmptyBackend::DisableAutoSignInForOriginsAsync(
     const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
     base::OnceClosure completion) {
-  NOTREACHED() << "The empty store backend cannot hold data.";
+  // Technically there is no auto sign-in enabled, since there is nothing stored
+  // so it's safe to just invoke `completion` here.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(completion));
 }
 
 SmartBubbleStatsStore* PasswordStoreEmptyBackend::GetSmartBubbleStatsStore() {
