@@ -525,6 +525,9 @@ class GnParser(object):
       target.proto_in_dir = self.get_proto_in_dir(desc)
       target.arch[arch].sources.update(desc.get('sources', []))
       target.arch[arch].inputs.update(desc.get('inputs', []))
+      target.arch[arch].outputs.update(
+          _remove_out_prefix(output) for output in desc['outputs'])
+      target.arch[arch].args = desc['args']
     elif target.type == 'source_set':
       target.arch[arch].sources.update(source
                                        for source in desc.get('sources', [])
