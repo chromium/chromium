@@ -1398,17 +1398,6 @@ crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-023.html [ Failure
 crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-024.html [ Failure ]
 crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-025.html [ Failure ]
 
-# css-images
-crbug.com/358159989 external/wpt/css/css-images/conic-gradient-angle-negative.html [ Failure ]
-crbug.com/358159989 external/wpt/css/css-images/conic-gradient-angle.html [ Failure ]
-crbug.com/358159989 external/wpt/css/css-images/conic-gradient-center.html [ Failure ]
-crbug.com/358159989 external/wpt/css/css-images/multiple-position-color-stop-conic.html [ Failure ]
-crbug.com/358159989 external/wpt/css/css-images/normalization-conic-2.html [ Failure ]
-crbug.com/358159989 external/wpt/css/css-images/normalization-conic-degenerate.html [ Failure ]
-crbug.com/358159989 external/wpt/css/css-images/normalization-conic.html [ Failure ]
-crbug.com/358159989 external/wpt/css/css-images/out-of-range-color-stop-conic.html [ Failure ]
-crbug.com/358159989 external/wpt/css/css-images/tiled-conic-gradients.html [ Failure ]
-
 # css-scoping
 crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-flattened-004.html [ Failure ]
 crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-functional-001.tentative.html [ Failure ]
