@@ -300,7 +300,9 @@ std::vector<TestUpdaterVersion> GetRealUpdaterVersions();
 
 // Sets up a real updater on the system given any (higher or lower) version of
 // `UpdaterSetup.exe` in `updater_path`.
-void SetupRealUpdater(UpdaterScope scope, const base::FilePath& updater_path);
+void SetupRealUpdater(UpdaterScope scope,
+                      const base::FilePath& updater_path,
+                      const base::Value::List& switches);
 
 // Sets up a fake updater on the system at a version higher than the test.
 void SetupFakeUpdaterHigherVersion(UpdaterScope scope);

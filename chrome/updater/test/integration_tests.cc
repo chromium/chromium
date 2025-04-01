@@ -462,8 +462,9 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->SetupFakeUpdaterLowerVersion();
   }
 
-  void SetupRealUpdater(const base::FilePath& updater_path) {
-    test_commands_->SetupRealUpdater(updater_path);
+  void SetupRealUpdater(const base::FilePath& updater_path,
+                        const base::flat_set<std::string>& switches = {}) {
+    test_commands_->SetupRealUpdater(updater_path, SetToList(switches));
   }
 
   void SetActive(const std::string& app_id) {
@@ -4452,7 +4453,8 @@ class IntegrationLegacyAppCommandWebTest
     }
 
     test_server_ = std::make_unique<ScopedServer>(test_commands_);
-    ASSERT_NO_FATAL_FAILURE(SetupRealUpdater(GetParam().updater_setup_path));
+    ASSERT_NO_FATAL_FAILURE(
+        SetupRealUpdater(GetParam().updater_setup_path, switches()));
   }
 
   void TearDown() override {
@@ -4467,6 +4469,8 @@ class IntegrationLegacyAppCommandWebTest
 
     IntegrationTest::TearDown();
   }
+
+  virtual base::flat_set<std::string> switches() const { return {}; }
 
   std::unique_ptr<ScopedServer> test_server_;
 };
@@ -4593,7 +4597,12 @@ TEST_P(IntegrationLegacyProcessLauncherTest, Test) {
 }
 
 class IntegrationLegacyPolicyStatusTest
-    : public IntegrationLegacyAppCommandWebTest {};
+    : public IntegrationLegacyAppCommandWebTest {
+ protected:
+  base::flat_set<std::string> switches() const override {
+    return {kEnableCecaExperimentSwitch};
+  }
+};
 
 INSTANTIATE_TEST_SUITE_P(IntegrationLegacyPolicyStatusTestCases,
                          IntegrationLegacyPolicyStatusTest,

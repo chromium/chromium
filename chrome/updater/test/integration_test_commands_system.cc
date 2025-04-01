@@ -297,9 +297,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("setup_fake_updater_lower_version");
   }
 
-  void SetupRealUpdater(const base::FilePath& updater_path) const override {
-    RunCommand("setup_real_updater",
-               {Param("updater_path", updater_path.AsUTF8Unsafe())});
+  void SetupRealUpdater(const base::FilePath& updater_path,
+                        const base::Value::List& switches) const override {
+    RunCommand(
+        "setup_real_updater",
+        {Param("updater_path", updater_path.AsUTF8Unsafe()),
+         Param("switches", StringFromValue(base::Value(switches.Clone())))});
   }
 
   void SetExistenceCheckerPath(const std::string& app_id,

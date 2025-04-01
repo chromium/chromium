@@ -123,7 +123,8 @@ class IntegrationTestCommands
   virtual void CopyLog(const std::string& infix) const = 0;
   virtual void SetupFakeUpdaterHigherVersion() const = 0;
   virtual void SetupFakeUpdaterLowerVersion() const = 0;
-  virtual void SetupRealUpdater(const base::FilePath& updater_path) const = 0;
+  virtual void SetupRealUpdater(const base::FilePath& updater_path,
+                                const base::Value::List& switches) const = 0;
   virtual void SetExistenceCheckerPath(const std::string& app_id,
                                        const base::FilePath& path) const = 0;
   virtual void SetServerStarts(int value) const = 0;
