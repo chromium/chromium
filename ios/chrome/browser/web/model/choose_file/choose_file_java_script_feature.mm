@@ -190,8 +190,3 @@ void ChooseFileJavaScriptFeature::LogChooseFileEvent(int accept_type,
       "IOS.Web.FileInput.ContentState",
       ContentStateFromAttributes(allow_multiple_files, has_selected_file));
 }
-
-std::optional<ChooseFileEvent>
-ChooseFileJavaScriptFeature::ResetLastChooseFileEvent() {
-  return ChooseFileEventHolder::GetInstance()->ResetLastChooseFileEvent();
-}

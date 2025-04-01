@@ -29,9 +29,6 @@ class ChooseFileJavaScriptFeature : public web::JavaScriptFeature {
   void LogChooseFileEvent(int accept_type,
                           bool allow_multiple_files,
                           bool has_selected_file);
-
-  // Returns and resets `last_choose_file_event_`.
-  std::optional<ChooseFileEvent> ResetLastChooseFileEvent();
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_CHOOSE_FILE_CHOOSE_FILE_JAVA_SCRIPT_FEATURE_H_
