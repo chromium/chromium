@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "commander": "^2.19.0",
-    "http-server": "^0.11.1",
+    "http-server": "^14.1.1",
     "napa": "^3.0.0",
     "puppeteer": "^1.5.0"
   }

@@ -4,7 +4,7 @@
     "author": "Matt Glazar <matt.glazar@gmail.com>",
     "version": "0.0.0",
     "dependencies": {
-        "express": "~2.5.0"
+        "express": "~4.21.2"
     },
     "engine": "node ~0.4.8"
 }
