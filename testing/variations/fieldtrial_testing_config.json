@@ -464,6 +464,22 @@
             ]
         }
     ],
+    "AndroidBookmarkBar": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidAppearanceSettings",
+                        "AndroidBookmarkBar"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidBottomToolbar": [
         {
             "platforms": [

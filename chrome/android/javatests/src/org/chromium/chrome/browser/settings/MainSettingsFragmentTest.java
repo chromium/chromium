@@ -240,11 +240,13 @@ public class MainSettingsFragmentTest {
                 mSettingsActivityTestRule
                         .getActivity()
                         .findViewById(R.id.account_management_account_row);
+        ChromeRenderTestRule.sanitize(accountRow);
         mRenderTestRule.render(accountRow, "main_settings_signed_out_account");
         View googleServicesRow =
                 mSettingsActivityTestRule
                         .getActivity()
                         .findViewById(R.id.account_management_google_services_row);
+        ChromeRenderTestRule.sanitize(googleServicesRow);
         mRenderTestRule.render(googleServicesRow, "main_settings_signed_out_google_services");
     }
 
@@ -260,6 +262,7 @@ public class MainSettingsFragmentTest {
                 mSettingsActivityTestRule
                         .getActivity()
                         .findViewById(R.id.account_management_account_row);
+        ChromeRenderTestRule.sanitize(accountRow);
         mRenderTestRule.render(accountRow, "main_settings_signin_disabled_by_policy_account");
     }
 
@@ -546,6 +549,7 @@ public class MainSettingsFragmentTest {
                         .getActivity()
                         .findViewById(android.R.id.content)
                         .getRootView();
+        ChromeRenderTestRule.sanitize(view);
         mRenderTestRule.render(view, "main_settings_signed_in_identity_error");
     }
 
