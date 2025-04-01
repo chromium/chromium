@@ -8,6 +8,7 @@
 
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/quad_f.h"
 
@@ -58,6 +59,30 @@ String ContouredRect::ToString() const {
 bool ContouredRect::IntersectsQuad(const gfx::QuadF& quad) const {
   return HasRoundCurvature() ? rect_.IntersectsQuad(quad)
                              : GetPath().Intersects(quad);
+}
+
+void ContouredRect::OutsetForMarginOrShadow(const gfx::OutsetsF& outsets) {
+  // For ordinary rounded rects, we use the existing formula.
+  if (HasRoundCurvature()) {
+    rect_.OutsetForMarginOrShadow(outsets);
+    return;
+  }
+
+  // For anything else, keep the same proportions between the original radii and
+  // the original rect.
+  gfx::RectF new_rect = rect_.Rect();
+  FloatRoundedRect::Radii radii = rect_.GetRadii();
+  new_rect.Outset(outsets);
+
+  CHECK(!rect_.IsEmpty());
+  float scale_x = new_rect.width() / rect_.Rect().width();
+  float scale_y = new_rect.height() / rect_.Rect().height();
+  radii.SetTopLeft(gfx::ScaleSize(radii.TopLeft(), scale_x, scale_y));
+  radii.SetTopRight(gfx::ScaleSize(radii.TopRight(), scale_x, scale_y));
+  radii.SetBottomRight(gfx::ScaleSize(radii.BottomRight(), scale_x, scale_y));
+  radii.SetBottomLeft(gfx::ScaleSize(radii.BottomLeft(), scale_x, scale_y));
+  rect_.SetRadii(radii);
+  rect_.SetRect(new_rect);
 }
 
 Path ContouredRect::GetPath() const {
