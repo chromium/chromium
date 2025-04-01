@@ -254,9 +254,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
     return color_params_.ColorSpace();
   }
 
-  virtual void DispatchContextLostEvent(TimerBase*);
-  virtual void DispatchContextRestoredEvent(TimerBase*);
-  virtual void TryRestoreContextEvent(TimerBase*);
+  void DispatchContextLostEvent(TimerBase*);
+  void DispatchContextRestoredEvent(TimerBase*);
+  void TryRestoreContextEvent(TimerBase*);
 
   // `CanvasRenderingContext2D` and `OffscreenCanvasRenderingContext2D` do not
   // create resource providers the same way. Thus, `BaseRenderingContext2D`
