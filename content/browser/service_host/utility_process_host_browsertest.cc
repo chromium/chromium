@@ -60,7 +60,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "base/apple/mach_port_rendezvous_mac.h"
+#include "base/apple/mach_port_rendezvous.h"
 #endif
 
 namespace content {

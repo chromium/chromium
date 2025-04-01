@@ -2068,8 +2068,6 @@ component("base") {
     sources += [
       "apple/mach_port_rendezvous.cc",
       "apple/mach_port_rendezvous.h",
-      "apple/mach_port_rendezvous_mac.cc",
-      "apple/mach_port_rendezvous_mac.h",
       "enterprise_util.cc",
       "enterprise_util.h",
       "enterprise_util_mac.mm",
@@ -2210,11 +2208,7 @@ component("base") {
         # the bare minimum and does not use Mach ports.
         sources += [ "process/process_tvos.cc" ]
       } else {
-        sources += [
-          "apple/mach_port_rendezvous_ios.cc",
-          "apple/mach_port_rendezvous_ios.h",
-          "process/process_mac.cc",
-        ]
+        sources += [ "process/process_mac.cc" ]
       }
 
       # We include launch_mac on simulator builds so unittests can fork. But,

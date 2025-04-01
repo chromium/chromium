@@ -22,10 +22,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/base_tracing.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "base/apple/mach_port_rendezvous_mac.h"
-#endif
-
 extern "C" {
 // Changes the current thread's directory to a path or directory file
 // descriptor.
