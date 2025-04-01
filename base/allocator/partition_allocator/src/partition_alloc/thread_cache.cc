@@ -864,4 +864,39 @@ void ThreadCache::PurgeInternalHelper() {
   }
 }
 
+bool ThreadCache::IsInFreelist(uintptr_t address,
+                               size_t bucket_index,
+                               size_t& position) {
+  PA_REENTRANCY_GUARD(is_in_thread_cache_);
+
+  auto& bucket = buckets_[bucket_index];
+  if (!bucket.freelist_head) [[unlikely]] {
+    return false;
+  }
+  internal::PartitionFreelistEntry* entry = bucket.freelist_head;
+
+  const internal::PartitionFreelistDispatcher* freelist_dispatcher =
+      get_freelist_dispatcher_from_root();
+  size_t index = 0;
+  size_t length = bucket.count;
+  while (entry != nullptr && index < length) {
+    if (address == internal::SlotStartPtr2Addr(entry)) {
+      position = index;
+      return true;
+    }
+#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
+    internal::PartitionFreelistEntry* next =
+        freelist_dispatcher->GetNextForThreadCacheTrue(entry, bucket.slot_size);
+#else
+    internal::PartitionFreelistEntry* next =
+        freelist_dispatcher->GetNextForThreadCache<true>(entry,
+                                                         bucket.slot_size);
+#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
+    entry = next;
+    ++index;
+  }
+  position = 0;
+  return false;
+}
+
 }  // namespace partition_alloc
