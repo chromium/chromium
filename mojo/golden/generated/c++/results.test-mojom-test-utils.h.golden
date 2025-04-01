@@ -15,7 +15,7 @@ namespace golden {
 
 class  ResultInterfaceInterceptorForTesting : public ResultInterface {
   virtual ResultInterface* GetForwardingInterface() = 0;
-  void Method(bool a, MethodResultCallback callback) override;
+  void Method(bool a, MethodCallback callback) override;
 };
 class  ResultInterfaceAsyncWaiter {
  public:
