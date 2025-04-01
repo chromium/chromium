@@ -257,10 +257,19 @@ void BaseRenderingContext2D::DispatchContextRestoredEvent(TimerBase*) {
   if (context_lost_mode_ == CanvasRenderingContext::kNotLostContext) {
     return;
   }
+
+  CanvasRenderingContextHost* host = GetCanvasRenderingContextHost();
+  if (host == nullptr) {
+    // This function can be called in a new task, via
+    // `dispatch_context_restored_event_timer_`. Abort if the host was disposed
+    // since the task was queued.
+    return;
+  }
+
   ResetInternal();
   context_lost_mode_ = CanvasRenderingContext::kNotLostContext;
   Event* event(Event::Create(event_type_names::kContextrestored));
-  GetCanvasRenderingContextHost()->HostDispatchEvent(event);
+  host->HostDispatchEvent(event);
   UseCounter::Count(GetTopExecutionContext(),
                     WebFeature::kCanvasRenderingContext2DContextRestoredEvent);
 }
