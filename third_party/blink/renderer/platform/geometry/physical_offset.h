@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GEOMETRY_PHYSICAL_OFFSET_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GEOMETRY_PHYSICAL_OFFSET_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_PHYSICAL_OFFSET_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_PHYSICAL_OFFSET_H_
 
-#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -25,7 +24,7 @@ namespace blink {
 // For more information about physical and logical coordinate systems, see:
 // https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/layout/README.md#coordinate-spaces
 template <typename ValueType>
-struct CORE_EXPORT PhysicalFixedOffset {
+struct PLATFORM_EXPORT PhysicalFixedOffset {
   constexpr PhysicalFixedOffset() = default;
   constexpr PhysicalFixedOffset(ValueType left, ValueType top)
       : left(left), top(top) {}
@@ -125,7 +124,7 @@ struct CORE_EXPORT PhysicalFixedOffset {
 
 using PhysicalOffset = PhysicalFixedOffset<LayoutUnit>;
 
-// TODO(crbug.com/962299): These functions should upgraded to force correct
+// TODO(crbug.com/41458361): These functions should upgraded to force correct
 // pixel snapping in a type-safe way.
 template <typename ValueType>
 inline gfx::Point ToRoundedPoint(const PhysicalFixedOffset<ValueType>& o) {
@@ -156,9 +155,9 @@ inline gfx::Vector2d ToCeiledVector2d(const PhysicalFixedOffset<ValueType>& o) {
 }
 
 template <typename ValueType>
-CORE_EXPORT std::ostream& operator<<(std::ostream&,
-                                     const PhysicalFixedOffset<ValueType>&);
+PLATFORM_EXPORT std::ostream& operator<<(std::ostream&,
+                                         const PhysicalFixedOffset<ValueType>&);
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GEOMETRY_PHYSICAL_OFFSET_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_PHYSICAL_OFFSET_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -21,9 +21,9 @@ std::ostream& operator<<(std::ostream& os,
 }
 
 // Explicit instantiations.
-#define INSTANTIATE(ValueType)                    \
-  template struct PhysicalFixedOffset<ValueType>; \
-  template CORE_EXPORT std::ostream& operator<<(  \
+#define INSTANTIATE(ValueType)                       \
+  template struct PhysicalFixedOffset<ValueType>;    \
+  template PLATFORM_EXPORT std::ostream& operator<<( \
       std::ostream&, const PhysicalFixedOffset<ValueType>&)
 
 INSTANTIATE(LayoutUnit);
