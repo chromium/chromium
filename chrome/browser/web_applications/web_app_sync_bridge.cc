@@ -921,13 +921,6 @@ std::optional<syncer::ModelError> WebAppSyncBridge::ApplyIncrementalSyncChanges(
 
 void WebAppSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
-  if (!base::FeatureList::IsEnabled(
-          features::kWebAppDontAddExistingAppsToSync)) {
-    syncer::DataTypeSyncBridge::ApplyDisableSyncChanges(
-        std::move(delete_metadata_change_list));
-    return;
-  }
-
   auto update_local_data = std::make_unique<RegistryUpdateData>();
 
   for (const WebApp& web_app : registrar_->GetAppsIncludingStubs()) {

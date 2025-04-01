@@ -81,13 +81,8 @@ using ::testing::Optional;
 using ::testing::Property;
 using ::testing::VariantWith;
 
-class WebAppDatabaseTest : public base::test::WithFeatureOverride,
-                           public WebAppTest {
+class WebAppDatabaseTest : public WebAppTest {
  public:
-  WebAppDatabaseTest()
-      : base::test::WithFeatureOverride(
-            features::kWebAppDontAddExistingAppsToSync) {}
-
   void SetUp() override {
     WebAppTest::SetUp();
     provider_ = FakeWebAppProvider::Get(profile());
@@ -144,11 +139,8 @@ class WebAppDatabaseTest : public base::test::WithFeatureOverride,
       std::unique_ptr<WebApp> app = test::CreateRandomWebApp({.seed = i});
       if (ensure_no_migration_needed) {
         EnsureHasUserDisplayModeForCurrentPlatform(*app);
-        if (base::FeatureList::IsEnabled(
-                features::kWebAppDontAddExistingAppsToSync)) {
-          if (app->GetSources().Has(WebAppManagement::kSync)) {
-            app->AddSource(WebAppManagement::kUserInstalled);
-          }
+        if (app->GetSources().Has(WebAppManagement::kSync)) {
+          app->AddSource(WebAppManagement::kUserInstalled);
         }
         test::MaybeEnsureShortcutAppsTreatedAsDiy(*app);
         proto::DatabaseMetadata metadata;
@@ -232,7 +224,7 @@ class WebAppDatabaseTest : public base::test::WithFeatureOverride,
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
 };
 
-TEST_P(WebAppDatabaseTest, WriteAndReadRegistry) {
+TEST_F(WebAppDatabaseTest, WriteAndReadRegistry) {
   InitSyncBridge();
   EXPECT_TRUE(registrar().is_empty());
 
@@ -256,7 +248,7 @@ TEST_P(WebAppDatabaseTest, WriteAndReadRegistry) {
   EXPECT_TRUE(IsDatabaseRegistryEqualToRegistrar());
 }
 
-TEST_P(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
+TEST_F(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
   InitSyncBridge();
   EXPECT_TRUE(registrar().is_empty());
 
@@ -316,7 +308,7 @@ TEST_P(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
 
 // Read a database where all apps are already in a valid state, so there should
 // be no difference between the apps written and read.
-TEST_P(WebAppDatabaseTest, OpenDatabaseAndReadRegistry) {
+TEST_F(WebAppDatabaseTest, OpenDatabaseAndReadRegistry) {
   Registry registry = WriteWebApps(100, /*ensure_no_migration_needed=*/true);
 
   InitSyncBridge();
@@ -327,7 +319,7 @@ TEST_P(WebAppDatabaseTest, OpenDatabaseAndReadRegistry) {
 }
 
 // Read a database where some apps will be migrated at read time.
-TEST_P(WebAppDatabaseTest, OpenDatabaseAndReadRegistryWithMigration) {
+TEST_F(WebAppDatabaseTest, OpenDatabaseAndReadRegistryWithMigration) {
   Registry registry = WriteWebApps(100, /*ensure_no_migration_needed=*/false);
 
   InitSyncBridge();
@@ -343,12 +335,8 @@ TEST_P(WebAppDatabaseTest, OpenDatabaseAndReadRegistryWithMigration) {
   for (auto& [app_id, app] : registry) {
     EnsureHasUserDisplayModeForCurrentPlatform(*app);
     test::MaybeEnsureShortcutAppsTreatedAsDiy(*app);
-
-    if (base::FeatureList::IsEnabled(
-            features::kWebAppDontAddExistingAppsToSync)) {
-      if (app->GetSources().Has(WebAppManagement::kSync)) {
-        app->AddSource(WebAppManagement::kUserInstalled);
-      }
+    if (app->GetSources().Has(WebAppManagement::kSync)) {
+      app->AddSource(WebAppManagement::kUserInstalled);
     }
   }
 
@@ -358,7 +346,7 @@ TEST_P(WebAppDatabaseTest, OpenDatabaseAndReadRegistryWithMigration) {
 
 // Read a database where some apps will be migrated from not having a
 // kUserInstalled source to having one.
-TEST_P(WebAppDatabaseTest,
+TEST_F(WebAppDatabaseTest,
        OpenDatabaseAndReadRegistryWithSourceUpgradeMigration) {
   Registry registry = WriteWebApps(100, /*ensure_no_migration_needed=*/false);
   auto write_batch = database_factory().GetStore()->CreateWriteBatch();
@@ -380,13 +368,10 @@ TEST_P(WebAppDatabaseTest,
     if (app->GetSources().Has(WebAppManagement::kSync)) {
       found_migrated_apps |=
           !app->GetSources().Has(WebAppManagement::kUserInstalled);
-      if (base::FeatureList::IsEnabled(
-              features::kWebAppDontAddExistingAppsToSync)) {
-        EXPECT_TRUE(registrar().GetAppById(app_id)->GetSources().Has(
-            WebAppManagement::kUserInstalled));
-        EXPECT_TRUE(registrar().GetAppById(app_id)->GetSources().Has(
-            WebAppManagement::kSync));
-      }
+      EXPECT_TRUE(registrar().GetAppById(app_id)->GetSources().Has(
+          WebAppManagement::kUserInstalled));
+      EXPECT_TRUE(registrar().GetAppById(app_id)->GetSources().Has(
+          WebAppManagement::kSync));
     }
   }
   EXPECT_TRUE(found_migrated_apps)
@@ -396,7 +381,7 @@ TEST_P(WebAppDatabaseTest,
 // Read a database where some apps will be migrated from not having a
 // kUserInstalled source to having one. Additionally with sync disabled, the
 // sync source should be removed.
-TEST_P(WebAppDatabaseTest,
+TEST_F(WebAppDatabaseTest,
        OpenDatabaseAndReadRegistryWithSourceUpgradeMigrationNoSync) {
   Registry registry = WriteWebApps(100, /*ensure_no_migration_needed=*/false);
   auto write_batch = database_factory().GetStore()->CreateWriteBatch();
@@ -416,13 +401,11 @@ TEST_P(WebAppDatabaseTest,
     if (app->GetSources().Has(WebAppManagement::kSync)) {
       found_migrated_apps |=
           !app->GetSources().Has(WebAppManagement::kUserInstalled);
-      if (base::FeatureList::IsEnabled(
-              features::kWebAppDontAddExistingAppsToSync)) {
-        EXPECT_TRUE(registrar().GetAppById(app_id)->GetSources().Has(
-            WebAppManagement::kUserInstalled));
-        EXPECT_FALSE(registrar().GetAppById(app_id)->GetSources().Has(
-            WebAppManagement::kSync));
-      }
+
+      EXPECT_TRUE(registrar().GetAppById(app_id)->GetSources().Has(
+          WebAppManagement::kUserInstalled));
+      EXPECT_FALSE(registrar().GetAppById(app_id)->GetSources().Has(
+          WebAppManagement::kSync));
     }
   }
   EXPECT_TRUE(found_migrated_apps)
@@ -431,7 +414,7 @@ TEST_P(WebAppDatabaseTest,
 
 // Read a database where some apps will be migrated from having a kUserInstalled
 // source to not having one.
-TEST_P(WebAppDatabaseTest,
+TEST_F(WebAppDatabaseTest,
        OpenDatabaseAndReadRegistryWithSourceDowngradeMigration) {
   Registry registry = WriteWebApps(100, /*ensure_no_migration_needed=*/false);
   auto write_batch = database_factory().GetStore()->CreateWriteBatch();
@@ -452,23 +435,15 @@ TEST_P(WebAppDatabaseTest,
   for (auto& [app_id, app] : registry) {
     if (app->GetSources().Has(WebAppManagement::kUserInstalled)) {
       found_migrated_apps = true;
-      if (base::FeatureList::IsEnabled(
-              features::kWebAppDontAddExistingAppsToSync)) {
-        EXPECT_EQ(registrar().GetAppById(app_id)->GetSources(),
-                  app->GetSources());
-      } else {
-        EXPECT_FALSE(registrar().GetAppById(app_id)->GetSources().Has(
-            WebAppManagement::kUserInstalled));
-        EXPECT_TRUE(registrar().GetAppById(app_id)->GetSources().Has(
-            WebAppManagement::kSync));
-      }
+      EXPECT_EQ(registrar().GetAppById(app_id)->GetSources(),
+                app->GetSources());
     }
   }
   EXPECT_TRUE(found_migrated_apps)
       << "Generated apps did not include any that needed migrating.";
 }
 
-TEST_P(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
+TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
   const GURL start_url{"https://example.com/"};
   const webapps::AppId app_id =
       GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
@@ -517,10 +492,7 @@ TEST_P(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
   EXPECT_EQ(mojom::UserDisplayMode::kBrowser, app->user_display_mode());
   EXPECT_EQ(proto::INSTALLED_WITHOUT_OS_INTEGRATION, app->install_state());
   EXPECT_TRUE(app->IsSynced());
-  if (base::FeatureList::IsEnabled(
-          features::kWebAppDontAddExistingAppsToSync)) {
-    EXPECT_TRUE(app->GetSources().Has(WebAppManagement::kUserInstalled));
-  }
+  EXPECT_TRUE(app->GetSources().Has(WebAppManagement::kUserInstalled));
   EXPECT_FALSE(app->IsPreinstalledApp());
 
   if (IsChromeOsDataMandatory()) {
@@ -533,7 +505,7 @@ TEST_P(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
   }
 }
 
-TEST_P(WebAppDatabaseTest, UserDisplayModeCrosOnly_MigratesToCurrentPlatform) {
+TEST_F(WebAppDatabaseTest, UserDisplayModeCrosOnly_MigratesToCurrentPlatform) {
   std::unique_ptr<WebApp> base_app = test::CreateRandomWebApp({});
   std::unique_ptr<proto::WebApp> base_proto = WebAppToProto(*base_app);
 
@@ -568,7 +540,7 @@ TEST_P(WebAppDatabaseTest, UserDisplayModeCrosOnly_MigratesToCurrentPlatform) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-TEST_P(WebAppDatabaseTest,
+TEST_F(WebAppDatabaseTest,
        UserDisplayModeDefaultOnly_MigratesToCurrentPlatform) {
   std::unique_ptr<WebApp> base_app = test::CreateRandomWebApp({});
   std::unique_ptr<proto::WebApp> base_proto = WebAppToProto(*base_app);
@@ -605,7 +577,7 @@ TEST_P(WebAppDatabaseTest,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-TEST_P(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
+TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   InitSyncBridge();
 
   const auto start_url = GURL("https://example.com/");
@@ -622,8 +594,9 @@ TEST_P(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
   app->SetInstallState(proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE);
   // chromeos_data should always be set on ChromeOS.
-  if (IsChromeOsDataMandatory())
+  if (IsChromeOsDataMandatory()) {
     app->SetWebAppChromeOsData(std::make_optional<WebAppChromeOsData>());
+  }
 
   EXPECT_FALSE(app->HasAnySources());
   for (WebAppManagement::Type type : WebAppManagementTypes::All()) {
@@ -738,7 +711,7 @@ TEST_P(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app_copy->latest_install_time().is_null());
 }
 
-TEST_P(WebAppDatabaseTest, WebAppWithManyIcons) {
+TEST_F(WebAppDatabaseTest, WebAppWithManyIcons) {
   InitSyncBridge();
 
   const GURL base_url("https://example.com/path");
@@ -786,7 +759,7 @@ TEST_P(WebAppDatabaseTest, WebAppWithManyIcons) {
   EXPECT_FALSE(app_copy->is_generated_icon());
 }
 
-TEST_P(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
+TEST_F(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
   std::unique_ptr<WebApp> base_app = test::CreateRandomWebApp({});
   std::unique_ptr<proto::WebApp> base_proto = WebAppToProto(*base_app);
 
@@ -862,7 +835,7 @@ TEST_P(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
 }
 
 // Tests handling crashes fixed in crbug.com/1417955.
-TEST_P(WebAppDatabaseTest, MigrateFromMissingShortcutsSizes) {
+TEST_F(WebAppDatabaseTest, MigrateFromMissingShortcutsSizes) {
   std::unique_ptr<WebApp> base_app = test::CreateRandomWebApp({});
   WebAppShortcutsMenuItemInfo shortcut_item_info{};
   shortcut_item_info.name = u"shortcut";
@@ -899,7 +872,7 @@ TEST_P(WebAppDatabaseTest, MigrateFromMissingShortcutsSizes) {
 // containing a fragment part in the URL. It should be stripped out, because the
 // spec requires that ManifestIds with different fragments are considered
 // equivalent.
-TEST_P(WebAppDatabaseTest, RemovesFragmentFromSyncProtoManifestIdPath) {
+TEST_F(WebAppDatabaseTest, RemovesFragmentFromSyncProtoManifestIdPath) {
   base::HistogramTester histogram_tester;
 
   std::unique_ptr<WebApp> app = test::CreateRandomWebApp({});
@@ -928,7 +901,7 @@ TEST_P(WebAppDatabaseTest, RemovesFragmentFromSyncProtoManifestIdPath) {
                                       false, 1);
 }
 
-TEST_P(WebAppDatabaseTest, RemovesFragmentAndQueriesFromScopeDuringParsing) {
+TEST_F(WebAppDatabaseTest, RemovesFragmentAndQueriesFromScopeDuringParsing) {
   std::unique_ptr<WebApp> app = test::CreateRandomWebApp({});
   EXPECT_TRUE(app->scope().is_valid());
   EXPECT_FALSE(app->scope().has_ref());
@@ -950,8 +923,6 @@ TEST_P(WebAppDatabaseTest, RemovesFragmentAndQueriesFromScopeDuringParsing) {
   EXPECT_FALSE(reparsed_app->scope().has_ref());
   EXPECT_FALSE(reparsed_app->scope().has_query());
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(WebAppDatabaseTest);
 
 class WebAppDatabaseProtoDataTest : public ::testing::Test {
  public:

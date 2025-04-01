@@ -409,9 +409,7 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
   web_app->SetParentAppId(web_app_info.parent_app_id);
   web_app->SetAdditionalSearchTerms(web_app_info.additional_search_terms);
   web_app->AddSource(options.source);
-  if (base::FeatureList::IsEnabled(
-          features::kWebAppDontAddExistingAppsToSync) &&
-      options.source == WebAppManagement::kUserInstalled &&
+  if (options.source == WebAppManagement::kUserInstalled &&
       IsSyncEnabledForApps(profile_)) {
     web_app->AddSource(WebAppManagement::kSync);
   }

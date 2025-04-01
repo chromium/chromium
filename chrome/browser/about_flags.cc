@@ -5360,12 +5360,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"record-web-app-debug-info", flag_descriptions::kRecordWebAppDebugInfoName,
      flag_descriptions::kRecordWebAppDebugInfoDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kRecordWebAppDebugInfo)},
-#if !BUILDFLAG(IS_ANDROID)
-    {"enable-desktop-pwas-sync-changes",
-     flag_descriptions::kDesktopPWAsSyncChangesName,
-     flag_descriptions::kDesktopPWAsSyncChangesDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kWebAppDontAddExistingAppsToSync)},
-#endif  // !BUILDFLAG(IS_ANDROID)
     {"use-sync-sandbox", flag_descriptions::kSyncSandboxName,
      flag_descriptions::kSyncSandboxDescription, kOsAll,
      SINGLE_VALUE_TYPE_AND_VALUE(
