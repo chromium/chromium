@@ -456,7 +456,8 @@ void LensOverlaySidePanelCoordinator::OnTextFinderLookupComplete(
   }
 
   // If every text fragment was found, then create a text highlighter manager to
-  // render the text highlights.
+  // render the text highlights. Focus the main tab first.
+  lens_overlay_controller_->GetTabInterface()->GetContents()->Focus();
   companion::TextHighlighterManager* text_highlighter_manager =
       companion::TextHighlighterManager::GetOrCreateForPage(page);
   text_highlighter_manager->CreateTextHighlightersAndRemoveExisting(
