@@ -3704,36 +3704,14 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram
-    name="DomDistiller.Android.OnDistillableResult.DistillableMobilePageExcluded"
-    enum="Boolean" expires_after="2025-08-24">
+    name="DomDistiller.Android.OnDistillableResult.PageDistillationResult"
+    enum="DistillationResult" expires_after="2025-08-24">
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
-    Records whether current page was excluded because it was found to be mobile
-    friendly. Recorded when ReaderModeManager gets a distillation result.
-  </summary>
-</histogram>
-
-<histogram
-    name="DomDistiller.Android.OnDistillableResult.DistillablePageExcludedByRequestDesktopSite"
-    enum="Boolean" expires_after="2025-08-24">
-  <owner>wylieb@google.com</owner>
-  <owner>chrome-reader-mode-team@google.com</owner>
-  <summary>
-    Records whether the current page is not distillable only because the user is
-    requesting the desktop site. Recorded when ReaderModeManager gets a
-    distillation result.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.Android.OnDistillableResult.PageDistillable"
-    enum="Boolean" expires_after="2025-08-24">
-  <owner>wylieb@google.com</owner>
-  <owner>chrome-reader-mode-team@google.com</owner>
-  <summary>
-    Records whether current page is considered distillable. This is different
-    from the triggering model result because it also includes android business
-    logic. Recorded when ReaderModeManager gets a distillation result.
+    Records the end-state of the distillation result. This is different from the
+    triggering model result because it also includes android business logic.
+    Recorded when ReaderModeManager gets a distillation result.
   </summary>
 </histogram>
 
