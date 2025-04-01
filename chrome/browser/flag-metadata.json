@@ -7995,6 +7995,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "safe-browsing-trusted-url",
+    "owners": [ "danieltwhite@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "safety-check-extensions",
     "owners": [
       "zackhan@chromium.org",

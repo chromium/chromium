@@ -689,6 +689,9 @@ extern const char kSafeBrowsingLocalListsUseSBv5Description[];
 extern const char kSafeBrowsingRealTimeLookupName[];
 extern const char kSafeBrowsingRealTimeLookupDescription[];
 
+extern const char kSafeBrowsingTrustedURLName[];
+extern const char kSafeBrowsingTrustedURLDescription[];
+
 extern const char kSafetyCheckMagicStackName[];
 extern const char kSafetyCheckMagicStackDescription[];
 

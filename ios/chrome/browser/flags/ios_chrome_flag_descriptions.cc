@@ -1165,6 +1165,11 @@ const char kSafeBrowsingRealTimeLookupDescription[] =
     "When enabled, navigation URLs are checked using real-time queries to Safe "
     "Browsing servers, subject to an opt-in preference.";
 
+extern const char kSafeBrowsingTrustedURLName[] =
+    "Enable the Trusted URL for Safe Browsing";
+extern const char kSafeBrowsingTrustedURLDescription[] =
+    "When enabled, chrome://safe-browsing will be accessible.";
+
 const char kSafetyCheckMagicStackName[] = "Enable Safety Check (Magic Stack)";
 const char kSafetyCheckMagicStackDescription[] =
     "When enabled, the Safety Check module will be displayed in the Magic "
