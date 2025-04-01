@@ -342,7 +342,8 @@ class NET_EXPORT SpdySession
               TimeFunc time_func,
               NetworkQualityEstimator* network_quality_estimator,
               NetLog* net_log,
-              MultiplexedSessionCreationInitiator session_creation_initiator);
+              MultiplexedSessionCreationInitiator session_creation_initiator,
+              SpdySessionInitiator spdy_session_initiator);
 
   ~SpdySession() override;
 
@@ -608,6 +609,10 @@ class NET_EXPORT SpdySession
 
   // Whether connection status monitoring is active or not.
   bool IsBrokenConnectionDetectionEnabled() const;
+
+  SpdySessionInitiator spdy_session_initiator() const {
+    return spdy_session_initiator_;
+  }
 
  private:
   friend class test::SpdyStreamTest;
@@ -1283,6 +1288,8 @@ class NET_EXPORT SpdySession
 
   // Represents how this session is created.
   const MultiplexedSessionCreationInitiator session_creation_initiator_;
+
+  const SpdySessionInitiator spdy_session_initiator_;
 
   // Used for accessing the SpdySession from asynchronous tasks. An asynchronous
   // must check if its WeakPtr<SpdySession> is valid before accessing it, to

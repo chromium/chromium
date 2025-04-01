@@ -794,7 +794,8 @@ SpdySession::SpdySession(
     TimeFunc time_func,
     NetworkQualityEstimator* network_quality_estimator,
     NetLog* net_log,
-    MultiplexedSessionCreationInitiator session_creation_initiator)
+    MultiplexedSessionCreationInitiator session_creation_initiator,
+    SpdySessionInitiator spdy_session_initiator)
     : spdy_session_key_(spdy_session_key),
       http_server_properties_(http_server_properties),
       transport_security_state_(transport_security_state),
@@ -830,7 +831,8 @@ SpdySession::SpdySession(
       hung_interval_(base::Seconds(kHungIntervalSeconds)),
       time_func_(time_func),
       network_quality_estimator_(network_quality_estimator),
-      session_creation_initiator_(session_creation_initiator) {
+      session_creation_initiator_(session_creation_initiator),
+      spdy_session_initiator_(spdy_session_initiator) {
   net_log_.BeginEvent(NetLogEventType::HTTP2_SESSION, [&] {
     return NetLogSpdySessionParams(host_port_proxy_pair());
   });
