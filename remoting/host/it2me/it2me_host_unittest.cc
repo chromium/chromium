@@ -985,6 +985,12 @@ TEST_F(It2MeHostTest, StartHost_DoesNotUseCorpSessionAuthz) {
   ASSERT_FALSE(has_corp_host_status_logger());
 }
 
+TEST_F(It2MeHostTest, AllowRemoteInputSessionPolicyEnabledByDefault) {
+  StartHost();
+
+  EXPECT_TRUE(*get_local_session_policies().allow_remote_input);
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(It2MeHostTest, ConnectRespectsSuppressDialogsParameter) {
   ChromeOsEnterpriseParams params;
@@ -1034,6 +1040,22 @@ TEST_F(It2MeHostTest, ConnectRespectsEnableCurtainingParameter) {
   StartHost(std::move(params));
 
   EXPECT_TRUE(*get_local_session_policies().curtain_required);
+}
+
+TEST_F(It2MeHostTest, ConnectRespectsAllowRemoteInputParameter) {
+  ChromeOsEnterpriseParams params;
+  params.allow_remote_input = false;
+  StartHost(std::move(params));
+
+  EXPECT_FALSE(*get_local_session_policies().allow_remote_input);
+}
+
+TEST_F(It2MeHostTest, ConnectRespectsAllowClipboardSyncParameter) {
+  ChromeOsEnterpriseParams params;
+  params.allow_clipboard_sync = false;
+  StartHost(std::move(params));
+
+  EXPECT_EQ(*get_local_session_policies().clipboard_size_bytes, 0U);
 }
 
 TEST_F(It2MeHostTest, EnableCurtainingDefaultsToFalse) {

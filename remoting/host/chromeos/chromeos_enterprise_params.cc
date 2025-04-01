@@ -21,6 +21,8 @@ constexpr char kAllowFileTransfer[] = "allowFileTransfer";
 constexpr char kConnectionDialogRequired[] = "connectionDialogRequired";
 constexpr char kConnectionAutoAcceptTimeout[] = "connectionAutoAcceptTimeout";
 constexpr char kMaximumSessionDuration[] = "maximumSessionDuration";
+constexpr char kAllowRemoteInput[] = "allowRemoteInput";
+constexpr char kAllowClipboardSync[] = "allowClipboardSync";
 }  // namespace
 
 ChromeOsEnterpriseParams::ChromeOsEnterpriseParams() = default;
@@ -47,6 +49,9 @@ ChromeOsEnterpriseParams ChromeOsEnterpriseParams::FromDict(
   params.maximum_session_duration =
       base::ValueToTimeDelta(dict.Find(kMaximumSessionDuration))
           .value_or(base::TimeDelta());
+  params.allow_remote_input = dict.FindBool(kAllowRemoteInput).value_or(true);
+  params.allow_clipboard_sync =
+      dict.FindBool(kAllowClipboardSync).value_or(true);
   params.show_troubleshooting_tools =
       dict.FindBool(kShowTroubleshootingTools).value_or(false);
   params.allow_troubleshooting_tools =
@@ -71,6 +76,7 @@ base::Value::Dict ChromeOsEnterpriseParams::ToDict() const {
       .Set(kCurtainLocalUserSession, curtain_local_user_session)
       .Set(kMaximumSessionDuration,
            base::TimeDeltaToValue(maximum_session_duration))
+      .Set(kAllowRemoteInput, allow_remote_input)
       .Set(kShowTroubleshootingTools, show_troubleshooting_tools)
       .Set(kAllowTroubleshootingTools, allow_troubleshooting_tools)
       .Set(kAllowReconnections, allow_reconnections)
