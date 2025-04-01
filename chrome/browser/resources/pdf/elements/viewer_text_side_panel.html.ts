@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import './icons.html.js';
+import './ink_color_selector.js';
 import './selectable_icon_button.js';
 
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -61,6 +62,13 @@ export function getHtml(this: ViewerTextSidePanelElement) {
             name="${TextAlignment.RIGHT}" label="Right">
         </selectable-icon-button>
       </cr-radio-group>
+    </div>
+    <div class="side-panel-content">
+      <h2>Text color</h2>
+      <ink-color-selector .colors="${this.colors_}"
+          .currentColor="${this.currentColor_}"
+          @current-color-changed="${this.onCurrentColorChanged_}">
+      </ink-color-selector>
     </div>
   <!--_html_template_end_-->`;
   // clang-format on

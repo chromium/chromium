@@ -51,3 +51,8 @@ cr-radio-group, .style-buttons {
   /* 4px + 24px bottom padding from first item to make 28px total spacing */
   padding-top: 4px;
 }
+
+.side-panel-content:nth-child(3) {
+  /* 8px + 24px bottom padding from second item to make 32px total spacing */
+  padding-top: 8px;
+}
