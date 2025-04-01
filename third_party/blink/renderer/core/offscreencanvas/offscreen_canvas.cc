@@ -183,6 +183,10 @@ void OffscreenCanvas::SetSize(gfx::Size size) {
   UpdateMemoryUsage();
   current_frame_damage_rect_ = SkIRect::MakeWH(Size().width(), Size().height());
 
+  if (context_ && context_->isContextLost()) {
+    context_->RestoreFromInvalidSizeIfNeeded();
+  }
+
   if (frame_dispatcher_)
     frame_dispatcher_->Reshape(Size());
   if (context_) {
@@ -537,6 +541,11 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
 
   if (ResourceProvider()) {
     return ResourceProvider();
+  }
+
+  if (!IsValidImageSize(Size()) && !Size().IsEmpty()) {
+    context_->LoseContext(CanvasRenderingContext::kInvalidCanvasSize);
+    return nullptr;
   }
 
   std::unique_ptr<CanvasResourceProvider> provider;

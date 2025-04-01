@@ -3,6 +3,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/html/canvas/resources/canvas-promise-test.js"></script>
 <script>
+runCanvasTestsInWorker();
 
 /**
  * Tests that canvas 2d context can be lost by setting an invalid canvas size
@@ -79,6 +80,6 @@ canvasPromiseTest(async (canvas) => {
       `The canvas should be usable after it's restored.`);
 
 }, 'Test losing and restoring a 2D context by setting an invalid canvas size.',
-   {testTypes: HTML_CANVAS_ELEMENT_TEST_TYPES});
+   {testTypes: ALL_CANVAS_TEST_TYPES});
 
 </script>

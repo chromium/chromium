@@ -104,7 +104,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/graphics/platform_focus_ring.h"
-#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
@@ -234,20 +233,6 @@ void CanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
     }
   }
   needs_context_lost_event_ = true;
-}
-
-void CanvasRenderingContext2D::RestoreFromInvalidSizeIfNeeded() {
-  HTMLCanvasElement* element = canvas();
-  if (!context_restorable_ || context_lost_mode_ != kInvalidCanvasSize ||
-      !element) {
-    return;
-  }
-  DCHECK(!element->ResourceProvider());
-
-  if (IsValidImageSize(element->Size())) {
-    dispatch_context_restored_event_timer_.StartOneShot(base::TimeDelta(),
-                                                        FROM_HERE);
-  }
 }
 
 void CanvasRenderingContext2D::Trace(Visitor* visitor) const {

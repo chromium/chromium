@@ -257,6 +257,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   void DispatchContextLostEvent(TimerBase*);
   void DispatchContextRestoredEvent(TimerBase*);
   void TryRestoreContextEvent(TimerBase*);
+  void RestoreFromInvalidSizeIfNeeded() override;
 
   // `CanvasRenderingContext2D` and `OffscreenCanvasRenderingContext2D` do not
   // create resource providers the same way. Thus, `BaseRenderingContext2D`
