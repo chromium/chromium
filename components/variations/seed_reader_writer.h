@@ -49,6 +49,15 @@ struct SeedInfo {
   std::string data;
 };
 
+struct SeedFieldsPrefs {
+  const char* seed;
+  const char* signature;
+};
+
+COMPONENT_EXPORT(VARIATIONS)
+extern const SeedFieldsPrefs kRegularSeedFieldsPrefs;
+COMPONENT_EXPORT(VARIATIONS) extern const SeedFieldsPrefs kSafeSeedFieldsPrefs;
+
 // Handles reading and writing seeds to disk.
 class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
     : public base::ImportantFileWriter::BackgroundDataSerializer {
@@ -58,9 +67,9 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Android Webview intentionally uses an empty path as it uses only local
   // state to store seeds.
   // `seed_filename` is the base name of a file in which seed data is stored.
-  // `seed_pref` is a variations pref (kVariationsCompressedSeed or
-  // kVariationsSafeCompressed) denoting the type of seed handled by this
-  // SeedReaderWriter.
+  // `fields_prefs` is a variations pref struct (kRegularSeedFieldsPrefs or
+  // kSafeSeedFieldsPrefs) denoting the prefs for the fields for the type of
+  // seed being stored.
   // `channel` describes the release channel of the browser.
   // `entropy_providers` is used to provide entropy when setting up the seed
   // file field trial. If null, the client will not participate in the
@@ -69,7 +78,7 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   SeedReaderWriter(PrefService* local_state,
                    const base::FilePath& seed_file_dir,
                    base::FilePath::StringViewType seed_filename,
-                   std::string_view seed_pref,
+                   const SeedFieldsPrefs& fields_prefs,
                    version_info::Channel channel,
                    const EntropyProviders* entropy_providers,
                    scoped_refptr<base::SequencedTaskRunner> file_task_runner =
@@ -122,9 +131,9 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Pref service used to persist seeds.
   raw_ptr<PrefService> local_state_;
 
-  // A variations pref (kVariationsCompressedSeed or kVariationsSafeCompressed)
-  // denoting the type of seed handled by this SeedReaderWriter.
-  std::string_view seed_pref_;
+  // Prefs used to store the seed and related info in local state.
+  // TODO(crbug.com/380465790): Remove once the info is stored in the SeedFile.
+  SeedFieldsPrefs fields_prefs_;
 
   // Task runner for IO-related operations.
   const scoped_refptr<base::SequencedTaskRunner> file_task_runner_;

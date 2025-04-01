@@ -85,16 +85,24 @@ void SetUpSeedFileTrial(
 
 }  // namespace
 
+const SeedFieldsPrefs kRegularSeedFieldsPrefs = {
+    .seed = prefs::kVariationsCompressedSeed,
+    .signature = prefs::kVariationsSeedSignature};
+
+const SeedFieldsPrefs kSafeSeedFieldsPrefs = {
+    .seed = prefs::kVariationsSafeCompressedSeed,
+    .signature = prefs::kVariationsSafeSeedSignature};
+
 SeedReaderWriter::SeedReaderWriter(
     PrefService* local_state,
     const base::FilePath& seed_file_dir,
     base::FilePath::StringViewType seed_filename,
-    std::string_view seed_pref,
+    const SeedFieldsPrefs& fields_prefs,
     version_info::Channel channel,
     const EntropyProviders* entropy_providers,
     scoped_refptr<base::SequencedTaskRunner> file_task_runner)
     : local_state_(local_state),
-      seed_pref_(seed_pref),
+      fields_prefs_(fields_prefs),
       file_task_runner_(std::move(file_task_runner)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!seed_file_dir.empty()) {
@@ -123,7 +131,7 @@ void SeedReaderWriter::StoreValidatedSeed(std::string_view compressed_seed_data,
   if (ShouldUseSeedFile()) {
     ScheduleSeedFileWrite(compressed_seed_data);
   } else {
-    local_state_->SetString(seed_pref_, base64_seed_data);
+    local_state_->SetString(fields_prefs_.seed, base64_seed_data);
   }
 }
 
@@ -133,7 +141,7 @@ void SeedReaderWriter::ClearSeed() {
   if (ShouldUseSeedFile()) {
     ScheduleSeedFileWrite(std::string());
   } else {
-    local_state_->ClearPref(seed_pref_);
+    local_state_->ClearPref(fields_prefs_.seed);
     // Although only clients in the treatment group write seeds to dedicated
     // seed files, attempt to delete the seed file for clients with
     // Local-State-based seeds. If a client switches experiment groups or
@@ -153,7 +161,7 @@ StoredSeed SeedReaderWriter::GetSeedData() const {
     return StoredSeed{
         .storage_format =
             StoredSeed::StorageFormat::kCompressedAndBase64Encoded,
-        .data = local_state_->GetString(seed_pref_)};
+        .data = local_state_->GetString(fields_prefs_.seed)};
   }
 }
 
@@ -224,7 +232,7 @@ void SeedReaderWriter::ReadSeedFile() {
     // in the seed file experiment's treatment group.
     // 3. Seed file exists and read failed.
     std::string decoded_data;
-    if (base::Base64Decode(local_state_->GetString(seed_pref_),
+    if (base::Base64Decode(local_state_->GetString(fields_prefs_.seed),
                            &decoded_data)) {
       // Write will only occur if ShouldUseSeedFile() is true.
       ScheduleSeedFileWrite(decoded_data);
@@ -252,7 +260,7 @@ void SeedReaderWriter::ReadSeedFile() {
 
   // Clients using a seed file should clear seed from local state as it will no
   // longer be used.
-  local_state_->ClearPref(seed_pref_);
+  local_state_->ClearPref(fields_prefs_.seed);
 }
 
 bool SeedReaderWriter::ShouldUseSeedFile() const {
