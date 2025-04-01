@@ -428,10 +428,6 @@ struct EnhancedSafeBrowsingActivePromoData
         [[NotificationsSettingsObserver alloc] initWithPrefService:prefService
                                                         localState:localState];
     _notificationsObserver.delegate = self;
-
-    // TODO(crbug.com/41344225): -loadModel should not be called from
-    // initializer. A possible fix is to move this call to -viewDidLoad.
-    [self loadModel];
   }
   return self;
 }
@@ -455,6 +451,8 @@ struct EnhancedSafeBrowsingActivePromoData
 
   self.navigationItem.largeTitleDisplayMode =
       UINavigationItemLargeTitleDisplayModeAlways;
+
+  [self loadModel];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
