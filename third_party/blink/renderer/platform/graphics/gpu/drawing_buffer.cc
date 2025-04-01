@@ -1111,17 +1111,15 @@ bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
       [&](scoped_refptr<gpu::ClientSharedImage> src_shared_image,
           const gpu::SyncToken& produce_sync_token, SkAlphaType src_alpha_type,
           const gfx::Size&) -> std::optional<gpu::SyncToken> {
-    auto source_origin = IsOriginTopLeft() ? kTopLeft_GrSurfaceOrigin
-                                           : kBottomLeft_GrSurfaceOrigin;
-
     // If origin doesn't match, we need to flip.
-    bool flip_y = source_origin != destination_origin;
+    bool do_flip_y = src_shared_image->surface_origin() != destination_origin;
 
-    // If source is not in a top left coordinate space, flip this rect to match
-    // texture orientation.
+    // `src_rect` here is always in top-left coordinate space, but
+    // CopySubTextureCHROMIUM source rect is in texture coordinate space, so we
+    // need to adjust.
     auto src_sub_rectangle = src_rect;
-    if (source_origin == kBottomLeft_GrSurfaceOrigin) {
-      src_sub_rectangle.set_y(Size().height() - src_sub_rectangle.bottom());
+    if (src_shared_image->surface_origin() == kBottomLeft_GrSurfaceOrigin) {
+      src_sub_rectangle.set_y(size_.height() - src_sub_rectangle.bottom());
     }
 
     GLboolean unpack_premultiply_alpha_needed = GL_FALSE;
@@ -1139,7 +1137,7 @@ bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
         src_si_access->texture_id(), 0, dst_texture_target, dst_texture,
         dst_level, dst_texture_offset.x(), dst_texture_offset.y(),
         src_sub_rectangle.x(), src_sub_rectangle.y(), src_sub_rectangle.width(),
-        src_sub_rectangle.height(), flip_y, unpack_premultiply_alpha_needed,
+        src_sub_rectangle.height(), do_flip_y, unpack_premultiply_alpha_needed,
         unpack_unpremultiply_alpha_needed);
     auto sync_token = gpu::SharedImageTexture::ScopedAccess::EndAccess(
         std::move(src_si_access));
