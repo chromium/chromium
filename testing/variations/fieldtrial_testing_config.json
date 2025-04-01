@@ -291,6 +291,28 @@
             ]
         }
     ],
+    "AiDataCollectionAllowlist": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "allowed_extensions": "fjhpgileahdpnmfmaggobehbipojhlce"
+                    },
+                    "enable_features": [
+                        "AllowlistedAiDataExtensions"
+                    ]
+                }
+            ]
+        }
+    ],
     "AiSettingsPageEnterpriseDisabledUi": [
         {
             "platforms": [
