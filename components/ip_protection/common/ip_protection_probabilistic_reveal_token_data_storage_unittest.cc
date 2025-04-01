@@ -208,8 +208,8 @@ TEST_F(ProbabilisticRevealTokenDataStorageTest, StoreTokenOutcome) {
   // Store 3 tokens across two calls.
   OpenDatabase();
   outcome.tokens.emplace_back(/*version=*/1, std::string(kPRTPointSize, 'u'),
-                              std::string(kPRTPointSize, 'e'),
-                              std::string(8, '0'));
+                              std::string(kPRTPointSize, 'e'));
+  outcome.epoch_id = std::string(8, '0');
   outcome.expiration_time_seconds = 123;
   outcome.next_epoch_start_time_seconds = 456;
   outcome.num_tokens_with_signal = 100;
@@ -218,11 +218,10 @@ TEST_F(ProbabilisticRevealTokenDataStorageTest, StoreTokenOutcome) {
 
   TryGetProbabilisticRevealTokensOutcome outcome2;
   outcome2.tokens.emplace_back(/*version=*/1, std::string(kPRTPointSize, 'u'),
-                               std::string(kPRTPointSize, 'e'),
-                               std::string(8, '0'));
+                               std::string(kPRTPointSize, 'e'));
   outcome2.tokens.emplace_back(/*version=*/1, std::string(kPRTPointSize, 'u'),
-                               std::string(kPRTPointSize, 'e'),
-                               std::string(8, '0'));
+                               std::string(kPRTPointSize, 'e'));
+  outcome2.epoch_id = std::string(8, '0');
   outcome2.expiration_time_seconds = 234;
   outcome2.next_epoch_start_time_seconds = 567;
   outcome2.num_tokens_with_signal = 200;
@@ -274,8 +273,8 @@ TEST_F(ProbabilisticRevealTokenDataStorageTest, OpenCorruptedDatabase) {
   // Trigger the lazy-initialization by attempting to store a token.
   TryGetProbabilisticRevealTokensOutcome outcome;
   outcome.tokens.emplace_back(/*version=*/1, std::string(kPRTPointSize, 'u'),
-                              std::string(kPRTPointSize, 'e'),
-                              std::string(8, '0'));
+                              std::string(kPRTPointSize, 'e'));
+  outcome.epoch_id = std::string(8, '0');
   outcome.expiration_time_seconds = 123;
   outcome.next_epoch_start_time_seconds = 456;
   outcome.num_tokens_with_signal = 100;

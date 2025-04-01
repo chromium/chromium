@@ -184,13 +184,13 @@ void IpProtectionProbabilisticRevealTokenDataStorage::StoreTokenOutcome(
           << "InsertProbabilisticRevealToken SQL statement did not compile.";
       return;
     }
-    CHECK_EQ(token.epoch_id.size(), 8u);
+    CHECK_EQ(outcome.epoch_id.size(), 8u);
 
     statement.BindInt64(0, token.version);
     statement.BindBlob(1, token.u);
     statement.BindBlob(2, token.e);
     statement.BindInt64(3, base::U64FromBigEndian(
-                               base::as_byte_span(token.epoch_id).first<8u>()));
+                               base::as_byte_span(outcome.epoch_id).first<8u>()));
     statement.BindInt64(4, outcome.expiration_time_seconds);
     statement.BindInt64(5, outcome.num_tokens_with_signal);
     statement.BindString(6, base::Base64Encode(outcome.public_key));

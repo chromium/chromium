@@ -141,7 +141,6 @@ source_set("ip_protection_data_types") {
   public_deps = [
     "//base",
     "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
-    "//third_party/boringssl",
   ]
 }
 
@@ -694,6 +693,7 @@ source_set("ip_protection_probabilistic_reveal_token_manager") {
     ":ip_protection_telemetry",
     "//base",
     "//net",
+    "//third_party/boringssl",
   ]
 }
 
@@ -714,6 +714,7 @@ source_set("ip_protection_probabilistic_reveal_token_manager_unittest") {
     "//sql:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/boringssl",
     "//third_party/private-join-and-compute/src:ec_commutative_cipher",
   ]
 }
