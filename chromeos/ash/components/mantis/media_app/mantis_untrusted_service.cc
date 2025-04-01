@@ -68,4 +68,11 @@ void MantisUntrustedService::ClassifyImageSafety(
   processor_->ClassifyImageSafety(image, std::move(callback));
 }
 
+void MantisUntrustedService::InferSegmentationMode(
+    std::vector<mantis::mojom::TouchPointPtr> gesture,
+    InferSegmentationModeCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  processor_->InferSegmentationMode(std::move(gesture), std::move(callback));
+}
+
 }  // namespace ash

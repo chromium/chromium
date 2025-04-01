@@ -30,6 +30,9 @@ using ::mantis::mojom::MantisError;
 using ::mantis::mojom::MantisResult;
 using ::mantis::mojom::MantisResultPtr;
 using ::mantis::mojom::SafetyClassifierVerdict;
+using ::mantis::mojom::SegmentationMode;
+using ::mantis::mojom::TouchPoint;
+using ::mantis::mojom::TouchPointPtr;
 
 // Gets a random vector of number to represent a fake encoded image.
 std::vector<uint8_t> GetFakeImage() {
@@ -39,6 +42,12 @@ std::vector<uint8_t> GetFakeImage() {
 // Gets a random vector of number to represent a fake encoded mask.
 std::vector<uint8_t> GetFakeMask() {
   return {0x10, 0x50, 0x90, 0x20, 0x60, 0xA0, 0x00, 0x7F, 0xFF};
+}
+
+std::vector<TouchPointPtr> GetFakeGesture() {
+  std::vector<TouchPointPtr> result;
+  result.emplace_back(TouchPoint::New(0.1, 0.2));
+  return result;
 }
 
 // Gets a number for the seed.
@@ -239,6 +248,27 @@ INSTANTIATE_TEST_SUITE_P(MantisMediaApp,
                          ClassifyImageSafetyTest,
                          testing::Values(SafetyClassifierVerdict::kPass,
                                          SafetyClassifierVerdict::kFail),
+                         testing::PrintToStringParamName());
+
+class InferSegmentationModeTest
+    : public MantisUntrustedServiceTest,
+      public testing::WithParamInterface<SegmentationMode> {};
+
+TEST_P(InferSegmentationModeTest, InferSegmentationMode) {
+  const SegmentationMode& mode = GetParam();
+
+  EXPECT_CALL(mojo_mantis_processor_, InferSegmentationMode)
+      .WillOnce(RunOnceCallback<1>(mode));
+
+  base::test::TestFuture<SegmentationMode> mode_future;
+  service_.InferSegmentationMode(GetFakeGesture(), mode_future.GetCallback());
+  EXPECT_EQ(mode_future.Take(), mode);
+}
+
+INSTANTIATE_TEST_SUITE_P(MantisMediaApp,
+                         InferSegmentationModeTest,
+                         testing::Values(SegmentationMode::kScribble,
+                                         SegmentationMode::kLasso),
                          testing::PrintToStringParamName());
 
 }  // namespace
