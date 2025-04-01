@@ -11382,6 +11382,7 @@ from previous Chrome versions.
   <int value="-1106191827" label="VirtualKeyboardNewHeader:enabled"/>
   <int value="-1105925767"
       label="StorageAccessApiFollowsSameOriginPolicy:disabled"/>
+  <int value="-1105697919" label="GridTabSwitcherUpdate:enabled"/>
   <int value="-1105686819" label="ShareUsageRanking:enabled"/>
   <int value="-1105637876" label="FilteringScrollPrediction:enabled"/>
   <int value="-1105274313"
@@ -13739,6 +13740,7 @@ from previous Chrome versions.
   <int value="-179541740" label="bookmarks-tree-view:disabled"/>
   <int value="-178744239" label="DriveFsMirroring:enabled"/>
   <int value="-178709425" label="PwaRestoreUiAtStartup:disabled"/>
+  <int value="-178464783" label="GridTabSwitcherUpdate:disabled"/>
   <int value="-178364053" label="TerminalSystemAppLegacySettings:enabled"/>
   <int value="-178359490" label="DrawImmediatelyWhenInteractive:enabled"/>
   <int value="-177974995" label="CrostiniShowMicSetting:disabled"/>

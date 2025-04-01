@@ -4583,6 +4583,10 @@ const char kTabClosureMethodRefactorDescription[] =
     "Enables the refactored changes for tab closure methods where existing "
     "methods usages are switched off and newly introduced are made active.";
 
+const char kGridTabSwitcherUpdateName[] = "Grid tab switcher update";
+const char kGridTabSwitcherUpdateDescription[] =
+    "Enables the visual changes in the grid tab switcher.";
+
 const char kDynamicSafeAreaInsetsName[] = "DynamicSafeAreaInsets";
 const char kDynamicSafeAreaInsetsDescription[] =
     "Dynamically change the safe area insets based on the bottom browser "
