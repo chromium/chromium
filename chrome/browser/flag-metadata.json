@@ -508,11 +508,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "ash-forest-feature",
-    "owners": [ "sammiequon@chromium.org", "cros-forest@google.com"],
-    "expiry_milestone": 135
-  },
-  {
     "name": "ash-limit-shelf-items-to-active-desk",
     "owners": [ "dandersson@chromium.org", "janetmac@chromium.org" ],
     "expiry_milestone": 135
@@ -8706,11 +8701,6 @@
   },
   {
     "name": "sys-ui-holdback-drive-integration",
-    "owners": ["newcomer@chromium.org"],
-    "expiry_milestone": 135
-  },
-  {
-    "name": "sys-ui-holdback-forest",
     "owners": ["newcomer@chromium.org"],
     "expiry_milestone": 135
   },

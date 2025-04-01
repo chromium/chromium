@@ -656,8 +656,6 @@ BASE_DECLARE_FEATURE(kFeatureManagementShouldExcludeFromSysUiHoldback);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kSysUiShouldHoldbackDriveIntegration);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kSysUiShouldHoldbackForest);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kSysUiShouldHoldbackTaskManagement);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kNightLight);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1389,8 +1387,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSystemNudgeMigrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSystemTrayShadowEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsSysUiShouldHoldbackDriveIntegrationEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsSysUiShouldHoldbackForestEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsTetheringExperimentalFunctionalityEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTilingWindowResizeEnabled();

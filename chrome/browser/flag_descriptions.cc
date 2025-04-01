@@ -431,11 +431,6 @@ const char kForceStartupSigninPromoDescription[] =
     "If enabled, the full screen signin promo will be forced to show up at "
     "Chrome start-up.";
 
-#if BUILDFLAG(IS_CHROMEOS)
-const char kForestFeatureName[] = "Forest";
-const char kForestFeatureDescription[] = "Enable Forest experiment.";
-#endif
-
 const char kFontationsFontBackendName[] = "Enable Fontations font backend";
 const char kFontationsFontBackendDescription[] =
     "If enabled, the Fontations font backend will be used for web fonts where "
@@ -7449,10 +7444,6 @@ const char kSysUiShouldHoldbackDriveIntegrationName[] =
     "Holdback for Drive Integration on chromeOS";
 const char kSysUiShouldHoldbackDriveIntegrationDescription[] =
     "Enables holdback for Drive Integration.";
-
-const char kSysUiShouldHoldbackForestName[] = "Holdback for Forest on chromeOS";
-const char kSysUiShouldHoldbackForestDescription[] =
-    "Enables holdback for Forest.";
 
 const char kSysUiShouldHoldbackTaskManagementName[] =
     "Holdback for Task Management on chromeOS";

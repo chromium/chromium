@@ -1988,11 +1988,6 @@ BASE_FEATURE(kSysUiShouldHoldbackDriveIntegration,
              "SysUiShouldHoldbackDriveIntegration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables a holdback experiment for Forest.
-BASE_FEATURE(kSysUiShouldHoldbackForest,
-             "SysUiShouldHoldbackForest",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables a holdback experiment for Task Management
 // Glanceables.
 BASE_FEATURE(kSysUiShouldHoldbackTaskManagement,
@@ -3736,17 +3731,6 @@ bool ShouldForceEnableServerSideSpeechRecognition() {
 }
 
 bool IsForestFeatureEnabled() {
-  // If the holdback feature flag is enabled, the feature should be disabled,
-  // but only if the device is eligible for the study. Exclusion happens
-  // via hardware overlay, so it needs to be checked separately from the finch
-  // controlled holdback feature flag.
-  const bool device_excluded_from_holdback_study = base::FeatureList::IsEnabled(
-      kFeatureManagementShouldExcludeFromSysUiHoldback);
-  if (IsSysUiShouldHoldbackForestEnabled() &&
-      !device_excluded_from_holdback_study) {
-    return false;
-  }
-
   return base::FeatureList::IsEnabled(kForestFeature);
 }
 
@@ -4533,11 +4517,6 @@ bool IsSystemTrayShadowEnabled() {
 
 bool IsSysUiShouldHoldbackDriveIntegrationEnabled() {
   return base::FeatureList::IsEnabled(kSysUiShouldHoldbackDriveIntegration) &&
-         !base::FeatureList::IsEnabled(kIgnoreM129Holdback);
-}
-
-bool IsSysUiShouldHoldbackForestEnabled() {
-  return base::FeatureList::IsEnabled(kSysUiShouldHoldbackForest) &&
          !base::FeatureList::IsEnabled(kIgnoreM129Holdback);
 }
 

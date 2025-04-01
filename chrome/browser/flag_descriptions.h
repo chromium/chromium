@@ -304,11 +304,6 @@ extern const char kFontationsFontBackendDescription[];
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 
-#if BUILDFLAG(IS_CHROMEOS)
-extern const char kForestFeatureName[];
-extern const char kForestFeatureDescription[];
-#endif
-
 extern const char kAvifGainmapHdrImagesName[];
 extern const char kAvifGainmapHdrImagesDescription[];
 
@@ -4377,9 +4372,6 @@ extern const char kMacAddressRandomizationDescription[];
 
 extern const char kSysUiShouldHoldbackDriveIntegrationName[];
 extern const char kSysUiShouldHoldbackDriveIntegrationDescription[];
-
-extern const char kSysUiShouldHoldbackForestName[];
-extern const char kSysUiShouldHoldbackForestDescription[];
 
 extern const char kSysUiShouldHoldbackTaskManagementName[];
 extern const char kSysUiShouldHoldbackTaskManagementDescription[];
