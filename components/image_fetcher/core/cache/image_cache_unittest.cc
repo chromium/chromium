@@ -307,7 +307,7 @@ TEST_F(CachedImageFetcherImageCacheTest, EvictionHoldUtilExpires) {
                            base::Hours(1));
   RunUntilIdle();
 
-  // Forward the clock to make image with |kOtherImageUrl| expired.
+  // Forward the clock to make image with `kOtherImageUrl` expired.
   clock()->SetNow(clock()->Now() + base::Hours(3));
   RunEvictionOnStartup(/* success */ true);
   LoadImage(kImageUrl, "image_data");

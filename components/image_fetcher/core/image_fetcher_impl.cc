@@ -35,7 +35,7 @@ void ImageFetcherImpl::FetchImageAndData(
     ImageFetcherCallback image_callback,
     ImageFetcherParams params) {
   // Before starting to fetch the image. Look for a request in progress for
-  // |image_url|, and queue if appropriate.
+  // `image_url`, and queue if appropriate.
   auto it = pending_net_requests_.find(image_url);
   if (it == pending_net_requests_.end()) {
     ImageRequest request;

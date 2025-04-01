@@ -326,8 +326,8 @@ void CachedImageFetcher::StoreData(bool cache_result_needs_transcoding,
         return;
     }
 
-    // |needs_transcoding| is only true when the image to save isn't transcoded
-    // and |allow_needs_transcoding_file()| is true (set by
+    // `needs_transcoding` is only true when the image to save isn't transcoded
+    // and `allow_needs_transcoding_file()` is true (set by
     // ReducedModeImageFetcher).
     bool needs_transcoding = !is_image_data_transcoded &&
                              request.params.allow_needs_transcoding_file();
