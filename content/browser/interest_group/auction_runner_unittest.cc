@@ -452,15 +452,67 @@ const auction_worklet::mojom::PrivateAggregationRequestPtr
             blink::mojom::AggregationServiceMode::kDefault,
             blink::mojom::DebugModeDetails::New());
 
+// gTest helper to allow both finalized and non-finalized requests to be
+// compared for equality.
+template <typename T>
+concept IsPrivateAggregationRequestPtr =
+    std::same_as<T, auction_worklet::mojom::PrivateAggregationRequestPtr> ||
+    std::same_as<T,
+                 auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr>;
+
+template <typename T>
+  requires IsPrivateAggregationRequestPtr<T>
+bool RequestsEqual(const T& request1, const T& request2) {
+  return request1 == request2;
+}
+bool RequestsEqual(
+    const auction_worklet::mojom::PrivateAggregationRequestPtr& request,
+    const auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr&
+        finalized) {
+  if (!request->contribution->is_histogram_contribution()) {
+    return false;
+  }
+
+  return request->contribution->get_histogram_contribution() ==
+             finalized->contribution &&
+         request->aggregation_mode == finalized->aggregation_mode &&
+         request->debug_mode_details == finalized->debug_mode_details;
+}
+bool RequestsEqual(
+    const auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr&
+        finalized,
+    const auction_worklet::mojom::PrivateAggregationRequestPtr& request) {
+  return RequestsEqual(request, finalized);
+}
+
+template <typename T>
+  requires IsPrivateAggregationRequestPtr<T>
+const T& MaybeUnwrapRequestRef(const T& request) {
+  return request;
+}
+template <typename T>
+  requires IsPrivateAggregationRequestPtr<T>
+const T& MaybeUnwrapRequestRef(std::reference_wrapper<const T> request) {
+  return request;
+}
+
+MATCHER_P(RequestEq, request, "") {
+  return RequestsEqual(MaybeUnwrapRequestRef(arg),
+                       MaybeUnwrapRequestRef(request));
+}
+
 // Helper to avoid excess boilerplate.
 template <typename... Ts>
 auto ElementsAreRequests(const Ts&... requests) {
   static_assert(
-      std::conjunction<std::is_same<
-          std::remove_const_t<Ts>,
-          auction_worklet::mojom::PrivateAggregationRequestPtr>...>::value);
+      std::conjunction<std::disjunction<
+          std::is_same<std::remove_const_t<Ts>,
+                       auction_worklet::mojom::PrivateAggregationRequestPtr>,
+          std::is_same<std::remove_const_t<Ts>,
+                       auction_worklet::mojom::
+                           FinalizedPrivateAggregationRequestPtr>>...>::value);
   // Need to use `std::ref` as `mojo::StructPtr`s are move-only.
-  return testing::UnorderedElementsAre(testing::Eq(std::ref(requests))...);
+  return testing::UnorderedElementsAre(RequestEq(std::ref(requests))...);
 }
 
 // Helper to avoid excess boilerplate.
@@ -1999,7 +2051,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     base::flat_map<blink::FencedFrame::ReportingDestination,
                    FencedFrameReporter::ReportingMacros>
         ad_macros;
-    std::map<std::string, PrivateAggregationRequests>
+    std::map<std::string, FinalizedPrivateAggregationRequests>
         private_aggregation_event_map;
     std::vector<blink::InterestGroupKey> interest_groups_that_bid;
 
@@ -16621,12 +16673,8 @@ TEST_F(AuctionRunnerTest, PrivateAggregationReservedOnceRandomlyChosen) {
     const auto& seller_requests = pa_requests_map[kSeller];
 
     ASSERT_EQ(bidder_requests.size(), 1u);
-    ASSERT_TRUE(bidder_requests[0]->contribution->is_histogram_contribution());
-    EXPECT_EQ(
-        10,
-        bidder_requests[0]->contribution->get_histogram_contribution()->bucket);
-    switch (
-        bidder_requests[0]->contribution->get_histogram_contribution()->value) {
+    EXPECT_EQ(10, bidder_requests[0]->contribution->bucket);
+    switch (bidder_requests[0]->contribution->value) {
       case 1:
         saw_bid1 = true;
         break;
@@ -16638,12 +16686,8 @@ TEST_F(AuctionRunnerTest, PrivateAggregationReservedOnceRandomlyChosen) {
     }
 
     ASSERT_EQ(seller_requests.size(), 1u);
-    ASSERT_TRUE(seller_requests[0]->contribution->is_histogram_contribution());
-    EXPECT_EQ(
-        20,
-        seller_requests[0]->contribution->get_histogram_contribution()->bucket);
-    switch (
-        seller_requests[0]->contribution->get_histogram_contribution()->value) {
+    EXPECT_EQ(20, seller_requests[0]->contribution->bucket);
+    switch (seller_requests[0]->contribution->value) {
       case 3:
         saw_score3 = true;
         break;
@@ -16767,12 +16811,8 @@ TEST_F(AuctionRunnerTest, PrivateAggregationReservedOnceAdditionalBid) {
     const auto& seller_requests = pa_requests_map[kSeller];
 
     ASSERT_EQ(seller_requests.size(), 1u);
-    ASSERT_TRUE(seller_requests[0]->contribution->is_histogram_contribution());
-    EXPECT_EQ(
-        20,
-        seller_requests[0]->contribution->get_histogram_contribution()->bucket);
-    switch (
-        seller_requests[0]->contribution->get_histogram_contribution()->value) {
+    EXPECT_EQ(20, seller_requests[0]->contribution->bucket);
+    switch (seller_requests[0]->contribution->value) {
       case 3:
         saw_score3 = true;
         break;

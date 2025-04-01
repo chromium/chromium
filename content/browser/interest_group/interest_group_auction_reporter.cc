@@ -238,9 +238,9 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
     std::vector<GURL> debug_win_report_urls,
     std::vector<GURL> debug_loss_report_urls,
     base::flat_set<std::string> k_anon_keys_to_join,
-    std::map<PrivateAggregationKey, PrivateAggregationRequests>
+    std::map<PrivateAggregationKey, FinalizedPrivateAggregationRequests>
         private_aggregation_requests_reserved,
-    std::map<std::string, PrivateAggregationRequests>
+    std::map<std::string, FinalizedPrivateAggregationRequests>
         private_aggregation_requests_non_reserved,
     PrivateAggregationAllParticipantsData all_participants_data,
     std::map<url::Origin, RealTimeReportingContributions>
@@ -395,7 +395,8 @@ void InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
     PrivateAggregationManager* private_aggregation_manager,
     const url::Origin& main_frame_origin,
     std::map<PrivateAggregationKey,
-             std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
+             std::vector<
+                 auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr>>
         private_aggregation_requests) {
   // Empty vectors should've been filtered out.
   DCHECK(std::ranges::none_of(private_aggregation_requests,

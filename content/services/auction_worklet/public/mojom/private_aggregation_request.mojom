@@ -113,17 +113,26 @@ struct AggregatableReportForEventContribution {
 };
 
 // `histogram_contribution` for contributeToHistogram(), and
-// `for_event_contribution` for reportPrivateAggregationEvent().
+// `for_event_contribution` for contributeToHistogramOnEvent().
 union AggregatableReportContribution {
   blink.mojom.AggregatableReportHistogramContribution histogram_contribution;
   AggregatableReportForEventContribution for_event_contribution;
 };
 
-// Represents a request made to Private Aggregation API. It can be either
-// contributeToHistogram() or reportPrivateAggregationEvent(), depending on the
-// type of contribution.
+// Represents a request made to Private Aggregation API. It can be made by
+// either contributeToHistogram() or contributeToHistogramOnEvent(), depending
+// on the type of contribution.
 struct PrivateAggregationRequest {
   AggregatableReportContribution contribution;
+  blink.mojom.AggregationServiceMode aggregation_mode;
+  blink.mojom.DebugModeDetails debug_mode_details;
+};
+
+// Represents a PrivateAggregationRequest that has been finalized, i.e. it has
+// been 'filled in' if necessary and it is no longer conditional on an event (or
+// that condition is tracked outside this type).
+struct FinalizedPrivateAggregationRequest {
+  blink.mojom.AggregatableReportHistogramContribution contribution;
   blink.mojom.AggregationServiceMode aggregation_mode;
   blink.mojom.DebugModeDetails debug_mode_details;
 };

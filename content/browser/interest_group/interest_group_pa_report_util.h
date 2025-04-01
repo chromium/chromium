@@ -25,7 +25,7 @@ class PrivateAggregationManager;
 
 struct CONTENT_EXPORT PrivateAggregationRequestWithEventType {
   PrivateAggregationRequestWithEventType(
-      auction_worklet::mojom::PrivateAggregationRequestPtr request,
+      auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr request,
       std::optional<std::string> event_type);
 
   PrivateAggregationRequestWithEventType(
@@ -35,7 +35,7 @@ struct CONTENT_EXPORT PrivateAggregationRequestWithEventType {
 
   ~PrivateAggregationRequestWithEventType();
 
-  auction_worklet::mojom::PrivateAggregationRequestPtr request;
+  auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr request;
 
   // Event type of the private aggregation request. Set to std::nullopt if it's
   // a reserved event type.
@@ -158,7 +158,8 @@ CONTENT_EXPORT bool IsPrivateAggregationRequestReservedOnce(
 // Splits a vector of requests into those with matching debug mode details and
 // then forwards to a new mojo pipe.
 CONTENT_EXPORT void SplitContributionsIntoBatchesThenSendToHost(
-    std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr> requests,
+    std::vector<auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr>
+        requests,
     PrivateAggregationManager& pa_manager,
     const url::Origin& reporting_origin,
     std::optional<url::Origin> aggregation_coordinator_origin,
