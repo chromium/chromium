@@ -80,9 +80,6 @@ class GlicWindowAnimator::GlicViewOpacityAnimation {
     window_animator_->SetGlicWebViewVisibility(true);
     if (!web_view->layer()) {
       web_view->SetPaintToLayer();
-      web_view->layer()->SetRoundedCornerRadius(
-          gfx::RoundedCornersF{kGlicViewCornerRadius});
-      web_view->layer()->SetIsFastRoundedCorner(true);
     }
     web_view->layer()->SetOpacity(start_opacity);
 
