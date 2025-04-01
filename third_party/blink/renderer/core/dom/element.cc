@@ -3199,6 +3199,8 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
         } else if (DisplayLockContext* context = GetDisplayLockContext()) {
           context->SetIsHiddenUntilFoundElement(false);
         }
+      } else if (name == html_names::kInertAttr) {
+        UseCounter::Count(GetDocument(), WebFeature::kInertAttribute);
       }
       // NOTE: We could test here if we have a shared ElementData
       // with presentation attribute style, and avoid re-dirtying
