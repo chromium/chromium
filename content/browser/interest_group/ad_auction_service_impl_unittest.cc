@@ -11604,60 +11604,6 @@ TEST_F(AdAuctionServiceImplTest, SerializesMultipleOwnersAuctionBlob) {
           testing::Pair(test_origin_b, testing::ElementsAre("trains"))));
 }
 
-TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobDebugReportingInLockout) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kFledgeSampleDebugReports,
-        {{"fledge_enable_filtering_debug_report_starting_from", "100ms"}}}},
-      {});
-
-  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
-  manager_->JoinInterestGroup(
-      blink::TestInterestGroupBuilder(test_origin, "cars")
-          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/"do not send",
-                     /*size_group=*/std::nullopt,
-                     /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt,
-                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
-                     "1234"}}})
-          .Build(),
-      GURL("https://a.test/example.html"));
-  task_environment()->FastForwardBy(base::Seconds(1));
-  manager_->RecordDebugReportLockout(
-      base::Time::Now(), blink::features::kFledgeDebugReportLockout.Get());
-  task_environment()->FastForwardBy(base::Seconds(1));
-
-  std::vector<uint8_t> msg;
-  base::flat_map<url::Origin, std::vector<std::string>> group_names;
-  base::RunLoop run_loop;
-  manager_->GetInterestGroupAdAuctionData(
-      /*top_level_origin=*/test_origin,
-      /*generation_id=*/
-      base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"),
-      /*timestamp=*/base::Time::FromMillisecondsSinceUnixEpoch(0),
-      /*config=*/blink::mojom::AuctionDataConfig::New(),
-      /*sellers=*/{test_origin},
-      /*callback=*/base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
-        EXPECT_EQ(1u, data.requests.size());
-        msg = std::move(data.requests[test_origin]);
-        group_names = std::move(data.group_names);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-  std::string expected =
-      "AgAAAPqmZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
-      "MC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBzOi8v"
-      "YS50ZXN0WGEfiwgAAAAAAAAAa1ycnJhS3JhiaGRskpKXmJuakpxYVJyXVJRfXpxaFJyZnpeY"
-      "U7wkIykzxTm/"
-      "NK+"
-      "EIaOgKLUsPDOvuCEzKz8zDyzImFmUmpyal1zpW8wAALB77c5QAAAAcnJlcXVlc3RUaW1lc3R"
-      "hbXBNcwB0ZW5hYmxlRGVidWdSZXBvcnRpbmf0AAAAAAAAAAAAAAAAAAAAAAAAAA";
-  EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
-  EXPECT_EQ(5u * 1024u - kEncryptionOverhead, msg.size());
-  EXPECT_THAT(group_names, testing::ElementsAre(testing::Pair(
-                               test_origin, testing::ElementsAre("cars"))));
-}
-
 TEST_F(AdAuctionServiceImplTest,
        SerializesAuctionBlobSendDebugReportCooldownsToBandA) {
   base::test::ScopedFeatureList feature_list;
@@ -12672,63 +12618,6 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
           blink::InterestGroupKey(test_origin, "cars"), pagg_coordinator)));
 }
 
-TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayloadWithDebugReportLockout) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kFledgeSampleDebugReports,
-        {{"fledge_enable_filtering_debug_report_starting_from", "100ms"}}}},
-      {});
-
-  ProvideKeys();
-  NavigateAndCommit(kUrlA);
-  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
-  manager_->JoinInterestGroup(
-      blink::TestInterestGroupBuilder(test_origin, "cars")
-          .SetAds(
-              {{{GURL("https://c.test/ad1.html"), /*metadata=*/std::nullopt}}})
-          .Build(),
-      GURL("https://a.test/example.html"));
-  task_environment()->FastForwardBy(base::Seconds(1));
-  manager_->RecordDebugReportLockout(
-      base::Time::Now(), blink::features::kFledgeDebugReportLockout.Get());
-  task_environment()->FastForwardBy(base::Seconds(1));
-
-  std::optional<AdAuctionDataAndId> result =
-      GetAdAuctionDataAndFlushForFrame(test_origin);
-
-  ASSERT_TRUE(result.has_value());
-  ASSERT_FALSE(result->request.empty());
-
-  auto key_config =
-      quiche::ObliviousHttpHeaderKeyConfig::Create(
-          kTestPrivacySandboxCoordinatorId, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
-          EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM)
-          .value();
-  auto ohttp_gateway =
-      quiche::ObliviousHttpGateway::Create(
-          GetTestPrivacySandboxCoordinatorPrivateKey(), key_config)
-          .value();
-  EXPECT_EQ(0x00, result->request[0]);
-  auto request = ohttp_gateway.DecryptObliviousHttpRequest(
-      result->request.substr(1), kBiddingAndAuctionEncryptionRequestMediaType);
-  ASSERT_TRUE(request.ok()) << request.status();
-  auto plaintext_data = request->GetPlaintextData();
-
-  EXPECT_EQ(0x02, plaintext_data[0]);
-  size_t request_size = 0;
-  for (size_t idx = 0; idx < sizeof(uint32_t); idx++) {
-    request_size =
-        (request_size << 8) | static_cast<uint8_t>(plaintext_data[idx + 1]);
-  }
-
-  std::string got_str = cbor::DiagnosticWriter::Write(
-      cbor::Reader::Read(
-          base::as_byte_span(plaintext_data.substr(5, request_size)))
-          .value());
-  EXPECT_THAT(got_str,
-              testing::EndsWith(R"(, "enableDebugReporting": false})"));
-}
-
 TEST_F(AdAuctionServiceImplBAndATest,
        EncryptsPayload_DebugReportNotInLockoutOrCooldown) {
   base::test::ScopedFeatureList feature_list;
@@ -12845,7 +12734,7 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload_DebugReportInLockout) {
   EXPECT_THAT(
       got_str,
       testing::EndsWith(
-          R"(, "inCooldownOrLockout": true, "enableDebugReporting": false})"));
+          R"(, "inCooldownOrLockout": true, "enableDebugReporting": true})"));
 }
 
 // Similar to DebugReportNotInLockoutOrCooldown, but the seller is in cooldown.

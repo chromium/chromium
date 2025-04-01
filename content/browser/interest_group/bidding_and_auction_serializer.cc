@@ -988,8 +988,9 @@ std::optional<BiddingAndAuctionData> BiddingAndAuctionSerializer::Build() {
   message_elements_size += TaggedStringLength(constexpr_strlen("publisher")) +
                            TaggedStringLength(publisher_.size());
 
-  message_obj[cbor::Value("enableDebugReporting")] =
-      cbor::Value(!debug_report_in_lockout_);
+  // TODO(crbug.com/407777426): deprecate this field when no one is using it
+  // anymore.
+  message_obj[cbor::Value("enableDebugReporting")] = cbor::Value(true);
   message_elements_size +=
       TaggedStringLength(constexpr_strlen("enableDebugReporting")) + 1;
 
