@@ -280,6 +280,10 @@ void BaseRenderingContext2D::DispatchContextRestoredEvent(TimerBase*) {
     return;
   }
 
+  if (!context_restorable_) {
+    return;
+  }
+
   CanvasRenderingContextHost* host = GetCanvasRenderingContextHost();
   if (host == nullptr) {
     // This function can be called in a new task, via
