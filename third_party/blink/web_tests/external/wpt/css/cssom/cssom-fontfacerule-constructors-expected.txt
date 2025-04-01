@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] The style attribute must return a CSSFontFaceDescriptors block
+  assert_equals: expected "[object CSSFontFaceDescriptors]" but got "[object CSSStyleDeclaration]"
+Harness: the test ran to completion.
+

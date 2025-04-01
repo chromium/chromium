@@ -2608,6 +2608,7 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac13 ] external/wpt/webrtc/RTCDataChannel-send-close.html [ Skip Timeout ]
 crbug.com/407404837 [ Win11-arm64 ] external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Timeout ]
 crbug.com/407404837 [ Win11-arm64 ] virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Timeout ]
 crbug.com/406805472 [ Mac12 ] external/wpt/import-maps/data-url-specifiers.sub.html [ Skip Timeout ]
