@@ -1326,6 +1326,10 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
     suggestion.main_text.value = card_name;
     suggestion.minor_texts.emplace_back(
         credit_card.ObfuscatedNumberWithVisibleLastFourDigits());
+    suggestion.custom_icon = Suggestion::CustomIconUrl(
+        client.GetPersonalDataManager().payments_data_manager().GetCardArtURL(
+            credit_card));
+    suggestion.icon = credit_card.CardIconForAutofillSuggestion();
     std::optional<Suggestion::Text> benefit_label =
         GetCreditCardBenefitSuggestionLabel(credit_card, client);
     if (benefit_label) {
