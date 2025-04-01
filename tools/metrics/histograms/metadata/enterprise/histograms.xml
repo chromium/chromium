@@ -2024,7 +2024,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentForcedInitial"
-    enum="EnterpriseEnrollmentType" expires_after="2025-06-01">
+    enum="EnterpriseEnrollmentType" expires_after="2026-04-06">
   <owner>asumaneev@google.com</owner>
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2046,7 +2046,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentForcedInitialManualFallback"
-    enum="EnterpriseEnrollmentType" expires_after="2025-06-01">
+    enum="EnterpriseEnrollmentType" expires_after="2026-04-06">
   <owner>asumaneev@google.com</owner>
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2093,7 +2093,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentRecovery" enum="EnterpriseEnrollmentType"
-    expires_after="2025-06-01">
+    expires_after="2026-04-06">
   <owner>asumaneev@google.com</owner>
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2146,7 +2146,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentRollbackManualFallback"
-    enum="EnterpriseEnrollmentType" expires_after="2025-06-01">
+    enum="EnterpriseEnrollmentType" expires_after="2026-04-06">
   <owner>crisguerrero@chromium.org</owner>
   <owner>mpolzer@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2160,7 +2160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentTime.Cancel" units="ms"
-    expires_after="2025-06-01">
+    expires_after="2026-04-06">
   <owner>asumaneev@google.com</owner>
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2170,7 +2170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentTime.Failure" units="ms"
-    expires_after="2025-06-01">
+    expires_after="2026-04-06">
   <owner>asumaneev@google.com</owner>
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2190,7 +2190,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentTokenBased"
-    enum="EnterpriseEnrollmentType" expires_after="2025-06-01">
+    enum="EnterpriseEnrollmentType" expires_after="2026-04-06">
   <owner>jacksontadie@google.com</owner>
   <owner>drcrash@google.com</owner>
   <owner>cros-onboarding-team@google.com</owner>
@@ -2205,7 +2205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentTokenBasedManualFallback"
-    enum="EnterpriseEnrollmentType" expires_after="2025-06-01">
+    enum="EnterpriseEnrollmentType" expires_after="2026-04-06">
   <owner>jacksontadie@google.com</owner>
   <owner>drcrash@google.com</owner>
   <owner>cros-onboarding-team@google.com</owner>
@@ -2342,7 +2342,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.InstallAttributes.ValidOnEnrolledDevice"
-    enum="Boolean" expires_after="2025-06-08">
+    enum="Boolean" expires_after="2026-04-06">
   <owner>igorcov@chromium.org</owner>
   <owner>emaxx@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2723,7 +2723,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyRefresh2" enum="EnterprisePolicyRefresh"
-    expires_after="2025-06-01">
+    expires_after="2026-04-06">
   <owner>asumaneev@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -2796,7 +2796,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.Device" units="days"
-    expires_after="2025-06-08">
+    expires_after="2026-04-06">
   <owner>rbock@google.com</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2816,7 +2816,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.User" units="days"
-    expires_after="2025-04-06">
+    expires_after="2026-04-06">
   <owner>rbock@google.com</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
