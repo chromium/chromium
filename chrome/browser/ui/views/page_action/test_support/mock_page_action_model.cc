@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/page_action/mock_page_action_model.h"
+#include "chrome/browser/ui/views/page_action/test_support/mock_page_action_model.h"
 
 namespace page_actions {
 

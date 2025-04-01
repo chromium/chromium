@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/views/page_action/page_action_observer.h"
 
 #include "chrome/browser/ui/tabs/test/mock_tab_interface.h"
-#include "chrome/browser/ui/views/page_action/mock_page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
+#include "chrome/browser/ui/views/page_action/test_support/mock_page_action_model.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
