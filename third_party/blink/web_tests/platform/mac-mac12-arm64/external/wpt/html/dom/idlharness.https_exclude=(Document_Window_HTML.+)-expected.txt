@@ -1,0 +1,72 @@
+This is a testharness.js-based test.
+Found 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] TextTrack interface: attribute inBandMetadataTrackDispatchType
+  assert_true: The prototype object must have a property "inBandMetadataTrackDispatchType" expected true got false
+[FAIL] TextTrack interface: document.createElement("track").track must inherit property "inBandMetadataTrackDispatchType" with the proper type
+  assert_inherits: property "inBandMetadataTrackDispatchType" not found in prototype chain
+[FAIL] ImageData interface: new ImageData(10, 10) must inherit property "data" with the proper type
+  assert_inherits: property "data" found on object expected in prototype chain
+[FAIL] CustomElementRegistry interface: existence and properties of interface object
+  assert_throws_js: interface object didn't throw TypeError when called as a constructor function "function() {\n                new interface_object();\n            }" did not throw
+[FAIL] ElementInternals interface: operation setValidity(optional ValidityStateFlags, optional DOMString, optional HTMLElement)
+  assert_equals: property has wrong .length expected 0 but got 1
+[FAIL] VisibilityStateEntry interface: attribute name
+  assert_own_property: expected property "name" missing
+[FAIL] VisibilityStateEntry interface: attribute entryType
+  assert_own_property: expected property "entryType" missing
+[FAIL] VisibilityStateEntry interface: attribute startTime
+  assert_own_property: expected property "startTime" missing
+[FAIL] VisibilityStateEntry interface: attribute duration
+  assert_own_property: expected property "duration" missing
+[FAIL] Location interface: stringifier
+  assert_own_property: interface prototype object missing non-static operation expected property "toString" missing
+[FAIL] PromiseRejectionEvent interface: attribute promise
+  assert_throws_js: getting property on prototype object must throw TypeError function "function () { [native code] }" did not throw
+[FAIL] Navigator interface: operation taintEnabled()
+  assert_own_property: interface prototype object missing non-static operation expected property "taintEnabled" missing
+[FAIL] Navigator interface: attribute oscpu
+  assert_true: The prototype object must have a property "oscpu" expected true got false
+[FAIL] Navigator interface: window.navigator must inherit property "taintEnabled()" with the proper type
+  assert_inherits: property "taintEnabled" not found in prototype chain
+[FAIL] Navigator interface: window.navigator must inherit property "oscpu" with the proper type
+  assert_inherits: property "oscpu" not found in prototype chain
+[FAIL] Worker interface: attribute onmessageerror
+  assert_true: The prototype object must have a property "onmessageerror" expected true got false
+[FAIL] SVGSVGElement interface: attribute onafterprint
+  assert_true: The prototype object must have a property "onafterprint" expected true got false
+[FAIL] SVGSVGElement interface: attribute onbeforeprint
+  assert_true: The prototype object must have a property "onbeforeprint" expected true got false
+[FAIL] SVGSVGElement interface: attribute onbeforeunload
+  assert_true: The prototype object must have a property "onbeforeunload" expected true got false
+[FAIL] SVGSVGElement interface: attribute onhashchange
+  assert_true: The prototype object must have a property "onhashchange" expected true got false
+[FAIL] SVGSVGElement interface: attribute onlanguagechange
+  assert_true: The prototype object must have a property "onlanguagechange" expected true got false
+[FAIL] SVGSVGElement interface: attribute onmessage
+  assert_true: The prototype object must have a property "onmessage" expected true got false
+[FAIL] SVGSVGElement interface: attribute onmessageerror
+  assert_true: The prototype object must have a property "onmessageerror" expected true got false
+[FAIL] SVGSVGElement interface: attribute onoffline
+  assert_true: The prototype object must have a property "onoffline" expected true got false
+[FAIL] SVGSVGElement interface: attribute ononline
+  assert_true: The prototype object must have a property "ononline" expected true got false
+[FAIL] SVGSVGElement interface: attribute onpagehide
+  assert_true: The prototype object must have a property "onpagehide" expected true got false
+[FAIL] SVGSVGElement interface: attribute onpagereveal
+  assert_true: The prototype object must have a property "onpagereveal" expected true got false
+[FAIL] SVGSVGElement interface: attribute onpageshow
+  assert_true: The prototype object must have a property "onpageshow" expected true got false
+[FAIL] SVGSVGElement interface: attribute onpageswap
+  assert_true: The prototype object must have a property "onpageswap" expected true got false
+[FAIL] SVGSVGElement interface: attribute onpopstate
+  assert_true: The prototype object must have a property "onpopstate" expected true got false
+[FAIL] SVGSVGElement interface: attribute onrejectionhandled
+  assert_true: The prototype object must have a property "onrejectionhandled" expected true got false
+[FAIL] SVGSVGElement interface: attribute onstorage
+  assert_true: The prototype object must have a property "onstorage" expected true got false
+[FAIL] SVGSVGElement interface: attribute onunhandledrejection
+  assert_true: The prototype object must have a property "onunhandledrejection" expected true got false
+[FAIL] SVGSVGElement interface: attribute onunload
+  assert_true: The prototype object must have a property "onunload" expected true got false
+Harness: the test ran to completion.
+
