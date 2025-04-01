@@ -54,8 +54,6 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
   virtual void PageVisibilityChanged() {}
   virtual CanvasResourceProvider* GetOrCreateCanvasResourceProvider(
       RasterModeHint hint) = 0;
-  virtual CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl(
-      RasterModeHint hint) = 0;
   CanvasResourceProvider*
   GetOrCreateResourceProviderWithCurrentRasterModeHint() {
     return GetOrCreateCanvasResourceProvider(preferred_2d_raster_mode());
@@ -136,6 +134,10 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
 
   virtual void SetTransferToGPUTextureWasInvoked() {}
   virtual bool TransferToGPUTextureWasInvoked() { return false; }
+
+ protected:
+  virtual CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl(
+      RasterModeHint hint) = 0;
 
  private:
   bool is_displayed_ = false;

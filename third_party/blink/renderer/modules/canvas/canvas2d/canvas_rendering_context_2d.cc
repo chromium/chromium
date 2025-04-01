@@ -278,18 +278,7 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
     }
   }
 
-  // This code historically checked whether the bridge existed because it called
-  // into the bridge to restore the resource provider. However, it no longer
-  // does so, and there is no logical reason to guard restoring the resource
-  // provider by whether the bridge is present or not. Note that it doesn't make
-  // sense to call IsPaintable() here when IsPaintable() is returning whether
-  // the resource provider is present, since we are trying to restore the
-  // resource provider here :). Instead, just ensure that the canvas is present,
-  // since this method is called on a timer.
-  bool can_restore = CheckProviderInCanvas2DRenderingContextIsPaintable()
-                         ? canvas() != nullptr
-                         : IsPaintable();
-  if (context_lost_mode_ == kRealLostContext && can_restore && Restore()) {
+  if (context_lost_mode_ == kRealLostContext && Restore()) {
     Host()->set_context_lost(false);
     try_restore_context_event_timer_.Stop();
     DispatchContextRestoredEvent(nullptr);
@@ -326,7 +315,7 @@ bool CanvasRenderingContext2D::Restore() {
 
   if (!context_provider_wrapper->ContextProvider().IsContextLost()) {
     CanvasResourceProvider* resource_provider =
-        host->GetOrCreateCanvasResourceProviderImpl(RasterModeHint::kPreferGPU);
+        host->GetOrCreateResourceProviderWithCurrentRasterModeHint();
 
     // The current paradigm does not support switching from accelerated to
     // non-accelerated, which would be tricky due to changes to the layer tree,
@@ -337,8 +326,6 @@ bool CanvasRenderingContext2D::Restore() {
       // FIXME: draw sad canvas picture into new buffer crbug.com/243842
     }
   }
-
-  host->UpdateMemoryUsage();
 
   return host->ResourceProvider();
 }

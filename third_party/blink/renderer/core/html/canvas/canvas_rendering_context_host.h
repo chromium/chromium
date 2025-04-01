@@ -99,8 +99,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
 
   // Partial CanvasResourceHost implementation
   void InitializeForRecording(cc::PaintCanvas*) const final;
-  CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl(
-      RasterModeHint hint) final;
   CanvasResourceProvider* GetOrCreateCanvasResourceProvider(
       RasterModeHint hint) override;
   void PageVisibilityChanged() override;
@@ -140,6 +138,8 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   scoped_refptr<StaticBitmapImage> CreateTransparentImage(
       const gfx::Size&) const;
 
+  CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl(
+      RasterModeHint hint) final;
   void CreateCanvasResourceProvider2D(RasterModeHint hint);
   void CreateCanvasResourceProviderWebGL();
   void CreateCanvasResourceProviderWebGPU();
