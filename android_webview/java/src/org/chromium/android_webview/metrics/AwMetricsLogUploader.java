@@ -21,6 +21,7 @@ import org.chromium.android_webview.common.services.ServiceHelper;
 import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.metrics.AndroidMetricsLogConsumer;
@@ -75,26 +76,36 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            // If onServiceConnected is incorrectly called twice in a row without
-            // onServiceDisconnected, we will still try take the latest service connection for
-            // a hope of working.
-            mConnectionsQueue.clear();
-            IMetricsUploadService uploadService = IMetricsUploadService.Stub.asInterface(service);
-            // Keep track of if the service is updated again since the last clear.
-            if (!mConnectionsQueue.offer(uploadService)) {
-                Log.d(TAG, "Attempted to re-bind with service twice.");
-            }
+            // Posting this to ensure it doesn't run while async startup is in progress.
+            ThreadUtils.runOnUiThread(
+                    () -> {
+                        // If onServiceConnected is incorrectly called twice in a row without
+                        // onServiceDisconnected, we will still try take the latest service
+                        // connection for a hope of working.
+                        mConnectionsQueue.clear();
+                        IMetricsUploadService uploadService =
+                                IMetricsUploadService.Stub.asInterface(service);
+                        // Keep track of if the service is updated again since the last clear.
+                        if (!mConnectionsQueue.offer(uploadService)) {
+                            Log.d(TAG, "Attempted to re-bind with service twice.");
+                        }
+                    });
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            // If we get an unexpected disconnection, we should no longer trust the connection we
-            // have queued.
-            // If the metrics service already has a connection it will simply fail when trying to
-            // make a call.
-            // This should be helpful for the first connection where there is a more considerable
-            // delta between when we first bind, and when we try to send data.
-            mConnectionsQueue.clear();
+            // Posting this to ensure it doesn't run while async startup is in progress.
+            ThreadUtils.runOnUiThread(
+                    () -> {
+                        // If we get an unexpected disconnection, we should no longer trust the
+                        // connection we have queued.
+                        // If the metrics service already has a connection it will simply fail when
+                        // trying to make a call.
+                        // This should be helpful for the first connection where there is a more
+                        // considerable delta between when we first bind, and when we try to send
+                        // data.
+                        mConnectionsQueue.clear();
+                    });
         }
 
         /**
