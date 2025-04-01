@@ -43,6 +43,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace tab_groups {
 namespace {
 
@@ -173,6 +177,16 @@ class SingleClientSharedTabGroupDataSyncTest : public SyncTest {
         {});
   }
   ~SingleClientSharedTabGroupDataSyncTest() override = default;
+
+  void SetUp() override {
+#if BUILDFLAG(IS_ANDROID)
+    if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+      // TODO(crbug.com/399444939): Re-enable once automotive is supported.
+      GTEST_SKIP() << "Test shouldn't run on automotive builders.";
+    }
+#endif
+    SyncTest::SetUp();
+  }
 
   void RegisterCollaboration(const syncer::CollaborationId& collaboration_id) {
     GetTabGroupSyncService()
