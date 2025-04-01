@@ -4368,6 +4368,10 @@ const char kAndroidPdfAssistContentName[] = "Provide assist content for PDF";
 const char kAndroidPdfAssistContentDescription[] =
     "Provide assist content for PDF on Android.";
 
+const char kAndroidSurfaceColorUpdateName[] = "Android surface color update.";
+const char kAndroidSurfaceColorUpdateDescription[] =
+    "If enabled, updates the android surface colors.";
+
 const char kAndroidTabDeclutterName[] = "Android Tab Declutter";
 const char kAndroidTabDeclutterDescription[] =
     "Enables auto-archival and deletion of inactive tabs.";

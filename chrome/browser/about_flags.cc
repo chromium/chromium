@@ -11964,6 +11964,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kContextMenuEmptySpace)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"android-surface-color-update",
+     flag_descriptions::kAndroidSurfaceColorUpdateName,
+     flag_descriptions::kAndroidSurfaceColorUpdateDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidSurfaceColorUpdate)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

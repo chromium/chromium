@@ -2565,6 +2565,9 @@ extern const char kAndroidOpenPdfInlineBackportDescription[];
 extern const char kAndroidPdfAssistContentName[];
 extern const char kAndroidPdfAssistContentDescription[];
 
+extern const char kAndroidSurfaceColorUpdateName[];
+extern const char kAndroidSurfaceColorUpdateDescription[];
+
 extern const char kAndroidTabDeclutterName[];
 extern const char kAndroidTabDeclutterDescription[];
 

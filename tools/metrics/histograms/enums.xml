@@ -15074,6 +15074,7 @@ from previous Chrome versions.
   <int value="336830575" label="DeviceForceScheduledReboot:enabled"/>
   <int value="337637199" label="HttpsFirstModeIncognito:disabled"/>
   <int value="338061950" label="ChromeWebStoreNavigationThrottle:disabled"/>
+  <int value="338353369" label="AndroidSurfaceColorUpdate:disabled"/>
   <int value="338662897" label="AndroidNightModeTabReparenting:disabled"/>
   <int value="339388667" label="SyncAndroidPromosWithTitle:enabled"/>
   <int value="339419844" label="EmojiSuggestAddition:enabled"/>
@@ -17779,6 +17780,7 @@ from previous Chrome versions.
   <int value="1382107019" label="LevelDBPerformRewrite:disabled"/>
   <int value="1382500494" label="disable-drive-apps-in-app-list"/>
   <int value="1382727025" label="SeparateLocalAndAccountThemes:disabled"/>
+  <int value="1382972493" label="AndroidSurfaceColorUpdate:enabled"/>
   <int value="1383197819" label="IncognitoScreenshot:enabled"/>
   <int value="1383526461" label="QuickAnswersRichUi:enabled"/>
   <int value="1383591631" label="enable-gesture-typing"/>

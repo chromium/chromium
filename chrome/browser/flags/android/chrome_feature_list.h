@@ -32,6 +32,7 @@ BASE_DECLARE_FEATURE(kAndroidKeyboardA11y);
 BASE_DECLARE_FEATURE(kAndroidNoVisibleHintForDifferentTLD);
 BASE_DECLARE_FEATURE(kAndroidOpenPdfInlineBackport);
 BASE_DECLARE_FEATURE(kAndroidPdfAssistContent);
+BASE_DECLARE_FEATURE(kAndroidSurfaceColorUpdate);
 BASE_DECLARE_FEATURE(kAndroidTabDeclutter);
 BASE_DECLARE_FEATURE(kAndroidTabDeclutterArchiveAllButActiveTab);
 BASE_DECLARE_FEATURE(kAndroidTabDeclutterArchiveDuplicateTabs);
