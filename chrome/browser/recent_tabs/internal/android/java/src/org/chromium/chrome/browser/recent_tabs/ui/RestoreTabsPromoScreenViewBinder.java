@@ -90,26 +90,12 @@ public class RestoreTabsPromoScreenViewBinder {
             getRestoreTabsButton(view)
                     .setOnClickListener(
                             (v) -> {
-                                var context = view.mContentView.getContext();
-                                String restoreDescription =
-                                        context.getString(
-                                                R.string
-                                                        .restore_tabs_open_tabs_button_clicked_description);
-                                getRestoreTabsButton(view)
-                                        .announceForAccessibility(restoreDescription);
                                 delegate.onAllTabsChosen();
                             });
 
             getReviewTabsButton(view)
                     .setOnClickListener(
                             (v) -> {
-                                var context = view.mContentView.getContext();
-                                String reviewDescription =
-                                        context.getString(
-                                                R.string
-                                                        .restore_tabs_promo_sheet_review_tabs_button_clicked_description);
-                                getReviewTabsButton(view)
-                                        .announceForAccessibility(reviewDescription);
                                 delegate.onReviewTabsChosen();
                             });
         } else if (propertyKey == SELECTED_DEVICE) {
