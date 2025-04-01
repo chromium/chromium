@@ -98,7 +98,7 @@ dependencies {
     // buildCompile needed because we add a custom dep of onto this from guava
     // to fix "unknown enum constant ReflectionSupport$Level.FULL".
     buildCompile 'com.google.j2objc:j2objc-annotations:2.8'
-    compile 'com.google.protobuf:protobuf-javalite:4.28.0'
+    compile 'com.google.protobuf:protobuf-javalite:4.30.2'
     compile 'javax.inject:javax.inject:1'
 
     // Needed by androidx.room, but by default it selects a lower version that
