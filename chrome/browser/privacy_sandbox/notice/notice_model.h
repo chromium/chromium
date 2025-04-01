@@ -60,11 +60,11 @@ class Notice {
 
   // Performs post-processing on relevant target apis based on an `event`
   // performed on this notice.
-  void UpdateTargetApiResults(NoticeEvent event);
+  void UpdateTargetApiResults(notice::mojom::PrivacySandboxNoticeEvent event);
 
   // Determines if an `event` is one of the FulfillEvents, both enabled or
   // disable events are considered.
-  bool IsFulfillmentEvent(NoticeEvent event);
+  bool IsFulfillmentEvent(notice::mojom::PrivacySandboxNoticeEvent event);
 
   // TODO(crbug.com/392612108) NoticeViews should also implement a function to
   // guard against a notice showing in certain conditions, even if it is the
@@ -74,8 +74,10 @@ class Notice {
  private:
   // TODO(crbug.com/392612108): Add a feature for every notice here, we will
   // use the associated string/name for pref setting.
-  virtual const std::set<NoticeEvent>& EnablementFulfillEvents();
-  virtual const std::set<NoticeEvent>& DisablementFulfillEvents();
+  virtual const std::set<notice::mojom::PrivacySandboxNoticeEvent>&
+  EnablementFulfillEvents();
+  virtual const std::set<notice::mojom::PrivacySandboxNoticeEvent>&
+  DisablementFulfillEvents();
   NoticeId notice_id_;
   std::vector<raw_ptr<NoticeApi>> target_apis_;
   std::vector<raw_ptr<NoticeApi>> pre_req_apis_;
@@ -88,8 +90,10 @@ class Consent : public Notice {
   NoticeType GetNoticeType() override;
 
  private:
-  const std::set<NoticeEvent>& EnablementFulfillEvents() override;
-  const std::set<NoticeEvent>& DisablementFulfillEvents() override;
+  const std::set<notice::mojom::PrivacySandboxNoticeEvent>&
+  EnablementFulfillEvents() override;
+  const std::set<notice::mojom::PrivacySandboxNoticeEvent>&
+  DisablementFulfillEvents() override;
 };
 
 class NoticeApi {

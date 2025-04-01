@@ -22982,7 +22982,7 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="Shown"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/privacy_sandbox/privacy_sandbox_notice_storage.h:NoticeEvent) -->
+<!-- LINT.ThenChange(/components/privacy_sandbox/privacy_sandbox_notice.mojom:PrivacySandboxNoticeEvent) -->
 
 <!-- LINT.IfChange(PrivacySandboxNoticeStartupState) -->
 

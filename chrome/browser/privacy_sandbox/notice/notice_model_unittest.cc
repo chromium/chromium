@@ -13,6 +13,7 @@
 
 using base::MockCallback;
 using privacy_sandbox::notice::mojom::PrivacySandboxNotice;
+using privacy_sandbox::notice::mojom::PrivacySandboxNoticeEvent;
 using testing::_;
 using testing::Contains;
 using testing::ValuesIn;
@@ -46,20 +47,23 @@ TEST_F(NoticeTest, NoticeIsFulfillmentEventCorrect) {
   Notice* notice = RegisterAndRetrieveNotice(
       PrivacySandboxNotice::kTopicsConsentNotice,
       &privacy_sandbox::kTopicsConsentDesktopModalFeature);
-  for (const auto& event : {NoticeEvent::kAck, NoticeEvent::kSettings}) {
+  for (const auto& event : {PrivacySandboxNoticeEvent::kAck,
+                            PrivacySandboxNoticeEvent::kSettings}) {
     EXPECT_EQ(notice->IsFulfillmentEvent(event), true);
   }
-  EXPECT_EQ(notice->IsFulfillmentEvent(NoticeEvent::kOptIn), false);
+  EXPECT_EQ(notice->IsFulfillmentEvent(PrivacySandboxNoticeEvent::kOptIn),
+            false);
 }
 
 TEST_F(NoticeTest, ConsentIsFulfillmentEventCorrect) {
   Notice* notice = RegisterAndRetrieveConsent(
       PrivacySandboxNotice::kTopicsConsentNotice,
       &privacy_sandbox::kTopicsConsentDesktopModalFeature);
-  for (const auto& event : {NoticeEvent::kOptIn, NoticeEvent::kOptOut}) {
+  for (const auto& event : {PrivacySandboxNoticeEvent::kOptIn,
+                            PrivacySandboxNoticeEvent::kOptOut}) {
     EXPECT_EQ(notice->IsFulfillmentEvent(event), true);
   }
-  EXPECT_EQ(notice->IsFulfillmentEvent(NoticeEvent::kAck), false);
+  EXPECT_EQ(notice->IsFulfillmentEvent(PrivacySandboxNoticeEvent::kAck), false);
 }
 
 TEST_F(NoticeTest, NoEligibilityCallbackReturnsNotEligible) {
@@ -111,8 +115,9 @@ TEST_F(NoticeTest, ConsentEligibilityWithNoticeTypeReturnsNotFulfilled) {
   EXPECT_FALSE(api->IsFulfilled());
 }
 
-class ResultCallbackTest : public NoticeTest,
-                           public testing::WithParamInterface<NoticeEvent> {};
+class ResultCallbackTest
+    : public NoticeTest,
+      public testing::WithParamInterface<PrivacySandboxNoticeEvent> {};
 
 TEST_P(ResultCallbackTest, UpdateTargetApiResultsSuccess) {
   MockCallback<base::OnceCallback<void(bool)>> result_callback;
@@ -139,12 +144,14 @@ TEST_P(ResultCallbackTest, UpdateTargetApiResultsSuccess) {
   notice->UpdateTargetApiResults(GetParam());
 }
 
-INSTANTIATE_TEST_SUITE_P(ResultCallbackTest,
-                         ResultCallbackTest,
-                         ValuesIn(std::vector<NoticeEvent>{
-                             NoticeEvent::kAck, NoticeEvent::kClosed,
-                             NoticeEvent::kOptIn, NoticeEvent::kOptOut,
-                             NoticeEvent::kSettings, NoticeEvent::kShown}));
+INSTANTIATE_TEST_SUITE_P(
+    ResultCallbackTest,
+    ResultCallbackTest,
+    ValuesIn(std::vector<PrivacySandboxNoticeEvent>{
+        PrivacySandboxNoticeEvent::kAck, PrivacySandboxNoticeEvent::kClosed,
+        PrivacySandboxNoticeEvent::kOptIn, PrivacySandboxNoticeEvent::kOptOut,
+        PrivacySandboxNoticeEvent::kSettings,
+        PrivacySandboxNoticeEvent::kShown}));
 
 class NoticeCatalogNoticeTest : public NoticeTest {};
 

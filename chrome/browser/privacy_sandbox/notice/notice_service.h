@@ -28,7 +28,8 @@ class PrivacySandboxNoticeService : public KeyedService {
   std::vector<notice::mojom::PrivacySandboxNotice> GetRequiredNotices(
       SurfaceType surface);
 
-  void EventOccurred(NoticeId notice_id, NoticeEvent event);
+  void EventOccurred(NoticeId notice_id,
+                     notice::mojom::PrivacySandboxNoticeEvent event);
 
   // Service Accessors.
   PrivacySandboxNoticeStorage* GetNoticeStorage();

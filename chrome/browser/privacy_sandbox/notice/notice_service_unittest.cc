@@ -17,6 +17,7 @@ namespace privacy_sandbox {
 namespace {
 
 using privacy_sandbox::notice::mojom::PrivacySandboxNotice;
+using privacy_sandbox::notice::mojom::PrivacySandboxNoticeEvent;
 
 class NoticeServiceTest : public testing::Test,
                           public testing::WithParamInterface<NoticeId> {
@@ -42,8 +43,8 @@ class NoticeServiceTest : public testing::Test,
 TEST_P(NoticeServiceTest, EventOccurredRegisteredInNoticeStorage) {
   NoticeId notice_id = GetParam();
 
-  notice_service()->EventOccurred(notice_id, NoticeEvent::kShown);
-  notice_service()->EventOccurred(notice_id, NoticeEvent::kAck);
+  notice_service()->EventOccurred(notice_id, PrivacySandboxNoticeEvent::kShown);
+  notice_service()->EventOccurred(notice_id, PrivacySandboxNoticeEvent::kAck);
 
   std::string_view notice_name = notice_service()
                                      ->GetCatalog()
@@ -55,7 +56,7 @@ TEST_P(NoticeServiceTest, EventOccurredRegisteredInNoticeStorage) {
   auto actual = notice_service()->GetNoticeStorage()->ReadNoticeData(
       notice_service()->GetPrefService(), notice_name);
   EXPECT_EQ(actual->GetNoticeActionTakenForFirstShownFromEvents()->first,
-            privacy_sandbox::NoticeEvent::kAck);
+            PrivacySandboxNoticeEvent::kAck);
   EXPECT_EQ(actual->GetNoticeEvents().size(), 2u);
 }
 
