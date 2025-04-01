@@ -39,7 +39,7 @@
 #endif
 
 #if BUILDFLAG(IS_IOS)
-#include "base/apple/mach_port_rendezvous.h"
+#include "base/apple/mach_port_rendezvous_ios.h"
 #endif
 
 namespace content {

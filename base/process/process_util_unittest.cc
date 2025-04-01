@@ -94,7 +94,7 @@
 #if BUILDFLAG(IS_MAC)
 #include <mach/mach.h>
 
-#include "base/apple/mach_port_rendezvous.h"
+#include "base/apple/mach_port_rendezvous_mac.h"
 #include "base/apple/scoped_mach_port.h"
 #include "base/mac/process_requirement.h"
 #endif

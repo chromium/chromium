@@ -27,6 +27,10 @@
 #include "base/time/time.h"
 #include "testing/multiprocess_func_list.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/apple/mach_port_rendezvous_mac.h"
+#endif
+
 namespace base {
 
 namespace {
