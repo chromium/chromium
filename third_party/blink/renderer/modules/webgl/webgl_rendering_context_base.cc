@@ -292,6 +292,36 @@ ScopedRGBEmulationColorMask::~ScopedRGBEmulationColorMask() {
   }
 }
 
+gfx::Rect WebGLRenderingContextBase::TexImageParams::GetSourceRect(
+    gfx::Size source_size) {
+  gfx::Rect rect(unpack_skip_pixels, unpack_skip_rows,
+                 width.value_or(source_size.width()),
+                 height.value_or(source_size.height()));
+
+  // `unpack_skip_rows` is defined as "Number of rows of pixel locations skipped
+  // before the first pixel is read from memory". `unpack_flip_y` is defined in
+  // terms of "first pixel transferred":
+  // The first pixel transferred from the source to the WebGL implementation
+  // corresponds to the upper left corner of the source. This behavior is
+  // modified by the UNPACK_FLIP_Y_WEBGL pixel storage parameter, except for
+  // ImageBitmap arguments, as described in the abovementioned section.
+
+  // That means that while `unpack_flip_y` defines orientation of the
+  // destination texture (with false == top-left and true == bootom-left) it
+  // also affects source rect, because `unpack_skip_rows` is counted either from
+  // the top or from the bottom depending on the `unpack_flip_y`.
+  if (unpack_flip_y) {
+    rect.set_y(source_size.height() - rect.bottom());
+  }
+
+  return rect;
+}
+
+GrSurfaceOrigin
+WebGLRenderingContextBase::TexImageParams::GetDestinationOrigin() {
+  return unpack_flip_y ? kBottomLeft_GrSurfaceOrigin : kTopLeft_GrSurfaceOrigin;
+}
+
 void WebGLRenderingContextBase::InitializeWebGLContextLimits(
     WebGraphicsContext3DProvider* context_provider) {
   base::AutoLock locker(WebGLContextLimitLock());
@@ -5889,9 +5919,7 @@ void WebGLRenderingContextBase::TexImageViaGPU(
   if (!texture)
     return;
 
-  // source in Y-down coordinate space -> is_source_origin_top_left = true
-  // source in Y-up coordinate space -> is_source_origin_top_left = false
-  bool is_source_origin_top_left = false;
+  GrSurfaceOrigin source_origin = kTopLeft_GrSurfaceOrigin;
   gfx::Size source_size;
   // Only one of `source_image` and `source_canvas_webgl_context` may be
   // specified.
@@ -5899,7 +5927,9 @@ void WebGLRenderingContextBase::TexImageViaGPU(
     DCHECK(source_image->IsTextureBacked());
     DCHECK(!source_canvas_webgl_context);
     source_size = source_image->Size();
-    is_source_origin_top_left = source_image->IsOriginTopLeft();
+    source_origin = source_image->IsOriginTopLeft()
+                        ? kTopLeft_GrSurfaceOrigin
+                        : kBottomLeft_GrSurfaceOrigin;
   }
   if (source_canvas_webgl_context) {
     DCHECK(!source_image);
@@ -5910,8 +5940,10 @@ void WebGLRenderingContextBase::TexImageViaGPU(
       return;
     }
     source_size = source_canvas_webgl_context->GetDrawingBuffer()->Size();
-    is_source_origin_top_left =
-        source_canvas_webgl_context->GetDrawingBuffer()->IsOriginTopLeft();
+    source_origin =
+        source_canvas_webgl_context->GetDrawingBuffer()->IsOriginTopLeft()
+            ? kTopLeft_GrSurfaceOrigin
+            : kBottomLeft_GrSurfaceOrigin;
   }
   if (!params.width)
     params.width = source_size.width();
@@ -5951,29 +5983,18 @@ void WebGLRenderingContextBase::TexImageViaGPU(
   }
 
   {
-    // The GPU-GPU copy path uses the Y-up coordinate system.
-    gfx::Rect source_sub_rectangle(params.unpack_skip_pixels,
-                                   params.unpack_skip_rows, *params.width,
-                                   *params.height);
+    // This rect is always in a top-left coordinate space.
+    gfx::Rect source_sub_rectangle = params.GetSourceRect(source_size);
 
-    // source_sub_rectangle is always specified in Y-down coordinate space.
-    // Adjust if source is in Y-up coordinate space.
-    // If unpack_flip_y is true specified by the caller, adjust it back again.
-    // This is equivalent of is_source_origin_top_left == params.unpack_flip_y.
-    bool adjust_source_sub_rectangle =
-        is_source_origin_top_left == params.unpack_flip_y;
-    if (adjust_source_sub_rectangle) {
+    // If source is not in a top left coordinate space, flip this rect to match
+    // texture orientation.
+    if (source_origin == kBottomLeft_GrSurfaceOrigin) {
       source_sub_rectangle.set_y(source_size.height() -
                                  source_sub_rectangle.bottom());
     }
 
-    // The various underlying copy functions require a Y-up rectangle.
-    // We need to set flip_y according to source_coordinate system and the
-    // unpack_flip_y value specified by the caller.
-    // The first transferred pixel should be the upper left corner of the source
-    // when params.unpack_flip_y is false. And bottom left corner of the source
-    // when params.unpack_flip_y is true.
-    bool flip_y = is_source_origin_top_left == params.unpack_flip_y;
+    // If origin doesn't match, we need to flip.
+    bool flip_y = source_origin != params.GetDestinationOrigin();
 
     // glCopyTextureCHROMIUM has a DRAW_AND_READBACK path which will call
     // texImage2D. So, reset unpack buffer parameters before that.
