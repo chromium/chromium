@@ -222,7 +222,6 @@ src/webgpu/api/operation/resource_init/check_texture/by_sampling.ts
 src/webgpu/api/operation/resource_init/texture_zero.spec.ts
 src/webgpu/api/operation/sampling/anisotropy.spec.ts
 src/webgpu/api/operation/sampling/filter_mode.spec.ts
-src/webgpu/api/operation/sampling/lod_clamp.spec.ts
 src/webgpu/api/operation/sampling/sampler_texture.spec.ts
 src/webgpu/api/operation/shader_module/compilation_info.spec.ts
 src/webgpu/api/operation/storage_texture/read_only.spec.ts
