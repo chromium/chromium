@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
@@ -274,20 +275,20 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
 
   DCHECK(context_lost_mode_ != kWebGLLoseContextLostContext);
 
-  RestoreGuard context_is_being_restored(*this);
-
-  // If lost mode is |kSyntheticLostContext| and |context_restorable_| is set to
-  // true, it means context is forced to be lost for testing purpose. Restore
-  // the context.
-  if (context_lost_mode_ == kSyntheticLostContext) {
-    if (host->GetOrCreateResourceProviderWithCurrentRasterModeHint()) {
-      try_restore_context_event_timer_.Stop();
-      DispatchContextRestoredEvent(nullptr);
-      return;
+  if (context_lost_mode_ == kRealLostContext) {
+    if (SharedGpuContext::IsGpuCompositingEnabled()) {
+      if (!SharedGpuContext::SharedImageInterfaceProvider()) {
+        return;
+      }
+    } else {
+      if (!SharedGpuContext::ContextProviderWrapper()) {
+        return;
+      }
     }
   }
 
-  if (context_lost_mode_ == kRealLostContext && Restore()) {
+  RestoreGuard context_is_being_restored(*this);
+  if (host->GetOrCreateResourceProviderWithCurrentRasterModeHint()) {
     try_restore_context_event_timer_.Stop();
     DispatchContextRestoredEvent(nullptr);
     return;
@@ -302,24 +303,6 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
     if (CanCreateCanvas2dResourceProvider())
       DispatchContextRestoredEvent(nullptr);
   }
-}
-
-bool CanvasRenderingContext2D::Restore() {
-  CanvasRenderingContextHost* host = Host();
-  CHECK(host);
-  DCHECK(!host->ResourceProvider());
-
-  if (SharedGpuContext::IsGpuCompositingEnabled()) {
-    if (!SharedGpuContext::SharedImageInterfaceProvider()) {
-      return false;
-    }
-  } else {
-    if (!SharedGpuContext::ContextProviderWrapper()) {
-      return false;
-    }
-  }
-
-  return !!host->GetOrCreateResourceProviderWithCurrentRasterModeHint();
 }
 
 void CanvasRenderingContext2D::WillDrawImage(CanvasImageSource* source) const {

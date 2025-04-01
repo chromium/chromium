@@ -248,8 +248,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   // TODO(crbug.com/40280152): Fold this method into PageVisibilityChanged().
   void OnPageVisibilityChangeWhenPaintable();
 
-  bool Restore();
-
   void PruneLocalFontCache(size_t target_size);
 
   void ScrollPathIntoViewInternal(const Path&);
