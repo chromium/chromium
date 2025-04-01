@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
@@ -58,12 +57,11 @@ void SafeAudioVideoChecker::CheckMediaFileDone(bool valid) {
 SafeAudioVideoChecker::~SafeAudioVideoChecker() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  // Close `file_` on a SequencedTaskRunner because BrowserThread::IO disallows
-  // blocking.
+  // Offload `file_` Close because BrowserThread::IO disallows blocking.
   if (file_.IsValid()) {
-    base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
-        ->PostTask(FROM_HERE,
-                   base::BindOnce([](base::File file) { file.Close(); },
-                                  std::move(file_)));
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce([](base::File file) { file.Close(); },
+                       std::move(file_)));
   }
 }
