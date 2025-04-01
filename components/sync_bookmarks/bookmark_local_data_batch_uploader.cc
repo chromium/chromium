@@ -21,7 +21,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync_bookmarks/bookmark_model_view.h"
-#include "components/sync_bookmarks/local_bookmark_model_merger.h"
 #include "components/sync_bookmarks/local_bookmark_to_account_merger.h"
 #include "components/sync_bookmarks/switches.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -101,9 +100,7 @@ void BookmarkLocalDataBatchUploader::GetLocalDataDescription(
       bookmarked_urls.insert(bookmarked_urls.end(), urls.begin(), urls.end());
 
       if (base::FeatureList::IsEnabled(
-              switches::kSyncBookmarksBatchUploadSelectedItems) &&
-          base::FeatureList::IsEnabled(
-              switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload)) {
+              switches::kSyncBookmarksBatchUploadSelectedItems)) {
         // Populate the individual items for Batch Upload (used on
         // Windows/Mac/Linux) only.
         local_data_items.push_back(
@@ -134,20 +131,7 @@ void BookmarkLocalDataBatchUploader::TriggerLocalDataMigration() {
         kBatchUploadDurationHistogramName,
         base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kMediumTimes);
 
-    if (base::FeatureList::IsEnabled(
-            switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload)) {
       LocalBookmarkToAccountMerger(bookmark_model_).MoveAndMergeAllNodes();
-    } else {
-      BookmarkModelViewUsingLocalOrSyncableNodes
-          local_or_syncable_bookmark_model_view(bookmark_model_);
-      BookmarkModelViewUsingAccountNodes account_bookmark_model_view(
-          bookmark_model_);
-
-      LocalBookmarkModelMerger(&local_or_syncable_bookmark_model_view,
-                               &account_bookmark_model_view)
-          .Merge();
-      local_or_syncable_bookmark_model_view.RemoveAllSyncableNodes();
-    }
   }
 
   // All local nodes should have been merged into account nodes.
@@ -182,11 +166,6 @@ void BookmarkLocalDataBatchUploader::TriggerLocalDataMigration() {
 
 void BookmarkLocalDataBatchUploader::TriggerLocalDataMigrationForItems(
     std::vector<syncer::LocalDataItemModel::DataId> items) {
-  // The per-item batch upload UI requires this new code path. The entry point
-  // is hidden if this feature flag is disabled so it's safe to CHECK here.
-  CHECK(base::FeatureList::IsEnabled(
-      switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload));
-
   if (!CanUpload()) {
     return;
   }
