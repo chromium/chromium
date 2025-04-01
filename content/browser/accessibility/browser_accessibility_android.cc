@@ -1834,15 +1834,14 @@ int BrowserAccessibilityAndroid::ColumnCount() const {
   }
 
   // For <ol> and <ul> elements on Android (e.g. role kList, kListBox, kMenu,
-  // kMenuBar and kMenuListPopup), the AX code will consider these 0 columns,
-  // but on Android they are 1.
+  // kMenuBar and kMenuListPopup), the AX code may consider these 0 columns (or
+  // more if the element is inside of a table), but on Android they are 1.
   int ax_cols = node()->GetTableColCount().value_or(0);
   if (GetRole() == ax::mojom::Role::kList ||
       GetRole() == ax::mojom::Role::kListBox ||
       GetRole() == ax::mojom::Role::kMenu ||
       GetRole() == ax::mojom::Role::kMenuBar ||
       GetRole() == ax::mojom::Role::kMenuListPopup) {
-    DCHECK_EQ(ax_cols, 0);
     ax_cols = 1;
   }
 
