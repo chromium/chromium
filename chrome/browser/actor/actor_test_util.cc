@@ -8,6 +8,7 @@
 
 using optimization_guide::proto::BrowserAction;
 using optimization_guide::proto::ClickAction;
+using optimization_guide::proto::MoveMouseAction;
 
 namespace actor {
 
@@ -29,6 +30,13 @@ BrowserAction MakeHistoryBack() {
 BrowserAction MakeHistoryForward() {
   BrowserAction action;
   action.add_action_information()->mutable_forward();
+  return action;
+}
+
+BrowserAction MakeMouseMove(int content_node_id) {
+  BrowserAction action;
+  MoveMouseAction* move = action.add_action_information()->mutable_move_mouse();
+  move->mutable_target()->set_content_node_id(content_node_id);
   return action;
 }
 
