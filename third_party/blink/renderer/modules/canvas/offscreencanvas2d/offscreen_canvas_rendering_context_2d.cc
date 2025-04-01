@@ -444,15 +444,9 @@ void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
     return;
   }
 
-  // It gets here if lost mode is |kRealLostContext| and it fails to create a
-  // new PaintCanvas. Discard the old resource and allocating a new one here.
+  // Retry up to `kMaxTryRestoreContextAttempts` times before giving up.
   if (++try_restore_context_attempt_count_ > kMaxTryRestoreContextAttempts) {
-    host->DiscardResourceProvider();
     try_restore_context_event_timer_.Stop();
-    if (CanvasResourceProvider* provider = GetOrCreateCanvasResourceProvider();
-        provider) {
-      DispatchContextRestoredEvent(nullptr);
-    }
   }
 }
 

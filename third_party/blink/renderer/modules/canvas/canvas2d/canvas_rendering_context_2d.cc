@@ -294,14 +294,9 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
     return;
   }
 
-  // If it fails to restore the context, TryRestoreContextEvent again.
+  // Retry up to `kMaxTryRestoreContextAttempts` times before giving up.
   if (++try_restore_context_attempt_count_ > kMaxTryRestoreContextAttempts) {
-    // After 4 tries, we start the final attempt, allocate a brand new image
-    // buffer instead of restoring
     try_restore_context_event_timer_.Stop();
-    host->DiscardResourceProvider();
-    if (CanCreateCanvas2dResourceProvider())
-      DispatchContextRestoredEvent(nullptr);
   }
 }
 
