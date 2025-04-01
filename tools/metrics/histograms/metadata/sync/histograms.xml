@@ -141,6 +141,22 @@ chromium-metrics-reviews@google.com.
                last day (wrt recording the metrics)."/>
 </variants>
 
+<histogram name="Sync.AccountMenu.UserActionableError"
+    enum="UserActionableError" expires_after="2025-11-14">
+  <owner>rgod@google.com</owner>
+  <owner>ylahodiuk@google.com</owner>
+  <summary>
+    iOS only.
+
+    Account menu settings page displays an error on top whenever there is any
+    user actionable error.
+
+    Records the type of an error that is visible to the user when they navigate
+    to the account menu settings page or when it appears while the user is on
+    that page.
+  </summary>
+</histogram>
+
 <histogram name="Sync.AndroidExplicitPassphrasePlatformApiResponse"
     enum="AndroidExplicitPassphrasePlatformApiResponse"
     expires_after="2026-03-30">
