@@ -1447,7 +1447,8 @@ protocol::Response InspectorDOMAgent::performSearch(
   *search_id = IdentifiersFactory::CreateIdentifier();
   GCedHeapVector<Member<Node>>* results_it =
       search_results_
-          .insert(*search_id, MakeGarbageCollected<HeapVector<Member<Node>>>())
+          .insert(*search_id,
+                  MakeGarbageCollected<GCedHeapVector<Member<Node>>>())
           .stored_value->value;
 
   for (auto& result : result_collector)
