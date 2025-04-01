@@ -605,23 +605,7 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
     if (!CreateLayer())
       return nullptr;
     SetNeedsUnbufferedInputEvents(true);
-    frame_dispatcher_ = std::make_unique<CanvasResourceDispatcher>(
-        nullptr, GetDocument().GetTaskRunner(TaskType::kInternalDefault),
-        GetPage()
-            ->GetPageScheduler()
-            ->GetAgentGroupScheduler()
-            .CompositorTaskRunner(),
-        surface_layer_bridge_->GetFrameSinkId().client_id(),
-        surface_layer_bridge_->GetFrameSinkId().sink_id(),
-        CanvasResourceDispatcher::kInvalidPlaceholderCanvasId, Size());
-    if (!base::FeatureList::IsEnabled(
-            kLowLatencyCanvasNoBeginFrameKillSwitch)) {
-      // We don't actually need the begin frame signal when in low latency mode,
-      // but we need to subscribe to it or else dispatching frames will not
-      // work.
-      frame_dispatcher_->SetNeedsBeginFrame(IsPageVisible());
-    }
-
+    GetOrCreateResourceDispatcher();
     UseCounter::Count(GetDocument(), WebFeature::kHTMLCanvasElementLowLatency);
   }
 
@@ -1468,9 +1452,25 @@ bool HTMLCanvasElement::ShouldAccelerate2dContext() const {
 }
 
 CanvasResourceDispatcher* HTMLCanvasElement::GetOrCreateResourceDispatcher() {
-  // The HTMLCanvasElement override of this method never needs to 'create'
-  // because the frame_dispatcher is only used in low latency mode, in which
-  // case the dispatcher is created upfront.
+  if (!frame_dispatcher_ && context_ &&
+      context_->CreationAttributes().desynchronized) {
+    frame_dispatcher_ = std::make_unique<CanvasResourceDispatcher>(
+        nullptr, GetDocument().GetTaskRunner(TaskType::kInternalDefault),
+        GetPage()
+            ->GetPageScheduler()
+            ->GetAgentGroupScheduler()
+            .CompositorTaskRunner(),
+        surface_layer_bridge_->GetFrameSinkId().client_id(),
+        surface_layer_bridge_->GetFrameSinkId().sink_id(),
+        CanvasResourceDispatcher::kInvalidPlaceholderCanvasId, Size());
+    if (!base::FeatureList::IsEnabled(
+            kLowLatencyCanvasNoBeginFrameKillSwitch)) {
+      // We don't actually need the begin frame signal when in low latency mode,
+      // but we need to subscribe to it or else dispatching frames will not
+      // work.
+      frame_dispatcher_->SetNeedsBeginFrame(IsPageVisible());
+    }
+  }
   return frame_dispatcher_.get();
 }
 
@@ -1544,10 +1544,6 @@ void HTMLCanvasElement::NotifyGpuContextLost() {
   if (IsRenderingContext2D()) {
     context_->LoseContext(CanvasRenderingContext::kRealLostContext);
   }
-
-  // TODO(juonv): Do we need to do anything about frame_dispatcher_ here?
-  // Desynchronized canvases seem to continue to work after recovering from a
-  // GPU context loss, so maybe the status quo is fine.
 }
 
 void HTMLCanvasElement::Trace(Visitor* visitor) const {

@@ -222,6 +222,7 @@ void CanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   HTMLCanvasElement* const element = canvas();
   if (element != nullptr) [[likely]] {
     element->DiscardResourceProvider();
+    element->DiscardResourceDispatcher();
 
     if (element->IsPageVisible()) {
       dispatch_context_lost_event_timer_.StartOneShot(base::TimeDelta(),
