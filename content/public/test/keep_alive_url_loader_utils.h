@@ -4,10 +4,17 @@
 #ifndef CONTENT_PUBLIC_TEST_KEEP_ALIVE_URL_LOADER_UTILS_H_
 #define CONTENT_PUBLIC_TEST_KEEP_ALIVE_URL_LOADER_UTILS_H_
 
+#include <stdint.h>
+
 #include <memory>
+#include <optional>
+#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/keep_alive_request_tracker.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 
 namespace content {
@@ -75,6 +82,49 @@ class KeepAliveURLLoadersTestObserver {
 
  private:
   std::unique_ptr<KeepAliveURLLoadersTestObserverImpl> impl_;
+};
+
+// `KeepAliveRequestUkmMatcher` provides common matchers and expectations to
+// help make test assertions on fetch keepalive request-related UKM metrics.
+class KeepAliveRequestUkmMatcher {
+ protected:
+  using UkmEvent = ukm::builders::FetchKeepAliveRequest_WithCategory;
+  virtual ukm::TestAutoSetUkmRecorder& ukm_recorder() = 0;
+
+  // Returns the last recorded UKM event.
+  // This assumes that only a single UKM event is recorded.
+  const ukm::mojom::UkmEntry* GetUkmEntry();
+
+  // Verifies no UKM event logged.
+  void ExpectNoUkm();
+
+  // Verifies all the common UKM metrics.
+  //
+  // `keepalive_token` is optional. If not provided, this method will just
+  // assert the existence of Id.Low and Id.High metrics.
+  void ExpectCommonUkm(
+      KeepAliveRequestTracker::RequestType request_type,
+      size_t category_id,
+      size_t num_redirects,
+      bool is_context_detached,
+      KeepAliveRequestTracker::RequestStageType end_stage,
+      std::optional<KeepAliveRequestTracker::RequestStageType> previous_stage =
+          std::nullopt,
+      const std::optional<base::UnguessableToken>& keepalive_token =
+          std::nullopt,
+      std::optional<int64_t> error_code = std::nullopt,
+      std::optional<int64_t> extended_error_code = std::nullopt);
+
+  // Verifies that UKM TimeDelta.* listed in `time_sorted_metric_names` are all
+  // non-null and have their values in the given order. All the other
+  // TimeDelta.* metrics must be null.
+  //
+  // For example, if `time_sorted_metric_names` is
+  // {"TimeDelta.RequestStarted", "TimeDelta.RequestFailed"}, this method will
+  // check that the logged value for "TimeDelta.RequestStarted" <=
+  // "TimeDelta.RequestFailed".
+  void ExpectTimeSortedTimeDeltaUkm(
+      const std::vector<std::string>& time_sorted_metric_names);
 };
 
 }  // namespace content
