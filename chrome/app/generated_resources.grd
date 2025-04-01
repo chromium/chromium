@@ -4736,6 +4736,9 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_TAB_LABEL" desc="Text displayed on an infobar when another (non-current) tab is being shared.">
        Sharing <ph name="TAB_NAME">$1<ex>youtube.com</ex></ph> to <ph name="APP_NAME">$2<ex>meet.google.com</ex></ph>
       </message>
+      <message name="IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_TAB_TO_THIS_TAB_LABEL" desc="Text displayed on an infobar when another (non-current) tab is being shared.">
+       Sharing <ph name="TAB_NAME">$1<ex>youtube.com</ex></ph> to this tab
+      </message>
       <message name="IDS_TAB_SHARING_INFOBAR_SHARE_BUTTON" desc="Text displayed on the button to share current tab.">
        Share this tab instead
       </message>

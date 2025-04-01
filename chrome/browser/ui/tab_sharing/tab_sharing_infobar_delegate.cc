@@ -226,9 +226,7 @@ class TabSharingInfoBarDelegate::CscIndicatorButton
   const base::WeakPtr<content::WebContents> web_contents_;
 };
 
-namespace {
-
-bool IsCapturedTab(TabRole role) {
+bool TabSharingInfoBarDelegate::IsCapturedTab(TabRole role) {
   switch (role) {
     case TabRole::kCapturingTab:
     case TabRole::kOtherTab:
@@ -240,7 +238,17 @@ bool IsCapturedTab(TabRole role) {
   NOTREACHED();
 }
 
-}  // namespace
+bool TabSharingInfoBarDelegate::IsCapturingTab(TabRole role) {
+  switch (role) {
+    case TabRole::kCapturingTab:
+    case TabRole::kSelfCapturingTab:
+      return true;
+    case TabRole::kCapturedTab:
+    case TabRole::kOtherTab:
+      return false;
+  }
+  NOTREACHED();
+}
 
 // static
 infobars::InfoBar* TabSharingInfoBarDelegate::Create(

@@ -8,6 +8,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "media/capture/capture_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/box_layout.h"
@@ -45,9 +46,9 @@ void ActivateWebContents(content::GlobalRenderFrameHostId focus_target_id) {
 }
 
 TabSharingStatusMessageView::MessageInfo GetMessageInfoCastingNoSinkName(
-    bool shared_tab,
+    TabRole role,
     const TabSharingStatusMessageView::EndpointInfo& shared_tab_info) {
-  if (shared_tab) {
+  if (TabSharingInfoBarDelegate::IsCapturedTab(role)) {
     return TabSharingStatusMessageView::MessageInfo(
         IDS_TAB_CASTING_INFOBAR_CASTING_CURRENT_TAB_NO_DEVICE_NAME_LABEL,
         /*endpoint_infos=*/{});
@@ -62,17 +63,17 @@ TabSharingStatusMessageView::MessageInfo GetMessageInfoCastingNoSinkName(
 }
 
 TabSharingStatusMessageView::MessageInfo GetMessageInfoCasting(
-    bool shared_tab,
+    TabRole role,
     const TabSharingStatusMessageView::EndpointInfo& shared_tab_info,
     const std::u16string& sink_name) {
   if (sink_name.empty()) {
-    return GetMessageInfoCastingNoSinkName(shared_tab, shared_tab_info);
+    return GetMessageInfoCastingNoSinkName(role, shared_tab_info);
   }
 
   TabSharingStatusMessageView::EndpointInfo sink_info(
       sink_name, content::GlobalRenderFrameHostId());
 
-  if (shared_tab) {
+  if (TabSharingInfoBarDelegate::IsCapturedTab(role)) {
     return TabSharingStatusMessageView::MessageInfo(
         IDS_TAB_CASTING_INFOBAR_CASTING_CURRENT_TAB_LABEL, {sink_info});
   }
@@ -86,32 +87,27 @@ TabSharingStatusMessageView::MessageInfo GetMessageInfoCasting(
 }
 
 TabSharingStatusMessageView::MessageInfo GetMessageInfoCapturing(
-    bool shared_tab,
+    TabRole role,
     const TabSharingStatusMessageView::EndpointInfo& shared_tab_info,
     const TabSharingStatusMessageView::EndpointInfo& capturer_info) {
-  if (shared_tab) {
+  if (TabSharingInfoBarDelegate::IsCapturedTab(role)) {
     return TabSharingStatusMessageView::MessageInfo(
         IDS_TAB_SHARING_INFOBAR_SHARING_CURRENT_TAB_LABEL, {capturer_info});
   }
-  return !shared_tab_info.text.empty()
-             ? TabSharingStatusMessageView::MessageInfo(
-                   IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_TAB_LABEL,
-                   {shared_tab_info, capturer_info})
-             : TabSharingStatusMessageView::MessageInfo(
-                   IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_UNTITLED_TAB_LABEL,
-                   {capturer_info});
-}
-
-bool IsCapturedTab(TabRole role) {
-  switch (role) {
-    case TabRole::kCapturingTab:
-    case TabRole::kOtherTab:
-      return false;
-    case TabRole::kCapturedTab:
-    case TabRole::kSelfCapturingTab:
-      return true;
+  if (shared_tab_info.text.empty()) {
+    return TabSharingStatusMessageView::MessageInfo(
+        IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_UNTITLED_TAB_LABEL,
+        {capturer_info});
   }
-  NOTREACHED();
+  if (base::FeatureList::IsEnabled(features::kTabCaptureInfobarLinks) &&
+      TabSharingInfoBarDelegate::IsCapturingTab(role)) {
+    return TabSharingStatusMessageView::MessageInfo(
+        IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_TAB_TO_THIS_TAB_LABEL,
+        {shared_tab_info});
+  }
+  return TabSharingStatusMessageView::MessageInfo(
+      IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_TAB_LABEL,
+      {shared_tab_info, capturer_info});
 }
 
 TabSharingStatusMessageView::MessageInfo GetMessageInfo(
@@ -122,12 +118,10 @@ TabSharingStatusMessageView::MessageInfo GetMessageInfo(
     TabSharingInfoBarDelegate::TabShareType capture_type) {
   switch (capture_type) {
     case TabSharingInfoBarDelegate::TabShareType::CAST:
-      return GetMessageInfoCasting(IsCapturedTab(role), shared_tab_info,
-                                   capturer_name);
+      return GetMessageInfoCasting(role, shared_tab_info, capturer_name);
 
     case TabSharingInfoBarDelegate::TabShareType::CAPTURE:
-      return GetMessageInfoCapturing(IsCapturedTab(role), shared_tab_info,
-                                     capturer_info);
+      return GetMessageInfoCapturing(role, shared_tab_info, capturer_info);
   }
   NOTREACHED();
 }
