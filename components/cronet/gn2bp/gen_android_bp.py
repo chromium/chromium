@@ -1248,17 +1248,12 @@ def create_proto_modules(blueprint, gn, target):
   if buildtools_protobuf_src in target.proto_paths:
     cmd += ['--proto_path=%s' % android_protobuf_src]
 
-  # We don't generate any targets for source_set proto modules because
-  # they will be inlined into other modules if required.
-  if target.proto_plugin == 'source_set':
-    return None
-
   sources = {gn_utils.label_to_path(src) for src in target.sources}
   absolute_sources = sorted(
       [f"external/cronet/{IMPORT_CHANNEL}/{src}" for src in sources])
 
   # Descriptor targets only generate a single target.
-  if target.proto_plugin == 'descriptor':
+  if any(output.endswith('.descriptor') for output in target.outputs):
     out = '{}.bin'.format(target_module_name)
 
     cmd += ['--descriptor_set_out=$(out)']
@@ -1308,11 +1303,8 @@ def create_proto_modules(blueprint, gn, target):
   source_module.genrule_srcs.add(':' + source_module.name)
   source_module.genrule_headers.add(header_module.name)
 
-  if target.proto_plugin == 'proto':
-    source_module.genrule_shared_libs.add('libprotobuf-cpp-lite')
-    cmd += [f'--cpp_out=lite=true:$(genDir)/{cpp_out_dir}/']
-  else:
-    raise Exception('Unsupported proto plugin: %s' % target.proto_plugin)
+  source_module.genrule_shared_libs.add('libprotobuf-cpp-lite')
+  cmd += [f'--cpp_out=lite=true:$(genDir)/{cpp_out_dir}/']
 
   cmd += absolute_sources
   source_module.cmd = cmd
