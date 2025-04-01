@@ -170,7 +170,9 @@ def writeCommonArgs(f):
     f.write("dcheck_always_on = true\n")
     f.write("is_chrome_branded = true\n")
     f.write("is_debug = false\n")
-    f.write("is_official_build = true\n")
+    # linux-rel would have this be true, but to save on compile time we disable
+    # it.
+    f.write("is_official_build = false\n")
     f.write("chrome_pgo_phase = 0\n")
     f.write("force_enable_raw_ptr_exclusion = true\n")
 
