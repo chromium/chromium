@@ -1647,16 +1647,6 @@ prefs when the profile is loaded.  -->
   </token>
 </histogram>
 
-<histogram name="Signin.Intercept.HeuristicLatency" units="ms"
-    expires_after="2025-05-11">
-  <owner>ljjlee@google.com</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Records the latency for determining the signin interception heuristic, which
-    runs for each signin interception.
-  </summary>
-</histogram>
-
 <histogram name="Signin.Intercept.HeuristicOutcome"
     enum="SigninInterceptHeuristicOutcome" expires_after="2025-09-14">
   <owner>droger@chromium.org</owner>
