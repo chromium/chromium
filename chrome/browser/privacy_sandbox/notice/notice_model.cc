@@ -56,7 +56,8 @@ bool NoticeApi::IsFulfilled() {
 }
 
 // Notice class definitions.
-Notice::Notice(NoticeId notice_id) : notice_id_(notice_id) {}
+Notice::Notice(NoticeId notice_id, const base::Feature* feature)
+    : notice_id_(notice_id), feature_(feature) {}
 Notice::Notice(const Notice& other) = default;
 Notice::~Notice() = default;
 
@@ -66,11 +67,6 @@ const std::vector<raw_ptr<NoticeApi>>& Notice::GetTargetApis() {
 
 const std::vector<raw_ptr<NoticeApi>>& Notice::GetPreReqApis() {
   return pre_req_apis_;
-}
-
-Notice* Notice::SetFeature(const base::Feature* feature) {
-  feature_ = feature;
-  return this;
 }
 
 Notice* Notice::SetPreReqApis(const std::vector<NoticeApi*>& apis) {
@@ -148,7 +144,8 @@ const std::set<NoticeEvent>& Notice::DisablementFulfillEvents() {
 }
 
 // Consent class definitions.
-Consent::Consent(NoticeId notice_id) : Notice(notice_id) {}
+Consent::Consent(NoticeId notice_id, const base::Feature* feature)
+    : Notice(notice_id, feature) {}
 
 NoticeType Consent::GetNoticeType() {
   return NoticeType::kConsent;

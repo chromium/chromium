@@ -38,7 +38,7 @@ using NoticeId = std::pair<notice::mojom::PrivacySandboxNotice, SurfaceType>;
 class Notice {
   // TODO(crbug.com/392612108): Include view group information.
  public:
-  explicit Notice(NoticeId notice_id);
+  explicit Notice(NoticeId notice_id, const base::Feature*);
   Notice(const Notice& other);
   virtual ~Notice();
 
@@ -46,7 +46,6 @@ class Notice {
   // notice.
   Notice* SetTargetApis(const std::vector<NoticeApi*>& apis);
   Notice* SetPreReqApis(const std::vector<NoticeApi*>& apis);
-  Notice* SetFeature(const base::Feature* feature);
 
   bool WasFulfilled();
 
@@ -85,7 +84,7 @@ class Notice {
 
 class Consent : public Notice {
  public:
-  explicit Consent(NoticeId notice_id);
+  explicit Consent(NoticeId notice_id, const base::Feature* feature);
   NoticeType GetNoticeType() override;
 
  private:
@@ -141,8 +140,9 @@ class NoticeCatalog {
   // classes need access to the template implementation source.
   // Registers a new notice.
   template <typename T>
-  Notice* RegisterAndRetrieveNewNotice(NoticeId notice_id) {
-    notices_.emplace(notice_id, std::make_unique<T>(T(notice_id)));
+  Notice* RegisterAndRetrieveNewNotice(NoticeId notice_id,
+                                       const base::Feature* feature) {
+    notices_.emplace(notice_id, std::make_unique<T>(T(notice_id, feature)));
     return notices_[notice_id].get();
   }
 
@@ -153,9 +153,8 @@ class NoticeCatalog {
       std::vector<std::pair<NoticeId, const base::Feature*>>&& notice_ids,
       std::vector<NoticeApi*>&& target_apis,
       std::vector<NoticeApi*>&& pre_req_apis = {}) {
-    for (auto [notice_id, feature] : notice_ids) {
-      RegisterAndRetrieveNewNotice<T>(notice_id)
-          ->SetFeature(feature)
+    for (auto notice_id : notice_ids) {
+      RegisterAndRetrieveNewNotice<T>(notice_id.first, notice_id.second)
           ->SetTargetApis(target_apis)
           ->SetPreReqApis(pre_req_apis);
     }
