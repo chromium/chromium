@@ -20,9 +20,6 @@ class String;
 
 namespace blink {
 
-struct LogicalOffset;
-struct PhysicalSize;
-
 // PhysicalOffset is the position of a rect (typically a fragment) relative to
 // its parent rect in the physical coordinate system.
 // For more information about physical and logical coordinate systems, see:
@@ -44,14 +41,6 @@ struct CORE_EXPORT PhysicalFixedOffset {
 
   ValueType left;
   ValueType top;
-
-  // Converts a physical offset to a logical offset. See:
-  // https://drafts.csswg.org/css-writing-modes-3/#logical-to-physical
-  // @param outer_size the size of the rect (typically a fragment).
-  // @param inner_size the size of the inner rect (typically a child fragment).
-  LogicalOffset ConvertToLogical(WritingDirectionMode writing_direction,
-                                 PhysicalSize outer_size,
-                                 PhysicalSize inner_size) const;
 
   constexpr bool IsZero() const { return !left && !top; }
   constexpr bool HasFraction() const {

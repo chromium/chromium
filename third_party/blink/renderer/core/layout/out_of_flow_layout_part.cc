@@ -693,8 +693,8 @@ OutOfFlowLayoutPart::ApplyPositionAreaOffsets(
                      insets.inline_start);
 
   const LogicalOffset logical_shift =
-      default_anchor_scroll_shift.ConvertToLogical(
-          container_info.writing_direction, PhysicalSize(), PhysicalSize());
+      WritingModeConverter(container_info.writing_direction, PhysicalSize())
+          .ToLogical(default_anchor_scroll_shift, PhysicalSize());
 
   const LogicalBoxSides behaves_as_auto =
       offsets.behaves_as_auto.ToLogical(container_info.writing_direction);
@@ -1043,8 +1043,10 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
     // Step 1 - determine the start_offset.
     const PhysicalRect& start_rect =
         block_info.value->start_fragment_union_rect;
-    LogicalOffset start_offset = start_rect.offset.ConvertToLogical(
-        container_writing_direction, container_builder_size, start_rect.size);
+    const WritingModeConverter container_converter{container_writing_direction,
+                                                   container_builder_size};
+    LogicalOffset start_offset =
+        container_converter.ToLogical(start_rect.offset, start_rect.size);
 
     // Make sure we add the inline borders, we don't need to do this in the
     // inline direction if the blocks are in opposite directions.
@@ -1054,8 +1056,8 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
 
     // Step 2 - determine the end_offset.
     const PhysicalRect& end_rect = block_info.value->end_fragment_union_rect;
-    LogicalOffset end_offset = end_rect.offset.ConvertToLogical(
-        container_writing_direction, container_builder_size, end_rect.size);
+    LogicalOffset end_offset =
+        container_converter.ToLogical(end_rect.offset, end_rect.size);
 
     // Add in the size of the fragment to get the logical end of the fragment.
     end_offset += end_rect.size.ConvertToLogical(
@@ -1088,12 +1090,13 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
       // writing mode of the builder into account.
       PhysicalSize physical_size =
           ToPhysicalSize(inline_cb_size, GetConstraintSpace().GetWritingMode());
+      const PhysicalOffset start_physical_offset =
+          start_offset.ConvertToPhysical(container_writing_direction,
+                                         container_builder_size, physical_size);
       start_offset =
-          start_offset
-              .ConvertToPhysical(container_writing_direction,
-                                 container_builder_size, physical_size)
-              .ConvertToLogical(GetConstraintSpace().GetWritingDirection(),
-                                container_builder_size, physical_size);
+          WritingModeConverter(GetConstraintSpace().GetWritingDirection(),
+                               container_builder_size)
+              .ToLogical(start_physical_offset, physical_size);
     }
 
     // Subtract out the inline relative offset, if set, so that it can be

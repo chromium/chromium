@@ -4,22 +4,9 @@
 
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 
-#include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
-#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
-#include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
-
-template <typename ValueType>
-LogicalOffset PhysicalFixedOffset<ValueType>::ConvertToLogical(
-    WritingDirectionMode writing_direction,
-    PhysicalSize outer_size,
-    PhysicalSize inner_size) const {
-  return WritingModeConverter(writing_direction, outer_size)
-      .ToLogical(*this, inner_size);
-}
 
 template <typename ValueType>
 String PhysicalFixedOffset<ValueType>::ToString() const {
