@@ -1026,18 +1026,6 @@ class MathFunctionParser {
     return result;
   }
 
-  // TODO: Remove this method once ConsumeNumberRaw_DO_NOT_USE is removed.
-  bool ConsumeNumberRaw(double& result) {
-    if (!calc_value_ || calc_value_->Category() != kCalcNumber ||
-        !calc_value_->ExpressionNode()->IsNumericLiteral()) {
-      return false;
-    }
-    DCHECK(!has_consumed_);  // Cannot consume twice.
-    has_consumed_ = true;
-    result = calc_value_->GetDoubleValue();
-    return true;
-  }
-
  private:
   bool has_consumed_ = false;
   CSSParserTokenStream* stream_;
@@ -1145,18 +1133,6 @@ CSSPrimitiveValue* ConsumeIntegerOrNumberCalc(
 CSSPrimitiveValue* ConsumePositiveInteger(CSSParserTokenStream& stream,
                                           const CSSParserContext& context) {
   return ConsumeInteger(stream, context, 1);
-}
-
-bool ConsumeNumberRaw_DO_NOT_USE(CSSParserTokenStream& stream,
-                                 const CSSParserContext& context,
-                                 double& result) {
-  if (stream.Peek().GetType() == kNumberToken) {
-    result = stream.ConsumeIncludingWhitespace().NumericValue();
-    return true;
-  }
-  MathFunctionParser math_parser(stream, context,
-                                 CSSPrimitiveValue::ValueRange::kAll);
-  return math_parser.ConsumeNumberRaw(result);
 }
 
 CSSPrimitiveValue* ConsumeNumber(CSSParserTokenStream& stream,
