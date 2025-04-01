@@ -153,8 +153,9 @@ public interface TabGroupModelFilterObserver {
      *
      * @param rootId The current rootId of the tab group.
      * @param isCollapsed Whether or not the tab group is now collapsed.
+     * @param animate Whether the collapse or expand should be animated.
      */
-    default void didChangeTabGroupCollapsed(int rootId, boolean isCollapsed) {}
+    default void didChangeTabGroupCollapsed(int rootId, boolean isCollapsed, boolean animate) {}
 
     /**
      * When a tab group's root id needs to change because the tab whose id was previously being used

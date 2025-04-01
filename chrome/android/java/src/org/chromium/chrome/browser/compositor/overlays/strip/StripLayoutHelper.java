@@ -291,7 +291,8 @@ public class StripLayoutHelper
                 }
 
                 @Override
-                public void didChangeTabGroupCollapsed(int rootId, boolean isCollapsed) {
+                public void didChangeTabGroupCollapsed(
+                        int rootId, boolean isCollapsed, boolean animate) {
                     final StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
                     if (groupTitle == null) return;
 
@@ -299,7 +300,7 @@ public class StripLayoutHelper
                         groupTitle.setNotificationBubbleShown(false);
                         updateGroupTextAndSharedState(rootId);
                     }
-                    updateTabGroupCollapsed(groupTitle, isCollapsed, true);
+                    updateTabGroupCollapsed(groupTitle, isCollapsed, animate);
                 }
 
                 @Override

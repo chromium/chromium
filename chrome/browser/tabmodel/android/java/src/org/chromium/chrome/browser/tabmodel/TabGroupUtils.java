@@ -109,7 +109,7 @@ public class TabGroupUtils {
 
         // 4. Apply the tab group attributes (color, collapsed state, and title).
         tabGroupModelFilter.setTabGroupColor(rootId, tabGroupColor);
-        tabGroupModelFilter.setTabGroupCollapsed(rootId, tabGroupCollapsed);
+        tabGroupModelFilter.setTabGroupCollapsed(rootId, tabGroupCollapsed, /* animate= */ false);
         tabGroupModelFilter.setTabGroupTitle(rootId, tabGroupTitle);
     }
 }

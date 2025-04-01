@@ -2432,14 +2432,25 @@ public class TabGroupModelFilterImplUnitTest {
     public void testSetTabGroupCollapsed() {
         mTabGroupModelFilter.setTabGroupCollapsed(TAB2_ROOT_ID, /* isCollapsed= */ true);
         verify(mTabGroupModelFilterObserver)
-                .didChangeTabGroupCollapsed(TAB2_ROOT_ID, /* isCollapsed= */ true);
+                .didChangeTabGroupCollapsed(
+                        TAB2_ROOT_ID, /* isCollapsed= */ true, /* animate= */ true);
+    }
+
+    @Test
+    public void testSetTabGroupCollapsed_NotAnimated() {
+        mTabGroupModelFilter.setTabGroupCollapsed(
+                TAB2_ROOT_ID, /* isCollapsed= */ true, /* animate= */ false);
+        verify(mTabGroupModelFilterObserver)
+                .didChangeTabGroupCollapsed(
+                        TAB2_ROOT_ID, /* isCollapsed= */ true, /* animate= */ false);
     }
 
     @Test
     public void testDeleteTabGroupCollapsed() {
         mTabGroupModelFilter.deleteTabGroupCollapsed(TAB2_ROOT_ID);
         verify(mTabGroupModelFilterObserver)
-                .didChangeTabGroupCollapsed(TAB2_ROOT_ID, /* isCollapsed= */ false);
+                .didChangeTabGroupCollapsed(
+                        TAB2_ROOT_ID, /* isCollapsed= */ false, /* animate= */ false);
     }
 
     @Test

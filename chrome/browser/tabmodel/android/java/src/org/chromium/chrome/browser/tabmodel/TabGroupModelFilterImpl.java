@@ -1437,18 +1437,24 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public void setTabGroupCollapsed(int rootId, boolean isCollapsed) {
+    public void setTabGroupCollapsed(int rootId, boolean isCollapsed, boolean animate) {
         TabGroupCollapsedUtils.storeTabGroupCollapsed(rootId, isCollapsed);
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            observer.didChangeTabGroupCollapsed(rootId, isCollapsed);
+            observer.didChangeTabGroupCollapsed(rootId, isCollapsed, animate);
         }
+    }
+
+    @Override
+    public void setTabGroupCollapsed(int rootId, boolean isCollapsed) {
+        setTabGroupCollapsed(rootId, isCollapsed, /* animate= */ true);
     }
 
     @Override
     public void deleteTabGroupCollapsed(int rootId) {
         TabGroupCollapsedUtils.deleteTabGroupCollapsed(rootId);
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            observer.didChangeTabGroupCollapsed(rootId, false);
+            observer.didChangeTabGroupCollapsed(
+                    rootId, /* isCollapsed= */ false, /* animate= */ false);
         }
     }
 

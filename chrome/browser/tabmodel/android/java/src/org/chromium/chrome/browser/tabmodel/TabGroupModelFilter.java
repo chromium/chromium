@@ -281,6 +281,9 @@ public interface TabGroupModelFilter extends SupportsTabModelObserver {
     /** Returns whether the tab group is expanded or collapsed. */
     boolean getTabGroupCollapsed(@TabId int rootId);
 
+    /** Sets whether the tab group is expanded or collapsed, with optional animation. */
+    void setTabGroupCollapsed(@TabId int rootId, boolean isCollapsed, boolean animate);
+
     /** Sets whether the tab group is expanded or collapsed. */
     void setTabGroupCollapsed(@TabId int rootId, boolean isCollapsed);
 
