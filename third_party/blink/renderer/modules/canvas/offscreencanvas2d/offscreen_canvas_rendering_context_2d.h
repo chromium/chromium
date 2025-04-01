@@ -149,7 +149,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
                    int x,
                    int y) override;
   void DispatchContextLostEvent(TimerBase*) override;
-  void TryRestoreContextEvent(TimerBase*) override;
 
   bool ResolveFont(const String& new_font) override;
 

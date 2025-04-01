@@ -87,7 +87,6 @@ class ImageDataSettings;
 class MemoryManagedPaintRecorder;
 class Path2D;
 class SVGResource;
-class TimerBase;
 enum class FlushReason;
 enum class PredefinedColorSpace;
 
@@ -232,7 +231,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
                    size_t row_bytes,
                    int x,
                    int y) override;
-  void TryRestoreContextEvent(TimerBase*) override;
 
   bool WillSetFont() const final;
   bool CurrentFontResolvedAndUpToDate() const final;

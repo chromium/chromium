@@ -256,11 +256,12 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
 
   virtual void DispatchContextLostEvent(TimerBase*);
   virtual void DispatchContextRestoredEvent(TimerBase*);
-  virtual void TryRestoreContextEvent(TimerBase*) {}
+  virtual void TryRestoreContextEvent(TimerBase*);
 
   // `CanvasRenderingContext2D` and `OffscreenCanvasRenderingContext2D` do not
   // create resource providers the same way. Thus, `BaseRenderingContext2D`
-  // needs a dedicated function to create the provider the right way.
+  // needs a dedicated function to create the provider the right way. Returns
+  // `nullptr` while the context is lost.
   // TODO(crbug.com/346766781): Remove once HTML and Offscreen provider creation
   // are unified.
   virtual CanvasResourceProvider* GetOrCreateCanvas2DResourceProvider() = 0;

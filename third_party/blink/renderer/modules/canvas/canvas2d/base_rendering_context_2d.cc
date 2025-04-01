@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_deferred_paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/flush_reason.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -273,6 +274,48 @@ void BaseRenderingContext2D::DispatchContextRestoredEvent(TimerBase*) {
   host->HostDispatchEvent(event);
   UseCounter::Count(GetTopExecutionContext(),
                     WebFeature::kCanvasRenderingContext2DContextRestoredEvent);
+}
+
+void BaseRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
+  if (GetCanvasRenderingContextHost() == nullptr) [[unlikely]] {
+    // The host was disposed while this callback was pending.
+    try_restore_context_event_timer_.Stop();
+    return;
+  }
+
+  if (context_lost_mode_ == CanvasRenderingContext::kNotLostContext) {
+    // Canvas was already restored (possibly thanks to a resize), so stop
+    // trying.
+    try_restore_context_event_timer_.Stop();
+    return;
+  }
+
+  DCHECK(context_lost_mode_ !=
+         CanvasRenderingContext::kWebGLLoseContextLostContext);
+
+  if (context_lost_mode_ == CanvasRenderingContext::kRealLostContext) {
+    if (SharedGpuContext::IsGpuCompositingEnabled()) {
+      if (!SharedGpuContext::SharedImageInterfaceProvider()) {
+        return;
+      }
+    } else {
+      if (!SharedGpuContext::ContextProviderWrapper()) {
+        return;
+      }
+    }
+  }
+
+  RestoreGuard context_is_being_restored(*this);
+  if (GetOrCreateCanvas2DResourceProvider()) {
+    try_restore_context_event_timer_.Stop();
+    DispatchContextRestoredEvent(nullptr);
+    return;
+  }
+
+  // Retry up to `kMaxTryRestoreContextAttempts` times before giving up.
+  if (++try_restore_context_attempt_count_ > kMaxTryRestoreContextAttempts) {
+    try_restore_context_event_timer_.Stop();
+  }
 }
 
 ImageData* BaseRenderingContext2D::createImageData(

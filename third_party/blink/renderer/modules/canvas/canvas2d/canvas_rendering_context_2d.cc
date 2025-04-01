@@ -97,7 +97,6 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_context_rate_limiter.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
@@ -256,48 +255,6 @@ void CanvasRenderingContext2D::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   BaseRenderingContext2D::Trace(visitor);
   SVGResourceClient::Trace(visitor);
-}
-
-void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
-  CanvasRenderingContextHost* host = Host();
-  if (host == nullptr) [[unlikely]] {
-    // The host was disposed while this callback was pending.
-    try_restore_context_event_timer_.Stop();
-    return;
-  }
-
-  if (context_lost_mode_ == kNotLostContext) {
-    // Canvas was already restored (possibly thanks to a resize), so stop
-    // trying.
-    try_restore_context_event_timer_.Stop();
-    return;
-  }
-
-  DCHECK(context_lost_mode_ != kWebGLLoseContextLostContext);
-
-  if (context_lost_mode_ == kRealLostContext) {
-    if (SharedGpuContext::IsGpuCompositingEnabled()) {
-      if (!SharedGpuContext::SharedImageInterfaceProvider()) {
-        return;
-      }
-    } else {
-      if (!SharedGpuContext::ContextProviderWrapper()) {
-        return;
-      }
-    }
-  }
-
-  RestoreGuard context_is_being_restored(*this);
-  if (host->GetOrCreateResourceProviderWithCurrentRasterModeHint()) {
-    try_restore_context_event_timer_.Stop();
-    DispatchContextRestoredEvent(nullptr);
-    return;
-  }
-
-  // Retry up to `kMaxTryRestoreContextAttempts` times before giving up.
-  if (++try_restore_context_attempt_count_ > kMaxTryRestoreContextAttempts) {
-    try_restore_context_event_timer_.Stop();
-  }
 }
 
 void CanvasRenderingContext2D::WillDrawImage(CanvasImageSource* source) const {

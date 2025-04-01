@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -405,49 +404,6 @@ void OffscreenCanvasRenderingContext2D::DispatchContextLostEvent(
     TimerBase* time) {
   ResetInternal();
   BaseRenderingContext2D::DispatchContextLostEvent(time);
-}
-
-void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
-    TimerBase* timer) {
-  CanvasRenderingContextHost* host = Host();
-  if (host == nullptr) [[unlikely]] {
-    // The host was disposed while this callback was pending.
-    try_restore_context_event_timer_.Stop();
-    return;
-  }
-
-  if (context_lost_mode_ == kNotLostContext) {
-    // Canvas was already restored (possibly thanks to a resize), so stop
-    // trying.
-    try_restore_context_event_timer_.Stop();
-    return;
-  }
-
-  DCHECK(context_lost_mode_ != kWebGLLoseContextLostContext);
-
-  if (context_lost_mode_ == kRealLostContext) {
-    if (SharedGpuContext::IsGpuCompositingEnabled()) {
-      if (!SharedGpuContext::SharedImageInterfaceProvider()) {
-        return;
-      }
-    } else {
-      if (!SharedGpuContext::ContextProviderWrapper()) {
-        return;
-      }
-    }
-  }
-
-  RestoreGuard context_is_being_restored(*this);
-  if (GetOrCreateCanvasResourceProvider()) {
-    try_restore_context_event_timer_.Stop();
-    DispatchContextRestoredEvent(nullptr);
-    return;
-  }
-
-  // Retry up to `kMaxTryRestoreContextAttempts` times before giving up.
-  if (++try_restore_context_attempt_count_ > kMaxTryRestoreContextAttempts) {
-    try_restore_context_event_timer_.Stop();
-  }
 }
 
 std::optional<cc::PaintRecord> OffscreenCanvasRenderingContext2D::FlushCanvas(
