@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/ozone/platform/wayland/host/xdg_toplevel_wrapper_impl.h"
+#include "ui/ozone/platform/wayland/host/xdg_toplevel.h"
 
 #include <xdg-decoration-unstable-v1-client-protocol.h>
+#include <xdg-shell-client-protocol.h>
 #include <xdg-toplevel-icon-v1-client-protocol.h>
 
 #include <optional>
 
 #include "base/bit_cast.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,8 +21,6 @@
 #include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
-#include "ui/ozone/platform/wayland/host/shell_surface_wrapper.h"
-#include "ui/ozone/platform/wayland/host/shell_toplevel_wrapper.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
@@ -29,7 +29,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_shm_buffer.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
-#include "ui/ozone/platform/wayland/host/xdg_surface_wrapper_impl.h"
+#include "ui/ozone/platform/wayland/host/xdg_surface.h"
 
 namespace ui {
 
@@ -38,22 +38,22 @@ namespace {
 static_assert(sizeof(uint32_t) == sizeof(float),
               "Sizes much match for reinterpret cast to be meaningful");
 
-XDGToplevelWrapperImpl::DecorationMode ToDecorationMode(uint32_t mode) {
+XdgToplevel::DecorationMode ToDecorationMode(uint32_t mode) {
   switch (mode) {
     case ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE:
-      return XDGToplevelWrapperImpl::DecorationMode::kClientSide;
+      return XdgToplevel::DecorationMode::kClientSide;
     case ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE:
-      return XDGToplevelWrapperImpl::DecorationMode::kServerSide;
+      return XdgToplevel::DecorationMode::kServerSide;
     default:
       NOTREACHED();
   }
 }
 
-uint32_t ToInt32(XDGToplevelWrapperImpl::DecorationMode mode) {
+uint32_t ToInt32(XdgToplevel::DecorationMode mode) {
   switch (mode) {
-    case XDGToplevelWrapperImpl::DecorationMode::kClientSide:
+    case XdgToplevel::DecorationMode::kClientSide:
       return ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE;
-    case XDGToplevelWrapperImpl::DecorationMode::kServerSide:
+    case XdgToplevel::DecorationMode::kServerSide:
       return ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE;
     default:
       NOTREACHED();
@@ -67,35 +67,43 @@ std::optional<wl::Serial> GetSerialForMoveResize(
                                                  wl::SerialType::kKeyPress});
 }
 
+bool CheckIfWlArrayHasValue(struct wl_array* wl_array, uint32_t value) {
+  // wl_array_for_each has a bug in upstream. It tries to assign void* to
+  // uint32_t *, which is not allowed in C++. Explicit cast should be
+  // performed. In other words, one just cannot assign void * to other pointer
+  // type implicitly in C++ as in C. We can't modify wayland-util.h, because
+  // it is fetched with gclient sync. Thus, use own loop.
+
+  // SAFETY: Wayland ensures that `wl_array->data` and `wl_array->size`
+  // correspond to a valid buffer. The contents are additionally
+  // guaranteed to be sufficiently aligned for `uint32_t` because
+  // `wl_array` contents are always allocated with `malloc`.
+  auto span =
+      UNSAFE_BUFFERS(base::span(reinterpret_cast<uint32_t*>(wl_array->data),
+                                wl_array->size / sizeof(uint32_t)));
+  return base::Contains(span, value);
+}
+
 }  // namespace
 
-XDGToplevelWrapperImpl::XDGToplevelWrapperImpl(
-    std::unique_ptr<XDGSurfaceWrapperImpl> surface,
-    WaylandWindow* wayland_window,
-    WaylandConnection* connection)
-    : xdg_surface_wrapper_(std::move(surface)),
-      wayland_window_(wayland_window),
-      connection_(connection),
-      decoration_mode_(DecorationMode::kNone) {}
+XdgToplevel::XdgToplevel(std::unique_ptr<XdgSurface> xdg_surface)
+    : xdg_surface_(std::move(xdg_surface)) {
+  CHECK(xdg_surface_);
+}
 
-XDGToplevelWrapperImpl::~XDGToplevelWrapperImpl() = default;
+XdgToplevel::~XdgToplevel() = default;
 
-bool XDGToplevelWrapperImpl::Initialize() {
-  if (!connection_->shell()) {
-    NOTREACHED() << "Wrong shell protocol";
-  }
-
-  if (!xdg_surface_wrapper_) {
+bool XdgToplevel::Initialize() {
+  if (!xdg_surface_) {
     return false;
   }
 
-  xdg_toplevel_.reset(
-      xdg_surface_get_toplevel(xdg_surface_wrapper_->xdg_surface()));
+  xdg_toplevel_.reset(xdg_surface_get_toplevel(xdg_surface()));
   if (!xdg_toplevel_) {
     LOG(ERROR) << "Failed to create xdg_toplevel";
     return false;
   }
-  connection_->window_manager()->NotifyWindowRoleAssigned(wayland_window_);
+  connection()->window_manager()->NotifyWindowRoleAssigned(window());
 
   static constexpr xdg_toplevel_listener kXdgToplevelListener = {
       .configure = &OnToplevelConfigure,
@@ -112,34 +120,34 @@ bool XDGToplevelWrapperImpl::Initialize() {
   return true;
 }
 
-void XDGToplevelWrapperImpl::SetMaximized() {
+void XdgToplevel::SetMaximized() {
   DCHECK(xdg_toplevel_);
   xdg_toplevel_set_maximized(xdg_toplevel_.get());
 }
 
-void XDGToplevelWrapperImpl::UnSetMaximized() {
+void XdgToplevel::UnSetMaximized() {
   DCHECK(xdg_toplevel_);
   xdg_toplevel_unset_maximized(xdg_toplevel_.get());
 }
 
-void XDGToplevelWrapperImpl::SetFullscreen(WaylandOutput* wayland_output) {
+void XdgToplevel::SetFullscreen(WaylandOutput* wayland_output) {
   DCHECK(xdg_toplevel_);
   xdg_toplevel_set_fullscreen(
       xdg_toplevel_.get(),
       wayland_output ? wayland_output->get_output() : nullptr);
 }
 
-void XDGToplevelWrapperImpl::UnSetFullscreen() {
+void XdgToplevel::UnSetFullscreen() {
   DCHECK(xdg_toplevel_);
   xdg_toplevel_unset_fullscreen(xdg_toplevel_.get());
 }
 
-void XDGToplevelWrapperImpl::SetMinimized() {
+void XdgToplevel::SetMinimized() {
   DCHECK(xdg_toplevel_);
   xdg_toplevel_set_minimized(xdg_toplevel_.get());
 }
 
-void XDGToplevelWrapperImpl::SurfaceMove(WaylandConnection* connection) {
+void XdgToplevel::SurfaceMove(WaylandConnection* connection) {
   DCHECK(xdg_toplevel_);
   if (auto serial = GetSerialForMoveResize(connection)) {
     xdg_toplevel_move(xdg_toplevel_.get(), connection->seat()->wl_object(),
@@ -147,8 +155,8 @@ void XDGToplevelWrapperImpl::SurfaceMove(WaylandConnection* connection) {
   }
 }
 
-void XDGToplevelWrapperImpl::SurfaceResize(WaylandConnection* connection,
-                                           uint32_t hittest) {
+void XdgToplevel::SurfaceResize(WaylandConnection* connection,
+                                uint32_t hittest) {
   DCHECK(xdg_toplevel_);
   if (auto serial = GetSerialForMoveResize(connection)) {
     xdg_toplevel_resize(xdg_toplevel_.get(), connection->seat()->wl_object(),
@@ -156,7 +164,7 @@ void XDGToplevelWrapperImpl::SurfaceResize(WaylandConnection* connection,
   }
 }
 
-void XDGToplevelWrapperImpl::SetTitle(const std::u16string& title) {
+void XdgToplevel::SetTitle(const std::u16string& title) {
   DCHECK(xdg_toplevel_);
 
   // TODO(crbug.com/40785817): find a better way to handle long titles, or
@@ -176,56 +184,56 @@ void XDGToplevelWrapperImpl::SetTitle(const std::u16string& title) {
   xdg_toplevel_set_title(xdg_toplevel_.get(), short_title.c_str());
 }
 
-void XDGToplevelWrapperImpl::SetWindowGeometry(const gfx::Rect& bounds) {
-  xdg_surface_wrapper_->SetWindowGeometry(bounds);
+void XdgToplevel::SetWindowGeometry(const gfx::Rect& bounds) {
+  xdg_surface_->SetWindowGeometry(bounds);
 }
 
-void XDGToplevelWrapperImpl::SetMinSize(int32_t width, int32_t height) {
+void XdgToplevel::SetMinSize(int32_t width, int32_t height) {
   DCHECK(xdg_toplevel_);
   xdg_toplevel_set_min_size(xdg_toplevel_.get(), width, height);
 }
 
-void XDGToplevelWrapperImpl::SetMaxSize(int32_t width, int32_t height) {
+void XdgToplevel::SetMaxSize(int32_t width, int32_t height) {
   DCHECK(xdg_toplevel_);
   xdg_toplevel_set_max_size(xdg_toplevel_.get(), width, height);
 }
 
-void XDGToplevelWrapperImpl::SetAppId(const std::string& app_id) {
+void XdgToplevel::SetAppId(const std::string& app_id) {
   DCHECK(xdg_toplevel_);
   xdg_toplevel_set_app_id(xdg_toplevel_.get(), app_id.c_str());
 }
 
-void XDGToplevelWrapperImpl::ShowWindowMenu(WaylandConnection* connection,
-                                            const gfx::Point& point) {
+void XdgToplevel::ShowWindowMenu(WaylandConnection* connection,
+                                 const gfx::Point& point) {
   DCHECK(xdg_toplevel_);
   if (auto serial = GetSerialForMoveResize(connection)) {
     xdg_toplevel_show_window_menu(xdg_toplevel_.get(),
-                                  connection_->seat()->wl_object(),
+                                  connection->seat()->wl_object(),
                                   serial->value, point.x(), point.y());
   }
 }
 
-void XDGToplevelWrapperImpl::SetDecoration(DecorationMode decoration) {
+void XdgToplevel::SetDecoration(DecorationMode decoration) {
   SetTopLevelDecorationMode(decoration);
 }
 
-void XDGToplevelWrapperImpl::AckConfigure(uint32_t serial) {
-  DCHECK(xdg_surface_wrapper_);
-  xdg_surface_wrapper_->AckConfigure(serial);
+void XdgToplevel::AckConfigure(uint32_t serial) {
+  DCHECK(xdg_surface_);
+  xdg_surface_->AckConfigure(serial);
 }
 
-bool XDGToplevelWrapperImpl::IsConfigured() {
-  DCHECK(xdg_surface_wrapper_);
-  return xdg_surface_wrapper_->IsConfigured();
+bool XdgToplevel::IsConfigured() {
+  DCHECK(xdg_surface_);
+  return xdg_surface_->IsConfigured();
 }
 
 // static
-void XDGToplevelWrapperImpl::OnToplevelConfigure(void* data,
-                                                 xdg_toplevel* toplevel,
-                                                 int32_t width,
-                                                 int32_t height,
-                                                 wl_array* states) {
-  auto* self = static_cast<XDGToplevelWrapperImpl*>(data);
+void XdgToplevel::OnToplevelConfigure(void* data,
+                                      xdg_toplevel* toplevel,
+                                      int32_t width,
+                                      int32_t height,
+                                      wl_array* states) {
+  auto* self = static_cast<XdgToplevel*>(data);
   DCHECK(self);
 
   WaylandWindow::WindowStates window_states;
@@ -253,44 +261,41 @@ void XDGToplevelWrapperImpl::OnToplevelConfigure(void* data,
             CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_TILED_BOTTOM)};
   }
 
-  self->wayland_window_->HandleToplevelConfigure(width, height, window_states);
+  self->window()->HandleToplevelConfigure(width, height, window_states);
 }
 
 // static
-void XDGToplevelWrapperImpl::OnToplevelClose(void* data,
-                                             xdg_toplevel* toplevel) {
-  auto* self = static_cast<XDGToplevelWrapperImpl*>(data);
+void XdgToplevel::OnToplevelClose(void* data, xdg_toplevel* toplevel) {
+  auto* self = static_cast<XdgToplevel*>(data);
   DCHECK(self);
-  self->wayland_window_->OnCloseRequest();
+  self->window()->OnCloseRequest();
 }
 
 // static
-void XDGToplevelWrapperImpl::OnConfigureBounds(void* data,
-                                               xdg_toplevel* toplevel,
-                                               int32_t width,
-                                               int32_t height) {
+void XdgToplevel::OnConfigureBounds(void* data,
+                                    xdg_toplevel* toplevel,
+                                    int32_t width,
+                                    int32_t height) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
 // static
-void XDGToplevelWrapperImpl::OnWmCapabilities(void* data,
-                                              xdg_toplevel* toplevel,
-                                              wl_array* capabilities) {
+void XdgToplevel::OnWmCapabilities(void* data,
+                                   xdg_toplevel* toplevel,
+                                   wl_array* capabilities) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
 // static
-void XDGToplevelWrapperImpl::OnDecorationConfigure(
-    void* data,
-    zxdg_toplevel_decoration_v1* decoration,
-    uint32_t mode) {
-  auto* self = static_cast<XDGToplevelWrapperImpl*>(data);
+void XdgToplevel::OnDecorationConfigure(void* data,
+                                        zxdg_toplevel_decoration_v1* decoration,
+                                        uint32_t mode) {
+  auto* self = static_cast<XdgToplevel*>(data);
   DCHECK(self);
   self->decoration_mode_ = ToDecorationMode(mode);
 }
 
-void XDGToplevelWrapperImpl::SetTopLevelDecorationMode(
-    DecorationMode requested_mode) {
+void XdgToplevel::SetTopLevelDecorationMode(DecorationMode requested_mode) {
   if (!zxdg_toplevel_decoration_ || requested_mode == decoration_mode_) {
     return;
   }
@@ -299,12 +304,12 @@ void XDGToplevelWrapperImpl::SetTopLevelDecorationMode(
                                        ToInt32(requested_mode));
 }
 
-void XDGToplevelWrapperImpl::InitializeXdgDecoration() {
-  if (connection_->xdg_decoration_manager_v1()) {
+void XdgToplevel::InitializeXdgDecoration() {
+  if (connection()->xdg_decoration_manager_v1()) {
     DCHECK(!zxdg_toplevel_decoration_);
     zxdg_toplevel_decoration_.reset(
         zxdg_decoration_manager_v1_get_toplevel_decoration(
-            connection_->xdg_decoration_manager_v1(), xdg_toplevel_.get()));
+            connection()->xdg_decoration_manager_v1(), xdg_toplevel_.get()));
 
     static constexpr zxdg_toplevel_decoration_v1_listener
         kToplevelDecorationListener = {
@@ -315,10 +320,10 @@ void XDGToplevelWrapperImpl::InitializeXdgDecoration() {
   }
 }
 
-wl::Object<wl_region> XDGToplevelWrapperImpl::CreateAndAddRegion(
+wl::Object<wl_region> XdgToplevel::CreateAndAddRegion(
     const std::vector<gfx::Rect>& shape) {
   wl::Object<wl_region> region(
-      wl_compositor_create_region(connection_->compositor()));
+      wl_compositor_create_region(connection()->compositor()));
 
   for (const auto& rect : shape) {
     wl_region_add(region.get(), rect.x(), rect.y(), rect.width(),
@@ -328,19 +333,14 @@ wl::Object<wl_region> XDGToplevelWrapperImpl::CreateAndAddRegion(
   return region;
 }
 
-XDGSurfaceWrapperImpl* XDGToplevelWrapperImpl::xdg_surface_wrapper() const {
-  DCHECK(xdg_surface_wrapper_.get());
-  return xdg_surface_wrapper_.get();
-}
-
-void XDGToplevelWrapperImpl::SetSystemModal(bool modal) {
+void XdgToplevel::SetSystemModal(bool modal) {
   // TODO(crbug.com/378465003): Linux/Wayland can set a window to be modal via
   // xdg-dialog-v1 protocol. Consider support for that.
   // See https://wayland.app/protocols/xdg-dialog-v1
 }
 
-void XDGToplevelWrapperImpl::SetIcon(const gfx::ImageSkia& icon) {
-  auto* manager = connection_->toplevel_icon_manager_v1();
+void XdgToplevel::SetIcon(const gfx::ImageSkia& icon) {
+  auto* manager = connection()->toplevel_icon_manager_v1();
   if (!manager) {
     return;
   }
@@ -361,7 +361,7 @@ void XDGToplevelWrapperImpl::SetIcon(const gfx::ImageSkia& icon) {
       continue;
     }
 
-    WaylandShmBuffer buffer(connection_->buffer_factory(), image_size);
+    WaylandShmBuffer buffer(connection()->buffer_factory(), image_size);
     if (!buffer.IsValid()) {
       LOG(ERROR) << "Failed to create SHM buffer for icon Bitmap.";
       return;
@@ -375,10 +375,6 @@ void XDGToplevelWrapperImpl::SetIcon(const gfx::ImageSkia& icon) {
   }
   xdg_toplevel_icon_manager_v1_set_icon(manager, xdg_toplevel_.get(), xdg_icon);
   xdg_toplevel_icon_v1_destroy(xdg_icon);
-}
-
-XDGToplevelWrapperImpl* XDGToplevelWrapperImpl::AsXDGToplevelWrapper() {
-  return this;
 }
 
 }  // namespace ui

@@ -21,13 +21,12 @@
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
-#include "ui/ozone/platform/wayland/host/shell_toplevel_wrapper.h"
 #include "ui/ozone/platform/wayland/host/wayland_popup.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
-#include "ui/ozone/platform/wayland/host/xdg_popup_wrapper_impl.h"
-#include "ui/ozone/platform/wayland/host/xdg_surface_wrapper_impl.h"
-#include "ui/ozone/platform/wayland/host/xdg_toplevel_wrapper_impl.h"
+#include "ui/ozone/platform/wayland/host/xdg_popup.h"
+#include "ui/ozone/platform/wayland/host/xdg_surface.h"
+#include "ui/ozone/platform/wayland/host/xdg_toplevel.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ui/base/wayland/wayland_display_util.h"
@@ -146,21 +145,15 @@ void WaylandInputEmulate::EmulatePointerMotion(
 
   auto* wayland_proxy = wl::WaylandProxy::GetInstance();
 
-  xdg_surface* target_surface = nullptr;
+  struct xdg_surface* target_surface = nullptr;
   gfx::Point target_location = mouse_screen_location;
   if (widget) {
     auto* window = wayland_proxy->GetWaylandWindowForAcceleratedWidget(widget);
-    xdg_surface* xdg_surface = nullptr;
+    struct xdg_surface* xdg_surface = nullptr;
     if (auto* toplevel_window = window->AsWaylandToplevelWindow()) {
-      xdg_surface = toplevel_window->shell_toplevel()
-                        ->AsXDGToplevelWrapper()
-                        ->xdg_surface_wrapper()
-                        ->xdg_surface();
+      xdg_surface = toplevel_window->xdg_toplevel()->xdg_surface();
     } else if (auto* popup = window->AsWaylandPopup()) {
-      xdg_surface = popup->shell_popup()
-                        ->AsXDGPopupWrapper()
-                        ->xdg_surface_wrapper()
-                        ->xdg_surface();
+      xdg_surface = popup->xdg_popup()->xdg_surface();
     }
     bool screen_coordinates = false;
     if (force_use_screen_coordinates_once_) {

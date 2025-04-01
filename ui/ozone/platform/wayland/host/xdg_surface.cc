@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/ozone/platform/wayland/host/xdg_surface_wrapper_impl.h"
+#include "ui/ozone/platform/wayland/host/xdg_surface.h"
 
 #include <xdg-shell-client-protocol.h>
 
@@ -12,19 +12,17 @@
 
 namespace ui {
 
-XDGSurfaceWrapperImpl::XDGSurfaceWrapperImpl(WaylandWindow* wayland_window,
-                                             WaylandConnection* connection)
+XdgSurface::XdgSurface(WaylandWindow* wayland_window,
+                       WaylandConnection* connection)
     : wayland_window_(wayland_window), connection_(connection) {}
 
-XDGSurfaceWrapperImpl::~XDGSurfaceWrapperImpl() {
+XdgSurface::~XdgSurface() {
   is_configured_ = false;
   connection_->window_manager()->NotifyWindowConfigured(wayland_window_);
 }
 
-bool XDGSurfaceWrapperImpl::Initialize() {
-  if (!connection_->shell()) {
-    NOTREACHED() << "Wrong shell protocol";
-  }
+bool XdgSurface::Initialize() {
+  CHECK(connection_->shell()) << "No xdg-shell protocol available.";
 
   xdg_surface_.reset(xdg_wm_base_get_xdg_surface(
       connection_->shell(), wayland_window_->root_surface()->surface()));
@@ -42,7 +40,7 @@ bool XDGSurfaceWrapperImpl::Initialize() {
   return true;
 }
 
-void XDGSurfaceWrapperImpl::AckConfigure(uint32_t serial) {
+void XdgSurface::AckConfigure(uint32_t serial) {
   // We must not ack any serial more than once, so check for that here.
   DCHECK_LE(last_acked_serial_, serial);
   if (serial == last_acked_serial_) {
@@ -57,11 +55,11 @@ void XDGSurfaceWrapperImpl::AckConfigure(uint32_t serial) {
   connection_->window_manager()->NotifyWindowConfigured(wayland_window_);
 }
 
-bool XDGSurfaceWrapperImpl::IsConfigured() {
+bool XdgSurface::IsConfigured() {
   return is_configured_;
 }
 
-void XDGSurfaceWrapperImpl::SetWindowGeometry(const gfx::Rect& bounds) {
+void XdgSurface::SetWindowGeometry(const gfx::Rect& bounds) {
   DCHECK(xdg_surface_);
   CHECK(!bounds.IsEmpty()) << "The xdg-shell protocol specification forbids "
                               "empty bounds (zero width or height). bounds="
@@ -70,20 +68,11 @@ void XDGSurfaceWrapperImpl::SetWindowGeometry(const gfx::Rect& bounds) {
                                   bounds.width(), bounds.height());
 }
 
-XDGSurfaceWrapperImpl* XDGSurfaceWrapperImpl::AsXDGSurfaceWrapper() {
-  return this;
-}
-
-struct xdg_surface* XDGSurfaceWrapperImpl::xdg_surface() const {
-  DCHECK(xdg_surface_);
-  return xdg_surface_.get();
-}
-
 // static
-void XDGSurfaceWrapperImpl::OnConfigure(void* data,
-                                        struct xdg_surface* surface,
-                                        uint32_t serial) {
-  auto* self = static_cast<XDGSurfaceWrapperImpl*>(data);
+void XdgSurface::OnConfigure(void* data,
+                             struct xdg_surface* surface,
+                             uint32_t serial) {
+  auto* self = static_cast<XdgSurface*>(data);
   DCHECK(self);
 
   // Calls to HandleSurfaceConfigure() might end up hiding the enclosing
@@ -91,8 +80,9 @@ void XDGSurfaceWrapperImpl::OnConfigure(void* data,
   auto weak_window = self->wayland_window_->AsWeakPtr();
   weak_window->HandleSurfaceConfigure(serial);
 
-  if (!weak_window)
+  if (!weak_window) {
     return;
+  }
 
   weak_window->OnSurfaceConfigureEvent();
 }
