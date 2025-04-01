@@ -278,7 +278,7 @@ class GlicWindowController : public views::WidgetObserver,
 
   void AddAccelerators();
 
-  gfx::Rect GetInitialDetachedBounds();
+  gfx::Rect GetInitialDetachedBounds(Browser* browser);
 
   // Get the default detached bounds relative to browser.
   gfx::Rect GetInitialDetachedBoundsFromBrowser(Browser* browser);
