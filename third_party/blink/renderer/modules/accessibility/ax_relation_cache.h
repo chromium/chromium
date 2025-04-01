@@ -271,7 +271,7 @@ class AXRelationCache {
   // exist in the DOM, and are a descendant of a shadow including ancestor.
   void UpdateAriaOwnsFromAttrAssociatedElementsWithCleanLayout(
       AXObject* owner,
-      const HeapVector<Member<Element>>& attr_associated_elements,
+      const GCedHeapVector<Member<Element>>& attr_associated_elements,
       HeapVector<Member<AXObject>>& owned_children,
       bool force);
 
