@@ -255,6 +255,13 @@ void CanvasRenderingContext2D::Trace(Visitor* visitor) const {
 }
 
 void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
+  CanvasRenderingContextHost* host = Host();
+  if (host == nullptr) [[unlikely]] {
+    // The host was disposed while this callback was pending.
+    try_restore_context_event_timer_.Stop();
+    return;
+  }
+
   if (context_lost_mode_ == kNotLostContext) {
     // Canvas was already restored (possibly thanks to a resize), so stop
     // trying.
@@ -270,7 +277,7 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
   // true, it means context is forced to be lost for testing purpose. Restore
   // the context.
   if (context_lost_mode_ == kSyntheticLostContext) {
-    if (Host()->GetOrCreateResourceProviderWithCurrentRasterModeHint()) {
+    if (host->GetOrCreateResourceProviderWithCurrentRasterModeHint()) {
       try_restore_context_event_timer_.Stop();
       DispatchContextRestoredEvent(nullptr);
       return;
@@ -288,9 +295,7 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
     // After 4 tries, we start the final attempt, allocate a brand new image
     // buffer instead of restoring
     try_restore_context_event_timer_.Stop();
-    if (CanvasRenderingContextHost* host = Host()) [[likely]] {
-      host->DiscardResourceProvider();
-    }
+    host->DiscardResourceProvider();
     if (CanCreateCanvas2dResourceProvider())
       DispatchContextRestoredEvent(nullptr);
   }
