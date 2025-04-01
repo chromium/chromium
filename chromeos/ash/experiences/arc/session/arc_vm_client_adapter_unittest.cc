@@ -2782,20 +2782,7 @@ TEST_F(ArcVmClientAdapterTest, mglruReclaimEnabled) {
   EXPECT_EQ(req.mglru_reclaim_swappiness(), 0);
 }
 
-TEST_F(ArcVmClientAdapterTest, LazyWebViewInitEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(kEnableLazyWebViewInit, true);
-  StartParams start_params(GetPopulatedStartParams());
-
-  StartMiniArcWithParams(true, std::move(start_params));
-
-  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_TRUE(request.enable_web_view_zygote_lazy_init());
-}
-
 TEST_F(ArcVmClientAdapterTest, LazyWebViewInitDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(kEnableLazyWebViewInit, false);
   StartParams start_params(GetPopulatedStartParams());
 
   StartMiniArcWithParams(true, std::move(start_params));

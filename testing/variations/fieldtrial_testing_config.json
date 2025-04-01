@@ -1024,21 +1024,6 @@
             ]
         }
     ],
-    "ArcLazyWebViewInit": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LazyWebViewInit"
-                    ]
-                }
-            ]
-        }
-    ],
     "ArcOnDemandV2_holdback": [
         {
             "platforms": [
