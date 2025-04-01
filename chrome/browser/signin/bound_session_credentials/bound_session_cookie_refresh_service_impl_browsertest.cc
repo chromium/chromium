@@ -864,14 +864,14 @@ IN_PROC_BROWSER_TEST_F(
                                    HasDomainAndPath(kSubdomain, "/")));
 }
 
-#if BUILDFLAG(IS_WIN)
 // Integration test for wsbeta registrations with a disabled feature flag.
 class BoundSessionCookieRefreshServiceImplWsbetaBrowserTest
     : public BoundSessionCookieRefreshServiceImplBrowserTest {
  public:
   BoundSessionCookieRefreshServiceImplWsbetaBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        switches::kEnableBoundSessionCredentials);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kEnableBoundSessionCredentialsWsbetaBypass},
+        /*disabled_features=*/{switches::kEnableBoundSessionCredentials});
   }
 
   void SetUpOnMainThread() override {
@@ -917,4 +917,3 @@ IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplWsbetaBrowserTest,
   // Tests that a session was initialized on startup successfully.
   EXPECT_FALSE(service()->GetBoundSessionThrottlerParams().empty());
 }
-#endif  // BUILDFLAG(IS_WIN)
