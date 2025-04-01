@@ -67,17 +67,13 @@ enum AvailabilityStatus {
     attribute boolean interimResults;
     attribute unsigned long maxAlternatives;
     [RuntimeEnabled=OnDeviceWebSpeechAvailable] attribute SpeechRecognitionMode mode;
-    [RuntimeEnabled=WebSpeechRecognitionContext] attribute SpeechRecognitionContext context;
+    [RuntimeEnabled=WebSpeechRecognitionContext] attribute SpeechRecognitionPhraseList phrases;
 
     // methods to drive the speech interaction
     [RaisesException, Measure] void start();
     [RaisesException, Measure, RuntimeEnabled=MediaStreamTrackWebSpeech] void start(MediaStreamTrack track);
     [ImplementedAs=stopFunction] void stop();
     void abort();
-    [
-        RaisesException,
-        RuntimeEnabled=WebSpeechRecognitionContext
-    ] void updateContext(SpeechRecognitionContext context);
     [
         CallWith=ScriptState,
         RaisesException,

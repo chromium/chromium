@@ -7,8 +7,10 @@
 
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/speech/speech_recognition_phrase.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -17,18 +19,24 @@ class MODULES_EXPORT SpeechRecognitionPhraseList final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static SpeechRecognitionPhraseList* Create();
+  static SpeechRecognitionPhraseList* Create(
+      const HeapVector<Member<SpeechRecognitionPhrase>>& phrases);
 
-  explicit SpeechRecognitionPhraseList() = default;
+  explicit SpeechRecognitionPhraseList(
+      const HeapVector<Member<SpeechRecognitionPhrase>>& phrases);
   ~SpeechRecognitionPhraseList() override = default;
 
   // ScriptWrappable:
   void Trace(Visitor* visitor) const override;
 
   // SpeechRecognitionPhraseList:
-  uint64_t length() const { return phrases_.size(); }
-  SpeechRecognitionPhrase* item(uint64_t index) const;
+  wtf_size_t length() const { return phrases_.size(); }
+  SpeechRecognitionPhrase* item(
+      wtf_size_t index,
+      ExceptionState& exception_state = ASSERT_NO_EXCEPTION) const;
   void addItem(SpeechRecognitionPhrase* item);
+  void removeItem(wtf_size_t index,
+                  ExceptionState& exception_state = ASSERT_NO_EXCEPTION);
 
  private:
   HeapVector<Member<SpeechRecognitionPhrase>> phrases_;
