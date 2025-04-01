@@ -20,4 +20,16 @@ BrowserAction MakeClick(int content_node_id) {
   return action;
 }
 
+BrowserAction MakeHistoryBack() {
+  BrowserAction action;
+  action.add_action_information()->mutable_back();
+  return action;
+}
+
+BrowserAction MakeHistoryForward() {
+  BrowserAction action;
+  action.add_action_information()->mutable_forward();
+  return action;
+}
+
 }  // namespace actor
