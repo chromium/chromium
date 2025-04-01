@@ -139,7 +139,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void SetBrowserAXMode(JNIEnv* env,
                         jboolean needs_full_engine,
                         jboolean form_controls_mode,
-                        jboolean is_screen_reader_running);
+                        jboolean is_screen_reader_running,
+                        jboolean on_screen_mode);
 
   base::android::ScopedJavaLocalRef<jstring> GetSupportedHtmlElementTypes(
       JNIEnv* env);

@@ -807,7 +807,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                             mNativeObj,
                             AccessibilityState.isScreenReaderEnabled(),
                             AccessibilityState.isOnlyPasswordManagersEnabled(),
-                            AccessibilityState.isScreenReaderRunning());
+                            AccessibilityState.isScreenReaderRunning(),
+                            AccessibilityState.getTalkBackEnabledState().second);
 
             // Update the state of enabling/disabling the image descriptions feature. To enable the
             // feature, this instance must be a candidate and a screen reader must be enabled.
@@ -2316,7 +2317,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 long nativeWebContentsAccessibilityAndroid,
                 boolean screenReaderMode,
                 boolean formControlsMode,
-                boolean isScreenReaderRunning);
+                boolean isScreenReaderRunning,
+                boolean onScreenMode);
 
         void disableRendererAccessibility(long nativeWebContentsAccessibilityAndroid);
 

@@ -620,7 +620,8 @@ void WebContentsAccessibilityAndroid::SetBrowserAXMode(
     JNIEnv* env,
     jboolean needs_full_engine,
     jboolean is_form_controls_candidate,
-    jboolean is_screen_reader_running) {
+    jboolean is_screen_reader_running,
+    jboolean on_screen_mode) {
   BrowserAccessibilityStateImpl* accessibility_state =
       BrowserAccessibilityStateImpl::GetInstance();
   auto* accessibility_state_android =
@@ -632,15 +633,24 @@ void WebContentsAccessibilityAndroid::SetBrowserAXMode(
   // Set the AXMode based on currently running services, sent from Java-side
   // code and will fit into one of the below categories:
   // 1. Screen reader -- |ui::kAXModeComplete|.
-  // 2. Performance filtering disallowed -- |ui::kAXModeComplete|.
-  // 2. Only password manager running -- |ui::kAXModeFormControls|
-  // 3. Some accessibility services running that need more information than a
+  //    2. Only Screen reader running -- |ui::kAccessibilityOnScreenMode|.
+  // 3. Performance filtering disallowed -- |ui::kAXModeComplete|.
+  // 4. Only password manager running -- |ui::kAXModeFormControls|
+  // 5. Some accessibility services running that need more information than a
   //       password manager, but not as much as a screenreader -
   //       |ui::kAXModeBasic|
-  if (needs_full_engine) {
+  if (!accessibility_state->IsPerformanceFilteringAllowed()) {
     target_mode = ui::kAXModeComplete;
-  } else if (!accessibility_state->IsPerformanceFilteringAllowed()) {
-    target_mode = ui::kAXModeComplete;
+  } else if (needs_full_engine) {
+    if (features::IsAccessibilityOnScreenAXModeEnabled() && on_screen_mode) {
+      // Add on screen experimental mode.
+      // TODO(accessibility): expand this for other services running, not only
+      // screen reader on its own.
+      CHECK(accessibility_state->IsPerformanceFilteringAllowed());
+      target_mode = ui::kAXModeOnScreen;
+    } else {
+      target_mode = ui::kAXModeComplete;
+    }
   } else if (is_form_controls_candidate) {
     target_mode = ui::kAXModeFormControls;
   } else {
