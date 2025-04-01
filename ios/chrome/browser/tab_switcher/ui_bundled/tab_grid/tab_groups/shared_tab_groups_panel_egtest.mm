@@ -38,6 +38,13 @@ NSString* const kGroupTitle = @"shared group";
 // Adds a shared tab group and sets the user as `owner` or not of the group.
 void AddSharedGroup(BOOL owner) {
   [TabGroupAppInterface prepareFakeSharedTabGroups:1 asOwner:owner];
+  // Sleep for 3 seconds to make sure that the shared group data are correctly
+  // fetched.
+  // This sleep is longer than other `AddSharedGroup:` sleeps because, unlike
+  // other shared group items, the panel group item directly contains its
+  // sharing state. For other items, this state is fetched when long-pressing,
+  // which delays the state check.
+  base::PlatformThread::Sleep(base::Seconds(3));
   [ChromeEarlGreyUI openTabGrid];
   // Wait for the group cell to appear.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:

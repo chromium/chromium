@@ -112,6 +112,9 @@ void ShareGroupAtIndex(unsigned int index) {
 // Adds a shared tab group and sets the user as `owner` or not of the group.
 void AddSharedGroup(BOOL owner) {
   [TabGroupAppInterface prepareFakeSharedTabGroups:1 asOwner:owner];
+  // Sleep for 1 second to make sure that the shared group data are correctly
+  // fetched.
+  base::PlatformThread::Sleep(base::Seconds(1));
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           TabGridCloseButtonForCellAtIndex(0)]
