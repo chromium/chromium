@@ -19,6 +19,7 @@ build_webui("build") {
   css_files = [ "searchbox_shared_style.css" ]
 
   ts_composite = true
+  ts_tsconfig_base = "//tools/typescript/tsconfig_base_polymer_legacy.json"
   ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",
