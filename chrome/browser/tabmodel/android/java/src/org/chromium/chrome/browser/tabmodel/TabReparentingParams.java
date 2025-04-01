@@ -6,40 +6,41 @@ package org.chromium.chrome.browser.tabmodel;
 
 import android.content.ComponentName;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 
 /** Class for handling tab reparenting operations across multiple activities. */
+@NullMarked
 public class TabReparentingParams implements AsyncTabParams {
     private final Tab mTabToReparent;
-    private final Runnable mFinalizeCallback;
+    private final @Nullable Runnable mFinalizeCallback;
 
     /** Basic constructor for {@link TabReparentingParams}. */
-    public TabReparentingParams(Tab tabToReparent, Runnable finalizeCallback) {
+    public TabReparentingParams(Tab tabToReparent, @Nullable Runnable finalizeCallback) {
         mTabToReparent = tabToReparent;
         mFinalizeCallback = finalizeCallback;
     }
 
     @Override
-    public LoadUrlParams getLoadUrlParams() {
+    public @Nullable LoadUrlParams getLoadUrlParams() {
         return null;
     }
 
     @Override
-    public Integer getRequestId() {
+    public @Nullable Integer getRequestId() {
         return null;
     }
 
     @Override
-    public WebContents getWebContents() {
+    public @Nullable WebContents getWebContents() {
         return null;
     }
 
     @Override
-    public ComponentName getComponentName() {
+    public @Nullable ComponentName getComponentName() {
         return null;
     }
 

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabmodel;
 import android.util.SparseArray;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -15,6 +16,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 /** Allows observing registration (e.g. add / remove) events of Tabs from a TabModelSelector. */
+@NullMarked
 public final class TabModelSelectorTabRegistrationObserver {
     private final TabModelSelectorTabModelObserver mTabModelObserver;
     private final SparseArray<Tab> mTabsToClose = new SparseArray<>();
@@ -94,7 +96,7 @@ public final class TabModelSelectorTabRegistrationObserver {
                             TabModel tabModel = tabModels.get(i);
                             TabList comprehensiveTabList = tabModel.getComprehensiveModel();
                             for (int j = 0; j < comprehensiveTabList.getCount(); j++) {
-                                onTabRegistered(comprehensiveTabList.getTabAt(j));
+                                onTabRegistered(comprehensiveTabList.getTabAtChecked(j));
                             }
                         }
                     }

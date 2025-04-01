@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.annotation.NonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,24 +22,25 @@ import java.util.List;
  * TabModel}s. It always owns two {@link TabGroupModelFilter}s, one for normal {@link TabModel} and
  * one for incognito {@link TabModel}.
  */
+@NullMarked
 public class TabGroupModelFilterProvider {
     private final List<TabModelObserver> mPendingTabModelObserver = new ArrayList<>();
-    private final ObservableSupplierImpl<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier =
-            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<@Nullable TabGroupModelFilter>
+            mCurrentTabGroupModelFilterSupplier = new ObservableSupplierImpl<>();
     private final Callback<TabModel> mCurrentTabModelObserver = this::onCurrentTabModelChanged;
 
     private List<TabGroupModelFilterInternal> mTabGroupModelFilterInternalList =
             Collections.emptyList();
-    private TabModelSelector mTabModelSelector;
-    private CallbackController mCallbackController = new CallbackController();
+    private @Nullable TabModelSelector mTabModelSelector;
+    private @Nullable CallbackController mCallbackController = new CallbackController();
 
     /*package*/ TabGroupModelFilterProvider() {}
 
     /*package*/ void init(
-            @NonNull TabGroupModelFilterFactory tabGroupModelFilterFactory,
-            @NonNull TabUngrouperFactory tabUngrouperFactory,
-            @NonNull TabModelSelector tabModelSelector,
-            @NonNull List<TabModelInternal> tabModels) {
+            TabGroupModelFilterFactory tabGroupModelFilterFactory,
+            TabUngrouperFactory tabUngrouperFactory,
+            TabModelSelector tabModelSelector,
+            List<TabModelInternal> tabModels) {
         assert mTabGroupModelFilterInternalList.isEmpty();
         assert tabModels.size() > 0;
 
@@ -62,6 +65,7 @@ public class TabGroupModelFilterProvider {
         }
         mPendingTabModelObserver.clear();
 
+        assumeNonNull(mCallbackController);
         TabModelUtils.runOnTabStateInitialized(
                 mTabModelSelector,
                 mCallbackController.makeCancelable(
@@ -111,7 +115,7 @@ public class TabGroupModelFilterProvider {
      * @return A {@link TabGroupModelFilter}. This returns null, if this called before native
      *     library is initialized.
      */
-    public TabGroupModelFilter getTabGroupModelFilter(boolean isIncognito) {
+    public @Nullable TabGroupModelFilter getTabGroupModelFilter(boolean isIncognito) {
         for (TabGroupModelFilter filter : mTabGroupModelFilterInternalList) {
             if (filter.getTabModel().isIncognito() == isIncognito) {
                 return filter;
@@ -126,12 +130,13 @@ public class TabGroupModelFilterProvider {
      * @return The current {@link TabGroupModelFilter}. This returns null, if this called before
      *     native library is initialized.
      */
-    public TabGroupModelFilter getCurrentTabGroupModelFilter() {
+    public @Nullable TabGroupModelFilter getCurrentTabGroupModelFilter() {
         return mCurrentTabGroupModelFilterSupplier.get();
     }
 
     /** Returns an observable supplier for the current tab model filter. */
-    public ObservableSupplier<TabGroupModelFilter> getCurrentTabGroupModelFilterSupplier() {
+    public ObservableSupplier<@Nullable TabGroupModelFilter>
+            getCurrentTabGroupModelFilterSupplier() {
         return mCurrentTabGroupModelFilterSupplier;
     }
 
