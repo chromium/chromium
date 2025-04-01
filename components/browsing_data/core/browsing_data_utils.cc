@@ -22,13 +22,10 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace browsing_data {
-
-const char kDeleteBrowsingDataDialogHistogram[] =
-    "Privacy.DeleteBrowsingData.Dialog";
-
-// Creates a string like "for a.com, b.com, and 4 more".
-std::u16string CreateDomainExamples(
+namespace {
+// Creates a string like "for a.com, b.com, and 4 more" for the password
+// counter.
+std::u16string CreatePasswordDomainExamples(
     int password_count,
     const std::vector<std::string> domain_examples) {
   DCHECK_GE(password_count,
@@ -53,6 +50,67 @@ std::u16string CreateDomainExamples(
       replacements, nullptr);
   return domains_list;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Constructs the text to be displayed by the history counter from the given
+// `history_result`. The string is based on the unique domains within the
+// deletion range and if there are synced entries within the deletion range.
+std::u16string CreateHistoryCounterString(
+    const browsing_data::HistoryCounter::HistoryResult* history_result) {
+  CHECK(history_result->source()->GetPrefName() ==
+            browsing_data::prefs::kDeleteBrowsingHistoryBasic ||
+        history_result->source()->GetPrefName() ==
+            browsing_data::prefs::kDeleteBrowsingHistory);
+
+  if (!history_result->Finished()) {
+    // The counter is still counting.
+    return l10n_util::GetStringUTF16(IDS_CLEAR_BROWSING_DATA_CALCULATING);
+  }
+
+  browsing_data::BrowsingDataCounter::ResultInt unique_domains_count =
+      history_result->unique_domains_result();
+
+  if (unique_domains_count == 0) {
+    if (history_result->has_synced_visits()) {
+      return l10n_util::GetStringUTF16(IDS_DEL_NO_BROWSING_HISTORY_SYNC_TEXT);
+    }
+    return l10n_util::GetStringUTF16(IDS_DEL_NO_BROWSING_HISTORY_TEXT);
+  }
+  std::u16string last_visited_domain =
+      base::UTF8ToUTF16(history_result->last_visited_domain());
+  CHECK(!last_visited_domain.empty());
+
+  unique_domains_count--;
+  if (unique_domains_count > 0) {
+    std::u16string domain_count_string;
+    if (history_result->has_synced_visits()) {
+      domain_count_string = l10n_util::GetPluralStringFUTF16(
+          IDS_DEL_BROWSING_HISTORY_DOMAIN_COUNT_SYNC_TEXT,
+          unique_domains_count);
+    } else {
+      domain_count_string = l10n_util::GetPluralStringFUTF16(
+          IDS_DEL_BROWSING_HISTORY_DOMAIN_COUNT_TEXT, unique_domains_count);
+    }
+    return l10n_util::GetStringFUTF16(
+        IDS_DEL_BROWSING_HISTORY_COUNTER_MULTIPLE_DOMAINS_TEXT,
+        last_visited_domain, domain_count_string);
+  }
+
+  if (history_result->has_synced_visits()) {
+    return l10n_util::GetStringFUTF16(
+        IDS_DEL_BROWSING_HISTORY_COUNTER_SINGLE_DOMAIN_SYNC_TEXT,
+        last_visited_domain);
+  }
+  return l10n_util::GetStringFUTF16(
+      IDS_DEL_BROWSING_HISTORY_COUNTER_SINGLE_DOMAIN_TEXT, last_visited_domain);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+}  // namespace
+
+namespace browsing_data {
+
+const char kDeleteBrowsingDataDialogHistogram[] =
+    "Privacy.DeleteBrowsingData.Dialog";
 
 base::Time CalculateBeginDeleteTime(TimePeriod time_period) {
   base::TimeDelta diff;
@@ -178,8 +236,8 @@ std::u16string GetCounterTextFromResult(
                   ? IDS_DEL_PASSWORDS_COUNTER_SYNCED
                   : IDS_DEL_PASSWORDS_COUNTER,
               profile_passwords),
-          CreateDomainExamples(profile_passwords,
-                               password_result->domain_examples()),
+          CreatePasswordDomainExamples(profile_passwords,
+                                       password_result->domain_examples()),
           nullptr));
     }
 
@@ -188,8 +246,9 @@ std::u16string GetCounterTextFromResult(
           l10n_util::GetPluralStringFUTF16(
               IDS_DEL_ACCOUNT_PASSWORDS_COUNTER,
               password_result->account_passwords()),
-          CreateDomainExamples(password_result->account_passwords(),
-                               password_result->account_domain_examples()),
+          CreatePasswordDomainExamples(
+              password_result->account_passwords(),
+              password_result->account_domain_examples()),
           nullptr));
     }
 
@@ -228,7 +287,14 @@ std::u16string GetCounterTextFromResult(
     NOTREACHED();
   }
 
+  // TODO(crbug.com/397187800): Migrate to displaying the domains for Desktop
+  // and iOS.
   if (pref_name == prefs::kDeleteBrowsingHistory) {
+#if BUILDFLAG(IS_ANDROID)
+    // History counter.
+    return CreateHistoryCounterString(
+        static_cast<const HistoryCounter::HistoryResult*>(result));
+#else   // !BUILDFLAG(IS_ANDROID)
     // History counter.
     const HistoryCounter::HistoryResult* history_result =
         static_cast<const HistoryCounter::HistoryResult*>(result);
@@ -239,6 +305,7 @@ std::u16string GetCounterTextFromResult(
                      IDS_DEL_BROWSING_HISTORY_COUNTER_SYNCED, local_item_count)
                : l10n_util::GetPluralStringFUTF16(
                      IDS_DEL_BROWSING_HISTORY_COUNTER, local_item_count);
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   if (pref_name == prefs::kDeleteFormData) {
