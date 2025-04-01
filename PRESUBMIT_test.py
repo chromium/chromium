@@ -393,7 +393,7 @@ class CheckAddedDepsHaveTestApprovalsTest(unittest.TestCase):
             '!sandbox',
         ]
         old_specific_include_rules = {
-            'compositor\.*': {
+            r'compositor\.*': {
                 '+cc',
             },
         }
@@ -412,10 +412,10 @@ class CheckAddedDepsHaveTestApprovalsTest(unittest.TestCase):
             '+' + os.path.join('third_party', 'WebKit'),
         ]
         new_specific_include_rules = {
-            'compositor\.*': {
+            r'compositor\.*': {
                 '+cc',
             },
-            'widget\.*': {
+            r'widget\.*': {
                 '+gpu',
             },
         }
