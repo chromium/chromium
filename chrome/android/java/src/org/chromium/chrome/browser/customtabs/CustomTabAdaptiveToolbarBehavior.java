@@ -63,6 +63,11 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
     }
 
     @Override
+    public boolean canShowSettings() {
+        return false;
+    }
+
+    @Override
     public void registerPerSurfaceButtons(
             AdaptiveToolbarButtonController controller, Supplier<Tracker> trackerSupplier) {
         if (ChromeFeatureList.sCctAdaptiveButtonEnableVoice.getValue()) {

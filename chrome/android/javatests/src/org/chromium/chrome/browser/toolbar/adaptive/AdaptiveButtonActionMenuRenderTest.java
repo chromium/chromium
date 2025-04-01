@@ -72,7 +72,7 @@ public class AdaptiveButtonActionMenuRenderTest {
                 () -> {
                     Activity activity = mActivityTestRule.getActivity();
                     AdaptiveButtonActionMenuCoordinator coordinator =
-                            new AdaptiveButtonActionMenuCoordinator();
+                            new AdaptiveButtonActionMenuCoordinator(/* showMenu= */ true);
 
                     coordinator.displayMenu(
                             activity,
