@@ -353,13 +353,10 @@ HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     "sanity/multiple-screen-details.js",
     "--screen-info={label=#1}{600x800 label='#2'}")
 
-// This fails on Windows, see http://crbug.com/401294443.
-#if !BUILDFLAG(IS_WIN)
 HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     MoveWindowBetweenScreens,
     "sanity/move-window-between-screens.js",
     "--screen-info={label='#1'}{label='#2'}{0,600 label='#3'}{label='#4'}")
-#endif
 
 HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     WindowOpenOnSecondaryScreen,
