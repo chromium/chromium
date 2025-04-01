@@ -815,6 +815,17 @@ void WebContentsAccessibilityAndroid::HandlePaneOpened(int32_t unique_id) {
   Java_WebContentsAccessibilityImpl_handlePaneOpened(env, obj, unique_id);
 }
 
+void WebContentsAccessibilityAndroid::HandleExpandedStateChanged(
+    int32_t unique_id) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+  Java_WebContentsAccessibilityImpl_handleExpandedStateChanged(env, obj,
+                                                               unique_id);
+}
+
 void WebContentsAccessibilityAndroid::AnnounceLiveRegionText(
     const std::u16string& text) {
   CHECK(!base::FeatureList::IsEnabled(
@@ -1236,7 +1247,8 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       GetCanonicalJNIString(env, node->GetContentInvalidErrorMessage()),
       node->ClickableScore(), GetCanonicalJNIString(env, node->GetCSSDisplay()),
       base::android::ConvertUTF16ToJavaString(env, node->GetBrailleLabel()),
-      GetCanonicalJNIString(env, node->GetBrailleRoleDescription()));
+      GetCanonicalJNIString(env, node->GetBrailleRoleDescription()),
+      node->ExpandedState());
 
   ScopedJavaLocalRef<jintArray> suggestion_starts_java;
   ScopedJavaLocalRef<jintArray> suggestion_ends_java;

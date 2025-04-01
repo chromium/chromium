@@ -1,6 +1,6 @@
 android.webkit.WebView focusable focused
 ++android.view.View
-++++android.view.View role_description='menu pop up button' clickable collapsed focusable interesting
+++++android.view.View role_description='menu pop up button' clickable collapsed focusable interesting expanded_state=1
 ++++++android.view.View collection invisible item_count=8 row_count=8 column_count=1
 ++++++++android.view.View invisible name='Enabled' selection_mode=1
 ++++++++++android.view.View clickable collection_item focusable invisible name='One'
@@ -12,4 +12,4 @@ android.webkit.WebView focusable focused
 ++++++++++android.view.View clickable collection_item disabled invisible name='Two' item_index=5 row_index=5
 ++++++++++android.view.View clickable collection_item disabled invisible name='Three' item_index=6 row_index=6
 ++++++++++android.view.View clickable collection_item disabled invisible name='Four' item_index=7 row_index=7
-++++android.view.View role_description='menu pop up button' clickable collapsed focusable interesting name='Random Transformer'
+++++android.view.View role_description='menu pop up button' clickable collapsed focusable interesting name='Random Transformer' expanded_state=1

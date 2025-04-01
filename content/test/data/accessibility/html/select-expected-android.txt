@@ -1,13 +1,13 @@
 android.webkit.WebView focusable focused
 ++android.view.View
-++++android.view.View role_description='menu pop up button' clickable collapsed focusable interesting name='Placeholder option'
-++++android.view.View role_description='menu pop up button' clickable collapsed focusable interesting name='Option 2'
-++++android.view.View role_description='menu pop up button' clickable collapsed focusable required interesting name='Option 1'
+++++android.view.View role_description='menu pop up button' clickable collapsed focusable interesting name='Placeholder option' expanded_state=1
+++++android.view.View role_description='menu pop up button' clickable collapsed focusable interesting name='Option 2' expanded_state=1
+++++android.view.View role_description='menu pop up button' clickable collapsed focusable required interesting name='Option 1' expanded_state=1
 ++++android.widget.ListView role_description='list box' clickable collection focusable multiselectable interesting name='0 selected' state_description='multiselectable, none selected.' item_count=3 row_count=3 column_count=1 selection_mode=2
 ++++++android.view.View clickable collection_item focusable name='Option 1' row_span=1 column_span=1
 ++++++android.view.View clickable collection_item focusable name='Option 2' item_index=1 row_index=1 row_span=1 column_span=1
 ++++++android.view.View clickable collection_item focusable name='Option 3' item_index=2 row_index=2 row_span=1 column_span=1
-++++android.view.View role_description='menu pop up button' clickable collapsed focusable interesting
+++++android.view.View role_description='menu pop up button' clickable collapsed focusable interesting expanded_state=1
 ++++++android.view.View collection invisible item_count=3 row_count=3 column_count=1 selection_mode=1
 ++++++++android.view.View clickable collection_item focusable invisible name='Option 1'
 ++++++++android.view.View clickable collection_item focusable invisible name='Option 2' item_index=1 row_index=1
