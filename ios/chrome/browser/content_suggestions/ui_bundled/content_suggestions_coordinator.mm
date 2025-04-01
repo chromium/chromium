@@ -430,7 +430,9 @@ using segmentation_platform::TipIdentifier;
                                     profile)
                    imageFetcher:std::make_unique<
                                     image_fetcher::ImageDataFetcher>(
-                                    profile->GetSharedURLLoaderFactory())];
+                                    profile->GetSharedURLLoaderFactory())
+                  faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                                    profile)];
     [moduleMediators addObject:_shopCardMediator];
     _shopCardMediator.shopCardActionDelegate = self;
   }

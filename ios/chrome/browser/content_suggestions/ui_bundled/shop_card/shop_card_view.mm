@@ -9,11 +9,13 @@
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_commands.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_data.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_favicon_consumer.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_mediator.h"
 #import "ios/chrome/browser/price_notifications/ui_bundled/cells/price_notifications_price_chip_view.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "url/gurl.h"
@@ -28,7 +30,18 @@ const CGFloat kFaviconImageContainerTrailingMargin = -5.0;
 const CGFloat kFaviconCornerRadius = 4.0;
 const CGFloat kFaviconImageContainerTrailingCornerRadius = 8.0;
 
+// Alpha for top of gradient overlay.
+// TODO(crbug.com/392970898): add support for no product image case
+const CGFloat kGradientOverlayTopAlpha = 0.0;
+
+// Alpha for bottom of gradient overlay.
+// TODO(crbug.com/392970898): add support for no product image case
+const CGFloat kGradientOverlayBottomAlpha = 0.14;
+
 }  // namespace
+
+@interface ShopCardModuleView () <ShopCardFaviconConsumer>
+@end
 
 @implementation ShopCardModuleView {
   ShopCardItem* _item;
@@ -46,6 +59,7 @@ const CGFloat kFaviconImageContainerTrailingCornerRadius = 8.0;
   UIView* _faviconImageContainer;
   UIImageView* _productImage;
   UIImageView* _faviconImage;
+  UIView* _gradientOverlay;
 
   PriceNotificationsPriceChipView* _priceNotificationsChip;
 }
@@ -71,6 +85,13 @@ const CGFloat kFaviconImageContainerTrailingCornerRadius = 8.0;
   }
 }
 
+#pragma mark - ShopCardFaviconConsumer
+- (void)faviconCompleted:(UIImage*)faviconImage {
+  [self populateFaviconImageAndContainer:faviconImage];
+  [self addFaviconToViewIfPresent];
+  [self addFaviconImageAndContainerConstraintsIfPresent];
+}
+
 - (void)configureViewForTrackedProducts:(ShopCardItem*)configItem {
   _titleLabel = [[UILabel alloc] init];
   _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
@@ -90,14 +111,17 @@ const CGFloat kFaviconImageContainerTrailingCornerRadius = 8.0;
   _urlLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
 
   _priceNotificationsChip = [[PriceNotificationsPriceChipView alloc] init];
+  _priceNotificationsChip.previousPriceFont =
+      CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightMedium);
+  _priceNotificationsChip.currentPriceFont =
+      CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightMedium);
+  _priceNotificationsChip.strikeoutPreviousPrice = YES;
   [_priceNotificationsChip
        setPriceDrop:_item.shopCardData.priceDrop->current_price
       previousPrice:_item.shopCardData.priceDrop->previous_price];
 
   _productAndFaviconContainer = [[UIView alloc] init];
-  _faviconImageContainer = [[UIView alloc] init];
   _productImage = [[UIImageView alloc] init];
-  _faviconImage = [[UIImageView alloc] init];
   UIImage* retrievedProductImage =
       [UIImage imageWithData:_item.shopCardData.productImage
                        scale:[UIScreen mainScreen].scale];
@@ -111,37 +135,38 @@ const CGFloat kFaviconImageContainerTrailingCornerRadius = 8.0;
   _productImage.layer.masksToBounds = YES;
   _productImage.backgroundColor = UIColor.whiteColor;
 
-  // TODO: crbug.com/394638800 - populate favicon with favicon image. Current
-  // placeholder is just the product image.
-  _faviconImage.image = retrievedProductImage;
-  _faviconImage.contentMode = UIViewContentModeScaleAspectFill;
-  _faviconImage.translatesAutoresizingMaskIntoConstraints = NO;
+  _gradientOverlay = [[GradientView alloc]
+      initWithTopColor:[[UIColor blackColor]
+                           colorWithAlphaComponent:kGradientOverlayTopAlpha]
+           bottomColor:[[UIColor blackColor] colorWithAlphaComponent:
+                                                 kGradientOverlayBottomAlpha]];
+  _gradientOverlay.layer.masksToBounds = YES;
+  _gradientOverlay.translatesAutoresizingMaskIntoConstraints = NO;
 
-  _faviconImage.layer.borderWidth = 0;
-  _faviconImage.layer.masksToBounds = YES;
-  _faviconImageContainer.layer.cornerRadius = kFaviconCornerRadius;
-  _faviconImageContainer.layer.masksToBounds = YES;
-
-  _faviconImageContainer.layer.mask =
-      [self faviconMaskWithRadius:kFaviconImageContainerTrailingCornerRadius
-                 imageHeightWidth:kFaviconImageWidthHeight];
+  if (configItem.shopCardData && configItem.shopCardData.faviconImage) {
+    [self
+        populateFaviconImageAndContainer:configItem.shopCardData.faviconImage];
+  }
 
   // Define hierarchy
   [_productAndFaviconContainer addSubview:_productImage];
-  [_productAndFaviconContainer addSubview:_faviconImageContainer];
-  [_faviconImageContainer addSubview:_faviconImage];
+  [_productImage addSubview:_gradientOverlay];
+
+  [self addFaviconToViewIfPresent];
 
   // Add constraints after the hierarchy is defined
+  [_productAndFaviconContainer bringSubviewToFront:_gradientOverlay];
   [self addConstraintsForProductImage];
+  [NSLayoutConstraint activateConstraints:@[
+    [_gradientOverlay.heightAnchor
+        constraintEqualToConstant:kProductImageWidthHeight],
+    [_gradientOverlay.widthAnchor
+        constraintEqualToAnchor:_gradientOverlay.heightAnchor]
+  ]];
+  AddSameConstraints(_gradientOverlay, _productImage);
   AddSameConstraints(_productImage, _productAndFaviconContainer);
-  if (_faviconImage) {
-    [self addConstraintsForFaviconImage];
-    AddSameConstraints(_faviconImage, _faviconImageContainer);
-  }
 
-  // Place the favicon to trailing-bottom of product image
-  _faviconImageContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  [self addConstraintsForFaviconContainerToTrailingEdge];
+  [self addFaviconImageAndContainerConstraintsIfPresent];
 
   // Lay out text stack
   _textStack = [[UIStackView alloc] initWithArrangedSubviews:@[
@@ -225,6 +250,40 @@ const CGFloat kFaviconImageContainerTrailingCornerRadius = 8.0;
 
 - (void)shopCardItemTapped:(UIGestureRecognizer*)sender {
   [self.commandHandler openShopCardItem:_item];
+}
+
+- (void)populateFaviconImageAndContainer:(UIImage*)faviconImage {
+  _faviconImageContainer = [[UIView alloc] init];
+  _faviconImage = [[UIImageView alloc] init];
+  _faviconImage.image = faviconImage;
+  _faviconImage.contentMode = UIViewContentModeScaleAspectFill;
+  _faviconImage.translatesAutoresizingMaskIntoConstraints = NO;
+
+  _faviconImage.layer.borderWidth = 0;
+  _faviconImage.layer.masksToBounds = YES;
+  _faviconImageContainer.layer.cornerRadius = kFaviconCornerRadius;
+  _faviconImageContainer.layer.masksToBounds = YES;
+
+  _faviconImageContainer.layer.mask =
+      [self faviconMaskWithRadius:kFaviconImageContainerTrailingCornerRadius
+                 imageHeightWidth:kFaviconImageWidthHeight];
+}
+
+- (void)addFaviconToViewIfPresent {
+  if (_faviconImage) {
+    [_productAndFaviconContainer addSubview:_faviconImageContainer];
+    [_faviconImageContainer addSubview:_faviconImage];
+  }
+}
+
+- (void)addFaviconImageAndContainerConstraintsIfPresent {
+  if (_faviconImage) {
+    [self addConstraintsForFaviconImage];
+    AddSameConstraints(_faviconImage, _faviconImageContainer);
+    // Place the favicon to trailing-bottom of product image
+    _faviconImageContainer.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addConstraintsForFaviconContainerToTrailingEdge];
+  }
 }
 
 @end
