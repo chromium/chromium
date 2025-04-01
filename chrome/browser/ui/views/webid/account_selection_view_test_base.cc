@@ -243,11 +243,13 @@ void AccountSelectionViewTestBase::CheckHoverableAccountRow(
   } else {
     EXPECT_FALSE(GetHoverButtonFooter(account_row));
   }
-  EXPECT_EQ(icon_view->size(),
-            is_modal_dialog ? gfx::Size(kModalAvatarSize, kModalAvatarSize)
-            : expect_idp    ? gfx::Size(kDesiredAvatarSize + kIdpBadgeOffset,
-                                        kDesiredAvatarSize + kIdpBadgeOffset)
-                         : gfx::Size(kDesiredAvatarSize, kDesiredAvatarSize));
+  EXPECT_EQ(
+      icon_view->size(),
+      is_modal_dialog ? gfx::Size(kModalAvatarSize, kModalAvatarSize)
+      // Height is increased by 2 * offset so that the account icon is centered.
+      : expect_idp ? gfx::Size(kDesiredAvatarSize + kIdpBadgeOffset,
+                               kDesiredAvatarSize + 2 * kIdpBadgeOffset)
+                   : gfx::Size(kDesiredAvatarSize, kDesiredAvatarSize));
 
   if (is_modal_dialog) {
     // Check for arrow icon in secondary view.
