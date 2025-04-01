@@ -574,6 +574,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
         loadTimeData.getBoolean('loggingEnabled'));
     this.sender = new PostMessageRequestSender(
         windowProxy, embeddedOrigin, this.senderId, 'glic_api_host');
+    this.sender.setLoggingEnabled(loadTimeData.getBoolean('loggingEnabled'));
     this.handler = new WebClientHandlerRemote();
     this.browserProxy.handler.createWebClient(
         this.handler.$.bindNewPipeAndPassReceiver());

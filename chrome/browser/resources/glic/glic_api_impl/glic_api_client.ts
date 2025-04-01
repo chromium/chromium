@@ -215,6 +215,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         'glicBrowserWebClientCreated', undefined);
     const state = response.initialState;
     this.receiver.setLoggingEnabled(state.loggingEnabled);
+    this.sender.setLoggingEnabled(state.loggingEnabled);
     this.panelState.assignAndSignal(state.panelState);
     const focusedTabData =
         convertFocusedTabDataFromPrivate(state.focusedTabData);
