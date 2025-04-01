@@ -33,6 +33,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/checked_iterators.h"
+#include "base/containers/span_forward_internal.h"
 #include "base/numerics/integral_constant_like.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/cstring_view.h"
@@ -279,25 +280,12 @@
 
 namespace base {
 
-// [span.syn]: Constants
-inline constexpr size_t dynamic_extent = std::numeric_limits<size_t>::max();
-
 // Provides a compile-time fixed extent to the `count` argument of the span
 // constructor.
 //
 // (Not in `std::`.)
 template <size_t N>
 using fixed_extent = std::integral_constant<size_t, N>;
-
-// [views.span]: class template `span<>`
-template <typename ElementType,
-          size_t Extent = dynamic_extent,
-          // Storage pointer customization. By default this is not a
-          // `raw_ptr<>`, since `span` is mostly used for stack variables. Use
-          // `raw_span` instead for class fields, which sets this to
-          // `raw_ptr<T>`.
-          typename InternalPtrType = ElementType*>
-class span;
 
 }  // namespace base
 
@@ -899,7 +887,13 @@ class GSL_POINTER span {
     // extent` is no larger than just past the end of the corresponding
     // allocation, which is a legal pointer to construct and compare to (though
     // not dereference).
-    return UNSAFE_BUFFERS(iterator(data(), data() + extent));
+    //
+    // Use `AssumeValid()` to elide unnecessary precondition `CHECK()`'s in the
+    // iterator constructor: `data() + extent` must not overflow given the above
+    // constraints, so the iterator's requirement that begin <= current <= end
+    // is guaranteed to be true.
+    return UNSAFE_BUFFERS(iterator(
+        typename iterator::AssumeValid(data(), data(), data() + extent)));
   }
   constexpr const_iterator cbegin() const noexcept {
     return const_iterator(begin());
@@ -909,7 +903,13 @@ class GSL_POINTER span {
     // extent` is no larger than just past the end of the corresponding
     // allocation, which is a legal pointer to construct and compare to (though
     // not dereference).
-    return UNSAFE_BUFFERS(iterator(data(), data() + extent, data() + extent));
+    //
+    // Use `AssumeValid()` to elide unnecessary precondition `CHECK()`'s in the
+    // iterator constructor: `data() + extent` must not overflow given the above
+    // constraints, so the iterator's requirement that begin <= current <= end
+    // is guaranteed to be true.
+    return UNSAFE_BUFFERS(iterator(typename iterator::AssumeValid(
+        data(), data() + extent, data() + extent)));
   }
   constexpr const_iterator cend() const noexcept {
     return const_iterator(end());
@@ -1340,7 +1340,13 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
     // size()` is no larger than just past the end of the corresponding
     // allocation, which is a legal pointer to construct and compare to (though
     // not dereference).
-    return UNSAFE_BUFFERS(iterator(data(), data() + size()));
+    //
+    // Use `AssumeValid()` to elide unnecessary precondition `CHECK()`'s in the
+    // iterator constructor: `data() + size()` must not overflow given the above
+    // constraints, so the iterator's requirement that begin <= current <= end
+    // is guaranteed to be true.
+    return UNSAFE_BUFFERS(iterator(
+        typename iterator::AssumeValid(data(), data(), data() + size())));
   }
   constexpr const_iterator cbegin() const noexcept {
     return const_iterator(begin());
@@ -1350,7 +1356,13 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
     // size()` is no larger than just past the end of the corresponding
     // allocation, which is a legal pointer to construct and compare to (though
     // not dereference).
-    return UNSAFE_BUFFERS(iterator(data(), data() + size(), data() + size()));
+    //
+    // Use `AssumeValid()` to elide unnecessary precondition `CHECK()`'s in the
+    // iterator constructor: `data() + size()` must not overflow given the above
+    // constraints, so the iterator's requirement that begin <= current <= end
+    // is guaranteed to be true.
+    return UNSAFE_BUFFERS(iterator(typename iterator::AssumeValid(
+        data(), data() + size(), data() + size())));
   }
   constexpr const_iterator cend() const noexcept {
     return const_iterator(end());
