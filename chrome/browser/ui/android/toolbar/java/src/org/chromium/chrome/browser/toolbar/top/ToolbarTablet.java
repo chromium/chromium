@@ -504,13 +504,6 @@ public class ToolbarTablet extends ToolbarLayout
     }
 
     @Override
-    void updateBackButtonVisibility(boolean canGoBack) {
-        boolean enableButton = canGoBack && !mIsInTabSwitcherMode;
-        mBackButton.setEnabled(enableButton);
-        mBackButton.setFocusable(enableButton);
-    }
-
-    @Override
     void updateForwardButtonVisibility(boolean canGoForward) {
         boolean enableButton = canGoForward && !mIsInTabSwitcherMode;
         mForwardButton.setEnabled(enableButton);

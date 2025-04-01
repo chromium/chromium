@@ -520,17 +520,8 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     /**
-     * Gives inheriting classes the chance to update the visibility of the
-     * back button.
-     * @param canGoBack Whether or not the current tab has any history to go back to.
-     */
-    public void updateBackButtonVisibility(boolean canGoBack) {
-        mToolbarLayout.updateBackButtonVisibility(canGoBack);
-    }
-
-    /**
-     * Gives inheriting classes the chance to update the visibility of the
-     * forward button.
+     * Gives inheriting classes the chance to update the visibility of the forward button.
+     *
      * @param canGoForward Whether or not the current tab has any history to go forward to.
      */
     public void updateForwardButtonVisibility(boolean canGoForward) {

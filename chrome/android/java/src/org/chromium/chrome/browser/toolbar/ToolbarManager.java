@@ -1273,9 +1273,6 @@ public class ToolbarManager
 
                     @Override
                     public void onNavigationEntriesDeleted(Tab tab) {
-                        if (tab == mLocationBarModel.getTab()) {
-                            updateButtonStatus();
-                        }
                         onBackPressStateChanged();
                     }
 
@@ -1418,6 +1415,9 @@ public class ToolbarManager
                             mInTabSwitcherTransition = true;
                             mLocationBarModel.updateForNonStaticLayout();
                             mToolbar.setTabSwitcherMode(false);
+                            if (mBackButtonCoordinator != null) {
+                                mBackButtonCoordinator.setTabSwitcherMode(false);
+                            }
                             mIsTabSwitcherFinishedShowingSupplier.set(false);
                             updateButtonStatus();
                         }
@@ -1557,6 +1557,9 @@ public class ToolbarManager
         if (layoutType == LayoutType.TAB_SWITCHER) {
             mLocationBarModel.updateForNonStaticLayout();
             mToolbar.setTabSwitcherMode(layoutType == LayoutType.TAB_SWITCHER);
+            if (mBackButtonCoordinator != null) {
+                mBackButtonCoordinator.setTabSwitcherMode(true);
+            }
             updateButtonStatus();
         }
         mIsTabSwitcherFinishedShowingSupplier.set(
@@ -2520,7 +2523,6 @@ public class ToolbarManager
         boolean tabCrashed = currentTab != null && SadTab.isShowing(currentTab);
 
         mToolbar.updateButtonVisibility();
-        mToolbar.updateBackButtonVisibility(currentTab != null && currentTab.canGoBack());
         onBackPressStateChanged();
         mToolbar.updateForwardButtonVisibility(currentTab != null && currentTab.canGoForward());
         updateReloadState(tabCrashed);
