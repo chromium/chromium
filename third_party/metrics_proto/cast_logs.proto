@@ -14,7 +14,7 @@ package metrics;  // Cast-enabled device specific log data included in ChromeUse
 // Next tag: 9
 message CastLogsProto {
   // Cast specific device information.
-  // Next tag: 7
+  // Next tag: 8
   message CastDeviceInfo {
     // The product type of Cast device sent from Cast-enabled devices.
     // Next tag: 14
@@ -78,6 +78,17 @@ message CastLogsProto {
     }
 
     optional HardwareInfo hardware_info = 6;
+
+    // The environment of the device indicates where the device is being used,
+    // i.e., hotel, home, car etc. Next tag: 4
+    enum DeviceEnvironment {
+      DEVICE_ENVIRONMENT_UNKNOWN = 0;
+      DEVICE_ENVIRONMENT_HOTEL = 1;
+      DEVICE_ENVIRONMENT_HOME = 2;
+      DEVICE_ENVIRONMENT_AUTOMOTIVE = 3;
+    }
+
+    optional DeviceEnvironment device_environment = 7;
   }
 
   // The device sends this information at least once per day.
