@@ -309,8 +309,6 @@ bool CanvasRenderingContext2D::Restore() {
   CHECK(host);
   DCHECK(!host->ResourceProvider());
 
-  host->ClearLayerTexture();
-
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
     if (!SharedGpuContext::SharedImageInterfaceProvider()) {
       return false;
