@@ -22,13 +22,10 @@ function compute_inner_curvature(curvature, outer_length, inner_length) {
   if (curvature === 0)
     return 0;
   if (curvature < 1)
-    return 1 /
-        compute_inner_curvature(1 / curvature, outer_length, inner_length);
+    return 1 / compute_inner_curvature(1 / curvature, outer_length, inner_length);
   const target_length = (inner_length - outer_length) / Math.SQRT2;
   return Math.log(0.5) /
-      Math.log(
-          (Math.pow(0.5, 1 / curvature) * outer_length + target_length) /
-          inner_length);
+      Math.log((superellipse(curvature).x * outer_length + target_length) / inner_length);
 }
 
 /**

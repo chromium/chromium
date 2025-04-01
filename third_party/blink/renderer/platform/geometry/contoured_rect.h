@@ -148,7 +148,8 @@ class PLATFORM_EXPORT ContouredRect {
              gfx::ScaleVector2d(v4(), normalized_point.y());
     }
 
-    Corner AlignedToOrigin(Corner origin) const;
+    Corner AlignedToOrigin(const Corner& origin) const;
+    String ToString() const;
 
    private:
     std::array<gfx::PointF, 4> vertices_;
