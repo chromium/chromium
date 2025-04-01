@@ -2974,11 +2974,6 @@
       status: "stable",
     },
     {
-      // crbug.com/376097115
-      name: "NoCollapseSpaceBeforeRuby",
-      status: "stable",
-    },
-    {
       // crbug.com/380107555
       name: "NodeInUAShadowRootUnderAnonymousBlockFlow",
       status: "stable",
