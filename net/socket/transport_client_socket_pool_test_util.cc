@@ -5,6 +5,7 @@
 #include "net/socket/transport_client_socket_pool_test_util.h"
 
 #include <stdint.h>
+
 #include <string>
 #include <utility>
 
@@ -12,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
