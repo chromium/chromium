@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_ENTERPRISE_INCOGNITO_NAVIGATION_THROTTLE_H_
-#define CHROME_BROWSER_CHROMEOS_ENTERPRISE_INCOGNITO_NAVIGATION_THROTTLE_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_INCOGNITO_INCOGNITO_NAVIGATION_THROTTLE_H_
+#define CHROME_BROWSER_ENTERPRISE_INCOGNITO_INCOGNITO_NAVIGATION_THROTTLE_H_
 
 #include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -16,7 +17,7 @@ namespace content {
 class NavigationHandle;
 }  // namespace content
 
-namespace chromeos {
+namespace enterprise_incognito {
 
 // A `content::NavigationThrottle` implementation that blocks navigation in
 // Incognito mode unless the user enables a list of mandatory extensions to run
@@ -61,6 +62,6 @@ class IncognitoNavigationThrottle : public content::NavigationThrottle {
 
   base::WeakPtrFactory<IncognitoNavigationThrottle> weak_ptr_factory_{this};
 };
-}  // namespace chromeos
+}  // namespace enterprise_incognito
 
-#endif  // CHROME_BROWSER_CHROMEOS_ENTERPRISE_INCOGNITO_NAVIGATION_THROTTLE_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_INCOGNITO_INCOGNITO_NAVIGATION_THROTTLE_H_

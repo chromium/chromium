@@ -12,7 +12,7 @@ showBlockingExtensions = (extensionNames) => {
 };
 
 showMissingExtensions = (extensionIDs) => {
-  const ul = document.getElementById('mising-extensions');
+  const ul = document.getElementById('missing-extensions');
   for (extName of extensionIDs) {
     const li = document.createElement('li');
     li.appendChild(document.createTextNode(extName));

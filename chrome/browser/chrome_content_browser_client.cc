@@ -567,7 +567,6 @@
 #include "chrome/browser/apps/intent_helper/chromeos_disabled_apps_throttle.h"
 #include "chrome/browser/apps/link_capturing/chromeos_link_capturing_delegate.h"
 #include "chrome/browser/apps/link_capturing/chromeos_reimpl_navigation_capturing_throttle.h"
-#include "chrome/browser/chromeos/enterprise/incognito_navigation_throttle.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
 #include "chrome/browser/chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.h"
 #include "chrome/browser/file_system_access/cloud_identifier/cloud_identifier_util_cros.h"
@@ -647,6 +646,7 @@
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/enterprise/connectors/device_trust/navigation_throttle.h"
+#include "chrome/browser/enterprise/incognito/incognito_navigation_throttle.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_CHROMEOS)
 
@@ -1643,8 +1643,12 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       policy::policy_prefs::kForcePermissionPolicyUnloadDefaultEnabled, false);
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_LINUX)
   registry->RegisterListPref(prefs::kMandatoryExtensionsForIncognitoNavigation);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterListPref(
       prefs::kSubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins);
 #endif
@@ -5655,14 +5659,22 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   // TODO(b:296844164) Handle captive portal signin properly.
   if (profile && profile->IsIncognitoProfile() && profile->IsOffTheRecord() &&
       !profile->GetOTRProfileID().IsCaptivePortal()) {
-    MaybeAddThrottle(
-        chromeos::IncognitoNavigationThrottle::MaybeCreateThrottleFor(handle),
-        &throttles);
+    MaybeAddThrottle(enterprise_incognito::IncognitoNavigationThrottle::
+                         MaybeCreateThrottleFor(handle),
+                     &throttles);
   }
 
   MaybeAddThrottle(apps::AppInstallNavigationThrottle::MaybeCreate(handle),
                    &throttles);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (profile && profile->IsIncognitoProfile() && profile->IsOffTheRecord()) {
+    MaybeAddThrottle(enterprise_incognito::IncognitoNavigationThrottle::
+                         MaybeCreateThrottleFor(handle),
+                     &throttles);
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if !BUILDFLAG(IS_ANDROID)
   MaybeAddThrottle(PreviewNavigationThrottle::MaybeCreateThrottleFor(handle),

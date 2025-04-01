@@ -1,8 +1,7 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "chrome/browser/chromeos/enterprise/incognito_navigation_throttle.h"
+#include "chrome/browser/enterprise/incognito/incognito_navigation_throttle.h"
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -37,7 +36,7 @@
 
 using testing::NotNull;
 
-namespace chromeos {
+namespace enterprise_incognito {
 
 const char16_t kSimplePageContent[] = u"Basic html test.";
 const char kBlockingPageContentSingular[] =
@@ -63,7 +62,7 @@ class IncognitoNavigationThrottleBrowserTest
 
   void SetUpOnMainThread() override {
     embedded_test_server()->AddDefaultHandlers(
-        base::FilePath("content/test/data"));
+        base::FilePath(FILE_PATH_LITERAL("content/test/data")));
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -170,11 +169,17 @@ class IncognitoNavigationThrottleBrowserTest
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_ = nullptr;
 };
 
+// TODO(crbug.com/406464640): leaks flakily on LSAN bots.
+#if defined(LEAK_SANITIZER)
+#define MAYBE_PolicySetBlockingExtension DISABLED_PolicySetBlockingExtension
+#else
+#define MAYBE_PolicySetBlockingExtension PolicySetBlockingExtension
+#endif
 // Verify that when the `MandatoryExtensionsForIncognitoNavigation` policy is
 // set, Incognito mode can only be used if the user allows the configured
 // mandatory extensions to run in Incognito.
 IN_PROC_BROWSER_TEST_F(IncognitoNavigationThrottleBrowserTest,
-                       PolicySetBlockingExtension) {
+                       MAYBE_PolicySetBlockingExtension) {
   const extensions::Extension* extension = InstallExtension();
   ASSERT_THAT(extension, NotNull());
 
@@ -240,4 +245,4 @@ IN_PROC_BROWSER_TEST_F(IncognitoNavigationThrottleBrowserTest,
       IsMissingExtensionsBlockingPageSown(incognito_browser(), extensions));
 }
 
-}  // namespace chromeos
+}  // namespace enterprise_incognito

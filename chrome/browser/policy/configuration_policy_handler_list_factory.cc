@@ -958,6 +958,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::INTEGER },
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) \
      || BUILDFLAG(IS_MAC)
+  { key::kMandatoryExtensionsForIncognitoNavigation,
+    prefs::kMandatoryExtensionsForIncognitoNavigation,
+    base::Value::Type::LIST },
   { key::kRequireOnlineRevocationChecksForLocalAnchors,
     prefs::kCertRevocationCheckingRequiredLocalAnchors,
     base::Value::Type::BOOLEAN },
@@ -1085,9 +1088,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kKerberosEnabled,
     prefs::kKerberosEnabled,
     base::Value::Type::BOOLEAN },
-  { key::kMandatoryExtensionsForIncognitoNavigation,
-    prefs::kMandatoryExtensionsForIncognitoNavigation,
-    base::Value::Type::LIST },
   { key::kReportWebsiteActivityAllowlist,
     ::reporting::kReportWebsiteActivityAllowlist,
     base::Value::Type::LIST },
