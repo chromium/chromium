@@ -32,10 +32,8 @@ import "services/network/public/mojom/network_service_test.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
 import "services/network/public/mojom/proxy_config.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
-import "services/network/public/mojom/source_type.mojom";
 import "services/network/public/mojom/system_dns_resolution.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
-import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_network_service_observer.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "url/mojom/origin.mojom";
@@ -454,25 +452,4 @@ interface NetworkService {
   // service with that of the browser.
   SetTpcdMetadataGrants(
       array<content_settings.mojom.ContentSettingPatternSource> settings);
-
-  // Set up a content decoding interceptor for an existing URLLoader connection.
-  // This is typically used by the browser process when client-side decoding was
-  // initially requested, but the final consumer of the response body resides in
-  // the browser process (e.g., for downloads or Signed Exchanges) rather than
-  // the renderer.
-  //
-  // The interceptor reads the encoded data from the `source_body` pipe, decodes
-  // it according to the specified `content_encoding_types`, and writes the
-  // decoded data to the `dest_body` pipe. It manages the communication flow
-  // between the original URLLoader/URLLoaderClient pair (`source_url_loader`,
-  // `source_url_loader_client`) and presents a new pair (`dest_url_loader`,
-  // `dest_url_loader_client`) for the ultimate consumer to interact with.
-  InterceptUrlLoaderForBodyDecoding(
-      array<SourceType> content_encoding_types,
-      handle<data_pipe_consumer> source_body,
-      handle<data_pipe_producer> dest_body,
-      pending_remote<URLLoader> source_url_loader,
-      pending_receiver<URLLoaderClient> source_url_loader_client,
-      pending_receiver<URLLoader> dest_url_loader,
-      pending_remote<URLLoaderClient> dest_url_loader_client);
 };

@@ -90,7 +90,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "services/network/public/cpp/content_decoding_interceptor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -4445,33 +4444,6 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
                                        &downloaded_content));
     EXPECT_EQ(downloaded_content, "Hello World!\n");
   }
-}
-
-IN_PROC_BROWSER_TEST_F(
-    DownloadContentTest,
-    CompressedResponseWithContentDispositionInsufficientResources) {
-  // Forces the ContentDecodingInterceptor to simulate a failure when attempting
-  // to create its internal Mojo data pipe.
-  network::ContentDecodingInterceptor::
-      SetForceMojoCreateDataPipeFailureForTesting(true);
-
-  auto observer = std::make_unique<DownloadCreateObserver>(
-      DownloadManagerForShell(shell()));
-  // gzip-content-with-content-disposition.gz is served with Content-Disposition
-  // headers, and `Content-Encoding: gzip`.
-  EXPECT_TRUE(NavigateToURLAndExpectNoCommit(
-      shell(), embedded_test_server()->GetURL(
-                   "/download/gzip-content-with-content-disposition.gz")));
-  download::DownloadItem* download = observer->WaitForFinished();
-  WaitForInterrupt(download);
-
-  // Verify that the download interruption reason is NETWORK_FAILED.
-  EXPECT_EQ(download->GetLastReason(),
-            download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED);
-
-  // Reset the test hook to false to ensure it doesn't affect subsequent tests.
-  network::ContentDecodingInterceptor::
-      SetForceMojoCreateDataPipeFailureForTesting(false);
 }
 
 // Test that the network isolation key is populated for:
