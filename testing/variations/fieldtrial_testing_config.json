@@ -22291,14 +22291,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Both_20250207",
+                    "name": "Enabled_Both_20250401",
                     "params": {
-                        "delay_after_tasks": "30",
                         "max_chunk_size": "100"
                     },
                     "enable_features": [
-                        "ShouldFreezeSelf",
-                        "V8Flag_memory_reducer_respects_frozen_state"
+                        "ShouldFreezeSelf"
                     ]
                 }
             ]
