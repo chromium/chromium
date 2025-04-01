@@ -1028,6 +1028,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "no_safe_browsing",
+    args = {
+        "safe_browsing_mode": 0,
+    },
+)
+
+gn_args.config(
     name = "no_siso",
     args = {
         "use_siso": False,
