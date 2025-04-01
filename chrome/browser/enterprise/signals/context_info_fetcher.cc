@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
-#include "chrome/browser/enterprise/signals/signals_utils.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -23,7 +22,6 @@
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/version_info/version_info.h"
-#include "content/public/browser/site_isolation_policy.h"
 #include "device_management_backend.pb.h"
 
 
@@ -60,6 +58,11 @@ SettingValue GetChromeosFirewall() {
              : SettingValue::ENABLED;
 }
 #endif
+
+bool GetBuiltInDnsClientEnabled(PrefService* local_state) {
+  DCHECK(local_state);
+  return local_state->GetBoolean(prefs::kBuiltInDnsClientEnabled);
+}
 
 }  // namespace
 
@@ -113,19 +116,18 @@ void ContextInfoFetcher::Fetch(ContextInfoCallback callback) {
   info.on_security_event_providers = GetOnSecurityEventProviders();
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   info.browser_version = version_info::GetVersionNumber();
-  info.site_isolation_enabled =
-      content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites();
+  info.site_isolation_enabled = device_signals::GetSiteIsolationEnabled();
   info.built_in_dns_client_enabled =
-      utils::GetBuiltInDnsClientEnabled(g_browser_process->local_state());
+      GetBuiltInDnsClientEnabled(g_browser_process->local_state());
   info.chrome_remote_desktop_app_blocked =
-      utils::GetChromeRemoteDesktopAppBlocked(
+      device_signals::GetChromeRemoteDesktopAppBlocked(
           PolicyBlocklistFactory::GetForBrowserContext(browser_context_));
 
   Profile* profile = Profile::FromBrowserContext(browser_context_);
   info.safe_browsing_protection_level =
-      utils::GetSafeBrowsingProtectionLevel(profile->GetPrefs());
+      device_signals::GetSafeBrowsingProtectionLevel(profile->GetPrefs());
   info.password_protection_warning_trigger =
-      utils::GetPasswordProtectionWarningTrigger(profile->GetPrefs());
+      device_signals::GetPasswordProtectionWarningTrigger(profile->GetPrefs());
   info.enterprise_profile_id = GetEnterpriseProfileId(profile);
 
 #if BUILDFLAG(IS_WIN)

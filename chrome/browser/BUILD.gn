@@ -4270,7 +4270,6 @@ static_library("browser") {
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_cueing:impl",
       "//chrome/browser/enterprise/incognito",
-      "//chrome/browser/enterprise/signals:utils",
       "//chrome/browser/error_reporting",
       "//chrome/browser/feedback:feedback_enum",
       "//chrome/browser/hid",
