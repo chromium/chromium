@@ -74,6 +74,12 @@ class CollaborationControllerDelegateDesktop
       ResultCallback result,
       std::optional<data_sharing::mojom::GroupAction> action,
       std::optional<data_sharing::mojom::GroupActionProgress> progress);
+
+  void OnManageDialogClosing(
+      ResultCallback result,
+      std::optional<data_sharing::mojom::GroupAction> action,
+      std::optional<data_sharing::mojom::GroupActionProgress> progress);
+
   void ShowErrorDialog();
   void MaybeShowSignInAndSyncUi();
   void MaybeShowSignInOrSyncPromptDialog();
