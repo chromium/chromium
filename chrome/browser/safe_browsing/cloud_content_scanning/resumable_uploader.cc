@@ -77,7 +77,8 @@ ResumableUploadRequest::ResumableUploadRequest(
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     VerdictReceivedCallback verdict_received_callback,
-    ContentUploadedCallback content_uploaded_callback)
+    ContentUploadedCallback content_uploaded_callback,
+    bool force_sync_upload)
     : ConnectorUploadRequest(std::move(url_loader_factory),
                              base_url,
                              metadata,
@@ -90,7 +91,8 @@ ResumableUploadRequest::ResumableUploadRequest(
       verdict_received_callback_(std::move(verdict_received_callback)),
       get_data_result_(get_data_result),
       is_obfuscated_(is_obfuscated),
-      content_uploaded_callback_(std::move(content_uploaded_callback)) {
+      content_uploaded_callback_(std::move(content_uploaded_callback)),
+      force_sync_upload_(force_sync_upload) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -103,7 +105,8 @@ ResumableUploadRequest::ResumableUploadRequest(
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     VerdictReceivedCallback verdict_received_callback,
-    ContentUploadedCallback content_uploaded_callback)
+    ContentUploadedCallback content_uploaded_callback,
+    bool force_sync_upload)
     : ConnectorUploadRequest(std::move(url_loader_factory),
                              base_url,
                              metadata,
@@ -113,7 +116,8 @@ ResumableUploadRequest::ResumableUploadRequest(
                              base::DoNothing()),
       verdict_received_callback_(std::move(verdict_received_callback)),
       get_data_result_(get_data_result),
-      content_uploaded_callback_(std::move(content_uploaded_callback)) {
+      content_uploaded_callback_(std::move(content_uploaded_callback)),
+      force_sync_upload_(force_sync_upload) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -175,7 +179,8 @@ ResumableUploadRequest::CreateFileRequest(
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     VerdictReceivedCallback verdict_received_callback,
-    ContentUploadedCallback content_uploaded_callback) {
+    ContentUploadedCallback content_uploaded_callback,
+    bool force_sync_upload) {
   if (factory_) {
     return factory_->CreateFileRequest(
         url_loader_factory, base_url, metadata, get_data_result, path,
@@ -187,7 +192,7 @@ ResumableUploadRequest::CreateFileRequest(
       url_loader_factory, base_url, metadata, get_data_result, path, file_size,
       is_obfuscated, histogram_suffix, traffic_annotation,
       std::move(verdict_received_callback),
-      std::move(content_uploaded_callback));
+      std::move(content_uploaded_callback), force_sync_upload);
 }
 
 // static
@@ -201,7 +206,8 @@ ResumableUploadRequest::CreatePageRequest(
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     VerdictReceivedCallback verdict_received_callback,
-    ContentUploadedCallback content_uploaded_callback) {
+    ContentUploadedCallback content_uploaded_callback,
+    bool force_sync_upload) {
   if (factory_) {
     return factory_->CreatePageRequest(
         url_loader_factory, base_url, metadata, get_data_result,
@@ -213,7 +219,7 @@ ResumableUploadRequest::CreatePageRequest(
       url_loader_factory, base_url, metadata, get_data_result,
       std::move(page_region), histogram_suffix, traffic_annotation,
       std::move(verdict_received_callback),
-      std::move(content_uploaded_callback));
+      std::move(content_uploaded_callback), force_sync_upload);
 }
 
 void ResumableUploadRequest::SendMetadataRequest() {
@@ -260,7 +266,8 @@ void ResumableUploadRequest::OnMetadataUploadCompleted(
   }
 
   if (base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnableAsyncUploadAfterVerdict)) {
+          enterprise_connectors::kEnableAsyncUploadAfterVerdict) &&
+      !force_sync_upload_) {
     // TODO(329293309): Remove logging when rolled out to 100% Stable
     VLOG(1) << "enterprise.asyncupload: feature enabled";
     if (headers->HasHeader(kUploadIntermediateHeader)) {
