@@ -576,11 +576,13 @@ void InitializeUserDataDir(base::CommandLine* command_line) {
   // DISPLAYs, so the profile directory can be specified in the environment to
   // support the virtual desktop use-case.
   if (user_data_dir.empty()) {
-    std::string user_data_dir_string;
     std::unique_ptr<base::Environment> environment(base::Environment::Create());
-    if (environment->GetVar("CHROME_USER_DATA_DIR", &user_data_dir_string) &&
-        base::IsStringUTF8(user_data_dir_string)) {
-      user_data_dir = base::FilePath::FromUTF8Unsafe(user_data_dir_string);
+    std::optional<std::string> user_data_dir_string =
+        environment->GetVar("CHROME_USER_DATA_DIR");
+    if (user_data_dir_string.has_value() &&
+        base::IsStringUTF8(user_data_dir_string.value())) {
+      user_data_dir =
+          base::FilePath::FromUTF8Unsafe(user_data_dir_string.value());
     }
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
