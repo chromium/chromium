@@ -8,8 +8,10 @@
 
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources.h"
 #include "ash/webui/file_manager/url_constants.h"
+#include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
+#include "chrome/browser/ash/file_manager/open_with_browser.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -132,10 +134,18 @@ FileManagerSystemAppDelegate::GetWebAppInfo() const {
 
   // View in the browser (with mime-type):
   AppendFileHandler(*info, "view-pdf", {"pdf"}, "application/pdf");
-  AppendFileHandler(
-      *info, "view-in-browser",
-      {"htm", "html", "mht", "mhtml", "shtml", "xht", "xhtml", "svg", "txt"},
-      "text/plain");
+  // file_manager::util::kFileExtensionsViewableInBrowser;
+  base::flat_set<std::string> text_extensions = {
+      "htm", "html", "mht", "mhtml", "shtml", "xht", "xhtml", "svg", "txt"};
+  // base::flat_set<std::string> text_extensions =
+  // base::MakeFlatSet<std::string>(
+  //     file_manager::util::kFileExtensionsViewableInBrowser, {},
+  //     [](const base::FilePath::CharType* e) {
+  //       LOG(ERROR) << "LUCMULT EXT: " << e;
+  //       return base::FilePath(e).AsUTF8Unsafe();
+  //     });
+
+  AppendFileHandler(*info, "view-in-browser", text_extensions, "text/*");
 
   // Crostini:
   AppendFileHandler(*info, "install-linux-package", {"deb"});

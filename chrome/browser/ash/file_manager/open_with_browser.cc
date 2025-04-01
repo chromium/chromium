@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
+#include "chrome/browser/ash/file_manager/open_with_browser.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/hats_office_trigger.h"
@@ -41,30 +42,15 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/api/file_handlers/mime_util.h"
 #include "net/base/filename_util.h"
-#include "pdf/buildflags.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 using content::BrowserThread;
 
 namespace file_manager::util {
+
 namespace {
-
-// List of file extensions viewable in the browser.
-constexpr const base::FilePath::CharType* kFileExtensionsViewableInBrowser[] = {
-    FILE_PATH_LITERAL(".bmp"),   FILE_PATH_LITERAL(".ico"),
-    FILE_PATH_LITERAL(".jpg"),   FILE_PATH_LITERAL(".jpeg"),
-    FILE_PATH_LITERAL(".png"),   FILE_PATH_LITERAL(".webp"),
-    FILE_PATH_LITERAL(".gif"),   FILE_PATH_LITERAL(".txt"),
-    FILE_PATH_LITERAL(".html"),  FILE_PATH_LITERAL(".htm"),
-    FILE_PATH_LITERAL(".mhtml"), FILE_PATH_LITERAL(".mht"),
-    FILE_PATH_LITERAL(".xhtml"), FILE_PATH_LITERAL(".xht"),
-    FILE_PATH_LITERAL(".shtml"), FILE_PATH_LITERAL(".svg"),
-#if BUILDFLAG(ENABLE_PDF)
-    FILE_PATH_LITERAL(".pdf"),
-#endif  // BUILDFLAG(ENABLE_PDF)
-};
-
 // Returns true if |file_path| is viewable in the browser (ex. HTML file).
 bool IsViewableInBrowser(const base::FilePath& file_path) {
   for (size_t i = 0; i < std::size(kFileExtensionsViewableInBrowser); i++) {
@@ -239,19 +225,6 @@ bool OpenFileWithAppOrBrowser(Profile* profile,
     return false;
   }
 
-  // For things supported natively by the browser, we should open it in a tab.
-  if (IsViewableInBrowser(file_path) || action_id == "view-pdf" ||
-      (action_id == "view-in-browser" && file_path.Extension() == "")) {
-    // Use external file URL if it is provided for the file system.
-    GURL page_url = ash::FileSystemURLToExternalFileURL(file_system_url);
-    if (page_url.is_empty()) {
-      page_url = net::FilePathToFileURL(file_path);
-    }
-
-    OpenNewTab(page_url);
-    return true;
-  }
-
   if (drive::util::HasHostedDocumentExtension(file_path)) {
     if (file_manager::util::IsUnderNonNativeLocalPath(profile, file_path)) {
       // The file is on a non-native volume. Use external file URL. If the file
@@ -278,9 +251,47 @@ bool OpenFileWithAppOrBrowser(Profile* profile,
     return true;
   }
 
-  // Failed to open the file of unknown type.
-  LOG(WARNING) << "Unknown file type: " << file_path.value();
-  return false;
+  // For things supported natively by the browser, we should open it in a tab.
+  if (!(action_id == "view-pdf" || action_id == "view-in-browser")) {
+    // Failed to open the file of unknown type.
+    LOG(WARNING) << "Unknown file type: " << file_path.value();
+    return false;
+  }
+
+  // Check the MIME type to confirm that the file is a text file.
+  auto* mime_type_collector =
+      new extensions::app_file_handler_util::MimeTypeCollector(profile);
+
+  auto process_mime = base::BindOnce(
+      [](LaunchAppCallback callback, base::FilePath file_path,
+         FileSystemURL file_system_url, std::string action_id,
+         extensions::app_file_handler_util::MimeTypeCollector* mime_collector,
+         std::unique_ptr<std::vector<std::string>> mimes) {
+        std::string text_mime = "text/";
+        std::string mime = mimes->size() > 0 ? (*mimes)[0] : "";
+        bool is_text = mimes->size() > 0 && mime.starts_with(text_mime);
+
+        if (is_text || IsViewableInBrowser(file_path) ||
+            action_id == "view-pdf" ||
+            (action_id == "view-in-browser" && file_path.Extension() == "")) {
+          // Use external file URL if it is provided for the file system.
+          GURL page_url = ash::FileSystemURLToExternalFileURL(file_system_url);
+          if (page_url.is_empty()) {
+            page_url = net::FilePathToFileURL(file_path);
+          }
+          OpenNewTab(page_url);
+          return;
+        }
+        LOG(ERROR) << "Not viewable in browser: MIME: " << mime
+                   << " action: " << action_id;
+      },
+      std::move(callback), file_path, file_system_url, action_id,
+      base::Owned(mime_type_collector));
+
+  mime_type_collector->CollectForLocalPaths({file_path},
+                                            std::move(process_mime));
+
+  return true;
 }
 
 }  // namespace file_manager::util
