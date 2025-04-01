@@ -6,9 +6,10 @@
 
 namespace base {
 
-DriveInfo::DriveInfo() = default;
-DriveInfo::DriveInfo(DriveInfo&&) = default;
-DriveInfo& DriveInfo::operator=(DriveInfo&&) = default;
-DriveInfo::~DriveInfo() = default;
+std::optional<DriveInfo> GetFileDriveInfo(const FilePath& file_path) {
+  DriveInfo info;
+  info.has_seek_penalty = false;
+  return info;
+}
 
 }  // namespace base
