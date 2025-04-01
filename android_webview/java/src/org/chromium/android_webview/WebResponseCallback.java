@@ -9,6 +9,8 @@ import org.jni_zero.JNINamespace;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -20,9 +22,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * eventually call the callback.
  */
 @JNINamespace("android_webview")
+@NullMarked
 public final class WebResponseCallback {
     private static final String TAG = "WebRspnsCllbck";
-    private AwContentsClient mAwContentsClient;
+    private @Nullable AwContentsClient mAwContentsClient;
     private final AwWebResourceRequest mRequest;
 
     private final JniOnceCallback<AwWebResourceInterceptResponse> mResponseCallback;
@@ -37,27 +40,30 @@ public final class WebResponseCallback {
         mResponseCallback = responseCallback;
     }
 
-    public void intercept(WebResourceResponseInfo response) {
-        if (mAwContentsClient != null) {
-            if (response == null) {
-                mAwContentsClient.getCallbackHelper().postOnLoadResource(mRequest.getUrl());
-            }
-            if (response != null && response.getData() == null) {
-                // In this case the intercepted URLRequest job will simulate an empty response
-                // which doesn't trigger the onReceivedError callback. For WebViewClassic
-                // compatibility we synthesize that callback.  http://crbug.com/180950
-                mAwContentsClient
-                        .getCallbackHelper()
-                        .postOnReceivedError(
-                                mRequest,
-                                /* error description filled in by the glue layer */
-                                new AwContentsClient.AwWebResourceError());
-            }
-        }
+    public void intercept(@Nullable WebResourceResponseInfo response) {
         if (mInterceptCalled.getAndSet(true)) {
             throw new IllegalStateException("Request has already been responded to.");
         }
+        if (mAwContentsClient != null) {
+            notifyContentsClientCallbackHelper(mAwContentsClient.getCallbackHelper(), response);
+        }
         mResponseCallback.onResult(new AwWebResourceInterceptResponse(response, false));
+    }
+
+    private void notifyContentsClientCallbackHelper(
+            AwContentsClientCallbackHelper callbackHelper,
+            @Nullable WebResourceResponseInfo response) {
+        if (response == null) {
+            callbackHelper.postOnLoadResource(mRequest.getUrl());
+        } else if (response.getData() == null) {
+            // In this case the intercepted URLRequest job will simulate an empty response
+            // which doesn't trigger the onReceivedError callback. For WebViewClassic
+            // compatibility we synthesize that callback.  http://crbug.com/180950
+            callbackHelper.postOnReceivedError(
+                    mRequest,
+                    /* error description filled in by the glue layer */
+                    new AwContentsClient.AwWebResourceError());
+        }
     }
 
     public void setAwContentsClient(AwContentsClient client) {
