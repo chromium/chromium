@@ -36,6 +36,7 @@
 <translation id="1121850836842642159">Nuotraukos ir vaizdai</translation>
 <translation id="1126696498560056882">Tvarkyti paskyras šiame įrenginyje</translation>
 <translation id="1126809382673880764">Neapsaugo jūsų nuo pavojingų svetainių, atsisiuntimų ir plėtinių. Kai yra galimybė, vis tiek gausite saugaus naršymo pranešimus kitose „Google“ paslaugose, pvz., „Gmail“ ir paieškoje.</translation>
+<translation id="1136104150802877429">Rodomi atsiliepimai apie produktą</translation>
 <translation id="1142371195993008685">Išjungti pranešimus apie „<ph name="FEATURE_NAME" />“</translation>
 <translation id="1147031633655575115">Prisijungta kaip <ph name="USER" /></translation>
 <translation id="1149401351239820326">Galiojimo laiko pabaigos mėnuo</translation>
@@ -284,6 +285,7 @@
 <translation id="2148799636999124959">Sparčiai prisijunkite prie svetainių ir programų naudodami išsaugotus slaptažodžius.</translation>
 <translation id="2149968176347646218">Ryšys nėra saugus</translation>
 <translation id="2149973817440762519">Redaguoti žymes</translation>
+<translation id="2155663190508912427">Ištrynimas po mėnesio</translation>
 <translation id="2161446265348023004">Perjungti į atidarytą langą</translation>
 <translation id="2164946989711475905">Prisijungti…</translation>
 <translation id="2175927920773552910">QR kodas</translation>
@@ -664,6 +666,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3909222758573607742">Išsaugoti slaptažodžius ir kitus elementus paskyroje</translation>
 <translation id="3913463964270756493">Slėpti Paiešką ekrane naudojant „Google Lens“</translation>
 <translation id="3914640181019354363">Adresų aptikimas</translation>
+<translation id="391904960191284041">Atsiliepimai apie produktą</translation>
 <translation id="3921585859122905677">Adreso juostos pozicija</translation>
 <translation id="3922185497376658606">Išankstinis svetainių įkėlimas</translation>
 <translation id="3922395466317605522">Meniu tinkinimas</translation>
@@ -726,6 +729,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4152011295694446843">Čia rasite žymes</translation>
 <translation id="4154753961803534698">Ieškoti naudojant fotoaparatą</translation>
 <translation id="4158491215857439601">Slaptažodžių tvarkytuvė</translation>
+<translation id="4159430626587776301">Peržiūrėkite neseniai naršytų produktų apžvalgas</translation>
 <translation id="4161488339191275792">Kurkite skirtukų grupes, kad galėtumėte tvarkyti atidarytus skirtukus</translation>
 <translation id="4163699139741158298">{count,plural, =1{Žymė išsaugota skiltyje „{title}“. Ji išsaugoma tik šiame įrenginyje.}one{{count} žymė išsaugota skiltyje „{title}“. Jos išsaugomos tik šiame įrenginyje.}few{{count} žymės išsaugotos skiltyje „{title}“. Jos išsaugomos tik šiame įrenginyje.}many{{count} žymės išsaugota skiltyje „{title}“. Jos išsaugomos tik šiame įrenginyje.}other{{count} žymių išsaugota skiltyje „{title}“. Jos išsaugomos tik šiame įrenginyje.}}</translation>
 <translation id="4164514562270305824">Automatiškai ištrinti atsisiuntimus</translation>
@@ -785,6 +789,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4389019817280890563">Palieskite, kad pakeistumėte kalbą.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Po vienos dienos}one{Po {COUNT} dienos}few{Po {COUNT} dienų}many{Po {COUNT} dienos}other{Po {COUNT} dienų}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 skirtukas}one{# skirtukas}few{# skirtukai}many{# skirtuko}other{# skirtukų}}</translation>
+<translation id="4404790787924017676">Gaukite įspėjimus apie sumažintas stebimų produktų kainas</translation>
 <translation id="4405320213589929829">Naudokite adresus tinklalapiuose, kad gautumėte vietos informacijos ir nuorodų.</translation>
 <translation id="441218095371040430">Naudoti klaviatūrą</translation>
 <translation id="4415276339145661267">„Google“ paskyros tvarkymas</translation>
@@ -927,6 +932,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="496392417432935267">Atidaryta kitur</translation>
 <translation id="4971735654804503942">Spartesnė, veiksni apsauga nuo pavojingų svetainių, atsisiuntimų ir plėtinių. Įspėjama apie slaptažodžių pažeidimus. Naršymo duomenys turi būti siunčiami į sistemą „Google“.</translation>
 <translation id="4979397965658815378">Prisijunkite naudodami „Google“ paskyrą, kad gautumėte žymes, slaptažodžius, istoriją ir kitus nustatymus visuose įrenginiuose</translation>
+<translation id="4985921635659180565">Kai failas suplanuotas ištrinti, jo negalima atšaukti.</translation>
 <translation id="498624032394115435">Visi nuorodą turintys žmonės gali redaguoti visus skirtukus.</translation>
 <translation id="4989065233040279145">Pasirinkite, kur išsaugoti „<ph name="FILENAME" />“</translation>
 <translation id="4992255726304765516">Skirtukų grupės spalva <ph name="COLOR" /></translation>
@@ -1202,6 +1208,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6140600850356225166">Prašyti atidaryti nuorodas iš kitų programų inkognito režimu</translation>
 <translation id="6140948187512243695">Rodyti išsamią informaciją</translation>
 <translation id="6144589619057374135">Atidaryti ${url} inkognito režimu</translation>
+<translation id="6147279996212084542">Paaiškinti</translation>
 <translation id="6151006591088192882">Atrakinti inkognito skirtukus naudojant <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Neaktyvu</translation>
 <translation id="6152406514676263192">Sinchronizuokite, kad būtų pateikiamas labiausiai su jūsų pomėgiais susijęs turinys.</translation>
@@ -1247,6 +1254,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6316141353357700666">Iš pateikto sąrašo pasirinkite norimą naudoti slaptažodį.</translation>
 <translation id="6321526113093607004">Pridėti prie žymių</translation>
 <translation id="6331836477476466332">Saugesnė ir galingesnė naršyklė jums</translation>
+<translation id="6335744088476213315">Šioje kortelėje rodomi produktai, kuriuos neseniai peržiūrėjote ir kuriuos galbūt norėtumėte stebėti, kad gautumėte įspėjimus apie sumažintas kainas</translation>
 <translation id="6337234675334993532">Šifruotė</translation>
 <translation id="633809752005859102">Kažkas tikrai nepavyko. Pasistengsime tai ištaisyti.</translation>
 <translation id="6339793034470834130">Jei norite naudoti Žiniatinklio tikrintuvą, prisijunkite prie „Safari“ kompiuteriu naudodami laidą ir pasiekite „iPhone“ meniu „Develop“. Meniu „Develop“ galite įgalinti kompiuterio „Safari“ nustatymų skiltyje „Advanced“.</translation>
@@ -1536,6 +1544,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7512075701202892785">Dabar mėgstama naršyklė „iPad“</translation>
 <translation id="7512909159512473473">Įvesti slaptafrazę…</translation>
 <translation id="7514365320538308">Atsisiųsti</translation>
+<translation id="7522948500476882302">Atsisiųsdami failą pasirinkite, kad jis būtų automatiškai ištrintas per vieną mėnesį</translation>
 <translation id="7524055474074101597">Pasiekite slaptažodžius ir kitas funkcijas programose.</translation>
 <translation id="75362970626182391">Nauja skirtukų grupė</translation>
 <translation id="7537586195939242955">Deja, šiuo metu negalima įdiegti „Pass“ į „Passbook“.</translation>
@@ -1774,6 +1783,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8487667956631253959">Įjungta</translation>
 <translation id="8487700953926739672">Pasiekiama neprisijungus</translation>
 <translation id="8490629238792920282">Nepavyko sukurti nuorodos</translation>
+<translation id="8501469528283376592">Automatinis atsisiuntimų trynimas</translation>
 <translation id="8503813439785031346">Vartotojo vardas</translation>
 <translation id="8505361906966222822">Išsaugoti…</translation>
 <translation id="850600235656508448">Atidaryti inkognito režimu</translation>

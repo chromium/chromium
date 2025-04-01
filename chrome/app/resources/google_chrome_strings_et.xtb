@@ -59,6 +59,7 @@
 <translation id="1786044937610313874">Otseteed avanevad Chrome'is</translation>
 <translation id="178701303897325119">Seda laiendust enam ei toetata. Chrome soovitab selle eemaldada.</translation>
 <translation id="1812689907177901597">Kui selle välja lülitate, saate Google'i saitidele (nt Gmaili) sisse logida ilma Chrome'i sisse logimata</translation>
+<translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome soovitab teie brauserit aeglustava vahelehe peatada}other{Chrome soovitab teie brauserit aeglustavad vahelehed peatada}}</translation>
 <translation id="1838374766361614909">Otsingu kustutamine</translation>
 <translation id="1860536484129686729">Chrome vajab selle saidi puhul luba, et teie kaamerale juurde pääseda</translation>
 <translation id="1873233029667955273">Google Chrome ei ole vaikebrauser</translation>
@@ -256,6 +257,7 @@
 <translation id="4281844954008187215">Teenusetingimused</translation>
 <translation id="4293420128516039005">Logige sisse, et Chrome kõigis oma seadmetes sünkroonida ja isikupärastada</translation>
 <translation id="430327780270213103">Lubage laiendus, et juurdepääsutaotlused Chrome'i tööriistaribal kuvada</translation>
+<translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome soovitab teie brauserit aeglustava vahelehe peatada}other{Chrome soovitab teie brauserit aeglustavad vahelehed peatada}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Isikupärastatud kasutuskogemuse saamiseks ja muude funktsioonide kasutamiseks kaasake Chrome veebi- ja rakendustegevustesse ning lingitud Google'i teenustesse</translation>
 <translation id="4334294535648607276">Allalaadimine on lõpule viidud.</translation>

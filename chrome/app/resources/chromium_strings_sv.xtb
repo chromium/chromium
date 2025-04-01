@@ -151,6 +151,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2977470724722393594">Chromium är uppdaterat</translation>
 <translation id="2977506796191543575">Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chromium till Säker webbsökning tillsammans med delar av sidinnehållet</translation>
 <translation id="2981563588585023386">Du kan skydda dig online med dina föräldrars val genom att logga in i Chromium</translation>
+<translation id="3003694935412297923">Alla uppgifter</translation>
 <translation id="3013473503895162900">Öppna <ph name="URL" /> på en ny flik i Chromium.</translation>
 <translation id="3032706164202344641">Chromium kan inte kontrollera dina lösenord. Försök igen senare.</translation>
 <translation id="3032787606318309379">Lägger till i Chromium ...</translation>
@@ -170,6 +171,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3179665906251668410">Öppna länken i ett inko&amp;gnitofönster i Chromium</translation>
 <translation id="3185330573522821672">Anpassa din nya Chromium-profil</translation>
 <translation id="3224847870593914902">Du kan ta bort Google-kontot från Chromium genom att logga ut från Chromium på sidan Inställningar</translation>
+<translation id="3234316605225071811">Senare kan Chromium fråga om du vill använda sparade uppgifter för att fylla i formulär automatiskt</translation>
 <translation id="3258596308407688501">Chromium kan inte läsa och skriva till datakatalogen:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -266,6 +268,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4570813286784708942">Den här nedladdningen blockerades av Chromium eftersom du har inaktiverat Säker webbsökning och filen inte kan verifieras</translation>
 <translation id="4594305310729380060">I Lösenordshantering på den här enheten</translation>
 <translation id="459535195905078186">Chromium-appar</translation>
+<translation id="4598116752460667024">Sök efter en process i listan.</translation>
 <translation id="4613863813562375431">Chromium OS-version</translation>
 <translation id="4621240073146040695">Nästan klart! Slutför uppdateringen genom att starta om Chromium.</translation>
 <translation id="4665829708273112819">Varning! Chromium kan inte förhindra att tillägg registrerar din webbhistorik. Om du vill inaktivera det här tillägget i inkognitoläge avmarkerar du det här alternativet.</translation>
@@ -432,6 +435,7 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog elle
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium har upptäckt att <ph name="EXTENSION_NAME" /> innehåller skadlig kod</translation>
 <translation id="6896758677409633944">Kopiera</translation>
+<translation id="6901631050894301805">Ställ in Chromium som standardwebbläsare och fäst den på aktivitetsfältet</translation>
 <translation id="6929417474050522668">Med Annonsmätning, om provfunktioner är aktiverade, kan webbplatser du besöker begära information från Chromium som hjälper dem att mäta annonsernas resultat. Med annonsmätning begränsas spårningen från webbplats till webbplats genom att så lite information som möjligt överförs mellan webbplatserna.</translation>
 <translation id="6940431691900807093">Senare kan en webbplats fråga efter dina intressen i Chromium för att anpassa vilka annonser som visas. Chromium kan dela upp till tre intressen.</translation>
 <translation id="6964305034639999644">Öppna länken i ett inko&amp;gnitofönster i Chromium.</translation>
@@ -456,6 +460,7 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog elle
 <translation id="7223968959479464213">Aktivitetshanteraren – Chromium</translation>
 <translation id="7246575524853130370">Chromiums uppskattning av dina intressen</translation>
 <translation id="7274695763216404502">Fäst! Använd Bildsökning igen från verktygsfältet</translation>
+<translation id="7288567540154601580">Flikar och tillägg</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Vi rekommenderar att du tar bort detta}other{Vi rekommenderar att du tar bort dessa}}</translation>
 <translation id="7309928523159922338">Genom annonsmätning kan webbplatser du besöker begära information från Chromium som hjälper dem att mäta annonsernas resultat. Med annonsmätning begränsas spårningen från webbplats till webbplats genom att så lite information som möjligt överförs mellan webbplatserna.</translation>
 <translation id="731795002583552498">Chromium uppdateras</translation>

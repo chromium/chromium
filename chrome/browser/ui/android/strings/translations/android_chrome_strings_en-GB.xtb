@@ -63,7 +63,6 @@
 <translation id="1240288207750131269">Loading <ph name="LANG" /></translation>
 <translation id="124116460088058876">More languages</translation>
 <translation id="1241792820757384812">Your passwords will be deleted from Google Password Manager for <ph name="CHROME_CHANNEL" />. You will keep the passwords file you just downloaded.</translation>
-<translation id="1242883863226959074">device</translation>
 <translation id="124678866338384709">Close current tab</translation>
 <translation id="1246905108078336582">Remove suggestion from clipboard?</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
@@ -510,7 +509,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3398320232533725830">Open the bookmarks manager</translation>
 <translation id="3414952576877147120">Size:</translation>
 <translation id="3421726884497337397">Choose when to block third-party cookies</translation>
-<translation id="342220687432920852">{HOURS,plural, =1{# hr ago}other{# hrs ago}}</translation>
 <translation id="3430670036890315772">Turning off your profile lock will remove your saved info</translation>
 <translation id="3435465986463792564">Got many windows? You can manage them from here</translation>
 <translation id="3435575784518354875">To keep access to your passwords, export them now, update Google Play services and then import them back to Google Password Manager. <ph name="BEGIN_LINK" />See full instructions<ph name="END_LINK" />.</translation>
@@ -693,6 +691,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4269820728363426813">Copy link address</translation>
 <translation id="4270730597186910506">Track or untrack a product.</translation>
 <translation id="4277529130885813215">Use another device</translation>
+<translation id="427987768447457592">New tab group</translation>
 <translation id="4282440837784183472">Your organisation, <ph name="MANAGED_DOMAIN" />, manages the account that you're signing in to and how Chrome can be used. Your administrator can set up or restrict certain features.</translation>
 <translation id="4285498937028063278">Unpin</translation>
 <translation id="4285846616383034558">Cookies, cache and other site data</translation>
@@ -963,7 +962,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5517095782334947753">You have bookmarks, history, passwords and other settings from <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5517326820028369152">Recent activity bottom sheet</translation>
 <translation id="5526281268548144413">Can't be closed across multiple windows</translation>
-<translation id="5528925345478618296">{MINUTES,plural, =1{# min ago}other{# mins ago}}</translation>
 <translation id="5548606607480005320">Safety check</translation>
 <translation id="5554520618550346933">When you use a password, Chrome warns you if it has been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>
 <translation id="5555525474779371165">Choose your Safe Browsing protection</translation>
@@ -1274,7 +1272,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6865313869410766144">Autofill form data</translation>
 <translation id="6867400383614725881">New Incognito tab</translation>
 <translation id="686899695320434745">Addresses aren't encrypted with your passphrase. This lets you use them in other Google services.</translation>
-<translation id="6869056123412990582">computer</translation>
 <translation id="687838958001010630">Anyone with the link can edit all tabs</translation>
 <translation id="6880903702195291049">Permissions look good</translation>
 <translation id="6883204995689174413">Share</translation>
@@ -1637,7 +1634,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8419244640277402268">Include</translation>
 <translation id="8422250855136581222">No tabs on this device</translation>
 <translation id="842386925677997438">Chrome’s safety tools</translation>
-<translation id="8424781820952413435">Page sent. To see it, open Chrome on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Preview tab is half-opened</translation>
 <translation id="8428213095426709021">Settings</translation>
 <translation id="8430824733382774043">Share screenshot only</translation>
@@ -1692,7 +1688,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8611922158252451755">Anyone with the link can edit all tabs, so share wisely. Link expires in 48 hours.</translation>
 <translation id="8616006591992756292">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Open the suggested URL specified in the downloaded content?</translation>
-<translation id="8621068256433641644">phone</translation>
 <translation id="8635399646025169806">Keep tab group?</translation>
 <translation id="8636825310635137004">To get your tabs from your other devices, turn on sync.</translation>
 <translation id="864544049772947936">Manage windows (<ph name="INSTANCE_COUNTS" />)</translation>

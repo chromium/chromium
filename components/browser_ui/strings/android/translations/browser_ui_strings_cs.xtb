@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">Vynutit aktivaci přiblížení</translation>
 <translation id="3905475044299942653">Zastavit spousty oznámení</translation>
 <translation id="3908288065506437185">V anonymním režimu blokovat soubory cookie třetích stran</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Některé funkce mohou být omezeny. Související weby mohou soubory cookie třetích stran používat i nadále.</translation>
 <translation id="3922092564198021702">V telefonu přejděte do Nastavení</translation>
 <translation id="3933121352599513978">Sbalit nechtěné žádosti (doporučeno)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">Podrobnosti</translation>
 <translation id="4598549027014564149">V anonymním režimu weby nemohou používat soubory cookie ke sledování vaší aktivity prohlížení na webech, a to ani na souvisejících webech. Vaše aktivita prohlížení se nepoužívá například k personalizaci reklam. Některé weby mohou přestat fungovat.</translation>
 <translation id="461356340001513807">Umožňuje přihlašovat se na weby pomocí účtu služby identity</translation>
-<translation id="4619615317237390068">Karty z ostatních zařízení</translation>
 <translation id="4635969503923889910">Nepovolovat webům používat zařízení NFC</translation>
 <translation id="4644713492825682049">Vymazat a resetovat</translation>
 <translation id="4645575059429386691">Spravováno vaším rodičem</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">Sdílet prostřednictvím</translation>
 <translation id="5001526427543320409">Soubory cookie třetích stran</translation>
 <translation id="5007392906805964215">Zkontrolovat</translation>
-<translation id="5014182796621173645">Navštívili jste <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Povolit</translation>
 <translation id="5048398596102334565">Povolit webům přístup k senzorům pohybu (doporučeno)</translation>
 <translation id="5048841907079026162">Spravujte své údaje o procházení</translation>

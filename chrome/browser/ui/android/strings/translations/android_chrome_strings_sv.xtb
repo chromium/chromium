@@ -63,7 +63,6 @@
 <translation id="1240288207750131269">Läser in <ph name="LANG" /></translation>
 <translation id="124116460088058876">Fler språk</translation>
 <translation id="1241792820757384812">Dina lösenord raderas från Google Lösenordshantering för <ph name="CHROME_CHANNEL" />. Lösenordsfilen som du precis laddade ned finns kvar.</translation>
-<translation id="1242883863226959074">enhet</translation>
 <translation id="124678866338384709">Stäng den aktuella fliken</translation>
 <translation id="1246905108078336582">Vill du ta bort förslaget från urklipp?</translation>
 <translation id="1258753120186372309">Googles doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
@@ -510,7 +509,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3398320232533725830">Öppna bokmärkeshanteraren</translation>
 <translation id="3414952576877147120">Storlek:</translation>
 <translation id="3421726884497337397">Välj när cookies från tredje part ska blockeras</translation>
-<translation id="342220687432920852">{HOURS,plural, =1{# tim sedan}other{# tim sedan}}</translation>
 <translation id="3430670036890315772">Om du inaktiverar profillåset tas dina sparade uppgifter bort</translation>
 <translation id="3435465986463792564">Har du många fönster? Du kan hantera dem härifrån</translation>
 <translation id="3435575784518354875">Om du vill behålla åtkomsten till dina lösenord kan du exportera dem nu, uppdatera Google Play-tjänster och sedan importera dem till Google Lösenordshantering. <ph name="BEGIN_LINK" />Se fullständiga instruktioner<ph name="END_LINK" />.</translation>
@@ -518,11 +516,13 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3439276997620616816">Du hittar dina senaste flikar här</translation>
 <translation id="3443221991560634068">Läs in den aktuella sidan igen</translation>
 <translation id="3444179773590444986">Vill du dela feedback om mörkt tema för webbplatser?</translation>
+<translation id="3448874648066942074">Sammanfatta sidan med AI</translation>
 <translation id="3452832259067974318">Av integritetsskäl fylls ditt lösenord inte i automatiskt i det här fältet.</translation>
 <translation id="3467081767799433066">Med annonsmätning delas begränsade typer av data mellan webbplatser för att mäta annonsernas resultat, till exempel om du har gjort ett köp efter att ha besökt en webbplats.</translation>
 <translation id="3474624961160222204">Fortsätt som <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Du kan välja din sökmotor</translation>
 <translation id="3479552764303398839">Inte nu</translation>
+<translation id="3482805106082349287">Sök med tangentbordet, rösten, inkognitoläget eller kameran</translation>
 <translation id="3487903178221457900">Den exporterade filen kan vara tillgänglig för andra, inklusive appar. När du har exporterat dem raderas lösenorden från Chrome.</translation>
 <translation id="3488199663160411179">ditt namn</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /> om förslag på innehåll</translation>
@@ -694,6 +694,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4269820728363426813">Kopiera länkadress</translation>
 <translation id="4270730597186910506">Bevaka eller sluta bevaka en produkt.</translation>
 <translation id="4277529130885813215">Använd en annan enhet</translation>
+<translation id="427987768447457592">Ny flikgrupp</translation>
 <translation id="4282440837784183472">Din organisation, <ph name="MANAGED_DOMAIN" />, hanterar kontot du loggar in på och hur Chrome kan användas. Administratören kan konfigurera eller begränsa vissa funktioner.</translation>
 <translation id="4285498937028063278">Lossa</translation>
 <translation id="4285846616383034558">Cookies, cacheminne och annan webbplatsdata</translation>
@@ -784,6 +785,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4698061626562952596">Granska dina inaktiva flikar här</translation>
 <translation id="4699172675775169585">Cachade bilder och filer</translation>
 <translation id="4710167854527459075">Sortera efter senaste</translation>
+<translation id="4718044610319080485">Startar AI-assistenten</translation>
 <translation id="4719927025381752090">Erbjud översättning</translation>
 <translation id="4720556299488643018">Avsluta prenumeration</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
@@ -899,6 +901,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5174700554036517242">Fliken är tillbaka till ursprunglig höjd</translation>
 <translation id="5180063720319462041">Sidan har översatts till <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5191251636205085390">Läs mer om ny teknik som med tiden kan ersätta tredjepartscookies och hur du kan styra den</translation>
+<translation id="5197649123261764478">Kom enkelt åt dina bokmärken</translation>
 <translation id="5204967432542742771">Ange lösenord</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Filen laddas ned …}other{# filer laddas ned …}}</translation>
 <translation id="5210286577605176222">Hoppa till föregående flik</translation>
@@ -928,6 +931,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5328542107300944283">Använd med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Behörighetsförfrågningar</translation>
 <translation id="534580735623577507">Inga webbplatser från <ph name="TIME_PERIOD" /></translation>
+<translation id="5354716139000094027">Sammanfatta med AI</translation>
 <translation id="5355191726083956201">Förbättrat skydd är aktiverat</translation>
 <translation id="5375374982898812658">Du förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och den raderas från alla dina enheter</translation>
 <translation id="5375577065097716013">Bildsökning med Google Lens <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
@@ -937,6 +941,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="539881862970320163">Ett starkt lösenord har föreslagits. Tangentbordet är dolt.</translation>
 <translation id="5409881200985013443">Vill du skicka <ph name="ONE_TIME_CODE" /> på <ph name="CLIENT_NAME" />?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) vill att du ska gå med i en flikgrupp. Alla som har länken kan redigera alla flikar, så tänk efter innan du går med. Länken löper ut om 48 timmar.</translation>
+<translation id="5412388166586147626">Det gick inte att öppna AI-assistenten. Försök igen.</translation>
 <translation id="5414836363063783498">Verifierar ...</translation>
 <translation id="5415871492522952905">Din historik och dina fikar finns på alla enheter, så att du kan fortsätta där du slutade</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /></translation>
@@ -964,13 +969,13 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5517095782334947753">Du har bokmärken, historik, lösenord och andra inställningar från <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5517326820028369152">Senaste aktiviteten i arket på nedre delen av skärmen</translation>
 <translation id="5526281268548144413">Kan inte stängas i flera fönster</translation>
-<translation id="5528925345478618296">{MINUTES,plural, =1{# min sedan}other{# min sedan}}</translation>
 <translation id="5548606607480005320">Säkerhetskontroll</translation>
 <translation id="5554520618550346933">När du använder ett lösenord visas en varning i Chrome om det har publicerats online. När detta görs krypteras dina lösenord och användarnamn så att varken Google eller någon annan kan läsa dem.</translation>
 <translation id="5555525474779371165">Välj ditt skydd med Säker webbsökning</translation>
 <translation id="5556459405103347317">Hämta igen</translation>
 <translation id="555671485580955310">Synkronisera historik och flikar</translation>
 <translation id="555816257274242153">Bevakning av pris har avbrutits</translation>
+<translation id="5561445479436807659">Hoppa in i ett roligt dinosauriespel</translation>
 <translation id="5561549206367097665">Väntar på nätverket …</translation>
 <translation id="5568069709869097550">Kan inte logga in</translation>
 <translation id="557018954714092179">Skapa ny mapp</translation>
@@ -1275,7 +1280,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6865313869410766144">Formuläruppgifter för Autofyll</translation>
 <translation id="6867400383614725881">Ny inkognitoflik</translation>
 <translation id="686899695320434745">Adresserna krypteras inte med lösenfrasen. Detta gör att du kan använda dem i andra Google-tjänster.</translation>
-<translation id="6869056123412990582">dator</translation>
 <translation id="687838958001010630">Alla som har länken kan redigera alla flikar</translation>
 <translation id="6880903702195291049">Behörigheterna ser bra ut</translation>
 <translation id="6883204995689174413">Dela</translation>
@@ -1518,6 +1522,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 har blockerats av organisationen}other{# har blockerats av organisationen}}</translation>
 <translation id="7914399737746719723">Appen har installerats</translation>
 <translation id="7919123827536834358">Översätt dessa språk automatiskt</translation>
+<translation id="7921782882718083488">Sammanfatta den här sidan</translation>
 <translation id="7926975587469166629">Kortets namn</translation>
 <translation id="7929962904089429003">Öppna menyn</translation>
 <translation id="7934668619883965330">Det gick inte att ladda ned filen. Filformatet stöds inte.</translation>
@@ -1638,7 +1643,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8419244640277402268">Inkludera</translation>
 <translation id="8422250855136581222">Inga flikar på den här enheten</translation>
 <translation id="842386925677997438">Säkerhetsverktyg i Chrome</translation>
-<translation id="8424781820952413435">Sidan har skickats. Öppna Chrome på <ph name="DEVICE_TYPE" /> för att se den</translation>
 <translation id="8427875596167638501">Fliken Förhandsgranskning visas på halva skärmen</translation>
 <translation id="8428213095426709021">Inställningar</translation>
 <translation id="8430824733382774043">Dela endast skärmbild</translation>
@@ -1675,6 +1679,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8540136935098276800">Ange en webbadress i rätt format</translation>
 <translation id="854522910157234410">Öppna sidan</translation>
 <translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{Inaktiv flik (1)}other{Inaktiva flikar (#)}}</translation>
+<translation id="8547466829003330976">Granska PDF:en med AI</translation>
 <translation id="8551513938758868521">Lås inkognitoflikar när du stänger Chrome</translation>
 <translation id="8559961053328923750">Chrome begränsar den totala mängden data som webbplatser kan dela via webbläsaren för att mäta annonsresultatet</translation>
 <translation id="8559990750235505898">Erbjud översättning av sidor till andra språk</translation>
@@ -1693,7 +1698,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8611922158252451755">Alla som har länken kan redigera alla flikar, så tänk efter innan du delar. Länken löper ut om 48 timmar.</translation>
 <translation id="8616006591992756292">Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Vill du öppna den föreslagna webbadressen i det nedladdade innehållet?</translation>
-<translation id="8621068256433641644">telefon</translation>
 <translation id="8635399646025169806">Vill du behålla flikgruppen?</translation>
 <translation id="8636825310635137004">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter.</translation>
 <translation id="864544049772947936">Hantera fönster (<ph name="INSTANCE_COUNTS" />)</translation>
@@ -1773,6 +1777,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="9022871169049522985">Webbplatser och annonsörer kan mäta annonsernas resultat</translation>
 <translation id="9035378196785279980">Flytta till\u2026</translation>
 <translation id="9042893549633094279">Integritet och säkerhet</translation>
+<translation id="9047347135558855162">Starta snabbt en sökning i Chrome</translation>
 <translation id="9050666287014529139">Lösenfras</translation>
 <translation id="9055497320631373736">Webbplatsen har lagts till i potentiella webbplatser igen</translation>
 <translation id="9057030985451135243">Läs mer om delade flikgrupper</translation>

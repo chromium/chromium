@@ -296,7 +296,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1492194039220927094">Skicka principer:</translation>
 <translation id="1495677929897281669">Tillbaka till flik</translation>
 <translation id="1500286806237135498">Kameror (<ph name="CAMERAS_COUNT" />)</translation>
-<translation id="1501859676467574491">Visa kort från ditt Google-konto</translation>
 <translation id="1504042622576912555">Vågor</translation>
 <translation id="1507202001669085618">&lt;p&gt;Felmeddelandet visas om du använder en wifi-portal där du måste logga in innan du kommer ut på internet.&lt;/p&gt;
     &lt;p&gt;Åtgärda problemet genom att klicka på &lt;strong&gt;Anslut&lt;/strong&gt; på sidan du försöker öppna.&lt;/p&gt;</translation>
@@ -2026,6 +2025,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4521280267704259211">Monarch-kuvert</translation>
 <translation id="4521916730539354575">Vänster fack</translation>
 <translation id="4522570452068850558">Detaljer</translation>
+<translation id="4523580145196408446">Länkad</translation>
 <translation id="4523643381056109546">Skyltar</translation>
 <translation id="4524138615196389145">Verifiera kreditkort snabbare genom att använda WebAuthn från och med nu</translation>
 <translation id="45243788195988825">Blockera <ph name="TOPIC" /></translation>
@@ -3091,6 +3091,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6405181733356710802">Vill du fortsätta till <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Ange utgångsdatum och CVC-kod för <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4 x 8</translation>
+<translation id="6412543105195503444">Dialogruta för föräldragodkännande</translation>
 <translation id="6414010576370319452">Hud- och nagelvård</translation>
 <translation id="6415778972515849510">Du kan skydda Google-kontot genom att byta lösenord.</translation>
 <translation id="6416877227920300343">EDP</translation>

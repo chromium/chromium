@@ -4176,15 +4176,6 @@ Kebijakan ini bersifat sementara dan akan dihapus pada masa mendatang.</translat
 <translation id="3956573780915784996">Izinkan pengguna mengumpulkan jejak performa di seluruh sistem.</translation>
 <translation id="3956686688560604829">Gunakan kebijakan SiteList Internet Explorer untuk Dukungan Browser Lama.</translation>
 <translation id="3958586912393694012">Izinkan Smart Lock digunakan</translation>
-<translation id="3959350391319409669">Kebijakan ini mengontrol setelan kode dinamis untuk <ph name="PRODUCT_NAME" />.
-
-Menonaktifkan kode dinamis akan meningkatkan keamanan <ph name="PRODUCT_NAME" /> dengan mencegah kode dinamis dan kode pihak ketiga yang berpotensi berbahaya agar tidak mengubah perilaku <ph name="PRODUCT_NAME" />, tetapi dapat menyebabkan masalah kompatibilitas dengan software pihak ketiga yang harus berjalan dalam proses browser.
-
-Jika kebijakan disetel ke 0 - Default atau tidak disetel, <ph name="PRODUCT_NAME" /> akan menggunakan setelan default.
-
-Jika kebijakan disetel ke 1 - DisabledForBrowser, proses browser <ph name="PRODUCT_NAME" /> akan mencegah membuat kode dinamis.
-
-Catatan: Baca selengkapnya tentang kebijakan mitigasi proses ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
 <translation id="3960728283243442805">Pengguna tidak akan diberi opsi di menu <ph name="PRODUCT_NAME" /> untuk memilih perangkat transmisi dengan menggunakan kode akses atau dengan memindai kode QR.</translation>
 <translation id="3962445567482559878">Gunakan mode EDU pengalaman aktivasi Asisten</translation>
 <translation id="396261881101930204">Sembunyikan rekomendasi media dari pengguna</translation>

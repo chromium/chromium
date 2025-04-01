@@ -38,6 +38,7 @@
 <translation id="19085484004813472">यो नयाँ सुविधा हो</translation>
 <translation id="2006524834898217237">यो डिभाइस इन्टरनेटमा जोडिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="208586643495776849">कृपया फेरि प्रयास गर्नुहोस्</translation>
+<translation id="2111134541987263231">"<ph name="BEGIN_BOLD" />इन्कोग्निटो मोडमा अनुमति दिनुहोस्<ph name="END_BOLD" />" अन गर्नुहोस्</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{१ दिन}other{# दिन}}</translation>
 <translation id="2148716181193084225">आज</translation>
 <translation id="2168039046890040389">पृष्ठ माथि</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">आफ्नो स्क्रिनमा स्पर्शका लक्ष्यहरूमा छुनुहोस्।</translation>
 <translation id="2295140143284145483">सर्वेक्षण</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> टीबी/सेकेन्ड</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{निम्न ID भएको एक्स्टेन्सन <ph name="BEGIN_LIST" /><ph name="END_LIST" /> भेट्टाउन सकिएन। आफ्ना एड्मिनसँग सम्पर्क गर्नुहोस्।}other{निम्न ID भएका एक्स्टेन्सनहरू <ph name="BEGIN_LIST" /><ph name="END_LIST" /> भेट्टाउन सकिएन। आफ्ना एड्मिनसँग सम्पर्क गर्नुहोस्।}}</translation>
 <translation id="2353636109065292463">तपाईंको इन्टरनेट जडानको जाँच गर्दै</translation>
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
 <translation id="2388990488038464401">आफ्नो फोनबाट यो नम्बरमा कल गर्ने हो?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">सबै वस्तु मेट्नुहोस्</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{१ दिनमा}other{# दिनमा}}</translation>
 <translation id="2922712708897119705"><ph name="COLUMN_NAME" /> नामक कोलम वर्णानुक्रमअनुसार घट्दो क्रममा क्रमबद्ध गरिएको छ।</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{एक्स्टेन्सन भेटिएन}other{एक्स्टेन्सनहरू भेटिएनन्}}</translation>
 <translation id="3036649622769666520">खुल्ला फाइलहरू</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> एमबी</translation>
 <translation id="3087734570205094154">तल</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">निम्न सेवामार्फत कल गर्नुहोस्</translation>
 <translation id="3306688585798492231">अन्तर्निर्मित डिस्प्ले</translation>
 <translation id="335581015389089642">बोली</translation>
+<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />विवरणहरू<ph name="END_BOLD" />मा क्लिक गर्नुहोस्</translation>
 <translation id="3389286852084373014">पाठ ज्यादै ठुलो छ</translation>
 <translation id="3406306243914553062">HTML सामग्री</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{ १ दिन बाँकी}other{ # दिन बाँकी}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> नामक कोलम वर्णानुक्रमअनुसार बढ्दो क्रममा क्रमबद्ध गरिएको छ।</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{१ नपढिएको सूचना}other{# नपढिएका सूचनाहरू}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{इन्कोग्निटो मोडमा निम्न एक्स्टेन्सन अन गर्नुहोस्:}other{इन्कोग्निटो मोडमा निम्न एक्स्टेन्सनहरू अन गर्नुहोस्:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{१ महिना अघि}other{# महिना अघि}}</translation>
 <translation id="4289300219472526559">बोल्न सुरु गर्नुहोस्</translation>
 <translation id="4289540628985791613">समीक्षा</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">फोन नम्बर</translation>
 <translation id="4746179598275229723">एक्स्टेन्सन अनपिन गरियो</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{१ महिना बाँकी}other{# महिना बाँकी}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{तपाईंले आफ्नो सङ्गठनले तोकेको एक्स्टेन्सन अन गरेपछि मात्र तपाईं इन्कोग्निटो मोड प्रयोग गर्न पाउनुहुन्छ}other{तपाईंले आफ्नो सङ्गठनले तोकेका केही एक्स्टेन्सन अन गरेपछि मात्र तपाईं इन्कोग्निटो मोड प्रयोग गर्न पाउनुहुन्छ}}</translation>
+<translation id="482932175346970750">आफ्नो ब्राउजरमा <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> टाइप गर्नुहोस्</translation>
 <translation id="4888938634149558681">कल गर्नुहोस्</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{ १ सेकेन्ड}other{ # सेकेन्ड}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;टाँस्नुहोस्</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> पीबी</translation>
 <translation id="5278860589123563674">पठाउन सकिएन</translation>
+<translation id="5283101102242354279">इन्कोग्निटो मोडमा एक्स्टेन्सन अन गर्ने तरिका:</translation>
 <translation id="528468243742722775">समाप्त</translation>
 <translation id="5329858601952122676">&amp;मेट्नुहोस्</translation>
 <translation id="5361107212971249203">टेक्स्ट</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">अर्को पटक तपाईंको एप पुनः सुरु भएपछि तपाईंको एपको डिस्प्लेसम्बन्धी सेटिङहरू लागू हुने छन्।</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{ १ मिनेट बाँकी}other{ # मिनेट बाँकी}}</translation>
+<translation id="7252604552361840748">माथि उल्लिखित एक्स्टेन्सन खोज्नुहोस्</translation>
 <translation id="7363164521834647158">जवाफ पठाउनुहोस्</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{ १ मिनेटअघि}other{ # मिनेटअघि}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>

@@ -61,6 +61,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1786044937610313874">Magbubukas ang mga shortcut sa Chrome</translation>
 <translation id="178701303897325119">Hindi na sinusuportahan ang extension na ito. Inirerekomenda ng Chrome na alisin mo na lang ito.</translation>
 <translation id="1812689907177901597">Kapag na-off ito, maaari kang mag-sign in sa mga site ng Google tulad ng Gmail nang hindi nagsa-sign in sa Chrome</translation>
+<translation id="1821644463306970002">{NUM_TABS,plural, =1{Inirerekomenda ng Chrome na i-pause ang tab na nagpapabagal sa iyong browser}one{Inirerekomenda ng Chrome na i-pause ang mga tab na nagpapabagal sa iyong browser}other{Inirerekomenda ng Chrome na i-pause ang mga tab na nagpapabagal sa iyong browser}}</translation>
 <translation id="1838374766361614909">I-clear ang paghahanap</translation>
 <translation id="1860536484129686729">Kailangan ng Chrome ng pahintulot na i-access ang iyong camera para sa site na ito</translation>
 <translation id="1873233029667955273">Hindi Google Chrome ang iyong default na browser</translation>
@@ -187,6 +188,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3282568296779691940">Mag-sign in sa Chrome</translation>
 <translation id="3286538390144397061">I-restart Ngayon</translation>
 <translation id="3292333338048274092">Pagkatapos, kakailanganin mong i-restart ang Chrome.</translation>
+<translation id="3327226547491422998">Itatanong sa iyo ng Chrome sa ibang pagkakataon kung gusto mong gamitin ang naka-save na impormasyon para i-autofill ang mga form para sa iyo</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Muli nang ilulunsad ang Chrome ngayon}=1{Muli nang ilulunsad ang Chrome sa loob ng 1 segundo}one{Muli nang ilulunsad ang Chrome sa loob ng # segundo}other{Muli nang ilulunsad ang Chrome sa loob ng # na segundo}}</translation>
 <translation id="3396977131400919238">Nagkaroon ng error sa operating system habang nag-i-install. Paki-download muli ang Google Chrome.</translation>
@@ -258,6 +260,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4281844954008187215">Mga Tuntunin ng Serbisyo</translation>
 <translation id="4293420128516039005">Mag-sign in para i-sync at i-personalize ang Chrome sa lahat ng iyong device</translation>
 <translation id="430327780270213103">Payagan ang extension na ipakita ang mga kahilingan sa access sa toolbar ng Chromium</translation>
+<translation id="4326552909330437744">{NUM_TABS,plural, =1{Inirerekomenda ng Chrome na I-pause ang Tab na Nagpapabagal sa Iyong Browser}one{Inirerekomenda ng Chrome na I-pause ang Mga Tab na Nagpapabagal sa Iyong Browser}other{Inirerekomenda ng Chrome na I-pause ang Mga Tab na Nagpapabagal sa Iyong Browser}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Para makuha ang pag-personalize at iba pang feature, isama ang Chrome sa Aktibidad sa Web at App at mga naka-link na serbisyo ng Google</translation>
 <translation id="4334294535648607276">Tapos na ang pag-download.</translation>
@@ -404,6 +407,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6251759518630934363">Babalaan ka tungkol sa mga mapanganib na site, kahit iyong mga hindi alam ng Google noon, sa pamamagitan ng pagsusuri sa higit pang data mula sa mga site kaysa sa karaniwang proteksyon. Puwede mong piliing laktawan ang mga babala ng Chrome.</translation>
 <translation id="6277547788421725101">In-off ng iyong magulang ang "Mga pahintulot para sa mga site, app, at extension" para sa Chrome</translation>
 <translation id="627882678981830918">I-customize at kontrolin ang Chrome. Itakda ang Chrome bilang default mo.</translation>
+<translation id="6288580400488258237">Itakda ang Google Chrome bilang iyong default browser at i-pin ito sa taskbar mo</translation>
 <translation id="6291089322031436445">Mga Chrome Dev App</translation>
 <translation id="6291549208091401781">Naka-install na ang Google Chrome para sa lahat ng user sa iyong computer.</translation>
 <translation id="6319856120645568262">Kailangan ng Chrome ng pahintulot na imapa ang paligid mo at i-track ang iyong mga kamay</translation>

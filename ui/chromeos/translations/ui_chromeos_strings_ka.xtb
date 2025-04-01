@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">მადლობის წარწერა</translation>
 <translation id="2088690981887365033">VPN ქსელი</translation>
 <translation id="209653272837065803">ფაილების სინქრონიზაციის გასაგრძელებლად საკმარისი მეხსიერება არ არის</translation>
-<translation id="2111134541987263231">ჩართეთ <ph name="BEGIN_BOLD" />ინკოგნიტოში დაშვება<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">წაშლილებში არსებული <ph name="NUMBER_OF_ITEMS" /> ერთეული წაიშლება და მათ აღდგენას ვეღარ მოახერხებთ.</translation>
 <translation id="2122305276694332719">დამალულ ქსელთან ავტომატურად დაკავშირება საშუალებას მისცემს სხვებს, იხილონ თქვენი მოწყობილობა და ქსელის ზოგიერთი პარამეტრი, ამიტომ ეს არ არის რეკომენდებული.</translation>
 <translation id="2125607626296734455">ქხმერული</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">პლანეტა</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ამოღებულია.</translation>
 <translation id="2307462900900812319">ქსელის კონფიგურაცია</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{გაფართოება ID-ით <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ვერ მოიძებნა. დაუკავშირდით თქვენს ადმინისტრატორს.}other{გაფართოებები ID-ებით <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ვერ მოიძებნა. დაუკავშირდით თქვენს ადმინისტრატორს.}}</translation>
 <translation id="2325650632570794183">ამ ფაილის ტიპი ვერ მოძებნა. გთხოვთ ეწვიოთ Chrome Web Store, რათა იპოვოთ ამ ფაილის გამხსნელი აპლიკაცია.</translation>
 <translation id="2326539130272988168">ბულგარული</translation>
 <translation id="233822363739146957">თქვენი ყველა ფაილის სინქრონიზაციისთვის საკმარისი მეხსიერება არ არის</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">მარათული</translation>
 <translation id="2923240520113693977">ესტონური</translation>
 <translation id="2938685643439809023">მონღოლური</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{გაფართოება ვერ მოიძებნა}other{გაფართოებები ვერ მოიძებნა}}</translation>
 <translation id="2943503720238418293">გამოიყენეთ უფრო მოკლე სახელი</translation>
 <translation id="2949781154072577687">მიმდინარეობს <ph name="DRIVE_NAME" />-ის დაფორმატება...</translation>
 <translation id="2951236788251446349">მედუზა</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">დასრულებულია</translation>
 <translation id="3358452157379365236">გიტარა</translation>
 <translation id="3368922792935385530">დაკავშირებული</translation>
-<translation id="3372635229069101468">დააწკაპუნეთ <ph name="BEGIN_BOLD" />დეტალებზე<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">ნეპალური InScript კლავიატურით</translation>
 <translation id="338691029516748599">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, მართავს თქვენი ადმინისტრატორი, დაკავშირება</translation>
 <translation id="3408072735282270043">გააქტიურება, <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">ზღაპრული მარტორქა</translation>
 <translation id="4131235941541910880">გადაიტანეთ არასაჭირო ერთეულები წაშლილებში</translation>
 <translation id="4134804435730168042">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, გაააქტიურეთ მოწყობილობის დაყენების შემდეგ</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{ინკოგნიტო რეჟიმში ჩართეთ შემდეგი გაფართოება:}other{ინკოგნიტო რეჟიმში ჩართეთ შემდეგი გაფართოებები:}}</translation>
 <translation id="4153015322587141338">თაროდან თქვენს ფაილებზე სწრაფი წვდომა რომ იქონიოთ, მარჯვენა ღილაკით დააწკაპუნეთ ფაილზე და აირჩიეთ „<ph name="PIN_COMMAND" />“.</translation>
 <translation id="4157569377477607576">ადმინისტრატორის წესების მიხედვით რეკომენდებული არ არის:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> გადატანილია.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">ორივე შენარჩუნდეს</translation>
 <translation id="4804827417948292437">ავოკადო</translation>
 <translation id="4805966553127040832">მიმდინარეობს <ph name="COUNT" /> ერთეულის აღდგენა</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{ინკოგნიტო რეჟიმის გამოსაყენებლად თქვენი ორგანიზაცია ითხოვს გაფართოებას}other{ინკოგნიტო რეჟიმის გამოსაყენებლად თქვენი ორგანიზაცია ითხოვს გარკვეულ გაფართოებებს}}</translation>
 <translation id="4826849268470072925">ტამილური ITRANS</translation>
-<translation id="482932175346970750">აკრიფეთ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> თქვენს ბრაუზერში</translation>
 <translation id="4843566743023903107">Chromebase-ები</translation>
 <translation id="4850886885716139402">გადახედვა</translation>
 <translation id="485316830061041779">გერმანული</translation>
@@ -561,7 +554,6 @@
     ფაილებზე სხვებთან ერთად და ერთი სივრციდან.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">აღდგენილი ფაილი Google Drive-დან</translation>
 <translation id="5278111733643988471">ამ ერთეულის აღსადგენად ჩავლებით გადაიტანეთ ის ახალ საქაღალდეში წაშლილებს მიღმა. ამ ერთეულის თავდაპირველი საქაღალდე „<ph name="PARENT_FOLDER_NAME" />“ წაიშალა.</translation>
-<translation id="5283101102242354279">ინკოგნიტო რეჟიმში ჩართეთ გაფართოება:</translation>
 <translation id="5288441970121584418">ბურგერი</translation>
 <translation id="5293615890992542006">ამ ფაილის გადატანა დაბლოკილია ადმინისტრატორის წესების მიხედვით</translation>
 <translation id="5305688511332277257">არცერთი არ არის დაინსტალირებული</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, დეტალები</translation>
 <translation id="7246947237293279874">FTP პროქსი-სერვერი</translation>
 <translation id="7248671827512403053">პროგრამა</translation>
-<translation id="7252604552361840748">ზემოთ იპოვეთ გაფართოება</translation>
 <translation id="7256405249507348194">ამოუცნობი შეცდომა: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ხელმისაწვდომი მომსახურებები</translation>
 <translation id="7291818353625820805">გსურთ, კლავიშები გამეორდეს? გამორთეთ მახვილის ნიშნები კლავიატურის პარამეტრებიდან</translation>

@@ -298,7 +298,6 @@
 <translation id="1492194039220927094">Слање смерница:</translation>
 <translation id="1495677929897281669">Назад на картицу</translation>
 <translation id="1500286806237135498">Камере (<ph name="CAMERAS_COUNT" />)</translation>
-<translation id="1501859676467574491">Приказуј картице са мог Google налога</translation>
 <translation id="1504042622576912555">Флаута</translation>
 <translation id="1507202001669085618">&lt;p&gt;Ова грешка се приказује ако користите WiFi портал на коме морате да се пријавите да бисте се повезали на интернет.&lt;/p&gt;
     &lt;p&gt;Да бисте отклонили ту грешку, кликните на &lt;strong&gt;Повежи се&lt;/strong&gt; на страници коју покушавате да отворите.&lt;/p&gt;</translation>
@@ -1016,6 +1015,7 @@
 <translation id="2742870351467570537">Уклони изабране ставке</translation>
 <translation id="2743512410823092182">Апарати и опрема за ди-џејеве</translation>
 <translation id="2743934314332613923">Желите да ажурирате возачку дозволу?</translation>
+<translation id="2759299890026163685">Уверите се да имате стабилну интернет везу пре него што пробате поново</translation>
 <translation id="2759825833388495838">унесе лозинку на <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Стрипови</translation>
 <translation id="2765217105034171413">Мала</translation>
@@ -1280,6 +1280,7 @@
 <translation id="323107829343500871">Унесите CVC за картицу <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Увек откривај важан садржај на овом сајту</translation>
 <translation id="323585066388831737">Светлоцрвена</translation>
+<translation id="3235902901585019063">Локални фајлови ће бити избрисани <ph name="DATE_TIME" />. Уверите се да су сви важни пословни или лични подаци сачувани на другом месту.</translation>
 <translation id="3236212803136366317">Предности картица</translation>
 <translation id="3238395604961564389">Отвори линк у прозору без архивирања</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте прилагодили изглед прегледача</translation>
@@ -1758,6 +1759,7 @@
 <translation id="4031179711345676612">Микрофон је дозвољен</translation>
 <translation id="4036753017940930924">Парцеле и земља</translation>
 <translation id="4039506337798853114">Да бисте омогућили приказ курсора, притисните |<ph name="ACCELERATOR" />|</translation>
+<translation id="4045226534284799755">Пријавите се на Microsoft налог пре него што пробате поново</translation>
 <translation id="4045441967987592849">Поново отвори</translation>
 <translation id="4047351652147966654">18×24 in</translation>
 <translation id="404831776305217138">URL ажурирања за додатак са ИД-ом <ph name="EXTENSION_ID" /> је неважећи или користи неподржану шему. Подржане шеме су: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> и <ph name="FILE_SCHEME" />.</translation>
@@ -1778,6 +1780,7 @@
 <translation id="4073797364926776829">Прикажи картицу</translation>
 <translation id="4075732493274867456">Клијент и сервер не подржавају исту верзију SSL протокола или пакет за шифровање.</translation>
 <translation id="4079302484614802869">Конфигурација проксија је подешена да користи URL адресу .pac скрипте, а не фиксне прокси сервере.</translation>
+<translation id="4080855220442581440">скроловање и зумирање дељених картица</translation>
 <translation id="4082333119419111506">Папир (штампан унапред)</translation>
 <translation id="4082393374666368382">Подешавања – управљање</translation>
 <translation id="4084219288110917128">Коверта C1</translation>
@@ -2046,6 +2049,7 @@
 <translation id="4521280267704259211">Коверта Monarch</translation>
 <translation id="4521916730539354575">Лева фиока</translation>
 <translation id="4522570452068850558">Детаљи</translation>
+<translation id="4523580145196408446">Повезано је</translation>
 <translation id="4523643381056109546">Натписи</translation>
 <translation id="4524138615196389145">Од сада брже потврђујте картице уз WebAuthn</translation>
 <translation id="45243788195988825">Блокирај <ph name="TOPIC" /></translation>
@@ -2210,6 +2214,7 @@
 <translation id="4834250788637067901">Начини плаћања, понуде и адресе који користе Google Pay</translation>
 <translation id="4840250757394056958">Прегледајте историју Chrome-а</translation>
 <translation id="484462545196658690">Аутоматски</translation>
+<translation id="4844937814014739139">Скроловање и зумирање дељених картица</translation>
 <translation id="484671803914931257">Остварите попуст код продавца <ph name="MERCHANT_NAME" /> и других продаваца</translation>
 <translation id="484988093836683706">Користи откључавање уређаја</translation>
 <translation id="4850886885716139402">Приказ</translation>
@@ -2503,6 +2508,7 @@
 <translation id="5344522958567249764">Управљајте приватношћу са огласима</translation>
 <translation id="5344579389779391559">Ова страница може да покуша да вам нешто наплати</translation>
 <translation id="5345249337934847112">Папир (тежак премаз)</translation>
+<translation id="5348330584842140856">Овај фајл није премештен јер више не постоји</translation>
 <translation id="5349543692327946794">Ознаке (инкџет)</translation>
 <translation id="5351548097010183514">Грађевински материјал и опрема</translation>
 <translation id="5354143049423063163">Хеџ фондови</translation>
@@ -2767,6 +2773,7 @@
 <translation id="5826507051599432481">Опште име (CN)</translation>
 <translation id="5830698870816298009">коришћење и кретање камере</translation>
 <translation id="583281660410589416">Непознато</translation>
+<translation id="5837220895135257862">Ослободите простору у услузи <ph name="CLOUD_PROVIDER" /> пре него што пробате поново</translation>
 <translation id="5838278095973806738">Немојте да уносите осетљиве информације на овом сајту (на пример, лозинке или кредитне картице) јер нападачи могу да их украду.</translation>
 <translation id="5838732667866024867">Промене цена на графикону можете да прегледате помоћу стрелице налево и надесно</translation>
 <translation id="5840318881868981258">На Google налогу, <ph name="ACCOUNT" /></translation>
@@ -3117,6 +3124,7 @@
 <translation id="6405181733356710802">Желите ли да наставите на: <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Унесите датум истека и CVC за картицу <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
+<translation id="6412543105195503444">Дијалог за одобрење родитеља</translation>
 <translation id="6414010576370319452">Нега коже и ноктију</translation>
 <translation id="6415778972515849510">Chromium може да вам помогне да заштитите Google налог и промените лозинку.</translation>
 <translation id="6416877227920300343">EDP</translation>
@@ -4026,6 +4034,7 @@
 <translation id="799149739215780103">Повезивање</translation>
 <translation id="7992044431894087211">Настављено је дељење садржаја екрана са апликацијом <ph name="APPLICATION_TITLE" /></translation>
 <translation id="7995512525968007366">Није наведено</translation>
+<translation id="7997855386298213183">дељене картице</translation>
 <translation id="800218591365569300">Пробајте да затворите друге картице или програме да бисте ослободили меморију.</translation>
 <translation id="8002230960325005199">Погледајте сродне сајтове на новој картици</translation>
 <translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />“</translation>
@@ -4100,6 +4109,7 @@
 <translation id="812020627659652807">Избриши фајлове</translation>
 <translation id="8120720167840853945">Ове смернице не контролишу подразумевано понашање других смерница.</translation>
 <translation id="8127301229239896662">Софтвер „<ph name="SOFTWARE_NAME" />“ није правилно инсталиран на рачунару или мрежи. Затражите од ИТ администратора да реши овај проблем.</translation>
+<translation id="8130113808541743942">Преместите у…</translation>
 <translation id="8131740175452115882">Потврди</translation>
 <translation id="8133495915926741232">Одаберите широке категорије тема које могу да се користе за персонализацију огласа. Ако искључите ширу категорију, блокираћете и сродне теме. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Запошљавање и избор кадрова</translation>

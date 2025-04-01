@@ -63,7 +63,6 @@
 <translation id="1240288207750131269"><ph name="LANG" /> yüklənir</translation>
 <translation id="124116460088058876">Digər dillər</translation>
 <translation id="1241792820757384812"><ph name="CHROME_CHANNEL" /> üçün parollar Google Parol Menecerindən silinəcək. İndicə endirilən parol faylını saxlayacaqsınız.</translation>
-<translation id="1242883863226959074">cihaz</translation>
 <translation id="124678866338384709">Cari paneli bağlayın</translation>
 <translation id="1246905108078336582">Təklif mübadilə buferindən silinsin?</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
@@ -510,7 +509,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3398320232533725830">Əlfəcin menecerini açın</translation>
 <translation id="3414952576877147120">Ölçü:</translation>
 <translation id="3421726884497337397">Üçüncü tərəf kukilərinin nə vaxt bloklanacağını seçin</translation>
-<translation id="342220687432920852">{HOURS,plural, =1{# saat əvvəl}other{# saat əvvəl}}</translation>
 <translation id="3430670036890315772">Profil kilidi deaktiv ediləndə yadda saxlanmış məlumatlar silinəcək</translation>
 <translation id="3435465986463792564">Çox sayda pəncərə var? Onları buradan idarə edə bilərsiniz</translation>
 <translation id="3435575784518354875">Parollarınıza girişi saxlamaq üçün onları indi eksport edin, Google Play Xidmətlərini güncəlləyin və sonra onları yenidən Google Parol Menecerinə import edin. <ph name="BEGIN_LINK" />Bütün təlimatlara baxın<ph name="END_LINK" />.</translation>
@@ -693,6 +691,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4269820728363426813">Link ünvanını kopyalayın</translation>
 <translation id="4270730597186910506">Məhsulu izləyin və ya izləməyin.</translation>
 <translation id="4277529130885813215">Digər cihazdan istifadə edin</translation>
+<translation id="427987768447457592">Yeni tab qrupu</translation>
 <translation id="4282440837784183472">Təşkilat (<ph name="MANAGED_DOMAIN" />) daxil olduğunuz hesabı və Chrome-dan istifadə qaydasını idarə edir. Administrator müəyyən funksiyaları ayarlaya və ya məhdudlaşdıra bilər.</translation>
 <translation id="4285498937028063278">Çıxarın</translation>
 <translation id="4285846616383034558">Kukilər, keş və digər sayt datası</translation>
@@ -963,7 +962,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="5517095782334947753"><ph name="FROM_ACCOUNT" /> hesabından əlfəcin, tarixçə, parol və digər ayarlar var.</translation>
 <translation id="5517326820028369152">Son fəaliyyət üzrə aşağıdakı vərəq</translation>
 <translation id="5526281268548144413">Bir neçə pəncərədə bağlana bilməz</translation>
-<translation id="5528925345478618296">{MINUTES,plural, =1{# dəqiqə əvvəl}other{# dəqiqə əvvəl}}</translation>
 <translation id="5548606607480005320">Təhlükəsizlik yoxlanışı</translation>
 <translation id="5554520618550346933">İstifadə edilən parol onlayn yayımlanıbsa, Chrome xəbərdarlıq edir. Parol və istifadəçi adları şifrələnir və hətta Google-a da görünmür.</translation>
 <translation id="5555525474779371165">Təhlükəsiz Baxış ilə qorunmanı seçin</translation>
@@ -1272,7 +1270,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="6865313869410766144">Avtomatik data doldurması</translation>
 <translation id="6867400383614725881">Yeni Incognito tabı</translation>
 <translation id="686899695320434745">Ünvanlar parol ifadəsi ilə şifrələnmir. Onları digər Google xidmətlərində istifadə etmək olur.</translation>
-<translation id="6869056123412990582">kompüter</translation>
 <translation id="687838958001010630">Keçidi olan hər kəs bütün tablara düzəliş edə bilər</translation>
 <translation id="6880903702195291049">İcazələr təhlükəsiz görünür</translation>
 <translation id="6883204995689174413">Paylaşın</translation>
@@ -1635,7 +1632,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8419244640277402268">Daxil edin</translation>
 <translation id="8422250855136581222">Bu cihazda tab yoxdur</translation>
 <translation id="842386925677997438">Chrome-un güvənlik alətləri</translation>
-<translation id="8424781820952413435">Səhifə göndərildi. Onu görmək üçün bu cihazda Chrome'u açın: <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Önbaxış tabının yarısı açılıb</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8430824733382774043">Yalnız skrinşot paylaşın</translation>
@@ -1690,7 +1686,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8611922158252451755">Keçidi olan hər kəs bütün tabları redaktə edə bilər, ona görə də paylaşarkən diqqətli olun. Keçidin müddəti 48 saat ərzində bitir.</translation>
 <translation id="8616006591992756292"><ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> linkində Google Hesabına məxsus axtarış tarixçəsinin başqa formaları ola bilər.</translation>
 <translation id="8617240290563765734">Endirilmiş kontentdə təklif edilən link açılsın?</translation>
-<translation id="8621068256433641644">telefon</translation>
 <translation id="8635399646025169806">Tab qrupu saxlanılsın?</translation>
 <translation id="8636825310635137004">Panelləri digər cihazlarınızdan əldə etmək üçün sinxronizasiyanı aktiv edin.</translation>
 <translation id="864544049772947936">Pəncərələri idarə edin (<ph name="INSTANCE_COUNTS" />)</translation>

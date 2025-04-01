@@ -298,7 +298,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1492194039220927094">Deurstuur van beleide:</translation>
 <translation id="1495677929897281669">Terug na oortjie</translation>
 <translation id="1500286806237135498">Kameras (<ph name="CAMERAS_COUNT" />)</translation>
-<translation id="1501859676467574491">Wys kaarte van jou Google-rekening</translation>
 <translation id="1504042622576912555">Gleuf</translation>
 <translation id="1507202001669085618">&lt;p&gt;Jy sal hierdie fout sien as jy 'n Wi-Fi-portaal gebruik waar jy moet aanmeld voordat jy aanlyn kan gaan.&lt;/p&gt;
     &lt;p&gt;Klik &lt;strong&gt;Koppel&lt;/strong&gt; op die bladsy wat jy probeer oopmaak om die fout reg te stel.&lt;/p&gt;</translation>
@@ -570,6 +569,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1975584088563498795">Posbus 10</translation>
 <translation id="1978555033938440688">Fermwareweergawe</translation>
 <translation id="1979156660928743046">Media-inligting</translation>
+<translation id="1987486584747170374">Jou soektogte, beste passings en hul bladsyinhoud word na Google toe gestuur. Dit sal nie gebruik word deur mense wat kontrolering uitvoer om KI te verbeter nie. Jou organisasie kan enige tyd hierdie instellings verander.</translation>
 <translation id="1988881251331415125">As die spelling korrek is, kan jy <ph name="BEGIN_LINK" />Konnektiwiteitdiagnostiek probeer gebruik<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> wil groot data permanent op jou plaaslike rekenaar berg</translation>
@@ -766,6 +766,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="230286397113210245">Knoppie om Incognito-venster oop te maak; aktiveer om ’n nuwe Incognito-venster oop te maak om privaat te blaai</translation>
 <translation id="2305294852062272447">Stoor rybewys?</translation>
 <translation id="2306124309679506798">Laat ’n omvattende ervaring toe?</translation>
+<translation id="2307711332257985952">Jou huis- en werkadres is nou in Chrome beskikbaar.</translation>
 <translation id="2312234273148520048">Speserye en souse</translation>
 <translation id="2316087952091171402">Minder as <ph name="UPPER_ESTIMATE" />. Sommige werwe sal dalk met jou volgende besoek stadiger laai.</translation>
 <translation id="2316159751672436664">Personaliseer jou toeganklikheidsnutsgoed in Chrome-bedryfstelselinstellings</translation>
@@ -1187,6 +1188,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3102312643185441063">Spaar</translation>
 <translation id="3103188521861412364">Aandele en effekte</translation>
 <translation id="3103535543639438037">Vergelyk soortgelyke produkte langs mekaar</translation>
+<translation id="3103993932858740905">’n Eenmalige virtuelekaartnommer word ingevul wanneer jy oor ’n tydperk betaal. Hierdie nommer is net vir hierdie aankoop.</translation>
 <translation id="3105172416063519923">Bate-ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Gaan die veilige-DNS-opstelling na<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Middelste laai</translation>

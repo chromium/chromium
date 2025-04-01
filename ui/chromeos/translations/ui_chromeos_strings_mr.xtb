@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">सांकेतिक भाषेत धन्यवाद म्हणणारी व्यक्ती</translation>
 <translation id="2088690981887365033">VPN नेटवर्क</translation>
 <translation id="209653272837065803">फाइल सिंक करणे पुढे सुरू ठेवण्यासाठी पुरेशी जागा नाही</translation>
-<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />गुप्त मोडमध्ये अनुमती द्या<ph name="END_BOLD" /> सुरू करा</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> आयटम हटवले जातील आणि तुम्ही ते रिस्टोअर करू शकणार नाही.</translation>
 <translation id="2122305276694332719">लपलेल्या नेटवर्कवर आपोआप कनेक्ट केल्याने इतरांना तुमचे डिव्हाइस आणि काही नेटवर्क सेटिंग्ज पाहण्याची अनुमती मिळते आणि याची शिफारस केली जात नाही.</translation>
 <translation id="2125607626296734455">ख्मेर</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">ग्रह</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> बाहेर काढले गेले आहे.</translation>
 <translation id="2307462900900812319">नेटवर्क कॉन्फिगर करा</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> हा आयडी असलेले एक्स्टेंशन लोकेट करू शकत नाही. तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> हे आयडी असलेले एक्स्टेंशन लोकेट करू शकत नाही. तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.}}</translation>
 <translation id="2325650632570794183">हा फाइल प्रकार सपोर्टेड नाही. कृपया या प्रकारची फाइल उघडू शकणारे अ‍ॅप शोधण्यासाठी Chrome वेब स्टोअरला भेट द्या.</translation>
 <translation id="2326539130272988168">बल्गेरियन</translation>
 <translation id="233822363739146957">तुमच्या सर्व फाइल सिंक करण्यासाठी पुरेशी स्टोरेज जागा नाही</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">मराठी</translation>
 <translation id="2923240520113693977">एस्टोनियन</translation>
 <translation id="2938685643439809023">मंगोलियन</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{एक्स्टेंशन शोधू शकत नाही}other{एक्स्टेंशन शोधू शकत नाही}}</translation>
 <translation id="2943503720238418293">लहान नाव वापरा</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> फॉरमॅट करत आहे...</translation>
 <translation id="2951236788251446349">जेलिफिश</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">पूर्ण</translation>
 <translation id="3358452157379365236">गिटार</translation>
 <translation id="3368922792935385530">कनेक्ट केले</translation>
-<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />तपशील<ph name="END_BOLD" /> वर क्लिक करा</translation>
 <translation id="3382143449143186018">InScript कीबोर्डसह नेपाळी</translation>
 <translation id="338691029516748599"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले, कनेक्ट करा</translation>
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> अ‍ॅक्टिव्हेट करा</translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">युनिकॉर्न</translation>
 <translation id="4131235941541910880">तुम्हाला नको असलेले आयटम हे ट्रॅश मध्ये हलवा</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, डिव्हाइस सेटअप केल्यानंतर ॲक्टिव्हेट होते</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{गुप्त मोडमध्ये पुढील एक्स्टेंशन सुरू करा:}other{गुप्त मोडमध्ये पुढील एक्स्टेंशन सुरू करा:}}</translation>
 <translation id="4153015322587141338">फाइलवर राइट-क्लिक करा आणि शेल्फमधील तुमच्या फाइल झटपट अ‍ॅक्सेस करण्यासाठी "<ph name="PIN_COMMAND" />" निवडा.</translation>
 <translation id="4157569377477607576">अ‍ॅडमिनिस्ट्रेटर धोरणाची शिफारस केली जात नाही:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> हलवला.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">दोन्ही ठेवा</translation>
 <translation id="4804827417948292437">ॲव्होकॅडो</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> आयटम रिस्टोअर करत आहे</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{गुप्त मोड वापरण्यासाठी, तुमच्या संस्थेला एक्स्टेंशनची आवश्यकता आहे}other{गुप्त मोड वापरण्यासाठी, तुमच्या संस्थेला काही एक्स्टेंशनची आवश्यकता आहे}}</translation>
 <translation id="4826849268470072925">तमिळ ITRANS</translation>
-<translation id="482932175346970750">तुमच्या ब्राउझरमध्ये <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> टाइप करा</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">पहा</translation>
 <translation id="485316830061041779">जर्मन</translation>
@@ -561,7 +554,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 शेअर करा, तयार करा आणि सहयोग करा.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google ड्राइव्ह वरून पुनर्प्राप्त केलेल्‍या फाइल</translation>
 <translation id="5278111733643988471">हा आयटम रिस्टोअर करण्यासाठी, तो ट्रॅशच्या बाहेरील नवीन फोल्डरमध्ये ड्रॅग करा. या आयटमसाठीचे मूळ फोल्डर "<ph name="PARENT_FOLDER_NAME" />" हटवले गेले आहे.</translation>
-<translation id="5283101102242354279">गुप्त मोडमध्ये एक्स्टेंशन सुरू करा:</translation>
 <translation id="5288441970121584418">बर्गर</translation>
 <translation id="5293615890992542006">ही फाइल हलवणे अ‍ॅडमिनिस्ट्रेटर धोरणाद्वारे ब्लॉक केले आहे</translation>
 <translation id="5305688511332277257">काहीही इंस्टॉल केले नाही</translation>
@@ -815,7 +807,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, तपशील</translation>
 <translation id="7246947237293279874">FTP प्रॉक्सी</translation>
 <translation id="7248671827512403053">ॲप्लिकेशन</translation>
-<translation id="7252604552361840748">वर एक्स्टेंशन शोधा</translation>
 <translation id="7256405249507348194">अपरिचित एरर: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">उपलब्ध सेवा</translation>
 <translation id="7291818353625820805">की रिपीट व्हाव्यात असे वाटते का? कीबोर्ड सेटिंग्ज मध्ये अ‍ॅक्सेंट मार्क बंद करा</translation>

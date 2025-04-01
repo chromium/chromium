@@ -3091,6 +3091,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3122883569442693641">Več podrobnosti</translation>
 <translation id="3124111068741548686">Kode za dostop uporabnika USER</translation>
 <translation id="3124332159330678621">Prilagodite Chrome, da bo brskalnik videti drugače.</translation>
+<translation id="3125816458150005808">Lahko ga odpnete in odprete v meniju</translation>
 <translation id="3126026824346185272">CTRL</translation>
 <translation id="3127860049873093642">Uporabite združljiv napajalnik Dell ali USB Type-C, da ne bi prišlo do težav z napajanjem in delovanjem.</translation>
 <translation id="3127862849166875294">Sprememba velikosti diska v Linuxu</translation>
@@ -5341,6 +5342,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4723140812774948886">Zamenjaj z naslednjim</translation>
 <translation id="4724450788351008910">Zveza je prekinjena</translation>
 <translation id="4725511304875193254">Valižanski ovčar</translation>
+<translation id="4725762702191453794">Iskanje zavihkov je pripeto orodni vrstici</translation>
 <translation id="4726710355753484204">Za povečavo pritisnite Ctrl + Alt + tipko za povečanje svetlosti.
 Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translation>
 <translation id="4726710629007580002">Pri poskusu namestitve razširitve so bila opozorila:</translation>

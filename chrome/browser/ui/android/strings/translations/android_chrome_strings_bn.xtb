@@ -63,7 +63,6 @@
 <translation id="1240288207750131269"><ph name="LANG" /> লোড হচ্ছে</translation>
 <translation id="124116460088058876">আরও ভাষা</translation>
 <translation id="1241792820757384812"><ph name="CHROME_CHANNEL" />-এর জন্য Google Password Manager থেকে আপনার পাসওয়ার্ড মুছে ফেলা হবে। এই মাত্র ডাউনলোড করা পাসওয়ার্ড ফাইল আপনি রেখে দেবেন।</translation>
-<translation id="1242883863226959074">ডিভাইস</translation>
 <translation id="124678866338384709">বর্তমান ট্যাব বন্ধ করুন</translation>
 <translation id="1246905108078336582">ক্লিপবোর্ড থেকে সাজেশন সরাতে চান?</translation>
 <translation id="1258753120186372309">Google ডুডল: <ph name="DOODLE_DESCRIPTION" /></translation>
@@ -510,7 +509,6 @@
 <translation id="3398320232533725830">বুকমার্কস ম্যানেজার খুলুন</translation>
 <translation id="3414952576877147120">মাপ:</translation>
 <translation id="3421726884497337397">থার্ড-পার্টি কুকি কখন ব্লক করবেন সেটি বেছে নিন</translation>
-<translation id="342220687432920852">{HOURS,plural, =1{# ঘণ্টা আগে}one{# ঘণ্টা আগে}other{# ঘণ্টা আগে}}</translation>
 <translation id="3430670036890315772">প্রোফাইল লক বন্ধ করে দিলে সেভ করা তথ্য মুছে যাবে</translation>
 <translation id="3435465986463792564">অনেক উইন্ডো খোলা আছে? আপনি সেগুলি এখানে ম্যানেজ করতে পারেন</translation>
 <translation id="3435575784518354875">আপনার পাসওয়ার্ডে অ্যাক্সেস বজায় রাখতে, সেগুলি এখন এক্সপোর্ট, Google Play পরিষেবা আপডেট করুন এবং সেগুলি Google Password Manager-এ আবার ইমপোর্ট করুন। <ph name="BEGIN_LINK" />সম্পূর্ণ নির্দেশাবলী দেখুন<ph name="END_LINK" />।</translation>
@@ -693,6 +691,7 @@
 <translation id="4269820728363426813">লিঙ্ক অ্যাড্রেস কপি করুন</translation>
 <translation id="4270730597186910506">কোনও প্রোডাক্ট ট্র্যাক করুন বা ট্র্যাক করা বন্ধ করুন।</translation>
 <translation id="4277529130885813215">অন্য ডিভাইস ব্যবহার করুন</translation>
+<translation id="427987768447457592">নতুন ট্যাব গ্রুপ</translation>
 <translation id="4282440837784183472">আপনার সাইন-ইন করা অ্যাকাউন্ট এবং Chrome কীভাবে ব্যবহার করা হয় তা আপনার প্রতিষ্ঠান, <ph name="MANAGED_DOMAIN" /> ম্যানেজ করে। আপনার অ্যাডমিনিস্ট্রেটর নির্দিষ্ট ফিচার সেট-আপ বা সীমিত করতে পারেন।</translation>
 <translation id="4285498937028063278">আনপিন</translation>
 <translation id="4285846616383034558">কুকি, ক্যাশে ও অন্যান্য সাইট ডেটা</translation>
@@ -963,7 +962,6 @@
 <translation id="5517095782334947753">আপনার জন্য <ph name="FROM_ACCOUNT" /> থেকে বুকমার্কস, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংস আছে।</translation>
 <translation id="5517326820028369152">সাম্প্রতিক কার্যকলাপের স্ক্রিনের নিচে অ্যাটাচ করা শিট</translation>
 <translation id="5526281268548144413">একাধিক উইন্ডো জুড়ে ট্যাব বন্ধ করা যাবে না</translation>
-<translation id="5528925345478618296">{MINUTES,plural, =1{# মিনিট আগে}one{# মিনিট আগে}other{# মিনিট আগে}}</translation>
 <translation id="5548606607480005320">নিরাপত্তা সংক্রান্ত পরীক্ষা</translation>
 <translation id="5554520618550346933">আপনি পাসওয়ার্ড ব্যবহার করার সময়, সেটি অনলাইনে প্রকাশিত হয়েছে কিনা সেই সম্পর্কে Chrome সতর্ক করে। এটি করার সময় আপনার পাসওয়ার্ড ও ইউজারনেম এনক্রিপ্ট করা থাকে, তাই সেগুলি কেউ দেখতে পাবে না, এমনকি Google-ও না।</translation>
 <translation id="5555525474779371165">আপনার Safe Browsing সুরক্ষা বেছে নিন</translation>
@@ -1274,7 +1272,6 @@
 <translation id="6865313869410766144">স্বতঃপূর্ণ ফর্ম ডেটা</translation>
 <translation id="6867400383614725881">নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="686899695320434745">আপনার পাসফ্রেজের সাথে অ্যাড্রেস এনক্রিপটেড নয়। এটি আপনাকে অন্যান্য Google পরিষেবায় এগুলি ব্যবহার করতে দেয়।</translation>
-<translation id="6869056123412990582">কম্পিউটার</translation>
 <translation id="687838958001010630">যেসব ব্যক্তির কাছে এই লিঙ্ক আছে, তারা প্রত্যেকে সব ট্যাব এডিট করতে পারবেন</translation>
 <translation id="6880903702195291049">অনুমতি সঠিক বলে মনে হচ্ছে</translation>
 <translation id="6883204995689174413">শেয়ার করুন</translation>
@@ -1637,7 +1634,6 @@
 <translation id="8419244640277402268">অন্তর্ভুক্ত করুন</translation>
 <translation id="8422250855136581222">এই ডিভাইসে কোনও ট্যাব নেই</translation>
 <translation id="842386925677997438">Chrome-এর নিরাপত্তা টুল</translation>
-<translation id="8424781820952413435">পৃষ্ঠা পাঠানো হয়েছে। এটি দেখতে, আপনার <ph name="DEVICE_TYPE" />-এ Chrome খুলুন</translation>
 <translation id="8427875596167638501">প্রিভিউ ট্যাব অর্ধেক খোলা আছে</translation>
 <translation id="8428213095426709021">সেটিংস</translation>
 <translation id="8430824733382774043">শুধুমাত্র স্ক্রিনশট শেয়ার করুন</translation>
@@ -1692,7 +1688,6 @@
 <translation id="8611922158252451755">লিঙ্কটির অ্যাক্সেস আছে এমন যেকোনও ব্যক্তি, সব ট্যাব এডিট করতে পারবেন, তাই ভেবেচিন্তে শেয়ার করুন। ৪৮ ঘণ্টার মধ্যে লিঙ্কের মেয়াদ শেষ হয়ে যাবে।</translation>
 <translation id="8616006591992756292"><ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />-এ আপনার Google অ্যাকাউন্টের অন্যান্য ধরনের ব্রাউজিংয়ের ইতিহাস থাকতে পারে।</translation>
 <translation id="8617240290563765734">ডাউনলোড হওয়া কন্টেন্টতে নির্দিষ্ট করা প্রস্তাবিত URLটি খুলবেন?</translation>
-<translation id="8621068256433641644">ফোন</translation>
 <translation id="8635399646025169806">ট্যাব গ্রুপ রেখে দেবেন?</translation>
 <translation id="8636825310635137004">আপনার অন্য ডিভাইসগুলি থেকে আপনার ট্যাবগুলি পেতে, সিঙ্ক চালু করুন।</translation>
 <translation id="864544049772947936">উইন্ডো ম্যানেজ করুন (<ph name="INSTANCE_COUNTS" />)</translation>

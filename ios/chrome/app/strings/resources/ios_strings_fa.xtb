@@ -105,6 +105,7 @@
 <translation id="1411386976162024013">جستجوی تصویری «لنز»</translation>
 <translation id="1417474386970818917">خروج از سیستم و حذف</translation>
 <translation id="1426410128494586442">بله</translation>
+<translation id="1429187656584513419">باز کردن «گذرواژه‌ها»</translation>
 <translation id="1430915738399379752">چاپ</translation>
 <translation id="1436671784520050284">ادامه راه‌اندازی</translation>
 <translation id="143681031165817424">نشانی فقط در این دستگاه ذخیره می‌شود</translation>
@@ -590,6 +591,7 @@
 <translation id="3530206579861815432">برگه‌های باز و اخیراً بسته‌شده را سریع در دستگاه‌های همگام‌سازی‌شده پیدا کنید.</translation>
 <translation id="3530767473765895035">مدیریت کردن حساب‌ها در این دستگاه…</translation>
 <translation id="3533436815740441613">برگه جدید</translation>
+<translation id="3533860663366814939">‏باز کردن Autofill &amp; Password settings (تنظیمات «تکمیل خودکار و گذرواژه»)</translation>
 <translation id="3547356470684043247">ارزیابی‌های مشتریان از محصولات، خدمات، یا تجربه‌ها را بخوانید تا به کمک مرورها تصمیم‌های آگاهانه‌ای بگیرید</translation>
 <translation id="3557336313807607643">افزودن به مخاطبین</translation>
 <translation id="355765753469272474">واگرداندن</translation>
@@ -1512,6 +1514,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7431851541687113774">غیرفعال کردن تشخیص نشانی</translation>
 <translation id="7431991332293347422">کنترل نحوه استفاده از سابقه مرور برای شخصی‌سازی «جستجو» و موارد دیگر</translation>
 <translation id="7435356471928173109">سرپرستتان آن را خاموش کرده است</translation>
+<translation id="7437712592381799950">برای دیدن محتوای بیشتری که متناسب با سلیقه شما است، می‌توانید تند به بالا بکشید.</translation>
 <translation id="7438481509621345350">اکنون وقتی برگه جدیدی باز می‌کنید، داستان‌هایی از <ph name="CHANNEL_NAME" /> خواهید دید.</translation>
 <translation id="7451023311965289370">{count,plural, =1{نشانک در «{title}» ذخیره شد}one{نشانک در «{title}» ذخیره شد}other{نشانک‌ها در «{title}» ذخیره شد}}</translation>
 <translation id="7451404862887877229">روی «حریم خصوصی و امنیت» و سپس «مرور ایمن» تک‌ضرب بزنید</translation>
@@ -1614,6 +1617,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="784934925303690534">محدوده زمانی</translation>
 <translation id="7851858861565204677">دستگاه‌های دیگر</translation>
 <translation id="7853202427316060426">فعالیت</translation>
+<translation id="7854006015462979438">‏باز کردن General (موارد کلی)</translation>
 <translation id="7859988229622350291">هرگز ترجمه نشود</translation>
 <translation id="7863211248337747225">دریافت کردن برنامه</translation>
 <translation id="7865127013871431856">گزینه‌های ترجمه</translation>

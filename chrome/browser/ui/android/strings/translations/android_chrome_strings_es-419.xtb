@@ -63,7 +63,6 @@
 <translation id="1240288207750131269">Cargando <ph name="LANG" /></translation>
 <translation id="124116460088058876">Más idiomas</translation>
 <translation id="1241792820757384812">Se borrarán tus contraseñas del Administrador de contraseñas de Google para <ph name="CHROME_CHANNEL" />. Conservarás el archivo de contraseñas que acabas de descargar.</translation>
-<translation id="1242883863226959074">dispositivo</translation>
 <translation id="124678866338384709">Cerrar la pestaña actual</translation>
 <translation id="1246905108078336582">¿Quieres quitar la sugerencia del portapapeles?</translation>
 <translation id="1258753120186372309">Doodle de Google: <ph name="DOODLE_DESCRIPTION" /></translation>
@@ -510,7 +509,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3398320232533725830">Abrir el administrador de favoritos</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
 <translation id="3421726884497337397">Decide cuándo bloquear las cookies de terceros</translation>
-<translation id="342220687432920852">{HOURS,plural, =1{Hace # h}other{Hace # h}}</translation>
 <translation id="3430670036890315772">Si desactivas el bloqueo de perfil, se quitará la información guardada</translation>
 <translation id="3435465986463792564">¿Tienes muchas ventanas? Puedes administrarlas desde aquí.</translation>
 <translation id="3435575784518354875">Para mantener el acceso a tus contraseñas, expórtalas ahora, actualiza los Servicios de Google Play y, luego, vuelve a importarlas al Administrador de contraseñas de Google. <ph name="BEGIN_LINK" />Consulta las instrucciones completas<ph name="END_LINK" />.</translation>
@@ -693,6 +691,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4269820728363426813">Copiar dirección del vínculo</translation>
 <translation id="4270730597186910506">Iniciar o detener el seguimiento de un producto.</translation>
 <translation id="4277529130885813215">Usar otro dispositivo</translation>
+<translation id="427987768447457592">Nuevo grupo de pestañas</translation>
 <translation id="4282440837784183472">Tu organización, <ph name="MANAGED_DOMAIN" />, administra la cuenta a la que estás accediendo y la forma en que se puede usar Chrome. El administrador puede configurar o restringir ciertas funciones.</translation>
 <translation id="4285498937028063278">Dejar de fijar</translation>
 <translation id="4285846616383034558">Cookies, caché y otros datos de sitios</translation>
@@ -963,7 +962,6 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5517095782334947753">Tienes favoritos, historial, contraseñas y otras opciones de configuración de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5517326820028369152">Hoja inferior de actividad reciente</translation>
 <translation id="5526281268548144413">No se pueden cerrar en varias ventanas</translation>
-<translation id="5528925345478618296">{MINUTES,plural, =1{Hace # min}other{Hace # min}}</translation>
 <translation id="5548606607480005320">Verificación de seguridad</translation>
 <translation id="5554520618550346933">Cuando usas una contraseña, Chrome te advierte si se publicó en línea. Cuando lo haces, se encriptan tus contraseñas y nombres de usuario para que nadie, ni siquiera Google, pueda leer esta información.</translation>
 <translation id="5555525474779371165">Elige tu protección de Navegación segura</translation>
@@ -1274,7 +1272,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6865313869410766144">Datos del formulario de autocompletar</translation>
 <translation id="6867400383614725881">Nueva pestaña de incógnito</translation>
 <translation id="686899695320434745">Las direcciones no se encriptaron con tu frase de contraseña. Esto te permite usarlas en otros servicios de Google.</translation>
-<translation id="6869056123412990582">computadora</translation>
 <translation id="687838958001010630">Cualquier persona que tenga el vínculo puede editar todas las pestañas</translation>
 <translation id="6880903702195291049">Los permisos parecen estar en orden</translation>
 <translation id="6883204995689174413">Compartir</translation>
@@ -1637,7 +1634,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8419244640277402268">Incluir</translation>
 <translation id="8422250855136581222">No hay pestañas en este dispositivo</translation>
 <translation id="842386925677997438">Herramientas de seguridad de Chrome</translation>
-<translation id="8424781820952413435">Se envió la página. Para verla, abre Chrome en tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8427875596167638501">La pestaña de vista previa está abierta a la mitad</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8430824733382774043">Compartir solo la captura de pantalla</translation>
@@ -1692,7 +1688,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8611922158252451755">Cualquier persona que tenga el vínculo puede editar todas las pestañas, así que compártelo con cuidado. El vínculo vence dentro de 48 horas.</translation>
 <translation id="8616006591992756292">Es posible que tu cuenta de Google tenga otras formas de historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">¿Quieres abrir la URL sugerida que se especifica en el contenido descargado?</translation>
-<translation id="8621068256433641644">teléfono</translation>
 <translation id="8635399646025169806">¿Quieres conservar el grupo de pestañas?</translation>
 <translation id="8636825310635137004">Activa la sincronización para obtener las pestañas de tus otros dispositivos.</translation>
 <translation id="864544049772947936">Administrar ventanas (<ph name="INSTANCE_COUNTS" />)</translation>

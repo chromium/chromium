@@ -161,6 +161,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – nätverksinloggning – Chrome</translation>
 <translation id="2970681950995291301">Du kan ta bort Google-kontot från Chrome genom att logga ut från Chrome på sidan Inställningar</translation>
 <translation id="2994465299455873643">Tillhandahåller krypteringstjänster och ett säkert sätt att återställa <ph name="BROWSER_NAME" /> om den blir inaktuell. Om den här tjänsten inaktiveras kan <ph name="BROWSER_NAME" /> förlora åtkomst till krypterad data och <ph name="BROWSER_NAME" /> kanske inte kan återställa sig själv.</translation>
+<translation id="3003694935412297923">Alla uppgifter</translation>
 <translation id="3018957014024118866">Radera även data från Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Starta om för att uppdatera &amp;ChromeOS Flex</translation>
 <translation id="3037838751736561277">Google Chrome körs i bakgrundsläge.</translation>
@@ -187,6 +188,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3282568296779691940">Logga in i Chrome</translation>
 <translation id="3286538390144397061">Starta om nu</translation>
 <translation id="3292333338048274092">Du måste sedan starta om Chrome.</translation>
+<translation id="3327226547491422998">Senare kan Chrome fråga om du vill använda sparade uppgifter för att fylla i formulär automatiskt åt dig</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome startas om nu}=1{Om en sekund startas Chrome om}other{Om # sekunder startas Chrome om}}</translation>
 <translation id="3396977131400919238">Ett operativsystemsfel inträffade under installationen. Ladda ned Google Chrome igen.</translation>
@@ -276,6 +278,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4567424176335768812">Du är inloggad som <ph name="USER_EMAIL_ADDRESS" />. Nu kan du komma åt dina bokmärken, historik och andra inställningar på alla enheter som du är inloggad på.</translation>
 <translation id="4571503333518166079">Öppna aviseringsinställningarna för Chrome</translation>
 <translation id="459622048091363950">När du har gett Chrome åtkomst kan webbplatser begära att få åtkomst.</translation>
+<translation id="4598116752460667024">Sök efter en process i listan.</translation>
 <translation id="4600710005438004015">Det gick inte att uppdatera Chrome till den senaste versionen. Därför går du miste om nya funktioner och säkerhetskorrigeringar.</translation>
 <translation id="4624065194742029982">Inkognitoläget i Chrome</translation>
 <translation id="4627412468266359539">Valfritt: Skicka diagnostik- och användningsdata automatiskt till Google och hjälp oss att förbättra funktioner och prestanda i ChromeOS Flex.</translation>
@@ -404,6 +407,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6251759518630934363">Varnar dig om farliga webbplatser, även sådana som Google inte kände till tidigare, genom att analysera mer data från webbplatser än standardskyddet. Du kan välja att hoppa över Chrome-varningar.</translation>
 <translation id="6277547788421725101">Din förälder har inaktiverat Behörigheter för webbplatser, appar och tillägg för Chrome</translation>
 <translation id="627882678981830918">Anpassa och styr Chrome. Ställ in Chrome som standardwebbläsare.</translation>
+<translation id="6288580400488258237">Ställ in Google Chrome som standardwebbläsare och fäst den på aktivitetsfältet</translation>
 <translation id="6291089322031436445">Appar i Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome har redan installerats för alla användare på datorn.</translation>
 <translation id="6319856120645568262">Chrome behöver behörighet för att kartlägga din omgivning och spåra dina händer</translation>
@@ -471,6 +475,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7193885263065350793">Organisationen avslutar Chrome när det inte har använts på <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Du loggar in med ett hanterat konto och ger dess administratör kontroll över din Google Chrome-profil. Dina Chrome-uppgifter, t.ex. dina appar, bokmärken, din historik, dina lösenord och andra inställningar, knyts permanent till <ph name="USER_NAME" />. Du kommer att kunna ta bort dessa uppgifter via instrumentpanelen i Google Konton, men du kommer inte att kunna koppla dessa uppgifter till ett annat konto. Du kan skapa en ny profil om du vill hålla dina befintliga Chrome-uppgifter separata. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> hanterar Chrome</translation>
+<translation id="7288567540154601580">Flikar och tillägg</translation>
 <translation id="7296210096911315575">Viktig användnings- och säkerhetsinformation</translation>
 <translation id="7302361266603927550">Viss Chrome-data har inte sparats i ditt Google-konto ännu. Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas denna data.</translation>
 <translation id="7308322188646931570">Du behöver ge Chrome åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>

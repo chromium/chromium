@@ -4100,6 +4100,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3820749202859700794">Lengkung eliptik SECG secp521r1 (alias NIST P-521)</translation>
 <translation id="3821074617718452587">Pemberitahuan Hab Telefon</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Satu sambungan telah diluluskan}other{# sambungan telah diluluskan}}</translation>
+<translation id="3822426549715448461">HH</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Sekurang-kurangnya <ph name="INSTALL_SIZE" /> ruang disyorkan untuk Linux.</translation>
 <translation id="3824621460022590830">Token pendaftaran peranti tidak sah. Sila hubungi pemilik atau pentadbir peranti anda. Kod ralat: <ph name="ERROR_CODE" />.</translation>
@@ -4629,6 +4630,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4203769790323223880">Kamera tidak dibenarkan</translation>
 <translation id="4204415812590935863">Tidak dapat membuat tema sekarang.</translation>
 <translation id="4205157409548006256">Ralat telah berlaku semasa mengkonfigurasi Linux.</translation>
+<translation id="4205643719206044108">Untuk menawarkan cadangan, laman yang anda lawati dan kandungan halaman akan dikongsi dengan Google</translation>
 <translation id="4206144641569145248">Makhluk asing</translation>
 <translation id="4206323443866416204">Laporan Maklum Balas</translation>
 <translation id="4206585797409671301">Dibenarkan untuk menunjukkan permintaan</translation>
@@ -8770,6 +8772,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7199452998289813782">Jeda penghantaran pada <ph name="DEVICE_NAME" /></translation>
 <translation id="720110658997053098">Pastikan peranti ini kekal dalam mod kios</translation>
 <translation id="7201118060536064622">'<ph name="DELETED_ITEM_NAME" />' dipadamkan</translation>
+<translation id="7201336084980086208">Ciri autolengkap boleh menawarkan untuk menyimpan maklumat apabila anda menyerahkan borang, seperti lesen memandu atau nombor pasport anda</translation>
 <translation id="7201420661433230412">Lihat fail</translation>
 <translation id="7201432510117121839">Ciri menghantar audio desktop tidak disokong pada peranti ini</translation>
 <translation id="7201535955609308429">Sila tunggu sementara pengesahan dijalankan</translation>

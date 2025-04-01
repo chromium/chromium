@@ -63,7 +63,6 @@
 <translation id="1240288207750131269">Cargando <ph name="LANG" /></translation>
 <translation id="124116460088058876">Máis idiomas</translation>
 <translation id="1241792820757384812">Os contrasinais eliminaranse do xestor de contrasinais de Google para <ph name="CHROME_CHANNEL" />. Conservarás o ficheiro de contrasinais que acabas de descargar.</translation>
-<translation id="1242883863226959074">dispositivo</translation>
 <translation id="124678866338384709">Pechar a pestana actual</translation>
 <translation id="1246905108078336582">Queres quitar a suxestión do portapapeis?</translation>
 <translation id="1258753120186372309">Doodle de Google: <ph name="DOODLE_DESCRIPTION" /></translation>
@@ -510,7 +509,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3398320232533725830">Abre o xestor de marcadores</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
 <translation id="3421726884497337397">Escolle cando queres bloquear as cookies de terceiros</translation>
-<translation id="342220687432920852">{HOURS,plural, =1{Hai # h}other{Hai # h}}</translation>
 <translation id="3430670036890315772">Se desactivas o bloqueo do perfil, quitarase a información gardada</translation>
 <translation id="3435465986463792564">Tes varias ventás? Podes xestionalas desde aquí</translation>
 <translation id="3435575784518354875">Para poder acceder aos contrasinais, expórtaos agora, actualiza os servizos de Google Play e despois volve importalos no xestor de contrasinais de Google. <ph name="BEGIN_LINK" />Ver as instrucións completas.<ph name="END_LINK" /></translation>
@@ -693,6 +691,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4269820728363426813">Copiar enderezo da ligazón</translation>
 <translation id="4270730597186910506">Iniciar ou deter o seguimento dun produto.</translation>
 <translation id="4277529130885813215">Usar outro dispositivo</translation>
+<translation id="427987768447457592">Novo grupo de pestanas</translation>
 <translation id="4282440837784183472">A túa organización, <ph name="MANAGED_DOMAIN" />, xestiona a conta na que estás iniciando sesión e o xeito no que se usa Chrome. A persoa administradora pode configurar ou restrinxir determinadas funcións.</translation>
 <translation id="4285498937028063278">Deixar de fixar</translation>
 <translation id="4285846616383034558">Cookies, memoria caché e outros datos dos sitios</translation>
@@ -963,7 +962,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5517095782334947753">Tes os marcadores, o historial, os contrasinais e outras opcións de configuración de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5517326820028369152">Panel inferior de actividade recente</translation>
 <translation id="5526281268548144413">Non se poden pechar en varias ventás</translation>
-<translation id="5528925345478618296">{MINUTES,plural, =1{Hai # min}other{Hai # min}}</translation>
 <translation id="5548606607480005320">Revisión de seguranza</translation>
 <translation id="5554520618550346933">Cando usas un contrasinal, Chrome avísate se se publicou en liña. Ao facelo, os teus contrasinais e os teus nomes de usuario encríptanse, polo que ninguén pode lelos, nin sequera Google.</translation>
 <translation id="5555525474779371165">Escolle a protección da función Navegación segura</translation>
@@ -1274,7 +1272,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6865313869410766144">Autocompletar datos do formulario</translation>
 <translation id="6867400383614725881">Nova pestana de incógnito</translation>
 <translation id="686899695320434745">Os enderezos non se encriptan coa túa frase de acceso. Deste xeito, poderás usalos noutros servizos de Google.</translation>
-<translation id="6869056123412990582">ordenador</translation>
 <translation id="687838958001010630">Calquera persoa que teña a ligazón poderá editar todas as pestanas</translation>
 <translation id="6880903702195291049">Todo en orde cos permisos</translation>
 <translation id="6883204995689174413">Compartir</translation>
@@ -1637,7 +1634,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8419244640277402268">Incluír</translation>
 <translation id="8422250855136581222">Non hai pestanas neste dispositivo</translation>
 <translation id="842386925677997438">Ferramentas de privacidade de Chrome</translation>
-<translation id="8424781820952413435">Enviouse a páxina. Para vela, abre Chrome no teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">A pestana de vista previa abriuse ata a metade</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8430824733382774043">Compartir só captura de pantalla</translation>
@@ -1692,7 +1688,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8611922158252451755">Calquera persoa que teña a ligazón poderá editar todas as pestanas, polo que che recomendamos que teñas coidado ao compartila. A ligazón caduca ás 48 horas.</translation>
 <translation id="8616006591992756292">É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Queres abrir o URL específico suxerido no contido descargado?</translation>
-<translation id="8621068256433641644">teléfono</translation>
 <translation id="8635399646025169806">Queres manter o grupo de pestanas?</translation>
 <translation id="8636825310635137004">Activa a sincronización para sincronizar as pestanas dos demais dispositivos.</translation>
 <translation id="864544049772947936">Xestionar ventás (<ph name="INSTANCE_COUNTS" />)</translation>

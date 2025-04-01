@@ -169,6 +169,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="3179665906251668410">Buka Pautan dalam Tetingkap Inko&amp;gnito Chromium</translation>
 <translation id="3185330573522821672">Sesuaikan profil Chromium baharu anda</translation>
 <translation id="3224847870593914902">Untuk mengalih keluar Google Account anda daripada Chromium, log keluar dari Chromium dalam halaman Tetapan</translation>
+<translation id="3234316605225071811">Kemudian, Chromium boleh bertanya sama ada anda mahu menggunakan maklumat yang disimpan bagi mengisi borang untuk anda secara automatik atau tidak</translation>
 <translation id="3258596308407688501">Chromium tidak dapat membaca atau menulis pada direktori datanya:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -432,6 +433,7 @@ Beberapa ciri mungkin tidak tersedia. Sila nyatakan direktori profil yang berbez
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium mendapati bahawa "<ph name="EXTENSION_NAME" />" mengandungi perisian hasad</translation>
 <translation id="6896758677409633944">Salin</translation>
+<translation id="6901631050894301805">Tetapkan Chromium sebagai penyemak imbas lalai anda dan sematkan Chromium pada bar tugas anda</translation>
 <translation id="6929417474050522668">Apabila percubaan sedang berlangsung, pengukuran iklan membenarkan laman yang anda lawati meminta maklumat daripada Chromium yang membantu laman tersebut mengukur prestasi iklan mereka. Pengukuran iklan mengehadkan penjejakan rentas laman dengan memindahkan maklumat antara laman sedikit yang mungkin.</translation>
 <translation id="6940431691900807093">Kemudian, laman yang anda lawati boleh meminta Chromium melihat minat anda untuk memeribadikan iklan yang anda lihat. Chromium boleh berkongsi sehingga 3 minat.</translation>
 <translation id="6964305034639999644">Buka pautan dalam tetingkap inko&amp;gnito Chromium</translation>

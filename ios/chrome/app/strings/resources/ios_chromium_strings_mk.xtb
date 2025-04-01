@@ -91,6 +91,7 @@
 <translation id="3054480780637153380">Отворете ги поставките за Chromium на iOS, па допрете „Стандардна апликација за прелистување“ и изберете Chromium.</translation>
 <translation id="3102849287235003384">За да се одјавите од вашата сметка на Google на сите веб-сајтови, <ph name="BEGIN_LINK" />одјавете се од Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Да се направи Chromium ваш стандарден прелистувач?</translation>
+<translation id="3180939591219927904">Вклучете „Заклучувај ги картичките „Инкогнито“ при затворање на Chromium“</translation>
 <translation id="3242612358525156339">Од поставките на вашиот уред, отворете „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ и изберете „Chromium“</translation>
 <translation id="328933489847748230">{count,plural, =1{Сега се прикажува 1 прозорец на Chromium}one{Сега се прикажуваат {count} прозорец на Chromium}other{Сега се прикажуваат {count} прозорци на Chromium}}</translation>
 <translation id="3344973607274501920">Chromium не може да ги провери вашите лозинки. Проверете ја интернет-врската.</translation>
@@ -260,6 +261,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Избраните податоци се отстранети од Chromium и синхронизираните уреди. Вашата сметка на Google можеби има други форми на историја на прелистување, како на пр., пребарувања и активност од други услуги на Google на history.google.com.</translation>
 <translation id="7395825497086981028">Лозинката ќе се зачува во „Управникот со лозинки“ за <ph name="EMAIL" />.</translation>
+<translation id="7504829997542308412">Отворете го Chromium</translation>
 <translation id="7531461704633548377">Од Chromium</translation>
 <translation id="7554983317097061001">Совет за Chromium: преместете го Chromium на докот</translation>
 <translation id="7576863740961052505">Управувајте со поставките за Chromium</translation>

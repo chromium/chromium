@@ -2996,6 +2996,7 @@
 <translation id="3045447014237878114">Сајтов автоматски презеде повеќе датотеки</translation>
 <translation id="3046178388369461825">Дискот на Linux е речиси полн</translation>
 <translation id="304644035656848980">Преглед на микрофонот</translation>
+<translation id="3046892784550338476">Верзија <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Веб-страница, целосна</translation>
 <translation id="304747341537320566">Софтвер за говор</translation>
 <translation id="3047678109605649715">Нема гласови на <ph name="LANGUAGE" /> на уредот. Ослободете простор на уредот и обидете се повторно.</translation>

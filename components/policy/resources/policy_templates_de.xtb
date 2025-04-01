@@ -4015,15 +4015,6 @@ Diese Richtlinie ist vorübergehend und wird zukünftig entfernt.</translation>
 <translation id="3956573780915784996">Nutzern erlauben, eine systemweite Leistungs-Trace zu erfassen.</translation>
 <translation id="3956686688560604829">Richtlinie "SiteList" von Internet Explorer zur Unterstützung älterer Browser verwenden.</translation>
 <translation id="3958586912393694012">Verwendung von Smart Lock erlauben</translation>
-<translation id="3959350391319409669">Diese Richtlinie steuert die Einstellungen von dynamischem Code für <ph name="PRODUCT_NAME" />.
-
-Durch das Deaktivieren von dynamischem Code wird die Sicherheit von <ph name="PRODUCT_NAME" /> verbessert, da potenziell schädlicher dynamischer Code und Code von Drittanbietern das Verhalten von <ph name="PRODUCT_NAME" /> nicht verändern können. Dies kann jedoch zu Kompatibilitätsproblemen mit Drittanbieter-Software führen, die innerhalb des Browserprozesses ausgeführt werden muss.
-
-Wenn die Richtlinie auf „0 – Default“ gesetzt oder nicht konfiguriert ist, verwendet <ph name="PRODUCT_NAME" /> die Standardeinstellungen.
-
-Wenn die Richtlinie auf „1 – DisabledForBrowser“ gesetzt ist, kann der Browserprozess von <ph name="PRODUCT_NAME" /> keinen dynamischen Code erstellen.
-
-Hinweis: Weitere Informationen zu Prozessschutzrichtlinien findest du unter https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="3960728283243442805">Nutzer haben nicht die Möglichkeit, im <ph name="PRODUCT_NAME" />-Menü mithilfe eines Zugriffscodes oder durch Scannen eines QR-Codes Übertragungsgeräte auszuwählen.</translation>
 <translation id="3962445567482559878">EDU-Modus für das Einrichten von Assistant verwenden</translation>
 <translation id="396261881101930204">Medien-Empfehlungen für Nutzer verbergen</translation>

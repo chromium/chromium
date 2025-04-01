@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">Tvinga aktivering av zoom</translation>
 <translation id="3905475044299942653">Stoppa många aviseringar</translation>
 <translation id="3908288065506437185">Blockera tredjepartscookies i inkognitoläge</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">En del funktioner fungerar eventuellt inte. Relaterade webbplatser kan fortfarande använda tredjepartscookies.</translation>
 <translation id="3922092564198021702">Öppna Inställningar på telefonen</translation>
 <translation id="3933121352599513978">Komprimera oönskade förfrågningar (rekommenderas)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">Information</translation>
 <translation id="4598549027014564149">I inkognitoläget kan webbplatser inte använda cookies för att se din webbaktivitet på olika webbplatser – inte ens relaterade webbplatser. Din webbaktivitet används inte för sådant som annonsanpassning. Vissa webbplatsers funktioner kanske inte fungerar.</translation>
 <translation id="461356340001513807">Låter dig logga in på webbplatser med kontot du har hos en identitetstjänst</translation>
-<translation id="4619615317237390068">Flikar från andra enheter</translation>
 <translation id="4635969503923889910">Tillåt inte att webbplatser använder NFC-enheter</translation>
 <translation id="4644713492825682049">Radera och återställ</translation>
 <translation id="4645575059429386691">Hanteras av din förälder</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">Dela via</translation>
 <translation id="5001526427543320409">Tredjepartscookies</translation>
 <translation id="5007392906805964215">Granska</translation>
-<translation id="5014182796621173645">Du var här <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Tillåt</translation>
 <translation id="5048398596102334565">Tillåt webbplatser att använda enhetens rörelsesensorer (rekommenderas)</translation>
 <translation id="5048841907079026162">Hantera webbinformation</translation>
