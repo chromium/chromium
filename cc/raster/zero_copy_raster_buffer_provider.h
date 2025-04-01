@@ -27,7 +27,6 @@ class SharedImageInterface;
 }
 
 namespace cc {
-class LayerTreeFrameSink;
 
 // RasterBuffer for the zero copy upload, which is given to the raster worker
 // threads for raster/upload.
@@ -72,8 +71,9 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
       const RasterCapabilities& raster_caps);
 
   // Constructor used with software compositing.
-  explicit ZeroCopyRasterBufferProvider(LayerTreeFrameSink* frame_sink,
-                                        const RasterCapabilities& raster_caps);
+  explicit ZeroCopyRasterBufferProvider(
+      const scoped_refptr<gpu::SharedImageInterface>& shared_image_interface,
+      const RasterCapabilities& raster_caps);
 
   ZeroCopyRasterBufferProvider(const ZeroCopyRasterBufferProvider&) = delete;
   ~ZeroCopyRasterBufferProvider() override;
