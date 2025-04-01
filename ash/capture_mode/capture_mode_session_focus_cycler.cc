@@ -726,16 +726,11 @@ void CaptureModeSessionFocusCycler::AdvanceFocus(bool reverse) {
 void CaptureModeSessionFocusCycler::OnFineTunePositionUpdated(
     bool notify_selection_event) {
   const FineTunePosition fine_tune_position = GetFocusedFineTunePosition();
-  if (!ax_virtual_views_.contains(fine_tune_position)) {
-    return;
-  }
-
   views::AXVirtualView* affordance_ax_virtual_view =
       ax_virtual_views_[fine_tune_position];
   if (!affordance_ax_virtual_view) {
     return;
   }
-  CHECK(affordance_ax_virtual_view);
 
   const gfx::Rect user_region =
       CaptureModeController::Get()->user_capture_region();
