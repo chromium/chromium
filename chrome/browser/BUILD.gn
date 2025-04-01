@@ -6688,6 +6688,15 @@ static_library("browser") {
     ]
   }
 
+  if (enterprise_telomere_reporting) {
+    sources += [
+      "enterprise/connectors/reporting/telomere_event_router.cc",
+      "enterprise/connectors/reporting/telomere_event_router.h",
+      "enterprise/connectors/reporting/telomere_reporting_context.cc",
+      "enterprise/connectors/reporting/telomere_reporting_context.h",
+    ]
+  }
+
   if (enterprise_local_content_analysis) {
     sources += [
       "enterprise/connectors/analysis/local_binary_upload_service.cc",
