@@ -43,8 +43,8 @@ suite('AdTopicsFragment', function() {
   test('TestAdTopicsPageContent', function() {
     const adTopicsToggle =
         fragment.shadowRoot!.querySelector('settings-toggle-button');
-    const cardHeader =
-        fragment.shadowRoot!.querySelector<HTMLElement>('.header-label-phase2');
+    const cardHeader = fragment.shadowRoot!.querySelector<HTMLElement>(
+        '.settings-fragment-header-label');
     const descriptionHeaders =
         fragment.shadowRoot!.querySelectorAll<HTMLElement>(
             '.description-header');
