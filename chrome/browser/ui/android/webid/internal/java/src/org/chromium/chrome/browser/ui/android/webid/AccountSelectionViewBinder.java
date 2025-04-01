@@ -21,6 +21,7 @@ import android.icu.text.ListFormatter;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -135,6 +136,20 @@ class AccountSelectionViewBinder {
         ImageView avatarView = view.findViewById(R.id.start_icon);
         Resources resources = view.getContext().getResources();
         if (model.get(AccountProperties.SHOW_IDP)) {
+            // Resize the image view and the margin to account for the badging.
+            ViewGroup.LayoutParams layoutParams = avatarView.getLayoutParams();
+            ViewGroup.MarginLayoutParams marginLayoutParams =
+                    (ViewGroup.MarginLayoutParams) layoutParams;
+            int size =
+                    resources.getDimensionPixelSize(
+                            R.dimen.account_selection_account_avatar_multi_idp_size);
+            int marginEnd =
+                    resources.getDimensionPixelSize(
+                            R.dimen.account_selection_account_avatar_multi_idp_margin_end);
+            layoutParams.width = size;
+            layoutParams.height = size;
+            marginLayoutParams.setMarginEnd(marginEnd);
+
             // In this case, we expect the image to be badged and cropped, so we set the image
             // directly instead of using the monogram and invoking AvatarGenerator.makeRoundAvatar.
             Bitmap output = Bitmap.createBitmap(avatarSize, avatarSize, Config.ARGB_8888);

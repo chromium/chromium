@@ -40,7 +40,8 @@ using DismissReason = content::IdentityRequestDialogController::DismissReason;
 
 namespace {
 
-// The size of the circle cropped badged avatar on Android.
+// The size of the circle cropped avatar on Android, not including the offset
+// from badging.
 constexpr int kCircleCroppedBadgedAvatarSize = 40;
 
 ScopedJavaLocalRef<jobject> ConvertToJavaAccount(
