@@ -70,6 +70,8 @@
     <string name="send_to_external_app_text">External Intent Handler</string>
     <string name="search_in_cct_text">Interactive Omnibox</string>
     <string name="share_identity_text">Share Identity</string>
+    <string name="open_in_browser_text">Add open in browser button in toolbar</string>
+    <string name="show_action_button_text">Show the action button</string>
     <string name="custom_scheme">Custom scheme:</string>
     <string name="auth_tab_result">Received auth result.</string>
     <string name="auth_tab_canceled">AuthTab canceled</string>
