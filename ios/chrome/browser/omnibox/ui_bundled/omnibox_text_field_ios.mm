@@ -793,8 +793,13 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     case kRightArrow:
       return ([self isPreEditing] || [self hasAutocompleteText] ||
               [self hasAdditionalText]);
-    case kReturnKey:
-      return [self hasText];
+    case kReturnKey: {
+      NSString* trimmedText =
+          [self.text stringByTrimmingCharactersInSet:
+                         [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+      // Don't allow return when the text is empty. (crbug.com/400861280)
+      return self.allowsReturnKeyWithEmptyText || trimmedText.length;
+    }
   }
 }
 

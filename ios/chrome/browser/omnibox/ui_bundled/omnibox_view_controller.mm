@@ -502,13 +502,6 @@ using base::UserMetricsAction;
   self.isUpdatingCachedClipboardState = NO;
 }
 
-- (BOOL)textFieldIsBlank {
-  NSString* trimmedText = [self.textField.text
-      stringByTrimmingCharactersInSet:[NSCharacterSet
-                                          whitespaceAndNewlineCharacterSet]];
-  return [trimmedText length] == 0;
-}
-
 #pragma mark notification callbacks
 
 // Called on UITextInputCurrentInputModeDidChangeNotification for self.textField
