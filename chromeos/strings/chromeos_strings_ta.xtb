@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">ஸ்கிரீன் சேவரை முடக்குதல்</translation>
 <translation id="3091839911843451378">பிரிண்டர் நிறுத்தப்பட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="3102119246920354026">தற்காலிகச் சேமிப்பு</translation>
-<translation id="3112413615003385433">School Toolsஸில் உங்கள் ஆசிரியர் உள்ளடக்கத்தை அகற்றியுள்ளார்</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">நீச்சல் குளங்கள்</translation>
 <translation id="3122883569442693641">கூடுதல் விவரங்கள்</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">பகுதியளவு செயலாக்கப்பட்டது</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> வண்ணங்களுடைய <ph name="OFFICE_STYLE" /> அலுவலகம்</translation>
 <translation id="3493187369049186498">டேட்டாவை உங்கள் Chromebook அளவிடுகிறது. இது வழங்குநர் டேட்டாவிலிருந்து வேறுபடலாம்.</translation>
-<translation id="349570724365779960">School Toolsஸில் மாணவர்கள் இணைந்துள்ளனர்</translation>
 <translation id="3502426834823382181">அனைத்து ஆப்ஸையும் காட்டும்</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />செயல்திறன் டிரேஸ் தரவை <ph name="END_LINK1" /> அனுப்பு</translation>
 <translation id="3517001332549868749">ChromeOS அப்டேட்</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">திருத்தம் முடிந்தது</translation>
 <translation id="3532980081107202182">சுமார் <ph name="MIN_REMAINING" /> நிமிடங்கள் மீதமுள்ளன</translation>
 <translation id="3533790840489634638">நீச்சல்குளம்</translation>
-<translation id="3535802910192338629">School Toolsஸில் உங்கள் ஆசிரியர் புதிய உள்ளடக்கத்தைச் சேர்த்துள்ளார்</translation>
 <translation id="3547264467365135390">சூத்திரம்</translation>
 <translation id="3557205324756024651">அக அடையாளம் (விருப்பத்தேர்வு)</translation>
 <translation id="3565064564551103223">அனுமதிக்கப்படும் IPகள்</translation>
@@ -1440,7 +1437,6 @@
 <translation id="7544853251252956727">கலை</translation>
 <translation id="7550715992156305117">பிழை கண்டறிதலுக்கான வழக்கங்கள்</translation>
 <translation id="7551123448725492271">சாதனம் ஒரு ஆடியோ சாதனம்.</translation>
-<translation id="7553913964854052228">உங்கள் மைக்ரோஃபோனை School Tools பயன்படுத்துகிறது</translation>
 <translation id="7559239713112547082">ஸ்கிரீன்ஷாட்டின் மாதிரிக்காட்சி</translation>
 <translation id="7561454561030345039">இந்தச் செயல் உங்கள் நிர்வாகியால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="7561759921596375678">ஒலியளவை இயக்கும்</translation>
@@ -1663,7 +1659,6 @@
 <translation id="8576249514688522074">ஆரம்பிக்கப்படவில்லை</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" />க்கான நிலைபொருளின் <ph name="VERSION" /> பதிப்பை நிறுவ சாதனத்தை மீண்டும் தொடங்க வேண்டும். உங்கள் கம்ப்யூட்டர் சில முறை மறுபடி தொடங்கப்படலாம். இது வழக்கமானதே.</translation>
 <translation id="8593058461203131755">மீடியாவை இடைநிறுத்துவதற்கான ஐகான்</translation>
-<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">ரோமிங் நிலை</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" />க்கான கூடுதல் செயல்கள்</translation>
 <translation id="86356131183441916">வெளிர் ஊதா</translation>

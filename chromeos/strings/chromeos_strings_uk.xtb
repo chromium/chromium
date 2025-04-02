@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Деактивувати заставку</translation>
 <translation id="3091839911843451378">Не надруковано – друк зупинено</translation>
 <translation id="3102119246920354026">Кеш</translation>
-<translation id="3112413615003385433">Ваш викладач вилучив контент зі School Tools</translation>
 <translation id="3122464029669770682">ЦП</translation>
 <translation id="3122614491980756867">ставки</translation>
 <translation id="3122883569442693641">Докладніше</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Частково активовано</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> офіс в <ph name="OFFICE_COLOR" /> тонах</translation>
 <translation id="3493187369049186498">Дані про використання трафіку вимірює пристрій Chromebook. Вони можуть відрізнятися від даних постачальника.</translation>
-<translation id="349570724365779960">Студентів підключено до додатка School Tools</translation>
 <translation id="3502426834823382181">переглянути всі додатки</translation>
 <translation id="3510890413042482857">Надсилати <ph name="BEGIN_LINK1" />дані відстеження ефективності<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Оновлення ОС Chrome</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Завершити редагування</translation>
 <translation id="3532980081107202182">Залишилося приблизно <ph name="MIN_REMAINING" /> хв</translation>
 <translation id="3533790840489634638">ставок</translation>
-<translation id="3535802910192338629">Ваш викладач додав новий контент у School Tools</translation>
 <translation id="3547264467365135390">Формула</translation>
 <translation id="3557205324756024651">Локальна ідентифікація (необов’язково)</translation>
 <translation id="3565064564551103223">Дозволені IP-адреси</translation>
@@ -1440,7 +1437,6 @@
 <translation id="7544853251252956727">Перемішати</translation>
 <translation id="7550715992156305117">Послідовності дій для діагностики</translation>
 <translation id="7551123448725492271">Це аудіопристрій.</translation>
-<translation id="7553913964854052228">Додаток School Tools використовує ваш мікрофон</translation>
 <translation id="7559239713112547082">Попередній перегляд знімка екрана</translation>
 <translation id="7561454561030345039">Цією дією керує адміністратор</translation>
 <translation id="7561759921596375678">Увімкнути звук</translation>
@@ -1663,7 +1659,6 @@
 <translation id="8576249514688522074">Не ініціалізовано</translation>
 <translation id="8584654835905316966">Щоб завершити оновлення мікропрограми пристрою <ph name="DEVICE_NAME" /> до версії <ph name="VERSION" />, потрібно перезапустити пристрій. Ваш комп’ютер може перезапуститися кілька разів. Це нормально.</translation>
 <translation id="8593058461203131755">призупинити відтворення медіаконтенту</translation>
-<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Статус роумінгу</translation>
 <translation id="8626489604350149811">Інші дії для точки доступу <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Світло-фіолетовий</translation>

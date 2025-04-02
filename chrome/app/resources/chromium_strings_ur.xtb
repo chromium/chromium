@@ -150,6 +150,7 @@
 <translation id="2977470724722393594">‏Chromium اپ ٹو ڈیٹ ہے</translation>
 <translation id="2977506796191543575">‏اگر کوئی سائٹ آپ کا پاس ورڈ چرانے کی کوشش کرتی ہے یا جب آپ نقصان دہ فائل ڈاؤن لوڈ کرتے ہیں تو Chromium محفوظ براؤزنگ پر صفحہ کے مواد کے کچھ حصوں سمیت URLs بھی بھیج سکتا ہے</translation>
 <translation id="2981563588585023386">‏اپنے والدین کے انتخابات کے ساتھ آن لائن محفوظ رہنے کے لیے، Chromium میں سائن ان کریں</translation>
+<translation id="3003694935412297923">سبھی ٹاسکس</translation>
 <translation id="3013473503895162900">‏<ph name="URL" /> کو Chromium میں ایک نئے ٹیب میں کھولیں۔</translation>
 <translation id="3032706164202344641">‏Chromium آپ کے پاس ورڈز چیک نہیں کر سکتا ہے۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="3032787606318309379">‏Chromium میں شامل کیا جا رہا ہے…</translation>
@@ -169,6 +170,7 @@
 <translation id="3179665906251668410">‏لنک کو Chromium &amp;پوشیدگی ونڈو میں کھولیں</translation>
 <translation id="3185330573522821672">‏اپنی نئی Chromium پروفائل کو حسب ضرورت بنائیں</translation>
 <translation id="3224847870593914902">‏اپنے Google اکاؤنٹ کو Chromium سے ہٹانے کے لیے، ترتیبات کے صفحے میں Chromium سے سائن آؤٹ کریں</translation>
+<translation id="3234316605225071811">‏بعد میں، Chromium پوچھ سکتا ہے کہ کیا آپ اپنے لیے فارمز کو آٹو فل کرنے کے لیے محفوظ کردہ معلومات استعمال کرنا چاہتے ہیں</translation>
 <translation id="3258596308407688501">‏Chromium اپنی ڈیٹا ڈائریکٹری میں پڑھ اور لکھ نہیں سکتا ہے:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -265,6 +267,7 @@
 <translation id="4570813286784708942">‏Chromium نے اس ڈاؤن لوڈ کو مسدود کر دیا کیونکہ آپ نے محفوظ براؤزنگ کو آف کر دیا ہے اور فائل کی تصدیق نہیں ہو سکتی</translation>
 <translation id="4594305310729380060">اس آلہ پر پاس ورڈ مینیجر کو</translation>
 <translation id="459535195905078186">‏Chromium ایپس</translation>
+<translation id="4598116752460667024">فہرست سے کوئی بھی پروسیس تلاش کریں۔</translation>
 <translation id="4613863813562375431">‏ChromiumOS ورژن</translation>
 <translation id="4621240073146040695">‏تقریباً اپ ٹو ڈیٹ! اپ ڈیٹ کرنے کو مکمل کرنے کیلئے Chromium کو دوبارہ شروع کریں۔</translation>
 <translation id="4665829708273112819">‏وارننگ: Chromium ایکسٹینشنز کو آپ کی براؤزنگ سرگزشت ریکارڈ کرنے سے نہیں روک سکتا۔ اس ایکسٹینشن کو پوشیدگی وضع میں غیر فعال کرنے کے لیے اس اختیار کو غیر منتخب کریں۔</translation>
@@ -431,6 +434,7 @@
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" />‎</translation>
 <translation id="6873893289264747459">‏Chromium کو پتا چلا ہے کہ "<ph name="EXTENSION_NAME" />" میلوئیر پر مشتمل ہے</translation>
 <translation id="6896758677409633944">کاپی کریں</translation>
+<translation id="6901631050894301805">‏‫Chromium کو اپنے ڈیفالٹ براؤزر کے طور پر سیٹ کریں اور اسے اپنے ٹاسک بار پر پن کریں</translation>
 <translation id="6929417474050522668">‏ٹرائلز کے آن ہونے پر، Ad measurement آپ کی ملاحظہ کی جانے والی سائٹس کو Chromium سے معلومات کی درخواست کرنے کی اجازت دیتا ہے جس سے سائٹ کو اپنے اشتہارات کی کارکردگی کی پیمائش کرنے میں مدد ملتی ہے۔ Ad measurement سائٹس کے درمیان ممکنہ حد تک کم معلومات کی منتقلی کے ذریعے کراس سائٹ ٹریکنگ کو محدود کرتا ہے۔</translation>
 <translation id="6940431691900807093">‏بعد میں، آپ کی ملاحظہ کی جانے والی سائٹ آپ کو دکھائی دینے والے اشتہارات کو ذاتی نوعیت کا بنانے کے لیے Chromium سے آپ کی دلچسپیوں کو دیکھنے کا مطالبہ کر سکتی ہے۔ Chromium‏ 3 دلچسپیوں تک کا اشتراک کر سکتا ہے۔</translation>
 <translation id="6964305034639999644">‏لنک کو Chromium &amp;پوشیدگی ونڈو میں کھولیں</translation>
@@ -455,6 +459,7 @@
 <translation id="7223968959479464213">‏ٹاسک مینیجر - Chromium</translation>
 <translation id="7246575524853130370">‏Chromium کے مطابق اندازہ لگائی گئی آپ کی دلچسپیاں</translation>
 <translation id="7274695763216404502">پن کر دیا گیا! ٹول بار سے دوبارہ تصاویر کا استعمال کر کے تلاش استعمال کریں</translation>
+<translation id="7288567540154601580">ٹیبز اور ایکسٹینشز</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{‏Chromium تجویز کرتا ہے کہ آپ اسے ہٹا دیں}other{‏Chromium تجویز کرتا ہے کہ آپ انہیں ہٹا دیں}}</translation>
 <translation id="7309928523159922338">‏Ad measurement آپ کی ملاحظہ کی جانے والی سائٹس کو Chromium سے معلومات کی درخواست کرنے کی اجازت دیتا ہے جس سے سائٹ کو اپنے اشتہارات کی کارکردگی کی پیمائش کرنے میں مدد ملتی ہے۔ Ad measurement سائٹس کے درمیان ممکنہ حد تک کم معلومات کی منتقلی کے ذریعے کراس سائٹ ٹریکنگ کو محدود کرتا ہے۔</translation>
 <translation id="731795002583552498">‏Chromium کو اپ ڈیٹ کیا جا رہا ہے</translation>

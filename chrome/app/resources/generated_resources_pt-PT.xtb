@@ -4088,6 +4088,7 @@ Quer pará-lo?</translation>
 <translation id="3820749202859700794">SECG de curva elíptica secp521r1 (também denominada NIST P-521)</translation>
 <translation id="3821074617718452587">Notificações do Phone Hub</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Uma extensão foi aprovada}other{# extensões foram aprovadas}}</translation>
+<translation id="3822426549715448461">DD</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Recomenda-se, pelo menos, <ph name="INSTALL_SIZE" /> de espaço para o Linux.</translation>
 <translation id="3824621460022590830">O token de inscrição de dispositivo é inválido. Contacte o proprietário ou o gestor do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
@@ -4617,6 +4618,7 @@ Quer pará-lo?</translation>
 <translation id="4203769790323223880">Acesso à câmara não permitido</translation>
 <translation id="4204415812590935863">De momento, não é possível criar um tema.</translation>
 <translation id="4205157409548006256">Ocorreu um erro ao configurar o Linux.</translation>
+<translation id="4205643719206044108">Para oferecer sugestões, os sites que visita e o conteúdo das páginas são partilhados com a Google</translation>
 <translation id="4206144641569145248">Extraterrestre</translation>
 <translation id="4206323443866416204">Relatório de comentários</translation>
 <translation id="4206585797409671301">Com autorização para mostrar pedidos</translation>
@@ -8761,6 +8763,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7199452998289813782">Pausar transmissão para <ph name="DEVICE_NAME" /></translation>
 <translation id="720110658997053098">Manter este dispositivo permanentemente no modo quiosque</translation>
 <translation id="7201118060536064622">"<ph name="DELETED_ITEM_NAME" />" eliminado</translation>
+<translation id="7201336084980086208">O preenchimento automático pode oferecer a opção de guardar informações quando envia formulários, como o número da carta de condução ou do passaporte</translation>
 <translation id="7201420661433230412">Ver ficheiros</translation>
 <translation id="7201432510117121839">A transmissão do áudio do computador não é suportada neste dispositivo</translation>
 <translation id="7201535955609308429">Aguarde enquanto a validação está em curso</translation>

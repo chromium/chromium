@@ -105,6 +105,7 @@
 <translation id="1411386976162024013">Визуално търсене с Обектив</translation>
 <translation id="1417474386970818917">Излизане от профила и изтриване</translation>
 <translation id="1426410128494586442">Да</translation>
+<translation id="1429187656584513419">Отворете Passwords</translation>
 <translation id="1430915738399379752">Печат</translation>
 <translation id="1436671784520050284">Продължаване с настройването</translation>
 <translation id="143681031165817424">Адресът е запазен само на това устройство</translation>
@@ -288,6 +289,7 @@
 <translation id="2164946989711475905">Вход…</translation>
 <translation id="2175927920773552910">Код за бърза реакция</translation>
 <translation id="218350106843433823">Автоматично попълване на пароли и ключове за достъп</translation>
+<translation id="2184272387334793084">Влезте в профила си, за да имате достъп до своите пароли и др. на всичките си устройства</translation>
 <translation id="2186206192313702726">Google Обектив</translation>
 <translation id="219283042927675668">Раздели в групата</translation>
 <translation id="2194856509914051091">Обмислете следните неща</translation>
@@ -590,6 +592,7 @@
 <translation id="3530206579861815432">Можете бързо да намирате отворените и наскоро затворените раздели на синхронизираните си устройства.</translation>
 <translation id="3530767473765895035">Управление на профилите на това устройство…</translation>
 <translation id="3533436815740441613">Нов раздел</translation>
+<translation id="3533860663366814939">Отворете Autofill &amp; Password settings</translation>
 <translation id="3547356470684043247">Четете оценки за продуктите и услугите или отзиви за практическата работа на клиентите, така че да вземате информирани решения</translation>
 <translation id="3557336313807607643">Добавяне към контактите</translation>
 <translation id="355765753469272474">Отмяна</translation>
@@ -1512,6 +1515,7 @@
 <translation id="7431851541687113774">Изключване на разпознаването на адреси</translation>
 <translation id="7431991332293347422">Контролирайте начина, по който историята ви на сърфиране се използва за персонализиране на търсенето и др.</translation>
 <translation id="7435356471928173109">Изключено от администратора ви</translation>
+<translation id="7437712592381799950">Можете да плъзнете нагоре, за да видите повече съдържание, персонализирано за вас.</translation>
 <translation id="7438481509621345350">Когато отворите нов раздел, вече ще виждате материали от <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Отметката е запазена в(ъв) „{title}“}other{Отметките са запазени в(ъв) „{title}“}}</translation>
 <translation id="7451404862887877229">Докоснете „Поверителност и сигурност“ и след това – Безопасно сърфиране.</translation>
@@ -1610,10 +1614,12 @@
 <translation id="7841180087127694526">Търсене на копирания текст</translation>
 <translation id="7841418003178675048">Изберете картите, които да виждате в новия раздел в браузъра.</translation>
 <translation id="7846161022626028328">Възникна грешка. Опитайте отново.</translation>
+<translation id="784623644169604270">Няма скорошна активност</translation>
 <translation id="7846296061357476882">Услуги на Google</translation>
 <translation id="784934925303690534">Период от време</translation>
 <translation id="7851858861565204677">Други устройства</translation>
 <translation id="7853202427316060426">Активност</translation>
+<translation id="7854006015462979438">Отворете General</translation>
 <translation id="7859988229622350291">Никога да не се превежда от</translation>
 <translation id="7863211248337747225">Инсталиране на приложението</translation>
 <translation id="7865127013871431856">Опции за превод</translation>

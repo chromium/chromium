@@ -1015,6 +1015,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2742870351467570537">Suprimeix els elements seleccionats</translation>
 <translation id="2743512410823092182">Equipament i recursos per a discjòqueis</translation>
 <translation id="2743934314332613923">Vols actualitzar el permís de conduir?</translation>
+<translation id="2759299890026163685">Assegura't de tenir una connexió a Internet estable abans de tornar-ho a provar</translation>
 <translation id="2759825833388495838">emplenar la teva contrasenya a <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Còmics</translation>
 <translation id="2765217105034171413">Petita</translation>
@@ -1279,6 +1280,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="323107829343500871">Introdueix el CVC de la targeta <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Detecta sempre el contingut important d'aquest lloc</translation>
 <translation id="323585066388831737">Vermell clar</translation>
+<translation id="3235902901585019063">Els fitxers locals se suprimiran el dia <ph name="DATE_TIME" />. Assegura't que totes les dades empresarials o personals essencials s'emmagatzemin externament.</translation>
 <translation id="3236212803136366317">Avantatges de les targetes</translation>
 <translation id="3238395604961564389">Obre l'enllaç en una finestra d'incògnit</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per personalitzar l'aspecte del teu navegador</translation>
@@ -1757,6 +1759,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4031179711345676612">El micròfon es pot utilitzar</translation>
 <translation id="4036753017940930924">Parcel·les i terres</translation>
 <translation id="4039506337798853114">Per mostrar el cursor, prem |<ph name="ACCELERATOR" />|</translation>
+<translation id="4045226534284799755">Inicia la sessió al teu compte de Microsoft abans de tornar-ho a provar</translation>
 <translation id="4045441967987592849">Torna a obrir</translation>
 <translation id="4047351652147966654">18 x 24 polzades</translation>
 <translation id="404831776305217138">L'URL d'actualització de l'extensió amb l'identificador "<ph name="EXTENSION_ID" />" no és vàlid o utilitza un esquema no admès. S'admeten els esquemes següents: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> i <ph name="FILE_SCHEME" />.</translation>
@@ -1777,6 +1780,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4073797364926776829">Mostra la targeta</translation>
 <translation id="4075732493274867456">El client i el servidor no admeten cap versió de protocol SSL ni cap sistema de xifratge comuns.</translation>
 <translation id="4079302484614802869">La configuració del servidor intermediari s'ha definit perquè utilitzi un URL de script .pac, en lloc de servidors intermedis fixos.</translation>
+<translation id="4080855220442581440">desplaçar-se i fer zoom a les pestanyes compartides</translation>
 <translation id="4082333119419111506">Paper (preimprès)</translation>
 <translation id="4082393374666368382">Configuració - Gestió</translation>
 <translation id="4084219288110917128">Sobre C1</translation>
@@ -2209,6 +2213,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4834250788637067901">Formes de pagament, ofertes i adreces que fan servir Google Pay</translation>
 <translation id="4840250757394056958">Mostra l'historial de Chrome</translation>
 <translation id="484462545196658690">Automàtic</translation>
+<translation id="4844937814014739139">Desplaçar-se i fer zoom a les pestanyes compartides</translation>
 <translation id="484671803914931257">Obtén un descompte a <ph name="MERCHANT_NAME" /> i més</translation>
 <translation id="484988093836683706">Utilitza el desbloqueig del dispositiu</translation>
 <translation id="4850886885716139402">Mostra</translation>
@@ -2502,6 +2507,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5344522958567249764">Gestiona la privadesa d'anuncis</translation>
 <translation id="5344579389779391559">És possible que aquesta pàgina provi de fer-te algun càrrec</translation>
 <translation id="5345249337934847112">Paper (estucat d'alt gramatge)</translation>
+<translation id="5348330584842140856">Aquest fitxer no s'ha mogut perquè ja no existeix</translation>
 <translation id="5349543692327946794">Etiquetes (tinta d'injecció)</translation>
 <translation id="5351548097010183514">Materials i subministraments per a la construcció</translation>
 <translation id="5354143049423063163">Fons d'inversió lliure</translation>
@@ -2766,6 +2772,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5826507051599432481">Nom comú (CN)</translation>
 <translation id="5830698870816298009">ús i moviment de la càmera</translation>
 <translation id="583281660410589416">Desconegut</translation>
+<translation id="5837220895135257862">Allibera espai a <ph name="CLOUD_PROVIDER" /> abans de tornar-ho a provar</translation>
 <translation id="5838278095973806738">És recomanable que no introdueixis informació sensible en aquest lloc web (com ara contrasenyes o targetes de crèdit), ja que alguns atacants podrien robar-la.</translation>
 <translation id="5838732667866024867">Pots fer servir les fletxes esquerra o dreta per consultar els canvis de preu al gràfic</translation>
 <translation id="5840318881868981258">Al teu Compte de Google, <ph name="ACCOUNT" /></translation>
@@ -4026,6 +4033,7 @@ Detalls addicionals:
 <translation id="799149739215780103">Enquadernació</translation>
 <translation id="7992044431894087211">S'ha reprès la compartició de la pantalla amb <ph name="APPLICATION_TITLE" /></translation>
 <translation id="7995512525968007366">No especificat</translation>
+<translation id="7997855386298213183">pestanyes compartides</translation>
 <translation id="800218591365569300">Prova de tancar altres pestanyes o programes per alliberar memòria.</translation>
 <translation id="8002230960325005199">Mostra llocs web relacionats en una pestanya nova</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>

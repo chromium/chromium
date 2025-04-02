@@ -17,6 +17,7 @@
 <translation id="1052842760770519282">Não é possível acessar algumas das suas senhas</translation>
 <translation id="1058669287135776095">Você está off-line. Verifique sua conexão de Internet e tente de novo.</translation>
 <translation id="10614374240317010">Nunca salvas</translation>
+<translation id="1070689840697074178">Você pode baixar PDFs aqui</translation>
 <translation id="107147699690128016">Se você mudar a extensão do arquivo, ele poderá ser aberto em um aplicativo diferente e colocar em risco seu dispositivo.</translation>
 <translation id="1080365971383768617">Senhas em todos os seus dispositivos</translation>
 <translation id="1087176310396019910">Possível spam</translation>
@@ -955,6 +956,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5456381639095306749">Baixar página</translation>
 <translation id="5458366071038729214">Você verá os sites que você seguir aqui</translation>
 <translation id="5468068603361015296">Quer baixar <ph name="FILE_NAME" /> mesmo assim?</translation>
+<translation id="5471273988133666918">Não foi possível mover a guia <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Abrir no app de mapa</translation>
 <translation id="5492637351392383067">Criptografia no dispositivo</translation>
 <translation id="549660026907543296">Participar como <ph name="MEMBER_FULL_NAME" /></translation>

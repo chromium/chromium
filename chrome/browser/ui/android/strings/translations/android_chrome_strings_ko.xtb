@@ -17,6 +17,7 @@
 <translation id="1052842760770519282">일부 비밀번호에 액세스할 수 없습니다</translation>
 <translation id="1058669287135776095">현재 오프라인 상태입니다. 인터넷 연결을 확인하고 다시 시도해 보세요.</translation>
 <translation id="10614374240317010">저장하지 않음</translation>
+<translation id="1070689840697074178">여기에서 PDF를 다운로드할 수 있습니다.</translation>
 <translation id="107147699690128016">파일 확장자를 변경하면 파일이 다른 애플리케이션에서 열리고 기기가 위험에 노출될 수도 있습니다.</translation>
 <translation id="1080365971383768617">모든 기기의 비밀번호</translation>
 <translation id="1087176310396019910">스팸일 수 있음</translation>
@@ -288,6 +289,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2362083820973145409"><ph name="USER_NAME" /> 계정으로 로그인되었습니다. <ph name="USER_EMAIL" />입니다. 설정을 엽니다.</translation>
 <translation id="2363734411417672757">더 많은 페이지가 미리 로드됩니다. 다른 사이트 또는 앱에서 요청하면 Google 서버를 통해 페이지가 미리 로드될 수 있습니다.</translation>
 <translation id="2366554533468315977">이 옵션의 웹 전반 가격 변동 내역</translation>
+<translation id="2367818124433749493">개발자 단축키</translation>
 <translation id="2385605401818128172">알림을 많이 보내는 사이트를 검토하고, 향후 알림을 보내지 못하도록 할 수 있습니다.</translation>
 <translation id="2386938421315164605">주제 숨기기 및 숨기기 해제</translation>
 <translation id="2390510615457643724"><ph name="FILE_NAME" />(<ph name="FILE_SIZE" />) 파일을 다시 다운로드하시겠습니까?</translation>
@@ -954,6 +956,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5456381639095306749">다운로드 페이지</translation>
 <translation id="5458366071038729214">팔로우하는 사이트가 여기에 표시됩니다</translation>
 <translation id="5468068603361015296">그래도 <ph name="FILE_NAME" /> 파일을 다운로드하시겠습니까?</translation>
+<translation id="5471273988133666918"><ph name="TAB_TITLE" /> 탭을 이동할 수 없습니다.</translation>
 <translation id="548278423535722844">지도 앱에서 열기</translation>
 <translation id="5492637351392383067">기기 내 암호화</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" />(으)로 참여</translation>
@@ -1130,6 +1133,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6295158916970320988">모든 사이트</translation>
 <translation id="6296366034485697675">내보내기 및 삭제</translation>
 <translation id="629730747756840877">계정</translation>
+<translation id="6301526076346731664">개발자 도구 열기</translation>
 <translation id="6303969859164067831">로그아웃하고 동기화 사용 중지</translation>
 <translation id="6307241780749477694">이 기기에서 모든 비밀번호를 가져오려면 본인 인증을 진행하세요.</translation>
 <translation id="6312687380483398334">웹 앱(무음)</translation>

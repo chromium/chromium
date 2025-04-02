@@ -288,6 +288,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2362083820973145409">Logget ind som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Åbner indstillinger.</translation>
 <translation id="2363734411417672757">Flere sider forudindlæses. Sider forudindlæses muligvis via Googles servere, når andre websites eller apps anmoder om siderne.</translation>
 <translation id="2366554533468315977">Prishistorik for dette produkt på nettet</translation>
+<translation id="2367818124433749493">Udviklergenveje</translation>
 <translation id="2385605401818128172">Du kan gennemgå websites, der sender mange notifikationer, og forhindre dem i at sende flere i fremtiden</translation>
 <translation id="2386938421315164605">Skjul og vis emner</translation>
 <translation id="2390510615457643724">Vil du downloade <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> igen?</translation>
@@ -1130,6 +1131,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6295158916970320988">Alle websites</translation>
 <translation id="6296366034485697675">Eksportér og slet</translation>
 <translation id="629730747756840877">Konto</translation>
+<translation id="6301526076346731664">Åbn Udviklerværktøjer</translation>
 <translation id="6303969859164067831">Log ud, og deaktiver synkronisering</translation>
 <translation id="6307241780749477694">Verificer din identitet for at få alle dine adgangskoder på denne enhed</translation>
 <translation id="6312687380483398334">Webapps (lydløs)</translation>

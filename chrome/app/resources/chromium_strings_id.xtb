@@ -94,6 +94,7 @@
 <translation id="2238130810669087193">Untuk mendapatkan alamat dan info Anda yang lain di semua perangkat Anda, login ke Chromium. Alamat ini akan disimpan di Akun Google Anda setelah Anda login.</translation>
 <translation id="2240214816234246077">Anda tidak membuka situs ini baru-baru ini. Chromium menghapus <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Jika Anda berbagi komputer, teman dan keluarga bisa menjelajah secara terpisah dan menyiapkan Chromium sesuai keinginannya.</translation>
+<translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium merekomendasikan untuk menjeda tab yang memperlambat browser Anda}other{Chromium merekomendasikan untuk menjeda tab yang memperlambat browser Anda}}</translation>
 <translation id="2313870531055795960">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chromium. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chromium mungkin juga mengirim URL, termasuk bit konten halaman, ke Safe Browsing.</translation>
 <translation id="2343156876103232566">Untuk mengirimkan nomor dari sini ke ponsel Android Anda, login ke Chromium di kedua perangkat.</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
@@ -310,6 +311,7 @@
 <translation id="5405650547142096840">Hapus dari Chromium</translation>
 <translation id="5427571867875391349">Setel Chromium sebagai browser default</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
+<translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium Merekomendasikan untuk Menjeda Tab yang Memperlambat Browser Anda}other{Chromium Merekomendasikan untuk Menjeda Tab yang Memperlambat Browser Anda}}</translation>
 <translation id="5473971139929175403">Chromium mungkin tidak berfungsi dengan semestinya karena sudah tidak didukung di distribusi Linux ini</translation>
 <translation id="5475924890392386523">Chromium memblokir download ini karena file tersebut dapat membahayakan akun pribadi dan jejaring sosial Anda</translation>
 <translation id="5480860683791598150">Chromium memerlukan akses ke lokasi Anda untuk berbagi lokasi dengan situs ini</translation>

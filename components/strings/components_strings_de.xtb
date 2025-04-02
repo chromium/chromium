@@ -35,6 +35,7 @@
 <translation id="1060136083665017312">Spielsysteme und ‑konsolen</translation>
 <translation id="1060320201901229167">Umschlag Kaku 5</translation>
 <translation id="1062407476771304334">Ersetzen</translation>
+<translation id="1063822554756965137">Dateien wurden gelöscht</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Einzelheiten zur Suchmaschine</translation>
 <translation id="1068672505746868501">Seiten auf <ph name="SOURCE_LANGUAGE" /> nie übersetzen</translation>
@@ -145,6 +146,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1253846494229886276">Screenshot wird gespeichert</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synchronisiert)</translation>
 <translation id="1255086252236620440">Handrührgeräte</translation>
+<translation id="1255931290436977164">Reisepass</translation>
 <translation id="1256368399071562588">&lt;p&gt;Wenn du eine bestimmte Website nicht aufrufen kannst, versuche zuerst, das Problem folgendermaßen zu beheben:&lt;/p&gt;
     &lt;ol&gt;
     &lt;li&gt;Prüfe die Webadresse auf Tippfehler.&lt;/li&gt;
@@ -384,6 +386,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1644574205037202324">Verlauf</translation>
 <translation id="1645004815457365098">Unbekannte Quelle</translation>
 <translation id="1645368109819982629">Nicht unterstütztes Protokoll</translation>
+<translation id="1647550855876293003"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /></translation>
 <translation id="1650602712345345441">Chrome-Einstellungen verwalten</translation>
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">Wenn du den Passwortmanager mit dem macOS-Schlüsselbund verwenden möchtest, starte Chromium neu und erlaube den Zugriff auf den Schlüsselbund. Deine Tabs werden nach dem Neustart wieder geöffnet.</translation>
@@ -761,6 +764,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2300306941146563769">Nicht hochgeladen</translation>
 <translation id="2301098101308036335">Welche Websites zu welchem Zeitpunkt besucht werden.</translation>
 <translation id="230286397113210245">Schaltfläche „Inkognitofenster öffnen“ – aktivieren, um ein neues Inkognitofenster zu öffnen und privat zu surfen</translation>
+<translation id="2305294852062272447">Führerschein speichern?</translation>
 <translation id="2306124309679506798">Immersive Nutzung zulassen?</translation>
 <translation id="2307711332257985952">Deine Privat- und deine Arbeitsadresse sind jetzt in Chrome verfügbar</translation>
 <translation id="2312234273148520048">Würzmittel und Dressings</translation>
@@ -770,6 +774,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2317259163369394535">Für <ph name="DOMAIN" /> sind ein Nutzername und ein Passwort erforderlich.</translation>
 <translation id="2318594867107319532">Letzter Richtlinien-Zeitstempel:</translation>
 <translation id="2320564945062300737">Gesichtspflegeprodukte</translation>
+<translation id="2321291402658100099">Informationen verwalten</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 Fenster}other{# Fenster}}</translation>
 <translation id="2328651992442742497">Zugelassen (Standardeinstellung)</translation>
 <translation id="2328955282645810595">Bau- und Elektrowerkzeuge</translation>
@@ -819,6 +824,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2396249848217231973">&amp;Löschen rückgängig machen</translation>
 <translation id="2399344929880464793">Diese IBAN wurde in deinem Google-Konto gespeichert, damit du sie auch in anderen Google-Diensten verwenden kannst.</translation>
 <translation id="2399868464369312507">Google Chrome versucht, Zahlungsmethoden zu bearbeiten.</translation>
+<translation id="2400263725572336749">Reisepass hinzufügen</translation>
 <translation id="2400600116338235695">Darf nachfragen, wenn sie eine Verbindung mit seriellen Ports herstellen möchte</translation>
 <translation id="2404884497378469141">Versuche noch einmal, deine Dateien zu kopieren</translation>
 <translation id="2413155254802890957">Alt</translation>
@@ -1008,6 +1014,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2742128390261873684">Heimautomatisierung</translation>
 <translation id="2742870351467570537">Ausgewählte Einträge entfernen</translation>
 <translation id="2743512410823092182">Ressourcen und Ausrüstung für DJs</translation>
+<translation id="2743934314332613923">Führerschein aktualisieren?</translation>
 <translation id="2759825833388495838">dein Passwort in <ph name="APP_NAME" /> einzugeben</translation>
 <translation id="2764001903315068341">Comics</translation>
 <translation id="2765217105034171413">Klein</translation>
@@ -1060,6 +1067,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2891963978019740012">Deine Suchmaschine in Chrome</translation>
 <translation id="2893773853358652045">Vierte Rolle</translation>
 <translation id="2894137550885451583">Das sind die Preise in <ph name="CURRENCY" /> für <ph name="PRODUCT" /></translation>
+<translation id="2894233157216554317">Reisepass aktualisieren?</translation>
 <translation id="2900528713135656174">Termin erstellen</translation>
 <translation id="2902312830803030883">Weitere Aktionen</translation>
 <translation id="2903493209154104877">Adressen</translation>
@@ -1147,6 +1155,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3023165109041533893">Wenn du von Websites vorgeschlagene Werbung erlaubst, dürfen Websites dir relevante Werbung präsentieren – deine Identität und dein Browserverlauf bleiben dabei aber geschützt. Eine von dir besuchte Website kann ausgehend von deinen Aktivitäten entsprechende Werbung vorschlagen. In den Einstellungen kannst du eine Liste dieser Websites aufrufen und unerwünschte Websites blockieren.</translation>
 <translation id="3024663005179499861">Falscher Richtlinientyp</translation>
 <translation id="3030331669969285614">Diese Flags verhindern eine funktionsgefährdende Änderung oder machen sie rückgängig und sind nur für begrenzte Zeit verfügbar.</translation>
+<translation id="3030542417256082866">Fahrzeug speichern?</translation>
 <translation id="3034526003882782781">Scrollen und Zoomen zulässig</translation>
 <translation id="3036894576201005614">Reinigungsmittel für den Haushalt</translation>
 <translation id="3037177537145227281">Preis wird beobachtet</translation>
@@ -1174,6 +1183,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3090667236485488075">Glas</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Ignoriert, da die „disable“-Liste ein Muster enthält, das „*“ und damit der Deaktivierung der Richtlinie entspricht.</translation>
+<translation id="3098944373717628099">Deine lokalen Dateien werden in 1 Stunde gelöscht</translation>
 <translation id="3099619114405539473">Verfügbare Kameras verwenden (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Sparkonto</translation>
 <translation id="3103188521861412364">Aktien und Anleihen</translation>
@@ -1343,6 +1353,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3364869320075768271"><ph name="URL" /> möchte dein Virtual-Reality-Gerät und deine Virtual-Reality-Daten verwenden</translation>
 <translation id="3369192424181595722">Fehler bei der Uhrzeit</translation>
 <translation id="3371064404604898522">Google Chrome als Standardbrowser festlegen</translation>
+<translation id="3371186787117738282"><ph name="ATTRIBUTE_NAME" /> hinzugefügt</translation>
 <translation id="337363190475750230">Bereitstellung aufgehoben</translation>
 <translation id="3377144306166885718">Der Server hat eine veraltete TLS-Version verwendet.</translation>
 <translation id="3377188786107721145">Fehler beim Parsen der Richtlinie</translation>
@@ -1352,6 +1363,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3380864720620200369">Client-ID: </translation>
 <translation id="3381668585148405088">Deinen Einkauf bestätigen</translation>
 <translation id="3383566085871012386">Aktuelle Rangfolge</translation>
+<translation id="3383713837163550889">Deine lokalen Dateien werden in 1 Minute gelöscht</translation>
 <translation id="3384522979010096022">Deine Organisation lässt nicht zu, dass du diese Website aufrufst</translation>
 <translation id="3391030046425686457">Lieferadresse</translation>
 <translation id="3391482648489541560">Dateibearbeitung</translation>
@@ -1453,6 +1465,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3558573058928565255">Tageszeit</translation>
 <translation id="3559897352860026926">Bitte deinen Administrator, die <ph name="CLOUD_PROVIDER" />-Konfigurationseinstellungen zu überprüfen.</translation>
 <translation id="3560824484345057728">Ähnliche Websites ansehen</translation>
+<translation id="356359327498380603">Fahrzeug aktualisieren?</translation>
 <translation id="3566021033012934673">Dies ist keine sichere Verbindung</translation>
 <translation id="3566336457819493938">215 × 315 mm</translation>
 <translation id="3566649245868131295">Stellen im Bereich Gesundheit und Medizin</translation>
@@ -1479,6 +1492,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3586931643579894722">Details ausblenden</translation>
 <translation id="3587725436724465984">Deine Organisation hat <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> als eine Website identifiziert, die möglicherweise gegen eine Richtlinie verstößt. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Mitte</translation>
+<translation id="3596918995172292499">Kennzeichen – Bundesstaat</translation>
 <translation id="3600106876108433070">Informationen zu Vergleichstabellen</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Schaltfläche „Datenschutzeinstellungen des Google-Kontos verwalten“ – aktivieren, um die Datenschutzeinstellungen deines Google-Kontos aufzurufen</translation>
@@ -1651,6 +1665,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3858027520442213535">Datum und Uhrzeit aktualisieren</translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="3865339060090354361">Hier findest du die Nutzungsbedingungen für <ph name="CREDIT_CARD_NAME" /></translation>
+<translation id="3869939189466884821">Deine lokalen Dateien werden in <ph name="MINUTES" /> Minuten gelöscht</translation>
 <translation id="3872834068356954457">Wissenschaft</translation>
 <translation id="3875783148670536197">Zeigen</translation>
 <translation id="3879748587602334249">Download-Manager</translation>
@@ -1702,6 +1717,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3965672182149944205">Adresse speichern?</translation>
 <translation id="3966044442021752214">Produktsicherheit</translation>
 <translation id="3969869202926863008">Zugriff auf lokales Netzwerk</translation>
+<translation id="3970239200223030389">Ausstellungsdatum</translation>
 <translation id="397105322502079400">Wird berechnet...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ist gesperrt</translation>
 <translation id="3975852104434126461">Automobilbranche</translation>
@@ -1905,6 +1921,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4290920330097335010">Nie erlauben</translation>
 <translation id="4296207570293932800">Neue Funktion zum Datenschutz bei Werbung verfügbar</translation>
 <translation id="4297502707443874121">Miniaturansicht für Seite <ph name="THUMBNAIL_PAGE" /></translation>
+<translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> wurde aktualisiert</translation>
 <translation id="4298000214066716287">Investitionen</translation>
 <translation id="42981349822642051">Maximieren</translation>
 <translation id="4300675098767811073">Mehrfache Lochung rechts</translation>
@@ -1954,16 +1971,19 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4363222835916186793">Benachrichtigungen zu diesem Produkt wurden deaktiviert</translation>
 <translation id="4363729811203340554">Wenn du dieses Gerät gemeinsam mit anderen verwendest, kann Chrome bei jeder Zahlung mit Autofill eine Bestätigung anfordern</translation>
 <translation id="4366943895537458493">Platte</translation>
+<translation id="4369179505195332608">Führerschein bearbeiten</translation>
 <translation id="437040971055499437">Sicherheitshinweis aufgetreten</translation>
 <translation id="4371591986692297148">Inaktiv</translation>
 <translation id="4372948949327679948">Erwarteter <ph name="VALUE_TYPE" />-Wert</translation>
 <translation id="437620492464254965">Türen und Fenster</translation>
 <translation id="4377125064752653719">Du hast versucht, auf <ph name="DOMAIN" /> zuzugreifen, das vom Server übermittelte Zertifikat wurde jedoch vom entsprechenden Aussteller widerrufen. Das bedeutet, dass die vom Server übermittelten Sicherheitsinformationen nicht vertrauenswürdig sind. Möglicherweise kommunizierst du mit einem Hacker.</translation>
 <translation id="4378154925671717803">Telefon</translation>
+<translation id="4382833368532556056">Speichere deine Dateien in Zukunft im Cloud-Speicher</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Datei-Upload in Microsoft OneDrive wurde pausiert</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4395550503472021297">Mit dieser Richtlinie wird das Standardverhalten der folgenden Richtlinien festgelegt: <ph name="POLICIES" /></translation>
+<translation id="4396554829965096368">Führerschein</translation>
 <translation id="4397978002248035985">Öffnet ein Bestätigungs-Pop-up auf der Website deiner Bank</translation>
 <translation id="4406883609789734330">Automatische Untertitel</translation>
 <translation id="4406896451731180161">Suchergebnisse</translation>
@@ -2374,6 +2394,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5159010409087891077">Seite in einem neuen Inkognitofenster öffnen (⇧⌘N)</translation>
 <translation id="5161334686036120870">Thema:</translation>
 <translation id="5161506081086828129">Stapelfach 9</translation>
+<translation id="5164537320435517152">Dateien in <ph name="MINUTES" /> Min. löschen</translation>
 <translation id="5164798890604758545">Text eingegeben</translation>
 <translation id="5164928537947209380">Dieses experimentelle KI-Tool kann falsche Ergebnisse ausgeben. Deine Inhalte werden an Google gesendet, damit wir sie verbessern können.
     <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -2402,6 +2423,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5217759126664161410">Ungültiges Protokollformat.</translation>
 <translation id="5221377878828867877">Die Wiederverwendung von Passwörtern wird von deiner Organisation geprüft</translation>
 <translation id="5222812217790122047">E-Mail-Adresse erforderlich</translation>
+<translation id="5225215474235602477">Reisepass speichern?</translation>
 <translation id="5228269245420405804">Fernunterricht</translation>
 <translation id="5230733896359313003">Versandadresse</translation>
 <translation id="5230815978613972521">B8</translation>
@@ -2615,6 +2637,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5570825185877910964">Konto schützen</translation>
 <translation id="5571083550517324815">Diese Abholadresse wird nicht unterstützt. Bitte wähle eine andere Adresse aus.</translation>
 <translation id="5572434905385510939">22 × 28 Zoll</translation>
+<translation id="5573641252776268565">Reisepass bearbeiten</translation>
 <translation id="5578606540385219379">Internetanbieter</translation>
 <translation id="5580958916614886209">Prüfe den Ablaufmonat und versuche es dann erneut</translation>
 <translation id="5583442610070676234">Weitere Aktionen für Vergleichstabelle „<ph name="COMPARE_SET_NAME" />“</translation>
@@ -2806,6 +2829,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5944297261866530437">Stoff (hochglanz)</translation>
 <translation id="5950901984834744590">Rasierer</translation>
 <translation id="5951495562196540101">Registrierung mit Kundenkonto nicht möglich (Paketlizenz verfügbar).</translation>
+<translation id="5952076224478208938">Marke</translation>
 <translation id="5953516610448771166">Die Funktion „Automatische Untertitel“ ist für diesen Inhalt nicht verfügbar. Wenn du Untertitel nutzen möchtest, blockiere <ph name="CONTENT_SETTINGS" /> für diese Website.</translation>
 <translation id="595873925609605681">Wenn die Websitefunktionen nicht funktionieren, <ph name="BEGIN_LINK" />kannst du versuchen, Drittanbieter-Cookies vorübergehend zuzulassen<ph name="END_LINK" />.</translation>
 <translation id="5960795367348889467">Bestätigung</translation>
@@ -2845,6 +2869,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6015796118275082299">Jahr</translation>
 <translation id="6017514345406065928">Grün</translation>
 <translation id="6018650639991193045">In den Chrome-Einstellungen Browserverlauf, Cookies und andere Daten löschen sowie Cache leeren</translation>
+<translation id="6023810427609440412">FIN (Fahrzeugidentifikationsnummer)</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (synchronisiert)</translation>
 <translation id="6028591542479806248">Hier kannst du deine mobilen Benachrichtigungen und E-Mail-Benachrichtigungen einrichten</translation>
 <translation id="6028833024483927901">Internationale Küche</translation>
@@ -2889,6 +2914,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6089505343295765444">Tabs, die du aus deinem Chrome-Verlauf löschst, werden weiterhin in deinen Vergleichstabellen angezeigt</translation>
 <translation id="6093599771645355227">Gelb 1</translation>
 <translation id="6093795393556121384">Ihre Karte wurde bestätigt.</translation>
+<translation id="6094253940069566294">Fahrzeug bearbeiten</translation>
 <translation id="6094273045989040137">Anmerkung hinzufügen</translation>
 <translation id="6094290315941448991">Die Administratorrichtlinie blockiert die Bildschirmaufzeichnung, wenn vertrauliche Inhalte sichtbar sind</translation>
 <translation id="6099269767116481177">22 × 29,5 Zoll</translation>
@@ -2980,6 +3006,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6241121617266208201">Vorschläge ausblenden</translation>
 <translation id="624499991300733384">Druck-Setzdienst</translation>
 <translation id="6246316216123107851">Vor <ph name="NUM_DAYS" /> Tagen</translation>
+<translation id="6246382863801034910">Fahrzeug</translation>
 <translation id="6246868321321344665">Deine Organisation kann Browserdaten wie Passwörter und den Verlauf sowohl in deinem Arbeitsprofil als auch in deinem privaten Profil sehen</translation>
 <translation id="6250932670816326647">Bade- und Körperpflegeprodukte</translation>
 <translation id="6251906504834538140">{0,plural, =1{Datei kann nicht verschoben werden}other{<ph name="FILE_COUNT" /> Dateien können nicht verschoben werden}}</translation>
@@ -3092,6 +3119,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6415778972515849510">Mithilfe von Chromium kannst du dein Google-Konto schützen und dein Passwort ändern.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="641811520997304166">Gehaltsabrechnungsservice</translation>
+<translation id="6418199314628742460">Achte darauf, dass alle wichtigen geschäftlichen oder privaten Daten extern gespeichert sind.</translation>
 <translation id="6424600253695044005">Cloud-Speicher</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Fensterfaltung</translation>
@@ -3265,6 +3293,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> vergleichen · <ph name="ITEMS" /> Elemente</translation>
 <translation id="6716672519412350405"><ph name="URL" /> möchte eine 3D-Karte deiner Umgebung erstellen und die Kameraposition verfolgen</translation>
 <translation id="6717692133381953670">Tab von „<ph name="DEVICE_NAME" />“ gesendet</translation>
+<translation id="6718524733720986924">Speichere deine Informationen, damit Autofill beim nächsten Mal mehr Felder für dich ausfüllen kann</translation>
 <translation id="6718612893943028815">Kamera verwenden?</translation>
 <translation id="6721164594124191969">Etiketten (glänzend)</translation>
 <translation id="6726832600570791992">(32-Bit-Emulation)</translation>
@@ -3336,6 +3365,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6871813064737840684">Preisentwicklung für diese Option im Web</translation>
 <translation id="6873456682041376666">Oberes Fach</translation>
 <translation id="6874604403660855544">&amp;Hinzufügen wiederholen</translation>
+<translation id="6875894866901426843">Dein Administrator löscht deine lokalen Dateien, einschließlich aller Dateien im Papierkorb, am <ph name="DATE_TIME" />.</translation>
 <translation id="6880941331070119097">Hochpreisige Option</translation>
 <translation id="6881240511396774766">Schnell ein neues Google-Dokument erstellen</translation>
 <translation id="6882210908253838664">Wenn eine Website nicht funktioniert, kannst du ihr eine temporäre Berechtigung zur Verwendung von Drittanbieter-Cookies erteilen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -3573,6 +3603,7 @@ Weitere Details:
 <translation id="7275334191706090484">Verwaltete Lesezeichen</translation>
 <translation id="7275808129217605899">Gesunde Ernährung</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um das Passwort für dein Google-Konto zu ändern</translation>
+<translation id="7291578327729322058">Führerschein hinzufügen</translation>
 <translation id="7292031607255951991">Name des Empfängers</translation>
 <translation id="7298195798382681320">Empfohlen</translation>
 <translation id="7299471494012161875">Angeschlossene Anzeigegeräte</translation>
@@ -4064,8 +4095,10 @@ Weitere Details:
 <translation id="8116925261070264013">Stummgeschaltet</translation>
 <translation id="8118489163946903409">Zahlungsmethode</translation>
 <translation id="8118506371121007279">Feedback geben</translation>
+<translation id="812020627659652807">Dateien jetzt löschen</translation>
 <translation id="8120720167840853945">Mit dieser Richtlinie wird derzeit das Standardverhalten von keinen anderen Richtlinien festgelegt.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" war nicht ordnungsgemäß auf deinem Computer oder im Netzwerk installiert. Bitte deinen IT-Administrator, das Problem zu lösen.</translation>
+<translation id="8130113808541743942">Verschieben nach...</translation>
 <translation id="8131740175452115882">Bestätigen</translation>
 <translation id="8133495915926741232">Wähle aus, welche allgemeinen Themenkategorien für die Personalisierung von Werbung verwendet werden sollen. Wenn du eine allgemeine Kategorie deaktivierst, werden die zugehörigen Themen ebenfalls blockiert. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Personalbeschaffung</translation>
@@ -4149,6 +4182,7 @@ Weitere Details:
 <translation id="8278544367771164040">Unternehmensdarlehen</translation>
 <translation id="8279290844152565425">Konzerte und Musikfestivals</translation>
 <translation id="8279611986089885641">Du musst Chrome-Benachrichtigungen aktivieren. Rufe dazu einfach die <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> auf.</translation>
+<translation id="8280569545097027381">Dateien in <ph name="HOURS" /> Stunden löschen</translation>
 <translation id="8280630997017109758">Fach 11</translation>
 <translation id="8281730697546299650">Weitere Funktionen zum Datenschutz bei Werbung jetzt verfügbar</translation>
 <translation id="8281886186245836920">Überspringen</translation>
@@ -4373,6 +4407,7 @@ Weitere Details:
 <translation id="8687429322371626002">Dein Gerät und dein Konto werden von <ph name="MANAGER" /> verwaltet.</translation>
 <translation id="8688672835843460752">Verfügbar</translation>
 <translation id="868922510921656628">Seiten pro Satz</translation>
+<translation id="8694684557210599098">Fahrzeug hinzufügen</translation>
 <translation id="8695996513186494922">Tabs vergleichen?</translation>
 <translation id="8698428283892912525">Chrome verfügt über integrierte Sicherheitsfunktionen, die dich beim Surfen schützen. Eine dieser Funktionen, Google Safe Browsing, hat auf dieser Website kürzlich <ph name="BEGIN_LINK" />schädliche Software gefunden<ph name="END_LINK" />.</translation>
 <translation id="869891660844655955">Ablaufdatum</translation>
@@ -4517,6 +4552,7 @@ Weitere Details:
 <translation id="8959288490306482616">Lederbraun 3</translation>
 <translation id="8963117664422609631">Website-Einstellungen aufrufen</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Vorschläge:<ph name="MARKUP_2" />Vergewissere dich, dass du über eine Datenverbindung verfügst.<ph name="MARKUP_3" />Lade diese Webseite später neu.<ph name="MARKUP_4" />Überprüfe die von dir eingegebene Adresse.<ph name="MARKUP_5" /></translation>
+<translation id="8963969435440878110">Deine lokalen Dateien werden in <ph name="HOURS" /> Stunden gelöscht</translation>
 <translation id="8968766641738584599">Karte speichern</translation>
 <translation id="8970887620466824814">Es gab ein Problem.</translation>
 <translation id="8971063699422889582">Das Serverzertifikat ist abgelaufen.</translation>
@@ -4568,6 +4604,7 @@ Weitere Details:
 <translation id="9051072642122229460">Kaffee- und Espressomaschinen</translation>
 <translation id="9053840549256861041">Wir führen eine neue Funktion zum Datenschutz bei Werbung ein: Erfolgsmessung bei Anzeigen. Chrome gibt nur sehr wenige Informationen zwischen Websites weiter – dazu zählt beispielsweise, wann dir eine Anzeige präsentiert wurde, damit Websites die Leistung von Werbung analysieren können.</translation>
 <translation id="9053955920216300738">Welche URLs du besuchst</translation>
+<translation id="90542379288189611">Kfz-Kennzeichen</translation>
 <translation id="9054288282721240609">Handtracking erlaubt</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">Eventuell wurde sie verschoben, bearbeitet oder gelöscht.</translation>

@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Անջատել էկրանապահը</translation>
 <translation id="3091839911843451378">Չհաջողվեց տպել – Տպիչի աշխատանքը դադարեցվել է</translation>
 <translation id="3102119246920354026">Հիշապահեստ</translation>
-<translation id="3112413615003385433">Ձեր ուսուցիչը բովանդակություն է հեռացրել School Tools-ից</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">լողավազաններ</translation>
 <translation id="3122883569442693641">Այլ մանրամասներ</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Մասամբ ակտիվացված</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> գրասենյակ <ph name="OFFICE_COLOR" /> գուներանգներով</translation>
 <translation id="3493187369049186498">Chromebook-ը չափում է ձեր թրաֆիկի օգտագործումը։ Այդ ցուցանիշը կարող է տարբերվել մատակարարի տվյալներից։</translation>
-<translation id="349570724365779960">Ուսանողները միացած են School Tools-ին</translation>
 <translation id="3502426834823382181">դիտել բոլոր հավելվածները</translation>
 <translation id="3510890413042482857">Ուղարկել <ph name="BEGIN_LINK1" />արդյունավետության հետագծման տվյալները<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS-ի թարմացում</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Խմբագրումը կատարված է</translation>
 <translation id="3532980081107202182">Մնացել է մոտ <ph name="MIN_REMAINING" /> րոպե</translation>
 <translation id="3533790840489634638">լողավազան</translation>
-<translation id="3535802910192338629">Ձեր ուսուցիչը նոր բովանդակություն է ավելացրել School Tools-ում</translation>
 <translation id="3547264467365135390">Բանաձև</translation>
 <translation id="3557205324756024651">Տեղային իսկորոշում (պարտադիր չէ)</translation>
 <translation id="3565064564551103223">Թույլատրված IP-ներ</translation>
@@ -1440,7 +1437,6 @@
 <translation id="7544853251252956727">Խառնել</translation>
 <translation id="7550715992156305117">Դիագնոստիկայի ծրագրեր</translation>
 <translation id="7551123448725492271">Սարքն աուդիո սարք է։</translation>
-<translation id="7553913964854052228">School Tools հավելվածը օգտագործում է ձեր խոսափողը</translation>
 <translation id="7559239713112547082">Սքրինշոթի նախադիտում</translation>
 <translation id="7561454561030345039">Այս գործողությունը կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="7561759921596375678">Միացնել ձայնը</translation>
@@ -1663,7 +1659,6 @@
 <translation id="8576249514688522074">Սկզբնավորված չէ</translation>
 <translation id="8584654835905316966">Վերագործարկեք <ph name="DEVICE_NAME" /> սարքը՝ ներկառուցված ծրագրի <ph name="VERSION" /> տարբերակով թարմացումն ավարտելու համար։ Կարող է տպավորություն ստեղծվել, որ ձեր համակարգիչը մի քանի անգամ վերաբեռնվում է։ Նման վարքագիծը նորմալ է։</translation>
 <translation id="8593058461203131755">դադարեցնել մեդիաֆայլը</translation>
-<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Ռոումինգի կարգավիճակը</translation>
 <translation id="8626489604350149811">Լրացուցիչ գործողություններ <ph name="APN_NAME" />-ի համար</translation>
 <translation id="86356131183441916">Բաց մանուշակագույն</translation>

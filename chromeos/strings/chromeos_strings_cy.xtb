@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Analluogi'r arbedydd sgrîn</translation>
 <translation id="3091839911843451378">Methwyd - Wedi'i stopio</translation>
 <translation id="3102119246920354026">Storfa</translation>
-<translation id="3112413615003385433">Mae eich athro wedi tynnu cynnwys yn Offer Ysgol</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">pyllau</translation>
 <translation id="3122883569442693641">Rhagor o fanylion</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Wedi'i weithredu'n rhannol</translation>
 <translation id="3492882532495507361">Swyddfa <ph name="OFFICE_STYLE" /> gyda thonau <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Mae data yn cael eu mesur gan eich Chromebook. Gall hyn fod yn wahanol i ddata'r darparwr.</translation>
-<translation id="349570724365779960">Mae Offer ysgol yn gysylltiedig â myfyrwyr</translation>
 <translation id="3502426834823382181">gweld pob ap</translation>
 <translation id="3510890413042482857">Anfon <ph name="BEGIN_LINK1" />data olrhain perfformiad<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Diweddariad ChromeOS</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Wedi gorffen golygu</translation>
 <translation id="3532980081107202182">Tua <ph name="MIN_REMAINING" /> o funudau ar ôl</translation>
 <translation id="3533790840489634638">pwll</translation>
-<translation id="3535802910192338629">Mae eich athro wedi ychwanegu cynnwys newydd yn Offer Ysgol</translation>
 <translation id="3547264467365135390">Fformiwla</translation>
 <translation id="3557205324756024651">Hunaniaeth leol (dewisol)</translation>
 <translation id="3565064564551103223">Cyfeiriadau IP a ganiateir</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">Caniatáu i wasanaethau system ddefnyddio'ch lleoliad?</translation>
 <translation id="6657585470893396449">Cyfrinair</translation>
 <translation id="66621959568103627">pinc cwrel</translation>
+<translation id="6669485505082792176">Methu â chreu lluniau o hyn ar hyn o bryd. Rhowch gynnig ar aralleirio eich disgrifiad. Cofiwch na allwch greu lluniau o bobl, cynnwys niweidiol neu benodol. <ph name="BEGIN_LINK_LEARN_MORE" />Dysgu rhagor<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">disgleirdeb y bysellfwrdd i fyny</translation>
 <translation id="6692996468359469499">Cael gwybodaeth sy'n gysylltiedig â'ch dewis</translation>
 <translation id="6694534975463174713">clo</translation>
@@ -1440,7 +1438,6 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="7544853251252956727">Hapdrefnu</translation>
 <translation id="7550715992156305117">Arferion Diagnostig</translation>
 <translation id="7551123448725492271">Mae'r ddyfais yn ddyfais sain.</translation>
-<translation id="7553913964854052228">Mae Offer Ysgol yn defnyddio eich meicroffon</translation>
 <translation id="7559239713112547082">Rhagolwg o'r Sgrinlun</translation>
 <translation id="7561454561030345039">Rheolir y weithred hon gan eich gweinyddwr</translation>
 <translation id="7561759921596375678">Troi'r sain ymlaen</translation>
@@ -1663,7 +1660,6 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8576249514688522074">Heb ei gychwyn</translation>
 <translation id="8584654835905316966">Mae angen ailgychwyn i gwblhau gosod cadarnwedd ar gyfer <ph name="DEVICE_NAME" /> i fersiwn <ph name="VERSION" />. Mae'n bosib y bydd eich cyfrifiadur yn ailgychwyn sawl gwaith. Disgwylir yr ymddygiad hwn.</translation>
 <translation id="8593058461203131755">seibio'r cyfryngau</translation>
-<translation id="8619169570378509764">Offer Ysgol</translation>
 <translation id="8620617069779373398">Statws crwydro</translation>
 <translation id="8626489604350149811">Rhagor o weithredoedd ar gyfer <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Porffor golau</translation>

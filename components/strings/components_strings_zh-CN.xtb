@@ -1015,6 +1015,7 @@
 <translation id="2742870351467570537">移除所选项</translation>
 <translation id="2743512410823092182">DJ 资源与设备</translation>
 <translation id="2743934314332613923">要更新驾照信息吗？</translation>
+<translation id="2759299890026163685">请确保您拥有稳定的网络连接，然后再重试</translation>
 <translation id="2759825833388495838">在<ph name="APP_NAME" />上填充您的密码</translation>
 <translation id="2764001903315068341">漫画</translation>
 <translation id="2765217105034171413">小</translation>
@@ -1277,6 +1278,7 @@
 <translation id="323107829343500871">输入“<ph name="CREDIT_CARD" />”的银行卡验证码 (CVC)</translation>
 <translation id="3234666976984236645">始终检测此网站上的重要内容</translation>
 <translation id="323585066388831737">浅红色</translation>
+<translation id="3235902901585019063">本地文件将于 <ph name="DATE_TIME" />删除。请确保将所有关键业务数据或个人数据存储在外部。</translation>
 <translation id="3236212803136366317">凭卡可享的福利</translation>
 <translation id="3238395604961564389">在无痕式窗口中打开链接</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可自定义您的浏览器外观</translation>
@@ -1753,6 +1755,7 @@
 <translation id="4031179711345676612">已允许使用麦克风</translation>
 <translation id="4036753017940930924">地块与土地</translation>
 <translation id="4039506337798853114">若要显示光标，请按 |<ph name="ACCELERATOR" />|</translation>
+<translation id="4045226534284799755">请登录您的 Microsoft 账号，然后重试</translation>
 <translation id="4045441967987592849">重新打开</translation>
 <translation id="4047351652147966654">18 x 24 英寸</translation>
 <translation id="404831776305217138">ID 为“<ph name="EXTENSION_ID" />”的扩展程序的更新网址无效或使用的架构不受支持。受支持的架构包括：<ph name="HTTP_SCHEME" />、<ph name="HTTPS_SCHEME" /> 和 <ph name="FILE_SCHEME" />。</translation>
@@ -1773,6 +1776,7 @@
 <translation id="4073797364926776829">查看卡</translation>
 <translation id="4075732493274867456">客户端和服务器不支持一般 SSL 协议版本或加密套件。</translation>
 <translation id="4079302484614802869">代理配置已设置为使用 .pac 脚本网址，而不是固定的代理服务器。</translation>
+<translation id="4080855220442581440">滚动和缩放分享的标签页</translation>
 <translation id="4082333119419111506">纸（预打印）</translation>
 <translation id="4082393374666368382">设置 - 管理</translation>
 <translation id="4084219288110917128">C1 信封</translation>
@@ -2205,6 +2209,7 @@
 <translation id="4834250788637067901">Google Pay 中存储的付款方式、优惠和地址信息</translation>
 <translation id="4840250757394056958">查看您的 Chrome 历史记录</translation>
 <translation id="484462545196658690">自动</translation>
+<translation id="4844937814014739139">滚动和缩放分享的标签页</translation>
 <translation id="484671803914931257">获取<ph name="MERCHANT_NAME" />及其他商家的折扣信息</translation>
 <translation id="484988093836683706">使用设备解锁</translation>
 <translation id="4850886885716139402">查看</translation>
@@ -2498,6 +2503,7 @@
 <translation id="5344522958567249764">管理广告隐私设置</translation>
 <translation id="5344579389779391559">此页面可能会向您收取费用</translation>
 <translation id="5345249337934847112">纸（重磅涂布纸）</translation>
+<translation id="5348330584842140856">此文件已不存在，因此无法移动</translation>
 <translation id="5349543692327946794">标签（喷墨纸）</translation>
 <translation id="5351548097010183514">建材和建筑用品</translation>
 <translation id="5354143049423063163">对冲基金</translation>
@@ -2762,6 +2768,7 @@
 <translation id="5826507051599432481">公用名 (CN)</translation>
 <translation id="5830698870816298009">使用和移动摄像头</translation>
 <translation id="583281660410589416">未知</translation>
+<translation id="5837220895135257862">请先释放 <ph name="CLOUD_PROVIDER" /> 中的空间，然后重试</translation>
 <translation id="5838278095973806738">请勿在此网站上输入任何敏感信息（例如密码或信用卡信息），因为攻击者可能会盗取这些信息。</translation>
 <translation id="5838732667866024867">您可以使用向左/向右箭头在图表中查看价格变动</translation>
 <translation id="5840318881868981258">在您的 Google 账号 <ph name="ACCOUNT" /> 中更新</translation>
@@ -4021,6 +4028,7 @@
 <translation id="799149739215780103">装订</translation>
 <translation id="7992044431894087211">已继续与<ph name="APPLICATION_TITLE" />共享屏幕</translation>
 <translation id="7995512525968007366">未指定</translation>
+<translation id="7997855386298213183">分享的标签页</translation>
 <translation id="800218591365569300">请尝试关闭其他标签页或程序以释放内存。</translation>
 <translation id="8002230960325005199">在新标签页中查看相关网站</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>

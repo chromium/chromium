@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Onemogućite čuvara ekrana</translation>
 <translation id="3091839911843451378">Nije uspjelo – zaustavljeno</translation>
 <translation id="3102119246920354026">Keš memorija</translation>
-<translation id="3112413615003385433">Nastavnik je uklonio sadržaj iz Školskih alata</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">bazeni</translation>
 <translation id="3122883569442693641">Više detalja</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Djelimično aktivirano</translation>
 <translation id="3492882532495507361">Kancelarija u stilu "<ph name="OFFICE_STYLE" />" u nijansama boje "<ph name="OFFICE_COLOR" />"</translation>
 <translation id="3493187369049186498">Podatke mjeri Chromebook. Ovo se može razlikovati od podataka pružaoca usluge.</translation>
-<translation id="349570724365779960">Školski alati su povezani s učenicima</translation>
 <translation id="3502426834823382181">prikaz svih aplikacija</translation>
 <translation id="3510890413042482857">Pošalji <ph name="BEGIN_LINK1" />podatke o praćenju performansi<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Ažuriranje ChromeOS-a</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Uređivanje je završeno</translation>
 <translation id="3532980081107202182">Preostalo je oko <ph name="MIN_REMAINING" /> min</translation>
 <translation id="3533790840489634638">bazen</translation>
-<translation id="3535802910192338629">Nastavnik je dodao novi sadržaj u Školske alate</translation>
 <translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Lokalni identitet (nije obavezno)</translation>
 <translation id="3565064564551103223">Dozvoljeni IP protokoli</translation>
@@ -1441,7 +1438,6 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="7544853251252956727">Izmiješaj</translation>
 <translation id="7550715992156305117">Rutine dijagnostike</translation>
 <translation id="7551123448725492271">Uređaj je audio uređaj.</translation>
-<translation id="7553913964854052228">Školski alati koriste mikrofon</translation>
 <translation id="7559239713112547082">Snimak ekrana pregleda</translation>
 <translation id="7561454561030345039">Ovom radnjom upravlja vaš administrator</translation>
 <translation id="7561759921596375678">Uključite zvuk</translation>
@@ -1664,7 +1660,6 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="8576249514688522074">Pokretanje je prekinuto</translation>
 <translation id="8584654835905316966">Da se završi instalacija firmvera za <ph name="DEVICE_NAME" /> na verziju <ph name="VERSION" />, potrebno je ponovo pokrenuti uređaj. Može izgledati da se računar više puta ponovo pokreće. To je očekivano ponašanje.</translation>
 <translation id="8593058461203131755">pauziranje medija</translation>
-<translation id="8619169570378509764">Školski alati</translation>
 <translation id="8620617069779373398">Status rominga</translation>
 <translation id="8626489604350149811">Više radnji za aplikaciju <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Svijetloljubičasto</translation>

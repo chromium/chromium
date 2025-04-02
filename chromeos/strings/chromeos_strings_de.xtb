@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Bildschirmschoner deaktivieren</translation>
 <translation id="3091839911843451378">Fehlgeschlagen – Angehalten</translation>
 <translation id="3102119246920354026">Cache</translation>
-<translation id="3112413615003385433">Deine Lehrkraft hat Inhalte aus den Tools der Bildungseinrichtung entfernt</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">Schwimmbecken</translation>
 <translation id="3122883569442693641">Weitere Details</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Teilweise aktiviert</translation>
 <translation id="3492882532495507361">Büro (<ph name="OFFICE_STYLE" />) mit <ph name="OFFICE_COLOR" />en Farbtönen</translation>
 <translation id="3493187369049186498">Die Daten werden von deinem Chromebook gemessen. Sie können sich von den Anbieterdaten unterscheiden.</translation>
-<translation id="349570724365779960">Tools der Bildungseinrichtung sind mit Schülern/Studenten verbunden</translation>
 <translation id="3502426834823382181">Alle Apps anzeigen</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Leistungs-Trace-Daten<ph name="END_LINK1" /> senden</translation>
 <translation id="3517001332549868749">Chrome OS-Update</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Fertig</translation>
 <translation id="3532980081107202182">Noch etwa <ph name="MIN_REMAINING" /> Minuten</translation>
 <translation id="3533790840489634638">Schwimmbecken</translation>
-<translation id="3535802910192338629">Deine Lehrkraft hat neue Inhalte in den Tools der Bildungseinrichtung hinzugefügt</translation>
 <translation id="3547264467365135390">Formel</translation>
 <translation id="3557205324756024651">Lokale Identität (optional)</translation>
 <translation id="3565064564551103223">Zugelassene IPs</translation>
@@ -713,7 +710,7 @@
           Wenn du dein eigenes Hintergrundbild erstellst, wird dein Prompt an Google-Server gesendet, um Bilder zu erstellen und das Produkt gemäß den <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Nutzungsbedingungen und der Datenschutzerklärung von Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> zu verbessern. Gib keine persönlichen, sensiblen oder vertraulichen Informationen an.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Generative KI kann Fehler machen, auch bei Informationen über Personen – überprüfe daher die Antworten. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Weitere Informationen<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
+          Generative KI kann Fehler machen, auch bei Informationen über Personen. Prüfe die Antworten daher sorgfältig. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Weitere Informationen<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">HTTP-Latenz</translation>
 <translation id="4266143281602681663">Garn</translation>
 <translation id="4269815121975886860">Starteinstellungen</translation>
@@ -1440,7 +1437,6 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="7544853251252956727">Zufallsmix</translation>
 <translation id="7550715992156305117">Diagnoseroutinen</translation>
 <translation id="7551123448725492271">Das Gerät ist ein Audiogerät.</translation>
-<translation id="7553913964854052228">Tools der Bildungseinrichtung verwenden dein Mikrofon</translation>
 <translation id="7559239713112547082">Screenshot in der Vorschau anzeigen</translation>
 <translation id="7561454561030345039">Diese Aktion wird von deinem Administrator verwaltet</translation>
 <translation id="7561759921596375678">Ton einschalten</translation>
@@ -1663,7 +1659,6 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8576249514688522074">Noch nicht initialisiert</translation>
 <translation id="8584654835905316966">Ein Neustart ist erforderlich, um die Installation der Firmware für <ph name="DEVICE_NAME" /> auf Version <ph name="VERSION" /> abzuschließen. Möglicherweise startet dein Computer mehrmals neu. Dieses Verhalten ist so vorgesehen.</translation>
 <translation id="8593058461203131755">Medienwiedergabe pausieren</translation>
-<translation id="8619169570378509764">Tools der Bildungseinrichtung</translation>
 <translation id="8620617069779373398">Roaming-Status</translation>
 <translation id="8626489604350149811">Weitere Aktionen für „<ph name="APN_NAME" />“</translation>
 <translation id="86356131183441916">Hellviolett</translation>

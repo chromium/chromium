@@ -4089,6 +4089,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3820749202859700794">SECG eliptična krivulja secp521r1 (poznata i kao NIST P-521)</translation>
 <translation id="3821074617718452587">Obavijesti Phone huba</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Proširenje je odobreno}one{Odobreno je # proširenje}few{Odobrena su # proširenja}other{Odobreno je # proširenja}}</translation>
+<translation id="3822426549715448461">DD</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Za Linux se preporučuje najmanje <ph name="INSTALL_SIZE" /> prostora.</translation>
 <translation id="3824621460022590830">Oznaka za registraciju uređaja nije važeća. Obratite se vlasniku ili administratoru uređaja. Kôd pogreške: <ph name="ERROR_CODE" />.</translation>
@@ -4618,6 +4619,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4203769790323223880">Kamera nije dopuštena</translation>
 <translation id="4204415812590935863">Tema se trenutačno ne može izraditi.</translation>
 <translation id="4205157409548006256">Došlo je do pogreške prilikom konfiguriranja Linuxa.</translation>
+<translation id="4205643719206044108">Da bi se ponudili prijedlozi, web-lokacije koje posjećujete i sadržaj stranice dijele se s Googleom</translation>
 <translation id="4206144641569145248">Vanzemaljac</translation>
 <translation id="4206323443866416204">Izvješće s povratnim informacijama</translation>
 <translation id="4206585797409671301">Dopušteno je prikazivanje zahtjeva</translation>
@@ -8760,6 +8762,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7199452998289813782">Pauzirajte emitiranje na uređaj <ph name="DEVICE_NAME" /></translation>
 <translation id="720110658997053098">Trajno zadrži uređaj u načinu kioska</translation>
 <translation id="7201118060536064622">Izbrisana je stavka "<ph name="DELETED_ITEM_NAME" />"</translation>
+<translation id="7201336084980086208">Automatsko popunjavanje može ponuditi spremanje podataka kad pošaljete obrasce, kao što su broj vozačke dozvole ili putovnice</translation>
 <translation id="7201420661433230412">Pregled datoteka</translation>
 <translation id="7201432510117121839">Emitiranje zvuka s računala nije podržano na ovom uređaju</translation>
 <translation id="7201535955609308429">Pričekajte dok se postupak potvrde ne završi</translation>

@@ -288,6 +288,7 @@
 <translation id="2362083820973145409">נכנסת לחשבון בתור <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. ההגדרות ייפתחו.</translation>
 <translation id="2363734411417672757">‏יותר דפים נטענים מראש. השרתים של Google יכולים לטעון דפים מראש לפי בקשה של אתרים אחרים או אפליקציות אחרות.</translation>
 <translation id="2366554533468315977">היסטוריית המחירים של האפשרות הזו באינטרנט</translation>
+<translation id="2367818124433749493">קיצורי דרך למפתחים</translation>
 <translation id="2385605401818128172">אפשר לבדוק אתרים ששולחים הרבה התראות ולמנוע מהם לשלוח עוד התראות בעתיד</translation>
 <translation id="2386938421315164605">הסתרה וביטול הסתרה של נושאים</translation>
 <translation id="2390510615457643724">רוצה להוריד שוב את <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
@@ -1130,6 +1131,7 @@
 <translation id="6295158916970320988">כל האתרים</translation>
 <translation id="6296366034485697675">ייצוא ומחיקה</translation>
 <translation id="629730747756840877">חשבון</translation>
+<translation id="6301526076346731664">פתיחת "כלים למפתחים"</translation>
 <translation id="6303969859164067831">יציאה וכיבוי הסנכרון</translation>
 <translation id="6307241780749477694">כדי לקבל את כל הסיסמאות במכשיר הזה, צריך לאמת את הזהות שלך</translation>
 <translation id="6312687380483398334">אפליקציות אינטרנט (שקט)</translation>

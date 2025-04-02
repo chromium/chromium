@@ -288,6 +288,7 @@
 <translation id="2362083820973145409">目前登入的帳戶是<ph name="USER_NAME" />。<ph name="USER_EMAIL" />。開啟設定。</translation>
 <translation id="2363734411417672757">預先載入更多網頁。收到其他網站或應用程式的要求時，系統可能會透過 Google 伺服器預先載入這些網頁。</translation>
 <translation id="2366554533468315977">這項商品的網路價格記錄</translation>
+<translation id="2367818124433749493">開發人員捷徑</translation>
 <translation id="2385605401818128172">你可以查看傳送大量通知的網站，並禁止這些網站再傳送通知</translation>
 <translation id="2386938421315164605">隱藏和取消隱藏主題</translation>
 <translation id="2390510615457643724">要再次下載「<ph name="FILE_NAME" />」(<ph name="FILE_SIZE" />) 嗎？</translation>
@@ -1130,6 +1131,7 @@
 <translation id="6295158916970320988">所有網站</translation>
 <translation id="6296366034485697675">匯出並刪除</translation>
 <translation id="629730747756840877">帳戶</translation>
+<translation id="6301526076346731664">開啟「開發人員工具」</translation>
 <translation id="6303969859164067831">登出並關閉同步處理功能</translation>
 <translation id="6307241780749477694">通過身分驗證，即可在這部裝置上存取所有密碼</translation>
 <translation id="6312687380483398334">網頁應用程式 (安靜模式)</translation>

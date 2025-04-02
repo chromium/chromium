@@ -289,6 +289,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2362083820973145409">Naka-sign in bilang <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Binubuksan ang mga setting.</translation>
 <translation id="2363734411417672757">Mas maraming page ang ipi-preload. Posibleng i-preload ang mga page sa pamamagitan ng mga server ng Google kapag hiniling ng iba pang site o app.</translation>
 <translation id="2366554533468315977">History ng presyo sa buong web para sa opsyong ito</translation>
+<translation id="2367818124433749493">Mga shortcut ng developer</translation>
 <translation id="2385605401818128172">Puwede mong suriin ang mga site na nagpapadala ng maraming notification at pigilan ang mga itong magpadala ng higit pa sa hinaharap</translation>
 <translation id="2386938421315164605">Itago at i-unhide ang mga paksa</translation>
 <translation id="2390510615457643724">Gusto mo bang i-download ulit ang <ph name="FILE_NAME" /><ph name="FILE_SIZE" />?</translation>
@@ -1138,6 +1139,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6295158916970320988">Lahat ng site</translation>
 <translation id="6296366034485697675">I-export at i-delete</translation>
 <translation id="629730747756840877">Account</translation>
+<translation id="6301526076346731664">Buksan ang Mga Tool ng Developer</translation>
 <translation id="6303969859164067831">Mag-sign out at i-off ang pag-sync</translation>
 <translation id="6307241780749477694">I-verify na ikaw ito para makuha ang lahat ng iyong password sa device na ito</translation>
 <translation id="6312687380483398334">Mga web app (tahimik)</translation>

@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Çaktivizo mbrojtësin e ekranit</translation>
 <translation id="3091839911843451378">Dështoi - Ndaloi</translation>
 <translation id="3102119246920354026">Memoria specifike</translation>
-<translation id="3112413615003385433">Mësuesi yt ka hequr përmbajtje nga "Veglat e shkollës"</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">pishina</translation>
 <translation id="3122883569442693641">Më shumë detaje</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">I aktivizuar pjesërisht</translation>
 <translation id="3492882532495507361">Një zyrë (<ph name="OFFICE_STYLE" />) me tone: <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Të dhënat maten nga Chromebook. Kjo mund të jetë ndryshe nga të dhënat e ofruesit.</translation>
-<translation id="349570724365779960">School Tools është lidhur për studentët</translation>
 <translation id="3502426834823382181">shiko të gjitha aplikacionet</translation>
 <translation id="3510890413042482857">Dërgo <ph name="BEGIN_LINK1" />të dhënat e gjurmimit të performancës<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Përditësim: ChromeOS</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Modifikimi përfundoi</translation>
 <translation id="3532980081107202182">Rreth <ph name="MIN_REMAINING" /> minuta të mbetura</translation>
 <translation id="3533790840489634638">pishinë</translation>
-<translation id="3535802910192338629">Mësuesi yt ka shtuar përmbajtje të reja te "Veglat e shkollës"</translation>
 <translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Identiteti lokal (opsional)</translation>
 <translation id="3565064564551103223">IP-të e lejuara</translation>
@@ -1440,7 +1437,6 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7544853251252956727">Përziej</translation>
 <translation id="7550715992156305117">Rutinat diagnostikuese</translation>
 <translation id="7551123448725492271">Pajisja është një pajisje audio.</translation>
-<translation id="7553913964854052228">School Tools po përdor mikrofonin tënd</translation>
 <translation id="7559239713112547082">Shiko paraprakisht pamjen e ekranit</translation>
 <translation id="7561454561030345039">Ky veprim menaxhohet nga administratori yt</translation>
 <translation id="7561759921596375678">Aktivizo volumin</translation>
@@ -1663,7 +1659,6 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8576249514688522074">E pafilluar</translation>
 <translation id="8584654835905316966">Kërkohet rinisja për të përfunduar instalimin e firmuerit për <ph name="DEVICE_NAME" /> në versionin <ph name="VERSION" />. Kompjuteri yt mund të rindizet disa herë. Kjo sjellje është e pritshme.</translation>
 <translation id="8593058461203131755">vendose median në pauzë</translation>
-<translation id="8619169570378509764">Veglat e shkollës</translation>
 <translation id="8620617069779373398">Statusi në roaming</translation>
 <translation id="8626489604350149811">Më shumë veprime për <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Vjollcë e çelur</translation>

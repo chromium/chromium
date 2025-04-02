@@ -4358,6 +4358,9 @@ URL 패턴은 <ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" />와 충
       키오스크 세션에는 유예 기간이 없으며 재부팅에 관한 알림이 표시되지 않습니다.
 </translation>
 <translation id="4187576366596772431">이 사이트에서 WebHID API 차단</translation>
+<translation id="4188427466177877986">정책을 설정하지 않거나 사용 설정하면 사용자가 새 탭 페이지를 통해 <ph name="PRODUCT_NAME" />에서 배송을 추적할 수 있습니다.
+정책을 사용 중지하면 사용자가 새 탭 페이지를 통해 <ph name="PRODUCT_NAME" />에서 배송을 추적할 수 없습니다.
+지원 중단됨: M132부터는 택배 추적 기능이 사용 중지되며, 이 정책은 그 이후에 적용되지 않습니다.</translation>
 <translation id="4189100643304138928"><ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" /> Enterprise 커넥터에 적용할 Chrome Enterprise 커넥터 서비스 설정의 목록으로, 파일이 Chrome에 첨부될 때 실행됩니다.
 
       <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 필드는 파일이 특정 페이지에 첨부되었을 때 커넥터가 분석을 위해 파일을 전송할지와 파일 분석 요청에 어떤 태그를 포함할지 결정하는 데 사용됩니다. 'enable' 패턴에 해당하는 태그는 페이지 URL이 이 태그와 연결된 패턴과 일치하면 분석 요청에 포함되지만, 이때 이 태그의 'disable' 패턴 중에서 페이지 URL과 일치하는 것이 없어야 합니다. 하나 이상의 태그가 요청에 포함되면 분석이 실시됩니다.

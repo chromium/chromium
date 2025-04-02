@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">স্ক্রিন সেভার বন্ধ করুন</translation>
 <translation id="3091839911843451378">প্রিন্ট করা যায়নি - প্রিন্টার বন্ধ হয়ে গেছে</translation>
 <translation id="3102119246920354026">ক্যাশে</translation>
-<translation id="3112413615003385433">শিক্ষক স্কুল টুল থেকে কন্টেন্ট সরিয়েছেন</translation>
 <translation id="3122464029669770682">সিপিইউ</translation>
 <translation id="3122614491980756867">পুল</translation>
 <translation id="3122883569442693641">আরও বিবরণ</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">আংশিকভাবে সক্রিয়</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> টোন সহ <ph name="OFFICE_STYLE" /> অফিস</translation>
 <translation id="3493187369049186498">ডেটা আপনার Chromebook-এর মাধ্যমে পরিমাপ করা হয়। এটি পরিষেবা প্রদানকারীর ডেটা থেকে আলাদা হতে পারে।</translation>
-<translation id="349570724365779960">'স্কুল' টুল স্টুডেন্টদের সাথে কানেক্ট করা আছে</translation>
 <translation id="3502426834823382181">সব অ্যাপ দেখুন</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />পারফর্ম্যান্স ট্রেস ডেটা<ph name="END_LINK1" /> পাঠান</translation>
 <translation id="3517001332549868749">ChromeOS-এর আপডেট</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">এডিট করা হয়েছে</translation>
 <translation id="3532980081107202182">প্রায় <ph name="MIN_REMAINING" /> মিনিট সময় লাগবে</translation>
 <translation id="3533790840489634638">পুল</translation>
-<translation id="3535802910192338629">শিক্ষক স্কুল টুলে নতুন কন্টেন্ট যোগ করেছেন</translation>
 <translation id="3547264467365135390">ফর্মুলা</translation>
 <translation id="3557205324756024651">স্থানীয় আইডেন্টিটি (ঐচ্ছিক)</translation>
 <translation id="3565064564551103223">অনুমোদিত IP অ্যাড্রেসগুলি</translation>
@@ -1440,7 +1437,6 @@
 <translation id="7544853251252956727">শাফল করুন</translation>
 <translation id="7550715992156305117">ডায়াগনস্টিক রুটিন</translation>
 <translation id="7551123448725492271">ডিভাইস একটি অডিও ডিভাইস।</translation>
-<translation id="7553913964854052228">'স্কুল' টুল আপনার মাইক্রোফোন ব্যবহার করছে</translation>
 <translation id="7559239713112547082">স্ক্রিনশট প্রিভিউ করুন</translation>
 <translation id="7561454561030345039">এই কাজটি আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="7561759921596375678">ভলিউম চালু করুন</translation>
@@ -1663,7 +1659,6 @@
 <translation id="8576249514688522074">যা শুরু করা হয়নি</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" />-এর <ph name="VERSION" /> ভার্সনে ফার্মওয়্যার ইনস্টলেশন সম্পূর্ণ করতে, রিস্টার্ট করতে হবে। আপনার কম্পিউটার একাধিকবার রিবুট হচ্ছে বলে দেখতে পেতে পারেন। এই আচরণ প্রত্যাশিত।</translation>
 <translation id="8593058461203131755">মিডিয়া পজ করুন</translation>
-<translation id="8619169570378509764">স্কুল টুল</translation>
 <translation id="8620617069779373398">রোমিং স্থিতি</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" />-এর জন্য আরও অ্যাকশন</translation>
 <translation id="86356131183441916">হালকা বেগুনি</translation>

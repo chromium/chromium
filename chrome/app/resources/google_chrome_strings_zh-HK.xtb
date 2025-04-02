@@ -61,6 +61,7 @@
 <translation id="1786044937610313874">在 Chrome 中開啟捷徑</translation>
 <translation id="178701303897325119">此擴充程式不再受支援，Chrome 建議你將其移除。</translation>
 <translation id="1812689907177901597">關閉此功能後，您無需登入 Chrome，即可登入 Gmail 等 Google 網站</translation>
+<translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome 建議暫停導致瀏覽器運作緩慢的分頁}other{Chrome 建議暫停導致瀏覽器運作緩慢的分頁}}</translation>
 <translation id="1838374766361614909">清除搜尋</translation>
 <translation id="1860536484129686729">Chrome 需要取得權限，才能讓這個網站存取您的相機</translation>
 <translation id="1873233029667955273">Google Chrome 並非您的預設瀏覽器</translation>
@@ -257,6 +258,7 @@
 <translation id="4281844954008187215">服務條款</translation>
 <translation id="4293420128516039005">登入即可在不同裝置上同步和設定個人化的 Chrome</translation>
 <translation id="430327780270213103">允許擴充程式在 Chrome 工具列中顯示存取要求</translation>
+<translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome 建議暫停導致瀏覽器運作緩慢的分頁}other{Chrome 建議暫停導致瀏覽器運作緩慢的分頁}}</translation>
 <translation id="4328355335528187361">Google Chrome 開發人員版 (mDNS-In)</translation>
 <translation id="4329315893554541805">如要取得個人化和其他功能，請將 Chrome 加入「網絡和應用程式活動記錄」以及連結的 Google 服務</translation>
 <translation id="4334294535648607276">下載完成。</translation>

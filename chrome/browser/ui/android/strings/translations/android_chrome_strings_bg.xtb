@@ -17,6 +17,7 @@
 <translation id="1052842760770519282">Някои от паролите ви не са достъпни</translation>
 <translation id="1058669287135776095">Офлайн сте. Проверете връзката си с интернет и опитайте отново.</translation>
 <translation id="10614374240317010">Незапазвани никога</translation>
+<translation id="1070689840697074178">Можете да изтегляте PDF файловете тук</translation>
 <translation id="107147699690128016">Ако промените файловото разширение, файлът може да се отвори в друго приложение и потенциално да навреди на устройството ви.</translation>
 <translation id="1080365971383768617">Паролите са достъпни на всичките ви устройства</translation>
 <translation id="1087176310396019910">Възможен спам</translation>
@@ -955,6 +956,7 @@
 <translation id="5456381639095306749">Изтегляне на страницата</translation>
 <translation id="5458366071038729214">Тук ще виждате сайтовете, които следите</translation>
 <translation id="5468068603361015296">Искате ли да изтеглите <ph name="FILE_NAME" /> въпреки това?</translation>
+<translation id="5471273988133666918">Разделът „<ph name="TAB_TITLE" />“ не може да бъде преместен</translation>
 <translation id="548278423535722844">Отваряне в приложение за карти</translation>
 <translation id="5492637351392383067">Шифроване на устройството</translation>
 <translation id="549660026907543296">Присъединяване като <ph name="MEMBER_FULL_NAME" /></translation>

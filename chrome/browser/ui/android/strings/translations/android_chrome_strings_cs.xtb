@@ -288,6 +288,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2362083820973145409">Jste přihlášeni jako <ph name="USER_NAME" />. <ph name="USER_EMAIL" /> Otevře nastavení.</translation>
 <translation id="2363734411417672757">Předběžně se načítá více stránek. Stránky, o které žádají jiné weby nebo aplikace, se mohou předběžně načíst prostřednictvím serverů Google.</translation>
 <translation id="2366554533468315977">Historie cen na webu pro tuto možnost</translation>
+<translation id="2367818124433749493">Zkratky pro vývojáře</translation>
 <translation id="2385605401818128172">Můžete zkontrolovat weby, které odesílají velké množství oznámení, a zabránit jim v odesílání dalších</translation>
 <translation id="2386938421315164605">Skrýt a znovu zobrazit témata</translation>
 <translation id="2390510615457643724">Opravdu soubor <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) chcete stáhnout znovu?</translation>
@@ -1130,6 +1131,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6295158916970320988">Všechny weby</translation>
 <translation id="6296366034485697675">Exportovat a smazat</translation>
 <translation id="629730747756840877">Účet</translation>
+<translation id="6301526076346731664">Otevřít Nástroje pro vývojáře</translation>
 <translation id="6303969859164067831">Odhlásit a vypnout synchronizaci</translation>
 <translation id="6307241780749477694">Pokud na tomhle zařízení chcete mít všechna svá hesla, ověřte svou totožnost</translation>
 <translation id="6312687380483398334">Webové aplikace (tiché)</translation>

@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Ekraanisäästja keelamine</translation>
 <translation id="3091839911843451378">Ebaõnnestus – peatatud</translation>
 <translation id="3102119246920354026">Vahemälu</translation>
-<translation id="3112413615003385433">Õpetaja eemaldas tööriistas School Tools sisu</translation>
 <translation id="3122464029669770682">Protsessor</translation>
 <translation id="3122614491980756867">basseinidega</translation>
 <translation id="3122883569442693641">Rohkem üksikasju</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Osaliselt aktiveeritud</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> kontor, mis on <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Andmekasutust mõõdab teie Chromebook. See võib erineda teenusepakkuja andmetest.</translation>
-<translation id="349570724365779960">School Tools on ühendatud õpilastega</translation>
 <translation id="3502426834823382181">kõikide rakenduste kuvamine</translation>
 <translation id="3510890413042482857">Saada <ph name="BEGIN_LINK1" />toimivuse jälgimiseandmeid<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS-i värsken.</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Muudetud</translation>
 <translation id="3532980081107202182">Jäänud on ligikaudu <ph name="MIN_REMAINING" /> minutit</translation>
 <translation id="3533790840489634638">bassein</translation>
-<translation id="3535802910192338629">Õpetaja lisas tööriistas School Tools uut sisu</translation>
 <translation id="3547264467365135390">Valem</translation>
 <translation id="3557205324756024651">Kohalik identiteet (valikuline)</translation>
 <translation id="3565064564551103223">Lubatud IP-d</translation>
@@ -1441,7 +1438,6 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="7544853251252956727">Esita juhuslikus järjekorras</translation>
 <translation id="7550715992156305117">Diagnostikarutiinid</translation>
 <translation id="7551123448725492271">Seade on heliseade.</translation>
-<translation id="7553913964854052228">School Tools kasutab teie mikrofoni</translation>
 <translation id="7559239713112547082">Ekraanipildi eelvaade</translation>
 <translation id="7561454561030345039">Seda toimingut haldab administraator.</translation>
 <translation id="7561759921596375678">Lülita heli sisse</translation>
@@ -1664,7 +1660,6 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8576249514688522074">Lähtestamata</translation>
 <translation id="8584654835905316966">Seadme <ph name="DEVICE_NAME" /> püsivara versiooni <ph name="VERSION" /> installimiseks on vajalik taaskäivitamine. Teie arvuti võib mitu korda taaskäivituda. See on ootuspärane käitumine.</translation>
 <translation id="8593058461203131755">peatab meediasisu</translation>
-<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Rändluse olek</translation>
 <translation id="8626489604350149811">Rohkem toiminguid: <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Helelilla</translation>

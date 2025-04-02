@@ -4300,6 +4300,9 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       在自助服务终端会话中，没有宽限期，系统也不会发出关于重新启动设备的通知。
 </translation>
 <translation id="4187576366596772431">禁止在这些网站上使用 WebHID API</translation>
+<translation id="4188427466177877986">如果此政策未设置或已启用，用户将能够通过“新标签页”页面在 <ph name="PRODUCT_NAME" /> 上跟踪包裹。
+如果此政策已停用，用户将无法通过“新标签页”页面在 <ph name="PRODUCT_NAME" /> 上跟踪包裹。
+已弃用：自 M132 起，包裹跟踪功能已停用，此政策自此失效。</translation>
 <translation id="4189100643304138928">让您能够以列表形式指定要应用于 <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" /> 企业版接口的 Chrome 企业版接口服务设置，以供系统在有人向 Chrome 附加文件时调用。
 
       <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 字段用于确定当用户向特定网页附加文件时，该接口是否应将此文件发送给系统进行分析，以及要将哪些标记添加到此文件的分析请求中。如果相应的网页网址与某个标记关联的“enable”格式相匹配，但不与此标记关联的任何“disable”格式匹配，该接口便会将这个标记添加到分析请求中。如果该接口向分析请求中添加了至少 1 个标记，系统便会启动分析。

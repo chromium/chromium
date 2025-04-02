@@ -110,6 +110,15 @@
 <translation id="1065175969514496951">このポリシーでは、<ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> の例外として、認証中に（ログイン画面やロック画面などで）アクセスを許可する URL のリストを指定できます。リストの指定形式については、このポリシーの説明をご覧ください。このポリシーは、たとえば <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> で <ph name="WILDCARD_VALUE" /> と設定してすべてのリクエストをブロックし、限定された一部の URL のみアクセスを許可する場合に使用します。つまり、特定のスキームや、他のドメインのサブドメイン、ポート、具体的なパスについて例外を設定します。設定の際は、https://support.google.com/chrome/a?p=url_blocklist_filter_format で指定された形式を使用します。URL のブロックや許可は、最も具体的なフィルタによって決定されます。<ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> ポリシーは、<ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> より優先されます。このポリシーで指定できる URL は最大 1,000 件です。
 
 このポリシーを未設定のままにした場合、<ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> に例外は設定されません。</translation>
+<translation id="1065501094422559251">このポリシーでは、<ph name="PRODUCT_NAME" /> での動的コードの設定を管理します。
+
+動的コードを無効にすると、悪意のある動的コードやサードパーティのコードによって <ph name="PRODUCT_NAME" /> の動作に変更が加えられるのを防いで、<ph name="PRODUCT_NAME" /> のセキュリティを向上できますが、ブラウザ プロセス内で実行する必要があるサードパーティ ソフトウェア（特定のプリンタ ドライバなど）との互換性に問題が生じる可能性があります。
+
+このポリシーを 0（デフォルト）に設定するか未設定のままにした場合は、<ph name="PRODUCT_NAME" /> でデフォルトの設定が使用されます。
+
+このポリシーを 1（DisabledForBrowser）に設定した場合は、<ph name="PRODUCT_NAME" /> のブラウザ プロセスで動的コードが作成されなくなります。
+
+注: 詳しくはプロセス対応ポリシー（https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies）をご覧ください。</translation>
 <translation id="1068801725746725727">セーフ ブラウジングに関するアンケートの受け取りを有効にする</translation>
 <translation id="107045325503547419">機能のリリース プロセスに準拠する。</translation>
 <translation id="1073983258515362346">デバイスのバックライトに関する情報を報告します。
@@ -4208,6 +4217,9 @@ URL パターンは、<ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" /
       キオスク セッションの場合、猶予期間はなく、再起動に関する通知も行われません。
 </translation>
 <translation id="4187576366596772431">WebHID API をブロックするサイトを指定します</translation>
+<translation id="4188427466177877986">このポリシーを未設定のままにするか有効に設定した場合、ユーザーは <ph name="PRODUCT_NAME" /> の新しいタブページで荷物を追跡できます。
+このポリシーを無効に設定した場合、ユーザーは <ph name="PRODUCT_NAME" /> の新しいタブページで荷物を追跡できません。
+非推奨: M132 以降、荷物追跡機能は無効になっているため、このポリシーは無視されます。</translation>
 <translation id="4189100643304138928"><ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" /> Enterprise コネクタに適用する Chrome Enterprise Connectors サービス設定のリストで、Chrome にファイルが添付されている場合に呼び出されます。
 
       <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> フィールドは、特定のページに添付されるファイルを分析のためコネクタが送信すべきかどうかと、そのファイルの分析リクエストにどのタグを含めるかをコネクタで判別する際に使用されます。「有効」パターンに該当するタグは、ページの URL がそのタグに関連付けられているパターンと一致し、同じタグの「無効」パターンとは一致しない場合に分析リクエストに含められます。分析は、リクエストにタグが少なくとも 1 つ含まれる場合に行われます。

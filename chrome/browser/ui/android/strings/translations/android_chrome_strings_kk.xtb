@@ -17,6 +17,7 @@
 <translation id="1052842760770519282">Құпия сөздеріңіздің кейбірін пайдалана алмайсыз.</translation>
 <translation id="1058669287135776095">Желіге қосылмағансыз. Интернет байланысын тексеріп, әрекетті қайталаңыз.</translation>
 <translation id="10614374240317010">Ешқашан сақталмайды</translation>
+<translation id="1070689840697074178">PDF құжаттарын осы жерден жүктеп алуға болады.</translation>
 <translation id="107147699690128016">Файл кеңейтімін өзгертсеңіз, файл басқа қолданбада ашылып, құрылғыны зақымдауы мүмкін.</translation>
 <translation id="1080365971383768617">Барлық құрылғыңыздағы құпия сөздер</translation>
 <translation id="1087176310396019910">Спам болуы мүмкін</translation>
@@ -954,6 +955,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5456381639095306749">Жүктеп алу беті</translation>
 <translation id="5458366071038729214">Жазылған сайттарыңыз осы жерде көрсетіледі.</translation>
 <translation id="5468068603361015296"><ph name="FILE_NAME" /> файлын сонда да жүктеп алғыңыз келе ме?</translation>
+<translation id="5471273988133666918"><ph name="TAB_TITLE" /> қойындысын жылжыту мүмкін емес.</translation>
 <translation id="548278423535722844">Maps қолданбасында ашу</translation>
 <translation id="5492637351392383067">Құрылғыда шифрлау</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> ретінде қосылу</translation>

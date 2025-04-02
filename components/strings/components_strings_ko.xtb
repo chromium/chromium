@@ -1015,6 +1015,7 @@
 <translation id="2742870351467570537">선택한 항목 삭제</translation>
 <translation id="2743512410823092182">DJ 인력 및 장비</translation>
 <translation id="2743934314332613923">운전면허증을 업데이트하시겠습니까?</translation>
+<translation id="2759299890026163685">다시 시도하기 전에 인터넷 연결이 안정적인지 확인하세요.</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" />에 비밀번호 입력</translation>
 <translation id="2764001903315068341">만화</translation>
 <translation id="2765217105034171413">작게</translation>
@@ -1279,6 +1280,7 @@
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> 카드의 CVC를 입력하세요</translation>
 <translation id="3234666976984236645">이 사이트에서 중요한 콘텐츠 항상 감지</translation>
 <translation id="323585066388831737">연한 빨간색</translation>
+<translation id="3235902901585019063">로컬 파일이 <ph name="DATE_TIME" />에 삭제됩니다. 중요한 비즈니스 정보와 개인 정보는 외부에 저장해야 합니다.</translation>
 <translation id="3236212803136366317">카드 혜택</translation>
 <translation id="3238395604961564389">시크릿 창에서 링크 열기</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, 브라우저 테마를 맞춤설정하려면 Tab과 Enter를 차례로 누르세요</translation>
@@ -1757,6 +1759,7 @@
 <translation id="4031179711345676612">마이크 허용됨</translation>
 <translation id="4036753017940930924">부지 및 토지</translation>
 <translation id="4039506337798853114">커서를 표시하려면 |<ph name="ACCELERATOR" />| 키를 누르세요.</translation>
+<translation id="4045226534284799755">Microsoft 계정에 로그인한 후 다시 시도해 주세요.</translation>
 <translation id="4045441967987592849">다시 열기</translation>
 <translation id="4047351652147966654">18x24인치</translation>
 <translation id="404831776305217138">ID가 "<ph name="EXTENSION_ID" />"인 확장 프로그램의 업데이트 URL이 잘못되었거나 지원되지 않는 스키마를 사용합니다. 지원되는 스키마는 <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" />, <ph name="FILE_SCHEME" />입니다.</translation>
@@ -1777,6 +1780,7 @@
 <translation id="4073797364926776829">카드 보기</translation>
 <translation id="4075732493274867456">클라이언트와 서버가 일반적인 SSL 프로토콜 버전 또는 암호화 제품군을 지원하지 않습니다.</translation>
 <translation id="4079302484614802869">프록시 설정이 고정 프록시 서버가 아닌 .pac 스크립트 URL을 사용하도록 설정됩니다.</translation>
+<translation id="4080855220442581440">공유 탭 스크롤 및 확대/축소</translation>
 <translation id="4082333119419111506">용지(사전 인쇄됨)</translation>
 <translation id="4082393374666368382">설정 - 관리</translation>
 <translation id="4084219288110917128">봉투 C1</translation>
@@ -2209,6 +2213,7 @@
 <translation id="4834250788637067901">Google Pay에 사용되는 결제 수단, 쿠폰, 주소</translation>
 <translation id="4840250757394056958">Chrome 방문 기록 보기</translation>
 <translation id="484462545196658690">자동</translation>
+<translation id="4844937814014739139">공유 탭 스크롤 및 확대/축소</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> 등에서 할인을 받으세요</translation>
 <translation id="484988093836683706">기기 잠금 해제 사용</translation>
 <translation id="4850886885716139402">보기</translation>
@@ -2502,6 +2507,7 @@
 <translation id="5344522958567249764">광고 개인 정보 보호 관리</translation>
 <translation id="5344579389779391559">이 페이지에서 금액을 청구할 수 있습니다.</translation>
 <translation id="5345249337934847112">용지(중코팅)</translation>
+<translation id="5348330584842140856">파일이 더 이상 존재하지 않으므로 이동되지 않았습니다.</translation>
 <translation id="5349543692327946794">라벨(잉크젯)</translation>
 <translation id="5351548097010183514">건축 자재 및 용품</translation>
 <translation id="5354143049423063163">헤지 펀드</translation>
@@ -2766,6 +2772,7 @@
 <translation id="5826507051599432481">일반 이름(CN)</translation>
 <translation id="5830698870816298009">카메라 사용 및 이동</translation>
 <translation id="583281660410589416">알 수 없음</translation>
+<translation id="5837220895135257862">다시 시도하기 전에 <ph name="CLOUD_PROVIDER" />에서 여유 공간을 확보하세요.</translation>
 <translation id="5838278095973806738">이 사이트에 입력하는 비밀번호나 신용카드 번호 등의 정보가 공격자에 의해 도용될 수 있습니다.</translation>
 <translation id="5838732667866024867">왼쪽/오른쪽 화살표를 사용하여 그래프에서 가격 변경사항을 검토할 수 있습니다.</translation>
 <translation id="5840318881868981258">Google 계정(<ph name="ACCOUNT" />)에서 업데이트합니다.</translation>
@@ -4025,6 +4032,7 @@
 <translation id="799149739215780103">바인드</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" />과(와)의 화면 공유가 재개되었습니다.</translation>
 <translation id="7995512525968007366">지정되지 않음</translation>
+<translation id="7997855386298213183">공유된 탭</translation>
 <translation id="800218591365569300">다른 탭이나 프로그램을 종료하여 메모리를 확보하세요.</translation>
 <translation id="8002230960325005199">새 탭에서 관련 사이트 보기</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
@@ -4099,6 +4107,7 @@
 <translation id="812020627659652807">지금 파일 삭제</translation>
 <translation id="8120720167840853945">이 정책은 다른 정책의 기본 동작을 제어하지 않습니다.</translation>
 <translation id="8127301229239896662">'<ph name="SOFTWARE_NAME" />'이(가) 컴퓨터 또는 네트워크에 제대로 설치되지 않았습니다. IT 관리자에게 문제 해결을 요청해 보세요.</translation>
+<translation id="8130113808541743942">이동…</translation>
 <translation id="8131740175452115882">확인</translation>
 <translation id="8133495915926741232">광고 맞춤설정을 지원하는 데 사용할 수 있는 광범위한 주제 카테고리를 선택하세요. 더 광범위한 카테고리를 사용 중지하면 관련 주제도 차단됩니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">신규모집 및 채용</translation>

@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">スクリーン セーバーを無効にする</translation>
 <translation id="3091839911843451378">失敗 - 停止中です</translation>
 <translation id="3102119246920354026">キャッシュ</translation>
-<translation id="3112413615003385433">教師がスクールツールのコンテンツを削除しました</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">プール</translation>
 <translation id="3122883569442693641">詳細</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">一部有効</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" />色調の<ph name="OFFICE_STYLE" />オフィス</translation>
 <translation id="3493187369049186498">お使いの Chromebook で測定されたデータ使用量です。測定結果はプロバイダのデータとは異なる場合があります。</translation>
-<translation id="349570724365779960">スクールツールが生徒に接続しています</translation>
 <translation id="3502426834823382181">すべてのアプリを表示</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />パフォーマンス追跡データ<ph name="END_LINK1" />を送信する</translation>
 <translation id="3517001332549868749">ChromeOS の更新</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">編集を終了</translation>
 <translation id="3532980081107202182">残り時間: 約 <ph name="MIN_REMAINING" /> 分</translation>
 <translation id="3533790840489634638">プール</translation>
-<translation id="3535802910192338629">教師がスクールツールに新しいコンテンツを追加しました</translation>
 <translation id="3547264467365135390">数式</translation>
 <translation id="3557205324756024651">ローカル ID（オプション）</translation>
 <translation id="3565064564551103223">許可する IP</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">システム サービスによる位置情報の使用を許可しますか？</translation>
 <translation id="6657585470893396449">パスワード</translation>
 <translation id="66621959568103627">コーラルピンク</translation>
+<translation id="6669485505082792176">現在、この画像を作成できません。説明の表現を変えてみてください。なお、人物、有害な内容、露骨な表現を含む画像は作成できません。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">キーボードの明るさを上げる</translation>
 <translation id="6692996468359469499">選択した項目に関連する情報を取得する</translation>
 <translation id="6694534975463174713">ロック</translation>
@@ -1440,7 +1438,6 @@
 <translation id="7544853251252956727">シャッフル</translation>
 <translation id="7550715992156305117">ルーティン診断</translation>
 <translation id="7551123448725492271">デバイスの種類はオーディオ機器です。</translation>
-<translation id="7553913964854052228">スクールツールがマイクを使用しています</translation>
 <translation id="7559239713112547082">スクリーンショットのプレビュー</translation>
 <translation id="7561454561030345039">この操作は管理者によって管理されています</translation>
 <translation id="7561759921596375678">音量をオンにする</translation>
@@ -1663,7 +1660,6 @@
 <translation id="8576249514688522074">初期化が未完了</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> でバージョン <ph name="VERSION" /> へのファームウェアのインストールを完了するには、再起動が必要です。その際、コンピュータに再起動の画面が複数回表示されることがありますが、これは正常な動作です。</translation>
 <translation id="8593058461203131755">メディアを一時停止する</translation>
-<translation id="8619169570378509764">スクールツール</translation>
 <translation id="8620617069779373398">ローミング状態</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> に対するその他の操作</translation>
 <translation id="86356131183441916">ライトパープル</translation>

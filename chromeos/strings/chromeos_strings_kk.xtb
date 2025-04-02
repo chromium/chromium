@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Скринсейверді өшіру</translation>
 <translation id="3091839911843451378">Сәтсіз: тоқтатылды</translation>
 <translation id="3102119246920354026">Кэш</translation>
-<translation id="3112413615003385433">Мұғаліміңіз "Мектепке арналған құралдар" бөлімінен контент өшірді.</translation>
 <translation id="3122464029669770682">Орталық процессор</translation>
 <translation id="3122614491980756867">бассейндер</translation>
 <translation id="3122883569442693641">Қосымша мәліметтер</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Ішінара белсендірілген</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> реңкті <ph name="OFFICE_STYLE" /> кеңсе</translation>
 <translation id="3493187369049186498">Деректі Chromebook өлшейді. Бұл көрсеткіш провайдер дерегінен өзгеше болуы мүмкін.</translation>
-<translation id="349570724365779960">Оқушылар мектепке арналған құралдар сеансына қосылды.</translation>
 <translation id="3502426834823382181">барлық қолданбаны көру</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Өнімділікті бақылау деректерін<ph name="END_LINK1" /> жіберу</translation>
 <translation id="3517001332549868749">Chrome OS жаңарту</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Өзгертіліп болды</translation>
 <translation id="3532980081107202182">Шамамен <ph name="MIN_REMAINING" /> минут қалды.</translation>
 <translation id="3533790840489634638">бассейн</translation>
-<translation id="3535802910192338629">Мұғаліміңіз "Мектепке арналған құралдар" бөліміне жаңа контент қосты.</translation>
 <translation id="3547264467365135390">Формула</translation>
 <translation id="3557205324756024651">Жергілікті идентификация (қосымша)</translation>
 <translation id="3565064564551103223">Рұқсат етілген IP мекенжайлары</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">Жүйелік қызметтердің локацияңызды пайдалануына рұқсат беру қажет пе?</translation>
 <translation id="6657585470893396449">Құпия сөз</translation>
 <translation id="66621959568103627">маржан қызғылт</translation>
+<translation id="6669485505082792176">Суреттерді дәл қазір жасау мүмкін емес. Сипаттаманы өзгертіп көріңіз. Адамдардың суреттерін, зиянды немесе цензурасыз контентті жасай алмайтыныңызды есте сақтаңыз. <ph name="BEGIN_LINK_LEARN_MORE" />Толық ақпарат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">пернетақта жарықтығын арттыру</translation>
 <translation id="6692996468359469499">Таңдауға қатысты ақпарат алу</translation>
 <translation id="6694534975463174713">құлыптау</translation>
@@ -1440,7 +1438,6 @@
 <translation id="7544853251252956727">Кездейсоқ</translation>
 <translation id="7550715992156305117">Диагностикалық режим</translation>
 <translation id="7551123448725492271">Бұл — аудио құрылғы.</translation>
-<translation id="7553913964854052228">Мектепке арналған құралдар микрофоныңызды пайдаланып жатыр.</translation>
 <translation id="7559239713112547082">Скриншотты алдын ала көру</translation>
 <translation id="7561454561030345039">Бұл әрекетті әкімшіңіз басқарады.</translation>
 <translation id="7561759921596375678">Дыбыс деңгейін қосу</translation>
@@ -1663,7 +1660,6 @@
 <translation id="8576249514688522074">Бастаудан бас тартылды</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> құрылғысына арналған микробағдарламаны <ph name="VERSION" /> нұсқасына орнату үшін құрылғыны өшіріп қосу қажет. Компьютер бірнеше рет өшіп қосылуы мүмкін. Бұл — қалыпты жағдай.</translation>
 <translation id="8593058461203131755">мультимедианы кідірту</translation>
-<translation id="8619169570378509764">Мектепке арналған құралдар</translation>
 <translation id="8620617069779373398">Роуминг күйі</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> қосымша әрекеттері</translation>
 <translation id="86356131183441916">Ашық күлгін</translation>

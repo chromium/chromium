@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">የማያ ገፅ ማቆያን አሰናክል</translation>
 <translation id="3091839911843451378">አልተሳካም - ተቋርጧል</translation>
 <translation id="3102119246920354026">መሸጎጫ</translation>
-<translation id="3112413615003385433">መምህርዎ የትምህርት ቤት መሣሪያዎች ውስጥ ይዘት አስወገደዋል</translation>
 <translation id="3122464029669770682">ሲፒዩ</translation>
 <translation id="3122614491980756867">ስብስቦች</translation>
 <translation id="3122883569442693641">ተጨማሪ ዝርዝሮች</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">በከፊል ገብሯል</translation>
 <translation id="3492882532495507361">የ<ph name="OFFICE_COLOR" /> ቃና ያለው የ<ph name="OFFICE_STYLE" /> ቢሮ</translation>
 <translation id="3493187369049186498">ውሂብ የሚለካው በእርስዎ Chromebook ነው። ይህ ከአቅራቢው ውሂብ የተለየ ሊሆን ይችላል።</translation>
-<translation id="349570724365779960">የትምህርት ቤት መሣሪያዎች ከተማሪዎች ጋር የተገናኘ ነው</translation>
 <translation id="3502426834823382181">ሁሉንም መተግበሪያዎች ይመልከቱ</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />የአፈጻጸም መከታተያ ውሂብ<ph name="END_LINK1" />ን ይላኩ</translation>
 <translation id="3517001332549868749">የChromeOS ዝማኔ</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">አርትዖት ተከናውኗል</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> ደቂቃዎች ገደማ ይቀራል</translation>
 <translation id="3533790840489634638">መዋኛ ገንዳ</translation>
-<translation id="3535802910192338629">መምህርዎ የትምህርት ቤት መሣሪያዎች ውስጥ አዲስ ይዘት አክለዋል</translation>
 <translation id="3547264467365135390">ቀመር</translation>
 <translation id="3557205324756024651">የአካባቢ ማንነት (ከተፈለገ)</translation>
 <translation id="3565064564551103223">የተፈቀዱ አይፒዎች</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">የሥርዓት አገልግሎቶች አካባቢዎን እንዲጠቀሙ ይፈቀድ?</translation>
 <translation id="6657585470893396449">የይለፍ ቃል</translation>
 <translation id="66621959568103627">ኮራል ሮዝ</translation>
+<translation id="6669485505082792176">አሁን የዚህን ምስል መፍጠር አይቻልም። መገለጫዎን በሌላ አነጋገር ለመግለጽ ይሞክሩ። የሰዎች፣ ጎጂ ወይም ግልፅ ይዘት ምስሎችን መፍጠር እንደማይችሉ ልብ ይበሉ። <ph name="BEGIN_LINK_LEARN_MORE" />የበለጠ ለመረዳት<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">የቁልፍ ሰሌዳ ብሩህነት መጨመሪያ</translation>
 <translation id="6692996468359469499">ከእርስዎ ምርጫ ጋር የተገናኘ መረጃ ያግኙ</translation>
 <translation id="6694534975463174713">ቁልፍ</translation>
@@ -1440,7 +1438,6 @@
 <translation id="7544853251252956727">በውዝ</translation>
 <translation id="7550715992156305117">የምርመራ የዕለት ተዕለት ሥራዎች</translation>
 <translation id="7551123448725492271">መሣሪያ የኦዲዮ መሣሪያ ነው።</translation>
-<translation id="7553913964854052228">የተማሪ መሣሪያዎች ማይክሮፎንዎን እየተጠቀመ ነው</translation>
 <translation id="7559239713112547082">የቅጸበታዊ ገፅ ቅድመ ዕይታ</translation>
 <translation id="7561454561030345039">ይህ ቅንብር በአስተዳዳሪዎ የሚቀናበር ነው።</translation>
 <translation id="7561759921596375678">ድምጽን አብራ</translation>
@@ -1663,7 +1660,6 @@
 <translation id="8576249514688522074">ያልተጀመረ</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> ወደ ሥሪት <ph name="VERSION" /> ፊርምዌር መጫኑን ለማጠናቀቅ ዳግም ማስጀመር ያስፈልጋል። ኮምፒውተርዎ በርካታ ጊዜያት ዳግም ሊነሳ የሚችል ይመስላል። ይህ ባህሪ የሚጠበቅ ነው።</translation>
 <translation id="8593058461203131755">ሚዲያን ባለበት ማቆሚያ</translation>
-<translation id="8619169570378509764">የትምህርት ቤት መሣሪያዎች</translation>
 <translation id="8620617069779373398">የውሂብ ዝውውር ሁኔታ</translation>
 <translation id="8626489604350149811">ለ<ph name="APN_NAME" /> ተጨማሪ እርምጃዎች</translation>
 <translation id="86356131183441916">ፈዛዛ ወይን ጠጅ</translation>

@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Desgaitu pantaila-babeslea</translation>
 <translation id="3091839911843451378">Hutsegitea - Gelditu egin da</translation>
 <translation id="3102119246920354026">Cachea</translation>
-<translation id="3112413615003385433">Irakasleak edukia kendu du School Tools-etik</translation>
 <translation id="3122464029669770682">PUZ</translation>
 <translation id="3122614491980756867">igerilekuekin</translation>
 <translation id="3122883569442693641">Xehetasun gehiago</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Partzialki aktibatuta</translation>
 <translation id="3492882532495507361">Bulego <ph name="OFFICE_STYLE" /> bat, tonu <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Chromebook-ak neurtzen ditu datuak. Baliteke informazio hori bat ez etortzea hornitzaileak egindako datuen neurketarekin.</translation>
-<translation id="349570724365779960">School Tools ikasleekin konektatuta dago</translation>
 <translation id="3502426834823382181">ikusi aplikazio guztiak</translation>
 <translation id="3510890413042482857">Bidali <ph name="BEGIN_LINK1" />errendimenduaren jarraipena egiteko datuak<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS-ren eguneratzea</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Amaitu editatzen</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> minutu inguru geratzen dira</translation>
 <translation id="3533790840489634638">igerileku</translation>
-<translation id="3535802910192338629">Irakasleak eduki berria gehitu du School Tools-en</translation>
 <translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Tokiko identitatea (aukerakoa)</translation>
 <translation id="3565064564551103223">Baimena duten IPak</translation>
@@ -1440,7 +1437,6 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="7544853251252956727">Ausazko erreprodukzioa</translation>
 <translation id="7550715992156305117">Diagnostiko-errutinak</translation>
 <translation id="7551123448725492271">Gailua audio-gailu bat da.</translation>
-<translation id="7553913964854052228">School Tools zure mikrofonoa erabiltzen ari da</translation>
 <translation id="7559239713112547082">Aurrebistako pantaila-argazkia</translation>
 <translation id="7561454561030345039">Administratzaileak kudeatzen du ekintza hau</translation>
 <translation id="7561759921596375678">Aktibatu bolumena</translation>
@@ -1663,7 +1659,6 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8576249514688522074">Hasieratu gabe</translation>
 <translation id="8584654835905316966">Berrabiaraztea beharrezkoa da <ph name="DEVICE_NAME" /> gailuan <ph name="VERSION" /> bertsioko firmwarea instalatzeko. Baliteke behin baino gehiagotan berrabiaraztea ordenagailua. Portaera hori normala da.</translation>
 <translation id="8593058461203131755">pausatu multimedia-edukia</translation>
-<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Ibiltaritza-egoera</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> APNarekin erlazionatutako ekintza gehiago</translation>
 <translation id="86356131183441916">More argia</translation>

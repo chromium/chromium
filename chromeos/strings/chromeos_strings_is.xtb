@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Slökkva á skjávara</translation>
 <translation id="3091839911843451378">Mistókst – stöðvaðist</translation>
 <translation id="3102119246920354026">Skyndiminni</translation>
-<translation id="3112413615003385433">Kennarinn þinn fjarlægði efni úr skólagögnum</translation>
 <translation id="3122464029669770682">Örgjörvi</translation>
 <translation id="3122614491980756867">sundlaugum</translation>
 <translation id="3122883569442693641">Nánari upplýsingar</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Virkjað að hluta</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> skrifstofa í <ph name="OFFICE_COLOR" /> litatónum</translation>
 <translation id="3493187369049186498">Chromebook-tækið mælir gögnin þín. Þau kunna að vera aðskilin gögnum þjónustuveitanda.</translation>
-<translation id="349570724365779960">Nemendur eru tengdir við School Tools</translation>
 <translation id="3502426834823382181">skoða öll forrit</translation>
 <translation id="3510890413042482857">Senda <ph name="BEGIN_LINK1" />rakningargögn um afköst<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS uppfærsla</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Breytingum lokið</translation>
 <translation id="3532980081107202182">Um <ph name="MIN_REMAINING" /> mínútur eftir</translation>
 <translation id="3533790840489634638">sundlaug</translation>
-<translation id="3535802910192338629">Kennarinn þinn bætti nýju efni við skólagögn</translation>
 <translation id="3547264467365135390">Formúla</translation>
 <translation id="3557205324756024651">Staðbundið auðkenni (valkvætt)</translation>
 <translation id="3565064564551103223">Leyfðar IP-tölur</translation>
@@ -1440,7 +1437,6 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="7544853251252956727">Stokka</translation>
 <translation id="7550715992156305117">Greiningarrútínur</translation>
 <translation id="7551123448725492271">Tækið er hljómtæki.</translation>
-<translation id="7553913964854052228">School Tools notar hljóðnemann</translation>
 <translation id="7559239713112547082">Forskoða skjámynd</translation>
 <translation id="7561454561030345039">Kerfisstjórinn þinn stjórnar þessari stillingu</translation>
 <translation id="7561759921596375678">Kveikja á hljóði</translation>
@@ -1663,7 +1659,6 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8576249514688522074">Ekki frumstillt</translation>
 <translation id="8584654835905316966">Endurræsingar er krafist til að ljúka uppsetningu á fastbúnaði fyrir <ph name="DEVICE_NAME" /> í útgáfu <ph name="VERSION" />. Tölvan þín kann að virðast endurræsast nokkrum sinnum. Búast má við þessari virkni.</translation>
 <translation id="8593058461203131755">gera hlé á efni</translation>
-<translation id="8619169570378509764">Skólagögn</translation>
 <translation id="8620617069779373398">Reikistaða</translation>
 <translation id="8626489604350149811">Fleiri aðgerðir fyrir <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Ljósfjólublár</translation>
