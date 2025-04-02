@@ -687,11 +687,13 @@ void CaptureModeSessionFocusCycler::AdvanceFocus(bool reverse) {
           views::Widget::InitParams::TYPE_POPUP);
       // Using can maximize and a container with a fill layout means the widget
       // bounds will always match the root window bounds.
-      params.delegate = new views::WidgetDelegate();
-      params.delegate->SetCanMaximize(true);
-      params.delegate->RegisterWindowClosingCallback(
+      auto delegate = std::make_unique<views::WidgetDelegate>();
+      delegate->RegisterWindowClosingCallback(
           base::BindOnce(&CaptureModeSessionFocusCycler::OnAXWidgetClosing,
                          weak_ptr_factory_.GetWeakPtr()));
+      delegate->SetCanMaximize(true);
+      delegate->SetOwnedByWidget(true);
+      params.delegate = delegate.release();
       params.layer_type = ui::LAYER_NOT_DRAWN;
       params.parent = Shell::GetContainer(session_->current_root(),
                                           kShellWindowId_WallpaperContainer);
@@ -726,11 +728,16 @@ void CaptureModeSessionFocusCycler::AdvanceFocus(bool reverse) {
 void CaptureModeSessionFocusCycler::OnFineTunePositionUpdated(
     bool notify_selection_event) {
   const FineTunePosition fine_tune_position = GetFocusedFineTunePosition();
+  if (!ax_virtual_views_.contains(fine_tune_position)) {
+    return;
+  }
+
   views::AXVirtualView* affordance_ax_virtual_view =
       ax_virtual_views_[fine_tune_position];
   if (!affordance_ax_virtual_view) {
     return;
   }
+  CHECK(affordance_ax_virtual_view);
 
   const gfx::Rect user_region =
       CaptureModeController::Get()->user_capture_region();
