@@ -18517,7 +18517,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PasswordManager.PasswordFillingIOS">
-  <owner>theocristea@google.com</owner>
   <owner>kazinova@google.com</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
