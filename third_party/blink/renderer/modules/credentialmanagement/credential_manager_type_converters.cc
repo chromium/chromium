@@ -1041,10 +1041,6 @@ TypeConverter<RpMode, blink::V8IdentityCredentialRequestOptionsMode>::Convert(
       return RpMode::kPassive;
     case blink::V8IdentityCredentialRequestOptionsMode::Enum::kActive:
       return RpMode::kActive;
-    case blink::V8IdentityCredentialRequestOptionsMode::Enum::kWidget:
-      return RpMode::kPassive;
-    case blink::V8IdentityCredentialRequestOptionsMode::Enum::kButton:
-      return RpMode::kActive;
   }
 }
 
