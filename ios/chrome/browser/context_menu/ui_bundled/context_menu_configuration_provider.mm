@@ -835,10 +835,16 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 // on Show Full URL button from the context menu.
 - (void)showFullURLPopUp:(web::ContextMenuParams)params
                URLString:(NSString*)URLString {
-  UIAlertController* alert =
-      [UIAlertController alertControllerWithTitle:@""
-                                          message:URLString
-                                   preferredStyle:UIAlertControllerStyleAlert];
+  // Due to a UIKit bug, UIAlertController that show a URL may truncate their
+  // last line. To avoid masking useful information, add an artificial empty
+  // last line that can be truncated safely.
+  // The "..." will still be visible but no useful information will be lost.
+  // TODO(crbug.com/407565099): remove workaround.
+  UIAlertController* alert = [UIAlertController
+      alertControllerWithTitle:@""
+                       message:[URLString
+                                   stringByAppendingString:@"\u00a0\n\u00a0"]
+                preferredStyle:UIAlertControllerStyleAlert];
 
   UIAlertAction* defaultAction = [UIAlertAction
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_CLOSE_ALERT_BUTTON_LABEL)
