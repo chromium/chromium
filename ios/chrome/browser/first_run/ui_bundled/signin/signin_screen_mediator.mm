@@ -345,13 +345,6 @@ enum class SigninScreenState {
   }
 }
 
-- (void)handleIdentityListChanged {
-  if (![self selectedIdentityIsValid]) {
-    self.selectedIdentity = signin::GetDefaultIdentityOnDevice(
-        _identityManager, _accountManagerService);
-  }
-}
-
 - (void)handleIdentityUpdated:(id<SystemIdentity>)identity {
   if ([self.selectedIdentity isEqual:identity]) {
     [self updateConsumerIdentity];
@@ -373,7 +366,7 @@ enum class SigninScreenState {
   __weak __typeof(self) weakSelf = self;
   FetchManagedStatusForIdentity(identity, base::BindOnce(^(bool managed) {
                                   if (managed) {
-                                    [weakSelf identityUpdated:identity];
+                                    [weakSelf handleIdentityUpdated:identity];
                                   }
                                 }));
   return NO;
@@ -390,7 +383,10 @@ enum class SigninScreenState {
 #pragma mark -  IdentityManagerObserver
 
 - (void)onAccountsOnDeviceChanged {
-  [self handleIdentityListChanged];
+  if (![self selectedIdentityIsValid]) {
+    self.selectedIdentity = signin::GetDefaultIdentityOnDevice(
+        _identityManager, _accountManagerService);
+  }
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
