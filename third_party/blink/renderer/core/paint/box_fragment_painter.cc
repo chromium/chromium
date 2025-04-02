@@ -1349,10 +1349,10 @@ void BoxFragmentPainter::PaintGaps(GridTrackSizingDirection track_direction,
   BoxSide box_side = BoxSideFromGridDirection(style, track_direction);
 
   Color rule_color;
-  EBorderStyle rule_style;
-  LayoutUnit rule_thickness;
   RuleBreak rule_break;
   Length rule_outset;
+  GapDataList<EBorderStyle> rule_styles;
+  GapDataList<int> rule_widths;
 
   // TODO(crbug.com/357648037): We are currently only painting gaps with a
   // single color, but we should update this to paint with all values
@@ -1360,20 +1360,21 @@ void BoxFragmentPainter::PaintGaps(GridTrackSizingDirection track_direction,
   if (track_direction == kForColumns) {
     rule_color =
         LayoutObject::ResolveColor(style, GetCSSPropertyColumnRuleColor());
-    rule_style = ComputedStyle::CollapsedBorderStyle(
-        style.ColumnRuleStyle().GetLegacyValue());
-    rule_thickness = LayoutUnit(style.ColumnRuleWidth().GetLegacyValue());
+    rule_styles = style.ColumnRuleStyle();
+    rule_widths = style.ColumnRuleWidth();
     rule_break = style.ColumnRuleBreak();
     rule_outset = style.ColumnRuleOutset();
   } else {
     rule_color =
         LayoutObject::ResolveColor(style, GetCSSPropertyRowRuleColor());
-    rule_style = ComputedStyle::CollapsedBorderStyle(
-        style.RowRuleStyle().GetLegacyValue());
-    rule_thickness = LayoutUnit(style.RowRuleWidth().GetLegacyValue());
+    rule_styles = style.RowRuleStyle();
+    rule_widths = style.RowRuleWidth();
     rule_break = style.RowRuleBreak();
     rule_outset = style.RowRuleOutset();
   }
+
+  rule_styles.ExpandValues();
+  rule_widths.ExpandValues();
 
   // Determines if the `end_index` should advance when determining pairs for gap
   // decorations. For `kSpanningItem` rule break, decorations break only at "T"
@@ -1516,6 +1517,10 @@ void BoxFragmentPainter::PaintGaps(GridTrackSizingDirection track_direction,
       LayoutUnit decoration_end_offset =
           LayoutUnit(end_width / 2.0f) - end_outset;
 
+      EBorderStyle rule_style =
+          rule_styles.GetGapDecorationForGapIndex(gap_index, gaps.size());
+      LayoutUnit rule_thickness = LayoutUnit(
+          rule_widths.GetGapDecorationForGapIndex(gap_index, gaps.size()));
       if (track_direction == kForColumns) {
         // For columns, paint a vertical strip at the center of the gap.
         const LayoutUnit center = gap[start].inline_offset;
