@@ -359,7 +359,6 @@ pub fn build_rule_from_dep(
                     NameLibStyle::LibLiteral => "lib".to_string(),
                 },
                 deps::DependencyKind::Build => "buildrs_support".to_string(),
-                _ => unreachable!(),
             };
             let (crate_name, epoch) = match name_lib_style {
                 NameLibStyle::PackageName => (None, None),
@@ -377,7 +376,6 @@ pub fn build_rule_from_dep(
             lib_detail.features = match &dep_kind {
                 Normal => requested_features_for_normal.clone(),
                 Build => requested_features_for_build.clone(),
-                _ => unreachable!(), // The for loop here is over [Normal, Build].
             };
 
             // TODO(danakj): Crates in the 'sandbox' group should have their

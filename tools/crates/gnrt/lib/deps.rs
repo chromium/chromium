@@ -12,7 +12,6 @@ use crate::{
 };
 
 use anyhow::{bail, Context, Result};
-pub use cargo_metadata::DependencyKind;
 use guppy::{
     graph::cargo::{CargoOptions, CargoSet},
     graph::feature::{FeatureSet, StandardFeatures},
@@ -104,6 +103,15 @@ impl<'g> From<&PackageMetadata<'g>> for PackageId {
     fn from(p: &PackageMetadata<'g>) -> Self {
         Self { name: p.name().to_string(), version: p.version().clone() }
     }
+}
+
+/// How a package is depended on.
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+pub enum DependencyKind {
+    /// A normal (i.e. production) dependency.
+    Normal,
+    /// A build-type dependency: proc macro or build.rs dep.
+    Build,
 }
 
 /// A dependency of a `Package`. Cross-references another `Package` entry in the
@@ -262,9 +270,8 @@ pub fn collect_dependencies(
             return Condition::AlwaysFalse;
         }
         let dep_kind = match dep_kind {
-            cargo_metadata::DependencyKind::Normal => guppy::DependencyKind::Normal,
-            cargo_metadata::DependencyKind::Build => guppy::DependencyKind::Build,
-            _ => unreachable!(), // `gnrt` ignores other dependency kinds.
+            DependencyKind::Normal => guppy::DependencyKind::Normal,
+            DependencyKind::Build => guppy::DependencyKind::Build,
         };
         get_link_condition(link, dep_kind)
     };
@@ -419,7 +426,6 @@ fn get_reverse_dependency_kinds(
                     .sorted()
                     .dedup()
                     .collect_vec(),
-                _ => unreachable!(),
             };
             let info: &mut PerKindInfo = result
                 .entry(kind)
