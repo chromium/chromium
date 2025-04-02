@@ -1,6 +1,6 @@
 {
-  "version": "51.60",
-  "log_list_timestamp": "2025-04-01T12:56:05Z",
+  "version": "52.1",
+  "log_list_timestamp": "2025-04-02T12:56:10Z",
   "operators": [
     {
       "name": "Google",
@@ -228,8 +228,8 @@
           "url": "https://wyvern.ct.digicert.com/2025h1/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2024-08-29T03:09:43Z"
+            "retired": {
+              "timestamp": "2025-04-14T22:33:20Z"
             }
           },
           "temporal_interval": {
@@ -292,8 +292,8 @@
           "url": "https://sphinx.ct.digicert.com/2025h1/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2024-08-29T03:09:43Z"
+            "retired": {
+              "timestamp": "2025-04-14T22:33:20Z"
             }
           },
           "temporal_interval": {
