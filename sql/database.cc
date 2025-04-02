@@ -2291,20 +2291,7 @@ void Database::PreloadInternal(const base::FilePath& path) {
 }
 
 void Database::ConfigureSqliteDatabaseObject() {
-  // The use of SQLite's non-standard string quoting is not allowed in Chrome.
-  //
-  // Allowing double-quoted string literals is now considered a misfeature by
-  // SQLite authors. See https://www.sqlite.org/quirks.html#dblquote
   auto sqlite_result_code = ToSqliteResultCode(
-      sqlite3_db_config(db_, SQLITE_DBCONFIG_DQS_DDL, 0, nullptr));
-  DCHECK_EQ(sqlite_result_code, SqliteResultCode::kOk)
-      << "sqlite3_db_config(SQLITE_DBCONFIG_DQS_DDL) should not fail";
-  sqlite_result_code = ToSqliteResultCode(
-      sqlite3_db_config(db_, SQLITE_DBCONFIG_DQS_DML, 0, nullptr));
-  DCHECK_EQ(sqlite_result_code, SqliteResultCode::kOk)
-      << "sqlite3_db_config(SQLITE_DBCONFIG_DQS_DML) should not fail";
-
-  sqlite_result_code = ToSqliteResultCode(
       sqlite3_db_config(db_, SQLITE_DBCONFIG_ENABLE_FKEY, 0, nullptr));
   DCHECK_EQ(sqlite_result_code, SqliteResultCode::kOk)
       << "sqlite3_db_config(SQLITE_DBCONFIG_ENABLE_FKEY) should not fail";
