@@ -4762,6 +4762,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Network.TotalBytesReceived.SRC" units="bytes"
+    expires_after="2025-08-01">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Reports the total bytes received over the network by a
+    ResourceMultiBufferDataProvider instance. One is created each time a
+    src=file playback needs to retrieve non-contiguous data over the network.
+    Value is recorded at destruction time, so may be lost in the event of tab
+    closure. Range is 1kb to 1gb.
+  </summary>
+</histogram>
+
 <histogram name="Media.Notification.Cast.Count" units="count"
     expires_after="2025-06-08">
   <owner>muyaoxu@google.com</owner>
