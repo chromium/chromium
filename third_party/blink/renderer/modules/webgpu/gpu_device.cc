@@ -196,6 +196,17 @@ GPUDevice::~GPUDevice() {
   }
 }
 
+bool GPUDevice::IsDestroyed() const {
+  return destroyed_;
+}
+
+std::string GPUDevice::GetFormattedLabel() const {
+  std::string deviceLabel =
+      label().empty() ? "[Device]" : "[Device \"" + label().Utf8() + "\"]";
+
+  return deviceLabel;
+}
+
 void GPUDevice::InjectError(wgpu::ErrorType type, const char* message) {
   GetHandle().InjectError(type, message);
 }
@@ -203,9 +214,11 @@ void GPUDevice::InjectError(wgpu::ErrorType type, const char* message) {
 void GPUDevice::AddConsoleWarning(wgpu::StringView message) {
   AddConsoleWarning(StringFromASCIIAndUTF8(message));
 }
+
 void GPUDevice::AddConsoleWarning(const char* message) {
   AddConsoleWarning(StringFromASCIIAndUTF8(message));
 }
+
 void GPUDevice::AddConsoleWarning(const String& message) {
   ExecutionContext* execution_context = GetExecutionContext();
   if (execution_context && allowed_console_warnings_remaining_ > 0) {
@@ -237,7 +250,7 @@ void GPUDevice::AddSingletonWarning(GPUSingletonWarning type) {
         message =
             "WebGPU canvas configured with a different format than is "
             "preferred by this device (\"" +
-            FromDawnEnum(GPU::preferred_canvas_format()).AsString() +
+            FromDawnEnum(GPU::GetPreferredCanvasFormat()).AsString() +
             "\"). This requires an extra copy, which may impact performance.";
         break;
       case GPUSingletonWarning::kDepthKey:
@@ -274,7 +287,7 @@ bool GPUDevice::ValidateTextureFormatUsage(V8GPUTextureFormat format,
 
   V8GPUFeatureName::Enum requiredFeatureEnum = requiredFeatureOptional.value();
 
-  if (features_->has(requiredFeatureEnum)) {
+  if (features_->Has(requiredFeatureEnum)) {
     return true;
   }
 
@@ -283,15 +296,8 @@ bool GPUDevice::ValidateTextureFormatUsage(V8GPUTextureFormat format,
   exception_state.ThrowTypeError(String::Format(
       "Use of the '%s' texture format requires the '%s' feature "
       "to be enabled on %s.",
-      format.AsCStr(), requiredFeature.AsCStr(), formattedLabel().c_str()));
+      format.AsCStr(), requiredFeature.AsCStr(), GetFormattedLabel().c_str()));
   return false;
-}
-
-std::string GPUDevice::formattedLabel() const {
-  std::string deviceLabel =
-      label().empty() ? "[Device]" : "[Device \"" + label().Utf8() + "\"]";
-
-  return deviceLabel;
 }
 
 // Validates that any features required for the given blend factor are enabled
@@ -308,7 +314,7 @@ bool GPUDevice::ValidateBlendFactor(V8GPUBlendFactor blend_factor,
 
   V8GPUFeatureName::Enum requiredFeatureEnum = requiredFeatureOptional.value();
 
-  if (features_->has(requiredFeatureEnum)) {
+  if (features_->Has(requiredFeatureEnum)) {
     return true;
   }
 
@@ -318,7 +324,7 @@ bool GPUDevice::ValidateBlendFactor(V8GPUBlendFactor blend_factor,
       String::Format("Use of the '%s' blend factor requires the '%s' feature "
                      "to be enabled on %s.",
                      blend_factor.AsCStr(), requiredFeature.AsCStr(),
-                     formattedLabel().c_str()));
+                     GetFormattedLabel().c_str()));
   return false;
 }
 
@@ -496,10 +502,6 @@ GPUQueue* GPUDevice::queue() {
   return queue_.Get();
 }
 
-bool GPUDevice::destroyed() const {
-  return destroyed_;
-}
-
 void GPUDevice::destroy(v8::Isolate* isolate) {
   destroyed_ = true;
   external_texture_cache_->Destroy();
@@ -638,14 +640,14 @@ GPUQuerySet* GPUDevice::createQuerySet(const GPUQuerySetDescriptor* descriptor,
   const V8GPUFeatureName::Enum kTimestampQueryInsidePasses =
       V8GPUFeatureName::Enum::kChromiumExperimentalTimestampQueryInsidePasses;
   if (descriptor->type() == V8GPUQueryType::Enum::kTimestamp &&
-      !features_->has(kTimestampQuery) &&
-      !features_->has(kTimestampQueryInsidePasses)) {
+      !features_->Has(kTimestampQuery) &&
+      !features_->Has(kTimestampQueryInsidePasses)) {
     exception_state.ThrowTypeError(
         String::Format("Use of timestamp queries requires the '%s' or '%s' "
                        "feature to be enabled on %s.",
                        V8GPUFeatureName(kTimestampQuery).AsCStr(),
                        V8GPUFeatureName(kTimestampQueryInsidePasses).AsCStr(),
-                       formattedLabel().c_str()));
+                       GetFormattedLabel().c_str()));
     return nullptr;
   }
   return GPUQuerySet::Create(this, descriptor);

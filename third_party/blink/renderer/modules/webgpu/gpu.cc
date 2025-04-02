@@ -449,10 +449,10 @@ ScriptPromise<IDLNullable<GPUAdapter>> GPU::requestAdapter(
 }
 
 V8GPUTextureFormat GPU::getPreferredCanvasFormat() {
-  return FromDawnEnum(preferred_canvas_format());
+  return FromDawnEnum(GetPreferredCanvasFormat());
 }
 
-wgpu::TextureFormat GPU::preferred_canvas_format() {
+wgpu::TextureFormat GPU::GetPreferredCanvasFormat() {
 #if BUILDFLAG(IS_ANDROID)
   return wgpu::TextureFormat::RGBA8Unorm;
 #else

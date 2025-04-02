@@ -59,7 +59,7 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<wgpu::Adapter> {
 
   GPUAdapterInfo* CreateAdapterInfoForAdapter();
 
-  bool isXRCompatible() const { return is_xr_compatible_; }
+  bool IsXRCompatible() const { return is_xr_compatible_; }
 
  private:
   void OnRequestDeviceCallback(GPUDevice* device,
@@ -69,7 +69,7 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<wgpu::Adapter> {
                                wgpu::Device dawn_device,
                                wgpu::StringView error_message);
 
-  void setLabelImpl(const String&) override {
+  void SetLabelImpl(const String&) override {
     // There isn't a wgpu::Adapter::SetLabel, just skip.
   }
 

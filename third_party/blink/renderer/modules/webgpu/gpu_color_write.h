@@ -14,13 +14,6 @@ class GPUColorWrite : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // gpu_color_write.idl
-  static constexpr uint32_t kRed = V8GPUColorWrite::Constant::kRed;
-  static constexpr uint32_t kGreen = V8GPUColorWrite::Constant::kGreen;
-  static constexpr uint32_t kBlue = V8GPUColorWrite::Constant::kBlue;
-  static constexpr uint32_t kAlpha = V8GPUColorWrite::Constant::kAlpha;
-  static constexpr uint32_t kAll = V8GPUColorWrite::Constant::kAll;
-
   GPUColorWrite(const GPUColorWrite&) = delete;
   GPUColorWrite& operator=(const GPUColorWrite&) = delete;
 };
