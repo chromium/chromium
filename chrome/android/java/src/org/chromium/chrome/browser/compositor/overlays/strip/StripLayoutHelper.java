@@ -2719,7 +2719,6 @@ public class StripLayoutHelper
     }
 
     private void handleGroupTitleClick(StripLayoutGroupTitle groupTitle) {
-        if (!ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) return;
         if (groupTitle == null) return;
 
         int rootId = groupTitle.getRootId();
@@ -3052,7 +3051,6 @@ public class StripLayoutHelper
 
     private void updateTabGroupCollapsed(
             StripLayoutGroupTitle groupTitle, boolean isCollapsed, boolean animate) {
-        if (!ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) return;
         if (groupTitle.isCollapsed() == isCollapsed) return;
 
         List<Animator> collapseAnimationList = animate ? new ArrayList<>() : null;

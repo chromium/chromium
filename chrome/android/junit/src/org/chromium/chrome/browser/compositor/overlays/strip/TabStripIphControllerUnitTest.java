@@ -46,10 +46,7 @@ import org.chromium.ui.base.LocalizationUtils;
 /** Unit tests for {@link TabStripIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({
-    ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE,
-    ChromeFeatureList.TAB_GROUP_SYNC_ANDROID
-})
+@EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
 public class TabStripIphControllerUnitTest {
     private static final float TAB_STRIP_HEIGHT = 40f;
     private static final float TAB_WIDTH = 150f;

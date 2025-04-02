@@ -2849,8 +2849,7 @@ const char kOmniboxStarterPackIPHDescription[] =
     "Enables an informational IPH message for the  Site search starter pack "
     "feature";
 
-const char kOmniboxSearchAggregatorName[] =
-    "Omnibox search aggregator";
+const char kOmniboxSearchAggregatorName[] = "Omnibox search aggregator";
 const char kOmniboxSearchAggregatorDescription[] =
     "Enables omnibox suggestions from the search aggregator provider";
 
@@ -4950,14 +4949,6 @@ const char kTabGroupSyncDisableNetworkLayerDescription[] =
 const char kTabStripContextMenuAndroidName[] = "Tab Strip Context Menu Android";
 const char kTabStripContextMenuAndroidDescription[] =
     "Enables context menus upon long-pressing on a tab on the tab strip.";
-
-const char kTabStripGroupCollapseAndroidName[] =
-    "Tab Strip Group Collapse Android";
-const char kTabStripGroupCollapseAndroidDescription[] =
-    "Enables tab strip group indicators to be clicked to collapse, temporarily "
-    "hiding the colored outline, the group title, and the grouped tabs. "
-    "Collapsed groups can be clicked again to expand. Synced tab groups will "
-    "immediately be collapsed.";
 
 const char kTabStripGroupDragDropAndroidName[] =
     "Tab Strip Group Drag Drop Android";

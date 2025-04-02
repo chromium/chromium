@@ -548,7 +548,6 @@ public abstract class ChromeFeatureList {
             "TabGroupParityBottomSheetAndroid";
     public static final String TAB_RESUMPTION_MODULE_ANDROID = "TabResumptionModuleAndroid";
     public static final String TAB_STRIP_CONTEXT_MENU = "TabStripContextMenuAndroid";
-    public static final String TAB_STRIP_GROUP_COLLAPSE = "TabStripGroupCollapseAndroid";
     public static final String TAB_STRIP_GROUP_DRAG_DROP_ANDROID = "TabStripGroupDragDropAndroid";
     public static final String TAB_STRIP_GROUP_REORDER = "TabStripGroupReorderAndroid";
     public static final String TAB_STRIP_INCOGNITO_MIGRATION = "TabStripIncognitoMigration";
@@ -834,8 +833,6 @@ public abstract class ChromeFeatureList {
                     TAB_STRIP_LAYOUT_OPTIMIZATION,
                     /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sTabStripGroupCollapse =
-            newCachedFlag(TAB_STRIP_GROUP_COLLAPSE, /* defaultValue= */ true);
     public static final CachedFlag sTabWindowManagerReportIndicesMismatch =
             newCachedFlag(TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH, true);
     public static final CachedFlag sTestDefaultDisabled =
@@ -943,7 +940,6 @@ public abstract class ChromeFeatureList {
                     sTabClosureMethodRefactor,
                     sTabGroupPaneAndroid,
                     sTabStateFlatBuffer,
-                    sTabStripGroupCollapse,
                     sTabStripIncognitoMigration,
                     sTabStripLayoutOptimization,
                     sTabWindowManagerReportIndicesMismatch,

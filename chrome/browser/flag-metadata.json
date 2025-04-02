@@ -8858,11 +8858,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "tab-strip-group-collapse-android",
-    "owners": [ "nemco@google.com", "zheliooo@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "tab-strip-group-drag-drop-android",
     "owners": [ "zheliooo@google.com", "nemco@google.com", "skavuluru@google.com", "clank-large-form-factors@google.com"],
     "expiry_milestone": 145
