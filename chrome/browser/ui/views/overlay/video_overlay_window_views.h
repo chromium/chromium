@@ -369,6 +369,8 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   raw_ptr<views::View> controls_top_scrim_view_ = nullptr;
   raw_ptr<views::View> controls_bottom_scrim_view_ = nullptr;
   raw_ptr<views::View> controls_container_view_ = nullptr;
+  raw_ptr<views::View> playback_controls_container_view_ = nullptr;
+  raw_ptr<views::View> vc_controls_container_view_ = nullptr;
   raw_ptr<views::ImageView> favicon_view_ = nullptr;
   raw_ptr<views::Label> origin_ = nullptr;
   raw_ptr<CloseImageButton> close_controls_view_ = nullptr;

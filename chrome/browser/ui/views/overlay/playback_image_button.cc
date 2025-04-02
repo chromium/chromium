@@ -31,7 +31,7 @@ PlaybackImageButton::PlaybackImageButton(PressedCallback callback)
   // never change.
   if (base::FeatureList::IsEnabled(
           media::kVideoPictureInPictureControlsUpdate2024)) {
-    SetSize(gfx::Size(kPlaybackButtonSize, kPlaybackButtonSize));
+    SetSize(gfx::Size(kCenterButtonSize, kCenterButtonSize));
 
     play_image_ = ui::ImageModel::FromVectorIcon(
         vector_icons::kPlayArrowIcon, ui::kColorSysOnSecondaryContainer,
@@ -120,7 +120,7 @@ void PlaybackImageButton::SetPlayButtonBackground() {
     return;
   }
   SetBackground(views::CreateRoundedRectBackground(
-      ui::kColorSysSecondaryContainer, kPlaybackButtonSize / 2));
+      ui::kColorSysSecondaryContainer, kCenterButtonSize / 2));
 }
 
 void PlaybackImageButton::SetPauseButtonBackground() {
@@ -130,7 +130,7 @@ void PlaybackImageButton::SetPauseButtonBackground() {
   }
 
   SetBackground(views::CreateRoundedRectBackground(
-      SkColorSetARGB(0x33, 0xFF, 0xFF, 0xFF), kPlaybackButtonSize / 2));
+      SkColorSetARGB(0x33, 0xFF, 0xFF, 0xFF), kCenterButtonSize / 2));
 }
 
 BEGIN_METADATA(PlaybackImageButton)
