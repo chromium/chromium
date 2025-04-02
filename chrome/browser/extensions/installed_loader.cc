@@ -22,6 +22,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
@@ -62,7 +63,6 @@
 #include "extensions/common/permissions/permissions_data.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/extension_management.h"
 #endif
 
@@ -1188,11 +1188,6 @@ int InstalledLoader::GetCreationFlags(const ExtensionInfo* info) {
 
 void InstalledLoader::HandleCorruptExtension(const Extension& extension,
                                              const ManagementPolicy& policy) {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/404549055): Port CorruptedExtensionReinstaller to desktop
-  // Android.
-  NOTIMPLEMENTED() << "Corrupted extension reinstall not supported on Android";
-#else
   CorruptedExtensionReinstaller* corrupted_extension_reinstaller =
       CorruptedExtensionReinstaller::Get(profile_);
   if (policy.MustRemainEnabled(&extension, nullptr)) {
@@ -1214,7 +1209,6 @@ void InstalledLoader::HandleCorruptExtension(const Extension& extension,
     corrupted_extension_reinstaller->ExpectReinstallForCorruption(
         extension.id(), std::nullopt, extension.location());
   }
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool InstalledLoader::UpdatesFromWebstore(const Extension& extension) {

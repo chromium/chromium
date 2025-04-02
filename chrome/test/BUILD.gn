@@ -8804,6 +8804,7 @@ test("unit_tests") {
   # Unit tests that run on Win/Mac/Linux and Android desktop.
   if (enable_extensions_core) {
     sources += [
+      "../browser/extensions/corrupted_extension_reinstaller_unittest.cc",
       "../browser/extensions/extension_install_prompt_unittest.cc",
       "../browser/extensions/install_tracker_unittest.cc",
       "../browser/extensions/installed_loader_unittest.cc",
@@ -8967,7 +8968,6 @@ test("unit_tests") {
       "../browser/extensions/component_loader_unittest.cc",
       "../browser/extensions/context_menu_matcher_unittest.cc",
       "../browser/extensions/convert_user_script_unittest.cc",
-      "../browser/extensions/corrupted_extension_reinstaller_unittest.cc",
       "../browser/extensions/cws_info_service_unittest.cc",
       "../browser/extensions/error_console/error_console_unittest.cc",
       "../browser/extensions/event_router_forwarder_unittest.cc",

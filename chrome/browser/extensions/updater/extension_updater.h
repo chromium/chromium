@@ -352,9 +352,6 @@ class ExtensionUpdater : public KeyedService,
   // Returns the IDs of corrupted extensions scheduled for reinstall.
   std::set<ExtensionId> GetCorruptedExtensionIds() const;
 
-  // Are we expecting a reinstall of the extension due to corruption?
-  bool IsReinstallForCorruptionExpected(const ExtensionId& id) const;
-
   // Get the effective update URL for the extension. Normally this URL comes
   // from the extension manifest, but may be overridden by policies.
   GURL GetEffectiveUpdateURL(const Extension& extension) const;

@@ -26,6 +26,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/delayed_install_manager.h"
 #include "chrome/browser/extensions/external_install_manager.h"
@@ -61,7 +62,6 @@
 #include "extensions/common/manifest_url_handlers.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/extension_management.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -175,12 +175,9 @@ ExtensionUpdater::ExtensionUpdater(Profile* profile)
       registrar_(ExtensionRegistrar::Get(profile)),
       delayed_install_manager_(DelayedInstallManager::Get(profile)),
       pending_extension_manager_(PendingExtensionManager::Get(profile)),
-      external_install_manager_(ExternalInstallManager::Get(profile)) {
-#if !BUILDFLAG(IS_ANDROID)
-  corrupted_extension_reinstaller_ =
-      CorruptedExtensionReinstaller::Get(profile);
-#endif
-}
+      external_install_manager_(ExternalInstallManager::Get(profile)),
+      corrupted_extension_reinstaller_(
+          CorruptedExtensionReinstaller::Get(profile)) {}
 
 void ExtensionUpdater::InitAndEnable(
     ExtensionPrefs* extension_prefs,
@@ -473,7 +470,8 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
           pending_extension_manager->GetById(pending_id);
 
       const bool is_corrupt_reinstall =
-          IsReinstallForCorruptionExpected(pending_id);
+          corrupted_extension_reinstaller_->IsReinstallForCorruptionExpected(
+              pending_id);
 
       // Extensions from the webstore that are corrupted do not have
       // PendingExtensionInfo but are still available in the extension registry.
@@ -1043,30 +1041,12 @@ void ExtensionUpdater::OnAppTerminating() {
 }
 
 std::set<ExtensionId> ExtensionUpdater::GetCorruptedExtensionIds() const {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/404549055): Port CorruptedExtensionInstaller to Android.
-  NOTIMPLEMENTED() << "Corrupted extension update not supported on Android";
-  return {};
-#else
   std::set<ExtensionId> ids;
   for (const auto& it :
        corrupted_extension_reinstaller_->GetExpectedReinstalls()) {
     ids.insert(it.first);
   }
   return ids;
-#endif
-}
-
-bool ExtensionUpdater::IsReinstallForCorruptionExpected(
-    const ExtensionId& id) const {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/404549055): Port CorruptedExtensionInstaller to Android.
-  // Only log once because this is called inside a loop.
-  NOTIMPLEMENTED_LOG_ONCE() << "IsReinstallForCorruptionExpected";
-  return false;
-#else
-  return corrupted_extension_reinstaller_->IsReinstallForCorruptionExpected(id);
-#endif
 }
 
 GURL ExtensionUpdater::GetEffectiveUpdateURL(const Extension& extension) const {

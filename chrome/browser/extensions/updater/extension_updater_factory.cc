@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/updater/extension_updater_factory.h"
 
+#include "chrome/browser/extensions/corrupted_extension_reinstaller_factory.h"
 #include "chrome/browser/extensions/delayed_install_manager_factory.h"
 #include "chrome/browser/extensions/external_install_manager_factory.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
@@ -15,10 +16,6 @@
 #include "extensions/browser/extension_registrar_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/updater/update_service_factory.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/corrupted_extension_reinstaller_factory.h"
-#endif
 
 using content::BrowserContext;
 
@@ -49,10 +46,7 @@ ExtensionUpdaterFactory::ExtensionUpdaterFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
-#if !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/404549055): Port CorruptedExtensionInstaller to Android.
   DependsOn(CorruptedExtensionReinstallerFactory::GetInstance());
-#endif
   DependsOn(DelayedInstallManagerFactory::GetInstance());
   DependsOn(ExtensionPrefsFactory::GetInstance());
   DependsOn(ExtensionRegistrarFactory::GetInstance());

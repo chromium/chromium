@@ -16,6 +16,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_error_controller.h"
 #include "chrome/browser/extensions/external_install_manager.h"
@@ -44,7 +45,6 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #endif
 
@@ -522,15 +522,8 @@ void ExternalProviderManager::InstallationFromExternalFileFinished(
 
 bool ExternalProviderManager::IsReinstallForCorruptionExpected(
     const ExtensionId& id) const {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/404549055): Port CorruptedExtensionInstaller to Android.
-  // Only log once because this is called inside a loop.
-  NOTIMPLEMENTED_LOG_ONCE() << "IsReinstallForCorruptionExpected";
-  return false;
-#else
   auto* reinstaller = CorruptedExtensionReinstaller::Get(context_);
   return reinstaller->IsReinstallForCorruptionExpected(id);
-#endif
 }
 
 }  // namespace extensions
