@@ -50,6 +50,25 @@ version = "2.0.0-beta2"
 default-features = false
 features = ["calendar", "compiled_data", "experimental", "casemap"]
 
+[dependencies.icu_casemap]
+version = "2.0.0-beta2"
+default-features = false
+[dependencies.icu_experimental]
+version = "0.3.0-beta2"
+default-features = false
+[dependencies.icu_locale_core]
+version = "2.0.0-beta2"
+default-features = false
+[dependencies.icu_normalizer]
+version = "2.0.0-beta2"
+default-features = false
+[dependencies.icu_properties]
+version = "2.0.0-beta2"
+default-features = false
+[dependencies.icu_provider]
+version = "2.0.0-beta2"
+default-features = false
+
 [dependencies.tinyvec]
 version = "1.6.0"
 features = ["rustc_1_55"]
