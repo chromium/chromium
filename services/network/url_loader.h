@@ -487,43 +487,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Inbound control flow:
   //
   // Start in `ProcessInboundAttributionInterceptorOnResponseStarted`
-  //  - If `attribution_request_helper_` is not defined,
-  //    immediately calls
-  //    `ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted`.
+  //  - If `attribution_request_helper_` is not defined, immediately
+  //    calls`ProcessInboundSharedStorageInterceptorOnResponseStarted`.
   // - Otherwise:
   //   - Execute `AttributionRequestHelper::Finalize`
   //   - On Finalize's callback, calls
-  //    `ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted`.
+  //   `ProcessInboundSharedStorageInterceptorOnResponseStarted`
   void ProcessOutboundAttributionInterceptor();
   void ProcessInboundAttributionInterceptorOnReceivedRedirect(
       const ::net::RedirectInfo& redirect_info,
       mojom::URLResponseHeadPtr response);
   void ProcessInboundAttributionInterceptorOnResponseStarted();
-
-  // All inbound responses will invoke
-  // `ad_auction_event_record_request_helper_.HandleResponse()`, which
-  // always returns immediately without blocking, and also exits early for
-  // ineligible responses.
-  //
-  // Outbound control flow:
-  //
-  // There are no outbound flow methods as the request headers are set by
-  // ComputeAttributionReportingHeaders() in the URLLoader() constructor.
-  //
-  // Redirection control flow:
-  //
-  // Redirection isn't handled yet. TODO(crbug.com/394108643): Support
-  // capturing headers on redirection responses.
-  //
-  // Inbound control flow:
-  //
-  // Start in
-  // `ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted()`
-  //  - Execute
-  //   `ad_auction_event_record_request_helper_::HandleResponse()`.
-  //  - Afterwards, execute
-  //   `ProcessInboundSharedStorageInterceptorOnResponseStarted()`.
-  void ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted();
 
   // Continuation of `OnReceivedRedirect` after possibly asynchronously
   // concluding the request's Attribution and/or Shared Storage operations.

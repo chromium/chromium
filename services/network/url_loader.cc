@@ -2109,22 +2109,15 @@ void URLLoader::ProcessInboundSharedStorageInterceptorOnResponseStarted() {
 
 void URLLoader::ProcessInboundAttributionInterceptorOnResponseStarted() {
   if (!attribution_request_helper_) {
-    ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted();
+    ProcessInboundSharedStorageInterceptorOnResponseStarted();
     return;
   }
 
   attribution_request_helper_->Finalize(
       *response_,
       base::BindOnce(
-          &URLLoader::
-              ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted,
+          &URLLoader::ProcessInboundSharedStorageInterceptorOnResponseStarted,
           weak_ptr_factory_.GetWeakPtr()));
-}
-
-void URLLoader::
-    ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted() {
-  ad_auction_event_record_request_helper_.HandleResponse(*url_request_);
-  ProcessInboundSharedStorageInterceptorOnResponseStarted();
 }
 
 void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
@@ -2150,6 +2143,8 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
 
   response_ = BuildResponseHead();
   DispatchOnRawResponse();
+
+  ad_auction_event_record_request_helper_.HandleResponse(*url_request_);
 
   // Parse and remove the Trust Tokens response headers, if any are expected,
   // potentially failing the request if an error occurs.
