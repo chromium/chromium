@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_commands.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_view.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/base_grid_view_controller+subclassing.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/common/material_timing.h"
@@ -88,6 +89,9 @@
             forControlEvents:UIControlEventTouchUpInside];
       }
     }
+
+    // Dismiss all modals.
+    [self.applicationHandler dismissModalDialogsWithCompletion:nil];
 
     [self.view addSubview:_blockingView];
     _blockingView.alpha = 1;

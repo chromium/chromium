@@ -11,6 +11,8 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_eg_utils.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -21,6 +23,12 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
 #import "ui/base/l10n/l10n_util.h"
+
+using chrome_test_util::CloseTabMenuButton;
+using chrome_test_util::CreateTabGroupAtIndex;
+using chrome_test_util::OpenTabGroupAtIndex;
+using chrome_test_util::TabGridIncognitoTabsPanelButton;
+using chrome_test_util::TabGroupCreationView;
 
 @interface IncognitoReauthTestCase : ChromeTestCase
 @end
@@ -56,8 +64,7 @@
 
   [ChromeEarlGreyUI openTabGrid];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          TabGridIncognitoTabsPanelButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridIncognitoTabsPanelButton()]
       performAction:grey_tap()];
 
   [[EarlGrey
@@ -89,8 +96,7 @@
 
   [ChromeEarlGreyUI openTabGrid];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          TabGridIncognitoTabsPanelButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridIncognitoTabsPanelButton()]
       performAction:grey_tap()];
 
   NSString* cellID =
@@ -103,9 +109,94 @@
       performAction:chrome_test_util::LongPressOnHiddenElement()];
 
   base::PlatformThread::Sleep(base::Seconds(1));
+  [[EarlGrey selectElementWithMatcher:CloseTabMenuButton()]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that the context menu after long pressing an incognito tab is dismissed
+// when the blocking UI is shown.
+- (void)testContextMenuDismissedBeforeReauthScreen {
+  // Open the Incognito tab grid with a new Incognito tab.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:TabGridIncognitoTabsPanelButton()]
+      performAction:grey_tap()];
+
+  // Long press the tab.
+  NSString* cellID =
+      [NSString stringWithFormat:@"%@%u", kGridCellIdentifierPrefix, 0];
   [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   chrome_test_util::CloseTabMenuButton(), nil)]
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(cellID),
+                                          grey_ancestor(grey_accessibilityID(
+                                              kIncognitoTabGridIdentifier)),
+                                          nil)] performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:CloseTabMenuButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Relaunch to display the Incognito Reauth UI.
+  [self displayBlockingUI];
+
+  // Check that the context menu disappeared.
+  [[EarlGrey selectElementWithMatcher:CloseTabMenuButton()]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that the tab group creation view is dismissed when the blocking UI is
+// shown.
+- (void)testTabGroupCreationDismissedBeforeReauthScreen {
+  // Open the Incognito tab grid with a new Incognito tab.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:TabGridIncognitoTabsPanelButton()]
+      performAction:grey_tap()];
+
+  // Long press the tab.
+  NSString* cellID =
+      [NSString stringWithFormat:@"%@%u", kGridCellIdentifierPrefix, 0];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(cellID),
+                                          grey_ancestor(grey_accessibilityID(
+                                              kIncognitoTabGridIdentifier)),
+                                          nil)] performAction:grey_longPress()];
+
+  // Open the tab group creation view.
+  [[EarlGrey
+      selectElementWithMatcher:grey_text(l10n_util::GetPluralNSStringF(
+                                   IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP,
+                                   1))] performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGroupCreationView()];
+
+  // Relaunch to display the Incognito Reauth UI.
+  [self displayBlockingUI];
+
+  // Check that the tab group creation view disappeared.
+  [[EarlGrey selectElementWithMatcher:TabGroupCreationView()]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that the tab group view is dismissed when the blocking UI is shown.
+- (void)testTabGroupViewDismissedBeforeReauthScreen {
+  // Open the Incognito tab grid with a new Incognito tab.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:TabGridIncognitoTabsPanelButton()]
+      performAction:grey_tap()];
+
+  // Create and open a tab group.
+  CreateTabGroupAtIndex(0, @"Some group");
+  OpenTabGroupAtIndex(0);
+
+  // Verify that the tab group view is displayed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kTabGroupViewIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Relaunch to display the Incognito Reauth UI.
+  [self displayBlockingUI];
+
+  // Verify that the tab group view is no longer displayed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kTabGroupViewIdentifier)]
       assertWithMatcher:grey_nil()];
 }
 
