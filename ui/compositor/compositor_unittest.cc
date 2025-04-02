@@ -148,7 +148,43 @@ class TestCompositorAnimationObserver : public CompositorAnimationObserver {
   bool failed_ = false;
 };
 
+// For tests using layer list mode
+class CompositorLayerListTest : public CompositorTestWithMockedTime {
+ public:
+  CompositorLayerListTest() {
+    feature_list_.InitAndEnableFeature(features::kUiCompositorUsesLayerLists);
+  }
+
+  ~CompositorLayerListTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 }  // namespace
+
+TEST_F(CompositorLayerListTest, ViewportClipNodes) {
+  const cc::PropertyTrees* trees = compositor()->property_trees();
+  const cc::ClipTree& clip_tree = trees->clip_tree();
+
+  // Initially the clip tree is empty (there's always one placeholder node
+  // in a tree).
+  ASSERT_EQ(clip_tree.size(), 1UL);
+
+  viz::ParentLocalSurfaceIdAllocator allocator;
+  allocator.GenerateId();
+  const viz::LocalSurfaceId& surface_id = allocator.GetCurrentLocalSurfaceId();
+
+  // Calling SetScaleAndSize() creates a ClipNode for the viewport.
+  compositor()->SetScaleAndSize(1.0, gfx::Size(100, 100), surface_id);
+  ASSERT_EQ(clip_tree.size(), 2UL);
+  ASSERT_EQ(clip_tree.Node(1)->clip, gfx::RectF(0, 0, 100, 100));
+
+  // Make sure that changing the viewport size doesn't grow another node.
+  compositor()->SetScaleAndSize(1.0, gfx::Size(50, 50), surface_id);
+  ASSERT_EQ(clip_tree.size(), 2UL);
+  ASSERT_EQ(clip_tree.Node(1)->clip, gfx::RectF(0, 0, 50, 50));
+}
 
 TEST_F(CompositorTestWithMockedTime, AnimationObserverBasic) {
   TestCompositorAnimationObserver test;
