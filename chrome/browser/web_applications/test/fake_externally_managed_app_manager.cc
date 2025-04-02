@@ -56,7 +56,6 @@ void FakeExternallyManagedAppManager::UninstallApps(
     std::vector<GURL> uninstall_urls,
     ExternalInstallSource install_source,
     const UninstallCallback& callback) {
-  std::ranges::copy(uninstall_urls, std::back_inserter(uninstall_requests_));
   if (handle_uninstall_request_callback_) {
     for (auto& app_url : uninstall_urls) {
       base::SequencedTaskRunner::GetCurrentDefault()

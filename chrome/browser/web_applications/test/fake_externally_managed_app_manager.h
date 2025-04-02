@@ -30,9 +30,6 @@ class FakeExternallyManagedAppManager : public ExternallyManagedAppManager {
   const std::vector<ExternalInstallOptions>& install_requests() const {
     return install_requests_;
   }
-  const std::vector<GURL>& uninstall_requests() const {
-    return uninstall_requests_;
-  }
 
   void SetDropRequestsForTesting(bool drop_requests_for_testing) {
     drop_requests_for_testing_ = drop_requests_for_testing;
@@ -58,7 +55,6 @@ class FakeExternallyManagedAppManager : public ExternallyManagedAppManager {
 
  private:
   std::vector<ExternalInstallOptions> install_requests_;
-  std::vector<GURL> uninstall_requests_;
   bool drop_requests_for_testing_ = false;
   HandleInstallRequestCallback handle_install_request_callback_;
   HandleUninstallRequestCallback handle_uninstall_request_callback_;

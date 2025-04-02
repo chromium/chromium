@@ -255,8 +255,10 @@ TEST_F(SystemWebAppManagerTest, UninstallAppInstalledInPreviousSession) {
 
   EXPECT_THAT(externally_managed_app_manager().install_requests(),
               ElementsAre(options));
-  EXPECT_THAT(externally_managed_app_manager().uninstall_requests(),
-              ElementsAre(AppUrl2()));
+  EXPECT_FALSE(provider()
+                   .registrar_unsafe()
+                   .LookUpAppIdByInstallUrl(AppUrl2())
+                   .has_value());
 }
 
 TEST_F(SystemWebAppManagerTest, AlwaysUpdate) {
