@@ -535,8 +535,11 @@
   <message name="IDS_EXTENSIONS_SIDEBAR_EXTENSIONS" desc="The text displayed in the sidebar to go to the extensions section of the page.">
     My extensions
   </message>
-  <message name="IDS_EXTENSIONS_SIDEBAR_DISCOVER_MORE" desc="The text displayed in the sidebar to open the Chrome Web Store to get more extensions.">
+  <message name="IDS_EXTENSIONS_SIDEBAR_DISCOVER_MORE" desc="The text displayed in the sidebar of the chrome://extensions page to open the Chrome Web Store to get more extensions.">
     Discover more extensions and themes on the <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt; <ex>&lt;/a&gt;</ex> </ph>
+  </message>
+  <message name="IDS_EXTENSIONS_WHATS_NEW_SIDEBAR_PROMO" desc="The text displayed in the sidebar of the chrome://extensions page to promote the extension documenation, for when the user is in developer mode.">
+    Developing extensions? Stay up to date on <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>What's New<ph name="END_LINK">&lt;/a&gt;</ph> with Chrome Extension developer documentation.
   </message>
   <message name="IDS_EXTENSIONS_SIDEBAR_KEYBOARD_SHORTCUTS" desc="The text for the link to manage keyboard shortcuts for extensions.">
     Keyboard shortcuts
