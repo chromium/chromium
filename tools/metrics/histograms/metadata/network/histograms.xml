@@ -5370,6 +5370,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.IpProtection.QuicProxiesFailed"
+    units="requests" expires_after="2025-08-24">
+  <owner>djmitche@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Recorded when a connection to a QUIC proxy for IP Protection failed and the
+    HTTPS fallback succeeds, recording the number of requests begun before this
+    failure occurred. In this situation, Chrome falls back to exclusively HTTPS
+    proxies until the network changes, so this metric provides a way to
+    determine what proportion of clients are experiencing this failure, and how
+    quickly they experience the failure. Note that the metric counts requests
+    *begun*, so this value may be greater than one even if the first request
+    fails. This metric is not recorded for clients not configured to use QUIC to
+    connect to IP Protection proxies.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.IpProtection.RequestIsEligibleForProtection"
     enum="IpProtectionEligibility" expires_after="2025-08-24">
   <owner>ashleynewson@chromium.org</owner>
