@@ -133,6 +133,7 @@ suite('AutofillAiSectionUiTest', function() {
         typeNameAsString: 'Car',
         addEntityTypeString: 'Add car',
         editEntityTypeString: 'Edit car',
+        deleteEntityTypeString: 'Delete car',
       },
       attributeInstances: [
         {
@@ -163,12 +164,14 @@ suite('AutofillAiSectionUiTest', function() {
         typeNameAsString: 'Passport',
         addEntityTypeString: 'Add passport',
         editEntityTypeString: 'Edit passport',
+        deleteEntityTypeString: 'Delete passport',
       },
       {
         typeName: 2,
         typeNameAsString: 'Car',
         addEntityTypeString: 'Add car',
         editEntityTypeString: 'Edit car',
+        deleteEntityTypeString: 'Delete car',
       },
     ];
     // Initially not sorted alphabetically. The production code should sort them

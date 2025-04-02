@@ -33,6 +33,17 @@
     Edit driver's license
   </message>
 
+  <!-- Delete entity strings -->
+  <message name="IDS_AUTOFILL_AI_DELETE_PASSPORT_ENTITY" desc="A title of a dialog within settings that allows a user to delete a passport. The user opened this dialog by choosing 'Delete' from the more options menu.">
+    Delete passport
+  </message>
+  <message name="IDS_AUTOFILL_AI_DELETE_VEHICLE_ENTITY" desc="A title of a dialog within settings that allows a user to delete a vehicle. The user opened this dialog by choosing 'Delete' from the more options menu.">
+    Delete vehicle
+  </message>
+  <message name="IDS_AUTOFILL_AI_DELETE_DRIVERS_LICENSE_ENTITY" desc="A title of a dialog within settings that allows a user to delete a driver's license. The user opened this dialog by choosing 'Delete' from the more options menu.">
+    Delete driver's license
+  </message>
+
   <!-- Attributes of the passport entity -->
   <message name="IDS_AUTOFILL_AI_PASSPORT_NAME_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “First and last name” and Delta might label it “Full name”. Once the information is saved with Autofill with AI, we just call the value “Name”.">
     Name
