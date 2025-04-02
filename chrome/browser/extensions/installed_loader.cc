@@ -1050,7 +1050,6 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
                               extension_user_count + extension_external_count);
   base::UmaHistogramCounts100("Extensions.LoadExtensionExternal",
                               extension_external_count);
-  base::UmaHistogramCounts100("Extensions.LoadUserScript", user_script_count);
   base::UmaHistogramCounts100("Extensions.LoadTheme", theme_count);
   // Histogram name different for legacy reasons.
   base::UmaHistogramCounts100("PageActionController.ExtensionsWithPageActions",
