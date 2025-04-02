@@ -40,6 +40,8 @@ class AICreateMonitor final
   DEFINE_ATTRIBUTE_EVENT_LISTENER(downloadprogress, kDownloadprogress)
 
  private:
+  bool dispatched_start_ = false;
+  bool dispatched_end_ = false;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoReceiver<mojom::blink::ModelDownloadProgressObserver, AICreateMonitor>
       receiver_;
