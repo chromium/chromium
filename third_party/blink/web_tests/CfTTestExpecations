@@ -6,3 +6,7 @@
 # the Chromium Blink CfT bots.
 
 crbug.com/380778943 external/wpt/ai/translator/* [ Skip ]
+
+# These tests require the component updater and thus do not run on CfT bots.
+external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Skip Timeout ]
+virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Skip Timeout ]
