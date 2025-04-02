@@ -1015,6 +1015,7 @@
 <translation id="2742870351467570537">Κατάργηση επιλεγμένων στοιχείων</translation>
 <translation id="2743512410823092182">Πόροι και εξοπλισμός DJ</translation>
 <translation id="2743934314332613923">Ενημέρωση πληροφοριών διπλώματος οδήγησης;</translation>
+<translation id="2759299890026163685">Βεβαιωθείτε ότι έχετε σταθερή σύνδεση στο διαδίκτυο, προτού δοκιμάσετε ξανά</translation>
 <translation id="2759825833388495838">συμπληρώστε τον κωδικό πρόσβασης στην εφαρμογή <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Κόμικ</translation>
 <translation id="2765217105034171413">Μικρό</translation>
@@ -1279,6 +1280,7 @@
 <translation id="323107829343500871">Εισαγάγετε τον κωδικό CVC για την πιστωτική κάρτα <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Να εντοπίζεται πάντα σημαντικό περιεχόμενο σε αυτόν τον ιστότοπο</translation>
 <translation id="323585066388831737">Ανοιχτό κόκκινο</translation>
+<translation id="3235902901585019063">Τα τοπικά αρχεία θα διαγραφούν στις <ph name="DATE_TIME" />. Βεβαιωθείτε ότι τυχόν σημαντικά επιχειρηματικά ή προσωπικά δεδομένα αποθηκεύονται εξωτερικά.</translation>
 <translation id="3236212803136366317">Οφέλη κάρτας</translation>
 <translation id="3238395604961564389">Άνοιγμα συνδέσμου σε παράθυρο για ανώνυμη περιήγηση</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να προσαρμόσετε την εμφάνιση του προγράμματος περιήγησης</translation>
@@ -1757,6 +1759,7 @@
 <translation id="4031179711345676612">Επιτρέπεται το μικρόφωνο</translation>
 <translation id="4036753017940930924">Οικόπεδα και γη</translation>
 <translation id="4039506337798853114">Για να εμφανιστεί ο δείκτης, πατήστε |<ph name="ACCELERATOR" />|</translation>
+<translation id="4045226534284799755">Συνδεθείτε στον λογαριασμό σας Microsoft, προτού δοκιμάσετε ξανά</translation>
 <translation id="4045441967987592849">Εκ νέου άνοιγμα</translation>
 <translation id="4047351652147966654">18 x 24 ίντσες</translation>
 <translation id="404831776305217138">Το URL ενημέρωσης για την επέκταση με αναγνωριστικό "<ph name="EXTENSION_ID" />" δεν είναι έγκυρο ή χρησιμοποιεί μη υποστηριζόμενο σχήμα. Τα υποστηριζόμενα σχήματα είναι: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> και <ph name="FILE_SCHEME" />.</translation>
@@ -1777,6 +1780,7 @@
 <translation id="4073797364926776829">Προβολή κάρτας</translation>
 <translation id="4075732493274867456">Η εφαρμογή πελάτης και ο διακομιστής δεν υποστηρίζουν κάποια κοινή έκδοση πρωτοκόλλου SSL ή σουίτα κρυπτογράφησης.</translation>
 <translation id="4079302484614802869">Η διαμόρφωση του διακομιστή μεσολάβησης είναι ορισμένη να χρησιμοποιεί μια διεύθυνση URL σεναρίου .pac και όχι σταθερούς διακομιστές μεσολάβησης.</translation>
+<translation id="4080855220442581440">κύλιση και εστίαση σε κοινόχρηστες καρτέλες</translation>
 <translation id="4082333119419111506">Χαρτί (Προ-εκτυπωμένο)</translation>
 <translation id="4082393374666368382">Ρυθμίσεις - Διαχείριση</translation>
 <translation id="4084219288110917128">Φάκελος C1</translation>
@@ -2210,6 +2214,7 @@
 <translation id="4834250788637067901">Τρόποι πληρωμής, προσφορές και διευθύνσεις μέσω Google Pay</translation>
 <translation id="4840250757394056958">Προβολή του ιστορικού Chrome</translation>
 <translation id="484462545196658690">Αυτόματα</translation>
+<translation id="4844937814014739139">Κύλιση και εστίαση σε κοινόχρηστες καρτέλες</translation>
 <translation id="484671803914931257">Λάβετε έκπτωση στο κατάστημα <ph name="MERCHANT_NAME" /> και περισσότερα</translation>
 <translation id="484988093836683706">Χρήση λειτουργίας ξεκλειδώματος συσκευής</translation>
 <translation id="4850886885716139402">Προβολή</translation>
@@ -2504,6 +2509,7 @@
 <translation id="5344522958567249764">Διαχείριση απορρήτου διαφημίσεων</translation>
 <translation id="5344579389779391559">Αυτή η σελίδα μπορεί να προσπαθήσει να σας χρεώσει</translation>
 <translation id="5345249337934847112">Χαρτί (Βαρύ με επίστρωση)</translation>
+<translation id="5348330584842140856">Αυτό το αρχείο δεν μετακινήθηκε, επειδή δεν υπάρχει πλέον</translation>
 <translation id="5349543692327946794">Ετικέτες (Inkjet)</translation>
 <translation id="5351548097010183514">Οικοδομικά υλικά και προμήθειες</translation>
 <translation id="5354143049423063163">Κεφάλαια αντιστάθμισης κινδύνου</translation>
@@ -2768,6 +2774,7 @@
 <translation id="5826507051599432481">Κοινό όνομα (CN)</translation>
 <translation id="5830698870816298009">χρήση και μετακίνηση κάμερας</translation>
 <translation id="583281660410589416">Άγνωστο</translation>
+<translation id="5837220895135257862">Ελευθερώστε χώρο στο <ph name="CLOUD_PROVIDER" />, προτού δοκιμάσετε ξανά</translation>
 <translation id="5838278095973806738">Δεν θα πρέπει να εισαγάγετε ευαίσθητες πληροφορίες σε αυτόν τον ιστότοπο (για παράδειγμα, κωδικούς πρόσβασης ή πιστωτικές κάρτες), επειδή ενδέχεται να υποκλαπούν από εισβολείς.</translation>
 <translation id="5838732667866024867">Μπορείτε να χρησιμοποιήσετε το αριστερό/δεξί βέλος για να δείτε στο γράφημα τις αλλαγές στις τιμές</translation>
 <translation id="5840318881868981258">Στον Λογαριασμό σας Google, <ph name="ACCOUNT" /></translation>
@@ -4029,6 +4036,7 @@
 <translation id="799149739215780103">Δέσιμο</translation>
 <translation id="7992044431894087211">Έγινε συνέχιση της κοινής χρήσης οθόνης με την εφαρμογή <ph name="APPLICATION_TITLE" />.</translation>
 <translation id="7995512525968007366">Δεν καθορίστηκε</translation>
+<translation id="7997855386298213183">κοινόχρηστες καρτέλες</translation>
 <translation id="800218591365569300">Δοκιμάστε να κλείσετε τις άλλες καρτέλες ή τα άλλα προγράμματα για να απελευθερώσετε μνήμη.</translation>
 <translation id="8002230960325005199">Δείτε σχετικούς ιστοτόπους σε νέα καρτέλα</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>

@@ -713,7 +713,7 @@
           Wenn du dein eigenes Hintergrundbild erstellst, wird dein Prompt an Google-Server gesendet, um Bilder zu erstellen und das Produkt gemäß den <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Nutzungsbedingungen und der Datenschutzerklärung von Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> zu verbessern. Gib keine persönlichen, sensiblen oder vertraulichen Informationen an.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Generative KI kann Fehler machen, auch bei Informationen über Personen – überprüfe daher die Antworten. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Weitere Informationen<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
+          Generative KI kann Fehler machen, auch bei Informationen über Personen. Prüfe die Antworten daher sorgfältig. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Weitere Informationen<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">HTTP-Latenz</translation>
 <translation id="4266143281602681663">Garn</translation>
 <translation id="4269815121975886860">Starteinstellungen</translation>

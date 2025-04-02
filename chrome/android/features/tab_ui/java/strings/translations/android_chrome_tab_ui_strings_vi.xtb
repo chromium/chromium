@@ -19,6 +19,7 @@ Nếu bạn xoá, mọi người sẽ lập tức mất quyền truy cập vào 
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Tạo <ph name="NUM_MINS_ONE" /> phút trước}other{Tạo <ph name="NUM_MINS_MANY" /> phút trước}}</translation>
 <translation id="1499635324672558517">Đóng tất cả thẻ ẩn danh?</translation>
 <translation id="1501480321619201731">Xóa nhóm</translation>
+<translation id="1505526451013346974">Thêm vào <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1555130319947370107">Xanh lam</translation>
 <translation id="161042844686301425">Lục lam</translation>
 <translation id="1645759014353344461">Đã nhóm <ph name="TABS_COUNT_MANY" /> thẻ</translation>

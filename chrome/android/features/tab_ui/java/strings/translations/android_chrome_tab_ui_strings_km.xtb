@@ -19,6 +19,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{បានបង្កើត <ph name="NUM_MINS_ONE" /> នាទីមុន}other{បានបង្កើត <ph name="NUM_MINS_MANY" /> នាទីមុន}}</translation>
 <translation id="1499635324672558517">បិទ​ផ្ទាំងឯកជន​ទាំងអស់ឬ?</translation>
 <translation id="1501480321619201731">លុបក្រុម</translation>
+<translation id="1505526451013346974">បញ្ចូល​ទៅក្នុង <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1555130319947370107">ខៀវ</translation>
 <translation id="161042844686301425">បៃតងខ្ចី</translation>
 <translation id="1645759014353344461">បានដាក់ <ph name="TABS_COUNT_MANY" /> ផ្ទាំងជាក្រុម</translation>

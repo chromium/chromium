@@ -61,6 +61,7 @@
 <translation id="1786044937610313874">Товчлолууд Chrome-д нээгддэг</translation>
 <translation id="178701303897325119">Энэ өргөтгөлийг дэмжихээ больсон. Chrome танд оронд нь үүнийг хасахыг зөвлөж байна.</translation>
 <translation id="1812689907177901597">Үүнийг унтрааснаар та Gmail зэрэг Google-н сайтуудад Chrome-д нэвтрэлгүйгээр нэвтэрч болно</translation>
+<translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome таны хөтчийг удаашруулж буй табыг түр зогсоохыг зөвлөж байна}other{Chrome таны хөтчийг удаашруулж буй табуудыг түр зогсоохыг зөвлөж байна}}</translation>
 <translation id="1838374766361614909">Хайлтыг арилгах</translation>
 <translation id="1860536484129686729">Энэ сайтыг ашиглахын тулд Chrome-д зөвшөөрөл шаардлагатай</translation>
 <translation id="1873233029667955273">Google Chrome таны өгөгдмөл хөтөч биш юм</translation>
@@ -258,6 +259,7 @@
 <translation id="4281844954008187215">Үйлчилгээний нөхцөл</translation>
 <translation id="4293420128516039005">Төхөөрөмжүүддээ Chrome-г синк хийж, хувийн болгохын тулд нэвтрэх</translation>
 <translation id="430327780270213103">Өргөтгөлд Chrome-н самбарт хандах хүсэлт харуулахыг зөвшөөрнө үү</translation>
+<translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome таны хөтчийг удаашруулж буй табыг түр зогсоохыг зөвлөж байна}other{Chrome таны хөтчийг удаашруулж буй табуудыг түр зогсоохыг зөвлөж байна}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Хувийн болгох болон бусад онцлогийг авахын тулд Chrome-г Веб, аппын үйл ажиллагаа болон Google-н холбосон үйлчилгээнүүдэд оруулна уу</translation>
 <translation id="4334294535648607276">Татаж дууслаа.</translation>

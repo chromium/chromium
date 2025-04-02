@@ -19,6 +19,7 @@ Se o eliminar, todas as pessoas vão perder imediatamente o acesso ao grupo de s
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Criado há <ph name="NUM_MINS_ONE" /> minuto}other{Criado há <ph name="NUM_MINS_MANY" /> minutos}}</translation>
 <translation id="1499635324672558517">Fechar todos os separadores anónimos?</translation>
 <translation id="1501480321619201731">Eliminar grupo</translation>
+<translation id="1505526451013346974">Adicionar a <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="161042844686301425">Turquesa</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> separadores agrupados</translation>

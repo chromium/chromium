@@ -112,6 +112,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1306549533752902673">ỨNG DỤNG ĐỀ XUẤT</translation>
 <translation id="1310396869741602366">Thay đổi giọng điệu</translation>
 <translation id="1312604459020188865">Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">Ô điều khiển cạnh trên đã chọn, dùng phím mũi tên để di chuyển</translation>
 <translation id="1316069254387866896">Luôn hiển thị kệ</translation>
 <translation id="132346741904777634">Máy ảnh được chuyển đến góc trên bên trái Xung đột với khu vực hệ thống.</translation>
 <translation id="132415371743256095">Đóng <ph name="DESK_NAME" /> và các cửa sổ</translation>
@@ -186,6 +187,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1557622599341396706">Hiện tên không gian làm việc</translation>
 <translation id="1569384531973824928">Nếu bạn bật, tất cả ứng dụng và trang web có quyền truy cập máy ảnh và micrô sẽ có thể sử dụng máy ảnh và micrô. Bạn có thể cần làm mới trang web hoặc khởi động lại ứng dụng.</translation>
 <translation id="1571697193564730395">Bật/tắt chế độ Không làm phiền. <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">Ô điều khiển cạnh trái đã chọn, dùng phím mũi tên để di chuyển</translation>
 <translation id="1576623706766186887">Thu nhỏ khi kính lúp đang bật</translation>
 <translation id="1582946770779745370">Hiện bạn đã có thể sử dụng Trang tổng quan trò chơi. Nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape rồi nhấn <ph name="LAUNCHER_KEY_NAME" /> + g bất cứ lúc nào để mở</translation>
 <translation id="1586324912145647027">Chuyển đến không gian làm việc từ 1 đến 8</translation>
@@ -608,6 +610,7 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="304097922505898963">Mở ứng dụng Phím tắt</translation>
 <translation id="304417730895741346">Các ứng dụng bạn đang mở và đã ghim sẽ xuất hiện trên kệ. Để ghim một ứng dụng vào kệ, nhấp chuột phải vào ứng dụng đó hoặc dùng hai ngón tay nhấn lên bàn di chuột.</translation>
 <translation id="3045488863354895414">Xin chào!</translation>
+<translation id="3045670165536837541">Ô điều khiển trên cùng bên phải đã chọn, dùng phím mũi tên để di chuyển</translation>
 <translation id="3047761520276763270">Thử nói:</translation>
 <translation id="3053407068093039599">Bật/tắt quyền truy cập camera</translation>
 <translation id="3055162170959710888">Bạn đã dùng thiết bị này trong <ph name="USED_TIME" /> hôm nay</translation>
@@ -1763,6 +1766,7 @@ Mới cài đặt</translation>
 <translation id="6696025732084565524">Bàn phím có thể tháo rời của bạn cần một bản cập nhật quan trọng</translation>
 <translation id="6697913454192220372">Thêm không gian làm việc mới</translation>
 <translation id="6700713906295497288">Nút menu IME</translation>
+<translation id="6704073473590541209">Ô điều khiển cạnh phải đã chọn, dùng phím mũi tên để di chuyển</translation>
 <translation id="6706742084323792866">Bàn phím để nhập mã PIN</translation>
 <translation id="6710213216561001401">Trước</translation>
 <translation id="6723839937902243910">Nguồn</translation>
@@ -1786,6 +1790,7 @@ Mới cài đặt</translation>
 <translation id="6781002679438061620">Không gian làm việc 9</translation>
 <translation id="6782182743534150858">Không gian làm việc 13</translation>
 <translation id="6782919488259222803">Tìm kiếm trên trang hiện tại</translation>
+<translation id="6783348167101855071">Ô điều khiển dưới cùng bên phải đã chọn, dùng phím mũi tên để di chuyển</translation>
 <translation id="6786750046913594791">Đóng thư mục</translation>
 <translation id="6790428901817661496">Phát</translation>
 <translation id="6792262051831399889">Không có</translation>
@@ -1941,6 +1946,7 @@ Mới cài đặt</translation>
 <translation id="7371404428569700291">Ghi hình nội dung của cửa sổ</translation>
 <translation id="7372069265635026568">Còn trống <ph name="AVAILABLE_MEMORY" /> trong tổng <ph name="TOTAL_MEMORY" /> bộ nhớ</translation>
 <translation id="737315737514430195">Điều này cho phép sử dụng micrô đối với tất cả ứng dụng và trang web có quyền truy cập micrô</translation>
+<translation id="7376933029363911338">Ô điều khiển cạnh dưới đã chọn, dùng phím mũi tên để di chuyển</translation>
 <translation id="7377169924702866686">Caps Lock đang bật.</translation>
 <translation id="7377481913241237033">Kết nối bằng mã</translation>
 <translation id="7378203170292176219">Kéo để chọn một vùng sẽ quay</translation>
@@ -2037,6 +2043,7 @@ Mới cài đặt</translation>
 <translation id="7658239707568436148">Huỷ</translation>
 <translation id="7659861092419699379">Đã đóng không gian làm việc và cửa sổ</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> của bạn sẽ xuất hiện trên các thiết bị liên kết với <ph name="EMAIL" /></translation>
+<translation id="7661694115779363471">Ô điều khiển dưới cùng bên trái đã chọn, dùng phím mũi tên để di chuyển</translation>
 <translation id="7662283695561029522">Nhấn để định cấu hình</translation>
 <translation id="7670953955701272011">Mở ngày này trong Lịch Google</translation>
 <translation id="7671610481353807627">Ứng dụng được sắp xếp theo màu sắc</translation>
@@ -2205,6 +2212,7 @@ Mới cài đặt</translation>
 <translation id="8155628902202578800">Mở hộp thoại thông tin cho <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Đang dùng <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Nội dung</translation>
+<translation id="8172370561760918656">Ô điều khiển trên cùng bên trái đã chọn, dùng phím mũi tên để di chuyển</translation>
 <translation id="81817143961839203">Không chèn được hình ảnh</translation>
 <translation id="8185090165691050712">Bật/tắt trình đơn thay đổi kích thước chế độ khoá</translation>
 <translation id="8192727139462702395">Khi bạn tắt Bluetooth, các thiết bị bên ngoài sau đây sẽ ngắt kết nối khỏi <ph name="DEVICE_TYPE" />:</translation>
