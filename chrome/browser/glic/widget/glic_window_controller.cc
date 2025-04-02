@@ -1004,6 +1004,11 @@ void GlicWindowController::EnableDragResize(bool enabled) {
     return;
   }
 
+  if (base::FeatureList::IsEnabled(features::kGlicZOrderChanges)) {
+    GetGlicWidget()->SetZOrderLevel(enabled ? ui::ZOrderLevel::kNormal
+                                            : ui::ZOrderLevel::kFloatingWindow);
+  }
+
   if (base::FeatureList::IsEnabled(features::kGlicUserResize)) {
     GetGlicWidget()->widget_delegate()->SetCanResize(enabled);
     GetGlicView()->UpdateBackgroundColor();

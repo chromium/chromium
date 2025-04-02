@@ -5049,6 +5049,14 @@
     "expiry_milestone": 137
   },
   {
+    "name": "glic-z-order-changes",
+    "owners": [
+      "andreaxg@google.com",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 137
+  },
+  {
     "name": "glic-zero-state-suggestions",
     "owners": [
       "zekunjiang@google.com",

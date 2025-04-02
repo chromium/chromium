@@ -8038,6 +8038,9 @@ const char kOidcAuthProfileManagementDescription[] =
 const char kGlicName[] = "Glic";
 const char kGlicDescription[] = "Enables glic";
 
+const char kGlicZOrderChangesName[] = "Glic Z Order Changes";
+const char kGlicZOrderChangesDescription[] = "Enables glic z order changing";
+
 const char kGlicUserResizeName[] = "Glic User Resize";
 const char kGlicUserResizeDescription[] =
     "Enables resizing the glic panel by dragging";

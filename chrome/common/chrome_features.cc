@@ -311,6 +311,12 @@ BASE_FEATURE(kGlicActor, "GlicActor", base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls whether the Glic feature is always detached.
 BASE_FEATURE(kGlicDetached, "GlicDetached", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether the Glic feature's z order changes based on the webclient
+// mode.
+BASE_FEATURE(kGlicZOrderChanges,
+             "GlicZOrderChanges",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether to sync @google.com account cookies. This is only for development and
 // testing.
 BASE_FEATURE(kGlicDevelopmentSyncGoogleCookies,
