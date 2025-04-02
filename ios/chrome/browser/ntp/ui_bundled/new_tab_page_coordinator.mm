@@ -600,6 +600,10 @@
   [self presentLensIconBubbleNow];
 }
 
+- (BOOL)isFeedVisible {
+  return [self shouldFeedBeVisible] && self.feedViewController;
+}
+
 #pragma mark - Setters
 
 - (void)setSelectedFeed:(FeedType)selectedFeed {
@@ -1694,11 +1698,6 @@
   [self.NTPViewController layoutContentInParentCollectionView];
 
   [self updateFeedLayout];
-}
-
-// Returns `YES` if the feed is currently visible on the NTP.
-- (BOOL)isFeedVisible {
-  return [self shouldFeedBeVisible] && self.feedViewController;
 }
 
 // Creates, configures and returns a feed view controller configuration.
