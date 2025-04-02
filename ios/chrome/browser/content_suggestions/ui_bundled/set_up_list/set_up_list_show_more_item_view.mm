@@ -124,8 +124,9 @@ NSAttributedString* Strikethrough(NSString* text) {
     UIButton* tryButton = [[UIButton alloc] init];
     tryButton.backgroundColor =
         [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-    tryButton.titleLabel.font =
-        CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
+    tryButton.titleLabel.font = PreferredFontForTextStyle(
+        UIFontTextStyleSubheadline, UIFontWeightSemibold);
+    tryButton.titleLabel.adjustsFontForContentSizeCategory = YES;
     NSString* tryButtonTitle =
         l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TRY_BUTTON_TEXT);
     [tryButton setTitle:tryButtonTitle forState:UIControlStateNormal];
@@ -161,8 +162,11 @@ NSAttributedString* Strikethrough(NSString* text) {
   CrossfadeLabel* label = [[CrossfadeLabel alloc] init];
   label.text = [self titleText];
   label.accessibilityIdentifier = set_up_list::kAccessibilityID;
-  label.font =
-      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
+  label.font = PreferredFontForTextStyle(UIFontTextStyleSubheadline,
+                                         UIFontWeightSemibold);
+  label.adjustsFontForContentSizeCategory = YES;
+  label.numberOfLines = 3;
+  label.lineBreakMode = NSLineBreakByWordWrapping;
   if (_data.complete) {
     label.textColor = [UIColor colorNamed:kTextQuaternaryColor];
     label.attributedText = Strikethrough(label.text);
@@ -212,7 +216,8 @@ NSAttributedString* Strikethrough(NSString* text) {
   label.numberOfLines = 0;
   label.lineBreakMode = NSLineBreakByWordWrapping;
   //  label.translatesAutoresizingMaskIntoConstraints = NO;
-  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  label.font = PreferredFontForTextStyle(UIFontTextStyleFootnote);
+  label.adjustsFontForContentSizeCategory = YES;
   if (_data.complete) {
     label.textColor = [UIColor colorNamed:kTextQuaternaryColor];
     label.attributedText = Strikethrough(label.text);
