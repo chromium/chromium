@@ -476,9 +476,10 @@ crbug.com/402429382 [ win11 amd-0x7480 ] Pixel_ReflectedDiv [ Failure ]
 crbug.com/404887521 [ android android-chromium android-nexus-5x ] Pixel_OffscreenCanvasAccelerated2D [ Failure ]
 crbug.com/404887521 [ android android-chromium android-nexus-5x ] Pixel_OffscreenCanvasAccelerated2DWorker [ RetryOnFailure ]
 
-# Failures on Mac Intel and win10 Nvidia
+# Failures on all Mac (except ARM) and Windows bots running these tests
 crbug.com/370694819 [ mac intel ] Pixel_WebGPUDestroyed_TransferToOffscreenCanvas* [ Failure ]
-crbug.com/370694819 [ win10 nvidia ] Pixel_WebGPUDestroyed_TransferToOffscreenCanvas* [ Failure ]
+crbug.com/370694819 [ mac amd ] Pixel_WebGPUDestroyed_TransferToOffscreenCanvas* [ Failure ]
+crbug.com/370694819 [ win ] Pixel_WebGPUDestroyed_TransferToOffscreenCanvas* [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
