@@ -43,20 +43,22 @@ public class DataSharingServiceFactoryTest {
     @Test
     @MediumTest
     public void testSettingTestFactory() throws TimeoutException {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    DataSharingService testService = new TestDataSharingService();
-                    DataSharingServiceFactory.setForTesting(testService);
-                });
+        DataSharingService testService = new TestDataSharingService();
+
+        DataSharingServiceFactory.setForTesting(testService);
         LibraryLoader.getInstance().ensureInitialized();
         mActivityTestRule.startMainActivityOnBlankPage();
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    DataSharingService dataSharingService =
-                            DataSharingServiceFactory.getForProfile(
-                                    ProfileManager.getLastUsedRegularProfile());
-                    Assert.assertTrue(dataSharingService.isEmptyService());
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        DataSharingService dataSharingService =
+                                DataSharingServiceFactory.getForProfile(
+                                        ProfileManager.getLastUsedRegularProfile());
+                        Assert.assertTrue(dataSharingService.isEmptyService());
+                        Assert.assertEquals(dataSharingService, testService);
+                    }
                 });
     }
 

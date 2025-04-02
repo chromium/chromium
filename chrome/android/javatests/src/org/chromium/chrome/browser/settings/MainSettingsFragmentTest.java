@@ -158,7 +158,6 @@ import java.util.stream.Stream;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
 @DoNotBatch(reason = "Tests cannot run batched because they launch a Settings activity.")
-@DisableFeatures(ChromeFeatureList.DATA_SHARING)
 public class MainSettingsFragmentTest {
     private static final String SEARCH_ENGINE_SHORT_NAME = "Google";
 
