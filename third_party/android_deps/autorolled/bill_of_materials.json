@@ -1647,12 +1647,12 @@
     {
         "name": "kotlinx-serialization-bom",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.7.2"
+        "version": "1.7.3"
     },
     {
         "name": "kotlinx-serialization-core",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.6.3"
+        "version": "1.7.3"
     },
     {
         "name": "kotlinx-serialization-core-jvm",
