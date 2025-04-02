@@ -1,16 +1,6 @@
-# Copyright (C) 2022 The Android Open Source Project
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 
 # A collection of utilities for extracting build rule information from GN
 # projects.
@@ -66,16 +56,16 @@ def _get_build_path_from_label(target_name: str) -> str:
   return target_name[2:].split(":")[0]
 
 
-def _clean_string(str):
-  return str.replace('\\', '').replace('../../', '').replace('"', '').strip()
+def _clean_string(string):
+  return string.replace('\\', '').replace('../../', '').replace('"', '').strip()
 
 
 def _clean_aidl_import(orig_str):
-  str = _clean_string(orig_str)
-  src_idx = str.find("src/")
+  new_str = _clean_string(orig_str)
+  src_idx = new_str.find("src/")
   if src_idx == -1:
     raise ValueError(f"Unable to clean aidl import {orig_str}")
-  return str[:src_idx + len("src")]
+  return new_str[:src_idx + len("src")]
 
 
 def _extract_includes_from_aidl_args(args):
@@ -99,7 +89,7 @@ def _extract_includes_from_aidl_args(args):
 
 
 def contains_aidl(sources):
-  return any([src.endswith(".aidl") for src in sources])
+  return any(src.endswith(".aidl") for src in sources)
 
 
 def _get_jni_registration_deps(gn_target_name, gn_desc):
@@ -136,7 +126,7 @@ def _remove_out_prefix(label):
   return re.sub('^//out/.+?/(gen|obj)/', '', label)
 
 
-class GnParser(object):
+class GnParser:
   """A parser with some cleverness for GN json desc files
 
     The main goals of this parser are:
@@ -153,7 +143,7 @@ class GnParser(object):
        being used.
     """
 
-  class Target(object):
+  class Target:
     """Reperesents A GN target.
 
         Maked properties are propagated up the dependency chain when a
@@ -180,7 +170,7 @@ class GnParser(object):
         self.response_file_contents = ''
         self.rust_flags = list()
 
-    def __init__(self, name, type):
+    def __init__(self, name, gn_type):
       self.name = name  # e.g. //src/ipc:ipc
 
       VALID_TYPES = ('static_library', 'shared_library', 'executable', 'group',
@@ -188,9 +178,9 @@ class GnParser(object):
                      'action_foreach', 'generated_file', "rust_library",
                      "rust_proc_macro")
       assert (
-          type
-          in VALID_TYPES), f"Unable to parse target {name} with type {type}."
-      self.type = type
+          gn_type
+          in VALID_TYPES), f"Unable to parse target {name} with type {gn_type}."
+      self.type = gn_type
       self.testonly = False
       self.toolchain = None
 
@@ -203,7 +193,7 @@ class GnParser(object):
       # bubbled-up sources.
       self.public_headers = set()  # 'public'
 
-      # These are valid only for type == 'action'
+      # These are valid only for gn_type == 'action'
       self.script = ''
 
       # These variables are propagated up when encountering a dependency
@@ -224,7 +214,7 @@ class GnParser(object):
       # Local Includes used for AIDL
       self.local_aidl_includes = set()
       # Each java_target will contain the transitive java sources found
-      # in generate_jni type target.
+      # in generate_jni gn_type target.
       self.transitive_jni_java_sources = set()
       # Deps for JNI Registration. Those are not added to deps so that
       # the generated module would not depend on those deps.
@@ -323,7 +313,7 @@ class GnParser(object):
       return 'host' in self.arch
 
     def device_supported(self):
-      return any([name.startswith('android') for name in self.arch.keys()])
+      return any(name.startswith('android') for name in self.arch)
 
     def is_linker_unit_type(self):
       return self.type in LINKER_UNIT_TYPES
@@ -371,8 +361,8 @@ class GnParser(object):
     def _finalize_non_set_attribute(self, key):
       # Only when all the arch has the same non empty value, move the value to the target common
       val = getattr(list(self.get_archs().values())[0], key)
-      if val and all(
-          [val == getattr(arch, key) for arch in self.get_archs().values()]):
+      if val and all(val == getattr(arch, key)
+                     for arch in self.get_archs().values()):
         setattr(self, key, copy.deepcopy(val))
 
     def _finalize_attribute(self, key):
@@ -427,16 +417,15 @@ class GnParser(object):
   def _get_arch(self, toolchain):
     if toolchain == '//build/toolchain/android:android_clang_x86':
       return 'android_x86', 'x86'
-    elif toolchain == '//build/toolchain/android:android_clang_x64':
+    if toolchain == '//build/toolchain/android:android_clang_x64':
       return 'android_x86_64', 'x64'
-    elif toolchain == '//build/toolchain/android:android_clang_arm':
+    if toolchain == '//build/toolchain/android:android_clang_arm':
       return 'android_arm', 'arm'
-    elif toolchain == '//build/toolchain/android:android_clang_arm64':
+    if toolchain == '//build/toolchain/android:android_clang_arm64':
       return 'android_arm64', 'arm64'
-    elif toolchain == '//build/toolchain/android:android_clang_riscv64':
+    if toolchain == '//build/toolchain/android:android_clang_riscv64':
       return 'android_riscv64', 'riscv64'
-    else:
-      return 'host', 'host'
+    return 'host', 'host'
 
   def get_target(self, gn_target_name):
     """Returns a Target object from the fully qualified GN target name.
