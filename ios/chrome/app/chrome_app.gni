@@ -160,9 +160,9 @@ template("chrome_app") {
     ios_app_bundle(_target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+      deps += [ "//ios/chrome/app:app_trampoline" ]
       if (ios_partition_alloc_enabled) {
         frameworks = [ "EarlyMallocZoneRegistration.framework" ]
-        deps += [ "//ios/chrome/app:app_trampoline" ]
         bundle_deps +=
             [ "//ios/chrome/app:early_partition_alloc_framework+bundle" ]
       }
