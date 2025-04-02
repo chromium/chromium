@@ -4,9 +4,9 @@
 
 #include "components/autofill/core/browser/ui/autofill_image_fetcher.h"
 
-#include "components/autofill/core/browser/data_model/payments/credit_card_art_image.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
+#include "components/autofill/core/browser/ui/autofill_image.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -62,8 +62,8 @@ AutofillImageFetcher::~AutofillImageFetcher() = default;
 void AutofillImageFetcher::FetchImagesForURLs(
     base::span<const GURL> image_urls,
     base::span<const AutofillImageFetcherBase::ImageSize> image_sizes_unused,
-    base::OnceCallback<void(
-        const std::vector<std::unique_ptr<CreditCardArtImage>>&)> callback) {
+    base::OnceCallback<void(const std::vector<std::unique_ptr<AutofillImage>>&)>
+        callback) {
   if (!GetImageFetcher()) {
     std::move(callback).Run({});
     return;
@@ -72,7 +72,7 @@ void AutofillImageFetcher::FetchImagesForURLs(
   // Construct a BarrierCallback and so that the inner `callback` is invoked
   // only when all the images are fetched.
   const auto barrier_callback =
-      base::BarrierCallback<std::unique_ptr<CreditCardArtImage>>(
+      base::BarrierCallback<std::unique_ptr<AutofillImage>>(
           image_urls.size(), std::move(callback));
 
   for (const auto& image_url : image_urls) {
@@ -110,8 +110,7 @@ gfx::Image AutofillImageFetcher::ResolveCardArtImage(
 AutofillImageFetcher::AutofillImageFetcher() = default;
 
 void AutofillImageFetcher::OnCardArtImageFetched(
-    base::OnceCallback<void(std::unique_ptr<CreditCardArtImage>)>
-        barrier_callback,
+    base::OnceCallback<void(std::unique_ptr<AutofillImage>)> barrier_callback,
     const GURL& card_art_url,
     const std::optional<base::TimeTicks>& fetch_image_request_timestamp,
     const gfx::Image& card_art_image,
@@ -122,7 +121,7 @@ void AutofillImageFetcher::OnCardArtImageFetched(
   gfx::Image resolved_image = ResolveCardArtImage(card_art_url, card_art_image);
 
   std::move(barrier_callback)
-      .Run(std::make_unique<CreditCardArtImage>(card_art_url, resolved_image));
+      .Run(std::make_unique<AutofillImage>(card_art_url, resolved_image));
 
   // Log metrics on card fetch success/failure. We only log metrics on either
   // the first attempt to fetch a given URL (whether it succeeded or failed) or
@@ -139,8 +138,7 @@ void AutofillImageFetcher::OnCardArtImageFetched(
 }
 
 void AutofillImageFetcher::FetchImageForURL(
-    base::OnceCallback<void(std::unique_ptr<CreditCardArtImage>)>
-        barrier_callback,
+    base::OnceCallback<void(std::unique_ptr<AutofillImage>)> barrier_callback,
     const GURL& card_art_url) {
   CHECK(card_art_url.is_valid());
 
