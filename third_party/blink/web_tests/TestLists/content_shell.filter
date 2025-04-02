@@ -603,7 +603,6 @@ external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elemen
 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-align.html
 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-sans-fieldset-display.html
 external/wpt/html/rendering/pixel-length-attributes.html
-external/wpt/html/rendering/replaced-elements/attributes-for-embedded-content-and-images/input-image-inline-alt.html
 external/wpt/html/rendering/widgets/baseline-alignment-and-overflow.tentative.html
 external/wpt/html/rendering/widgets/input-time-content-size.html
 external/wpt/html/rendering/widgets/textarea-scrollbar-sizing-*
