@@ -213,8 +213,11 @@ bool IconLabelBubbleView::ShouldShowLabel() const {
   return label()->GetVisible() && !label()->GetText().empty();
 }
 
-void IconLabelBubbleView::Layout(PassKey) {
-  ink_drop_container()->SetBoundsRect(GetLocalBounds());
+views::ProposedLayout IconLabelBubbleView::CalculateProposedLayout(
+    const views::SizeBounds& size_bounds) const {
+  views::ProposedLayout layout;
+  layout.child_layouts.emplace_back(ink_drop_container(), true,
+                                    GetLocalBounds());
 
   // We may not have horizontal room for both the image and the trailing
   // padding. When the view is expanding (or showing-label steady state), the
@@ -230,37 +233,46 @@ void IconLabelBubbleView::Layout(PassKey) {
       bubble_trailing_padding -= space_shortage;
     }
   }
-  image_container_view()->SetBounds(GetInsets().left(), 0, image_width,
-                                    height());
+  gfx::Rect image_bounds(GetInsets().left(), 0, image_width, height());
+  layout.child_layouts.emplace_back(
+      const_cast<views::View*>(this->image_container_view()), true,
+      image_bounds);
 
   // Compute the label bounds. The label gets whatever size is left over after
   // accounting for the preferred image width and padding amounts. Note that if
   // the label has zero size it doesn't actually matter what we compute its X
   // value to be, since it won't be visible.
-  const int label_x =
-      image_container_view()->bounds().right() + GetInternalSpacing();
-  int label_width = std::max(0, width() - label_x - bubble_trailing_padding -
-                                    GetWidthBetweenIconAndSeparator());
-  label()->SetBounds(label_x, 0, label_width, height());
+  const int label_x = image_bounds.right() + GetInternalSpacing();
+  int label_width = label()->GetPreferredSize(size_bounds).width();
+  if (size_bounds.width().is_bounded() &&
+      label_width > size_bounds.width() - label_x - bubble_trailing_padding -
+                        GetWidthBetweenIconAndSeparator()) {
+    label_width = 0;
+  }
+  gfx::Rect label_bounds(label_x, 0, label_width, height());
+  layout.child_layouts.emplace_back(
+      label(),
+      static_cast<views::LayoutManagerBase*>(GetLayoutManager())
+          ->CanBeVisible(label()),
+      label_bounds);
 
   // The separator should be the same height as the icons.
   const int separator_height = GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
-  gfx::Rect separator_bounds(label()->bounds());
+  gfx::Rect separator_bounds(label_bounds);
   separator_bounds.Inset(
       gfx::Insets::VH((separator_bounds.height() - separator_height) / 2, 0));
-
   float separator_width =
       GetWidthBetweenIconAndSeparator() + GetEndPaddingWithSeparator();
-  int separator_x = label()->GetText().empty()
-                        ? image_container_view()->bounds().right()
-                        : label()->bounds().right();
-  separator_view_->SetBounds(separator_x, separator_bounds.y(), separator_width,
-                             separator_height);
+  int separator_x =
+      label()->GetText().empty() ? image_bounds.right() : label_bounds.right();
 
-  if (views::FocusRing::Get(this)) {
-    views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
-    views::FocusRing::Get(this)->SchedulePaint();
-  }
+  layout.child_layouts.emplace_back(
+      const_cast<views::View*>(this->separator_view()), ShouldShowSeparator(),
+      gfx::Rect(separator_x, separator_bounds.y(), separator_width,
+                separator_height));
+
+  layout.host_size = GetSizeForLabelWidth(label_width);
+  return layout;
 }
 
 void IconLabelBubbleView::SetBackgroundVisibility(
@@ -445,10 +457,11 @@ void IconLabelBubbleView::OnTouchUiChanged() {
 
 gfx::Size IconLabelBubbleView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return GetSizeForLabelWidth(
-      label()
-          ->GetPreferredSize(views::SizeBounds(label()->width(), {}))
-          .width());
+  return views::View::CalculatePreferredSize(available_size);
+}
+
+gfx::Size IconLabelBubbleView::GetMinimumSize() const {
+  return views::View::GetMinimumSize();
 }
 
 bool IconLabelBubbleView::OnMousePressed(const ui::MouseEvent& event) {
@@ -487,11 +500,17 @@ void IconLabelBubbleView::NotifyClick(const ui::Event& event) {
 }
 
 void IconLabelBubbleView::OnFocus() {
+  if (views::FocusRing* const ring = views::FocusRing::Get(this)) {
+    ring->SchedulePaint();
+  }
   separator_view_->UpdateOpacity();
   LabelButton::OnFocus();
 }
 
 void IconLabelBubbleView::OnBlur() {
+  if (views::FocusRing* const ring = views::FocusRing::Get(this)) {
+    ring->SchedulePaint();
+  }
   separator_view_->UpdateOpacity();
   LabelButton::OnBlur();
 }
@@ -572,7 +591,7 @@ gfx::Size IconLabelBubbleView::GetSizeForLabelWidth(int label_width) const {
   // even after the label is not visible in order to slide the icon into its
   // final position. Therefore it is necessary to calculate additional width
   // even when the label is hidden as long as the animation is still shrinking.
-  if (!ShouldShowLabel() && !shrinking) {
+  if (label_width == 0 || (!ShouldShowLabel() && !shrinking)) {
     return image_size;
   }
 

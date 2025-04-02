@@ -205,6 +205,7 @@ class TestIconLabelBubbleFakeAnimationView : public TestIconLabelBubbleView {
 
   void SetCurrentAnimationValue(int value) {
     value_ = value;
+    InvalidateLayout();
     SizeToPreferredSize();
   }
 
