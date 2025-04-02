@@ -21,7 +21,7 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {AppStyleUpdater} from './app_style_updater.js';
 import type {SettingsPrefs} from './common.js';
-import {getCurrentSpeechRate, isWhitespace, minOverflowLengthToScroll, playFromSelectionTimeout} from './common.js';
+import {getCurrentSpeechRate, isHtmlElementVisible, isWhitespace, minOverflowLengthToScroll, playFromSelectionTimeout} from './common.js';
 import type {LanguageToastElement} from './language_toast.js';
 import {ReadAnythingLogger, TimeFrom, TimeTo} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
@@ -206,6 +206,7 @@ export class AppElement extends AppElementBase {
   private hiddenImageNodesIds_: Set<number> = new Set();
   private imageNodeIdsToFetch_: Set<number> = new Set();
 
+  private allowAutoScroll_ = true;
   private scrollingOnSelection_ = false;
   protected hasContent_ = false;
   protected emptyStateImagePath_?: string;
@@ -472,6 +473,14 @@ export class AppElement extends AppElementBase {
     this.$.containerParent.onscroll = () => {
       chrome.readingMode.onScroll(this.scrollingOnSelection_);
       this.scrollingOnSelection_ = false;
+
+      // If the reading mode panel was scrolled while read aloud is speaking,
+      // we should disable autoscroll if the highlights are no longer visible,
+      // and we should re-enable autoscroll if the highlights are now
+      // visible.
+      if (this.speechPlayingState.isSpeechActive) {
+        this.allowAutoScroll_ = this.areHighlightsOnScreen();
+      }
     };
 
     // Pass copy commands to main page. Copy commands will not work if they are
@@ -2217,6 +2226,16 @@ export class AppElement extends AppElementBase {
   }
 
   private scrollHighlightIntoView() {
+    if (!this.allowAutoScroll_) {
+      if (!this.areHighlightsOnScreen()) {
+        return;
+      }
+
+      // If we scrolled away from the current highlights but speech has
+      // caught up with the new scrolled position, resume autoscrolling.
+      this.allowAutoScroll_ = true;
+    }
+
     // Ensure all the current highlights are in view.
     // TODO: crbug.com/40927698 - Handle if the highlight is longer than the
     // full height of the window (e.g. when font size is very large). Possibly
@@ -2243,6 +2262,20 @@ export class AppElement extends AppElementBase {
       // off.
       firstHighlight.scrollIntoView({block: 'center'});
     }
+  }
+
+  private areHighlightsOnScreen(): boolean {
+    assert(this.shadowRoot);
+    const currentHighlights = this.shadowRoot.querySelectorAll<HTMLElement>(
+        '.' + currentReadHighlightClass);
+    if (!currentHighlights || !currentHighlights.length) {
+      return false;
+    }
+
+    const firstHighlight = currentHighlights.item(0);
+    const lastHighlight = currentHighlights.item(currentHighlights.length - 1);
+    return isHtmlElementVisible(firstHighlight) ||
+        isHtmlElementVisible(lastHighlight);
   }
 
   private defaultUtteranceSettings(): UtteranceSettings {
