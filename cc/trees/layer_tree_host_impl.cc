@@ -4192,7 +4192,8 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
 
   if (!compositor_context_provider) {
     return std::make_unique<ZeroCopyRasterBufferProvider>(
-        layer_tree_frame_sink_->shared_image_interface(), raster_caps_);
+        layer_tree_frame_sink_->shared_image_interface(), raster_caps_,
+        /*is_software=*/true);
   }
 
   const gpu::Capabilities& caps =
@@ -4221,7 +4222,8 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
 
   if (use_zero_copy) {
     return std::make_unique<ZeroCopyRasterBufferProvider>(
-        compositor_context_provider, raster_caps_);
+        compositor_context_provider->SharedImageInterface(), raster_caps_,
+        /*is_software=*/false);
   }
 
   const int max_copy_texture_chromium_size =

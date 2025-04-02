@@ -16,7 +16,6 @@
 #include "cc/resources/resource_pool.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/viz/client/client_resource_provider.h"
-#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -164,15 +163,10 @@ bool ZeroCopyRasterBufferImpl::SupportsBackgroundThreadPriority() const {
 }
 
 ZeroCopyRasterBufferProvider::ZeroCopyRasterBufferProvider(
-    viz::RasterContextProvider* compositor_context_provider,
-    const RasterCapabilities& raster_caps)
-    : compositor_context_provider_(compositor_context_provider),
-      tile_format_(raster_caps.tile_format) {}
-
-ZeroCopyRasterBufferProvider::ZeroCopyRasterBufferProvider(
     const scoped_refptr<gpu::SharedImageInterface>& shared_image_interface,
-    const RasterCapabilities& raster_caps)
-    : is_software_(true),
+    const RasterCapabilities& raster_caps,
+    bool is_software)
+    : is_software_(is_software),
       shared_image_interface_(shared_image_interface),
       tile_format_(raster_caps.tile_format) {
   CHECK(shared_image_interface_)
@@ -198,9 +192,7 @@ ZeroCopyRasterBufferProvider::AcquireBufferForRaster(
   }
 
   return std::make_unique<ZeroCopyRasterBufferImpl>(
-      resource,
-      base::WrapRefCounted(
-          compositor_context_provider_->SharedImageInterface()),
+      resource, shared_image_interface_,
       /*resource_has_previous_content=*/false, /*is_software=*/false);
 }
 
