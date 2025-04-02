@@ -45,6 +45,7 @@
 #include "content/public/browser/generated_code_cache_settings.h"
 #include "content/public/browser/interest_group_api_operation.h"
 #include "content/public/browser/interest_group_manager.h"
+#include "content/public/browser/keep_alive_request_tracker.h"
 #include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/mojo_binder_policy_map.h"
@@ -3258,6 +3259,23 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldPrioritizeForBackForwardCache(
       BrowserContext* browser_context,
       const GURL& url);
+
+  // Returns a `KeepAliveRequestTracker` instance if `request` is eligible to
+  // be tracked.
+  //
+  // `ukm_source_id` is the UKM ID to associate with the events logged by the
+  // returned tracker.
+  // `is_attribution_request` tells if `request` is an attribution reporting
+  // eligible request.
+  // `is_context_detached_callback` tells if the context of `request` is
+  // detached at the time running the callback.
+  virtual std::unique_ptr<KeepAliveRequestTracker>
+  MaybeCreateKeepAliveRequestTracker(
+      const network::ResourceRequest& request,
+      std::optional<ukm::SourceId> ukm_source_id,
+      bool is_attribution_request,
+      KeepAliveRequestTracker::IsContextDetachedCallback
+          is_context_detached_callback);
 };
 
 }  // namespace content

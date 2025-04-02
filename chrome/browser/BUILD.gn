@@ -639,6 +639,8 @@ static_library("browser") {
     "lifetime/browser_shutdown.h",
     "lifetime/termination_notification.cc",
     "lifetime/termination_notification.h",
+    "loader/keep_alive_request_tracker.cc",
+    "loader/keep_alive_request_tracker.h",
     "login_detection/login_detection_keyed_service.cc",
     "login_detection/login_detection_keyed_service.h",
     "login_detection/login_detection_keyed_service_factory.cc",

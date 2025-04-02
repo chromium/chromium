@@ -5109,6 +5109,35 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
 
 <!-- LINT.ThenChange(//services/network/url_loader.h:FetchKeepAliveRequestNetworkMetricType) -->
 
+<!-- LINT.IfChange(FetchKeepAliveRequestStage) -->
+
+<enum name="FetchKeepAliveRequestStage">
+  <int value="0" label="kLoaderCreated"/>
+  <int value="1" label="kRequestStarted"/>
+  <int value="2" label="kFirstRedirectReceived"/>
+  <int value="3" label="kSecondRedirectReceived"/>
+  <int value="4" label="kThirdOrLaterRedirectReceived"/>
+  <int value="5" label="kResponseReceived"/>
+  <int value="6" label="kRequestFailed"/>
+  <int value="7" label="kLoaderDisconnectedFromRenderer"/>
+  <int value="8" label="kRequestCancelledByRenderer"/>
+  <int value="9" label="kRequestCancelledAfterTimeLimit"/>
+  <int value="10" label="kBrowserShutdown"/>
+  <int value="11" label="kLoaderComplated"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/public/browser/keep_alive_request_tracker.h:RequestStageType) -->
+
+<!-- LINT.IfChange(FetchKeepAliveRequestType) -->
+
+<enum name="FetchKeepAliveRequestType">
+  <int value="0" label="kFetch"/>
+  <int value="1" label="kAttribution"/>
+  <int value="2" label="kFetchLater"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/public/browser/keep_alive_request_tracker.h:RequestType) -->
+
 <enum name="FetchLaterBrowserMetricType">
   <int value="0"
       label="kAbortedByInitiator: FetchLater request is aborted by its

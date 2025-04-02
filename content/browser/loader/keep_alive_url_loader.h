@@ -6,7 +6,9 @@
 #define CONTENT_BROWSER_LOADER_KEEP_ALIVE_URL_LOADER_H_
 
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 #include <queue>
 #include <string>
 #include <string_view>
@@ -15,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/pass_key.h"
 #include "content/common/content_export.h"
@@ -24,6 +27,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -43,6 +47,7 @@ namespace content {
 
 class BrowserContext;
 class KeepAliveAttributionRequestHelper;
+class KeepAliveRequestTracker;
 class KeepAliveURLBrowserTestBase;
 class KeepAliveURLLoaderService;
 class PolicyContainerHost;
@@ -121,6 +126,7 @@ class CONTENT_EXPORT KeepAliveURLLoader
       scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
       scoped_refptr<PolicyContainerHost> policy_container_host,
       WeakDocumentPtr weak_document_ptr,
+      std::optional<ukm::SourceId> ukm_source_id,
       BrowserContext* browser_context,
       URLLoaderThrottlesGetter throttles_getter,
       base::PassKey<KeepAliveURLLoaderService>,
@@ -186,6 +192,9 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // Returns a pointer to the RenderFrameHostImpl of the request initiator
   // document if it is still alive. Otherwise, returns nullptr;
   RenderFrameHostImpl* GetInitiator() const;
+
+  // Returns true if the request initiator document is detached.
+  bool IsContextDetached() const;
 
   // Receives actions from renderer.
   // `network::mojom::URLLoader` overrides:
@@ -329,6 +338,9 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // is deleted or navigates to a different document. See its classdoc for more
   // details.
   WeakDocumentPtr weak_document_ptr_;
+
+  // The tracker to record the browser-side UKM metrics for this request.
+  std::unique_ptr<KeepAliveRequestTracker> request_tracker_;
 
   // The BrowserContext that initiates this loader.
   // It is ensured to outlive this because it owns KeepAliveURLLoaderService

@@ -92,6 +92,7 @@
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/language_detection/language_detection_model_service_factory.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/loader/keep_alive_request_tracker.h"
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 #include "chrome/browser/media/audio_service_util.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
@@ -9024,4 +9025,16 @@ bool ChromeContentBrowserClient::ShouldPrioritizeForBackForwardCache(
   return TemplateURLServiceFactory::GetForProfile(
              Profile::FromBrowserContext(browser_context))
       ->IsSearchResultsPageFromDefaultSearchProvider(url);
+}
+
+std::unique_ptr<content::KeepAliveRequestTracker>
+ChromeContentBrowserClient::MaybeCreateKeepAliveRequestTracker(
+    const network::ResourceRequest& request,
+    std::optional<ukm::SourceId> ukm_source_id,
+    bool is_attribution_reporting_eligible_request,
+    content::KeepAliveRequestTracker::IsContextDetachedCallback
+        is_context_detached_callback) {
+  return ChromeKeepAliveRequestTracker::MaybeCreateKeepAliveRequestTracker(
+      request, ukm_source_id, is_attribution_reporting_eligible_request,
+      std::move(is_context_detached_callback));
 }

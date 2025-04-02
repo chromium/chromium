@@ -8881,6 +8881,188 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="FetchKeepAliveRequest.WithCategory">
+  <owner>mych@chromium.org</owner>
+  <owner>rakina@chromium.org</owner>
+  <summary>
+    Records metrics of a fetch keepalive request with a specific set of
+    &quot;category&quot; values in the request URL parameter.
+
+    This is logged only once per request, at the end of the request handling in
+    the browser process.
+
+    https://docs.google.com/document/d/1TSbtp5I5Bc1pbAKrrEHfmZlAwgeh6AlgAH7GbDMNPRQ/edit?tab=t.0
+  </summary>
+  <metric name="Category">
+    <summary>
+      An 8-bit integer that can be mapped to a specific value of a
+      &quot;category&quot; parameter in the request URL.
+    </summary>
+  </metric>
+  <metric name="CompletionStatus.ErrorCode">
+    <summary>
+      An integer representing the error code of the request when it completes or
+      fails. This comes from network::URLLoaderCompletionStatus.error_code.
+    </summary>
+  </metric>
+  <metric name="CompletionStatus.ExtendedErrorCode">
+    <summary>
+      An integer representing the error code of the request when it completes or
+      fails. This comes from
+      network::URLLoaderCompletionStatus.extended_error_code.
+    </summary>
+  </metric>
+  <metric name="EndStage" enum="FetchKeepAliveRequestStage">
+    <summary>
+      An enum representing the end stage of the fetch keepalive request when the
+      event is logged.
+    </summary>
+  </metric>
+  <metric name="Id.High">
+    <summary>
+      The high bits of the unique number that connects a fetch keepalive request
+      throughout different processes.
+    </summary>
+  </metric>
+  <metric name="Id.Low">
+    <summary>
+      The low bits of the unique number that connects a fetch keepalive request
+      throughout different processes.
+    </summary>
+  </metric>
+  <metric name="IsContextDetached" enum="Boolean">
+    <summary>
+      Whether the Context is detached or not when this event is logged.
+    </summary>
+  </metric>
+  <metric name="NumRedirects">
+    <summary>
+      The number of redirects a fetch keepalive request loader has experienced
+      so far when the event is logged.
+
+      Note that the maximum value is 20, as specified at
+      https://fetch.spec.whatwg.org/#http-redirect-fetch.
+    </summary>
+  </metric>
+  <metric name="PreviousStage" enum="FetchKeepAliveRequestStage">
+    <summary>
+      An enum representing the previous stage of the fetch keepalive request
+      when the event is logged.
+
+      When the request is abandoned from the &quot;LoaderCreated&quot; stage,
+      this is also set to &quot;LoaderCreated&quot; stage.
+    </summary>
+  </metric>
+  <metric name="RequestType" enum="FetchKeepAliveRequestType">
+    <summary>
+      An enum representing the type of the fetch keepalive request. It tells
+      whether this request is a fetch request, an attribution reporting request,
+      or a fetchLater request.
+    </summary>
+  </metric>
+  <metric name="TimeDelta.BrowserShutdown">
+    <summary>
+      The time difference (in milliseconds) between the
+      &quot;BrowserShutdown&quot; stage and the &quot;LoaderCreated&quot; stage.
+
+      Only set when the stage is reached.
+    </summary>
+  </metric>
+  <metric name="TimeDelta.EventLogged">
+    <summary>
+      The time difference (in milliseconds) between when this event is logged
+      and the &quot;LoaderCreated&quot; stage.
+    </summary>
+  </metric>
+  <metric name="TimeDelta.FirstRedirectReceived">
+    <summary>
+      The time difference (in milliseconds) between the
+      &quot;FirstRedirectReceived&quot; stage and the &quot;LoaderCreated&quot;
+      stage.
+
+      Only set when the stage is reached.
+    </summary>
+  </metric>
+  <metric name="TimeDelta.LoaderCompleted">
+    <summary>
+      The time difference (in milliseconds) between the
+      &quot;LoaderCompleted&quot; stage and the &quot;LoaderCreated&quot; stage.
+
+      Only set when the stage is reached.
+    </summary>
+  </metric>
+  <metric name="TimeDelta.LoaderDisconnectedFromRenderer">
+    <summary>
+      The time difference (in milliseconds) between the
+      &quot;LoaderDisconnectedFromRenderer&quot; stage and the
+      &quot;LoaderCreated&quot; stage.
+
+      Only set when the stage is reached.
+    </summary>
+  </metric>
+  <metric name="TimeDelta.RequestCancelledAfterTimeLimit">
+    <summary>
+      The time difference (in milliseconds) between the
+      &quot;RequestCancelledAfterTimeLimit&quot; stage and the
+      &quot;LoaderCreated&quot; stage.
+
+      Only set when the stage is reached.
+    </summary>
+  </metric>
+  <metric name="TimeDelta.RequestCancelledByRenderer">
+    <summary>
+      The time difference (in milliseconds) between the
+      &quot;RequestCancelledByRenderer&quot; stage and the
+      &quot;LoaderCreated&quot; stage.
+
+      Only set when the stage is reached.
+    </summary>
+  </metric>
+  <metric name="TimeDelta.RequestFailed">
+    <summary>
+      The time difference (in milliseconds) between the
+      &quot;RequestFailed&quot; stage and the &quot;LoaderCreated&quot; stage.
+
+      Only set when the stage is reached.
+    </summary>
+  </metric>
+  <metric name="TimeDelta.RequestStarted">
+    <summary>
+      The time difference (in milliseconds) between the
+      &quot;RequestStarted&quot; stage and the &quot;LoaderCreated&quot; stage.
+
+      Only set when the stage is reached.
+    </summary>
+  </metric>
+  <metric name="TimeDelta.ResponseReceived">
+    <summary>
+      The time difference (in milliseconds) between the
+      &quot;ResponseReceived&quot; stage and the &quot;LoaderCreated&quot;
+      stage.
+
+      Only set when the stage is reached.
+    </summary>
+  </metric>
+  <metric name="TimeDelta.SecondRedirectReceived">
+    <summary>
+      The time difference (in milliseconds) between the
+      &quot;SecondRedirectReceived&quot; stage and the &quot;LoaderCreated&quot;
+      stage.
+
+      Only set when the stage is reached.
+    </summary>
+  </metric>
+  <metric name="TimeDelta.ThirdOrLaterRedirectReceived">
+    <summary>
+      The time difference (in milliseconds) between the
+      &quot;SecondRedirectReceived&quot; stage and the &quot;LoaderCreated&quot;
+      stage.
+
+      Only set when the stage is reached.
+    </summary>
+  </metric>
+</event>
+
 <event name="FileSystemAPI.WebRequest">
   <owner>mek@chromium.org</owner>
   <owner>rhalavatigit@chromium.org</owner>

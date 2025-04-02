@@ -18,9 +18,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/page_load_metrics/browser/features.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/keep_alive_request_tracker.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -32,6 +36,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/url_util.h"
 
 namespace {
 
@@ -56,16 +61,31 @@ constexpr char k301ResponseTemplate[] =
     "Location: %s\r\n"
     "\r\n";
 
+std::string GetUrlWithCategory(std::string_view category) {
+  return base::StrCat({kKeepAliveEndpoint, "?category=", category});
+}
+
+std::string EncodeRelativeURL(std::string_view relative_url) {
+  CHECK(relative_url.starts_with("/")) << relative_url;
+  url::RawCanonOutputT<char> buffer;
+  url::EncodeURIComponent(relative_url, &buffer);
+  return std::string(buffer.view());
+}
+
 }  // namespace
 
-class ChromeKeepAliveURLBrowserTestBase : public InProcessBrowserTest {
+class ChromeKeepAliveURLBrowserTestBase
+    : public PlatformBrowserTest,
+      public content::KeepAliveRequestUkmMatcher {
  public:
   ChromeKeepAliveURLBrowserTestBase()
       : https_test_server_(std::make_unique<net::EmbeddedTestServer>(
             net::EmbeddedTestServer::TYPE_HTTPS)) {
     feature_list_.InitWithFeaturesAndParameters(
         content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(
-            {{blink::features::kKeepAliveInBrowserMigration, {}}}),
+            {{blink::features::kKeepAliveInBrowserMigration, {}},
+             {page_load_metrics::features::kBeaconLeakageLogging,
+              {{"category_prefix", "test-prefix"}}}}),
         content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
   ~ChromeKeepAliveURLBrowserTestBase() override = default;
@@ -77,22 +97,28 @@ class ChromeKeepAliveURLBrowserTestBase : public InProcessBrowserTest {
 
  protected:
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    PlatformBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
 
-    // Initialize an HTTPS server, as `variations::VariationsURLLoaderThrottle`
-    // only works in secure context.
+    // Initialize an HTTPS server, as
+    // `variations::VariationsURLLoaderThrottle` only works in secure context.
     https_test_server_->AddDefaultHandlers(GetChromeTestDataDir());
 
     loaders_observer_ =
         std::make_unique<content::KeepAliveURLLoadersTestObserver>(
             web_contents()->GetBrowserContext());
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  }
+
+  void TearDownOnMainThread() override {
+    ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Ignore all HTTPS certificate errors, as
-    // `variations::VariationsURLLoaderThrottle` only works with google domains,
-    // which are not covered by `net::EmbeddedTestServer::CERT_TEST_NAMES`.
+    // `variations::VariationsURLLoaderThrottle` only works with google
+    // domains, which are not covered by
+    // `net::EmbeddedTestServer::CERT_TEST_NAMES`.
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
@@ -138,9 +164,12 @@ class ChromeKeepAliveURLBrowserTestBase : public InProcessBrowserTest {
     return handlers;
   }
 
-  GURL GetKeepAlivePageURL(const std::string& host, const std::string& method) {
-    std::string url =
-        base::StringPrintf("/fetch-keepalive.html?method=%s", method.c_str());
+  GURL GetKeepAlivePageURL(const std::string& host,
+                           const std::string& target_relative_url,
+                           const std::string& method) {
+    std::string url = base::StringPrintf(
+        "/fetch-keepalive.html?target_url=%s&method=%s",
+        EncodeRelativeURL(target_relative_url).c_str(), method.c_str());
     return server()->GetURL(host, url);
   }
 
@@ -171,11 +200,16 @@ class ChromeKeepAliveURLBrowserTestBase : public InProcessBrowserTest {
     return *loaders_observer_;
   }
 
+  ukm::TestAutoSetUkmRecorder& ukm_recorder() override {
+    return *ukm_recorder_;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   bool use_https_ = false;
   const std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
   std::unique_ptr<content::KeepAliveURLLoadersTestObserver> loaders_observer_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
 // Basic Chrome browser tests to cover behaviors when handling fetch keepalive
@@ -197,12 +231,12 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest, OneRequest) {
   const std::string method = GetParam();
-  auto request_handler =
-      std::move(RegisterRequestHandlers({kKeepAliveEndpoint})[0]);
+  const std::string target_url = GetUrlWithCategory("test-prefix1");
+  auto request_handler = std::move(RegisterRequestHandlers({target_url})[0]);
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  ASSERT_TRUE(
-      NavigateToURL(web_contents(), GetKeepAlivePageURL(kPrimaryHost, method)));
+  ASSERT_TRUE(NavigateToURL(
+      web_contents(), GetKeepAlivePageURL(kPrimaryHost, target_url, method)));
   // Ensure the keepalive request is sent, but delay response.
   request_handler->WaitForRequest();
 
@@ -214,6 +248,19 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest, OneRequest) {
   EXPECT_EQ(watcher.WaitAndGetTitle(), kPromiseResolvedPageTitle);
   loaders_observer().WaitForTotalOnReceiveResponseForwarded(1);
   loaders_observer().WaitForTotalOnCompleteForwarded({net::OK});
+  ExpectCommonUkm(
+      content::KeepAliveRequestTracker::RequestType::kFetch,
+      /*category_id=*/1,
+      /*num_redirects=*/0,
+      /*is_context_detached=*/false,
+      content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
+      content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
+      /*keepalive_token=*/std::nullopt,
+      /*error_code=*/net::OK,
+      /*extended_error_code=*/0);
+  ExpectTimeSortedTimeDeltaUkm(
+      {"TimeDelta.RequestStarted", "TimeDelta.ResponseReceived",
+       "TimeDelta.LoaderCompleted", "TimeDelta.EventLogged"});
 }
 
 // Delays response to a keepalive ping until after the page making the keepalive
@@ -222,16 +269,27 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest, OneRequest) {
 IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
                        ReceiveResponseAfterPageUnload) {
   const std::string method = GetParam();
-  auto request_handler =
-      std::move(RegisterRequestHandlers({kKeepAliveEndpoint})[0]);
+  const std::string target_url = GetUrlWithCategory("test-prefix1");
+  auto request_handler = std::move(RegisterRequestHandlers({target_url})[0]);
   ASSERT_TRUE(embedded_test_server()->Start());
 
   LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
-      GetKeepAlivePageURL(kPrimaryHost, method), request_handler.get(),
-      k200TextResponse);
+      GetKeepAlivePageURL(kPrimaryHost, target_url, method),
+      request_handler.get(), k200TextResponse);
 
   // The response should be processed in browser.
   loaders_observer().WaitForTotalOnReceiveResponseProcessed(1);
+  ExpectCommonUkm(
+      content::KeepAliveRequestTracker::RequestType::kFetch,
+      /*category_id=*/1,
+      /*num_redirects=*/0,
+      /*is_context_detached=*/true,
+      content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
+      content::KeepAliveRequestTracker::RequestStageType::
+          kLoaderDisconnectedFromRenderer);
+  ExpectTimeSortedTimeDeltaUkm(
+      {"TimeDelta.RequestStarted", "TimeDelta.LoaderDisconnectedFromRenderer",
+       "TimeDelta.ResponseReceived", "TimeDelta.EventLogged"});
 }
 
 // Shutdown delay is not supported on Android.
@@ -249,10 +307,11 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
 IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
                        MAYBE_ReceiveResponseAfterBrowserShutdown) {
   const std::string method = GetParam();
-  auto request_handler =
-      std::move(RegisterRequestHandlers({kKeepAliveEndpoint})[0]);
+  const std::string target_url = GetUrlWithCategory("test-prefix1");
+  auto request_handler = std::move(RegisterRequestHandlers({target_url})[0]);
   ASSERT_TRUE(embedded_test_server()->Start());
-  auto keepalive_page_url = GetKeepAlivePageURL(kPrimaryHost, method);
+  auto keepalive_page_url =
+      GetKeepAlivePageURL(kPrimaryHost, target_url, method);
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), keepalive_page_url));
 
@@ -282,12 +341,12 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
 IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
                        ReceiveResponseInBackForwardCache) {
   const std::string method = GetParam();
-  auto request_handler =
-      std::move(RegisterRequestHandlers({kKeepAliveEndpoint})[0]);
+  const std::string target_url = GetUrlWithCategory("test-prefix1");
+  auto request_handler = std::move(RegisterRequestHandlers({target_url})[0]);
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  ASSERT_TRUE(
-      NavigateToURL(web_contents(), GetKeepAlivePageURL(kPrimaryHost, method)));
+  ASSERT_TRUE(NavigateToURL(
+      web_contents(), GetKeepAlivePageURL(kPrimaryHost, target_url, method)));
   content::RenderFrameHostWrapper rfh_1(current_frame_host());
   // Ensure the keepalive request is sent before leaving the current page.
   request_handler->WaitForRequest();
@@ -310,6 +369,19 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
   EXPECT_EQ(watcher.WaitAndGetTitle(), kPromiseResolvedPageTitle);
   request_handler->Done();
   loaders_observer().WaitForTotalOnCompleteForwarded({net::OK});
+  ExpectCommonUkm(
+      content::KeepAliveRequestTracker::RequestType::kFetch,
+      /*category_id=*/1,
+      /*num_redirects=*/0,
+      /*is_context_detached=*/false,
+      content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
+      content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
+      /*keepalive_token=*/std::nullopt,
+      /*error_code=*/net::OK,
+      /*extended_error_code=*/0);
+  ExpectTimeSortedTimeDeltaUkm(
+      {"TimeDelta.RequestStarted", "TimeDelta.ResponseReceived",
+       "TimeDelta.LoaderCompleted", "TimeDelta.EventLogged"});
 }
 
 // Delays handling redirect for a keepalive ping until after the page making the
@@ -318,16 +390,18 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
 IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
                        ReceiveRedirectAfterPageUnload) {
   const std::string method = GetParam();
+  const std::string target_url = GetUrlWithCategory("test-prefix1");
   const char redirect_target[] = "/beacon-redirected";
   auto request_handlers =
-      RegisterRequestHandlers({kKeepAliveEndpoint, redirect_target});
+      RegisterRequestHandlers({target_url, redirect_target});
   ASSERT_TRUE(server()->Start());
 
   // Set up redirects according to the following redirect chain:
   // fetch("http://a.com:<port>/beacon", keepalive: true)
   // --> http://a.com:<port>/beacon-redirected
   LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
-      GetKeepAlivePageURL(kPrimaryHost, method), request_handlers[0].get(),
+      GetKeepAlivePageURL(kPrimaryHost, target_url, method),
+      request_handlers[0].get(),
       base::StringPrintf(k301ResponseTemplate, redirect_target));
 
   // The redirect request should be processed in browser and gets sent.
@@ -341,6 +415,18 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
 
   // The response should be processed in browser.
   loaders_observer().WaitForTotalOnReceiveResponseProcessed(1);
+  ExpectCommonUkm(
+      content::KeepAliveRequestTracker::RequestType::kFetch,
+      /*category_id=*/1,
+      /*num_redirects=*/1,
+      /*is_context_detached=*/true,
+      content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
+      content::KeepAliveRequestTracker::RequestStageType::
+          kFirstRedirectReceived);
+  ExpectTimeSortedTimeDeltaUkm(
+      {"TimeDelta.RequestStarted", "TimeDelta.LoaderDisconnectedFromRenderer",
+       "TimeDelta.FirstRedirectReceived", "TimeDelta.ResponseReceived",
+       "TimeDelta.EventLogged"});
 }
 
 // Delays handling an unsafe redirect for a keepalive ping until after the page
@@ -349,16 +435,17 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
 IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
                        ReceiveUnSafeRedirectAfterPageUnload) {
   const std::string method = GetParam();
+  const std::string target_url = GetUrlWithCategory("test-prefix1");
   const char unsafe_redirect_target[] = "chrome://settings";
-  auto request_handler =
-      std::move(RegisterRequestHandlers({kKeepAliveEndpoint})[0]);
+  auto request_handler = std::move(RegisterRequestHandlers({target_url})[0]);
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Sets up redirects according to the following redirect chain:
   // fetch("http://a.com:<port>/beacon", keepalive: true)
   // --> chrome://settings
   LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
-      GetKeepAlivePageURL(kPrimaryHost, method), request_handler.get(),
+      GetKeepAlivePageURL(kPrimaryHost, target_url, method),
+      request_handler.get(),
       base::StringPrintf("HTTP/1.1 301 Moved Permanently\r\n"
                          "Location: %s\r\n"
                          "\r\n",
@@ -367,6 +454,7 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
   // The redirect is unsafe, so the loader is terminated.
   loaders_observer().WaitForTotalOnCompleteProcessed(
       {net::ERR_UNSAFE_REDIRECT});
+  // The test is too flaky to assert on the number of redirects processed.
 }
 
 // Checks that when a fetch keepalive request's redirect is handled in browser
@@ -374,11 +462,12 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
 IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
                        ReceiveMultipleRedirectsToGoogleAfterPageUnload) {
   const std::string method = GetParam();
+  const std::string target_url = GetUrlWithCategory("test-prefix1");
   const std::string redirect_target1 = "/redirected1";
   const std::string redirect_target2 = "/redirected2";
   SetUseHttps();
-  auto request_handlers = RegisterRequestHandlers(
-      {kKeepAliveEndpoint, redirect_target1, redirect_target2});
+  auto request_handlers =
+      RegisterRequestHandlers({target_url, redirect_target1, redirect_target2});
   ASSERT_TRUE(server()->Start());
 
   // Set up redirects according to the following redirect chain:
@@ -386,7 +475,8 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
   // --> https://www.google.com:<port>/redirected1
   // --> https://www.google.com:<port>/redirected2
   LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
-      GetKeepAlivePageURL("www.google.com", method), request_handlers[0].get(),
+      GetKeepAlivePageURL(kGoogleHost, target_url, method),
+      request_handlers[0].get(),
       base::StringPrintf(k301ResponseTemplate, redirect_target1.c_str()));
 
   request_handlers[1]->WaitForRequest();
@@ -406,6 +496,18 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
   // The redirects/response should all be processed in browser.
   loaders_observer().WaitForTotalOnReceiveRedirectProcessed(2);
   loaders_observer().WaitForTotalOnReceiveResponseProcessed(1);
+  ExpectCommonUkm(
+      content::KeepAliveRequestTracker::RequestType::kFetch,
+      /*category_id=*/1,
+      /*num_redirects=*/2,
+      /*is_context_detached=*/true,
+      content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
+      content::KeepAliveRequestTracker::RequestStageType::
+          kSecondRedirectReceived);
+  ExpectTimeSortedTimeDeltaUkm(
+      {"TimeDelta.RequestStarted", "TimeDelta.LoaderDisconnectedFromRenderer",
+       "TimeDelta.FirstRedirectReceived", "TimeDelta.SecondRedirectReceived",
+       "TimeDelta.ResponseReceived", "TimeDelta.EventLogged"});
 }
 
 // Chrome browser tests to cover variation header-related behaviors for fetch
@@ -429,9 +531,10 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLVariationBrowserTest,
                        ReceiveRedirectToGoogleAfterPageUnloadAndStripHeaders) {
   const std::string method = GetParam();
+  const std::string target_url = GetUrlWithCategory("test-prefix1");
   SetUseHttps();
   auto request_handlers =
-      RegisterRequestHandlers({kKeepAliveEndpoint, "/redirect", "/final"});
+      RegisterRequestHandlers({target_url, "/redirect", "/final"});
   ASSERT_TRUE(server()->Start());
 
   // Set up redirects according to the following redirect chain:
@@ -439,7 +542,8 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLVariationBrowserTest,
   // --> https://www.google.com:<port>/redirect
   // --> https://www.b.com:<port>/final
   LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
-      GetKeepAlivePageURL(kGoogleHost, method), request_handlers[0].get(),
+      GetKeepAlivePageURL(kGoogleHost, target_url, method),
+      request_handlers[0].get(),
       ("HTTP/1.1 301 Moved Permanently\r\n"
        "Access-Control-Allow-Origin: *\r\n"
        "Location: /redirect\r\n"
