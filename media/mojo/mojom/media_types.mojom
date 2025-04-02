@@ -469,6 +469,8 @@ union VideoFrameData {
   GpuMemoryBufferSharedImageVideoFrameData gpu_memory_buffer_shared_image_data;
   SharedImageVideoFrameData shared_image_data;
   OpaqueVideoFrameData opaque_data;
+  [EnableIf=is_chromeos|is_linux]
+  DmabufVideoFrameData dmabuf_data;
 };
 
 // A marker for EOS frames.
@@ -507,6 +509,35 @@ struct SharedImageVideoFrameData {
 // An empty structure used for STORAGE_OPAQUE VideoFrame.
 struct OpaqueVideoFrameData {
 };
+
+[EnableIf=is_chromeos|is_linux]
+struct ColorPlaneLayout {
+  // Stride, offsets, and sizes for each ColorPlaneLayout. Offsets are relative
+  // to the start of the DMA buffer.
+  uint64 stride;
+  uint64 offset;
+  uint64 size;
+};
+
+[EnableIf=is_chromeos|is_linux]
+struct DmabufVideoFrameData {
+  // The following members are needed to transmit the VideoFrameLayout.
+  array<ColorPlaneLayout> planes;
+  // |is_multi_planar| is true when a format uses multiple backing buffers to
+  // store its planes.
+  bool is_multi_planar;
+  // |buffer_addr_align| contains the memory address alignment for the buffers.
+  uint64 buffer_addr_align;
+  // |modifier| is retrieved from the GBM library. It can be different from
+  // kNoModifier only if the VideoFrame is created by using NativePixmap.
+  uint64 modifier;
+
+  // An array of FD's to the DMA Buffers. Note: there may be more
+  // ColorLayoutPlanes than FD's. This can happen when the planes are stored
+  // in a single buffer. The "extra" planes will refer to the last FD.
+  array<handle<platform>> fds;
+};
+
 
 struct PipelineStatistics {
   uint64 audio_bytes_decoded;

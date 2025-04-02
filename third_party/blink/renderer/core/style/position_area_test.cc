@@ -107,25 +107,6 @@ struct UsedInsetsTestCase {
   ExpectedInset expected_right;
 };
 
-namespace {
-
-std::optional<AnchorQuery> ToAnchorQuery(ExpectedInset inset) {
-  switch (inset) {
-    case ExpectedInset::kZero:
-      return std::nullopt;  // 0px
-    case ExpectedInset::kTop:
-      return PositionArea::AnchorTop();
-    case ExpectedInset::kBottom:
-      return PositionArea::AnchorBottom();
-    case ExpectedInset::kLeft:
-      return PositionArea::AnchorLeft();
-    case ExpectedInset::kRight:
-      return PositionArea::AnchorRight();
-  }
-}
-
-}  // namespace
-
 // Note that we use ExpectedInset to express the expected results
 // instead of calling PositionArea::AnchorTop() (etc) directly here,
 // because PositionArea::InitializeAnchors may not have happened yet.
@@ -167,25 +148,5 @@ UsedInsetsTestCase used_insets_test_cases[] = {
      ExpectedInset::kZero,
      ExpectedInset::kZero},
 };
-
-class PositionAreaUsedInsetsTest
-    : public testing::Test,
-      public testing::WithParamInterface<UsedInsetsTestCase> {};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PositionAreaUsedInsetsTest,
-                         testing::ValuesIn(used_insets_test_cases));
-
-TEST_P(PositionAreaUsedInsetsTest, All) {
-  const UsedInsetsTestCase& test_case = GetParam();
-  EXPECT_EQ(test_case.physical.UsedTop(),
-            ToAnchorQuery(test_case.expected_top));
-  EXPECT_EQ(test_case.physical.UsedBottom(),
-            ToAnchorQuery(test_case.expected_bottom));
-  EXPECT_EQ(test_case.physical.UsedLeft(),
-            ToAnchorQuery(test_case.expected_left));
-  EXPECT_EQ(test_case.physical.UsedRight(),
-            ToAnchorQuery(test_case.expected_right));
-}
 
 }  // namespace blink

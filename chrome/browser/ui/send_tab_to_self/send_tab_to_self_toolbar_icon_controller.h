@@ -16,7 +16,6 @@ namespace send_tab_to_self {
 
 // Controller for send tab to self's toolbar button that decides when to show
 // or hide the icon from the toolbar.
-// Owned by send_tab_to_self::ReceivingUiHandlerRegistry.
 class SendTabToSelfToolbarIconController
     : public send_tab_to_self::ReceivingUiHandler,
       public BrowserListObserver {
@@ -39,12 +38,6 @@ class SendTabToSelfToolbarIconController
 
   // BrowserListObserver implementation
   void OnBrowserSetLastActive(Browser* browser) override;
-
-  const Profile* profile() const override;
-
-  void LogNotificationOpened();
-
-  void LogNotificationDismissed();
 
  private:
   void StorePendingEntry(

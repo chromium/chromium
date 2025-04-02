@@ -223,9 +223,7 @@ BASE_FEATURE(kBocaOnTaskMuteArcAudio,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables the Boca OnTask pod on ChromeOS.
-BASE_FEATURE(kBocaOnTaskPod,
-             "BocaOnTaskPod",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBocaOnTaskPod, "BocaOnTaskPod", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Boca OnTask enter locked mode countdown duration on
 // ChromeOS.
@@ -242,7 +240,7 @@ constexpr base::FeatureParam<base::TimeDelta>
 // Enables or disables Boca sending student heartbeat requests on ChromeOS.
 BASE_FEATURE(kBocaStudentHeartbeat,
              "BocaStudentHeartbeat",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Boca student heartbeat custom interval on ChromeOS.
 BASE_FEATURE(kBocaStudentHeartbeatCustomInterval,
@@ -1783,6 +1781,9 @@ BASE_FEATURE(kLobsterForManagedUsers,
              "LobsterForManagedUsers",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables lobster i18n response.
+BASE_FEATURE(kLobsterI18n, "LobsterI18n", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables lobster entry point in quick insert zero state.
 BASE_FEATURE(kLobsterQuickInsertZeroState,
              "LobsterQuickInsertZeroState",
@@ -1870,7 +1871,7 @@ BASE_FEATURE(kMediaAppImageMantisModel,
 // Enables the Reimagine feature of Mantis
 BASE_FEATURE(kMediaAppImageMantisReimagine,
              "MediaAppImageMantisReimagine",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the Remove Background feature of Mantis
 BASE_FEATURE(kMediaAppImageMantisRemoveBackground,
@@ -1892,13 +1893,6 @@ const base::FeatureParam<MantisModel> kMediaAppImageMantisModelParams{
 BASE_FEATURE(kMinimumChromeVersion,
              "MinimumChromeVersion",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables the use of Mojo by Chrome-process code to communicate with Power
-// Manager. In order to use mojo, this feature must be turned on and a callsite
-// must use PowerManagerMojoClient::Get().
-BASE_FEATURE(kMojoDBusRelay,
-             "MojoDBusRelay",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables to split left and right modifiers in settings.
 BASE_FEATURE(kModifierSplit, "ModifierSplit", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1990,11 +1984,6 @@ BASE_FEATURE(kFeatureManagementShouldExcludeFromSysUiHoldback,
 // Enables a holdback experiment for Drive integration.
 BASE_FEATURE(kSysUiShouldHoldbackDriveIntegration,
              "SysUiShouldHoldbackDriveIntegration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables a holdback experiment for Forest.
-BASE_FEATURE(kSysUiShouldHoldbackForest,
-             "SysUiShouldHoldbackForest",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables a holdback experiment for Task Management
@@ -2552,7 +2541,7 @@ BASE_FEATURE(kReleaseNotesNotificationAlwaysEligible,
 // Enables rendering ARC notifications using ChromeOS notification framework
 BASE_FEATURE(kRenderArcNotificationsByChrome,
              "RenderArcNotificationsByChrome",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allows the OS to unpin apps that were pinned by PinnedLauncherApps policy
 // but are no longer a part of it from shelf under specific conditions.
@@ -3740,17 +3729,6 @@ bool ShouldForceEnableServerSideSpeechRecognition() {
 }
 
 bool IsForestFeatureEnabled() {
-  // If the holdback feature flag is enabled, the feature should be disabled,
-  // but only if the device is eligible for the study. Exclusion happens
-  // via hardware overlay, so it needs to be checked separately from the finch
-  // controlled holdback feature flag.
-  const bool device_excluded_from_holdback_study = base::FeatureList::IsEnabled(
-      kFeatureManagementShouldExcludeFromSysUiHoldback);
-  if (IsSysUiShouldHoldbackForestEnabled() &&
-      !device_excluded_from_holdback_study) {
-    return false;
-  }
-
   return base::FeatureList::IsEnabled(kForestFeature);
 }
 
@@ -4028,6 +4006,10 @@ bool IsLobsterDisabledByInvalidIME() {
 
 bool IsLobsterUseRewrittenQuery() {
   return base::FeatureList::IsEnabled(kLobsterUseRewrittenQuery);
+}
+
+bool IsLobsterI18nEnabled() {
+  return base::FeatureList::IsEnabled(kLobsterI18n);
 }
 
 bool IsLobsterAlwaysShowDisclaimerForTesting() {
@@ -4533,11 +4515,6 @@ bool IsSystemTrayShadowEnabled() {
 
 bool IsSysUiShouldHoldbackDriveIntegrationEnabled() {
   return base::FeatureList::IsEnabled(kSysUiShouldHoldbackDriveIntegration) &&
-         !base::FeatureList::IsEnabled(kIgnoreM129Holdback);
-}
-
-bool IsSysUiShouldHoldbackForestEnabled() {
-  return base::FeatureList::IsEnabled(kSysUiShouldHoldbackForest) &&
          !base::FeatureList::IsEnabled(kIgnoreM129Holdback);
 }
 

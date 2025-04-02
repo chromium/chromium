@@ -277,11 +277,11 @@ BASE_FEATURE(kPrivacySandboxAllowPromptForBlocked3PCookies,
              "PrivacySandboxAllowPromptForBlocked3PCookies",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrivacySandboxEqualizedPromptButtons,
-             "PrivacySandboxEqualizedPromptButtons",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPrivacySandboxMigratePrefsToSchemaV2,
              "PrivacySandboxMigratePrefsToSchemaV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPrivacySandboxFirstTimeNoticeV2,
+             "PrivacySandboxFirstTimeNoticeV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace privacy_sandbox

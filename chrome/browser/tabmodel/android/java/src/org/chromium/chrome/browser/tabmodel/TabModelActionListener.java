@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabmodel;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 
 import java.lang.annotation.Retention;
@@ -15,6 +16,7 @@ import java.lang.annotation.RetentionPolicy;
  * Listener to get updates for actions that may show speedbump dialogs when performing operations on
  * a {@link TabModel}. See {@link TabRemover} and {@link TabUngrouper}.
  */
+@NullMarked
 public interface TabModelActionListener {
     /** An enum representing the type of dialog that was shown. */
     @IntDef({DialogType.NONE, DialogType.SYNC, DialogType.COLLABORATION})

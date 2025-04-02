@@ -72,7 +72,7 @@ class AutofillAiModelCacheImpl : public AutofillAiModelCache,
   // Returns the entry corresponding to `form_signature` in the form that it
   // is saved in the database.
   base::optional_ref<const CacheEntryWithMetadata> GetRawEntry(
-      FormSignature form_signature) const;
+      FormSignature form_signature) const LIFETIME_BOUND;
 
   // Removes expired cache entries and limits the cache size to
   // `max_cache_size_` by removing the oldest entries.

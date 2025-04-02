@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Тодорхойлогч файл буруу байна</translation>
 <translation id="7217838517480956708">Энэ машины админаас суулгах <ph name="EXTENSION_NAME" />-ийг шаардаж байна. Үүнийг устгах юмуу өөрчилж болохгүй.</translation>
 <translation id="7612608473764576263">Хувийн түлхүүрийн оролтын утга хүчинтэй формат байх ёстой (PKCS#8-формат PEM-кодолсон RSA түлхүүр).</translation>
+<translation id="7876803335449432072">Контентын скриптэд зориулж '<ph name="RELATIVE_PATH" />' файлыг ачаалж чадсангүй. Контентын скриптийн style sheet-г зөвхөн .css файл зэрэг дэмжигдсэн style sheet файлаас ачаалж болно.</translation>
 <translation id="7939686037314084444">Тус өргөтгөлийг зохих ёсоор ачаалж чадсангүй. Энэ нь сүлжээний хүсэлтийг зогсоох боломжгүй байж болзошгүй.</translation>
 <translation id="7972881773422714442">Сонголтууд: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Хэрэглэгч рүү харсан</translation>
 <translation id="8047248493720652249">Өөр өргөтгөл (<ph name="EXTENSION_NAME" /> ) татсан файлын нэрийг <ph name="ACTUAL_FILENAME" /> өөрөөр тодорхойлсон тул энэхүү өргөтгөлийн зүгээс <ph name="ATTEMPTED_FILENAME" /> гэсэн нэрээр нэрлэх үйлдэл амжилтгүй болсон байна.</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" />-ний <ph name="PRODUCT_NAME" /></translation>
 <translation id="8517576857589387417">Тодорхойлогч файл байхгүй эсвэл үүнийг унших боломжгүй байна</translation>
+<translation id="8621383749470166852">Контентын скриптэд зориулж '<ph name="RELATIVE_PATH" />' файлыг ачаалж чадсангүй. Контентын скриптийг зөвхөн .js файл зэрэг JavaScript-н файлаас ачаалж болно.</translation>
 <translation id="8636666366616799973">Багц нь хүчингүй байна. Дэлгэрэнгүй мэдээллийг: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" таны аль нэг төхөөрөмжид хандах хүсэлтэй байна:</translation>
 <translation id="8885905466771744233">Зааж өгсөн өргөтгөлийн хувийн түлхүүр  аль хэдийн суугдсан байна.  Энэ түлхүүрийг дахин ашиглах эсвэл эхлээд устгана уу.</translation>

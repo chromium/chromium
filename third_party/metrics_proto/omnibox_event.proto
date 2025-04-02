@@ -14,7 +14,7 @@ package metrics;
 import "omnibox_input_type.proto";
 
 // Stores information about an omnibox interaction.
-// Next tag: 28
+// Next tag: 29
 message OmniboxEventProto {
   // The timestamp for the event, in seconds.
   // This value comes from Chromium's TimeTicks::Now(), which is an abstract
@@ -331,6 +331,9 @@ message OmniboxEventProto {
     // Contextual search autocomplete provider for the '@page' keyword mode of
     // the omnibox.
     CONTEXTUAL_SEARCH_PROVIDER = 33;
+
+    // A verbatim match for the input.
+    VERBATIM_MATCH = 34;
   }
 
   // The result set displayed on the completion popup
@@ -680,6 +683,24 @@ message OmniboxEventProto {
 
   // Whether the Omnibox was in keyword mode, however it was entered.
   optional bool in_keyword_mode = 19;
+
+  // The type of keyword used in keyword mode. Not present if not in keyword
+  // mode.
+  enum KeywordType {
+    KEYWORD_TYPE_UNSPECIFIED = 0;
+    STARTER_PACK = 1;                           // Starter pack keyword.
+    FEATURED_POLICY_SET_SEARCH_AGGREGATOR = 2;  // Featured keyword set by
+                                                // enterprise search
+                                                // aggregator policy.
+    FEATURED_POLICY_SET_SITE_SEARCH = 3;        // Featured policy-set
+                                                // site search keyword.
+    NON_FEATURED_POLICY_SET_SITE_SEARCH = 4;    // Non-featured policy-set
+                                                // site search keyword.
+    USER_CREATED_SITE_SEARCH = 5;               // User-created site
+                                                // search keyword.
+  }
+
+  optional KeywordType keyword_type = 28;
 
   // How the Omnibox got into keyword mode. Not present if not in keyword
   // mode.

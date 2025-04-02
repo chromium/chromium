@@ -12,6 +12,7 @@
 #include <linux/v4l2-controls.h>
 
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_math.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_decode_surface.h"
@@ -37,7 +38,7 @@ class V4L2VP9Picture : public VP9Picture {
   ~V4L2VP9Picture() override = default;
 
   scoped_refptr<VP9Picture> CreateDuplicate() override {
-    return new V4L2VP9Picture(dec_surface_);
+    return base::MakeRefCounted<V4L2VP9Picture>(dec_surface_);
   }
 
   scoped_refptr<V4L2DecodeSurface> dec_surface_;
@@ -169,7 +170,7 @@ scoped_refptr<VP9Picture> V4L2VideoDecoderDelegateVP9::CreateVP9Picture() {
   if (!dec_surface)
     return nullptr;
 
-  return new V4L2VP9Picture(std::move(dec_surface));
+  return base::MakeRefCounted<V4L2VP9Picture>(std::move(dec_surface));
 }
 
 scoped_refptr<VP9Picture> V4L2VideoDecoderDelegateVP9::CreateVP9PictureSecure(
@@ -180,7 +181,7 @@ scoped_refptr<VP9Picture> V4L2VideoDecoderDelegateVP9::CreateVP9PictureSecure(
     return nullptr;
   }
 
-  return new V4L2VP9Picture(std::move(dec_surface));
+  return base::MakeRefCounted<V4L2VP9Picture>(std::move(dec_surface));
 }
 
 DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(

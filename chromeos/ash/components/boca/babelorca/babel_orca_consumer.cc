@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_caption_translator.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_controller.h"
@@ -38,6 +39,9 @@
 
 namespace ash::babelorca {
 namespace {
+
+constexpr char kReceivingStoppedReasonUma[] =
+    "Ash.Boca.Babelorca.ReceivingStoppedReason";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("ash_babelorca_babel_orca_consumer",
@@ -146,6 +150,10 @@ void BabelOrcaConsumer::OnSessionStarted() {
 }
 
 void BabelOrcaConsumer::OnSessionEnded() {
+  if (IsReceivingCaptions()) {
+    base::UmaHistogramEnumeration(kReceivingStoppedReasonUma,
+                                  ReceivingStoppedReason::kSessionEnded);
+  }
   in_session_ = false;
   Reset();
 }
@@ -153,6 +161,11 @@ void BabelOrcaConsumer::OnSessionEnded() {
 void BabelOrcaConsumer::OnSessionCaptionConfigUpdated(
     bool session_captions_enabled,
     bool translations_enabled) {
+  if (IsReceivingCaptions() && !session_captions_enabled) {
+    base::UmaHistogramEnumeration(
+        kReceivingStoppedReasonUma,
+        ReceivingStoppedReason::kSessionCaptionTurnedOff);
+  }
   if (!in_session_) {
     LOG(ERROR) << "Session caption config event called out of session.";
     return;
@@ -170,6 +183,11 @@ void BabelOrcaConsumer::OnSessionCaptionConfigUpdated(
 
 void BabelOrcaConsumer::OnLocalCaptionConfigUpdated(
     bool local_captions_enabled) {
+  if (IsReceivingCaptions() && !local_captions_enabled) {
+    base::UmaHistogramEnumeration(
+        kReceivingStoppedReasonUma,
+        ReceivingStoppedReason::kLocalCaptionTurnedOff);
+  }
   if (!in_session_) {
     LOG(ERROR) << "Consumer local caption config event called out of session.";
     return;
@@ -228,6 +246,10 @@ void BabelOrcaConsumer::StartReceiving() {
 }
 
 void BabelOrcaConsumer::OnSignedIn(bool success) {
+  if (IsReceivingCaptions() && !success) {
+    base::UmaHistogramEnumeration(kReceivingStoppedReasonUma,
+                                  ReceivingStoppedReason::kTachyonSigninError);
+  }
   if (!success) {
     // TODO(crbug.com/373692250): report error.
     LOG(ERROR) << "Failed to signin to Tachyon";
@@ -269,6 +291,10 @@ void BabelOrcaConsumer::JoinSessionTachyonGroup() {
 }
 
 void BabelOrcaConsumer::OnJoinGroupResponse(TachyonResponse response) {
+  if (IsReceivingCaptions() && !response.ok()) {
+    base::UmaHistogramEnumeration(kReceivingStoppedReasonUma,
+                                  ReceivingStoppedReason::kJoinGroupError);
+  }
   if (!response.ok()) {
     // TODO(crbug.com/373692250): report error.
     LOG(ERROR) << "Failed to join Tachyon group";
@@ -294,6 +320,11 @@ void BabelOrcaConsumer::OnTranscriptReceived(
 }
 
 void BabelOrcaConsumer::OnReceivingFailed() {
+  if (IsReceivingCaptions()) {
+    base::UmaHistogramEnumeration(
+        kReceivingStoppedReasonUma,
+        ReceivingStoppedReason::kTachyonReceiveMessagesError);
+  }
   // TODO(crbug.com/373692250): report error.
   LOG(ERROR) << "Transcript receive request failed";
   // Only reset local captions since session caption is not controlled by the
@@ -312,6 +343,10 @@ void BabelOrcaConsumer::Reset() {
   local_captions_enabled_ = false;
   session_captions_enabled_ = false;
   joined_group_ = false;
+}
+
+bool BabelOrcaConsumer::IsReceivingCaptions() {
+  return in_session_ && local_captions_enabled_ && session_captions_enabled_;
 }
 
 }  // namespace ash::babelorca

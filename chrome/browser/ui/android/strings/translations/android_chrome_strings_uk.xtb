@@ -63,7 +63,6 @@
 <translation id="1240288207750131269">Завантажується мовний пакет (<ph name="LANG" />)</translation>
 <translation id="124116460088058876">Інші мови</translation>
 <translation id="1241792820757384812">Ваші паролі буде видалено з Google Менеджера паролів для <ph name="CHROME_CHANNEL" />. Файл із паролями, який ви щойно завантажили, буде збережено.</translation>
-<translation id="1242883863226959074">пристрої</translation>
 <translation id="124678866338384709">Закрити поточну вкладку</translation>
 <translation id="1246905108078336582">Видалити пропозицію з буфера обміну?</translation>
 <translation id="1258753120186372309">Дудл Google: <ph name="DOODLE_DESCRIPTION" /></translation>
@@ -307,6 +306,7 @@
 <translation id="2453860139492968684">Готово</translation>
 <translation id="2461378706168271257">Пошук вкладок</translation>
 <translation id="2461822463642141190">Зараз</translation>
+<translation id="2463770278804271243">СТОРІНКА</translation>
 <translation id="2468444275314013497">Ваш вебпереглядач у безпеці</translation>
 <translation id="2472163211318554013">Увійдіть, щоб користуватися всіма можливостями Chrome</translation>
 <translation id="247737702124049222">Описи зображень увімкнено</translation>
@@ -509,7 +509,6 @@
 <translation id="3398320232533725830">Відкрити Диспетчер закладок</translation>
 <translation id="3414952576877147120">Розмір:</translation>
 <translation id="3421726884497337397">Виберіть, коли потрібно блокувати сторонні файли cookie</translation>
-<translation id="342220687432920852">{HOURS,plural, =1{# год тому}one{# год тому}few{# год тому}many{# год тому}other{# год тому}}</translation>
 <translation id="3430670036890315772">Якщо вимкнути блокування профілю, збережені дані буде вилучено</translation>
 <translation id="3435465986463792564">Забагато вікон? Можете керувати ними тут</translation>
 <translation id="3435575784518354875">Щоб зберегти доступ до своїх паролів, експортуйте їх зараз, оновіть сервіси Google Play і знову імпортуйте паролі в Google Менеджер паролів. <ph name="BEGIN_LINK" />Переглянути докладні вказівки.<ph name="END_LINK" /></translation>
@@ -692,6 +691,7 @@
 <translation id="4269820728363426813">Копіювати адресу посилання</translation>
 <translation id="4270730597186910506">Почати або припинити відстежувати ціну на товар.</translation>
 <translation id="4277529130885813215">Скористатись іншим пристроєм</translation>
+<translation id="427987768447457592">Нова група вкладок</translation>
 <translation id="4282440837784183472">Ваша організація (<ph name="MANAGED_DOMAIN" />) керує обліковим записом, у який ви входите, і тим, як може використовуватися Chrome. Адміністратор може налаштовувати певні функції або обмежувати до них доступ.</translation>
 <translation id="4285498937028063278">Відкріпити</translation>
 <translation id="4285846616383034558">Файли cookie, кеш і інші дані сайтів</translation>
@@ -962,7 +962,6 @@
 <translation id="5517095782334947753">У вас є закладки, історія, паролі й інші налаштування з облікового запису <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5517326820028369152">Нижній екран із даними про останні дії</translation>
 <translation id="5526281268548144413">Не можна закрити в кількох вікнах</translation>
-<translation id="5528925345478618296">{MINUTES,plural, =1{# хв тому}one{# хв тому}few{# хв тому}many{# хв тому}other{# хв тому}}</translation>
 <translation id="5548606607480005320">Перевірка безпеки</translation>
 <translation id="5554520618550346933">Коли ви використовуєте пароль, Chrome попереджає вас, якщо його опубліковано в Інтернеті. Під час цього ваші паролі й імена користувачів шифруються, тож їх ніхто не може прочитати, навіть Google.</translation>
 <translation id="5555525474779371165">Виберіть вид захисту в Безпечному перегляді</translation>
@@ -1273,7 +1272,6 @@
 <translation id="6865313869410766144">Дані автозаповнення форм</translation>
 <translation id="6867400383614725881">Нова анонімна вкладка</translation>
 <translation id="686899695320434745">Адреси не шифруються за допомогою парольної фрази. Це дає змогу використовувати їх в інших сервісах Google.</translation>
-<translation id="6869056123412990582">комп’ютері</translation>
 <translation id="687838958001010630">Кожен, хто має посилання, може редагувати всі вкладки</translation>
 <translation id="6880903702195291049">З дозволами все гаразд</translation>
 <translation id="6883204995689174413">Поділитися</translation>
@@ -1636,7 +1634,6 @@
 <translation id="8419244640277402268">Так, враховувати</translation>
 <translation id="8422250855136581222">Немає вкладок на цьому пристрої</translation>
 <translation id="842386925677997438">Інструменти безпеки Chrome</translation>
-<translation id="8424781820952413435">Сторінку надіслано. Щоб переглянути її, відкрийте Chrome на <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8427875596167638501">Вкладку "Попередній перегляд" відкрито на половину висоти</translation>
 <translation id="8428213095426709021">Налаштування</translation>
 <translation id="8430824733382774043">Поділитися лише знімком екрана</translation>
@@ -1691,7 +1688,6 @@
 <translation id="8611922158252451755">Редагувати можуть усі, хто має посилання, тому надавайте доступ відповідально. Посилання діє 48 годин.</translation>
 <translation id="8616006591992756292">Історія веб-перегляду може також зберігатися у вашому обліковому записі Google на сторінці <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Перейти за URL-адресою, указаною в завантаженому вмісті?</translation>
-<translation id="8621068256433641644">телефоні</translation>
 <translation id="8635399646025169806">Зберегти групу вкладок?</translation>
 <translation id="8636825310635137004">Щоб мати доступ до вкладок з інших пристроїв, увімкніть синхронізацію.</translation>
 <translation id="864544049772947936">Керувати вікнами (<ph name="INSTANCE_COUNTS" />)</translation>

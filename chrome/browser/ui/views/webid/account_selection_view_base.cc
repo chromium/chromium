@@ -347,6 +347,10 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
           *account, avatar_size,
           std::make_optional<gfx::ImageSkia>(
               idp_data.idp_metadata.brand_decoded_icon.AsImageSkia()));
+      // Add a border at the top so that the account avatar is centered, not the
+      // whole badged icon.
+      account_image_view->SetBorder(views::CreateEmptyBorder(
+          gfx::Insets::TLBR(kIdpBadgeOffset, 0, 0, 0)));
     } else {
       account_image_view->SetAccountImage(*account, avatar_size);
     }

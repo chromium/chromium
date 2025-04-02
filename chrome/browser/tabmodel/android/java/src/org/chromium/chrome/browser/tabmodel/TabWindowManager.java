@@ -9,6 +9,7 @@ import android.util.Pair;
 
 import org.chromium.base.Token;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.multiwindow.WindowId;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -31,6 +32,7 @@ import java.util.List;
  *
  * <p>This is the highest level of the hierarchy of Tab containers.
  */
+@NullMarked
 public interface TabWindowManager {
     /**
      * An index that represents the invalid state (i.e. when the window wasn't found in the list).

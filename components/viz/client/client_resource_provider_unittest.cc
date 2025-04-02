@@ -54,7 +54,7 @@ class ClientResourceProviderTest : public testing::TestWithParam<bool> {
 
   // Some tests want to override feature flags that are checked at construction
   // time. Allow them to recreate the provider.
-  void InitProvider() {
+  void InitProvider(bool use_imported_resource_id = false) {
     // VizTestSuite::task_environment is set for us. We use the default
     // TaskRunner for the Main thread. We then create a second TaskRunner which
     // is built on a separate thread for the Compositor thread.
@@ -62,7 +62,8 @@ class ClientResourceProviderTest : public testing::TestWithParam<bool> {
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::ThreadPool::CreateSequencedTaskRunner({}),
         base::BindRepeating(&MockFlushCallback::FlushCallback,
-                            base::Unretained(&mock_flush_callback_)));
+                            base::Unretained(&mock_flush_callback_)),
+        use_imported_resource_id);
   }
 
   void SetUp() override { InitProvider(); }
@@ -1174,6 +1175,31 @@ TEST_P(ClientResourceProviderTest,
   DestroyProvider();
   ExpectFlush();
   VizTestSuite::RunUntilIdle();
+}
+
+// Tests that ImportResource generates a new ResourceId when
+// use_imported_resource_id is false (the default behavior).
+TEST_P(ClientResourceProviderTest, ImportResourceGeneratesNewIdByDefault) {
+  MockReleaseCallback release;
+  TransferableResource resource = MakeTransferableResource(use_gpu(), 'a', 15);
+  ResourceId imported_id = provider().ImportResource(
+      resource, base::BindOnce(&MockReleaseCallback::Released,
+                               base::Unretained(&release)));
+  EXPECT_NE(imported_id, resource.id);
+  provider().RemoveImportedResource(imported_id);
+}
+
+// Tests that ImportResource uses the provided ResourceId when
+// use_imported_resource_id is true.
+TEST_P(ClientResourceProviderTest, ImportResourceUsesImportedIdWhenEnabled) {
+  InitProvider(/*use_imported_resource_id=*/true);
+  MockReleaseCallback release;
+  TransferableResource resource = MakeTransferableResource(use_gpu(), 'a', 15);
+  ResourceId imported_id = provider().ImportResource(
+      resource, base::BindOnce(&MockReleaseCallback::Released,
+                               base::Unretained(&release)));
+  EXPECT_EQ(imported_id, resource.id);
+  provider().RemoveImportedResource(imported_id);
 }
 
 }  // namespace

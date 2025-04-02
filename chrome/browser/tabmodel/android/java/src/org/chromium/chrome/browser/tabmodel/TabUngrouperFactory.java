@@ -4,22 +4,22 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 
 /** Creates a {@link TabUngrouper} for {@link TabGroupModelFilterFactory}. */
 @FunctionalInterface
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+@NullMarked
 public interface TabUngrouperFactory {
     /**
      * @param isIncognitoBranded Whether the filter is for incognito tabs.
      * @param tabGroupModelFilterSupplier The supplier of the {@link TabGroupModelFilter}.
      * @return a {@link TabUngrouper}.
      */
-    /*package*/ @NonNull
+    /*package*/
     TabUngrouper create(
-            boolean isIncognitoBranded,
-            @NonNull Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier);
+            boolean isIncognitoBranded, Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier);
 }

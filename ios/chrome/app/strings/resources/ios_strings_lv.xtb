@@ -440,6 +440,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="2783161812871838616">Pieprasīt vietni datoriem</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Parole ir saglabāta jūsu Google kontā ({EMAIL})}zero{Paroles ir saglabātas jūsu Google kontā ({EMAIL})}one{Paroles ir saglabātas jūsu Google kontā ({EMAIL})}other{Paroles ir saglabātas jūsu Google kontā ({EMAIL})}}</translation>
 <translation id="2791174088547598693">Pievienot paroli…</translation>
+<translation id="2793703503584038325">Atlasiet paroli un pieskarieties ikonai “Kopīgot”.</translation>
 <translation id="2797302972324086597">Valsts kods</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} fails}zero{{COUNT} failu}one{{COUNT} fails}other{{COUNT} faili}}</translation>
 <translation id="2816489851009559785">Izvēlne → Iestatījumi → Noklusējuma pārlūks</translation>
@@ -579,6 +580,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="35083190962747987">Atvērt ${url}</translation>
 <translation id="3511519535430890904">Pievienojiet pārlūkošanas aizsardzību</translation>
 <translation id="3517216995152707259">Dzēšot pārlūkošanas datus, jūs neizrakstāties no Google konta. Lai to izdarītu, <ph name="BEGIN_LINK" />izrakstieties no pārlūka Chrome<ph name="END_LINK" />.</translation>
+<translation id="3519792890877853853">Šajā kartītē tiek rādītas atsauksmes par produktiem jūsu atvērtajās cilnēs.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Atvērt cilni}zero{Atvērt {count} cilnes}one{Atvērt {count} cilni}other{Atvērt {count} cilnes}}</translation>
 <translation id="3523513363815970085">Paslēpt kartīti “Jūsu populārākās vietnes”</translation>
 <translation id="3523789730715594198">Jebkurā brīdī iestatījumos varat pārtraukt sinhronizēšanu. Google var personalizēt pakalpojumu Meklēšana un citus pakalpojumus, ņemot vērā jūsu vēsturi.</translation>
@@ -819,6 +821,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4565377596337484307">Slēpt paroli</translation>
 <translation id="4568230126482344545">Paslēpt vienumu “Nesen atvērtās cilnes”</translation>
 <translation id="4578835633387306383">Ieslēgt…</translation>
+<translation id="4580716718466706433">Pārejiet uz sadaļu “Paroļu pārvaldnieks”.</translation>
 <translation id="4587589328781138893">Vietnes</translation>
 <translation id="4592672037257622855">{count,plural, =1{Lapa tika pievienota jūsu lasīšanas sarakstam.}zero{{count} lapas tika pievienotas jūsu lasīšanas sarakstam.}one{{count} lapa tika pievienota jūsu lasīšanas sarakstam.}other{{count} lapas tika pievienotas jūsu lasīšanas sarakstam.}}</translation>
 <translation id="459644946100970322">Vai ieslēgt brīdinājumus par cenu?</translation>
@@ -858,6 +861,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4717844083556844785">Šajā tīmekļa lapā esat inkognito režīmā</translation>
 <translation id="4719927025381752090">Piedāvāt tulkot</translation>
 <translation id="4720530280568305198">Atlasītais saturs tika atvērts jaunā cilnē.</translation>
+<translation id="472259426228234149">Cena: 100 $–180 $</translation>
 <translation id="473775607612524610">Atjaunināt</translation>
 <translation id="474209246745757965">Iepērcieties un tulkojiet, izmantojot kameru</translation>
 <translation id="4742407542027196863">Pārvaldīt paroles…</translation>

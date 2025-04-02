@@ -28,6 +28,8 @@ source_set("ui") {
     "empty_credentials_view_controller.mm",
     "generic_error_view_controller.h",
     "generic_error_view_controller.mm",
+    "multi_profile_passkey_creation_view_controller.h",
+    "multi_profile_passkey_creation_view_controller.mm",
     "new_password_coordinator+Testing.h",
     "new_password_coordinator.h",
     "new_password_coordinator.mm",

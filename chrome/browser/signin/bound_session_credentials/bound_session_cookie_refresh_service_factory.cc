@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
@@ -21,6 +22,15 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/network_service_instance.h"
+
+BASE_FEATURE(kEnableBoundSessionCredentialsWsbetaBypass,
+             "EnableBoundSessionCredentialsWsbetaBypass",
+#if BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // static
 BoundSessionCookieRefreshServiceFactory*
@@ -52,11 +62,25 @@ BoundSessionCookieRefreshServiceFactory::
 BoundSessionCookieRefreshServiceFactory::
     ~BoundSessionCookieRefreshServiceFactory() = default;
 
+bool BoundSessionCookieRefreshServiceFactory::ServiceIsNULLWhileTesting()
+    const {
+  // Avoid building the service in tests that don't have a proper network
+  // context.
+  return true;
+}
+
 std::unique_ptr<KeyedService>
 BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  if (base::FeatureList::IsEnabled(
+          switches::kBoundSessionCredentialsKillSwitch)) {
+    return nullptr;
+  }
+
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs())) {
+  if (!switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs()) &&
+      !base::FeatureList::IsEnabled(
+          kEnableBoundSessionCredentialsWsbetaBypass)) {
     return nullptr;
   }
 
@@ -87,7 +111,7 @@ BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
               *key_service,
               BoundSessionParamsStorage::CreateForProfile(*profile),
               profile->GetDefaultStoragePartition(),
-              content::GetNetworkConnectionTracker(),
+              content::GetNetworkConnectionTracker(), profile->GetPrefs(),
               profile->IsOffTheRecord());
   bound_session_cookie_refresh_service->Initialize();
   return bound_session_cookie_refresh_service;

@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 
 class ScopedKeepAlive;
@@ -19,6 +20,7 @@ class ScopedProfileKeepAlive;
 namespace web_app {
 
 struct IsolatedWebAppApplyUpdateCommandError;
+class IsolatedWebAppApplyUpdateCommandSuccess;
 class WebAppCommandScheduler;
 
 // This task is responsible for applying a pending Isolated Web App update by
@@ -26,7 +28,8 @@ class WebAppCommandScheduler;
 class IsolatedWebAppUpdateApplyTask {
  public:
   using CompletionStatus =
-      base::expected<void, IsolatedWebAppApplyUpdateCommandError>;
+      base::expected<IsolatedWebAppApplyUpdateCommandSuccess,
+                     IsolatedWebAppApplyUpdateCommandError>;
   using CompletionCallback = base::OnceCallback<void(CompletionStatus status)>;
 
   IsolatedWebAppUpdateApplyTask(

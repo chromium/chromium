@@ -1614,12 +1614,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
   // install source.
   EXPECT_FALSE(provider->registrar_unsafe().CanUserUninstallWebApp(app_id));
   const WebApp& web_app = *provider->registrar_unsafe().GetAppById(app_id);
-  if (base::FeatureList::IsEnabled(
-          features::kWebAppDontAddExistingAppsToSync)) {
     EXPECT_TRUE(web_app.GetSources().Has(WebAppManagement::kUserInstalled));
-  } else {
-    EXPECT_TRUE(web_app.IsSynced());
-  }
   EXPECT_TRUE(web_app.IsPolicyInstalledApp());
 }
 

@@ -115,8 +115,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
     // |receiver_| is bound and the fetch event is being dispatched to the
     // service worker.
     kStarted,
-    // The response head has been sent to |url_loader_client_|.
-    kSentHeader,
     // The data pipe for the response body has been sent to
     // |url_loader_client_|. The body is being written to the pipe.
     kSentBody,
@@ -142,10 +140,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
                      blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream);
 
   // ServiceWorkerResourceLoader overrides:
-  // Calls url_loader_client_->OnReceiveResponse() with given |response_head|.
-  void CommitResponseHeaders(
-      const network::mojom::URLResponseHeadPtr& response_head) override;
-
   // Calls url_loader_client_->OnReceiveResponse() with
   // |response_head|, |response_body| and |cached_metadata|.
   void CommitResponseBody(

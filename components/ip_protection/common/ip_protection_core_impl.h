@@ -80,7 +80,7 @@ class IpProtectionCoreImpl
       ProxyLayer proxy_layer);
   IpProtectionProxyConfigManager* GetIpProtectionProxyConfigManagerForTesting();
 
-  std::optional<ProbabilisticRevealToken> GetProbabilisticRevealToken(
+  std::optional<std::string> GetProbabilisticRevealToken(
       const std::string& top_level,
       const std::string& third_party) override;
 

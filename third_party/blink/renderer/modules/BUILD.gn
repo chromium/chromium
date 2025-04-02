@@ -80,6 +80,7 @@ component("modules") {
     "//third_party/blink/renderer/modules/contacts_picker",
     "//third_party/blink/renderer/modules/content_extraction",
     "//third_party/blink/renderer/modules/content_index",
+    "//third_party/blink/renderer/modules/context_menu",
     "//third_party/blink/renderer/modules/cookie_store",
     "//third_party/blink/renderer/modules/credentialmanagement",
     "//third_party/blink/renderer/modules/crypto",
@@ -668,10 +669,6 @@ source_set("unit_tests") {
       # preventing meaningful testing.
       "mediastream/capture_controller_test.cc",
     ]
-  }
-
-  if (media_use_openh264) {
-    sources += [ "mediarecorder/h264_encoder_unittest.cc" ]
   }
 
   configs += [

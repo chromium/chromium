@@ -17,6 +17,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {DeepLinkingMixin} from '../../common/deep_linking_mixin.js';
 import {RouteOriginMixin} from '../../common/route_origin_mixin.js';
+import type {PrefsState} from '../../common/types.js';
 import {recordSettingChange} from '../../metrics_recorder.js';
 import type {App, AppNotificationsHandlerInterface} from '../../mojom-webui/app_notification_handler.mojom-webui.js';
 import {AppNotificationsObserverReceiver} from '../../mojom-webui/app_notification_handler.mojom-webui.js';
@@ -86,7 +87,7 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
     };
   }
 
-  prefs: {[key: string]: any};
+  prefs: PrefsState;
   private appList_: App[];
   private appNotificationsObserverReceiver_: AppNotificationsObserverReceiver|
       null;

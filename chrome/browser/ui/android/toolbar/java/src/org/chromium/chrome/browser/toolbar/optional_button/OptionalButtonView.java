@@ -19,6 +19,7 @@ import android.transition.Transition.TransitionListener;
 import android.transition.TransitionManager;
 import android.transition.TransitionSet;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -246,6 +247,20 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mClickListener = buttonSpec.getOnClickListener();
         mLongClickListener = buttonSpec.getOnLongClickListener();
         mButton.setEnabled(buttonData.isEnabled());
+
+        // Set circular highlight for optional button when button variant is profile, share, voice
+        // search and new tab. Set box highlight for the rest of button variants.
+        int resId = buttonData.getBackgroundResource();
+        if (buttonData.getButtonSpec().shouldShowBackgroundHighlight()
+                && resId != Resources.ID_NULL) {
+            mButton.setBackgroundResource(resId);
+        } else {
+            TypedValue themeRes = new TypedValue();
+            getContext()
+                    .getTheme()
+                    .resolveAttribute(R.attr.selectableItemBackground, themeRes, true);
+            mButton.setBackgroundResource(themeRes.resourceId);
+        }
 
         // Set hover state tooltip text for optional toolbar buttons(e.g. share, voice search, new
         // tab and profile).

@@ -57,13 +57,11 @@ std::vector<crashpad::CrashReportDatabase::Report> GetNewReports(
     time_t latest_creation_time) {
   auto crashpad_path = crash_reporter::GetCrashpadDatabasePath();
   if (!crashpad_path) {
-    VLOG(1) << "enterprise.crash_reporting: no valid crashpad path";
     return {};
   }
   std::unique_ptr<crashpad::CrashReportDatabase> database =
       crashpad::CrashReportDatabase::InitializeWithoutCreating(*crashpad_path);
   if (!database) {
-    VLOG(1) << "enterprise.crash_reporting: failed to fetch crashpad db";
     return {};
   }
   return GetNewReportsFromDatabase(latest_creation_time, database.get());
@@ -76,13 +74,10 @@ void ReportCrashes() {
   }
   RealtimeReportingClient* reporting_client =
       context->GetCrashReportingClient();
-  VLOG(1) << "enterprise.crash_reporting: crash reporting enabled: "
-          << (reporting_client != nullptr);
   if (!reporting_client) {
     g_browser_process->local_state()->ClearPref(kLatestCrashReportCreationTime);
     return;
   }
-  VLOG(1) << "enterprise.crash_reporting: checking for unreported crashes";
   time_t latest_creation_time =
       GetLatestCrashReportTime(g_browser_process->local_state());
   if (latest_creation_time == 0) {
@@ -117,8 +112,6 @@ base::TimeDelta GetCrashpadPollingInterval() {
       }
     }
   }
-  VLOG(1) << "enterprise.crash_reporting: crashpad polling interval set to "
-          << result;
   return result;
 }
 
@@ -141,10 +134,7 @@ std::vector<crashpad::CrashReportDatabase::Report> GetNewReportsFromDatabase(
 }
 
 time_t GetLatestCrashReportTime(PrefService* local_state) {
-  time_t timestamp = local_state->GetInt64(kLatestCrashReportCreationTime);
-  VLOG(1) << "enterprise.crash_reporting: latest crash report time: "
-          << base::Time::FromTimeT(timestamp);
-  return timestamp;
+  return local_state->GetInt64(kLatestCrashReportCreationTime);
 }
 
 void SetLatestCrashReportTime(PrefService* local_state, time_t timestamp) {
@@ -155,8 +145,6 @@ void UploadToReportingServer(
     base::WeakPtr<RealtimeReportingClient> reporting_client,
     PrefService* local_state,
     std::vector<crashpad::CrashReportDatabase::Report> reports) {
-  VLOG(1) << "enterprise.crash_reporting: " << reports.size()
-          << " crashes to report";
   if (reports.empty() || !reporting_client) {
     return;
   }
@@ -227,14 +215,12 @@ bool CrashReportingContext::HasActiveProfile() const {
 
 void CrashReportingContext::OnBrowserUnenrolled(bool succeeded) {
   if (succeeded && repeating_crash_report_.IsRunning()) {
-    VLOG(1) << "enterprise.crash_reporting: browser unenrolled";
     repeating_crash_report_.Stop();
   }
 }
 
 void CrashReportingContext::OnCloudReportingLaunched(
     enterprise_reporting::ReportScheduler* report_scheduler) {
-  VLOG(1) << "enterprise.crash_reporting: crash event reporting initializing";
   // An initial call to ReportCrashes() is required because the first call
   // in the repeating callback happens after the delay.
   ReportCrashes();

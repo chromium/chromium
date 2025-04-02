@@ -692,13 +692,11 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
   AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
   ui::AXTreeID tree_id = manager->ax_tree_id();
 
-  // TODO: after Lacros, this should be EQ.
   EXPECT_NE(nullptr, registry->GetActionHandler(tree_id));
   manager->Enable();
   EXPECT_NE(nullptr, registry->GetActionHandler(tree_id));
   manager->Disable();
 
-  // TODO: after Lacros, this should be EQ.
   EXPECT_NE(nullptr, registry->GetActionHandler(tree_id));
   manager->Enable();
   EXPECT_NE(nullptr, registry->GetActionHandler(tree_id));

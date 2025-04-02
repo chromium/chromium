@@ -1217,6 +1217,10 @@ bool ContentBrowserClient::ShouldOverrideUrlLoading(
 }
 #endif
 
+bool ContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync() {
+  return true;
+}
+
 bool ContentBrowserClient::ShouldAllowSameSiteRenderFrameHostChange(
     const RenderFrameHost& rfh) {
   return true;
@@ -1958,6 +1962,16 @@ bool ContentBrowserClient::ShouldPrioritizeForBackForwardCache(
     BrowserContext* browser_context,
     const GURL& url) {
   return false;
+}
+
+std::unique_ptr<KeepAliveRequestTracker>
+ContentBrowserClient::MaybeCreateKeepAliveRequestTracker(
+    const network::ResourceRequest& request,
+    std::optional<ukm::SourceId> ukm_source_id,
+    bool is_attribution_request,
+    KeepAliveRequestTracker::IsContextDetachedCallback
+        is_context_detached_callback) {
+  return nullptr;
 }
 
 }  // namespace content

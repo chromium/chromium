@@ -1,5 +1,6 @@
 {
   "gn_args": {
+    "android_static_analysis": "on",
     "clang_use_default_sample_profile": false,
     "debuggable_apks": false,
     "default_min_sdk_version": 23,

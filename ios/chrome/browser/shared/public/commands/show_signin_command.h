@@ -84,6 +84,10 @@ enum class AuthenticationOperation {
 // approved it before. Default: YES
 @property(nonatomic, assign) BOOL optionalHistorySync;
 
+// Whether the sign-in promo should be displayed in a fullscreen modal.
+// Default: NO.
+@property(nonatomic, assign) BOOL fullScreenPromo;
+
 // The completion to be invoked after the operation is complete.
 @property(nonatomic, copy, readonly)
     SigninCoordinatorCompletionCallback completion;

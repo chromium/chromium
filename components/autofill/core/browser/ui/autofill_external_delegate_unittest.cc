@@ -265,16 +265,6 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
   MockBrowserAutofillManager& operator=(const MockBrowserAutofillManager&) =
       delete;
 
-  bool ShouldShowCardsFromAccountOption(
-      const FormData& form,
-      const FieldGlobalId& field_id,
-      AutofillSuggestionTriggerSource trigger_source) const override {
-    return should_show_cards_from_account_option_;
-  }
-
-  void ShowCardsFromAccountOption() {
-    should_show_cards_from_account_option_ = true;
-  }
   MOCK_METHOD(void,
               UndoAutofill,
               (mojom::ActionPersistence action_persistence,
@@ -321,9 +311,6 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                FieldType,
                const std::string&),
               (override));
-
- private:
-  bool should_show_cards_from_account_option_ = false;
 };
 
 class AutofillExternalDelegateTest : public testing::Test {
@@ -476,17 +463,6 @@ class AutofillExternalDelegateTest : public testing::Test {
   // Form containing the triggering field that initialized the external delegate
   // `OnQuery`.
   FormData queried_form_;
-};
-
-// Variant for use in cases when we expect the BrowserAutofillManager would
-// normally set the |should_show_cards_from_account_option_| bit.
-class AutofillExternalDelegateCardsFromAccountTest
-    : public AutofillExternalDelegateTest {
- protected:
-  void SetUp() override {
-    AutofillExternalDelegateTest::SetUp();
-    manager().ShowCardsFromAccountOption();
-  }
 };
 
 TEST_F(AutofillExternalDelegateTest, GetMainFillingProduct) {
@@ -2720,32 +2696,6 @@ TEST_F(AutofillExternalDelegateTest, RemoveSuggestion_ServerCard) {
       pdm().payments_data_manager().GetCreditCardByGUID(server_card.guid()));
 }
 
-TEST_F(AutofillExternalDelegateCardsFromAccountTest,
-       ShowCardsFromAccountMetrics) {
-  using Event = autofill_metrics::ShowCardsFromGoogleAccountButtonEvent;
-  static constexpr std::string_view kUmaName =
-      "Autofill.ButterForPayments.ShowCardsFromGoogleAccountButtonEvents";
-  base::HistogramTester histogram_tester;
-
-  auto show_suggestions = [&] {
-    std::vector<Suggestion> suggestions = {
-        Suggestion(SuggestionType::kShowAccountCards)};
-    OnSuggestionsReturned(queried_field().global_id(), suggestions);
-    external_delegate().OnSuggestionsShown(suggestions);
-  };
-  IssueOnQuery();
-
-  show_suggestions();
-  EXPECT_THAT(histogram_tester.GetAllSamples(kUmaName),
-              BucketsAre(base::Bucket(Event::kButtonAppeared, 1),
-                         base::Bucket(Event::kButtonAppearedOnce, 1)));
-
-  show_suggestions();
-  EXPECT_THAT(histogram_tester.GetAllSamples(kUmaName),
-              BucketsAre(base::Bucket(Event::kButtonAppeared, 2),
-                         base::Bucket(Event::kButtonAppearedOnce, 1)));
-}
-
 TEST_F(AutofillExternalDelegateTest, RecordSuggestionTypeOnSuggestionAccepted) {
   base::HistogramTester histogram_tester;
   IssueOnQuery();
@@ -2790,8 +2740,7 @@ TEST_F(AutofillExternalDelegateTest, UpdateSuggestions) {
 
 #if BUILDFLAG(IS_IOS)
 // Tests that outdated returned suggestions are discarded.
-TEST_F(AutofillExternalDelegateCardsFromAccountTest,
-       ShouldDiscardOutdatedSuggestions) {
+TEST_F(AutofillExternalDelegateTest, ShouldDiscardOutdatedSuggestions) {
   FieldGlobalId old_field_id = test::MakeFieldGlobalId();
   FieldGlobalId new_field_id = test::MakeFieldGlobalId();
   client().set_last_queried_field(new_field_id);

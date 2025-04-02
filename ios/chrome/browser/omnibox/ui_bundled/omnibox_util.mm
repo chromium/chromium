@@ -31,6 +31,7 @@ OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
     case AutocompleteMatchType::DOCUMENT_SUGGESTION:
     case AutocompleteMatchType::HISTORY_BODY:
     case AutocompleteMatchType::HISTORY_CLUSTER:
+    case AutocompleteMatchType::HISTORY_KEYWORD:
     case AutocompleteMatchType::HISTORY_TITLE:
     case AutocompleteMatchType::HISTORY_URL:
     case AutocompleteMatchType::NAVSUGGEST:

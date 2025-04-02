@@ -316,6 +316,7 @@ void ParentAccessView::DisplayErrorMessage(content::WebContents* web_contents) {
       views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY);
   title_label->SetProperty(views::kMarginsKey,
                            gfx::Insets().set_top(top_margin));
+  auto* title_label_ptr = title_label.get();
   error_view->AddChildView(std::move(title_label));
 
   // Add dialog body text.
@@ -356,6 +357,12 @@ void ParentAccessView::DisplayErrorMessage(content::WebContents* web_contents) {
   // Triggers the dialog resizing.
   error_view_->SetPreferredSize(kErrorViewPreferredSize);
   widget->Show();
+
+  if (removed_view_holder_ && removed_view_holder_->GetVisible()) {
+    // Focus the error screen title to facilitate screen reader announcements in
+    // the change of the dialog's content.
+    GetFocusManager()->SetFocusedView(title_label_ptr);
+  }
 }
 
 content::WebContents* ParentAccessView::GetWebViewContents() {

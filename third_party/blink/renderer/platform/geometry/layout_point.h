@@ -44,21 +44,22 @@ class String;
 
 namespace blink {
 
-class PLATFORM_EXPORT LayoutPoint {
+// This class is deprecated. PhysicalOffset or LogicalOffset should be used.
+class PLATFORM_EXPORT DeprecatedLayoutPoint {
   DISALLOW_NEW();
 
  public:
-  constexpr LayoutPoint() = default;
-  constexpr LayoutPoint(LayoutUnit x, LayoutUnit y) : x_(x), y_(y) {}
-  constexpr explicit LayoutPoint(const gfx::PointF& point)
+  constexpr DeprecatedLayoutPoint() = default;
+  constexpr DeprecatedLayoutPoint(LayoutUnit x, LayoutUnit y) : x_(x), y_(y) {}
+  constexpr explicit DeprecatedLayoutPoint(const gfx::PointF& point)
       : x_(point.x()), y_(point.y()) {}
 
   // This is deleted to avoid unwanted lossy conversion from float or double to
   // LayoutUnit or int. Use explicit LayoutUnit constructor for each parameter
   // instead.
-  LayoutPoint(double, double) = delete;
+  DeprecatedLayoutPoint(double, double) = delete;
 
-  bool operator==(const LayoutPoint&) const = default;
+  bool operator==(const DeprecatedLayoutPoint&) const = default;
 
   constexpr LayoutUnit X() const { return x_; }
   constexpr LayoutUnit Y() const { return y_; }
@@ -69,7 +70,8 @@ class PLATFORM_EXPORT LayoutPoint {
   LayoutUnit x_, y_;
 };
 
-PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const LayoutPoint&);
+PLATFORM_EXPORT std::ostream& operator<<(std::ostream&,
+                                         const DeprecatedLayoutPoint&);
 
 }  // namespace blink
 

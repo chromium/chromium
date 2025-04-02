@@ -177,7 +177,7 @@ chrome.test.runTests([
     await microtasksFinished();
 
     const drawPanelQuery = 'viewer-side-panel';
-    const textPanelQuery = `div[page-name="${AnnotationMode.TEXT}"]`;
+    const textPanelQuery = 'viewer-text-side-panel';
 
     // Panels are not in the DOM in NONE annotation mode.
     chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);

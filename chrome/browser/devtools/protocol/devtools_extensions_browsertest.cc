@@ -9,6 +9,7 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -69,6 +70,10 @@ class DevToolsExtensionsProtocolTest : public DevToolsProtocolTestBase {
         SendCommandSync(command, std::move(storage_params));
     return get_result;
   }
+
+ private:
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler_;
 };
 
 class DevToolsExtensionsProtocolWithUnsafeDebuggingTest

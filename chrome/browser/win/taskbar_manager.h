@@ -16,7 +16,7 @@ using PinResultCallback = base::OnceCallback<void(bool)>;
 // Functions to pin an icon for a Chrome window to the Windows taskbar, and to
 // check if Chrome should offer to pin. These functions do most of their work on
 // a background thread, but have to finish the work on the UI thread.
-// The result callback will be called from the UI thread.
+// The result callback will be called from the thread that called them.
 
 // `callback` is called with true if pinning is supported, and the app is not
 // currently pinned to the taskbar, false otherwise. There must be a shortcut

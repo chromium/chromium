@@ -1,90 +1,72 @@
-﻿<style include="cr-page-host-style cr-shared-style">
-  :host {
-    display: block;
-    height: 100%;
-    overflow: hidden;
-  }
 
-  cr-button {
-    width: 95%;
-    margin: 3%;
-  }
-
-  cr-toolbar {
-    --cr-toolbar-left-spacer-width: 500px;
-  }
-
-  #requests {
-    height: calc(100% - var(--cr-toolbar-height));
-    overflow: auto;
-  }
-
-  [slot='header'] {
-    padding: 0 var(--cr-section-padding) var(--cr-section-padding);
-  }
-</style>
 <cr-toolbar page-name="Suggest Debug Tool" search-prompt="Filter requests"
-    clear-label="Clear filter" on-search-changed="onFilterChanged_"
-    always-show-logo show-search show-menu on-cr-toolbar-menu-click="showOutputControls_">
+    clear-label="Clear filter" @search-changed="${this.onFilterChanged_}"
+    always-show-logo show-search show-menu
+    @cr-toolbar-menu-click="${this.showOutputControls_}">
 </cr-toolbar>
 <cr-drawer id="drawer" heading="Output controls">
   <div slot="body">
-        <cr-button title="Export requests in JSON format" on-click="onExportClick_">
-          Export
-          <cr-icon icon="cr:file-download" slot="suffix-icon"></cr-icon>
-        </cr-button>
-        <cr-button title="Import requests in JSON format" on-click="onImportClick_">
-          Import
-          <cr-icon icon="suggest:file-upload" slot="suffix-icon"></cr-icon>
-        </cr-button>
-        <input id="fileInput" type="file" accept=".json" style="display: none;" on-change="onImportFile_">
-        <cr-button title="Clear the result list" on-click="onClearClick_">
-          Clear
-          <cr-icon icon="cr:delete" slot="suffix-icon"></cr-icon>
-        </cr-button>
+    <cr-button title="Export requests in JSON format"
+        @click="${this.onExportClick_}">
+      Export
+      <cr-icon icon="cr:file-download" slot="suffix-icon"></cr-icon>
+    </cr-button>
+    <cr-button title="Import requests in JSON format"
+        @click="${this.onImportClick_}">
+      Import
+      <cr-icon icon="suggest:file-upload" slot="suffix-icon"></cr-icon>
+    </cr-button>
+    <input id="fileInput" type="file" accept=".json" style="display: none;"
+      @change="${this.onImportFile_}">
+    <cr-button title="Clear the result list" @click="${this.onClearClick_}">
+      Clear
+      <cr-icon icon="cr:delete" slot="suffix-icon"></cr-icon>
+    </cr-button>
   </div>
 </cr-drawer>
 <div id="requests">
-  <template is="dom-if" if="[[hardcodedRequest_]]">
-    <suggest-request request="[[hardcodedRequest_]]"
-        on-show-toast="onShowToast_"
-        on-open-hardcode-response-dialog="onOpenHardcodeResponseDialog_"
-        on-chip-click="populateSearchInput_">
+  ${this.hardcodedRequest_ ? html`
+    <suggest-request request="${this.hardcodedRequest_}"
+        @show-toast="${this.onShowToast_}"
+        @open-hardcode-response-dialog="${this.onOpenHardcodeResponseDialog_}"
+        @chip-click="${this.populateSearchInput_}">
     </suggest-request>
-  </template>
-  <template is="dom-repeat" items="[[requests_]]" as="request"
-      filter="[[requestFilter_(filter_)]]">
-    <suggest-request request="[[request]]"
-        on-show-toast="onShowToast_"
-        on-open-hardcode-response-dialog="onOpenHardcodeResponseDialog_"
-        on-chip-click="populateSearchInput_">
+  ` : ''}
+  ${this.requests_.filter(
+        request => this.requestFilter_(request)).map(request => html`
+    <suggest-request .request="${request}"
+        @show-toast="${this.onShowToast_}"
+        @open-hardcode-response-dialog="${this.onOpenHardcodeResponseDialog_}"
+        @chip-click="${this.populateSearchInput_}">
     </suggest-request>
-  </template>
+  `)}
 </div>
 <cr-dialog id="hardcodeResponseDialog">
   <div slot="header">
     Confirm to hardcode the following response for all Suggest requests.
   </div>
   <div slot="body">
-    <cr-input type="text" label="Delay" value="{{responseDelay_}}"
-      placeholder="optional delay in milliseconds"
-      pattern="[0-9]+"
-      error-message="must be a positive integer"
-      auto-validate>
+    <cr-input type="text" label="Delay" value="${this.responseDelay_}"
+        @value-changed="${this.onResponseDelayChanged_}"
+        placeholder="optional delay in milliseconds"
+        pattern="[0-9]+"
+        error-message="must be a positive integer"
+        auto-validate>
     </cr-input>
-    <cr-textarea label="Response" value="{{responseText_}}" autogrow>
+    <cr-textarea label="Response" value="${this.responseText_}"
+        @value-changed="${this.onResponseTextChanged_}" autogrow>
     </cr-textarea>
   </div>
   <div slot="button-container">
-    <cr-button class="cancel-button" on-click="onCloseDialogs_">
+    <cr-button class="cancel-button" @click="${this.onCloseDialogs_}">
       Cancel
     </cr-button>
     <cr-button class="action-button"
-        on-click="onConfirmHardcodeResponseDialog_">
+        @click="${this.onConfirmHardcodeResponseDialog_}">
       Confirm
     </cr-button>
   </div>
 </cr-dialog>
-<cr-toast id="toast" duration="[[toastDuration_]]">
-  <div>[[toastMessage_]]</div>
+<cr-toast id="toast" duration="${this.toastDuration_}">
+  <div>${this.toastMessage_}</div>
 </cr-toast>

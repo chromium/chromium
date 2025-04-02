@@ -12,14 +12,15 @@ cargo_crate("lib") {
   crate_name = "ppv_lite86"
   epoch = "0.2"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/ppv-lite86-0.2.21/src/lib.rs"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/ppv-lite86-v0_2/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/ppv-lite86-0.2.21/src/generic.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ppv-lite86-0.2.21/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ppv-lite86-0.2.21/src/soft.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ppv-lite86-0.2.21/src/types.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ppv-lite86-0.2.21/src/x86_64/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/ppv-lite86-0.2.21/src/x86_64/sse2.rs",
+    "//third_party/rust/chromium_crates_io/vendor/ppv-lite86-v0_2/src/generic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/ppv-lite86-v0_2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/ppv-lite86-v0_2/src/soft.rs",
+    "//third_party/rust/chromium_crates_io/vendor/ppv-lite86-v0_2/src/types.rs",
+    "//third_party/rust/chromium_crates_io/vendor/ppv-lite86-v0_2/src/x86_64/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/ppv-lite86-v0_2/src/x86_64/sse2.rs",
   ]
   inputs = []
 

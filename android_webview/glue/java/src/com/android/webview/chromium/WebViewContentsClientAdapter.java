@@ -224,7 +224,7 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
                 TraceEvent.scoped("WebView.APICallback.WebViewClient.shouldInterceptRequest")) {
             AwHistogramRecorder.recordCallbackInvocation(
                     AwHistogramRecorder.WebViewCallbackType.SHOULD_INTERCEPT_REQUEST);
-            if (TRACE) Log.i(TAG, "shouldInterceptRequest=" + request.url);
+            if (TRACE) Log.i(TAG, "shouldInterceptRequest=" + request.getUrl());
             WebResourceResponse response =
                     mWebViewClient.shouldInterceptRequest(
                             mWebView, new WebResourceRequestAdapter(request));

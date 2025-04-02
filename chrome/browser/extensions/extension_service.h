@@ -328,15 +328,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // main frame has been created.
   void DidCreateMainFrameForBackgroundPage(ExtensionHost* host);
 
-  // Record a histogram using the PermissionMessage enum values for each
-  // permission in |e|.
-  // NOTE: If this is ever called with high frequency, the implementation may
-  // need to be made more efficient.
-  static void RecordPermissionMessagesHistogram(
-      const Extension* extension,
-      const char* histogram,
-      bool log_user_profile_histograms);
-
   // Unloads the given extension and marks the extension as terminated. This
   // doesn't notify the user that the extension was terminated, if such a
   // notification is desired the calling code is responsible for doing that.

@@ -47,6 +47,16 @@ class SpdySession;
 class StreamSocket;
 class TransportSecurityState;
 
+// Represents the initiator of a session.
+// TODO(crbug.com/406932139, crbug.com/406936736): Remove once we identify
+// the cause of bugs.
+enum class SpdySessionInitiator : uint32_t {
+  kUnknown = 0,
+  kHttpStreamFactoryJob = 1,
+  kHttpStreamPoolAttemptManager = 2,
+  kHttpProxyConnectJob = 3,
+};
+
 // This is a very simple pool for open SpdySessions.
 class NET_EXPORT SpdySessionPool
     : public NetworkChangeNotifier::IPAddressObserver,
@@ -176,7 +186,9 @@ class NET_EXPORT SpdySessionPool
       std::unique_ptr<StreamSocketHandle> stream_socket_handle,
       const NetLogWithSource& net_log,
       const MultiplexedSessionCreationInitiator session_creation_initiator,
-      base::WeakPtr<SpdySession>* session);
+      base::WeakPtr<SpdySession>* session,
+      SpdySessionInitiator spdy_session_initiator =
+          SpdySessionInitiator::kUnknown);
 
   // Just like the above method, except it takes a SocketStream instead of a
   // StreamSocketHandle, and separate connect timing information. When this
@@ -191,7 +203,9 @@ class NET_EXPORT SpdySessionPool
       const SpdySessionKey& key,
       std::unique_ptr<StreamSocket> socket_stream,
       const LoadTimingInfo::ConnectTiming& connect_timing,
-      const NetLogWithSource& net_log);
+      const NetLogWithSource& net_log,
+      SpdySessionInitiator spdy_session_initiator =
+          SpdySessionInitiator::kUnknown);
 
   // If there is an available session for |key|, return it.
   // Otherwise if there is a session to pool to based on IP address:
@@ -404,7 +418,8 @@ class NET_EXPORT SpdySessionPool
   std::unique_ptr<SpdySession> CreateSession(
       const SpdySessionKey& key,
       NetLog* net_log,
-      const MultiplexedSessionCreationInitiator session_creation_initiator);
+      const MultiplexedSessionCreationInitiator session_creation_initiator,
+      SpdySessionInitiator spdy_session_initiator);
   // Adds a new session previously created with CreateSession to the pool.
   // |source_net_log| is the NetLog for the object that created the session.
   base::expected<base::WeakPtr<SpdySession>, int> InsertSession(

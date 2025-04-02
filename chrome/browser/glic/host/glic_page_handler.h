@@ -58,11 +58,14 @@ class GlicPageHandler : public glic::mojom::PageHandler {
 
   void CreateWebClient(::mojo::PendingReceiver<glic::mojom::WebClientHandler>
                            web_client_receiver) override;
-  void PrepareForClient(base::OnceCallback<void(bool)> callback) override;
+  void PrepareForClient(base::OnceCallback<void(mojom::PrepareForClientResult)>
+                            callback) override;
   // Called whenever the webview main frame commits.
   void WebviewCommitted(const GURL& origin) override;
 
   void ClosePanel() override;
+
+  void SignInAndClosePanel() override;
 
   void ResizeWidget(const gfx::Size& size,
                     base::TimeDelta duration,

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -11,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
@@ -21,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** Helper class to handle tab group color related utilities. */
+@NullMarked
 public class TabGroupColorUtils {
     public static final int INVALID_COLOR_ID = -1;
     private static final String TAB_GROUP_COLORS_FILE_NAME = "tab_group_colors";
@@ -97,7 +101,8 @@ public class TabGroupColorUtils {
                 int suggestedColorId = getNextSuggestedColorId(currentColorCountMap);
                 storeTabGroupColor(rootId, suggestedColorId);
                 currentColorCountMap.put(
-                        suggestedColorId, currentColorCountMap.get(suggestedColorId) + 1);
+                        suggestedColorId,
+                        assumeNonNull(currentColorCountMap.get(suggestedColorId)) + 1);
             }
         }
 
@@ -169,7 +174,7 @@ public class TabGroupColorUtils {
 
             // If the tab group has a color stored on shared prefs, increment the colorId map count.
             if (colorId != INVALID_COLOR_ID) {
-                colorCountMap.put(colorId, colorCountMap.get(colorId) + 1);
+                colorCountMap.put(colorId, assumeNonNull(colorCountMap.get(colorId)) + 1);
             }
         }
 

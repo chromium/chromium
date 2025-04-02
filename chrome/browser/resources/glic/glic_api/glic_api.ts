@@ -619,6 +619,8 @@ export enum InvocationSource {
   UNSUPPORTED = 8,
   /** From the What's New page. */
   WHATS_NEW = 9,
+  /** User clicks sign-in and then signs in. */
+  AFTER_SIGN_IN = 10,
 }
 
 /** The default value of TabContextOptions.pdfSizeLimit. */

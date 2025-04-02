@@ -22,6 +22,7 @@ include_rules = [
   "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/extensions/chrome_extension_test_notification_observer.h",
   "+chrome/browser/extensions/chrome_test_extension_loader.h",
+  "+chrome/browser/extensions/scoped_test_mv2_enabler.h",
   "+chrome/browser/lifetime",
   "+chrome/browser/net",
   "+chrome/browser/notifications",

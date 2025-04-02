@@ -376,7 +376,9 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
             WebDXFeature::kBeforeInstallPrompt},
            {WebFeature::kWebAppManifestLaunchHandler,
             WebDXFeature::kLaunchHandler},
-           {WebFeature::kCSSFunctions, WebDXFeature::kDRAFT_CssFunction}}};
+           {WebFeature::kCSSFunctions, WebDXFeature::kDRAFT_CssFunction},
+           {WebFeature::kSelectionGetComposedRanges,
+            WebDXFeature::kComposedRanges}}};
 
   return *kMap;
 }
@@ -513,7 +515,8 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
             {CSSSampleId::kViewTransitionClass,
              WebDXFeature::kViewTransitionClass},
             {CSSSampleId::kScrollMarkerGroup, WebDXFeature::kScrollMarkers},
-            {CSSSampleId::kInteractivity, WebDXFeature::kInteractivity}}};
+            {CSSSampleId::kInteractivity, WebDXFeature::kInteractivity},
+            {CSSSampleId::kReadingFlow, WebDXFeature::kReadingFlow}}};
 
   return *kMap;
 }

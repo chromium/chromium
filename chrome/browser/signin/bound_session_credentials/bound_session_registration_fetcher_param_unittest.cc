@@ -246,6 +246,66 @@ TEST_F(BoundSessionRegistrationFetcherParamTest, AllValidUnrecognizedAlgo) {
   }
 }
 
+TEST_F(BoundSessionRegistrationFetcherParamTest, AllValidWsbetaTrue) {
+  GURL registration_request = GURL("https://www.google.com/registration");
+  std::vector<scoped_refptr<net::HttpResponseHeaders>> test_cases = {
+      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
+          .AddHeader("Sec-Session-Google-Registration-List",
+                     "(ES256 RS256);path=\"startsession\";"
+                     "challenge=\"Y2hhbGxlbmdl\";wsbeta")
+          .Build(),
+      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
+          .AddHeader("Sec-Session-Google-Registration-List",
+                     "(ES256 RS256);path=\"startsession\";"
+                     "challenge=\"Y2hhbGxlbmdl\";wsbeta=?1")
+          .Build(),
+  };
+
+  for (size_t i = 0; i < test_cases.size(); ++i) {
+    SCOPED_TRACE(i);
+    std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
+        BoundSessionRegistrationFetcherParam::CreateFromHeaders(
+            registration_request, test_cases[i].get());
+
+    ASSERT_EQ(maybe_params.size(), 1U);
+    const BoundSessionRegistrationFetcherParam& params = maybe_params[0];
+    EXPECT_TRUE(params.is_wsbeta());
+  }
+}
+
+TEST_F(BoundSessionRegistrationFetcherParamTest, AllValidWsbetaFalse) {
+  GURL registration_request = GURL("https://www.google.com/registration");
+  std::vector<scoped_refptr<net::HttpResponseHeaders>> test_cases = {
+      // Legacy header doesn't support wsbeta parameter.
+      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
+          .AddHeader("Sec-Session-Google-Registration",
+                     "registration=startsession; supported-alg=ES256,RS256; "
+                     "challenge=Y2hhbGxlbmdl; wsbeta=true")
+          .Build(),
+      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
+          .AddHeader("Sec-Session-Google-Registration-List",
+                     "(ES256 RS256);path=\"startsession\";"
+                     "challenge=\"Y2hhbGxlbmdl\"")
+          .Build(),
+      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
+          .AddHeader("Sec-Session-Google-Registration-List",
+                     "(ES256 RS256);path=\"startsession\";"
+                     "challenge=\"Y2hhbGxlbmdl\";wsbeta=?0")
+          .Build(),
+  };
+
+  for (size_t i = 0; i < test_cases.size(); ++i) {
+    SCOPED_TRACE(i);
+    std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
+        BoundSessionRegistrationFetcherParam::CreateFromHeaders(
+            registration_request, test_cases[i].get());
+
+    ASSERT_EQ(maybe_params.size(), 1U);
+    const BoundSessionRegistrationFetcherParam& params = maybe_params[0];
+    EXPECT_FALSE(params.is_wsbeta());
+  }
+}
+
 TEST_F(BoundSessionRegistrationFetcherParamTest, MultipleValidRegistrations) {
   GURL registration_request = GURL("https://www.google.com/registration");
   std::vector<scoped_refptr<net::HttpResponseHeaders>> test_cases = {

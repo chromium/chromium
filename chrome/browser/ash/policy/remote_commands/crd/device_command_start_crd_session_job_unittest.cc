@@ -611,6 +611,24 @@ TEST_F(DeviceCommandStartCrdSessionJobTest, ShouldCheckNetworkManagedStatus) {
   std::move(callback).Run({});
 }
 
+TEST_F(DeviceCommandStartCrdSessionJobTest,
+       ShouldPassAllowRemoteInputToDelegate) {
+  LogInAsKioskUser();
+
+  EXPECT_SUCCESS(RunJobAndWaitForResult());
+
+  EXPECT_TRUE(delegate().session_parameters().allow_remote_input);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobTest,
+       ShouldPassAllowClipboardSyncToDelegate) {
+  LogInAsKioskUser();
+
+  EXPECT_SUCCESS(RunJobAndWaitForResult());
+
+  EXPECT_TRUE(delegate().session_parameters().allow_clipboard_sync);
+}
+
 TEST_P(DeviceCommandStartCrdSessionJobTestBoolParameterized,
        ShouldPassAllowTroubleshootingToolsToDelegateForKiosk) {
   LogInAsKioskUser();

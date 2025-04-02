@@ -144,7 +144,7 @@ class LensOverlayTabHelper : public LensOverlaySnapshotControllerDelegate,
 
   // Tracks the state of the bottom sheet associated with this web state.
   // Should remain in sync with the actual dimension of the bottom sheet.
-  SheetDimensionState sheet_dimension_state_ = SheetDimensionStateHidden;
+  SheetDimensionState sheet_dimension_state_ = SheetDimensionState::kHidden;
 
   UIImage* viewport_snapshot_;
 

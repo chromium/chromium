@@ -323,6 +323,9 @@ void DumpAccessibilityTestBase::RunTest(
 // Event::kAccessibilityClean, etc. because this can be used multiple times
 // per test.
 void DumpAccessibilityTestBase::WaitForEndOfTest(ui::AXMode mode) const {
+  AccessibilityNotificationWaiter waiter(GetWebContents(), mode,
+                                         ax::mojom::Event::kEndOfTest);
+
   // To make sure we've handled all accessibility events, add a sentinel by
   // calling SignalEndOfTest on each frame and waiting for a kEndOfTest event
   // in response.
@@ -333,8 +336,6 @@ void DumpAccessibilityTestBase::WaitForEndOfTest(ui::AXMode mode) const {
     host->AccessibilityPerformAction(action_data);
   }
 
-  AccessibilityNotificationWaiter waiter(GetWebContents(), mode,
-                                         ax::mojom::Event::kEndOfTest);
   ASSERT_TRUE(waiter.WaitForNotification(true));
 }
 
@@ -505,18 +506,14 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
     EXPECT_TRUE(NavigateToURL(shell(), url));
     AccessibilityNotificationWaiter accessibility_waiter(
         web_contents, ax_mode_for_test, ax::mojom::Event::kNone);
-    static_cast<BrowserAccessibilityStateImpl*>(
-        BrowserAccessibilityState::GetInstance())
-        ->SetAXModeChangeAllowed(false);
+    BrowserAccessibilityStateImpl::GetInstance()->SetAXModeChangeAllowed(false);
     ASSERT_TRUE(accessibility_waiter.WaitForNotification());
   } else {
     // Enable accessibility, then load the test html and wait for the
     // "load complete" AX event.
     AccessibilityNotificationWaiter accessibility_waiter(
         web_contents, ax_mode_for_test, ax::mojom::Event::kLoadComplete);
-    static_cast<BrowserAccessibilityStateImpl*>(
-        BrowserAccessibilityState::GetInstance())
-        ->SetAXModeChangeAllowed(false);
+    BrowserAccessibilityStateImpl::GetInstance()->SetAXModeChangeAllowed(false);
     EXPECT_TRUE(NavigateToURL(shell(), url));
     // TODO(crbug.com/40844856): Investigate why this does not return
     // true.

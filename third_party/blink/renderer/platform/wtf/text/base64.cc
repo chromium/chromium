@@ -54,14 +54,15 @@ ModpDecodePolicy GetModpPolicy(Base64DecodePolicy policy) {
 
 // Invokes modp_b64 without stripping whitespace.
 bool Base64DecodeRaw(const StringView& in,
-                     Vector<char>& out,
+                     Vector<uint8_t>& out,
                      Base64DecodePolicy policy) {
   // Using StringUTF8Adaptor means we avoid allocations if the string is 8-bit
   // ascii, which is likely given that base64 is required to be ascii.
   StringUTF8Adaptor adaptor(in);
   out.resize(modp_b64_decode_len(adaptor.size()));
-  size_t output_size = modp_b64_decode(out.data(), adaptor.data(), adaptor.size(),
-                                       GetModpPolicy(policy));
+  base::span<char> write_buffer = base::as_writable_chars(base::span(out));
+  size_t output_size = modp_b64_decode(write_buffer.data(), adaptor.data(),
+                                       adaptor.size(), GetModpPolicy(policy));
   if (output_size == MODP_B64_ERROR)
     return false;
 
@@ -98,7 +99,7 @@ void Base64Encode(base::span<const uint8_t> data, Vector<char>& out) {
 }
 
 bool Base64Decode(const StringView& in,
-                  Vector<char>& out,
+                  Vector<uint8_t>& out,
                   Base64DecodePolicy policy) {
   switch (policy) {
     case Base64DecodePolicy::kForgiving: {
@@ -121,7 +122,7 @@ bool Base64Decode(const StringView& in,
   }
 }
 
-bool Base64UnpaddedURLDecode(const String& in, Vector<char>& out) {
+bool Base64UnpaddedURLDecode(const String& in, Vector<uint8_t>& out) {
   if (in.Contains('+') || in.Contains('/') || in.Contains('='))
     return false;
 

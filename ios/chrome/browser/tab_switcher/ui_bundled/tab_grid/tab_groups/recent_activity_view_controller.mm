@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_avatar_primitive.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_log_cell.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_log_item.h"
@@ -73,6 +74,7 @@ NSString* const kRecentActivitySectionIdentifier =
   tableView.scrollEnabled = YES;
 
   RegisterTableViewCell<RecentActivityLogCell>(tableView);
+  RegisterTableViewCell<TableViewTextCell>(tableView);
 }
 
 #pragma mark - RecentActivityConsumer
@@ -81,7 +83,13 @@ NSString* const kRecentActivitySectionIdentifier =
   ActivityLogSnapshot* snapshot = [[ActivityLogSnapshot alloc] init];
   [snapshot
       appendSectionsWithIdentifiers:@[ kRecentActivitySectionIdentifier ]];
-  [snapshot appendItemsWithIdentifiers:items];
+  if (items.count == 0) {
+    RecentActivityLogItem* emptyItem = [[RecentActivityLogItem alloc] init];
+    emptyItem.type = ActivityLogType::kEmptyActivity;
+    [snapshot appendItemsWithIdentifiers:@[ emptyItem ]];
+  } else {
+    [snapshot appendItemsWithIdentifiers:items];
+  }
 
   [self.dataSource applySnapshot:snapshot animatingDifferences:NO];
 }
@@ -116,6 +124,15 @@ NSString* const kRecentActivitySectionIdentifier =
 - (UITableViewCell*)cellForTableView:(UITableView*)tableView
                            indexPath:(NSIndexPath*)indexPath
                       itemIdentifier:(RecentActivityLogItem*)itemIdentifier {
+  if (itemIdentifier.type == ActivityLogType::kEmptyActivity) {
+    TableViewTextCell* cell =
+        DequeueTableViewCell<TableViewTextCell>(tableView);
+
+    cell.textLabel.text = l10n_util::GetNSString(
+        IDS_IOS_TAB_GROUP_RECENT_ACTIVITY_SHEET_EMPTY_MESSAGE);
+    return cell;
+  }
+
   RecentActivityLogCell* cell =
       DequeueTableViewCell<RecentActivityLogCell>(tableView);
   cell.titleLabel.text = itemIdentifier.title;

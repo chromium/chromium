@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "android_webview/browser/safe_browsing/aw_ping_manager_factory.h"
+
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_browser_context_store.h"
 #include "android_webview/browser/aw_browser_process.h"
+#include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -33,8 +35,11 @@ class AwPingManagerFactoryTest : public testing::Test {
         std::make_unique<content::TestContentClientInitializer>();
     aw_feature_list_creator_ = std::make_unique<AwFeatureListCreator>();
     aw_feature_list_creator_->CreateLocalState();
+    std::unique_ptr<AwContentBrowserClient> content_browser_client =
+        std::make_unique<AwContentBrowserClient>(
+            aw_feature_list_creator_.get());
     browser_process_ =
-        std::make_unique<AwBrowserProcess>(aw_feature_list_creator_.get());
+        std::make_unique<AwBrowserProcess>(content_browser_client.get());
   }
 
   void TearDown() override { base::RunLoop().RunUntilIdle(); }

@@ -9,6 +9,9 @@ import("//testing/test.gni")
 mojom("privacy_sandbox_notice_mojom") {
   sources = [ "privacy_sandbox_notice.mojom" ]
   webui_module_path = "/"
+
+  generate_legacy_js_bindings = true
+  generate_java = true
 }
 
 static_library("privacy_sandbox_prefs") {
@@ -131,6 +134,7 @@ source_set("privacy_sandbox_notice_storage") {
     "//base/version_info:version_info",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
+    "//components/privacy_sandbox:privacy_sandbox_notice_mojom",
   ]
 
   public_deps = [ "//base" ]
@@ -257,6 +261,7 @@ test("fuzz_tests") {
 
   deps = [
     ":privacy_sandbox_notice_storage",
+    "//components/privacy_sandbox:privacy_sandbox_notice_mojom",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/fuzztest:fuzztest_gtest_main",
@@ -285,6 +290,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/content_settings/core/common",
     "//components/prefs:test_support",
+    "//components/privacy_sandbox:privacy_sandbox_notice_mojom",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync_preferences:test_support",
     "//components/version_info",

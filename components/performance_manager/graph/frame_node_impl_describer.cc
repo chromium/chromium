@@ -21,18 +21,16 @@ namespace {
 const char kDescriberName[] = "FrameNodeImpl";
 
 std::string ViewportIntersectionToString(
-    std::optional<ViewportIntersection> viewport_intersection) {
-  if (!viewport_intersection.has_value()) {
-    return "Nullopt";
+    ViewportIntersection viewport_intersection) {
+  switch (viewport_intersection) {
+    case ViewportIntersection::kUnknown:
+      return "Unknown";
+    case ViewportIntersection::kNotIntersecting:
+      return "Not intersecting";
+    case ViewportIntersection::kIntersecting:
+      return "Intersecting";
   }
-
-  if (viewport_intersection->is_intersecting_large_area()) {
-    return "Intersecting (Large area)";
-  } else if (viewport_intersection->is_intersecting()) {
-    return "Intersecting (Not large area)";
-  } else {
-    return "Not intersecting";
-  }
+  NOTREACHED();
 }
 
 std::string FrameNodeVisibilityToString(FrameNode::Visibility visibility) {
@@ -101,6 +99,8 @@ base::Value::Dict FrameNodeImplDescriber::DescribeFrameNodeData(
   ret.Set("viewport_intersection",
           ViewportIntersectionToString(impl->viewport_intersection_.value()));
   ret.Set("visibility", FrameNodeVisibilityToString(impl->visibility_.value()));
+  ret.Set("is_intersecting_large_area", impl->IsIntersectingLargeArea());
+  ret.Set("is_important", impl->is_important_.value());
   ret.Set("resource_context", impl->GetResourceContext().ToString());
 
   base::Value::Dict metrics;

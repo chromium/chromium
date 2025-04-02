@@ -38,6 +38,7 @@
 <translation id="19085484004813472">Ovo je nova značajka</translation>
 <translation id="2006524834898217237">Provjerite je li uređaj povezan s internetom.</translation>
 <translation id="208586643495776849">Pokušajte ponovo</translation>
+<translation id="2111134541987263231">Uključite opciju <ph name="BEGIN_BOLD" />Dopusti u anonimnom načinu<ph name="END_BOLD" /></translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d}one{# d}few{# d}other{# d}}</translation>
 <translation id="2148716181193084225">Danas</translation>
 <translation id="2168039046890040389">Stranica prema gore</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">Dodirnite ciljeve dodira na zaslonu.</translation>
 <translation id="2295140143284145483">Anketa</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Proširenje s ID-jem <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nije moguće pronaći. Obratite se administratoru.}one{Proširenja s ID-jevima <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nije moguće pronaći. Obratite se administratoru.}few{Proširenja s ID-jevima <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nije moguće pronaći. Obratite se administratoru.}other{Proširenja s ID-jevima <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nije moguće pronaći. Obratite se administratoru.}}</translation>
 <translation id="2353636109065292463">Provjera vaše internetske veze</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2388990488038464401">Želite li nazvati ovaj broj s telefona?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">Izbriši sve</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{za 1 d}one{za # d}few{za # d}other{za # d}}</translation>
 <translation id="2922712708897119705">Stupac <ph name="COLUMN_NAME" /> poredan je silaznim redoslijedom.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Nije moguće pronaći proširenje}one{Nije moguće pronaći proširenja}few{Nije moguće pronaći proširenja}other{Nije moguće pronaći proširenja}}</translation>
 <translation id="3036649622769666520">Otvori datoteke</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">Donji</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">Uputite poziv koristeći</translation>
 <translation id="3306688585798492231">Ugrađeni zaslon</translation>
 <translation id="335581015389089642">Govor</translation>
+<translation id="3372635229069101468">Kliknite <ph name="BEGIN_BOLD" />Pojedinosti<ph name="END_BOLD" /></translation>
 <translation id="3389286852084373014">Tekst je prevelik</translation>
 <translation id="3406306243914553062">HTML sadržaj</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{Još 1 dan}one{Još # dan}few{Još # dana}other{Još # dana}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">Stupac <ph name="COLUMN_NAME" /> poredan je uzlaznim redoslijedom.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 nepročitana obavijest}one{# nepročitana obavijest}few{# nepročitane obavijesti}other{# nepročitanih obavijesti}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Uključite sljedeće proširenje u anonimnom načinu:}one{Uključite sljedeća proširenja u anonimnom načinu:}few{Uključite sljedeća proširenja u anonimnom načinu:}other{Uključite sljedeća proširenja u anonimnom načinu:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Prije mjesec dana}one{Prije # mjeseca}few{Prije # mjeseca}other{Prije # mjeseci}}</translation>
 <translation id="4289300219472526559">Počni govoriti</translation>
 <translation id="4289540628985791613">Pregled</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">broj</translation>
 <translation id="4746179598275229723">Proširenje je otkvačeno</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Još mjesec dana}one{Još # mjesec}few{Još # mjeseca}other{Još # mjeseci}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Organizacija zahtijeva proširenje za upotrebu anonimnog načina}one{Organizacija zahtijeva određena proširenja za upotrebu anonimnog načina}few{Organizacija zahtijeva određena proširenja za upotrebu anonimnog načina}other{Organizacija zahtijeva određena proširenja za upotrebu anonimnog načina}}</translation>
+<translation id="482932175346970750">U preglednik unesite <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
 <translation id="4888938634149558681">Uputi poziv</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekunda}one{# sekunda}few{# sekunde}other{# sekundi}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;Zalijepi</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Slanje nije uspjelo</translation>
+<translation id="5283101102242354279">Uključite proširenja u anonimnom načinu:</translation>
 <translation id="528468243742722775">Završi</translation>
 <translation id="5329858601952122676">&amp;Obriši</translation>
 <translation id="5361107212971249203">tekstna poruka</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">Postavke za prikaz aplikacije aktivirat će se nakon njezinog ponovnog pokretanja.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Još 1 min}one{Još # min}few{Još # min}other{Još # min}}</translation>
+<translation id="7252604552361840748">Pronađite navedeno proširenje</translation>
 <translation id="7363164521834647158">Pošalji odgovor</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Prije 1 min}one{Prije # min}few{Prije # min}other{Prije # min}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>

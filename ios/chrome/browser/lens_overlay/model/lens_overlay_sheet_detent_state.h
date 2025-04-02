@@ -16,18 +16,24 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
 };
 
 // Indicates the state of the bottom sheet dimension.
-typedef NS_ENUM(NSUInteger, SheetDimensionState) {
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SheetDimensionState)
+enum class SheetDimensionState {
   // The bottom sheet is not shown.
-  SheetDimensionStateHidden = 0,
+  kHidden = 0,
   // The bottom sheet is expanded.
-  SheetDimensionStateLarge = 1,
+  kLarge = 1,
   // The bottom sheet is covering approximately half of the screen.
-  SheetDimensionStateMedium = 2,
+  kMedium = 2,
   // The bottom sheet is in peaking state.
-  SheetDimensionStatePeaking = 3,
+  kPeaking = 3,
   // The bottom sheet is displayed with the fixed custom dimensions for consent.
-  SheetDimensionStateConsent = 4,
+  kConsent = 4,
+  kMaxValue = kConsent,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:SheetDimensionState)
 
 // Indicates the presentation strategy of the bottom sheet medium detent based
 // on the current Lens filter.

@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">ကျေးဇူးတင်ကြောင်း လက်မှတ်ထိုးနေသူ</translation>
 <translation id="2088690981887365033">VPN ကွန်ရက်</translation>
 <translation id="209653272837065803">ဖိုင်များ ဆက်၍စင့်ခ်လုပ်ရန်အတွက် သိုလှောင်ခန်းနေရာ လုံလောက်မှုမရှိပါ</translation>
-<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />ရုပ်ဖျက်မုဒ်တွင် ခွင့်ပြုရန်<ph name="END_BOLD" /> ဖွင့်ပါ</translation>
 <translation id="2114191879048183086">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ဖိုင်ကို ဖျက်လိုက်မည်ဖြစ်ပြီး ၎င်းတို့ကို ပြန်ယူ၍မရပါ။</translation>
 <translation id="2122305276694332719">ဝှက်ထားသည့် ကွန်ရက်သို့ အလိုအလျောက် ချိတ်ဆက်ခြင်းဖြင့် အခြားသူများသည် သင့်စက်ပစ္စည်းနှင့် အချို့သော ကွန်ရက်ဆက်တင်များကို မြင်ရနိုင်သောကြောင့် အကြံမပြုပါ။</translation>
 <translation id="2125607626296734455">ခမာ</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">ဂြိုဟ်</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ကို ထုတ်ပယ်ထားသည်။</translation>
 <translation id="2307462900900812319">ကွန်ရက် ပြုပြင်ရန်</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{ID ပါသော နောက်ဆက်တွဲကို <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ရှာမတွေ့ပါ။ သင့်စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။}other{ID ပါသော နောက်ဆက်တွဲများကို <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ရှာမတွေ့ပါ။ သင့်စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။}}</translation>
 <translation id="2325650632570794183">ဤဖိုင်အမျိုးစားအား မထောက်ပံ့ပါ။ Chrome ဝက်ဘ်စတိုးသို့ဝင်ရောက်ကာ ဤဖိုင်အမျိုးစားကို ဖွင့်နိုင်သည့် အက်ပ် ကိုရှာပါ။</translation>
 <translation id="2326539130272988168">ဘူလ်ဂေးရီးယား</translation>
 <translation id="233822363739146957">သင့်ဖိုင်အားလုံးစင့်ခ်လုပ်ရန် သိုလှောင်ခန်းနေရာ လုံလောက်မှုမရှိပါ</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">မာရာသီ</translation>
 <translation id="2923240520113693977">အက်စ်တိုနီယမ်</translation>
 <translation id="2938685643439809023">မွန်ဂိုဘာသာ</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{နောက်ဆက်တွဲ ရှာမတွေ့ပါ}other{နောက်ဆက်တွဲများ ရှာမတွေ့ပါ}}</translation>
 <translation id="2943503720238418293">ပိုတိုသောအမည်ကို အသုံးပြုပါ</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> ကို ဖော်မက်ချနေသည်...</translation>
 <translation id="2951236788251446349">ငါးထီး</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">ပြီးဆုံးပြီ</translation>
 <translation id="3358452157379365236">ဂစ်တာ</translation>
 <translation id="3368922792935385530">ချိတ်ဆက်ထားပြီ</translation>
-<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />အသေးစိတ်<ph name="END_BOLD" /> ကိုနှိပ်ပါ</translation>
 <translation id="3382143449143186018">InScript ကီးဘုတ်ဖြင့် နီပေါ</translation>
 <translation id="338691029516748599">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်၊ ချိတ်ဆက်ရန်</translation>
 <translation id="3408072735282270043">စဖွင့်ရန်၊ <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">သိင်္ဂဿမြင်း</translation>
 <translation id="4131235941541910880">မလိုသောဖိုင်များကို အမှိုက်ပုံးသို့ ရွှေ့ပါ</translation>
 <translation id="4134804435730168042">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" /> ခုမြောက်၊ <ph name="NETWORK_NAME" />၊ <ph name="NETWORK_PROVIDER_NAME" />။ စက်ကို စနစ်ထည့်သွင်းပြီးနောက် စတင်ပါ</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{‘ရုပ်ဖျက်မုဒ်’ တွင် အောက်ပါနောက်ဆက်တွဲကို ဖွင့်ရန်-}other{‘ရုပ်ဖျက်မုဒ်’ တွင် အောက်ပါနောက်ဆက်တွဲများကို ဖွင့်ရန်-}}</translation>
 <translation id="4153015322587141338">ဖိုင်ကို ညာဘက်ခလုတ်နှိပ်ပြီး စင်ပေါ်ရှိ သင့်ဖိုင်များကို အမြန်သုံးခွင့်အတွက် “<ph name="PIN_COMMAND" />” ကို ရွေးပါ။</translation>
 <translation id="4157569377477607576">စီမံခန့်ခွဲသူ မူဝါဒက အကြံမပြုပါ-</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ကို ရွှေ့ထားသည်။</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">နှစ်ခုစလုံးကို ထားရှိရန်</translation>
 <translation id="4804827417948292437">ထောပတ်သီး</translation>
 <translation id="4805966553127040832">ဖိုင် <ph name="COUNT" /> ဖိုင် ပြန်ယူနေသည်</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{‘ရုပ်ဖျက်မုဒ်’ သုံးရန် သင့်အဖွဲ့အစည်းက နောက်ဆက်တွဲတစ်ခု လိုအပ်သည်}other{‘ရုပ်ဖျက်မုဒ်’ သုံးရန် သင့်အဖွဲ့အစည်းက နောက်ဆက်တွဲအချို့ လိုအပ်သည်}}</translation>
 <translation id="4826849268470072925">တမီးလ် ITRANS</translation>
-<translation id="482932175346970750">သင့်ဘရောင်ဇာတွင် <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ကိုရိုက်ထည့်ပါ</translation>
 <translation id="4843566743023903107">Chromebase များ</translation>
 <translation id="4850886885716139402">မြင်ကွင်း</translation>
 <translation id="485316830061041779">ဂျာမန်</translation>
@@ -561,7 +554,6 @@
     တို့ကို တစ်နေရာတည်းတွင်လုပ်ဆောင်နိုင်သည်<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Drive မှရှာဖွေထားသည့် ဖိုင်များ</translation>
 <translation id="5278111733643988471">ဤဖိုင်ကို ပြန်ယူရန် အမှိုက်ပုံးပြင်ပရှိ ဖိုင်တွဲအသစ်ထဲသို့ ဖိဆွဲပါ။ ဤဖိုင်၏ မူရင်းဖိုင်တွဲ “<ph name="PARENT_FOLDER_NAME" />” ကို ဖျက်လိုက်သည်။</translation>
-<translation id="5283101102242354279">‘ရုပ်ဖျက်မုဒ်’ တွင် နောက်ဆက်တွဲဖွင့်ရန်-</translation>
 <translation id="5288441970121584418">အသားညှပ်ပေါင်မုန့်လုံး</translation>
 <translation id="5293615890992542006">ဤဖိုင်ရွှေ့ခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
 <translation id="5305688511332277257">ဘာမှ မသွင်းထား</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />၊ အသေးစိတ်များ</translation>
 <translation id="7246947237293279874">FTP ပရောက်စီ</translation>
 <translation id="7248671827512403053">အပလီကေးရှင်း</translation>
-<translation id="7252604552361840748">အပေါ်တွင် နောက်ဆက်တွဲကို ရှာပါ</translation>
 <translation id="7256405249507348194">သိမှတ်မရသည့် အမှား: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ရရှိနိုင်သော ဝန်ဆောင်မှုများ</translation>
 <translation id="7291818353625820805">ခလုတ်များကို ထပ်ကျော့လိုပါသလား။ ကီးဘုတ်ဆက်တင်များတွင် အသံပြောင်း အမှတ်အသားများကို ပိတ်ပါ</translation>

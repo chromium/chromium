@@ -32,6 +32,7 @@ import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.autofill.SubKeyRequester;
+import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
@@ -483,6 +484,9 @@ public class AutofillTestHelper {
             String subLabel,
             String secondarySubLabel,
             String labelContentDescription,
+            @SuggestionType int suggestionType,
+            GURL customIconUrl,
+            int iconId,
             boolean applyDeactivatedStyle,
             boolean shouldDisplayTermsAvailable) {
         return new AutofillSuggestion.Builder()
@@ -491,6 +495,9 @@ public class AutofillTestHelper {
                 .setSubLabel(subLabel)
                 .setSecondarySubLabel(secondarySubLabel)
                 .setLabelContentDescription(labelContentDescription)
+                .setSuggestionType(suggestionType)
+                .setCustomIconUrl(customIconUrl)
+                .setIconId(iconId)
                 .setApplyDeactivatedStyle(applyDeactivatedStyle)
                 .setShouldDisplayTermsAvailable(shouldDisplayTermsAvailable)
                 .build();

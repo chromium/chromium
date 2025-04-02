@@ -191,9 +191,6 @@ public class IntentHandler {
     /** A hash code for the URL to verify intent data hasn't been modified. */
     public static final String EXTRA_DATA_HASH_CODE = "org.chromium.chrome.browser.data_hash";
 
-    /** A boolean to indicate whether incognito mode is currently selected. */
-    public static final String EXTRA_INCOGNITO_MODE = "org.chromium.chrome.browser.incognito_mode";
-
     /** Byte array for the POST data when load a url, only Intents sent by Chrome can use this. */
     public static final String EXTRA_POST_DATA = "com.android.chrome.post_data";
 
@@ -1611,13 +1608,13 @@ public class IntentHandler {
 
     /**
      * Whether bundle has any extra that indicates an incognito tab will be launched.
+     *
      * @param extras A bundle that carries extras
      * @return True if there is any incognito related extra, otherwise return false.
      */
     public static boolean hasAnyIncognitoExtra(@Nullable Bundle extras) {
         if (extras == null) return false;
-        return IntentUtils.safeGetBoolean(extras, EXTRA_INCOGNITO_MODE, false)
-                || IntentUtils.safeGetBoolean(extras, EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
+        return IntentUtils.safeGetBoolean(extras, EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
                 || IntentUtils.safeGetBoolean(
                         extras, EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false)
                 || IntentUtils.safeGetBoolean(extras, EXTRA_ENABLE_EPHEMERAL_BROWSING, false);

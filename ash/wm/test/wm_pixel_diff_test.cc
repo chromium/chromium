@@ -25,7 +25,6 @@
 #include "ash/wm/window_restore/informed_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/strings/strcat.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -46,9 +45,6 @@ class WmPixelDiffTest : public AshTestBase {
       const override {
     return pixel_test::InitParams();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_features_{features::kForestFeature};
 };
 
 // A basic overview pixel test that shows three overview windows and the virtual

@@ -207,6 +207,22 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_mime_type.h:LensOverlayMimeType) -->
 
+<!-- LINT.IfChange(SheetDimensionState) -->
+
+<enum name="SheetDimensionState">
+  <summary>
+    Indicates the size of the bottom panel. When the panel is closed, value 0
+    &quot;hidden&quot; is used.
+  </summary>
+  <int value="0" label="Hidden"/>
+  <int value="1" label="Large"/>
+  <int value="2" label="Medium"/>
+  <int value="3" label="Peaking"/>
+  <int value="4" label="Consent"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/lens_overlay/model/lens_overlay_sheet_detent_state.h:SheetDimensionState) -->
+
 <!-- LINT.IfChange(LensOverlaySidePanelResultStatus) -->
 
 <enum name="SidePanelResultStatus">

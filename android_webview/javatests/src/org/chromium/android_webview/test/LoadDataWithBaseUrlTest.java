@@ -680,7 +680,7 @@ public class LoadDataWithBaseUrlTest extends AwParameterizedTest {
                     @Override
                     public WebResourceResponseInfo shouldInterceptRequest(
                             AwWebResourceRequest request) {
-                        String url = request.url;
+                        String url = request.getUrl();
                         if (textUri.equals(url)) {
                             return new WebResourceResponseInfo(
                                     "text/plaintext",

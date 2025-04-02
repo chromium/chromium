@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">O arquivo de manifesto é inválido</translation>
 <translation id="7217838517480956708">O administrador desta máquina requer a instalação de <ph name="EXTENSION_NAME" />. Não é possível remover ou modificá-lo.</translation>
 <translation id="7612608473764576263">O valor inserido para a chave privada precisa ser um formato válido (chave RSA codificada em PEM de formato PKCS#8).</translation>
+<translation id="7876803335449432072">Não foi possível carregar o arquivo "<ph name="RELATIVE_PATH" />" para o script de conteúdo. As folhas de estilo desse tipo de script só podem ser carregadas de arquivos compatíveis, como .css.</translation>
 <translation id="7939686037314084444">A extensão não foi carregada corretamente. Talvez ela não consiga interceptar solicitações de rede.</translation>
 <translation id="7972881773422714442">Opções: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Voltada para o usuário</translation>
 <translation id="8047248493720652249">Falha ao nomear o download "<ph name="ATTEMPTED_FILENAME" />" com esta extensão, porque outra extensão (<ph name="EXTENSION_NAME" />) determinou um nome de arquivo diferente: "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> de <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">O arquivo de manifesto está faltando ou não pode ser lido</translation>
+<translation id="8621383749470166852">Não foi possível carregar o arquivo "<ph name="RELATIVE_PATH" />" para o script de conteúdo. Esse tipo de script só pode ser carregado de arquivos JavaScript compatíveis, como .js.</translation>
 <translation id="8636666366616799973">O pacote é inválido. Detalhes "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" está solicitando acesso a um dos seus dispositivos:</translation>
 <translation id="8885905466771744233">Já existe uma chave privada para a extensão especificada. Reutilize essa chave ou exclua-a primeiro.</translation>

@@ -55,9 +55,9 @@ void LogInitResult(WebDatabaseInitResult result) {
   base::UmaHistogramEnumeration("WebDatabase.InitResult", result);
 }
 
-// Version 134 migrates address Autofill tables to a new format, changing table
-// names. It is thus is no longer compatible with version 133.
-constexpr int kCompatibleVersionNumber = 134;
+// Version 139 migrates valuables tables to a new format, changing the column
+// names. It is thus is no longer compatible with version 138.
+constexpr int kCompatibleVersionNumber = 139;
 
 // Change the version number and possibly the compatibility version of
 // |meta_table_|.

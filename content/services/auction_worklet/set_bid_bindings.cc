@@ -23,6 +23,7 @@
 #include "content/services/auction_worklet/webidl_compat.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
@@ -701,8 +702,23 @@ bool SetBidBindings::IsSelectedReportingIdValid(
   if (!ad.selectable_buyer_and_seller_reporting_ids.has_value()) {
     return false;
   }
-  if (!base::Contains(*ad.selectable_buyer_and_seller_reporting_ids,
-                      selected_buyer_and_seller_reporting_id)) {
+  auto iter = std::find(ad.selectable_buyer_and_seller_reporting_ids->begin(),
+                        ad.selectable_buyer_and_seller_reporting_ids->end(),
+                        selected_buyer_and_seller_reporting_id);
+  if (iter == ad.selectable_buyer_and_seller_reporting_ids->end()) {
+    return false;
+  }
+  if (base::FeatureList::IsEnabled(
+          blink::features::
+              kFledgeTruncateSelectableBuyerAndSellerReportingIdsToKAnonLimit) &&
+      blink::features::
+              kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit
+                  .Get() >= 0 &&
+      std::distance(ad.selectable_buyer_and_seller_reporting_ids->begin(),
+                    iter) >=
+          blink::features::
+              kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit
+                  .Get()) {
     return false;
   }
   if (is_reporting_id_set_excluded_.Run(

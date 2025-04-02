@@ -161,14 +161,9 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
     # Disable overlay scrollbar animations to prevent flaky wpt screenshots based on timing.
     chrome_options["args"].append("--disable-features=ScrollbarAnimations")
 
-    # Always disable antialiasing on the Ahem font.
-    blink_features = ['DisableAhemAntialias']
-
     if kwargs["enable_mojojs"]:
-        blink_features.append('MojoJS')
-        blink_features.append('MojoJSTest')
-
-    chrome_options["args"].append("--enable-blink-features=" + ','.join(blink_features))
+        blink_features = ['MojoJS', 'MojoJSTest']
+        chrome_options["args"].append("--enable-blink-features=" + ','.join(blink_features))
 
     if kwargs["enable_swiftshader"]:
         # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/gpu/swiftshader.md

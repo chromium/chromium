@@ -17,6 +17,50 @@ sys.path.insert(1, os.path.join(os.path.dirname(__file__), '..'))
 import gn_helpers
 
 
+def _GetMemoryMaxInCurrentCGroup():
+  with open("/proc/self/cgroup") as cgroup:
+    lines = cgroup.readlines()
+    if len(lines) >= 1:
+      cgroupname = lines[0].strip().split(':')[-1]
+      memmax = '/sys/fs/cgroup' + cgroupname + '/memory.max'
+      if os.path.exists(memmax):
+        with open(memmax) as f:
+          try:
+            return int(f.read().strip())
+          except ValueError:
+            return None
+  return None
+
+
+def _GetCPUCountFromCurrentCGroup():
+  with open("/proc/self/cgroup") as cgroup:
+    lines = cgroup.readlines()
+    if len(lines) >= 1:
+      cgroupname = lines[0].strip().split(':')[-1]
+      cpuset = '/sys/fs/cgroup' + cgroupname + '/cpuset.cpus'
+      if os.path.exists(cpuset):
+        with open(cpuset) as f:
+          return _CountCPUs(f.read().strip())
+  return None
+
+
+def _CountCPUs(cpuset):
+  n = 0
+  try:
+    for s in cpuset.split(','):
+      r = s.split('-')
+      if len(r) == 1:
+        n += 1
+        continue
+      elif len(r) == 2:
+        n += int(r[1]) - int(r[0]) + 1
+      else:
+        # wrong range?
+        return 0
+    return n
+  except ValueError:
+    return 0
+
 def _GetTotalMemoryInBytes():
   if sys.platform in ('win32', 'cygwin'):
     import ctypes
@@ -38,6 +82,9 @@ def _GetTotalMemoryInBytes():
     ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat))
     return stat.ullTotalPhys
   elif sys.platform.startswith('linux'):
+    memmax = _GetMemoryMaxInCurrentCGroup()
+    if memmax:
+      return memmax
     if os.path.exists("/proc/meminfo"):
       with open("/proc/meminfo") as meminfo:
         memtotal_re = re.compile(r'^MemTotal:\s*(\d*)\s*kB')
@@ -73,7 +120,11 @@ def _GetDefaultConcurrentLinks(per_link_gb, reserve_gb, thin_lto_type,
       max(1, adjusted_mem_total_gb / (per_link_gb + secondary_per_link_gb)))
 
   try:
-    cpu_count = multiprocessing.cpu_count()
+    cpu_count = None
+    if sys.platform.startswith('linux'):
+      cpu_count = _GetCPUCountFromCurrentCGroup()
+    if not cpu_count:
+      cpu_count = multiprocessing.cpu_count()
   except:
     cpu_count = 1
 
@@ -83,9 +134,9 @@ def _GetDefaultConcurrentLinks(per_link_gb, reserve_gb, thin_lto_type,
     assert thin_lto_type == 'local'
     cpu_cap = min(cpu_count, 6)
 
-  explanation.append(
-      'cpu_count={} cpu_cap={} mem_total_gb={:.1f}GiB adjusted_mem_total_gb={:.1f}GiB'
-      .format(cpu_count, cpu_cap, mem_total_gb, adjusted_mem_total_gb))
+  explanation.append(f'cpu_count={cpu_count} cpu_cap={cpu_cap} ' +
+                     f'mem_total_gb={mem_total_gb:.1f}GiB ' +
+                     f'adjusted_mem_total_gb={adjusted_mem_total_gb:.1f}GiB')
 
   num_links = min(mem_cap, cpu_cap)
   if num_links == cpu_cap:

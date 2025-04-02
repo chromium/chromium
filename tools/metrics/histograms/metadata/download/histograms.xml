@@ -72,6 +72,22 @@ chromium-metrics-reviews@google.com.
   <variant name="UserValidated"/>
 </variants>
 
+<variants name="DownloadSource">
+  <variant name=".ContextMenu" summary="ContextMenu."/>
+  <variant name=".DragAndDrop" summary="DragAndDrop."/>
+  <variant name=".ExtensionAPI" summary="ExtensionAPI."/>
+  <variant name=".ExtensionInstaller" summary="ExtensionInstaller."/>
+  <variant name=".FromRenderer" summary="FromRenderer."/>
+  <variant name=".InternalAPI" summary="InternalAPI."/>
+  <variant name=".Navigation" summary="Navigation."/>
+  <variant name=".OfflinePage" summary="OfflinePage."/>
+  <variant name=".Retry" summary="Retry."/>
+  <variant name=".RetryFromBubble" summary="RetryFromBubble."/>
+  <variant name=".ToolbarMenu" summary="ToolbarMenu."/>
+  <variant name=".UnknownSource" summary="UnknownSource."/>
+  <variant name=".WebContentsAPI" summary="WebContentsAPI."/>
+</variants>
+
 <variants name="DownloadType">
   <variant name=".Transient" summary="Transient download."/>
   <variant name=".UserDownload" summary="User download."/>
@@ -289,16 +305,22 @@ chromium-metrics-reviews@google.com.
   <summary>Types of video files that are downloaded.</summary>
 </histogram>
 
-<histogram base="true" name="Download.Counts" enum="DownloadCountType"
-    expires_after="2025-09-14">
+<histogram name="Download.Counts.{ParallelizableDownload}"
+    enum="DownloadCountType" expires_after="2025-09-14">
 <!-- Name completed by histogram_suffixes name="DownloadSource" -->
 
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     Various individual counts in the download system; see DownloadCountType for
-    details.
+    details. {ParallelizableDownload}
   </summary>
+  <token key="ParallelizableDownload">
+    <variant name="ParallelDownload"
+        summary="Download that uses parallel requests."/>
+    <variant name="ParallelizableDownload"
+        summary="Download that supports but doesn't use parallel requests."/>
+  </token>
 </histogram>
 
 <histogram name="Download.DangerousDialog.Events"
@@ -438,13 +460,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Download.InterruptedReason" enum="InterruptReason"
-    expires_after="never">
+<histogram name="Download.InterruptedReason.ParallelDownload"
+    enum="InterruptReason" expires_after="never">
 <!-- expires-never: Core download metrics, used in go/chrome-download-dashboard. -->
 
   <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
-  <summary>The reason that a download was interrupted.</summary>
+  <summary>The reason that a parallel download was interrupted.</summary>
+</histogram>
+
+<histogram name="Download.InterruptedReason{DownloadSource}"
+    enum="InterruptReason" expires_after="never">
+<!-- expires-never: Core download metrics, used in go/chrome-download-dashboard. -->
+
+  <owner>qinmin@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
+  <summary>
+    The reason that a download was interrupted. {DownloadSource}
+  </summary>
 </histogram>
 
 <histogram name="Download.Interstitial.UIAction"
@@ -686,12 +719,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Download.NetworkConnectionType.StartNew"
+<histogram name="Download.NetworkConnectionType.StartNew{DownloadSource}"
     enum="NetworkConnectionType" expires_after="2023-06-04">
-<!-- Name completed by histogram_suffixes name="DownloadSource" -->
-
   <owner>dtrainor@chromium.org</owner>
-  <summary>Network connection type when starting a new download.</summary>
+  <summary>
+    Network connection type when starting a new download. {DownloadSource}
+  </summary>
 </histogram>
 
 <histogram name="Download.Open.ContentType" enum="DownloadContentType"
@@ -950,16 +983,6 @@ chromium-metrics-reviews@google.com.
     The lifestime of a download file, which begins from the download completion
     to the file being deleted by the clean up task.
   </summary>
-</histogram>
-
-<histogram base="true" name="Download.Service.Finish.Time" units="ms"
-    expires_after="M85">
-<!-- Name completed by histogram_suffixes
-     name="Download.Service.CompletionType" -->
-
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>The time to complete the download in download service.</summary>
 </histogram>
 
 <histogram name="Download.Service.Finish.Type"

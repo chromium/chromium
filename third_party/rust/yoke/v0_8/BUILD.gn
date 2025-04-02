@@ -13,17 +13,17 @@ cargo_crate("lib") {
   epoch = "0.8"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/yoke-0.8.0/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/yoke-v0_8/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/yoke-0.8.0/src/cartable_ptr.rs",
-    "//third_party/rust/chromium_crates_io/vendor/yoke-0.8.0/src/either.rs",
-    "//third_party/rust/chromium_crates_io/vendor/yoke-0.8.0/src/erased.rs",
-    "//third_party/rust/chromium_crates_io/vendor/yoke-0.8.0/src/kinda_sorta_dangling.rs",
-    "//third_party/rust/chromium_crates_io/vendor/yoke-0.8.0/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/yoke-0.8.0/src/macro_impls.rs",
-    "//third_party/rust/chromium_crates_io/vendor/yoke-0.8.0/src/yoke.rs",
-    "//third_party/rust/chromium_crates_io/vendor/yoke-0.8.0/src/yokeable.rs",
-    "//third_party/rust/chromium_crates_io/vendor/yoke-0.8.0/src/zero_from.rs",
+    "//third_party/rust/chromium_crates_io/vendor/yoke-v0_8/src/cartable_ptr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/yoke-v0_8/src/either.rs",
+    "//third_party/rust/chromium_crates_io/vendor/yoke-v0_8/src/erased.rs",
+    "//third_party/rust/chromium_crates_io/vendor/yoke-v0_8/src/kinda_sorta_dangling.rs",
+    "//third_party/rust/chromium_crates_io/vendor/yoke-v0_8/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/yoke-v0_8/src/macro_impls.rs",
+    "//third_party/rust/chromium_crates_io/vendor/yoke-v0_8/src/yoke.rs",
+    "//third_party/rust/chromium_crates_io/vendor/yoke-v0_8/src/yokeable.rs",
+    "//third_party/rust/chromium_crates_io/vendor/yoke-v0_8/src/zero_from.rs",
   ]
   inputs = []
 

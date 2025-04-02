@@ -38,6 +38,7 @@
 <translation id="19085484004813472">这是一项新功能</translation>
 <translation id="2006524834898217237">请确保此设备已连接到互联网。</translation>
 <translation id="208586643495776849">请重试</translation>
+<translation id="2111134541987263231">开启<ph name="BEGIN_BOLD" />在无痕模式下启用<ph name="END_BOLD" /></translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 天}other{# 天}}</translation>
 <translation id="2148716181193084225">今天</translation>
 <translation id="2168039046890040389">向上翻页</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">点按您屏幕上的触摸目标。</translation>
 <translation id="2295140143284145483">调查问卷</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{找不到以下 ID 对应的扩展程序：<ph name="BEGIN_LIST" /><ph name="END_LIST" />。请联系您的管理员。}other{找不到以下 ID 对应的扩展程序：<ph name="BEGIN_LIST" /><ph name="END_LIST" />。请联系您的管理员。}}</translation>
 <translation id="2353636109065292463">检查互联网连接状况</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2388990488038464401">要用手机拨打此号码？</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">全部删除</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 天后}other{# 天后}}</translation>
 <translation id="2922712708897119705">“<ph name="COLUMN_NAME" />”列目前是按降序排列。</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{找不到扩展程序}other{找不到扩展程序}}</translation>
 <translation id="3036649622769666520">打开文件</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">底部</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">通过以下方式拨打电话：</translation>
 <translation id="3306688585798492231">内置显示屏</translation>
 <translation id="335581015389089642">语音</translation>
+<translation id="3372635229069101468">点击<ph name="BEGIN_BOLD" />详细信息<ph name="END_BOLD" /></translation>
 <translation id="3389286852084373014">文本过长</translation>
 <translation id="3406306243914553062">HTML 内容</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{还剩 1 天}other{还剩 # 天}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">“<ph name="COLUMN_NAME" />”列目前是按升序排列。</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 条未读通知}other{# 条未读通知}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{在无痕模式下启用以下扩展程序：}other{在无痕模式下启用以下扩展程序：}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 个月前}other{# 个月前}}</translation>
 <translation id="4289300219472526559">开始讲话</translation>
 <translation id="4289540628985791613">概述</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">电话号码</translation>
 <translation id="4746179598275229723">已取消固定该扩展程序</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{还有 1 个月的时间}other{还有 # 个月的时间}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{根据贵单位的要求，您必须安装一个扩展程序才能使用无痕模式}other{根据贵单位的要求，您必须安装一些扩展程序才能使用无痕模式}}</translation>
+<translation id="482932175346970750">在浏览器中输入 <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
 <translation id="4888938634149558681">致电</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 秒}other{# 秒}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">粘贴(&amp;P)</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">发送失败</translation>
+<translation id="5283101102242354279">要在无痕模式下启用扩展程序，请执行以下操作：</translation>
 <translation id="528468243742722775">结束</translation>
 <translation id="5329858601952122676">删除(&amp;D)</translation>
 <translation id="5361107212971249203">文字</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">您的应用的显示设置会在下次重启此应用时生效。</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{还剩 1 分钟}other{还剩 # 分钟}}</translation>
+<translation id="7252604552361840748">查找以上扩展程序</translation>
 <translation id="7363164521834647158">发送回复</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 分钟前}other{# 分钟前}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>

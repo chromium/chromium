@@ -217,8 +217,9 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::SetupFakeUpdaterLowerVersion(updater_scope_);
   }
 
-  void SetupRealUpdater(const base::FilePath& updater_path) const override {
-    updater::test::SetupRealUpdater(updater_scope_, updater_path);
+  void SetupRealUpdater(const base::FilePath& updater_path,
+                        const base::Value::List& switches) const override {
+    updater::test::SetupRealUpdater(updater_scope_, updater_path, switches);
   }
 
   void SetExistenceCheckerPath(const std::string& app_id,
@@ -367,8 +368,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
         updater_scope_, app_id, command_id, parameters, expected_exit_code);
   }
 
-  void ExpectLegacyPolicyStatusSucceeds() const override {
-    updater::test::ExpectLegacyPolicyStatusSucceeds(updater_scope_);
+  void ExpectLegacyPolicyStatusSucceeds(
+      const base::Version& updater_version) const override {
+    updater::test::ExpectLegacyPolicyStatusSucceeds(updater_scope_,
+                                                    updater_version);
   }
 
   void LegacyInstallApp(const std::string& app_id,

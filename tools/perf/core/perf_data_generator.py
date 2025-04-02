@@ -768,42 +768,6 @@ BUILDERS = {
             'device_os_flavor': 'google',
         },
     },
-    'android-new-pixel-perf': {
-        'tests': [{
-            'isolate':
-            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
-        }],
-        'platform':
-        'android-trichrome-chrome-google-64-32-bundle',
-        'dimension': {},
-    },
-    'android-new-pixel-perf-pgo': {
-        'tests': [{
-            'isolate':
-            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
-        }],
-        'platform':
-        'android-trichrome-chrome-google-64-32-bundle',
-        'dimension': {},
-    },
-    'android-new-pixel-pro-perf': {
-        'tests': [{
-            'isolate':
-            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
-        }],
-        'platform':
-        'android-trichrome-chrome-google-64-32-bundle',
-        'dimension': {},
-    },
-    'android-new-pixel-pro-perf-pgo': {
-        'tests': [{
-            'isolate':
-            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
-        }],
-        'platform':
-        'android-trichrome-chrome-google-64-32-bundle',
-        'dimension': {},
-    },
     'linux-perf': {
         'tests': [
             {

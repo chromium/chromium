@@ -70,7 +70,6 @@
 <translation id="1122714970786750095">Elektronica en elektriciteit</translation>
 <translation id="1123753900084781868">Live ondertiteling is momenteel niet beschikbaar</translation>
 <translation id="1125453215844207206">Niet-gelabelde graphic. Tekst extraheren, mogelijk gemaakt door AI van Google.</translation>
-<translation id="1125573121925420732">Wanneer de beveiliging van websites wordt geüpdatet, worden vaak waarschuwingen weergegeven. Dit wordt binnenkort verbeterd.</translation>
 <translation id="112840717907525620">Cachegeheugen van beleid is OK</translation>
 <translation id="1131264053432022307">Afbeelding die je hebt gekopieerd</translation>
 <translation id="1138458427267715730">Krijg meldingen als de prijs daalt op een site op internet</translation>
@@ -297,7 +296,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1492194039220927094">Pushen van beleid:</translation>
 <translation id="1495677929897281669">Terug naar tabblad</translation>
 <translation id="1500286806237135498">Camera's (<ph name="CAMERAS_COUNT" />)</translation>
-<translation id="1501859676467574491">Passen uit je Google-account bekijken</translation>
 <translation id="1504042622576912555">Golf</translation>
 <translation id="1507202001669085618">&lt;p&gt;J​e ​zi​et​ d​ez​e ​fo​ut​ a​ls​ j​e ​ee​n ​wi​fi​-p​or​ta​l ​ge​br​ui​kt​ w​aa​ro​p ​je​ m​oe​t ​in​lo​gg​en​ v​oo​rd​at​ j​e ​on​li​ne​ k​un​t ​ga​an​.&lt;/p&gt;
    &lt;p&gt;​K​li​k ​op​ &lt;​st​ro​ng​&gt;V​er​bi​nd​in​g ​ma​ke​n&lt;​/s​tr​on​g&gt;​ o​p ​de​ p​ag​in​a ​di​e ​je​ p​ro​be​er​t ​te​ o​pe​ne​n ​om​ d​ez​e ​fo​ut​ o​p ​te​ l​os​se​n.​&lt;/p&gt;</translation>
@@ -568,6 +566,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1975584088563498795">Mailbox 10</translation>
 <translation id="1978555033938440688">Firmwareversie</translation>
 <translation id="1979156660928743046">Mediagegevens</translation>
+<translation id="1987486584747170374">Je zoekopdrachten, de beste overeenkomsten en de bijbehorende paginacontent worden naar Google gestuurd. De gegevens worden niet door menselijke reviewers gebruikt om AI te verbeteren. Je organisatie kan deze instellingen op elk moment wijzigen.</translation>
 <translation id="1988881251331415125">Als de spelling klopt, <ph name="BEGIN_LINK" />voer je een verbindingsdiagnose uit<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> vraagt toestemming om permanent grote gegevens op je lokale computer op te slaan</translation>
@@ -763,6 +762,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2301098101308036335">Welke websites worden bezocht en wanneer.</translation>
 <translation id="230286397113210245">Knop Incognitovenster openen. Activeer deze om een nieuw incognitovenster te openen om privé te browsen.</translation>
 <translation id="2306124309679506798">Een immersieve beleving toestaan?</translation>
+<translation id="2307711332257985952">Je woon- en werkadressen zijn nu beschikbaar in Chrome</translation>
 <translation id="2312234273148520048">Sauzen en dressings</translation>
 <translation id="2316087952091171402">Minder dan <ph name="UPPER_ESTIMATE" />. Sommige sites laden misschien langzamer bij je volgende bezoek.</translation>
 <translation id="2316159751672436664">Je toegankelijkheidstools personaliseren in de Chrome OS-instellingen</translation>
@@ -1178,6 +1178,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3102312643185441063">Spaarrekening</translation>
 <translation id="3103188521861412364">Aandelen en obligaties</translation>
 <translation id="3103535543639438037">Vergelijkbare producten naast elkaar vergelijken</translation>
+<translation id="3103993932858740905">Als je gespreid betaalt, wordt een eenmalig virtueel kaartnummer ingevuld. Dit nummer is alleen voor deze aankoop.</translation>
 <translation id="3105172416063519923">Item-ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Controleer de configuratie voor beveiligde DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Middelste lade</translation>

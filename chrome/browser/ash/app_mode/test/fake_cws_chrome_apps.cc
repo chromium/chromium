@@ -11,26 +11,19 @@
 
 namespace ash::kiosk::test {
 
-namespace {
-
-constexpr std::string_view kOfflineEnabledKioskAppId =
-    "iiigpodgfihagabpagjehoocpakbnclp";
-
-constexpr std::string_view kLocalFsAppId = "abbjjkefakmllanciinhgjgjamdmlbdg";
-
-}  // namespace
-
 KioskMixin::CwsChromeAppOption OfflineEnabledChromeAppV1() {
+  constexpr std::string_view kAppId = "iiigpodgfihagabpagjehoocpakbnclp";
+
   return KioskMixin::CwsChromeAppOption{
       /*account_id=*/"offline-enabled-chrome-app@localhost",
-      /*app_id=*/kOfflineEnabledKioskAppId,
-      /*crx_filename=*/base::StrCat({kOfflineEnabledKioskAppId, "_v1.crx"}),
+      /*app_id=*/kAppId,
+      /*crx_filename=*/base::StrCat({kAppId, "_v1.crx"}),
       /*crx_version=*/"1.0.0"};
 }
 
 KioskMixin::CwsChromeAppOption OfflineEnabledChromeAppV2() {
   auto app_v2 = OfflineEnabledChromeAppV1();
-  app_v2.crx_filename = base::StrCat({kOfflineEnabledKioskAppId, ".crx"});
+  app_v2.crx_filename = base::StrCat({app_v2.app_id, ".crx"});
   app_v2.crx_version = "2.0.0";
   return app_v2;
 }
@@ -38,31 +31,33 @@ KioskMixin::CwsChromeAppOption OfflineEnabledChromeAppV2() {
 KioskMixin::CwsChromeAppOption OfflineEnabledChromeAppV2WithPermissionChange() {
   auto app_v2 = OfflineEnabledChromeAppV1();
   app_v2.crx_filename =
-      base::StrCat({kOfflineEnabledKioskAppId, "_v2_permission_change.crx"});
+      base::StrCat({app_v2.app_id, "_v2_permission_change.crx"});
   app_v2.crx_version = "2.0.0";
   return app_v2;
 }
 
 KioskMixin::CwsChromeAppOption OfflineEnabledChromeAppV2RequiresVersion1234() {
   auto app_v2 = OfflineEnabledChromeAppV1();
-  app_v2.crx_filename = base::StrCat(
-      {kOfflineEnabledKioskAppId, "_v2_required_platform_version_added.crx"});
+  app_v2.crx_filename =
+      base::StrCat({app_v2.app_id, "_v2_required_platform_version_added.crx"});
   app_v2.crx_version = "2.0.0";
   return app_v2;
 }
 
 KioskMixin::CwsChromeAppOption LocalFsChromeAppV1() {
+  constexpr std::string_view kAppId = "abbjjkefakmllanciinhgjgjamdmlbdg";
+
   return KioskMixin::CwsChromeAppOption{
       /*account_id=*/"local-fs-chrome-app@localhost",
-      /*app_id=*/kLocalFsAppId,
-      /*crx_filename=*/base::StrCat({kLocalFsAppId, ".crx"}),
+      /*app_id=*/kAppId,
+      /*crx_filename=*/base::StrCat({kAppId, ".crx"}),
       /*crx_version=*/"1.0.0"};
 }
 
 KioskMixin::CwsChromeAppOption LocalFsChromeAppV2() {
   auto app_v2 = LocalFsChromeAppV1();
   app_v2.crx_filename =
-      base::StrCat({kLocalFsAppId, "_v2_read_and_verify_data.crx"});
+      base::StrCat({app_v2.app_id, "_v2_read_and_verify_data.crx"});
   app_v2.crx_version = "2.0.0";
   return app_v2;
 }

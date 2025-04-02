@@ -1377,6 +1377,7 @@
 <translation id="193565226207940518">כלי תמיכה</translation>
 <translation id="1935995810530254458">אעתיק בכל זאת</translation>
 <translation id="1936157145127842922">הצג בתיקייה</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{הדף נוסף לרשימת הקריאה}one{הדפים נוספו לרשימת הקריאה}two{הדפים נוספו לרשימת הקריאה}other{הדפים נוספו לרשימת הקריאה}}</translation>
 <translation id="1936931585862840749">יש להזין מספר שמציין כמה עותקים יש להדפיס (1 עד <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">לא ניתן לייבא ארכיטקטורת מאגר מסוג <ph name="ARCHITECTURE_CONTAINER" /> באמצעות המכשיר הזה, כי הוא מסוג <ph name="ARCHITECTURE_DEVICE" />. אפשר לנסות לשחזר את המאגר במכשיר אחר או לפתוח את האפליקציה 'קבצים' כדי לגשת לקבצים בתוך תמונת המאגר.</translation>
 <translation id="1938351510777341717">‏מקש Command חיצוני</translation>
@@ -2993,6 +2994,7 @@
 <translation id="3045447014237878114">האתר הזה הוריד קבצים מרובים באופן אוטומטי</translation>
 <translation id="3046178388369461825">‏נפח האחסון של Linux כמעט נגמר</translation>
 <translation id="304644035656848980">תצוגה מקדימה של המיקרופון</translation>
+<translation id="3046892784550338476">גרסה <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">דף אינטרנט, שלם</translation>
 <translation id="304747341537320566">מנועי דיבור</translation>
 <translation id="3047678109605649715">אין קולות ב<ph name="LANGUAGE" /> במכשיר. צריך לפנות מקום במכשיר ולנסות שוב.</translation>
@@ -3085,6 +3087,7 @@
 <translation id="3122883569442693641">פרטים נוספים</translation>
 <translation id="3124111068741548686">מזהים ייחודיים של משתמש</translation>
 <translation id="3124332159330678621">‏מתאימים אישית את Chrome כדי לשנות את מראה הדפדפן</translation>
+<translation id="3125816458150005808">אפשר לבטל את ההצמדה ולפתוח אותה מהתפריט</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">‏כדי להימנע מבעיות בטעינה ובביצועים, יש להשתמש במתאם מתח תואם של Dell, או מסוג USB-C.</translation>
 <translation id="3127862849166875294">‏שינוי הגודל של שטח האחסון של Linux בכונן</translation>
@@ -5336,6 +5339,7 @@
 <translation id="4723140812774948886">החלפה עם הבא</translation>
 <translation id="4724450788351008910">השיוך השתנה</translation>
 <translation id="4725511304875193254">קורגי</translation>
+<translation id="4725762702191453794">החיפוש בכרטיסיות מוצמד עכשיו לסרגל הכלים</translation>
 <translation id="4726710355753484204">‏כדי להתקרב, מקישים על Ctrl‏ + Alt + העלאת רמת הבהירות.
 כדי להתרחק, מקישים על Ctrl‏ +Alt + הורדת רמת הבהירות.</translation>
 <translation id="4726710629007580002">הופיעו אזהרות בעת הניסיון להתקין תוסף זה:</translation>

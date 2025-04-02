@@ -1,30 +1,167 @@
-#include "notice_model.h"
-class NoticeCatalogApiTest {};  // Copyright 2025 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/privacy_sandbox/notice/framework_features.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
+
+#include "base/test/mock_callback.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_notice.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using base::MockCallback;
 using privacy_sandbox::notice::mojom::PrivacySandboxNotice;
+using privacy_sandbox::notice::mojom::PrivacySandboxNoticeEvent;
+using testing::_;
 using testing::Contains;
+using testing::ValuesIn;
 
 namespace privacy_sandbox {
 namespace {
 
-class NoticeCatalogNoticeTest : public testing::Test {};
+class NoticeTest : public testing::Test {
+ public:
+  NoticeTest() : catalog_(std::make_unique<NoticeCatalog>()) {}
+
+  Notice* RegisterAndRetrieveNotice(PrivacySandboxNotice notice,
+                                    const base::Feature* feature) {
+    return catalog_->RegisterAndRetrieveNewNotice<Notice>(
+        {notice, SurfaceType::kDesktopNewTab}, feature);
+  }
+
+  Notice* RegisterAndRetrieveConsent(PrivacySandboxNotice notice,
+                                     const base::Feature* feature) {
+    return catalog_->RegisterAndRetrieveNewNotice<Consent>(
+        {notice, SurfaceType::kDesktopNewTab}, feature);
+  }
+
+  NoticeCatalog* notice_catalog() { return catalog_.get(); }
+
+ private:
+  std::unique_ptr<NoticeCatalog> catalog_;
+};
+
+TEST_F(NoticeTest, NoticeIsFulfillmentEventCorrect) {
+  Notice* notice = RegisterAndRetrieveNotice(
+      PrivacySandboxNotice::kTopicsConsentNotice,
+      &privacy_sandbox::kTopicsConsentDesktopModalFeature);
+  for (const auto& event : {PrivacySandboxNoticeEvent::kAck,
+                            PrivacySandboxNoticeEvent::kSettings}) {
+    EXPECT_EQ(notice->IsFulfillmentEvent(event), true);
+  }
+  EXPECT_EQ(notice->IsFulfillmentEvent(PrivacySandboxNoticeEvent::kOptIn),
+            false);
+}
+
+TEST_F(NoticeTest, ConsentIsFulfillmentEventCorrect) {
+  Notice* notice = RegisterAndRetrieveConsent(
+      PrivacySandboxNotice::kTopicsConsentNotice,
+      &privacy_sandbox::kTopicsConsentDesktopModalFeature);
+  for (const auto& event : {PrivacySandboxNoticeEvent::kOptIn,
+                            PrivacySandboxNoticeEvent::kOptOut}) {
+    EXPECT_EQ(notice->IsFulfillmentEvent(event), true);
+  }
+  EXPECT_EQ(notice->IsFulfillmentEvent(PrivacySandboxNoticeEvent::kAck), false);
+}
+
+TEST_F(NoticeTest, NoEligibilityCallbackReturnsNotEligible) {
+  NoticeApi* api = notice_catalog()->RegisterAndRetrieveNewApi();
+  EXPECT_EQ(api->GetEligibilityLevel(), EligibilityLevel::kNotEligible);
+}
+
+TEST_F(NoticeTest, SetEligibilityCallbackReturnsNoticeEligibilitySuccessfully) {
+  NoticeApi* api =
+      notice_catalog()->RegisterAndRetrieveNewApi()->SetEligibilityCallback(
+          base::BindRepeating([]() -> EligibilityLevel {
+            return EligibilityLevel::kEligibleNotice;
+          }));
+  RegisterAndRetrieveNotice(PrivacySandboxNotice::kTopicsConsentNotice,
+                            &privacy_sandbox::kTopicsConsentDesktopModalFeature)
+      ->SetTargetApis({api});
+  // TODO(crbug.com/392612108): Once WasFulfilled is implemented, change this
+  // value.
+  EXPECT_FALSE(api->IsFulfilled());
+}
+
+TEST_F(NoticeTest,
+       SetEligibilityCallbackReturnsConsentEligibilitySuccessfully) {
+  NoticeApi* api =
+      notice_catalog()->RegisterAndRetrieveNewApi()->SetEligibilityCallback(
+          base::BindRepeating([]() -> EligibilityLevel {
+            return EligibilityLevel::kEligibleConsent;
+          }));
+  RegisterAndRetrieveConsent(
+      PrivacySandboxNotice::kTopicsConsentNotice,
+      &privacy_sandbox::kTopicsConsentDesktopModalFeature)
+      ->SetTargetApis({api});
+  // TODO(crbug.com/392612108): Once WasFulfilled is implemented, change this
+  // value.
+  EXPECT_FALSE(api->IsFulfilled());
+}
+
+TEST_F(NoticeTest, ConsentEligibilityWithNoticeTypeReturnsNotFulfilled) {
+  NoticeApi* api =
+      notice_catalog()->RegisterAndRetrieveNewApi()->SetEligibilityCallback(
+          base::BindRepeating([]() -> EligibilityLevel {
+            return EligibilityLevel::kEligibleConsent;
+          }));
+  RegisterAndRetrieveNotice(PrivacySandboxNotice::kTopicsConsentNotice,
+                            &privacy_sandbox::kTopicsConsentDesktopModalFeature)
+      ->SetTargetApis({api});
+  // TODO(crbug.com/392612108): Once WasFulfilled is implemented, change this
+  // value.
+  EXPECT_FALSE(api->IsFulfilled());
+}
+
+class ResultCallbackTest
+    : public NoticeTest,
+      public testing::WithParamInterface<PrivacySandboxNoticeEvent> {};
+
+TEST_P(ResultCallbackTest, UpdateTargetApiResultsSuccess) {
+  MockCallback<base::OnceCallback<void(bool)>> result_callback;
+  NoticeApi* target =
+      notice_catalog()->RegisterAndRetrieveNewApi()->SetResultCallback(
+          result_callback.Get());
+  MockCallback<base::OnceCallback<void(bool)>> result2_callback;
+  NoticeApi* target2 =
+      notice_catalog()->RegisterAndRetrieveNewApi()->SetResultCallback(
+          result2_callback.Get());
+  Notice* notice = RegisterAndRetrieveConsent(
+                       PrivacySandboxNotice::kTopicsConsentNotice,
+                       &privacy_sandbox::kTopicsConsentDesktopModalFeature)
+                       ->SetTargetApis({target, target2});
+
+  // Set Expectations.
+  if (notice->IsFulfillmentEvent(GetParam())) {
+    EXPECT_CALL(result_callback, Run(_)).Times(1);
+    EXPECT_CALL(result2_callback, Run(_)).Times(1);
+  } else {
+    EXPECT_CALL(result_callback, Run(_)).Times(0);
+    EXPECT_CALL(result2_callback, Run(_)).Times(0);
+  }
+  notice->UpdateTargetApiResults(GetParam());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ResultCallbackTest,
+    ResultCallbackTest,
+    ValuesIn(std::vector<PrivacySandboxNoticeEvent>{
+        PrivacySandboxNoticeEvent::kAck, PrivacySandboxNoticeEvent::kClosed,
+        PrivacySandboxNoticeEvent::kOptIn, PrivacySandboxNoticeEvent::kOptOut,
+        PrivacySandboxNoticeEvent::kSettings,
+        PrivacySandboxNoticeEvent::kShown}));
+
+class NoticeCatalogNoticeTest : public NoticeTest {};
 
 TEST_F(NoticeCatalogNoticeTest, RegisterNewNoticeSuccessfully) {
   NoticeCatalog catalog;
-  NoticeApi* target_api = catalog.RegisterAndRetrieveNewApi();
+  NoticeApi* target_api = notice_catalog()->RegisterAndRetrieveNewApi();
 
-  NoticeApi* pre_req_api = catalog.RegisterAndRetrieveNewApi();
+  NoticeApi* pre_req_api = notice_catalog()->RegisterAndRetrieveNewApi();
 
-  EXPECT_THAT(catalog.GetNoticeApis().size(), 2u);
+  EXPECT_THAT(notice_catalog()->GetNoticeApis().size(), 2u);
   Notice* notice = catalog
                        .RegisterAndRetrieveNewNotice<Notice>(
                            {PrivacySandboxNotice::kTopicsConsentNotice,
@@ -45,12 +182,11 @@ TEST_F(NoticeCatalogNoticeTest, RegisterNewNoticeSuccessfully) {
 }
 
 TEST_F(NoticeCatalogNoticeTest, RegisterNewNoticeGroupSuccessfully) {
-  NoticeCatalog catalog;
-  NoticeApi* target_api = catalog.RegisterAndRetrieveNewApi();
+  NoticeApi* target_api = notice_catalog()->RegisterAndRetrieveNewApi();
 
-  NoticeApi* pre_req_api = catalog.RegisterAndRetrieveNewApi();
+  NoticeApi* pre_req_api = notice_catalog()->RegisterAndRetrieveNewApi();
 
-  catalog.RegisterNoticeGroup<Consent>(
+  notice_catalog()->RegisterNoticeGroup<Consent>(
       {{{PrivacySandboxNotice::kTopicsConsentNotice,
          SurfaceType::kDesktopNewTab},
         &privacy_sandbox::kTopicsConsentDesktopModalFeature},
@@ -61,7 +197,7 @@ TEST_F(NoticeCatalogNoticeTest, RegisterNewNoticeGroupSuccessfully) {
         &privacy_sandbox::kTopicsConsentModalClankCCTFeature}},
       {target_api});
 
-  catalog.RegisterNoticeGroup<Notice>(
+  notice_catalog()->RegisterNoticeGroup<Notice>(
       {{{PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
          SurfaceType::kDesktopNewTab},
         &privacy_sandbox::kProtectedAudienceMeasurementNoticeModalFeature},
@@ -75,8 +211,8 @@ TEST_F(NoticeCatalogNoticeTest, RegisterNewNoticeGroupSuccessfully) {
             kProtectedAudienceMeasurementNoticeModalClankCCTFeature}},
       {target_api}, {pre_req_api});
 
-  const auto& notice_map = catalog.GetNoticeMap();
-  EXPECT_THAT(catalog.GetNoticeApis().size(), 2u);
+  const auto& notice_map = notice_catalog()->GetNoticeMap();
+  EXPECT_THAT(notice_catalog()->GetNoticeApis().size(), 2u);
   EXPECT_THAT(notice_map.size(), 6u);
 
   Notice* topics_desktop_notice =
@@ -98,9 +234,9 @@ TEST_F(NoticeCatalogNoticeTest, RegisterNewNoticeGroupSuccessfully) {
 TEST_F(NoticeCatalogNoticeTest,
        VerifyFeatureSetCorrectlyDuringNoticeGroupRegistration) {
   NoticeCatalog catalog;
-  NoticeApi* target_api = catalog.RegisterAndRetrieveNewApi();
+  NoticeApi* target_api = notice_catalog()->RegisterAndRetrieveNewApi();
 
-  catalog.RegisterNoticeGroup<Consent>(
+  notice_catalog()->RegisterNoticeGroup<Consent>(
       {{{PrivacySandboxNotice::kTopicsConsentNotice,
          SurfaceType::kDesktopNewTab},
         &privacy_sandbox::kTopicsConsentDesktopModalFeature},
@@ -111,7 +247,7 @@ TEST_F(NoticeCatalogNoticeTest,
         &privacy_sandbox::kTopicsConsentModalClankCCTFeature}},
       {target_api});
 
-  const auto& notice_map = catalog.GetNoticeMap();
+  const auto& notice_map = notice_catalog()->GetNoticeMap();
 
   Notice* topics_desktop_notice =
       notice_map

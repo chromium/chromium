@@ -635,8 +635,7 @@ void BidderWorklet::ReportWin(
     const std::optional<std::string>&
         direct_from_seller_auction_signals_header_ad_slot,
     const std::string& seller_signals_json,
-    mojom::KAnonymityBidMode kanon_mode,
-    bool bid_is_kanon,
+    mojom::KAnonymityStatus kanon_status,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
     const std::optional<blink::AdCurrency>& browser_signal_bid_currency,
@@ -674,8 +673,7 @@ void BidderWorklet::ReportWin(
   report_win_task->auction_signals_json = auction_signals_json;
   report_win_task->per_buyer_signals_json = per_buyer_signals_json;
   report_win_task->seller_signals_json = seller_signals_json;
-  report_win_task->kanon_mode = kanon_mode;
-  report_win_task->bid_is_kanon = bid_is_kanon;
+  report_win_task->kanon_status = kanon_status;
   report_win_task->browser_signal_render_url = browser_signal_render_url;
   report_win_task->browser_signal_bid = browser_signal_bid;
   report_win_task->browser_signal_bid_currency = browser_signal_bid_currency;
@@ -1100,8 +1098,7 @@ void BidderWorklet::V8State::ReportWin(
     const std::optional<std::string>&
         direct_from_seller_auction_signals_header_ad_slot,
     const std::string& seller_signals_json,
-    mojom::KAnonymityBidMode kanon_mode,
-    bool bid_is_kanon,
+    mojom::KAnonymityStatus kanon_status,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
     const std::optional<blink::AdCurrency>& browser_signal_bid_currency,
@@ -1175,24 +1172,19 @@ void BidderWorklet::V8State::ReportWin(
   v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
   gin::Dictionary browser_signals_dict(isolate, browser_signals);
 
-  std::string kanon_status;
-  switch (kanon_mode) {
-    case mojom::KAnonymityBidMode::kEnforce:
-      // If k-anon was truly enforced and it passed.
-      kanon_status = "passedAndEnforced";
+  std::string kanon_status_str;
+  switch (kanon_status) {
+    case mojom::KAnonymityStatus::kUnknown:
+      kanon_status_str = "notCalculated";
       break;
-    case mojom::KAnonymityBidMode::kSimulate:
-      if (bid_is_kanon) {
-        // If K-anon can determine the value and kSimulate is on.
-        kanon_status = "passedNotEnforced";
-      } else {
-        // Number of ad was below the threshold and kSimulate is on.
-        kanon_status = "belowThreshold";
-      }
+    case mojom::KAnonymityStatus::kBelowThreshold:
+      kanon_status_str = "belowThreshold";
       break;
-    case mojom::KAnonymityBidMode::kNone:
-      // K-anon cannot determine the theoretical outcome.
-      kanon_status = "notCalculated";
+    case mojom::KAnonymityStatus::kPassingNotEnforced:
+      kanon_status_str = "passedNotEnforced";
+      break;
+    case mojom::KAnonymityStatus::kPassingAndEnforced:
+      kanon_status_str = "passedAndEnforced";
       break;
   }
 
@@ -1217,7 +1209,8 @@ void BidderWorklet::V8State::ReportWin(
       browser_signal_modeling_signals, browser_signal_join_count,
       browser_signal_recency, browser_signal_seller_origin,
       browser_signal_top_level_seller_origin, bidding_signals_data_version,
-      kanon_status, reporting_timeout, browser_signals, browser_signals_dict);
+      kanon_status_str, reporting_timeout, browser_signals,
+      browser_signals_dict);
   if (!browser_signals_set) {
     PostReportWinCallbackToUserThread(
         std::move(callback),
@@ -1364,7 +1357,7 @@ void BidderWorklet::V8State::ReportWin(
         browser_signal_recency, browser_signal_seller_origin,
         browser_signal_top_level_seller_origin,
         browser_signal_reporting_timeout, bidding_signals_data_version,
-        kanon_status, aggregate_win_signals, reporting_timeout,
+        kanon_status_str, aggregate_win_signals, reporting_timeout,
         per_buyer_signals, auction_signals,
         context_recycler.report_bindings()->modeling_signals_config().value(),
         report_aggregate_win_args);
@@ -1880,6 +1873,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
       should_exclude_component_ad_due_to_kanon,
       should_exclude_reporting_id_set_due_to_kanon);
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "fillInInterestGroupV8Argument",
+                                    trace_id);
   v8::LocalVector<v8::Value> args(isolate);
   v8::Local<v8::Object> interest_group_object = v8::Object::New(isolate);
   gin::Dictionary interest_group_dict(isolate, interest_group_object);
@@ -1912,6 +1907,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
   }
 
   args.push_back(std::move(interest_group_object));
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "fillInInterestGroupV8Argument",
+                                  trace_id);
 
   if (!AppendJsonValueOrNull(v8_helper_.get(), context, auction_signals_json,
                              &args) ||
@@ -1920,6 +1917,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
     return std::nullopt;
   }
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "fillInTrustedSignalsV8Argument",
+                                    trace_id);
   v8::Local<v8::Value> trusted_signals;
   SignalsOriginRelation trusted_signals_relation = ClassifyTrustedSignals(
       script_source_url_, trusted_bidding_signals_origin_);
@@ -1941,6 +1940,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
   } else {
     args.push_back(v8::Null(isolate));
   }
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "fillInTrustedSignalsV8Argument",
+                                  trace_id);
 
   std::optional<uint32_t> bidding_signals_data_version;
   if (trusted_bidding_signals_result) {
@@ -1948,6 +1949,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
         trusted_bidding_signals_result->GetDataVersion();
   }
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "fillInBrowserSignalsV8Argument",
+                                    trace_id);
   v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
   gin::Dictionary browser_signals_dict(isolate, browser_signals);
   // TODO(crbug.com/336164429): Construct the fields of browser signals lazily.
@@ -2022,6 +2025,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
   }
 
   args.push_back(browser_signals);
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "fillInBrowserSignalsV8Argument",
+                                  trace_id);
 
   v8::Local<v8::Object> direct_from_seller_signals = v8::Object::New(isolate);
   gin::Dictionary direct_from_seller_signals_dict(isolate,
@@ -2212,6 +2217,8 @@ BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
     return nullptr;
   }
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "addBindingsToContextRecycler",
+                                    trace_id);
   context_recycler->AddForDebuggingOnlyBindings();
   context_recycler->AddPrivateAggregationBindings(
       permissions_policy_state_->private_aggregation_allowed,
@@ -2232,6 +2239,8 @@ BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
   context_recycler->AddSetPrioritySignalsOverrideBindings();
   context_recycler->AddInterestGroupLazyFiller();
   context_recycler->AddBiddingBrowserSignalsLazyFiller();
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "addBindingsToContextRecycler",
+                                  trace_id);
 
   if (should_deep_freeze && !DeepFreezeContext(context, errors_out)) {
     return nullptr;
@@ -2911,8 +2920,7 @@ void BidderWorklet::RunReportWinIfReady(ReportWinTaskList::iterator task) {
           std::move(task->direct_from_seller_per_buyer_signals_header_ad_slot),
           std::move(task->direct_from_seller_result_auction_signals),
           std::move(task->direct_from_seller_auction_signals_header_ad_slot),
-          std::move(task->seller_signals_json), std::move(task->kanon_mode),
-          std::move(task->bid_is_kanon),
+          std::move(task->seller_signals_json), std::move(task->kanon_status),
           std::move(task->browser_signal_render_url),
           std::move(task->browser_signal_bid),
           std::move(task->browser_signal_bid_currency),

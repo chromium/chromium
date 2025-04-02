@@ -2979,6 +2979,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3045447014237878114">Diese Website hat automatisch mehrere Dateien heruntergeladen</translation>
 <translation id="3046178388369461825">Auf dem Linux-Laufwerk ist nur noch sehr wenig Speicherplatz verfügbar</translation>
 <translation id="304644035656848980">Mikrofon-Audiovorschau</translation>
+<translation id="3046892784550338476">Version <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Webseite, vollständig</translation>
 <translation id="304747341537320566">Sprach-Engines</translation>
 <translation id="3047678109605649715">Auf deinem Gerät sind keine Stimmen für <ph name="LANGUAGE" /> vorhanden. Gib auf dem Gerät Speicherplatz frei und versuche es noch einmal.</translation>

@@ -44,7 +44,6 @@
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_setting_override.h"
-#include "net/cookies/cookie_switches.h"
 #include "net/cookies/parsed_cookie.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
@@ -1134,15 +1133,6 @@ NET_EXPORT bool IsForceThirdPartyCookieBlockingEnabled() {
   return base::FeatureList::IsEnabled(
              features::kForceThirdPartyCookieBlocking) &&
          base::FeatureList::IsEnabled(features::kThirdPartyStoragePartitioning);
-}
-
-bool PartitionedCookiesDisabledByCommandLine() {
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
-  if (!command_line) {
-    return false;
-  }
-  return command_line->HasSwitch(kDisablePartitionedCookiesSwitch);
 }
 
 bool ShouldAddInitialStorageAccessApiOverride(

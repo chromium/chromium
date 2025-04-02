@@ -1511,20 +1511,21 @@ class ComputedStyle final : public ComputedStyleBase {
   // fallback calculation purposes.
   // https://drafts.csswg.org/css-anchor-position-1/#determine-the-position-fallback-styles
   bool IsTopInsetNonAuto() const {
-    return !Top().IsAuto() ||
-           (PositionAreaOffsets() && PositionAreaOffsets()->top);
+    return !Top().IsAuto() || (PositionAreaOffsets() &&
+                               !PositionAreaOffsets()->behaves_as_auto.top);
   }
   bool IsRightInsetNonAuto() const {
-    return !Right().IsAuto() ||
-           (PositionAreaOffsets() && PositionAreaOffsets()->right);
+    return !Right().IsAuto() || (PositionAreaOffsets() &&
+                                 !PositionAreaOffsets()->behaves_as_auto.right);
   }
   bool IsBottomInsetNonAuto() const {
     return !Bottom().IsAuto() ||
-           (PositionAreaOffsets() && PositionAreaOffsets()->bottom);
+           (PositionAreaOffsets() &&
+            !PositionAreaOffsets()->behaves_as_auto.bottom);
   }
   bool IsLeftInsetNonAuto() const {
-    return !Left().IsAuto() ||
-           (PositionAreaOffsets() && PositionAreaOffsets()->left);
+    return !Left().IsAuto() || (PositionAreaOffsets() &&
+                                !PositionAreaOffsets()->behaves_as_auto.left);
   }
 
   // Content utility functions.

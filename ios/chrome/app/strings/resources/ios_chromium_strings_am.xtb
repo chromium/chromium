@@ -90,6 +90,7 @@
 <translation id="3054480780637153380">በiOS ውስጥ የChromium ቅንብሮችን ይክፈቱ ከዚያ «ነባሪ አሳሽ መተግበሪያ» ላይ መታ ያድርጉ እና Chromium ይምረጡ።</translation>
 <translation id="3102849287235003384">በሁሉም ድር ጣቢያዎች ላይ የእርስዎን የGoogle መለያ ዘግተው ለመውጣት <ph name="BEGIN_LINK" />ከChromium ዘግተው ይውጡ<ph name="END_LINK" />።</translation>
 <translation id="3115956258722352278">Chromium የእርስዎ ነባሪ አሳሽ ይደረግ?</translation>
+<translation id="3180939591219927904">Chromium በሚዘጉበት ጊዜ «ማንነት የማያሳውቁ ትሮችን ይቆልፉ» የሚለውን ያብሩ</translation>
 <translation id="3242612358525156339">ከመሣሪያዎ ቅንብሮች ላይ ሆነው «<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />»ን ይክፈቱ እና «Chromium»ን ይምረጡ</translation>
 <translation id="328933489847748230">{count,plural, =1{አሁን 1 Chromium መስኮትን በማሳየት ላይ}one{አሁን {count} Chromium መስኮቶችን በማሳየት ላይ}other{አሁን {count} Chromium መስኮቶችን በማሳየት ላይ}}</translation>
 <translation id="3344973607274501920">Chromium የእርስዎን የይለፍ ቃላት መፈተሽ አይችልም። የበይነመረብ ግንኙነትዎን ለመፈተሽ ይሞክሩ።</translation>
@@ -259,6 +260,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">የተመረጠው ውሂብ ከChromium እና የሰመሩ መሣሪያዎች ተወግዷል። የGoogle መለያዎ history.google.com ላይ እንደ የሌሎች Google አገልግሎቶች ፍለጋዎች እና እንቅስቃሴ ያለ ሌሎች የአሰሳ ታሪክ ዓይነት ሊኖረው ይችላል።</translation>
 <translation id="7395825497086981028">የይለፍ ቃልዎ ለ<ph name="EMAIL" /> በይለፍ ቃል አስተዳዳሪ ላይ ይቀመጣል።</translation>
+<translation id="7504829997542308412">Chromium ይክፈቱ</translation>
 <translation id="7531461704633548377">ከChromium</translation>
 <translation id="7554983317097061001">Chromium ጠቃሚ ምክር፦ Chromium ወደ መትከያው ያንቀሳቅሱ</translation>
 <translation id="7576863740961052505">የChromium ቅንብሮችን ያስተዳድሩ</translation>

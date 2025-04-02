@@ -23,6 +23,7 @@ namespace {
 
 constexpr int kFakeBaseGenerationSeed = 10;
 constexpr char kQueryRewriterTag[] = "use_query_rewrite";
+constexpr char kLobsterI18nFlag[] = "use_i18n";
 
 const std::string_view GetTestJpgBytes(const SkBitmap& bitmap) {
   static const base::NoDestructor<std::string> jpg_bytes([&] {
@@ -52,7 +53,8 @@ manta::proto::Request CreateTestMantaRequest(std::string_view query,
                                              std::optional<uint32_t> seed,
                                              const gfx::Size& size,
                                              int num_outputs,
-                                             bool use_query_rewriter) {
+                                             bool use_query_rewriter,
+                                             bool use_i18n) {
   manta::proto::Request request;
   manta::proto::RequestConfig& request_config =
       *request.mutable_request_config();
@@ -74,6 +76,11 @@ manta::proto::Request CreateTestMantaRequest(std::string_view query,
       *request.add_input_data();
   query_rewritten_input_data.set_tag(kQueryRewriterTag);
   query_rewritten_input_data.set_text(use_query_rewriter ? "true" : "false");
+
+  manta::proto::InputData& query_i18n_flag_input_data =
+      *request.add_input_data();
+  query_i18n_flag_input_data.set_tag(kLobsterI18nFlag);
+  query_i18n_flag_input_data.set_text(use_i18n ? "true" : "false");
 
   return request;
 }

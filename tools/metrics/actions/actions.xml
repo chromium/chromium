@@ -5626,6 +5626,17 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="BookmarkBar_ContextMenu_Move">
+  <owner>amelies@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user decided to move one or more bookmarks using the context menu (e.g.
+    from the side panel). This metric is recorded when the native move dialog is
+    opened (opposed to the webUI version), which is the case when the flag
+    `SyncEnableBookmarksInTransportMode` is enabled.
+  </description>
+</action>
+
 <action name="BookmarkBar_ContextMenu_NewFolder">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -24185,6 +24196,13 @@ should be able to be added at any place in this file.
   <owner>clank-start@google.com</owner>
   <description>
     User pressed 'New tab' in the app menu when start surface finale is enabled.
+  </description>
+</action>
+
+<action name="MobileMenuNewTabGroup">
+  <owner>mfiaz@google.com</owner>
+  <description>
+    User pressed 'New Tab Group' in the mobile tab switcher.
   </description>
 </action>
 

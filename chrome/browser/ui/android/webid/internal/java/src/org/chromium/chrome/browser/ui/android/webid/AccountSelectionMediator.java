@@ -22,6 +22,7 @@ import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ButtonData;
@@ -219,7 +220,10 @@ class AccountSelectionMediator {
     private HeaderType mHeaderType;
     private String mRpForDisplay;
     private String mIdpForDisplay;
-    private Bitmap mIdpBrandIcon;
+    // The icon to be displayed in the title of the dialog. Corresponds to the IDP icon when one IDP
+    // is involved or the RP icon when multiple IDPs are involved.
+    private Bitmap mHeaderIcon;
+    // The RP brand icon provided by the IDP. Used only in active mode.
     private Bitmap mRpBrandIcon;
     private boolean mIsAutoReauthn;
     private @RpContext.EnumType int mRpContext;
@@ -508,7 +512,7 @@ class AccountSelectionMediator {
                 };
 
         return new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                .with(HeaderProperties.IDP_BRAND_ICON, mIdpBrandIcon)
+                .with(HeaderProperties.HEADER_ICON, mHeaderIcon)
                 .with(HeaderProperties.RP_BRAND_ICON, mRpBrandIcon)
                 .with(HeaderProperties.CLOSE_ON_CLICK_LISTENER, closeOnClickRunnable)
                 .with(HeaderProperties.IDP_FOR_DISPLAY, idpForDisplay)
@@ -595,18 +599,20 @@ class AccountSelectionMediator {
         return currentTime - mComponentShowTime > POTENTIALLY_UNINTENDED_INPUT_THRESHOLD;
     }
 
-    private boolean isValidBrandIcon(Bitmap bitmap) {
+    private boolean isValidBrandIcon(Bitmap bitmap, boolean shouldCircleCrop) {
         return bitmap != null
                 && bitmap.getWidth() == bitmap.getHeight()
-                && bitmap.getWidth() >= AccountSelectionBridge.getBrandIconMinimumSize(mRpMode);
+                && (!shouldCircleCrop
+                        || bitmap.getWidth()
+                                >= AccountSelectionBridge.getBrandIconMinimumSize(mRpMode));
     }
 
-    private void updateIdpBrandIcon(Bitmap bitmap) {
-        mIdpBrandIcon = isValidBrandIcon(bitmap) ? bitmap : null;
+    private void updateHeaderIcon(Bitmap bitmap, boolean shouldCircleCrop) {
+        mHeaderIcon = isValidBrandIcon(bitmap, shouldCircleCrop) ? bitmap : null;
     }
 
     private void updateRpBrandIcon(Bitmap bitmap) {
-        mRpBrandIcon = isValidBrandIcon(bitmap) ? bitmap : null;
+        mRpBrandIcon = isValidBrandIcon(bitmap, /* shouldCircleCrop= */ true) ? bitmap : null;
     }
 
     private void maybeRecordAccountChooserResult(int result) {
@@ -714,9 +720,7 @@ class AccountSelectionMediator {
             List<Account> accounts,
             List<IdentityProviderData> idpDataList,
             boolean isAutoReauthn,
-            List<Account> newAccounts,
-            Bitmap favicon) {
-        // TOOD(crbug.com/392142580): use the favicon where needed.
+            List<Account> newAccounts) {
         mRpForDisplay = rpForDisplay;
         mAccounts = accounts;
         mIdpDataListForShowAccounts = idpDataList;
@@ -775,7 +779,7 @@ class AccountSelectionMediator {
             return false;
         }
         setComponentShowTime(SystemClock.elapsedRealtime());
-        updateIdpBrandIcon(idpMetadata.getBrandIconBitmap());
+        updateHeaderIcon(idpMetadata.getBrandIconBitmap(), /* shouldCircleCrop= */ true);
         return true;
     }
 
@@ -802,7 +806,7 @@ class AccountSelectionMediator {
                     /* areAccountsClickable= */ false)) {
                 return false;
             }
-            updateIdpBrandIcon(idpMetadata.getBrandIconBitmap());
+            updateHeaderIcon(idpMetadata.getBrandIconBitmap(), /* shouldCircleCrop= */ true);
             return true;
         }
 
@@ -1029,9 +1033,12 @@ class AccountSelectionMediator {
                 areAccountsClickable,
                 showUseDifferentAccountInSingleAccountChooserActiveMode);
         if (uniqueIdp != null) {
-            updateIdpBrandIcon(uniqueIdp.getIdpMetadata().getBrandIconBitmap());
+            updateHeaderIcon(
+                    uniqueIdp.getIdpMetadata().getBrandIconBitmap(), /* shouldCircleCrop= */ true);
         } else {
-            updateIdpBrandIcon(null);
+            updateHeaderIcon(
+                    mIsMultipleIdps ? TabFavicon.getBitmap(mTab) : null,
+                    /* shouldCircleCrop= */ false);
         }
         assert mRpMode == RpMode.PASSIVE || !mIsMultipleIdps;
         // RP brand icon is set here, but only shown during the request permission dialog.
@@ -1237,9 +1244,15 @@ class AccountSelectionMediator {
                 mIsMultipleIdps
                         ? account.getCircledBadgedPictureBitmap()
                         : account.getPictureBitmap();
+        int avatarSize =
+                mIsMultipleIdps
+                        ? mContext.getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.account_selection_account_avatar_multi_idp_size)
+                        : mDesiredAvatarSize;
         accountModel.set(
                 AccountProperties.AVATAR,
-                new AccountProperties.Avatar(displayName, picture, mDesiredAvatarSize));
+                new AccountProperties.Avatar(displayName, picture, avatarSize));
     }
 
     private void setIsMultipleIdps(boolean isMultipleIdps) {

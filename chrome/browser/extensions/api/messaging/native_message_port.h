@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_MESSAGING_NATIVE_MESSAGE_PORT_H_
 #define CHROME_BROWSER_EXTENSIONS_API_MESSAGING_NATIVE_MESSAGE_PORT_H_
 
+#include <memory>
+#include <string>
+
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "extensions/browser/api/messaging/message_port.h"
-#include "extensions/common/api/messaging/port_id.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -17,6 +19,8 @@ class SingleThreadTaskRunner;
 
 namespace extensions {
 class NativeMessageHost;
+struct Message;
+struct PortId;
 
 // A port that manages communication with a native application.
 // All methods must be called on the UI Thread of the browser process.

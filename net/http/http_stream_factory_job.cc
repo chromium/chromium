@@ -1161,7 +1161,7 @@ int HttpStreamFactory::Job::DoCreateStream() {
   int rv =
       session_->spdy_session_pool()->CreateAvailableSessionFromSocketHandle(
           spdy_session_key_, std::move(connection_), net_log_, initiator,
-          &spdy_session);
+          &spdy_session, SpdySessionInitiator::kHttpStreamFactoryJob);
 
   if (rv != OK) {
     return rv;

@@ -152,6 +152,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.FaviconResolver;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListFaviconResolverFactory;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
@@ -259,6 +260,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable BookmarkOpener mBookmarkOpener;
     private @NonNull ObservableSupplier<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier;
     private @NonNull AdvancedProtectionCoordinator mAdvancedProtectionCoordinator;
+    private final @NonNull KeyboardFocusRowManager mKeyboardFocusRowManager;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -517,6 +519,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 savedInstanceState, mEdgeToEdgeManager.getEdgeToEdgeStateProvider());
 
         mBookmarkManagerOpenerSupplier = bookmarkManagerOpenerSupplier;
+
+        mKeyboardFocusRowManager =
+                new KeyboardFocusRowManager(
+                        () -> mBookmarkBarCoordinator, // Gets current mBookmarkBarCoordinator
+                        compositorViewHolderSupplier,
+                        modalDialogManagerSupplier,
+                        () -> mLayoutManager.getStripLayoutHelperManager(), // Gets current SLHM
+                        getTabObscuringHandler(),
+                        () -> mToolbarManager // Gets current value of mToolbarManager
+                        );
     }
 
     @Override
@@ -1308,6 +1320,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 EdgeToEdgeControllerFactory.createBottomChin(
                         mActivity.findViewById(R.id.edge_to_edge_bottom_chin),
                         mWindowAndroid.getKeyboardDelegate(),
+                        mInsetObserver,
                         mLayoutManager,
                         mLayoutManager::requestUpdate,
                         mEdgeToEdgeControllerSupplier.get(),
@@ -1346,7 +1359,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private void initCollaborationDelegatesOnProfile(Profile profile) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) return;
+        if (!TabUiUtils.isDataSharingFunctionalityEnabled()) return;
 
         // We must use the original non-OTR profile here.
         Profile originalProfile = profile.getOriginalProfile();
@@ -1701,5 +1714,28 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     public static void setDisableTopControlsAnimationsForTesting(boolean disable) {
         sDisableTopControlsAnimationForTesting = disable;
         ResettersForTesting.register(() -> sDisableTopControlsAnimationForTesting = false);
+    }
+
+    /* package */ void initializeBookmarkBarCoordinatorForTesting() {
+        createBookmarkBarIfNecessary();
+    }
+
+    // MenuOrKeyboardActionHandler implementation
+    @Override
+    public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
+        if (super.handleMenuOrKeyboardAction(id, fromMenu)) return true;
+        if (id == R.id.switch_keyboard_focus_row) {
+            mKeyboardFocusRowManager.onKeyboardFocusRowSwitch();
+            return true;
+        } else if (id == R.id.focus_bookmarks) {
+            if (mBookmarkBarCoordinator != null) mBookmarkBarCoordinator.requestFocus();
+            return true;
+        }
+
+        return false;
+    }
+
+    /* package */ KeyboardFocusRowManager getKeyboardFocusRowManagerForTesting() {
+        return mKeyboardFocusRowManager;
     }
 }

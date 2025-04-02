@@ -105,6 +105,7 @@
 <translation id="1411386976162024013">Lensi visuaalne otsing</translation>
 <translation id="1417474386970818917">Logi välja ja kustuta</translation>
 <translation id="1426410128494586442">Jah</translation>
+<translation id="1429187656584513419">Avage valik Passwords</translation>
 <translation id="1430915738399379752">Printimine</translation>
 <translation id="1436671784520050284">Jätka seadistamist</translation>
 <translation id="143681031165817424">Aadress salvestatakse ainult sellesse seadmesse</translation>
@@ -440,6 +441,7 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="2783161812871838616">Taotle arvutisaiti</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Parool salvestati teie Google’i kontole {EMAIL}}other{Paroolid salvestati teie Google’i kontole {EMAIL}}}</translation>
 <translation id="2791174088547598693">Parooli lisamine …</translation>
+<translation id="2793703503584038325">Valige parool ja puudutage jagamise ikooni</translation>
 <translation id="2797302972324086597">Riigikood</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} file}other{{COUNT} faili}}</translation>
 <translation id="2816489851009559785">Menüü → Seaded → Vaikebrauser</translation>
@@ -579,6 +581,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="35083190962747987">Avage ${url}</translation>
 <translation id="3511519535430890904">Lisage sirvimise kaitse</translation>
 <translation id="3517216995152707259">Sirvimisandmete kustutamine ei logi teid Google'i kontolt välja. Selleks <ph name="BEGIN_LINK" />logige Chrome'ist välja<ph name="END_LINK" />.</translation>
+<translation id="3519792890877853853">Sellel kaardil kuvatakse teie avatud vahelehtedel olevate toodete arvustused</translation>
 <translation id="3519905498307021260">{count,plural, =1{Ava vaheleht}other{Ava {count} vahelehte}}</translation>
 <translation id="3523513363815970085">Peida moodul „Teie enim külastatud saidid"</translation>
 <translation id="3523789730715594198">Sünkroonimise võite seadetes igal ajal lõpetada. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
@@ -588,6 +591,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3530206579861815432">Leidke kiiresti oma sünkroonitud seadmetes avatud ja hiljuti suletud vahelehti.</translation>
 <translation id="3530767473765895035">Kontode haldamine selles seadmes …</translation>
 <translation id="3533436815740441613">Uus vaheleht</translation>
+<translation id="3533860663366814939">Avage seadetest Autofill &amp; Passwords</translation>
 <translation id="3547356470684043247">Lugege klientide hinnanguid toodetele, teenustele või kogemustele, et saaksite arvustuste abil teha teadlikumaid otsuseid</translation>
 <translation id="3557336313807607643">Lisa kontaktidesse</translation>
 <translation id="355765753469272474">Võta tagasi</translation>
@@ -819,6 +823,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4565377596337484307">Peida parool</translation>
 <translation id="4568230126482344545">Peida valik „Hiljutised vahelehed“</translation>
 <translation id="4578835633387306383">Lülitage sisse …</translation>
+<translation id="4580716718466706433">Avage „Paroolihaldur“</translation>
 <translation id="4587589328781138893">Saidid</translation>
 <translation id="4592672037257622855">{count,plural, =1{Teie lugemisloendisse lisati üks leht}other{Teie lugemisloendisse lisati {count} lehte}}</translation>
 <translation id="459644946100970322">Kas lülitada hinnamärguanded sisse?</translation>
@@ -858,6 +863,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4717844083556844785">Praegune veebileht on inkognito režiimis</translation>
 <translation id="4719927025381752090">Paku tõlkimist</translation>
 <translation id="4720530280568305198">Teie valik on avatud uuel vahelehel</translation>
+<translation id="472259426228234149">Hind 100–180 $</translation>
 <translation id="473775607612524610">Värskenda</translation>
 <translation id="474209246745757965">Ostke ja tõlkige oma kaamera abil</translation>
 <translation id="4742407542027196863">Halda paroole …</translation>
@@ -1508,6 +1514,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7431851541687113774">Lülita aadressi tuvastamine välja</translation>
 <translation id="7431991332293347422">Juhtige, kuidas kasutatakse teie sirvimisajalugu otsingu ja muu isikupärastamiseks</translation>
 <translation id="7435356471928173109">Administraator on välja lülitanud</translation>
+<translation id="7437712592381799950">Selleks et näha rohkem teile kohandatud sisu, saate pühkida üles.</translation>
 <translation id="7438481509621345350">Uue vahelehe avamisel näete nüüd lugusid kanalist <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Järjehoidja salvestati kohta „{title}“}other{Järjehoidjad salvestati kohta „{title}“}}</translation>
 <translation id="7451404862887877229">Puudutage valikut „Privaatsus ja turvalisus“ ning seejärel valikut „Google'i ohutu sirvimine“</translation>
@@ -1610,6 +1617,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="784934925303690534">Ajavahemik</translation>
 <translation id="7851858861565204677">Muud seadmed</translation>
 <translation id="7853202427316060426">Tegevus</translation>
+<translation id="7854006015462979438">Avage valik General</translation>
 <translation id="7859988229622350291">Ära kunagi tõlgi</translation>
 <translation id="7863211248337747225">Hankige rakendus</translation>
 <translation id="7865127013871431856">Tõlkimise valikud</translation>

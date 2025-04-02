@@ -893,6 +893,12 @@ class Browser : public TabStripModelObserver,
   web_app::AppBrowserController* GetAppBrowserController() override;
   std::vector<tabs::TabInterface*> GetAllTabInterfaces() override;
   Browser* GetBrowserForMigrationOnly() override;
+  bool IsTabModalPopup() const override;
+
+  // Called by BrowserView.
+  void set_is_tab_modal_popup(bool is_tab_modal_popup) {
+    is_tab_modal_popup_ = is_tab_modal_popup;
+  }
 
   // Called by BrowserView on active change for the browser.
   void DidBecomeActive();
@@ -1504,6 +1510,10 @@ class Browser : public TabStripModelObserver,
   // If true, the Browser window has been closed and this will be deleted
   // shortly (after a PostTask).
   bool is_delete_scheduled_ = false;
+
+  // If true, the browser window was created as a tab modal pop-up. This is
+  // determined by the NavigateParams::is_tab_modal_popup.
+  bool is_tab_modal_popup_ = false;
 
 #if defined(USE_AURA)
   std::unique_ptr<OverscrollPrefManager> overscroll_pref_manager_;

@@ -387,7 +387,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                     mIntentDataProvider.get(),
                     mFeatureOverridesManagerSupplier.get(),
                     mMinimizeDelegateSupplier.get(),
-                    omniboxParams);
+                    omniboxParams,
+                    params -> mToolbarCoordinator.get().onCustomButtonClick(params));
 
             super.initializeToolbar();
 

@@ -189,7 +189,7 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
     NOT_DESTROYED();
     return "LayoutMultiColumnSet";
   }
-  LayoutPoint LocationInternal() const override;
+  DeprecatedLayoutPoint LocationInternal() const override;
 
   // Tell the column set that it shouldn't really exist. This happens when
   // there's a leftover column set after DOM / style changes, that NG doesn't

@@ -89,10 +89,8 @@ import {AnnotationMode} from './constants.js';
           selected="${this.annotationMode_}">
         <viewer-side-panel page-name="${AnnotationMode.DRAW}">
         </viewer-side-panel>
-        <div page-name="${AnnotationMode.TEXT}"
-            style="color: lightgray; width: 288px;">
-          Text Annotation coming soon
-        </div>
+        <viewer-text-side-panel page-name="${AnnotationMode.TEXT}">
+        </viewer-text-side-panel>
       </cr-page-selector>
     ` : ''}
   </if>

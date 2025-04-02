@@ -57,6 +57,7 @@ include_rules = [
   "+chrome/browser/extensions/external_loader.h",
   "+chrome/browser/extensions/external_provider_impl.h",
   "+chrome/browser/extensions/policy_handlers.h",
+  "+chrome/browser/extensions/scoped_test_mv2_enabler.h",
   "+chrome/browser/extensions/updater",
   "+chrome/browser/invalidation",
   "+chrome/browser/lifetime",

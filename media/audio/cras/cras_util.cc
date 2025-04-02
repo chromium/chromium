@@ -60,7 +60,7 @@ libcras_client* CrasConnect() {
     LOG(ERROR) << "Couldn't create CRAS client.\n";
     return nullptr;
   }
-  if (libcras_client_connect(client)) {
+  if (libcras_client_connect_timeout(client, kCrasConnectTimeoutMs)) {
     LOG(ERROR) << "Couldn't connect CRAS client.\n";
     libcras_client_destroy(client);
     return nullptr;

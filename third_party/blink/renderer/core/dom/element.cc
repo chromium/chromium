@@ -1177,13 +1177,13 @@ Element* Element::GetElementAttributeResolvingReferenceTarget(
   return nullptr;
 }
 
-HeapVector<Member<Element>>* Element::GetAttrAssociatedElements(
+GCedHeapVector<Member<Element>>* Element::GetAttrAssociatedElements(
     const QualifiedName& name,
     bool resolve_reference_target) const {
   // https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#attr-associated-elements
   // 1. Let elements be an empty list.
-  HeapVector<Member<Element>>* result_elements =
-      MakeGarbageCollected<HeapVector<Member<Element>>>();
+  GCedHeapVector<Member<Element>>* result_elements =
+      MakeGarbageCollected<GCedHeapVector<Member<Element>>>();
   GCedHeapLinkedHashSet<WeakMember<Element>>* explicitly_set_elements =
       GetExplicitlySetElementsForAttr(name);
   if (explicitly_set_elements) {
@@ -1255,7 +1255,7 @@ FrozenArray<Element>* Element::GetElementArrayAttribute(
   // https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#reflecting-content-attributes-in-idl-attributes:element-3
 
   // 1. Let elements be this's attr-associated elements.
-  HeapVector<Member<Element>>* elements =
+  GCedHeapVector<Member<Element>>* elements =
       GetAttrAssociatedElements(name, /*resolve_reference_target=*/false);
 
   CachedAttrAssociatedElementsMap* cached_attr_associated_elements_map =
@@ -1283,7 +1283,8 @@ FrozenArray<Element>* Element::GetElementArrayAttribute(
 
   // 3. Let elementsAsFrozenArray be elements, converted to a FrozenArray<T>?.
   FrozenArray<Element>* elements_as_frozen_array =
-      MakeGarbageCollected<FrozenArray<Element>>(std::move(*elements));
+      MakeGarbageCollected<FrozenArray<Element>>(
+          HeapVector<Member<Element>>(std::move(*elements)));
 
   // 4. Set this's cached attr-associated elements to elementsAsFrozenArray.
   cached_attr_associated_elements_map->Set(name, elements_as_frozen_array);
@@ -1294,7 +1295,7 @@ FrozenArray<Element>* Element::GetElementArrayAttribute(
 
 void Element::SetElementArrayAttribute(
     const QualifiedName& name,
-    const HeapVector<Member<Element>>* given_elements) {
+    const GCedHeapVector<Member<Element>>* given_elements) {
   // https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#reflecting-content-attributes-in-idl-attributes:element-3
 
   ExplicitlySetAttrElementsMap* element_attribute_map =
@@ -1354,7 +1355,7 @@ FrozenArray<Element>* Element::ariaControlsElements() {
   return GetElementArrayAttribute(html_names::kAriaControlsAttr);
 }
 void Element::setAriaControlsElements(
-    HeapVector<Member<Element>>* given_elements) {
+    GCedHeapVector<Member<Element>>* given_elements) {
   SetElementArrayAttribute(html_names::kAriaControlsAttr, given_elements);
 }
 
@@ -1362,7 +1363,7 @@ FrozenArray<Element>* Element::ariaDescribedByElements() {
   return GetElementArrayAttribute(html_names::kAriaDescribedbyAttr);
 }
 void Element::setAriaDescribedByElements(
-    HeapVector<Member<Element>>* given_elements) {
+    GCedHeapVector<Member<Element>>* given_elements) {
   SetElementArrayAttribute(html_names::kAriaDescribedbyAttr, given_elements);
 }
 
@@ -1370,7 +1371,7 @@ FrozenArray<Element>* Element::ariaDetailsElements() {
   return GetElementArrayAttribute(html_names::kAriaDetailsAttr);
 }
 void Element::setAriaDetailsElements(
-    HeapVector<Member<Element>>* given_elements) {
+    GCedHeapVector<Member<Element>>* given_elements) {
   SetElementArrayAttribute(html_names::kAriaDetailsAttr, given_elements);
 }
 
@@ -1378,7 +1379,7 @@ FrozenArray<Element>* Element::ariaErrorMessageElements() {
   return GetElementArrayAttribute(html_names::kAriaErrormessageAttr);
 }
 void Element::setAriaErrorMessageElements(
-    HeapVector<Member<Element>>* given_elements) {
+    GCedHeapVector<Member<Element>>* given_elements) {
   SetElementArrayAttribute(html_names::kAriaErrormessageAttr, given_elements);
 }
 
@@ -1386,7 +1387,7 @@ FrozenArray<Element>* Element::ariaFlowToElements() {
   return GetElementArrayAttribute(html_names::kAriaFlowtoAttr);
 }
 void Element::setAriaFlowToElements(
-    HeapVector<Member<Element>>* given_elements) {
+    GCedHeapVector<Member<Element>>* given_elements) {
   SetElementArrayAttribute(html_names::kAriaFlowtoAttr, given_elements);
 }
 
@@ -1394,14 +1395,15 @@ FrozenArray<Element>* Element::ariaLabelledByElements() {
   return GetElementArrayAttribute(html_names::kAriaLabelledbyAttr);
 }
 void Element::setAriaLabelledByElements(
-    HeapVector<Member<Element>>* given_elements) {
+    GCedHeapVector<Member<Element>>* given_elements) {
   SetElementArrayAttribute(html_names::kAriaLabelledbyAttr, given_elements);
 }
 
 FrozenArray<Element>* Element::ariaOwnsElements() {
   return GetElementArrayAttribute(html_names::kAriaOwnsAttr);
 }
-void Element::setAriaOwnsElements(HeapVector<Member<Element>>* given_elements) {
+void Element::setAriaOwnsElements(
+    GCedHeapVector<Member<Element>>* given_elements) {
   SetElementArrayAttribute(html_names::kAriaOwnsAttr, given_elements);
 }
 
@@ -3197,6 +3199,8 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
         } else if (DisplayLockContext* context = GetDisplayLockContext()) {
           context->SetIsHiddenUntilFoundElement(false);
         }
+      } else if (name == html_names::kInertAttr) {
+        UseCounter::Count(GetDocument(), WebFeature::kInertAttribute);
       }
       // NOTE: We could test here if we have a shared ElementData
       // with presentation attribute style, and avoid re-dirtying
@@ -4569,8 +4573,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
     GetDocument().GetStyleEngine().MarkCountersDirty();
   }
 
-  if ((!old_style || old_style->ScrollMarkerContainNone()) && new_style &&
-      !new_style->ScrollMarkerContainNone()) {
+  if (new_style && !new_style->ScrollMarkerContainNone()) {
     GetDocument().AddScrollMarkerGroup(&EnsureScrollMarkerGroupData());
   }
 
@@ -8845,6 +8848,13 @@ PseudoElement* Element::CreatePseudoElementIfNeeded(
 
   PseudoElement* pseudo_element =
       PseudoElement::Create(this, pseudo_id, view_transition_name);
+  if (RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()) {
+    if (!pseudo_element) {
+      // TODO(crbug.com/405117185): Replace with DCHECK(pseudo_element) once we
+      // properly track per-scope view transition names.
+      return nullptr;
+    }
+  }
   EnsureElementRareData().SetPseudoElement(pseudo_id, pseudo_element,
                                            view_transition_name);
   pseudo_element->InsertedInto(*this);
@@ -11533,12 +11543,8 @@ ScrollMarkerGroupData& Element::EnsureScrollMarkerGroupData() {
 
 void Element::RemoveScrollMarkerGroupData() {
   if (ElementRareDataVector* data = GetElementRareData()) {
-    if (ScrollMarkerGroupData* scroll_marker_group_data =
-            data->GetScrollMarkerGroupData()) {
-      scroll_marker_group_data->ClearFocusGroup();
-      GetDocument().RemoveScrollMarkerGroup(scroll_marker_group_data);
-      data->RemoveScrollMarkerGroupData();
-    }
+    GetDocument().RemoveScrollMarkerGroup(data->GetScrollMarkerGroupData());
+    data->RemoveScrollMarkerGroupData();
   }
 }
 

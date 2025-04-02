@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/renderer/actor/click_tool.h"
+#include "chrome/renderer/actor/mouse_move_tool.h"
 #include "content/public/renderer/render_frame.h"
 
 using content::RenderFrame;
@@ -36,6 +37,12 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr request,
       CHECK(request->action->get_click());
       tool_ = std::make_unique<ClickTool>(
           std::move(request->action->get_click()), frame_);
+      break;
+    }
+    case actor::mojom::ToolAction::Tag::kMouseMove: {
+      CHECK(request->action->get_mouse_move());
+      tool_ = std::make_unique<MouseMoveTool>(
+          std::move(request->action->get_mouse_move()), frame_);
       break;
     }
   }

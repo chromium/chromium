@@ -115,7 +115,7 @@ public class VariationsSeedLoader {
     private static long sCachedAppSeedFreshness;
 
     private FutureTask<SeedLoadResult> mLoadTask;
-    private SeedServerCallback mSeedServerCallback = new SeedServerCallback();
+    private final SeedServerCallback mSeedServerCallback = new SeedServerCallback();
 
     private static void recordLoadSeedResult(@LoadSeedResult int result) {
         RecordHistogram.recordEnumeratedHistogram(
@@ -338,8 +338,8 @@ public class VariationsSeedLoader {
     // Connects to VariationsSeedServer service. Sends a file descriptor for our local copy of the
     // seed to the service, to which the service will write a new seed.
     private class SeedServerConnection extends ServiceConnectionDelayRecorder {
-        private ParcelFileDescriptor mNewSeedFd;
-        private long mOldSeedDate;
+        private final ParcelFileDescriptor mNewSeedFd;
+        private final long mOldSeedDate;
 
         public SeedServerConnection(ParcelFileDescriptor newSeedFd, long oldSeedDate) {
             mNewSeedFd = newSeedFd;
@@ -372,17 +372,23 @@ public class VariationsSeedLoader {
 
         @Override
         public void onServiceConnectedImpl(ComponentName name, IBinder service) {
-            try {
-                if (mNewSeedFd.getFd() >= 0) {
-                    IVariationsSeedServer.Stub.asInterface(service)
-                            .getSeed(mNewSeedFd, mOldSeedDate, mSeedServerCallback);
-                }
-            } catch (RemoteException e) {
-                Log.e(TAG, "Faild requesting seed", e);
-            } finally {
-                ContextUtils.getApplicationContext().unbindService(this);
-                VariationsUtils.closeSafely(mNewSeedFd);
-            }
+            // onServiceConnected is called on the app's main thread. Punt this back to the
+            // background thread as this work is not time critical.
+            PostTask.postTask(
+                    TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                    () -> {
+                        try {
+                            if (mNewSeedFd.getFd() >= 0) {
+                                IVariationsSeedServer.Stub.asInterface(service)
+                                        .getSeed(mNewSeedFd, mOldSeedDate, mSeedServerCallback);
+                            }
+                        } catch (RemoteException e) {
+                            Log.e(TAG, "Faild requesting seed", e);
+                        } finally {
+                            ContextUtils.getApplicationContext().unbindService(this);
+                            VariationsUtils.closeSafely(mNewSeedFd);
+                        }
+                    });
         }
 
         @Override

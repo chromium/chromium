@@ -20,6 +20,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "ui/display/display_switches.h"
 
 namespace optimization_guide {
@@ -189,6 +190,12 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, AIPageContent) {
   EXPECT_EQ(root_geometry.visible_bounding_box().width(),
             window_bounds.width());
   EXPECT_EQ(root_geometry.visible_bounding_box().height(),
+            window_bounds.height());
+
+  EXPECT_EQ(page_content().viewport_geometry().x(), 0);
+  EXPECT_EQ(page_content().viewport_geometry().y(), 0);
+  EXPECT_EQ(page_content().viewport_geometry().width(), window_bounds.width());
+  EXPECT_EQ(page_content().viewport_geometry().height(),
             window_bounds.height());
 }
 
@@ -744,10 +751,9 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
       ukm::builders::OptimizationGuide_AIPageContentAgent::kEntryName);
   EXPECT_EQ(1u, entries.size());
   auto* entry = entries[0].get();
-  EXPECT_EQ(
-      1, *ukm_recorder.GetEntryMetric(
-             entry, ukm::builders::OptimizationGuide_AIPageContentAgent::
-                        kNodeDepthLimitExceededName));
+  EXPECT_EQ(1, *ukm_recorder.GetEntryMetric(
+                   entry, ukm::builders::OptimizationGuide_AIPageContentAgent::
+                              kNodeDepthLimitExceededName));
 }
 
 IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
@@ -771,6 +777,92 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::OptimizationGuide_AIPageContentAgent::kEntryName);
   EXPECT_EQ(0u, entries.size());
+}
+
+class ScaledPageContentProtoProviderBrowserTest
+    : public PageContentProtoProviderBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    content::ContentBrowserTest::SetUpCommandLine(command_line);
+
+    // HTTPS server only serves a valid cert for localhost, so this is needed
+    // to load pages from other hosts without an error.
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+
+    command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "2.0");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ScaledPageContentProtoProviderBrowserTest, ScaleSizes) {
+  const gfx::Size window_bounds(web_contents()->GetSize());
+  LoadPage(https_server()->GetURL("/simple.html"));
+
+  EXPECT_EQ(page_content().version(),
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+  EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
+  AssertHasText(page_content().root_node(), "Non empty simple page\n\n");
+  EXPECT_FALSE(
+      page_content().root_node().content_attributes().has_interaction_info());
+
+  // The viewport geometry should be scaled by the device scale factor.
+  EXPECT_EQ(page_content().viewport_geometry().x(), 0);
+  EXPECT_EQ(page_content().viewport_geometry().y(), 0);
+  EXPECT_EQ(page_content().viewport_geometry().width(), window_bounds.width());
+  EXPECT_EQ(page_content().viewport_geometry().height(),
+            window_bounds.height());
+}
+
+bool ContainsRole(const optimization_guide::proto::ContentNode& node,
+                  optimization_guide::proto::AnnotatedRole role) {
+  for (const auto& r : node.content_attributes().annotated_roles()) {
+    if (r == role) {
+      return true;
+    }
+  }
+  return false;
+}
+
+class PageContentProtoProviderBrowserTestPaidContentDisabled
+    : public PageContentProtoProviderBrowserTest {
+ public:
+ PageContentProtoProviderBrowserTestPaidContentDisabled() {
+    features_.InitAndDisableFeature(
+        blink::features::kAIPageContentPaidContentAnnotation);
+  }
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, PaidContent) {
+  LoadPage(https_server()->GetURL("/paid_content.html"));
+
+  // The page contains paid content.
+  EXPECT_TRUE(page_content()
+                  .main_frame_data()
+                  .paid_content_metadata()
+                  .contains_paid_content());
+
+  auto& nodes = page_content().root_node().children_nodes();
+  EXPECT_EQ(nodes.size(), 2);
+  EXPECT_FALSE(ContainsRole(
+      nodes[0], optimization_guide::proto::ANNOTATED_ROLE_PAID_CONTENT));
+  EXPECT_TRUE(ContainsRole(
+      nodes[1], optimization_guide::proto::ANNOTATED_ROLE_PAID_CONTENT));
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestPaidContentDisabled,
+                       PaidContentDisabled) {
+  LoadPage(https_server()->GetURL("/paid_content.html"));
+
+  // If the feature has been disabled, there should be no paid content metadata.
+  EXPECT_FALSE(page_content().main_frame_data().has_paid_content_metadata());
+
+  auto& nodes = page_content().root_node().children_nodes();
+  EXPECT_EQ(nodes.size(), 2);
+  EXPECT_FALSE(ContainsRole(
+      nodes[0], optimization_guide::proto::ANNOTATED_ROLE_PAID_CONTENT));
+  EXPECT_FALSE(ContainsRole(
+      nodes[1], optimization_guide::proto::ANNOTATED_ROLE_PAID_CONTENT));
 }
 
 }  // namespace

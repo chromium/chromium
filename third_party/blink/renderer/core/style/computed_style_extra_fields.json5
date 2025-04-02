@@ -1328,7 +1328,7 @@
       name: "AnchorCenterOffset",
       field_template: "external",
       field_group: "*",
-      include_paths: ["third_party/blink/renderer/core/layout/geometry/physical_offset.h"],
+      include_paths: ["third_party/blink/renderer/platform/geometry/physical_offset.h"],
       default_value: "std::nullopt",
       type_name: "std::optional<PhysicalOffset>",
       custom_compare: true,

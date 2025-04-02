@@ -21,8 +21,9 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -32,7 +33,13 @@ import org.chromium.ui.base.DeviceFormFactor;
 public class TabCountLabelTest {
     /** Check the tabCount string against an expected value. */
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    @Before
+    public void setUp() {
+        mActivityTestRule.startOnBlankPage();
+    }
 
     private void tabCountLabelCheck(String stepName, String labelExpected) {
         ImageButton tabSwitcherBtn =
@@ -66,10 +73,5 @@ public class TabCountLabelTest {
         // Make sure the TAB_CLOSED notification went through
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         tabCountLabelCheck("After close tab", "1");
-    }
-
-    @Before
-    public void setUp() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
     }
 }

@@ -213,7 +213,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void TriggerPlusAddressUserPerceptionSurvey(
       plus_addresses::hats::SurveyType survey_type) final;
 
-  // TODO(crbug.com/320634151): Create a test API.
+  // TODO(crbug.com/407666146): Create a test API.
   base::WeakPtr<AutofillSuggestionController>
   suggestion_controller_for_testing() {
     return suggestion_controller_;

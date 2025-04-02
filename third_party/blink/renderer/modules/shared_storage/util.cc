@@ -7,7 +7,9 @@
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "services/network/public/mojom/shared_storage.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom-blink.h"
@@ -37,6 +39,23 @@ bool StringFromV8(v8::Isolate* isolate, v8::Local<v8::Value> val, String* out) {
 
 bool IsReservedLockName(const String& lock_name) {
   return lock_name.StartsWith('-');
+}
+
+bool IsValidSharedStorageBatchUpdateMethodsArgument(
+    const Vector<
+        network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr>&
+        methods_with_options) {
+  if (!base::FeatureList::IsEnabled(
+          network::features::kSharedStorageTransactionalBatchUpdate)) {
+    return true;
+  }
+
+  for (const auto& method : methods_with_options) {
+    if (method->with_lock) {
+      return false;
+    }
+  }
+  return true;
 }
 
 bool CheckBrowsingContextIsValid(ScriptState& script_state,

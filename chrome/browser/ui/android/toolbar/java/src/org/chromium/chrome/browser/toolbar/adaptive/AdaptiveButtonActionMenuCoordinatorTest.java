@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.adaptive;
 
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -53,7 +54,7 @@ public class AdaptiveButtonActionMenuCoordinatorTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
     public void testCreateOnLongClickListener() {
-        AdaptiveButtonActionMenuCoordinator coordinator = new AdaptiveButtonActionMenuCoordinator();
+        var coordinator = new AdaptiveButtonActionMenuCoordinator(/* showMenu= */ true);
         View.OnLongClickListener listener = coordinator.createOnLongClickListener(mCallback);
 
         ListMenuButton menuView =
@@ -79,7 +80,7 @@ public class AdaptiveButtonActionMenuCoordinatorTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
     public void testCreateOnLongClickListener_clickHandlerIsNotModified() {
-        AdaptiveButtonActionMenuCoordinator coordinator = new AdaptiveButtonActionMenuCoordinator();
+        var coordinator = new AdaptiveButtonActionMenuCoordinator(/* showMenu= */ true);
         View.OnLongClickListener listener = coordinator.createOnLongClickListener(mCallback);
 
         ListMenuButton menuView =
@@ -99,5 +100,26 @@ public class AdaptiveButtonActionMenuCoordinatorTest {
 
         // Menu should have been shown once (on long click).
         verify(menuView).showMenu();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
+    public void testCreateOnLongClickListener_noPopupMenu() {
+        var coordinator = new AdaptiveButtonActionMenuCoordinator(/* showMenu= */ false);
+        View.OnLongClickListener listener = coordinator.createOnLongClickListener(mCallback);
+
+        ListMenuButton menuView =
+                spy(
+                        new ListMenuButton(
+                                ApplicationProvider.getApplicationContext(),
+                                Robolectric.buildAttributeSet().build()));
+        doReturn(ApplicationProvider.getApplicationContext().getResources())
+                .when(menuView)
+                .getResources();
+
+        // Long click menuView, nothing should happen.
+        listener.onLongClick(menuView);
+        verify(menuView, never()).showMenu();
     }
 }

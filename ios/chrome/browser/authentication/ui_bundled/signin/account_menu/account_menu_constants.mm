@@ -22,3 +22,6 @@ NSString* const kAccountMenuOpenSettingsButtonId =
     @"AccountMenuOpenSettingsButtonId";
 NSString* const kAccountMenuManageAccountsButtonId =
     @"AccountMenuManageAccountsButtonId";
+NSString* const kAccountMenuEditAccountListId = @"kEditAccountListId";
+NSString* const kAccountMenuManageYourGoogleAccountId =
+    @"kManageYourGoogleAccountId";

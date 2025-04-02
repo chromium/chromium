@@ -1554,10 +1554,6 @@ BASE_FEATURE(kUseChromiumUpdater,
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kWebAppDontAddExistingAppsToSync,
-             "WebAppDontAddExistingAppsToSync",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kWebAppManifestIconUpdating,
              "WebAppManifestIconUpdating",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1602,12 +1598,6 @@ BASE_FEATURE(kWin10AcceleratedDefaultBrowserFlow,
              "Win10AcceleratedDefaultBrowserFlow",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
-
-// Enables writing basic system profile to the persistent histograms files
-// earlier.
-BASE_FEATURE(kWriteBasicSystemProfileToPersistentHistogramsFile,
-             "WriteBasicSystemProfileToPersistentHistogramsFile",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool IsParentAccessCodeForReauthEnabled() {

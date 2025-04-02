@@ -29,6 +29,7 @@
 <translation id="1356661055722410047">Yangi! Ekrandagi matn va rasmlarni tarjima qilish mumkin</translation>
 <translation id="1363996462118479832">Hisobga kirishdagi xatolik sababli ChromeOS maʼlumotlarni sinxronlay olmadi.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
+<translation id="1383876407941801731">Qidiruv</translation>
 <translation id="1399397803214730675">Bu kompyuterdagi Google Chrome brauzeri eskirgan, agar brauzer ishlamayotgan bo‘lsa, uni o‘chirib tashlang va qaytadan o‘rnating.</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome yangilandi. Qayta ochilganda oxirgi versiyadan foydalanish mumkin. Keyin joriy varaqlar tiklanadi.}=1{Chrome yangilandi. Qayta ochilganda oxirgi versiyadan foydalanish mumkin. Keyin joriy varaqlar tiklanadi. Inkognito oynalar qayta ochilmaydi.}other{Chrome yangilandi. Qayta ochilganda oxirgi versiyadan foydalanish mumkin. Keyin joriy varaqlar tiklanadi. # ta inkognito oyna qayta ochilmaydi.}}</translation>
 <translation id="1434626383986940139">Chrome Canary ilovalari</translation>
@@ -120,6 +121,7 @@
 <translation id="2580411288591421699">Hozir ishlab turgan versiyadagi Google Chrome brauzerini o‘rnatib bo‘lmaydi. Google Chrome brauzeringizni yoping va qaytadan urinib ko‘ring.</translation>
 <translation id="2586406160782125153">Bu qurilmadagi brauzer tarixini tozalaydi. Ma’lumotlaringizni keyinroq olish uchun Chrome brauzeriga <ph name="USER_EMAIL" /> sifatida kiring.</translation>
 <translation id="259935314519650377">Yuklab olingan oʻrnatish vositasi keshlanmadi. Xato: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2620436844016719705">Tizim</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome brauzer sozlamalari xavfsiz ekanini muntazam tekshiradi. Biror sozlamaga diqqat qilish kerak boʻlganda sizga xabar qilamiz.</translation>
 <translation id="2652691236519827073">Havolani yangi &amp;varaqda ochish</translation>
@@ -524,6 +526,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7951272445806340501">Yangilanishni oʻrnatish uchun ChromeOS Flex qayta ishga tushirilishi kerak.</translation>
 <translation id="7959172989483770734">Chrome profillarini boshqaring</translation>
 <translation id="7962410387636238736">Endi kompyuteringizda Google Chrome yangilanmaydi, chunki uning yangi versiyalarida Windows XP va Windows Vista tizimlari ta’minoti to‘xtatilgan</translation>
+<translation id="8004582292198964060">Brauzer</translation>
 <translation id="8005666035647241369">Bu qurilmadagi Google Parollar menejerida</translation>
 <translation id="8008534537613507642">Chrome‘ni qaytadan o‘rnatish</translation>
 <translation id="8009904340233602924">Chrome brauzeridan hisobsiz foydalanish</translation>

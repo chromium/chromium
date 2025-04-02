@@ -716,7 +716,7 @@ TEST_F(CookieControlsUserBypassTest, ThirdPartyCookiesException) {
 }
 
 TEST_F(CookieControlsUserBypassTest, FrequentPageReloads) {
-  // Update on the initial web contents to ensure the tab observer is set up.
+  // Update on the initial web contents to ensure the tab observer is setup.
   cookie_controls()->Update(web_contents());
   auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
 
@@ -1595,9 +1595,6 @@ TEST_F(CookieControlsUserBypassTest, SubresourceBlocked) {
       web_contents(), /*pref_service=*/nullptr, /*content_settings=*/nullptr,
       /*tracking_protection_settings=*/nullptr, /*is_incognito=*/false);
 
-  // Update on the initial web contents to ensure the tab observer is set up.
-  cookie_controls()->Update(web_contents());
-
   NavigateAndCommit(GURL(kUrl));
   fingerprinting_protection_filter::FingerprintingProtectionWebContentsHelper::
       FromWebContents(web_contents())
@@ -1629,9 +1626,6 @@ TEST_F(CookieControlsUserBypassTest, SubresourceBlockedInIncognito) {
       web_contents(), /*pref_service=*/nullptr, /*content_settings=*/nullptr,
       /*tracking_protection_settings=*/nullptr, /*is_incognito=*/true);
 
-  // Update on the initial web contents to ensure the tab observer is set up.
-  cookie_controls()->Update(web_contents());
-
   NavigateAndCommit(GURL(kUrl));
   fingerprinting_protection_filter::FingerprintingProtectionWebContentsHelper::
       FromWebContents(web_contents())
@@ -1660,9 +1654,6 @@ TEST_F(CookieControlsUserBypassTest, SubresourceProxied) {
       net::features::kEnableIpProtectionProxy);
 
   ip_protection::IpProtectionStatus::CreateForWebContents(web_contents());
-
-  // Update on the initial web contents to ensure the tab observer is set up.
-  cookie_controls()->Update(web_contents());
 
   NavigateAndCommit(GURL(kUrl));
 
@@ -1844,9 +1835,6 @@ TEST_F(CookieControlsUserBypassIncognitoTest, SubresourceProxied) {
       net::features::kEnableIpProtectionProxy);
 
   ip_protection::IpProtectionStatus::CreateForWebContents(web_contents());
-
-  // Update on the initial web contents to ensure the tab observer is set up.
-  incognito_cookie_controls()->Update(web_contents());
 
   NavigateAndCommit(GURL(kUrl));
 

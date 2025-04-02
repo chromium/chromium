@@ -46,7 +46,10 @@ public interface CollaborationService {
      * @param delegate The delegate to perform action on the Android UI.
      * @param url The URL of the join request.
      */
-    void startJoinFlow(CollaborationControllerDelegate delegate, GURL url);
+    void startJoinFlow(
+            CollaborationControllerDelegate delegate,
+            GURL url,
+            @CollaborationServiceJoinEntryPoint int entry);
 
     /**
      * Starts a new collaboration share or manage flow.
@@ -54,7 +57,10 @@ public interface CollaborationService {
      * @param delegate The delegate to perform action on the Android UI.
      * @param either_id The ID to identify a tab group.
      */
-    void startShareOrManageFlow(CollaborationControllerDelegate delegate, String syncId);
+    void startShareOrManageFlow(
+            CollaborationControllerDelegate delegate,
+            String syncId,
+            @CollaborationServiceShareOrManageEntryPoint int entry);
 
     /** Returns the current {@link ServiceStatus} of the service. */
     ServiceStatus getServiceStatus();

@@ -22,7 +22,27 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Renderer4.Browser.RasterTaskSchedulingDelayNoAtRasterDecodes"
+<variants name="RasterTaskSchedulingDelayNoAtRasterDecodesType">
+  <variant name=".All"
+      summary="This metric applies to all raster work that doesn't depend on
+               at-raster image decodes."/>
+  <variant name=".TilesWithJpegHwDecodeCandidates"
+      summary="This metric applies only to raster work that depends on JPEGs
+               that are candidates for hardware decode acceleration (and that
+               doesn't depend on at-raster image decodes)."/>
+  <variant name=".TilesWithWebPHwDecodeCandidates"
+      summary="This metric applies only to raster work that depends on WebPs
+               that are candidates for hardware decode acceleration (and that
+               doesn't depend on at-raster image decodes)."/>
+</variants>
+
+<variants name="RasterTaskTypeGpu">
+  <variant name=".Gpu" summary="This metric is for only gpu raster."/>
+  <variant name=".Oop" summary="This metric is for only oop raster."/>
+</variants>
+
+<histogram
+    name="Renderer4.Browser.RasterTaskSchedulingDelayNoAtRasterDecodes{RasterTaskSchedulingDelayNoAtRasterDecodesType}"
     units="microseconds" expires_after="2022-09-30">
   <owner>andrescj@chromium.org</owner>
   <owner>chromeos-gfx@google.com</owner>
@@ -32,11 +52,11 @@ chromium-metrics-reviews@google.com.
     time decoding and uploading images. Note that this does not count raster
     tasks that depend on at-raster image decodes. Since this metric is only
     reported for Chrome OS clients, it has data only from high-resolution
-    clocks.
+    clocks. {RasterTaskSchedulingDelayNoAtRasterDecodesType}
   </summary>
 </histogram>
 
-<histogram name="Renderer4.Browser.RasterTaskTotalDuration"
+<histogram name="Renderer4.Browser.RasterTaskTotalDuration{RasterTaskTypeGpu}"
     units="microseconds" expires_after="2023-09-10">
   <owner>khushalsagar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@google.com</owner>
@@ -47,7 +67,7 @@ chromium-metrics-reviews@google.com.
 
     WARNING: This metric is only reported for clients with high resolution
     clocks, which means this will be biased to a portion of the population on
-    windows.
+    windows. {RasterTaskTypeGpu}
   </summary>
 </histogram>
 
@@ -76,7 +96,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Renderer4.GpuImageDecodeState.FirstLockWasted"
+<histogram name="Renderer4.GpuImageDecodeState.FirstLockWasted{OutOfRaster}"
     enum="BooleanWasted" expires_after="2024-06-02">
   <owner>vmpstr@chromium.org</owner>
   <owner>thiabaud@google.com</owner>
@@ -85,7 +105,13 @@ chromium-metrics-reviews@google.com.
     not used). Images are decoded and locked prior to raster; this indicates
     whether the decode was used or not during the first lock. Warning: this
     histogram was expired from 2021-06-06 to 2022-05-20; data may be missing.
+    {OutOfRaster}
   </summary>
+  <token key="OutOfRaster">
+    <variant name=""/>
+    <variant name=".OutOfRaster"
+        summary="Task was not performed as part of a raster task."/>
+  </token>
 </histogram>
 
 <histogram name="Renderer4.GpuImageUploadState" enum="GpuImageUsageState"
@@ -102,7 +128,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.GpuImageUploadState.FirstLockWasted"
-    enum="BooleanWasted" expires_after="2025-07-06">
+    enum="BooleanWasted" expires_after="2025-09-28">
   <owner>vmpstr@chromium.org</owner>
   <owner>thiabaud@google.com</owner>
   <summary>
@@ -205,7 +231,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Renderer4.Renderer.RasterTaskSchedulingDelayNoAtRasterDecodes"
+<histogram
+    name="Renderer4.Renderer.RasterTaskSchedulingDelayNoAtRasterDecodes{RasterTaskSchedulingDelayNoAtRasterDecodesType}"
     units="microseconds" expires_after="2022-09-30">
   <owner>andrescj@chromium.org</owner>
   <owner>chromeos-gfx@google.com</owner>
@@ -215,11 +242,11 @@ chromium-metrics-reviews@google.com.
     time decoding and uploading images. Note that this does not count raster
     tasks that depend on at-raster image decodes. Since this metric is only
     reported for Chrome OS clients, it has data only from high-resolution
-    clocks.
+    clocks. {RasterTaskSchedulingDelayNoAtRasterDecodesType}
   </summary>
 </histogram>
 
-<histogram name="Renderer4.Renderer.RasterTaskTotalDuration"
+<histogram name="Renderer4.Renderer.RasterTaskTotalDuration{RasterTaskTypeGpu}"
     units="microseconds" expires_after="2025-07-27">
   <owner>khushalsagar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@google.com</owner>
@@ -230,14 +257,12 @@ chromium-metrics-reviews@google.com.
 
     WARNING: This metric is only reported for clients with high resolution
     clocks, which means this will be biased to a portion of the population on
-    windows.
+    windows. {RasterTaskTypeGpu}
   </summary>
 </histogram>
 
-<histogram name="Renderer4.ScrollingThread" enum="ScrollingThreadStatus"
-    expires_after="2025-08-24">
-<!-- Name completed by histogram_suffixes name="ScrollSourceDevice" -->
-
+<histogram name="Renderer4.ScrollingThread.{ScrollSourceDevice}"
+    enum="ScrollingThreadStatus" expires_after="2025-08-24">
   <owner>bokan@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -245,7 +270,12 @@ chromium-metrics-reviews@google.com.
     scroll is: handled unblocked on the compositor thread, handled on the
     compositor thread but blocked on main thread event listeners, or being
     handled on the main thread. Broken down by scroll device.
+    {ScrollSourceDevice}
   </summary>
+  <token key="ScrollSourceDevice">
+    <variant name="Touch" summary="Touch"/>
+    <variant name="Wheel" summary="Wheel"/>
+  </token>
 </histogram>
 
 </histograms>

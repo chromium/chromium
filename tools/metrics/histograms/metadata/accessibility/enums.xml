@@ -1599,6 +1599,23 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h:DependencyParserModelState) -->
 
+<!-- LINT.IfChange(DistillationResult)-->
+
+<enum name="DistillationResult">
+  <summary>Describes the end-state of the distillation result.</summary>
+  <int value="0" label="Not distillable"/>
+  <int value="1" label="Distillable"/>
+  <int value="2" label="Distillable but excluded for an unknown reason."/>
+  <int value="3"
+      label="Distillable but excluded because the page is considered mobile
+             friendly."/>
+  <int value="4"
+      label="Distillable but excluded because the user is requesting the
+             desktop version of the site."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java.java:DistillationResult) -->
+
 <!-- LINT.IfChange(KeyboardShortcutsSemanticMeaning) -->
 
 <enum name="KeyboardShortcutsSemanticMeaning">
@@ -1652,7 +1669,7 @@ Unknown properties are collapsed to zero. -->
   <int value="34" label="Show or hide the bookmarks bar"/>
   <int value="35" label="Toggle immersive mode (not implemented)"/>
   <int value="36" label="Exit immersive mode (not implemented)"/>
-  <int value="37" label="Open developer tools (not implemented)"/>
+  <int value="37" label="Open developer tools"/>
   <int value="38" label="Open developer tools console (not implemented)"/>
   <int value="39"
       label="Open developer tools element inspection (not implemented)"/>

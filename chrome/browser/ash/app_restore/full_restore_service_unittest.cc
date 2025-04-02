@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/first_run/first_run.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/sessions/exit_type_service.h"
@@ -56,7 +55,6 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/message_center/public/cpp/notification.h"
 
 namespace ash::full_restore {
 
@@ -143,8 +141,6 @@ class FullRestoreTestHelper {
 
     ::app_restore::AppRestoreInfo::GetInstance()->SetRestorePref(account_id_,
                                                                  false);
-    display_service_ =
-        std::make_unique<NotificationDisplayServiceTester>(profile_.get());
   }
   FullRestoreTestHelper(const FullRestoreTestHelper&) = delete;
   FullRestoreTestHelper& operator=(const FullRestoreTestHelper&) = delete;
@@ -152,42 +148,6 @@ class FullRestoreTestHelper {
 
   TestingProfile* profile() { return profile_; }
   const AccountId& account_id() const { return account_id_; }
-
-  bool HasNotificationFor(const std::string& notification_id) const {
-    return display_service_->GetNotification(notification_id).has_value();
-  }
-
-  void VerifyRestoreNotificationTitle(const std::string& notification_id,
-                                      bool is_reboot_notification) {
-    std::optional<message_center::Notification> message_center_notification =
-        display_service_->GetNotification(notification_id);
-    ASSERT_TRUE(message_center_notification.has_value());
-    const int message_id = is_reboot_notification
-                               ? IDS_POLICY_DEVICE_POST_REBOOT_TITLE
-                               : IDS_RESTORE_NOTIFICATION_TITLE;
-    EXPECT_EQ(message_center_notification->title(),
-              l10n_util::GetStringUTF16(message_id));
-  }
-
-  void VerifyNotification(bool has_crash_notification,
-                          bool has_restore_notification,
-                          bool is_reboot_notification = false) {
-    EXPECT_EQ(has_crash_notification,
-              HasNotificationFor(kRestoreForCrashNotificationId));
-    EXPECT_EQ(has_restore_notification,
-              HasNotificationFor(kRestoreNotificationId));
-    if (has_restore_notification) {
-      VerifyRestoreNotificationTitle(kRestoreNotificationId,
-                                     is_reboot_notification);
-    }
-  }
-
-  void SimulateClick(const std::string& notification_id,
-                     RestoreNotificationButtonIndex action_index) {
-    display_service_->SimulateClick(
-        NotificationHandler::Type::TRANSIENT, notification_id,
-        static_cast<int>(action_index), std::nullopt);
-  }
 
   void CreateFullRestoreServiceForTesting(
       std::unique_ptr<MockFullRestoreServiceDelegate> mock_delegate) {
@@ -218,11 +178,8 @@ class FullRestoreTestHelper {
   raw_ptr<TestingProfile> profile_ = nullptr;
   base::ScopedTempDir temp_dir_;
   AccountId account_id_;
-  std::unique_ptr<NotificationDisplayServiceTester> display_service_;
 };
 
-// TODO(http://b/326982900): Remove non-forest test suites when the feature flag
-// is removed.
 class FullRestoreServiceTest : public testing::Test {
  public:
   FullRestoreServiceTest()
@@ -235,7 +192,9 @@ class FullRestoreServiceTest : public testing::Test {
     test_helper_ = std::make_unique<FullRestoreTestHelper>(
         "usertest@gmail.com", GaiaId("1234567890"), fake_user_manager_.Get(),
         profile_manager_.get(), testing_pref_service_.get());
-    scoped_feature_list_.InitAndDisableFeature(features::kForestFeature);
+
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ::switches::kNoFirstRun);
   }
   FullRestoreServiceTest(const FullRestoreServiceTest&) = delete;
   FullRestoreServiceTest& operator=(const FullRestoreServiceTest&) = delete;
@@ -247,19 +206,6 @@ class FullRestoreServiceTest : public testing::Test {
 
   TestingProfile* profile() { return test_helper_->profile(); }
   const AccountId& account_id() const { return test_helper_->account_id(); }
-
-  void VerifyNotification(bool has_crash_notification,
-                          bool has_restore_notification,
-                          bool is_reboot_notification = false) {
-    test_helper_->VerifyNotification(has_crash_notification,
-                                     has_restore_notification,
-                                     is_reboot_notification);
-  }
-
-  void SimulateClick(const std::string& notification_id,
-                     RestoreNotificationButtonIndex action_index) {
-    test_helper_->SimulateClick(notification_id, action_index);
-  }
 
   void CreateFullRestoreServiceForTesting(
       std::unique_ptr<MockFullRestoreServiceDelegate> mock_delegate) {
@@ -362,27 +308,11 @@ class FullRestoreServiceTest : public testing::Test {
       testing_pref_service_;
   std::unique_ptr<FullRestoreTestHelper> test_helper_;
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class ForestFullRestoreServiceTest : public FullRestoreServiceTest {
- protected:
-  ForestFullRestoreServiceTest() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeature(features::kForestFeature);
-
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ::switches::kNoFirstRun);
-  }
-  ForestFullRestoreServiceTest(const ForestFullRestoreServiceTest&) = delete;
-  ForestFullRestoreServiceTest& operator=(const ForestFullRestoreServiceTest&) =
-      delete;
-  ~ForestFullRestoreServiceTest() override = default;
 };
 
 // If the system is crash, and there is no full restore file, don't show the
 // informed restore dialog.
-TEST_F(ForestFullRestoreServiceTest, Crash) {
+TEST_F(FullRestoreServiceTest, Crash) {
   ExitTypeService::GetInstanceForProfile(profile())
       ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
@@ -395,7 +325,7 @@ TEST_F(ForestFullRestoreServiceTest, Crash) {
 
 // If the OS restore setting is 'Ask every time', and there is no full restore
 // file, don't show the informed restore dialog.
-TEST_F(ForestFullRestoreServiceTest, AskEveryTime) {
+TEST_F(FullRestoreServiceTest, AskEveryTime) {
   SetRestoreOption(RestoreOption::kAskEveryTime);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
   EXPECT_CALL(*mock_delegate,
@@ -408,7 +338,7 @@ TEST_F(ForestFullRestoreServiceTest, AskEveryTime) {
 
 // If the OS restore setting is 'Always', after reboot, don't show the informed
 // restore dialog and verify the restore flag.
-TEST_F(ForestFullRestoreServiceTest, Always) {
+TEST_F(FullRestoreServiceTest, Always) {
   SetRestoreOption(RestoreOption::kAlways);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
   EXPECT_CALL(*mock_delegate,
@@ -422,7 +352,7 @@ TEST_F(ForestFullRestoreServiceTest, Always) {
 
 // If the OS restore setting is 'Do not restore', after reboot, don't show the
 // informed restore dialog and verify the restore flag.
-TEST_F(ForestFullRestoreServiceTest, NotRestore) {
+TEST_F(FullRestoreServiceTest, NotRestore) {
   SetRestoreOption(RestoreOption::kDoNotRestore);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
   EXPECT_CALL(*mock_delegate,
@@ -436,7 +366,7 @@ TEST_F(ForestFullRestoreServiceTest, NotRestore) {
 
 // For a brand new user, if sync off, set 'Ask Every Time' as the default value,
 // and don't show the informed restore dialog.
-TEST_F(ForestFullRestoreServiceTest, NewUserSyncOff) {
+TEST_F(FullRestoreServiceTest, NewUserSyncOff) {
   fake_user_manager()->SetIsCurrentUserNew(true);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
   EXPECT_CALL(*mock_delegate,
@@ -452,7 +382,7 @@ TEST_F(ForestFullRestoreServiceTest, NewUserSyncOff) {
 // For a new ChromeOS user, if the Chrome restore setting is 'Continue where
 // you left off', after sync, set 'Always' as the default value, and don't show
 // the informed restore dialog and don't restore.
-TEST_F(ForestFullRestoreServiceTest, NewUserSyncChromeRestoreSetting) {
+TEST_F(FullRestoreServiceTest, NewUserSyncChromeRestoreSetting) {
   fake_user_manager()->SetIsCurrentUserNew(true);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
   EXPECT_CALL(*mock_delegate,
@@ -477,7 +407,7 @@ TEST_F(ForestFullRestoreServiceTest, NewUserSyncChromeRestoreSetting) {
 // For a new ChromeOS user, if the Chrome restore setting is 'New tab', after
 // sync, set 'Ask every time' as the default value, and don't show the informed
 // restore dialog and don't restore.
-TEST_F(ForestFullRestoreServiceTest, NewUserSyncChromeNotRestoreSetting) {
+TEST_F(FullRestoreServiceTest, NewUserSyncChromeNotRestoreSetting) {
   fake_user_manager()->SetIsCurrentUserNew(true);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
   EXPECT_CALL(*mock_delegate,
@@ -501,7 +431,7 @@ TEST_F(ForestFullRestoreServiceTest, NewUserSyncChromeNotRestoreSetting) {
 
 // For a new ChromeOS user, keep the ChromeOS restore setting from sync, and
 // don't show the informed restore dialog, and don't restore.
-TEST_F(ForestFullRestoreServiceTest, ReImage) {
+TEST_F(FullRestoreServiceTest, ReImage) {
   fake_user_manager()->SetIsCurrentUserNew(true);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
   EXPECT_CALL(*mock_delegate,
@@ -527,7 +457,7 @@ TEST_F(ForestFullRestoreServiceTest, ReImage) {
 // For the current ChromeOS user, when it is the first time upgrading to the
 // full restore release, set the default value based on the current Chrome
 // restore setting. Don't show the informed restore dialog and don't restore.
-TEST_F(ForestFullRestoreServiceTest, Upgrading) {
+TEST_F(FullRestoreServiceTest, Upgrading) {
   profile()->GetPrefs()->SetInteger(
       ::prefs::kRestoreOnStartup,
       static_cast<int>(SessionStartupPref::kPrefValueNewTab));
@@ -555,8 +485,6 @@ class FullRestoreServiceTestHavingFullRestoreFile
     : public FullRestoreServiceTest {
  public:
   FullRestoreServiceTestHavingFullRestoreFile() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ::switches::kNoFirstRun);
     CreateRestoreData(profile());
   }
   FullRestoreServiceTestHavingFullRestoreFile(
@@ -593,22 +521,8 @@ class FullRestoreServiceTestHavingFullRestoreFile
   }
 };
 
-class ForestFullRestoreServiceTestHavingFullRestoreFile
-    : public FullRestoreServiceTestHavingFullRestoreFile {
- protected:
-  ForestFullRestoreServiceTestHavingFullRestoreFile() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeature(features::kForestFeature);
-  }
-  ForestFullRestoreServiceTestHavingFullRestoreFile(
-      const ForestFullRestoreServiceTestHavingFullRestoreFile&) = delete;
-  ForestFullRestoreServiceTestHavingFullRestoreFile& operator=(
-      const ForestFullRestoreServiceTestHavingFullRestoreFile&) = delete;
-  ~ForestFullRestoreServiceTestHavingFullRestoreFile() override = default;
-};
-
 // If the system is crash, the delegate is notified.
-TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile, Crash) {
+TEST_F(FullRestoreServiceTestHavingFullRestoreFile, Crash) {
   ExitTypeService::GetInstanceForProfile(profile())
       ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
 
@@ -622,12 +536,6 @@ TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile, Crash) {
       });
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
 
-  // The notification should not show up anymore with forest enabled.
-  // TODO(http://b/326982900): Remove this check once non-forest cannot be
-  // enabled.
-  VerifyNotification(/*has_crash_notification=*/false,
-                     /*has_restore_notification=*/false);
-
   EXPECT_TRUE(CanPerformRestore(account_id()));
   EXPECT_TRUE(allow_save());
 }
@@ -635,7 +543,7 @@ TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile, Crash) {
 // Test that the informed restore dialog is not shown if the previous session
 // was crashed, there was full restore data and the restore option is always.
 // Regression test for crbug.com/388309832.
-TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile,
+TEST_F(FullRestoreServiceTestHavingFullRestoreFile,
        NoInformedRestoreSessionIfCrash) {
   SetRestoreOption(RestoreOption::kAlways);
   ExitTypeService::GetInstanceForProfile(profile())
@@ -648,8 +556,7 @@ TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile,
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
 }
 
-TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile,
-       AskEveryTimeAndRestore) {
+TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndRestore) {
   SetRestoreOption(RestoreOption::kAskEveryTime);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
   EXPECT_CALL(*mock_delegate,
@@ -658,12 +565,6 @@ TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile,
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
 
   VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 1);
-  // The notification should not show up anymore with forest enabled.
-  // TODO(http://b/326982900): Remove this check once non-forest cannot be
-  // enabled.
-  VerifyNotification(/*has_crash_notification=*/false,
-                     /*has_restore_notification=*/false);
-
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
   EXPECT_TRUE(CanPerformRestore(account_id()));
   EXPECT_TRUE(allow_save());
@@ -671,7 +572,7 @@ TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile,
 
 // Test that for an existing user, if re-image, do not show the informed restore
 // dialog for the first run.
-TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile, ExistingUserReImage) {
+TEST_F(FullRestoreServiceTestHavingFullRestoreFile, ExistingUserReImage) {
   // Set the restore pref setting to simulate sync for the first time.
   SetRestoreOption(RestoreOption::kAskEveryTime);
   first_run::ResetCachedSentinelDataForTesting();
@@ -711,18 +612,6 @@ class FullRestoreServiceMultipleUsersTest
   TestingProfile* profile2() { return test_helper2_->profile(); }
   const AccountId& account_id2() const { return test_helper2_->account_id(); }
 
-  void VerifyNotificationForProfile2(bool has_crash_notification,
-                                     bool has_restore_notification) {
-    test_helper2_->VerifyNotification(has_crash_notification,
-                                      has_restore_notification,
-                                      /*is_reboot_notification=*/false);
-  }
-
-  void SimulateClickForProfile2(const std::string& notification_id,
-                                RestoreNotificationButtonIndex action_index) {
-    test_helper2_->SimulateClick(notification_id, action_index);
-  }
-
   void CreateFullRestoreService2ForTesting() {
     test_helper2_->CreateFullRestoreServiceForTesting(nullptr);
   }
@@ -750,16 +639,12 @@ class FullRestoreServiceMultipleUsersTest
 
  private:
   std::unique_ptr<FullRestoreTestHelper> test_helper2_;
-  std::unique_ptr<NotificationDisplayServiceTester> display_service2_;
 };
 
 class ForestFullRestoreServiceMultipleUsersTest
     : public FullRestoreServiceMultipleUsersTest {
  protected:
   ForestFullRestoreServiceMultipleUsersTest() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeature(features::kForestFeature);
-
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kNoFirstRun);
   }

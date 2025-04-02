@@ -485,18 +485,24 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
       base::UTF8ToUTF16(request->mojo_request->instrument->display_name);
 
   std::u16string network_label = u"";
-  SkBitmap network_icon;
+  std::unique_ptr<SkBitmap> network_icon;
   if (request->mojo_request->network_info) {
     network_label =
         base::UTF8ToUTF16(request->mojo_request->network_info->name);
-    network_icon = request->icon_infos[IconType::NETWORK].icon;
+    if (!request->icon_infos[IconType::NETWORK].icon.drawsNothing()) {
+      network_icon = std::make_unique<SkBitmap>(
+          request->icon_infos[IconType::NETWORK].icon);
+    }
   }
 
   std::u16string issuer_label = u"";
-  SkBitmap issuer_icon;
+  std::unique_ptr<SkBitmap> issuer_icon;
   if (request->mojo_request->issuer_info) {
     issuer_label = base::UTF8ToUTF16(request->mojo_request->issuer_info->name);
-    issuer_icon = request->icon_infos[IconType::ISSUER].icon;
+    if (!request->icon_infos[IconType::ISSUER].icon.drawsNothing()) {
+      issuer_icon = std::make_unique<SkBitmap>(
+          request->icon_infos[IconType::ISSUER].icon);
+    }
   }
 
   std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder;
@@ -521,7 +527,8 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
           url::Origin::Create(request->delegate->GetTopOrigin()),
           request->delegate->GetSpec()->AsWeakPtr(),
           std::move(request->mojo_request), std::move(request->authenticator),
-          network_label, network_icon, issuer_label, issuer_icon));
+          network_label, std::move(network_icon), issuer_label,
+          std::move(issuer_icon)));
 
   request->delegate->OnDoneCreatingPaymentApps();
 }

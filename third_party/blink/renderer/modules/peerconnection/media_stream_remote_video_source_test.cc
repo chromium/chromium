@@ -37,6 +37,7 @@
 #include "third_party/webrtc/api/rtp_packet_infos.h"
 #include "third_party/webrtc/api/video/color_space.h"
 #include "third_party/webrtc/api/video/i420_buffer.h"
+#include "third_party/webrtc/rtc_base/time_utils.h"
 #include "third_party/webrtc/system_wrappers/include/clock.h"
 #include "ui/gfx/color_space.h"
 
@@ -168,10 +169,11 @@ class MediaStreamRemoteVideoSourceTest : public ::testing::Test {
                       blink::mojom::MediaStreamRequestResult result,
                       const blink::WebString& result_name) {
     ASSERT_EQ(source, remote_source_);
-    if (result == blink::mojom::MediaStreamRequestResult::OK)
+    if (result == blink::mojom::MediaStreamRequestResult::OK) {
       ++number_of_successful_track_starts_;
-    else
+    } else {
       ++number_of_failed_track_starts_;
+    }
   }
 
   test::TaskEnvironment task_environment_;

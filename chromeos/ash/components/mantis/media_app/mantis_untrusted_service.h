@@ -59,6 +59,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_MANTIS_MEDIA_APP)
                      uint32_t seed,
                      OutpaintImageCallback callback) override;
 
+  void InferSegmentationMode(std::vector<mantis::mojom::TouchPointPtr> gesture,
+                             InferSegmentationModeCallback callback) override;
+
  private:
   mojo::Receiver<media_app_ui::mojom::MantisUntrustedService> receiver_;
   mojo::Remote<mantis::mojom::MantisProcessor> processor_;

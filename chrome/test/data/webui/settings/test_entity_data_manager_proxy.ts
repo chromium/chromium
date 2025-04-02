@@ -19,6 +19,7 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
   private entityTypes_: EntityType[] = [];
   private entityInstancesChangedListener_: EntityInstancesChangedListener|null =
       null;
+  private optInStatus_: boolean = false;
 
   constructor() {
     super([
@@ -31,6 +32,7 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
       'removeEntityInstance',
       'removeEntityInstancesChangedListener',
       'setOptInStatus',
+      'getOptInStatus',
     ]);
   }
 
@@ -52,8 +54,8 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
     this.attributeTypes_ = attributeTypes;
   }
 
-  setOptInStatus(optInStatus: boolean) {
-    this.methodCalled('setOptInStatus', optInStatus);
+  setGetOptInStatusResponse(optInStatus: boolean): void {
+    this.optInStatus_ = optInStatus;
   }
 
   callEntityInstancesChangedListener(
@@ -76,13 +78,13 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
     return Promise.resolve(structuredClone(this.entityInstancesWithLabels_));
   }
 
-  getEntityInstanceByGuid(guid: string) {
+  getEntityInstanceByGuid(guid: string): Promise<EntityInstance> {
     this.methodCalled('getEntityInstanceByGuid', guid);
     assert(this.entityInstance_);
     return Promise.resolve(structuredClone(this.entityInstance_));
   }
 
-  getAllEntityTypes() {
+  getAllEntityTypes(): Promise<EntityType[]> {
     this.methodCalled('getAllEntityTypes');
     return Promise.resolve(structuredClone(this.entityTypes_));
   }
@@ -93,14 +95,24 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
     return Promise.resolve(structuredClone(this.attributeTypes_));
   }
 
-  addEntityInstancesChangedListener(listener: EntityInstancesChangedListener) {
+  addEntityInstancesChangedListener(listener: EntityInstancesChangedListener):
+      void {
     this.methodCalled('addEntityInstancesChangedListener');
     this.entityInstancesChangedListener_ = listener;
   }
 
   removeEntityInstancesChangedListener(
-      _listener: EntityInstancesChangedListener) {
+      _listener: EntityInstancesChangedListener): void {
     this.methodCalled('removeEntityInstancesChangedListener');
     this.entityInstancesChangedListener_ = null;
+  }
+
+  getOptInStatus(): Promise<boolean> {
+    this.methodCalled('getOptInStatus');
+    return Promise.resolve(this.optInStatus_);
+  }
+
+  setOptInStatus(optInStatus: boolean): void {
+    this.methodCalled('setOptInStatus', optInStatus);
   }
 }

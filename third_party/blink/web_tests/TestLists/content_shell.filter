@@ -589,10 +589,6 @@ external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property
 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property-self.https.html
 external/wpt/html/cross-origin-opener-policy/reporting/document-reporting/reporting-redirect-with-unsafe-none.https.html
 external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-soap.https.html*
-external/wpt/html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-002.html
-external/wpt/html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-004.html
-external/wpt/html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-005.html
-external/wpt/html/editing/the-hidden-attribute/beforematch-scroll-to-text-fragment.html
 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/nested-sharedworker-success.https.html
 external/wpt/html/interaction/focus/focusgroup/tentative/grid-navigation/rowspan.html
 external/wpt/html/interaction/focus/the-autofocus-attribute/first-reconnected.html

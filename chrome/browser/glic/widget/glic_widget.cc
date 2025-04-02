@@ -20,6 +20,8 @@
 namespace glic {
 namespace {
 
+constexpr float kGlicWidgetCornerRadius = 12;
+
 bool UserResizeEnabled() {
   return base::FeatureList::IsEnabled(features::kGlicUserResize);
 }
@@ -56,6 +58,7 @@ GlicWidget::GlicWidget(ThemeService* theme_service, InitParams params)
 
 GlicWidget::~GlicWidget() = default;
 
+// static
 gfx::Size GlicWidget::GetInitialSize() {
   return {features::kGlicInitialWidth.Get(),
           features::kGlicInitialHeight.Get()};
@@ -78,7 +81,12 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
   // Don't change this name. This is used by other code to identify the glic
   // window. See b/404947780.
   params.name = "GlicWidget";
-  params.corner_radius = kCornerRadius;
+  // Support of rounded corners varies across platforms. See
+  // Widget::InitParams::corner_radius. DO NOT apply this radius using
+  // views::Background or in the web client because it will mismatch with
+  // the window's actual corner radius. e.g. on win10 resizable windows
+  // do have rounded corners.
+  params.corner_radius = kGlicWidgetCornerRadius;
 #if BUILDFLAG(IS_MAC)
   params.animation_enabled = true;
 #endif

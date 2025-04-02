@@ -36,6 +36,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/base/test/ui_controls.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/virtual_display_util.h"
@@ -60,7 +61,10 @@ const InteractiveBrowserTestApi::DeepQuery
 
 class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
  public:
-  GlicWindowControllerUiTest() = default;
+  GlicWindowControllerUiTest() {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ::switches::kGlicHostLogging);
+  }
   ~GlicWindowControllerUiTest() override = default;
 
   auto SimulateGlicHotkey() {
@@ -449,40 +453,45 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kError));
 }
 
-// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
-// kGlicAlwaysDetached is now default true.
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
-                       DISABLED_AttachedWidgetOpensAfterReauth) {
+                       InvalidatedAccountSignInOnGlicOpenFlow) {
   RunTestSequence(
-      ForceInvalidateAccount(), PressButton(kGlicButtonElementId),
-      ObserveState(test::internal::kLogInAndOpenState,
-                   std::ref(window_controller())),
-      WaitForState(test::internal::kLogInAndOpenState,
-                   GlicWindowController::LogInAndOpen::State::kLogIn),
-      CheckControllerHasWidget(false), ForceReauthAccount(),
-      WaitForState(test::internal::kLogInAndOpenState,
-                   GlicWindowController::LogInAndOpen::State::kPostLogIn),
-      ObserveState(test::internal::kGlicWindowControllerState,
-                   std::ref(window_controller())),
-      WaitForState(test::internal::kGlicWindowControllerState,
-                   GlicWindowController::State::kOpen));
+      ObserveState(test::internal::kGlicAppState, &window_controller()),
+      ForceInvalidateAccount(), SimulateGlicHotkey(),
+      CheckControllerHasWidget(true), WaitForAndInstrumentGlic(kHostOnly),
+      WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kSignIn),
+      InAnyContext(ClickElement(test::kGlicHostElementId, {"#signInButton"},
+                                ui_controls::LEFT, ui_controls::kNoAccelerator,
+                                ExecuteJsMode::kFireAndForget)),
+      WaitForHide(test::kGlicHostElementId),
+      // Without a pause here, we will 'sign-in' before the callback is
+      // registered to listen for it. This isn't a bug because it takes real
+      // users finite time to actually sign-in.
+      Wait(base::Milliseconds(500)), ForceReauthAccount(),
+      WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kReady));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
-                       DetachedWidgetOpensAfterReauth) {
+                       AccountInvalidatedWhileGlicOpen) {
+  RunTestSequence(
+      SimulateGlicHotkey(), CheckControllerHasWidget(true),
+      ObserveState(test::internal::kGlicAppState, &window_controller()),
+      WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kReady),
+      ForceInvalidateAccount(),
+      WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kSignIn));
+}
+
+// Open glic with an invalidated account, then sign in without clicking the
+// sign-in button. The web client should loaded and shown.
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       OpenGlicWithInvalidatedAccountAndThenSignIn) {
   RunTestSequence(
       ForceInvalidateAccount(), SimulateGlicHotkey(),
-      ObserveState(test::internal::kLogInAndOpenState,
-                   std::ref(window_controller())),
-      WaitForState(test::internal::kLogInAndOpenState,
-                   GlicWindowController::LogInAndOpen::State::kLogIn),
-      CheckControllerHasWidget(false), ForceReauthAccount(),
-      WaitForState(test::internal::kLogInAndOpenState,
-                   GlicWindowController::LogInAndOpen::State::kPostLogIn),
-      ObserveState(test::internal::kGlicWindowControllerState,
-                   std::ref(window_controller())),
-      WaitForState(test::internal::kGlicWindowControllerState,
-                   GlicWindowController::State::kOpen));
+      CheckControllerHasWidget(true),
+      ObserveState(test::internal::kGlicAppState, &window_controller()),
+      WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kSignIn),
+      ForceReauthAccount(),
+      WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kReady));
 }
 
 class GlicWindowControllerWithMemoryPressureUiTest

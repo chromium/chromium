@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AnnotationBrushType, hexToColor, PEN_COLORS} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {hexToColor, HIGHLIGHTER_COLORS, PEN_COLORS} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {Color, InkColorSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -12,6 +12,7 @@ import {assertLabels, assertSelectedColor, getColorButtons} from './test_util.js
 
 function createSelector(initialValue?: Color): InkColorSelectorElement {
   const selector = document.createElement('ink-color-selector');
+  selector.colors = PEN_COLORS;
   // Emulate the parent initializing this value via a data binding, e.g. before
   // the sidepanel is shown, or before the bottom toolbar color button is
   // clicked to add this element to the DOM.
@@ -56,18 +57,16 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  // Test that certain brush types have different color options.
+  // Test that changing the color options updates the DOM correctly.
   async function testColorLength() {
     const selector = createSelector();
 
     // Pens should have 20 color options.
-    selector.currentType = AnnotationBrushType.PEN;
     await microtasksFinished();
-
     chrome.test.assertEq(20, getColorButtons(selector).length);
 
     // Highlighters should have 10 color options.
-    selector.currentType = AnnotationBrushType.HIGHLIGHTER;
+    selector.colors = HIGHLIGHTER_COLORS;
     await microtasksFinished();
 
     chrome.test.assertEq(10, getColorButtons(selector).length);
@@ -172,10 +171,8 @@ chrome.test.runTests([
   // pressing 'ArrowDown' will select the color button in the first row in the
   // same column.
   async function testArrowKeysChangeColorFirstLastRow() {
-    // Switch to pen, which has multiple rows of colors.
+    // Defaults to the 20 PEN_COLORS in createSelector().
     const selector = createSelector();
-    chrome.test.assertEq(AnnotationBrushType.PEN, selector.currentType);
-
     const colorButtons = getColorButtons(selector);
     chrome.test.assertEq(20, colorButtons.length);
 
@@ -196,10 +193,10 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  // Test the labels for each highlighter color button.
+  // Test the labels when the colors are set to the HIGHLIGHTER_COLORS.
   async function testHighlighterLabels() {
     const selector = createSelector();
-    selector.currentType = AnnotationBrushType.HIGHLIGHTER;
+    selector.colors = HIGHLIGHTER_COLORS;
     await microtasksFinished();
 
     const colorButtons = getColorButtons(selector);
@@ -225,11 +222,10 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  // Test the labels for each pen color button.
+  // Test the labels when the colors are set to the PEN_COLORS (default in
+  // createSelector()).
   function testPenLabels() {
     const selector = createSelector();
-    chrome.test.assertEq(AnnotationBrushType.PEN, selector.currentType);
-
     const colorButtons = getColorButtons(selector);
 
     const expectedLabels: string[] = [

@@ -40,13 +40,14 @@ class Browser;
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
 // Designated initializer.
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                      rect:(CGRect)rect
-                                      view:(UIView*)view
-                  forceSnackbarOverToolbar:(BOOL)forceSnackbarOverToolbar
-                                withSource:(signin_metrics::ProfileSignout)
-                                               signout_source_metric
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                          rect:(CGRect)rect
+                          view:(UIView*)view
+      forceSnackbarOverToolbar:(BOOL)forceSnackbarOverToolbar
+                    withSource:(signin_metrics::ProfileSignout)source
+                    completion:(signin_ui::SignoutCompletionCallback)completion
     NS_DESIGNATED_INITIALIZER;
 
 // The delegate.
@@ -57,10 +58,6 @@ class Browser;
 
 // The message displayed for the sign-out alert.
 @property(nonatomic, strong, readonly) NSString* message;
-
-// Required callback to be used after sign-out is completed.
-@property(nonatomic, copy)
-    signin_ui::SignoutCompletionCallback signoutCompletion;
 
 // Whether to warns feature won’t be available anymore when user is not
 // synced.

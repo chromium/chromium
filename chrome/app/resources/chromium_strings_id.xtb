@@ -27,6 +27,7 @@
 <translation id="1342274909142618978">Hapus juga data dari Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Disematkan. Anda dapat mengakses Penelusuran Gambar lagi dari tombol baru di toolbar</translation>
 <translation id="1356661055722410047">Baru! Anda dapat menerjemahkan teks dan gambar di layar</translation>
+<translation id="1383876407941801731">Telusuri</translation>
 <translation id="1414495520565016063">Anda sudah masuk ke Chromium!</translation>
 <translation id="1465192221147974788">Untuk membagikan jendela Anda, izinkan perekaman layar untuk Chromium di Setelan Sistem.</translation>
 <translation id="1478370723027452770">Dapatkan bantuan untuk Chrome for Testing</translation>
@@ -118,6 +119,7 @@
 <translation id="2583187216237139145">Data Chromium yang dibuat selama penggunaan profil ini (seperti pembuatan bookmark, histori, sandi, dan setelan lain) dapat dihapus oleh administrator profil kerja. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Terus gunakan Chromium</translation>
 <translation id="259935314519650377">Gagal menyimpan cache penginstal yang didownload. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2620436844016719705">Sistem</translation>
 <translation id="2629740064077610681">Organisasi Anda dapat melihat dan mengelola data penjelajahan, seperti bookmark, histori, dan sandi. Organisasi Anda tidak dapat melihat data penjelajahan di profil Chromium lain</translation>
 <translation id="2635452620547538388">Verifikasi diri Anda untuk menggunakan dan menyimpan data Chromium di akun Anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="264613044588233783">Chromium berjalan lebih cepat dan fitur yang menggunakan JavaScript akan berfungsi sebagaimana mestinya (direkomendasikan)</translation>
@@ -498,6 +500,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="7937630085815544518">Anda telah masuk ke Chromium sebagai <ph name="USER_EMAIL_ADDRESS" />. Gunakan akun yang sama untuk masuk kembali.</translation>
 <translation id="7975919845073681630">Ini adalah pemasangan Chromium sekunder, dan tidak dapat digunakan sebagai browser default.</translation>
 <translation id="7997934263947464652">Ekstensi, aplikasi, dan tema dari sumber tidak dikenal dapat membahayakan perangkat Anda. Chromium merekomendasikan hanya menginstal ekstensi, aplikasi, dan tema dari <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
+<translation id="8004582292198964060">Browser</translation>
 <translation id="8010081455002666927">Deteksi otomatis</translation>
 <translation id="8013436988911883588">Setelah Chromium memiliki akses, situs dapat meminta akses dari Anda.</translation>
 <translation id="80471789339884597">Terima kasih telah menginstal. Anda harus memulai ulang semua browser sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>

@@ -20,7 +20,8 @@ because ultimately we trust the reviewer’s judgement here.
 
 * **ATL+Director approval**: Is it an import of a new crate?
   If so, then check if 1) ATL approval has been obtained
-  and 2) a Director has been CC-ed on a post to rust-fyi@ group
+  and 2) a Director has been CC-ed on a post to
+  [the rust-fyi@ group](https://groups.google.com/a/chromium.org/g/rust-fyi)
   (step 3 from
   [go/chrome-rust](https://goto2.corp.google.com/chrome-rust)
   [Google-internal]).

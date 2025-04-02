@@ -316,7 +316,7 @@ PrivateAggregationPhaseKey& PrivateAggregationPhaseKey::operator=(
 PrivateAggregationPhaseKey::~PrivateAggregationPhaseKey() = default;
 
 PrivateAggregationRequestWithEventType::PrivateAggregationRequestWithEventType(
-    auction_worklet::mojom::PrivateAggregationRequestPtr request,
+    auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr request,
     std::optional<std::string> event_type)
     : request(std::move(request)), event_type(event_type) {}
 
@@ -345,8 +345,16 @@ FillInPrivateAggregationRequest(
     // TODO(crbug.com/40254406): Report a bad mojom message when contribution's
     // value is negative. The worklet code should prevent that, but the worklet
     // process may be compromised.
+    auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr
+        finalized_request =
+            auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
+                /*contribution=*/std::move(
+                    request->contribution->get_histogram_contribution()),
+                request->aggregation_mode,
+                std::move(request->debug_mode_details));
+
     PrivateAggregationRequestWithEventType request_with_event_type(
-        std::move(request), /*event_type=*/std::nullopt);
+        std::move(finalized_request), /*event_type=*/std::nullopt);
     return request_with_event_type;
   }
 
@@ -398,10 +406,9 @@ FillInPrivateAggregationRequest(
   }
 
   PrivateAggregationRequestWithEventType request_with_event_type(
-      auction_worklet::mojom::PrivateAggregationRequest::New(
-          auction_worklet::mojom::AggregatableReportContribution::
-              NewHistogramContribution(std::move(calculated_contribution)),
-          request->aggregation_mode, std::move(request->debug_mode_details)),
+      auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
+          std::move(calculated_contribution), request->aggregation_mode,
+          std::move(request->debug_mode_details)),
       non_reserved_event_type);
   return request_with_event_type;
 }
@@ -419,7 +426,8 @@ bool IsPrivateAggregationRequestReservedOnce(
 }
 
 void SplitContributionsIntoBatchesThenSendToHost(
-    std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr> requests,
+    std::vector<auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr>
+        requests,
     PrivateAggregationManager& pa_manager,
     const url::Origin& reporting_origin,
     std::optional<url::Origin> aggregation_coordinator_origin,
@@ -435,12 +443,8 @@ void SplitContributionsIntoBatchesThenSendToHost(
   bool is_debug_mode_allowed = pa_manager.IsDebugModeAllowed(
       /*top_frame_origin=*/main_frame_origin, reporting_origin);
 
-  for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
+  for (auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr& request :
        requests) {
-    // All for-event contributions have already been converted to histogram
-    // contributions by filling in post auction signals using
-    // `FillInPrivateAggregationRequest()` before reaching here.
-    CHECK(request->contribution->is_histogram_contribution());
     CHECK(request->debug_mode_details);
 
     // TODO(alexmt): Split by this too when it can be non-default.
@@ -455,7 +459,7 @@ void SplitContributionsIntoBatchesThenSendToHost(
     }
 
     contributions_map[std::move(request->debug_mode_details)].push_back(
-        std::move(request->contribution->get_histogram_contribution()));
+        std::move(request->contribution));
   }
 
   if (aggregation_coordinator_origin &&

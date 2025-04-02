@@ -741,7 +741,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.NetworkRequestDuration" units="ms"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -941,7 +941,8 @@ useful for Chirp alerts (go/crca-alerts). -->
     every {RequestType} that comes in.
 
     Starting in M95, the PRIVATE_IP bucket was split to include LOCAL_RESOURCE
-    and CHROME_UI_PAGE.
+    and CHROME_UI_PAGE. Starting in M137, the children histograms start to log
+    the CLASSIFY bucket.
   </summary>
   <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>
@@ -1021,13 +1022,57 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.VisualFeatureTime" units="ms"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records how long it took to extract visual features on the main thread. Work
     performed off-thread is not recorded in this histogram. This is recorded on
-    every phishing classification.
+    every phishing classification or image embedding.
+  </summary>
+</histogram>
+
+<histogram
+    name="SBClientPhishing.VisualFeatureTime.BackgroundPlayback.Duration"
+    units="microseconds" expires_after="2025-09-27">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the duration in PlaybackOnBackgroundThread when extracting visual
+    features. This is recorded on every phishing classification or image
+    embedding. This logs wall time while
+    SBClientPhishing.VisualFeatureTime.BackgroundPlayback.ThreadDuration logs
+    thread time. This metric is logged even for clients that do not support
+    ThreadTicks or have high resolution clocks.
+  </summary>
+</histogram>
+
+<histogram
+    name="SBClientPhishing.VisualFeatureTime.BackgroundPlayback.ThreadDuration"
+    units="microseconds" expires_after="2025-09-27">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the thread duration in PlaybackOnBackgroundThread when extracting
+    visual features. This is recorded on every phishing classification or image
+    embedding. This logs thread time while
+    SBClientPhishing.VisualFeatureTime.BackgroundPlayback.Duration logs wall
+    time. This metric is only recorded for clients with ThreadTicks support.
+    Only recorded for clients with high resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.VisualFeatureTime.TotalDuration" units="ms"
+    expires_after="2025-09-27">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records how long it took to extract visual features. This logs the total
+    duration, including the main thread time that is logged separately in
+    SBClientPhishing.VisualFeatureTime, as well as the time taken on the
+    background thread, up to but not including the execution of the done
+    callback. This also includes queueing time for the posted task. This is
+    recorded on every phishing classification or image embedding.
   </summary>
 </histogram>
 

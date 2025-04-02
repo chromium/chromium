@@ -411,8 +411,8 @@ ValueAndSizeAndPrevWinsSize SerializeInterestGroup(
   if (base::FeatureList::IsEnabled(
           features::kFledgeSendDebugReportCooldownsToBandA)) {
     group_elements_size +=
-        TaggedStringLength(constexpr_strlen("InCooldownOrLockout")) + 1;
-    group_obj[cbor::Value("InCooldownOrLockout")] =
+        TaggedStringLength(constexpr_strlen("inCooldownOrLockout")) + 1;
+    group_obj[cbor::Value("inCooldownOrLockout")] =
         cbor::Value(in_cooldown_or_lockout);
   }
 
@@ -988,8 +988,9 @@ std::optional<BiddingAndAuctionData> BiddingAndAuctionSerializer::Build() {
   message_elements_size += TaggedStringLength(constexpr_strlen("publisher")) +
                            TaggedStringLength(publisher_.size());
 
-  message_obj[cbor::Value("enableDebugReporting")] =
-      cbor::Value(!debug_report_in_lockout_);
+  // TODO(crbug.com/407777426): deprecate this field when no one is using it
+  // anymore.
+  message_obj[cbor::Value("enableDebugReporting")] = cbor::Value(true);
   message_elements_size +=
       TaggedStringLength(constexpr_strlen("enableDebugReporting")) + 1;
 
@@ -999,12 +1000,12 @@ std::optional<BiddingAndAuctionData> BiddingAndAuctionSerializer::Build() {
     // will be overwritten in
     // `InterestGroupManagerImpl::OnAdAuctionDataLoadComplete` to its real
     // value, with lockout and cooldowns considered.
-    message_obj[cbor::Value("InCooldownOrLockout")] = cbor::Value(false);
+    message_obj[cbor::Value("inCooldownOrLockout")] = cbor::Value(false);
 
     // Boolean values (true and false) have the same size (1 byte), so changing
     // the field's value won't change the field's size.
     message_elements_size +=
-        TaggedStringLength(constexpr_strlen("InCooldownOrLockout")) + 1;
+        TaggedStringLength(constexpr_strlen("inCooldownOrLockout")) + 1;
   }
 
   if (base::FeatureList::IsEnabled(
@@ -1117,9 +1118,9 @@ BiddingAndAuctionSerializer::BuildRequestFromMessage(const url::Origin& seller,
     bool debug_report_in_cooldown_or_lockout =
         debug_report_in_lockout_ ||
         IsInDebugReportCooldown(seller, debug_report_cooldown_map_, now);
-    // Set InCooldownOrLockout field's real value. It does not change
+    // Set inCooldownOrLockout field's real value. It does not change
     // `data`'s message_total_size.
-    message_obj_[cbor::Value("InCooldownOrLockout")] =
+    message_obj_[cbor::Value("inCooldownOrLockout")] =
         cbor::Value(debug_report_in_cooldown_or_lockout);
   }
   std::optional<std::vector<uint8_t>> maybe_msg =

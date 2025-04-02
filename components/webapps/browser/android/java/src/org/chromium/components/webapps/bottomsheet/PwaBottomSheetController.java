@@ -30,6 +30,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.components.webapps.AddToHomescreenProperties;
 import org.chromium.components.webapps.AddToHomescreenViewDelegate;
 import org.chromium.components.webapps.AppType;
@@ -123,10 +124,12 @@ public class PwaBottomSheetController
     static class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotViewHolder> {
         private Context mContext;
         private ArrayList<Bitmap> mScreenshots;
+        private boolean mShouldPadForDialogContent;
 
-        public ScreenshotsAdapter(Context context) {
+        public ScreenshotsAdapter(Context context, boolean shouldPadForDialogContent) {
             mContext = context;
             mScreenshots = new ArrayList<Bitmap>();
+            mShouldPadForDialogContent = shouldPadForDialogContent;
         }
 
         @SuppressWarnings("NotifyDataSetChanged")
@@ -154,7 +157,8 @@ public class PwaBottomSheetController
                     mContext.getString(R.string.pwa_install_bottom_sheet_screenshot));
             view.setOnClickListener(
                     v -> {
-                        final ImageZoomView dialog = new ImageZoomView(mContext, bitmap);
+                        final ImageZoomView dialog =
+                                new ImageZoomView(mContext, bitmap, mShouldPadForDialogContent);
                         dialog.show();
                     });
         }
@@ -241,7 +245,9 @@ public class PwaBottomSheetController
         }
         mBottomSheetController = bottomSheetController;
 
-        mScreenshotAdapter = new ScreenshotsAdapter(mContext);
+        boolean shouldPadForDialogContent =
+                EdgeToEdgeStateProvider.isEdgeToEdgeEnabledForWindow(windowAndroid);
+        mScreenshotAdapter = new ScreenshotsAdapter(mContext, shouldPadForDialogContent);
         PwaInstallBottomSheetView view =
                 new PwaInstallBottomSheetView(mContext, mScreenshotAdapter);
         mPwaBottomSheetContent = new PwaInstallBottomSheetContent(view, this);

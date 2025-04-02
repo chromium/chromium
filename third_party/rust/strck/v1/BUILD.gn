@@ -13,14 +13,14 @@ cargo_crate("lib") {
   epoch = "1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/strck-1.0.0/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/strck-v1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/strck-1.0.0/src/ident/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/strck-1.0.0/src/ident/rust.rs",
-    "//third_party/rust/chromium_crates_io/vendor/strck-1.0.0/src/ident/unicode.rs",
-    "//third_party/rust/chromium_crates_io/vendor/strck-1.0.0/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/strck-1.0.0/src/partial_eq.rs",
-    "//third_party/rust/chromium_crates_io/vendor/strck-1.0.0/src/serde.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strck-v1/src/ident/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strck-v1/src/ident/rust.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strck-v1/src/ident/unicode.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strck-v1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strck-v1/src/partial_eq.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strck-v1/src/serde.rs",
   ]
   inputs = []
 

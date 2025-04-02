@@ -39,8 +39,8 @@
       },
       "AppANavigateExistingAppBFocusExisting_Tab_ScopeA2B2_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppANavigateExistingAppBFocusExisting_AppAStandaloneAppBTabbed_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B2_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
-         "bug": "this should have focused and appended launch params probably?",
+         "bug": "https://crbug.com/407788841, this should have focused and appended launch params",
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -121,7 +121,8 @@
       },
       "AppANavigateExistingAppBFocusExisting_Tab_ScopeA2B2_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppANavigateExistingAppBFocusExisting_AppAStandaloneAppBTabbed_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B2_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "bug": "https://crbug.com/407788841, this should have focused and appended launch params",
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -202,7 +203,8 @@
       },
       "AppANavigateExistingAppBFocusExisting_Tab_ScopeA2B2_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppANavigateExistingAppBFocusExisting_AppAStandaloneAppBTabbed_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B2_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "bug": "https://crbug.com/407788841, this should have focused and appended launch params",
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -283,7 +285,8 @@
       },
       "AppANavigateExistingAppBFocusExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppANavigateExistingAppBFocusExisting_AppAStandaloneAppBTabbed_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "bug": "https://crbug.com/407788841, this should have focused and appended launch params",
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -364,7 +367,8 @@
       },
       "AppANavigateExistingAppBFocusExisting_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppANavigateExistingAppBFocusExisting_AppAStandaloneAppBTabbed_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "bug": "https://crbug.com/407788841, this should have focused and appended launch params",
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -445,7 +449,8 @@
       },
       "AppANavigateExistingAppBFocusExisting_Tab_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppANavigateExistingAppBFocusExisting_AppAStandaloneAppBTabbed_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "bug": "https://crbug.com/407788841, this should have focused and appended launch params",
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -530,7 +535,8 @@
       },
       "NavigateExisting_Tab_ScopeA2B2_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "NavigateExisting_AppAStandaloneAppBTabbed_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B2_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "bug": "https://crbug.com/407788841, this should have focused and appended launch params",
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -615,7 +621,8 @@
       },
       "NavigateExisting_Tab_ScopeA2B2_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "NavigateExisting_AppAStandaloneAppBTabbed_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B2_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "bug": "https://crbug.com/407788841, this should have focused and appended launch params",
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -700,7 +707,8 @@
       },
       "NavigateExisting_Tab_ScopeA2B2_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "NavigateExisting_AppAStandaloneAppBTabbed_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B2_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "bug": "https://crbug.com/407788841, this should have focused and appended launch params",
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -785,7 +793,8 @@
       },
       "NavigateExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "NavigateExisting_AppAStandaloneAppBTabbed_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "bug": "https://crbug.com/407788841, this should have focused and appended launch params",
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -870,7 +879,8 @@
       },
       "NavigateExisting_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "NavigateExisting_AppAStandaloneAppBTabbed_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "bug": "https://crbug.com/407788841, this should have focused and appended launch params",
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -955,7 +965,8 @@
       },
       "NavigateExisting_Tab_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "NavigateExisting_AppAStandaloneAppBTabbed_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "bug": "https://crbug.com/407788841, this should have focused and appended launch params",
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",

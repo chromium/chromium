@@ -7,11 +7,12 @@
 namespace content {
 
 SpeculationRulesParams::SpeculationRulesParams() = default;
+SpeculationRulesParams::~SpeculationRulesParams() = default;
 
 SpeculationRulesParams::SpeculationRulesParams(
     blink::mojom::SpeculationTargetHint target_hint,
     blink::mojom::SpeculationEagerness eagerness,
-    SpeculationRulesTags tags)
+    std::optional<SpeculationRulesTags> tags)
     : target_hint(target_hint), eagerness(eagerness), tags(std::move(tags)) {}
 
 SpeculationRulesParams::SpeculationRulesParams(const SpeculationRulesParams&) =

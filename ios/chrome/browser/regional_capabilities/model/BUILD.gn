@@ -12,9 +12,12 @@ source_set("model") {
     "regional_capabilities_service_factory.mm",
   ]
   deps = [
+    "//base",
     "//components/country_codes",
     "//components/prefs",
     "//components/regional_capabilities",
+    "//components/variations/service",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/common",

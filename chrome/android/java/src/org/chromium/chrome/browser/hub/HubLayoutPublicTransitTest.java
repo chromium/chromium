@@ -130,7 +130,7 @@ public class HubLayoutPublicTransitTest {
                     ChromeTabbedActivity cta = mCtaTestRule.getActivity();
                     ChromeApplicationTestUtils.fireHomeScreenIntent(cta);
                     try {
-                        mCtaTestRule.getActivityTestRule().resumeMainActivityFromLauncher();
+                        mCtaTestRule.resumeMainActivityFromLauncher();
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }

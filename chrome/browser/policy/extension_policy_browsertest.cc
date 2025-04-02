@@ -33,6 +33,7 @@
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/load_error_waiter.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
@@ -377,6 +378,9 @@ class ExtensionPolicyTest : public ExtensionPolicyTestBase {
 
  private:
   web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
+
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler_;
 };
 
 }  // namespace
@@ -2563,6 +2567,9 @@ class ExtensionPolicyTest2Contexts : public PolicyTest {
   raw_ptr<extensions::ExtensionRegistrar> registrar2_ = nullptr;
   raw_ptr<extensions::ExtensionRegistry> registry1_ = nullptr;
   raw_ptr<extensions::ExtensionRegistry> registry2_ = nullptr;
+
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler_;
 };
 
 // Verifies that default policy host block/allow settings are applied as

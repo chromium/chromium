@@ -49,7 +49,6 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   base::TimeDelta GetTryRegistrationDelay() override;
   void ProhibitSignoutIfNeeded() override;
   void UpdateLastPolicyCheckTime() override;
-  signin::ConsentLevel GetConsentLevelForRegistration() override;
   bool CanApplyPolicies(bool check_for_refresh_token) override;
   std::string GetProfileId() override;
 

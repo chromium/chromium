@@ -8,6 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -186,6 +187,11 @@ void TouchToFillPaymentMethodController::ServerIbanSuggestionSelected(
   if (delegate_) {
     delegate_->IbanSuggestionSelected(Iban::InstrumentId(instrument_id));
   }
+}
+
+int TouchToFillPaymentMethodController::GetJavaResourceId(
+    int native_resource_id) {
+  return ResourceMapper::MapToJavaDrawableId(native_resource_id);
 }
 
 base::android::ScopedJavaLocalRef<jobject>

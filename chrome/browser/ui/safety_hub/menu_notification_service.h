@@ -14,9 +14,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/safety_hub/menu_notification.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -72,7 +72,7 @@ class SafetyHubMenuNotificationService : public KeyedService {
  public:
   explicit SafetyHubMenuNotificationService(
       PrefService* pref_service,
-      UnusedSitePermissionsService* unused_site_permissions_service,
+      RevokedPermissionsService* revoked_permissions_service,
       NotificationPermissionsReviewService* notification_permissions_service,
 #if !BUILDFLAG(IS_ANDROID)
       PasswordStatusCheckService* password_check_service,

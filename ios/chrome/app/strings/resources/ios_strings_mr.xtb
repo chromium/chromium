@@ -440,6 +440,7 @@
 <translation id="2783161812871838616">डेस्कटॉप साइट ची विनंती करा</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{तुमच्या {EMAIL} या Google खाते मध्ये पासवर्ड सेव्ह केला आहे}other{तुमच्या {EMAIL} या Google खाते मध्ये पासवर्ड सेव्ह केले आहेत}}</translation>
 <translation id="2791174088547598693">पासवर्ड जोडा…</translation>
+<translation id="2793703503584038325">पासवर्ड निवडा आणि “शेअर करा” आयकनवर टॅप करा</translation>
 <translation id="2797302972324086597">देशाचा कोड</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} फाइल}other{{COUNT} फाइल}}</translation>
 <translation id="2816489851009559785">मेनू → सेटिंग्ज → डीफॉल्ट ब्राउझर</translation>
@@ -579,6 +580,7 @@
 <translation id="35083190962747987">${url} उघडा</translation>
 <translation id="3511519535430890904">ब्राउझिंग संरक्षण जोडा</translation>
 <translation id="3517216995152707259">तुमचा ब्राउझिंग डेटा हटवल्यामुळे तुम्ही तुमच्या Google खाते मधून साइन आउट होत नाही. असे करण्यासाठी, <ph name="BEGIN_LINK" />Chrome मधून साइन आउट करणे<ph name="END_LINK" /> हे करा.</translation>
+<translation id="3519792890877853853">हे कार्ड तुमच्या उघड्या असलेल्या टॅबमधील उत्पादनांसाठी पुनरावलोकने दाखवते</translation>
 <translation id="3519905498307021260">{count,plural, =1{टॅब उघडा}other{{count} टॅब उघडा}}</translation>
 <translation id="3523513363815970085">"तुमच्या टॉप साइट" लपवा</translation>
 <translation id="3523789730715594198">तुम्ही सेटिंग्जमध्ये सिंक करणे कधीही थांबवू शकता. Google तुमच्या इतिहासाच्या आधारे Search आणि इतर सेवा पर्सनलाइझ करू शकते.</translation>
@@ -819,6 +821,7 @@
 <translation id="4565377596337484307">पासवर्ड लपवा</translation>
 <translation id="4568230126482344545">अलीकडील टॅब लपवा</translation>
 <translation id="4578835633387306383">सुरू करा…</translation>
+<translation id="4580716718466706433">"Password Manager" वर जा</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4592672037257622855">{count,plural, =1{पेज तुमच्या वाचन सूचीमध्ये जोडले आहे}other{{count} पेज तुमच्या वाचन सूचीमध्ये जोडली आहेत}}</translation>
 <translation id="459644946100970322">किमतीविषयी सूचना सुरू करायच्या आहेत का?</translation>
@@ -858,6 +861,7 @@
 <translation id="4717844083556844785">सद्य वेबपेज गुप्त मोडमध्ये उघडले आहे</translation>
 <translation id="4719927025381752090">भाषांतर करण्यास ऑफर करा</translation>
 <translation id="4720530280568305198">तुमची निवड नवीन टॅबमध्ये उघडली आहे</translation>
+<translation id="472259426228234149">किंमत $१०० ते $१८०</translation>
 <translation id="473775607612524610">अपडेट करा</translation>
 <translation id="474209246745757965">तुमचा कॅमेरा वापरून खरेदी करा आणि भाषांतर करा</translation>
 <translation id="4742407542027196863">पासवर्ड व्यवस्थापित करा…</translation>

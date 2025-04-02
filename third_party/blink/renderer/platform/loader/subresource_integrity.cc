@@ -273,7 +273,7 @@ bool SubresourceIntegrity::CheckHashesImpl(
     }
 
     // And finally decode the metadata's digest for comparison.
-    Vector<char> decoded_metadata;
+    Vector<uint8_t> decoded_metadata;
     Base64Decode(metadata.digest, decoded_metadata);
     DigestValue expected_value;
     expected_value.AppendSpan(base::as_byte_span(decoded_metadata));
@@ -578,7 +578,7 @@ bool SubresourceIntegrity::VerifyInlineIntegrity(
       continue;
     }
 
-    Vector<char> decoded_signature;
+    Vector<uint8_t> decoded_signature;
     if (!Base64Decode(StringView(base::as_byte_span(base64_signature)),
                       decoded_signature) ||
         decoded_signature.size() != 64u) {
@@ -588,16 +588,15 @@ bool SubresourceIntegrity::VerifyInlineIntegrity(
     semantically_valid_signatures++;
 
     for (const auto& key : integrity_metadata.public_keys) {
-      Vector<char> decoded_key;
+      Vector<uint8_t> decoded_key;
       if (!Base64Decode(key.digest, decoded_key) || decoded_key.size() != 32u) {
         // TODO(391907163): Log an error for invalid public key digests.
         continue;
       }
       if (ED25519_verify(
               reinterpret_cast<const uint8_t*>(source_adaptor.data()),
-              source_adaptor.size(),
-              reinterpret_cast<const uint8_t*>(decoded_signature.data()),
-              reinterpret_cast<const uint8_t*>(decoded_key.data()))) {
+              source_adaptor.size(), decoded_signature.data(),
+              decoded_key.data())) {
         return true;
       }
     }

@@ -4,11 +4,19 @@
 
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/json/json_reader.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/gtest_sub_test_results.h"
+#include "base/test/gtest_tags.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -29,21 +37,58 @@
 #include "chrome/test/base/ui_test_utils.h"
 #endif
 
-namespace {
+namespace webui {
 
-bool WaitForTestToFinish(content::WebContents* web_contents) {
-  content::DOMMessageQueue message_queue(web_contents);
-  std::string message;
-  do {
-    if (!message_queue.WaitForMessage(&message)) {
-      return false;
-    }
-  } while (message.compare("\"PENDING\"") == 0);
-
-  return message.compare("\"SUCCESS\"") == 0;
+void CanonicalizeTestName(std::string* test_name) {
+  if (!test_name) {
+    return;
+  }
+  std::replace_if(
+      test_name->begin(), test_name->end(),
+      [](char c) {
+        return !(base::IsAsciiAlpha(c) || base::IsAsciiDigit(c) || c == '_');
+      },
+      '_');
 }
 
-}  // namespace
+bool WaitForTestToFinish(content::WebContents* web_contents,
+                         bool is_sub_test_result_reporting_enabled) {
+  content::DOMMessageQueue message_queue(web_contents);
+  std::string message;
+  while (message_queue.WaitForMessage(&message)) {
+    if (message == "\"SUCCESS\"") {
+      return true;
+    } else if (message == "\"FAILURE\"") {
+      return false;
+    }
+    // Android can't use XmlUnitTestResultPrinter, so AddSubTestResult is not
+    // supported.
+#if !BUILDFLAG(IS_ANDROID)
+    // Deserialize JSON from JS and record a SubTestResult.
+    if (is_sub_test_result_reporting_enabled) {
+      std::optional<base::Value> msg = base::JSONReader::Read(message);
+
+      std::string* test_name = msg->GetDict().FindString("fullTitle");
+      std::string canonicalized_test_name = *test_name;
+      CanonicalizeTestName(&canonicalized_test_name);
+
+      std::optional<int> duration = msg->GetDict().FindInt("duration");
+
+      std::string* failure_reason = msg->GetDict().FindString("failureReason");
+      std::optional<std::string> optional_failure_reason;
+      if (failure_reason) {
+        optional_failure_reason.emplace(*failure_reason);
+      }
+
+      base::AddSubTestResult(canonicalized_test_name, *duration,
+                             optional_failure_reason);
+    }
+#endif
+  }
+  NOTREACHED();
+}
+
+}  // namespace webui
 
 WebUIMochaBrowserTest::WebUIMochaBrowserTest()
     : test_loader_host_(chrome::kChromeUIWebUITestHost),
@@ -173,7 +218,9 @@ testing::AssertionResult WebUIMochaBrowserTest::RunTestOnWebContents(
     return result;
   }
 
-  bool success = WaitForTestToFinish(web_contents);
+  // Receive messages from JS.
+  bool success = webui::WaitForTestToFinish(
+      web_contents, is_sub_test_result_reporting_enabled_);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Report code coverage metrics.
@@ -202,6 +249,10 @@ void WebUIMochaBrowserTest::RunTestWithoutTestLoader(
     const std::string& file,
     const std::string& trigger) {
   RunTest(file, trigger, /*skip_test_loader=*/true);
+}
+
+void WebUIMochaBrowserTest::DisableSubTestResultReporting() {
+  is_sub_test_result_reporting_enabled_ = false;
 }
 
 testing::AssertionResult WebUIMochaBrowserTest::SimulateTestLoader(

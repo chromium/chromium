@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -51,6 +52,7 @@ class FakeEnterpriseSearchAggregatorProvider
   using EnterpriseSearchAggregatorProvider::
       ParseEnterpriseSearchAggregatorSearchResults;
   using EnterpriseSearchAggregatorProvider::RequestCompleted;
+  using EnterpriseSearchAggregatorProvider::RequestStarted;
 
   using EnterpriseSearchAggregatorProvider::adjusted_input_;
   using EnterpriseSearchAggregatorProvider::done_;
@@ -768,6 +770,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, ParseWithNonDict) {
       .Times(1);
 
   provider_->done_ = false;
+  provider_->RequestStarted(nullptr);
   provider_->RequestCompleted(
       nullptr, 200, std::make_unique<std::string>(kNonDictJsonResponse));
   ASSERT_TRUE(provider_->WaitForUpdateResults());
@@ -800,6 +803,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, CacheMatches_ErrorResponse) {
       .Times(0);
 
   // Complete request with error, old match should be cleared.
+  provider_->RequestStarted(nullptr);
   provider_->done_ = false;
   provider_->RequestCompleted(nullptr, 404,
                               std::make_unique<std::string>("bad"));
@@ -822,6 +826,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
 
   // Complete request with error, old match should be cleared.
   provider_->done_ = false;
+  provider_->RequestStarted(nullptr);
   provider_->RequestCompleted(nullptr, 404,
                               std::make_unique<std::string>("bad"));
   EXPECT_THAT(GetMatches(), testing::ElementsAre());
@@ -842,6 +847,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, CacheMatches_EmptyResponse) {
 
   // Complete request with empty results, old match should be cleared.
   provider_->done_ = false;
+  provider_->RequestStarted(nullptr);
   provider_->RequestCompleted(
       nullptr, 200, std::make_unique<std::string>(kGoodEmptyJsonResponse));
   ASSERT_TRUE(provider_->WaitForUpdateResults());
@@ -863,6 +869,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
 
   // Complete request with non-empty results, old match should be replaced.
   provider_->done_ = false;
+  provider_->RequestStarted(nullptr);
   provider_->RequestCompleted(nullptr, 200,
                               std::make_unique<std::string>(kGoodJsonResponse));
   ASSERT_TRUE(provider_->WaitForUpdateResults());
@@ -894,6 +901,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, UnfeaturedKeyword) {
       .Times(0);
 
   provider_->Start(input, false);
+  provider_->RequestStarted(nullptr);
   provider_->RequestCompleted(nullptr, 200,
                               std::make_unique<std::string>(kGoodJsonResponse));
   ASSERT_TRUE(provider_->WaitForUpdateResults());
@@ -914,6 +922,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, UnscopedMode) {
       .Times(0);
 
   provider_->Start(input, false);
+  provider_->RequestStarted(nullptr);
   provider_->RequestCompleted(nullptr, 200,
                               std::make_unique<std::string>(kGoodJsonResponse));
   ASSERT_TRUE(provider_->WaitForUpdateResults());
@@ -1519,4 +1528,91 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
               testing::ElementsAre(
                   ScoredMatch{u"https://url/", 420},
                   ScoredMatch{u"https://www.google.com/?q=query", 410}));
+}
+
+TEST_F(EnterpriseSearchAggregatorProviderTest, Logging) {
+  // The code flow is:
+  // 1) `Start()`
+  // 2) `Run()` is invoked from `Start()` after a potential debouncing.
+  // 3) A request is asyncly made to Vertex AI backend once auth
+  //    token is ready.
+  // 4) A response is asyncly received from the Vertex AI backend.
+  // At any point, the chain of events can be interrupted by a `Stop()`
+  // invocation; usually when there's a new input.
+  // The below 3 cases test the logged histograms when `Stop()` is invoked after
+  // steps 2, 3, and after the request is completed.
+
+  {
+    SCOPED_TRACE("Case: Stop() before Run().");
+    base::HistogramTester histogram_tester;
+    provider_->Stop(false, false);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.SuggestRequestsSent.ResponseTime2.RequestState."
+        "EnterpriseSearchAggregatorSuggest.Interrupted",
+        0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.SuggestRequestsSent.ResponseTime2.RequestState."
+        "EnterpriseSearchAggregatorSuggest.Completed",
+        0);
+  }
+
+  {
+    SCOPED_TRACE("Case: Stop() before response.");
+    base::HistogramTester histogram_tester;
+    provider_->done_ = false;
+    provider_->RequestStarted(network::SimpleURLLoader::Create(
+        std::make_unique<network::ResourceRequest>(),
+        net::DefineNetworkTrafficAnnotation("test", "test")));
+    provider_->Stop(false, false);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.SuggestRequestsSent.ResponseTime2.RequestState."
+        "EnterpriseSearchAggregatorSuggest.Interrupted",
+        1);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.SuggestRequestsSent.ResponseTime2.RequestState."
+        "EnterpriseSearchAggregatorSuggest.Completed",
+        0);
+  }
+
+  {
+    SCOPED_TRACE("Case: Request complete ");
+    base::HistogramTester histogram_tester;
+    provider_->done_ = false;
+    provider_->RequestStarted(nullptr);
+    provider_->RequestCompleted(
+        nullptr, 200, std::make_unique<std::string>(kNonDictJsonResponse));
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.SuggestRequestsSent.ResponseTime2.RequestState."
+        "EnterpriseSearchAggregatorSuggest.Interrupted",
+        0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.SuggestRequestsSent.ResponseTime2.RequestState."
+        "EnterpriseSearchAggregatorSuggest.Completed",
+        1);
+  }
+
+  // The below test case checks that number of results logged is expected.
+  {
+    SCOPED_TRACE("Case: Parsing complete ");
+    base::HistogramTester histogram_tester;
+    provider_->done_ = false;
+    ParseResponse(kGoodJsonResponse);
+
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.SuggestRequestsSent.ResultCount."
+        "EnterpriseSearchAggregatorSuggest",
+        3, 1);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.SuggestRequestsSent.ResultCount."
+        "EnterpriseSearchAggregatorSuggest.Query",
+        1);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.SuggestRequestsSent.ResultCount."
+        "EnterpriseSearchAggregatorSuggest.People",
+        1);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.SuggestRequestsSent.ResultCount."
+        "EnterpriseSearchAggregatorSuggest.Content",
+        1);
+  }
 }

@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">मेनिफ़ेस्ट फ़ाइल गलत है</translation>
 <translation id="7217838517480956708">इस मशीन का व्यवस्थापक चाहता है कि <ph name="EXTENSION_NAME" /> इंस्टॉल किया हुआ हो. इसे निकाला या संशोधित नहीं किया जा सकता.</translation>
 <translation id="7612608473764576263">निजी कुंजी के लिए इनपुट मान एक सही फ़ॉर्मेट में होना चाहिए (PKCS#8-फ़ॉर्मेट PEM-कोड में बदली गई RSA कुंजी).</translation>
+<translation id="7876803335449432072">कॉन्टेंट स्क्रिप्ट के लिए, '<ph name="RELATIVE_PATH" />' फ़ाइल लोड नहीं की जा सकी. कॉन्टेंट स्क्रिप्ट स्टाइल शीट को सिर्फ़ साथ काम करने वाली स्टाइल शीट फ़ाइलों, जैसे कि .css फ़ाइलों से लोड किया जा सकता है.</translation>
 <translation id="7939686037314084444">एक्सटेंशन ठीक से लोड नहीं हो पाया. शायद वह नेटवर्क अनुरोधों को बीच में रोक नहीं पाए.</translation>
 <translation id="7972881773422714442">विकल्‍प: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">सामने वाला कैमरा</translation>
 <translation id="8047248493720652249">यह एक्सटेंशन "<ph name="ATTEMPTED_FILENAME" />" डाउनलोड को नाम देने में विफल रहा, क्योंकि किसी अन्य एक्सटेंशन (<ph name="EXTENSION_NAME" />) ने एक भिन्न फ़ाइलनाम "<ph name="ACTUAL_FILENAME" />" तय कर लिया है.</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> की ओर से <ph name="PRODUCT_NAME" /></translation>
 <translation id="8517576857589387417">मेनिफ़ेस्ट फ़ाइल नहीं मिल रही है या पढ़ने के लिए उपलब्ध नहीं है</translation>
+<translation id="8621383749470166852">कॉन्टेंट स्क्रिप्ट के लिए, '<ph name="RELATIVE_PATH" />' फ़ाइल लोड नहीं की जा सकी. कॉन्टेंट स्क्रिप्ट को सिर्फ़ साथ काम करने वाली JavaScript फ़ाइलों, जैसे कि .js फ़ाइलों से लोड किया जा सकता है.</translation>
 <translation id="8636666366616799973">पैकेज अमान्य है. ब्यौरा: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" आपके किसी एक डिवाइस का एक्‍सेस मांग रहा है:</translation>
 <translation id="8885905466771744233">तय किए गए एक्सटेंशन के लिए कोई 'निजी की' पहले से मौजूद है. उस की का फिर से इस्तेमाल करें या पहले उसे मिटाएं.</translation>

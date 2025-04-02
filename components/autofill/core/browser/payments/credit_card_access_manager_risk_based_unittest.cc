@@ -583,7 +583,6 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
       1);
 }
 
-#if !BUILDFLAG(IS_IOS)
 // Test the yellow path flow when the masked server card enrolled in card info
 // retrieval is retrieved from the server with Sms Otp authentication.
 TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
@@ -798,7 +797,6 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   EXPECT_FALSE(
       payments_autofill_client().unmask_authenticator_selection_dialog_shown());
 }
-#endif  // !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 // Params of the

@@ -188,6 +188,8 @@ ash::LobsterSystemState LobsterSystemStateProviderImpl::GetSystemState(
       pref_->IsManagedPreference(
           ash::prefs::kLobsterEnterprisePolicySettings)) {
     system_state.status = ash::LobsterStatus::kBlocked;
+    system_state.failed_checks.Put(
+        ash::LobsterSystemCheck::kForcedDisabledOnManagedUsers);
   }
 
   if (pref_->GetInteger(ash::prefs::kLobsterEnterprisePolicySettings) ==

@@ -112,8 +112,8 @@ public class AwServiceWorkerClientTest extends AwParameterizedTest {
         // Check that the two service worker related callbacks were correctly intercepted.
         List<AwWebResourceRequest> requests = helper.getAwWebResourceRequests();
         Assert.assertEquals(2, requests.size());
-        Assert.assertEquals(fullSwUrl, requests.get(0).url);
-        Assert.assertEquals(fullFetchUrl, requests.get(1).url);
+        Assert.assertEquals(fullSwUrl, requests.get(0).getUrl());
+        Assert.assertEquals(fullFetchUrl, requests.get(1).getUrl());
     }
 
     @Test
@@ -127,7 +127,7 @@ public class AwServiceWorkerClientTest extends AwParameterizedTest {
         BlockingQueue<Pair<String, WebResponseCallback>> callbacks = new ArrayBlockingQueue<>(10);
         AsyncShouldInterceptRequestCallback asyncCallback =
                 (request, callback) -> {
-                    callbacks.add(Pair.create(request.url, callback));
+                    callbacks.add(Pair.create(request.getUrl(), callback));
                 };
 
         mActivityTestRule
@@ -169,7 +169,7 @@ public class AwServiceWorkerClientTest extends AwParameterizedTest {
         // Check that the two service worker related callbacks were correctly intercepted.
         List<AwWebResourceRequest> requests = helper.getAwWebResourceRequests();
         Assert.assertEquals(2, requests.size());
-        Assert.assertEquals(fullSwUrl, requests.get(0).url);
+        Assert.assertEquals(fullSwUrl, requests.get(0).getUrl());
     }
 
     // Verify that WebView ServiceWorker code can properly handle resource loading errors
@@ -187,7 +187,7 @@ public class AwServiceWorkerClientTest extends AwParameterizedTest {
         // Check that the two service worker related callbacks were correctly intercepted.
         List<AwWebResourceRequest> requests = helper.getAwWebResourceRequests();
         Assert.assertEquals(2, requests.size());
-        Assert.assertEquals(fullSwUrl, requests.get(0).url);
+        Assert.assertEquals(fullSwUrl, requests.get(0).getUrl());
     }
 
     @Test
@@ -223,7 +223,7 @@ public class AwServiceWorkerClientTest extends AwParameterizedTest {
         // overriding top level response to a non-null value.
         List<AwWebResourceRequest> requests = helper.getAwWebResourceRequests();
         Assert.assertEquals(1, requests.size());
-        Assert.assertEquals(fullSwUrl, requests.get(0).url);
+        Assert.assertEquals(fullSwUrl, requests.get(0).getUrl());
     }
 
     private void loadPage(

@@ -9,6 +9,7 @@
 
 #include "android_webview/browser/aw_apk_type.h"
 #include "android_webview/browser/aw_browser_context.h"
+#include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_enterprise_authentication_app_link_manager.h"
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "android_webview/browser/lifecycle/aw_contents_lifecycle_notifier.h"
@@ -46,7 +47,7 @@ class VisibilityMetricsLogger;
 // Lifetime: Singleton
 class AwBrowserProcess {
  public:
-  AwBrowserProcess(AwFeatureListCreator* aw_feature_list_creator);
+  explicit AwBrowserProcess(AwContentBrowserClient* browser_client);
 
   AwBrowserProcess(const AwBrowserProcess&) = delete;
   AwBrowserProcess& operator=(const AwBrowserProcess&) = delete;
@@ -100,6 +101,7 @@ class AwBrowserProcess {
 
   embedder_support::OriginTrialsSettingsStorage*
   GetOriginTrialsSettingsStorage();
+  AwContentBrowserClient* GetBrowserClient();
 
  private:
   void CreateSafeBrowsingUIManager();
@@ -143,6 +145,7 @@ class AwBrowserProcess {
   std::unique_ptr<embedder_support::OriginTrialsSettingsStorage>
       origin_trials_settings_storage_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
+  raw_ref<AwContentBrowserClient> browser_client_;
 };
 
 }  // namespace android_webview

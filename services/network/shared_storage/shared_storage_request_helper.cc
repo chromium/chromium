@@ -327,6 +327,13 @@ bool SharedStorageRequestHelper::ProcessResponse(net::URLRequest& request,
     }
   }
 
+  // While header parsing is generally lenient, we enforce strict validation
+  // for the deprecated 'with_lock' parameter in batch inner methods to prevent
+  // potential misuse.
+  if (!IsValidSharedStorageBatchUpdateMethodsArgument(methods_with_options)) {
+    return false;
+  }
+
   observer_->OnSharedStorageHeaderReceived(
       url::Origin::Create(request.url()), std::move(methods_with_options),
       with_lock,

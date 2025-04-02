@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">मॅनिफेस्ट फाइल चुकीची आहे</translation>
 <translation id="7217838517480956708">या मशीनच्या ॲडमिनिस्ट्रेटरला <ph name="EXTENSION_NAME" /> इंस्टॉल करणे आवश्यक आहे. हे काढले किंवा सुधारित केले जाऊ शकत नाही.</translation>
 <translation id="7612608473764576263">प्रायव्हेट की साठीचे इनपुट मूल्य योग्य फॉरमॅटमध्ये असावे (PKCS#8-फॉरमॅट PEM-एंकोड केलेली RSA की).</translation>
+<translation id="7876803335449432072">आशय स्क्रिप्टसाठी फाइल '<ph name="RELATIVE_PATH" />' लोड करता आली नाही, आशय स्क्रिप्ट स्टाइल शीट या फक्त .css फाइलसारख्या सपोर्ट असलेल्या स्टाइल शीटमधून लोड करता येऊ शकतात.</translation>
 <translation id="7939686037314084444">एक्सटेंशन योग्यरित्या लोड होऊ शकले नाही. हे कदाचित नेटवर्क विनंत्या व्यत्यय आणू शकत नाही.</translation>
 <translation id="7972881773422714442">पर्याय: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">वापरकर्ता-समोरील</translation>
 <translation id="8047248493720652249">दुसर्‍या एक्स्टेंशनने (<ph name="EXTENSION_NAME" />) एक वेगळे फाइलनाव "<ph name="ACTUAL_FILENAME" />" निर्धारित केल्यामुळे डाउनलोड "<ph name="ATTEMPTED_FILENAME" />" ला नाव देण्यात हे एक्स्टेंशन अयशस्वी झाले.</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> कडील <ph name="PRODUCT_NAME" /></translation>
 <translation id="8517576857589387417">मॅनिफेस्ट फाइल गहाळ किंवा वाचता न येण्यासारखी आहे</translation>
+<translation id="8621383749470166852">आशय स्क्रिप्टसाठी फाइल '<ph name="RELATIVE_PATH" />' लोड करता आली नाही, आशय स्क्रिप्ट या फक्त .js फाइलसारख्या सपोर्ट असलेल्या JavaScript मधून लोड करता येऊ शकतात.</translation>
 <translation id="8636666366616799973">पॅकेज चुकीचे आहे. तपशील: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> तुमच्या एका डिव्हाइस ॲक्सेसची विनंती करत आहे:</translation>
 <translation id="8885905466771744233">नमूद एक्स्टेंशनसाठी खासगी की यापूर्वीच विद्यमान आहे. ती की पुन्हा वापरा किंवा प्रथम ती हटवा.</translation>

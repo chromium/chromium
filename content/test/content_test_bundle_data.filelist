@@ -1016,6 +1016,14 @@ data/accessibility/aria/aria-label-with-tabindex-expected-mac.txt
 data/accessibility/aria/aria-label-with-tabindex-expected-uia-win.txt
 data/accessibility/aria/aria-label-with-tabindex-expected-win.txt
 data/accessibility/aria/aria-label-with-tabindex.html
+data/accessibility/aria/aria-label-with-visual-content-expected-android-external.txt
+data/accessibility/aria/aria-label-with-visual-content-expected-android.txt
+data/accessibility/aria/aria-label-with-visual-content-expected-auralinux.txt
+data/accessibility/aria/aria-label-with-visual-content-expected-blink.txt
+data/accessibility/aria/aria-label-with-visual-content-expected-mac.txt
+data/accessibility/aria/aria-label-with-visual-content-expected-uia-win.txt
+data/accessibility/aria/aria-label-with-visual-content-expected-win.txt
+data/accessibility/aria/aria-label-with-visual-content.html
 data/accessibility/aria/aria-label.html
 data/accessibility/aria/aria-labelledby-heading-expected-android-assist-data.txt
 data/accessibility/aria/aria-labelledby-heading-expected-android-external.txt
@@ -1336,6 +1344,7 @@ data/accessibility/aria/aria-paragraph-expected-auralinux.txt
 data/accessibility/aria/aria-paragraph-expected-mac.txt
 data/accessibility/aria/aria-paragraph-expected-win.txt
 data/accessibility/aria/aria-paragraph.html
+data/accessibility/aria/aria-posinset-expected-android-external.txt
 data/accessibility/aria/aria-posinset-expected-android.txt
 data/accessibility/aria/aria-posinset-expected-auralinux.txt
 data/accessibility/aria/aria-posinset-expected-blink.txt
@@ -7032,6 +7041,8 @@ data/gpu/pixel_canvas_low_latency_webgl_draw_image.html
 data/gpu/pixel_canvas_low_latency_webgl_occluded.html
 data/gpu/pixel_canvas_low_latency_webgl_rounded_corners.html
 data/gpu/pixel_css3d.html
+data/gpu/pixel_destroyed_webgpu_canvas.html
+data/gpu/pixel_destroyed_webgpu_canvas.js
 data/gpu/pixel_media_foundation_clear_dcomp.html
 data/gpu/pixel_media_recorder_from_canvas_2d.html
 data/gpu/pixel_media_recorder_from_video_element.html
@@ -7832,6 +7843,8 @@ data/prerender/doc-with-display-none-iframe.html
 data/prerender/duplicate_prerenders.html
 data/prerender/empty.html
 data/prerender/image_loading_lazy.html
+data/prerender/multiple_prerender_with_tags.html
+data/prerender/multiple_prerender_with_tags_and_different_eagerness.html
 data/prerender/origin_trial_initiator.html
 data/prerender/page-with-embedded-plugin.html
 data/prerender/page-with-object-plugin.html
@@ -8353,6 +8366,7 @@ data/unload.html
 data/view_transitions/basic-vt-opt-in.html
 data/view_transitions/capture-style.css
 data/view_transitions/green.html
+data/view_transitions/parent-child-opacity-iframe.html
 data/view_transitions/parent-child-opacity.html
 data/view_transitions/parent-child.html
 data/view_transitions/red_jank_second_pageshow.html

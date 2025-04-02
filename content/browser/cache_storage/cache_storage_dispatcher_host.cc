@@ -710,10 +710,6 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
         [](base::TimeTicks start_time, int64_t trace_id,
            blink::mojom::CacheStorage::KeysCallback callback,
            std::vector<std::u16string> cache_names) {
-          std::vector<std::u16string> string16s;
-          for (const auto& name : cache_names) {
-            string16s.push_back(name);
-          }
           UMA_HISTOGRAM_LONG_TIMES(
               "ServiceWorkerCache.CacheStorage.Browser.Keys",
               base::TimeTicks::Now() - start_time);
@@ -722,8 +718,8 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
               "CacheStorageDispatchHost::CacheStorageImpl::Keys::Callback",
               TRACE_ID_GLOBAL(trace_id),
               TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "key_list",
-              CacheStorageTracedValue(string16s));
-          std::move(callback).Run(string16s);
+              CacheStorageTracedValue(cache_names));
+          std::move(callback).Run(cache_names);
         },
         base::TimeTicks::Now(), trace_id, std::move(callback));
 

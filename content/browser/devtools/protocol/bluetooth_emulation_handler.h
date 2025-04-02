@@ -80,6 +80,17 @@ class CONTENT_EXPORT BluetoothEmulationHandler
       const std::string& in_serviceId,
       const std::string& in_characteristicId,
       std::unique_ptr<RemoveCharacteristicCallback> callback) override;
+  void AddDescriptor(const std::string& in_address,
+                     const std::string& in_serviceId,
+                     const std::string& in_characteristicId,
+                     const std::string& in_descriptorUuid,
+                     std::unique_ptr<AddDescriptorCallback> callback) override;
+  void RemoveDescriptor(
+      const std::string& in_address,
+      const std::string& in_serviceId,
+      const std::string& in_characteristicId,
+      const std::string& in_descriptorId,
+      std::unique_ptr<RemoveDescriptorCallback> callback) override;
 
   // bluetooth::mojom::FakeCentralClient
   void DispatchGATTOperationEvent(

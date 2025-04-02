@@ -3,6 +3,7 @@
   const relativeLengthUnits = ["em", "ex", "cap", "ch", "ic", "lh", "rcap", "rch", "rem", "rex", "ric", "rlh", "vw", "vh ", "vi", "vb", "vmin", "vmax"];
   const lengthExpressions = ["calc(1em + 10px)", "calc(1em + 3em)", "calc(3px + 2.54cm)", "clamp(10px, calc(10rem + 10rex), 30px)", "max(100px, 30em)", "calc(100px * cos(60deg))"];
   const invalidLengthValues = ["calc(", "em", "calc(10 + 20)", "red", "calc(10ms + 5s)"];
+  const validNumberValues = ["100", "log(1000, 10)", "calc(10 + 30)"];
   const testValues = ["invalid", "1em", "1rem", "calc(3px + 3px)", "calc(1em + 1px)"];
   const cssWideKeywords = ["initial", "inherit", "unset"];
   const validColorValues = ["aqua", "peachpuff", "blanchedalmond", "rgb(255, 0, 0)", "#0f5ffe", "color-mix(in srgb, plum, #f00)"];
@@ -78,6 +79,11 @@
       var relativeValues = relativeLengthUnits.map((x) => "1" + x);
       await testResolveValues('.inner', relativeValues, "width");
     },
+    async function testResolveValuesRelativeUnitsNoProperty() {
+      testRunner.log('Test resolveValues on relative units no property specified');
+      var relativeValues = relativeLengthUnits.map((x) => "1" + x);
+      await testResolveValuesWithoutProperty('.inner', relativeValues);
+    },
     async function testRelativeUnitsNoProperty() {
       testRunner.log('Relative length units to absolute no property specified test');
       var relativeValues = relativeLengthUnits.map((x) => "1" + x);
@@ -122,8 +128,8 @@
       testRunner.log('Test <color> values with no property specified');
       await testResolveValuesWithoutProperty('.inner', validColorValues);
     },
-    async function testOnlyInvalidValues() {
-      testRunner.log('Invalid values test');
+    async function testInvalidLengthValues() {
+      testRunner.log('Invalid length values test');
       await testResolveValues('.inner', invalidLengthValues, "width");
     },
     async function testCustomProperty() {
@@ -153,6 +159,10 @@
     async function testElementDisplayNone() {
       testRunner.log('Test on element without computed style');
       await testResolveValues('.display-none', testValues, "height");
+    },
+    async function testResolveValuesIgnoreProperty() {
+      testRunner.log('Test resolveValues should ignore property');
+      await testResolveValues('.inner', validNumberValues, "width");
     },
     async function testResolveValuesValidInnerHeight() {
       testRunner.log('Test resolveValues for height property of inner element');
@@ -225,6 +235,10 @@
     async function testResolveValuesValidOuterPaddingBottom() {
       testRunner.log('Test resolveValues for padding-bottom property of outer element');
       await testResolveValues('.outer', validPercentageExpressions, "padding-bottom");
+    },
+    async function testResolvePercentageValuesNoProperty() {
+      testRunner.log('Test resolveValues with invalid percentage expressions');
+      await testResolveValues('.inner', validPercentageExpressions);
     },
     async function testResolveInvalidPercentageValues() {
       testRunner.log('Test resolveValues with invalid percentage expressions');

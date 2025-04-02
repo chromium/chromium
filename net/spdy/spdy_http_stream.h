@@ -92,6 +92,7 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
   void SetPriority(RequestPriority priority) override;
   const std::set<std::string>& GetDnsAliases() const override;
   std::string_view GetAcceptChViaAlps() const override;
+  void SetHTTP11Required() override;
 
   // SpdyStream::Delegate implementation.
   void OnHeadersSent() override;

@@ -26,6 +26,11 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="AudioContextInterruptionType">
+  <int value="0" label="AudioContext tried to play audio in a hidden frame"/>
+  <int value="1" label="Frame got hidden while the AudioContext was playing"/>
+</enum>
+
 <enum name="BiquadFilterType">
   <int value="0" label="lowpass"/>
   <int value="1" label="highpass"/>

@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">Ota zoomaus käyttöön</translation>
 <translation id="3905475044299942653">Estä useat ilmoitukset</translation>
 <translation id="3908288065506437185">Estä kolmannen osapuolen evästeet incognito-tilassa</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Kaikki ominaisuudet eivät välttämättä toimi. Aiheeseen liittyvät sivustot voivat edelleen käyttää kolmannen osapuolen evästeitä.</translation>
 <translation id="3922092564198021702">Avaa puhelimella Asetukset</translation>
 <translation id="3933121352599513978">Tiivistä ei-toivotut pyynnöt (suositus)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">Tiedot</translation>
 <translation id="4598549027014564149">Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta – eivät edes aiheeseen liittyvillä sivustoilla. Selaustoimintaasi ei käytetä mainosten personointiin tai muuhun vastaavaan. Joidenkin sivustojen ominaisuudet eivät välttämättä toimi.</translation>
 <translation id="461356340001513807">Sallii sinun kirjautua verkkosivustoille identiteettipalvelun tilillä</translation>
-<translation id="4619615317237390068">Välilehdet muista laitteista</translation>
 <translation id="4635969503923889910">Älä salli sivustojen käyttää NFC-laitteita</translation>
 <translation id="4644713492825682049">Poista ja nollaa luvat</translation>
 <translation id="4645575059429386691">Vanhempasi hallinnoima</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">Jaa palvelussa:</translation>
 <translation id="5001526427543320409">Kolmannen osapuolen evästeet</translation>
 <translation id="5007392906805964215">Tarkista</translation>
-<translation id="5014182796621173645">Kävit täällä <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Salli</translation>
 <translation id="5048398596102334565">Anna sivustojen käyttää liiketunnistimien lukemia (suositus)</translation>
 <translation id="5048841907079026162">Hallinnoi selausdataasi</translation>

@@ -40,6 +40,8 @@ class ValuablesDataManager : public KeyedService,
   // The cache is populated asynchronously after the construction of this
   // `ValuablesDataManager`. Returns an empty span until the population is
   // finished.
+  //
+  // The returned span may be invalidated asynchronously.
   base::span<const LoyaltyCard> GetLoyaltyCards() const;
 
   // AutofillWebDataServiceObserverOnUISequence:

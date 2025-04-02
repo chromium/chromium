@@ -36,6 +36,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/url_formatter/url_formatter.h"
@@ -145,7 +146,7 @@ class WebContentsImplBrowserTest : public ContentBrowserTest {
  public:
   WebContentsImplBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kCanvasInterventions);
+        fingerprinting_protection_interventions::features::kCanvasNoise);
   }
 
   void SetUp() override {

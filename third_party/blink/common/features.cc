@@ -1020,6 +1020,29 @@ BASE_FEATURE(kFledgeDisableLocalAdsAuctions,
              "FledgeDisableLocalAdsAuctions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Provides a configurable limit on the number of
+// `selectableBuyerAndSellerReportingIds` for which the browser fetches k-anon
+// keys. If the `SelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit` is
+// negative, no limit is enforced.
+BASE_FEATURE(kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon,
+             "FledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(
+    int,
+    kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit,
+    &kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon,
+    "SelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit",
+    -1);
+
+// Feature flag to truncate the set of `selectableBuyerAndSellerReportingIds`
+// to only those for which k-anon status was fetched, as limited by the
+// `kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit` parameter
+// defined above. This is only meaningful if
+// `kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit` is >= 0.
+BASE_FEATURE(kFledgeTruncateSelectableBuyerAndSellerReportingIdsToKAnonLimit,
+             "FledgeTruncateSelectableBuyerAndSellerReportingIdsToKAnonLimit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kForceHighPerformanceGPUForWebGL,
              "ForceHighPerformanceGPUForWebGL",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1128,7 +1151,10 @@ BASE_FEATURE(kHiddenSelectionBounds,
 
 BASE_FEATURE(kIgnoreInputWhileHidden,
              "IgnoreInputWhileHidden",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             // TODO(crbug.com/407265465) Some Accessibility tools on Windows
+             // appear to mark the Renderer as Hidden. This feature currently
+             // breaks them. Disabling until the root cause can be identified.
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kImageLoadingPrioritizationFix,
              "ImageLoadingPrioritizationFix",
@@ -2739,7 +2765,11 @@ BASE_FEATURE_PARAM(bool,
 // handle any necessary resampling, potentially reducing latency and overhead.
 BASE_FEATURE(kWebAudioRemoveAudioDestinationResampler,
              "WebAudioRemoveAudioDestinationResampler",
+#if BUILDFLAG(IS_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 /// Enables cache-aware WebFonts loading. See https://crbug.com/570205.
 // The feature is disabled on Android for WebView API issue discussed at

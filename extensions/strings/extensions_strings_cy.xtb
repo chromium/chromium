@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Mae'r ffeil maniffest yn annilys</translation>
 <translation id="7217838517480956708">Mae gweinyddwr y peiriant hwn yn ei gwneud yn ofynnol i osod <ph name="EXTENSION_NAME" />. Ni ellir ei dynnu na'i addasu.</translation>
 <translation id="7612608473764576263">Rhaid i werth mewnbwn ar gyfer allwedd breifat fod yn fformat dilys (allwedd RSA PKCS # 8-fformat PEM-encoded).</translation>
+<translation id="7876803335449432072">Methu â llwytho'r ffeil '<ph name="RELATIVE_PATH" />' ar gyfer sgript cynnwys, dim ond o ffeiliau dalennau arddull a gefnogir megis ffeiliau .css y gellir llwytho dalennau arddull sgript cynnwys.</translation>
 <translation id="7939686037314084444">Mae'r estyniad wedi methu â llwytho'n iawn. Mae'n bosib na fydd yn gallu rhyng-gipio ceisiadau rhwydwaith.</translation>
 <translation id="7972881773422714442">Dewisiadau: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Yn wynebu'r defnyddiwr</translation>
 <translation id="8047248493720652249">Gwnaeth yr estyniad hwn fethu ag enwi'r lawrlwythiad "<ph name="ATTEMPTED_FILENAME" />" oherwydd bod estyniad arall (<ph name="EXTENSION_NAME" />) wedi pennu enw ffeil gwahanol "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> gan <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Mae'r ffeil maniffest ar goll neu'n annarllenadwy</translation>
+<translation id="8621383749470166852">Methu â llwytho'r ffeil '<ph name="RELATIVE_PATH" />' ar gyfer sgript cynnwys, dim ond o ffeiliau JavaScript a gefnogir megis ffeiliau .js y gellir llwytho sgriptiau cynnwys.</translation>
 <translation id="8636666366616799973">Mae'r pecyn yn annilys. Manylion: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">Mae "<ph name="APP_NAME" />" yn gofyn am fynediad at un o'ch dyfeisiau:</translation>
 <translation id="8885905466771744233">Mae allwedd breifat ar gyfer yr estyniad dan sylw eisoes yn bodoli. Ailddefnyddiwch yr allwedd honno neu ei dileu'n gyntaf.</translation>

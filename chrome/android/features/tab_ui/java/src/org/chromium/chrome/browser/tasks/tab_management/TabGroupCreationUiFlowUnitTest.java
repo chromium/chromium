@@ -59,7 +59,7 @@ public class TabGroupCreationUiFlowUnitTest {
     private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private Supplier<PaneManager> mPaneManagerSupplier;
     private Supplier<TabGroupModelFilter> mFilterSupplier;
-    private TabGroupCreationUiFlow mUiFlow;
+    private TabGroupCreationUiFlow mTabGroupCreationUiFlow;
     private Token mToken;
     private Activity mActivity;
 
@@ -76,7 +76,7 @@ public class TabGroupCreationUiFlowUnitTest {
         when(mTab.getTabGroupId()).thenReturn(mToken);
         when(mTab.getId()).thenReturn(1);
 
-        mUiFlow =
+        mTabGroupCreationUiFlow =
                 new TabGroupCreationUiFlow(
                         mActivity,
                         mModalDialogManagerSupplier,
@@ -89,14 +89,14 @@ public class TabGroupCreationUiFlowUnitTest {
 
     @Test
     public void testNewTabGroupFlow() {
-        mUiFlow.newTabGroupFlow();
+        mTabGroupCreationUiFlow.newTabGroupFlow();
         verify(mTabGroupCreationDialogManager).showDialog(mToken, mFilter);
     }
 
     @Test
     public void testNewTabGroupFlow_tabCreationFails() {
         when(mTabCreator.createNewTab(any(), anyInt(), any())).thenReturn(null);
-        mUiFlow.newTabGroupFlow();
+        mTabGroupCreationUiFlow.newTabGroupFlow();
         verify(mTabGroupCreationDialogManager, never()).showDialog(mToken, mFilter);
     }
 
@@ -106,7 +106,7 @@ public class TabGroupCreationUiFlowUnitTest {
         when(mPaneManager.getPaneForId(PaneId.TAB_SWITCHER)).thenReturn(mTabSwitcherPane);
 
         AtomicReference<Runnable> openTabGroupUiContainer = new AtomicReference<>(() -> {});
-        mUiFlow =
+        mTabGroupCreationUiFlow =
                 new TabGroupCreationUiFlow(
                         mActivity,
                         mModalDialogManagerSupplier,
@@ -116,7 +116,7 @@ public class TabGroupCreationUiFlowUnitTest {
                             openTabGroupUiContainer.set(openTabGroupUi);
                             return mTabGroupCreationDialogManager;
                         });
-        mUiFlow.newTabGroupFlow();
+        mTabGroupCreationUiFlow.newTabGroupFlow();
         openTabGroupUiContainer.get().run();
         verify(mTabSwitcherPane).requestOpenTabGroupDialog(mTab.getId());
     }
@@ -127,7 +127,7 @@ public class TabGroupCreationUiFlowUnitTest {
         when(mPaneManager.getPaneForId(PaneId.TAB_SWITCHER)).thenReturn(null);
 
         AtomicReference<Runnable> openTabGroupUiContainer = new AtomicReference<>(() -> {});
-        mUiFlow =
+        mTabGroupCreationUiFlow =
                 new TabGroupCreationUiFlow(
                         mActivity,
                         mModalDialogManagerSupplier,
@@ -137,7 +137,7 @@ public class TabGroupCreationUiFlowUnitTest {
                             openTabGroupUiContainer.set(openTabGroupUi);
                             return mTabGroupCreationDialogManager;
                         });
-        mUiFlow.newTabGroupFlow();
+        mTabGroupCreationUiFlow.newTabGroupFlow();
         openTabGroupUiContainer.get().run();
 
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);

@@ -98,6 +98,8 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   // Returns a relative score of how likely a node is to be clickable.
   int ClickableScore() const;
 
+  int ExpandedState() const;
+
   bool CanOpenPopup() const;
 
   bool HasAriaCurrent() const;
@@ -285,6 +287,13 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
 
   void AppendTextToString(std::u16string extra_text,
                           std::u16string* string) const;
+
+  // Returns true if the node has int attribute of kDefaultActionVerb and the
+  // default action verb is kSelect.
+  bool HasSelectActionVerb() const;
+
+  // Returns tree if any child has kSelect action verb.
+  bool HasSelectActionVerbChildren() const;
 
   std::u16string cached_text_;
   std::u16string old_value_;

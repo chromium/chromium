@@ -52,6 +52,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_options.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
@@ -495,7 +496,7 @@ void CookieManager::SetCookieHelper(const GURL& host,
   const GURL& new_host = MaybeFixUpSchemeForSecureCookie(
       host, value, workaround_http_secure_cookies_, &should_allow_cookie);
   std::optional<net::CookiePartitionKey> cookie_partition_key =
-      net::cookie_util::PartitionedCookiesDisabledByCommandLine()
+      net::CookiePartitionKey::IsPartitioningDisabledInWebView()
           ? std::nullopt
           : std::make_optional(net::CookiePartitionKey::FromWire(
                 net::SchemefulSite(new_host),
@@ -816,6 +817,10 @@ base::FilePath CookieManager::GetContextPath() const {
     return AwBrowserContext::BuildStoragePath(
         base::FilePath(AwBrowserContextStore::kDefaultContextPath));
   }
+}
+
+void JNI_AwCookieManager_DisablePartitionedCookies(JNIEnv* env) {
+  net::CookiePartitionKey::DisablePartitioningInWebView();
 }
 
 }  // namespace android_webview

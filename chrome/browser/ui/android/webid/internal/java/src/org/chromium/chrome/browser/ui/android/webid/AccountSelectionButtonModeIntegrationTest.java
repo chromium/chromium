@@ -86,8 +86,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -108,8 +107,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                                                 mNewBobWithAddAccount, mReturningAnaWithAddAccount),
                                         Arrays.asList(mIdpDataWithAddAccount),
                                         /* isAutoReauthn= */ false,
-                                        mNewAccountsReturningAna,
-                                        /* favicon= */ null);
+                                        mNewAccountsReturningAna);
                                 mAccountSelection.getMediator().setComponentShowTime(-1000);
                                 return null;
                             }
@@ -141,8 +139,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -163,8 +160,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                                                 mNewBobWithAddAccount, mReturningAnaWithAddAccount),
                                         Arrays.asList(mIdpDataWithAddAccount),
                                         /* isAutoReauthn= */ false,
-                                        mNewAccountsNewBob,
-                                        /* favicon= */ null);
+                                        mNewAccountsNewBob);
                                 mAccountSelection.getMediator().setComponentShowTime(-1000);
                                 return null;
                             }
@@ -225,8 +221,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -246,8 +241,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                                         Arrays.asList(account, mReturningAnaWithAddAccount),
                                         Arrays.asList(mIdpDataWithAddAccount),
                                         /* isAutoReauthn= */ false,
-                                        Arrays.asList(account),
-                                        /* favicon= */ null);
+                                        Arrays.asList(account));
                                 mAccountSelection.getMediator().setComponentShowTime(-1000);
                                 return null;
                             }
@@ -287,8 +281,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -332,8 +325,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -361,8 +353,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -392,8 +383,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mNewBobWithAddAccount, mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -463,8 +453,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -497,8 +486,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -526,8 +514,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -554,8 +541,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -586,8 +572,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -623,8 +608,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -637,7 +621,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                 ((TextView) contentView.findViewById(R.id.header_title)).getText().toString();
         String expectedSubtitle =
                 ((TextView) contentView.findViewById(R.id.header_subtitle)).getText().toString();
-        onView(withId(R.id.header_idp_icon)).check(matches(isDisplayed()));
+        onView(withId(R.id.header_icon)).check(matches(isDisplayed()));
         onView(withId(R.id.header_rp_icon)).check(matches(not(isDisplayed())));
         onView(withId(R.id.arrow_range_icon)).check(matches(not(isDisplayed())));
 
@@ -650,7 +634,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
         assertEquals(
                 expectedSubtitle,
                 ((TextView) contentView.findViewById(R.id.header_subtitle)).getText().toString());
-        onView(withId(R.id.header_idp_icon)).check(matches(isDisplayed()));
+        onView(withId(R.id.header_icon)).check(matches(isDisplayed()));
         onView(withId(R.id.header_rp_icon)).check(matches(not(isDisplayed())));
         onView(withId(R.id.arrow_range_icon)).check(matches(not(isDisplayed())));
     }
@@ -665,8 +649,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -685,7 +668,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                 ((TextView) contentView.findViewById(R.id.header_title)).getText().toString();
         String expectedSubtitle =
                 ((TextView) contentView.findViewById(R.id.header_subtitle)).getText().toString();
-        onView(withId(R.id.header_idp_icon)).check(matches(isDisplayed()));
+        onView(withId(R.id.header_icon)).check(matches(isDisplayed()));
         onView(withId(R.id.header_rp_icon)).check(matches(isDisplayed()));
         onView(withId(R.id.arrow_range_icon)).check(matches(isDisplayed()));
 
@@ -698,7 +681,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
         assertEquals(
                 expectedSubtitle,
                 ((TextView) contentView.findViewById(R.id.header_subtitle)).getText().toString());
-        onView(withId(R.id.header_idp_icon)).check(matches(isDisplayed()));
+        onView(withId(R.id.header_icon)).check(matches(isDisplayed()));
         onView(withId(R.id.header_rp_icon)).check(matches(isDisplayed()));
         onView(withId(R.id.arrow_range_icon)).check(matches(isDisplayed()));
     }
@@ -714,8 +697,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -740,8 +722,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -773,8 +754,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mReturningAna, mNewBob),
                             Arrays.asList(mIdpData),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
 
@@ -802,8 +782,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -828,8 +807,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -859,8 +837,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -890,8 +867,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -940,8 +916,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
 
@@ -966,8 +941,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
 
@@ -1078,8 +1052,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -1109,8 +1082,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -1140,8 +1112,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -1167,8 +1138,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -1200,8 +1170,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);

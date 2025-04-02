@@ -196,7 +196,8 @@ constexpr LogicalRect::LogicalRect(int inline_offset,
                                    int inline_size,
                                    int block_size)
     : offset(inline_offset, block_offset), size(inline_size, block_size) {}
-constexpr PhysicalOffset::PhysicalOffset(int left, int top)
+template <typename ValueType>
+constexpr PhysicalFixedOffset<ValueType>::PhysicalFixedOffset(int left, int top)
     : left(left), top(top) {}
 constexpr PhysicalSize::PhysicalSize(int width, int height)
     : width(width), height(height) {}

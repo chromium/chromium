@@ -7,9 +7,11 @@
 #include <cstddef>
 
 #include "base/files/file_util.h"
+#include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "components/affiliations/core/browser/affiliation_service_impl.h"
 #include "components/affiliations/core/browser/mock_affiliation_fetcher.h"
@@ -228,9 +230,13 @@ TEST_P(WellKnownChangePasswordStateTest, TimeoutTriggersOnProcessingFinished) {
 TEST_P(WellKnownChangePasswordStateTest,
        PrefetchCallbackTriggersOnProcessingFinished) {
   auto mock_fetcher = std::make_unique<affiliations::MockAffiliationFetcher>();
-  auto* raw_mock_fetcher = mock_fetcher.get();
   auto mock_fetcher_factory =
       std::make_unique<affiliations::MockAffiliationFetcherFactory>();
+  base::OnceCallback<void(
+      affiliations::AffiliationFetcherInterface::FetchResult)>
+      fetch_result_callback;
+  EXPECT_CALL(*(mock_fetcher.get()), StartRequest)
+      .WillOnce(testing::SaveArgByMove<2>(&fetch_result_callback));
   EXPECT_CALL(*(mock_fetcher_factory.get()), CreateInstance)
       .WillOnce(testing::Return(testing::ByMove(std::move(mock_fetcher))));
   scoped_refptr<base::TestMockTimeTaskRunner> background_task_runner =
@@ -246,7 +252,6 @@ TEST_P(WellKnownChangePasswordStateTest,
   affiliation_service->Init(network_connection_tracker, database_path);
   affiliation_service->SetFetcherFactoryForTesting(
       std::move(mock_fetcher_factory));
-
   state()->PrefetchChangePasswordURL(affiliation_service.get(),
                                      GURL("https://example.com"));
 
@@ -259,11 +264,10 @@ TEST_P(WellKnownChangePasswordStateTest,
   FastForwardBy(base::Milliseconds(ms_to_forward));
 
   EXPECT_CALL(*delegate(), OnProcessingFinished(false));
-  static_cast<affiliations::AffiliationFetcherDelegate*>(
-      affiliation_service.get())
-      ->OnFetchSucceeded(
-          raw_mock_fetcher,
-          std::make_unique<affiliations::AffiliationFetcherDelegate::Result>());
+  std::move(fetch_result_callback)
+      .Run(affiliations::AffiliationFetcherInterface::FetchResult());
+  // Unblocks tasks on the main runner that contains the prefetch closure.
+  FastForwardBy(base::Milliseconds(0));
 
   // Destroy the affiliation service and backend.
   affiliation_service->Shutdown();

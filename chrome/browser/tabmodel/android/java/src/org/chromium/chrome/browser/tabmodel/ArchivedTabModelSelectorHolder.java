@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.function.Function;
@@ -16,8 +16,9 @@ import java.util.function.Function;
  * when the browsing data is cleared from settings. It should be removed for a more forward-looking
  * crashfix.
  */
+@NullMarked
 public class ArchivedTabModelSelectorHolder {
-    private static Function<Profile, TabModelSelector> sArchivedTabModelSelectorFn;
+    private static @Nullable Function<Profile, TabModelSelector> sArchivedTabModelSelectorFn;
 
     private ArchivedTabModelSelectorHolder() {}
 

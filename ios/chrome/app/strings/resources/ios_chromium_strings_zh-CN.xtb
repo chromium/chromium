@@ -91,6 +91,7 @@
 <translation id="3054480780637153380">在 iOS 中打开 Chromium 设置，然后点按“默认浏览器应用”并选择“Chromium”。</translation>
 <translation id="3102849287235003384">若要在所有网站上退出您的 Google 账号，请<ph name="BEGIN_LINK" />退出 Chromium<ph name="END_LINK" />。</translation>
 <translation id="3115956258722352278">将 Chromium 设为默认浏览器？</translation>
+<translation id="3180939591219927904">开启“在您关闭 Chromium 时锁定无痕式标签页”</translation>
 <translation id="3242612358525156339">从设备的设置中打开“<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />”，然后选择“Chromium”</translation>
 <translation id="328933489847748230">{count,plural, =1{目前显示了 1 个 Chromium 窗口}other{目前显示了 {count} 个 Chromium 窗口}}</translation>
 <translation id="3344973607274501920">Chromium 无法检查您的密码。请尝试检查您的互联网连接。</translation>
@@ -260,6 +261,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">所选数据已从 Chromium 和同步的设备中移除。不过，您的 Google 账号在 history.google.com 上可能有其他形式的浏览记录（例如，在其他 Google 服务中的搜索记录和活动记录）。</translation>
 <translation id="7395825497086981028">系统会将您的密码保存到 <ph name="EMAIL" /> 的密码管理工具中。</translation>
+<translation id="7504829997542308412">打开 Chromium</translation>
 <translation id="7531461704633548377">来自 Chromium</translation>
 <translation id="7554983317097061001">Chromium 提示：将 Chromium 移至程序坞</translation>
 <translation id="7576863740961052505">管理 Chromium 设置</translation>

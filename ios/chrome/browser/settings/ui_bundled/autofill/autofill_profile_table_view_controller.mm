@@ -365,6 +365,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   } else if (_deletionSheetCoordinator != nil) {
     return ![_deletionSheetCoordinator isVisible];
   }
+  // TODO(crbug.com/407298266): Temporarily keep the toolbar visible when this
+  // view controller is at the top of the navigation stack.
+  else if (IsAddAddressManuallyEnabled() &&
+           self.navigationController.topViewController == self) {
+    return NO;
+  }
   return YES;
 }
 

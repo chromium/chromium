@@ -214,6 +214,19 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   node.backdrop_filter_quality = wire.backdrop_filter_quality;
   node.backdrop_mask_element_id = wire.backdrop_mask_element_id;
 
+  node.cache_render_surface = wire.cache_render_surface;
+  node.double_sided = wire.double_sided;
+  node.trilinear_filtering = wire.trilinear_filtering;
+  node.subtree_hidden = wire.subtree_hidden;
+  node.has_potential_filter_animation = wire.has_potential_filter_animation;
+  node.has_potential_backdrop_filter_animation =
+      wire.has_potential_backdrop_filter_animation;
+  node.has_potential_opacity_animation = wire.has_potential_opacity_animation;
+  node.subtree_has_copy_request = wire.subtree_has_copy_request;
+  node.is_fast_rounded_corner = wire.is_fast_rounded_corner;
+  node.may_have_backdrop_effect = wire.may_have_backdrop_effect;
+  node.has_2d_scale_transform = wire.has_2d_scale_transform;
+
   return base::ok();
 }
 

@@ -7,9 +7,11 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #import <memory>
+#import <optional>
 
 #import "base/check_op.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
@@ -82,6 +84,38 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
 
   std::move(completion).Run(/*success=*/true, new_browser);
   std::move(closure).Run();
+}
+
+// Handler for the signout action from a snackbar. Will `clear_selected_type`
+// if it is not std::nullopt.
+void HandleSignoutForSnackbar(
+    base::WeakPtr<Browser> weak_browser,
+    std::optional<syncer::UserSelectableType> clear_selected_type) {
+  Browser* browser = weak_browser.get();
+  if (!browser) {
+    return;
+  }
+
+  base::RecordAction(
+      base::UserMetricsAction("Mobile.Signin.SnackbarUndoTapped"));
+
+  ProfileIOS* profile = browser->GetProfile();
+  AuthenticationService* auth_service =
+      AuthenticationServiceFactory::GetForProfile(profile);
+  if (!auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    return;
+  }
+
+  if (clear_selected_type.has_value()) {
+    SyncServiceFactory::GetForProfile(profile)
+        ->GetUserSettings()
+        ->SetSelectedType(clear_selected_type.value(), false);
+  }
+
+  signin::MultiProfileSignOut(
+      browser, signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignIn,
+      /*force_snackbar_over_toolbar=*/false,
+      /*snackbar_message=*/nil, /*signout_completion=*/nil);
 }
 
 }  // namespace
@@ -327,28 +361,26 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
                      withIdentity:(id<SystemIdentity>)identity
                           browser:(Browser*)browser {
   DCHECK(browser);
-  base::WeakPtr<Browser> weakBrowser = browser->AsWeakPtr();
   ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
   syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
 
   // Signing in from bookmarks and reading list enables the corresponding
   // type.
-  BOOL bookmarksToggleEnabledWithSigninFlow = NO;
-  BOOL readingListToggleEnabledWithSigninFlow = NO;
+  std::optional<syncer::UserSelectableType> clearSelectableType;
   if (postSignInActions.Has(
           PostSignInAction::kEnableUserSelectableTypeBookmarks) &&
       !syncService->GetUserSettings()->GetSelectedTypes().Has(
           syncer::UserSelectableType::kBookmarks)) {
     syncService->GetUserSettings()->SetSelectedType(
         syncer::UserSelectableType::kBookmarks, true);
-    bookmarksToggleEnabledWithSigninFlow = YES;
+    clearSelectableType = syncer::UserSelectableType::kBookmarks;
   } else if (postSignInActions.Has(
                  PostSignInAction::kEnableUserSelectableTypeReadingList) &&
              !syncService->GetUserSettings()->GetSelectedTypes().Has(
                  syncer::UserSelectableType::kReadingList)) {
     syncService->GetUserSettings()->SetSelectedType(
         syncer::UserSelectableType::kReadingList, true);
-    readingListToggleEnabledWithSigninFlow = YES;
+    clearSelectableType = syncer::UserSelectableType::kReadingList;
   }
 
   if (postSignInActions.Has(
@@ -362,31 +394,9 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
   }
 
   MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
-  action.handler = ^{
-    if (!weakBrowser.get()) {
-      return;
-    }
-    base::RecordAction(
-        base::UserMetricsAction("Mobile.Signin.SnackbarUndoTapped"));
-    AuthenticationService* authService =
-        AuthenticationServiceFactory::GetForProfile(profile);
-    if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-      // Signing in from bookmarks and reading list enables the corresponding
-      // type. The undo button should handle that before signing out.
-      if (bookmarksToggleEnabledWithSigninFlow) {
-        syncService->GetUserSettings()->SetSelectedType(
-            syncer::UserSelectableType::kBookmarks, false);
-      } else if (readingListToggleEnabledWithSigninFlow) {
-        syncService->GetUserSettings()->SetSelectedType(
-            syncer::UserSelectableType::kReadingList, false);
-      }
-      signin::MultiProfileSignOut(
-          browser,
-          signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignIn,
-          /*force_snackbar_over_toolbar=*/false,
-          /*snackbar_message=*/nil, /*signout_completion=*/nil);
-    }
-  };
+  action.handler = base::CallbackToBlock(base::BindOnce(
+      &HandleSignoutForSnackbar, browser->AsWeakPtr(), clearSelectableType));
+
   action.title = l10n_util::GetNSString(IDS_IOS_SIGNIN_SNACKBAR_UNDO);
   action.accessibilityIdentifier = kSigninSnackbarUndo;
   NSString* messageText =
@@ -445,29 +455,41 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
   policy::UserPolicySigninService* userPolicyService =
       policy::UserPolicySigninServiceFactory::GetForProfile(profile);
 
-  __weak __typeof(self) weakSelf = self;
 
   [self startWatchdogTimerForUserPolicyRegistration];
+
+  __weak __typeof(self) weakSelf = self;
   userPolicyService->RegisterForPolicyWithAccountId(
       userEmail, accountID,
       base::BindOnce(^(const std::string& dmToken, const std::string& clientID,
                        const std::vector<std::string>& userAffiliationIDs) {
-        if (![self stopWatchdogTimer]) {
-          // Watchdog timer has already fired, don't notify the delegate.
-          return;
-        }
-        NSMutableArray<NSString*>* userAffiliationIDsNSArray =
-            [[NSMutableArray alloc] init];
-        for (const auto& userAffiliationID : userAffiliationIDs) {
-          [userAffiliationIDsNSArray
-              addObject:base::SysUTF8ToNSString(userAffiliationID)];
-        }
-        [weakSelf.delegate
-            didRegisterForUserPolicyWithDMToken:base::SysUTF8ToNSString(dmToken)
-                                       clientID:base::SysUTF8ToNSString(
-                                                    clientID)
-                             userAffiliationIDs:userAffiliationIDsNSArray];
+        [weakSelf didRegisterForUserPolicyWithDMToken:dmToken
+                                             clientID:clientID
+                                   userAffiliationIDs:userAffiliationIDs];
       }));
+}
+
+// Wraps -didRegisterForUserPolicyWithDMToken:clientID:userAffiliationIDs:
+// method from the delegate with a check that the watchdog has not expired
+// and conversion of the parameter to Objective-C types.
+- (void)didRegisterForUserPolicyWithDMToken:(const std::string&)dmToken
+                                   clientID:(const std::string&)clientID
+                         userAffiliationIDs:(const std::vector<std::string>&)
+                                                userAffiliationIDs {
+  // If the watchdog timer has already fired, don't notify the delegate.
+  if (![self stopWatchdogTimer]) {
+    return;
+  }
+
+  NSMutableArray<NSString*>* affiliationIDs = [[NSMutableArray alloc] init];
+  for (const auto& userAffiliationID : userAffiliationIDs) {
+    [affiliationIDs addObject:base::SysUTF8ToNSString(userAffiliationID)];
+  }
+
+  [_delegate
+      didRegisterForUserPolicyWithDMToken:base::SysUTF8ToNSString(dmToken)
+                                 clientID:base::SysUTF8ToNSString(clientID)
+                       userAffiliationIDs:affiliationIDs];
 }
 
 - (void)fetchUserPolicy:(ProfileIOS*)profile
@@ -486,8 +508,6 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
   AccountId accountID = AccountId::FromUserEmailGaiaId(
       gaia::CanonicalizeEmail(userEmail), GaiaId(identity.gaiaID));
 
-  __weak __typeof(self) weakSelf = self;
-
   std::vector<std::string> userAffiliationIDsVector;
   for (NSString* userAffiliationID in userAffiliationIDs) {
     userAffiliationIDsVector.push_back(
@@ -495,16 +515,25 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
   }
 
   [self startWatchdogTimerForUserPolicyFetch];
+
+  __weak __typeof(self) weakSelf = self;
   policyService->FetchPolicyForSignedInUser(
       accountID, base::SysNSStringToUTF8(dmToken),
       base::SysNSStringToUTF8(clientID), userAffiliationIDsVector,
       profile->GetSharedURLLoaderFactory(), base::BindOnce(^(bool success) {
-        if (![self stopWatchdogTimer]) {
-          // Watchdog timer has already fired, don't notify the delegate.
-          return;
-        }
-        [weakSelf.delegate didFetchUserPolicyWithSuccess:success];
+        [weakSelf didFetchUserPolicyWithSuccess:success];
       }));
+}
+
+// Wraps -didFetchUserPolicyWithSuccess: method from the delegate with a
+// check that the watchdog has not expired.
+- (void)didFetchUserPolicyWithSuccess:(BOOL)success {
+  // If the watchdog timer has already fired, don't notify the delegate.
+  if (![self stopWatchdogTimer]) {
+    return;
+  }
+
+  [_delegate didFetchUserPolicyWithSuccess:success];
 }
 
 #pragma mark - Private
@@ -564,48 +593,52 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
 // `stopWatchdogTimer` is called before it times out.
 - (void)startWatchdogTimerForManagedStatus {
   __weak AuthenticationFlowPerformer* weakSelf = self;
-  ProceduralBlock timeoutBlock = ^{
-    AuthenticationFlowPerformer* strongSelf = weakSelf;
-    if (!strongSelf) {
-      return;
-    }
-    [strongSelf stopWatchdogTimer];
-    NSError* error = [NSError errorWithDomain:kAuthenticationErrorDomain
-                                         code:TIMED_OUT_FETCH_POLICY
-                                     userInfo:nil];
-    [strongSelf->_delegate didFailFetchManagedStatus:error];
-  };
-  [self startWatchdogTimerWithTimeoutBlock:timeoutBlock];
+  [self startWatchdogTimerWithTimeoutBlock:^{
+    [weakSelf onManagedStatusWatchdogTimerExpired];
+  }];
+}
+
+// Handle the expiration of the watchdog timer for the method
+// -startWatchdogTimerForManagedStatus.
+- (void)onManagedStatusWatchdogTimerExpired {
+  NSError* error = [NSError errorWithDomain:kAuthenticationErrorDomain
+                                       code:TIMED_OUT_FETCH_POLICY
+                                   userInfo:nil];
+
+  [self stopWatchdogTimer];
+  [_delegate didFailFetchManagedStatus:error];
 }
 
 // Starts a Watchdog Timer that ends the user policy registration on time out.
 - (void)startWatchdogTimerForUserPolicyRegistration {
   __weak AuthenticationFlowPerformer* weakSelf = self;
-  ProceduralBlock timeoutBlock = ^{
-    AuthenticationFlowPerformer* strongSelf = weakSelf;
-    if (!strongSelf) {
-      return;
-    }
-    [strongSelf stopWatchdogTimer];
-    [strongSelf.delegate didRegisterForUserPolicyWithDMToken:@""
-                                                    clientID:@""
-                                          userAffiliationIDs:@[]];
-  };
-  [self startWatchdogTimerWithTimeoutBlock:timeoutBlock];
+  [self startWatchdogTimerWithTimeoutBlock:^{
+    [weakSelf onUserPolicyRegistrationWatchdogTimerExpired];
+  }];
+}
+
+// Handle the expiration of the watchdog time for the method
+// -startWatchdogTimerForUserPolicyRegistration.
+- (void)onUserPolicyRegistrationWatchdogTimerExpired {
+  [self stopWatchdogTimer];
+  [_delegate didRegisterForUserPolicyWithDMToken:@""
+                                        clientID:@""
+                              userAffiliationIDs:@[]];
 }
 
 // Starts a Watchdog Timer that ends the user policy fetch on time out.
 - (void)startWatchdogTimerForUserPolicyFetch {
   __weak AuthenticationFlowPerformer* weakSelf = self;
-  ProceduralBlock timeoutBlock = ^{
-    AuthenticationFlowPerformer* strongSelf = weakSelf;
-    if (!strongSelf) {
-      return;
-    }
-    [strongSelf stopWatchdogTimer];
-    [strongSelf->_delegate didFetchUserPolicyWithSuccess:NO];
-  };
-  [self startWatchdogTimerWithTimeoutBlock:timeoutBlock];
+  [self startWatchdogTimerWithTimeoutBlock:^{
+    [weakSelf onUserPolicyFetchWatchdogTimerExpired];
+  }];
+}
+
+// Handle the expiration of the watchdog time for the method
+// -startWatchdogTimerForUserPolicyFetch.
+- (void)onUserPolicyFetchWatchdogTimerExpired {
+  [self stopWatchdogTimer];
+  [_delegate didFetchUserPolicyWithSuccess:NO];
 }
 
 // Stops the watchdog timer, and doesn't call the `timeoutDelegateSelector`.

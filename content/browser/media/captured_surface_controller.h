@@ -58,8 +58,9 @@ class CONTENT_EXPORT CapturedSurfaceController {
 
   // Produce a wheel event on the captured surface.
   //
-  // TODO(crbug.com/40276312): Drop the callback; this should now check
-  // permission and silently fail on ASK/DENIED without ever prompting.
+  // * `action` represents the wheel event that should be forwarded to the
+  //   captured surface.
+  // * `reply_callback` reports success/failure back to the caller.
   virtual void SendWheel(
       blink::mojom::CapturedWheelActionPtr action,
       base::OnceCallback<void(CapturedSurfaceControlResult)> reply_callback);

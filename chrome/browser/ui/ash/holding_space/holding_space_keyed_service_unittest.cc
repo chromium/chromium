@@ -3199,7 +3199,7 @@ class HoldingSpaceKeyedServicePrintToPdfIntegrationTest
 
     // Create the PDF printer handler.
     Browser* browser = GetBrowserForPdfPrinterHandler();
-    pdf_printer_handler_ = std::make_unique<printing::PdfPrinterHandler>(
+    pdf_printer_handler_ = std::make_unique<::printing::PdfPrinterHandler>(
         browser->profile(), browser->tab_strip_model()->GetActiveWebContents(),
         /*sticky_settings=*/nullptr);
   }
@@ -3222,7 +3222,7 @@ class HoldingSpaceKeyedServicePrintToPdfIntegrationTest
     return incognito_browser_.get();
   }
 
-  std::unique_ptr<printing::PdfPrinterHandler> pdf_printer_handler_;
+  std::unique_ptr<::printing::PdfPrinterHandler> pdf_printer_handler_;
   std::unique_ptr<Browser> incognito_browser_;
 };
 

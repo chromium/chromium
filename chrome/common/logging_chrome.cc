@@ -110,7 +110,7 @@ const GUID kChromeTraceProviderName = {
 // Assertion handler for logging errors that occur when dialogs are
 // silenced.  To record a new error, pass the log string associated
 // with that error in the str parameter.
-NOINLINE void SilentRuntimeAssertHandler(const char* file,
+NOINLINE void SilentRuntimeAssertHandler(std::string_view file,
                                          int line,
                                          std::string_view message,
                                          std::string_view stack_trace) {
@@ -348,12 +348,12 @@ void RemoveSymlinkAndLog(const base::FilePath& link_path,
 }
 
 base::FilePath GetSessionLogDir(const base::CommandLine& command_line) {
-  std::string log_dir;
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  if (!env->GetVar(env_vars::kSessionLogDir, &log_dir)) {
+  std::optional<std::string> log_dir = env->GetVar(env_vars::kSessionLogDir);
+  if (!log_dir.has_value()) {
     NOTREACHED();
   }
-  return base::FilePath(log_dir);
+  return base::FilePath(log_dir.value());
 }
 
 base::FilePath GetSessionLogFile(const base::CommandLine& command_line) {
@@ -562,12 +562,12 @@ base::FilePath GetLogFileName(const base::CommandLine& command_line) {
   auto filename = command_line.GetSwitchValueNative(switches::kLogFile);
   // Try the environment.
   if (filename.empty()) {
-    std::string env_filename;
-    base::Environment::Create()->GetVar(env_vars::kLogFileName, &env_filename);
+    std::optional<std::string> env_filename =
+        base::Environment::Create()->GetVar(env_vars::kLogFileName);
 #if BUILDFLAG(IS_WIN)
-    filename = base::UTF8ToWide(env_filename);
+    filename = base::UTF8ToWide(env_filename.value_or(""));
 #else
-    filename = env_filename;
+    filename = env_filename.value_or("");
 #endif  // BUILDFLAG(IS_WIN)
   }
 

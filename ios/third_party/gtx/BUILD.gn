@@ -25,6 +25,14 @@ config("disable_deprecated_declarations") {
   cflags_objc = cflags_objcc
 }
 
+# The file ios/third_party/gtx/redirect_compiled_header.h brings dependency
+# on third_party/abseil-cpp/absl which does not use nullability annotations
+# but GTX uses the macro to push nullability annotation causing lots of
+# warnings during compilation.
+config("disable_nullability_completeness") {
+  cflags = [ "-Wno-nullability-completeness" ]
+}
+
 proto_library("proto") {
   sources = [ "src/OOPClasses/Protos/gtx.proto" ]
   cc_generator_options = "lite"
@@ -78,7 +86,10 @@ source_set("oop_classes") {
   ]
   include_dirs =
       [ "$root_out_dir/gen/ios/third_party/gtx/src/OOPClasses/Protos" ]
-  configs += [ ":internal_config" ]
+  configs += [
+    ":internal_config",
+    ":disable_nullability_completeness",
+  ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
 }

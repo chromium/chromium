@@ -18,4 +18,5 @@ include_rules = [
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/snapshots/model/snapshot_browser_agent.h",
   "+ios/chrome/browser/tabs/model/inactive_tabs",
+  "+ios/chrome/browser/default_browser/model/features.h",
 ]

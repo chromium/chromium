@@ -453,4 +453,9 @@ bool CanvasRenderingContextHost::ContextHasOpenLayers(
          context->LayerCount() != 0;
 }
 
+bool CanvasRenderingContextHost::IsContextLost() const {
+  CanvasRenderingContext* context = RenderingContext();
+  return !context || context->isContextLost();
+}
+
 }  // namespace blink

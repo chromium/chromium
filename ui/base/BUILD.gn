@@ -587,6 +587,13 @@ component("base") {
       "glib/scoped_gsignal.cc",
       "glib/scoped_gsignal.h",
     ]
+    if (use_gio) {
+      configs += [ "//build/linux:gio_config" ]
+      sources += [
+        "glib/gsettings.cc",
+        "glib/gsettings.h",
+      ]
+    }
   }
 
   if (is_chromeos || (use_aura && is_linux) || is_fuchsia) {

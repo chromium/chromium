@@ -126,7 +126,9 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
     // The client is restricted.
     kRestrictedClient,
     // Scope restricted by admin policy.
-    kAdminPolicyEnforced
+    kAdminPolicyEnforced,
+    // The user doesn't have consent for this scope.
+    kRemoteConsentResolutionRequired
   };
 
   bool operator==(const GoogleServiceAuthError &b) const;

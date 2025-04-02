@@ -48,7 +48,11 @@ std::string ViewTransitionElementResourceId::ToString() const {
 
 bool ViewTransitionElementResourceId::MatchesToken(
     const base::flat_set<blink::ViewTransitionToken>& tokens) const {
-  return transition_token_ ? tokens.contains(*transition_token_) : false;
+  // Subframe snapshot should not match the token, because they are not a part
+  // of capture for ViewTransition, but rather they are captures to implement
+  // pausing rendering for a subframe.
+  return !for_subframe_snapshot_ && transition_token_ &&
+         tokens.contains(*transition_token_);
 }
 
 }  // namespace viz

@@ -390,7 +390,7 @@ public class AwNetworkConfigurationTest extends AwParameterizedTest {
                 mContentsClient.getShouldInterceptRequestHelper().getRequestsForUrl(url);
         Assert.assertFalse(
                 "X-Requested-With should be invisible to shouldInterceptRequest",
-                request.requestHeaders.containsKey("X-Requested-With"));
+                request.getRequestHeaders().containsKey("X-Requested-With"));
     }
 
     @Test

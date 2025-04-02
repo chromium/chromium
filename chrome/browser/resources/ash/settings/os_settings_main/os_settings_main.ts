@@ -17,6 +17,7 @@ import '../settings_vars.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {PrefsState} from '../common/types.js';
 import type {OsPageAvailability} from '../os_page_availability.js';
 
 import {getTemplate} from './os_settings_main.html.js';
@@ -62,7 +63,7 @@ export class OsSettingsMainElement extends PolymerElement {
     };
   }
 
-  prefs: Object;
+  prefs: PrefsState;
   toolbarSpinnerActive: boolean;
   pageAvailability: OsPageAvailability;
   private isShowingSubpage_: boolean;

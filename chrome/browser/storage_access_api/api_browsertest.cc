@@ -860,7 +860,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
                                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
 
-  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   EXPECT_THAT(
       histogram_tester.GetBucketCount(kRequestOutcomeHistogram,
@@ -957,7 +957,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostC), kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
-  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   EXPECT_THAT(
       histogram_tester.GetBucketCount(
@@ -2280,7 +2280,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
   EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
-  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   EXPECT_THAT(
       histogram_tester.GetBucketCount(kRequestOutcomeHistogram,
@@ -2314,7 +2314,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
   EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostA), kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
-  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   EXPECT_THAT(histogram_tester.GetBucketCount(kRequestOutcomeHistogram,
                                               RequestOutcome::kDeniedByUser),
               Gt(0));
@@ -2372,7 +2372,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
   EXPECT_EQ(ReadCookies(GetFrame(), kHostC), CookieBundle("cross-site=c.test"));
 
-  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   EXPECT_THAT(histogram_tester.GetBucketCount(kRequestOutcomeHistogram,
                                               RequestOutcome::kGrantedByUser),
@@ -2398,7 +2398,7 @@ IN_PROC_BROWSER_TEST_F(
                                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
 
-  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   EXPECT_THAT(
       histogram_tester.GetBucketCount(kRequestOutcomeHistogram,
@@ -2443,7 +2443,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
   EXPECT_TRUE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
   EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
-  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   EXPECT_THAT(
       histogram_tester.GetBucketCount(kRequestOutcomeHistogram,
                                       RequestOutcome::kGrantedByFirstPartySet),

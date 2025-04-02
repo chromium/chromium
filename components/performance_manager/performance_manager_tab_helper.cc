@@ -22,6 +22,7 @@
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/performance_manager_registry_impl.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/render_process_user_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -207,7 +208,7 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   else if (auto* guest = guest_view::GuestViewBase::FromRenderFrameHost(
                render_frame_host)) {
-    if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    if (base::FeatureList::IsEnabled(::features::kGuestViewMPArch)) {
       content::RenderFrameHost* outer_document = guest->owner_rfh();
       CHECK(outer_document);
       outer_document_for_inner_frame_root =
@@ -351,8 +352,30 @@ void PerformanceManagerTabHelper::
   }
   CHECK(render_frame_host->IsRenderFrameLive());
 
+  bool is_intersecting_large_area = [&]() {
+    const gfx::Rect& viewport_intersection =
+        viewport_intersection_state.viewport_intersection;
+
+    if (viewport_intersection.IsEmpty()) {
+      return false;
+    }
+
+    int viewport_intersect_area =
+        viewport_intersection.size().GetCheckedArea().ValueOrDefault(INT_MAX);
+    int outermost_main_frame_area =
+        viewport_intersection_state.outermost_main_frame_size.GetCheckedArea()
+            .ValueOrDefault(INT_MAX);
+    if (outermost_main_frame_area == 0) {
+      return false;
+    }
+    float ratio = 1.0f * viewport_intersect_area / outermost_main_frame_area;
+    const float ratio_threshold =
+        blink::features::kLargeFrameSizePercentThreshold.Get() / 100.f;
+    return ratio > ratio_threshold;
+  }();
+
   auto* frame_node = frame_it->second.get();
-  frame_node->SetViewportIntersection(viewport_intersection_state);
+  frame_node->SetIsIntersectingLargeArea(is_intersecting_large_area);
 }
 
 void PerformanceManagerTabHelper::OnFrameVisibilityChanged(
@@ -368,8 +391,25 @@ void PerformanceManagerTabHelper::OnFrameVisibilityChanged(
   }
   CHECK(render_frame_host->IsRenderFrameLive());
 
+  ViewportIntersection viewport_intersection = [&]() {
+    switch (visibility) {
+      case blink::mojom::FrameVisibility::kNotRendered:
+        return ViewportIntersection::kNotIntersecting;
+      case blink::mojom::FrameVisibility::kRenderedOutOfViewport:
+        if (!features::kRenderedOutOfViewIsNotVisible.Get()) {
+          // Old, seemingly incorrect behavior. Treat an out of view frame as
+          // intersecting with the viewport.
+          return ViewportIntersection::kIntersecting;
+        }
+        return ViewportIntersection::kNotIntersecting;
+      case blink::mojom::FrameVisibility::kRenderedInViewport:
+        return ViewportIntersection::kIntersecting;
+    }
+    NOTREACHED();
+  }();
+
   auto* frame_node = frame_it->second.get();
-  frame_node->SetViewportIntersection(visibility);
+  frame_node->SetViewportIntersection(viewport_intersection);
 }
 
 void PerformanceManagerTabHelper::OnFrameIsCapturingMediaStreamChanged(
@@ -512,19 +552,15 @@ void PerformanceManagerTabHelper::TitleWasSet(content::NavigationEntry* entry) {
 void PerformanceManagerTabHelper::InnerWebContentsAttached(
     content::WebContents* inner_web_contents,
     content::RenderFrameHost* render_frame_host) {
-  // Note that we sometimes learn of contents creation at this point (before
-  // other helpers get a chance to attach), so we need to ensure our helper
-  // exists.
-  CreateForWebContents(inner_web_contents);
   auto* helper = FromWebContents(inner_web_contents);
-  DCHECK(helper);
+  CHECK(helper);
   auto* page = helper->page_node_.get();
-  DCHECK(page);
+  CHECK(page);
   auto* frame = GetFrameNode(render_frame_host);
 
   // For a guest view, the RFH should already have been seen.
   // Note that guest views can simultaneously have openers *and* be embedded.
-  DCHECK(frame);
+  CHECK(frame);
   page->SetEmbedderFrameNode(frame);
 }
 

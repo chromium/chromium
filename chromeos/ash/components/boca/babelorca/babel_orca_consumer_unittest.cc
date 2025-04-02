@@ -13,8 +13,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/boca/babelorca/babel_orca_controller.h"
 #include "chromeos/ash/components/boca/babelorca/caption_bubble_settings_impl.h"
 #include "chromeos/ash/components/boca/babelorca/caption_controller.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_caption_controller_delegate.h"
@@ -50,6 +52,8 @@ const GaiaId::Literal kGaiaId("gaia-id");
 const std::string kSessionId = "session_id";
 const std::string kEmail = "test@school.edu";
 constexpr char kTestSTUrl[] = "https://test";
+constexpr char kReceivingStoppedReasonUma[] =
+    "Ash.Boca.Babelorca.ReceivingStoppedReason";
 
 class BabelOrcaConsumerTest : public testing::Test {
  protected:
@@ -97,7 +101,7 @@ class BabelOrcaConsumerTest : public testing::Test {
         &pref_service_);
   }
 
-  std::string url() {
+  std::string JoinGroupUrl() {
     return base::StrCat({kTestSTUrl, base::ReplaceStringPlaceholders(
                                          boca::kJoinTachyonGroupUrlTemplate,
                                          {kGaiaId.ToString(), kSessionId},
@@ -133,6 +137,7 @@ class BabelOrcaConsumerTest : public testing::Test {
   raw_ptr<FakeCaptionControllerDelegate> caption_controller_delegate_;
   base::WeakPtr<FakeBabelOrcaTranslationDispatcher>
       fake_translation_dispatcher_;
+  base::HistogramTester uma_recorder_;
 };
 
 TEST_F(BabelOrcaConsumerTest, SessionThenLocalEnabledNotSignedIn) {
@@ -152,7 +157,7 @@ TEST_F(BabelOrcaConsumerTest, SessionThenLocalEnabledNotSignedIn) {
   std::move(signin_cb).Run(true);
 
   // Join Tachyon group.
-  url_loader_factory_.AddResponse(url(), "");
+  url_loader_factory_.AddResponse(JoinGroupUrl(), "");
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "oauth_token", base::Time::Max());
   ASSERT_TRUE(streaming_client_waiter_.Wait());
@@ -187,7 +192,7 @@ TEST_F(BabelOrcaConsumerTest, LocalThenSessionEnabledNotSignedIn) {
   std::move(signin_cb).Run(true);
 
   // Join Tachyon group.
-  url_loader_factory_.AddResponse(url(), "");
+  url_loader_factory_.AddResponse(JoinGroupUrl(), "");
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "oauth_token", base::Time::Max());
   ASSERT_TRUE(streaming_client_waiter_.Wait());
@@ -215,7 +220,7 @@ TEST_F(BabelOrcaConsumerTest, SessionThenLocalEnabledSignedIn) {
   consumer_->OnLocalCaptionConfigUpdated(/*local_captions_enabled=*/true);
 
   // Join Tachyon group.
-  url_loader_factory_.AddResponse(url(), "");
+  url_loader_factory_.AddResponse(JoinGroupUrl(), "");
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "oauth_token", base::Time::Max());
   ASSERT_TRUE(streaming_client_waiter_.Wait());
@@ -243,7 +248,7 @@ TEST_F(BabelOrcaConsumerTest, LocalThenSessionEnabledSignedIn) {
                                            /*translations_enabled=*/false);
 
   // Join Tachyon group.
-  url_loader_factory_.AddResponse(url(), "");
+  url_loader_factory_.AddResponse(JoinGroupUrl(), "");
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "oauth_token", base::Time::Max());
   ASSERT_TRUE(streaming_client_waiter_.Wait());
@@ -272,7 +277,7 @@ TEST_F(BabelOrcaConsumerTest, OnSessionEnded) {
                                            /*translations_enabled=*/false);
 
   // Join Tachyon group.
-  url_loader_factory_.AddResponse(url(), "");
+  url_loader_factory_.AddResponse(JoinGroupUrl(), "");
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "oauth_token", base::Time::Max());
 
@@ -281,6 +286,10 @@ TEST_F(BabelOrcaConsumerTest, OnSessionEnded) {
 
   consumer_->OnSessionEnded();
   EXPECT_FALSE(caption_controller_delegate_->IsCaptionBubbleAlive());
+  EXPECT_EQ(uma_recorder_.GetBucketCount(
+                kReceivingStoppedReasonUma,
+                BabelOrcaConsumer::ReceivingStoppedReason::kSessionEnded),
+            1);
 }
 
 TEST_F(BabelOrcaConsumerTest, DisableSessionCaptions) {
@@ -293,7 +302,7 @@ TEST_F(BabelOrcaConsumerTest, DisableSessionCaptions) {
                                            /*translations_enabled=*/false);
 
   // Join Tachyon group.
-  url_loader_factory_.AddResponse(url(), "");
+  url_loader_factory_.AddResponse(JoinGroupUrl(), "");
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "oauth_token", base::Time::Max());
 
@@ -303,6 +312,11 @@ TEST_F(BabelOrcaConsumerTest, DisableSessionCaptions) {
   consumer_->OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/false,
                                            /*translations_enabled=*/false);
   EXPECT_FALSE(caption_controller_delegate_->IsCaptionBubbleAlive());
+  EXPECT_EQ(
+      uma_recorder_.GetBucketCount(
+          kReceivingStoppedReasonUma,
+          BabelOrcaConsumer::ReceivingStoppedReason::kSessionCaptionTurnedOff),
+      1);
 }
 
 TEST_F(BabelOrcaConsumerTest, DisableLocalCaptions) {
@@ -315,7 +329,7 @@ TEST_F(BabelOrcaConsumerTest, DisableLocalCaptions) {
                                            /*translations_enabled=*/false);
 
   // Join Tachyon group.
-  url_loader_factory_.AddResponse(url(), "");
+  url_loader_factory_.AddResponse(JoinGroupUrl(), "");
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "oauth_token", base::Time::Max());
 
@@ -324,6 +338,11 @@ TEST_F(BabelOrcaConsumerTest, DisableLocalCaptions) {
 
   consumer_->OnLocalCaptionConfigUpdated(/*local_captions_enabled=*/false);
   EXPECT_FALSE(caption_controller_delegate_->IsCaptionBubbleAlive());
+  EXPECT_EQ(
+      uma_recorder_.GetBucketCount(
+          kReceivingStoppedReasonUma,
+          BabelOrcaConsumer::ReceivingStoppedReason::kLocalCaptionTurnedOff),
+      1);
 }
 
 TEST_F(BabelOrcaConsumerTest, EnableTranslations) {
@@ -336,7 +355,7 @@ TEST_F(BabelOrcaConsumerTest, EnableTranslations) {
   consumer_->OnLocalCaptionConfigUpdated(/*local_captions_enabled=*/true);
 
   // Join Tachyon group.
-  url_loader_factory_.AddResponse(url(), "");
+  url_loader_factory_.AddResponse(JoinGroupUrl(), "");
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "oauth_token", base::Time::Max());
   ASSERT_TRUE(streaming_client_waiter_.Wait());

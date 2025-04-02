@@ -70,7 +70,6 @@
 <translation id="1122714970786750095">Raftæki og rafbúnaður</translation>
 <translation id="1123753900084781868">Skjátextar í rauntíma eru ekki tiltækir núna</translation>
 <translation id="1125453215844207206">Ómerkt myndefni. Sækir texta með aðstoð gervigreindar Google</translation>
-<translation id="1125573121925420732">Viðvaranir geta verið tíðar á meðan vefsvæði uppfæra öryggisvarnir sínar. Þetta ætti að lagast fljótlega.</translation>
 <translation id="112840717907525620">Skyndiminni reglu í lagi</translation>
 <translation id="1131264053432022307">Myndir sem þú afritaðir</translation>
 <translation id="1138458427267715730">Fáðu tilkynningar ef verð lækkar á hvaða vefsvæði sem er</translation>
@@ -297,7 +296,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1492194039220927094">Sending reglna:</translation>
 <translation id="1495677929897281669">Aftur á flipa</translation>
 <translation id="1500286806237135498">Myndavélar (<ph name="CAMERAS_COUNT" />)</translation>
-<translation id="1501859676467574491">Sýna kort af Google reikningnum þínum</translation>
 <translation id="1504042622576912555">Innvols pappa</translation>
 <translation id="1507202001669085618">&lt;p&gt;Þú sérð þessa villu ef þú notar Wi-Fi gátt sem þú þarft að skrá þig inn á áður en þú tengist internetinu.&lt;/p&gt;
     &lt;p&gt;Til að leysa vandann skaltu smella á &lt;strong&gt;Tengjast&lt;/strong&gt; á síðunni sem þú ert að reyna að opna.&lt;/p&gt;</translation>
@@ -568,6 +566,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1975584088563498795">Pósthólf 10</translation>
 <translation id="1978555033938440688">Fastbúnaðarútgáfa</translation>
 <translation id="1979156660928743046">Upplýsingar um efni</translation>
+<translation id="1987486584747170374">Leitirnar þínar, bestu samsvaranirnar og efnið á síðum þeirra eru send til Google. Þessi gögn verða ekki notuð af mannlegum yfirlesurum til að bæta gervigreind. Fyrirtækið þitt getur breytt þessum stillingum hvenær sem er.</translation>
 <translation id="1988881251331415125">Ef stafsetningin er rétt skaltu <ph name="BEGIN_LINK" />prófa að keyra bilanaleit á tengigetu<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> vill fá að geyma mikið magn gagna varanlega í tölvunni þinni</translation>
@@ -763,6 +762,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2301098101308036335">Hvaða vefsvæði eru opnuð og hvenær.</translation>
 <translation id="230286397113210245">Hnappurinn „Opna huliðsglugga“, virkjaðu til að opna nýjan huliðsglugga og fara huldu höfði</translation>
 <translation id="2306124309679506798">Leyfa umlykjandi upplifun?</translation>
+<translation id="2307711332257985952">Nú geturðu skráð heimilisföng vinnu og heimilis í Chrome</translation>
 <translation id="2312234273148520048">Sósur, krydd eða bragðbætir</translation>
 <translation id="2316087952091171402">Minna en <ph name="UPPER_ESTIMATE" />. Sum vefsvæði kunna að hlaðast hægar í næstu heimsókn.</translation>
 <translation id="2316159751672436664">Þú getur sérsniðið aðgengisverkfærin þín í stillingum ChromeOS</translation>
@@ -1178,6 +1178,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3102312643185441063">Sparnaður</translation>
 <translation id="3103188521861412364">Verð- og skuldabréf</translation>
 <translation id="3103535543639438037">Berðu svipaðar vörur saman hlið við hlið</translation>
+<translation id="3103993932858740905">Þegar þú greiðir með afborgunum verður einnota númer sýndarkorts fyllt út. Þetta númer er eingöngu notað fyrir þessi kaup.</translation>
 <translation id="3105172416063519923">Auðkenni eignar:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Athugar stillingar öruggs DNS-þjóns<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Miðjubakki</translation>

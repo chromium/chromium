@@ -20,7 +20,6 @@ class MockPageInfoUiDelegate : public PageInfoUiDelegate {
   MOCK_METHOD(bool, IsMultipleTabsOpen, (), (override));
   MOCK_METHOD(void, OpenSiteSettingsFileSystem, (), (override));
 #endif
-  MOCK_METHOD(bool, IsTrackingProtection3pcdEnabled, (), (override));
   MOCK_METHOD(content::PermissionResult,
               GetPermissionResult,
               (blink::PermissionType permission),

@@ -93,7 +93,7 @@ class SyncServiceFactoryTest : public PlatformTest {
     }
     datatypes.Put(syncer::WEBAUTHN_CREDENTIAL);
     if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
-      datatypes.Put(syncer::AUTOFILL_LOYALTY_CARD);
+      datatypes.Put(syncer::AUTOFILL_VALUABLE);
     }
     if (base::FeatureList::IsEnabled(syncer::kSyncSharedTabGroupAccountData)) {
       datatypes.Put(syncer::SHARED_TAB_GROUP_ACCOUNT_DATA);

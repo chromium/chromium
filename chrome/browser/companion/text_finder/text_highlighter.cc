@@ -41,7 +41,7 @@ void TextHighlighter::DidFinishAttachment(const gfx::Rect& rect) {
   }
 
   // Call the mojo method to scroll to the highlighted text.
-  agent_->ScrollIntoView();
+  agent_->ScrollIntoView(/*applies_focus=*/true);
 }
 
 }  // namespace internal

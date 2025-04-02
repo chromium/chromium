@@ -5,6 +5,7 @@
 #include "components/browsing_data/core/counters/history_counter.h"
 
 #include <memory>
+#include <string>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -87,6 +88,16 @@ class HistoryCounterTest : public InProcessBrowserTest {
     return has_synced_visits_;
   }
 
+  std::string GetLastVisitedDomain() {
+    DCHECK(finished_);
+    return last_visited_domain_;
+  }
+
+  BrowsingDataCounter::ResultInt GetUniqueDomainsResult() {
+    DCHECK(finished_);
+    return unique_domains_result_;
+  }
+
   void Callback(std::unique_ptr<BrowsingDataCounter::Result> result) {
     finished_ = result->Finished();
 
@@ -96,6 +107,8 @@ class HistoryCounterTest : public InProcessBrowserTest {
 
       local_result_ = history_result->Value();
       has_synced_visits_ = history_result->has_synced_visits();
+      last_visited_domain_ = history_result->last_visited_domain();
+      unique_domains_result_ = history_result->unique_domains_result();
     }
 
     if (run_loop_ && finished_) {
@@ -129,6 +142,8 @@ class HistoryCounterTest : public InProcessBrowserTest {
   bool finished_;
   BrowsingDataCounter::ResultInt local_result_;
   bool has_synced_visits_;
+  std::string last_visited_domain_;
+  BrowsingDataCounter::ResultInt unique_domains_result_;
 };
 
 // Tests that the counter considers duplicate visits from the same day
@@ -139,22 +154,22 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, DuplicateVisits) {
   ASSERT_TRUE(base::Time::FromUTCString("1 Jul 2020 10:00 GMT", &time));
   SetTime(time);
 
-  AddVisit("https://www.google.com");  // 1 item
+  AddVisit("https://www.google.com");  // 1 visit and 1 unique domain
   AddVisit("https://www.google.com");
-  AddVisit("https://www.chrome.com");  // 2 items
+  AddVisit("https://www.chrome.com");  // 2 visits and 2 unique domains
   AddVisit("https://www.chrome.com");
   AddVisit("https://www.chrome.com");
-  AddVisit("https://www.example.com");  // 3 items
+  AddVisit("https://www.example.com");  // 3 visits
 
   RevertTimeInDays(1);
-  AddVisit("https://www.google.com");   // 4 items
-  AddVisit("https://www.example.com");  // 5 items
+  AddVisit("https://www.google.com");   // 4 visits
+  AddVisit("https://www.example.com");  // 5 visits and 3 unique domains
   AddVisit("https://www.example.com");
 
   RevertTimeInDays(1);
-  AddVisit("https://www.chrome.com");  // 6 items
+  AddVisit("https://www.chrome.com");  // 6 visits
   AddVisit("https://www.chrome.com");
-  AddVisit("https://www.google.com");  // 7 items
+  AddVisit("https://www.google.com");  // 7 visits
   AddVisit("https://www.chrome.com");
   AddVisit("https://www.google.com");
   AddVisit("https://www.google.com");
@@ -176,6 +191,8 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, DuplicateVisits) {
 
   WaitForCounting();
   EXPECT_EQ(7u, GetLocalResult());
+  EXPECT_EQ("example.com", GetLastVisitedDomain());
+  EXPECT_EQ(3u, GetUniqueDomainsResult());
 }
 
 // Tests that the counter works without |web_history_service_callback| and
@@ -199,6 +216,8 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, WithoutSyncService) {
 
   WaitForCounting();
   EXPECT_EQ(2u, GetLocalResult());
+  EXPECT_EQ("chrome.com", GetLastVisitedDomain());
+  EXPECT_EQ(2u, GetUniqueDomainsResult());
 }
 
 // Tests that the counter starts counting automatically when the deletion
@@ -224,6 +243,8 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, PrefChanged) {
 
   WaitForCounting();
   EXPECT_EQ(2u, GetLocalResult());
+  EXPECT_EQ("chrome.com", GetLastVisitedDomain());
+  EXPECT_EQ(2u, GetUniqueDomainsResult());
 }
 
 // Tests that changing the deletion period restarts the counting, and that
@@ -271,26 +292,38 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, PeriodChanged) {
   SetDeletionPeriodPref(browsing_data::TimePeriod::LAST_HOUR);
   WaitForCounting();
   EXPECT_EQ(1u, GetLocalResult());
+  EXPECT_EQ("google.com", GetLastVisitedDomain());
+  EXPECT_EQ(1u, GetUniqueDomainsResult());
 
   SetDeletionPeriodPref(browsing_data::TimePeriod::LAST_DAY);
   WaitForCounting();
   EXPECT_EQ(1u, GetLocalResult());
+  EXPECT_EQ("google.com", GetLastVisitedDomain());
+  EXPECT_EQ(1u, GetUniqueDomainsResult());
 
   SetDeletionPeriodPref(browsing_data::TimePeriod::LAST_WEEK);
   WaitForCounting();
   EXPECT_EQ(5u, GetLocalResult());
+  EXPECT_EQ("google.com", GetLastVisitedDomain());
+  EXPECT_EQ(3u, GetUniqueDomainsResult());
 
   SetDeletionPeriodPref(browsing_data::TimePeriod::FOUR_WEEKS);
   WaitForCounting();
   EXPECT_EQ(8u, GetLocalResult());
+  EXPECT_EQ("google.com", GetLastVisitedDomain());
+  EXPECT_EQ(3u, GetUniqueDomainsResult());
 
   SetDeletionPeriodPref(browsing_data::TimePeriod::ALL_TIME);
   WaitForCounting();
   EXPECT_EQ(11u, GetLocalResult());
+  EXPECT_EQ("google.com", GetLastVisitedDomain());
+  EXPECT_EQ(3u, GetUniqueDomainsResult());
 
   SetDeletionPeriodPref(browsing_data::TimePeriod::OLDER_THAN_30_DAYS);
   WaitForCounting();
   EXPECT_EQ(3u, GetLocalResult());
+  EXPECT_EQ("example.com", GetLastVisitedDomain());
+  EXPECT_EQ(2u, GetUniqueDomainsResult());
 }
 
 // Test the behavior for a profile that syncs history.
@@ -321,6 +354,8 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, Synced) {
   WaitForCounting();
   EXPECT_EQ(0u, GetLocalResult());
   EXPECT_FALSE(HasSyncedVisits());
+  EXPECT_EQ("", GetLastVisitedDomain());
+  EXPECT_EQ(0u, GetUniqueDomainsResult());
 
   // No entries locally. There are some entries in Sync, but they are out of the
   // time range.
@@ -332,6 +367,8 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, Synced) {
   WaitForCounting();
   EXPECT_EQ(0u, GetLocalResult());
   EXPECT_FALSE(HasSyncedVisits());
+  EXPECT_EQ("", GetLastVisitedDomain());
+  EXPECT_EQ(0u, GetUniqueDomainsResult());
 
   // No entries locally, but some entries in Sync.
   service->AddSyncedVisit("www.google.com", GetCurrentTime());
@@ -340,6 +377,8 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, Synced) {
   WaitForCounting();
   EXPECT_EQ(0u, GetLocalResult());
   EXPECT_TRUE(HasSyncedVisits());
+  EXPECT_EQ("", GetLastVisitedDomain());
+  EXPECT_EQ(0u, GetUniqueDomainsResult());
 
   // To err on the safe side, if the server request fails, we assume that there
   // might be some items on the server.
@@ -349,6 +388,8 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, Synced) {
   WaitForCounting();
   EXPECT_EQ(0u, GetLocalResult());
   EXPECT_TRUE(HasSyncedVisits());
+  EXPECT_EQ("", GetLastVisitedDomain());
+  EXPECT_EQ(0u, GetUniqueDomainsResult());
 
   // Same when the entire query fails.
   service->SetupFakeResponse(false /* success */,
@@ -357,6 +398,8 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, Synced) {
   WaitForCounting();
   EXPECT_EQ(0u, GetLocalResult());
   EXPECT_TRUE(HasSyncedVisits());
+  EXPECT_EQ("", GetLastVisitedDomain());
+  EXPECT_EQ(0u, GetUniqueDomainsResult());
 
   // Nonzero local count, nonempty sync.
   AddVisit("https://www.google.com");
@@ -366,6 +409,8 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, Synced) {
   WaitForCounting();
   EXPECT_EQ(2u, GetLocalResult());
   EXPECT_TRUE(HasSyncedVisits());
+  EXPECT_EQ("chrome.com", GetLastVisitedDomain());
+  EXPECT_EQ(2u, GetUniqueDomainsResult());
 
   // Nonzero local count, empty sync.
   service->ClearSyncedVisits();
@@ -374,6 +419,8 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, Synced) {
   WaitForCounting();
   EXPECT_EQ(2u, GetLocalResult());
   EXPECT_FALSE(HasSyncedVisits());
+  EXPECT_EQ("chrome.com", GetLastVisitedDomain());
+  EXPECT_EQ(2u, GetUniqueDomainsResult());
 }
 
 }  // namespace

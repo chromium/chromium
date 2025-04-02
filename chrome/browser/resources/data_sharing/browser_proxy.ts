@@ -6,6 +6,7 @@ import {AbslStatusCode} from '//resources/mojo/mojo/public/mojom/base/absl_statu
 
 import type {PageHandlerInterface} from './data_sharing.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './data_sharing.mojom-webui.js';
+import type {GroupAction, GroupActionProgress} from './data_sharing.mojom-webui.js';
 import type {DataSharingSdkSitePreview} from './data_sharing_sdk_types.js';
 import {Code} from './data_sharing_sdk_types.js';
 
@@ -21,6 +22,7 @@ export interface BrowserProxy {
   getShareLink(groupId: string, tokenSecret: string): Promise<string>;
   getTabGroupPreview(groupId: string, tokenSecret: string):
       Promise<DataSharingSdkSitePreview[]>;
+  onGroupAction(action: GroupAction, progress: GroupActionProgress): void;
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
@@ -85,6 +87,10 @@ export class BrowserProxyImpl implements BrowserProxy {
         resolve(previews);
       });
     });
+  }
+
+  onGroupAction(action: GroupAction, progress: GroupActionProgress) {
+    return this.handler.onGroupAction(action, progress);
   }
 
   // TODO(crbug.com/392965221): Use function from icon.ts instead.

@@ -10,6 +10,7 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './privacy_guide_fragment_shared.css.js';
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './privacy_guide_welcome_fragment.html.js';
@@ -30,7 +31,10 @@ export class PrivacyGuideWelcomeFragmentElement extends PolymerElement {
   }
 
   override focus() {
-    this.shadowRoot!.querySelector<HTMLElement>('.headline')!.focus();
+    const header = this.shadowRoot!.querySelector<HTMLElement>(
+        '.welcome-completion-header-label');
+    assert(header);
+    header.focus();
   }
 
   private onStartButtonClick_(e: Event) {

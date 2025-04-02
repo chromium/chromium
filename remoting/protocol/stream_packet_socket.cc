@@ -13,6 +13,7 @@
 #include "net/socket/tcp_client_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/protocol/stun_tcp_packet_processor.h"
+#include "third_party/webrtc/rtc_base/time_utils.h"
 
 namespace remoting::protocol {
 

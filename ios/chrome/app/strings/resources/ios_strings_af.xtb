@@ -440,6 +440,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="2783161812871838616">Versoek rekenaarwerf</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Wagwoord is in jou Google-rekening {EMAIL} gestoor}other{Wagwoorde in jou Google-rekening, {EMAIL}, gestoor}}</translation>
 <translation id="2791174088547598693">Voeg wagwoord by …</translation>
+<translation id="2793703503584038325">Kies ’n wagwoord en tik op die “deel”-ikoon</translation>
 <translation id="2797302972324086597">Landkode</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} lêer}other{{COUNT} lêers}}</translation>
 <translation id="2816489851009559785">Kieslys → Instellings → Verstekblaaier</translation>
@@ -579,6 +580,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="35083190962747987">Maak ${url} oop</translation>
 <translation id="3511519535430890904">Voeg blaaibeskerming by</translation>
 <translation id="3517216995152707259">Jy word nie by jou Google-rekening afgemeld wanneer jy jou blaaierdata uitvee nie. <ph name="BEGIN_LINK" />Meld by Chrome af<ph name="END_LINK" /> om dit te doen.</translation>
+<translation id="3519792890877853853">Hierdie kaart wys resensies vir produkte in jou oop oortjies</translation>
 <translation id="3519905498307021260">{count,plural, =1{Maak die oortjie oop}other{Maak {count} oortjies oop}}</translation>
 <translation id="3523513363815970085">Versteek “Jou topwerwe”</translation>
 <translation id="3523789730715594198">Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
@@ -819,6 +821,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4565377596337484307">Versteek wagwoord</translation>
 <translation id="4568230126482344545">Versteek Onlangs-oortjies</translation>
 <translation id="4578835633387306383">Skakel aan …</translation>
+<translation id="4580716718466706433">Gaan na “Wagwoordbestuurder”</translation>
 <translation id="4587589328781138893">Werwe</translation>
 <translation id="4592672037257622855">{count,plural, =1{Bladsy is by jou leeslys gevoeg}other{{count} bladsye is by jou leeslys gevoeg}}</translation>
 <translation id="459644946100970322">Skakel pryskennisgewings aan?</translation>
@@ -858,6 +861,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4717844083556844785">Huidige webbladsy is op Incognito</translation>
 <translation id="4719927025381752090">Aanbieding om te vertaal</translation>
 <translation id="4720530280568305198">Jou seleksie het in ’n nuwe oortjie oopgemaak</translation>
+<translation id="472259426228234149">Prys $100-$180</translation>
 <translation id="473775607612524610">Dateer op</translation>
 <translation id="474209246745757965">Doen inkopies en vertaal met jou kamera</translation>
 <translation id="4742407542027196863">Bestuur wagwoorde …</translation>

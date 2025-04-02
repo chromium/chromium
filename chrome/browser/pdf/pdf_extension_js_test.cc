@@ -560,6 +560,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2Manager) {
   RunTestsInJsModule("ink2_manager_test.js", "test.pdf");
 }
 
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2AnnotationBrushMixin) {
+  RunTestsInJsModule("ink2_annotation_brush_mixin_test.js", "test.pdf");
+}
+
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2BottomToolbar) {
   // The window must be smaller than 960px to show the bottom toolbar.
   GetActiveWebContents()->Resize({0, 0, 959, 100});
@@ -578,6 +582,12 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2SidePanel) {
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, SelectableIconButton) {
   RunTestsInJsModule("selectable_icon_button_test.js", "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2TextSidePanel) {
+  // The window must be at least 960px to show the text side panel.
+  GetActiveWebContents()->Resize({0, 0, 960, 100});
+  RunTestsInJsModule("ink2_text_side_panel_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2BrushSelector) {

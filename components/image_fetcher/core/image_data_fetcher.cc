@@ -174,7 +174,7 @@ void ImageDataFetcher::OnURLLoaderComplete(
     net::HttpResponseHeaders* headers = source->ResponseInfo()->headers.get();
     metadata.mime_type = source->ResponseInfo()->mime_type;
     metadata.http_response_code = headers->response_code();
-    // Just read the first value-pair for this header (not caring about |iter|).
+    // Just read the first value-pair for this header (not caring about `iter`).
     headers->EnumerateHeader(
         /*iter=*/nullptr, kContentLocationHeader,
         &metadata.content_location_header);
@@ -201,7 +201,7 @@ void ImageDataFetcher::FinishRequest(const network::SimpleURLLoader* source,
   auto callback = std::move(request_iter->second->callback);
   pending_requests_.erase(request_iter);
   std::move(callback).Run(image_data, metadata);
-  // |this| might be destroyed now.
+  // `this` might be destroyed now.
 }
 
 void ImageDataFetcher::InjectResultForTesting(const RequestMetadata& metadata,

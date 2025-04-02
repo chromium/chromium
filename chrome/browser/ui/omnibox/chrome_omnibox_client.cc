@@ -27,6 +27,7 @@
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/extensions/api/omnibox/omnibox_api.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -60,6 +61,7 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
+#include "chrome/common/pref_names.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_service.h"
@@ -68,10 +70,12 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/location_bar_model.h"
+#include "components/omnibox/browser/most_visited_sites_provider.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
+#include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -340,11 +344,25 @@ void ChromeOmniboxClient::OnFocusChanged(OmniboxFocusState state,
   }
 }
 
-void ChromeOmniboxClient::MaybeShowOnFocusHatsSurvey() {
-  // TODO(crbug.com/404039445): See if we need to check zero-suggest
-  // eligibility criteria
-  // If the content is for an SRP or Web Page
+void ChromeOmniboxClient::MaybeShowOnFocusHatsSurvey(
+    AutocompleteProviderClient* client,
+    std::u16string text) {
+  if (!g_browser_process ||
+      !base::StartsWith(g_browser_process->GetApplicationLocale(), "en")) {
+    return;
+  }
+  // Check zero-suggest eligibility criteria.
   auto classification = GetPageClassification(/*is_prefetch=*/false);
+  AutocompleteInput input(text, classification, GetSchemeClassifier());
+  input.set_current_url(GetNavigationEntryURL());
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  if (!ZeroSuggestProvider::GetResultTypeAndEligibility(client, input).second ||
+      !MostVisitedSitesProvider::AllowMostVisitedSitesSuggestions(client,
+                                                                  input)) {
+    return;
+  }
+
+  // If the content is for an SRP or Web Page.
   if (!omnibox::IsSearchResultsPage(classification) &&
       !omnibox::IsOtherWebPage(classification)) {
     return;
@@ -374,18 +392,27 @@ void ChromeOmniboxClient::MaybeShowOnFocusHatsSurvey() {
     if (show_happiness_survey) {
       hats_service->LaunchDelayedSurvey(
           kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness,
-          survey_delay_time_ms, {}, {});
+          survey_delay_time_ms, {},
+          {{"page classification",
+            metrics::OmniboxEventProto::PageClassification_Name(
+                classification)}});
     } else {
       hats_service->LaunchDelayedSurvey(
           kHatsSurveyTriggerOnFocusZpsSuggestionsUtility, survey_delay_time_ms,
-          {}, {});
+          {},
+          {{"page classification",
+            metrics::OmniboxEventProto::PageClassification_Name(
+                classification)}});
     }
   } else {
     // Control
     if (show_happiness_survey) {
       hats_service->LaunchDelayedSurvey(
           kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness,
-          survey_delay_time_ms, {}, {});
+          survey_delay_time_ms, {},
+          {{"page classification",
+            metrics::OmniboxEventProto::PageClassification_Name(
+                classification)}});
     }
   }
 }
@@ -660,11 +687,16 @@ bool ChromeOmniboxClient::IsHistoryEmbeddingsEnabled() const {
 
 std::optional<lens::proto::LensOverlaySuggestInputs>
 ChromeOmniboxClient::GetLensOverlaySuggestInputs() const {
-  if (LensSearchboxClient* client = LensOverlayController::GetController(
-          location_bar_->GetWebContents())) {
-    return client->GetLensSuggestInputs();
+  content::WebContents* web_contents = location_bar_->GetWebContents();
+  if (!web_contents) {
+    return std::nullopt;
   }
-  return std::nullopt;
+  LensSearchboxClient* client =
+      LensOverlayController::GetController(web_contents);
+  if (!client) {
+    return std::nullopt;
+  }
+  return client->GetLensSuggestInputs();
 }
 
 base::WeakPtr<OmniboxClient> ChromeOmniboxClient::AsWeakPtr() {

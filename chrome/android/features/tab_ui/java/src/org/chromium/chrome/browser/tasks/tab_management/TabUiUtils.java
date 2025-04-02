@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManage
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -176,7 +177,7 @@ public class TabUiUtils {
             ActionConfirmationManager actionConfirmationManager,
             ModalDialogManager modalDialogManager,
             int tabId) {
-        assert ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING);
+        assert isDataSharingFunctionalityEnabled();
         assert actionConfirmationManager != null;
 
         TabModel tabModel = filter.getTabModel();
@@ -311,12 +312,13 @@ public class TabUiUtils {
             TabGroupModelFilter filter,
             DataSharingTabManager dataSharingTabManager,
             int tabId,
-            String tabGroupDisplayName) {
+            String tabGroupDisplayName,
+            @CollaborationServiceShareOrManageEntryPoint int entry) {
         Tab tab = filter.getTabModel().getTabById(tabId);
         LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
 
         dataSharingTabManager.createOrManageFlow(
-                activity, /* syncId= */ null, localTabGroupId, (ignored) -> {});
+                activity, /* syncId= */ null, localTabGroupId, entry, (ignored) -> {});
     }
 
     /**
@@ -441,5 +443,14 @@ public class TabUiUtils {
         boolean isSensitive = anySensitiveContent(tabList);
         contentSensitivitySetter.onResult(isSensitive);
         RecordHistogram.recordBooleanHistogram(histogram, isSensitive);
+    }
+
+    /**
+     * Returns whether the data sharing feature is allowed to be used. Returns true if the data
+     * sharing or join only flag is enabled.
+     */
+    public static boolean isDataSharingFunctionalityEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+                || ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_JOIN_ONLY);
     }
 }

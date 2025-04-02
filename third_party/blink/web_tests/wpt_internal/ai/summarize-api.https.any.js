@@ -38,63 +38,85 @@ promise_test(async () => {
   assert_equals(availability, "unavailable");
 }, 'Summarizer.availability() returns no for unsupported languages');
 
+promise_test(async t => {
+  let createResult = undefined;
+  const progressEvents = [];
+  let options = {};
+  const downloadComplete = new Promise(resolve => {
+    options.monitor = (m) => {
+      m.addEventListener("downloadprogress", e => {
+        assert_equals(createResult, undefined);
+        assert_equals(e.total, 1);
+        progressEvents.push(e);
+        if (e.loaded == 1) { resolve(); }
+      });
+    };
+  });
+
+  createResult = await Summarizer.create(options);
+  await downloadComplete;
+  assert_greater_than_equal(progressEvents.length, 2);
+  assert_equals(progressEvents.at(0).loaded, 0);
+  assert_equals(progressEvents.at(-1).loaded, 1);
+}, 'Summarizer.create() notifies its monitor on downloadprogress');
+
 promise_test(async () => {
-  const summarizer = await createSummarizerMaybeDownload({});
+  const summarizer = await Summarizer.create({});
   const result = await summarizer.summarize(kTestPrompt);
   assert_equals(typeof result, "string");
   assert_greater_than(result.length, 0);
 }, 'Summarizer.summarize() returns non-empty result');
 
 promise_test(async () => {
-  const summarizer = await createSummarizerMaybeDownload({});
+  const summarizer = await Summarizer.create({});
   const result = await summarizer.measureInputUsage(kTestPrompt);
   assert_greater_than(result, 0);
 }, 'Summarizer.measureInputUsage() returns non-empty result');
 
 promise_test(async () => {
   const sharedContext = 'This is a shared context string';
-  const summarizer = await createSummarizerMaybeDownload({sharedContext: sharedContext});
+  const summarizer = await Summarizer.create({sharedContext: sharedContext});
   assert_equals(summarizer.sharedContext, sharedContext);
 }, 'Summarizer.sharedContext');
 
 promise_test(async () => {
-  const summarizer = await createSummarizerMaybeDownload({type: 'headline'});
+  const summarizer = await Summarizer.create({type: 'headline'});
   assert_equals(summarizer.type, 'headline');
 }, 'Summarizer.type');
 
 promise_test(async () => {
-  const summarizer = await createSummarizerMaybeDownload({format: 'markdown'});
+  const summarizer = await Summarizer.create({format: 'markdown'});
   assert_equals(summarizer.format, 'markdown');
 }, 'Summarizer.format');
 
 promise_test(async () => {
-  const summarizer = await createSummarizerMaybeDownload({length: 'medium'});
+  const summarizer = await Summarizer.create({length: 'medium'});
   assert_equals(summarizer.length, 'medium');
 }, 'Summarizer.length');
 
 promise_test(async () => {
-  const summarizer = await createSummarizerMaybeDownload({
+  const summarizer = await Summarizer.create({
     expectedInputLanguages: ['en']
   });
   assert_array_equals(summarizer.expectedInputLanguages, ['en']);
 }, 'Summarizer.expectedInputLanguages');
 
 promise_test(async () => {
-  const summarizer = await createSummarizerMaybeDownload({
+  const summarizer = await Summarizer.create({
     expectedContextLanguages: ['en']
   });
   assert_array_equals(summarizer.expectedContextLanguages, ['en']);
 }, 'Summarizer.expectedContextLanguages');
 
 promise_test(async () => {
-  const summarizer = await createSummarizerMaybeDownload({
+  const summarizer = await Summarizer.create({
     outputLanguage: 'en'
   });
   assert_equals(summarizer.outputLanguage, 'en');
 }, 'Summarizer.outputLanguage');
 
 promise_test(async () => {
-  const summarizer = await createSummarizerMaybeDownload({});
+  const summarizer = await Summarizer.create({});
   assert_equals(summarizer.expectedInputLanguages, null);
   assert_equals(summarizer.expectedContextLanguages, null);
   assert_equals(summarizer.outputLanguage, null);

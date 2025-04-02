@@ -44,7 +44,7 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
                 /* iphCommandBuilder= */ null,
                 AdaptiveToolbarButtonVariant.READER_MODE,
                 /* tooltipTextResId= */ Resources.ID_NULL,
-                /* showHoverHighlight= */ false);
+                /* showBackgroundHighlight= */ false);
     }
 
     @Override

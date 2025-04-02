@@ -178,6 +178,9 @@ class CONTENT_EXPORT InterestGroupAuction
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
+  using FinalizedPrivateAggregationRequests = std::vector<
+      auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr>;
+
   using RealTimeReportingContributions =
       std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>;
 
@@ -336,9 +339,9 @@ class CONTENT_EXPORT InterestGroupAuction
     // Private aggregation requests from B&A response that have been filtered by
     // B&A server. These can be simply be forwarded without further filtering on
     // Chrome side.
-    std::map<PrivateAggregationKey, PrivateAggregationRequests>
+    std::map<PrivateAggregationKey, FinalizedPrivateAggregationRequests>
         server_filtered_pagg_requests_reserved;
-    std::map<std::string, PrivateAggregationRequests>
+    std::map<std::string, FinalizedPrivateAggregationRequests>
         server_filtered_pagg_requests_non_reserved;
 
     std::array<PrivateAggregationTimings,
@@ -708,16 +711,15 @@ class CONTENT_EXPORT InterestGroupAuction
   // failed (on success, used internally to pass them to the
   // InterestGroupAuctionReporter). May only be called once, since it takes
   // ownership of stored reporting URLs.
-  std::map<PrivateAggregationKey, PrivateAggregationRequests>
+  std::map<PrivateAggregationKey, FinalizedPrivateAggregationRequests>
   TakeReservedPrivateAggregationRequests();
 
   // Retrieves all requests with non-reserved event type to the Private
   // Aggregation API returned by GenerateBid(). The return value is keyed by
-  // event type of the associated requests. May only be called by external
-  // consumers after an auction has failed (on success, used internally to pass
-  // them to the InterestGroupAuctionReporter). May only be called once, since
-  // it takes ownership of stored reporting URLs.
-  std::map<std::string, PrivateAggregationRequests>
+  // event type of the associated requests. Used internally to pass them to the
+  // InterestGroupAuctionReporter. May only be called once, since it takes
+  // ownership of stored reporting URLs.
+  std::map<std::string, FinalizedPrivateAggregationRequests>
   TakeNonReservedPrivateAggregationRequests();
 
   // Assembles per-participant metrics values relevant to the buyer and
@@ -1572,14 +1574,14 @@ class CONTENT_EXPORT InterestGroupAuction
   // InterestGroupAuctionReporter when it's created. Keyed by the origin of the
   // script that issued the request (i.e. the reporting origin) and the
   // aggregation coordinator origin.
-  std::map<PrivateAggregationKey, PrivateAggregationRequests>
+  std::map<PrivateAggregationKey, FinalizedPrivateAggregationRequests>
       private_aggregation_requests_reserved_;
 
   // Stores all pending Private Aggregation API report requests of non-reserved
   // event type. Only comes from bidding phase of winning buyer. These are
   // passed to the InterestGroupAuctionReporter when it's created. Keyed by the
   // request's event type.
-  std::map<std::string, PrivateAggregationRequests>
+  std::map<std::string, FinalizedPrivateAggregationRequests>
       private_aggregation_requests_non_reserved_;
 
   // This is used to keep track of which scoreAd execution's PA contributions on

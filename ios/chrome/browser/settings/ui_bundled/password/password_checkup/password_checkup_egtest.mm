@@ -612,10 +612,6 @@ NSString* LeakedPasswordDescription() {
 
 // Tests restoring a muted compromised password warning.
 - (void)testPasswordCheckupRestoreCompromisedPasswordWarning {
-  // TODO(crbug.com/382251787): Test fails when run on iOS 18.2.
-  if (@available(iOS 18.2, *)) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS 18.2");
-  }
   SaveMutedCompromisedPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(

@@ -255,6 +255,21 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       mojo::PendingRemote<mojom::GssapiLibraryLoadObserver>
           gssapi_library_load_observer) override;
 #endif  // BUILDFLAG(IS_LINUX)
+
+  // Set up a content decoding interceptor for an existing URLLoader connection.
+  // See comments in services/network/public/mojom/network_service.mojom for
+  // more details.
+  void InterceptUrlLoaderForBodyDecoding(
+      const std::vector<net::SourceStreamType>& content_encoding_types,
+      mojo::ScopedDataPipeConsumerHandle source_body,
+      mojo::ScopedDataPipeProducerHandle dest_body,
+      mojo::PendingRemote<network::mojom::URLLoader> source_url_loader,
+      mojo::PendingReceiver<network::mojom::URLLoaderClient>
+          source_url_loader_client,
+      mojo::PendingReceiver<network::mojom::URLLoader> dest_url_loader,
+      mojo::PendingRemote<network::mojom::URLLoaderClient>
+          dest_url_loader_client) override;
+
   void StartNetLogBounded(base::File file,
                           uint64_t max_total_size,
                           net::NetLogCaptureMode capture_mode,

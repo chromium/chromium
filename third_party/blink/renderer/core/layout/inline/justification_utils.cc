@@ -60,10 +60,13 @@ String BuildJustificationText(const String& text_content,
           const LineInfo& base_line = item_result.ruby_column->base_line;
           const InlineItemResults& base_results = base_line.Results();
           if (!base_results.empty()) {
+            const unsigned base_end =
+                RuntimeEnabledFeatures::RubyJustificationFixEnabled()
+                    ? std::min(base_results.back().EndOffset(), end_offset)
+                    : base_line.EndOffsetForJustify();
             line_text_builder.Append(BuildJustificationText(
                 text_content, base_results, base_results.front().StartOffset(),
-                base_line.EndOffsetForJustify(),
-                base_line.MayHaveTextCombineOrRubyItem()));
+                base_end, base_line.MayHaveTextCombineOrRubyItem()));
           }
         } else {
           line_text_builder.Append(kObjectReplacementCharacter);

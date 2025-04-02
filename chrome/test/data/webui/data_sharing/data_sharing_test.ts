@@ -7,13 +7,13 @@ import 'chrome-untrusted://data-sharing/data_sharing_app.js';
 import type {BrowserProxy} from 'chrome-untrusted://data-sharing/browser_proxy.js';
 import {BrowserProxyImpl} from 'chrome-untrusted://data-sharing/browser_proxy.js';
 import type {PageRemote} from 'chrome-untrusted://data-sharing/data_sharing.mojom-webui.js';
-import {PageCallbackRouter} from 'chrome-untrusted://data-sharing/data_sharing.mojom-webui.js';
+import {GroupAction, GroupActionProgress, PageCallbackRouter} from 'chrome-untrusted://data-sharing/data_sharing.mojom-webui.js';
 import {DataSharingApp} from 'chrome-untrusted://data-sharing/data_sharing_app.js';
 import {Code, LoggingIntent, Progress} from 'chrome-untrusted://data-sharing/data_sharing_sdk_types.js';
 import type {DataSharingSdkSitePreview, RunInviteFlowParams} from 'chrome-untrusted://data-sharing/data_sharing_sdk_types.js';
 import {DataSharingSdkImpl} from 'chrome-untrusted://data-sharing/dummy_data_sharing_sdk.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
-import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome-untrusted://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
@@ -32,6 +32,7 @@ class TestDataSharingBrowserProxy extends TestBrowserProxy implements
       'onTabGroupUnShareComplete',
       'getShareLink',
       'getTabGroupPreview',
+      'onGroupAction',
     ]);
     this.callbackRouter = new PageCallbackRouter();
     this.callbackRouterRemote =
@@ -69,6 +70,10 @@ class TestDataSharingBrowserProxy extends TestBrowserProxy implements
       Promise<DataSharingSdkSitePreview[]> {
     this.methodCalled('getTabGroupPreview', [groupId, tokenSecret]);
     return Promise.resolve([]);
+  }
+
+  onGroupAction(action: GroupAction, progress: GroupActionProgress) {
+    this.methodCalled('onGroupAction', [action, progress]);
   }
 }
 
@@ -153,6 +158,8 @@ suite('Start flows', () => {
     dataSharingApp = document.createElement('data-sharing-app');
     testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
     document.body.appendChild(dataSharingApp);
+    dataSharingApp.onEvent(
+        {intentType: LoggingIntent.LEAVE_GROUP, progress: Progress.SUCCEEDED});
     await microtasksFinished();
     assertEquals(1, testBrowserProxy.getCallCount('showUi'));
     assertEquals(1, testDataSharingSdk.getCallCount('runManageFlow'));
@@ -161,6 +168,11 @@ suite('Start flows', () => {
     assertEquals(true, arg.showLeaveDialogAtStartup);
     assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
     assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
+
+    assertEquals(1, testBrowserProxy.getCallCount('onGroupAction'));
+    assertDeepEquals(
+        [GroupAction.kLeaveGroup, GroupActionProgress.kSuccess],
+        testBrowserProxy.getArgs('onGroupAction')[0]);
   });
 
   test('Delete flow', async () => {
@@ -169,6 +181,8 @@ suite('Start flows', () => {
     dataSharingApp = document.createElement('data-sharing-app');
     testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
     document.body.appendChild(dataSharingApp);
+    dataSharingApp.onEvent(
+        {intentType: LoggingIntent.DELETE_GROUP, progress: Progress.SUCCEEDED});
     await microtasksFinished();
     assertEquals(1, testBrowserProxy.getCallCount('showUi'));
     assertEquals(1, testDataSharingSdk.getCallCount('runDeleteFlow'));
@@ -176,6 +190,11 @@ suite('Start flows', () => {
         'fake_id', testDataSharingSdk.getArgs('runDeleteFlow')[0].groupId);
     assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
     assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
+
+    assertEquals(1, testBrowserProxy.getCallCount('onGroupAction'));
+    assertDeepEquals(
+        [GroupAction.kDeleteGroup, GroupActionProgress.kSuccess],
+        testBrowserProxy.getArgs('onGroupAction')[0]);
   });
 
   test('Close flow', async () => {

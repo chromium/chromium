@@ -276,6 +276,7 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
 <translation id="1214942205301731697">Verwendung des Entwicklermodus auf der Seite „Erweiterungen“ nicht zulassen</translation>
 <translation id="1216919699175573511">Unterstützung für Signed HTTP Exchange (SXG) aktivieren</translation>
 <translation id="1219027971768347970">Standardkonfiguration für die Audio-Sandbox verwenden</translation>
+<translation id="1219036692926668273"><ph name="HAPPY_EYEBALLS_V3" />-Algorithmus wird verwendet.</translation>
 <translation id="1221359380862872747">Bei Demo-Anmeldung angegebene URLs laden</translation>
 <translation id="1221955019309484560">Updates für alle Komponenten aktivieren</translation>
 <translation id="1222694988453895594">Ermöglicht das Erstellen einer Liste mit Protokollen. Außerdem kannst du mit jedem Protokoll eine Liste mit zugelassenen Quellmustern verknüpfen, durch die eine externe App gestartet werden kann, ohne beim Nutzer nachzufragen. Das abschließende Trennzeichen darf nicht gemeinsam mit dem Protokoll angegeben werden. Gib also beispielsweise „skype“ ein statt „skype:“ oder „skype://“.
@@ -4014,15 +4015,6 @@ Diese Richtlinie ist vorübergehend und wird zukünftig entfernt.</translation>
 <translation id="3956573780915784996">Nutzern erlauben, eine systemweite Leistungs-Trace zu erfassen.</translation>
 <translation id="3956686688560604829">Richtlinie "SiteList" von Internet Explorer zur Unterstützung älterer Browser verwenden.</translation>
 <translation id="3958586912393694012">Verwendung von Smart Lock erlauben</translation>
-<translation id="3959350391319409669">Diese Richtlinie steuert die Einstellungen von dynamischem Code für <ph name="PRODUCT_NAME" />.
-
-Durch das Deaktivieren von dynamischem Code wird die Sicherheit von <ph name="PRODUCT_NAME" /> verbessert, da potenziell schädlicher dynamischer Code und Code von Drittanbietern das Verhalten von <ph name="PRODUCT_NAME" /> nicht verändern können. Dies kann jedoch zu Kompatibilitätsproblemen mit Drittanbieter-Software führen, die innerhalb des Browserprozesses ausgeführt werden muss.
-
-Wenn die Richtlinie auf „0 – Default“ gesetzt oder nicht konfiguriert ist, verwendet <ph name="PRODUCT_NAME" /> die Standardeinstellungen.
-
-Wenn die Richtlinie auf „1 – DisabledForBrowser“ gesetzt ist, kann der Browserprozess von <ph name="PRODUCT_NAME" /> keinen dynamischen Code erstellen.
-
-Hinweis: Weitere Informationen zu Prozessschutzrichtlinien findest du unter https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="3960728283243442805">Nutzer haben nicht die Möglichkeit, im <ph name="PRODUCT_NAME" />-Menü mithilfe eines Zugriffscodes oder durch Scannen eines QR-Codes Übertragungsgeräte auszuwählen.</translation>
 <translation id="3962445567482559878">EDU-Modus für das Einrichten von Assistant verwenden</translation>
 <translation id="396261881101930204">Medien-Empfehlungen für Nutzer verbergen</translation>
@@ -5737,6 +5729,17 @@ Wenn diese Richtlinie nicht konfiguriert ist oder die Liste keine gültigen Bild
       In diesem Zeitraum werden Nutzer wiederholt darüber informiert, dass ein Update erforderlich ist. Auf <ph name="PRODUCT_OS_NAME" />-Geräten erscheint entsprechend der Richtlinie "<ph name="RELAUNCH_HEADS_UP_PERIOD_POLICY_NAME" />" eine Neustartbenachrichtigung in der Taskleiste. In <ph name="PRODUCT_NAME" />-Browsern ändert sich das App-Menü, sobald ein Drittel des Benachrichtigungszeitraums abgelaufen ist, um zu zeigen, dass ein Neustart nötig ist. Die Farbe dieser Benachrichtigung ändert sich, sobald zwei Drittel des Benachrichtigungszeitraums vergangen sind. Wenn der ganze Zeitraum abgelaufen ist, ändert sich die Farbe erneut. Für die zusätzlichen Benachrichtigungen, die über die Richtlinie "<ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" />" aktiviert werden, gilt derselbe Zeitplan.
 
       Wenn die Richtlinie nicht konfiguriert ist, gilt der standardmäßige Zeitraum von 604.800.000 Millisekunden (eine Woche).</translation>
+<translation id="5212140720192262527">Durch diese Funktion kann der <ph name="HAPPY_EYEBALLS_V3" />-Algorithmus Verbindungsversuche ausführen. Weitere Informationen findest du unter https://datatracker.ietf.org/doc/draft-pauly-happy-happyeyeballs-v3.
+
+Wenn die Richtlinie aktiviert ist, verwendet <ph name="PRODUCT_NAME" /> den <ph name="HAPPY_EYEBALLS_V3" />-Algorithmus für Verbindungsversuche.
+
+Wenn die Richtlinie deaktiviert ist, wird der <ph name="HAPPY_EYEBALLS_V3" />-Algorithmus deaktiviert.
+
+Wenn die Richtlinie nicht konfiguriert ist, aktiviert oder deaktiviert <ph name="PRODUCT_NAME" /> den <ph name="HAPPY_EYEBALLS_V3" />-Algorithmus basierend auf chrome://flags/#happy-eyeballs-v3.
+
+Diese Richtlinie unterstützt die dynamische Aktualisierung.
+
+Sie ist eine vorübergehende Maßnahme und wird aus künftigen Versionen von <ph name="PRODUCT_NAME" /> entfernt.</translation>
 <translation id="5212810195096589189">Berechtigung für VM-Befehlszeile festlegen</translation>
 <translation id="5213038356678567351">Websites, die unter keinen Umständen einen Browserwechsel auslösen sollten.</translation>
 <translation id="5216815237712190041">Du kannst ein Hintergrundbild auf Geräteebene konfigurieren, das auf dem Anmeldebildschirm angezeigt wird, wenn sich noch kein Nutzer auf dem Gerät angemeldet hat. Zum Festlegen der Richtlinie muss die URL, über die das Chrome OS-Gerät das Hintergrundbild herunterladen kann, sowie ein kryptografischer Hash angegeben werden, um die Integrität des Downloads zu verifizieren. Das Bild muss im JPEG-Format vorliegen und darf nicht größer als 16 MB sein. Der Zugriff auf die URL muss ohne Authentifizierung möglich sein. Das Hintergrundbild wird heruntergeladen und im Cache gespeichert. Immer, wenn sich die URL oder der Hash ändert, wird es noch einmal heruntergeladen.
@@ -7010,6 +7013,7 @@ Diese Richtlinie kann verwendet werden, wenn die fehlende Unterstützung für di
 
 HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Richtlinie nur für neu gestartete Rendererprozesse übernommen.</translation>
 <translation id="6083631234867522991">Windows (Windows-Clients):</translation>
+<translation id="6087413944876892918"><ph name="HAPPY_EYEBALLS_V3" />-Algorithmus verwenden</translation>
 <translation id="608788685013546076">Schwellenwert des Akkus für das Umschalten bei Leistungsspitzen in Prozent festlegen</translation>
 <translation id="6089679180657323464">Legt die Einstellungen für Wilco Diagnostics and Telemetry Controller fest.</translation>
 <translation id="6091233616732024397">Erzwingen, dass Nutzer sich im Browser anmelden müssen</translation>
@@ -9507,6 +9511,7 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, umfasst der generierte K
 
       Bestimmt die ID der Erweiterung, die als Bildschirmschoner auf der Anmeldeseite verwendet werden soll. Die Erweiterung muss Teil des App-Pakets sein, das in der DeviceAppPack-Richtlinie für diese Domain konfiguriert wurde.</translation>
 <translation id="7882890448959833986">Warnung für nicht unterstützte Betriebssysteme unterdrücken</translation>
+<translation id="7884672714405919225"><ph name="HAPPY_EYEBALLS_V3" />-Algorithmus wird nicht verwendet.</translation>
 <translation id="788480874436328004">Speichern von Passwörtern im Passwortmanager deaktivieren</translation>
 <translation id="7891884447851425349">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" />" die URL der Standardsuchmaschine an. Die URL sollte den String <ph name="SEARCH_TERM_MARKER" /> enthalten, der während des Suchvorgangs durch die Suchbegriffe des Nutzers ersetzt wird.
 

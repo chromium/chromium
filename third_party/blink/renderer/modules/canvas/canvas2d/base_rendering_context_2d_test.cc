@@ -14,7 +14,6 @@
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_record.h"
 #include "cc/test/paint_op_matchers.h"
-#include "components/viz/common/resources/shared_image_format.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -45,7 +44,6 @@
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
-#include "third_party/blink/renderer/platform/graphics/predefined_color_space.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -140,11 +138,6 @@ class TestRenderingContext2D final
     return static_cast<HTMLCanvasElement*>(Host());
   }
 
- protected:
-  PredefinedColorSpace GetDefaultImageDataColorSpace() const override {
-    return PredefinedColorSpace::kSRGB;
-  }
-
  private:
   void InitializeForRecording(cc::PaintCanvas* canvas) const override {
     if (restore_matrix_enabled_) {
@@ -181,20 +174,11 @@ class TestRenderingContext2D final
   }
 
   // Implementing pure virtual functions from CanvasRenderingContext.
-  SkAlphaType GetAlphaType() const override {
-    return SkAlphaType::kUnknown_SkAlphaType;
-  }
-  viz::SharedImageFormat GetSharedImageFormat() const override {
-    return viz::SharedImageFormat();
-  }
-  gfx::ColorSpace GetColorSpace() const override {
-    return gfx::ColorSpace::CreateSRGB();
-  }
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) override {
     return nullptr;
   }
+
   bool IsComposited() const override { return false; }
-  void PageVisibilityChanged() override { return; }
   bool IsPaintable() const override { return true; }
   void Stop() override {}
 

@@ -61,6 +61,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   virtual void SetOriginTainted() = 0;
   virtual CanvasRenderingContext* RenderingContext() const = 0;
   virtual CanvasResourceDispatcher* GetOrCreateResourceDispatcher() = 0;
+  virtual void DiscardResourceDispatcher() = 0;
 
   virtual ExecutionContext* GetTopExecutionContext() const = 0;
   virtual DispatchEventResult HostDispatchEvent(Event*) = 0;
@@ -99,8 +100,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
 
   // Partial CanvasResourceHost implementation
   void InitializeForRecording(cc::PaintCanvas*) const final;
-  CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl(
-      RasterModeHint hint) final;
   CanvasResourceProvider* GetOrCreateCanvasResourceProvider(
       RasterModeHint hint) override;
   void PageVisibilityChanged() override;
@@ -134,12 +133,16 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   // resource provider did not exist at all, it may be created.
   virtual bool EnableAcceleration() = 0;
 
+  bool IsContextLost() const override;
+
  protected:
   ~CanvasRenderingContextHost() override = default;
 
   scoped_refptr<StaticBitmapImage> CreateTransparentImage(
       const gfx::Size&) const;
 
+  CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl(
+      RasterModeHint hint) final;
   void CreateCanvasResourceProvider2D(RasterModeHint hint);
   void CreateCanvasResourceProviderWebGL();
   void CreateCanvasResourceProviderWebGPU();

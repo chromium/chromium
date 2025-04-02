@@ -92,6 +92,8 @@ static constexpr char kSqliteOpenInMemoryPath[] = ":memory:";
 // TODO(shess): Better story on this.  http://crbug.com/56559
 const int kBusyTimeoutSeconds = 1;
 
+constexpr int kPrepareFlags = SQLITE_PREPARE_NO_VTAB;
+
 // RAII-style wrapper that enables `writable_schema` until it goes out of scope.
 // No error checking on the PRAGMA statements because it is reasonable to just
 // forge ahead in case of an error. If turning it on fails, then most likely
@@ -992,10 +994,6 @@ size_t Database::ComputeMmapSizeForOpen() {
   return mmap_ofs;
 }
 
-int Database::SqlitePrepareFlags() const {
-  return enable_virtual_tables_ ? 0 : SQLITE_PREPARE_NO_VTAB;
-}
-
 sqlite3_file* Database::GetSqliteVfsFile() {
   CHECK(db_) << "Database not opened";
 
@@ -1448,7 +1446,7 @@ SqliteResultCode Database::ExecuteAndReturnResultCode(
     sqlite3_stmt* sqlite_statement;
     const char* leftover_sql;
     sqlite_result_code = ToSqliteResultCode(
-        sqlite3_prepare_v3(db_, sql, /* nByte= */ -1, SqlitePrepareFlags(),
+        sqlite3_prepare_v3(db_, sql, /* nByte= */ -1, kPrepareFlags,
                            &sqlite_statement, &leftover_sql));
 
 #if DCHECK_IS_ON()
@@ -1570,7 +1568,7 @@ bool Database::ExecuteScriptForTesting(base::cstring_view sql_script) {
   while (*sql) {
     sqlite3_stmt* sqlite_statement;
     auto sqlite_result_code = ToSqliteResultCode(sqlite3_prepare_v3(
-        db_, sql, /*nByte=*/-1, SqlitePrepareFlags(), &sqlite_statement, &sql));
+        db_, sql, /*nByte=*/-1, kPrepareFlags, &sqlite_statement, &sql));
     if (sqlite_result_code != SqliteResultCode::kOk) {
       return false;
     }
@@ -1660,7 +1658,7 @@ scoped_refptr<Database::StatementRef> Database::GetStatementImpl(
   //               prepared with prepFlags set to SQLITE_PREPARE_PERSISTENT.
   sqlite3_stmt* sqlite_statement;
   auto sqlite_result_code = ToSqliteResultCode(sqlite3_prepare_v3(
-      db_, sql.c_str(), /* nByte= */ -1, SqlitePrepareFlags(),
+      db_, sql.c_str(), /* nByte= */ -1, kPrepareFlags,
       &sqlite_statement, unused_sql_ptr));
 
 #if DCHECK_IS_ON()
@@ -1750,7 +1748,7 @@ bool Database::IsSQLValid(base::cstring_view sql) {
 
   sqlite3_stmt* sqlite_statement = nullptr;
   auto sqlite_result_code = ToSqliteResultCode(sqlite3_prepare_v3(
-      db_, sql.c_str(), /* nByte= */ -1, SqlitePrepareFlags(),
+      db_, sql.c_str(), /* nByte= */ -1, kPrepareFlags,
       &sqlite_statement, unused_sql_ptr));
   if (sqlite_result_code != SqliteResultCode::kOk) {
     return false;
@@ -2486,7 +2484,7 @@ bool Database::FullIntegrityCheck(std::vector<std::string>* messages) {
   constexpr char kIntegrityCheckSql[] = "PRAGMA integrity_check";
   const auto prepare_result_code = ToSqliteResultCode(
       sqlite3_prepare_v3(db_, kIntegrityCheckSql, sizeof(kIntegrityCheckSql),
-                         SqlitePrepareFlags(), &statement, /*pzTail=*/nullptr));
+                         kPrepareFlags, &statement, /*pzTail=*/nullptr));
   if (prepare_result_code != SqliteResultCode::kOk) {
     return false;
   }

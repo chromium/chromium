@@ -554,6 +554,24 @@ class AutofillPrivateGetAllAttributeTypesForEntityTypeNameFunction
   ResponseAction Run() override;
 };
 
+class AutofillPrivateGetAutofillAiOptInStatusFunction
+    : public AutofillPrivateExtensionFunction {
+ public:
+  AutofillPrivateGetAutofillAiOptInStatusFunction() = default;
+  AutofillPrivateGetAutofillAiOptInStatusFunction(
+      const AutofillPrivateGetAutofillAiOptInStatusFunction&) = delete;
+  AutofillPrivateGetAutofillAiOptInStatusFunction& operator=(
+      const AutofillPrivateGetAutofillAiOptInStatusFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.getAutofillAiOptInStatus",
+                             AUTOFILLPRIVATE_GETAUTOFILLAIOPTINSTATUS)
+
+ protected:
+  ~AutofillPrivateGetAutofillAiOptInStatusFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 class AutofillPrivateSetAutofillAiOptInStatusFunction
     : public AutofillPrivateExtensionFunction {
  public:

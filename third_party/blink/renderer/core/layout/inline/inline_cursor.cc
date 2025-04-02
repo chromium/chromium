@@ -552,8 +552,9 @@ PhysicalRect InlineCursor::CurrentRectInBlockFlow() const {
           Current().GetLayoutObject()->ContainingBlock();
       DCHECK_EQ(containing_block->StyleRef().GetWritingDirection(),
                 ContainerFragment().Style().GetWritingDirection());
-      LogicalOffset logical_offset = rect.offset.ConvertToLogical(
-          writing_direction, ContainerFragment().Size(), rect.size);
+      LogicalOffset logical_offset =
+          WritingModeConverter(writing_direction, ContainerFragment().Size())
+              .ToLogical(rect.offset, rect.size);
       LogicalOffset logical_offset_in_flow_thread(
           logical_offset.inline_offset,
           logical_offset.block_offset + previously_consumed_block_size_);
@@ -594,11 +595,13 @@ PositionWithAffinity InlineCursor::PositionForPointInInlineFormattingContext(
   DCHECK(HasRoot());
   const auto writing_direction = container.Style().GetWritingDirection();
   const PhysicalSize& container_size = container.Size();
+  const WritingModeConverter container_converter{writing_direction,
+                                                 container_size};
   const LayoutUnit point_block_offset =
-      point
-          .ConvertToLogical(writing_direction, container_size,
-                            // |point| is actually a pixel with size 1x1.
-                            PhysicalSize(LayoutUnit(1), LayoutUnit(1)))
+      container_converter
+          .ToLogical(point,
+                     // |point| is actually a pixel with size 1x1.
+                     PhysicalSize(LayoutUnit(1), LayoutUnit(1)))
           .block_offset;
 
   // Stores the closest line box child after |point| in the block direction.
@@ -621,9 +624,9 @@ PositionWithAffinity InlineCursor::PositionForPointInInlineFormattingContext(
       }
       // Try to resolve if |point| falls in a line box in block direction.
       const LayoutUnit child_block_offset =
-          child_item->OffsetInContainerFragment()
-              .ConvertToLogical(writing_direction, container_size,
-                                child_item->Size())
+          container_converter
+              .ToLogical(child_item->OffsetInContainerFragment(),
+                         child_item->Size())
               .block_offset;
       if (point_block_offset < child_block_offset) {
         if (child_block_offset < closest_line_before_block_offset) {
@@ -721,11 +724,13 @@ PositionWithAffinity InlineCursor::PositionForPointInInlineBox(
   }
   const auto writing_direction = container->Style().GetWritingDirection();
   const PhysicalSize& container_size = container->Size();
+  const WritingModeConverter container_converter{writing_direction,
+                                                 container_size};
   const LayoutUnit point_inline_offset =
-      point
-          .ConvertToLogical(writing_direction, container_size,
-                            // |point| is actually a pixel with size 1x1.
-                            PhysicalSize(LayoutUnit(1), LayoutUnit(1)))
+      container_converter
+          .ToLogical(point,
+                     // |point| is actually a pixel with size 1x1.
+                     PhysicalSize(LayoutUnit(1), LayoutUnit(1)))
           .inline_offset;
 
   // Stores the closest child before |point| in the inline direction. Used if we
@@ -745,9 +750,9 @@ PositionWithAffinity InlineCursor::PositionForPointInInlineBox(
     if (ShouldIgnoreForPositionForPoint(*child_item))
       continue;
     const LayoutUnit child_inline_offset =
-        child_item->OffsetInContainerFragment()
-            .ConvertToLogical(writing_direction, container_size,
-                              child_item->Size())
+        container_converter
+            .ToLogical(child_item->OffsetInContainerFragment(),
+                       child_item->Size())
             .inline_offset;
     if (point_inline_offset < child_inline_offset) {
       if (child_item->IsFloating())

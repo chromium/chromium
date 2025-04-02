@@ -25,7 +25,6 @@
   // The multi-profile features are initially *dis*abled for migration tests -
   // they'll be enabled later on.
   config.features_disabled.push_back(kIdentityDiscAccountMenu);
-  config.features_disabled.push_back(kUseAccountListFromIdentityManager);
   config.features_disabled.push_back(kSeparateProfilesForManagedAccounts);
 
   return config;
@@ -82,7 +81,6 @@
   // Relaunch with the multi-profile features enabled.
   [self relaunchWithIdentities:@[ personalIdentity, managedIdentity ]
                enabledFeatures:{kIdentityDiscAccountMenu,
-                                kUseAccountListFromIdentityManager,
                                 kSeparateProfilesForManagedAccounts}
               disabledFeatures:{}];
 
@@ -131,7 +129,6 @@
   // Relaunch with the multi-profile features enabled.
   [self relaunchWithIdentities:@[ personalIdentity, managedIdentity ]
                enabledFeatures:{kIdentityDiscAccountMenu,
-                                kUseAccountListFromIdentityManager,
                                 kSeparateProfilesForManagedAccounts}
               disabledFeatures:{}];
 

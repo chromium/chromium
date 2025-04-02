@@ -279,6 +279,8 @@ views::UniqueWidgetPtr SearchResultsPanel::CreateWidget(aura::Window* root,
   params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.shadow_elevation = wm::kShadowElevationInactiveWindow;
+  params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
+  params.corner_radius = kPanelCornerRadius;
   params.name = "SearchResultsPanelWidget";
   auto widget = std::make_unique<views::Widget>(std::move(params));
   widget->SetContentsView(std::make_unique<SearchResultsPanel>());

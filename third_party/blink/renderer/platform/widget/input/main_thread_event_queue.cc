@@ -738,7 +738,11 @@ void MainThreadEventQueue::QueueEvent(
     PostTaskToMainThread();
   if (needs_main_frame) {
     // This main frame request is coming from input, make it urgent.
+    //
+    // We only ever want to consider urgent frames for clients which could have
+    // main frames throttled, hence we check the eligibility.
     bool urgent =
+        ::features::IsEligibleForThrottleMainFrameTo60Hz() &&
         base::FeatureList::IsEnabled(blink::features::kUrgentMainFrameForInput);
     SetNeedsMainFrame(urgent);
   }

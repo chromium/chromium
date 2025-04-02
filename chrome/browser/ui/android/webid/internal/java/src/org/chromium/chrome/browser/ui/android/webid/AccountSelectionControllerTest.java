@@ -19,7 +19,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.ACCOUNT;
-import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IDP_BRAND_ICON;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HEADER_ICON;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IDP_FOR_DISPLAY;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IS_MULTIPLE_IDPS;
@@ -106,14 +106,13 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mAnaAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
         assertEquals(mTestEtldPlusOne, headerModel.get(RP_FOR_DISPLAY));
         assertEquals(mTestEtldPlusOne2, headerModel.get(IDP_FOR_DISPLAY));
-        assertNotNull(headerModel.get(IDP_BRAND_ICON));
+        assertNotNull(headerModel.get(HEADER_ICON));
         assertEquals((Integer) mRpMode, headerModel.get(RP_MODE));
         assertFalse(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
         assertFalse(headerModel.get(IS_MULTIPLE_IDPS));
@@ -132,14 +131,13 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mAnaAccount, mBobAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
         assertEquals(mTestEtldPlusOne, headerModel.get(RP_FOR_DISPLAY));
         assertEquals(mTestEtldPlusOne2, headerModel.get(IDP_FOR_DISPLAY));
-        assertNotNull(headerModel.get(IDP_BRAND_ICON));
+        assertNotNull(headerModel.get(HEADER_ICON));
         assertEquals((Integer) mRpMode, headerModel.get(RP_MODE));
         assertTrue(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
         assertFalse(headerModel.get(IS_MULTIPLE_IDPS));
@@ -167,11 +165,10 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mAnaAccountWithoutBrandIcons),
                 Arrays.asList(mIdpDataWithoutIcons),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
-        assertNull(headerModel.get(IDP_BRAND_ICON));
+        assertNull(headerModel.get(HEADER_ICON));
     }
 
     @Test
@@ -181,8 +178,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mNewUserAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
@@ -195,8 +191,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mAnaAccount, mBobAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         // Header + two accounts. Also drag handlebar in active mode.
         int expectedItemCount = mRpMode == RpMode.PASSIVE ? 3 : 4;
         assertEquals(expectedItemCount, countAllItems());
@@ -210,8 +205,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Collections.singletonList(mAnaAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         // Header + Account + Continue Button. Also drag handlebar in active mode.
         int expectedItemCount = mRpMode == RpMode.PASSIVE ? 3 : 4;
         assertEquals(1, mSheetAccountItems.size());
@@ -224,8 +218,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Collections.singletonList(mBobAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         // Header + Account + Continue Button. Also drag handlebar in active mode.
         assertEquals(expectedItemCount, countAllItems());
         assertEquals(1, mSheetAccountItems.size());
@@ -241,8 +234,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mAnaAccount, mCarlAccount, mBobAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         verify(mMockBottomSheetController, times(1)).requestShowContent(any(), eq(true));
 
         assertFalse(mMediator.wasDismissed());
@@ -256,8 +248,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mAnaAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         // Do not let test inputs be ignored.
         mMediator.setComponentShowTime(-1000);
         assertFalse(mMediator.wasDismissed());
@@ -284,8 +275,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mAnaAccount, mCarlAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         // Do not let test inputs be ignored.
         mMediator.setComponentShowTime(-1000);
         assertFalse(mMediator.wasDismissed());
@@ -310,8 +300,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mAnaAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         pressBack();
         verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         assertTrue(mMediator.wasDismissed());
@@ -325,8 +314,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mAnaAccount, mBobAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         pressBack();
         verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         assertTrue(mMediator.wasDismissed());
@@ -340,8 +328,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mAnaAccount, mBobAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         mMediator.onAccountSelected(new ButtonData(mAnaAccount, /* idpMetadata= */ null));
         verify(mMockDelegate).onAccountSelected(mAnaAccount);
         assertFalse(mMediator.wasDismissed());
@@ -357,8 +344,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mAnaAccount, mNewUserAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         mMediator.onAccountSelected(new ButtonData(mNewUserAccount, /* idpMetadata= */ null));
 
         assertFalse(mMediator.wasDismissed());
@@ -375,8 +361,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mAnaAccount, mNewUserAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         mMediator.onAccountSelected(new ButtonData(mNewUserAccount, /* idpMetadata= */ null));
 
         pressBack();
@@ -398,8 +383,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mAnaAccount, mNewUserAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         assertEquals(2, mSheetAccountItems.size());
         mMediator.onAccountSelected(new ButtonData(mAnaAccount, /* idpMetadata= */ null));
 
@@ -415,8 +399,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mAnaAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ true,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         // Auto reauthenticates if no action is taken.
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mMockDelegate).onAccountSelected(mAnaAccount);
@@ -433,8 +416,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mAnaAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ true,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         // Auto reauthenticates even if dismissed.
         pressBack();
         verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
@@ -455,8 +437,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mNewUserAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         // For new user we expect header + account + consent text + continue btn. Also drag
         // handlebar in active mode.
         int expectedItemCount = mRpMode == RpMode.PASSIVE ? 4 : 5;
@@ -490,8 +471,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mNewUserAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         // Because disclosureFields are empty, we expect header + account + continue btn, and drag
         // handlebar in active mode.
         int expectedItemCount = mRpMode == RpMode.PASSIVE ? 3 : 4;
@@ -509,8 +489,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mNewUserAccount, mBobAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         mMediator.onAccountSelected(new ButtonData(mNewUserAccount, /* idpMetadata= */ null));
         verify(mMockDelegate).onAccountSelected(mNewUserAccount);
         assertFalse(mMediator.wasDismissed());
@@ -563,8 +542,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mAnaAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         KeyboardVisibilityListener listener = mMediator.getKeyboardEventListener();
         listener.keyboardVisibilityChanged(true);
         verify(mMockBottomSheetController).hideContent(mBottomSheetContent, true);
@@ -582,8 +560,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mAnaAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         mMediator.getTabObserver().onInteractabilityChanged(mTab, false);
         verify(mMockBottomSheetController).hideContent(mBottomSheetContent, false);
         mMediator.getTabObserver().onInteractabilityChanged(mTab, true);
@@ -599,8 +576,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mAnaAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         // We pass null as |mMediatior| does not really care about where we navigate to.
         mMediator.getTabObserver().onDidStartNavigationInPrimaryMainFrame(mTab, null);
         assertTrue(mMediator.wasDismissed());
@@ -615,8 +591,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mAnaAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         KeyboardVisibilityListener listener = mMediator.getKeyboardEventListener();
         listener.keyboardVisibilityChanged(true);
         verify(mMockBottomSheetController).hideContent(mBottomSheetContent, true);
@@ -639,8 +614,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mAnaAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         verify(mMockBottomSheetController, never()).requestShowContent(any(), anyBoolean());
         mMediator.getTabObserver().onInteractabilityChanged(mTab, true);
         verify(mMockBottomSheetController, times(1)).requestShowContent(mBottomSheetContent, true);
@@ -654,8 +628,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mNewUserAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
 
         assertNotNull(mModel.get(ItemProperties.HEADER).get(SET_FOCUS_VIEW_CALLBACK));
         assertNotNull(
@@ -675,8 +648,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 mNewAccountsMultipleAccounts,
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                mNewAccountsMultipleAccounts,
-                /* favicon= */ null);
+                mNewAccountsMultipleAccounts);
 
         // Account chooser is shown for multiple newly signed-in accounts.
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
@@ -691,8 +663,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                         mFilteredOutAccountWithUseDifferentAccount),
                 Arrays.asList(mIdpDataWithUseDifferentAccount),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
 
         // Account chooser is shown.
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
@@ -761,8 +732,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mFilteredOutAccountWithUseDifferentAccount),
                 Arrays.asList(mIdpDataWithUseDifferentAccount),
                 /* isAutoReauthn= */ false,
-                Arrays.asList(mFilteredOutAccountWithUseDifferentAccount),
-                /* favicon= */ null);
+                Arrays.asList(mFilteredOutAccountWithUseDifferentAccount));
         // Account chooser is shown.
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
         int expectedCount = mRpMode == RpMode.PASSIVE ? 3 : 2;
@@ -819,8 +789,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mNewUserAccount, mAnaAccountWithUseDifferentAccount),
                 Arrays.asList(mIdpData, mIdpDataWithUseDifferentAccount),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
 
         // Dragbar should be shown when multiple identity providers are shown.
         assertTrue(mModel.get(ItemProperties.DRAGBAR_HANDLE_VISIBLE));
@@ -829,7 +798,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
         assertEquals(mTestEtldPlusOne, headerModel.get(RP_FOR_DISPLAY));
         assertNull(headerModel.get(IDP_FOR_DISPLAY));
-        assertNull(headerModel.get(IDP_BRAND_ICON));
+        assertNull(headerModel.get(HEADER_ICON));
         assertEquals((Integer) mRpMode, headerModel.get(RP_MODE));
         assertTrue(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
         assertTrue(headerModel.get(IS_MULTIPLE_IDPS));
@@ -883,7 +852,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
         assertEquals(mTestEtldPlusOne, headerModel.get(RP_FOR_DISPLAY));
         assertEquals(mTestEtldPlusOne2, headerModel.get(IDP_FOR_DISPLAY));
-        assertNotNull(headerModel.get(IDP_BRAND_ICON));
+        assertNotNull(headerModel.get(HEADER_ICON));
         assertFalse(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
         assertFalse(headerModel.get(IS_MULTIPLE_IDPS));
         // Should show continue button with the single account.
@@ -903,7 +872,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
         assertEquals(mTestEtldPlusOne, headerModel.get(RP_FOR_DISPLAY));
         assertNull(headerModel.get(IDP_FOR_DISPLAY));
-        assertNull(headerModel.get(IDP_BRAND_ICON));
+        assertNull(headerModel.get(HEADER_ICON));
         assertTrue(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
         assertTrue(headerModel.get(IS_MULTIPLE_IDPS));
         assertEquals("Incorrect item sheet count", 4, mSheetAccountItems.size());

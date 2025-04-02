@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -21,6 +22,12 @@ namespace {
 std::unique_ptr<SkBitmap> PlaybackOnBackgroundThread(
     cc::PaintRecord paint_record,
     gfx::Rect bounds) {
+  base::ElapsedTimer timer;
+  std::optional<base::ElapsedThreadTimer> thread_timer;
+  if (base::ThreadTicks::IsSupported()) {
+    thread_timer.emplace();
+  }
+
   std::unique_ptr<SkBitmap> bitmap = std::make_unique<SkBitmap>();
   // Use the Rec. 2020 color space, in case the user input is wide-gamut.
   sk_sp<SkColorSpace> rec2020 = SkColorSpace::MakeRGB(
@@ -36,6 +43,14 @@ std::unique_ptr<SkBitmap> PlaybackOnBackgroundThread(
   SkCanvas sk_canvas(*bitmap, skia::LegacyDisplayGlobals::GetSkSurfaceProps());
   paint_record.Playback(&sk_canvas);
 
+  base::UmaHistogramCustomMicrosecondsTimes(
+      "SBClientPhishing.VisualFeatureTime.BackgroundPlayback.Duration",
+      timer.Elapsed(), base::Microseconds(1), base::Seconds(2), 100);
+  if (thread_timer) {
+    base::UmaHistogramCustomMicrosecondsTimes(
+        "SBClientPhishing.VisualFeatureTime.BackgroundPlayback.ThreadDuration",
+        thread_timer->Elapsed(), base::Microseconds(1), base::Seconds(2), 100);
+  }
   return bitmap;
 }
 
@@ -51,7 +66,7 @@ void PhishingVisualFeatureExtractor::ExtractFeatures(
     blink::WebLocalFrame* frame,
     DoneCallback done_callback) {
   done_callback_ = std::move(done_callback);
-  base::TimeTicks start_time = base::TimeTicks::Now();
+  timer_.emplace();
   gfx::SizeF viewport_size = frame->View()->VisualViewportSize();
   gfx::Rect bounds = ToEnclosingRect(gfx::RectF(viewport_size));
 
@@ -71,8 +86,9 @@ void PhishingVisualFeatureExtractor::ExtractFeatures(
 
   cc::PaintRecord paint_record = recorder.finishRecordingAsPicture();
 
+  // This logs only the main thread time.
   base::UmaHistogramTimes("SBClientPhishing.VisualFeatureTime",
-                          base::TimeTicks::Now() - start_time);
+                          timer_->Elapsed());
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::WithBaseSyncPrimitives()},
@@ -84,6 +100,11 @@ void PhishingVisualFeatureExtractor::ExtractFeatures(
 
 void PhishingVisualFeatureExtractor::RunCallback(
     std::unique_ptr<SkBitmap> bitmap) {
+  CHECK(timer_);
+  base::UmaHistogramTimes("SBClientPhishing.VisualFeatureTime.TotalDuration",
+                          timer_->Elapsed());
+  timer_.reset();
+
   DCHECK(!done_callback_.is_null());
   std::move(done_callback_).Run(std::move(bitmap));
 }

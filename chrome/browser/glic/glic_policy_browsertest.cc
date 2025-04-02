@@ -4,6 +4,7 @@
 
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/background/glic/glic_background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -485,8 +486,8 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyDisabledTest, WebUiDisabledAtLoad) {
 }
 
 // Ensure that if the policy changes to disabled at runtime, and the user has an
-// an open Glic window, that window is closed.
-IN_PROC_BROWSER_TEST_F(GlicPolicyTest, CloseOpenGlicWindowWhenDisabled) {
+// an open Glic window, that window should show the unavailable page.
+IN_PROC_BROWSER_TEST_F(GlicPolicyTest, DisableGlicWhenIsOpen) {
   // The pref defaults to enabled.
   ASSERT_EQ(kEnabledValue, profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
 
@@ -520,8 +521,12 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, CloseOpenGlicWindowWhenDisabled) {
   SetGlicPolicy(policy_for_profile_1(), SettingsPolicyState::kDisabled);
   ASSERT_EQ(kDisabledValue,
             profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
-
-  EXPECT_FALSE(service->window_controller().IsShowing());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return service->window_controller().GetWebUiState() ==
+           mojom::WebUiState::kUnavailable;
+  })) << "Timed out waiting for unavailable state. Current state: "
+      << service->window_controller().GetWebUiState();
+  ASSERT_TRUE(service->window_controller().IsShowing());
 }
 
 // Ensure the chrome://settings page for Glic is available when the feature is

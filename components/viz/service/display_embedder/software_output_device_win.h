@@ -33,9 +33,10 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDeviceWinDirect
   ~SoftwareOutputDeviceWinDirect() override;
 
   // SoftwareOutputDeviceWinBase implementation.
-  void ResizeDelegated() override;
+  bool ResizeDelegated(const gfx::Size& viewport_pixel_size) override;
   SkCanvas* BeginPaintDelegated() override;
   void EndPaintDelegated(const gfx::Rect& damage_rect) override;
+  void NotifyClientResized() override;
 
   // OutputDeviceBacking::Client implementation.
   const gfx::Size& GetViewportPixelSize() const override;
@@ -64,7 +65,7 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDeviceWinProxy
                      gfx::FrameData data) override;
 
   // SoftwareOutputDeviceWinBase implementation.
-  void ResizeDelegated() override;
+  bool ResizeDelegated(const gfx::Size& viewport_pixel_size) override;
   SkCanvas* BeginPaintDelegated() override;
   void EndPaintDelegated(const gfx::Rect& rect) override;
 

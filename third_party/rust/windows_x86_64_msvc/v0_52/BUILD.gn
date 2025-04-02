@@ -12,8 +12,8 @@ cargo_crate("lib") {
   crate_name = "windows_x86_64_msvc"
   epoch = "0.52"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/windows_x86_64_msvc-0.52.6/src/lib.rs"
-  sources = [ "//third_party/rust/chromium_crates_io/vendor/windows_x86_64_msvc-0.52.6/src/lib.rs" ]
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/windows_x86_64_msvc-v0_52/src/lib.rs"
+  sources = [ "//third_party/rust/chromium_crates_io/vendor/windows_x86_64_msvc-v0_52/src/lib.rs" ]
   inputs = []
 
   build_native_rust_unit_tests = false
@@ -29,12 +29,12 @@ cargo_crate("lib") {
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
   proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
-  build_root = "//third_party/rust/chromium_crates_io/vendor/windows_x86_64_msvc-0.52.6/build.rs"
-  build_sources = [ "//third_party/rust/chromium_crates_io/vendor/windows_x86_64_msvc-0.52.6/build.rs" ]
+  build_root = "//third_party/rust/chromium_crates_io/vendor/windows_x86_64_msvc-v0_52/build.rs"
+  build_sources = [ "//third_party/rust/chromium_crates_io/vendor/windows_x86_64_msvc-v0_52/build.rs" ]
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates
   ]
-  native_libs = [ "//third_party/rust/chromium_crates_io/vendor/windows_x86_64_msvc-0.52.6/src/../lib/windows.0.52.0.lib" ]
+  native_libs = [ "//third_party/rust/chromium_crates_io/vendor/windows_x86_64_msvc-v0_52/src/../lib/windows.0.52.0.lib" ]
 
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use

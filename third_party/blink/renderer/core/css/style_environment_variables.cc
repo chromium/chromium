@@ -110,6 +110,14 @@ const AtomicString StyleEnvironmentVariables::GetVariableName(
       return AtomicString("titlebar-area-width");
     case UADefinedVariable::kTitlebarAreaHeight:
       return AtomicString("titlebar-area-height");
+    case UADefinedVariable::kContextMenuInsetTop:
+      return AtomicString("context-menu-inset-top");
+    case UADefinedVariable::kContextMenuInsetLeft:
+      return AtomicString("context-menu-inset-left");
+    case UADefinedVariable::kContextMenuInsetBottom:
+      return AtomicString("context-menu-inset-bottom");
+    case UADefinedVariable::kContextMenuInsetRight:
+      return AtomicString("context-menu-inset-right");
     case UADefinedVariable::kPreferredTextScale:
       return AtomicString("preferred-text-scale");
     default:

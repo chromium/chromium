@@ -91,6 +91,10 @@ FromMojoScopeLimitedUnrecoverableErrorReason(
         kAdminPolicyEnforced:
       return GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
           kAdminPolicyEnforced;
+    case cm::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+        kRemoteConsentResolutionRequired:
+      return GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kRemoteConsentResolutionRequired;
   }
 }
 
@@ -114,6 +118,10 @@ ToMojoScopeLimitedUnrecoverableErrorReason(
         kAdminPolicyEnforced:
       return cm::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
           kAdminPolicyEnforced;
+    case GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+        kRemoteConsentResolutionRequired:
+      return cm::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kRemoteConsentResolutionRequired;
   }
 }
 

@@ -533,8 +533,6 @@ cronet_impl_native_java_deps_to_package = [
   ":flags_java_proto",
   ":request_context_config_java_proto",
   "//base:base_java",
-  "//base:flagged_apis_java",
-  "//base:service_loader_java",
   "//base/version_info/android:version_constants_java",
   "//third_party/jni_zero:jni_zero_java",
   "//net/android:net_java",

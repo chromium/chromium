@@ -38,6 +38,7 @@
 <translation id="19085484004813472">Questa funzionalità è nuova</translation>
 <translation id="2006524834898217237">Assicurati che questo dispositivo sia connesso a Internet.</translation>
 <translation id="208586643495776849">Riprova</translation>
+<translation id="2111134541987263231">Attiva l'opzione <ph name="BEGIN_BOLD" />Consenti modalità di navigazione in incognito<ph name="END_BOLD" /></translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 g}other{# gg}}</translation>
 <translation id="2148716181193084225">Oggi</translation>
 <translation id="2168039046890040389">Pagina su</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">Tocca i touch target sul tuo schermo.</translation>
 <translation id="2295140143284145483">Sondaggio</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Impossibile trovare un'estensione con ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Contatta l'amministratore.}other{Impossibile trovare estensioni con ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Contatta l'amministratore.}}</translation>
 <translation id="2353636109065292463">Controllare la connessione a Internet</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2388990488038464401">Vuoi chiamare questo numero dal telefono?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">Elimina tutto</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{tra 1 g}other{tra # g}}</translation>
 <translation id="2922712708897119705">Colonna <ph name="COLUMN_NAME" /> ordinata in ordine decrescente.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Impossibile trovare l'estensione}other{Impossibile trovare le estensioni}}</translation>
 <translation id="3036649622769666520">Apri file</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">In basso</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">Chiama da</translation>
 <translation id="3306688585798492231">Display incorporato</translation>
 <translation id="335581015389089642">Voce</translation>
+<translation id="3372635229069101468">Fai clic su <ph name="BEGIN_BOLD" />Dettagli<ph name="END_BOLD" /></translation>
 <translation id="3389286852084373014">Il testo è troppo grande</translation>
 <translation id="3406306243914553062">Contenuti HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 giorno rimanente}other{# giorni rimanenti}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">Colonna <ph name="COLUMN_NAME" /> ordinata in ordine crescente.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 notifica da leggere}other{# notifiche da leggere}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Attiva la seguente estensione in modalità di navigazione in incognito:}other{Attiva le seguenti estensioni in modalità di navigazione in incognito:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 mese fa}other{# mesi fa}}</translation>
 <translation id="4289300219472526559">Avvia comandi vocali</translation>
 <translation id="4289540628985791613">Panoramica</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">numero</translation>
 <translation id="4746179598275229723">Estensione sbloccata</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 mese rimasto}other{# mesi rimasti}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{La tua organizzazione richiede un'estensione per usare la modalità di navigazione in incognito}other{La tua organizzazione richiede alcune estensioni per usare la modalità di navigazione in incognito}}</translation>
+<translation id="482932175346970750">Digita <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> nel browser</translation>
 <translation id="4888938634149558681">Chiama</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 secondo}other{# secondi}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;Incolla</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Invio non riuscito</translation>
+<translation id="5283101102242354279">Attiva un'estensione in modalità di navigazione in incognito:</translation>
 <translation id="528468243742722775">Fine</translation>
 <translation id="5329858601952122676">&amp;Elimina</translation>
 <translation id="5361107212971249203">testo</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">Le impostazioni di visualizzazione dell'applicazione verranno applicate dopo il prossimo riavvio.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 min rimanente}other{# min rimanenti}}</translation>
+<translation id="7252604552361840748">Cerca l'estensione indicata in alto</translation>
 <translation id="7363164521834647158">Invia risposta</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 min fa}other{# min fa}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>

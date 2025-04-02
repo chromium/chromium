@@ -35,6 +35,11 @@ void FakeRegionalCapabilitiesServiceClient::FetchCountryId(
   std::move(on_country_id_fetched).Run(country_id_);
 }
 
+CountryId
+FakeRegionalCapabilitiesServiceClient::GetVariationsLatestCountryId() {
+  return country_id_;
+}
+
 namespace testing {}  // namespace testing
 
 }  // namespace regional_capabilities

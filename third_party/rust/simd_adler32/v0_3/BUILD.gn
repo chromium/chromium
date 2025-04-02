@@ -12,18 +12,18 @@ cargo_crate("lib") {
   crate_name = "simd_adler32"
   epoch = "0.3"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/simd-adler32-v0_3/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/src/hash.rs",
-    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/src/imp/avx2.rs",
-    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/src/imp/avx512.rs",
-    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/src/imp/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/src/imp/neon.rs",
-    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/src/imp/scalar.rs",
-    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/src/imp/sse2.rs",
-    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/src/imp/ssse3.rs",
-    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/src/imp/wasm.rs",
-    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-v0_3/src/hash.rs",
+    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-v0_3/src/imp/avx2.rs",
+    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-v0_3/src/imp/avx512.rs",
+    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-v0_3/src/imp/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-v0_3/src/imp/neon.rs",
+    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-v0_3/src/imp/scalar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-v0_3/src/imp/sse2.rs",
+    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-v0_3/src/imp/ssse3.rs",
+    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-v0_3/src/imp/wasm.rs",
+    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-v0_3/src/lib.rs",
   ]
   inputs = []
 

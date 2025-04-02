@@ -127,6 +127,7 @@ class CORE_EXPORT OffscreenCanvas final
               const SkIRect& damage_rect) override;
   bool ShouldAccelerate2dContext() const override;
   CanvasResourceDispatcher* GetOrCreateResourceDispatcher() override;
+  void DiscardResourceDispatcher() override { frame_dispatcher_ = nullptr; }
   UkmParameters GetUkmParameters() override;
 
   // Partial CanvasResourceHost implementation
@@ -192,11 +193,6 @@ class CORE_EXPORT OffscreenCanvas final
   bool IsWebGL1Enabled() const override { return true; }
   bool IsWebGL2Enabled() const override { return true; }
   bool IsWebGLBlocked() const override { return false; }
-
-  void CheckForGpuContextLost();
-  void SetRestoringGpuContext(bool restoring_gpu_context) {
-    restoring_gpu_context_ = restoring_gpu_context;
-  }
 
   TextDirection GetTextDirection(const ComputedStyle*) override;
   void SetTextDirection(TextDirection direction) {
@@ -302,7 +298,6 @@ class CORE_EXPORT OffscreenCanvas final
   uint32_t client_id_ = 0;
   uint32_t sink_id_ = 0;
 
-  bool restoring_gpu_context_ = false;
   bool transfer_to_gpu_texture_was_invoked_ = false;
 
   NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;

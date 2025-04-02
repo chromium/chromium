@@ -91,6 +91,7 @@
 <translation id="3054480780637153380">在 iOS 中開啟 Chromium 設定，輕按 [預設瀏覽器應用程式]，然後選取 [Chromium]。</translation>
 <translation id="3102849287235003384">如要在所有網站上登出 Google 帳戶，請<ph name="BEGIN_LINK" />登出 Chromium<ph name="END_LINK" />。</translation>
 <translation id="3115956258722352278">要將 Chromium 設定為預設瀏覽器嗎？</translation>
+<translation id="3180939591219927904">啟用「關閉 Chromium 時鎖定無痕式分頁」</translation>
 <translation id="3242612358525156339">從裝置的「設定」中開啟「<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />」，然後選取 [Chromium]</translation>
 <translation id="328933489847748230">{count,plural, =1{宜家顯示緊 1 個 Chromium 視窗}other{宜家顯示緊 {count} 個 Chromium 視窗}}</translation>
 <translation id="3344973607274501920">Chromium 無法檢查密碼，請檢查互聯網連線。</translation>
@@ -260,6 +261,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">所選資料已從 Chromium 和已同步的裝置中移除。不過，您仍可前往 history.google.com 存取 Google 帳戶中保存的其他各種瀏覽紀錄，例如在其他 Google 服務中的搜尋和活動紀錄。</translation>
 <translation id="7395825497086981028">系統會將密碼儲存在 <ph name="EMAIL" /> 的「密碼管理工具」。</translation>
+<translation id="7504829997542308412">開啟 Chromium</translation>
 <translation id="7531461704633548377">來自 Chromium</translation>
 <translation id="7554983317097061001">Chromium 提示：將 Chromium 移至捷徑列</translation>
 <translation id="7576863740961052505">管理 Chromium 設定</translation>

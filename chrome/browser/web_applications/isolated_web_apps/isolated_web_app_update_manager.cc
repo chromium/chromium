@@ -795,7 +795,11 @@ void IsolatedWebAppUpdateManager::OnLocalUpdateApplyTaskCreated(
   auto transform_status =
       [](base::Version update_version,
          IsolatedWebAppUpdateApplyTask::CompletionStatus status) {
-        return status.transform([&]() { return update_version; })
+        return status
+            .transform(
+                [&](const IsolatedWebAppApplyUpdateCommandSuccess& success) {
+                  return update_version;
+                })
             .transform_error(
                 [](const IsolatedWebAppApplyUpdateCommandError& error) {
                   return error.message;
@@ -1031,10 +1035,6 @@ void IsolatedWebAppUpdateManager::TaskQueue::OnUpdateApplyTaskCompleted(
   } else {
     VLOG(1) << "Applying an Isolated Web App update for "
             << task->url_info().web_bundle_id().id() << " succeeded.";
-    static_assert(
-        std::is_void_v<
-            IsolatedWebAppUpdateApplyTask::CompletionStatus::value_type>,
-        "Log `status.value()` above should it become non-void.");
   }
 
   update_manager_->OnUpdateApplyTaskCompleted(std::move(task), status);

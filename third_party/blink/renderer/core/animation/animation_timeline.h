@@ -141,7 +141,7 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
       const PaintArtifactCompositor*);
 
   using ReplaceableAnimationsMap =
-      HeapHashMap<Member<Element>, Member<HeapVector<Member<Animation>>>>;
+      HeapHashMap<Member<Element>, Member<GCedHeapVector<Member<Animation>>>>;
   void getReplaceableAnimations(
       ReplaceableAnimationsMap* replaceable_animation_set);
 

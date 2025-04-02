@@ -51,6 +51,7 @@ inline constexpr char kEnterpriseRealTimeUrlCheckScope[] =
     "safebrowsing.enterprise_real_time_url_check_scope";
 
 extern const char kLatestCrashReportCreationTime[];
+extern const char kLatestTelomereReportCreationTime[];
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);

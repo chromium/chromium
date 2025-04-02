@@ -440,6 +440,7 @@
 <translation id="2783161812871838616">Компьютердик версия талап кылынат</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Сырсөз Google аккаунтуңузга ({EMAIL}) сакталды}other{Сырсөздөр Google аккаунтуңузга ({EMAIL}) сакталды}}</translation>
 <translation id="2791174088547598693">Сырсөз кошуу…</translation>
+<translation id="2793703503584038325">Сырсөздү тандап, "Бөлүшүү" сүрөтчөсүн басыңыз</translation>
 <translation id="2797302972324086597">Өлкөнүн коду</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} файл}other{{COUNT} файл}}</translation>
 <translation id="2816489851009559785">Меню → Жөндөөлөр → Демейки серепчи</translation>
@@ -579,6 +580,7 @@
 <translation id="35083190962747987">${url} ачуу</translation>
 <translation id="3511519535430890904">Серептөө коргоосун кошуу</translation>
 <translation id="3517216995152707259">Серептөө дайындарыңыз өчүрүлсө, Google аккаунтуңуздан чыгарылбайсыз. Аккаунтуңуздан чыгуу үчүн <ph name="BEGIN_LINK" />Chrome'дон чыгыңыз<ph name="END_LINK" />.</translation>
+<translation id="3519792890877853853">Бул картада ачылып турган өтмөктөрдөгү товарлар жөнүндө сын-пикирлер көрүнөт</translation>
 <translation id="3519905498307021260">{count,plural, =1{Өтмөктү ачуу}other{{count} өтмөктү ачуу}}</translation>
 <translation id="3523513363815970085">"Көп кирген сайттарыңызды" жашыруу</translation>
 <translation id="3523789730715594198">Шайкештирүүнү параметрлерден каалаган убакта токтото аласыз. Google таржымалыңыздын негизинде Издөөнү жана башка кызматтарды жекелештириши мүмкүн.</translation>
@@ -819,6 +821,7 @@
 <translation id="4565377596337484307">Сырсөздү жашыруу</translation>
 <translation id="4568230126482344545">"Акыркы өтмөктөр" параметрин жашыруу</translation>
 <translation id="4578835633387306383">Күйгүзүү…</translation>
+<translation id="4580716718466706433">"Сырсөздөрдү башкаргычка" өтүү</translation>
 <translation id="4587589328781138893">Сайттар</translation>
 <translation id="4592672037257622855">{count,plural, =1{Барак окуу тизмеңизге кошулду}other{{count} барак окуу тизмеңизге кошулду}}</translation>
 <translation id="459644946100970322">Баалардын өзгөрүшү тууралуу кабарлоону күйгүзүлсүнбү?</translation>
@@ -858,6 +861,7 @@
 <translation id="4717844083556844785">Учурдагы веб-баракча жашыруун режимде</translation>
 <translation id="4719927025381752090">Которуу сунушталсын</translation>
 <translation id="4720530280568305198">Тандооңуз жаңы өтмөктө ачылды</translation>
+<translation id="472259426228234149">Баасы: $100—$180</translation>
 <translation id="473775607612524610">Жаңыртуу</translation>
 <translation id="474209246745757965">Соода кылып, камераңыз менен которуңуз</translation>
 <translation id="4742407542027196863">Сырсөздөрдү башкаруу…</translation>

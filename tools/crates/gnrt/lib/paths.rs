@@ -118,9 +118,8 @@ pub fn normalize_unix_path_separator(path: &Path) -> String {
 /// files (rather than based on directory names).  See also
 /// https://crbug.com/396397336#comment7 and adjacent comments.
 pub fn get_vendor_dir_for_package(name: &str, version: &semver::Version) -> String {
-    // TODO(https://crbug.com/396397336): Use instead:
-    // `crate::crates::Epoch::from_version(crate_version)`.
-    format!("{}-{}", name, version)
+    let epoch = crate::crates::Epoch::from_version(version);
+    format!("{}-{}", name, epoch)
 }
 
 static RUST_THIRD_PARTY_DIR: &str = "third_party/rust";

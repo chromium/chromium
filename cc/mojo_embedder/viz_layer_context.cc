@@ -162,6 +162,32 @@ void ComputePropertyTreeNodeUpdate(
       old_node->backdrop_filter_bounds == new_node.backdrop_filter_bounds &&
       old_node->backdrop_filter_quality == new_node.backdrop_filter_quality &&
       old_node->backdrop_mask_element_id == new_node.backdrop_mask_element_id &&
+      old_node->cache_render_surface == new_node.cache_render_surface &&
+      old_node->hidden_by_backface_visibility ==
+          new_node.hidden_by_backface_visibility &&
+      old_node->double_sided == new_node.double_sided &&
+      old_node->trilinear_filtering == new_node.trilinear_filtering &&
+      old_node->is_drawn == new_node.is_drawn &&
+      old_node->only_draws_visible_content ==
+          new_node.only_draws_visible_content &&
+      old_node->subtree_hidden == new_node.subtree_hidden &&
+      old_node->has_potential_filter_animation ==
+          new_node.has_potential_filter_animation &&
+      old_node->has_potential_backdrop_filter_animation ==
+          new_node.has_potential_backdrop_filter_animation &&
+      old_node->has_potential_opacity_animation ==
+          new_node.has_potential_opacity_animation &&
+      old_node->has_masking_child == new_node.has_masking_child &&
+      old_node->subtree_has_copy_request == new_node.subtree_has_copy_request &&
+      old_node->is_fast_rounded_corner == new_node.is_fast_rounded_corner &&
+      old_node->node_or_ancestor_has_fast_rounded_corner ==
+          new_node.node_or_ancestor_has_fast_rounded_corner &&
+      old_node->lcd_text_disallowed_by_filter ==
+          new_node.lcd_text_disallowed_by_filter &&
+      old_node->lcd_text_disallowed_by_backdrop_filter ==
+          new_node.lcd_text_disallowed_by_backdrop_filter &&
+      old_node->may_have_backdrop_effect == new_node.may_have_backdrop_effect &&
+      old_node->has_2d_scale_transform == new_node.has_2d_scale_transform &&
       copy_requests.empty()) {
     return;
   }
@@ -186,6 +212,22 @@ void ComputePropertyTreeNodeUpdate(
   wire->backdrop_filter_bounds = new_node.backdrop_filter_bounds;
   wire->backdrop_filter_quality = new_node.backdrop_filter_quality;
   wire->backdrop_mask_element_id = new_node.backdrop_mask_element_id;
+
+  wire->cache_render_surface = new_node.cache_render_surface;
+  wire->double_sided = new_node.double_sided;
+  wire->trilinear_filtering = new_node.trilinear_filtering;
+  wire->subtree_hidden = new_node.subtree_hidden;
+  wire->has_potential_filter_animation =
+      new_node.has_potential_filter_animation;
+  wire->has_potential_backdrop_filter_animation =
+      new_node.has_potential_backdrop_filter_animation;
+  wire->has_potential_opacity_animation =
+      new_node.has_potential_opacity_animation;
+  wire->subtree_has_copy_request = new_node.subtree_has_copy_request;
+  wire->is_fast_rounded_corner = new_node.is_fast_rounded_corner;
+  wire->may_have_backdrop_effect = new_node.may_have_backdrop_effect;
+  wire->has_2d_scale_transform = new_node.has_2d_scale_transform;
+
   container.push_back(std::move(wire));
 }
 

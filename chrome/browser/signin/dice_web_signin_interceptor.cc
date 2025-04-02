@@ -606,8 +606,6 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
         SigninInterceptionHeuristicOutcome::kAbortInterceptInProgress);
     return;
   }
-  DCHECK_EQ(state_->interception_start_time_, base::TimeTicks());
-  state_->interception_start_time_ = base::TimeTicks::Now();
   state_->access_point_ = access_point;
 
   if (!web_contents) {
@@ -1517,23 +1515,6 @@ void DiceWebSigninInterceptor::RecordSigninInterceptionHeuristicOutcome(
     SigninInterceptionHeuristicOutcome outcome) const {
   // Record the outcome.
   base::UmaHistogramEnumeration("Signin.Intercept.HeuristicOutcome", outcome);
-
-  // Record the latency, except in the case where this is a duplicate request
-  // for the same interception.
-  DCHECK_NE(state_->interception_start_time_, base::TimeTicks());
-  if (outcome ==
-      SigninInterceptionHeuristicOutcome::kAbortInterceptInProgress) {
-    // This is a special-case where we immediately abort the intercept request
-    // without first updating interception_start_time_ (because the previous
-    // request has not completed).
-    // Record the histogram for this request with zero duration.
-    base::UmaHistogramTimes("Signin.Intercept.HeuristicLatency",
-                            base::Milliseconds(0));
-  } else {
-    base::UmaHistogramTimes(
-        "Signin.Intercept.HeuristicLatency",
-        base::TimeTicks::Now() - state_->interception_start_time_);
-  }
 }
 
 bool DiceWebSigninInterceptor::IsFullExtendedAccountInfoAvailable(

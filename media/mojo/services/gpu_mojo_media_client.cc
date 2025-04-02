@@ -110,9 +110,6 @@ std::unique_ptr<GpuMojoMediaClient> GpuMojoMediaClient::Create(
 
   auto client = CreateGpuMediaService(traits);
   DCHECK(client);
-
-  base::UmaHistogramEnumeration("Media.GPU.VideoDecoderType",
-                                client->GetDecoderImplementationType());
   return client;
 }
 

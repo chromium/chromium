@@ -1,0 +1,11 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++ROLE_SYSTEM_PUSHBUTTON name='button supports naming with child content' FOCUSABLE
+++ROLE_SYSTEM_LINK name='link supports naming with child content' FOCUSABLE
+++++ROLE_SYSTEM_STATICTEXT name='This is a link'
+++IA2_ROLE_SECTION name='div does not support naming with child content'
+++++ROLE_SYSTEM_STATICTEXT name='This is a div'
+++IA2_ROLE_SECTION name='span does not support naming with child content'
+++++ROLE_SYSTEM_STATICTEXT name='This is a span'
+++ROLE_SYSTEM_STATICTEXT name=' '
+++IA2_ROLE_SECTION name='region does not support naming with child content'
+++++ROLE_SYSTEM_STATICTEXT name='This is a region'

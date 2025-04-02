@@ -53,7 +53,7 @@ BocaSystemAppDelegate::GetWebAppInfo() const {
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(ash::boca::kChromeBocaAppUntrustedURL);
-  info->title = l10n_util::GetStringUTF16(IDS_SCHOOL_TOOLS_TITLE);
+  info->title = l10n_util::GetStringUTF16(IDS_CLASS_TOOLS_TITLE);
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url(), {{"icon_256.png", 256, IDR_ASH_BOCA_UI_ICON_256_PNG}},
       *info);

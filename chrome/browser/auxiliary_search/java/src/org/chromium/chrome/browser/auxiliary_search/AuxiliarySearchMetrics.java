@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.auxiliary_search;
 
 import android.content.Intent;
+import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
@@ -169,6 +170,8 @@ public class AuxiliarySearchMetrics {
 
     private static final String HISTOGRAM_LAUNCHED_FROM_EXTERNAL_APP_PREFIX =
             "Search.AuxiliarySearch.LaunchedFromExternalApp.";
+    private static final String HISTOGRAM_TOP_SITE_EXPIRATION_DURATION =
+            "Search.AuxiliarySearch.TopSites.ExpirationDuration";
 
     /** Record the amount of time spent deleting content from the auxiliary search. */
     public static void recordDeleteTime(
@@ -353,5 +356,19 @@ public class AuxiliarySearchMetrics {
 
         RecordHistogram.recordEnumeratedHistogram(builder.toString(), position, MAX_POSITION_INDEX);
         return true;
+    }
+
+    /**
+     * Records the expiration duration of the latest fetch results of the top sites.
+     *
+     * @param expirationDurationMs How long ago the fetch results expired in milliseconds.
+     */
+    static void recordTopSiteExpirationDuration(long expirationDurationMs) {
+        RecordHistogram.recordCustomTimesHistogram(
+                HISTOGRAM_TOP_SITE_EXPIRATION_DURATION,
+                expirationDurationMs,
+                1,
+                DateUtils.DAY_IN_MILLIS,
+                50);
     }
 }

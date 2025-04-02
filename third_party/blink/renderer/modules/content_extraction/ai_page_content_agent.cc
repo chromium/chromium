@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table_row.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -53,12 +54,33 @@ namespace {
 constexpr MapCoordinatesFlags kMapCoordinatesFlags =
     kTraverseDocumentBoundaries | kApplyRemoteViewportTransform;
 constexpr VisualRectFlags kVisualRectFlags = static_cast<VisualRectFlags>(
-    kUseGeometryMapper | kVisualRectApplyRemoteViewportTransform);
+    kUseGeometryMapper | kVisualRectApplyRemoteViewportTransform |
+    kIgnoreFilters);
 
 constexpr float kHeading1FontSizeMultiplier = 2;
 constexpr float kHeading3FontSizeMultiplier = 1.17;
 constexpr float kHeading5FontSizeMultiplier = 0.83;
 constexpr float kHeading6FontSizeMultiplier = 0.67;
+
+ListBasedHitTestBehavior CollectHitTestNodes(std::vector<DOMNodeId>& hit_nodes,
+                                             const Node& node,
+                                             DOMNodeId dom_node_id) {
+  if (node.GetLayoutObject()) {
+    hit_nodes.push_back(dom_node_id);
+  }
+  return kContinueHitTesting;
+}
+
+gfx::Rect ComputeVisibleBoundingBox(const LayoutObject& object) {
+  gfx::RectF visible_bounding_box =
+      object.LocalBoundingBoxRectForAccessibility();
+
+  // TODO(khushalsagar): It might be more optimal to derive this from output of
+  // paint.
+  object.MapToVisualRectInAncestorSpace(nullptr, visible_bounding_box,
+                                        kVisualRectFlags);
+  return ToEnclosingRect(visible_bounding_box);
+}
 
 // TODO(crbug.com/383128653): This is duplicating logic from
 // UnsupportedTagTypeValueForNode, consider reusing it.
@@ -173,59 +195,6 @@ bool IsGenericContainer(
   }
 
   return false;
-}
-
-void AddAnnotatedRoles(
-    const LayoutObject& object,
-    Vector<mojom::blink::AIPageContentAnnotatedRole>& annotated_roles) {
-  const auto& style = object.StyleRef();
-  if (style.ContentVisibility() == EContentVisibility::kHidden) {
-    annotated_roles.push_back(
-        mojom::blink::AIPageContentAnnotatedRole::kContentHidden);
-  }
-
-  // Element specific roles below.
-  const auto* element = DynamicTo<HTMLElement>(object.GetNode());
-  if (!element) {
-    return;
-  }
-  if (element->HasTagName(html_names::kHeaderTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "banner") {
-    annotated_roles.push_back(
-        mojom::blink::AIPageContentAnnotatedRole::kHeader);
-  }
-  if (element->HasTagName(html_names::kNavTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "navigation") {
-    annotated_roles.push_back(mojom::blink::AIPageContentAnnotatedRole::kNav);
-  }
-  if (element->HasTagName(html_names::kSearchTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "search") {
-    annotated_roles.push_back(
-        mojom::blink::AIPageContentAnnotatedRole::kSearch);
-  }
-  if (element->HasTagName(html_names::kMainTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "main") {
-    annotated_roles.push_back(mojom::blink::AIPageContentAnnotatedRole::kMain);
-  }
-  if (element->HasTagName(html_names::kArticleTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "article") {
-    annotated_roles.push_back(
-        mojom::blink::AIPageContentAnnotatedRole::kArticle);
-  }
-  if (element->HasTagName(html_names::kSectionTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "region") {
-    annotated_roles.push_back(
-        mojom::blink::AIPageContentAnnotatedRole::kSection);
-  }
-  if (element->HasTagName(html_names::kAsideTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "complementary") {
-    annotated_roles.push_back(mojom::blink::AIPageContentAnnotatedRole::kAside);
-  }
-  if (element->HasTagName(html_names::kFooterTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "contentinfo") {
-    annotated_roles.push_back(
-        mojom::blink::AIPageContentAnnotatedRole::kFooter);
-  }
 }
 
 std::optional<DOMNodeId> GetDomNodeId(const LayoutObject& object) {
@@ -685,8 +654,7 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
   page_content->root_node = std::move(root_node);
 
   if (stack_depth_exceeded_) {
-    ukm::builders::OptimizationGuide_AIPageContentAgent(
-        document.UkmSourceID())
+    ukm::builders::OptimizationGuide_AIPageContentAgent(document.UkmSourceID())
         .SetNodeDepthLimitExceeded(true)
         .Record(document.UkmRecorder());
   }
@@ -936,6 +904,63 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
   return content_node;
 }
 
+void AIPageContentAgent::ContentBuilder::AddAnnotatedRoles(
+    const LayoutObject& object,
+    Vector<mojom::blink::AIPageContentAnnotatedRole>& annotated_roles) const {
+  const auto& style = object.StyleRef();
+  if (style.ContentVisibility() == EContentVisibility::kHidden) {
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kContentHidden);
+  }
+
+  // Element specific roles below.
+  const auto* element = DynamicTo<HTMLElement>(object.GetNode());
+  if (!element) {
+    return;
+  }
+  if (element->HasTagName(html_names::kHeaderTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "banner") {
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kHeader);
+  }
+  if (element->HasTagName(html_names::kNavTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "navigation") {
+    annotated_roles.push_back(mojom::blink::AIPageContentAnnotatedRole::kNav);
+  }
+  if (element->HasTagName(html_names::kSearchTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "search") {
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kSearch);
+  }
+  if (element->HasTagName(html_names::kMainTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "main") {
+    annotated_roles.push_back(mojom::blink::AIPageContentAnnotatedRole::kMain);
+  }
+  if (element->HasTagName(html_names::kArticleTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "article") {
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kArticle);
+  }
+  if (element->HasTagName(html_names::kSectionTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "region") {
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kSection);
+  }
+  if (element->HasTagName(html_names::kAsideTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "complementary") {
+    annotated_roles.push_back(mojom::blink::AIPageContentAnnotatedRole::kAside);
+  }
+  if (element->HasTagName(html_names::kFooterTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "contentinfo") {
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kFooter);
+  }
+  if (paid_content_.IsPaidElement(element)) {
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kPaidContent);
+  }
+}
+
 void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
     const LayoutObject& object,
     mojom::blink::AIPageContentAttributes& attributes) const {
@@ -949,15 +974,70 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
   geometry.outer_bounding_box =
       object.AbsoluteBoundingBoxRect(kMapCoordinatesFlags);
 
-  gfx::RectF visible_bounding_box =
-      object.LocalBoundingBoxRectForAccessibility();
-  object.MapToVisualRectInAncestorSpace(nullptr, visible_bounding_box,
-                                        kVisualRectFlags);
-  geometry.visible_bounding_box = ToEnclosingRect(visible_bounding_box);
+  auto it = dom_node_to_visible_bounding_box_.find(attributes.dom_node_id);
+  if (it != dom_node_to_visible_bounding_box_.end()) {
+    geometry.visible_bounding_box = it->second;
+  } else {
+    geometry.visible_bounding_box = ComputeVisibleBoundingBox(object);
+  }
 
   geometry.is_fixed_or_sticky_position =
       object.Style()->GetPosition() == EPosition::kFixed ||
       object.Style()->GetPosition() == EPosition::kSticky;
+}
+
+void AIPageContentAgent::ContentBuilder::ComputeHitTestableNodesInViewport(
+    const LocalFrame& frame,
+    mojom::blink::AIPageContentFrameData& frame_data) {
+  if (!options_->include_geometry) {
+    return;
+  }
+
+  const Document& document = *frame.GetDocument();
+  if (!document.GetLayoutView()) {
+    return;
+  }
+
+  const auto viewport_rect =
+      ComputeVisibleBoundingBox(*document.GetLayoutView());
+  if (viewport_rect.IsEmpty()) {
+    return;
+  }
+
+  const auto local_visible_viewport_rect =
+      document.GetLayoutView()->AbsoluteToLocalRect(PhysicalRect(viewport_rect),
+                                                    kMapCoordinatesFlags);
+  HitTestLocation location(local_visible_viewport_rect);
+
+  std::vector<DOMNodeId> hit_nodes;
+  HitTestRequest::HitNodeCb hit_node_cb =
+      WTF::BindRepeating(&CollectHitTestNodes, std::ref(hit_nodes));
+  HitTestRequest request(
+      HitTestRequest::kReadOnly | HitTestRequest::kActive |
+          HitTestRequest::kListBased | HitTestRequest::kPenetratingList |
+          HitTestRequest::kAvoidCache | HitTestRequest::kHitNodeCbWithId,
+      nullptr, std::move(hit_node_cb));
+  HitTestResult result(request, location);
+  document.GetLayoutView()->HitTest(location, result);
+
+  std::for_each(hit_nodes.rbegin(), hit_nodes.rend(), [&](auto node_id) {
+    if (dom_node_to_visible_bounding_box_.contains(node_id)) {
+      return;
+    }
+
+    const auto visible_bounding_box = ComputeVisibleBoundingBox(
+        *DOMNodeIds::NodeForId(node_id)->GetLayoutObject());
+    dom_node_to_visible_bounding_box_[node_id] = visible_bounding_box;
+
+    if (visible_bounding_box.IsEmpty()) {
+      return;
+    }
+
+    auto hit_test_node = mojom::blink::AIPageContentHitTestNode::New();
+    hit_test_node->dom_node_id = node_id;
+    hit_test_node->visible_bounding_box = visible_bounding_box;
+    frame_data.hit_test_nodes_in_viewport.push_back(std::move(hit_test_node));
+  });
 }
 
 void AIPageContentAgent::ContentBuilder::AddPageInteractionInfo(
@@ -1000,6 +1080,14 @@ void AIPageContentAgent::ContentBuilder::AddFrameData(
   frame_data.title = frame.GetDocument()->title();
   AddFrameInteractionInfo(frame, *frame_data.frame_interaction_info);
   AddMetaData(frame, frame_data.meta_data);
+
+  if (RuntimeEnabledFeatures::AIPageContentPaidContentAnnotationEnabled()) {
+    if (paid_content_.QueryPaidElements(*frame.GetDocument())) {
+      frame_data.contains_paid_content = true;
+    }
+  }
+
+  ComputeHitTestableNodesInViewport(frame, frame_data);
 }
 
 void AIPageContentAgent::ContentBuilder::AddFrameInteractionInfo(

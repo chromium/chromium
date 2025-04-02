@@ -442,6 +442,35 @@ TEST_F(MasonryLayoutAlgorithmTest, MaximizeAndStretchAutoTracks) {
                                               LayoutUnit(25)}));
 }
 
+TEST_F(MasonryLayoutAlgorithmTest, ExpandFlexibleTracks) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #masonry {
+      display: masonry;
+      masonry-template-tracks: 1fr 5fr 3fr 1fr;
+    }
+    </style>
+    <div id="masonry"></div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("masonry"));
+
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(100), LayoutUnit(100)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+
+  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  ComputeGeometry(algorithm);
+
+  EXPECT_EQ(TrackSizes(), Vector<LayoutUnit>({LayoutUnit(10), LayoutUnit(50),
+                                              LayoutUnit(30), LayoutUnit(10)}));
+}
+
 TEST_F(MasonryLayoutAlgorithmTest, UpdateRunningPositionsForSpan) {
   MasonryRunningPositions running_positions(
       /*track_count=*/4,

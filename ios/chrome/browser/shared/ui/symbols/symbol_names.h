@@ -32,7 +32,6 @@ extern NSString* const kGooglePasswordManagerWidgetPromoImage;
 extern NSString* const kGooglePasswordManagerWidgetPromoDisabledImage;
 extern NSString* const kGooglePaySymbol;
 extern NSString* const kGooglePhotosSymbol;
-extern NSString* const kGooglePlusAddressSymbol;
 extern NSString* const kGoogleSettingsPasswordsInOtherAppsBannerImage;
 extern NSString* const kLensKeyboardAccessoryImage;
 extern NSString* const kMulticolorChromeballSymbol;
@@ -272,6 +271,9 @@ extern NSString* const kIPhoneAndArrowForwardSymbol;
 extern NSString* const kPersonPlusSymbol;
 extern NSString* const kArrowUpTrashSymbol;
 extern NSString* const kRectangleGroupBubble;
+extern NSString* const kHomeSymbol;
+extern NSString* const kWorkSymbol;
+extern NSString* const kShieldedEnvelope;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

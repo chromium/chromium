@@ -113,7 +113,8 @@ bound_session_credentials::Credential CreateTestBoundSessionCredential(
 }
 
 bound_session_credentials::BoundSessionParams CreateTestBoundSessionParams(
-    const std::string& wrapped_key) {
+    const std::string& wrapped_key,
+    bool is_wsbeta = false) {
   bound_session_credentials::BoundSessionParams params;
   params.set_site("https://google.com/");
   params.set_session_id("007");
@@ -121,6 +122,7 @@ bound_session_credentials::BoundSessionParams CreateTestBoundSessionParams(
   params.set_refresh_url("https://www.google.com/rotate");
   *params.mutable_creation_time() =
       bound_session_credentials::TimeToTimestamp(base::Time::Now());
+  params.set_is_wsbeta(is_wsbeta);
 
   *params.add_credentials() =
       CreateTestBoundSessionCredential("auth_cookie_1P", ".google.com", "/");
@@ -183,10 +185,12 @@ class BoundSessionRegistrationFetcherImplTest : public testing::Test {
     return intercepted_request_body_;
   }
 
-  std::unique_ptr<BoundSessionRegistrationFetcherImpl> CreateFetcher() {
+  std::unique_ptr<BoundSessionRegistrationFetcherImpl> CreateFetcher(
+      bool is_wsbeta = false) {
     BoundSessionRegistrationFetcherParam params =
         BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
-            kRegistrationUrl, CreateAlgArray(), std::string(kChallenge));
+            kRegistrationUrl, CreateAlgArray(), std::string(kChallenge),
+            is_wsbeta);
     return std::make_unique<BoundSessionRegistrationFetcherImpl>(
         std::move(params), url_loader_factory_.GetSafeWeakWrapper(),
         unexportable_key_service(), /*is_off_the_record_profile=*/false);
@@ -284,6 +288,26 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, ValidInput) {
   EXPECT_TRUE(signin::VerifyJwtSignature(
       GetRequestBody(), *unexportable_key_service().GetAlgorithm(key_id),
       *unexportable_key_service().GetSubjectPublicKeyInfo(key_id)));
+}
+
+TEST_F(BoundSessionRegistrationFetcherImplTest, ValidInputWsbeta) {
+  std::unique_ptr<BoundSessionRegistrationFetcher> fetcher =
+      CreateFetcher(/*is_wsbeta=*/true);
+  RegistrationResultFuture future;
+
+  fetcher->Start(future.GetCallback());
+  RunBackgroundTasks();
+  SetUpServerResponse(
+      base::StrCat({kXssiPrefix, kBoundSessionParamsValidJson}));
+
+  ASSERT_TRUE(future.Get().has_value());
+  ASSERT_TRUE(bound_session_credentials::AreParamsValid(*future.Get()));
+  EXPECT_THAT(
+      future.Get(),
+      testing::Optional(base::test::EqualsProto(CreateTestBoundSessionParams(
+          future.Get()->wrapped_key(), /*is_wsbeta=*/true))));
+
+  ExpectRecordedMetrics(RegistrationError::kNone);
 }
 
 TEST_F(BoundSessionRegistrationFetcherImplTest, MissingXSSIPrefix) {

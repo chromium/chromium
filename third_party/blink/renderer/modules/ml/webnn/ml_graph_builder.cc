@@ -1455,7 +1455,7 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
     operand_to_id_map.insert(operand, operand_id);
   }
 
-  HeapVector<Member<const MLOperator>>* topologically_sorted_operators =
+  GCedHeapVector<Member<const MLOperator>>* topologically_sorted_operators =
       GetOperatorsInTopologicalOrder(named_outputs);
 
   // Visit the operators in topological order. For each operator,

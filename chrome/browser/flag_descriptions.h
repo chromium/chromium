@@ -134,9 +134,6 @@ extern const char kAriaElementReflectionDescription[];
 extern const char kAutomaticUsbDetachName[];
 extern const char kAutomaticUsbDetachDescription[];
 
-extern const char kAutomotiveFullscreenToolbarImprovementsName[];
-extern const char kAutomotiveFullscreenToolbarImprovementsDescription[];
-
 extern const char kAuxiliarySearchDonationName[];
 extern const char kAuxiliarySearchDonationDescription[];
 
@@ -304,11 +301,6 @@ extern const char kFontationsFontBackendDescription[];
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 
-#if BUILDFLAG(IS_CHROMEOS)
-extern const char kForestFeatureName[];
-extern const char kForestFeatureDescription[];
-#endif
-
 extern const char kAvifGainmapHdrImagesName[];
 extern const char kAvifGainmapHdrImagesDescription[];
 
@@ -474,9 +466,6 @@ extern const char kAutofillEnableVerveCardSupportDescription[];
 extern const char kAutofillImprovedLabelsName[];
 extern const char kAutofillImprovedLabelsDescription[];
 
-extern const char kAutofillRemovePaymentsButterDropdownName[];
-extern const char kAutofillRemovePaymentsButterDropdownDescription[];
-
 extern const char kAutofillSharedStorageServerCardDataName[];
 extern const char kAutofillSharedStorageServerCardDataDescription[];
 
@@ -599,6 +588,11 @@ extern const char kCrossTabElementCaptureDescription[];
 extern const char kCrossTabRegionCaptureName[];
 extern const char kCrossTabRegionCaptureDescription[];
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+extern const char kContextMenuEmptySpaceName[];
+extern const char kContextMenuEmptySpaceDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 extern const char kContextualCueingName[];
@@ -2195,9 +2189,6 @@ extern const char kTabSearchPositionSettingDescription[];
 extern const char kTearOffWebAppAppTabOpensWebAppWindowName[];
 extern const char kTearOffWebAppAppTabOpensWebAppWindowDescription[];
 
-extern const char kTabResumptionModuleAndroidName[];
-extern const char kTabResumptionModuleAndroidDescription[];
-
 extern const char kTextBasedAudioDescriptionName[];
 extern const char kTextBasedAudioDescriptionDescription[];
 
@@ -2566,6 +2557,9 @@ extern const char kAndroidOpenPdfInlineBackportDescription[];
 extern const char kAndroidPdfAssistContentName[];
 extern const char kAndroidPdfAssistContentDescription[];
 
+extern const char kAndroidSurfaceColorUpdateName[];
+extern const char kAndroidSurfaceColorUpdateDescription[];
+
 extern const char kAndroidTabDeclutterName[];
 extern const char kAndroidTabDeclutterDescription[];
 
@@ -2574,6 +2568,9 @@ extern const char kAndroidTabDeclutterArchiveAllButActiveTabDescription[];
 
 extern const char kAndroidTabDeclutterArchiveDuplicateTabsName[];
 extern const char kAndroidTabDeclutterArchiveDuplicateTabsDescription[];
+
+extern const char kAndroidTabDeclutterArchiveTabGroupsName[];
+extern const char kAndroidTabDeclutterArchiveTabGroupsDescription[];
 
 extern const char kAndroidThemeModuleName[];
 extern const char kAndroidThemeModuleDescription[];
@@ -2710,6 +2707,9 @@ extern const char kEnableCommandLineOnNoRootedDescription[];
 extern const char kTabClosureMethodRefactorName[];
 extern const char kTabClosureMethodRefactorDescription[];
 
+extern const char kGridTabSwitcherUpdateName[];
+extern const char kGridTabSwitcherUpdateDescription[];
+
 extern const char kEnableClipboardDataControlsAndroidName[];
 extern const char kEnableClipboardDataControlsAndroidDescription[];
 
@@ -2817,6 +2817,9 @@ extern const char kOmniboxShortcutsAndroidDescription[];
 extern const char kPaymentLinkDetectionName[];
 extern const char kPaymentLinkDetectionDescription[];
 
+extern const char kProcessRankPolicyAndroidName[];
+extern const char kProcessRankPolicyAndroidDescription[];
+
 extern const char kReadAloudName[];
 extern const char kReadAloudDescription[];
 extern const char kReadAloudBackgroundPlaybackName[];
@@ -2828,6 +2831,10 @@ extern const char kReadAloudInCCTDescription[];
 extern const char kReadAloudTapToSeekName[];
 extern const char kReadAloudTapToSeekDescription[];
 
+extern const char kReadAloudTapToSeekName[];
+extern const char kReadAloudTapToSeekDescription[];
+extern const char kReaderModeDevEntryPointName[];
+extern const char kReaderModeDevEntryPointDescription[];
 extern const char kReaderModeHeuristicsName[];
 extern const char kReaderModeHeuristicsDescription[];
 extern const char kReaderModeHeuristicsMarkup[];
@@ -2862,9 +2869,6 @@ extern const char kShowNewTabAnimationsDescription[];
 
 extern const char kShowReadyToPayDebugInfoName[];
 extern const char kShowReadyToPayDebugInfoDescription[];
-
-extern const char kSendTabToSelfV2Name[];
-extern const char kSendTabToSelfV2Description[];
 
 extern const char kSetMarketUrlForTestingName[];
 extern const char kSetMarketUrlForTestingDescription[];
@@ -4091,6 +4095,9 @@ extern const char kMahiSummarizeSelectedDescription[];
 extern const char kMahiDebuggingName[];
 extern const char kMahiDebuggingDescription[];
 
+extern const char kMediaAppImageMantisReimagineName[];
+extern const char kMediaAppImageMantisReimagineDescription[];
+
 extern const char kMediaAppPdfMahiName[];
 extern const char kMediaAppPdfMahiDescription[];
 
@@ -4369,9 +4376,6 @@ extern const char kMacAddressRandomizationDescription[];
 
 extern const char kSysUiShouldHoldbackDriveIntegrationName[];
 extern const char kSysUiShouldHoldbackDriveIntegrationDescription[];
-
-extern const char kSysUiShouldHoldbackForestName[];
-extern const char kSysUiShouldHoldbackForestDescription[];
 
 extern const char kSysUiShouldHoldbackTaskManagementName[];
 extern const char kSysUiShouldHoldbackTaskManagementDescription[];

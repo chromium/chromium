@@ -168,4 +168,20 @@ Screen* CreateNativeScreen() {
   return new ScreenIos;
 }
 
+float GetInternalDisplayDeviceScaleFactor() {
+#if BUILDFLAG(IS_IOS_APP_EXTENSION)
+  return 1.0f;
+#else
+  for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
+    UIWindowScene* windowScene =
+        base::apple::ObjCCastStrict<UIWindowScene>(scene);
+    UIScreen* screen = windowScene.keyWindow.screen;
+    if (screen) {
+      return [screen scale];
+    }
+  }
+  return 1.0f;
+#endif
+}
+
 }  // namespace display

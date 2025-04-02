@@ -4,6 +4,7 @@
 
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_manager.h"
 
+#include <array>
 #include <cstddef>
 #include <map>
 #include <memory>
@@ -11,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -23,8 +25,15 @@
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "net/base/features.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
 
 namespace {
+
+// Size of a PRT when TLS serialized, before base64 encoding.
+constexpr size_t kPRTSize = 79;
+constexpr size_t kPRTPointSize = 33;
+constexpr size_t kEpochIdSize = 8;
 
 base::TimeDelta GetNextTokenRequestDelta(base::Time next_epoch_start_time,
                                          base::Time expiration_time) {
@@ -146,6 +155,7 @@ void IpProtectionProbabilisticRevealTokenManager::OnTryGetTokens(
   expiration_ = base::Time::FromMillisecondsSinceUnixEpoch(
       base::Seconds(outcome.value().expiration_time_seconds).InMilliseconds());
   num_tokens_with_signal_ = outcome.value().num_tokens_with_signal;
+  epoch_id_ = outcome.value().epoch_id;
 
   StoreTokenOutcomeIfEnabled(*outcome);
 
@@ -181,7 +191,7 @@ bool IpProtectionProbabilisticRevealTokenManager::IsTokenAvailable() {
   return crypter_ && crypter_->IsTokenAvailable();
 }
 
-std::optional<ProbabilisticRevealToken>
+std::optional<std::string>
 IpProtectionProbabilisticRevealTokenManager::GetToken(
     const std::string& top_level,
     const std::string& third_party) {
@@ -200,36 +210,38 @@ IpProtectionProbabilisticRevealTokenManager::GetToken(
   auto outer_iterator = token_map_.find(top_level);
   if (outer_iterator != token_map_.end()) {
     // First party already has an associated token.
-    const std::size_t token_index = outer_iterator->second.first;
-    auto& inner_map = outer_iterator->second.second;
+    std::size_t token_index = outer_iterator->second.first;
+    std::map<std::string, ProbabilisticRevealToken>& inner_map =
+        outer_iterator->second.second;
 
     const auto inner_iterator = inner_map.find(third_party);
     if (inner_iterator != inner_map.end()) {
       // The pair already has a randomized token.
-      return inner_iterator->second;
+      return SerializeAndEncodePrt(inner_iterator->second);
     }
 
     // Seeing this third party for the first time in this top level.
     // Randomize top level's token and return.
-    const auto maybe_randomized_token = crypter_->Randomize(token_index);
+    absl::StatusOr<ProbabilisticRevealToken> maybe_randomized_token =
+        crypter_->Randomize(token_index);
     if (!maybe_randomized_token.ok()) {
       // Should not happen in theory, might happen with corrupted crypter.
       return std::nullopt;
     }
     inner_map[third_party] = std::move(maybe_randomized_token.value());
-    return inner_map[third_party];
+    return SerializeAndEncodePrt(inner_map[third_party]);
   }
   // Seeing first party for the first time.
-  const std::size_t& token_selected =
-      base::RandGenerator(crypter_->NumTokens());
-  const auto maybe_randomized_token = crypter_->Randomize(token_selected);
+  std::size_t token_selected = base::RandGenerator(crypter_->NumTokens());
+  absl::StatusOr<ProbabilisticRevealToken> maybe_randomized_token =
+      crypter_->Randomize(token_selected);
   if (!maybe_randomized_token.ok()) {
     // Should not happen in theory, might happen with corrupted crypter.
     return std::nullopt;
   }
   token_map_[top_level] = {token_selected,
                            {{third_party, maybe_randomized_token.value()}}};
-  return std::move(maybe_randomized_token.value());
+  return SerializeAndEncodePrt(std::move(maybe_randomized_token).value());
 }
 
 void IpProtectionProbabilisticRevealTokenManager::StoreTokenOutcomeIfEnabled(
@@ -240,6 +252,57 @@ void IpProtectionProbabilisticRevealTokenManager::StoreTokenOutcomeIfEnabled(
             &IpProtectionProbabilisticRevealTokenDataStorage::StoreTokenOutcome)
         .WithArgs(outcome);
   }
+}
+
+/*
+Serialize and base64 encode the following struct given in TLS presentation
+language (rfc8446 section-3). Size of u and e depends on the version and only
+possible version value is 1 for now. Only possible size for u and e is 33.
+Returns null in case of failure.
+
+struct {
+  uint8 version;
+  opaque u<0..2^16-1>;
+  opaque e<0..2^16-1>;
+  opaque epoch_id[8];
+} tlsPRT;
+
+Once serialized (before base64 encoding), output bytes will be as follows.
+
+[1 byte for version |
+ 2 bytes for u size | 33 bytes for u |
+ 2 bytes for e size | 33 bytes for e |
+ 8 bytes for epoch_id]
+*/
+std::optional<std::string>
+IpProtectionProbabilisticRevealTokenManager::SerializeAndEncodePrt(
+    ProbabilisticRevealToken token) {
+  if (token.version != 1 || token.u.size() != token.e.size() ||
+      token.u.size() != kPRTPointSize || epoch_id_.size() != kEpochIdSize) {
+    return std::nullopt;
+  }
+  bssl::ScopedCBB cbb;
+  std::array<uint8_t, kPRTSize> prt;
+  size_t cbb_size = 0;
+  // CBB doc says CBB_init_fixed will not fail.
+  CHECK(CBB_init_fixed(cbb.get(), prt.data(), kPRTSize));
+  if (!CBB_add_u8(cbb.get(), token.version) ||
+      !CBB_add_u16(cbb.get(), token.u.size()) ||
+      !CBB_add_bytes(cbb.get(),
+                     reinterpret_cast<const uint8_t*>(token.u.data()),
+                     token.u.size()) ||
+      !CBB_add_u16(cbb.get(), token.e.size()) ||
+      !CBB_add_bytes(cbb.get(),
+                     reinterpret_cast<const uint8_t*>(token.e.data()),
+                     token.e.size()) ||
+      !CBB_add_bytes(cbb.get(),
+                     reinterpret_cast<const uint8_t*>(epoch_id_.data()),
+                     epoch_id_.size()) ||
+      !CBB_finish(cbb.get(), nullptr, &cbb_size)) {
+    return std::nullopt;
+  }
+  CHECK_EQ(cbb_size, kPRTSize);
+  return base::Base64Encode(prt);
 }
 
 }  // namespace ip_protection

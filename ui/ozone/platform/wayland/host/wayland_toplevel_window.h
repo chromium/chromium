@@ -31,7 +31,7 @@ enum class TooltipTrigger;
 namespace ui {
 
 class GtkSurface1;
-class ShellToplevelWrapper;
+class XdgToplevel;
 
 class WaylandToplevelWindow : public WaylandWindow,
                               public WmMoveResizeHandler,
@@ -47,7 +47,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   WaylandToplevelWindow& operator=(const WaylandToplevelWindow&) = delete;
   ~WaylandToplevelWindow() override;
 
-  ShellToplevelWrapper* shell_toplevel() const { return shell_toplevel_.get(); }
+  XdgToplevel* xdg_toplevel() const { return xdg_toplevel_.get(); }
 
   // Sets the window's origin.
   void SetOrigin(const gfx::Point& origin);
@@ -168,8 +168,10 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   WaylandOutput* GetWaylandOutputForDisplayId(int64_t display_id);
 
-  // Creates a surface window, which is visible as a main window.
-  bool CreateShellToplevel();
+  // Creates and initializes the underlying xdg_toplevel surface, which
+  // is the protocol object the makes it possible for this map this as a
+  // toplevel window.
+  bool CreateXdgToplevel();
 
   WmMoveResizeHandler* AsWmMoveResizeHandler();
 
@@ -187,8 +189,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   // configure-time stages of the toplevel window initialization.
   void UpdateSessionStateIfNeeded();
 
-  // Wrappers around shell surface.
-  std::unique_ptr<ShellToplevelWrapper> shell_toplevel_;
+  std::unique_ptr<XdgToplevel> xdg_toplevel_;
 
   // True if it's maximized before requesting the window state change from the
   // client.

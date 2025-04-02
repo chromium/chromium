@@ -21,9 +21,9 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -48,6 +48,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
@@ -142,7 +143,7 @@ public class TabGroupUiMediatorUnitTest {
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private TabCreator mTabCreator;
     @Mock private LayoutStateProvider mLayoutManager;
-    @Mock private TabModel mTabModel;
+    @Spy private TabModel mTabModel;
     @Mock private View mView;
     @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
@@ -202,7 +203,7 @@ public class TabGroupUiMediatorUnitTest {
         Tab newTab = prepareTab(TAB4_ID, TAB4_ID);
         List<Tab> tabs = new ArrayList<>(Arrays.asList(newTab));
         doReturn(tabs).when(mTabGroupModelFilter).getRelatedTabList(TAB4_ID);
-        TabModel incognitoTabModel = mock(TabModel.class);
+        TabModel incognitoTabModel = spy(TabModel.class);
         doReturn(newTab).when(incognitoTabModel).getTabAt(POSITION1);
         doReturn(true).when(incognitoTabModel).isIncognito();
         doReturn(1).when(incognitoTabModel).getCount();
@@ -947,6 +948,28 @@ public class TabGroupUiMediatorUnitTest {
         mTabGroupModelFilterObserverArgumentCaptor.getValue().didMoveTabOutOfGroup(mTab3, 1);
 
         verifyResetStrip(true, tabs);
+    }
+
+    @Test
+    public void uiVisibleAfterMergeCurrentTabToGroup() {
+        initAndAssertProperties(mTab1);
+
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        doReturn(tabs).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
+        doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(mTab1);
+        doReturn(new Token(1L, TAB2_ROOT_ID)).when(mTab1).getTabGroupId();
+        mTabGroupModelFilterObserverArgumentCaptor.getValue().didMergeTabToGroup(mTab1);
+
+        verifyResetStrip(true, tabs);
+    }
+
+    @Test
+    public void uiNotVisibleAfterMergeNonCurrentTabToGroup() {
+        initAndAssertProperties(mTab1);
+
+        mTabGroupModelFilterObserverArgumentCaptor.getValue().didMergeTabToGroup(mTab3);
+
+        verify(mResetHandler, never()).resetGridWithListOfTabs(any());
     }
 
     @Test

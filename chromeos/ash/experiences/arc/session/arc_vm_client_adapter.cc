@@ -408,8 +408,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   request.set_lock_guest_memory(base::FeatureList::IsEnabled(kLockGuestMemory));
 
   // Controls whether WebView Zygote is lazily initialized in ARC.
-  request.set_enable_web_view_zygote_lazy_init(
-      base::FeatureList::IsEnabled(arc::kEnableLazyWebViewInit));
+  request.set_enable_web_view_zygote_lazy_init(false);
 
   // Specify VM Memory.
   if (base::FeatureList::IsEnabled(kVmMemorySize)) {

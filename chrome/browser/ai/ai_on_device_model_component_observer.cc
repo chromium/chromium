@@ -38,12 +38,9 @@ void AIOnDeviceModelComponentObserver::OnEvent(
                     item.state == ComponentState::kDownloadingDiff ||
                     item.state == ComponentState::kUpdating ||
                     item.state == ComponentState::kUpdatingDiff;
-
-  if (is_downloading_ || item.state == ComponentState::kUpToDate) {
-    if (item.downloaded_bytes >= 0 && item.total_bytes >= 0) {
-      ai_manager_->OnTextModelDownloadProgressChange(
-          base::PassKey<AIOnDeviceModelComponentObserver>(),
-          item.downloaded_bytes, item.total_bytes);
-    }
+  if (is_downloading_ && item.downloaded_bytes >= 0 && item.total_bytes >= 0) {
+    ai_manager_->OnTextModelDownloadProgressChange(
+        base::PassKey<AIOnDeviceModelComponentObserver>(),
+        item.downloaded_bytes, item.total_bytes);
   }
 }

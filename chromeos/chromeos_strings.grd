@@ -7020,8 +7020,8 @@
       </message>
 
       <!-- Strings for OnTask notifications -->
-      <message name="IDS_ON_TASK_NOTIFICATION_TITLE" desc="School Tools title for OnTask notifications">
-        School Tools
+      <message name="IDS_ON_TASK_NOTIFICATION_TITLE" desc="Class Tools title for OnTask notifications">
+        Class Tools
       </message>
       <message name="IDS_ON_TASK_ENTER_LOCKED_MODE_COUNTDOWN_NOTIFICATION_MESSAGE" desc="Message signaling the countdown before the teachers lock students' screen.">
         Your teacher will lock your screen in <ph name="NUM_SECONDS">$1<ex>5</ex></ph> seconds
@@ -7036,10 +7036,10 @@
         Access isn’t allowed for this link. Check with your teacher if you need access.
       </message>
       <message name="IDS_ON_TASK_BUNDLE_CONTENT_ADDED_MESSAGE" desc="Notification message telling students that their teacher has added new content to the bundle.">
-        Your teacher has added new content in School Tools
+        Your teacher has added new content in Class Tools
       </message>
       <message name="IDS_ON_TASK_BUNDLE_CONTENT_REMOVED_MESSAGE" desc="Notification message telling students that their teacher has removed content from the bundle.">
-        Your teacher has removed content in School Tools
+        Your teacher has removed content in Class Tools
       </message>
 
       <!-- Strings for the OnTask pod -->
@@ -7068,23 +7068,23 @@
         Move to top right
       </message>
 
-      <!-- Strings for School Tools -->
-      <message name="IDS_SCHOOL_TOOLS_TITLE" desc="Title of the School Tools App">
-        School Tools
+      <!-- Strings for Class Tools -->
+      <message name="IDS_CLASS_TOOLS_TITLE" desc="Title of the Class Tools App">
+        Class Tools
       </message>
 
       <!-- Strings for Class Hub notifications -->
-      <message name="IDS_BOCA_CONNECTED_TO_CLASS_NOTIFICATION_MESSAGE" desc="Message of the notification telling users that they're currently connected to a school tools session.">
-        School Tools is connected to students
+      <message name="IDS_BOCA_CONNECTED_TO_CLASS_NOTIFICATION_MESSAGE" desc="Message of the notification telling users that they're currently connected to a class tools session.">
+        Class Tools is connected to students
       </message>
-      <message name="IDS_BOCA_CONNECTED_TO_CLASS_BUTTON_TEXT" desc="Text for the button to open school tools app.">
+      <message name="IDS_BOCA_CONNECTED_TO_CLASS_BUTTON_TEXT" desc="Text for the button to open class tools app.">
         Open app
       </message>
-      <message name="IDS_BOCA_MICROPHONE_IN_USE_NOTIFICATION_MESSAGE" desc="Message of the notification telling users that school tools is currently using their microphone.">
-        School Tools is using your microphone
+      <message name="IDS_BOCA_MICROPHONE_IN_USE_NOTIFICATION_MESSAGE" desc="Message of the notification telling users that class tools is currently using their microphone.">
+        Class Tools is using your microphone
       </message>
-      <message name="IDS_BOCA_NOTIFICATION_TITLE" desc="Title of the school tools notification">
-        School Tools
+      <message name="IDS_BOCA_NOTIFICATION_TITLE" desc="Title of the class tools notification">
+        Class Tools
       </message>
       <message name="IDS_BOCA_SPOTLIGHT_NOTIFICATION_MESSAGE" desc="Message signaling the countdown before the start of a Spotlight session in the Boca app.">
         Your teacher will view your screen in <ph name="NUM_SECONDS">$1<ex>3</ex></ph> seconds

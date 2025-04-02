@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "build/build_config.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
@@ -28,8 +29,6 @@ class WebView;
 class Profile;
 
 namespace glic {
-
-inline constexpr static float kCornerRadius = 12;
 
 class GlicView : public views::View {
   METADATA_HEADER(GlicView, views::View)

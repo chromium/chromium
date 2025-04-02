@@ -30,8 +30,10 @@ void SoftwareOutputDeviceWinBase::Resize(const gfx::Size& viewport_pixel_size,
     return;
   }
 
-  viewport_pixel_size_ = viewport_pixel_size;
-  ResizeDelegated();
+  if (ResizeDelegated(viewport_pixel_size)) {
+    viewport_pixel_size_ = viewport_pixel_size;
+    NotifyClientResized();
+  }
 }
 
 SkCanvas* SoftwareOutputDeviceWinBase::BeginPaint(

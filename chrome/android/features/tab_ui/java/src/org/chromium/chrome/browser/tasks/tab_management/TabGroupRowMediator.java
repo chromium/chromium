@@ -11,12 +11,12 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 import androidx.core.util.Supplier;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesConfig;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.hub.PaneId;
@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.MaybeBlockingResult;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupTimeAgo.TimestampEvent;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.collaboration.CollaborationService;
@@ -108,7 +109,9 @@ class TabGroupRowMediator {
         builder.with(TabGroupRowProperties.COLOR_INDEX, savedTabGroup.color);
 
         String userTitle = savedTabGroup.title;
-        Pair<String, Integer> titleData = new Pair<>(userTitle, numberOfTabs);
+        TabGroupRowViewTitleData titleData =
+                new TabGroupRowViewTitleData(
+                        userTitle, numberOfTabs, R.string.tab_group_row_accessibility_text);
         builder.with(TabGroupRowProperties.TITLE_DATA, titleData);
 
         builder.with(

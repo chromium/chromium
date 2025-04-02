@@ -204,14 +204,6 @@ BASE_FEATURE(kAutofillEnableVerveCardSupport,
              "AutofillEnableVerveCardSupport",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-
-
-// When enabled, the "Show cards from your Google Account" Autofill suggestion
-// will not be displayed, and Autofill will work as if it had been selected.
-BASE_FEATURE(kAutofillRemovePaymentsButterDropdown,
-             "AutofillRemovePaymentsButterDropdown",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_IOS)
 // When enabled, save card bottomsheet will be shown when the user has not
 // previously rejected the offer to save the card, and both a valid expiry date
@@ -233,6 +225,12 @@ BASE_FEATURE(kAutofillShowManualFillForVirtualCards,
              "AutofillShowManualFillForVirtualCards",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
+
+// Kill switch, when enabled, will prevent the display of the save card bubble
+// within a tab modal pop-up window.
+BASE_FEATURE(kAutofillSkipSaveCardForTabModalPopup,
+             "AutofillSkipSaveCardForTabModalPopup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, adds a timeout on the network request for Unmask requests.
 BASE_FEATURE(kAutofillUnmaskCardRequestTimeout,

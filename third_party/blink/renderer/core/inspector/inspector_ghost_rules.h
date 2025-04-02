@@ -82,8 +82,7 @@ class CORE_EXPORT InspectorGhostRules {
   // The inner CSSStyleRule for each item in `inserted_rules_`.
   HeapHashSet<Member<CSSStyleRule>> inner_rules_;
 
-  HeapHashMap<Member<TreeScope>, Member<ActiveStyleSheetVector>>
-      affected_tree_scopes;
+  HeapHashMap<Member<TreeScope>, ActiveStyleSheetVector> affected_tree_scopes;
 };
 
 }  // namespace blink

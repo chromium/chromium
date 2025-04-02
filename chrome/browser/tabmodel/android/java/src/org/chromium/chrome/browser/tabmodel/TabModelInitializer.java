@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Class responsible for initializing the tab model infrastructure. */
+@NullMarked
 public interface TabModelInitializer {
-    /**
-     * Initialize the {@link TabModelSelector}, {@link TabModel}s, and
-     * {@link TabCreator}.
-     */
+    /** Initialize the {@link TabModelSelector}, {@link TabModel}s, and {@link TabCreator}. */
     void initializeTabModels();
 }

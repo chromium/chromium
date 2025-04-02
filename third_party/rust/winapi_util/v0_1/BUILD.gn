@@ -12,13 +12,14 @@ cargo_crate("lib") {
   crate_name = "winapi_util"
   epoch = "0.1"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.9/src/lib.rs"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/winapi-util-v0_1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.9/src/console.rs",
-    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.9/src/file.rs",
-    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.9/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.9/src/sysinfo.rs",
-    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.9/src/win.rs",
+    "//third_party/rust/chromium_crates_io/vendor/winapi-util-v0_1/src/console.rs",
+    "//third_party/rust/chromium_crates_io/vendor/winapi-util-v0_1/src/file.rs",
+    "//third_party/rust/chromium_crates_io/vendor/winapi-util-v0_1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/winapi-util-v0_1/src/sysinfo.rs",
+    "//third_party/rust/chromium_crates_io/vendor/winapi-util-v0_1/src/win.rs",
   ]
   inputs = []
 

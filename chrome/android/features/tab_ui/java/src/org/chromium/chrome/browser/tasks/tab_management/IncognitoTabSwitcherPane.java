@@ -142,6 +142,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
      * @param userEducationHelper Used for showing IPHs.
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      * @param compositorViewHolderSupplier Supplier to the {@link CompositorViewHolder} instance.
+     * @param tabGroupCreationUiFlow Orchestrates the tab group creation UI flow.
      */
     IncognitoTabSwitcherPane(
             @NonNull Context context,
@@ -152,7 +153,8 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
             @NonNull DoubleConsumer onToolbarAlphaChange,
             @NonNull UserEducationHelper userEducationHelper,
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
-            @NonNull ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier) {
+            @NonNull ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
+            @NonNull TabGroupCreationUiFlow tabGroupCreationUiFlow) {
         super(
                 context,
                 factory,
@@ -160,7 +162,8 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                 onToolbarAlphaChange,
                 userEducationHelper,
                 edgeToEdgeSupplier,
-                compositorViewHolderSupplier);
+                compositorViewHolderSupplier,
+                tabGroupCreationUiFlow);
 
         mIncognitoTabGroupModelFilterSupplier = incognitoTabGroupModelFilterSupplier;
         mLastClosedTabId = Tab.INVALID_TAB_ID;

@@ -665,7 +665,9 @@
         #browserCdpClient;
         #browsingContextStorage;
         #eventManager;
-        constructor(browserCdpClient, browsingContextStorage, eventManager) {
+        #userContextStorage;
+        constructor(browserCdpClient, browsingContextStorage, userContextStorage, eventManager) {
+            this.#userContextStorage = userContextStorage;
             this.#browserCdpClient = browserCdpClient;
             this.#browsingContextStorage = browsingContextStorage;
             this.#eventManager = eventManager;
@@ -753,21 +755,42 @@
             return await context.print(params);
         }
         async setViewport(params) {
-            if (params.userContexts === undefined && params.context === undefined) {
+            const impactedTopLevelContexts = await this.#getRelatedTopLevelBrowsingContexts(params.context, params.userContexts);
+            for (const userContextId of params.userContexts ?? []) {
+                const userContextConfig = this.#userContextStorage.getConfig(userContextId);
+                if (params.devicePixelRatio !== undefined) {
+                    userContextConfig.devicePixelRatio = params.devicePixelRatio;
+                }
+                if (params.viewport !== undefined) {
+                    userContextConfig.viewport = params.viewport;
+                }
+            }
+            await Promise.all(impactedTopLevelContexts.map((context) => context.setViewport(params.viewport, params.devicePixelRatio)));
+            return {};
+        }
+        async #getRelatedTopLevelBrowsingContexts(browsingContextId, userContextIds) {
+            if (browsingContextId === undefined && userContextIds === undefined) {
                 throw new InvalidArgumentException('Either userContexts or context must be provided');
             }
-            if (params.userContexts !== undefined && params.context !== undefined) {
+            if (browsingContextId !== undefined && userContextIds !== undefined) {
                 throw new InvalidArgumentException('userContexts and context are mutually exclusive');
             }
-            if (params.userContexts !== undefined) {
-                throw new UnsupportedOperationException('userContexts is not supported');
+            if (browsingContextId !== undefined) {
+                const context = this.#browsingContextStorage.getContext(browsingContextId);
+                if (!context.isTopLevelContext()) {
+                    throw new InvalidArgumentException('Emulating viewport is only supported on the top-level context');
+                }
+                return [context];
             }
-            const context = this.#browsingContextStorage.getContext(params.context);
-            if (!context.isTopLevelContext()) {
-                throw new InvalidArgumentException('Emulating viewport is only supported on the top-level context');
+            await this.#userContextStorage.verifyUserContextIdList(userContextIds);
+            const result = [];
+            for (const userContextId of userContextIds) {
+                const topLevelBrowsingContexts = this.#browsingContextStorage
+                    .getTopLevelContexts()
+                    .filter((browsingContext) => browsingContext.userContext === userContextId);
+                result.push(...topLevelBrowsingContexts);
             }
-            await context.setViewport(params.viewport, params.devicePixelRatio);
-            return {};
+            return [...new Set(result).values()];
         }
         async traverseHistory(params) {
             const context = this.#browsingContextStorage.getContext(params.context);
@@ -4274,7 +4297,7 @@
             this.#logger = logger;
             this.#bluetoothProcessor = bluetoothProcessor;
             this.#browserProcessor = new BrowserProcessor(browserCdpClient, browsingContextStorage, userContextStorage);
-            this.#browsingContextProcessor = new BrowsingContextProcessor(browserCdpClient, browsingContextStorage, eventManager);
+            this.#browsingContextProcessor = new BrowsingContextProcessor(browserCdpClient, browsingContextStorage, userContextStorage, eventManager);
             this.#cdpProcessor = new CdpProcessor(browsingContextStorage, realmStorage, cdpConnection, browserCdpClient);
             this.#inputProcessor = new InputProcessor(browsingContextStorage);
             this.#networkProcessor = new NetworkProcessor(browsingContextStorage, networkStorage);
@@ -4554,8 +4577,34 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
+    class UserContextConfig {
+        userContextId;
+        viewport;
+        devicePixelRatio;
+        constructor(userContextId) {
+            this.userContextId = userContextId;
+        }
+    }
+
+    /**
+     * Copyright 2025 Google LLC.
+     * Copyright (c) Microsoft Corporation.
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *     http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
     class UserContextStorage {
         #browserClient;
+        #userConfigMap = new Map();
         constructor(browserClient) {
             this.#browserClient = browserClient;
         }
@@ -4571,6 +4620,12 @@
                     };
                 }),
             ];
+        }
+        getConfig(userContextId) {
+            const userContextConfig = this.#userConfigMap.get(userContextId) ??
+                new UserContextConfig(userContextId);
+            this.#userConfigMap.set(userContextId, userContextConfig);
+            return userContextConfig;
         }
         async verifyUserContextIdList(userContextIds) {
             const foundContexts = new Set();
@@ -5608,7 +5663,6 @@
         userContext;
         #loaderId;
         #parentId = null;
-        #previousViewport = { width: 0, height: 0 };
         #originalOpener;
         #lifecycle = {
             DOMContentLoaded: new Deferred(),
@@ -6157,41 +6211,7 @@
             };
         }
         async setViewport(viewport, devicePixelRatio) {
-            if (viewport === null && devicePixelRatio === null) {
-                await this.#cdpTarget.cdpClient.sendCommand('Emulation.clearDeviceMetricsOverride');
-            }
-            else {
-                try {
-                    let appliedViewport;
-                    if (viewport === undefined) {
-                        appliedViewport = this.#previousViewport;
-                    }
-                    else if (viewport === null) {
-                        appliedViewport = {
-                            width: 0,
-                            height: 0,
-                        };
-                    }
-                    else {
-                        appliedViewport = viewport;
-                    }
-                    this.#previousViewport = appliedViewport;
-                    await this.#cdpTarget.cdpClient.sendCommand('Emulation.setDeviceMetricsOverride', {
-                        width: this.#previousViewport.width,
-                        height: this.#previousViewport.height,
-                        deviceScaleFactor: devicePixelRatio ? devicePixelRatio : 0,
-                        mobile: false,
-                        dontSetVisibleSize: true,
-                    });
-                }
-                catch (err) {
-                    if (err.message.startsWith(
-                    'Width and height values must be positive')) {
-                        throw new UnsupportedOperationException('Provided viewport dimensions are not supported');
-                    }
-                    throw err;
-                }
-            }
+            await this.cdpTarget.setViewport(viewport, devicePixelRatio);
         }
         async handleUserPrompt(accept, userText) {
             await this.#cdpTarget.cdpClient.sendCommand('Page.handleJavaScriptDialog', {
@@ -7157,9 +7177,11 @@
         #browsingContextStorage;
         #prerenderingDisabled;
         #networkStorage;
+        #userContextConfig;
         #unblocked = new Deferred();
         #unhandledPromptBehavior;
         #logger;
+        #previousViewport = { width: 0, height: 0 };
         #windowId;
         #deviceAccessEnabled = false;
         #cacheDisableState = false;
@@ -7168,14 +7190,15 @@
             response: false,
             auth: false,
         };
-        static create(targetId, cdpClient, browserCdpClient, parentCdpClient, realmStorage, eventManager, preloadScriptStorage, browsingContextStorage, networkStorage, prerenderingDisabled, unhandledPromptBehavior, logger) {
-            const cdpTarget = new CdpTarget(targetId, cdpClient, browserCdpClient, parentCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, networkStorage, prerenderingDisabled, unhandledPromptBehavior, logger);
+        static create(targetId, cdpClient, browserCdpClient, parentCdpClient, realmStorage, eventManager, preloadScriptStorage, browsingContextStorage, networkStorage, prerenderingDisabled, userContextConfig, unhandledPromptBehavior, logger) {
+            const cdpTarget = new CdpTarget(targetId, cdpClient, browserCdpClient, parentCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, networkStorage, prerenderingDisabled, userContextConfig, unhandledPromptBehavior, logger);
             LogManager.create(cdpTarget, realmStorage, eventManager, logger);
             cdpTarget.#setEventListeners();
             void cdpTarget.#unblock();
             return cdpTarget;
         }
-        constructor(targetId, cdpClient, browserCdpClient, parentCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, networkStorage, prerenderingDisabled, unhandledPromptBehavior, logger) {
+        constructor(targetId, cdpClient, browserCdpClient, parentCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, networkStorage, prerenderingDisabled, userContextConfig, unhandledPromptBehavior, logger) {
+            this.#userContextConfig = userContextConfig;
             this.#id = targetId;
             this.#cdpClient = cdpClient;
             this.#browserCdpClient = browserCdpClient;
@@ -7250,6 +7273,7 @@
                     }),
                     this.#updateWindowId(),
                     this.#initAndEvaluatePreloadScripts(),
+                    this.#setUserContextConfig(),
                     this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
                     this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
                     this.toggleDeviceAccessIfNeeded(),
@@ -7487,6 +7511,48 @@
                 return script.initInTarget(this, true);
             }));
         }
+        async setViewport(viewport, devicePixelRatio) {
+            if (viewport === null && devicePixelRatio === null) {
+                await this.cdpClient.sendCommand('Emulation.clearDeviceMetricsOverride');
+                return;
+            }
+            let newViewport;
+            if (viewport === undefined) {
+                newViewport = this.#previousViewport;
+            }
+            else if (viewport === null) {
+                newViewport = {
+                    width: 0,
+                    height: 0,
+                };
+            }
+            else {
+                newViewport = viewport;
+            }
+            try {
+                await this.cdpClient.sendCommand('Emulation.setDeviceMetricsOverride', {
+                    width: newViewport.width,
+                    height: newViewport.height,
+                    deviceScaleFactor: devicePixelRatio ? devicePixelRatio : 0,
+                    mobile: false,
+                    dontSetVisibleSize: true,
+                });
+                this.#previousViewport = newViewport;
+            }
+            catch (err) {
+                if (err.message.startsWith(
+                'Width and height values must be positive')) {
+                    throw new UnsupportedOperationException('Provided viewport dimensions are not supported');
+                }
+                throw err;
+            }
+        }
+        async #setUserContextConfig() {
+            if (this.#userContextConfig.viewport !== undefined ||
+                this.#userContextConfig.devicePixelRatio !== undefined) {
+                await this.setViewport(this.#userContextConfig.viewport, this.#userContextConfig.devicePixelRatio);
+            }
+        }
         get topLevelId() {
             return (this.#browsingContextStorage.findTopLevelContextId(this.id) ?? this.id);
         }
@@ -7514,6 +7580,7 @@
         #eventManager;
         #browsingContextStorage;
         #networkStorage;
+        #userContextStorage;
         #bluetoothProcessor;
         #preloadScriptStorage;
         #realmStorage;
@@ -7521,7 +7588,8 @@
         #logger;
         #unhandledPromptBehavior;
         #prerenderingDisabled;
-        constructor(cdpConnection, browserCdpClient, selfTargetId, eventManager, browsingContextStorage, realmStorage, networkStorage, bluetoothProcessor, preloadScriptStorage, defaultUserContextId, prerenderingDisabled, unhandledPromptBehavior, logger) {
+        constructor(cdpConnection, browserCdpClient, selfTargetId, eventManager, browsingContextStorage, userContextStorage, realmStorage, networkStorage, bluetoothProcessor, preloadScriptStorage, defaultUserContextId, prerenderingDisabled, unhandledPromptBehavior, logger) {
+            this.#userContextStorage = userContextStorage;
             this.#cdpConnection = cdpConnection;
             this.#browserCdpClient = browserCdpClient;
             this.#targetKeysToBeIgnoredByAutoAttach.add(selfTargetId);
@@ -7648,7 +7716,7 @@
         #createCdpTarget(targetCdpClient, parentCdpClient, targetInfo, userContext) {
             this.#setEventListeners(targetCdpClient);
             this.#preloadScriptStorage.onCdpTargetCreated(targetInfo.targetId, userContext);
-            const target = CdpTarget.create(targetInfo.targetId, targetCdpClient, this.#browserCdpClient, parentCdpClient, this.#realmStorage, this.#eventManager, this.#preloadScriptStorage, this.#browsingContextStorage, this.#networkStorage, this.#prerenderingDisabled, this.#unhandledPromptBehavior, this.#logger);
+            const target = CdpTarget.create(targetInfo.targetId, targetCdpClient, this.#browserCdpClient, parentCdpClient, this.#realmStorage, this.#eventManager, this.#preloadScriptStorage, this.#browsingContextStorage, this.#networkStorage, this.#prerenderingDisabled, this.#userContextStorage.getConfig(userContext), this.#unhandledPromptBehavior, this.#logger);
             this.#networkStorage.onCdpTargetCreated(target);
             this.#bluetoothProcessor.onCdpTargetCreated(target);
             return target;
@@ -9485,15 +9553,15 @@
             this.#messageQueue = new ProcessingQueue(this.#processOutgoingMessage, this.#logger);
             this.#transport = bidiTransport;
             this.#transport.setOnMessage(this.#handleIncomingMessage);
-            const userUserContextStorage = new UserContextStorage(browserCdpClient);
-            this.#eventManager = new EventManager(this.#browsingContextStorage, userUserContextStorage);
+            const userContextStorage = new UserContextStorage(browserCdpClient);
+            this.#eventManager = new EventManager(this.#browsingContextStorage, userContextStorage);
             const networkStorage = new NetworkStorage(this.#eventManager, this.#browsingContextStorage, browserCdpClient, logger);
             this.#bluetoothProcessor = new BluetoothProcessor(this.#eventManager, this.#browsingContextStorage);
-            this.#commandProcessor = new CommandProcessor(cdpConnection, browserCdpClient, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.#preloadScriptStorage, networkStorage, this.#bluetoothProcessor, userUserContextStorage, parser, async (options) => {
+            this.#commandProcessor = new CommandProcessor(cdpConnection, browserCdpClient, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.#preloadScriptStorage, networkStorage, this.#bluetoothProcessor, userContextStorage, parser, async (options) => {
                 await browserCdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
                     ignore: options.acceptInsecureCerts ?? false,
                 });
-                new CdpTargetManager(cdpConnection, browserCdpClient, selfTargetId, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, networkStorage, this.#bluetoothProcessor, this.#preloadScriptStorage, defaultUserContextId, options?.['goog:prerenderingDisabled'] ?? false, options?.unhandledPromptBehavior, logger);
+                new CdpTargetManager(cdpConnection, browserCdpClient, selfTargetId, this.#eventManager, this.#browsingContextStorage, userContextStorage, this.#realmStorage, networkStorage, this.#bluetoothProcessor, this.#preloadScriptStorage, defaultUserContextId, options?.['goog:prerenderingDisabled'] ?? false, options?.unhandledPromptBehavior, logger);
                 await browserCdpClient.sendCommand('Target.setDiscoverTargets', {
                     discover: true,
                 });

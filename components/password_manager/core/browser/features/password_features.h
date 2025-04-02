@@ -44,6 +44,10 @@ BASE_DECLARE_FEATURE(kClearUndecryptablePasswords);
 // Delete undecryptable passwords from the store when Sync is active.
 BASE_DECLARE_FEATURE(kClearUndecryptablePasswordsOnSync);
 
+// Marks form submission as failed whenever a POST request has failed for the
+// same iframe with 400-403 status code.
+BASE_DECLARE_FEATURE(kFailedLoginDetectionBasedOnResourceLoadingErrors);
+
 #if BUILDFLAG(IS_ANDROID)
 // Enables reading credentials from SharedPreferences.
 BASE_DECLARE_FEATURE(kFetchGaiaHashOnSignIn);

@@ -35,12 +35,12 @@ TestAXPlatformTreeManagerDelegate::AccessibilityGetAcceleratedWidget() {
 
 gfx::NativeViewAccessible
 TestAXPlatformTreeManagerDelegate::AccessibilityGetNativeViewAccessible() {
-  return nullptr;
+  return gfx::NativeViewAccessible();
 }
 
 gfx::NativeViewAccessible TestAXPlatformTreeManagerDelegate::
     AccessibilityGetNativeViewAccessibleForWindow() {
-  return nullptr;
+  return gfx::NativeViewAccessible();
 }
 
 void TestAXPlatformTreeManagerDelegate::AccessibilityHitTest(

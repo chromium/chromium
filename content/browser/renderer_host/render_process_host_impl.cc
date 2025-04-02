@@ -1301,6 +1301,18 @@ static RenderProcessHost* FindEmptyBackgroundHostForReuse(
   return nullptr;
 }
 
+bool IsRendererUnresponsive(RenderProcessHost* render_process_host) {
+  bool is_unresponsive = false;
+  render_process_host->ForEachRenderFrameHost(
+      [&is_unresponsive](RenderFrameHost* render_frame_host) {
+        if (render_frame_host->GetRenderWidgetHost()
+                ->IsCurrentlyUnresponsive()) {
+          is_unresponsive = true;
+        }
+      });
+  return is_unresponsive;
+}
+
 }  // namespace
 
 RenderProcessHostImpl::IOThreadHostImpl::IOThreadHostImpl(
@@ -4630,7 +4642,8 @@ bool RenderProcessHostImpl::MayReuseAndIsSuitable(
     const IsolationContext& isolation_context,
     const SiteInfo& site_info) {
   return host->MayReuseHost() &&
-         IsSuitableHost(host, isolation_context, site_info);
+         IsSuitableHost(host, isolation_context, site_info) &&
+         !IsRendererUnresponsive(host);
 }
 
 // static

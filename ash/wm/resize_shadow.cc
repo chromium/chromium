@@ -149,7 +149,7 @@ ResizeShadow::ResizeShadow(aura::Window* window,
 
   // If use static color, create the shadow image. Otherwise, observe the color
   // provider source to update the shadow color.
-  if (params_.color.GetSkColor()) {
+  if (params_.color.IsPhysical()) {
     UpdateShadowLayer();
   } else {
     Observe(RootWindowController::ForWindow(window)->color_provider_source());
@@ -173,13 +173,13 @@ ResizeShadow::~ResizeShadow() = default;
 void ResizeShadow::OnColorProviderChanged() {
   // This function will also be called when the color provider source is
   // destroyed. We should guarantee the color provider exists.
-  if (params_.color.GetColorId() && GetColorProviderSource()) {
+  if (params_.color.IsSemantic() && GetColorProviderSource()) {
     UpdateShadowLayer();
   }
 }
 
 void ResizeShadow::OnWindowParentToRootWindow() {
-  if (params_.color.GetColorId()) {
+  if (params_.color.IsSemantic()) {
     Observe(RootWindowController::ForWindow(window_)->color_provider_source());
   }
 }

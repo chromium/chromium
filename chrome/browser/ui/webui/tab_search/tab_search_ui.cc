@@ -35,6 +35,10 @@
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#endif
+
 TabSearchUIConfig::TabSearchUIConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
                                   chrome::kChromeUITabSearchHost) {}
@@ -203,6 +207,11 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       features::IsTabstripDeclutterEnabled() && !profile->IsIncognitoProfile());
   source->AddBoolean("dedupeEnabled", features::IsTabstripDedupeEnabled() &&
                                           !profile->IsIncognitoProfile());
+
+#if BUILDFLAG(ENABLE_GLIC)
+  source->AddResourcePath("alert_indicators/tab_media_glic_active.svg",
+                          IDR_GLIC_TAB_MEDIA_GLIC_ACTIVE);
+#endif
 
   ui::Accelerator accelerator(ui::VKEY_A,
                               ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR);

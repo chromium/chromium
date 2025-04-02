@@ -143,7 +143,7 @@ void ClearUserPolicyPrefs() {
 }
 
 id<GREYMatcher> ManagedProfileCreationTitleMatcher() {
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (![SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
     return grey_text(l10n_util::GetNSString(IDS_IOS_MANAGED_SIGNIN_TITLE));
   }
   return grey_accessibilityLabel(
@@ -151,7 +151,7 @@ id<GREYMatcher> ManagedProfileCreationTitleMatcher() {
 }
 
 id<GREYMatcher> ManagedProfileCreationSubtitleMatcher() {
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (![SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
     return grey_text(l10n_util::GetNSStringF(
         IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_SUBTITLE,
         base::UTF8ToUTF16(
@@ -210,7 +210,7 @@ void WaitForVisibleChromeManagementURL() {
 
 // Returns a matcher for the sign-in screen "Cancel" button.
 id<GREYMatcher> DeclineManagementButtonMatcher() {
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (![SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
     return grey_allOf(
         grey_accessibilityID(@"CancelAlertAction"),
         [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:IDS_CANCEL],
@@ -286,7 +286,12 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   // Sign in with managed account to fetch user policies.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    [SigninEarlGrey
+        signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
+  } else {
+    [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
+  }
 
   VerifyThatPoliciesAreSet();
 }
@@ -296,7 +301,12 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   // Sign in with managed account to fetch user policies.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    [SigninEarlGrey
+        signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
+  } else {
+    [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
+  }
   VerifyThatPoliciesAreSet();
 
   // Verify that the policies are cleared on sign out.
@@ -310,7 +320,12 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   // Sign in with managed account to fetch user policies.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    [SigninEarlGrey
+        signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
+  } else {
+    [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
+  }
 
   VerifyThatPoliciesAreSet();
 
@@ -400,7 +415,12 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   // Sign in with the managed account. This won't trigger the user policy fetch.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
-  [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    [SigninEarlGrey
+        signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
+  } else {
+    [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
+  }
 
   // Restart the browser while keeping sign-in by preserving the identity of the
   // managed account.
@@ -507,7 +527,7 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
 - (void)testSigninFlowConfirmationDialogNotShownWhenAlreadyBrowserPolicies {
   // With multi profile, the dialog is not shown at all, another screen is shown
   // that screen will be shown even if the browser is already managed.
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
     return;
   }
 

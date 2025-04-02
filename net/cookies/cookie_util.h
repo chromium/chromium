@@ -466,8 +466,6 @@ NET_EXPORT void DCheckIncludedAndExcludedCookieLists(
 // --test-third-party-cookie-phaseout.
 NET_EXPORT bool IsForceThirdPartyCookieBlockingEnabled();
 
-NET_EXPORT bool PartitionedCookiesDisabledByCommandLine();
-
 // Indicates whether the first hop in a request should have the
 // kStorageAccessGrantEligible override.
 [[nodiscard]] NET_EXPORT bool ShouldAddInitialStorageAccessApiOverride(

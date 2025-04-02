@@ -140,7 +140,6 @@
 <translation id="2084809735218147718">Άτομο που λέει ευχαριστώ στη νοηματική γλώσσα</translation>
 <translation id="2088690981887365033">Δίκτυο VPN</translation>
 <translation id="209653272837065803">Ο αποθηκευτικός χώρος δεν επαρκεί για να συνεχιστεί ο συγχρονισμός αρχείων</translation>
-<translation id="2111134541987263231">Ενεργοποιήστε την επιλογή <ph name="BEGIN_BOLD" />Να επιτρέπεται στην ανώνυμη περιήγηση<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> στοιχεία θα διαγραφούν και δεν θα είστε σε θέση να τα επαναφέρετε.</translation>
 <translation id="2122305276694332719">Η αυτόματη σύνδεση σε ένα κρυφό δίκτυο επιτρέπει σε άλλα άτομα να βλέπουν τη συσκευή σας και ορισμένες ρυθμίσεις δικτύου σας και δεν συνιστάται.</translation>
 <translation id="2125607626296734455">Xμερ</translation>
@@ -171,7 +170,6 @@
 <translation id="2304820083631266885">Πλανήτης</translation>
 <translation id="2305020378527873881">Το στοιχείο <ph name="VOLUME_NAME" /> καταργήθηκε.</translation>
 <translation id="2307462900900812319">Διαμόρφωση δικτύου</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Δεν είναι δυνατός ο εντοπισμός μιας επέκτασης με το αναγνωριστικό <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Επικοινωνήστε με τον διαχειριστή σας.}other{Δεν είναι δυνατός ο εντοπισμός των επεκτάσεων με τα αναγνωριστικά <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Επικοινωνήστε με τον διαχειριστή σας.}}</translation>
 <translation id="2325650632570794183">Αυτός ο τύπος αρχείου δεν υποστηρίζεται. Επισκεφτείτε το Chrome Web Store για να εντοπίσετε μια εφαρμογή που να μπορεί να ανοίξει αυτόν τον τύπο αρχείου.</translation>
 <translation id="2326539130272988168">Βουλγαρικά</translation>
 <translation id="233822363739146957">Ο αποθηκευτικός χώρος δεν επαρκεί για τον συγχρονισμό όλων των αρχείων σας</translation>
@@ -245,7 +243,6 @@
 <translation id="2923240520113693977">Εσθονικά
 </translation>
 <translation id="2938685643439809023">Μογγολικά</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Δεν είναι δυνατή η εύρεση της επέκτασης}other{Δεν είναι δυνατή η εύρεση των επεκτάσεων}}</translation>
 <translation id="2943503720238418293">Χρησιμοποιήστε πιο σύντομο όνομα</translation>
 <translation id="2949781154072577687">Μορφοποίηση <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Μέδουσα</translation>
@@ -304,7 +301,6 @@
 <translation id="3356580349448036450">Ολοκληρώθηκε</translation>
 <translation id="3358452157379365236">Κιθάρα</translation>
 <translation id="3368922792935385530">Σε σύνδεση</translation>
-<translation id="3372635229069101468">Κάντε κλικ στο στοιχείο <ph name="BEGIN_BOLD" />Λεπτομέρειες<ph name="END_BOLD" />.</translation>
 <translation id="3382143449143186018">Νεπαλικά με πληκτρολόγιο InScript</translation>
 <translation id="338691029516748599">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Διαχειριζόμενο από τον διαχειριστή σας, Σύνδεση</translation>
 <translation id="3408072735282270043">Ενεργοποίηση, <ph name="NETWORK_NAME" /></translation>
@@ -396,7 +392,6 @@
 <translation id="4124935795427217608">Μονόκερος</translation>
 <translation id="4131235941541910880">Μεταφέρετε τα στοιχεία που δεν θέλετε στον κάδο</translation>
 <translation id="4134804435730168042">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Ενεργοποίηση μετά τη ρύθμιση συσκευής</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Ενεργοποιήστε την παρακάτω επέκταση στην ανώνυμη περιήγηση:}other{Ενεργοποιήστε τις παρακάτω επεκτάσεις στην ανώνυμη περιήγηση:}}</translation>
 <translation id="4153015322587141338">Κάντε δεξί κλικ σε ένα αρχείο και επιλέξτε <ph name="PIN_COMMAND" /> για γρήγορη πρόσβαση στα αρχεία σας που βρίσκονται στο ράφι.</translation>
 <translation id="4157569377477607576">Η πολιτική διαχειριστή δεν συνιστά:</translation>
 <translation id="4159731583141908892">Το αρχείο <ph name="FILE_NAME" /> μετακινήθηκε.</translation>
@@ -495,9 +490,7 @@
 <translation id="4801956050125744859">Διατήρηση και των δύο</translation>
 <translation id="4804827417948292437">Αβοκάντο</translation>
 <translation id="4805966553127040832">Επαναφορά <ph name="COUNT" /> στοιχείων</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Ο οργανισμός σας απαιτεί μια επέκταση για να χρησιμοποιήσετε την ανώνυμη περιήγηση}other{Ο οργανισμός σας απαιτεί ορισμένες επεκτάσεις για να χρησιμοποιήσετε την ανώνυμη περιήγηση.}}</translation>
 <translation id="4826849268470072925">Ταμίλ ITRANS</translation>
-<translation id="482932175346970750">Πληκτρολογήστε <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> στο πρόγραμμα περιήγησης</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">Προβολή</translation>
 <translation id="485316830061041779">Γερμανικά
@@ -573,7 +566,6 @@
     σε αρχεία με άλλους χρήστες σε ένα μέρος.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Ανακτημένα αρχεία από το Google Drive</translation>
 <translation id="5278111733643988471">Για να επαναφέρετε αυτό το στοιχείο, σύρετέ το σε έναν νέο φάκελο εκτός του κάδου. Ο αρχικός φάκελος "<ph name="PARENT_FOLDER_NAME" />" αυτού του στοιχείου έχει διαγραφεί.</translation>
-<translation id="5283101102242354279">Ενεργοποιήστε μια επέκταση στην ανώνυμη περιήγηση:</translation>
 <translation id="5288441970121584418">Μπέργκερ</translation>
 <translation id="5293615890992542006">Η μετακίνηση αυτού του αρχείου έχει αποκλειστεί από την πολιτική διαχειριστή</translation>
 <translation id="5305688511332277257">Δεν υπάρχει εγκατεστημένο</translation>
@@ -829,7 +821,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Λεπτομέρειες</translation>
 <translation id="7246947237293279874">Διακομιστής μεσολάβησης FTP</translation>
 <translation id="7248671827512403053">Εφαρμογή</translation>
-<translation id="7252604552361840748">Βρείτε την επέκταση παραπάνω</translation>
 <translation id="7256405249507348194">Μη αναγνωρίσιμο σφάλμα: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Διαθέσιμες υπηρεσίες</translation>
 <translation id="7291818353625820805">Θέλετε να επαναλαμβάνεται το πάτημα των πλήκτρων; Απενεργοποίηση σημαδιών τονισμού στις Ρυθμίσεις πληκτρολογίου</translation>

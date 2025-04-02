@@ -98,7 +98,7 @@ void InspectorDOMDebuggerAgent::CollectEventListeners(
   for (AtomicString& type : event_types) {
     // We need to clone the EventListenerVector because `GetEffectiveFunction`
     // can execute script which may invalidate the iterator.
-    EventListenerVector listeners;
+    EventListenerVectorSnapshot listeners;
     if (auto* registered_listeners = target->GetEventListeners(type)) {
       listeners = *registered_listeners;
     } else {

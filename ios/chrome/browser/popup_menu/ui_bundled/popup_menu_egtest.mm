@@ -197,7 +197,6 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
   // Enable the IPH flag for this test
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.iph_feature_enabled = "IPH_iOSHistoryOnOverflowMenuFeature";
-  config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
   // Force the conditions that allow the iph to show.
   config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
   config.additional_args.push_back("SyncedAndFirstDevice");
@@ -238,7 +237,6 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
   // Enable the IPH flag for this test
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.iph_feature_enabled = "IPH_iOSHistoryOnOverflowMenuFeature";
-  config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
   // Force the conditions that allow the iph to show.
   config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
   config.additional_args.push_back("SyncedAndFirstDevice");
@@ -289,7 +287,6 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
   // Enable the IPH flag to ensure the IPH triggers
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.iph_feature_enabled = "IPH_iOSHistoryOnOverflowMenuFeature";
-  config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
   // Force the conditions that allow the iph to show.
   config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
   config.additional_args.push_back("SyncedAndFirstDevice");

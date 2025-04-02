@@ -26,7 +26,7 @@ public class SupportLibWebResourceRequest implements WebResourceRequestBoundaryI
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.AndroidX.WEB_RESOURCE_REQUEST_IS_REDIRECT")) {
             recordApiCall(ApiCall.WEB_RESOURCE_REQUEST_IS_REDIRECT);
-            return mAwRequest.isRedirect;
+            return mAwRequest.isRedirect();
         }
     }
 }

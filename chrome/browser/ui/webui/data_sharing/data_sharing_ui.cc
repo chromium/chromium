@@ -232,6 +232,14 @@ void DataSharingUI::OnShareLinkRequested(
   }
 }
 
+void DataSharingUI::OnGroupAction(
+    data_sharing::mojom::GroupAction action,
+    data_sharing::mojom::GroupActionProgress progress) {
+  if (delegate_) {
+    delegate_->OnGroupAction(action, progress);
+  }
+}
+
 void DataSharingUI::ShowErrorDialog(int status_code) {
   if (delegate_) {
     delegate_->ShowErrorDialog(status_code);

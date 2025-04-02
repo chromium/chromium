@@ -247,11 +247,14 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         Assert.assertEquals(2, mShouldInterceptRequestHelper.getUrls().size());
         Assert.assertEquals(
                 false,
-                mShouldInterceptRequestHelper.getRequestsForUrl(subframeUrl).isOutermostMainFrame);
+                mShouldInterceptRequestHelper
+                        .getRequestsForUrl(subframeUrl)
+                        .isOutermostMainFrame());
         Assert.assertEquals(
                 true,
-                mShouldInterceptRequestHelper.getRequestsForUrl(pageWithIframeUrl)
-                        .isOutermostMainFrame);
+                mShouldInterceptRequestHelper
+                        .getRequestsForUrl(pageWithIframeUrl)
+                        .isOutermostMainFrame());
     }
 
     @Test
@@ -270,7 +273,8 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         mActivityTestRule.loadUrlAsync(mAwContents, pageWithFormUrl);
         mShouldInterceptRequestHelper.waitForCallback(callCount);
         Assert.assertEquals(
-                "GET", mShouldInterceptRequestHelper.getRequestsForUrl(pageWithFormUrl).method);
+                "GET",
+                mShouldInterceptRequestHelper.getRequestsForUrl(pageWithFormUrl).getMethod());
 
         callCount = mShouldInterceptRequestHelper.getCallCount();
         JSUtils.clickOnLinkUsingJs(
@@ -280,7 +284,8 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
                 "link");
         mShouldInterceptRequestHelper.waitForCallback(callCount);
         Assert.assertEquals(
-                "POST", mShouldInterceptRequestHelper.getRequestsForUrl(pageToPostToUrl).method);
+                "POST",
+                mShouldInterceptRequestHelper.getRequestsForUrl(pageToPostToUrl).getMethod());
     }
 
     @Test
@@ -300,7 +305,7 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         mShouldInterceptRequestHelper.waitForCallback(callCount);
         Assert.assertEquals(
                 false,
-                mShouldInterceptRequestHelper.getRequestsForUrl(pageWithLinkUrl).hasUserGesture);
+                mShouldInterceptRequestHelper.getRequestsForUrl(pageWithLinkUrl).hasUserGesture());
 
         mActivityTestRule.waitForPixelColorAtCenterOfView(
                 mAwContents, mTestContainerView, CommonResources.LINK_COLOR);
@@ -308,7 +313,8 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         AwTestTouchUtils.simulateTouchCenterOfView(mTestContainerView);
         mShouldInterceptRequestHelper.waitForCallback(callCount);
         Assert.assertEquals(
-                true, mShouldInterceptRequestHelper.getRequestsForUrl(aboutPageUrl).hasUserGesture);
+                true,
+                mShouldInterceptRequestHelper.getRequestsForUrl(aboutPageUrl).hasUserGesture());
     }
 
     @Test
@@ -335,10 +341,10 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         Assert.assertEquals(2, mShouldInterceptRequestHelper.getUrls().size());
         Assert.assertEquals(pageUrl, mShouldInterceptRequestHelper.getUrls().get(0));
         Map<String, String> headers =
-                mShouldInterceptRequestHelper.getRequestsForUrl(pageUrl).requestHeaders;
+                mShouldInterceptRequestHelper.getRequestsForUrl(pageUrl).getRequestHeaders();
         Assert.assertFalse(headers.containsKey(refererHeaderName));
         Assert.assertEquals(imageUrl, mShouldInterceptRequestHelper.getUrls().get(1));
-        headers = mShouldInterceptRequestHelper.getRequestsForUrl(imageUrl).requestHeaders;
+        headers = mShouldInterceptRequestHelper.getRequestsForUrl(imageUrl).getRequestHeaders();
         Assert.assertTrue(headers.containsKey(refererHeaderName));
         Assert.assertEquals(pageUrl, headers.get(refererHeaderName));
     }
@@ -376,7 +382,7 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         mShouldInterceptRequestHelper.waitForCallback(callCount, 2);
 
         Map<String, String> headers =
-                mShouldInterceptRequestHelper.getRequestsForUrl(syncGetUrl).requestHeaders;
+                mShouldInterceptRequestHelper.getRequestsForUrl(syncGetUrl).getRequestHeaders();
         Assert.assertTrue(headers.containsKey(headerName));
         Assert.assertEquals(headerValue, headers.get(headerName));
     }
@@ -931,7 +937,7 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), pageWithImage);
         onReceivedErrorHelper.waitForCallback(onReceivedErrorHelperCallCount);
-        Assert.assertEquals(imageUrl, onReceivedErrorHelper.getRequest().url);
+        Assert.assertEquals(imageUrl, onReceivedErrorHelper.getRequest().getUrl());
     }
 
     @Test
@@ -1147,7 +1153,7 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         Assert.assertEquals(imageUrl, mShouldInterceptRequestHelper.getUrls().get(1));
 
         Map<String, String> headers =
-                mShouldInterceptRequestHelper.getRequestsForUrl(imageUrl).requestHeaders;
+                mShouldInterceptRequestHelper.getRequestsForUrl(imageUrl).getRequestHeaders();
         Assert.assertTrue(headers.containsKey(refererHeaderName));
         Assert.assertEquals(baseUrl, headers.get(refererHeaderName));
     }
@@ -1582,8 +1588,8 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
 
         // These are the cookies that were sent before we set a new one.
         var resourceRequest = mShouldInterceptRequestHelper.getRequestsForUrl(destinationUrl);
-        Assert.assertTrue(resourceRequest.requestHeaders.containsKey("Cookie"));
-        Assert.assertEquals("blah=yo", resourceRequest.requestHeaders.get("Cookie"));
+        Assert.assertTrue(resourceRequest.getRequestHeaders().containsKey("Cookie"));
+        Assert.assertEquals("blah=yo", resourceRequest.getRequestHeaders().get("Cookie"));
 
         // And then we should see our new value in the cookie manager.
         Assert.assertEquals("blah=yo; foo=bar", cookieManager.getCookie(destinationUrl));
@@ -1664,11 +1670,12 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         // These are the cookies that were sent before we set a new one.
         var resourceRequest = mShouldInterceptRequestHelper.getRequestsForUrl(destinationUrl);
         Assert.assertFalse(
-                "Cookie jar should be empty", resourceRequest.requestHeaders.containsKey("Cookie"));
+                "Cookie jar should be empty",
+                resourceRequest.getRequestHeaders().containsKey("Cookie"));
         Assert.assertNotEquals(
                 "Cookie jar should be empty",
                 "blah=yo",
-                resourceRequest.requestHeaders.get("Cookie"));
+                resourceRequest.getRequestHeaders().get("Cookie"));
 
         // And then we should see our new value in the cookie manager.
         Assert.assertEquals("blah=yo", cookieManager.getCookie(destinationUrl));

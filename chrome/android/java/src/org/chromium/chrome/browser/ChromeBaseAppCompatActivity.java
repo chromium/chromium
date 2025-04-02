@@ -207,7 +207,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                         EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled());
 
         if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
-            initializeSystemBarColors();
+            initializeSystemBarColors(mEdgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper());
         }
 
         if (VERSION.SDK_INT >= VERSION_CODES.UPSIDE_DOWN_CAKE
@@ -238,7 +238,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     }
 
     /** Set the default colors of the system bars for this activity. */
-    protected void initializeSystemBarColors() {
+    protected void initializeSystemBarColors(
+            EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper) {
         // TODO(crbug.com/379174458): Set color from Theme.
         final @ColorInt int defaultBgColor = SemanticColorUtils.getDefaultBgColor(this);
         @ColorInt
@@ -253,8 +254,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         defaultNavigationBarColor =
                 (defaultNavigationBarColor != 0) ? defaultNavigationBarColor : defaultBgColor;
 
-        EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper =
-                mEdgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper();
         edgeToEdgeSystemBarColorHelper.setStatusBarColor(defaultStatusBarColor);
         edgeToEdgeSystemBarColorHelper.setNavigationBarColor(defaultNavigationBarColor);
     }

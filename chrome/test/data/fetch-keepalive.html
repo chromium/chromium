@@ -8,10 +8,11 @@ const PARAMS = new URL(location.href).searchParams;
 const NUM_REQUESTS= PARAMS.has('requests') ? Number(PARAMS.get('requests')) : 1;
 const METHOD = PARAMS.get('method') || 'GET';
 const MODE = PARAMS.get('mode') || 'no-cors';
+const TARGET_URL = PARAMS.has('target_url') ?  decodeURIComponent(PARAMS.get('target_url')) : '/beacon';
 
 const promises = [];
 for (let i = 0; i < NUM_REQUESTS; i += 1) {
-  promises.push(fetch('/beacon', {
+  promises.push(fetch(TARGET_URL, {
     keepalive: true,
     cache: 'no-store',
     method: METHOD,

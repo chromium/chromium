@@ -296,11 +296,21 @@ VisitSegmentDatabase::QuerySegmentUsage(
     segments.push_back(std::move(segment));
   }
 
+  constexpr float kFloatEpsilon = std::numeric_limits<float>::epsilon();
   // Order by descending scores.
   std::sort(segments.begin(), segments.end(),
             [](const std::unique_ptr<PageUsageData>& lhs,
                const std::unique_ptr<PageUsageData>& rhs) {
-              return lhs->GetScore() > rhs->GetScore();
+              if (lhs->GetScore() - rhs->GetScore() > kFloatEpsilon) {
+                return true;
+              }
+              if (rhs->GetScore() - lhs->GetScore() > kFloatEpsilon) {
+                return false;
+              }
+
+              // If we reach here, scores are considered close enough.
+              // Sort by descending last visit time.
+              return lhs->GetLastVisitTimeslot() > rhs->GetLastVisitTimeslot();
             });
 
   // Phase 2: Read details (url, title, etc.) for the highest-ranked segments.

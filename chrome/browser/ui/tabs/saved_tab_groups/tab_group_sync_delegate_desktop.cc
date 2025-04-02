@@ -131,7 +131,8 @@ tabs::TabInterface* MaybeOpenTabFromSavedTab(const SavedTabGroupTab& saved_tab,
 TabGroupSyncDelegateDesktop::TabGroupSyncDelegateDesktop(
     TabGroupSyncService* service,
     Profile* profile)
-    : service_(service),
+    : profile_(profile),
+      service_(service),
       listener_(
           std::make_unique<SavedTabGroupModelListener>(service_, profile)) {}
 
@@ -254,6 +255,11 @@ std::vector<LocalTabGroupID>
 TabGroupSyncDelegateDesktop::GetLocalTabGroupIds() {
   std::vector<LocalTabGroupID> local_group_ids;
   for (Browser* browser : *BrowserList::GetInstance()) {
+    if (browser->profile() != profile_) {
+      // Skip browsers for other profiles.
+      continue;
+    }
+
     if (browser->tab_strip_model() &&
         browser->tab_strip_model()->SupportsTabGroups()) {
       std::vector<LocalTabGroupID> local_groups =
@@ -274,6 +280,11 @@ std::vector<LocalTabID> TabGroupSyncDelegateDesktop::GetLocalTabIdsForTabGroup(
 std::set<LocalTabID> TabGroupSyncDelegateDesktop::GetSelectedTabs() {
   std::set<LocalTabID> selected_tab_ids;
   for (Browser* browser : *BrowserList::GetInstance()) {
+    if (browser->profile() != profile_) {
+      // Skip browsers for other profiles.
+      continue;
+    }
+
     if (browser->tab_strip_model()) {
       tabs::TabInterface* active_tab =
           browser->tab_strip_model()->GetActiveTab();
@@ -289,6 +300,11 @@ std::set<LocalTabID> TabGroupSyncDelegateDesktop::GetSelectedTabs() {
 std::u16string TabGroupSyncDelegateDesktop::GetTabTitle(
     const LocalTabID& local_tab_id) {
   for (Browser* browser : *BrowserList::GetInstance()) {
+    if (browser->profile() != profile_) {
+      // Skip browsers for other profiles.
+      continue;
+    }
+
     TabStripModel* tab_strip_model = browser->tab_strip_model();
     if (tab_strip_model) {
       for (int i = 0; i < tab_strip_model->count(); ++i) {

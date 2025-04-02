@@ -25,8 +25,6 @@ WebAppsSyncTestBase::WebAppsSyncTestBase(TestType test_type)
   enabled_features.push_back(features::kPwaNavigationCapturing);
 #endif
 
-  enabled_features.push_back(features::kWebAppDontAddExistingAppsToSync);
-
   scoped_feature_list_.InitWithFeatures(enabled_features, {});
 }
 

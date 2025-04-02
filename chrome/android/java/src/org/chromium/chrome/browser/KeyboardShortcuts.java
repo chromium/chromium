@@ -29,6 +29,7 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.device.gamepad.GamepadList;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +86,7 @@ public class KeyboardShortcuts {
         KeyboardShortcutsSemanticMeaning.TOGGLE_BOOKMARK_BAR,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_IMMERSIVE,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_EXIT_IMMERSIVE,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_DEV_TOOLS,
+        KeyboardShortcutsSemanticMeaning.DEV_TOOLS,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_DEV_TOOLS_CONSOLE,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_DEV_TOOLS_INSPECT,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_DEV_TOOLS_TOGGLE,
@@ -169,7 +170,7 @@ public class KeyboardShortcuts {
         int NOT_IMPLEMENTED_EXIT_IMMERSIVE = 36;
 
         // Developer tools.
-        int NOT_IMPLEMENTED_DEV_TOOLS = 37;
+        int DEV_TOOLS = 37;
         int NOT_IMPLEMENTED_DEV_TOOLS_CONSOLE = 38;
         int NOT_IMPLEMENTED_DEV_TOOLS_INSPECT = 39;
         int NOT_IMPLEMENTED_DEV_TOOLS_TOGGLE = 40;
@@ -363,7 +364,7 @@ public class KeyboardShortcuts {
 
                 // Developer tools.
             case CTRL | SHIFT | KeyEvent.KEYCODE_I:
-                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_DEV_TOOLS;
+                return KeyboardShortcutsSemanticMeaning.DEV_TOOLS;
             case CTRL | SHIFT | KeyEvent.KEYCODE_J:
                 return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_DEV_TOOLS_CONSOLE;
             case CTRL | SHIFT | KeyEvent.KEYCODE_C:
@@ -682,6 +683,19 @@ public class KeyboardShortcuts {
                 ctrlShift);
         shortcutGroups.add(webpageShortcutGroup);
 
+        if (DeviceFormFactor.isDesktop()) {
+            KeyboardShortcutGroup developerShortcutGroup =
+                    new KeyboardShortcutGroup(
+                            context.getString(R.string.keyboard_shortcut_developer_group_header));
+            addShortcut(
+                    context,
+                    developerShortcutGroup,
+                    R.string.keyboard_shortcut_developer_tools,
+                    KeyEvent.KEYCODE_I,
+                    ctrlShift);
+            shortcutGroups.add(developerShortcutGroup);
+        }
+
         return shortcutGroups;
     }
 
@@ -770,6 +784,9 @@ public class KeyboardShortcuts {
                 } else {
                     break;
                 }
+            case KeyboardShortcutsSemanticMeaning.DEV_TOOLS:
+                menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.dev_tools, false);
+                return true;
             case KeyboardShortcutsSemanticMeaning.SAVE_PAGE:
                 menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.offline_page_id, false);
                 return true;

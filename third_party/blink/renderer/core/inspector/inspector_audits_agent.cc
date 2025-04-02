@@ -150,7 +150,7 @@ protocol::Response InspectorAuditsAgent::getEncodedResponse(
   if (!response.IsSuccess())
     return response;
 
-  Vector<char> base64_decoded_buffer;
+  Vector<uint8_t> base64_decoded_buffer;
   if (!is_base64_encoded || !Base64Decode(body, base64_decoded_buffer) ||
       base64_decoded_buffer.size() == 0) {
     return protocol::Response::ServerError("Failed to decode original image");
