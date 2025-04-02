@@ -18,10 +18,3 @@ EXTENSION_DATA = {
         "base64": get_base64_for_extension_file("chrome/packed.crx"),
     }
 }
-
-
-@pytest.fixture
-def extension_data(current_session):
-    browser_name = current_session.capabilities["browserName"]
-
-    return EXTENSION_DATA[browser_name]

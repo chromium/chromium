@@ -86182,7 +86182,7 @@
         ]
        ],
        "corner-shape-render-precise.html": [
-        "e7a3353db866500f0227aee98eca5fe539b6bf1c",
+        "b9092fb32123ddc416ee2f9e43e99cfd74da594f",
         [
          "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?border-radius=50%&corner-shape=bevel&box-shadow=10px%2010px%200%2010px%20black",
          [
@@ -86366,6 +86366,32 @@
          }
         ],
         [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-shape=square&border-bottom-left-radius=5px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=square&border-bottom-left-radius=5px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              350
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
          "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-shape=squircle&border-top-left-radius=25%&border-width=10px",
          [
           [
@@ -86422,32 +86448,6 @@
          [
           [
            "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-top-right-radius=30px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              180
-             ],
-             [
-              0,
-              350
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-shape=straight&border-bottom-left-radius=5px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=straight&border-bottom-left-radius=5px",
            "=="
           ]
          ],
@@ -86730,13 +86730,13 @@
          }
         ]
        ],
-       "corner-shape-straight.html": [
-        "04cd37b5a3170e7a725de9ed2ac92f8801c317c1",
+       "corner-shape-square.html": [
+        "3f86603bd669ff3d3212758cdbc0ba3cfd421d18",
         [
          null,
          [
           [
-           "/css/css-borders/tentative/corner-shape/corner-shape-straight-ref.html",
+           "/css/css-borders/tentative/corner-shape/corner-shape-square-ref.html",
            "=="
           ]
          ],
@@ -131703,7 +131703,7 @@
       ]
      ],
      "font-variant-emoji-003.html": [
-      "e197afa7c40f6537a7ab3c57c7143b52126d139f",
+      "a8f3f15e19b04174bc4c855b77f27071ea23b529",
       [
        null,
        [
@@ -131716,7 +131716,7 @@
       ]
      ],
      "font-variant-emoji-004.html": [
-      "d76828dff01d5fab2b374656caab1003d2f84840",
+      "39a910f03de57a32f8a1036512b249695eba5cfa",
       [
        null,
        [
@@ -223904,7 +223904,7 @@
        ]
       ],
       "svg-transform-nested-019.html": [
-       "4bb658d2f9ccc1d844141538b1e8cbc87396d684",
+       "319c2e28631453dc19ec0ddbfa7e4125e24fed04",
        [
         null,
         [
@@ -223920,11 +223920,11 @@
            [
             [
              0,
-             1
+             2
             ],
             [
              0,
-             299
+             400
             ]
            ]
           ]
@@ -233700,6 +233700,19 @@
      ]
     },
     "css-typed-om": {
+     "background-image-gradient.html": [
+      "00d7de91fb853dc1d6e7637ab9ed53cc141b1530",
+      [
+       null,
+       [
+        [
+         "/css/css-typed-om/background-image-gradient-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "rotate-by-added-angle.html": [
       "bb79a7df8d27c708e21a70a7589fbfa0422be3fb",
       [
@@ -233820,7 +233833,7 @@
       ]
      ],
      "appearance-auto-001.html": [
-      "deef1c5d0b52fe7c91a319abbd1f6ccc2eeda08d",
+      "60f90c587368fd224814a19bf5f5f44988ecd056",
       [
        null,
        [
@@ -233829,7 +233842,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "appearance-auto-input-non-widget-001.html": [
@@ -233859,7 +233888,7 @@
       ]
      ],
      "appearance-button-001.html": [
-      "317f56b18ae7109962340f3364d06d7116f97077",
+      "92e24c69113db8d8c12c80b052f74bf16edd5c44",
       [
        null,
        [
@@ -233868,11 +233897,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "appearance-checkbox-001.html": [
-      "54ebef94f24cd207f1e7a3f40f45cc825698df1c",
+      "69df5739d79141499eee82a9856cc71e7675385c",
       [
        null,
        [
@@ -233881,11 +233926,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "appearance-listbox-001.html": [
-      "b391754b7493242010cda8789bcb10beb0be5ea1",
+      "dd5b00188891a0001fbd74c084f6703e531964f2",
       [
        null,
        [
@@ -233894,11 +233955,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "appearance-menulist-001.html": [
-      "b4586870e3d623b2815405e1de3723f4a3618395",
+      "40892b14b7bf5b28a09a378883fa920667d4d923",
       [
        null,
        [
@@ -233907,11 +233984,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "appearance-menulist-button-001.html": [
-      "a170eb312643db5a639f3d1fd4ad173218bb6d9c",
+      "3f9cc6b6a56d063b87e24e3015986c6ee8802a48",
       [
        null,
        [
@@ -233920,7 +234013,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "appearance-menulist-button-002.tentative.html": [
@@ -233937,7 +234046,7 @@
       ]
      ],
      "appearance-meter-001.html": [
-      "da6f1ffa6cacd3ac0e77b343ffaa33ab44f4c2c2",
+      "bdcf886a0fadd554b8a30e3567385e2af088cbb0",
       [
        null,
        [
@@ -233946,11 +234055,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "appearance-progress-bar-001.html": [
-      "1573f69911566fc4410f6d49959f83dad140ce3e",
+      "3d1d626ea78a45517af4435f18f782a1f071b4c4",
       [
        null,
        [
@@ -233959,7 +234084,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "appearance-progress-bar-002.html": [
@@ -233976,7 +234117,7 @@
       ]
      ],
      "appearance-radio-001.html": [
-      "5a64ba7b0132201d5928837847aee446149a5663",
+      "bf6f103191c3c5f736072e0187b7ad6c2f81a2f8",
       [
        null,
        [
@@ -233985,7 +234126,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "appearance-revert-001.tentative.html": [
@@ -234002,7 +234159,7 @@
       ]
      ],
      "appearance-searchfield-001.html": [
-      "78741411551c667c3f3f317eeb475db883d9d7d4",
+      "9ed4110ee0303900da91e39fccd7269b22e4543e",
       [
        null,
        [
@@ -234011,11 +234168,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "appearance-textarea-001.html": [
-      "5c55ff9fbf6fd993aaf51114c175414a9ec8fe0b",
+      "890f2b20f9ad345c7bc2a728e11b8c733f28e9e4",
       [
        null,
        [
@@ -234024,7 +234197,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "appearance-textfield-001.html": [
@@ -246019,7 +246208,7 @@
       ]
      ],
      "webkit-appearance-auto-001.html": [
-      "fb0261b020f6fc2b1e3bfccb3da7d899f0337f79",
+      "df73cba13349ad843e5ca2326899717d78f3432a",
       [
        null,
        [
@@ -246028,7 +246217,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "webkit-appearance-auto-input-non-widget-001.html": [
@@ -246058,7 +246263,7 @@
       ]
      ],
      "webkit-appearance-button-001.html": [
-      "cf36b42384a7168d85a0475bded03aaadf26d52c",
+      "ac30091901aa91a1db7c17027fc6e73d1aa9e281",
       [
        null,
        [
@@ -246067,11 +246272,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "webkit-appearance-checkbox-001.html": [
-      "09dd3d76cd66d59522b02d1b6a0c0126bb5eda2a",
+      "a0dea650255027c0969bbe452973d4e124c82390",
       [
        null,
        [
@@ -246080,11 +246301,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "webkit-appearance-listbox-001.html": [
-      "2a33758e2b5671c1cf3317dd4936db9715ec4826",
+      "189286b8c71986cacb1e8e0b9e26e833a9929ad2",
       [
        null,
        [
@@ -246093,11 +246330,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "webkit-appearance-menulist-001.html": [
-      "b9826c4bd273a4d97c5113c43b94fec6b33bbb46",
+      "c5dac6920ff6308ea42b72d7e844057884bafb26",
       [
        null,
        [
@@ -246106,11 +246359,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "webkit-appearance-menulist-button-001.html": [
-      "ba4016a495aa59037a5f973127bb5602acc567bc",
+      "78d41248ed5198539dc17df54afbdc4c22d82431",
       [
        null,
        [
@@ -246119,7 +246388,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "webkit-appearance-menulist-button-002.tentative.html": [
@@ -246136,7 +246421,7 @@
       ]
      ],
      "webkit-appearance-meter-001.html": [
-      "05fb5ce25f24df1bf8fd2c72323a9deea9d0e112",
+      "496024d0505af749cacd91b530792d1401f73e0d",
       [
        null,
        [
@@ -246145,11 +246430,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "webkit-appearance-progress-bar-001.html": [
-      "b989502902d2b8716f7fcc0d8f18e124ec8cb94e",
+      "47db33234dacdf9075e5fae3aba4cf26fb25e9a1",
       [
        null,
        [
@@ -246158,7 +246459,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "webkit-appearance-progress-bar-002.html": [
@@ -246175,7 +246492,7 @@
       ]
      ],
      "webkit-appearance-radio-001.html": [
-      "52d9fb22ac144c2ba932e4a97bc65796760414b7",
+      "e10de4aca62c528d94bcc491816c7490c49867f4",
       [
        null,
        [
@@ -246184,11 +246501,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "webkit-appearance-searchfield-001.html": [
-      "8abd91e3c8faa9f5e02a8af6d2f4e66e1a0c6c29",
+      "af56298d4e4a9808c6ecbe9e01d29cad3fcea507",
       [
        null,
        [
@@ -246197,11 +246530,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "webkit-appearance-textarea-001.html": [
-      "cf3a15f4db6c9745de687cb38f593132d5ddf2f8",
+      "eba4d3044beae109150b619974a7cdfb898dfe2e",
       [
        null,
        [
@@ -246210,7 +246559,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "webkit-appearance-textfield-001.html": [
@@ -297210,6 +297575,19 @@
          {}
         ]
        ],
+       "date-time-with-trusted-types.html": [
+        "d510225bce5ae3b75b27a1c86147b81a69323085",
+        [
+         null,
+         [
+          [
+           "/html/semantics/forms/the-input-element/date-time-with-trusted-types-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "image01.html": [
         "e9028dceec736da67b8c8814cb103cfecbc518a0",
         [
@@ -331938,7 +332316,7 @@
         "8963c0ca2939c4036d9505461c9772b803b586f2",
         []
        ],
-       "corner-shape-straight-ref.html": [
+       "corner-shape-square-ref.html": [
         "4576240ef3288a954c9a627cbafd640eacd95444",
         []
        ],
@@ -331952,7 +332330,7 @@
          []
         ],
         "resolve-corner-style.js": [
-         "93e5112ea40cfd43ae2c19dbf8cfdf38e06c4c4e",
+         "e30dde244205abf809ae765d21ddbbee2809408c",
          []
         ]
        }
@@ -339729,11 +340107,11 @@
       []
      ],
      "font-variant-emoji-003-ref.html": [
-      "1e8cdb89cfa744b2f13ed7fc1d53ee06b8d735d9",
+      "f14584c13236853df9b5d13340aad03ec2434f91",
       []
      ],
      "font-variant-emoji-004-ref.html": [
-      "b15c8227cc4a019c369c5c97b53bd6810eb0b72f",
+      "633a94c4e51f32328bc68eeb74837aada6f4aff0",
       []
      ],
      "font-variant-emoji-1-notref.html": [
@@ -367182,6 +367560,10 @@
       "13ff52f509289cb229e9559f36f464c526b2945b",
       []
      ],
+     "background-image-gradient-ref.html": [
+      "588b934c7e81abaaf223f7659230aaf9b9c15389",
+      []
+     ],
      "historical-expected.txt": [
       "5be521fe5b91040b720c73bb5f53378cafaa4a5e",
       []
@@ -380615,10 +380997,6 @@
       []
      ]
     },
-    "idlharness.https-expected.txt": [
-     "25f7c78dbefe18a71b77afa2a2a8f355387c764d",
-     []
-    ],
     "polyfill": {
      "cast-polyfill.js": [
       "0c6b47b5cd0b7f046fff931e65a70d83a2b7c6d7",
@@ -384954,10 +385332,6 @@
      ],
      "get-interest-group-auction-data.https.window_9-12-expected.txt": [
       "c009c80a026fcec1fb5eeac04451d51f45b3148d",
-      []
-     ],
-     "kanon-status-below-threshold.https.window-expected.txt": [
-      "e27cfa443a0dcc5447592dc9af5d987467910dbd",
       []
      ],
      "private-aggregation.https.window_1-5-expected.txt": [
@@ -392272,7 +392646,7 @@
        []
       ],
       "canvas-promise-test.js": [
-       "09e01633ace2fc9157ae8b98f47fed3edc7a90d9",
+       "afcbec9a6d537efaf30fd86b7d6e4ed9e8566349",
        []
       ],
       "canvas-spec.css": [
@@ -400826,6 +401200,10 @@
        ],
        "color.window-expected.txt": [
         "ca5a73fcdc9eaa6fff3724c3d7a152d90d6494cf",
+        []
+       ],
+       "date-time-with-trusted-types-ref.html": [
+        "8cea76c7f0e17e42be07582d478a3f536b193c9b",
         []
        ],
        "hidden-charset-case-sensitive-child.html": [
@@ -424859,23 +425237,23 @@
       []
      ],
      "navigation-report-only-support.html": [
-      "791559f7a19bec50648245c15c1e92723034d5b9",
+      "d4e4ded7daad113f34d56288ccb9a1bf480e45d2",
       []
      ],
      "navigation-report-only-support.html.headers": [
-      "4c1ff15e167a9581839c64532078440689ca741c",
+      "e9e9a92f766e905a407252dddd4147b50bd8c740",
       []
      ],
      "navigation-support.html": [
-      "47f33c9fb6430cb0ded9f09facd8a3974901d1f5",
+      "306cc0e84f7dfbf5aacee2c0dadc7b2e08512fa6",
       []
      ],
      "navigation-support.html.headers": [
-      "604e765da46d85fe8ab85d3097fe7c2cbe00a930",
+      "cd8c4c6d24a0fd4099bb5c5cff5629c5f58fb096",
       []
      ],
      "navigation-support.js": [
-      "41dce761def94a328ac75f05699a6f079e0d0bee",
+      "8449dd202b6c76d1830dc348fc84ef927baae9f4",
       []
      ],
      "send-plain-string-to-trusted-type-sink.html": [
@@ -429788,10 +430166,6 @@
         "0f229bd3f996728daac75ccbf22ffbc84517b40b",
         []
        ],
-       "conftest.py": [
-        "e59af399b07c343b504a28f5ee8f1eb7ebd3df9f",
-        []
-       ],
        "install": {
         "__init__.py": [
          "8b137891791fe96927ad78e64b0aad7bded08bdc",
@@ -430278,7 +430652,7 @@
        []
       ],
       "fixtures.py": [
-       "21dbfcc25bcf33e7933f32e657d7b731fc15da99",
+       "6ccf394f27caafec6d54cae4967b9e9a63f4d57f",
        []
       ],
       "fixtures_bidi.py": [
@@ -430395,6 +430769,10 @@
       ],
       "sync.py": [
        "4e92bcdf23e044de9d6ec00c2f90d39f9672e7e3",
+       []
+      ],
+      "web_extension.py": [
+       "ba9473a7947e9f6cee367f47d7aadf5486fbc1fa",
        []
       ],
       "webextensions": {
@@ -481250,7 +481628,7 @@
       ]
      ],
      "to-javascript-parent-initiated-child-csp.html": [
-      "41945fa460fc4ec2b776db5bb90a116d76532701",
+      "41c57c6e04626c993be68079ca01a92c3f8f4393",
       [
        null,
        {}
@@ -484725,7 +485103,7 @@
      ]
     ],
     "cookieStore_special_names.https.any.js": [
-     "6b18c4f0668a4dfad5864273082bc1ae7ba6ca95",
+     "e2a3df7fe33f3d4325cb1f602d5582dba97da627",
      [
       "cookie-store/cookieStore_special_names.https.any.html",
       {
@@ -491709,21 +492087,21 @@
         ]
        ],
        "corner-shape-computed.html": [
-        "1d084e23397b3bd34764c8dd874aa69bd8678a89",
+        "0f009f349bf55d289ab3a7549ea80ca164fa7a94",
         [
          null,
          {}
         ]
        ],
        "corner-shape-invalid.html": [
-        "582617a634afe223aa7f7aca5974b4b58a5a54f6",
+        "6aee773f4a4005e1365ff7601b69cc4c08533e46",
         [
          null,
          {}
         ]
        ],
        "corner-shape-valid.html": [
-        "32aaa89fc5b18ae332e983852f61d84397f5cae4",
+        "bf5de38af10ce5e2b91b2a2af1f1e78a366c9e31",
         [
          null,
          {}
@@ -577198,7 +577576,7 @@
       ]
      ],
      "auction-config.https.window.js": [
-      "e32d8b31773295aa498db9109f20128109def8da",
+      "e0e27d23db2feaf446b4003964b34b3035cb73f1",
       [
        "fledge/tentative/auction-config.https.window.html?1-5",
        {
@@ -584196,36 +584574,6 @@
       "419b94bd7814756059a2029562510915a1c648ef",
       [
        "fledge/tentative/kanon-status-below-threshold.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/resources/testdriver.js"
-         ],
-         [
-          "script",
-          "/resources/testdriver-vendor.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/fledge-util.sub.js"
-         ],
-         [
-          "script",
-          "/common/subset-tests.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "kanon-status-not-calculated.https.window.js": [
-      "965082d8ffd0a2f4cbdedea298f19abddab1afa9",
-      [
-       "fledge/tentative/kanon-status-not-calculated.https.window.html",
        {
         "script_metadata": [
          [
@@ -727993,7 +728341,7 @@
      ]
     ],
     "trusted-types-navigation.html": [
-     "74a25fa3480c3779da87705812e26a3043edd2bc",
+     "f29405651f11a47d398cde6d01f57ce71afd97b3",
      [
       null,
       {}
@@ -764226,6 +764574,117 @@
          [
           "global",
           "window,worker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "inputs-with-special-names.https.any.js": [
+      "2921cf1fe5ebfd33e504e81bf5367f4940a3ac3c",
+      [
+       "webnn/conformance_tests/inputs-with-special-names.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test input with special character names"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/inputs-with-special-names.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test input with special character names"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/inputs-with-special-names.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test input with special character names"
+         ],
+         [
+          "global",
+          "window"
          ],
          [
           "variant",
@@ -829014,7 +829473,7 @@
          ]
         ],
         "response_completed_cached.py": [
-         "3f5cbad1047df2bca9038b7ce069ced79c0a2473",
+         "2c7ea02d6011e30ff4ef19050b0cf88681eea653",
          [
           null,
           {}
@@ -829030,7 +829489,7 @@
          ]
         ],
         "response_started_cached.py": [
-         "57db04a3afe7ccc09dc771ad11e5d896c4535f6a",
+         "db34035fca15d5b7c2749c316ed6eb8905cabbe7",
          [
           null,
           {}
