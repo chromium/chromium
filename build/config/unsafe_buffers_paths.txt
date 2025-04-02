@@ -5,7 +5,7 @@
 # See `docs/unsafe_buffers.md`.
 
 # Checks to enable
-.buffers
+.buffers,libc
 
 # Directories to exempt from checks
 -base/allocator/
