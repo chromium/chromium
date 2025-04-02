@@ -270,7 +270,12 @@ struct TypeConverter<mojom::AutocompleteMatchPtr, AutocompleteMatch> {
         base::UTF16ToUTF8(input.inline_autocompletion);
     result->destination_url = input.destination_url.spec();
     result->stripped_destination_url = input.stripped_destination_url.spec();
-    result->image = input.ImageUrl().spec().c_str();
+
+    GURL image = input.ImageUrl();
+    if (image.is_empty())
+      image = input.icon_url;
+    result->image = image.spec().c_str();
+
     result->contents = base::UTF16ToUTF8(input.contents);
     result->contents_class =
         mojo::ConvertTo<std::vector<mojom::ACMatchClassificationPtr>>(
