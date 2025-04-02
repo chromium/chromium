@@ -218,6 +218,11 @@ int MockMediaSessionPlayerObserver::received_request_visibility_calls() const {
   return received_request_visibility_calls_;
 }
 
+int MockMediaSessionPlayerObserver::
+    received_auto_picture_in_picture_info_changed_calls() const {
+  return received_auto_picture_in_picture_info_changed_calls_;
+}
+
 bool MockMediaSessionPlayerObserver::HasAudio(int player_id) const {
   EXPECT_GE(player_id, 0);
   EXPECT_GT(players_.size(), static_cast<size_t>(player_id));
@@ -253,6 +258,17 @@ bool MockMediaSessionPlayerObserver::SupportsAudioOutputDeviceSwitching(
 media::MediaContentType MockMediaSessionPlayerObserver::GetMediaContentType()
     const {
   return media_content_type_;
+}
+
+void MockMediaSessionPlayerObserver::OnAutoPictureInPictureInfoChanged(
+    int player_id,
+    std::string_view auto_picture_in_picture_info) {
+  EXPECT_GE(player_id, 0);
+  EXPECT_GT(players_.size(), static_cast<size_t>(player_id));
+
+  ++received_auto_picture_in_picture_info_changed_calls_;
+  players_[player_id].auto_picture_in_picture_info_ =
+      auto_picture_in_picture_info;
 }
 
 void MockMediaSessionPlayerObserver::SetMediaContentType(

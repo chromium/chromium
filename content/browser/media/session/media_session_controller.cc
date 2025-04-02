@@ -327,4 +327,18 @@ media::MediaContentType MediaSessionController::GetMediaContentType() const {
   return media_content_type_;
 }
 
+void MediaSessionController::OnAutoPictureInPictureInfoChanged(
+    int player_id,
+    std::string_view auto_picture_in_picture_info) {
+  DCHECK_EQ(player_id_, player_id);
+
+  auto* observer = web_contents_->media_web_contents_observer();
+  if (!observer->IsMediaPlayerRemoteAvailable(id_)) {
+    return;
+  }
+
+  observer->GetMediaPlayerRemote(id_)->RecordAutoPictureInPictureInfo(
+      std::string(auto_picture_in_picture_info));
+}
+
 }  // namespace content

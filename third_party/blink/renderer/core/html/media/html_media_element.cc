@@ -5000,6 +5000,14 @@ void HTMLMediaElement::SuspendForFrameClosed() {
     web_media_player_->SuspendForFrameClosed();
 }
 
+void HTMLMediaElement::RecordAutoPictureInPictureInfo(
+    const String& auto_picture_in_picture_info) {
+  if (web_media_player_) {
+    web_media_player_->RecordAutoPictureInPictureInfo(
+        auto_picture_in_picture_info);
+  }
+}
+
 bool HTMLMediaElement::MediaShouldBeOpaque() const {
   return !IsMediaDataCorsSameOrigin() && ready_state_ < kHaveMetadata &&
          EffectivePreloadType() != WebMediaPlayer::kPreloadNone;

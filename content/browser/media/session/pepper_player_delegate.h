@@ -55,6 +55,9 @@ class PepperPlayerDelegate : public MediaSessionPlayerObserver {
   std::string GetAudioOutputSinkId(int player_id) const override;
   bool SupportsAudioOutputDeviceSwitching(int player_id) const override;
   media::MediaContentType GetMediaContentType() const override;
+  void OnAutoPictureInPictureInfoChanged(
+      int player_id,
+      std::string_view auto_picture_in_picture_info) override {}
 
  private:
   void SetVolume(int player_id, double volume);

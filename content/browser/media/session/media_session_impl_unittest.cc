@@ -1010,6 +1010,24 @@ TEST_F(MediaSessionImplTest, AmbientPlayerDoesNotRequestFocusWhenSuspended) {
   observer.WaitForState(MediaSessionInfo::SessionState::kSuspended);
 }
 
+TEST_F(MediaSessionImplTest, AutoPictureInPictureInfoChanged) {
+  EXPECT_EQ(
+      0,
+      player_observer_->received_auto_picture_in_picture_info_changed_calls());
+
+  mock_media_session_service().EnableAction(
+      MediaSessionAction::kEnterPictureInPicture);
+  mock_media_session_service().FlushForTesting();
+
+  int player = player_observer_->StartNewPlayer();
+  GetMediaSession()->AddPlayer(player_observer_.get(), player);
+  GetMediaSession()->EnterAutoPictureInPicture();
+
+  EXPECT_EQ(
+      1,
+      player_observer_->received_auto_picture_in_picture_info_changed_calls());
+}
+
 class MediaSessionImplWithMediaSessionClientTest : public MediaSessionImplTest {
  protected:
   TestMediaSessionClient client_;
