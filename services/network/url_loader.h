@@ -20,6 +20,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/types/optional_ref.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -45,6 +46,7 @@
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
 #include "services/network/public/cpp/orb/orb_api.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/private_network_access_check_result.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
@@ -322,6 +324,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       net::CookieSettingOverrides devtools_overrides,
       const ResourceRequest& request,
       bool emit_metrics);
+
+  // Returns an optional reference to a constant permissions policy that belongs
+  // to the request. `this` must outlive the caller of this method.
+  base::optional_ref<const network::PermissionsPolicy> GetPermissionsPolicy()
+      const {
+    return permissions_policy_;
+  }
 
  private:
   // This class is used to set the URLLoader as user data on a URLRequest. This
@@ -946,6 +955,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   std::optional<std::pair<mojo::ScopedDataPipeProducerHandle,
                           mojo::ScopedDataPipeConsumerHandle>>
       pending_pipe_handles_;
+
+  // Permissions policy of the request.
+  const std::optional<network::PermissionsPolicy> permissions_policy_;
 
   base::WeakPtrFactory<URLLoader> weak_ptr_factory_{this};
 };

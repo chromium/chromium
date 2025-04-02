@@ -741,7 +741,8 @@ URLLoader::URLLoader(
       include_load_timing_internal_info_with_response_(
           request.trusted_params.has_value()),
       provide_data_use_updates_(context.DataUseUpdatesEnabled()),
-      partial_decoder_decoding_buffer_size_(net::kMaxBytesToSniff) {
+      partial_decoder_decoding_buffer_size_(net::kMaxBytesToSniff),
+      permissions_policy_(request.permissions_policy) {
   DCHECK(delete_callback_);
 
   // crbug.com/387537990: Experiment with creating the mojo data pipe

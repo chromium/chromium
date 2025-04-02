@@ -897,7 +897,8 @@ void CorsURLLoader::StartRequest() {
             network::URLLoader::CalculateCookieSettingOverrides(
                 factory_cookie_setting_overrides_,
                 devtools_cookie_setting_overrides_, request_,
-                /*emit_metrics=*/false)) ==
+                /*emit_metrics=*/false),
+            request_.permissions_policy) ==
             net::cookie_util::StorageAccessStatus::kInactive) {
       // Lower layers will add the Sec-Fetch-Storage-Access header, and the
       // server may respond with a "retry" header. The server needs to know the
