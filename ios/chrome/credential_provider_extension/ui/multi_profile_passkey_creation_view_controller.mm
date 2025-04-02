@@ -8,6 +8,7 @@
 #import "ios/chrome/common/ui/favicon/favicon_container_view.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/credential_provider_extension/favicon_util.h"
 #import "ios/chrome/credential_provider_extension/passkey_request_details.h"
 
 namespace {
@@ -83,6 +84,12 @@ NSAttributedString* AsAttributedString(NSString* text,
   // Information about a passkey credential request.
   PasskeyRequestDetails* _passkeyRequestDetails;
 
+  // The favicon view shown by this view controller's view.
+  FaviconView* _faviconView;
+
+  // The favicon attributes, if a favicon is available. Nil otherwise.
+  FaviconAttributes* _faviconAttributes;
+
   // The gaia ID associated with the current account
   NSString* _gaia;
 
@@ -95,6 +102,7 @@ NSAttributedString* AsAttributedString(NSString* text,
             initWithDetails:(PasskeyRequestDetails*)passkeyRequestDetails
                        gaia:(NSString*)gaia
                   userEmail:(NSString*)userEmail
+                    favicon:(NSString*)favicon
     navigationItemTitleView:(UIView*)navigationItemTitleView
                    delegate:
                        (id<MultiProfilePasskeyCreationViewControllerDelegate>)
@@ -106,6 +114,14 @@ NSAttributedString* AsAttributedString(NSString* text,
     _gaia = gaia;
     _multiProfilePasskeyCreationViewControllerDelegate = delegate;
     _navigationItemTitleView = navigationItemTitleView;
+
+    // Attempt to fetch the favicon.
+    if (favicon) {
+      __weak __typeof(self) weakSelf = self;
+      FetchFaviconAsync(favicon, ^(FaviconAttributes* attributes) {
+        [weakSelf setFaviconAttributes:attributes];
+      });
+    }
   }
   return self;
 }
@@ -134,6 +150,8 @@ NSAttributedString* AsAttributedString(NSString* text,
 
   self.view.backgroundColor = GetBackgroundColor();
   self.navigationItem.titleView = _navigationItemTitleView;
+
+  [_faviconView configureWithAttributes:_faviconAttributes];
 }
 
 #pragma mark - PromoStyleViewController
@@ -187,6 +205,11 @@ NSAttributedString* AsAttributedString(NSString* text,
   return specificContentView;
 }
 
+// Sets the favicon attributes.
+- (void)setFaviconAttributes:(FaviconAttributes*)attributes {
+  _faviconAttributes = attributes;
+}
+
 // Creates the favicon view for the passkey information view.
 - (UIView*)iconView {
   FaviconContainerView* faviconContainerView =
@@ -197,10 +220,10 @@ NSAttributedString* AsAttributedString(NSString* text,
               imageWithTintColor:[UIColor colorNamed:kTextQuaternaryColor]
                    renderingMode:UIImageRenderingModeAlwaysOriginal]];
 
-  // TODO(crbug.com/382479915): Verify if the favicon for the current URL is
-  // available before using the default icon.
-  [faviconContainerView.faviconView
-      configureWithAttributes:defaultWorldIconAttributes];
+  // Use the default world icon as the default favicon.
+  _faviconView = faviconContainerView.faviconView;
+  [_faviconView configureWithAttributes:defaultWorldIconAttributes];
+
   [faviconContainerView setFaviconBackgroundColor:GetBackgroundColor()];
   [faviconContainerView setFaviconBorderColor:[UIColor clearColor]];
   return faviconContainerView;

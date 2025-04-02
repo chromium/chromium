@@ -25,6 +25,7 @@ class MultiProfilePasskeyCreationViewControllerTest : public PlatformTest {
                 initWithDetails:details
                            gaia:nil
                       userEmail:@"peter.parker@gmail.com"
+                        favicon:nil
         navigationItemTitleView:navigationView
                        delegate:nil];
   }

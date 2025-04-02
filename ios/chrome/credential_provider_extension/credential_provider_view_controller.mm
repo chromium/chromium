@@ -1017,16 +1017,34 @@ enum class PasskeyCreationEligibility {
                    completion:nil];
 }
 
+// Returns the favicon associated with the rpId if it exists.
+// Returns nil otherwise.
+- (NSString*)faviconForRpId:(NSString*)rpId {
+  // Verify if a favicon already exists for the provided rpId.
+  NSArray<id<Credential>>* credentials = self.credentialStore.credentials;
+  NSUInteger credentialIndex =
+      [credentials indexOfObjectPassingTest:^BOOL(id<Credential> credential,
+                                                  NSUInteger idx, BOOL* stop) {
+        return [credential.rpId isEqualToString:rpId] &&
+               credential.favicon.length > 0;
+      }];
+  return credentialIndex != NSNotFound ? credentials[credentialIndex].favicon
+                                       : nil;
+}
+
 // Shows a confirmation dialog to the user before performing passkey creation.
 - (void)showMultiProfilePasskeyCreationDialogWithDetails:
             (PasskeyRequestDetails*)passkeyRequestDetails
                                                     gaia:(NSString*)gaia {
+  NSString* favicon =
+      [self faviconForRpId:passkeyRequestDetails.relyingPartyIdentifier];
   MultiProfilePasskeyCreationViewController*
       multiProfilePasskeyCreationViewController =
           [[MultiProfilePasskeyCreationViewController alloc]
                       initWithDetails:passkeyRequestDetails
                                  gaia:gaia
                             userEmail:[self userEmail]
+                              favicon:favicon
               navigationItemTitleView:self.passkeyNavigationItemTitleView
                              delegate:self];
 
