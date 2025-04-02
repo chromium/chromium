@@ -414,33 +414,21 @@ void RenderWidgetHostViewIOS::UpdateScreenInfo() {
       display_screen->GetScreenInfosNearestDisplay(
           display_screen->GetPrimaryDisplay().id());
 
-  if (screen_infos_ == new_screen_infos) {
-    return;
-  }
+  gfx::Rect view_bounds_dips([ui_view_->view_ bounds]);
+  const bool screen_info_changed = screen_infos_ != new_screen_infos;
+  const bool size_changed =
+      view_bounds_dips.size() != browser_compositor_->GetRendererSize();
+  screen_infos_ = std::move(new_screen_infos);
 
-  if (!IsTesting()) {
-    browser_compositor_->UpdateSurfaceFromUIView(
-        gfx::Rect([ui_view_->view_ bounds]).size());
+  if (!IsTesting() && (size_changed || screen_info_changed)) {
+    browser_compositor_->UpdateSurfaceFromUIView(view_bounds_dips.size());
   }
   ComputeDisplayFeature();
-
-  // We need to look at `orientation_type` which is marked as kUndefined at
-  // startup. Unlike `orientation_angle` that uses 0 degrees as the default.
-  // This accounts for devices which have a default landscape orientation, such
-  // as tablets. We do not want the first UpdateScreenInfo to be treated as a
-  // rotation.
-  const bool has_rotation_changed =
-      screen_infos_.current().orientation_type !=
-          display::mojom::ScreenOrientation::kUndefined &&
-      screen_infos_.current().orientation_type !=
-          new_screen_infos.current().orientation_type;
-  screen_infos_ = std::move(new_screen_infos);
 
   // Notify the associated RenderWidgetHostImpl when screen info has changed.
   // That will synchronize visual properties needed for frame tree rendering
   // and for web platform APIs that expose screen and window info and events.
-  if (host()) {
-    OnSynchronizedDisplayPropertiesChanged(has_rotation_changed);
+  if (size_changed || screen_info_changed) {
     host()->NotifyScreenInfoChanged();
   }
 }
