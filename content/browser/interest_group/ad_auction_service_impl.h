@@ -23,6 +23,8 @@
 #include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/bidding_and_auction_serializer.h"
+#include "content/browser/interest_group/dwa_auction_metrics.h"
+#include "content/browser/interest_group/interest_group_auction.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/content_browser_client.h"
@@ -246,6 +248,10 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // may keep references to the AuctionMetricsRecorders owned by the
   // `auction_metrics_recorder_manager_`.
   AuctionMetricsRecorderManager auction_metrics_recorder_manager_;
+
+  // Keeps track of metrics associated with each seller across the auction
+  // run.
+  DwaAuctionMetricsManager dwa_auction_metrics_manager_;
 
   // This must be before `auctions_`, since auctions may own references to
   // worklets it manages.

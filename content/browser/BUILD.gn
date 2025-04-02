@@ -1238,6 +1238,8 @@ source_set("browser") {
     "interest_group/debuggable_auction_worklet.h",
     "interest_group/debuggable_auction_worklet_tracker.cc",
     "interest_group/debuggable_auction_worklet_tracker.h",
+    "interest_group/dwa_auction_metrics.h",
+    "interest_group/dwa_auction_metrics.cc",
     "interest_group/devtools_enums.h",
     "interest_group/for_debugging_only_report_util.cc",
     "interest_group/for_debugging_only_report_util.h",

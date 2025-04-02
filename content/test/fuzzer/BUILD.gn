@@ -464,6 +464,7 @@ content_mojolpm_fuzzer_test("ad_auction_service_mojolpm_fuzzer") {
     "//content/public/browser:browser_sources",
     "//content/test:test_support",
     "//services/data_decoder/public/cpp:test_support",
+    "//third_party/metrics_proto",
   ]
 
   proto_deps = [

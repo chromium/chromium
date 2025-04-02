@@ -480,9 +480,10 @@ void AdAuctionServiceImpl::RunAdAuction(
 
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
       auction_metrics_recorder_manager_.CreateAuctionMetricsRecorder(),
-      &auction_worklet_manager_, &auction_nonce_manager_,
-      &GetInterestGroupManager(), render_frame_host().GetBrowserContext(),
-      private_aggregation_manager_, std::move(ad_auction_page_data_callback),
+      &dwa_auction_metrics_manager_, &auction_worklet_manager_,
+      &auction_nonce_manager_, &GetInterestGroupManager(),
+      render_frame_host().GetBrowserContext(), private_aggregation_manager_,
+      std::move(ad_auction_page_data_callback),
       // Unlike other callbacks, this needs to be safe to call after destruction
       // of the AdAuctionServiceImpl, so that the reporter can outlive it.
       base::BindRepeating(
