@@ -472,9 +472,7 @@ void AdjustVirtualCardSuggestionContent(Suggestion& suggestion,
         Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
   }
   suggestion.iph_metadata = Suggestion::IPHMetadata(
-      suggestion.HasDeactivatedStyle() &&
-              base::FeatureList::IsEnabled(
-                  features::kAutofillEnableVcnGrayOutForMerchantOptOut)
+      suggestion.HasDeactivatedStyle()
           ? &feature_engagement::
                 kIPHAutofillDisabledVirtualCardSuggestionFeature
           : &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
@@ -657,31 +655,6 @@ GetVirtualCreditCardsForStandaloneCvcField(
   return virtual_card_guid_to_last_four_map;
 }
 
-// Returns true if we should show a virtual card option for the server card
-// `card`, false otherwise.
-bool ShouldShowVirtualCardOptionForServerCard(const CreditCard& card,
-                                              const AutofillClient& client) {
-  // If the card is not enrolled into virtual cards, we should not show a
-  // virtual card suggestion for it.
-  if (card.virtual_card_enrollment_state() !=
-      CreditCard::VirtualCardEnrollmentState::kEnrolled) {
-    return false;
-  }
-  // We should not show a suggestion for this card if the autofill
-  // optimization guide returns that this suggestion should be blocked.
-  if (auto* autofill_optimization_guide =
-          client.GetAutofillOptimizationGuide()) {
-    return !autofill_optimization_guide->ShouldBlockFormFieldSuggestion(
-               client.GetLastCommittedPrimaryMainFrameOrigin().GetURL(),
-               card) ||
-           base::FeatureList::IsEnabled(
-               features::kAutofillEnableVcnGrayOutForMerchantOptOut);
-  }
-  // No conditions to prevent displaying a virtual card suggestion were
-  // found, so return true.
-  return true;
-}
-
 // Returns display name based on `issuer_id` in a vector.
 std::u16string GetDisplayNameForIssuerId(const std::string& issuer_id) {
   if (issuer_id == "paypay") {
@@ -733,8 +706,11 @@ bool ShouldShowVirtualCardOption(const CreditCard* candidate_card,
     return false;
   }
   candidate_card = candidate_server_card;
-  return ShouldShowVirtualCardOptionForServerCard(*candidate_server_card,
-                                                  client);
+
+  // Virtual card suggestion is shown only when the card is enrolled into
+  // virtual cards.
+  return candidate_card->virtual_card_enrollment_state() ==
+         CreditCard::VirtualCardEnrollmentState::kEnrolled;
 }
 
 // Returns the local and server cards ordered by the Autofill ranking.

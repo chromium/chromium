@@ -1569,9 +1569,6 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 // of virtual cards.
 TEST_F(PaymentsSuggestionGeneratorTest,
        ShouldShowVirtualCardOption_InDisabledStateForOptedOutMerchants) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableVcnGrayOutForMerchantOptOut);
-
   // Create an enrolled server card.
   CreditCard server_card =
       test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
@@ -1585,36 +1582,6 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       .WillByDefault(testing::Return(true));
   EXPECT_TRUE(
       ShouldShowVirtualCardOptionForTest(&server_card, *autofill_client()));
-}
-
-// Test that the virtual card option is not shown if the merchant is opted-out
-// of virtual cards.
-TEST_F(PaymentsSuggestionGeneratorTest,
-       ShouldNotShowVirtualCardOption_MerchantOptedOutOfVirtualCards) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      features::kAutofillEnableVcnGrayOutForMerchantOptOut);
-  // Create an enrolled server card.
-  CreditCard server_card =
-      CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
-  server_card.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  payments_data().AddServerCreditCard(server_card);
-
-  // Create a local card with same information.
-  CreditCard local_card =
-      CreateLocalCard(/*guid=*/"00000000-0000-0000-0000-000000000002");
-
-  // If the URL is opted-out of virtual cards for `server_card`, do not display
-  // the virtual card suggestion.
-  auto* optimization_guide = autofill_client()->GetAutofillOptimizationGuide();
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(optimization_guide),
-          ShouldBlockFormFieldSuggestion)
-      .WillByDefault(testing::Return(true));
-  EXPECT_FALSE(
-      ShouldShowVirtualCardOptionForTest(&server_card, *autofill_client()));
-  EXPECT_FALSE(
-      ShouldShowVirtualCardOptionForTest(&local_card, *autofill_client()));
 }
 
 // Test that the virtual card option is not shown if the server card we might be
@@ -2089,19 +2056,7 @@ TEST_P(AutofillIbanSuggestionContentTest, GetLocalAndServerIbanSuggestions) {
 // This class helps test the credit card contents that are displayed in
 // Autofill suggestions. It covers suggestions on Desktop/Android dropdown,
 // and on Android keyboard accessory.
-class AutofillCreditCardSuggestionContentTest
-    : public PaymentsSuggestionGeneratorTest {
- public:
-  AutofillCreditCardSuggestionContentTest() {
-    feature_list_metadata_.InitAndEnableFeature(
-        features::kAutofillEnableVcnGrayOutForMerchantOptOut);
-  }
-
-  ~AutofillCreditCardSuggestionContentTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_metadata_;
-};
+using AutofillCreditCardSuggestionContentTest = PaymentsSuggestionGeneratorTest;
 
 // Verify that the suggestion's texts are populated correctly for a virtual card
 // suggestion when the cardholder name field is focused.
@@ -2516,17 +2471,11 @@ class AutofillCreditCardSuggestionContentVcnMerchantOptOutTest
  private:
   void SetUp() override {
     AutofillCreditCardSuggestionContentTest::SetUp();
-    // Content test is only needed when the gray-out feature is enabled.
-    // Otherwise user will not see a VCN for opted out merchants.
-    scoped_feature_list_.InitWithFeatureState(
-        features::kAutofillEnableVcnGrayOutForMerchantOptOut, true);
-
     ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
                 autofill_client()->GetAutofillOptimizationGuide()),
             ShouldBlockFormFieldSuggestion)
         .WillByDefault(testing::Return(is_merchant_opted_out()));
   }
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
