@@ -81,22 +81,28 @@ pub enum AuditCriteria {
 /// Generate the config.toml for `cargo vet` with policies that match the groups
 /// specified for each crate through gnrt_config.toml.
 pub fn create_vet_config<'a>(
-    packages: impl IntoIterator<Item = &'a cargo_metadata::Package>,
-    is_removed: impl Fn(&'a cargo_metadata::PackageId) -> bool,
-    mut find_group: impl FnMut(&'a cargo_metadata::PackageId) -> Group,
-    mut find_shipped: impl FnMut(&'a cargo_metadata::PackageId) -> Option<bool>,
+    packages: impl IntoIterator<Item = guppy::graph::PackageMetadata<'a>>,
+    is_removed: impl Fn(&'a guppy::PackageId) -> bool,
+    mut find_group: impl FnMut(&'a guppy::PackageId) -> Group,
+    mut find_shipped: impl FnMut(&'a guppy::PackageId) -> Option<bool>,
 ) -> Result<VetConfigToml> {
     let mut vet_config_toml = VetConfigToml { policies: Vec::new() };
     for package in packages {
-        let group = find_group(&package.id);
-        let shipped = find_shipped(&package.id);
+        // Skip if it's the workspace package, since this only exists to have a
+        // cargo context.
+        if package.in_workspace() {
+            continue;
+        }
 
-        let mut crate_name = package.name.clone();
+        let group = find_group(package.id());
+        let shipped = find_shipped(package.id());
+
+        let mut crate_name = package.name().to_string();
         crate_name.push(':');
-        crate_name.push_str(&package.version.to_string());
+        crate_name.push_str(&package.version().to_string());
 
         let criteria =
-            if is_removed(&package.id) { vec![] } else { group_vet_criteria(group, shipped) };
+            if is_removed(package.id()) { vec![] } else { group_vet_criteria(group, shipped) };
 
         vet_config_toml.policies.push(Policy { crate_name, criteria });
     }

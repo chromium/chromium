@@ -4,31 +4,13 @@
 
 use crate::config;
 use crate::group::Group;
-use cargo_metadata::{Node, Package, PackageId};
-use std::collections::HashMap;
 
-fn is_ancestor(
-    ancestor_id: &PackageId,
-    id: &PackageId,
-    nodes: &HashMap<&PackageId, &Node>,
-) -> bool {
-    if id == ancestor_id {
-        return true;
-    }
-    for dep in &nodes[ancestor_id].dependencies {
-        if dep == id || is_ancestor(dep, id, nodes) {
-            return true;
-        }
-    }
-    false
-}
+use guppy::graph::PackageGraph;
+use guppy::PackageId;
 
-fn get_group(
-    id: &PackageId,
-    packages: &HashMap<&PackageId, &Package>,
-    config: &config::BuildConfig,
-) -> Option<Group> {
-    config.per_crate_config.get(&packages[id].name)?.group
+fn get_group(id: &PackageId, graph: &PackageGraph, config: &config::BuildConfig) -> Option<Group> {
+    let name = graph.metadata(id).unwrap().name();
+    config.per_crate_config.get(name)?.group
 }
 
 // TODO(https://crbug.com/395924069): Delete this functiona and use `collect_dependencies` result
@@ -38,8 +20,7 @@ fn get_group(
 pub fn find_inherited_privilege_group(
     id: &PackageId,
     root: &PackageId,
-    packages: &HashMap<&PackageId, &Package>,
-    nodes: &HashMap<&PackageId, &Node>,
+    graph: &PackageGraph,
     config: &config::BuildConfig,
 ) -> Group {
     // A group is inherited from its ancestors and its dependencies, including
@@ -52,9 +33,10 @@ pub fn find_inherited_privilege_group(
     let mut ancestor_groups = Vec::<Group>::new();
     let mut dependency_groups = Vec::<Group>::new();
 
-    for each_id in packages.keys() {
-        let found_group = get_group(each_id, packages, config).or_else(|| {
-            if nodes[root].deps.iter().any(|d| d.pkg == **each_id) {
+    for package in graph.packages() {
+        let each_id = package.id();
+        let found_group = get_group(each_id, graph, config).or_else(|| {
+            if graph.directly_depends_on(root, each_id).unwrap() {
                 // If the dependency is a top-level dep of Chromium, then it defaults to this
                 // privilege level.
                 // TODO: Default should be sandbox??
@@ -65,19 +47,19 @@ pub fn find_inherited_privilege_group(
         });
 
         if let Some(group) = found_group {
-            if id == *each_id || is_ancestor(each_id, id, nodes) {
+            if graph.depends_on(each_id, id).unwrap() {
                 // `each_id` is an ancestor of `id`, or is the same crate.
-                log::debug!("{} ance {} ({:?})", packages[id].name, packages[each_id].name, group);
+                log::debug!("{} ance {} ({:?})", id, each_id, group);
                 ancestor_groups.push(group);
-            } else if is_ancestor(id, each_id, nodes) {
-                // `each_id` is an descendent of `id`, or is the same crate.
-                log::debug!("{} depe {} ({:?})", packages[id].name, packages[each_id].name, group);
+            } else if graph.depends_on(id, each_id).unwrap() {
+                // `each_id` is an descendent of `id`.
+                log::debug!("{} depe {} ({:?})", id, each_id, group);
                 dependency_groups.push(group);
             }
         };
     }
 
-    if let Some(self_group) = get_group(id, packages, config) {
+    if let Some(self_group) = get_group(id, graph, config) {
         ancestor_groups.clear();
         ancestor_groups.push(self_group);
     }
@@ -105,26 +87,26 @@ pub fn find_inherited_privilege_group(
 fn find_inherited_bool_flag(
     id: &PackageId,
     root: &PackageId,
-    packages: &HashMap<&PackageId, &Package>,
-    nodes: &HashMap<&PackageId, &Node>,
+    graph: &PackageGraph,
     config: &config::BuildConfig,
     mut get_flag: impl FnMut(&PackageId) -> Option<bool>,
     mut get_flag_for_top_level: impl FnMut(Option<Group>) -> Option<bool>,
 ) -> Option<bool> {
     let mut inherited_flag = None;
 
-    for each_id in packages.keys() {
-        let group = get_group(each_id, packages, config);
+    for package in graph.packages() {
+        let each_id = package.id();
+        let group = get_group(each_id, graph, config);
 
         if let Some(flag) = get_flag(each_id).or_else(|| {
-            if nodes[root].deps.iter().any(|d| d.pkg == **each_id) {
+            if graph.directly_depends_on(root, each_id).unwrap() {
                 get_flag_for_top_level(group)
             } else {
                 None
             }
         }) {
-            if id == *each_id || is_ancestor(each_id, id, nodes) {
-                log::debug!("{} ance {} ({:?})", packages[id].name, packages[each_id].name, flag);
+            if graph.depends_on(each_id, id).unwrap() {
+                log::debug!("{} ance {} ({:?})", id, each_id, flag);
                 inherited_flag = Some(inherited_flag.unwrap_or_default() || flag);
             }
         };
@@ -140,12 +122,12 @@ fn find_inherited_bool_flag(
 pub fn find_inherited_security_critical_flag(
     id: &PackageId,
     root: &PackageId,
-    packages: &HashMap<&PackageId, &Package>,
-    nodes: &HashMap<&PackageId, &Node>,
+    graph: &PackageGraph,
     config: &config::BuildConfig,
 ) -> Option<bool> {
     let get_security_critical = |id: &PackageId| {
-        config.per_crate_config.get(&packages[id].name).and_then(|config| config.security_critical)
+        let name = graph.metadata(id).unwrap().name();
+        config.per_crate_config.get(name).and_then(|config| config.security_critical)
     };
     let get_top_level_security_critical = |group: Option<Group>| {
         // If the dependency is a top-level dep of Chromium and is not put into the test
@@ -159,13 +141,12 @@ pub fn find_inherited_security_critical_flag(
     let inherited_flag = find_inherited_bool_flag(
         id,
         root,
-        packages,
-        nodes,
+        graph,
         config,
         get_security_critical,
         get_top_level_security_critical,
     );
-    log::debug!("{} security_critical {:?}", packages[id].name, inherited_flag);
+    log::debug!("{} security_critical {:?}", id, inherited_flag);
     inherited_flag
 }
 
@@ -177,12 +158,12 @@ pub fn find_inherited_security_critical_flag(
 pub fn find_inherited_shipped_flag(
     id: &PackageId,
     root: &PackageId,
-    packages: &HashMap<&PackageId, &Package>,
-    nodes: &HashMap<&PackageId, &Node>,
+    graph: &PackageGraph,
     config: &config::BuildConfig,
 ) -> Option<bool> {
     let get_shipped = |id: &PackageId| {
-        config.per_crate_config.get(&packages[id].name).and_then(|config| config.shipped)
+        let name = graph.metadata(id).unwrap().name();
+        config.per_crate_config.get(name).and_then(|config| config.shipped)
     };
     let get_top_level_shipped = |group: Option<Group>| {
         // If the dependency is a top-level dep of Chromium and is not put into the test
@@ -193,15 +174,8 @@ pub fn find_inherited_shipped_flag(
         }
     };
 
-    let inherited_flag = find_inherited_bool_flag(
-        id,
-        root,
-        packages,
-        nodes,
-        config,
-        get_shipped,
-        get_top_level_shipped,
-    );
-    log::debug!("{} shipped {:?}", packages[id].name, inherited_flag);
+    let inherited_flag =
+        find_inherited_bool_flag(id, root, graph, config, get_shipped, get_top_level_shipped);
+    log::debug!("{} shipped {:?}", id, inherited_flag);
     inherited_flag
 }

@@ -106,12 +106,6 @@ impl<'g> From<&PackageMetadata<'g>> for PackageId {
     }
 }
 
-impl From<&cargo_metadata::Package> for PackageId {
-    fn from(p: &cargo_metadata::Package) -> Self {
-        Self { name: p.name.clone(), version: p.version.clone() }
-    }
-}
-
 /// A dependency of a `Package`. Cross-references another `Package` entry in the
 /// resolved list.
 #[derive(Clone, Debug, Eq, PartialEq)]

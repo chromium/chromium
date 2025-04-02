@@ -7,6 +7,8 @@ use crate::crates;
 use crate::group::Group;
 use crate::paths::{self, get_vendor_dir_for_package};
 use anyhow::{bail, format_err, Result};
+use guppy::graph::PackageMetadata;
+use guppy::PackageId;
 use itertools::Itertools;
 use semver::Version;
 use serde::Deserialize;
@@ -33,12 +35,12 @@ pub struct ReadmeFile {
 /// written. The value is the contents of the README file, which can be
 /// consumed by a handlebars template.
 pub fn readme_files_from_packages<'a>(
-    deps: impl IntoIterator<Item = &'a cargo_metadata::Package>,
+    deps: impl IntoIterator<Item = PackageMetadata<'a>>,
     paths: &paths::ChromiumPaths,
     extra_config: &BuildConfig,
-    mut find_group: impl FnMut(&'a cargo_metadata::PackageId) -> Group,
-    mut find_security_critical: impl FnMut(&'a cargo_metadata::PackageId) -> Option<bool>,
-    mut find_shipped: impl FnMut(&'a cargo_metadata::PackageId) -> Option<bool>,
+    mut find_group: impl FnMut(&'a PackageId) -> Group,
+    mut find_security_critical: impl FnMut(&'a PackageId) -> Option<bool>,
+    mut find_shipped: impl FnMut(&'a PackageId) -> Option<bool>,
 ) -> Result<HashMap<PathBuf, ReadmeFile>> {
     let mut map = HashMap::new();
 
@@ -58,32 +60,32 @@ pub fn readme_files_from_packages<'a>(
 }
 
 pub fn readme_file_from_package<'a>(
-    package: &'a cargo_metadata::Package,
+    package: PackageMetadata<'a>,
     paths: &paths::ChromiumPaths,
     extra_config: &BuildConfig,
-    find_group: &mut dyn FnMut(&'a cargo_metadata::PackageId) -> Group,
-    find_security_critical: &mut dyn FnMut(&'a cargo_metadata::PackageId) -> Option<bool>,
-    find_shipped: &mut dyn FnMut(&'a cargo_metadata::PackageId) -> Option<bool>,
+    find_group: &mut dyn FnMut(&'a PackageId) -> Group,
+    find_security_critical: &mut dyn FnMut(&'a PackageId) -> Option<bool>,
+    find_shipped: &mut dyn FnMut(&'a PackageId) -> Option<bool>,
 ) -> Result<(PathBuf, ReadmeFile)> {
-    let epoch = crates::Epoch::from_version(&package.version);
+    let epoch = crates::Epoch::from_version(&package.version());
     let dir = paths
         .third_party
-        .join(crates::NormalizedName::from_crate_name(&package.name).to_string())
+        .join(crates::NormalizedName::from_crate_name(package.name()).to_string())
         .join(epoch.to_string());
 
-    let crate_config = extra_config.per_crate_config.get(&package.name);
+    let crate_config = extra_config.per_crate_config.get(package.name());
     let crate_dir = paths
         .third_party_cargo_root
         .join("vendor")
-        .join(get_vendor_dir_for_package(&package.name, &package.version));
-    let group = find_group(&package.id);
+        .join(get_vendor_dir_for_package(package.name(), package.version()));
+    let group = find_group(package.id());
 
-    let security_critical = find_security_critical(&package.id).unwrap_or(match group {
+    let security_critical = find_security_critical(package.id()).unwrap_or(match group {
         Group::Safe | Group::Sandbox => true,
         Group::Test => false,
     });
 
-    let shipped = find_shipped(&package.id).unwrap_or(match group {
+    let shipped = find_shipped(package.id()).unwrap_or(match group {
         Group::Safe | Group::Sandbox => true,
         Group::Test => false,
     });
@@ -91,13 +93,13 @@ pub fn readme_file_from_package<'a>(
     let license = {
         if let Some(config_license) = crate_config.and_then(|config| config.license.clone()) {
             config_license
-        } else if let Some(pkg_license) = &package.license {
+        } else if let Some(pkg_license) = package.license() {
             let license_kinds = parse_license_string(pkg_license)?;
             license_kinds_to_string(&license_kinds)
         } else {
             return Err(format_err!(
                 "No license field found in Cargo.toml for {} crate",
-                package.name
+                package.name()
             ));
         }
     };
@@ -112,7 +114,7 @@ pub fn readme_file_from_package<'a>(
         config_license_files
             .map(|p| format!("//{}", paths::normalize_unix_path_separator(&crate_dir.join(p))))
             .collect()
-    } else if let Some(pkg_license) = &package.license {
+    } else if let Some(pkg_license) = package.license() {
         let license_kinds = parse_license_string(pkg_license)?;
         find_license_files_for_kinds(&license_kinds, &crate_dir)?
     } else {
@@ -135,7 +137,7 @@ pub fn readme_file_from_package<'a>(
                  a license file relative to the crate's root. \
                  (Alternatively you can tweak `gnrt`'s source code to improve \
                  its ability to recognize license files based on their name).",
-                name = package.name
+                name = package.name()
             );
         }
     }
@@ -145,7 +147,7 @@ pub fn readme_file_from_package<'a>(
             paths
                 .third_party_cargo_root
                 .join("vendor")
-                .join(get_vendor_dir_for_package(&package.name, &package.version))
+                .join(get_vendor_dir_for_package(package.name(), package.version()))
                 .join(".cargo_vcs_info.json"),
         ) {
             #[derive(Deserialize)]
@@ -165,10 +167,10 @@ pub fn readme_file_from_package<'a>(
     };
 
     let readme = ReadmeFile {
-        name: package.name.clone(),
-        url: format!("https://crates.io/crates/{}", package.name),
-        description: package.description.clone().unwrap_or_default(),
-        version: package.version.clone(),
+        name: package.name().to_string(),
+        url: format!("https://crates.io/crates/{}", package.name()),
+        description: package.description().unwrap_or_default().to_string(),
+        version: package.version().clone(),
         security_critical: if security_critical { "yes" } else { "no" },
         shipped: if shipped { "yes" } else { "no" },
         license,
