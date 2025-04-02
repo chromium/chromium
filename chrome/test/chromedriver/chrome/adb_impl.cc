@@ -105,8 +105,7 @@ void SendFileOnIOThread(const std::string& device_serial,
 
 std::string GetSerialFromEnvironment() {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  std::string serial;
-  return env->GetVar("ANDROID_SERIAL", &serial) ? serial : "";
+  return env->GetVar("ANDROID_SERIAL").value_or("");
 }
 
 }  // namespace
