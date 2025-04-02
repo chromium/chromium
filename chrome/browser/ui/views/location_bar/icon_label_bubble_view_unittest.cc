@@ -21,11 +21,14 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/test/ink_drop_host_test_api.h"
 #include "ui/views/animation/test/test_ink_drop.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/widget/widget_utils.h"
 
 #if defined(USE_AURA)
@@ -622,6 +625,81 @@ TEST_F(IconLabelBubbleViewTest, LabelPaintsBackgroundAlways) {
   EXPECT_EQ(nullptr, view()->GetBackground());
 }
 
+// Tests that the client-provided additional padding for labels is correctly
+// applied when the label is expanded.
+TEST_F(IconLabelBubbleViewTest, AdditionalPaddingForLabelAppliedWhenExpanded) {
+  view()->SetUpAnimation();
+  view()->ResetSlideAnimation(true);
+  ASSERT_TRUE(view()->IsLabelVisible());
+  view()->SizeToPreferredSize();
+  EXPECT_EQ(view()->GetInsets().left(), view()->GetImageContainerView()->x());
+
+  const int initial_width = view()->width();
+  const int initial_image_x = view()->GetImageContainerView()->x();
+  const int initial_label_x = view()->GetLabelBounds().x();
+  const int initial_label_right = view()->GetLabelBounds().right();
+
+  // Set the additional insets for labels.
+  constexpr int kExpandedLabelLeftPadding = 1;
+  constexpr int kExpandedLabelRightPadding = 2;
+  view()->SetExpandedLabelAdditionalInsets(
+      views::Inset1D(kExpandedLabelLeftPadding, kExpandedLabelRightPadding));
+  view()->SizeToPreferredSize();
+
+  // The container and label should be shifted to the right by the additional
+  // left padding.
+  EXPECT_EQ(initial_image_x + kExpandedLabelLeftPadding,
+            view()->GetImageContainerView()->x());
+  EXPECT_EQ(initial_label_x + kExpandedLabelLeftPadding,
+            view()->GetLabelBounds().x());
+
+  // The total width should also include the left and right values of the
+  // additional padding.
+  EXPECT_EQ(initial_label_right + kExpandedLabelLeftPadding +
+                kExpandedLabelRightPadding,
+            view()->GetLabelBounds().right());
+  EXPECT_EQ(
+      initial_width + kExpandedLabelLeftPadding + kExpandedLabelRightPadding,
+      view()->width());
+
+  // Collapse the label. The additional padding should not be applied anymore.
+  view()->SetBounds(0, 0, initial_width - view()->GetLabelBounds().width(),
+                    view()->height());
+  EXPECT_EQ(0, view()->GetLabelBounds().width());
+  EXPECT_EQ(initial_image_x, view()->GetImageContainerView()->x());
+}
+
+// Tests that the client-provided additional padding for labels is not
+// applied when the label is not shown.
+TEST_F(IconLabelBubbleViewTest, AdditionalPaddingRespectsLabelVisibility) {
+  view()->SetUpAnimation();
+  view()->ResetSlideAnimation(false);
+  view()->SizeToPreferredSize();
+  ASSERT_FALSE(view()->IsLabelVisible());
+
+  const int initial_width = view()->width();
+  const int initial_image_x = view()->GetImageContainerView()->x();
+
+  // Set the additional insets for labels. These shouldn't be applied until
+  // the label is shown.
+  constexpr int kExpandedLabelLeftPadding = 1;
+  constexpr int kExpandedLabelRightPadding = 2;
+  view()->SetExpandedLabelAdditionalInsets(
+      views::Inset1D(kExpandedLabelLeftPadding, kExpandedLabelRightPadding));
+  view()->SizeToPreferredSize();
+
+  // Nothing should have changed.
+  EXPECT_EQ(initial_image_x, view()->GetImageContainerView()->x());
+  EXPECT_EQ(initial_width, view()->width());
+
+  // Show the label. The additional padding should be applied.
+  view()->ResetSlideAnimation(true);
+  view()->SizeToPreferredSize();
+  ASSERT_TRUE(view()->IsLabelVisible());
+  EXPECT_EQ(initial_image_x + kExpandedLabelLeftPadding,
+            view()->GetImageContainerView()->x());
+}
+
 #if defined(USE_AURA)
 // Verifies IconLabelBubbleView::CalculatePreferredSize() doesn't crash when
 // there is a widget but no compositor.
@@ -645,29 +723,28 @@ TEST_F(IconLabelBubbleViewCrashTest,
 }
 #endif
 
-// This view facilitates checking each of its calculated widths, used
+// This view facilitates checking view state during animation steps, used
 // for regression testing crbug.com/401231035.
-class TestIconLabelBubbleViewWidthChecker : public TestIconLabelBubbleView {
+class TestIconLabelBubbleViewAnimationChecker : public TestIconLabelBubbleView {
  public:
   using TestIconLabelBubbleView::TestIconLabelBubbleView;
 
-  void SetWidthCheckCallback(base::RepeatingCallback<void(int)> cb) {
-    width_check_cb_ = std::move(cb);
+  void SetAnimationProgressedCallback(
+      base::RepeatingCallback<void(views::View*)> callback) {
+    animation_progress_callback_ = std::move(callback);
   }
 
  private:
-  int GetWidthBetween(int min, int max) const override {
-    int result = IconLabelBubbleView::GetWidthBetween(min, max);
-    if (width_check_cb_) {
-      width_check_cb_.Run(result);
+  void AnimationProgressed(const gfx::Animation* animation) override {
+    IconLabelBubbleView::AnimationProgressed(animation);
+    if (animation_progress_callback_) {
+      animation_progress_callback_.Run(this);
     }
-    return result;
   }
-
-  base::RepeatingCallback<void(int)> width_check_cb_;
+  base::RepeatingCallback<void(views::View*)> animation_progress_callback_;
 };
 
-class IconLabelBubbleViewWidthTest : public IconLabelBubbleViewTestBase {
+class IconLabelBubbleViewAnimationTest : public IconLabelBubbleViewTestBase {
  public:
   using IconLabelBubbleViewTestBase::IconLabelBubbleViewTestBase;
 
@@ -678,7 +755,8 @@ class IconLabelBubbleViewWidthTest : public IconLabelBubbleViewTestBase {
 
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     view_ = widget_->SetContentsView(
-        std::make_unique<TestIconLabelBubbleViewWidthChecker>(font_list, this));
+        std::make_unique<TestIconLabelBubbleViewAnimationChecker>(font_list,
+                                                                  this));
     widget_->Show();
   }
 
@@ -688,16 +766,16 @@ class IconLabelBubbleViewWidthTest : public IconLabelBubbleViewTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
-  TestIconLabelBubbleViewWidthChecker* view() { return view_; }
+  TestIconLabelBubbleViewAnimationChecker* view() { return view_; }
 
  private:
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<TestIconLabelBubbleViewWidthChecker> view_;
+  raw_ptr<TestIconLabelBubbleViewAnimationChecker> view_;
 };
 
 // Regression test for crbug.com/401231035, where AnimateOut would flicker at
 // the beginning of the animation.
-TEST_F(IconLabelBubbleViewWidthTest, WidthDecreasesDuringAnimateOut) {
+TEST_F(IconLabelBubbleViewAnimationTest, WidthDecreasesDuringAnimateOut) {
   gfx::Animation::SetPrefersReducedMotionForTesting(false);
   ASSERT_FALSE(gfx::Animation::PrefersReducedMotion());
 
@@ -709,9 +787,10 @@ TEST_F(IconLabelBubbleViewWidthTest, WidthDecreasesDuringAnimateOut) {
 
   int last_width = view()->GetPreferredSize().width();
   int animation_step_count = 0;
-  view()->SetWidthCheckCallback(base::BindRepeating(
-      [](int& last_width, int& animation_step_count, int width) {
-        EXPECT_LE(width, last_width)
+  view()->SetAnimationProgressedCallback(base::BindRepeating(
+      [](int& last_width, int& animation_step_count, views::View* view) {
+        const int width = view->GetPreferredSize().width();
+        EXPECT_LT(width, last_width)
             << "Failed on animation step #" << animation_step_count;
         last_width = width;
         ++animation_step_count;

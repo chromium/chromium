@@ -24,6 +24,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
@@ -219,13 +220,33 @@ views::ProposedLayout IconLabelBubbleView::CalculateProposedLayout(
   layout.child_layouts.emplace_back(ink_drop_container(), true,
                                     GetLocalBounds());
 
+  // First calculate the preferred size of this view, according to the
+  // preferred size of the label (i.e. with an expanded label).
+  // If that won't fit in the available bounds, then size this view
+  // based on a collapsed label.
+  const int preferred_label_width = label()->GetPreferredSize().width();
+  gfx::Size preferred_size = GetSizeForLabelWidth(preferred_label_width);
+  if (size_bounds.width().is_bounded() &&
+      preferred_size.width() > size_bounds.width()) {
+    if (label()->GetElideBehavior() == gfx::NO_ELIDE) {
+      preferred_size = GetSizeForLabelWidth(0);
+    } else {
+      // If the label supports eliding, whittle away from its fully expanded
+      // size.
+      preferred_size.set_width(size_bounds.width().value());
+    }
+  }
+  layout.host_size = preferred_size;
+  const int height = preferred_size.height();
+
   // We may not have horizontal room for both the image and the trailing
   // padding. When the view is expanding (or showing-label steady state), the
   // image. When the view is contracting (or hidden-label steady state), whittle
   // away at the trailing padding instead.
   int bubble_trailing_padding = GetEndPaddingWithSeparator();
   int image_width = image_container_view()->GetPreferredSize().width();
-  const int space_shortage = image_width + bubble_trailing_padding - width();
+  const int space_shortage =
+      image_width + bubble_trailing_padding - preferred_size.width();
   if (space_shortage > 0) {
     if (ShouldShowLabel()) {
       image_width -= space_shortage;
@@ -233,28 +254,43 @@ views::ProposedLayout IconLabelBubbleView::CalculateProposedLayout(
       bubble_trailing_padding -= space_shortage;
     }
   }
-  gfx::Rect image_bounds(GetInsets().left(), 0, image_width, height());
-  layout.child_layouts.emplace_back(
-      const_cast<views::View*>(this->image_container_view()), true,
-      image_bounds);
+
+  const int image_x = GetInsets().left();
+  const gfx::Rect image_bounds(image_x, 0, image_width, height);
+
+  // There may be extra padding added if the label is shown.
+  // The "_with_label" image values are used to compute the label's bounds,
+  // which is then compared to the available bounds for the label. If the
+  // label would fit in the bounds (i.e. not collapsed), then the "_with_label"
+  // values will accepted as the image's bounds too.
+  const int image_x_with_label =
+      image_x + GetWidthBetween(0, expanded_label_additional_insets_.leading());
+  const gfx::Rect image_bounds_with_label(image_x_with_label, 0, image_width,
+                                          height);
 
   // Compute the label bounds. The label gets whatever size is left over after
   // accounting for the preferred image width and padding amounts. Note that if
   // the label has zero size it doesn't actually matter what we compute its X
   // value to be, since it won't be visible.
-  const int label_x = image_bounds.right() + GetInternalSpacing();
-  int label_width = label()->GetPreferredSize(size_bounds).width();
-  if (size_bounds.width().is_bounded() &&
-      label_width > size_bounds.width() - label_x - bubble_trailing_padding -
-                        GetWidthBetweenIconAndSeparator()) {
-    label_width = 0;
-  }
-  gfx::Rect label_bounds(label_x, 0, label_width, height());
+  const int label_x = image_bounds_with_label.right() + GetInternalSpacing();
+  const int available_label_width =
+      std::max(0, layout.host_size.width() - label_x - bubble_trailing_padding -
+                      GetWidthBetweenIconAndSeparator());
+  gfx::Rect label_bounds(label_x, 0, available_label_width, height);
   layout.child_layouts.emplace_back(
       label(),
       static_cast<views::LayoutManagerBase*>(GetLayoutManager())
           ->CanBeVisible(label()),
       label_bounds);
+
+  // If the fully expanded label fits, or it is mid-animation, then we
+  // accept the "_with_label" image bounds.
+  const bool can_label_expand = available_label_width >= preferred_label_width;
+  layout.child_layouts.emplace_back(
+      const_cast<views::View*>(this->image_container_view()), true,
+      (can_label_expand || slide_animation_.is_animating())
+          ? image_bounds_with_label
+          : image_bounds);
 
   // The separator should be the same height as the icons.
   const int separator_height = GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
@@ -271,7 +307,6 @@ views::ProposedLayout IconLabelBubbleView::CalculateProposedLayout(
       gfx::Rect(separator_x, separator_bounds.y(), separator_width,
                 separator_height));
 
-  layout.host_size = GetSizeForLabelWidth(label_width);
   return layout;
 }
 
@@ -300,6 +335,12 @@ void IconLabelBubbleView::SetLabel(std::u16string_view label_text,
 
 void IconLabelBubbleView::SetFontList(const gfx::FontList& font_list) {
   label()->SetFontList(font_list);
+}
+
+void IconLabelBubbleView::SetExpandedLabelAdditionalInsets(
+    const views::Inset1D& insets) {
+  expanded_label_additional_insets_ = insets;
+  InvalidateLayout();
 }
 
 SkColor IconLabelBubbleView::GetBackgroundColor() const {
@@ -597,7 +638,8 @@ gfx::Size IconLabelBubbleView::GetSizeForLabelWidth(int label_width) const {
 
   const int min_width =
       shrinking ? image_size.width() : grow_animation_starting_width_;
-  const int max_width = image_size.width() + GetInternalSpacing() + label_width;
+  const int max_width = image_size.width() + GetInternalSpacing() +
+                        label_width + expanded_label_additional_insets_.size();
 
   return gfx::Size(GetWidthBetween(min_width, max_width), image_size.height());
 }

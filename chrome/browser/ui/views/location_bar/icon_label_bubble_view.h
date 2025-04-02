@@ -23,6 +23,7 @@
 #include "ui/views/animation/ink_drop_observer.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace gfx {
@@ -118,6 +119,10 @@ class IconLabelBubbleView : public views::InkDropObserver,
   void SetLabel(std::u16string_view label);
   void SetLabel(std::u16string_view label, std::u16string_view accessible_name);
   void SetFontList(const gfx::FontList& font_list);
+
+  // Applies additional padding around the icon and label whenever the label
+  // is visible and not collapsed.
+  void SetExpandedLabelAdditionalInsets(const views::Inset1D& insets);
 
   gfx::RoundedCornersF GetCornerRadii() const;
   void SetCornerRadii(const gfx::RoundedCornersF& radii);
@@ -335,6 +340,9 @@ class IconLabelBubbleView : public views::InkDropObserver,
   std::optional<ui::ColorId> foreground_color_id_;
 
   std::optional<gfx::RoundedCornersF> radii_;
+
+  // Padding that should be applied when the label is expanded.
+  views::Inset1D expanded_label_additional_insets_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_ICON_LABEL_BUBBLE_VIEW_H_
