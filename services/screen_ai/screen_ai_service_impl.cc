@@ -57,6 +57,10 @@ constexpr base::TimeDelta kIdleCheckingDelay = base::Minutes(5);
 // idle.
 constexpr base::TimeDelta kCoolDownTime = base::Seconds(10);
 
+// How long to wait for a request to the library be responded, before assuming
+// that the library is not responsive.
+constexpr base::TimeDelta kMaxWaitForResponseTime = base::Seconds(60);
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // See `screen_ai_service.mojom` for more info.
@@ -394,8 +398,11 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
                                 client_type);
 
   ocr_last_used_ = base::TimeTicks::Now();
+  bool* task_finished_ptr = StartProcessNotResponsiveKillTimer(true);
   auto result = library_->PerformOcr(image);
+  *task_finished_ptr = true;
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - ocr_last_used_;
+
   int lines_count = result ? result->lines_size() : 0;
   unsigned image_size = image.width() * image.height();
   VLOG(1) << "OCR returned " << lines_count << " lines in " << elapsed_time;
@@ -576,8 +583,10 @@ bool ScreenAIService::ExtractMainContentInternalAndRecordMetrics(
   }
 
   base::TimeTicks start_time = base::TimeTicks::Now();
+  bool* task_finished_ptr = StartProcessNotResponsiveKillTimer(false);
   content_node_ids =
       library_->ExtractMainContent(converted_snapshot->serialized_proto);
+  *task_finished_ptr = true;
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
 
   bool successful =
@@ -632,6 +641,32 @@ void ScreenAIService::CheckIdleStateAfterDelay() {
       base::BindOnce(&ScreenAIService::ShutDownIfNoClients,
                      weak_ptr_factory_.GetWeakPtr()),
       kCoolDownTime);
+}
+
+bool* ScreenAIService::StartProcessNotResponsiveKillTimer(bool request_is_ocr) {
+  // Ownership of this unique pointer is passed to the delayed task and a raw
+  // pointer to the variable is returned to the caller. If the delayed task runs
+  // before caller sets the raw pointer to true, the process is killed, and
+  // hence the caller will not use the pointer later than that.
+  std::unique_ptr<bool> task_finished = absl::make_unique<bool>(false);
+  bool* task_finished_ptr = task_finished.get();
+
+  base::ThreadPool::PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](bool request_is_ocr, std::unique_ptr<bool> task_finished) {
+            if (*task_finished) {
+              return;
+            }
+            base::UmaHistogramBoolean(
+                "Accessibility.ScreenAI.Service.NotReponsive.IsOCR",
+                request_is_ocr);
+            base::Process::TerminateCurrentProcessImmediately(0);
+          },
+          request_is_ocr, std::move(task_finished)),
+      kMaxWaitForResponseTime);
+
+  return task_finished_ptr;
 }
 
 void ScreenAIService::ShutDownIfNoClients() {

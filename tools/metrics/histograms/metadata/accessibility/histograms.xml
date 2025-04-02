@@ -3454,6 +3454,16 @@ even if they fit the naming pattern. -->
   <token key="status" variants="TerminationStatus"/>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.Service.NotReponsive.IsOCR"
+    enum="BooleanYesNo" expires_after="2026-03-21">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records when ScreenAI service does not get a reply from the library in one
+    minute after a request. Records if the request was for OCR or not.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.{feature}.InitializationLatency"
     units="ms" expires_after="2025-09-07">
   <owner>rhalavati@chromium.org</owner>
