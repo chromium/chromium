@@ -2979,6 +2979,7 @@
 <translation id="3045447014237878114">Бұл сайт бірнеше файлды автоматты түрде жүктеп алды</translation>
 <translation id="3046178388369461825">Linux дискісінде өте аз орын қалды</translation>
 <translation id="304644035656848980">Микрофонның алғы көрінісі</translation>
+<translation id="3046892784550338476"><ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /> нұсқасы</translation>
 <translation id="3046910703532196514">Веб-бет, толық</translation>
 <translation id="304747341537320566">Дауыстап оқу модульдері</translation>
 <translation id="3047678109605649715">Құрылғыңызда <ph name="LANGUAGE" /> тіліндегі дауыстар жоқ. Құрылғыдан орын босатып, әрекетті қайталап көріңіз.</translation>
@@ -3071,6 +3072,7 @@
 <translation id="3122883569442693641">Қосымша мәліметтер</translation>
 <translation id="3124111068741548686">USER тұтқалары</translation>
 <translation id="3124332159330678621">Браузеріңізге жаңа көрініс беру үшін Chrome браузерін бейімдеңіз</translation>
+<translation id="3125816458150005808">Оны босатып, мәзір арқылы ашуға болады.</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Құрылғыны зарядтау кезіндегі және оның жұмысындағы ақаулардың алдын алу үшін үйлесімді Dell немесе USB Type-C қуат адаптерін пайдаланыңыз.</translation>
 <translation id="3127862849166875294">Linux диск көлемін өзгерту</translation>
@@ -5319,6 +5321,7 @@
 <translation id="4723140812774948886">Келесіге ауыстыру</translation>
 <translation id="4724450788351008910">Мүшелік өзгерді</translation>
 <translation id="4725511304875193254">Корги</translation>
+<translation id="4725762702191453794">Қойынды іздеу функциясы енді құралдар тақтасына бекітілді</translation>
 <translation id="4726710355753484204">Ұлғайту үшін Ctrl + Alt + жарықтықты арттыру перне тіркесімін пайдаланыңыз.
 Кішірейту үшін Ctrl + Alt + жарықтықты азайту перне тіркесімін пайдаланыңыз.</translation>
 <translation id="4726710629007580002">Бұл кеңейтімді орнату кезінде ескертулер болды:</translation>

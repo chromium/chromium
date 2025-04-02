@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Ifayela le-manifest alivumelekile</translation>
 <translation id="7217838517480956708">Umlawuli walo mshini udinga ukuthi i-<ph name="EXTENSION_NAME" /> ifakwe. Ayikwazi ukususwa noma iguqulwe.</translation>
 <translation id="7612608473764576263">Inani lokufaka lokhiye wobumfihlo kumele libe ifomethi evumelekile (PKCS#8-ifomethi PEM-ukhiye we-RSA obetheliwe).</translation>
+<translation id="7876803335449432072">Ayikwazanga ukulayisha ifayela elithi '<ph name="RELATIVE_PATH" />' leskripthi sekhontenti, amashidi esitayela eskripthi sekhontenti singalayishwa kuphela ukusuka kumafayela eshidi lesitayela asekelwayo njengamafayela okuthi .css.</translation>
 <translation id="7939686037314084444">Isandiso sihlulekile ukulayisha ngokufanelekile. Kungenzeka singakwazi ukuhlangabeza izicelo zenethiwekhi.</translation>
 <translation id="7972881773422714442">Izinketho: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Ukubhekana nomsebenzisi</translation>
 <translation id="8047248493720652249">Lesi sandiso sihlulekile ukuqamba ukulanda kwe-"<ph name="ATTEMPTED_FILENAME" />" ngoba esinye isandiso (<ph name="EXTENSION_NAME" />) sinqume igama lefayela elihlukile elingu-"<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> kusuka ku-<ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Ifayela le-manifest alikho noma alifundeki</translation>
+<translation id="8621383749470166852">Ayikwazanga ukulayisha ifayela elithi '<ph name="RELATIVE_PATH" />' leskripthi sekhontenti, iskripthi sekhontenti singalayishwa kuphela ukusuka kumafayela eJavaScript asekelwayo njengamafayela okuthi .js.</translation>
 <translation id="8636666366616799973">Iphakheji alivumelekile. Imininingwane: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">I-"<ph name="APP_NAME" />" icela ukufinyelela kweyodwa  yamadivayisi akho.</translation>
 <translation id="8885905466771744233">Ukhiye oyimfihlo wesandiso esicacisiwe sowuvele ukhona. Phinda usebenzise loyo khiye noma wususe kuqala.</translation>

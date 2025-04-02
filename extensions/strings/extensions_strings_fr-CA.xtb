@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Le fichier de configuration n'est pas valide</translation>
 <translation id="7217838517480956708">L'administrateur de cet ordinateur exige que l'extension <ph name="EXTENSION_NAME" /> soit installée. Celle-ci ne peut pas être supprimée ni modifiée.</translation>
 <translation id="7612608473764576263">La valeur d'entrée pour la clé privée doit être dans un format valide (clé RSA au format PEM chiffré PKCS #8).</translation>
+<translation id="7876803335449432072">Impossible de charger le fichier « <ph name="RELATIVE_PATH" /> » pour le script de contenu; les feuilles de style de script de contenu ne peuvent être chargées qu'à partir de fichiers de feuille de style pris en charge tels que les fichiers .css.</translation>
 <translation id="7939686037314084444">L'extension n'a pas pu être chargée correctement. Celle-ci n'est peut-être pas en mesure d'intercepter de demandes réseau.</translation>
 <translation id="7972881773422714442">Options : <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Orienté vers l'utilisateur</translation>
 <translation id="8047248493720652249">Cette extension n'a pas pu nommer le téléchargement « <ph name="ATTEMPTED_FILENAME" /> », car une autre extension (<ph name="EXTENSION_NAME" />) lui a donné un nom de fichier différent : « <ph name="ACTUAL_FILENAME" /> ».</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> de <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Le fichier de configuration est manquant ou illisible</translation>
+<translation id="8621383749470166852">Impossible de charger le fichier « <ph name="RELATIVE_PATH" /> » pour le script de contenu; les scripts de contenu ne peuvent être chargés qu'à partir de fichiers JavaScript pris en charge tels que les fichiers .js.</translation>
 <translation id="8636666366616799973">Paquet incorrect. Information : « <ph name="ERROR_MESSAGE" /> ».</translation>
 <translation id="8761756413268424715">« <ph name="APP_NAME" /> » demande l’accès à l’un de vos appareils :</translation>
 <translation id="8885905466771744233">Une clé privée pour l'extension spécifiée existe déjà. Utilisez cette clé ou supprimez-la.</translation>

@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">O ficheiro de manifesto é inválido.</translation>
 <translation id="7217838517480956708">O gestor desta máquina exige que o <ph name="EXTENSION_NAME" /> seja instalado. Este não pode ser removido ou modificado.</translation>
 <translation id="7612608473764576263">O valor de entrada para uma chave privada tem de ter um formato válido (chave RSA com codificação PEM no formato PKCS#8).</translation>
+<translation id="7876803335449432072">Não foi possível carregar o ficheiro "<ph name="RELATIVE_PATH" />" para o script de conteúdo. As folhas de estilos de scripts de conteúdo só podem ser carregadas a partir de ficheiros de folhas de estilos compatíveis, como os ficheiros .css.</translation>
 <translation id="7939686037314084444">Não foi possível carregar a extensão corretamente. Pode não conseguir intercetar pedidos de rede.</translation>
 <translation id="7972881773422714442">Opções: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Virada para o utilizador</translation>
 <translation id="8047248493720652249">Esta extensão não conseguiu atribuir o nome "<ph name="ATTEMPTED_FILENAME" />" à transferência, porque outra extensão (<ph name="EXTENSION_NAME" />) determinou um nome de ficheiro diferente: "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> de <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">O ficheiro de manifesto está em falta ou é ilegível.</translation>
+<translation id="8621383749470166852">Não foi possível carregar o ficheiro "<ph name="RELATIVE_PATH" />" para o script de conteúdo. Os scripts de conteúdo só podem ser carregados a partir de ficheiros JavaScript compatíveis, como os ficheiros .js.</translation>
 <translation id="8636666366616799973">O pacote é inválido. Detalhes: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" está a solicitar acesso a um dos seus dispositivos:</translation>
 <translation id="8885905466771744233">Já existe uma chave privada para a extensão especificada. Volte a utilizar essa chave ou elimine-a primeiro.</translation>

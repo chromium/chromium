@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">資訊清單檔案無效</translation>
 <translation id="7217838517480956708">這台電腦的管理員要求安裝 <ph name="EXTENSION_NAME" />，因此你無法移除或修改它。</translation>
 <translation id="7612608473764576263">私密金鑰的輸入值必須是有效格式 (須為採用 PKCS#8 格式和 PEM 編碼的 RSA 金鑰)。</translation>
+<translation id="7876803335449432072">無法載入「<ph name="RELATIVE_PATH" />」檔案的內容指令碼，內容指令碼樣式表只能從支援的樣式表檔案 (例如 .css 檔案) 載入。</translation>
 <translation id="7939686037314084444">這個擴充功能未順利載入，因此可能無法攔截網路要求。</translation>
 <translation id="7972881773422714442">選項：<ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">前置鏡頭</translation>
 <translation id="8047248493720652249">擴充功能無法將下載的檔案命名為「<ph name="ATTEMPTED_FILENAME" />」，因為其他擴充功能 (<ph name="EXTENSION_NAME" />) 已為將此檔案命名為「<ph name="ACTUAL_FILENAME" />」。</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> (供應商：<ph name="VENDOR_NAME" />)</translation>
 <translation id="8517576857589387417">資訊清單檔案遺失或無法讀取</translation>
+<translation id="8621383749470166852">無法載入「<ph name="RELATIVE_PATH" />」檔案的內容指令碼，內容指令碼只能從支援的 JavaScript 檔案 (例如 .js 檔案) 載入。</translation>
 <translation id="8636666366616799973">套件無效，詳細資料：<ph name="ERROR_MESSAGE" />。</translation>
 <translation id="8761756413268424715">「<ph name="APP_NAME" />」要求存取你的其中一個裝置：</translation>
 <translation id="8885905466771744233">所指定的擴充功能已有私密金鑰，請使用該金鑰，或先將它刪除。</translation>

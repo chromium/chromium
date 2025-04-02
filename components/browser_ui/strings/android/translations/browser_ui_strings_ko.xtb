@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">확대/축소 강제 사용</translation>
 <translation id="3905475044299942653">많은 알림 중지</translation>
 <translation id="3908288065506437185">시크릿 모드에서 서드 파티 쿠키 차단</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">일부 기능이 작동하지 않을 수 있습니다. 관련 사이트에서는 계속 서드 파티 쿠키를 사용할 수 있습니다.</translation>
 <translation id="3922092564198021702">휴대전화에서 설정을 엽니다.</translation>
 <translation id="3933121352599513978">원치 않는 요청 접기(권장)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">세부정보</translation>
 <translation id="4598549027014564149">시크릿 모드인 경우 사이트에서 쿠키를 사용해 관련 사이트 등 사용자의 사이트 탐색 활동을 볼 수 없습니다. 사용자의 탐색 활동은 광고 개인 최적화 등의 목적으로 사용되지 않습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="461356340001513807">가지고 있는 ID 서비스 계정으로 웹사이트에 로그인할 수 있습니다.</translation>
-<translation id="4619615317237390068">다른 기기의 탭</translation>
 <translation id="4635969503923889910">사이트에서 NFC 기기를 사용할 수 없음</translation>
 <translation id="4644713492825682049">삭제 및 재설정</translation>
 <translation id="4645575059429386691">부모님이 관리합니다.</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">공유 방법</translation>
 <translation id="5001526427543320409">서드 파티 쿠키</translation>
 <translation id="5007392906805964215">검토</translation>
-<translation id="5014182796621173645"><ph name="RECENCY" />에 방문함</translation>
 <translation id="5039804452771397117">허용</translation>
 <translation id="5048398596102334565">사이트의 움직임 감지 센서 액세스 허용(권장)</translation>
 <translation id="5048841907079026162">인터넷 사용 기록 관리</translation>
@@ -443,6 +440,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" />GB</translation>
 <translation id="6612358246767739896">보호된 콘텐츠</translation>
 <translation id="662080504995468778">머무르기</translation>
+<translation id="6635327442719709864">사용 설정하면 사이트에서 직렬 포트 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 직렬 포트를 사용할 수 없습니다.</translation>
 <translation id="6653342741369270081">전체화면을 종료하려면 뒤로 버튼을 누르세요.</translation>
 <translation id="6683865262523156564">이 사이트는 내 활동을 볼 수 있는 그룹에 있습니다. 그룹 정의 기준: <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">프로필 사진</translation>

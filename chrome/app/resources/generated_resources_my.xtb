@@ -2994,6 +2994,7 @@
 <translation id="3045447014237878114">ဤဝဘ်ဆိုက်သည် ဖိုင်အမြောက်အများကို အလိုအလျောက် ဒေါင်းလုဒ်လုပ်ထားသည်</translation>
 <translation id="3046178388369461825">Linux ဒစ်ခ်နေရာ အလွန်နည်းနေပါပြီ</translation>
 <translation id="304644035656848980">မိုက်ခရိုဖုန်း အစမ်းကြည့်ရှုခြင်း</translation>
+<translation id="3046892784550338476">ဗားရှင်း <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">ဝဘ်စာမျက်နှာ၊ ပြီးပြည့်စုံ</translation>
 <translation id="304747341537320566">စကားပြော အင်ဂျင်များ</translation>
 <translation id="3047678109605649715">သင့်စက်တွင် <ph name="LANGUAGE" /> စကားသံများ မရှိပါ။ သင့်စက်တွင် နေရာရှင်းပြီး ထပ်စမ်းကြည့်ပါ။</translation>
@@ -7208,7 +7209,7 @@
 <translation id="6087960857463881712">ပြုံးရွှင်သည့် မျက်နှာ</translation>
 <translation id="6088475950266477163">&amp;ဆက်တင်များ</translation>
 <translation id="608912389580139775">သင်၏ဖတ်ရန် စာရင်းတွင် ဤစာမျက်နှာကို ထည့်ရန် ‘လိပ်စာ’ သင်္ကေတကို နှိပ်ပါ</translation>
-<translation id="6089289670051481345">အပြာ-အဝါ မမြင်ရခြင်း</translation>
+<translation id="6089289670051481345">အပြာ-အဝါ မခွဲခြားနိုင်ခြင်း</translation>
 <translation id="6090760257419195752">ပယ်ထားသော သတိပေးချက်များ</translation>
 <translation id="609174145569509836">သိုလှောင်ခန်းနေရာ ရှင်းရန်</translation>
 <translation id="6091761513005122595">မျှဝေပြီးပါပြီ။</translation>

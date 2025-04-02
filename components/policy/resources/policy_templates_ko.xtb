@@ -4052,15 +4052,6 @@ Chrome 114까지 이 정책을 적용하려면 <ph name="SYNC_DISABLED_POLICY_NA
 <translation id="3956573780915784996">사용자가 시스템 전체의 성능 흔적을 수집하도록 허용</translation>
 <translation id="3956686688560604829">이전 브라우저 지원에 Internet Explorer의 SiteList 정책을 사용합니다.</translation>
 <translation id="3958586912393694012">Smart Lock 사용 허용</translation>
-<translation id="3959350391319409669">이 정책은 <ph name="PRODUCT_NAME" />의 동적 코드 설정을 제어합니다.
-
-동적 코드를 사용 중지하면 악의적일 수 있는 동적 코드 및 서드 파티 코드가 <ph name="PRODUCT_NAME" />의 동작을 변경하지 못하게 하여 <ph name="PRODUCT_NAME" />의 보안을 개선할 수 있지만 브라우저 프로세스 내에서 실행되어야 하는 서드 파티 소프트웨어와의 호환성 문제가 발생할 수 있습니다.
-
-정책을 0 - Default로 설정하거나 설정하지 않으면 <ph name="PRODUCT_NAME" />에서 기본 설정을 사용합니다.
-
-정책을 1 - DisabledForBrowser로 설정하면 <ph name="PRODUCT_NAME" /> 브라우저 프로세스에서 동적 코드를 만들 수 없게 됩니다.
-
-참고: 프로세스 완화 정책(https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies)에 관해 자세히 알아보세요.</translation>
 <translation id="3960728283243442805">사용자에게 <ph name="PRODUCT_NAME" /> 메뉴에서 액세스 코드를 사용하거나 QR 코드를 스캔하여 Cast 기기를 선택하는 옵션을 제공하지 않음</translation>
 <translation id="3962445567482559878">어시스턴트 온보딩 환경의 EDU 모드 사용</translation>
 <translation id="396261881101930204">사용자에게 미디어 추천 숨기기</translation>
@@ -4367,6 +4358,9 @@ URL 패턴은 <ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" />와 충
       키오스크 세션에는 유예 기간이 없으며 재부팅에 관한 알림이 표시되지 않습니다.
 </translation>
 <translation id="4187576366596772431">이 사이트에서 WebHID API 차단</translation>
+<translation id="4188427466177877986">정책을 설정하지 않거나 사용 설정하면 사용자가 새 탭 페이지를 통해 <ph name="PRODUCT_NAME" />에서 배송을 추적할 수 있습니다.
+정책을 사용 중지하면 사용자가 새 탭 페이지를 통해 <ph name="PRODUCT_NAME" />에서 배송을 추적할 수 없습니다.
+지원 중단됨: M132부터는 택배 추적 기능이 사용 중지되며, 이 정책은 그 이후에 적용되지 않습니다.</translation>
 <translation id="4189100643304138928"><ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" /> Enterprise 커넥터에 적용할 Chrome Enterprise 커넥터 서비스 설정의 목록으로, 파일이 Chrome에 첨부될 때 실행됩니다.
 
       <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 필드는 파일이 특정 페이지에 첨부되었을 때 커넥터가 분석을 위해 파일을 전송할지와 파일 분석 요청에 어떤 태그를 포함할지 결정하는 데 사용됩니다. 'enable' 패턴에 해당하는 태그는 페이지 URL이 이 태그와 연결된 패턴과 일치하면 분석 요청에 포함되지만, 이때 이 태그의 'disable' 패턴 중에서 페이지 URL과 일치하는 것이 없어야 합니다. 하나 이상의 태그가 요청에 포함되면 분석이 실시됩니다.
@@ -8219,6 +8213,11 @@ false로 설정되면 Crostini 컨테이너로 포트 전달이 사용 중지됩
 만료된 데이터 삭제는 브라우저를 시작하고 15초 후에 이루어지며, 브라우저가 실행되는 동안에는 30분마다 이루어집니다.
 
 Chrome 114까지 이 정책을 적용하려면 <ph name="SYNC_DISABLED_POLICY_NAME" /> 정책을 true로 설정해야 합니다. Chrome 115부터 이 정책을 설정하면 <ph name="SYNC_DISABLED_POLICY_NAME" /> 정책을 설정하여 `<ph name="CHROME_SYNC_NAME" />`를 사용 중지하지 않거나 <ph name="BROWSER_SIGNIN_POLICY_NAME" /> 정책을 사용 중지하지 않으면 각 데이터 유형의 동기화가 사용 중지됩니다.</translation>
+<translation id="6762635531429930846">최소 출시 수명을 지정합니다. 이 수명이 다하면 다시 실행 알림이 지속적으로 자주 표시됩니다. 수명은 현재 실행 중인 버전이 클라이언트에 마지막으로 제공된 시점부터 계산됩니다.
+
+새 버전이 대기 중이고 브라우저를 다시 실행하거나 기기를 다시 시작해야 하며 이 설정에 지정된 일수보다 오랫동안 현재 버전이 대체되고 있는 경우, <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> 정책이 2시간으로 재정의됩니다. <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> 정책이 1('필수')로 설정된 경우 기간이 종료될 때 강제로 다시 실행 또는 다시 시작됩니다.
+
+정책을 설정하지 않거나 출시 수명을 확인할 수 없는 경우 모든 업데이트에 <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> 정책이 사용됩니다.</translation>
 <translation id="6763023079133439068">로컬 신뢰 앵커에서 발급할 때 subjectAlternativeName 확장이 없는 인증서 허용</translation>
 <translation id="6766216162565713893">사이트에서 사용자에게 근처 블루투스 기기에 대한 액세스 권한을 부여할 것인지 묻도록 허용합니다.</translation>
 <translation id="6770454900105963262">활성 키오스크 세션에 관한 정보 보고</translation>

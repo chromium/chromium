@@ -440,6 +440,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2783161812871838616">Biðja um tölvuvefsvæði</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Aðgangsorð vistað á Google-reikningnum þínum, {EMAIL}}one{Aðgangsorð vistuð á Google-reikningnum þínum, {EMAIL}}other{Aðgangsorð vistuð á Google-reikningnum þínum, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Bæta aðgangsorði við…</translation>
+<translation id="2793703503584038325">Veldu aðgangsorð og ýttu síðan á táknið „Deila“</translation>
 <translation id="2797302972324086597">Landskóði</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} skrá}one{{COUNT} skrá}other{{COUNT} skrár}}</translation>
 <translation id="2816489851009559785">Valmynd → Stillingar → Sjálfgefinn vafri</translation>
@@ -579,6 +580,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="35083190962747987">Opna ${url}</translation>
 <translation id="3511519535430890904">Auktu vafravernd</translation>
 <translation id="3517216995152707259">Þú skráist ekki út af Google-reikningnum þínum þegar þú eyðir vefskoðunargögnum. Til að gera það skaltu <ph name="BEGIN_LINK" />skrá þig út úr Chrome<ph name="END_LINK" />.</translation>
+<translation id="3519792890877853853">Þetta spjald sýnir umsagnir um vörur í opnu flipunum þínum</translation>
 <translation id="3519905498307021260">{count,plural, =1{Opna flipann}one{Opna {count} flipa}other{Opna {count} flipa}}</translation>
 <translation id="3523513363815970085">Fela „Vinsælustu vefsvæðin þín“</translation>
 <translation id="3523789730715594198">Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
@@ -819,6 +821,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4565377596337484307">Fela aðgangsorð</translation>
 <translation id="4568230126482344545">Fela „Nýlegir flipar“</translation>
 <translation id="4578835633387306383">Kveikja…</translation>
+<translation id="4580716718466706433">Farðu í Aðgangsorðastjórnun</translation>
 <translation id="4587589328781138893">Svæði</translation>
 <translation id="4592672037257622855">{count,plural, =1{Síðu bætt við leslistann þinn}one{{count} síðu bætt við leslistann þinn}other{{count} síðum bætt við leslistann þinn}}</translation>
 <translation id="459644946100970322">Kveikja á verðtilkynningum?</translation>
@@ -858,6 +861,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4717844083556844785">Opin vefsíða er í huliðsstillingu</translation>
 <translation id="4719927025381752090">Boð um þýðingu</translation>
 <translation id="4720530280568305198">Valið þitt opnaðist í nýjum flipa</translation>
+<translation id="472259426228234149">Verð: 100–180 USD</translation>
 <translation id="473775607612524610">Uppfæra</translation>
 <translation id="474209246745757965">Verslaðu og þýddu með myndavélinni þinni</translation>
 <translation id="4742407542027196863">Stjórna aðgangsorðum…</translation>

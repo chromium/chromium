@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Манифест файлы жарамсыз</translation>
 <translation id="7217838517480956708">Бұл машинаның әкімшісі <ph name="EXTENSION_NAME" /> кеңейтімін орнатуды қажет етеді. Оны жою не өзгерту мүмкін емес.</translation>
 <translation id="7612608473764576263">Жеке кілт үшін енгізілетін мән жарамды болуы керек (PKCS#8 форматындағы PEM кодталған RSA кілті).</translation>
+<translation id="7876803335449432072">Контент скрипті үшін "<ph name="RELATIVE_PATH" />" файлын жүктеу мүмкін болмады. Контент скриптінің стильдер кестесін тек қолдау көрсетілетін стильдер кестесі түріндегі файлдардан (мысалы, .css) жүктеуге болады.</translation>
 <translation id="7939686037314084444">Кеңейтім дұрыс жүктелмеді. Ол желі сұрауларын қабылдай алмауы мүмкін.</translation>
 <translation id="7972881773422714442">Опциялар: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Алдыңғы</translation>
 <translation id="8047248493720652249">Бұл кеңейтімнің жүктеу "<ph name="ATTEMPTED_FILENAME" />" файлының атын өзгерту әрекеті сәтсіз аяқталды, себебі басқа кеңейтім (<ph name="EXTENSION_NAME" />) басқа файл атауын "<ph name="ACTUAL_FILENAME" />" анықтады.</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> ұсынған <ph name="PRODUCT_NAME" /> өнімі</translation>
 <translation id="8517576857589387417">Манифест файлы жоқ немесе оқылмайды</translation>
+<translation id="8621383749470166852">Контент скрипті үшін "<ph name="RELATIVE_PATH" />" файлын жүктеу мүмкін болмады. Контент скрипттерін тек қолдау көрсетілетін JavaScript файлдарынан (мысалы, .js) жүктеуге болады.</translation>
 <translation id="8636666366616799973">Пакет жарамсыз. Мәліметтер: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" бір құрылғыға кіруге рұқсат сұрауда:</translation>
 <translation id="8885905466771744233">Көрсетілген кеңейтім үшін жеке кілт бұрыннан бар. Айтылған кілтті қайта пайдаланыңыз немесе алдымен оны өшіріңіз.</translation>

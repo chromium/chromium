@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">Force enable zoom</translation>
 <translation id="3905475044299942653">Stop lots of notifications</translation>
 <translation id="3908288065506437185">Block third-party cookies in Incognito mode</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Some features may not work. Related sites can still use third-party cookies.</translation>
 <translation id="3922092564198021702">On your phone, open Settings</translation>
 <translation id="3933121352599513978">Collapse unwanted requests (recommended)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">Details</translation>
 <translation id="4598549027014564149">While in Incognito, sites can't use your cookies to see your browsing activity across sites, even related sites. Your browsing activity isn't used for things like personalising ads. Features on some sites may not work.</translation>
 <translation id="461356340001513807">Lets you sign in to websites using the account that you have with an identity service</translation>
-<translation id="4619615317237390068">Tabs from other devices</translation>
 <translation id="4635969503923889910">Don't allow sites to use NFC devices</translation>
 <translation id="4644713492825682049">Delete and reset</translation>
 <translation id="4645575059429386691">Managed by your parent</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">Share via</translation>
 <translation id="5001526427543320409">Third-party cookies</translation>
 <translation id="5007392906805964215">Review</translation>
-<translation id="5014182796621173645">You visited <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5048398596102334565">Allow sites to access motion sensors (recommended)</translation>
 <translation id="5048841907079026162">Manage your browsing data</translation>

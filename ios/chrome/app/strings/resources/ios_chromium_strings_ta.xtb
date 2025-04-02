@@ -91,6 +91,7 @@
 <translation id="3054480780637153380">iOSஸில் Chromium அமைப்புகளைத் திறந்து "பிரவுசருக்கான இயல்பான ஆப்ஸ்" என்பதைத் தட்டி Chromium என்பதைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="3102849287235003384">இணையதளங்கள் அனைத்திலும் உங்கள் Google கணக்கில் இருந்து வெளியேற <ph name="BEGIN_LINK" />Chromiumமில் இருந்து வெளியேறுங்கள்<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromiumமை இயல்பு உலாவியாக அமைக்கவா?</translation>
+<translation id="3180939591219927904">"Chromiumமை மூடும்போது மறைநிலைப் பக்கங்களைப் பூட்டு" என்பதை ஆன் செய்யவும்</translation>
 <translation id="3242612358525156339">உங்கள் சாதன அமைப்புகளில் "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" என்பதைத் திறந்து "Chromium" என்பதைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="328933489847748230">{count,plural, =1{1 Chromium சாளரம் காட்டப்படுகிறது}other{{count} Chromium சாளரங்கள் காட்டப்படுகின்றன}}</translation>
 <translation id="3344973607274501920">Chromium உலாவியால் உங்கள் கடவுச்சொற்களைச் சரிபார்க்க முடியவில்லை. இணைய இணைப்பைச் சரிபார்க்கவும்.</translation>
@@ -260,6 +261,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">தேர்ந்தெடுத்த தரவு Chromium மற்றும் ஒத்திசைத்த சாதனங்களிலிருந்து அகற்றப்பட்டது. history.google.com எனும் தளத்தில் உங்கள் Google கணக்கில் பிற வகை உலாவல் வரலாறு இருக்கக்கூடும். எடுத்துக்காட்டாக, பிற Google சேவைகளில் நீங்கள் மேற்கொள்ளும் தேடல்கள், செயல்பாடுகள் போன்றவை.</translation>
 <translation id="7395825497086981028"><ph name="EMAIL" /> கணக்கின் கடவுச்சொல் நிர்வாகியில் உங்கள் கடவுச்சொல் சேமிக்கப்படும்.</translation>
+<translation id="7504829997542308412">Chromiumமைத் திறக்கவும்</translation>
 <translation id="7531461704633548377">Chromiumமில் இருந்து</translation>
 <translation id="7554983317097061001">Chromium உதவிக்குறிப்பு: Chromiumமை டாக்கிற்கு நகர்த்துங்கள்</translation>
 <translation id="7576863740961052505">Chromium அமைப்புகளை நிர்வகி</translation>

@@ -91,6 +91,7 @@
 <translation id="3054480780637153380">На пристрої iOS відкрийте налаштування Chromium, натисніть "Вебпереглядач за умовчанням" і виберіть Chromium.</translation>
 <translation id="3102849287235003384">Щоб вийти з облікового запису Google на всіх веб-сайтах, <ph name="BEGIN_LINK" />вийдіть із Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Зробити Chromium веб-переглядачем за умовчанням?</translation>
+<translation id="3180939591219927904">Увімкніть опцію "Блокувати анонімні вкладки після закриття Chromium".</translation>
 <translation id="3242612358525156339">У налаштуваннях пристрою відкрийте меню "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" і виберіть Chromium</translation>
 <translation id="328933489847748230">{count,plural, =1{Показано 1 вікно Chromium}one{Показано {count} вікно Chromium}few{Показано {count} вікна Chromium}many{Показано {count} вікон Chromium}other{Показано {count} вікна Chromium}}</translation>
 <translation id="3344973607274501920">Chromium не вдалося перевірити паролі. Переконайтеся, що є інтернет-з'єднання.</translation>
@@ -260,6 +261,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Вибрані дані видалено з Chromium і синхронізованих пристроїв. У вашому обліковому записі Google на сторінці history.google.com може зберігатись історія веб-перегляду (як-от пошукові запити й активність) з інших сервісів Google.</translation>
 <translation id="7395825497086981028">Ваш пароль буде збережено в Менеджері паролів для електронної адреси <ph name="EMAIL" />.</translation>
+<translation id="7504829997542308412">Відкрийте Chromium.</translation>
 <translation id="7531461704633548377">З Chromium</translation>
 <translation id="7554983317097061001">Порада щодо Chromium: перемістіть значок Chromium на панель Dock</translation>
 <translation id="7576863740961052505">Керувати налаштуваннями Chromium</translation>

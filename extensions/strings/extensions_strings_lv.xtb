@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Manifesta fails nav derīgs.</translation>
 <translation id="7217838517480956708">Šīs ierīces administrators uzskata, ka paplašinājumam <ph name="EXTENSION_NAME" /> ir jābūt instalētam. To nevar noņemt vai pārveidot.</translation>
 <translation id="7612608473764576263">Privātās atslēgas ievades vērtībai jābūt derīgam formātam (PKCS#8-formāta PEM-kodēta RSA atslēga).</translation>
+<translation id="7876803335449432072">Nevarēja ielādēt failu “<ph name="RELATIVE_PATH" />” satura apstrādes skriptam. Satura apstrādes skriptu stilu lapas var ielādēt tikai no atbalstītiem stilu lapu failiem, piemēram, .css failiem.</translation>
 <translation id="7939686037314084444">Neizdevās pareizi ielādēt paplašinājumu. Iespējams, tas nevarēs pārtvert tīkla pieprasījumus.</translation>
 <translation id="7972881773422714442">Iespējas: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Vērsta uz lietotāju</translation>
 <translation id="8047248493720652249">Šim paplašinājumam neizdevās piešķirt nosaukumu lejupielādei “<ph name="ATTEMPTED_FILENAME" />”, jo cits paplašinājums (<ph name="EXTENSION_NAME" />) noteica citu faila nosaukumu “<ph name="ACTUAL_FILENAME" />”.</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> no <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Manifesta fails nav atrodams vai nolasāms.</translation>
+<translation id="8621383749470166852">Nevarēja ielādēt failu “<ph name="RELATIVE_PATH" />” satura apstrādes skriptam. Satura apstrādes skriptus var ielādēt tikai no atbalstītiem JavaScript failiem, piemēram, .js failiem.</translation>
 <translation id="8636666366616799973">Pakotne nav derīga. Detaļas: <ph name="ERROR_MESSAGE" />.</translation>
 <translation id="8761756413268424715">Lietotne <ph name="APP_NAME" /> pieprasa piekļuvi kādai jūsu ierīcei:</translation>
 <translation id="8885905466771744233">Norādītajam paplašinājumam jau eksistē privāta atslēga. Atkārtoti izmantojiet šo atslēgu vai vispirms to izdzēsiet.</translation>

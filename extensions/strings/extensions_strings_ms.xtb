@@ -49,14 +49,14 @@
 <translation id="7068383018033524534">Fail manifes tidak sah</translation>
 <translation id="7217838517480956708">Pentadbir mesin ini memerlukan <ph name="EXTENSION_NAME" /> dipasang. Sambungan ini tidak boleh dialih keluar atau diubah suai.</translation>
 <translation id="7612608473764576263">Nilai input untuk kunci persendirian mestilah dalam format yang sah (Kunci RSA terkod PEM format PKCS#8).</translation>
-<translation id="7876803335449432072">Tidak dapat memuatkan fail '<ph name="RELATIVE_PATH" />' untuk skrip kandungan, helaian gaya skrip kandungan hanya boleh dimuatkan daripada fail helaian gaya yang disokong seperti fail .css.</translation>
+<translation id="7876803335449432072">Tidak dapat memuatkan fail '<ph name="RELATIVE_PATH" />' untuk skrip kandungan. Helaian gaya skrip kandungan hanya boleh dimuatkan daripada fail helaian gaya yang disokong seperti fail .css.</translation>
 <translation id="7939686037314084444">Sambungan gagal dimuatkan dengan betul. Sambungan itu mungkin tidak dapat memintas permintaan rangkaian.</translation>
 <translation id="7972881773422714442">Pilihan: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Menghadap pengguna</translation>
 <translation id="8047248493720652249">Sambungan ini gagal menamakan muat turun "<ph name="ATTEMPTED_FILENAME" />" kerana sambungan lain (<ph name="EXTENSION_NAME" />) menetapkan nama fail lain "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> daripada <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Fail manifes hilang atau tidak dapat dibaca</translation>
-<translation id="8621383749470166852">Tidak dapat memuatkan fail '<ph name="RELATIVE_PATH" />' untuk skrip kandungan, skrip kandungan hanya boleh dimuatkan daripada fail JavaScript yang disokong seperti fail .js.</translation>
+<translation id="8621383749470166852">Tidak dapat memuatkan fail '<ph name="RELATIVE_PATH" />' untuk skrip kandungan. Sskrip kandungan hanya boleh dimuatkan daripada fail JavaScript yang disokong seperti fail .js.</translation>
 <translation id="8636666366616799973">Pakej adalah tidak sah. Butiran: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" meminta akses kepada salah satu peranti anda:</translation>
 <translation id="8885905466771744233">Kunci persendirian untuk sambungan yang dinyatakan telah wujud. Gunakan semula kunci tersebut atau padamkannya dahulu.</translation>
