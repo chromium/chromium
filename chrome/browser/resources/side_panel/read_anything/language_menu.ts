@@ -112,19 +112,20 @@ export class LanguageMenuElement extends LanguageMenuElementBase implements
     };
   }
 
-  selectedLang: string = '';
-  localeToDisplayName: {[lang: string]: string} = {};
-  enabledLangs: string[] = [];
-  availableVoices: SpeechSynthesisVoice[] = [];
-  protected languageSearchValue_: string = '';
-  protected availableLanguages_: LanguageDropdownItem[] = [];
+  accessor selectedLang: string = '';
+  accessor localeToDisplayName: {[lang: string]: string} = {};
+  accessor enabledLangs: string[] = [];
+  accessor availableVoices: SpeechSynthesisVoice[] = [];
+  protected accessor languageSearchValue_: string = '';
+  protected accessor availableLanguages_: LanguageDropdownItem[] = [];
   // Use this variable instead of AVAILABLE_GOOGLE_TTS_LOCALES
   // directly to better aid in testing.
   localesOfLangPackVoices: Set<string> =
       this.getSupportedNaturalVoiceDownloadLocales();
 
   // The current notifications that should be used in the language menu.
-  private currentNotifications_: {[language: string]: NotificationType} = {};
+  private accessor currentNotifications_:
+      {[language: string]: NotificationType} = {};
   private notificationManager_: VoiceNotificationManager =
       VoiceNotificationManager.getInstance();
 

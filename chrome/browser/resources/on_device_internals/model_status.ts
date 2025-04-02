@@ -34,7 +34,7 @@ export class OnDeviceInternalsModelStatusElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
-  protected pageData_: OnDeviceInternalsData = {
+  protected accessor pageData_: OnDeviceInternalsData = {
     baseModelReady: false,
     modelState: 'NO STATE',
     registrationCriteria: {},
@@ -43,7 +43,7 @@ export class OnDeviceInternalsModelStatusElement extends CrLitElement {
     maxModelCrashCount: 0,
   };
 
-  protected mayRestartBrowser_: boolean = false;
+  protected accessor mayRestartBrowser_: boolean = false;
   private proxy_: BrowserProxy = BrowserProxy.getInstance();
 
   protected async onResetModelCrashCountClick_() {

@@ -91,21 +91,22 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
     };
   }
 
-  selectedVoice?: SpeechSynthesisVoice;
-  localeToDisplayName: {[lang: string]: string} = {};
-  previewVoicePlaying?: SpeechSynthesisVoice;
-  enabledLangs: string[] = [];
-  availableVoices: SpeechSynthesisVoice[] = [];
-  isSpeechActive: boolean = false;
+  accessor selectedVoice: SpeechSynthesisVoice|undefined;
+  accessor localeToDisplayName: {[lang: string]: string} = {};
+  accessor previewVoicePlaying: SpeechSynthesisVoice|undefined;
+  accessor enabledLangs: string[] = [];
+  accessor availableVoices: SpeechSynthesisVoice[] = [];
+  accessor isSpeechActive: boolean = false;
 
   // The current notifications that should be used in the voice menu.
-  private currentNotifications_: {[language: string]: NotificationType} = {};
+  private accessor currentNotifications_:
+      {[language: string]: NotificationType} = {};
 
-  private previewVoiceInitiated?: SpeechSynthesisVoice;
+  private accessor previewVoiceInitiated: SpeechSynthesisVoice|undefined;
   protected errorMessages_: string[] = [];
-  protected downloadingMessages_: string[] = [];
-  protected voiceGroups_: VoiceDropdownGroup[] = [];
-  protected showLanguageMenuDialog_: boolean = false;
+  protected accessor downloadingMessages_: string[] = [];
+  protected accessor voiceGroups_: VoiceDropdownGroup[] = [];
+  protected accessor showLanguageMenuDialog_: boolean = false;
 
   private voicePlayingWhenMenuOpened_: boolean = false;
   private readonly spBodyPadding_ = Number.parseInt(
