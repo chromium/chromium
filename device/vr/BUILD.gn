@@ -202,6 +202,8 @@ if (enable_vr) {
         "openxr/openxr_interaction_profile_paths.h",
         "openxr/openxr_interaction_profiles.cc",
         "openxr/openxr_interaction_profiles.h",
+        "openxr/openxr_layers.cc",
+        "openxr/openxr_layers.h",
         "openxr/openxr_light_estimator.cc",
         "openxr/openxr_light_estimator.h",
         "openxr/openxr_path_helper.cc",

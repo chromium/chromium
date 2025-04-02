@@ -146,6 +146,10 @@ XrResult OpenXrPlatformHelper::CreateInstance(XrInstance* instance,
                               factory_extensions.end());
   }
 
+  for (const auto& extension : OpenXrGraphicsBinding::GetOptionalExtensions()) {
+    handled_extensions.insert(extension);
+  }
+
   // Enable the required extensions for any controllers that both we and the
   // runtime support.
   for (const auto& interaction_profile :
