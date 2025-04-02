@@ -1078,6 +1078,8 @@ extern const char kExperimentalOmniboxLabsName[];
 extern const char kExperimentalOmniboxLabsDescription[];
 extern const char kExtensionAiDataCollectionName[];
 extern const char kExtensionAiDataCollectionDescription[];
+extern const char kExtensionsCollapseMainMenuName[];
+extern const char kExtensionsCollapseMainMenuDescription[];
 extern const char kExtensionsMenuAccessControlName[];
 extern const char kExtensionsMenuAccessControlDescription[];
 extern const char kIPHExtensionsMenuFeatureName[];

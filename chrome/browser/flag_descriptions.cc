@@ -1880,6 +1880,11 @@ const char kExtensionAiDataCollectionDescription[] =
     "Enables an extension API to allow specific extensions to collect data "
     "from browser process. This data may contain profile specific information "
     " and may be otherwise unavailable to an extension.";
+const char kExtensionsCollapseMainMenuName[] = "Collapse Extensions Submenu";
+const char kExtensionsCollapseMainMenuDescription[] =
+    "Enables a mode where if the current profile has no extensions, the "
+    "extensions submenu in the application menu is replaced by a single item, "
+    "e.g. \"Explore Extensions\".";
 const char kExtensionsMenuAccessControlName[] =
     "Extensions Menu Access Control";
 const char kExtensionsMenuAccessControlDescription[] =

@@ -14327,6 +14327,7 @@ from previous Chrome versions.
   <int value="33778663" label="OriginTrials:enabled"/>
   <int value="34166742" label="AccessibilityIncludeLongClickAction:enabled"/>
   <int value="34399969" label="SplitPartiallyOccludedQuads:enabled"/>
+  <int value="34511257" label="ExtensionsCollapseMainMenu:disabled"/>
   <int value="35364948" label="SafetyHubFollowup:enabled"/>
   <int value="35716183" label="MagnifierNewFocusFollowing:disabled"/>
   <int value="36110634" label="AllowScrollSettings:disabled"/>
@@ -18291,6 +18292,7 @@ from previous Chrome versions.
   <int value="1559034872" label="AutofillPrefilledFields:enabled"/>
   <int value="1559812394" label="ToolbarPinning:enabled"/>
   <int value="1560188739" label="reader-mode-heuristics"/>
+  <int value="1560607634" label="ExtensionsCollapseMainMenu:enabled"/>
   <int value="1561281771" label="PriceTrackingIconColors:enabled"/>
   <int value="1561833662" label="AndroidBrowserControlsInViz:disabled"/>
   <int value="1562855415" label="WebRtcUseMinMaxVEADimensions:disabled"/>

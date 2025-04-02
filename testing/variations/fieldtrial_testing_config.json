@@ -9566,6 +9566,24 @@
             ]
         }
     ],
+    "ExtensionsCollapseMainMenu": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ExtensionsCollapseMainMenu"
+                    ]
+                }
+            ]
+        }
+    ],
     "ExtensionsServiceWorkerOptimizedEventDispatch": [
         {
             "platforms": [

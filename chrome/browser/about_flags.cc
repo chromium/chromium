@@ -9129,6 +9129,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExtensionAiDataCollectionDescription, kOsDesktop,
      SINGLE_VALUE_TYPE(switches::kExtensionAiDataCollection)},
 
+    {"extensions-collapse-main-menu",
+     flag_descriptions::kExtensionsCollapseMainMenuName,
+     flag_descriptions::kExtensionsCollapseMainMenuDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kExtensionsCollapseMainMenu)},
+
     {"extensions-menu-access-control",
      flag_descriptions::kExtensionsMenuAccessControlName,
      flag_descriptions::kExtensionsMenuAccessControlDescription, kOsDesktop,

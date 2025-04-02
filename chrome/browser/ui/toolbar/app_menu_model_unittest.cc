@@ -117,16 +117,6 @@ class AppMenuModelTest : public BrowserWithTestWindowTest,
   base::test::ScopedFeatureList feature_list_;
 };
 
-class ExtensionsMenuModelTest : public AppMenuModelTest {
- public:
-  ExtensionsMenuModelTest() = default;
-
-  ExtensionsMenuModelTest(const ExtensionsMenuModelTest&) = delete;
-  ExtensionsMenuModelTest& operator=(const ExtensionsMenuModelTest&) = delete;
-
-  ~ExtensionsMenuModelTest() override = default;
-};
-
 // Copies parts of MenuModelTest::Delegate and combines them with the
 // AppMenuModel since AppMenuModel is now a SimpleMenuModel::Delegate and
 // not derived from SimpleMenuModel.
@@ -284,23 +274,6 @@ TEST_F(AppMenuModelTest, DefaultBrowserPrompt) {
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-// Tests that extensions sub menu (when enabled) generates the correct elements
-// or does not generate its elements when disabled.
-TEST_F(ExtensionsMenuModelTest, ExtensionsMenu) {
-  AppMenuModel model(this, browser());
-  model.Init();
-
-  ASSERT_TRUE(model.GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU));
-  ui::MenuModel* extensions_submenu = model.GetSubmenuModelAt(
-      model.GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU).value());
-  ASSERT_NE(extensions_submenu, nullptr);
-  ASSERT_EQ(2ul, extensions_submenu->GetItemCount());
-  EXPECT_EQ(IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS,
-            extensions_submenu->GetCommandIdAt(0));
-  EXPECT_EQ(IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE,
-            extensions_submenu->GetCommandIdAt(1));
-}
-
 TEST_F(AppMenuModelTest, PerformanceItem) {
   AppMenuModel model(this, browser());
   model.Init();
@@ -431,6 +404,57 @@ TEST_F(AppMenuModelTest, ModelHasIcons) {
   };
 
   check_for_icons(u"<Root Menu>", &model);
+}
+
+class ExtensionsMenuModelTest : public AppMenuModelTest,
+                                public testing::WithParamInterface<bool> {
+ public:
+  ExtensionsMenuModelTest() = default;
+  ~ExtensionsMenuModelTest() override = default;
+
+  void SetUp() override {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kExtensionsCollapseMainMenu);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kExtensionsCollapseMainMenu);
+    }
+    AppMenuModelTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ExtensionsMenuModelTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& param) {
+                           return param.param ? "Collapse" : "DoNotCollapse";
+                         });
+
+// Tests that extensions sub menu (when enabled) generates the correct elements
+// or does not generate its elements when disabled.
+TEST_P(ExtensionsMenuModelTest, ExtensionsMenu) {
+  AppMenuModel model(this, browser());
+  model.Init();
+
+  if (GetParam()) {
+    const auto index = model.GetIndexOfCommandId(IDC_EXPLORE_EXTENSIONS);
+    ASSERT_TRUE(index.has_value());
+    EXPECT_EQ(nullptr, model.GetSubmenuModelAt(*index));
+  } else {
+    ASSERT_TRUE(model.GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU));
+    ui::MenuModel* extensions_submenu = model.GetSubmenuModelAt(
+        model.GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU).value());
+    ASSERT_NE(extensions_submenu, nullptr);
+    ASSERT_EQ(2ul, extensions_submenu->GetItemCount());
+    EXPECT_EQ(IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS,
+              extensions_submenu->GetCommandIdAt(0));
+    EXPECT_EQ(IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE,
+              extensions_submenu->GetCommandIdAt(1));
+  }
 }
 
 // Profile row does not show on ChromeOS.

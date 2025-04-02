@@ -41,6 +41,11 @@ bool ShouldDisplayInNewTabPage(const Extension* extension,
 std::u16string GetEnabledExtensionNameForUrl(const GURL& url,
                                              content::BrowserContext* context);
 
+// Returns whether `browser_context` contains any extensions that are manageable
+// - i.e. visible to the user on the extensions settings page,
+// chrome://extensions.
+bool HasManageableExtensions(content::BrowserContext* browser_context);
+
 }  // namespace ui_util
 }  // namespace extensions
 
