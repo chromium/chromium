@@ -160,6 +160,7 @@ abstract class OnDeviceModel<T> implements Model<T> {
         maxOutputTokens: 0,
         topK: null,
         temperature: null,
+        responseJsonSchema: '',
       },
       responseRouter.$.bindNewPipeAndPassRemote(),
     );

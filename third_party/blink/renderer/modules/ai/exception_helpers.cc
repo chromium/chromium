@@ -60,6 +60,9 @@ const char kExceptionMessageSystemPromptIsNotTheFirst[] =
     "initialPrompts.";
 const char kExceptionMessageUnsupportedLanguages[] =
     "The specified languages are not supported.";
+const char kExceptionMessageInvalidResponseJsonSchema[] =
+    "Response json schema is invalid - it should be an object that can be "
+    "stringified into a JSON string.";
 
 void ThrowInvalidContextException(ExceptionState& exception_state) {
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -103,6 +106,23 @@ bool HandleAbortSignal(AbortSignal* signal,
   }
 
   return false;
+}
+
+String ValidateAndStringifyObject(const ScriptValue& input,
+                                  ScriptState* script_state,
+                                  ExceptionState& exception_state) {
+  v8::Local<v8::String> value;
+  if (!input.V8Value()->IsObject() ||
+      !v8::JSON::Stringify(script_state->GetContext(),
+                           input.V8Value().As<v8::Object>())
+           .ToLocal(&value)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        kExceptionMessageInvalidResponseJsonSchema);
+    return WTF::String();
+  }
+  return ToBlinkString<String>(script_state->GetIsolate(), value,
+                               kDoNotExternalize);
 }
 
 namespace {

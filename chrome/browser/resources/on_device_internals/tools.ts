@@ -416,6 +416,7 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
           maxOutputTokens: 0,
           topK: null,
           temperature: null,
+          responseJsonSchema: '',
         },
         this.responseRouter_.$.bindNewPipeAndPassRemote());
     const onResponseId =

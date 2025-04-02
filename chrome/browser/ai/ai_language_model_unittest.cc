@@ -335,9 +335,10 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
                   }
                 });
 
-            EXPECT_CALL(*session, ExecuteModel(_, _))
+            EXPECT_CALL(*session, ExecuteModelWithResponseJsonSchema(_, _, _))
                 .WillOnce(
                     [&](const google::protobuf::MessageLite& request_metadata,
+                        const std::optional<std::string>& response_json_schema,
                         optimization_guide::
                             OptimizationGuideModelExecutionResultStreamingCallback
                                 callback) {
@@ -361,9 +362,10 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
                               options.expected_cloned_context +
                                   options.expected_prompt);
                 });
-            EXPECT_CALL(*session, ExecuteModel(_, _))
+            EXPECT_CALL(*session, ExecuteModelWithResponseJsonSchema(_, _, _))
                 .WillOnce(
                     [&](const google::protobuf::MessageLite& request_metadata,
+                        const std::optional<std::string>& response_json_schema,
                         optimization_guide::
                             OptimizationGuideModelExecutionResultStreamingCallback
                                 callback) {
@@ -511,7 +513,8 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
                       });
 
               // The model should not be executed.
-              EXPECT_CALL(*session, ExecuteModel(_, _)).Times(0);
+              EXPECT_CALL(*session, ExecuteModelWithResponseJsonSchema(_, _, _))
+                  .Times(0);
               return session;
             });
 
@@ -586,10 +589,11 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
                                                    : "U: A\nM: OK\nU: B\nM: ");
               });
 
-          EXPECT_CALL(*session, ExecuteModel(_, _))
+          EXPECT_CALL(*session, ExecuteModelWithResponseJsonSchema(_, _, _))
               .Times(2)
               .WillRepeatedly(
                   [&](const google::protobuf::MessageLite& request_metadata,
+                      const std::optional<std::string>& response_json_schema,
                       optimization_guide::
                           OptimizationGuideModelExecutionResultStreamingCallback
                               callback) {
@@ -631,10 +635,10 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
               responder_run_loop_2.Quit();
             }));
 
-    mock_session->Prompt(MakeInput("A"),
+    mock_session->Prompt(MakeInput("A"), /*response_json_schema=*/std::nullopt,
                          mock_responder_1.BindNewPipeAndPassRemote());
     responder_run_loop_1.Run();
-    mock_session->Prompt(MakeInput("B"),
+    mock_session->Prompt(MakeInput("B"), /*response_json_schema=*/std::nullopt,
                          mock_responder_2.BindNewPipeAndPassRemote());
     responder_run_loop_2.Run();
   }
@@ -716,6 +720,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
             }));
 
     mock_session->Prompt(MakeInput(prompt),
+                         /*response_json_schema=*/std::nullopt,
                          mock_responder.BindNewPipeAndPassRemote());
     responder_run_loop.Run();
   }
@@ -861,6 +866,7 @@ TEST_F(AILanguageModelTest, PromptAfterDestroy) {
          AITestUtils::MockModelStreamingResponder& mock_responder) {
         mock_session->Destroy();
         mock_session->Prompt(MakeInput(kTestPrompt),
+                             /*response_json_schema=*/std::nullopt,
                              mock_responder.BindNewPipeAndPassRemote());
       }));
 }
@@ -872,6 +878,7 @@ TEST_F(AILanguageModelTest, PromptBeforeDestroy) {
       [](mojo::Remote<blink::mojom::AILanguageModel> mock_session,
          AITestUtils::MockModelStreamingResponder& mock_responder) {
         mock_session->Prompt(MakeInput(kTestPrompt),
+                             /*response_json_schema=*/std::nullopt,
                              mock_responder.BindNewPipeAndPassRemote());
         mock_session->Destroy();
       }));
@@ -950,9 +957,10 @@ TEST_F(AILanguageModelTest, MultimodalInput) {
                           "U: <audio>\n"
                           "M: ");
             });
-        EXPECT_CALL(*session, ExecuteModel(_, _))
+        EXPECT_CALL(*session, ExecuteModelWithResponseJsonSchema(_, _, _))
             .WillOnce(
                 [&](const google::protobuf::MessageLite& request_metadata,
+                    const std::optional<std::string>& response_json_schema,
                     optimization_guide::
                         OptimizationGuideModelExecutionResultStreamingCallback
                             callback) {
@@ -981,7 +989,7 @@ TEST_F(AILanguageModelTest, MultimodalInput) {
   input.push_back(blink::mojom::AILanguageModelPrompt::New(
       Role::kUser,
       blink::mojom::AILanguageModelPromptContent::NewAudio(CreateTestAudio())));
-  mock_session->Prompt(std::move(input),
+  mock_session->Prompt(std::move(input), /*response_json_schema=*/std::nullopt,
                        mock_responder.BindNewPipeAndPassRemote());
   run_loop.Run();
 }
@@ -1233,7 +1241,7 @@ TEST_F(AILanguageModelHackyPrototypeTest, Basic) {
   input.push_back(blink::mojom::AILanguageModelPrompt::New(
       Role::kUser, blink::mojom::AILanguageModelPromptContent::NewBitmap(
                        CreateTestBitmap(10, 10))));
-  mock_session->Prompt(std::move(input),
+  mock_session->Prompt(std::move(input), /*response_json_schema=*/std::nullopt,
                        mock_responder.BindNewPipeAndPassRemote());
   run_loop.Run();
 }
