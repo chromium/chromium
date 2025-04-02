@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/page_load_metrics/browser/observers/third_party_metrics_observer.h"
+
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -9,13 +11,13 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/network_session_configurator/common/network_switches.h"
-#include "components/page_load_metrics/browser/observers/third_party_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -513,10 +515,12 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   observer.Wait();
   NavigateToUntrackedUrl();
 
-  histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 0, 1);
+  const int expected_reads =
+      base::FeatureList::IsEnabled(network::features::kGetCookiesOnSet) ? 1 : 0;
+  histogram_tester.ExpectUniqueSample(kReadCookieHistogram, expected_reads, 1);
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
-      blink::mojom::WebFeature::kThirdPartyCookieRead, 0);
+      blink::mojom::WebFeature::kThirdPartyCookieRead, expected_reads);
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kThirdPartyCookieWrite, 1);

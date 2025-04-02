@@ -720,33 +720,32 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
   EXPECT_TRUE(NavigateToURL(web_contents(), url1));
   EXPECT_TRUE(ExecJs(web_contents(), "document.cookie='foo=bar'"));
 
-  cookie_tracker.WaitForCookies(1);
-  EXPECT_THAT(
-      cookie_tracker.cookie_accesses(),
-      testing::ElementsAre(CookieAccess{
-          CookieAccessDetails::Type::kChange, ContextType::kFrame,
-          cookie_tracker.frame_id(0), -1, url1, first_party_url, "foo", "bar",
-          net::CookieAccessResult(
-              net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
-              net::CookieInclusionStatus(),
-              net::CookieAccessSemantics::NONLEGACY,
-              net::CookieScopeSemantics::UNKNOWN, false)}));
-  cookie_tracker.cookie_accesses().clear();
-
   EXPECT_EQ("foo=bar", EvalJs(web_contents(), "document.cookie"));
 
-  cookie_tracker.WaitForCookies(1);
+  cookie_tracker.WaitForCookies(2);
+  // TODO(crbug.com/380864710): Move this check before reading cookies once
+  // GetCookiesOnSet is fully shipped. When the feature is enabled, a Set also
+  // does a Set, and the Get is cached, thus not producing an access
+  // notification.
   EXPECT_THAT(
       cookie_tracker.cookie_accesses(),
-      testing::ElementsAre(CookieAccess{
-          CookieAccessDetails::Type::kRead, ContextType::kFrame,
-          cookie_tracker.frame_id(0), -1, url1, first_party_url, "foo", "bar",
-          net::CookieAccessResult(
-              net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
-              net::CookieInclusionStatus(),
-              net::CookieAccessSemantics::NONLEGACY,
-              net::CookieScopeSemantics::NONLEGACY, false)}));
-  cookie_tracker.cookie_accesses().clear();
+      testing::ElementsAre(
+          CookieAccess{CookieAccessDetails::Type::kChange, ContextType::kFrame,
+                       cookie_tracker.frame_id(0), -1, url1, first_party_url,
+                       "foo", "bar",
+                       net::CookieAccessResult(
+                           net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
+                           net::CookieInclusionStatus(),
+                           net::CookieAccessSemantics::NONLEGACY,
+                           net::CookieScopeSemantics::UNKNOWN, false)},
+          CookieAccess{CookieAccessDetails::Type::kRead, ContextType::kFrame,
+                       cookie_tracker.frame_id(0), -1, url1, first_party_url,
+                       "foo", "bar",
+                       net::CookieAccessResult(
+                           net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
+                           net::CookieInclusionStatus(),
+                           net::CookieAccessSemantics::NONLEGACY,
+                           net::CookieScopeSemantics::NONLEGACY, false)}));
 }
 
 class WebContentsObserverBrowserTestWithTPCD
