@@ -8,8 +8,6 @@ source_set("ui_bundled") {
   sources = [
     "authentication_ui_util.h",
     "authentication_ui_util.mm",
-    "continuation.h",
-    "continuation.mm",
     "re_signin_infobar_delegate.h",
     "re_signin_infobar_delegate.mm",
     "signin_notification_infobar_delegate.h",
@@ -123,7 +121,8 @@ source_set("unit_tests") {
   ]
   deps = [
     ":account_settings_presenter",
-    ":change_profile_continuation_test",
+    ":continuation",
+    ":continuation_test",
     ":signin_presenter",
     ":ui_bundled",
     "//base",
@@ -308,13 +307,26 @@ source_set("eg2_tests") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("change_profile_continuation_test") {
+source_set("continuation") {
+  sources = [
+    "change_profile_continuation_provider.h",
+    "continuation.h",
+    "continuation.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app:change_profile_continuation",
+  ]
+}
+
+source_set("continuation_test") {
   testonly = true
   sources = [
     "authentication_test_util.h",
     "authentication_test_util.mm",
   ]
   deps = [
+    ":continuation",
     ":ui_bundled",
     "//base",
     "//ios/chrome/app:change_profile_continuation",
