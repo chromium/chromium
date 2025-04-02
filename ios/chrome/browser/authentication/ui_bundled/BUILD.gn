@@ -18,6 +18,7 @@ source_set("ui_bundled") {
   deps = [
     ":account_settings_presenter",
     ":authentication_constants",
+    ":continuation",
     ":signin_presenter",
     "//components/bookmarks/common",
     "//components/browser_sync",
