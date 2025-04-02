@@ -5016,7 +5016,7 @@ NavigationRequest::CreateNavigationEarlyHintsManagerParams(
 
   mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer;
   cookie_observers_->Add(cookie_observer.InitWithNewPipeAndPassReceiver(),
-                         CookieAccessDetails::Source::kNavigation);
+                         CookieAccessDetails::Source::kNonNavigation);
 
   mojo::PendingRemote<network::mojom::TrustTokenAccessObserver>
       trust_token_observer;
