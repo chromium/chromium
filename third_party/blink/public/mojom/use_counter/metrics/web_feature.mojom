@@ -4408,7 +4408,7 @@ enum WebFeature {
   kButtonTypeAttrInvalid = 5032,
   kButtonTypeAttrEmptyString = 5033,
   kProtectedAudienceDirectFromSellerSignals = 5034,
-  kWebGPUSubgroupsFeatures = 5035,
+  kOBSOLETE_WebGPUSubgroupsFeatures = 5035,
   kAudioContextOnError = 5036,
   kNoVarySearchPrerender = 5037,
   // The items above roughly this point are available in the M128 branch.

@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 
 #include "gpu/command_buffer/client/webgpu_interface.h"
-#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_compute_pipeline_descriptor.h"
@@ -168,15 +167,6 @@ void GPUDevice::Initialize(wgpu::Device handle,
 
   queue_ = MakeGarbageCollected<GPUQueue>(this, GetHandle().GetQueue(),
                                           descriptor->defaultQueue()->label());
-
-  // Increment subgroups features counter for OT.
-  // TODO(crbug.com/349125474): Clean up after OT finished.
-  if (features_->has(V8GPUFeatureName::Enum::kSubgroups)) {
-    DCHECK(RuntimeEnabledFeatures::WebGPUSubgroupsFeaturesEnabled(
-        GetExecutionContext()));
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kWebGPUSubgroupsFeatures);
-  }
 
   wgpu::Limits limits = {};
   GetHandle().GetLimits(&limits);
