@@ -19135,8 +19135,6 @@ from previous Chrome versions.
   <int value="1870023694" label="AccessibilityDeprecateChromeVoxTabs:enabled"/>
   <int value="1870187746" label="TabStripTransitionInDesktopWindow:enabled"/>
   <int value="1870973833" label="AssistantEnableStereoAudioInput:enabled"/>
-  <int value="1871544744"
-      label="AdjustCanCreateCanvas2dResourceProvider:disabled"/>
   <int value="1871938175" label="FontSrcLocalMatching:disabled"/>
   <int value="1872185826" label="LocationHardReload:enabled"/>
   <int value="1872768755" label="BackgroundResourceFetch:disabled"/>
@@ -19605,8 +19603,6 @@ from previous Chrome versions.
   <int value="2055184887" label="LocalHistoryZeroSuggestBeyondNTP:enabled"/>
   <int value="2056572020" label="EnableUsernameCorrection:disabled"/>
   <int value="2057084644" label="AndroidTabDeclutterArchiveTabGroups:disabled"/>
-  <int value="2057964838"
-      label="AdjustCanCreateCanvas2dResourceProvider:enabled"/>
   <int value="2058148069" label="UseMessagesStagingUrl:enabled"/>
   <int value="2058283872" label="CCTModuleCache:disabled"/>
   <int value="2058425230" label="LauncherNudgeSessionReset:enabled"/>

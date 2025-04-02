@@ -11875,13 +11875,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
-    {"adjust-can-create-canvas2d-resource-provider",
-     flag_descriptions::kAdjustCanCreateCanvas2DResourceProviderName,
-     flag_descriptions::kAdjustCanCreateCanvas2DResourceProviderDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         blink::features::kAdjustCanCreateCanvas2dResourceProvider)},
-
     {"is-paintable-checks-resource-provider",
      flag_descriptions::kIsPaintableChecksResourceProviderInsteadOfBridgeName,
      flag_descriptions::

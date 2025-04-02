@@ -40,12 +40,6 @@ BASE_FEATURE_PARAM(int,
                    "ad-auction-signals-max-size-bytes",
                    10000);
 
-// Serves as killswitch for changing CanCreateCanvasResourceProvider() to
-// create resource provider internally rather than Canvas2DLayerBridge.
-BASE_FEATURE(kAdjustCanCreateCanvas2dResourceProvider,
-             "AdjustCanCreateCanvas2dResourceProvider",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Avoids copying ResourceRequest::TrustedParams when possible.
 BASE_FEATURE(kAvoidTrustedParamsCopies,
              "AvoidTrustedParamsCopies",
