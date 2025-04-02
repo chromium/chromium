@@ -8812,6 +8812,7 @@ test("unit_tests") {
       "../browser/extensions/installed_loader_unittest.cc",
       "../common/extensions/chrome_manifest_url_handlers_unittest.cc",
       "../common/extensions/manifest_handlers/automation_unittest.cc",
+      "../common/extensions/manifest_handlers/background_scripts_manifest_unittest.cc",
       "../common/extensions/manifest_handlers/content_scripts_manifest_unittest.cc",
       "../common/extensions/manifest_handlers/exclude_matches_manifest_unittest.cc",
       "../common/extensions/manifest_handlers/natively_connectable_handler_unittest.cc",
