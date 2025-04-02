@@ -966,7 +966,7 @@ extern const base::FeatureParam<std::string>
 extern const std::string_view
     kFRESignInSecondaryActionLabelUpdateParamStaySignedOut;
 
-// Returns whether 'kFRESignInSecondaryActionLabelUpdate' is enabled
+// Returns whether 'kFRESignInSecondaryActionLabelUpdate' is enabled.
 bool FRESignInSecondaryActionLabelUpdate();
 
 // Enables passkey syncing follow-up features.
@@ -1093,5 +1093,12 @@ BASE_DECLARE_FEATURE(kNTPBackgroundCustomization);
 
 // Checks if background customization is enabled on the NTP.
 bool IsNTPBackgroundCustomizationEnabled();
+
+// Feature flag to control whether default status API check and reporting are
+// enabled.
+BASE_DECLARE_FEATURE(kRunDefaultStatusCheck);
+
+// Returns whether `kRunDefaultStatusCheck` is enabled.
+bool IsRunDefaultStatusCheckEnabled();
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

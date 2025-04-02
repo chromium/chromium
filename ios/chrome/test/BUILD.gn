@@ -537,6 +537,12 @@ test("ios_chrome_unittests") {
     "//ios/testing/earl_grey:unit_tests",
   ]
 
+  if (target_environment != "catalyst") {
+    deps += [
+      "//ios/chrome/browser/default_browser/model/default_status:unit_tests",
+    ]
+  }
+
   if (ios_enable_widget_kit_extension) {
     deps += [ "//ios/chrome/browser/widget_kit/model:unit_tests" ]
   }

@@ -126,6 +126,10 @@
 #import "ios/web/common/features.h"
 #import "ui/base/l10n/l10n_util.h"
 
+#if !BUILDFLAG(IS_IOS_MACCATALYST)
+#import "ios/chrome/browser/default_browser/model/default_status/default_status_helper_prefs.h"
+#endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
+
 namespace {
 
 // Deprecated 05/2024.
@@ -403,6 +407,10 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   TipsNotificationClient::RegisterLocalStatePrefs(registry);
   auto_deletion::AutoDeletionService::RegisterLocalStatePrefs(registry);
   push_notification_prefs::RegisterLocalStatePrefs(registry);
+
+#if !BUILDFLAG(IS_IOS_MACCATALYST)
+  default_status::RegisterDefaultStatusPrefs(registry);
+#endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
 
   // Preferences related to the profile manager.
   registry->RegisterStringPref(prefs::kLastUsedProfile, std::string());
