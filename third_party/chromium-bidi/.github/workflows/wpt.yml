@@ -78,7 +78,7 @@ jobs:
         with:
           submodules: true
       - name: Set up Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
+        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
         with:
           node-version-file: '.nvmrc'
           cache: npm
@@ -90,7 +90,7 @@ jobs:
       - name: Setup dirs
         run: mkdir -p out
       - name: Set up Python
-        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -131,7 +131,7 @@ jobs:
           FAIL_NO_TEST: false
       - name: Upload artifacts
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: ${{ matrix.kind }}-${{ matrix.head }}-${{ matrix.this_chunk }}.${{ matrix.total_chunks }}-artifacts
           path: |
@@ -162,7 +162,7 @@ jobs:
         with:
           submodules: true
       - name: Set up Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
+        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
         with:
           node-version-file: '.nvmrc'
           cache: npm
@@ -172,7 +172,7 @@ jobs:
       - name: Setup dirs
         run: mkdir -p out
       - name: Set up Python
-        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -181,7 +181,7 @@ jobs:
       - name: Download Artifact
         # Get all the artifacts from the previous WPT run in order to get all the
         # test reports.
-        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
         with:
           path: wpt_artifacts
           # Merge the artifacts from all jobs in the same file.
@@ -223,7 +223,7 @@ jobs:
           mkdir -p ./artifacts/updated-wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
           mv ./wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}/* ./artifacts/updated-wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}/
       - name: Upload artifacts
-        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: updated-wpt-metadata-${{ matrix.kind }}-${{ matrix.head }}
           path: ./artifacts
@@ -243,7 +243,7 @@ jobs:
         # There is no way to download artifacts by wildcard, so we need to download
         # all of them. The `updated-wpt-metadata` directory should contain all the
         # updated expectations from the `update_expectations` matrix.
-        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
         with:
           path: all-artifacts
           merge-multiple: true
@@ -253,7 +253,7 @@ jobs:
           rm -rf wpt-metadata/chromedriver wpt-metadata/mapper
           mv all-artifacts/updated-wpt-metadata/* ./wpt-metadata/
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@dd2324fc52d5d43c699a5636bcf19fceaa70c284 # v7.0.7
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
           token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN }}
           branch: ${{ github.head_ref }}-update-expectations
@@ -287,14 +287,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Set up Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
+        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
         with:
           node-version-file: '.nvmrc'
           cache: npm
       - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0.2
       - name: Install and build npm dependencies
         run: npm ci
-      - uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
+      - uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
         with:
           pattern: chromedriver-headful-*
           merge-multiple: true

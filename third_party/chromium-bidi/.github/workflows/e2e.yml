@@ -59,7 +59,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Set up Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
+        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
         with:
           node-version-file: '.nvmrc'
           cache: npm
@@ -74,7 +74,7 @@ jobs:
       - name: Install all chrome binaries if needed
         uses: ./.github/actions/setup-chrome-binaries
       - name: Set up Python
-        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
         with:
           python-version: '3.11'
           cache: pipenv
@@ -105,7 +105,7 @@ jobs:
           VERBOSE: ${{ github.event.inputs.verbose }}
       - name: Upload artifacts
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: ${{ matrix.os }}-${{ matrix.head }}-${{ matrix.this_chunk }}-artifacts
           path: logs
