@@ -92,7 +92,7 @@ jobs:
         working-directory: puppeteer
         env:
           PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
-        run: xvfb-run --auto-servernum npm run test:chrome:bidi -- --shard '${{ matrix.shard }}'
+        run: xvfb-run --auto-servernum npm run test:chrome:bidi -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}'
 
   puppeteer-test-required:
     name: '[Required] Puppeteer tests'
