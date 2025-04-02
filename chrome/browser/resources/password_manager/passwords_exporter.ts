@@ -61,9 +61,9 @@ export class PasswordsExporterElement extends PasswordsExporterElementBase {
   private onPasswordsFileExportProgressListener_:
       PasswordsFileExportProgressListener|null = null;
 
-  private showPasswordsExportErrorDialog_: boolean;
-  private showExportInProgress_: boolean;
-  private exportErrorMessage_: string|null;
+  declare private showPasswordsExportErrorDialog_: boolean;
+  declare private showExportInProgress_: boolean;
+  declare private exportErrorMessage_: string|null;
   private exportedFilePath_: string|null;
 
 
