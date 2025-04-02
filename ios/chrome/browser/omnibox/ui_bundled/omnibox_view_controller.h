@@ -15,7 +15,6 @@
 @class LayoutGuideCenter;
 @protocol OmniboxMutator;
 @protocol OmniboxKeyboardDelegate;
-@protocol OmniboxReturnDelegate;
 @class OmniboxViewController;
 @protocol TextFieldViewContaining;
 
@@ -77,8 +76,9 @@
 // The delegate for this object.
 @property(nonatomic, weak) id<OmniboxViewControllerTextInputDelegate>
     textInputDelegate;
+/// Delegate for paste actions.
 @property(nonatomic, weak) id<OmniboxViewControllerPasteDelegate> pasteDelegate;
-@property(nonatomic, weak) id<OmniboxReturnDelegate> returnKeyDelegate;
+/// Delegate for keyboard actions.
 @property(nonatomic, weak) id<OmniboxKeyboardDelegate> popupKeyboardDelegate;
 
 // The layout guide center to use to refer to the omnibox leading image.

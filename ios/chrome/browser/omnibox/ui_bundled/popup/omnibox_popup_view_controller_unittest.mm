@@ -59,12 +59,9 @@ class OmniboxPopupViewControllerTest : public PlatformTest {
         mockForProtocol:@protocol(AutocompleteResultConsumerDelegate)];
     preview_delegate_ =
         [OCMockObject mockForProtocol:@protocol(PopupMatchPreviewDelegate)];
-    return_delegate_ =
-        [OCMockObject mockForProtocol:@protocol(OmniboxReturnDelegate)];
     popup_view_controller_ = [[OmniboxPopupViewController alloc] init];
     popup_view_controller_.delegate = delegate_;
     popup_view_controller_.matchPreviewDelegate = preview_delegate_;
-    popup_view_controller_.acceptReturnDelegate = return_delegate_;
     // Force view initialisation since this view controller is never added into
     // the hierarchy in this unit test.
     [popup_view_controller_ view];
@@ -81,7 +78,6 @@ class OmniboxPopupViewControllerTest : public PlatformTest {
   }
 
   OCMockObject<AutocompleteResultConsumerDelegate>* delegate_;
-  OCMockObject<OmniboxReturnDelegate>* return_delegate_;
   OCMockObject<PopupMatchPreviewDelegate>* preview_delegate_;
   OmniboxPopupViewController* popup_view_controller_;
 

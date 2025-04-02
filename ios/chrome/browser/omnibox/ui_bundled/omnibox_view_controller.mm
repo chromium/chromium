@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_container_view.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_keyboard_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_mutator.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_change_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_delegate.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"

@@ -607,6 +607,28 @@ const CGFloat kHeaderTopPadding = 16.0f;
   [self.matchPreviewDelegate setPreviewSuggestion:suggestion isFirstUpdate:NO];
 }
 
+/// Whether the Return/Enter action can be performed.
+- (BOOL)canPerformReturnKeyAction {
+  if (self.highlightedIndexPath) {
+    id<AutocompleteSuggestion> suggestion =
+        [self suggestionAtIndexPath:self.highlightedIndexPath];
+    return suggestion != nil;
+  }
+  return NO;
+}
+
+/// Performs Return/Enter action.
+- (void)performReturnKeyAction {
+  CHECK([self canPerformReturnKeyAction], kOmniboxRefactoringNotFatalUntil);
+  id<AutocompleteSuggestion> suggestion =
+      [self suggestionAtIndexPath:self.highlightedIndexPath];
+  NSInteger absoluteRow =
+      [self absoluteRowIndexForIndexPath:self.highlightedIndexPath];
+  [self.delegate autocompleteResultConsumer:self
+                        didSelectSuggestion:suggestion
+                                      inRow:absoluteRow];
+}
+
 #pragma mark - OmniboxPopupRowDelegate
 
 - (void)omniboxPopupRowWithConfiguration:
@@ -652,38 +674,6 @@ const CGFloat kHeaderTopPadding = 16.0f;
                                  suggestion:suggestion
                                       inRow:configuration.indexPath.row];
 }
-
-#pragma mark - OmniboxReturnDelegate
-
-- (void)omniboxReturnPressed:(id)sender {
-  // TODO(crbug.com/402392448): Remove OmniboxReturnDelegate.
-}
-
-#pragma mark OmniboxReturnDelegate private
-
-/// Whether the Return/Enter action can be performed.
-- (BOOL)canPerformReturnKeyAction {
-  if (self.highlightedIndexPath) {
-    id<AutocompleteSuggestion> suggestion =
-        [self suggestionAtIndexPath:self.highlightedIndexPath];
-    return suggestion != nil;
-  }
-  return NO;
-}
-
-/// Performs Return/Enter action.
-- (void)performReturnKeyAction {
-  CHECK([self canPerformReturnKeyAction], kOmniboxRefactoringNotFatalUntil);
-  id<AutocompleteSuggestion> suggestion =
-      [self suggestionAtIndexPath:self.highlightedIndexPath];
-  NSInteger absoluteRow =
-      [self absoluteRowIndexForIndexPath:self.highlightedIndexPath];
-  [self.delegate autocompleteResultConsumer:self
-                        didSelectSuggestion:suggestion
-                                      inRow:absoluteRow];
-}
-
-#pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
       willDisplayCell:(UITableViewCell*)cell
