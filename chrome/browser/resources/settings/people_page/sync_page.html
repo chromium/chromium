@@ -225,7 +225,7 @@
 <if expr="not chromeos_ash">
     <template is="dom-if" if="[[showSetupCancelDialog_]]" restamp>
       <cr-dialog id="setupCancelDialog" on-close="onSetupCancelDialogClose_"
-          ignore-popstate>
+          ignore-popstate show-on-attach>
         <div slot="title">$i18n{syncSetupCancelDialogTitle}</div>
         <div slot="body">$i18n{syncSetupCancelDialogBody}</div>
         <div slot="button-container">
