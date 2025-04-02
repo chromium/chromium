@@ -132,21 +132,33 @@ bool VisibleForStyle(const ComputedStyle* style) {
   return !style->IsInert();
 }
 
-// Returns the next/previous node after |start_node| (including start node) that
-// is a text node and is searchable and visible.
+// Returns the next/previous node after |start_node| (including start node and
+// in the search range) that is a text node and is searchable and visible.
 template <class Direction>
-Node* GetVisibleTextNode(Node& start_node) {
+Node* GetVisibleTextNode(Node& start_node, Node* past_last_node = nullptr) {
   Node* node = &start_node;
+
+  // Move the end node to a visible subtree. Since we'll be testing node against
+  // it, it must be searchable otherwise node might skip past it.
+  if (past_last_node) {
+    while (Node* ancestor =
+               GetOutermostNonSearchableAncestor(*past_last_node)) {
+      past_last_node = Direction::NextSkippingSubtree(*ancestor);
+      if (!past_last_node) {
+        break;
+      }
+    }
+  }
+
   // Move to outside display none subtree if we're inside one.
   while (Node* ancestor = GetOutermostNonSearchableAncestor(*node)) {
-    if (!ancestor)
-      return nullptr;
     node = Direction::NextSkippingSubtree(*ancestor);
     if (!node)
       return nullptr;
   }
+
   // Move to first text node that's visible.
-  while (node) {
+  while (node && node != past_last_node) {
     const ComputedStyle* style = EnsureComputedStyleForFind(*node);
     if (FindBuffer::ShouldIgnoreContents(*node) ||
         (style && style->Display() == EDisplay::kNone)) {
@@ -178,6 +190,9 @@ bool AreInOrder(const Node& start, const Node& end) {
   const Node* node = &start;
   while (node && !node->isSameNode(&end)) {
     node = FlatTreeTraversal::Next(*node);
+  }
+  if (!node) {
+    return false;
   }
   return node->isSameNode(&end);
 }
@@ -341,7 +356,8 @@ bool FindBuffer::IsInSameUninterruptedBlock(const Node& start_node,
   return true;
 }
 
-Node* FindBuffer::ForwardVisibleTextNode(Node& start_node) {
+Node* FindBuffer::ForwardVisibleTextNode(Node& start_node,
+                                         Node* past_last_node) {
   struct ForwardDirection {
     static Node* Next(const Node& node) {
       return FlatTreeTraversal::Next(node);
@@ -350,7 +366,7 @@ Node* FindBuffer::ForwardVisibleTextNode(Node& start_node) {
       return FlatTreeTraversal::NextSkippingChildren(node);
     }
   };
-  return GetVisibleTextNode<ForwardDirection>(start_node);
+  return GetVisibleTextNode<ForwardDirection>(start_node, past_last_node);
 }
 
 Node* FindBuffer::BackwardVisibleTextNode(Node& start_node) {
@@ -394,9 +410,12 @@ void FindBuffer::CollectTextUntilBlockBoundary(
   const Node* const first_node = range.StartPosition().NodeAsRangeFirstNode();
   if (!first_node)
     return;
+
   // Get first visible text node from |start_position|.
-  Node* node =
-      ForwardVisibleTextNode(*range.StartPosition().NodeAsRangeFirstNode());
+  // Make sure the node stays within the search range.
+  Node* past_last_node = range.EndPosition().NodeAsRangePastLastNode();
+  Node* node = ForwardVisibleTextNode(
+      *range.StartPosition().NodeAsRangeFirstNode(), past_last_node);
   if (!node || !node->isConnected())
     return;
 
@@ -412,8 +431,6 @@ void FindBuffer::CollectTextUntilBlockBoundary(
 
   // Used for checking if we reached a new block.
   Node* last_added_text_node = nullptr;
-
-  // We will also stop if we encountered/passed |end_node|.
   Node* end_node = range.EndPosition().NodeAsRangeLastNode();
 
   if (ruby_support == RubySupport::kEnabledForcefully ||
