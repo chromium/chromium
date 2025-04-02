@@ -239,8 +239,6 @@ def _generate_mixin_values(formatter, mixin):
             formatter.add_line("'cros_build_target': '{}',".format(skylab.cros_build_target))
         if skylab.cros_model:
             formatter.add_line("'cros_model': '{}',".format(skylab.cros_model))
-        if skylab.cros_cbx:
-            formatter.add_line("'cros_cbx': True,")
         if skylab.cros_img:
             formatter.add_line("'cros_img': '{}',".format(skylab.cros_img))
         if skylab.use_lkgm:
