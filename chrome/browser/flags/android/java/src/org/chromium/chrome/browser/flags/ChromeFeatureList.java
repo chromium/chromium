@@ -353,6 +353,7 @@ public abstract class ChromeFeatureList {
     public static final String ESB_AI_STRING_UPDATE = "EsbAiStringUpdate";
     public static final String FEED_CONTAINMENT = "FeedContainment";
     public static final String FEED_FOLLOW_UI_UPDATE = "FeedFollowUiUpdate";
+    public static final String FEED_HEADER_REMOVAL = "FeedHeaderRemoval";
     public static final String FEED_IMAGE_MEMORY_CACHE_SIZE_PERCENTAGE =
             "FeedImageMemoryCacheSizePercentage";
     public static final String FEED_LOADING_PLACEHOLDER = "FeedLoadingPlaceholder";

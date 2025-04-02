@@ -756,6 +756,17 @@ const FeatureEntry::FeatureVariation
          std::size(kOptimizationGuidePersonalizedFetchingAllowPageInsights),
          nullptr}};
 
+const FeatureEntry::FeatureParam kFeedHeaderRemovalParam1 = {
+    feed::kFeedHeaderRemovalTreatmentParam,
+    feed::kFeedHeaderRemovalTreatmentValue1};
+const FeatureEntry::FeatureParam kFeedHeaderRemovalParam2 = {
+    feed::kFeedHeaderRemovalTreatmentParam,
+    feed::kFeedHeaderRemovalTreatmentValue2};
+const FeatureEntry::FeatureVariation kFeedHeaderRemovalVariations[] = {
+    {"1", &kFeedHeaderRemovalParam1, 1, nullptr},
+    {"2", &kFeedHeaderRemovalParam2, 1, nullptr},
+};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -5809,6 +5820,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"refresh-feed-on-start", flag_descriptions::kRefreshFeedOnRestartName,
      flag_descriptions::kRefreshFeedOnRestartDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kRefreshFeedOnRestart)},
+    {"feed-header-removal", flag_descriptions::kFeedHeaderRemovalName,
+     flag_descriptions::kFeedHeaderRemovalDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(feed::kFeedHeaderRemoval,
+                                    kFeedHeaderRemovalVariations,
+                                    "FeedHeaderRemoval")},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"enable-force-dark", flag_descriptions::kAutoWebContentsDarkModeName,
      flag_descriptions::kAutoWebContentsDarkModeDescription, kOsAll,

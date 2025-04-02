@@ -2748,6 +2748,9 @@ extern const char kFeedDynamicColorsDescription[];
 extern const char kFeedDiscoFeedEndpointName[];
 extern const char kFeedDiscoFeedEndpointDescription[];
 
+extern const char kFeedHeaderRemovalName[];
+extern const char kFeedHeaderRemovalDescription[];
+
 extern const char kFloatingSnackbarName[];
 extern const char kFloatingSnackbarDescription[];
 

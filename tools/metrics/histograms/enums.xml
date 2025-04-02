@@ -11974,6 +11974,7 @@ from previous Chrome versions.
   <int value="-884783216" label="ForceEnableFastCheckoutCapabilities:enabled"/>
   <int value="-884480360" label="ServiceWorkerAutoPreload:disabled"/>
   <int value="-884142134" label="TaskManagerDesktopRefresh:enabled"/>
+  <int value="-883752382" label="FeedHeaderRemoval:disabled"/>
   <int value="-883694393" label="SyncPseudoUSSSupervisedUsers:disabled"/>
   <int value="-883608641" label="enable-cros-action-recorder"/>
   <int value="-882434910" label="EnableAggregatedMlSearchRanking:enabled"/>
@@ -19779,6 +19780,7 @@ from previous Chrome versions.
   <int value="2118374092" label="MessagesForAndroidReaderMode:disabled"/>
   <int value="2119575519" label="ComposeUiRefinement:enabled"/>
   <int value="2119964154" label="enable-download-resumption"/>
+  <int value="2120179658" label="FeedHeaderRemoval:enabled"/>
   <int value="2120363312" label="QuickDim:enabled"/>
   <int value="2120659210" label="BackForwardCache:enabled"/>
   <int value="2121056855" label="IncreaseInputAudioBufferSize:disabled"/>

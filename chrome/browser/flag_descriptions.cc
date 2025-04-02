@@ -4673,6 +4673,9 @@ const char kFeedDynamicColorsName[] = "Enable dynamic colors in the feed";
 const char kFeedDynamicColorsDescription[] =
     "Allows feed to fully respect dynamic colors if supported by the client.";
 
+const char kFeedHeaderRemovalName[] = "Removing feed header";
+const char kFeedHeaderRemovalDescription[] = "Stops showing the feed header.";
+
 const char kFloatingSnackbarName[] = "FloatingSnackbar";
 const char kFloatingSnackbarDescription[] =
     "Enables the snackbar to float on top of the web content.";
