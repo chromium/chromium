@@ -25,6 +25,7 @@
 #include "components/favicon_base/favicon_types.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/mock_external_provider.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -113,7 +114,7 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
           .SetLocation(ManifestLocation::kUnpacked)
           .SetID("abcdefghijabcdefghijabcdefghijaa")
           .Build());
-  extension_service_->AddExtension(ext_unpacked.get());
+  ExtensionRegistrar::Get(profile_.get())->AddExtension(ext_unpacked.get());
 
   const GURL kExpectedUnpackedOverrideUrl =
       ext_unpacked->GetResourceURL(kOverrideResource);
@@ -218,7 +219,7 @@ TEST_F(ExtensionWebUITest, TestRemovingDuplicateEntriesForHosts) {
     all_overrides.Set("newtab", std::move(newtab_list));
   }
 
-  extension_service_->AddExtension(extension.get());
+  ExtensionRegistrar::Get(profile_.get())->AddExtension(extension.get());
   static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile_.get()))
       ->SetReady();
   base::RunLoop().RunUntilIdle();
@@ -238,7 +239,7 @@ TEST_F(ExtensionWebUITest, TestRemovingDuplicateEntriesForHosts) {
 TEST_F(ExtensionWebUITest, TestFaviconAlwaysAvailable) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension").Build();
-  extension_service_->AddExtension(extension.get());
+  ExtensionRegistrar::Get(profile_.get())->AddExtension(extension.get());
   static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile_.get()))
       ->SetReady();
 
@@ -283,7 +284,7 @@ TEST_F(ExtensionWebUITest, TestNumExtensionsOverridingURL) {
                             std::move(chrome_url_overrides))
             .Build();
 
-    extension_service_->AddExtension(extension.get());
+    ExtensionRegistrar::Get(profile_.get())->AddExtension(extension.get());
     EXPECT_EQ(extension, ExtensionWebUI::GetExtensionControllingURL(
                              GURL(chrome::kChromeUINewTabURL), profile_.get()));
 

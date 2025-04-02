@@ -38,6 +38,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_creator.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/mock_external_provider.h"
@@ -125,8 +126,6 @@ class GlobalErrorBubbleTest : public DialogBrowserTest {
 
 void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
   Profile* profile = browser()->profile();
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(profile)->extension_service();
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(profile);
 
@@ -134,7 +133,7 @@ void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
   builder.SetAction(extensions::ActionInfo::Type::kBrowser);
   builder.SetLocation(extensions::mojom::ManifestLocation::kInternal);
   scoped_refptr<const extensions::Extension> test_extension = builder.Build();
-  extension_service->AddExtension(test_extension.get());
+  extensions::ExtensionRegistrar::Get(profile)->AddExtension(test_extension);
 
   if (name == "ExtensionDisabledGlobalError") {
     GlobalErrorWaiter waiter(profile);
@@ -147,7 +146,8 @@ void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
         "to test that the bubble can handle long names";
     scoped_refptr<const extensions::Extension> long_name_extension =
         extensions::ExtensionBuilder(long_name).Build();
-    extension_service->AddExtension(long_name_extension.get());
+    extensions::ExtensionRegistrar::Get(profile)->AddExtension(
+        long_name_extension);
 
     GlobalErrorWaiter waiter(profile);
     extensions::AddExtensionDisabledError(profile, long_name_extension.get(),
@@ -175,6 +175,8 @@ void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
     // happens via a callback from the SafeBrowsing DB, but TestBlocklist
     // replaced the SafeBrowsing DB with a fake one, so the notification source
     // is different.
+    extensions::ExtensionService* extension_service =
+        extensions::ExtensionSystem::Get(profile)->extension_service();
     static_cast<extensions::Blocklist::Observer*>(extension_service)
         ->OnBlocklistUpdated();
     base::RunLoop().RunUntilIdle();
