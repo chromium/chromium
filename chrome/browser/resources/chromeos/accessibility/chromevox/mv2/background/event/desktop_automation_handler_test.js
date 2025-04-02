@@ -492,9 +492,10 @@ ChromeVoxDesktopAutomationHandlerWithoutTaskManagerDesktopRefreshTest.prototype
   disabled: ['features::kTaskManagerDesktopRefresh'],
 };
 
+// TODO(crbug.com/407459387): Fix and re-enable this test.
 TEST_F(
     'ChromeVoxDesktopAutomationHandlerWithoutTaskManagerDesktopRefreshTest',
-    'TaskManagerTableView', function() {
+    'DISABLED_TaskManagerTableView', function() {
       // TODO(crbug.com/397484647): Merge this test with the
       // TaskManagerDesktopRefresh version, and reintegrate it back into
       // ChromeVoxDesktopAutomationHandlerTest after the flag is enabled by

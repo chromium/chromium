@@ -702,7 +702,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.NumSearchesUntilChange{OsSettingsChangeType}"
-    units="searches" expires_after="2025-07-13">
+    units="searches" expires_after="2025-09-28">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -967,7 +967,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.TimeUntilChange{OsSettingsChangeType}"
-    units="ms" expires_after="2025-07-27">
+    units="ms" expires_after="2025-09-28">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>

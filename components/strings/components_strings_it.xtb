@@ -70,7 +70,6 @@
 <translation id="1122714970786750095">Elettronica e componenti elettrici</translation>
 <translation id="1123753900084781868">La funzionalità Sottotitoli in tempo reale non è al momento disponibile</translation>
 <translation id="1125453215844207206">Immagine senza etichetta. Estrazione del testo in corso, Google AI integrata</translation>
-<translation id="1125573121925420732">Gli avvisi potrebbero essere frequenti durante l'aggiornamento della sicurezza dei siti web. La situazione dovrebbe migliorare a breve.</translation>
 <translation id="112840717907525620">Cache delle policy integra</translation>
 <translation id="1131264053432022307">Immagine copiata</translation>
 <translation id="1138458427267715730">Ricevi avvisi quando il prezzo cala su qualsiasi sito del web</translation>
@@ -297,7 +296,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1492194039220927094">Push delle policy:</translation>
 <translation id="1495677929897281669">Torna alla scheda</translation>
 <translation id="1500286806237135498">Fotocamere (<ph name="CAMERAS_COUNT" />)</translation>
-<translation id="1501859676467574491">Mostra le carte dall'Account Google</translation>
 <translation id="1504042622576912555">In cavo</translation>
 <translation id="1507202001669085618">&lt;p&gt;Vedrai questo errore se stai utilizzando un portale Wi-Fi che richiede l'accesso per poterti connettere a Internet.&lt;/p&gt;
     &lt;p&gt;Per risolvere il problema, fai clic su &lt;strong&gt;Connetti&lt;/strong&gt; nella pagina che stai cercando di aprire.&lt;/p&gt;</translation>
@@ -4066,6 +4064,7 @@ Ulteriori dettagli:
 <translation id="8118506371121007279">Invia feedback</translation>
 <translation id="8120720167840853945">Questa policy non controlla il comportamento predefinito di altre policy.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" non è stato installato correttamente sul computer o sulla rete. Chiedi all'amministratore IT di risolvere il problema.</translation>
+<translation id="8130113808541743942">Sposta in…</translation>
 <translation id="8131740175452115882">Conferma</translation>
 <translation id="8133495915926741232">Scegli quali ampie categorie di argomenti possono essere utilizzate per personalizzare gli annunci. Se disattivi una categoria più ampia, verranno bloccati anche i suoi argomenti correlati. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Selezione e assunzione di personale</translation>

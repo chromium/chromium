@@ -12,17 +12,18 @@ cargo_crate("lib") {
   crate_name = "proc_macro2"
   epoch = "1"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.94/src/lib.rs"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.94/src/detection.rs",
-    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.94/src/extra.rs",
-    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.94/src/fallback.rs",
-    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.94/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.94/src/location.rs",
-    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.94/src/marker.rs",
-    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.94/src/parse.rs",
-    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.94/src/rcvec.rs",
-    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.94/src/wrapper.rs",
+    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/src/detection.rs",
+    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/src/extra.rs",
+    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/src/fallback.rs",
+    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/src/location.rs",
+    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/src/marker.rs",
+    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/src/parse.rs",
+    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/src/rcvec.rs",
+    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/src/wrapper.rs",
   ]
   inputs = []
 
@@ -46,10 +47,9 @@ cargo_crate("lib") {
     "span-locations",
   ]
   build_root =
-      "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.94/build.rs"
-  build_sources = [
-    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.94/build.rs",
-  ]
+      "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/build.rs"
+  build_sources =
+      [ "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/build.rs" ]
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates
   ]

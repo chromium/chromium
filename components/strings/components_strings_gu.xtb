@@ -70,7 +70,6 @@
 <translation id="1122714970786750095">ઇલેક્ટ્રોનિક અને ઇલેક્ટ્રિકલ</translation>
 <translation id="1123753900084781868">આ સમયે લાઇવ કૅપ્શનની સુવિધા ઉપલબ્ધ નથી</translation>
 <translation id="1125453215844207206">લેબલ વિનાનું ગ્રાફિક. ટેક્સ્ટ એક્સટ્રેક્ટ કરી રહ્યાં છીએ, જે Google AI દ્વારા સંચાલિત છે</translation>
-<translation id="1125573121925420732">વેબસાઇટ તેમની સુરક્ષા અપડેટ કરી રહ્યાં હોય ત્યારે ચેતવણીઓ દેખાવી સામાન્ય બાબત છે. ટૂંક સમયમાં જ આમાં સુધારો કરવામાં આવશે.</translation>
 <translation id="112840717907525620">પૉલિસી કૅશ મેમરી ઓકે</translation>
 <translation id="1131264053432022307">તમે કૉપિ કરેલી છબી</translation>
 <translation id="1138458427267715730">સમગ્ર વેબ પર કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય ત્યારે અલર્ટ મેળવો</translation>
@@ -297,7 +296,6 @@
 <translation id="1492194039220927094">પુશ કરેલી પૉલિસી:</translation>
 <translation id="1495677929897281669">ટૅબ પર પાછા જાઓ</translation>
 <translation id="1500286806237135498">કૅમેરા (<ph name="CAMERAS_COUNT" />)</translation>
-<translation id="1501859676467574491">તમારા Google એકાઉન્ટમાંથી કાર્ડ બતાવો</translation>
 <translation id="1504042622576912555">વાંસળી</translation>
 <translation id="1507202001669085618">&lt;p&gt;જો તમે ઑનલાઇન થાઓ એ પહેલાં જ્યાં તમારે સાઇન ઇન કરવું જરૂરી હોય તેવા વાઇ-ફાઇ પોર્ટલનો ઉપયોગ કરી રહ્યા હો, તો તમને આ ભૂલ દેખાશે.&lt;/p&gt;
     &lt;p&gt;આ સમસ્યા ઉકેલવા માટે, તમે ખોલવાનો પ્રયાસ કરી રહ્યા છો એ પેજ પર &lt;strong&gt;કનેક્ટ કરો&lt;/strong&gt; પર ક્લિક કરો.&lt;/p&gt;</translation>
@@ -1010,6 +1008,7 @@
 <translation id="2742128390261873684">હોમ ઑટોમૅશન</translation>
 <translation id="2742870351467570537">પસંદ કરેલી આઇટમ્સને દૂર કરો</translation>
 <translation id="2743512410823092182">ડીજે સંસાધનો અને સાધન</translation>
+<translation id="2759299890026163685">ફરી પ્રયાસ કરતા પહેલાં તમારું ઇન્ટરનેટ કનેક્શન સ્થિર હોય તેની ખાતરી કરો</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> પર તમારો પાસવર્ડ ભરો</translation>
 <translation id="2764001903315068341">કૉમિક</translation>
 <translation id="2765217105034171413">નાનું</translation>
@@ -1271,6 +1270,7 @@
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> માટે CVC દાખલ કરો</translation>
 <translation id="3234666976984236645">હંમેશાં આ સાઇટ પરનું મહત્ત્વનું કન્ટેન્ટ શોધો</translation>
 <translation id="323585066388831737">આછો લાલ</translation>
+<translation id="3235902901585019063"><ph name="DATE_TIME" /> વાગ્યે સ્થાનિક ફાઇલો ડિલીટ કરવામાં આવશે. કોઈપણ મહત્ત્વપૂર્ણ વ્યાવસાયિક અથવા વ્યક્તિગત ડેટા બહાર સ્ટોર કરવામાં આવ્યો હોય તેની ખાતરી કરો.</translation>
 <translation id="3236212803136366317">કાર્ડના લાભ</translation>
 <translation id="3238395604961564389">છૂપી વિન્ડોમાં લિંક ખોલો</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, તમારા બ્રાઉઝરનો દેખાવ કસ્ટમાઇઝ કરવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
@@ -1743,6 +1743,7 @@
 <translation id="4031179711345676612">માઇક્રોફોનને મંજૂરી</translation>
 <translation id="4036753017940930924">પ્લૉટ અને જમીન</translation>
 <translation id="4039506337798853114">તમારું કર્સર બતાવવા માટે, |<ph name="ACCELERATOR" />| દબાવો</translation>
+<translation id="4045226534284799755">ફરી વાર પ્રયાસ કરતા પહેલાં તમારા Microsoft એકાઉન્ટમાં સાઇન ઇન કરો</translation>
 <translation id="4045441967987592849">ફરી ખોલો</translation>
 <translation id="4047351652147966654">18 x 24 ઇંચ</translation>
 <translation id="404831776305217138">ID "<ph name="EXTENSION_ID" />" ધરાવતા એક્સ્ટેન્શનને અપડેટ કરવા માટે ઉપયોગમાં લેવાયેલું URL અમાન્ય છે અથવા અનસપોર્ટેડ સ્કીમનો ઉપયોગ કરે છે. સપોર્ટેડ સ્કીમ આ છે: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> અને <ph name="FILE_SCHEME" />.</translation>
@@ -1763,6 +1764,7 @@
 <translation id="4073797364926776829">કાર્ડ જુઓ</translation>
 <translation id="4075732493274867456">ક્લાઇન્ટ અને સર્વર સામાન્ય SSL પ્રોટોકોલ વર્ઝન અથવા સાઇફર સ્યૂટની સહાય કરતા નથી.</translation>
 <translation id="4079302484614802869">પ્રૉક્સી ગોઠવણી .pac સ્ક્રિપ્ટ URLનો ઉપયોગ કરવા માટે સેટ છે, ફિક્સ્ડ પ્રૉક્સી સર્વર માટે નહીંં.</translation>
+<translation id="4080855220442581440">શેર કરેલા ટૅબમાં સ્ક્રોલ અને નાનું-મોટું કરવાની સુવિધા</translation>
 <translation id="4082333119419111506">પેપર (પહેલેથી પ્રિન્ટ કરેલું)</translation>
 <translation id="4082393374666368382">સેટિંગ - મેનેજમેન્ટ</translation>
 <translation id="4084219288110917128">એન્વલપ C1</translation>
@@ -2027,6 +2029,7 @@
 <translation id="4521280267704259211">એન્વલપ મોનાર્ક</translation>
 <translation id="4521916730539354575">ડાબી બાજુની ટ્રે</translation>
 <translation id="4522570452068850558">વિગતો</translation>
+<translation id="4523580145196408446">લિંક કરેલું</translation>
 <translation id="4523643381056109546">નિર્દેશ સૂચક</translation>
 <translation id="4524138615196389145">હવેથી WebAuthnનો ઉપયોગ કરીને તમારા કાર્ડ વધુ ઝડપથી કન્ફર્મ કરો</translation>
 <translation id="45243788195988825"><ph name="TOPIC" />ને બ્લૉક કરો</translation>
@@ -2191,6 +2194,7 @@
 <translation id="4834250788637067901">Google Payનો ઉપયોગ કરતી ચુકવણી પદ્ધતિઓ, ઑફરો અને સરનામાં</translation>
 <translation id="4840250757394056958">તમારો Chrome ઇતિહાસ જુઓ</translation>
 <translation id="484462545196658690">ઑટો</translation>
+<translation id="4844937814014739139">શેર કરેલા ટૅબમાં સ્ક્રોલ અને નાનું-મોટું કરવાની સુવિધા</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> અને અન્ય ઘણા પર ડિસ્કાઉન્ટ મેળવો</translation>
 <translation id="484988093836683706">ડિવાઇસ અનલૉક કરવાની સુવિધાનો ઉપયોગ કરો</translation>
 <translation id="4850886885716139402">જુઓ</translation>
@@ -2482,6 +2486,7 @@
 <translation id="5344522958567249764">જાહેરાત સંબંધી પ્રાઇવસી મેનેજ કરો</translation>
 <translation id="5344579389779391559">આ પેજ કદાચ તમારી પાસેથી શુલ્ક વસૂલ કરવાનો પ્રયાસ કરી શકે છે</translation>
 <translation id="5345249337934847112">પેપર (હેવીવેઇટ કોટેડ)</translation>
+<translation id="5348330584842140856">આ ફાઇલ ખસેડી શકાતી નથી કારણ કે તે હવે અસ્તિત્વમાં નથી</translation>
 <translation id="5349543692327946794">લેબલ (ઇંકજેટ)</translation>
 <translation id="5351548097010183514">બાંધકામ સામગ્રીઓ અને પુરવઠા</translation>
 <translation id="5354143049423063163">હેજ ફંડ</translation>
@@ -2745,6 +2750,7 @@
 <translation id="5826507051599432481">કોમન નેમ (CN)</translation>
 <translation id="5830698870816298009">કૅમેરાનો ઉપયોગ અને હિલચાલ</translation>
 <translation id="583281660410589416">અજ્ઞાત</translation>
+<translation id="5837220895135257862">ફરી પ્રયાસ કરતા પહેલાં <ph name="CLOUD_PROVIDER" />માં સ્પેસ ખાલી કરો</translation>
 <translation id="5838278095973806738">તમારે આ સાઇટ પર કોઈપણ સંવેદનશીલ માહિતી (ઉદાહરણ તરીકે, પાસવર્ડ્સ અથવા ક્રેડિટ કાર્ડ્સ) દાખલ કરવી જોઈએ નહીં, કારણ કે તે હુમલાખોર દ્વારા ચોરવામાં આવી શકે છે.</translation>
 <translation id="5838732667866024867">કિંમતમાં થયેલા ફેરફારોનો રિવ્યૂ કરવા માટે તમે ગ્રાફ પર, ડાબી/જમણી ઍરો કીનો ઉપયોગ કરી શકો છો</translation>
 <translation id="5840318881868981258">તમારા Google એકાઉન્ટમાં, <ph name="ACCOUNT" /></translation>
@@ -3092,6 +3098,7 @@
 <translation id="6405181733356710802"><ph name="APP_NAME" /> પર આગળ વધીએ?</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> માટે સમાપ્તિ તારીખ અને CVC દાખલ કરો</translation>
 <translation id="6411107829285739505">A4x8</translation>
+<translation id="6412543105195503444">માતાપિતાની મંજૂરીનો સંવાદ</translation>
 <translation id="6414010576370319452">ત્વચા અને નખની સંભાળ</translation>
 <translation id="6415778972515849510">Chromium તમારા Google એકાઉન્ટને સુરક્ષિત કરવામાં અને તમારો પાસવર્ડ બદલવામાં તમારી સહાય કરી શકે છે.</translation>
 <translation id="6416877227920300343">EDP</translation>
@@ -3997,6 +4004,7 @@
 <translation id="799149739215780103">જોડો</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> સાથે સ્ક્રીન શેરિંગની સુવિધા ફરી શરૂ કરવામાં આવી</translation>
 <translation id="7995512525968007366">નિર્દિષ્ટ કરાયેલ નથી</translation>
+<translation id="7997855386298213183">શેર કરેલા ટૅબ</translation>
 <translation id="800218591365569300">મેમરી ખાલી કરવા માટે અન્ય ટૅબ અથવા પ્રોગ્રામને બંધ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="8002230960325005199">નવા ટૅબમાં સંબંધિત સાઇટ જુઓ</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>

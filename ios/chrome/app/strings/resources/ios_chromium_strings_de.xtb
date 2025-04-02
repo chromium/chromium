@@ -90,6 +90,7 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chromium verwendet w
 <translation id="3054480780637153380">Öffne unter iOS die Chromium-Einstellungen, tippe auf „Standard-Browser-App“ und wähle „Chromium“ aus.</translation>
 <translation id="3102849287235003384">Du kannst dich auf allen Websites aus deinem Google-Konto abmelden, indem du dich <ph name="BEGIN_LINK" />von Chromium abmeldest<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromium als Standardbrowser festlegen?</translation>
+<translation id="3180939591219927904">Aktiviere die Option „Inkognitotabs sperren, wenn Chromium geschlossen wird“</translation>
 <translation id="3242612358525156339">Rufe in den Einstellungen deines Geräts „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ auf und wähle „Chromium“ aus</translation>
 <translation id="328933489847748230">{count,plural, =1{Aktuell wird 1 Chromium-Fenster angezeigt}other{Aktuell werden {count} Chromium-Fenster angezeigt}}</translation>
 <translation id="3344973607274501920">Chromium konnte deine Passwörter nicht prüfen. Prüfe deine Internetverbindung.</translation>
@@ -259,6 +260,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Die ausgewählten Daten wurden aus Chromium und von allen synchronisierten Geräten entfernt. Eventuell findest du unter history.google.com weitere Arten von Browserverlaufsdaten wie Suchanfragen oder Aktivitäten anderer Google-Dienste für dein Google-Konto.</translation>
 <translation id="7395825497086981028">Dein Passwort wird im Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
+<translation id="7504829997542308412">Öffne Chromium</translation>
 <translation id="7531461704633548377">Aus Chromium</translation>
 <translation id="7554983317097061001">Chromium-Tipp: Chromium ins Dock verschieben</translation>
 <translation id="7576863740961052505">Chromium-Einstellungen verwalten</translation>

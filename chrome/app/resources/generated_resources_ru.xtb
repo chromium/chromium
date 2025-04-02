@@ -2984,6 +2984,7 @@
 <translation id="3045447014237878114">Этот сайт автоматически скачал несколько файлов</translation>
 <translation id="3046178388369461825">На диске Linux почти нет места</translation>
 <translation id="304644035656848980">Просмотр аудиопотока микрофона</translation>
+<translation id="3046892784550338476">Версия: <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Веб-страница полностью</translation>
 <translation id="304747341537320566">Синтезаторы речи</translation>
 <translation id="3047678109605649715">На устройстве нет голосов для этого языка: <ph name="LANGUAGE" />. Освободите место и повторите попытку.</translation>

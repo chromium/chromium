@@ -74,9 +74,9 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
     mojom::SecurePaymentConfirmationRequestPtr request,
     std::unique_ptr<webauthn::InternalAuthenticator> authenticator,
     const std::u16string& network_label,
-    const SkBitmap& network_icon,
+    std::unique_ptr<SkBitmap> network_icon,
     const std::u16string& issuer_label,
-    const SkBitmap& issuer_icon)
+    std::unique_ptr<SkBitmap> issuer_icon)
     : PaymentApp(/*icon_resource_id=*/0, PaymentApp::Type::INTERNAL),
       content::WebContentsObserver(web_contents_to_observe),
       authenticator_frame_routing_id_(
@@ -91,9 +91,9 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
       authenticator_(std::move(authenticator)),
       passkey_browser_binder_(std::move(passkey_browser_binder)),
       network_label_(network_label),
-      network_icon_(network_icon),
+      network_icon_(std::move(network_icon)),
       issuer_label_(issuer_label),
-      issuer_icon_(issuer_icon) {
+      issuer_icon_(std::move(issuer_icon)) {
   DCHECK(!credential_id_.empty());
 
   app_method_names_.insert(methods::kSecurePaymentConfirmation);
@@ -197,6 +197,14 @@ std::u16string SecurePaymentConfirmationApp::GetSublabel() const {
 
 const SkBitmap* SecurePaymentConfirmationApp::icon_bitmap() const {
   return payment_instrument_icon_.get();
+}
+
+const SkBitmap* SecurePaymentConfirmationApp::issuer_bitmap() const {
+  return issuer_icon_.get();
+}
+
+const SkBitmap* SecurePaymentConfirmationApp::network_bitmap() const {
+  return network_icon_.get();
 }
 
 bool SecurePaymentConfirmationApp::IsValidForModifier(

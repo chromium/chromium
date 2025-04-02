@@ -113,11 +113,11 @@ void FragmentBuilder::ReplaceChild(wtf_size_t index,
   children_[index] = LogicalFragmentLink(new_child, offset);
 }
 
-HeapVector<Member<LayoutBoxModelObject>>&
+GCedHeapVector<Member<LayoutBoxModelObject>>&
 FragmentBuilder::EnsureStickyDescendants() {
   if (!sticky_descendants_) {
     sticky_descendants_ =
-        MakeGarbageCollected<HeapVector<Member<LayoutBoxModelObject>>>();
+        MakeGarbageCollected<GCedHeapVector<Member<LayoutBoxModelObject>>>();
   }
   return *sticky_descendants_;
 }
@@ -135,9 +135,9 @@ void FragmentBuilder::PropagateStickyDescendants(
   }
 }
 
-HeapVector<Member<Element>>& FragmentBuilder::EnsureSnapAreas() {
+GCedHeapVector<Member<Element>>& FragmentBuilder::EnsureSnapAreas() {
   if (!snap_areas_) {
-    snap_areas_ = MakeGarbageCollected<HeapVector<Member<Element>>>();
+    snap_areas_ = MakeGarbageCollected<GCedHeapVector<Member<Element>>>();
   }
   return *snap_areas_;
 }

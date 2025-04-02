@@ -69,9 +69,6 @@ public class HomeModulesConfigSettingsUnitTest {
         String priceChangePreferenceKey =
                 ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
                         String.valueOf(ModuleType.PRICE_CHANGE));
-        String tabResumptionPreferenceKey =
-                ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
-                        String.valueOf(ModuleType.TAB_RESUMPTION));
 
         FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
         HomeModulesConfigSettings fragment =
@@ -92,14 +89,6 @@ public class HomeModulesConfigSettingsUnitTest {
         ChromeSwitchPreference switchExisted = fragment.findPreference(priceChangePreferenceKey);
         Assert.assertEquals(
                 mActivity.getString(R.string.price_change_module_name), switchExisted.getTitle());
-        Assert.assertTrue(switchExisted.isChecked());
-
-        switchExisted = fragment.findPreference(tabResumptionPreferenceKey);
-        Assert.assertEquals(
-                mActivity
-                        .getResources()
-                        .getQuantityString(R.plurals.home_modules_tab_resumption_title, 1),
-                switchExisted.getTitle());
         Assert.assertTrue(switchExisted.isChecked());
     }
 

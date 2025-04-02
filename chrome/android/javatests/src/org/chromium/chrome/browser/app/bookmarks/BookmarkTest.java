@@ -108,8 +108,9 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.MenuUtils;
@@ -164,7 +165,8 @@ public class BookmarkTest {
     private static final int TEST_PORT = 12345;
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -205,7 +207,7 @@ public class BookmarkTest {
         CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
         doReturn(false).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
 
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         runOnUiThreadBlocking(
                 () -> {
                     mBookmarkModel = mActivityTestRule.getActivity().getBookmarkModelForTesting();
@@ -213,7 +215,10 @@ public class BookmarkTest {
                 });
 
         // Use a custom port so the links are consistent for render tests.
-        mActivityTestRule.getEmbeddedTestServerRule().setServerPort(TEST_PORT);
+        mActivityTestRule
+                .getActivityTestRule()
+                .getEmbeddedTestServerRule()
+                .setServerPort(TEST_PORT);
         mTestServer = mActivityTestRule.getTestServer();
         mTestUrlA = new GURL("http://a.com");
         mTestPage = new GURL(mTestServer.getURL(TEST_PAGE_URL_GOOGLE));
@@ -273,7 +278,7 @@ public class BookmarkTest {
     @SmallTest
     public void testAddBookmarkToOtherFolder() {
         mActivityTestRule.loadUrl(mTestPage);
-        BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule);
+        BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule.getActivityTestRule());
         // Set default folder as "Other Folder".
         runOnUiThreadBlocking(
                 () -> {
@@ -330,7 +335,7 @@ public class BookmarkTest {
     @Test
     @SmallTest
     public void testUrlComposition() {
-        BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule);
+        BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule.getActivityTestRule());
         runOnUiThreadBlocking(
                 () -> {
                     BookmarkId mobileId = mBookmarkModel.getMobileFolderId();
@@ -1234,7 +1239,7 @@ public class BookmarkTest {
     @MediumTest
     public void testTopLevelFolderUpdateAfterSync() throws Exception {
         // Set up the test and open the bookmark manager to the Mobile Bookmarks folder.
-        BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule);
+        BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule.getActivityTestRule());
         openBookmarkManager();
 
         // Add a bookmark to the Other Bookmarks folder.
@@ -1946,12 +1951,12 @@ public class BookmarkTest {
 
     private BookmarkId addBookmark(final String title, GURL url, BookmarkId parent)
             throws ExecutionException {
-        BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule);
+        BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule.getActivityTestRule());
         return runOnUiThreadBlocking(() -> mBookmarkModel.addBookmark(parent, 0, title, url));
     }
 
     private BookmarkId addBookmark(final String title, final GURL url) throws ExecutionException {
-        BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule);
+        BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule.getActivityTestRule());
         return runOnUiThreadBlocking(
                 () ->
                         mBookmarkModel.addBookmark(
@@ -1959,7 +1964,7 @@ public class BookmarkTest {
     }
 
     private BookmarkId addFolder(final String title) throws ExecutionException {
-        BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule);
+        BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule.getActivityTestRule());
         return runOnUiThreadBlocking(
                 () ->
                         mBookmarkModel.addFolder(

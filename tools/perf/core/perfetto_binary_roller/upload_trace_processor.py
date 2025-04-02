@@ -22,7 +22,7 @@ from core.tbmv3 import trace_processor
 
 def _PerfettoRevision():
   deps_line_re = re.compile(
-      r".*'/platform/external/perfetto.git' \+ '@' \+ '([a-f0-9]+)'")
+      r".*'/external/github.com/google/perfetto.git' \+ '@' \+ '([a-f0-9]+)'")
   deps_file = os.path.join(path_util.GetChromiumSrcDir(), 'DEPS')
   with open(deps_file) as deps:
     for line in deps:

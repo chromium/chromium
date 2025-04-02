@@ -785,6 +785,16 @@ void PrimaryAccountManager::ComputeExplicitBrowserSignin(
           // Record an explicit signin for extensions for this account only.
           auto current_gaia_id =
               event_details.GetCurrentState().primary_account.gaia;
+
+          // Record an opt in for the extensions explicit signin feature and use
+          // the existing pref to determine if it's a new or existing opt in.
+          bool is_new_opt_in =
+              !SigninPrefs(*client_->GetPrefs())
+                   .GetExtensionsExplicitBrowserSignin(current_gaia_id);
+          base::UmaHistogramBoolean(
+              "Signin.Extensions.ExplicitSigninFromExtensionInstallBubble",
+              is_new_opt_in);
+
           SigninPrefs(*client_->GetPrefs())
               .SetExtensionsExplicitBrowserSignin(current_gaia_id, true);
         }

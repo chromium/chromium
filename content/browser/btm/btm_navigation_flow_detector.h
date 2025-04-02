@@ -8,26 +8,15 @@
 #include <optional>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "base/time/clock.h"
-#include "base/time/default_clock.h"
-#include "base/time/time.h"
-#include "content/browser/btm/btm_bounce_detector.h"
+#include "content/browser/btm/btm_page_visit_observer.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace content {
-
-struct CookieAccessDetails;
-class NavigationHandle;
-class RenderFrameHost;
 
 namespace btm {
 
@@ -38,31 +27,17 @@ enum class DirectNavigationSource {
   kBookmark = 2,
 };
 
-struct PageVisitInfo {
-  PageVisitInfo();
-  PageVisitInfo(PageVisitInfo&& other);
-
-  PageVisitInfo& operator=(PageVisitInfo&& other);
-
-  GURL url;
-  std::string site;
-  ukm::SourceId source_id;
-  bool did_page_access_cookies;
-  bool did_page_access_storage;
-  bool did_page_receive_user_activation;
-  bool did_page_have_successful_waa;
-  std::optional<bool> was_navigation_to_page_renderer_initiated;
-  std::optional<bool> was_navigation_to_page_user_initiated;
-
-  bool WasNavigationToPageClientRedirect() const;
-};
-
 struct EntrypointInfo {
   // Used when the entrypoint has a server redirect exit.
-  explicit EntrypointInfo(const BtmRedirectInfo& server_redirect_info,
-                          const btm::PageVisitInfo& exit_page_info);
-  // Used when the entrypoint has a client redirect exit.
-  explicit EntrypointInfo(const btm::PageVisitInfo& client_redirector_info);
+  explicit EntrypointInfo(const BtmServerRedirectInfo& server_redirect_info,
+                          bool was_referral_client_redirect_like);
+  // Used when the entrypoint has a client redirect(-like) exit, when the page
+  // visit has already been reported.
+  explicit EntrypointInfo(const BtmNavigationInfo& referral,
+                          const BtmPageVisitInfo& entrypoint_visit);
+  // Used when the entrypoint has a client redirect(-like) exit, when the
+  // EntrypointInfo needs to be created before the page visit is reported.
+  explicit EntrypointInfo(const BtmNavigationInfo& referral);
 
   const std::string site;
   ukm::SourceId source_id;
@@ -113,15 +88,12 @@ class InFlowSuccessorInteractionState {
 // Currently only reports UKM to inform how we might identify possible
 // navigational tracking by sites that also perform user-interest activity.
 class CONTENT_EXPORT BtmNavigationFlowDetector
-    : public RedirectChainDetector::Observer,
-      public WebContentsObserver,
-      public WebContentsUserData<BtmNavigationFlowDetector> {
+    : public WebContentsUserData<BtmNavigationFlowDetector> {
  public:
   ~BtmNavigationFlowDetector() override;
 
   void SetClockForTesting(base::Clock* clock) {
-    CHECK(clock);
-    clock_ = *clock;
+    page_visit_observer_.SetClockForTesting(clock);
   }
 
  protected:
@@ -134,10 +106,10 @@ class CONTENT_EXPORT BtmNavigationFlowDetector
   // Records events for flows we suspect include a tracker and have a server
   // redirect.
   void MaybeEmitSuspectedTrackerFlowUkmForServerRedirectExit(
-      const BtmRedirectInfo* exit_info,
+      const BtmServerRedirectInfo& exit_info,
       int32_t flow_id);
   bool CanEmitSuspectedTrackerFlowUkmForServerRedirectExit(
-      const BtmRedirectInfo* exit_info) const;
+      const BtmServerRedirectInfo& exit_info) const;
 
   // Records events for flows we suspect include a tracker and have a client
   // redirect.
@@ -145,9 +117,9 @@ class CONTENT_EXPORT BtmNavigationFlowDetector
   bool CanEmitSuspectedTrackerFlowUkmForClientRedirectExit() const;
 
   bool CanEmitSuspectedTrackerFlowUkm(
-      const btm::PageVisitInfo& referrer_page_info,
+      const BtmPageVisitInfo& referrer_page_info,
       const btm::EntrypointInfo& entrypoint_info,
-      const btm::PageVisitInfo& exit_page_info) const;
+      const std::string& exit_site) const;
 
   // Records an event for flows where there was a user interaction in between,
   // i.e. for flow A->B->C, there was a user interaction on B. This could be
@@ -166,48 +138,42 @@ class CONTENT_EXPORT BtmNavigationFlowDetector
   // So WebContentsUserData::CreateForWebContents can call the constructor.
   friend class WebContentsUserData<BtmNavigationFlowDetector>;
 
+  // Callback to be called by `BtmPageVisitObserver`.
+  void OnPageVisitReported(const BtmPageVisitInfo& page_visit,
+                           const BtmNavigationInfo& navigation);
+
   btm::FlowStatus FlowStatusAfterNavigation(
       bool did_most_recent_navigation_start_new_flow) const;
   // Returns whether the entrypoint was set or not.
   bool MaybeInitializeSuccessorInteractionTrackingState();
-  void ResetSuccessorInteractionTrackingState();
 
-  const BtmRedirectContext& GetRedirectContext() const;
-
-  // start WebContentsObserver overrides
-  // For client-initiated cookie accesses, and late-reported cookie accesses in
-  // navigations.
-  void OnCookiesAccessed(RenderFrameHost* render_frame_host,
-                         const CookieAccessDetails& details) override;
-  // For cookie accesses in navigations.
-  void OnCookiesAccessed(NavigationHandle* navigation_handle,
-                         const CookieAccessDetails& details) override;
-  void NotifyStorageAccessed(RenderFrameHost* render_frame_host,
-                             blink::mojom::StorageTypeAccessed storage_type,
-                             bool blocked) override;
-  void FrameReceivedUserActivation(RenderFrameHost* render_frame_host) override;
-  void WebAuthnAssertionRequestSucceeded(
-      RenderFrameHost* render_frame_host) override;
-  void WebContentsDestroyed() override;
-  // end WebContentsObserver overrides
-
-  // start RedirectChainDetector::Observer overrides
-  void OnNavigationCommitted(NavigationHandle* navigation_handle) override;
-  // end RedirectChainDetector::Observer overrides
+  // Must be called only when `previous_page_to_current_page_` is populated.
+  const std::string GetSiteForCurrentPage() const;
 
   // Navigation Flow:
   // A navigation flow consists of three navigations in a tab (A->B->C).
-  // The infos below correspond to A, B, and C, respectively and are updated
-  // when a new primary main frame navigation commits.
+  // The infos below are updated when the primary page changes.
   //
   // Note that server redirects don't commit, so if there's a server redirect
-  // from B->C, the navigation to B is not committed and we need to retrieve B's
-  // information by other means i.e. using BtmRedirectContext. In this case,
-  // `previous_page_visit_info_` corresponds to A and `current_page_visit_info_`
-  // corresponds to C.
-  std::optional<btm::PageVisitInfo> two_pages_ago_visit_info_;
-  std::optional<btm::PageVisitInfo> previous_page_visit_info_;
-  std::optional<btm::PageVisitInfo> current_page_visit_info_;
+  // from B->C, B is not committed and not reported as a page visit, but instead
+  // in the `server_redirects` field of the corresponding `BtmNavigationInfo`.
+  // In this case, `previous_page_` corresponds to A,
+  // `previous_page_to_current_page_->server_redirects` will contain B, and
+  // `previous_page_to_current_page_->destination` will have some limited
+  // information about C.
+
+  // In a series of three committed pages A->B->C, contains information about
+  // the visit on A.
+  std::optional<BtmPageVisitInfo> two_pages_ago_;
+  // In a series of three committed pages A->B->C, contains information about
+  // the navigation A->B.
+  std::optional<BtmNavigationInfo> two_pages_ago_to_previous_page_;
+  // In a series of three committed pages A->B->C, contains information about
+  // the visit on B.
+  std::optional<BtmPageVisitInfo> previous_page_;
+  // In a series of three committed pages A->B->C, contains information about
+  // the navigation B->C.
+  std::optional<BtmNavigationInfo> previous_page_to_current_page_;
 
   // The status of a flow for the purposes of InFlowSuccessorInteraction, after
   // the most recent primary page change.
@@ -218,20 +184,7 @@ class CONTENT_EXPORT BtmNavigationFlowDetector
   std::optional<btm::InFlowSuccessorInteractionState>
       successor_interaction_tracking_state_;
 
-  // Tracks a navigational cookie access notification that is received before
-  // the navigation finishes.
-  std::optional<GURL> navigation_cookie_access_url_;
-
-  base::Time last_page_change_time_;
-  long bucketized_previous_page_visit_duration_;
-
-  base::ScopedObservation<RedirectChainDetector,
-                          RedirectChainDetector::Observer>
-      redirect_chain_observation_{this};
-
-  raw_ref<base::Clock> clock_{*base::DefaultClock::GetInstance()};
-
-  base::WeakPtrFactory<BtmNavigationFlowDetector> weak_factory_{this};
+  BtmPageVisitObserver page_visit_observer_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

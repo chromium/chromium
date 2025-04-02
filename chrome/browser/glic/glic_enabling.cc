@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -81,13 +82,17 @@ bool GlicEnabling::IsEnabledAndConsentForProfile(Profile* profile) {
 }
 
 bool GlicEnabling::IsReadyForProfile(Profile* profile) {
+  return GetProfileReadyState(profile) == mojom::ProfileReadyState::kReady;
+}
+
+mojom::ProfileReadyState GlicEnabling::GetProfileReadyState(Profile* profile) {
   if (!IsEnabledAndConsentForProfile(profile)) {
-    return false;
+    return mojom::ProfileReadyState::kUnknownError;
   }
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(::switches::kGlicAutomation)) {
-    return true;
+    return mojom::ProfileReadyState::kReady;
   }
 
   signin::IdentityManager* identity_manager =
@@ -96,9 +101,14 @@ bool GlicEnabling::IsReadyForProfile(Profile* profile) {
   // Check that profile is not currently paused.
   CoreAccountInfo core_account_info =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  return !core_account_info.IsEmpty() &&
-         !identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-             core_account_info.account_id);
+  if (core_account_info.IsEmpty()) {
+    return mojom::ProfileReadyState::kUnknownError;
+  }
+  if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          core_account_info.account_id)) {
+    return mojom::ProfileReadyState::kSignInRequired;
+  }
+  return mojom::ProfileReadyState::kReady;
 }
 
 bool GlicEnabling::ShouldShowSettingsPage(Profile* profile) {

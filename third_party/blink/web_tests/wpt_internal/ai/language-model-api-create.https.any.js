@@ -12,6 +12,28 @@ promise_test(async t => {
 }, 'Create with no options');
 
 promise_test(async t => {
+  let createResult = undefined;
+  const progressEvents = [];
+  let options = {};
+  const downloadComplete = new Promise(resolve => {
+    options.monitor = (m) => {
+      m.addEventListener("downloadprogress", e => {
+        assert_equals(createResult, undefined);
+        assert_equals(e.total, 1);
+        progressEvents.push(e);
+        if (e.loaded == 1) { resolve(); }
+      });
+    };
+  });
+
+  createResult = await LanguageModel.create(options);
+  await downloadComplete;
+  assert_greater_than_equal(progressEvents.length, 2);
+  assert_equals(progressEvents.at(0).loaded, 0);
+  assert_equals(progressEvents.at(-1).loaded, 1);
+}, 'LanguageModel.create() notifies its monitor on downloadprogress');
+
+promise_test(async t => {
   let session = await LanguageModel.create({ topK: 3, temperature: 0.6 });
   assert_true(!!session);
 }, 'Create with topK and temperature');

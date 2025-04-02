@@ -64,6 +64,7 @@ class ActorSitePolicyAllowlistOnlyTest : public ActorSitePolicyTest {
   base::FieldTrialParams CreateFieldTrialParams() override {
     base::FieldTrialParams params;
     params["allowlist"] = "a.test,b.test";
+    params["allowlist_exact"] = "exact.test";
     params["allowlist_only"] = "true";
     return params;
   }
@@ -104,6 +105,11 @@ TEST_F(ActorSitePolicyTest, AllowIfNotBlocked) {
 
 TEST_F(ActorSitePolicyAllowlistOnlyTest, BlockIfNotInAllowlist) {
   CheckUrl(GURL("https://c.test/"), false);
+}
+
+TEST_F(ActorSitePolicyAllowlistOnlyTest, BlockSubdomainIfNotInExactAllowlist) {
+  CheckUrl(GURL("https://subdomain.exact.test/"), false);
+  CheckUrl(GURL("https://exact.test/"), true);
 }
 
 }  // namespace

@@ -136,6 +136,7 @@ bool SharedMemIPCServer::Init(void* shared_mem,
     thread_pool_->RegisterWait(this, service_context->ping_event.get(),
                                ThreadPingEventReady, service_context);
   }
+  // All handles are locally created, or trusted.
   if (!::DuplicateHandle(::GetCurrentProcess(), g_alive_mutex, target_process_,
                          &client_control_->server_alive,
                          SYNCHRONIZE | EVENT_MODIFY_STATE, false, 0)) {
@@ -334,6 +335,10 @@ bool SharedMemIPCServer::MakeEvents(base::win::ScopedHandle* server_ping,
 
   // The events are auto reset, and start not signaled.
   server_ping->Set(::CreateEventW(nullptr, false, false, nullptr));
+  // Avoid duplicating an invalid handle into the client.
+  if (!server_ping->is_valid()) {
+    return false;
+  }
   if (!::DuplicateHandle(::GetCurrentProcess(), server_ping->get(),
                          target_process_, client_ping, kDesiredAccess, false,
                          0)) {
@@ -341,6 +346,10 @@ bool SharedMemIPCServer::MakeEvents(base::win::ScopedHandle* server_ping,
   }
 
   server_pong->Set(::CreateEventW(nullptr, false, false, nullptr));
+  // Avoid duplicating an invalid handle into the client.
+  if (!server_pong->is_valid()) {
+    return false;
+  }
   if (!::DuplicateHandle(::GetCurrentProcess(), server_pong->get(),
                          target_process_, client_pong, kDesiredAccess, false,
                          0)) {

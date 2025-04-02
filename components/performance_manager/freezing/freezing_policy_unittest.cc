@@ -951,6 +951,48 @@ TEST_F(FreezingPolicyTest, DiscardGrowingPrivateMemory_Basic) {
   VerifyDiscarderExpectations();
 }
 
+// Regression test for crbug.com/407522185: When a (non-frozen) page is added to
+// a browsing instance in which all pages are frozen, the post-freezing memory
+// estimates are cleared.
+TEST_F(FreezingPolicyTest, DiscardGrowingPrivateMemory_PageAddedAfterFreezing) {
+  base::test::ScopedFeatureList feature_list{
+      features::kDiscardFrozenBrowsingInstancesWithGrowingPMF};
+  const int growth_threshold_kb =
+      features::kFreezingMemoryGrowthThresholdToDiscardKb.Get();
+  // Pretend that the page is frozen.
+  page_node()->SetLifecycleStateForTesting(PageNode::LifecycleState::kFrozen);
+
+  // First memory measurement after freezing.
+  constexpr int kInitialPMFKb = 10;
+  ReportMemoryUsage(kContext, kInitialPMFKb);
+
+  // Add a (non-frozen) page to the browsing instance.
+  auto [page2, frame2] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
+
+  // Memory measurement crossing the growth threshold. This should not result in
+  // discarding (or crash) since post-freezing memory estimates were cleared.
+  const int kSecondPMFKb = kInitialPMFKb + growth_threshold_kb + 1;
+  ReportMemoryUsage(kContext, kSecondPMFKb);
+
+  // Pretend that the new page is frozen.
+  page2->SetLifecycleStateForTesting(PageNode::LifecycleState::kFrozen);
+
+  // Memory measurement crossing the growth threshold. Should not result in
+  // discarding since it's the first measurement since the new page was added.
+  const int kThirdPMFKb = kSecondPMFKb + growth_threshold_kb + 1;
+  ReportMemoryUsage(kContext, kThirdPMFKb);
+
+  // Memory measurement crossing the growth threshold. This should result in
+  // discarding.
+  const int kFourthPMFKb = kThirdPMFKb + growth_threshold_kb + 1;
+  EXPECT_CALL(*discarder(),
+              DiscardPages(testing::_, testing::UnorderedElementsAre(
+                                           page_node(), page2.get())));
+  ReportMemoryUsage(kContext, kFourthPMFKb);
+  VerifyDiscarderExpectations();
+}
+
 TEST_F(FreezingPolicyTest, DiscardGrowingPrivateMemory_FeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(

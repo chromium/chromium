@@ -129,7 +129,6 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_TYPE, PageTransition.AUTO_BOOKMARK);
         intent.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_BOOKMARK_ID, item.getId().toString());
-        intent.putExtra(IntentHandler.EXTRA_INCOGNITO_MODE, incognito);
 
         if (mComponentName != null) {
             ActivityUtils.setNonAliasedComponentForMainBrowsingActivity(intent, mComponentName);

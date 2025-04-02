@@ -91,6 +91,7 @@ Du hittar fler inställningar som använder data för att förbättra Chromium-u
 <translation id="3054480780637153380">Öppna Chromium-inställningarna i iOS, tryck på Standardwebbläsarapp och välj Chromium.</translation>
 <translation id="3102849287235003384"><ph name="BEGIN_LINK" />Logga ut från Chromium<ph name="END_LINK" /> om du vill logga ut från Google-kontot på alla webbplatser.</translation>
 <translation id="3115956258722352278">Vill du göra Chromium till din standardwebbläsare?</translation>
+<translation id="3180939591219927904">Aktivera Lås inkognitoflikar när du stänger Chromium</translation>
 <translation id="3242612358525156339">Öppna <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> i enhetens inställningar och välj Chromium</translation>
 <translation id="328933489847748230">{count,plural, =1{Nu visas 1 Chromium-fönster}other{Nu visas {count} Chromium-fönster}}</translation>
 <translation id="3344973607274501920">Chromium kunde inte kontrollera dina lösenord. Testa att kontrollera internetanslutningen.</translation>
@@ -186,6 +187,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 1. Öppna inställningarna
 2. Tryck på Standardwebbläsarapp
 3. Välj Chromium</translation>
+<translation id="5482686278086727777">Om du vill få flikpåminnelse från Chromium aktiverar du aviseringar i iOS-inställningarna.</translation>
 <translation id="5521125884468363740">Logga in och aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chromium</translation>
 <translation id="5534584691915394889">Detta används för att skapa händelser i Apple Kalender från Chromium och Google Lens.</translation>
 <translation id="5571094606370987472">Öppnar senaste flikarna i Chromium.</translation>
@@ -260,6 +262,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Den data som markerades har tagits bort från Chromium och från synkroniserade enheter. Det kan finnas andra former av webbhistorik i Google-kontot på history.google.com, t.ex. sökningar och aktivitet på andra tjänster från Google.</translation>
 <translation id="7395825497086981028">Lösenordet sparas med Lösenordshantering för <ph name="EMAIL" />.</translation>
+<translation id="7504829997542308412">Öppna Chromium</translation>
 <translation id="7531461704633548377">Från Chromium</translation>
 <translation id="7554983317097061001">Tips för Chromium: Flytta Chromium till dockan</translation>
 <translation id="7576863740961052505">Hantera inställningar för Chromium</translation>

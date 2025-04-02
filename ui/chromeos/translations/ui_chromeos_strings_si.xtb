@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">ඔබට ස්තුතියි යැයි සංඥා කරමින්</translation>
 <translation id="2088690981887365033">VPN ජාලය</translation>
 <translation id="209653272837065803">ගොනු සමමුහුර්ත කිරීම දිගටම කරගෙන යාමට ප්‍රමාණවත් ආචයන ඉඩක් නොමැත</translation>
-<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />අප්‍රකට තුළ ඉඩ දීම<ph name="END_BOLD" /> ක්‍රියාත්මක කරන්න</translation>
 <translation id="2114191879048183086">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් මකනු ඇති අතර ඔබට ඒවා ප්‍රතිසාධනය කිරීමට නොහැකි වනු ඇත.</translation>
 <translation id="2122305276694332719">සැඟවුණු ජාලයකට ස්වයංක්‍රීයව සම්බන්ධ කිරීම අන් අයට ඔබේ උපාංගය සහ යම් ජාල සැකසීම් බැලීමට ඉඩ සලසන අතර, එය නිර්දේශ නොකෙරේ.</translation>
 <translation id="2125607626296734455">ඛමර්</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">ග්‍රහලෝකය</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ඉවත් කර ඇත.</translation>
 <translation id="2307462900900812319">ජාලය සකසන්න</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> සහිත දිගුවක් ස්ථානගත කළ නොහැක. ඔබේ පරිපාලක සම්බන්ධ කර ගන්න.}one{IDs <ph name="BEGIN_LIST" /><ph name="END_LIST" /> සහිත දිගු ස්ථානගත කළ නොහැක. ඔබේ පරිපාලක සම්බන්ධ කර ගන්න.}other{IDs <ph name="BEGIN_LIST" /><ph name="END_LIST" /> සහිත දිගු ස්ථානගත කළ නොහැක. ඔබේ පරිපාලක සම්බන්ධ කර ගන්න.}}</translation>
 <translation id="2325650632570794183">මෙම ගොනු ආකාරය සහාය නොදක්වයි. මෙම ආකාරයේ ගොනුව විවෘත කළ හැකි යෙදුමක් සොයා ගැනීමට Chrome වෙබ් අලෙවිසැල වෙත යන්න.</translation>
 <translation id="2326539130272988168">බල්ගේරියානු</translation>
 <translation id="233822363739146957">ඔබේ සියලු ම ගොනු සමමුහුර්ත කිරීමට ප්‍රමාණවත් ආචයන ඉඩක් නොමැත</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">මරාති</translation>
 <translation id="2923240520113693977">ඇස්ටෝනියානු</translation>
 <translation id="2938685643439809023">මොන්ගෝලියානු</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{දිගුව සොයා ගත නොහැක}one{දිගු සොයා ගත නොහැක}other{දිගු සොයා ගත නොහැක}}</translation>
 <translation id="2943503720238418293">කෙටි නමක් භාවිතා කරන්න</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> හැඩතල ගන්වමින්...</translation>
 <translation id="2951236788251446349">ජෙලිෆිෂ්</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">සම්පූර්ණ</translation>
 <translation id="3358452157379365236">ගිටාරය</translation>
 <translation id="3368922792935385530">සම්බන්ධ කළ</translation>
-<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />විස්තර<ph name="END_BOLD" /> බලන්න</translation>
 <translation id="3382143449143186018">InScript යතුරුපුවරුව සමග නේපාල</translation>
 <translation id="338691029516748599"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි, සබඳින්න</translation>
 <translation id="3408072735282270043">සක්‍රිය කරන්න, <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">කඟවේනා</translation>
 <translation id="4131235941541910880">ඔබට අවශ්‍ය නොවන අයිතම කුණු කූඩයට ගෙන යන්න</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, උපාංග පිහිටුවීමෙන් පසු සක්‍රිය කරන්න</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{අප්‍රසිද්ධ තුළ පහත දිගුව ක්‍රියාත්මක කරන්න:}one{අප්‍රසිද්ධ තුළ පහත දිගු ක්‍රියාත්මක කරන්න:}other{අප්‍රසිද්ධ තුළ පහත දිගු ක්‍රියාත්මක කරන්න:}}</translation>
 <translation id="4153015322587141338">ගොනුවක් මත දකුණු-ක්ලික් කරන්න, රාක්කයේ ඇති ඔබේ ගොනු වෙත ඉක්මන් ප්‍රවේශය සඳහා "<ph name="PIN_COMMAND" />" තෝරන්න.</translation>
 <translation id="4157569377477607576">පරිපාලක ප්‍රතිපත්තිය නිර්දේශ නොකරයි:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ගෙන යන ලදී.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">දෙකම තබා ගන්න</translation>
 <translation id="4804827417948292437">අලිගැටපේර</translation>
 <translation id="4805966553127040832">අයිතම <ph name="COUNT" />ක් ප්‍රතිසාධනය කරමින්</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{අප්‍රසිද්ධ භාවිතය සඳහා, ඔබේ සංවිධානයට දිගුවක් අවශ්‍ය වේ}one{අප්‍රසිද්ධ භාවිතය සඳහා, ඔබේ සංවිධානයට යම් දිගු අවශ්‍ය වේ}other{අප්‍රසිද්ධ භාවිතය සඳහා, ඔබේ සංවිධානයට යම් දිගු අවශ්‍ය වේ}}</translation>
 <translation id="4826849268470072925">දෙමළ ITRANS</translation>
-<translation id="482932175346970750">ඔබේ බ්‍රව්සරයට <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ටයිප් කරන්න</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">දසුන</translation>
 <translation id="485316830061041779">ජර්මානු</translation>
@@ -561,7 +554,6 @@
     ගොනු මත අනෙක් අය සමඟ එකම තැනකින්.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Drive වෙතින් නැවත ලබාගත්</translation>
 <translation id="5278111733643988471">මෙම අයිතමය ප්‍රතිසාධනය කිරීමට, එය කුණු කූඩයෙන් පිටත නව ෆෝල්ඩරයකට අදින්න. මෙම අයිතමය සඳහා මුල් ෆෝල්ඩරය "<ph name="PARENT_FOLDER_NAME" />" මකා ඇත.</translation>
-<translation id="5283101102242354279">අප්‍රසිද්ධ තුළ දිගුවක් ක්‍රියාත්මක කරන්න:</translation>
 <translation id="5288441970121584418">බර්ගර්</translation>
 <translation id="5293615890992542006">මෙම ගොනුව ගෙන යාම පරිපාලක ප්‍රතිපත්තිය මගින් අවහිර කර ඇත</translation>
 <translation id="5305688511332277257">කිසිවක් ස්ථාපනය නොවිණ</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, විස්තර</translation>
 <translation id="7246947237293279874">FTP ප්‍රොක්සිය</translation>
 <translation id="7248671827512403053">ඉල්ලුම් පත්‍රය</translation>
-<translation id="7252604552361840748">ඉහත දිගුව සොයා ගන්න</translation>
 <translation id="7256405249507348194">හඳුනා නොගත් දෝෂයකි: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ලබා ගත හැකි සේවා</translation>
 <translation id="7291818353625820805">යතුරු පුනරාවර්තනය කිරීමට අවශ්‍ය ද? යතුරු පුවරු සැකසීම් තුළ උච්චාරණ ලකුණු ක්‍රියා විරහිත කරන්න</translation>

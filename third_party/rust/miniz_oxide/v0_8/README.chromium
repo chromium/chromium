@@ -3,7 +3,7 @@ URL: https://crates.io/crates/miniz_oxide
 Version: 0.8.5
 Revision: 341edf5d7985e00d05512d221c84049129628718
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/miniz_oxide-0.8.5/LICENSE-APACHE.md
+License File: //third_party/rust/chromium_crates_io/vendor/miniz_oxide-v0_8/LICENSE-APACHE.md
 Shipped: yes
 Security Critical: yes
 

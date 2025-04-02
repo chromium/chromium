@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
+import static androidx.test.espresso.action.ViewActions.pressKey;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -23,6 +24,8 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.view.KeyEvent;
+
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -38,6 +41,7 @@ import org.chromium.base.Token;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -359,6 +363,31 @@ public class TabStripGroupContextMenuTest {
                 "The blue color should be selected",
                 TabGroupColorId.BLUE,
                 tabGroupModelFilter.getTabGroupColor(mRootId));
+    }
+
+    @Test
+    @SmallTest
+    @Feature("KeyboardA11y")
+    public void testKeyboardFocusAndActivation() {
+        // Prepare standard state and show menu.
+        prepareStandardState();
+        int numTabsBeforeClick = mActivityTestRule.getActivity().getCurrentTabModel().getCount();
+        showMenu();
+
+        // Hit down arrow 3 times. The first time should highlight the text field; the next should
+        // highlight the color chooser row; the last should skip the divider and go to "add new tab
+        // in group".
+        for (int i = 0; i < 3; i++) {
+            // We need to use espresso to perform the key events.
+            // InstrumentationRegistry.getInstrumentation().sendKeySync() and
+            // activity.dispatchKeyEvent don't work.
+            onView(withId(R.id.tab_group_action_menu_list))
+                    .perform(pressKey(KeyEvent.KEYCODE_DPAD_DOWN));
+        }
+        onView(withId(R.id.tab_group_action_menu_list)).perform(pressKey(KeyEvent.KEYCODE_SPACE));
+        assertEquals(
+                numTabsBeforeClick + 1,
+                mActivityTestRule.getActivity().getCurrentTabModel().getCount());
     }
 
     private void prepareStandardState() {

@@ -39,8 +39,18 @@ def _delete_line(path, line):
 
     path.write_text(''.join(lines))
 
+def _is_cog():
+    return os.getcwd().startswith('/google/cog/cloud')
 
 def main():
+    if _is_cog():
+        print(
+            'command is not supported in non-git environment. Please '
+            'use the "Format Modified Lines in All Files (git cl format)" '
+            'functionality in the command palette in the editor instead.',
+            file=sys.stderr)
+        sys.exit(1)
+
     java_files = _query_for_java_files()
     if not java_files:
         print('There are no changed .java files.')

@@ -214,6 +214,11 @@ TEST_F(KeywordProviderTest, Edit) {
       {u"mailto:z", 0, {kEmptyMatch, kEmptyMatch, kEmptyMatch}},
       {u"ftp://z", 0, {kEmptyMatch, kEmptyMatch, kEmptyMatch}},
       {u"https://z", 1, {{u"z ", true}, kEmptyMatch, kEmptyMatch}},
+
+      // Non-substituting keywords, whether typed fully or not
+      // should not add a space.
+      {u"nonsu", 1, {{u"nonsub", false}, kEmptyMatch, kEmptyMatch}},
+      {u"nonsub", 1, {{u"nonsub", true}, kEmptyMatch, kEmptyMatch}},
   };
 
   RunTest<std::u16string>(edit_cases, std::size(edit_cases),

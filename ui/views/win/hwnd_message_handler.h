@@ -210,6 +210,12 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   virtual void set_is_translucent(bool is_translucent);
   virtual bool is_translucent() const;
 
+  // Sets whether to use rounded corners. This uses DWMWCP_ROUND and is not
+  // effective on Windows 10.
+  void set_use_rounded_corner(bool use_rounded_corner) {
+    use_rounded_corner_ = use_rounded_corner;
+  }
+
   virtual std::unique_ptr<aura::ScopedEnableUnadjustedMouseEvents>
   RegisterUnadjustedMouseEvent();
 
@@ -812,6 +818,10 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // True if the window should have no border and its contents should be
   // partially or fully transparent.
   bool is_translucent_ = false;
+
+  // True if the window uses rounded corners. This uses DWMWCP_ROUND style on
+  // Windows 11. Not effective on Windows 10.
+  bool use_rounded_corner_ = false;
 
   // True if DWM frame should be cleared on next WM_ERASEBKGND message.  This is
   // necessary to avoid white flashing in the titlebar area around the

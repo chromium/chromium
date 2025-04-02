@@ -8,18 +8,20 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import androidx.recyclerview.widget.RecyclerView.State;
 
 import org.chromium.base.CallbackController;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
@@ -42,6 +44,7 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
     private RecyclerView mContenRecyclerView;
     private View mCommerceBottomSheetContentContainer;
     private ModelList mModelList;
+    private @Nullable Long mSheetOpenTimeMs;
 
     @MonotonicNonNull private CallbackController mCallbackController;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
@@ -89,6 +92,9 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
 
                     @Override
                     public void onSheetStateChanged(int newState, int reason) {
+                        if (mSheetOpenTimeMs == null) {
+                            mSheetOpenTimeMs = SystemClock.elapsedRealtime();
+                        }
                         if (newState == SheetState.FULL) {
                             mContenRecyclerView.suppressLayout(false);
                             if (mScrimModel != null && !mMediator.isContentWrappingContent()) {
@@ -97,6 +103,13 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
                             }
                         } else if (newState == SheetState.HALF) {
                             mContenRecyclerView.suppressLayout(true);
+                        } else if (newState == SheetState.HIDDEN) {
+                            if (mSheetOpenTimeMs != null) {
+                                Long durationMs = SystemClock.elapsedRealtime() - mSheetOpenTimeMs;
+                                RecordHistogram.recordTimesHistogram(
+                                        "Commerce.BottomSheet.BrowsingTime", durationMs);
+                            }
+                            mSheetOpenTimeMs = null;
                         }
                     }
 

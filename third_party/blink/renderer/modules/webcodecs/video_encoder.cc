@@ -1607,8 +1607,9 @@ void VideoEncoder::OnNewEncode(InputType* input,
       "either reorient the frames or reconfigure the encoder.");
 }
 
-void FindAnySupported(ScriptPromiseResolver<VideoEncoderSupport>* resolver,
-                      const HeapVector<Member<VideoEncoderSupport>>& supports) {
+void FindAnySupported(
+    ScriptPromiseResolver<VideoEncoderSupport>* resolver,
+    const GCedHeapVector<Member<VideoEncoderSupport>>& supports) {
   VideoEncoderSupport* result = nullptr;
   for (auto& support : supports) {
     result = support;

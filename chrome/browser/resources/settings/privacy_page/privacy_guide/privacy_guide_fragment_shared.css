@@ -17,7 +17,7 @@
   padding: 0 24px;
 }
 
-.headline-container {
+.welcome-completion-header {
   align-items: center;
   display: flex;
   flex: 1;
@@ -26,17 +26,28 @@
   text-align: center;
 }
 
-.headline {
+.welcome-completion-header picture {
+  animation: fade-in 1500ms, slide-in 300ms;
+}
+
+.welcome-completion-header-label {
+  align-self: center;
   color: var(--google-grey-800);
   font-size: 22px;
+  font-weight: 400;
   line-height: 1.15;
+  justify-content: center;
+  outline: none;
+  padding: 0;
 }
 
-settings-collapse-radio-button:not(:first-of-type) {
-  --settings-collapse-separator-line: var(--cr-separator-line);
+@media (prefers-color-scheme: dark) {
+  .welcome-completion-header-label {
+    color: var(--google-grey-200);
+  }
 }
 
-.header-phase2 {
+.settings-fragment-header {
   align-items: center;
   display: flex;
   flex-direction: column;
@@ -44,7 +55,7 @@ settings-collapse-radio-button:not(:first-of-type) {
   padding: 24px 0 16px 0;
 }
 
-.header-label-phase2 {
+.settings-fragment-header-label {
   animation: fade-in var(--privacy-guide-animation-duration);
   align-self: center;
   color: var(--cr-primary-text-color);
@@ -61,7 +72,7 @@ settings-collapse-radio-button:not(:first-of-type) {
 @keyframes slide-in {
   0% {
     transform: translateX(calc(
-        var(--privacy-guide-v2-translate-multiplier) * 20px));
+        var(--privacy-guide-translate-multiplier) * 20px));
   }
 
   100% {
@@ -69,18 +80,12 @@ settings-collapse-radio-button:not(:first-of-type) {
   }
 }
 
-.headline,
+.welcome-completion-header-label,
 .cr-secondary-text,
-.header-phase2 picture,
+.settings-fragment-header picture,
 .fragment-content {
   animation: fade-in var(--privacy-guide-animation-duration),
       slide-in 450ms;
-}
-
-@media (prefers-color-scheme: dark) {
-  .headline {
-    color: var(--google-grey-200);
-  }
 }
 
 .embedded-setting-wrapper {
@@ -92,6 +97,10 @@ settings-collapse-radio-button:not(:first-of-type) {
   .embedded-setting-wrapper {
     border-color: var(--google-grey-700);
   }
+}
+
+settings-collapse-radio-button:not(:first-of-type) {
+  --settings-collapse-separator-line: var(--cr-separator-line);
 }
 
 settings-toggle-button {

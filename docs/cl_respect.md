@@ -45,9 +45,8 @@ you're new to the codebase, it's a good idea to do a first round with a single
 local reviewer to clear the basic issues. Try to limit the number of owners you
 solicit (only one per section), but ensure you pick sufficiently specialized
 ones. Finally, be mindful of time zones and their effect on the review cycle
-time. Picking the right reviewers comes with experience, but you can start by
-looking at OWNERS files, asking a teammate, or using tools ('_git cl owners_',
-[Chromite Butler](https://chrome.google.com/webstore/detail/chromite-butler/bhcnanendmgjjeghamaccjnochlnhcgj)).
+time. Picking the right reviewers comes with experience, but start
+[here](cl_tips.md#choosing-the-right-reviewers).
 
 #### Provide context
 

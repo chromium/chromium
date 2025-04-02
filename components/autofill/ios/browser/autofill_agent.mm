@@ -311,7 +311,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   // Re-extract the active form and field only. All forms with at least one
   // input element are considered because key/value suggestions are offered
   // even on short forms.
-  driver->FetchFromsFilteredByName(
+  driver->FetchFormsFilteredByName(
       SysNSStringToUTF16(formQuery.formName),
       base::BindOnce(callback, self, formQuery, frame->AsWeakPtr(),
                      webState->GetWeakPtr(), completion));
@@ -447,12 +447,6 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
         base::BindOnce(callback, weakSelf, frame->AsWeakPtr(), formRendererID,
                        std::exchange(_suggestionHandledCompletion, nil)));
 
-  } else if (suggestion.type == autofill::SuggestionType::kShowAccountCards) {
-    autofill::BrowserAutofillManager* autofillManager =
-        [self autofillManagerFromWebState:_webState webFrame:frame];
-    if (autofillManager) {
-      autofillManager->OnUserAcceptedCardsFromAccountOption();
-    }
   } else {
     // TODO(crbug.com/366247033): Remove this crash key once the underlying
     // crash has been fixed.
@@ -638,10 +632,6 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       // Show the "clear form" button.
       // TODO(crbug.com/40266549): Replace Clear Form with Undo once this
       // changes
-      value = SysUTF16ToNSString(popup_suggestion.main_text.value);
-    } else if (popup_suggestion.type ==
-               autofill::SuggestionType::kShowAccountCards) {
-      // Show opt-in for showing cards from account.
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
     } else if (popup_suggestion.type ==
                    autofill::SuggestionType::kFillExistingPlusAddress ||
@@ -861,7 +851,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       };
 
   // Extract the active form and field only.
-  driver->FetchFromsFilteredByName(
+  driver->FetchFormsFilteredByName(
       base::UTF8ToUTF16(params.form_name),
       base::BindOnce(callback, weakSelf, frame->AsWeakPtr(),
                      params.field_renderer_id));

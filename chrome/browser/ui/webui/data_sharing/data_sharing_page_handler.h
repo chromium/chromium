@@ -72,6 +72,10 @@ class DataSharingPageHandler : public data_sharing::mojom::PageHandler {
       data_sharing::mojom::ReadGroupWithTokenParamPtr param,
       data_sharing::mojom::Page::ReadGroupWithTokenCallback callback);
 
+  void OnGroupAction(
+      data_sharing::mojom::GroupAction action,
+      data_sharing::mojom::GroupActionProgress progress) override;
+
  private:
   Profile* GetProfile();
 

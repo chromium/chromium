@@ -41,6 +41,10 @@ struct MEDIA_EXPORT AudioDeviceDescription {
   // Only supported on ChromeOS.
   static const char kLoopbackWithoutChromeId[];
 
+  // Prefix of the device id for application loopback devices. The full device
+  // id is formatted as "applicationLoopback:<application id>"
+  static const char kApplicationLoopbackDeviceId[];
+
   // TODO(b/338470954): Rename to IsVirtualDefaultDevice(...)
   // Returns true if |device_id| represents the virtual default device.
   static bool IsDefaultDevice(const std::string& device_id);
@@ -50,7 +54,15 @@ struct MEDIA_EXPORT AudioDeviceDescription {
   static bool IsCommunicationsDevice(const std::string& device_id);
 
   // Returns true if |device_id| represents a loopback audio capture device.
+  // Note that this will not work if |device_id| is hashed, which may be the
+  // case in the Renderer.
   static bool IsLoopbackDevice(const std::string& device_id);
+
+  // Returns true if |device_id| represents an application loopback audio
+  // capture device.
+  // Note that this will not work if |device_id| is hashed, which is the case in
+  // the Renderer.
+  static bool IsApplicationLoopbackDevice(const std::string& device_id);
 
   // If |device_id| is not empty, |session_id| should be ignored and the output
   // device should be selected basing on |device_id|.

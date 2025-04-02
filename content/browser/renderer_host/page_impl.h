@@ -208,7 +208,13 @@ class CONTENT_EXPORT PageImpl : public Page {
   }
   double load_progress() const { return load_progress_; }
 
+  // The env() variables for virtual keyboard overlay and context menu insets
+  // are page-level, and don't get propagated into iframes, because a) that
+  // would be a cross-site info leak, and b) it's hard to know exactly how they
+  // would be used in that context.
+  // See https://github.com/w3c/csswg-drafts/issues/4670.
   void NotifyVirtualKeyboardOverlayRect(const gfx::Rect& keyboard_rect);
+  void NotifyContextMenuInsetsObservers(const gfx::Rect&);
 
   void SetVirtualKeyboardMode(ui::mojom::VirtualKeyboardMode mode);
   ui::mojom::VirtualKeyboardMode virtual_keyboard_mode() const {

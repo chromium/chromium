@@ -625,9 +625,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(
 // issues from sites used in their organization.
 NET_EXPORT BASE_DECLARE_FEATURE(kReportingApiEnableEnterpriseCookieIssues);
 
-// Optimize parsing data: URLs.
-NET_EXPORT BASE_DECLARE_FEATURE(kOptimizeParsingDataUrls);
-
 // Use the simdutf library to base64 decode data: URLs.
 NET_EXPORT BASE_DECLARE_FEATURE(kSimdutfBase64Support);
 

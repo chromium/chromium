@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/lobster/lobster_candidate_resizer.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/protobuf_matchers.h"
@@ -17,6 +18,7 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -51,7 +53,8 @@ TEST_F(LobsterCandidateResizerTest, InflateImageCallsSnapperProvider) {
                /*query=*/"a nice strawberry",
                /*seed=*/kFakeBaseGenerationSeed, /*size=*/
                gfx::Size(kFullImageDimensionLength, kFullImageDimensionLength),
-               /*num_outputs=*/1, /*use_query_rewriter=*/false)),
+               /*num_outputs=*/1, /*use_query_rewriter=*/false,
+               /*use_i18n=*/false)),
            testing::_, testing::_))
       .WillOnce(testing::Invoke(
           [](const manta::proto::Request& request,
@@ -98,7 +101,8 @@ TEST_F(LobsterCandidateResizerTest,
                /*query=*/"a nice strawberry",
                /*seed=*/kFakeBaseGenerationSeed, /*size=*/
                gfx::Size(kFullImageDimensionLength, kFullImageDimensionLength),
-               /*num_outputs=*/1, /*use_query_rewriter=*/false)),
+               /*num_outputs=*/1, /*use_query_rewriter=*/false,
+               /*use_i18n=*/false)),
            testing::_, testing::_))
       .WillOnce(testing::Invoke(
           [](const manta::proto::Request& request,
@@ -120,9 +124,11 @@ TEST_F(LobsterCandidateResizerTest,
       future.GetCallback());
 
   EXPECT_FALSE(future.Get().has_value());
-  EXPECT_EQ(future.Get().error(),
-            ash::LobsterError(/*status_code=*/ash::LobsterErrorCode::kUnknown,
-                              "dummy error"));
+  EXPECT_EQ(
+      future.Get().error(),
+      ash::LobsterError(/*status_code=*/ash::LobsterErrorCode::kUnknown,
+                        l10n_util::GetStringUTF8(
+                            IDS_LOBSTER_NO_SERVER_RESPONSE_ERROR_MESSAGE)));
 }
 
 TEST_F(LobsterCandidateResizerTest,
@@ -140,7 +146,8 @@ TEST_F(LobsterCandidateResizerTest,
                /*query=*/"a nice strawberry",
                /*seed=*/kFakeBaseGenerationSeed, /*size=*/
                gfx::Size(kFullImageDimensionLength, kFullImageDimensionLength),
-               /*num_outputs=*/1, /*use_query_rewriter=*/false)),
+               /*num_outputs=*/1, /*use_query_rewriter=*/false,
+               /*use_i18n=*/false)),
            testing::_, testing::_))
       .WillOnce(testing::Invoke(
           [](const manta::proto::Request& request,
@@ -165,7 +172,8 @@ TEST_F(LobsterCandidateResizerTest,
   EXPECT_EQ(
       future.Get().error(),
       ash::LobsterError(/*status_code=*/ash::LobsterErrorCode::kBlockedOutputs,
-                        /*message=*/"the output is blocked"));
+                        /*message=*/l10n_util::GetStringUTF8(
+                            IDS_LOBSTER_CONTROVERSIAL_RESPONSE_ERROR_MESSAGE)));
 }
 
 }  // namespace

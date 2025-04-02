@@ -47,18 +47,14 @@ ScopedJavaLocalRef<jobject> JniPaymentApp::Create(
   // JniPaymentApp::FreeNativeObject() call.
   JniPaymentApp* app = new JniPaymentApp(std::move(payment_app));
 
-  ScopedJavaLocalRef<jobject> icon;
-  if (app->payment_app_->icon_bitmap() &&
-      !app->payment_app_->icon_bitmap()->drawsNothing()) {
-    icon = gfx::ConvertToJavaBitmap(*app->payment_app_->icon_bitmap());
-  }
-
   return Java_JniPaymentApp_Constructor(
       env, ConvertUTF8ToJavaString(env, app->payment_app_->GetId()),
       ConvertUTF16ToJavaString(env, app->payment_app_->GetLabel()),
-      ConvertUTF16ToJavaString(env, app->payment_app_->GetSublabel()), icon,
+      ConvertUTF16ToJavaString(env, app->payment_app_->GetSublabel()),
+      app->payment_app_->icon_bitmap(),
       static_cast<jint>(app->payment_app_->type()),
-      reinterpret_cast<jlong>(app));
+      reinterpret_cast<jlong>(app), app->payment_app_->issuer_bitmap(),
+      app->payment_app_->network_bitmap());
 }
 
 ScopedJavaLocalRef<jobjectArray> JniPaymentApp::GetInstrumentMethodNames(

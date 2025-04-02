@@ -109,7 +109,6 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
     case AutofillSuggestionTriggerSource::kTextFieldValueChanged:
     case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
     case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
-    case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
     case AutofillSuggestionTriggerSource::kPasswordManager:
     case AutofillSuggestionTriggerSource::kiOS:
     case AutofillSuggestionTriggerSource::
@@ -276,7 +275,6 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kSeparator:
-    case SuggestionType::kShowAccountCards:
     case SuggestionType::kTitle:
     case SuggestionType::kUndoOrClear:
     case SuggestionType::kViewPasswordDetails:
@@ -532,17 +530,6 @@ void AutofillExternalDelegate::OnSuggestionsShown(
     }
   }
 
-  if (shown_suggestion_types.contains(SuggestionType::kShowAccountCards)) {
-    autofill_metrics::LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
-        autofill_metrics::ShowCardsFromGoogleAccountButtonEvent::
-            kButtonAppeared);
-    if (!std::exchange(show_cards_from_account_suggestion_was_shown_, true)) {
-      autofill_metrics::LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
-          autofill_metrics::ShowCardsFromGoogleAccountButtonEvent::
-              kButtonAppearedOnce);
-    }
-  }
-
   manager_->DidShowSuggestions(suggestions, query_form_,
                                query_field_.global_id(),
                                CreateUpdateSuggestionsCallback());
@@ -679,7 +666,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
-    case SuggestionType::kShowAccountCards:
     case SuggestionType::kBnplEntry:
       break;
     case SuggestionType::kTitle:
@@ -721,10 +707,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kBnplEntry:
       DidAcceptPaymentsSuggestion(suggestion, metadata);
       break;
-    case SuggestionType::kShowAccountCards:
-      DidAcceptPaymentsSuggestion(suggestion, metadata);
-      manager_->RefetchCardsAndUpdatePopup(query_form_, query_field_);
-      return;
     case SuggestionType::kManageAddress:
     case SuggestionType::kManageAutofillAi:
     case SuggestionType::kManageCreditCard:
@@ -1008,7 +990,6 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
     case SuggestionType::kGeneratePasswordEntry:
-    case SuggestionType::kShowAccountCards:
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeDisable:
@@ -1374,12 +1355,6 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
       manager_->client()
           .GetPaymentsAutofillClient()
           ->ShowCreditCardSaveAndFillDialog();
-      break;
-    case SuggestionType::kShowAccountCards:
-      autofill_metrics::LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
-          autofill_metrics::ShowCardsFromGoogleAccountButtonEvent::
-              kButtonClicked);
-      manager_->OnUserAcceptedCardsFromAccountOption();
       break;
     case SuggestionType::kScanCreditCard:
       manager_->client().GetPaymentsAutofillClient()->ScanCreditCard(

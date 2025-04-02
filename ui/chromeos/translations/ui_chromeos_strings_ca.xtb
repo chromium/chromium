@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">Signe de gràcies</translation>
 <translation id="2088690981887365033">Xarxa VPN</translation>
 <translation id="209653272837065803">No hi ha prou espai d'emmagatzematge per continuar sincronitzant fitxers</translation>
-<translation id="2111134541987263231">Activa l'opció <ph name="BEGIN_BOLD" />Permet en mode d'incògnit<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">Se suprimiran <ph name="NUMBER_OF_ITEMS" /> elements i no els podràs restaurar.</translation>
 <translation id="2122305276694332719">La connexió automàtica a una xarxa amagada permet que altres usuaris puguin veure el teu dispositiu i algunes opcions de configuració de la xarxa. Per tant, no és recomanable.</translation>
 <translation id="2125607626296734455">Khmer</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">S'ha expulsat <ph name="VOLUME_NAME" />.</translation>
 <translation id="2307462900900812319">Configura la xarxa</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{No es troba cap extensió amb l'identificador: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Contacta amb l'administrador.}other{No es troben extensions amb els identificadors: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Contacta amb l'administrador.}}</translation>
 <translation id="2325650632570794183">Aquest tipus de fitxer no és compatible. Visiteu Chrome Web Store per trobar una aplicació que pugui obrir aquest tipus de fitxer.</translation>
 <translation id="2326539130272988168">Búlgar</translation>
 <translation id="233822363739146957">No hi ha prou espai d'emmagatzematge per sincronitzar tots els fitxers</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estonià</translation>
 <translation id="2938685643439809023">Mongol</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{No es troba l'extensió}other{No es troben les extensions}}</translation>
 <translation id="2943503720238418293">Utilitza un nom més curt</translation>
 <translation id="2949781154072577687">S'està formatant <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Medusa</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">Completada</translation>
 <translation id="3358452157379365236">Guitarra</translation>
 <translation id="3368922792935385530">Connectat</translation>
-<translation id="3372635229069101468">Fes clic a <ph name="BEGIN_BOLD" />Detalls<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">Nepalès amb teclat InScript</translation>
 <translation id="338691029516748599">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, gestionada per l'administrador, connecta</translation>
 <translation id="3408072735282270043">Activa, <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4131235941541910880">Mou els elements que no necessitis a la paperera</translation>
 <translation id="4134804435730168042">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Activa després de la configuració del dispositiu</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Activa l'extensió següent en mode d'incògnit:}other{Activa les extensions següents en mode d'incògnit:}}</translation>
 <translation id="4153015322587141338">Fes clic amb el botó dret en un fitxer i selecciona <ph name="PIN_COMMAND" /> per accedir ràpidament als teus fitxers al prestatge.</translation>
 <translation id="4157569377477607576">La política de l'administrador no recomana:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> s'ha mogut.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">Mantén-les totes dues</translation>
 <translation id="4804827417948292437">Alvocat</translation>
 <translation id="4805966553127040832">S'estan restaurant <ph name="COUNT" /> elements</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Per utilitzar el mode d'incògnit, la teva organització requereix una extensió}other{Per utilitzar el mode d'incògnit, la teva organització requereix algunes extensions}}</translation>
 <translation id="4826849268470072925">Tàmil (itrans)</translation>
-<translation id="482932175346970750">Escriu <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> al navegador</translation>
 <translation id="4843566743023903107">dispositius Chromebase</translation>
 <translation id="4850886885716139402">Mostra</translation>
 <translation id="485316830061041779">Alemany</translation>
@@ -561,7 +554,6 @@
     amb altres persones; tot en un sol lloc.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Fitxers recuperats de Google Drive</translation>
 <translation id="5278111733643988471">Per restaurar aquest element, arrossega'l a una carpeta nova fora de la paperera. La carpeta original "<ph name="PARENT_FOLDER_NAME" />" d'aquest element s'ha suprimit.</translation>
-<translation id="5283101102242354279">Activa una extensió en mode d'incògnit:</translation>
 <translation id="5288441970121584418">Hamburguesa</translation>
 <translation id="5293615890992542006">La política de l'administrador ha bloquejat l'opció de moure aquest fitxer</translation>
 <translation id="5305688511332277257">Cap d'instal·lat</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, detalls</translation>
 <translation id="7246947237293279874">Servidor intermediari FTP</translation>
 <translation id="7248671827512403053">Aplicació</translation>
-<translation id="7252604552361840748">Cerca l'extensió anterior</translation>
 <translation id="7256405249507348194">Error no reconegut: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Serveis disponibles</translation>
 <translation id="7291818353625820805">Vols que les tecles es repeteixin? Desactiva les marques d'accentuació a Configuració del teclat.</translation>

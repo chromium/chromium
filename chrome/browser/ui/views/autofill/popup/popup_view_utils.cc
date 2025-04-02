@@ -496,7 +496,6 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kSeparator:
-    case SuggestionType::kShowAccountCards:
     case SuggestionType::kTitle:
     case SuggestionType::kUndoOrClear:
     case SuggestionType::kViewPasswordDetails:

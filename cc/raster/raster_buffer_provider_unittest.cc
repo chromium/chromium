@@ -40,6 +40,7 @@
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/fake_raster_source.h"
 #include "cc/tiles/tile_task_manager.h"
+#include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/raster_capabilities.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/resources/platform_color.h"
@@ -51,6 +52,7 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_implementation_gles.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/ipc/client/client_shared_image_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "url/gurl.h"
@@ -201,7 +203,8 @@ class RasterBufferProviderTest
         CreateSoftwareResourceProvider();
         raster_buffer_provider_ =
             std::make_unique<ZeroCopyRasterBufferProvider>(
-                layer_tree_frame_sink_.get());
+                layer_tree_frame_sink_.get()->shared_image_interface(),
+                raster_caps);
         break;
     }
 

@@ -672,6 +672,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
     switch (settingsSearchResult.icon) {
       case SearchResultIcon.kA11y:
         return 'os-settings:accessibility';
+      case SearchResultIcon.kAlwaysShowScrollbars:
+        return 'os-settings:scroll-vertical';
       case SearchResultIcon.kAndroid:
         return 'os-settings:android';
       case SearchResultIcon.kAppsParentalControls:

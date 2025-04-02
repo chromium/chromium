@@ -5,7 +5,6 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
@@ -25,13 +24,8 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    // By default, the user is not opted in.
-    loadTimeData.overrideValues({'autofillAiOptedIn': false});
-
     entityDataManager = new TestEntityDataManagerProxy();
     EntityDataManagerProxyImpl.setInstance(entityDataManager);
-
-    section = document.createElement('settings-autofill-ai-section');
 
     // The tests need to simulate that the user has some entity instances saved,
     // because an ineligible user without any entity instances saved cannot see
@@ -51,6 +45,10 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
     ];
     entityDataManager.setLoadEntityInstancesResponse(
         testEntityInstancesWithLabels);
+    // By default, the user is not opted in.
+    entityDataManager.setGetOptInStatusResponse(false);
+
+    section = document.createElement('settings-autofill-ai-section');
   });
 
   interface EligibilityParamsInterface {
@@ -72,7 +70,7 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
   eligibilityParams.forEach(
       (params) => test(params.title, async function() {
         section.ineligibleUser = params.ineligibleUser;
-        loadTimeData.overrideValues({'autofillAiOptedIn': params.optedIn});
+        entityDataManager.setGetOptInStatusResponse(params.optedIn);
 
         document.body.appendChild(section);
         await flushTasks();
@@ -125,7 +123,6 @@ suite('AutofillAiSectionUiTest', function() {
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    loadTimeData.overrideValues({'autofillAiOptedIn': true});
 
     entityDataManager = new TestEntityDataManagerProxy();
     EntityDataManagerProxyImpl.setInstance(entityDataManager);
@@ -185,6 +182,7 @@ suite('AutofillAiSectionUiTest', function() {
         entityInstanceSubLabel: 'Passport',
       },
     ];
+    entityDataManager.setGetOptInStatusResponse(true);
     entityDataManager.setGetAllEntityTypesResponse(testEntityTypes);
     entityDataManager.setLoadEntityInstancesResponse(
         testEntityInstancesWithLabels);

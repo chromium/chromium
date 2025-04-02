@@ -52,7 +52,7 @@ public class PageSummaryButtonController extends BaseButtonDataProvider {
                 /* iphCommandBuilder= */ null,
                 AdaptiveToolbarButtonVariant.PAGE_SUMMARY,
                 /* tooltipTextResId= */ R.string.menu_summarize_with_ai,
-                /* showHoverHighlight= */ true);
+                /* showBackgroundHighlight= */ true);
         mContext = context;
         mAiAssistantService = aiAssistantService;
 
@@ -69,7 +69,7 @@ public class PageSummaryButtonController extends BaseButtonDataProvider {
                         AdaptiveToolbarButtonVariant.PAGE_SUMMARY,
                         /* actionChipLabelResId= */ Resources.ID_NULL,
                         /* tooltipTextResId= */ R.string.menu_review_pdf_with_ai,
-                        /* showHoverHighlight= */ true,
+                        /* showBackgroundHighlight= */ true,
                         /* hasErrorBadge= */ false);
     }
 

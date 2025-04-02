@@ -16,32 +16,6 @@ struct ZSTD_DCtx_s;
 typedef ZSTD_DCtx_s ZSTD_DCtx;
 
 class ZstDecompressor {
- private:
-  // The input stream where we are reading the compressed content from.
-  std::istream& _input_stream;
-  // A buffer containing a portion of the input_stream that we have read.
-  char* _input_buffer;
-  // The size of the contents stored in the input buffer.
-  size_t _input_buffer_size;
-  // A struct containing the input buffer, the size of the contents of input
-  // buffer, and the position where the zstd library function stopped reading.
-  // The position field is updated by the zstd library functions.
-  ZSTD_inBuffer* _input_struct;
-  // A buffer where the decompressed content is placed into. This is returned to
-  // the caller of DecompressStreaming().
-  char* _output_buffer;
-  // The size of the output buffer. Indicates how large the buffer is.
-  size_t _output_buffer_size;
-  // A struct containing the output buffer, the size of the output buffer,
-  // and the position where the zstd library function stopped writing.
-  // The position field is updated by the zstd library functions.
-  ZSTD_outBuffer* _output_struct;
-  // A context object needed by the zstd library functions.
-  ZSTD_DCtx* _ctx;
-  // The return value of the last call to the zstd library functions.
-  // Equals 0 when there is no more work to be done.
-  size_t _last_return_value;
-
  public:
   // The user is responsible for closing the input_stream if necessary.
   explicit ZstDecompressor(std::istream& input_stream);
@@ -63,6 +37,32 @@ class ZstDecompressor {
   // Return true if the entirety of input_stream has been decompressed, and
   // false otherwise.
   bool DecompressStreaming(DecompressedContent* output);
+
+ private:
+  // The input stream where we are reading the compressed content from.
+  std::istream& input_stream_;
+  // A buffer containing a portion of the input_stream that we have read.
+  char* input_buffer_;
+  // The size of the contents stored in the input buffer.
+  size_t input_buffer_size_;
+  // A struct containing the input buffer, the size of the contents of input
+  // buffer, and the position where the zstd library function stopped reading.
+  // The position field is updated by the zstd library functions.
+  ZSTD_inBuffer* input_struct_;
+  // A buffer where the decompressed content is placed into. This is returned to
+  // the caller of DecompressStreaming().
+  char* output_buffer_;
+  // The size of the output buffer. Indicates how large the buffer is.
+  size_t output_buffer_size_;
+  // A struct containing the output buffer, the size of the output buffer,
+  // and the position where the zstd library function stopped writing.
+  // The position field is updated by the zstd library functions.
+  ZSTD_outBuffer* output_struct_;
+  // A context object needed by the zstd library functions.
+  ZSTD_DCtx* ctx_;
+  // The return value of the last call to the zstd library functions.
+  // Equals 0 when there is no more work to be done.
+  size_t last_return_value_;
 };
 
 #endif  // TOOLS_ANDROID_DEVIL_UTIL_ZST_DECOMPRESSOR_H_

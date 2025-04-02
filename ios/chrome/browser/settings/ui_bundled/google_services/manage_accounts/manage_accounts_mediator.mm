@@ -126,15 +126,6 @@
 
 #pragma mark - ChromeAccountManagerServiceObserver
 
-- (void)identityUpdated:(id<SystemIdentity>)identity {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
-    // Listening to `onExtendedAccountInfoUpdated` instead.
-    return;
-  }
-  [self.consumer
-      updateIdentityViewItem:[self identityViewItemForIdentity:identity]];
-}
-
 - (void)onChromeAccountManagerServiceShutdown:
     (ChromeAccountManagerService*)accountManagerService {
   // TODO(crbug.com/40067367): This method can be removed once
@@ -145,10 +136,6 @@
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  if (!IsUseAccountListFromIdentityManagerEnabled()) {
-    // Listening to `identityUpdated` instead.
-    return;
-  }
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
   [self.consumer

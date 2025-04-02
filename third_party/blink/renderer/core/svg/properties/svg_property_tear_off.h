@@ -83,8 +83,6 @@ class SVGPropertyTearOffBase : public ScriptWrappable {
                          PropertyIsAnimValType property_is_anim_val);
   SVGPropertyTearOffBase(SVGElement* context_element);
 
-  void EnsureAnimValUpdated();
-
  private:
   Member<SVGElement> context_element_;
   Member<SVGAnimatedPropertyBase> binding_;
@@ -95,9 +93,6 @@ template <typename Property>
 class SVGPropertyTearOff : public SVGPropertyTearOffBase {
  public:
   Property* Target() {
-    if (IsAnimVal())
-      EnsureAnimValUpdated();
-
     return target_.Get();
   }
 

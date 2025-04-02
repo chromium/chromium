@@ -28,6 +28,8 @@ declare_args() {
       toolkit_views && (is_win || is_mac || is_linux || is_chromeos)
 
   enterprise_screenshot_protection = is_win || is_mac
+
+  enterprise_telomere_reporting = is_win || is_mac || is_linux
 }
 
 declare_args() {

@@ -20,6 +20,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -201,8 +202,8 @@ void TraceEventTestFixture::OnTraceDataCollected(
   trace_buffer_.AddFragment(events_str->as_string());
   trace_buffer_.Finish();
 
-  std::optional<Value> root = base::JSONReader::Read(
-      json_output_.json_output, JSON_PARSE_RFC | JSON_ALLOW_CONTROL_CHARS);
+  std::optional<Value> root =
+      base::JSONReader::Read(json_output_.json_output, JSON_PARSE_RFC);
 
   if (!root.has_value()) {
     LOG(ERROR) << json_output_.json_output;
@@ -1639,7 +1640,7 @@ TEST_F(TraceEventTestFixture, ThreadOnceBlocking) {
 
 std::string* g_log_buffer = nullptr;
 bool MockLogMessageHandler(int,
-                           const char*,
+                           std::string_view,
                            int,
                            size_t,
                            const std::string& str) {
@@ -1672,7 +1673,7 @@ TEST_F(TraceEventTestFixture, EchoToConsole) {
 }
 
 bool LogMessageHandlerWithTraceEvent(int,
-                                     const char*,
+                                     std::string_view,
                                      int,
                                      size_t,
                                      const std::string&) {

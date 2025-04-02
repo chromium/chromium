@@ -13,19 +13,19 @@ cargo_crate("lib") {
   epoch = "1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.97/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/anyhow-v1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.97/src/backtrace.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.97/src/chain.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.97/src/context.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.97/src/ensure.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.97/src/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.97/src/fmt.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.97/src/kind.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.97/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.97/src/macros.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.97/src/ptr.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.97/src/wrapper.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anyhow-v1/src/backtrace.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anyhow-v1/src/chain.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anyhow-v1/src/context.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anyhow-v1/src/ensure.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anyhow-v1/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anyhow-v1/src/fmt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anyhow-v1/src/kind.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anyhow-v1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anyhow-v1/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anyhow-v1/src/ptr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anyhow-v1/src/wrapper.rs",
   ]
   inputs = []
 
@@ -44,10 +44,9 @@ cargo_crate("lib") {
   proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
   proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
   features = [ "std" ]
-  build_root =
-      "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.97/build.rs"
+  build_root = "//third_party/rust/chromium_crates_io/vendor/anyhow-v1/build.rs"
   build_sources =
-      [ "//third_party/rust/chromium_crates_io/vendor/anyhow-1.0.97/build.rs" ]
+      [ "//third_party/rust/chromium_crates_io/vendor/anyhow-v1/build.rs" ]
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates
   ]

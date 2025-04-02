@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Shortcuts.Creation.Result" enum="ShortcutCreatorResult"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>

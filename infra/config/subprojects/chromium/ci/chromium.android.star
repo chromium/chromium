@@ -181,6 +181,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "debug_builder",
             "remoteexec",
             "arm",
@@ -237,6 +238,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_with_static_analysis",
             "debug_static_builder",
             "enable_android_secondary_abi",
             "remoteexec",
@@ -297,6 +299,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_with_static_analysis",
             "debug_static_builder",
             "enable_android_secondary_abi",
             "remoteexec",
@@ -331,6 +334,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_with_static_analysis",
             "debug_static_builder",
             "enable_android_secondary_abi",
             "remoteexec",
@@ -381,6 +385,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_with_static_analysis",
             "debug_static_builder",
             "enable_android_secondary_abi",
             "remoteexec",
@@ -429,6 +434,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_with_static_analysis",
             "debug_static_builder",
             "remoteexec",
             "x86",
@@ -572,6 +578,7 @@ ci.builder(
             "cast_debug",
             "cast_java_debug",
             "android_builder",
+            "android_with_static_analysis",
             "clang",
             "remoteexec",
             "arm",
@@ -628,6 +635,7 @@ ci.builder(
             "cast_release",
             "cast_java_release",
             "android_builder",
+            "android_with_static_analysis",
             "clang",
             "remoteexec",
             "arm",
@@ -684,6 +692,7 @@ ci.builder(
             "cast_debug",
             "cast_java_debug",
             "android_builder",
+            "android_with_static_analysis",
             "clang",
             "remoteexec",
             "arm64",
@@ -740,6 +749,7 @@ ci.builder(
             "cast_release",
             "cast_java_release",
             "android_builder",
+            "android_with_static_analysis",
             "clang",
             "remoteexec",
             "arm64",
@@ -770,6 +780,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "release_builder",
             "remoteexec",
             "minimal_symbols",
@@ -794,6 +805,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_with_static_analysis",
             "debug_builder",
             "remoteexec",
             "arm",
@@ -1165,6 +1177,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_with_static_analysis",
             "enable_android_secondary_abi",
             "release_builder",
             "remoteexec",
@@ -1357,6 +1370,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "cronet_android",
             "debug_static_builder",
             "remoteexec",
@@ -1460,6 +1474,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "cronet_android",
             "debug_static_builder",
             "remoteexec",
@@ -1514,6 +1529,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "cronet_android",
             "debug_static_builder",
             "remoteexec",
@@ -1611,6 +1627,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "cronet_android",
             "release_builder",
             "remoteexec",
@@ -1668,6 +1685,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "cronet_android",
             "debug_static_builder",
             "remoteexec",
@@ -1764,6 +1782,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "cronet_android",
             "debug_static_builder",
             "remoteexec",
@@ -1864,6 +1883,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "cronet_android",
             "debug_static_builder",
             "remoteexec",
@@ -1960,6 +1980,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "cronet_android",
             "debug_static_builder",
             "remoteexec",
@@ -2059,6 +2080,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "cronet_android",
             "debug_static_builder",
             "remoteexec",
@@ -2120,6 +2142,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "cronet_android",
             "debug_static_builder",
             "remoteexec",
@@ -3047,6 +3070,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_with_static_analysis",
             "release_builder",
             "remoteexec",
             "minimal_symbols",
@@ -4081,6 +4105,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_with_static_analysis",
             "release_builder",
             "remoteexec",
             "minimal_symbols",
@@ -4349,6 +4374,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_with_static_analysis",
             "release_builder",
             "remoteexec",
             "minimal_symbols",
@@ -5067,6 +5093,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_with_static_analysis",
             "release_builder",
             "remoteexec",
             "minimal_symbols",

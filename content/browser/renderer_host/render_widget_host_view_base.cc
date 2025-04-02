@@ -402,12 +402,12 @@ gfx::AcceleratedWidget
 
 gfx::NativeViewAccessible
     RenderWidgetHostViewBase::AccessibilityGetNativeViewAccessible() {
-  return nullptr;
+  return gfx::NativeViewAccessible();
 }
 
 gfx::NativeViewAccessible
 RenderWidgetHostViewBase::AccessibilityGetNativeViewAccessibleForWindow() {
-  return nullptr;
+  return gfx::NativeViewAccessible();
 }
 
 bool RenderWidgetHostViewBase::ShouldInitiateStylusWriting() {

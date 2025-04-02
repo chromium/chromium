@@ -12,7 +12,9 @@
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
+#include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,7 +22,7 @@ namespace autofill {
 
 namespace {
 
-enum DialogEnum { BnplTos };
+enum DialogEnum { BnplTos, SelectBnplIssuer };
 
 struct DialogTestData {
   std::string name;
@@ -46,14 +48,21 @@ class ChromePaymentsAutofillClientBrowserTest
 
   void ShowUi(const std::string& name) override {
     switch (GetParam().dialog) {
-      case DialogEnum::BnplTos:
+      case DialogEnum::BnplTos: {
         BnplTosModel model;
-        model.issuer = BnplIssuer(
-            /*instrument_id=*/std::nullopt, std::string(kBnplAffirmIssuerId),
-            std::vector<BnplIssuer::EligiblePriceRange>());
+        model.issuer = test::GetTestUnlinkedBnplIssuer();
         client()->ShowBnplTos(std::move(model), base::DoNothing(),
                               base::DoNothing());
         break;
+      }
+      case DialogEnum::SelectBnplIssuer: {
+        client()->ShowSelectBnplIssuerDialog(
+            {payments::BnplIssuerContext(
+                test::GetTestUnlinkedBnplIssuer(),
+                payments::BnplIssuerEligibilityForPage::kIsEligible)},
+            /*app_locale=*/"en-US", base::DoNothing(), base::DoNothing());
+        break;
+      }
     }
   }
 
@@ -67,11 +76,13 @@ class ChromePaymentsAutofillClientBrowserTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         ChromePaymentsAutofillClientBrowserTest,
-                         testing::Values(DialogTestData{"BNPL_ToS",
-                                                        DialogEnum::BnplTos}),
-                         GetTestName);
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ChromePaymentsAutofillClientBrowserTest,
+    testing::Values(DialogTestData{"BNPL_ToS", DialogEnum::BnplTos},
+                    DialogTestData{"Select_BNPL_Issuer",
+                                   DialogEnum::SelectBnplIssuer}),
+    GetTestName);
 
 // Ensures that the dialog is shown and it won't crash the browser.
 IN_PROC_BROWSER_TEST_P(ChromePaymentsAutofillClientBrowserTest,

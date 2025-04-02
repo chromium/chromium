@@ -14,12 +14,6 @@ BASE_FEATURE(kSendTabToSelfEnableNotificationTimeOut,
              "SendTabToSelfEnableNotificationTimeOut",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-BASE_FEATURE(kSendTabToSelfV2,
-             "SendTabToSelfV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
 BASE_FEATURE(kSendTabToSelfIOSPushNotifications,
              "SendTabToSelfIOSPushNotifications",
 #if BUILDFLAG(IS_IOS)

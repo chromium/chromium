@@ -2979,6 +2979,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3045447014237878114">Este sitio descargó varios archivos automáticamente</translation>
 <translation id="3046178388369461825">Hay muy poco espacio en el disco de Linux</translation>
 <translation id="304644035656848980">Vista previa de tu micrófono</translation>
+<translation id="3046892784550338476">Versión <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Página web, completa</translation>
 <translation id="304747341537320566">Motores de voz</translation>
 <translation id="3047678109605649715">No hay voces en <ph name="LANGUAGE" /> en tu dispositivo. Libera espacio en el dispositivo y vuelve a intentarlo.</translation>
@@ -3071,6 +3072,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3122883569442693641">Más detalles</translation>
 <translation id="3124111068741548686">A cargo del USUARIO</translation>
 <translation id="3124332159330678621">Personaliza Chrome para darle un nuevo aspecto a tu navegador</translation>
+<translation id="3125816458150005808">Puedes desfijarla y abrirla desde el menú</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Para evitar problemas de carga y rendimiento, usa un adaptador de alimentación compatible de Dell o con conexión USB Type-C.</translation>
 <translation id="3127862849166875294">Cambiar el tamaño de la partición del disco para Crostini</translation>
@@ -5321,6 +5323,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4723140812774948886">Intercambiar con el siguiente elemento</translation>
 <translation id="4724450788351008910">La afiliación ha cambiado</translation>
 <translation id="4725511304875193254">Corgi</translation>
+<translation id="4725762702191453794">La Búsqueda de pestañas ahora está fijada en la barra de herramientas</translation>
 <translation id="4726710355753484204">Usa Ctrl + Alt + Aumentar brillo para acercarte.
 Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4726710629007580002">Se reciberon advertencias al intentar instalar esta extensión:</translation>

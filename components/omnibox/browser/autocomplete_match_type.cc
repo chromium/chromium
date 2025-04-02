@@ -109,15 +109,18 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
                                          int* label_prefix_length) {
   // Types with a message ID of zero get |text| returned as-is.
   static constexpr auto message_ids = std::to_array<int>({
-      0,                                      // URL_WHAT_YOU_TYPED
-      IDS_ACC_AUTOCOMPLETE_HISTORY,           // HISTORY_URL
-      IDS_ACC_AUTOCOMPLETE_HISTORY,           // HISTORY_TITLE
-      IDS_ACC_AUTOCOMPLETE_HISTORY,           // HISTORY_BODY
-      0,                                      // HISTORY_KEYWORD (deprecated)
-      0,                                      // NAVSUGGEST
-      IDS_ACC_AUTOCOMPLETE_SEARCH,            // SEARCH_WHAT_YOU_TYPED
-      IDS_ACC_AUTOCOMPLETE_SEARCH_HISTORY,    // SEARCH_HISTORY
-      IDS_ACC_AUTOCOMPLETE_SUGGESTED_SEARCH,  // SEARCH_SUGGEST
+      0,                             // URL_WHAT_YOU_TYPED
+      IDS_ACC_AUTOCOMPLETE_HISTORY,  // HISTORY_URL
+      IDS_ACC_AUTOCOMPLETE_HISTORY,  // HISTORY_TITLE
+      IDS_ACC_AUTOCOMPLETE_HISTORY,  // HISTORY_BODY
+
+      // HISTORY_KEYWORD is a custom search engine with no %s in its string - so
+      // more or less a regular URL.
+      0,                                             // HISTORY_KEYWORD
+      0,                                             // NAVSUGGEST
+      IDS_ACC_AUTOCOMPLETE_SEARCH,                   // SEARCH_WHAT_YOU_TYPED
+      IDS_ACC_AUTOCOMPLETE_SEARCH_HISTORY,           // SEARCH_HISTORY
+      IDS_ACC_AUTOCOMPLETE_SUGGESTED_SEARCH,         // SEARCH_SUGGEST
       IDS_ACC_AUTOCOMPLETE_SUGGESTED_SEARCH_ENTITY,  // SEARCH_SUGGEST_ENTITY
       IDS_ACC_AUTOCOMPLETE_SUGGESTED_SEARCH,         // SEARCH_SUGGEST_TAIL
 

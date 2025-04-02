@@ -962,10 +962,11 @@ void ResourceBundle::InitSharedInstance(Delegate* delegate) {
   g_shared_instance_ = new ResourceBundle(delegate);
   std::vector<ResourceScaleFactor> supported_scale_factors;
 #if BUILDFLAG(IS_IOS)
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
-  if (display.device_scale_factor() > 2.0) {
+  float internal_display_device_scale_factor =
+      display::GetInternalDisplayDeviceScaleFactor();
+  if (internal_display_device_scale_factor > 2.0) {
     supported_scale_factors.push_back(k300Percent);
-  } else if (display.device_scale_factor() > 1.0) {
+  } else if (internal_display_device_scale_factor > 1.0) {
     supported_scale_factors.push_back(k200Percent);
   } else {
     supported_scale_factors.push_back(k100Percent);

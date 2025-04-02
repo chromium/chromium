@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/test/base/web_ui_mocha_browser_test.h"
+
 #include <string>
 
 #include "base/command_line.h"
@@ -11,9 +13,19 @@
 #include "base/logging.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/test_switches.h"
-#include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+// For unit testing private methods of WebUIMochaBrowserTest.
+using WebUIMochaUnitTest = WebUIMochaBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(WebUIMochaUnitTest, CanonicalizeTestName) {
+  std::string name("a b!c");
+  webui::CanonicalizeTestName(&name);
+  ASSERT_THAT(name, testing::MatchesRegex("[A-Za-z0-9_]{5}"));
+}
 
 // Test that code coverage metrics are reported from WebUIMochaBrowserTest
 // subclasses.
@@ -54,6 +66,9 @@ class WebUIMochaSuccessFailureTest : public WebUIMochaBrowserTest {
   WebUIMochaSuccessFailureTest() {
     EXPECT_FALSE(s_test_);
     s_test_ = this;
+    // Some of these tests contain intentionally failing JS tests.
+    // These should not be reported individually.
+    DisableSubTestResultReporting();
   }
 
  protected:
@@ -111,6 +126,9 @@ IN_PROC_BROWSER_TEST_F(WebUIMochaSuccessFailureTest, TestFileErrorFails) {
 
 // Test that when the underlying Mocha test fails, the C++ test also fails.
 IN_PROC_BROWSER_TEST_F(WebUIMochaSuccessFailureTest, TestFailureFails) {
+  // This JS test is expected to fail, so it should not be reported.
+  DisableSubTestResultReporting();
+
   EXPECT_FATAL_FAILURE(
       RunTestStatic("js/test_suite_self_test.js",
                     "mocha.fgrep('TestSuiteSelfTest Failure').run();"),

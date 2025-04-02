@@ -1139,6 +1139,16 @@ AutofillPrivateGetAllAttributeTypesForEntityTypeNameFunction::Run() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateGetAutofillAiOptInStatusFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateGetAutofillAiOptInStatusFunction::Run() {
+  return RespondNow(ArgumentList(
+      api::autofill_private::GetAutofillAiOptInStatus::Results::Create(
+          autofill::GetAutofillAiOptInStatus(*autofill_client()))));
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateSetAutofillAiOptInStatusFunction
 
 ExtensionFunction::ResponseAction

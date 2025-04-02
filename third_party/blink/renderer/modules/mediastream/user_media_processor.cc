@@ -429,7 +429,7 @@ class UserMediaProcessor::RequestInfo final
 
     // TODO(crbug.com/1313021): Refactor descriptors to make the assumption of
     // at most one audio and video track explicit.
-    descriptors_ = MakeGarbageCollected<MediaStreamDescriptorVector>();
+    descriptors_ = MakeGarbageCollected<GCedMediaStreamDescriptorVector>();
     for (const MediaStreamComponents* tracks : streams_components) {
       descriptors_->push_back(MakeGarbageCollected<MediaStreamDescriptor>(
           label,
@@ -453,7 +453,7 @@ class UserMediaProcessor::RequestInfo final
     return video_formats_map_.size() == count_video_devices();
   }
 
-  MediaStreamDescriptorVector* descriptors() {
+  GCedMediaStreamDescriptorVector* descriptors() {
     DCHECK(descriptors_);
     return descriptors_.Get();
   }
@@ -513,7 +513,7 @@ class UserMediaProcessor::RequestInfo final
   bool is_audio_content_capture_ = false;
   blink::VideoCaptureSettings video_capture_settings_;
   bool is_video_content_capture_ = false;
-  Member<MediaStreamDescriptorVector> descriptors_;
+  Member<GCedMediaStreamDescriptorVector> descriptors_;
   StreamControls stream_controls_;
   ResourcesReady ready_callback_;
   MediaStreamRequestResult request_result_ = MediaStreamRequestResult::OK;
@@ -2040,7 +2040,7 @@ void UserMediaProcessor::OnCreateNativeTracksCompleted(
 }
 
 void UserMediaProcessor::GetUserMediaRequestSucceeded(
-    MediaStreamDescriptorVector* descriptors,
+    GCedMediaStreamDescriptorVector* descriptors,
     UserMediaRequest* user_media_request) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(IsCurrentRequestInfo(user_media_request));
@@ -2062,7 +2062,7 @@ void UserMediaProcessor::GetUserMediaRequestSucceeded(
 
 void UserMediaProcessor::DelayedGetUserMediaRequestSucceeded(
     int32_t request_id,
-    MediaStreamDescriptorVector* components,
+    GCedMediaStreamDescriptorVector* components,
     UserMediaRequest* user_media_request) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   SendLogMessage(base::StringPrintf(

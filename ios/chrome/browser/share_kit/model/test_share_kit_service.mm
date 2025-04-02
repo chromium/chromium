@@ -74,9 +74,10 @@ data_sharing_pb::GroupMember CreateGroupMember(NSString* gaia_id,
 
 // Creates group data for a group containing two users.
 // The first user has the given `member_role`.
-GroupData CreateGroupData(MemberRole member_role, NSString* collaboration_id) {
+GroupData CreateGroupData(MemberRole member_role,
+                          const std::string& collaboration_id) {
   data_sharing_pb::GroupData group_data;
-  group_data.set_group_id(base::SysNSStringToUTF8(collaboration_id));
+  group_data.set_group_id(collaboration_id);
   group_data.set_display_name("Display Name");
   *group_data.add_members() =
       CreateGroupMember([FakeSystemIdentity fakeIdentity1].gaiaID, member_role);
@@ -127,7 +128,6 @@ NSString* TestShareKitService::ShareTabGroup(
   if (!tab_group) {
     return nil;
   }
-  is_owner_ = true;
   tab_groups::LocalTabGroupID tab_group_id = tab_group->tab_group_id();
 
   FakeShareKitFlowViewController* viewController =
@@ -136,9 +136,9 @@ NSString* TestShareKitService::ShareTabGroup(
   viewController.completionBlock = config.completion;
 
   // Set the shared group completion block.
-  auto shared_group_completion_block = base::CallbackToBlock(
-      base::BindOnce(&TestShareKitService::SetTabGroupCollabIdFromGroupId,
-                     weak_pointer_factory_.GetWeakPtr(), tab_group_id));
+  auto shared_group_completion_block = base::CallbackToBlock(base::BindOnce(
+      &TestShareKitService::SetTabGroupCollabIdFromGroupId,
+      weak_pointer_factory_.GetWeakPtr(), /*owner=*/true, tab_group_id));
   viewController.sharedGroupCompletionBlock = shared_group_completion_block;
 
   UINavigationController* navController = [[UINavigationController alloc]
@@ -165,7 +165,6 @@ NSString* TestShareKitService::ManageTabGroup(
 }
 
 NSString* TestShareKitService::JoinTabGroup(ShareKitJoinConfiguration* config) {
-  is_owner_ = false;
   FakeShareKitFlowViewController* viewController =
       [[FakeShareKitFlowViewController alloc]
           initWithType:FakeShareKitFlowType::kJoin];
@@ -173,7 +172,7 @@ NSString* TestShareKitService::JoinTabGroup(ShareKitJoinConfiguration* config) {
 
   // Set the joined group completion block.
   auto joined_group_completion_block = ^(NSString* collab_id) {
-    CreateSharedTabGroupInFakeServer(collab_id);
+    CreateSharedTabGroupInFakeServer(/*owner=*/false, collab_id);
   };
 
   viewController.sharedGroupCompletionBlock = joined_group_completion_block;
@@ -192,27 +191,32 @@ UIViewController* TestShareKitService::FacePile(
 }
 
 void TestShareKitService::ReadGroups(ShareKitReadGroupsConfiguration* config) {
-  MemberRole member_role = is_owner_ ? data_sharing_pb::MEMBER_ROLE_OWNER
-                                     : data_sharing_pb::MEMBER_ROLE_MEMBER;
   auto callback = config.callback;
 
   data_sharing_pb::ReadGroupsResult read_result;
   for (ShareKitReadGroupParamConfiguration* inner_config in config
            .groupsParam) {
-    *read_result.add_group_data() =
-        CreateGroupData(member_role, inner_config.collabID);
+    MemberRole member_role = data_sharing_pb::MEMBER_ROLE_UNSPECIFIED;
+    std::string collab_id = base::SysNSStringToUTF8(inner_config.collabID);
+    if (group_to_membership_.contains(collab_id)) {
+      member_role = group_to_membership_[collab_id];
+    }
+    *read_result.add_group_data() = CreateGroupData(member_role, collab_id);
   }
   callback(read_result);
 }
 
 void TestShareKitService::ReadGroupWithToken(
     ShareKitReadGroupWithTokenConfiguration* config) {
-  MemberRole member_role = is_owner_ ? data_sharing_pb::MEMBER_ROLE_OWNER
-                                     : data_sharing_pb::MEMBER_ROLE_MEMBER;
+  MemberRole member_role = data_sharing_pb::MEMBER_ROLE_UNSPECIFIED;
+  std::string collab_id = base::SysNSStringToUTF8(config.collabID);
+  if (group_to_membership_.contains(collab_id)) {
+    member_role = group_to_membership_[collab_id];
+  }
   auto callback = config.callback;
 
   data_sharing_pb::ReadGroupsResult read_result;
-  *read_result.add_group_data() = CreateGroupData(member_role, config.collabID);
+  *read_result.add_group_data() = CreateGroupData(member_role, collab_id);
   callback(read_result);
 }
 
@@ -270,46 +274,53 @@ void TestShareKitService::Shutdown() {
 }
 
 void TestShareKitService::SetTabGroupCollabIdFromGroupId(
+    bool owner,
     tab_groups::LocalTabGroupID tab_group_id,
     NSString* collab_id) {
-  if (tab_group_sync_service_ && collab_id) {
-    syncer::CollaborationId collaboration_id(
-        base::SysNSStringToUTF8(collab_id));
-    // It is necessary to make the collab available on both the sync server and
-    // the finder.
-    chrome_test_util::AddCollaboration(collaboration_id.value());
-    tab_group_sync_service_->GetCollaborationFinderForTesting()
-        ->SetCollaborationAvailableForTesting(collaboration_id);
+  if (!tab_group_sync_service_ || !collab_id) {
+    return;
+  }
 
-    std::optional<tab_groups::SavedTabGroup> saved_group =
-        tab_group_sync_service_->GetGroup(tab_group_id);
-    if (saved_group && !saved_group->is_shared_tab_group()) {
-      chrome_test_util::AddCollaborationGroupToFakeServer(
-          collaboration_id.value());
-      chrome_test_util::TriggerSyncCycle(syncer::COLLABORATION_GROUP);
-      // TODO(crbug.com/382557489): implement the callback.
-      tab_group_sync_service_->MakeTabGroupShared(
-          tab_group_id, collaboration_id.value(),
-          tab_groups::TabGroupSyncService::TabGroupSharingCallback());
-    }
+  group_to_membership_[base::SysNSStringToUTF8(collab_id)] =
+      owner ? data_sharing_pb::MEMBER_ROLE_OWNER
+            : data_sharing_pb::MEMBER_ROLE_MEMBER;
+
+  syncer::CollaborationId collaboration_id(base::SysNSStringToUTF8(collab_id));
+  // It is necessary to make the collab available on both the sync server and
+  // the finder.
+  chrome_test_util::AddCollaboration(collaboration_id.value());
+  tab_group_sync_service_->GetCollaborationFinderForTesting()
+      ->SetCollaborationAvailableForTesting(collaboration_id);
+
+  std::optional<tab_groups::SavedTabGroup> saved_group =
+      tab_group_sync_service_->GetGroup(tab_group_id);
+  if (saved_group && !saved_group->is_shared_tab_group()) {
+    chrome_test_util::AddCollaborationGroupToFakeServer(
+        collaboration_id.value());
+    chrome_test_util::TriggerSyncCycle(syncer::COLLABORATION_GROUP);
+    // TODO(crbug.com/382557489): implement the callback.
+    tab_group_sync_service_->MakeTabGroupShared(
+        tab_group_id, collaboration_id.value(),
+        tab_groups::TabGroupSyncService::TabGroupSharingCallback());
   }
 }
 
 void TestShareKitService::SetTabGroupCollabIdFromGroupGuid(
+    bool owner,
     base::Uuid group_guid,
     NSString* collab_id) {
   std::optional<tab_groups::SavedTabGroup> saved_group =
       tab_group_sync_service_->GetGroup(group_guid);
   if (saved_group && !saved_group->is_shared_tab_group()) {
     // Make the group shared.
-    SetTabGroupCollabIdFromGroupId(saved_group->local_group_id().value(),
+    SetTabGroupCollabIdFromGroupId(owner, saved_group->local_group_id().value(),
                                    collab_id);
   }
 }
 
 void TestShareKitService::CreateSharedTabGroupInFakeServer(
+    bool owner,
     NSString* collab_id) {
-  CHECK(!is_owner_);
   if (!tab_group_sync_service_) {
     return;
   }
@@ -328,6 +339,7 @@ void TestShareKitService::CreateSharedTabGroupInFakeServer(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&TestShareKitService::SetTabGroupCollabIdFromGroupGuid,
-                     weak_pointer_factory_.GetWeakPtr(), group_guid, collab_id),
+                     weak_pointer_factory_.GetWeakPtr(), owner, group_guid,
+                     collab_id),
       base::Milliseconds(1000));
 }

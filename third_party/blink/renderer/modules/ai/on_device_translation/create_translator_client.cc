@@ -113,6 +113,11 @@ void CreateTranslatorClient::OnResult(
     return;
   }
   if (result->is_translator()) {
+    if (monitor_) {
+      // Ensure that a download completion event is sent.
+      monitor_->OnDownloadProgressUpdate(kNormalizedDownloadProgressMax,
+                                         kNormalizedDownloadProgressMax);
+    }
     GetResolver()->Resolve(MakeGarbageCollected<Translator>(
         std::move(result->get_translator()), task_runner_,
         std::move(source_language_), std::move(target_language_)));

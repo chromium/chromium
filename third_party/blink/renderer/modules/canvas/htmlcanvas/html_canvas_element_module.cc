@@ -19,9 +19,7 @@ V8RenderingContext* HTMLCanvasElementModule::getContext(
     const String& context_id,
     const CanvasContextCreationAttributesModule* attributes,
     ExceptionState& exception_state) {
-  if (canvas.IsOffscreenCanvasRegistered() && !canvas.LowLatencyEnabled()) {
-    // The existence of canvas surfaceLayerBridge indicates that
-    // HTMLCanvasElement.transferControlToOffscreen() has been called.
+  if (canvas.IsOffscreenCanvasRegistered()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Cannot get context from a canvas that "
                                       "has transferred its control to "

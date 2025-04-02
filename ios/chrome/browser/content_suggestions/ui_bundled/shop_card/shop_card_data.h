@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import <optional>
+#import <string>
 
 class GURL;
 
@@ -53,6 +54,9 @@ class GURL;
 
 // Product image.
 @property(nonatomic, strong) NSData* productImage;
+
+// URL for product image.
+@property(nonatomic, assign) std::optional<std::string> productImageURL;
 
 @end
 

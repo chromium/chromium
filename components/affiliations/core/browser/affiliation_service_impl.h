@@ -101,10 +101,12 @@ class AffiliationServiceImpl : public AffiliationService,
     url_loader_factory_ = std::move(url_loader_factory);
   }
 
+#if defined(UNIT_TEST)
   void SetFetcherFactoryForTesting(
       std::unique_ptr<AffiliationFetcherFactory> fetcher_factory) {
-    fetcher_factory_ = std::move(fetcher_factory);
+    fetcher_manager_->SetFetcherFactoryForTesting(std::move(fetcher_factory));
   }
+#endif
 
   void GetAffiliationsAndBranding(
       const FacetURI& facet_uri,
@@ -149,11 +151,12 @@ class AffiliationServiceImpl : public AffiliationService,
       std::unique_ptr<AffiliationFetcherDelegate::Result> result) override;
   void OnFetchFailed(AffiliationFetcherInterface* fetcher) override;
   void OnMalformedResponse(AffiliationFetcherInterface* fetcher) override;
+  void OnFetchFinished(const FetchInfo& fetch_info,
+                       AffiliationFetcherInterface::FetchResult fetch_result);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::map<FacetURI, ChangePasswordUrlMatch> change_password_urls_;
-  std::vector<FetchInfo> pending_fetches_;
-  std::unique_ptr<AffiliationFetcherFactory> fetcher_factory_;
+  std::unique_ptr<AffiliationFetcherManager> fetcher_manager_;
   AffiliationPrefetcher prefetcher_{this};
 
   // The backend, owned by this AffiliationService instance, but

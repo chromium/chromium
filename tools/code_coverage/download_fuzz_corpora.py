@@ -21,7 +21,8 @@ ALL_CORPORA_TYPES = [
 CORPORA_BUCKET_BASE_URL_BY_TYPE = {
     LIBFUZZER_CORPORA_TYPE:
     'gs://clusterfuzz-libfuzzer-backup/corpus/libfuzzer/',
-    CENTIPEDE_CORPORA_TYPE: 'gs://clusterfuzz-centipede-backup/',
+    CENTIPEDE_CORPORA_TYPE:
+    'gs://clusterfuzz-centipede-backup/corpus/centipede/',
     FUZZILLI_CORPORA_TYPE: 'gs://autozilli/',
 }
 

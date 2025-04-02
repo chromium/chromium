@@ -668,20 +668,21 @@
     // An action is already in progress, ignore user's request.
     return;
   }
-  signin_metrics::ProfileSignout signout_source_metric = signin_metrics::
-      ProfileSignout::kUserClickedSignoutFromClearBrowsingDataPage;
+  constexpr signin_metrics::ProfileSignout signout_source_metric =
+      signin_metrics::ProfileSignout::
+          kUserClickedSignoutFromClearBrowsingDataPage;
+  __weak ClearBrowsingDataTableViewController* weakSelf = self;
   _signoutCoordinator = [[SignoutActionSheetCoordinator alloc]
       initWithBaseViewController:self
                          browser:browser
                             rect:itemView.frame
                             view:itemView
         forceSnackbarOverToolbar:NO
-                      withSource:signout_source_metric];
+                      withSource:signout_source_metric
+                      completion:^(BOOL success) {
+                        [weakSelf handleAuthenticationOperationDidFinish];
+                      }];
   _signoutCoordinator.showUnavailableFeatureDialogHeader = YES;
-  __weak ClearBrowsingDataTableViewController* weakSelf = self;
-  _signoutCoordinator.signoutCompletion = ^(BOOL success) {
-    [weakSelf handleAuthenticationOperationDidFinish];
-  };
   _signoutCoordinator.delegate = self;
   [_signoutCoordinator start];
 }

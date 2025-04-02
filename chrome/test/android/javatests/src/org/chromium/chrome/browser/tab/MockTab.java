@@ -23,6 +23,7 @@ public class MockTab extends TabImpl {
     private boolean mIsInitialized;
     private boolean mIsDestroyed;
     private boolean mIsBeingRestored;
+    private boolean mIsNativePage;
 
     private Boolean mCanGoBack;
     private Boolean mCanGoForward;
@@ -122,6 +123,30 @@ public class MockTab extends TabImpl {
 
     public void setIsCustomTab(boolean isCustomTab) {
         mIsCustomTab = isCustomTab;
+    }
+
+    public void setIsNativePage(boolean isNativePage) {
+        mIsNativePage = isNativePage;
+    }
+
+    @Override
+    public boolean isNativePage() {
+        return mIsNativePage;
+    }
+
+    @Override
+    public void onLoadStarted(boolean toDifferentDocument) {
+        super.onLoadStarted(toDifferentDocument);
+    }
+
+    @Override
+    public void onLoadStopped() {
+        super.onLoadStopped();
+    }
+
+    @Override
+    public void handleTabCrash() {
+        super.handleTabCrash();
     }
 
     @Override

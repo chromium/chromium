@@ -1136,7 +1136,7 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
     allowed_types.Put(syncer::SAVED_TAB_GROUP);
   }
   if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
-    allowed_types.Put(syncer::AUTOFILL_LOYALTY_CARD);
+    allowed_types.Put(syncer::AUTOFILL_VALUABLE);
   }
   if (base::FeatureList::IsEnabled(syncer::kSyncSharedTabGroupAccountData)) {
     allowed_types.Put(syncer::SHARED_TAB_GROUP_ACCOUNT_DATA);

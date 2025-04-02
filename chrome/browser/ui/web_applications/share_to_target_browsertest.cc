@@ -84,6 +84,9 @@ class ShareToTargetBrowserTest : public WebAppBrowserTestBase,
   void InstallWebAppFromManifest(const GURL& app_url) {
     DCHECK(app_id_.empty());
     app_id_ = web_app::InstallWebAppFromManifest(browser(), app_url);
+    // Enabling link capturing to ensure it doesn't interfere.
+    EXPECT_EQ(apps::test::EnableLinkCapturingByUser(profile(), app_id_),
+              base::ok());
   }
 
   const webapps::AppId& app_id() const { return app_id_; }
@@ -182,8 +185,11 @@ IN_PROC_BROWSER_TEST_P(ShareToTargetBrowserTest, ShareToPartialWild) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     ShareToTargetBrowserTest,
+    // Ensure share target still works with navigation capturing v2.
     testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
-                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff),
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::
+                        kV2DefaultOffCaptureExistingFrames),
     apps::test::LinkCapturingVersionToString);
 
 }  // namespace web_app

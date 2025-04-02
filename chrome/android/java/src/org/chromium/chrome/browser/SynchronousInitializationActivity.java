@@ -6,7 +6,6 @@ package org.chromium.chrome.browser;
 
 import android.os.Bundle;
 
-import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
@@ -65,18 +64,10 @@ public abstract class SynchronousInitializationActivity extends ChromeBaseAppCom
                         mProfileSupplier.set(profile);
                     });
         } else {
-            Profile profile = ProfileManager.getLastUsedRegularProfile();
-            boolean isIncognito =
-                    IntentUtils.safeGetBooleanExtra(
-                            getIntent(), IntentHandler.EXTRA_INCOGNITO_MODE, false);
-            if (isIncognito && !profile.hasPrimaryOtrProfile()) {
-                finish();
-                return;
-            }
-            mProfileSupplier.set(
-                    isIncognito
-                            ? profile.getPrimaryOtrProfile(/* createIfNeeded= */ false)
-                            : profile);
+            // TODO(crbug.com/40254448): Remove this fallback path once all activities are started
+            // with a Profile reference passed in. Instead of using the last used profile, these
+            // should call finish() instead.
+            mProfileSupplier.set(ProfileManager.getLastUsedRegularProfile());
         }
     }
 

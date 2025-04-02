@@ -674,8 +674,14 @@ int wcsicomp(const wchar *s1,const wchar *s2)
     // Convert lowercase to uppercase, keep numeric and not alphanumeric as is.
     wchar c1 = l1 ? *s1-'a'+'A' : *s1;
     wchar c2 = l2 ? *s2-'a'+'A' : *s2;
+
+    // If characters mistmatch, to return a proper value we must compare
+    // already converted, case insensitive characters instead of original ones.
+    // So we place a.txt before B.txt and can perform the correct case
+    // insensitive binary search in different string lists.
     if (c1 != c2)
-      return *s1 < *s2 ? -1 : 1;
+      return c1 < c2 ? -1 : 1;
+
     if (*s1==0)
       break;
     s1++;
@@ -691,8 +697,13 @@ int wcsicomp(const wchar *s1,const wchar *s2)
   {
     wchar u1 = towupper(*s1);
     wchar u2 = towupper(*s2);
+
+    // If characters mistmatch, to return a proper value we must compare
+    // already converted, case insensitive characters instead of original ones.
+    // So we place a.txt before B.txt and can perform the correct case
+    // insensitive binary search in different string lists.
     if (u1 != u2)
-      return *s1 < *s2 ? -1 : 1;
+      return u1 < u2 ? -1 : 1;
     if (*s1==0)
       break;
     s1++;

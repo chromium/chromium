@@ -6,8 +6,10 @@
 
 #include <optional>
 
+#include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/byte_conversions.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
@@ -20,7 +22,7 @@
 namespace {
 
 // Version number of the database.
-const int kCurrentVersionNumber = 2;
+const int kCurrentVersionNumber = 3;
 
 // clang-format off
 static constexpr char kCreateProbabilisticRevealTokensTableSql[] =
@@ -28,10 +30,10 @@ static constexpr char kCreateProbabilisticRevealTokensTableSql[] =
       "version INTEGER NOT NULL,"
       "u BLOB NOT NULL,"
       "e BLOB NOT NULL,"
-      "epoch_id BLOB NOT NULL,"
+      "epoch_id INTEGER NOT NULL,"
       "expiration INTEGER NOT NULL,"
       "num_tokens_with_signal INTEGER NOT NULL,"
-      "public_key BLOB NOT NULL)";
+      "public_key TEXT NOT NULL)";
 
 static constexpr char kInsertProbabilisticRevealTokenSql[] =
   "INSERT INTO tokens("
@@ -182,13 +184,16 @@ void IpProtectionProbabilisticRevealTokenDataStorage::StoreTokenOutcome(
           << "InsertProbabilisticRevealToken SQL statement did not compile.";
       return;
     }
+    CHECK_EQ(outcome.epoch_id.size(), 8u);
+
     statement.BindInt64(0, token.version);
     statement.BindBlob(1, token.u);
     statement.BindBlob(2, token.e);
-    statement.BindBlob(3, token.epoch_id);
+    statement.BindInt64(3, base::U64FromBigEndian(
+                               base::as_byte_span(outcome.epoch_id).first<8u>()));
     statement.BindInt64(4, outcome.expiration_time_seconds);
     statement.BindInt64(5, outcome.num_tokens_with_signal);
-    statement.BindBlob(6, outcome.public_key);
+    statement.BindString(6, base::Base64Encode(outcome.public_key));
 
     if (!statement.Run()) {
       DLOG(ERROR) << "Could not insert Probabilistic Reveal Token: "

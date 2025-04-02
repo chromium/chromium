@@ -199,6 +199,8 @@ public final class AwBrowserProcess {
      * Starts the chromium browser process running within this process. Creates threads and performs
      * other per-app resource allocations; must not be called from zygote. Note: it is up to the
      * caller to ensure this is only called once.
+     *
+     * <p>Note: To start the browser in tests, use startForTesting.
      */
     public static void start() {
         ThreadUtils.assertOnUiThread();
@@ -255,6 +257,16 @@ public final class AwBrowserProcess {
                             "Android.PlayServices.Version",
                             PlatformServiceBridge.getInstance().getGmsVersionCode());
                 });
+    }
+
+    /**
+     * onStartupComplete performs the final steps of Chromium startup, e.g enabling the task
+     * runners. It's called when WebViewChromiumAwInit startup tasks are done. Tests that start the
+     * browser process directly should use this.
+     */
+    public static void startForTesting() {
+        start();
+        onStartupComplete();
     }
 
     public static void setWebViewPackageName(String webViewPackageName) {
@@ -637,6 +649,12 @@ public final class AwBrowserProcess {
         }
     }
 
+    // Notify the native code that the embedder is done with startup. In WebView's case, this is
+    // when we are done running the startup tasks.
+    public static void onStartupComplete() {
+        AwBrowserProcessJni.get().onStartupComplete();
+    }
+
     private static void configureDisplayAndroidManager() {
         DisplayAndroidManager.disableHdrSdrRatioCallback();
     }
@@ -649,5 +667,7 @@ public final class AwBrowserProcess {
         void setProcessNameCrashKey(@JniType("std::string") String processName);
 
         ComponentLoaderPolicyBridge[] getComponentLoaderPolicies();
+
+        void onStartupComplete();
     }
 }

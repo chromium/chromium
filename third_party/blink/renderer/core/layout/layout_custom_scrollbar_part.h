@@ -73,7 +73,7 @@ class CORE_EXPORT LayoutCustomScrollbarPart final : public LayoutReplaced {
   // Update the overridden size.
   void SetOverriddenSize(const PhysicalSize& size);
   // This should not be called.
-  LayoutPoint LocationInternal() const override;
+  DeprecatedLayoutPoint LocationInternal() const override;
   // Rerturn the overridden size set by SetOverriddenSize();
   PhysicalSize Size() const override;
 

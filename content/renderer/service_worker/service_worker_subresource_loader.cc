@@ -904,9 +904,7 @@ void ServiceWorkerSubresourceLoader::StartResponse(
     return;
   }
 
-  // We have a non-redirect response. Send the headers to the client.
-  CommitResponseHeaders(response_head_);
-
+  CHECK(url_loader_client_.is_bound());
   bool body_stream_is_valid =
       !body_as_stream.is_null() && body_as_stream->stream.is_valid();
 
@@ -921,7 +919,6 @@ void ServiceWorkerSubresourceLoader::StartResponse(
   // Handle a stream response body.
   if (body_stream_is_valid) {
     DCHECK(!response->blob);
-    DCHECK(url_loader_client_.is_bound());
     stream_waiter_ = std::make_unique<StreamWaiter>(
         this, std::move(body_as_stream->callback_receiver));
     data_pipe = std::move(body_as_stream->stream);
@@ -964,17 +961,6 @@ void ServiceWorkerSubresourceLoader::StartResponse(
   // entire resource completes when the main body is read.
   OnSideDataReadingComplete(std::move(data_pipe),
                             std::optional<mojo_base::BigBuffer>());
-}
-
-void ServiceWorkerSubresourceLoader::CommitResponseHeaders(
-    const network::mojom::URLResponseHeadPtr& response_head) {
-  DCHECK(url_loader_client_.is_bound());
-  TRACE_EVENT_WITH_FLOW2(
-      "ServiceWorker", "ServiceWorkerSubesourceLoader::CommitResponseHeaders",
-      this, TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-      "response_code", response_head->headers->response_code(), "status_text",
-      response_head->headers->GetStatusText());
-  TransitionToStatus(Status::kSentHeader);
 }
 
 void ServiceWorkerSubresourceLoader::CommitResponseBody(
@@ -1479,11 +1465,8 @@ void ServiceWorkerSubresourceLoader::TransitionToStatus(Status new_status) {
     case Status::kSentRedirect:
       DCHECK_EQ(status_, Status::kStarted);
       break;
-    case Status::kSentHeader:
-      DCHECK_EQ(status_, Status::kStarted);
-      break;
     case Status::kSentBody:
-      DCHECK_EQ(status_, Status::kSentHeader);
+      DCHECK_EQ(status_, Status::kStarted);
       break;
     case Status::kCompleted:
       DCHECK(
@@ -1491,8 +1474,6 @@ void ServiceWorkerSubresourceLoader::TransitionToStatus(Status new_status) {
           status_ == Status::kNotStarted ||
           // Network fallback after interception.
           status_ == Status::kStarted ||
-          // Pipe creation failure for empty response.
-          status_ == Status::kSentHeader ||
           // Success case or error while sending the response's body.
           status_ == Status::kSentBody);
       break;

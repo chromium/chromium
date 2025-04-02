@@ -130,6 +130,15 @@ TEST_P(BoundSessionParamsStorageTest, SaveAndRead) {
               testing::Pointwise(base::test::EqualsProto(), {params}));
 }
 
+TEST_P(BoundSessionParamsStorageTest, SaveAndReadWithWsbeta) {
+  bound_session_credentials::BoundSessionParams params =
+      CreateValidBoundSessionParams();
+  params.set_is_wsbeta(true);
+  ASSERT_TRUE(storage().SaveParams(params));
+  EXPECT_THAT(storage().ReadAllParamsAndCleanStorageIfNecessary(),
+              testing::Pointwise(base::test::EqualsProto(), {params}));
+}
+
 TEST_P(BoundSessionParamsStorageTest, SaveInvalidParams) {
   EXPECT_FALSE(storage().SaveParams(CreateInvalidBoundSessionParams()));
   EXPECT_THAT(storage().ReadAllParamsAndCleanStorageIfNecessary(),

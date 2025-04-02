@@ -213,6 +213,6 @@ public class OptionalBrowsingModeButtonControllerTest {
                 /* isEnabled= */ true,
                 buttonVariant,
                 /* tooltipTextResId= */ Resources.ID_NULL,
-                /* showHoverhighlight= */ false);
+                /* showBackgroundHighlight= */ false);
     }
 }

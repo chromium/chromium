@@ -101,8 +101,7 @@ const base::FeatureParam<EnableBoundSessionCredentialsDiceSupport>
 // Set to an empty string to remove the restriction.
 const base::FeatureParam<std::string>
     kEnableBoundSessionCredentialsExclusiveRegistrationPath{
-        &kEnableBoundSessionCredentials, "exclusive-registration-path",
-        "/RegisterSession"};
+        &kEnableBoundSessionCredentials, "exclusive-registration-path", ""};
 
 // Enables Chrome refresh tokens binding to a device.
 BASE_FEATURE(kEnableChromeRefreshTokenBinding,
@@ -117,6 +116,11 @@ bool IsChromeRefreshTokenBindingEnabled(const PrefService* profile_prefs) {
 
   return base::FeatureList::IsEnabled(kEnableChromeRefreshTokenBinding);
 }
+
+// Allows to disable the bound session credentials code in case of emergency.
+BASE_FEATURE(kBoundSessionCredentialsKillSwitch,
+             "BoundSessionCredentialsKillSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kEnablePreferencesAccountStorage,

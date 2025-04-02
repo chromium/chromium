@@ -41,32 +41,33 @@ namespace content {
 namespace {
 static PrefetchService* g_prefetch_service_for_testing = nullptr;
 
-std::tuple<GURL,
-           PrefetchType,
-           blink::mojom::Referrer,
-           network::mojom::NoVarySearchPtr,
-           SpeculationRulesTags>
-SpeculationCandidateToPrefetchUrlParams(
-    const blink::mojom::SpeculationCandidatePtr& candidate) {
-  PrefetchType prefetch_type(
-      PreloadingTriggerTypeFromSpeculationInjectionType(
-          candidate->injection_type),
-      /*use_prefetch_proxy=*/
-      candidate->requires_anonymous_client_ip_when_cross_origin,
-      candidate->eagerness);
-  const GURL& prefetch_url = candidate->url;
-
-  if (prefetch_type.IsProxyRequiredWhenCrossOrigin() &&
-      ShouldPrefetchBypassProxyForTestHost(prefetch_url.host())) {
-    // TODO(crbug.com/40942006): Remove SetProxyBypassedForTest, since it is the
-    // only mutator of the PrefetchType.
-    prefetch_type.SetProxyBypassedForTest();  // IN-TEST
+struct PrefetchUrlParams {
+  explicit PrefetchUrlParams(
+      const blink::mojom::SpeculationCandidatePtr& candidate)
+      : prefetch_url(candidate->url),
+        prefetch_type(PreloadingTriggerTypeFromSpeculationInjectionType(
+                          candidate->injection_type),
+                      /*use_prefetch_proxy=*/
+                      candidate->requires_anonymous_client_ip_when_cross_origin,
+                      candidate->eagerness),
+        referrer(*candidate->referrer),
+        no_vary_search_hint(candidate->no_vary_search_hint.Clone()),
+        tags(candidate->tags.empty() ? std::nullopt
+                                     : std::make_optional(candidate->tags)) {
+    if (prefetch_type.IsProxyRequiredWhenCrossOrigin() &&
+        ShouldPrefetchBypassProxyForTestHost(prefetch_url.host())) {
+      // TODO(crbug.com/40942006): Remove SetProxyBypassedForTest, since it is
+      // the only mutator of the PrefetchType.
+      prefetch_type.SetProxyBypassedForTest();  // IN-TEST
+    }
   }
 
-  return std::make_tuple(prefetch_url, prefetch_type, *candidate->referrer,
-                         candidate->no_vary_search_hint.Clone(),
-                         SpeculationRulesTags(candidate->tags));
-}
+  GURL prefetch_url;
+  PrefetchType prefetch_type;
+  blink::mojom::Referrer referrer;
+  network::mojom::NoVarySearchPtr no_vary_search_hint;
+  std::optional<SpeculationRulesTags> tags;
+};
 
 }  // namespace
 
@@ -115,9 +116,7 @@ void PrefetchDocumentManager::ProcessCandidates(
   // to handle all prefetches and the prefetch proxy code in chrome/browser/ is
   // removed, then we can move the logic of which speculation candidates this
   // code can handle up a layer to |SpeculationHostImpl|.
-  std::vector<std::tuple<GURL, PrefetchType, blink::mojom::Referrer,
-                         network::mojom::NoVarySearchPtr, SpeculationRulesTags>>
-      prefetches;
+  std::vector<PrefetchUrlParams> prefetches;
 
   // Evicts an existing prefetch if there is no longer a matching speculation
   // candidate for it. Note: A matching candidate is not necessarily the
@@ -162,8 +161,7 @@ void PrefetchDocumentManager::ProcessCandidates(
           return false;
         }
 
-        prefetches.push_back(
-            SpeculationCandidateToPrefetchUrlParams(candidate));
+        prefetches.emplace_back(candidate);
         return true;
       };
 
@@ -175,7 +173,7 @@ void PrefetchDocumentManager::ProcessCandidates(
     const PreloadingPredictor enacting_predictor =
         GetPredictorForPreloadingTriggerType(prefetch_type.trigger_type());
     PrefetchUrl(prefetch_url, prefetch_type, enacting_predictor, referrer,
-                SpeculationRulesTags(tags), no_vary_search_hint,
+                std::move(tags), no_vary_search_hint,
                 PreloadPipelineInfo::Create(
                     /*planned_max_preloading_type=*/PreloadingType::kPrefetch));
   }
@@ -192,10 +190,10 @@ bool PrefetchDocumentManager::MaybePrefetch(
     return false;
   }
 
-  auto [prefetch_url, prefetch_type, referrer, no_vary_search_hint, tags] =
-      SpeculationCandidateToPrefetchUrlParams(candidate);
-  PrefetchUrl(prefetch_url, prefetch_type, enacting_predictor, referrer,
-              std::move(tags), no_vary_search_hint,
+  PrefetchUrlParams params(candidate);
+  PrefetchUrl(params.prefetch_url, params.prefetch_type, enacting_predictor,
+              params.referrer, std::move(params.tags),
+              params.no_vary_search_hint,
               PreloadPipelineInfo::Create(
                   /*planned_max_preloading_type=*/PreloadingType::kPrefetch));
   return true;
@@ -205,11 +203,10 @@ void PrefetchDocumentManager::PrefetchAheadOfPrerender(
     scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     blink::mojom::SpeculationCandidatePtr candidate,
     const PreloadingPredictor& enacting_predictor) {
-  auto [prefetch_url, prefetch_type, referrer, no_vary_search_hint, tags] =
-      SpeculationCandidateToPrefetchUrlParams(candidate);
-  PrefetchUrl(prefetch_url, prefetch_type, enacting_predictor, referrer,
-              std::move(tags), no_vary_search_hint,
-              std::move(preload_pipeline_info));
+  PrefetchUrlParams params(candidate);
+  PrefetchUrl(params.prefetch_url, params.prefetch_type, enacting_predictor,
+              params.referrer, std::move(params.tags),
+              params.no_vary_search_hint, std::move(preload_pipeline_info));
 }
 
 void PrefetchDocumentManager::PrefetchUrl(
@@ -217,7 +214,7 @@ void PrefetchDocumentManager::PrefetchUrl(
     const PrefetchType& prefetch_type,
     const PreloadingPredictor& enacting_predictor,
     const blink::mojom::Referrer& referrer,
-    SpeculationRulesTags&& speculation_rules_tags,
+    std::optional<SpeculationRulesTags> speculation_rules_tags,
     const network::mojom::NoVarySearchPtr& mojo_no_vary_search_hint,
     scoped_refptr<PreloadPipelineInfo> preload_pipeline_info) {
   const std::pair<GURL, PreloadingType> all_prefetches_key =
@@ -273,8 +270,7 @@ void PrefetchDocumentManager::PrefetchUrl(
 
   auto container = std::make_unique<PrefetchContainer>(
       static_cast<RenderFrameHostImpl&>(render_frame_host()), document_token_,
-      url, prefetch_type, referrer,
-      std::make_optional(std::move(speculation_rules_tags)),
+      url, prefetch_type, referrer, std::move(speculation_rules_tags),
       std::move(no_vary_search_hint), weak_method_factory_.GetWeakPtr(),
       std::move(preload_pipeline_info), attempt->GetWeakPtr());
   DVLOG(1) << *container << ": created";

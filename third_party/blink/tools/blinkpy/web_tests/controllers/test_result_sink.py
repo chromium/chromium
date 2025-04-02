@@ -253,7 +253,7 @@ class TestResultSink:
         summaries, artifacts = self._artifacts(result)
         r = {
             'artifacts': artifacts,
-            'duration': '%ss' % result.total_run_time,
+            'duration': '%.9fs' % result.total_run_time,
             # device failures are never expected.
             'expected': not result.device_failed and result.is_expected,
             'status': self._status(result),

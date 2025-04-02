@@ -26,6 +26,7 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/posix/eintr_wrapper.h"
+#include "media/gpu/buffer_validation.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace mojo {
@@ -165,10 +166,58 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
         media::mojom::OpaqueVideoFrameData::New());
   }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  if (input->storage_type() == media::VideoFrame::STORAGE_DMABUFS) {
+    // Duplicates the DMA buffer FDs to a new vector since this cannot take
+    // ownership of the FDs in |input| due to constness.
+    std::vector<mojo::PlatformHandle> duped_fds;
+    const size_t num_fds = input->NumDmabufFds();
+    duped_fds.reserve(num_fds);
+    for (size_t i = 0; i < num_fds; ++i) {
+      duped_fds.emplace_back(
+          base::ScopedFD(HANDLE_EINTR(dup(input->GetDmabufFd(i)))));
+    }
+
+    std::vector<media::mojom::ColorPlaneLayoutPtr> planes;
+    for (const auto& plane : input->layout().planes()) {
+      planes.emplace_back(media::mojom::ColorPlaneLayout::New(
+          plane.stride, plane.offset, plane.size));
+    }
+
+    return media::mojom::VideoFrameData::NewDmabufData(
+        media::mojom::DmabufVideoFrameData::New(
+            std::move(planes), input->layout().is_multi_planar(),
+            input->layout().buffer_addr_align(), input->layout().modifier(),
+            std::move(duped_fds)));
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
   NOTREACHED() << "Unsupported VideoFrame conversion";
 }
 
 }  // namespace
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// static
+bool StructTraits<
+    media::mojom::ColorPlaneLayoutDataView,
+    media::ColorPlaneLayout>::Read(media::mojom::ColorPlaneLayoutDataView data,
+                                   media::ColorPlaneLayout* out) {
+  if (!base::IsValueInRangeForNumericType<size_t>(data.stride())) {
+    return false;
+  }
+  out->stride = data.stride();
+  if (!base::IsValueInRangeForNumericType<size_t>(data.offset())) {
+    return false;
+  }
+  out->offset = base::checked_cast<size_t>(data.offset());
+  if (!base::IsValueInRangeForNumericType<size_t>(data.size())) {
+    return false;
+  }
+  out->size = base::checked_cast<size_t>(data.size());
+  return true;
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // static
 media::mojom::VideoFrameDataPtr StructTraits<media::mojom::VideoFrameDataView,
@@ -387,6 +436,141 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     frame = media::VideoFrame::WrapTrackingToken(
         format, *metadata.tracking_token, coded_size, visible_rect,
         natural_size, timestamp);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  } else if (data.is_dmabuf_data()) {
+    media::mojom::DmabufVideoFrameDataDataView dmabuf_data;
+    data.GetDmabufDataDataView(&dmabuf_data);
+
+    if (!media::VideoFrame::IsValidCodedSize(coded_size)) {
+      DLOG(ERROR) << "Coded size is beyond allowed dimensions: "
+                  << coded_size.ToString();
+      return false;
+    }
+
+    // This format list suffices for supporting the ChromeOS OOPVideoDecoder. If
+    // other formats are needed in the future, they may be added.
+    if (format != media::PIXEL_FORMAT_I420 &&
+        format != media::PIXEL_FORMAT_YV12 &&
+        format != media::PIXEL_FORMAT_NV12 &&
+        format != media::PIXEL_FORMAT_P010LE &&
+        format != media::PIXEL_FORMAT_ARGB) {
+      DLOG(ERROR) << "Unsupported: " << format;
+      return false;
+    }
+
+    mojo::ArrayDataView<mojo::PlatformHandle> fds;
+    dmabuf_data.GetFdsDataView(&fds);
+
+    // Note that the number of FDs may be less than the number of color layout
+    // planes. This happens when the data multiple planes are stored in a single
+    // continuous DMA buffer.
+    if (fds.size() == 0 || fds.size() > media::VideoFrame::NumPlanes(format)) {
+      DLOG(ERROR) << "Frame has invalid number of FDs: " << fds.size();
+      return false;
+    }
+
+    std::vector<base::ScopedFD> scoped_fds;
+    scoped_fds.reserve(fds.size());
+    for (size_t i = 0; i < fds.size(); ++i) {
+      scoped_fds.emplace_back(fds.Take(i).TakeFD());
+    }
+
+    // In order to reconstruct the video frame, this needs to build a
+    // VideoFrameLayout and a vector of base::ScopedFDs.
+    std::vector<media::ColorPlaneLayout> planes;
+    if (!dmabuf_data.ReadPlanes(&planes)) {
+      DLOG(ERROR) << "Invalid planes";
+      return false;
+    }
+
+    const size_t num_planes = planes.size();
+    if (num_planes != media::VideoFrame::NumPlanes(format)) {
+      DLOG(ERROR) << "Invalid number of planes (" << num_planes
+                  << ") for format " << format;
+      return false;
+    }
+
+    if (scoped_fds.size() > num_planes) {
+      DLOG(ERROR) << "Unexpected number of FDs";
+      return false;
+    }
+
+    // Checks that strides monotonically decrease.
+    for (size_t i = 1; i < num_planes; i++) {
+      if (planes[i - 1].stride < planes[i].stride) {
+        DLOG(ERROR) << "Strides do not monotonically decrease";
+        return false;
+      }
+    }
+
+    for (size_t i = 0; i < num_planes; i++) {
+      // Gets the size of the DMA buffer referenced by the FD. The DMA buffer's
+      // size is invariant for its lifetime, so getting its size once suffices
+      // for the lifetime of the ScopedFD. If there are more color planes than
+      // FDs, this reuses the last FD for planes beyond the last FD index.
+      const size_t scoped_fds_index = std::min(i, scoped_fds.size() - 1);
+      size_t dmabuf_size = 0;
+      // This checks the validity of the FD.
+      if (!media::GetFileSize(scoped_fds[scoped_fds_index].get(),
+                              &dmabuf_size)) {
+        DLOG(ERROR) << "Failed to get the FD size";
+        return false;
+      }
+
+      const size_t plane_height =
+          media::VideoFrame::Rows(i, format, coded_size.height());
+      base::CheckedNumeric<size_t> min_plane_size = base::CheckMul(
+          base::strict_cast<size_t>(planes[i].stride), plane_height);
+      const size_t plane_pixel_width =
+          media::VideoFrame::RowBytes(i, format, coded_size.width());
+      if (!min_plane_size.IsValid<uint64_t>() ||
+          min_plane_size.ValueOrDie<uint64_t>() > planes[i].size ||
+          base::strict_cast<size_t>(planes[i].stride) < plane_pixel_width) {
+        DLOG(ERROR) << "Invalid plane stride/size at index " << i;
+        return false;
+      }
+
+      // Ensures the plane fits within the DMA buffer. |min_dmabuf_size| is the
+      // computed minimum size needed to contain the plane.
+      size_t min_dmabuf_size;
+      if (!base::CheckAdd(planes[i].offset, planes[i].size)
+               .AssignIfValid(&min_dmabuf_size)) {
+        DLOG(ERROR) << "Invalid plane offset and size at index " << i;
+        return false;
+      }
+      if (min_dmabuf_size > dmabuf_size) {
+        DLOG(ERROR) << "Plane at index " << i
+                    << " would reference out of bounds data in the DMA Buffer";
+        return false;
+      }
+    }
+
+    if (!base::IsValueInRangeForNumericType<size_t>(
+            dmabuf_data.buffer_addr_align())) {
+      DLOG(ERROR) << "Invalid buffer_addr_align";
+      return false;
+    }
+    const size_t buffer_addr_align =
+        base::checked_cast<size_t>(dmabuf_data.buffer_addr_align());
+
+    std::optional<media::VideoFrameLayout> layout;
+    if (dmabuf_data.is_multi_planar()) {
+      layout = media::VideoFrameLayout::CreateMultiPlanar(
+          format, coded_size, std::move(planes), buffer_addr_align,
+          dmabuf_data.modifier());
+    } else {
+      layout = media::VideoFrameLayout::CreateWithPlanes(
+          format, coded_size, std::move(planes), buffer_addr_align,
+          dmabuf_data.modifier());
+    }
+    if (!layout) {
+      DLOG(ERROR) << "Invalid layout";
+      return false;
+    }
+
+    frame = media::VideoFrame::WrapExternalDmabufs(
+        *layout, visible_rect, natural_size, std::move(scoped_fds), timestamp);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   } else {
     // TODO(sandersd): Switch on the union tag to avoid this ugliness?
     NOTREACHED();

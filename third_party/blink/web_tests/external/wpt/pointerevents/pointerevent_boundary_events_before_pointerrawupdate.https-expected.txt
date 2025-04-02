@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Pointer boundary events should be fired before `pointerrawupdate`
+  assert_equals: expected "pointerover, pointerenter, pointerrawupdate, pointermove" but got "pointerrawupdate, pointerover, pointerenter, pointermove"
+Harness: the test ran to completion.
+

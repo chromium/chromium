@@ -770,7 +770,7 @@ void UserMediaRequest::Start() {
 }
 
 void UserMediaRequest::Succeed(
-    const MediaStreamDescriptorVector& streams_descriptors) {
+    const GCedMediaStreamDescriptorVector& streams_descriptors) {
   DCHECK(!is_resolved_);
   DCHECK(transferred_track_ == nullptr);
   if (!GetExecutionContext())
@@ -946,7 +946,7 @@ void UserMediaRequest::SetTransferredTrackComponent(
 }
 
 void UserMediaRequest::FinalizeTransferredTrackInitialization(
-    const MediaStreamDescriptorVector& streams_descriptors) {
+    const GCedMediaStreamDescriptorVector& streams_descriptors) {
   DCHECK(transferred_track_);
   DCHECK_EQ(streams_descriptors.size(), 1u);
   if (!GetExecutionContext())

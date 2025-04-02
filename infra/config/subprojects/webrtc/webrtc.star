@@ -82,6 +82,7 @@ builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_with_static_analysis",
             "debug_static_builder",
             "remoteexec",
             "arm64",

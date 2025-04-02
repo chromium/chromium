@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Manifest-Datei ist ungültig</translation>
 <translation id="7217838517480956708">Der Administrator dieses Computers schreibt die Installation von <ph name="EXTENSION_NAME" /> vor. Die Erweiterung kann nicht entfernt oder geändert werden.</translation>
 <translation id="7612608473764576263">Der Eingabewert für den privaten Schlüssel muss ein gültiges Format haben (PEM-codierter RSA-Schlüssel im PKCS#8-Format).</translation>
+<translation id="7876803335449432072">Die Datei „<ph name="RELATIVE_PATH" />“ konnte für das Content-Script nicht geladen werden. Content-Script-Stylesheets können nur aus unterstützten Stylesheet-Dateien wie CSS-Dateien geladen werden.</translation>
 <translation id="7939686037314084444">Die Erweiterung wurde nicht richtig geladen. Möglicherweise kann sie keine Netzwerkanfragen abfangen.</translation>
 <translation id="7972881773422714442">Options: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Frontkamera</translation>
 <translation id="8047248493720652249">Diese Erweiterung konnte den Download nicht "<ph name="ATTEMPTED_FILENAME" />" nennen, weil eine andere Erweiterung (<ph name="EXTENSION_NAME" />) einen anderen Dateinamen "<ph name="ACTUAL_FILENAME" />" festgelegt hat.</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> von <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Manifest-Datei fehlt oder ist nicht lesbar</translation>
+<translation id="8621383749470166852">Die Datei „<ph name="RELATIVE_PATH" />“ konnte für das Content-Script nicht geladen werden. Content-Scripts können nur aus unterstützten JavaScript-Dateien wie JS-Dateien geladen werden.</translation>
 <translation id="8636666366616799973">Paket ist ungültig. Details: "<ph name="ERROR_MESSAGE" />"</translation>
 <translation id="8761756413268424715">„<ph name="APP_NAME" />“ fordert Zugriff auf eines deiner Geräte an:</translation>
 <translation id="8885905466771744233">Es existiert bereits ein privater Schlüssel für die angegebene Erweiterung. Verwende diesen Schlüssel oder lösche ihn zuerst.</translation>

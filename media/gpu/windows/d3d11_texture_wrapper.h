@@ -90,7 +90,7 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
   // While the specific texture instance can change on every call to
   // ProcessTexture, the dxgi format must be the same for all of them.
   DefaultTexture2DWrapper(const gfx::Size& size,
-                          const gfx::ColorSpace& color_space,
+                          const gfx::ColorSpace& output_color_space,
                           DXGI_FORMAT dxgi_format,
                           ComD3D11Device device);
   ~DefaultTexture2DWrapper() override;
@@ -149,8 +149,8 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
   // The first error status that we've received from |gpu_resources_|, if any.
   std::optional<D3D11Status> received_error_;
 
-  gfx::Size size_;
-  gfx::ColorSpace color_space_;
+  const gfx::Size size_;
+  const gfx::ColorSpace output_color_space_;
   base::SequenceBound<GpuResources> gpu_resources_;
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
   DXGI_FORMAT dxgi_format_;

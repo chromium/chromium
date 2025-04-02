@@ -6964,6 +6964,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5916655001090539219">Lettura automatica</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="59174027418879706">Attivato</translation>
+<translation id="5919305207330938913">Tutti i dati raccolti verranno utilizzati nel rispetto delle <ph name="BEGIN_LINK" />Norme sulla privacy<ph name="END_LINK" /> di Google.</translation>
 <translation id="5920543303088087579">La connessione a questa rete è stata disattivata dall'amministratore</translation>
 <translation id="5922963926582976524">Disconnetti rete hotspot istantaneo</translation>
 <translation id="5924047253200400718">Richiedi assistenza<ph name="SCANNING_STATUS" /></translation>
@@ -7474,6 +7475,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6283438600881103103">Ora verrà eseguita automaticamente la disconnessione.
 <ph name="DOMAIN" /> richiede di lasciare la smart card inserita.</translation>
 <translation id="628352644014831790">4 secondi</translation>
+<translation id="6283823201263716145">I dispositivi in modalità demo inviano automaticamente a Google report sugli arresti anomali, nonché dati diagnostici e sull'utilizzo, per contribuire a migliorare le funzionalità e le prestazioni.</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> non viene scaricato spesso e potrebbe essere pericoloso.</translation>
 <translation id="6285770818046456882">Il dispositivo che stava condividendo dei contenuti ha annullato il trasferimento</translation>
 <translation id="628699625505156622">Utilizza la posizione. Consenti alle app, ai siti web e ai servizi ChromeOS e per Android che dispongono dell'autorizzazione di accesso alla posizione di usare la posizione di questo dispositivo. La precisione della posizione fornisce una posizione più precisa per app e servizi. A questo scopo, Google tratta periodicamente informazioni relative a sensori dei dispositivi e segnali wireless provenienti da questo dispositivo per raccogliere le posizioni dei segnali wireless mediante crowdsourcing. Queste vengono usate senza identificare nessuna persona per migliorare la precisione della posizione e i servizi basati sulla posizione geografica, nonché per migliorare, fornire e mantenere i servizi di Google basati sugli interessi legittimi di Google e di terze parti al fine di soddisfare le esigenze degli utenti. <ph name="BEGIN_LINK1" />Scopri di più sull'utilizzo della posizione<ph name="END_LINK1" /></translation>
@@ -9333,6 +9335,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7641720519047586765">Questa passkey è stata eliminata da questo sito</translation>
 <translation id="764178579712141045">Utente <ph name="USER_EMAIL" /> aggiunto</translation>
 <translation id="7642778300616172920">Nascondi contenuti sensibili</translation>
+<translation id="7643117827468520640">Leggi questi termini</translation>
 <translation id="7643842463591647490">{0,plural, =1{# finestra aperta}other{# finestre aperte}}</translation>
 <translation id="7643932971554933646">Vuoi consentire al sito di visualizzare i file?</translation>
 <translation id="7644953783774050577">Nessuna selezione</translation>

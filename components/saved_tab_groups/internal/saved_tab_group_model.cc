@@ -856,6 +856,17 @@ void SavedTabGroupModel::SetGroupHidden(
   }
 }
 
+void SavedTabGroupModel::RestoreHiddenGroupFromSync(
+    const base::Uuid& group_id) {
+  SavedTabGroup* group = GetMutableGroup(group_id);
+  CHECK(group);
+  group->SetIsHidden(false);
+  for (SavedTabGroupModelObserver& observer : observers_) {
+    observer.SavedTabGroupUpdatedFromSync(group->saved_guid(),
+                                          /*tab_guid=*/std::nullopt);
+  }
+}
+
 void SavedTabGroupModel::OnSyncBridgeUpdateTypeChanged(
     SyncBridgeUpdateType sync_bridge_update_type) {
   for (SavedTabGroupModelObserver& observer : observers_) {

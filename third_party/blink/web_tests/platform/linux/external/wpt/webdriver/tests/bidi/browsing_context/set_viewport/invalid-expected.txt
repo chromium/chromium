@@ -1,7 +1,0 @@
-This is a wdspec test.
-[FAIL] test_params_user_contexts_entry_invalid_value[]
-  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (userContexts is not supported)
-[FAIL] test_params_user_contexts_entry_invalid_value[somestring]
-  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (userContexts is not supported)
-Harness: the test ran to completion.
-

@@ -51,6 +51,7 @@ include_rules = [
   "+chrome/browser/extensions/extension_tab_util.h",
   "+chrome/browser/extensions/extension_util.h",
   "+chrome/browser/extensions/launch_util.h",
+  "+chrome/browser/extensions/scoped_test_mv2_enabler.h",
   "+chrome/browser/file_util_service.h",
   "+chrome/browser/media_galleries/fileapi",
   "+chrome/browser/notifications",

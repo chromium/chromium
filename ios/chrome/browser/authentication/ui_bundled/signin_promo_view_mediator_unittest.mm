@@ -12,6 +12,7 @@
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
@@ -159,8 +160,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   void TestSigninPromoWithAccount(SigninPromoViewStyle style) {
     // Expect to receive an update to the consumer with a configurator.
     ExpectConfiguratorNotification(/*identity_changed=*/YES);
-    if (base::FeatureList::IsEnabled(kUseAccountListFromIdentityManager) &&
-        !AreSeparateProfilesForManagedAccountsEnabled()) {
+    if (!AreSeparateProfilesForManagedAccountsEnabled()) {
       // With this feature configuration, AccountProfileMapper sends an extra
       // "account changed" notification when adding an account to the device.
       ExpectConfiguratorNotification(/*identity_changed=*/NO);
@@ -586,11 +586,11 @@ TEST_F(SigninPromoViewMediatorTest,
   [mediator_
       signinPromoViewDidTapPrimaryButtonWithDefaultAccount:signin_promo_view_];
   EXPECT_TRUE([mediator_
-      conformsToProtocol:@protocol(ChromeAccountManagerServiceObserver)]);
-  id<ChromeAccountManagerServiceObserver> accountManagerServiceObserver =
-      (id<ChromeAccountManagerServiceObserver>)mediator_;
+      conformsToProtocol:@protocol(IdentityManagerObserverBridgeDelegate)]);
+  id<IdentityManagerObserverBridgeDelegate> identityManagerObserver =
+      (id<IdentityManagerObserverBridgeDelegate>)mediator_;
   // Simulates an identity update.
-  [accountManagerServiceObserver identityUpdated:identity_];
+  [identityManagerObserver onExtendedAccountInfoUpdated:AccountInfo()];
   // Spins the run loop to wait for the profile image update.
   fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
   // Finishs the sign-in.

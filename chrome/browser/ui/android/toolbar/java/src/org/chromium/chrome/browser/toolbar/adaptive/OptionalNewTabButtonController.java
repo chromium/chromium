@@ -111,7 +111,7 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
                 /* iphCommandBuilder= */ null,
                 AdaptiveToolbarButtonVariant.NEW_TAB,
                 /* tooltipTextResId= */ R.string.new_tab_title,
-                /* showHoverHighlight= */ true);
+                /* showBackgroundHighlight= */ true);
         setShouldShowOnIncognitoTabs(true);
 
         mContext = context;

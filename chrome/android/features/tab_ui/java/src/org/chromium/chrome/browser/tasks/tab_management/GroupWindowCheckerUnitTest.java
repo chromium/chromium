@@ -12,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -38,7 +39,7 @@ public class GroupWindowCheckerUnitTest {
     @Mock private TabGroupSyncService mSyncService;
     @Mock private TabGroupModelFilter mFilter;
     @Mock private TabModel mTabModel;
-    @Mock private TabList mTabList;
+    @Spy private TabList mTabList;
     @Mock private Tab mTab1;
     private GroupWindowChecker mSyncUtils;
 

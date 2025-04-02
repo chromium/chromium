@@ -1233,6 +1233,27 @@ void MediaStreamVideoTrack::OnReadyStateChanged(
     encoded_sink->OnReadyStateChanged(state);
 }
 
+void MediaStreamVideoTrack::SetVideoFrameSettings(
+    gfx::Size frame_size,
+    double frame_rate,
+    std::optional<gfx::Size> metadata_source_size,
+    std::optional<float> device_scale_factor) {
+  width_ = frame_size.width();
+  height_ = frame_size.height();
+  computed_frame_rate_ = frame_rate;
+
+  bool resolution_changed =
+      (captured_frame_physical_size_ != metadata_source_size) ||
+      (device_scale_factor_ != device_scale_factor);
+
+  captured_frame_physical_size_ = metadata_source_size;
+  device_scale_factor_ = device_scale_factor;
+
+  if (resolution_changed && captured_surface_resolution_callback_) {
+    captured_surface_resolution_callback_.Run(/*has_changed=*/true);
+  }
+}
+
 void MediaStreamVideoTrack::SetMinimumFrameRate(double min_frame_rate) {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   min_frame_rate_ = min_frame_rate;

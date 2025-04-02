@@ -3067,15 +3067,7 @@ LayerTreeImpl::GetCaptureViewTransitionTokens() const {
   }
 
   for (const auto& request : view_transition_requests_) {
-    // We need to gather all save directive tokens, with the exceptionm of
-    // subframe snapshot. For subframe snapshot, we actually want to display the
-    // capture frame via pseudo elements instead of the new frame (which can be
-    // blank in a lot of navigation cases. Since this is used for iframes only,
-    // there is no risk of unclipped/unfiltered contents leaking since the
-    // iframe itself will still participate in all those operations in its
-    // parent.
-    if (request->type() == ViewTransitionRequest::Type::kSave &&
-        !request->HasSubframeSnapshot()) {
+    if (request->type() == ViewTransitionRequest::Type::kSave) {
       result.insert(request->token());
     }
   }

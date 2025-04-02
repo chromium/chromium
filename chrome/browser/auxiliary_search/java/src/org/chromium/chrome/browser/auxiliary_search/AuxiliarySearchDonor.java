@@ -40,6 +40,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
@@ -336,10 +337,11 @@ public class AuxiliarySearchDonor {
             List<T> entries, Map<T, Bitmap> entryToFaviconMap, Callback<Boolean> callback) {
         List<WebPage> docs = new ArrayList<>();
 
+        long currentTime = getCurrentTimeMillis();
         for (T entry : entries) {
             Bitmap favicon = entryToFaviconMap.get(entry);
             if (favicon != null) {
-                docs.add(buildDocument(entry, favicon, /* counts= */ null));
+                docs.add(buildDocument(entry, favicon, /* counts= */ null, currentTime));
             }
         }
 
@@ -353,8 +355,9 @@ public class AuxiliarySearchDonor {
     public <T> void donateEntries(List<T> entries, int[] counts, Callback<Boolean> callback) {
         List<WebPage> docs = new ArrayList<>();
 
+        long currentTime = getCurrentTimeMillis();
         for (T entry : entries) {
-            docs.add(buildDocument(entry, /* favicon= */ null, counts));
+            docs.add(buildDocument(entry, /* favicon= */ null, counts, currentTime));
         }
 
         donateTabsImpl(docs, callback);
@@ -369,15 +372,19 @@ public class AuxiliarySearchDonor {
     public <T> void donateEntries(Map<T, Bitmap> entryToFaviconMap, Callback<Boolean> callback) {
         List<WebPage> docs = new ArrayList<>();
 
+        long currentTime = getCurrentTimeMillis();
         for (Map.Entry<T, Bitmap> entry : entryToFaviconMap.entrySet()) {
-            docs.add(buildDocument(entry.getKey(), entry.getValue(), /* counts= */ null));
+            docs.add(
+                    buildDocument(
+                            entry.getKey(), entry.getValue(), /* counts= */ null, currentTime));
         }
         donateTabsImpl(docs, callback);
     }
 
     /** Creates a document for the given entry and favicon. */
     @VisibleForTesting
-    <T> WebPage buildDocument(T entry, @Nullable Bitmap favicon, @Nullable int[] counts) {
+    <T> WebPage buildDocument(
+            T entry, @Nullable Bitmap favicon, @Nullable int[] counts, long currentTime) {
         if (entry instanceof Tab tab) {
             String documentId = getDocumentId(AuxiliarySearchEntryType.TAB, tab.getId());
             if (counts != null) {
@@ -390,7 +397,8 @@ public class AuxiliarySearchDonor {
                     tab.getUrl().getSpec(),
                     tab.getTitle(),
                     tab.getTimestampMillis(),
-                    getTabDocumentTtlMs(),
+                    calculateDocumentTtlMs(
+                            /* isTab= */ true, tab.getTimestampMillis(), currentTime),
                     /* score= */ 0,
                     favicon);
         }
@@ -408,7 +416,10 @@ public class AuxiliarySearchDonor {
                     auxiliarySearchEntry.getUrl(),
                     auxiliarySearchEntry.getTitle(),
                     auxiliarySearchEntry.getLastAccessTimestamp(),
-                    getTabDocumentTtlMs(),
+                    calculateDocumentTtlMs(
+                            /* isTab= */ true,
+                            auxiliarySearchEntry.getLastAccessTimestamp(),
+                            currentTime),
                     /* score= */ 0,
                     favicon);
         }
@@ -428,7 +439,7 @@ public class AuxiliarySearchDonor {
                 dataEntry.url.getSpec(),
                 dataEntry.title,
                 dataEntry.lastActiveTime,
-                isTab ? getTabDocumentTtlMs() : getHistoryDocumentTtlMs(),
+                calculateDocumentTtlMs(isTab, dataEntry.lastActiveTime, currentTime),
                 dataEntry.score,
                 favicon);
     }
@@ -622,6 +633,14 @@ public class AuxiliarySearchDonor {
         }
     }
 
+    /** Returns the calculated TTL for a donated document in MS. */
+    @VisibleForTesting
+    public long calculateDocumentTtlMs(boolean isTab, long creationTime, long currentTime) {
+        return currentTime
+                - creationTime
+                + (isTab ? getTabDocumentTtlMs() : getHistoryDocumentTtlMs());
+    }
+
     /** Returns the donated document's TTL in MS. */
     @VisibleForTesting
     public long getTabDocumentTtlMs() {
@@ -807,6 +826,13 @@ public class AuxiliarySearchDonor {
     boolean isShareTabsWithOsEnabledKeyExist() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         return prefsManager.contains(ChromePreferenceKeys.SHARING_TABS_WITH_OS);
+    }
+
+    /** Returns the current time in milliseconds. */
+    private long getCurrentTimeMillis() {
+        // Uses TimeUtils.currentTimeMillis() since the last visited time of the document is got by
+        // using base::Time::InMillisecondsSinceUnixEpoch() in native.
+        return TimeUtils.currentTimeMillis();
     }
 
     public boolean getIsSchemaSetForTesting() {

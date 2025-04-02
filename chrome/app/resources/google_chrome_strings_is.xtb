@@ -31,6 +31,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1356661055722410047">Nýtt! Þú getur þýtt bæði texta og myndir á skjánum þínum</translation>
 <translation id="1363996462118479832">ChromeOS gat ekki samstillt gögnin þín vegna innskráningarvillu.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
+<translation id="1383876407941801731">Leita</translation>
 <translation id="1399397803214730675">Þessi tölva er þegar búin nýrri útgáfu af Google Chrome. Ef hugbúnaðurinn virkar ekki skaltu fjarlægja Google Chrome og reyna aftur.</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome-uppfærslu er lokið. Þú getur notað nýju útgáfuna um leið og þú hefur endurræst. Núverandi flipar opnast aftur þegar endurræsingu er lokið.}=1{Chrome-uppfærslu er lokið. Þú getur notað nýju útgáfuna um leið og þú hefur endurræst. Núverandi flipar opnast aftur þegar endurræsingu er lokið. Huliðsglugginn opnast ekki aftur.}one{Chrome-uppfærslu er lokið. Þú getur notað nýju útgáfuna um leið og þú hefur endurræst. Núverandi flipar opnast aftur þegar endurræsingu er lokið. # huliðsgluggi opnast ekki aftur.}other{Chrome-uppfærslu er lokið. Þú getur notað nýju útgáfuna um leið og þú hefur endurræst. Núverandi flipar opnast aftur þegar endurræsingu er lokið. # huliðsgluggar opnast ekki aftur.}}</translation>
 <translation id="1434626383986940139">Chrome Canary forrit</translation>
@@ -123,6 +124,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2580411288591421699">Ekki er hægt að setja upp sömu útgáfu Google Chrome og er nú þegar í gangi. Lokaðu Google Chrome og reyndu aftur.</translation>
 <translation id="2586406160782125153">Þetta mun eyða vefskoðunargögnum úr þessu tæki. Skráðu þig inn í Chrome sem <ph name="USER_EMAIL" /> til að endurheimta gögnin síðar.</translation>
 <translation id="259935314519650377">Ekki tókst að vista uppsetningarforrit sem var sótt í skyndiminni. Villa: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2620436844016719705">Kerfi</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome athugar reglulega hvort vafrinn þinn sé með öruggustu stillingarnar. Við látum þig vita ef þú þarft að yfirfara eitthvað.</translation>
 <translation id="2652691236519827073">Opna tengil í nýjum &amp;flipa í Chrome</translation>
@@ -528,6 +530,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7951272445806340501">Endurræsa þarf ChromeOS Flex til að nota uppfærsluna.</translation>
 <translation id="7959172989483770734">Stjórna Chrome-prófílum</translation>
 <translation id="7962410387636238736">Þessi tölva tekur ekki lengur við uppfærslum á Google Chrome vegna þess að stýrikerfin Windows XP og Windows Vista eru ekki lengur studd</translation>
+<translation id="8004582292198964060">Vafri</translation>
 <translation id="8005666035647241369">Í Aðgangsorðastjórnun Google í þessu tæki</translation>
 <translation id="8008534537613507642">Setja Chrome aftur upp</translation>
 <translation id="8009904340233602924">Nota Chrome án reiknings</translation>

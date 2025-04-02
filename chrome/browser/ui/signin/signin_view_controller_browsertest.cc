@@ -53,6 +53,7 @@
 #include "base/path_service.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_sync_util.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/signin_test_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
@@ -737,6 +738,9 @@ class SigninViewControllerInteractiveBrowserTest
 // - KeepAccountExtensions: account extensions are kept after signing out.
 IN_PROC_BROWSER_TEST_P(SigninViewControllerInteractiveBrowserTest,
                        ShowAccountExtensionsInSignoutPrompt) {
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler;
+
   auto load_extension = [this](const std::string& extension_path) {
     extensions::ChromeTestExtensionLoader extension_loader(GetProfile());
     extension_loader.set_pack_extension(true);

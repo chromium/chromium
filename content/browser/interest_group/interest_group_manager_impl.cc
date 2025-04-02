@@ -292,10 +292,12 @@ InterestGroupManagerImpl::InterestGroupManagerImpl(
               blink::features::kFledgeTrustedSignalsKVv2Support) &&
                   base::FeatureList::IsEnabled(
                       features::kFledgeUseKVv2SignalsCache)
-              ? std::make_unique<TrustedSignalsCacheImpl>(base::BindRepeating(
-                    &InterestGroupManagerImpl::GetTrustedServerKey,
-                    base::Unretained(this),
-                    TrustedServerAPIType::kTrustedKeyValue))
+              ? std::make_unique<TrustedSignalsCacheImpl>(
+                    &data_decoder_manager_,
+                    base::BindRepeating(
+                        &InterestGroupManagerImpl::GetTrustedServerKey,
+                        base::Unretained(this),
+                        TrustedServerAPIType::kTrustedKeyValue))
               : nullptr),
       auction_process_manager_(
           base::WrapUnique(process_mode == ProcessMode::kDedicated

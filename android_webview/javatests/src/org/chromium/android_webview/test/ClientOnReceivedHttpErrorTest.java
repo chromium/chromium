@@ -87,7 +87,7 @@ public class ClientOnReceivedHttpErrorTest extends AwParameterizedTest {
                 AwWebResourceRequest request, WebResourceResponseInfo response) {
             if (!mBypass) {
                 Assert.assertEquals(
-                        "onReceivedHttpError called twice for " + request.url,
+                        "onReceivedHttpError called twice for " + request.getUrl(),
                         false,
                         mIsOnReceivedHttpErrorCalled);
                 mIsOnReceivedHttpErrorCalled = true;
@@ -118,12 +118,12 @@ public class ClientOnReceivedHttpErrorTest extends AwParameterizedTest {
                 mContentsClient.getOnReceivedHttpErrorHelper();
         AwWebResourceRequest request = onReceivedHttpErrorHelper.getRequest();
         Assert.assertNotNull(request);
-        Assert.assertEquals(url, request.url);
-        Assert.assertEquals("GET", request.method);
-        Assert.assertNotNull(request.requestHeaders);
-        Assert.assertFalse(request.requestHeaders.isEmpty());
-        Assert.assertTrue(request.isOutermostMainFrame);
-        Assert.assertFalse(request.hasUserGesture);
+        Assert.assertEquals(url, request.getUrl());
+        Assert.assertEquals("GET", request.getMethod());
+        Assert.assertNotNull(request.getRequestHeaders());
+        Assert.assertFalse(request.getRequestHeaders().isEmpty());
+        Assert.assertTrue(request.isOutermostMainFrame());
+        Assert.assertFalse(request.hasUserGesture());
         WebResourceResponseInfo response = onReceivedHttpErrorHelper.getResponse();
         Assert.assertEquals(404, response.getStatusCode());
         Assert.assertEquals("Not Found", response.getReasonPhrase());
@@ -166,12 +166,12 @@ public class ClientOnReceivedHttpErrorTest extends AwParameterizedTest {
                 TimeUnit.MILLISECONDS);
         AwWebResourceRequest request = onReceivedHttpErrorHelper.getRequest();
         Assert.assertNotNull(request);
-        Assert.assertEquals(badUrl, request.url);
-        Assert.assertEquals("GET", request.method);
-        Assert.assertNotNull(request.requestHeaders);
-        Assert.assertFalse(request.requestHeaders.isEmpty());
-        Assert.assertTrue(request.isOutermostMainFrame);
-        Assert.assertTrue(request.hasUserGesture);
+        Assert.assertEquals(badUrl, request.getUrl());
+        Assert.assertEquals("GET", request.getMethod());
+        Assert.assertNotNull(request.getRequestHeaders());
+        Assert.assertFalse(request.getRequestHeaders().isEmpty());
+        Assert.assertTrue(request.isOutermostMainFrame());
+        Assert.assertTrue(request.hasUserGesture());
         WebResourceResponseInfo response = onReceivedHttpErrorHelper.getResponse();
         Assert.assertEquals(404, response.getStatusCode());
         Assert.assertEquals("Not Found", response.getReasonPhrase());
@@ -202,12 +202,12 @@ public class ClientOnReceivedHttpErrorTest extends AwParameterizedTest {
                 mContentsClient.getOnReceivedHttpErrorHelper();
         AwWebResourceRequest request = onReceivedHttpErrorHelper.getRequest();
         Assert.assertNotNull(request);
-        Assert.assertEquals(imageUrl, request.url);
-        Assert.assertEquals("GET", request.method);
-        Assert.assertNotNull(request.requestHeaders);
-        Assert.assertFalse(request.requestHeaders.isEmpty());
-        Assert.assertFalse(request.isOutermostMainFrame);
-        Assert.assertFalse(request.hasUserGesture);
+        Assert.assertEquals(imageUrl, request.getUrl());
+        Assert.assertEquals("GET", request.getMethod());
+        Assert.assertNotNull(request.getRequestHeaders());
+        Assert.assertFalse(request.getRequestHeaders().isEmpty());
+        Assert.assertFalse(request.isOutermostMainFrame());
+        Assert.assertFalse(request.hasUserGesture());
         WebResourceResponseInfo response = onReceivedHttpErrorHelper.getResponse();
         Assert.assertEquals(404, response.getStatusCode());
         Assert.assertEquals("Not Found", response.getReasonPhrase());
@@ -243,7 +243,7 @@ public class ClientOnReceivedHttpErrorTest extends AwParameterizedTest {
                 TimeUnit.MILLISECONDS);
         Assert.assertEquals(
                 onReceivedHttpErrorCallCount + 1, onReceivedHttpErrorHelper.getCallCount());
-        Assert.assertEquals(badUrl, onReceivedHttpErrorHelper.getRequest().url);
+        Assert.assertEquals(badUrl, onReceivedHttpErrorHelper.getRequest().getUrl());
     }
 
     @Test
@@ -261,12 +261,12 @@ public class ClientOnReceivedHttpErrorTest extends AwParameterizedTest {
                 mContentsClient.getOnReceivedHttpErrorHelper();
         AwWebResourceRequest request = onReceivedHttpErrorHelper.getRequest();
         Assert.assertNotNull(request);
-        Assert.assertEquals(secondUrl, request.url);
-        Assert.assertEquals("GET", request.method);
-        Assert.assertNotNull(request.requestHeaders);
-        Assert.assertFalse(request.requestHeaders.isEmpty());
-        Assert.assertTrue(request.isOutermostMainFrame);
-        Assert.assertFalse(request.hasUserGesture);
+        Assert.assertEquals(secondUrl, request.getUrl());
+        Assert.assertEquals("GET", request.getMethod());
+        Assert.assertNotNull(request.getRequestHeaders());
+        Assert.assertFalse(request.getRequestHeaders().isEmpty());
+        Assert.assertTrue(request.isOutermostMainFrame());
+        Assert.assertFalse(request.hasUserGesture());
         WebResourceResponseInfo response = onReceivedHttpErrorHelper.getResponse();
         Assert.assertEquals(404, response.getStatusCode());
         Assert.assertEquals("Not Found", response.getReasonPhrase());
@@ -304,7 +304,7 @@ public class ClientOnReceivedHttpErrorTest extends AwParameterizedTest {
                 onReceivedHttpErrorHelper.getCallCount());
         AwWebResourceRequest request = onReceivedHttpErrorHelper.getRequest();
         Assert.assertNotNull("onReceivedHttpError should have a non-null request", request);
-        Assert.assertEquals(badUrl, request.url);
+        Assert.assertEquals(badUrl, request.getUrl());
         Assert.assertEquals(
                 "onPageStartedHelper should be called once",
                 initialOnPageStartedCount + 1,
@@ -353,7 +353,7 @@ public class ClientOnReceivedHttpErrorTest extends AwParameterizedTest {
                 onReceivedHttpErrorHelper.getCallCount());
         AwWebResourceRequest request = onReceivedHttpErrorHelper.getRequest();
         Assert.assertNotNull("onReceivedHttpError should have a non-null request", request);
-        Assert.assertEquals(badUrl, request.url);
+        Assert.assertEquals(badUrl, request.getUrl());
         Assert.assertEquals(
                 "onPageStartedHelper should be called once",
                 initialOnPageStartedCount + 1,

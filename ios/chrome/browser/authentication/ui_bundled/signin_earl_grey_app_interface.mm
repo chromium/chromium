@@ -226,4 +226,8 @@
       profileSeparationDataMigrationSettings);
 }
 
++ (BOOL)areSeparateProfilesForManagedAccountsEnabled {
+  return AreSeparateProfilesForManagedAccountsEnabled();
+}
+
 @end

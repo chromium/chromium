@@ -43,6 +43,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/privacy_sandbox_notice.mojom.h"
 #include "components/privacy_sandbox/privacy_sandbox_notice_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -82,6 +83,7 @@ using FakeNoticePromptSuppressionReason =
     ::PrivacySandboxService::FakeNoticePromptSuppressionReason;
 using PrimaryAccountUserGroups =
     ::PrivacySandboxService::PrimaryAccountUserGroups;
+using privacy_sandbox::notice::mojom::PrivacySandboxNoticeEvent;
 
 constexpr char kBlockedTopicsTopicKey[] = "topic";
 
@@ -955,14 +957,14 @@ void UpdateNoticeStorage(
     }
     case PromptAction::kConsentAccepted: {
       notice_storage->SetNoticeActionTaken(pref_service, notice_name,
-                                           privacy_sandbox::NoticeEvent::kOptIn,
+                                           PrivacySandboxNoticeEvent::kOptIn,
                                            base::Time::Now());
       break;
     }
     case PromptAction::kConsentDeclined: {
-      notice_storage->SetNoticeActionTaken(
-          pref_service, notice_name, privacy_sandbox::NoticeEvent::kOptOut,
-          base::Time::Now());
+      notice_storage->SetNoticeActionTaken(pref_service, notice_name,
+                                           PrivacySandboxNoticeEvent::kOptOut,
+                                           base::Time::Now());
       break;
     }
     case PromptAction::kConsentMoreInfoOpened: {
@@ -976,14 +978,14 @@ void UpdateNoticeStorage(
     }
     case PromptAction::kNoticeAcknowledge: {
       notice_storage->SetNoticeActionTaken(pref_service, notice_name,
-                                           privacy_sandbox::NoticeEvent::kAck,
+                                           PrivacySandboxNoticeEvent::kAck,
                                            base::Time::Now());
       break;
     }
     case PromptAction::kNoticeOpenSettings: {
-      notice_storage->SetNoticeActionTaken(
-          pref_service, notice_name, privacy_sandbox::NoticeEvent::kSettings,
-          base::Time::Now());
+      notice_storage->SetNoticeActionTaken(pref_service, notice_name,
+                                           PrivacySandboxNoticeEvent::kSettings,
+                                           base::Time::Now());
       break;
     }
     case PromptAction::kNoticeMoreInfoOpened:
@@ -1002,15 +1004,15 @@ void UpdateNoticeStorage(
     case PromptAction::kRestrictedNoticeAcknowledge: {
       DCHECK(privacy_sandbox::IsRestrictedNoticeRequired());
       notice_storage->SetNoticeActionTaken(pref_service, notice_name,
-                                           privacy_sandbox::NoticeEvent::kAck,
+                                           PrivacySandboxNoticeEvent::kAck,
                                            base::Time::Now());
       break;
     }
     case PromptAction::kRestrictedNoticeOpenSettings: {
       DCHECK(privacy_sandbox::IsRestrictedNoticeRequired());
-      notice_storage->SetNoticeActionTaken(
-          pref_service, notice_name, privacy_sandbox::NoticeEvent::kSettings,
-          base::Time::Now());
+      notice_storage->SetNoticeActionTaken(pref_service, notice_name,
+                                           PrivacySandboxNoticeEvent::kSettings,
+                                           base::Time::Now());
       break;
     }
     default:

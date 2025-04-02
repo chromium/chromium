@@ -407,7 +407,8 @@ RenderWidgetHostViewBase* WebContentsViewMac::CreateViewForWidget(
     auto* remote_cocoa_application = views_host_->GetRemoteCocoaApplication();
     view->MigrateNSViewBridge(remote_cocoa_application, ns_view_id_);
     view->SetParentUiLayer(views_host_->GetUiLayer());
-    view->SetParentAccessibilityElement(views_host_accessibility_element_);
+    view->SetParentAccessibilityElement(
+        views_host_accessibility_element_.Get());
   }
 
   // Fancy layout comes later; for now just make it our size and resize it
@@ -790,7 +791,8 @@ void WebContentsViewMac::ViewsHostableSetParentAccessible(
     gfx::NativeViewAccessible parent_accessibility_element) {
   views_host_accessibility_element_ = parent_accessibility_element;
   for (auto* rwhv_mac : GetChildViews())
-    rwhv_mac->SetParentAccessibilityElement(views_host_accessibility_element_);
+    rwhv_mac->SetParentAccessibilityElement(
+        views_host_accessibility_element_.Get());
 }
 
 gfx::NativeViewAccessible
@@ -801,8 +803,9 @@ WebContentsViewMac::ViewsHostableGetParentAccessible() {
 gfx::NativeViewAccessible
 WebContentsViewMac::ViewsHostableGetAccessibilityElement() {
   RenderWidgetHostView* rwhv = web_contents_->GetRenderWidgetHostView();
-  if (!rwhv)
-    return nil;
+  if (!rwhv) {
+    return gfx::NativeViewAccessible();
+  }
   return rwhv->GetNativeViewAccessible();
 }
 

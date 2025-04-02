@@ -73,14 +73,14 @@
 
 - (void)lensOverlayDetentsManagerDidChangeDimensionState:
     (LensOverlayDetentsManager*)detentsManager {
-  if (detentsManager.sheetDimension == SheetDimensionStateHidden) {
+  if (detentsManager.sheetDimension == SheetDimensionState::kHidden) {
     [self.delegate requestDismissalOfConsentDialog:self];
   }
 }
 
 - (BOOL)lensOverlayDetentsManagerShouldDismissBottomSheet:
     (LensOverlayDetentsManager*)detentsManager {
-  DCHECK(detentsManager.sheetDimension == SheetDimensionStateConsent);
+  DCHECK(detentsManager.sheetDimension == SheetDimensionState::kConsent);
   return YES;
 }
 

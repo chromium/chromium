@@ -197,7 +197,7 @@ void InvalidatableInterpolation::EnsureValidInterpolationTypes(
 
 void InvalidatableInterpolation::SetFlagIfInheritUsed(
     InterpolationEnvironment& environment) const {
-  if (!property_.IsCSSProperty() && !property_.IsPresentationAttribute()) {
+  if (!property_.IsCSSProperty()) {
     return;
   }
   StyleResolverState& state =

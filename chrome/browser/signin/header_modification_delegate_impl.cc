@@ -76,7 +76,7 @@ bool HeaderModificationDelegateImpl::ShouldInterceptNavigation(
     content::WebContents* contents) {
   if (profile_->IsOffTheRecord()) {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    if (!switches::IsBoundSessionCredentialsEnabled(profile_->GetPrefs())) {
+    if (!BoundSessionCookieRefreshServiceFactory::GetForProfile(profile_)) {
       return false;
     }
 #else
@@ -98,10 +98,10 @@ void HeaderModificationDelegateImpl::ProcessRequest(
     const GURL& redirect_url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (profile_->IsOffTheRecord()) {
-    // We expect seeing traffic from OTR profiles only if the feature is
-    // enabled.
+    // We expect seeing traffic from OTR profiles only if
+    // `BoundSessionCookieRefreshService` exists.
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    CHECK(switches::IsBoundSessionCredentialsEnabled(profile_->GetPrefs()));
+    CHECK(BoundSessionCookieRefreshServiceFactory::GetForProfile(profile_));
     return;
 #else
     NOTREACHED();
@@ -166,8 +166,7 @@ void HeaderModificationDelegateImpl::ProcessResponse(
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (gaia::HasGaiaSchemeHostPort(response_adapter->GetUrl()) &&
-      IsFirstPartyRequest(response_adapter) &&
-      switches::IsBoundSessionCredentialsEnabled(profile_->GetPrefs())) {
+      IsFirstPartyRequest(response_adapter)) {
     BoundSessionCookieRefreshService* bound_session_cookie_refresh_service =
         BoundSessionCookieRefreshServiceFactory::GetForProfile(profile_);
     if (bound_session_cookie_refresh_service) {
@@ -177,10 +176,6 @@ void HeaderModificationDelegateImpl::ProcessResponse(
       auto params = BoundSessionRegistrationFetcherParam::CreateFromHeaders(
           response_adapter->GetUrl(), response_adapter->GetHeaders());
       for (auto&& param : std::move(params)) {
-        // `bound_session_cookie_refresh_service` currently can handle only one
-        // registration request. The service has logic to choose which request
-        // it should prioritize, so we're sending it multiple params to choose
-        // from.
         // TODO(b/274774185): modify `CreateRegistrationRequest()` to accept a
         // vector of params.
         bound_session_cookie_refresh_service->CreateRegistrationRequest(
@@ -191,10 +186,10 @@ void HeaderModificationDelegateImpl::ProcessResponse(
 #endif
 
   if (profile_->IsOffTheRecord()) {
-    // We expect seeing traffic from OTR profiles only if the feature is
-    // enabled.
+    // We expect seeing traffic from OTR profiles only if
+    // `BoundSessionCookieRefreshService` exists.
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    CHECK(switches::IsBoundSessionCredentialsEnabled(profile_->GetPrefs()));
+    CHECK(BoundSessionCookieRefreshServiceFactory::GetForProfile(profile_));
     return;
 #else
     NOTREACHED();

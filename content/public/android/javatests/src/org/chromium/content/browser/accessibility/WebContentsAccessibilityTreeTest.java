@@ -631,6 +631,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_ariaLabelWithVisualContent() {
+        performAriaTest("aria-label-with-visual-content.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaLabelAugmentInnerText() {
         performAriaTest("aria-label-augment-inner-text.html");
     }
@@ -860,6 +866,12 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_ariaParagraph() {
         performAriaTest("aria-paragraph.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaPosinset() {
+        performAriaTest("aria-posinset.html");
     }
 
     @Test

@@ -138,14 +138,13 @@ const char* IFaceWithTypemap::MessageToMethodName_(mojo::Message& message) {
 
 #if !BUILDFLAG(IS_FUCHSIA)
 uint32_t IFaceWithTypemap::Echo_Sym::IPCStableHash() {
-  // This method's address is used for indetifiying the mojo method name after
+  // This method's address is used for identifiying the mojo method name after
   // symbolization. So each IPCStableHash should have a unique address.
   // We cannot use NO_CODE_FOLDING() here - it relies on the uniqueness of
   // __LINE__ value, which is not unique accross different mojo modules.
   // The code below is very similar to NO_CODE_FOLDING, but it uses a unique
   // hash instead of __LINE__.
-  constexpr uint32_t kHash = base::MD5Hash32Constexpr(
-          "(Impl)golden::IFaceWithTypemap::Echo");
+  static constexpr uint32_t kHash = 0xdfc8d278;  // IPCStableHash for golden::IFaceWithTypemap::Echo
   const uint32_t hash = kHash;
   base::debug::Alias(&hash);
   return hash;
@@ -297,9 +296,10 @@ bool IFaceWithTypemap_Echo_ForwardToCallback::Accept(
         IFaceWithTypemap::Name_, 0, true);
     return false;
   }
-  if (!callback_.is_null())
+  if (!callback_.is_null()) {
     std::move(callback_).Run(
 std::move(p_out));
+  }
   return true;
 }
 
@@ -400,7 +400,7 @@ bool IFaceWithTypemapStubDispatch::AcceptWithResponder(
             IFaceWithTypemap::Name_, 0, false);
         return false;
       }
-      IFaceWithTypemap::EchoCallback callback =
+      auto callback =
           IFaceWithTypemap_Echo_ProxyToResponder::CreateCallback(
               *message, std::move(responder));
       // A null |impl| means no implementation was bound.
@@ -473,6 +473,7 @@ IFaceWithTypemapAsyncWaiter::IFaceWithTypemapAsyncWaiter(
     IFaceWithTypemap* proxy) : proxy_(proxy) {}
 
 IFaceWithTypemapAsyncWaiter::~IFaceWithTypemapAsyncWaiter() = default;
+
 
 void IFaceWithTypemapAsyncWaiter::Echo(
     TypemappedPtr param, TypemappedPtr* out_out) {

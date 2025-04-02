@@ -29,6 +29,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1342274909142618978">Taip pat ištrinti duomenis iš „Chromium“ (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Prisegta! Galite vėl pasiekti vaizdų paiešką naudodami naują įrankių juostos mygtuką</translation>
 <translation id="1356661055722410047">Naujiena! Galite versti ir tekstą, ir vaizdus ekrane</translation>
+<translation id="1383876407941801731">Ieškoti</translation>
 <translation id="1414495520565016063">Esate prisijungę prie „Chromium“.</translation>
 <translation id="1465192221147974788">Jei norite bendrinti langą, sistemos nustatymuose leiskite įrašyti „Chromium“ ekrano vaizdą.</translation>
 <translation id="1478370723027452770">Gauti pagalbos dėl „Chrome for Testing“</translation>
@@ -120,6 +121,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2583187216237139145">Visus „Chromium“ duomenis, sugeneruotus naudojant šį profilį (pvz., sukurtas žymes, istoriją, slaptažodžius ir kitus nustatymus), gali pašalinti darbo profilio administratorius. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Toliau naudoti „Chromium“</translation>
 <translation id="259935314519650377">Nepavyko talpykloje išsaugoti atsisiųstos diegimo programos. Klaida: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2620436844016719705">Sistema</translation>
 <translation id="2629740064077610681">Organizacija gali peržiūrėti ir tvarkyti naršymo duomenis, pvz., žymes, istoriją ir slaptažodžius. Ji negali peržiūrėti naršymo duomenų kituose „Chromium“ profiliuose</translation>
 <translation id="2635452620547538388">Patvirtinkite savo tapatybę, kad galėtumėte naudoti ir išsaugoti „Chromium“ duomenis paskyroje <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="264613044588233783">„Chromium“ veikia sparčiau, o „JavaScript“ naudojančios funkcijos turėtų veikti, kaip numatyta (rekomenduojama)</translation>
@@ -168,6 +170,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="3179665906251668410">Atidaryti nuorodą „Chromium“ inko&amp;gnito lange</translation>
 <translation id="3185330573522821672">Tinkinkite naująjį „Chromium“ profilį</translation>
 <translation id="3224847870593914902">Jei norite pašalinti „Google“ paskyrą iš „Chromium“, atsijunkite nuo „Chromium“ puslapyje „Nustatymai“</translation>
+<translation id="3234316605225071811">Vėliau „Chromium“ gali paklausti, ar norite naudoti išsaugotą informaciją automatiškai užpildydami formas</translation>
 <translation id="3258596308407688501">„Chromium“ negali skaityti ir rašyti į duomenų katalogą:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -430,6 +433,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6857782730669500492">„Chromium“ – „<ph name="PAGE_TITLE" />“</translation>
 <translation id="6873893289264747459">„Chromium“ aptiko kenkėjišką programą plėtinyje „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="6896758677409633944">Kopijuoti</translation>
+<translation id="6901631050894301805">Nustatykite „Chromium“ kaip numatytąją naršyklę ir prisekite ją prie užduočių juostos</translation>
 <translation id="6929417474050522668">Naudojant šias bandomąsias versijas, Skelbimų vertinimas leidžia svetainėms, kuriose lankotės, prašyti „Chromium“ informacijos, padedančios įvertinti savo skelbimų našumą. Skelbimų vertinimas apriboja veiklos skirtingose svetainėse stebėjimą tarp svetainių perduodant kaip įmanoma mažiau informacijos.</translation>
 <translation id="6940431691900807093">Vėliau svetainė, kurioje lankotės, gali paprašyti „Chromium“ peržiūrėti jūsų pomėgius, kad galėtų suasmeninti jums rodomus skelbimus. „Chromium“ gali bendrinti iki 3 pomėgių.</translation>
 <translation id="6964305034639999644">Atidaryti nuorodą „Chromium“ inko&amp;gnito lange</translation>
@@ -500,6 +504,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="7937630085815544518">Buvote prisijungę prie „Chromium“ kaip <ph name="USER_EMAIL_ADDRESS" />. Prisijungdami vėl naudokite tą pačią paskyrą.</translation>
 <translation id="7975919845073681630">Tai yra antrinis „Chromium“ diegimas, todėl ji negali būti nustatyta kaip numatytoji naršyklė.</translation>
 <translation id="7997934263947464652">Plėtiniai, programos ir temos iš nežinomų šaltinių gali pakenkti jūsų įrenginiui. „Chromium“ rekomenduoja įdiegti tik iš čia: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
+<translation id="8004582292198964060">Naršyklė</translation>
 <translation id="8010081455002666927">Automatinis aptikimas</translation>
 <translation id="8013436988911883588">Kai „Chromium“ galės pasiekti duomenis, svetainės taip pat galės prašyti suteikti leidimą juos pasiekti.</translation>
 <translation id="80471789339884597">Dėkojame už diegimą. Turite iš naujo paleisti visas naršykles, prieš naudodami „<ph name="BUNDLE_NAME" />“.</translation>

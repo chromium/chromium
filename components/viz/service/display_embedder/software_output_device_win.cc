@@ -37,9 +37,14 @@ SoftwareOutputDeviceWinDirect::~SoftwareOutputDeviceWinDirect() {
   backing_->UnregisterClient(this);
 }
 
-void SoftwareOutputDeviceWinDirect::ResizeDelegated() {
-  canvas_.reset();
+void SoftwareOutputDeviceWinDirect::NotifyClientResized() {
   backing_->ClientResized();
+}
+
+bool SoftwareOutputDeviceWinDirect::ResizeDelegated(
+    const gfx::Size& viewport_pixel_size) {
+  canvas_.reset();
+  return true;
 }
 
 SkCanvas* SoftwareOutputDeviceWinDirect::BeginPaintDelegated() {
@@ -110,32 +115,34 @@ void SoftwareOutputDeviceWinProxy::OnSwapBuffers(
       base::BindOnce(std::move(swap_ack_callback), viewport_pixel_size_);
 }
 
-void SoftwareOutputDeviceWinProxy::ResizeDelegated() {
+bool SoftwareOutputDeviceWinProxy::ResizeDelegated(
+    const gfx::Size& viewport_pixel_size) {
   canvas_.reset();
 
   size_t required_bytes;
-  if (!ResourceSizes::MaybeSizeInBytes(viewport_pixel_size_,
+  if (!ResourceSizes::MaybeSizeInBytes(viewport_pixel_size,
                                        SinglePlaneFormat::kRGBA_8888,
                                        &required_bytes)) {
-    DLOG(ERROR) << "Invalid viewport size " << viewport_pixel_size_.ToString();
-    return;
+    DLOG(ERROR) << "Invalid viewport size " << viewport_pixel_size.ToString();
+    return false;
   }
 
   base::UnsafeSharedMemoryRegion region =
       base::UnsafeSharedMemoryRegion::Create(required_bytes);
   if (!region.IsValid()) {
     DLOG(ERROR) << "Failed to allocate " << required_bytes << " bytes";
-    return;
+    return false;
   }
 
   // The SkCanvas maps shared memory on creation and unmaps on destruction.
   canvas_ = skia::CreatePlatformCanvasWithSharedSection(
-      viewport_pixel_size_.width(), viewport_pixel_size_.height(), true,
+      viewport_pixel_size.width(), viewport_pixel_size.height(), true,
       region.GetPlatformHandle(), skia::CRASH_ON_FAILURE);
 
   // Transfer region ownership to the browser process.
-  layered_window_updater_->OnAllocatedSharedMemory(viewport_pixel_size_,
+  layered_window_updater_->OnAllocatedSharedMemory(viewport_pixel_size,
                                                    std::move(region));
+  return true;
 }
 
 SkCanvas* SoftwareOutputDeviceWinProxy::BeginPaintDelegated() {

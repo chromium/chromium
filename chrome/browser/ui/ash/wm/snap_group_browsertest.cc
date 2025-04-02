@@ -4,7 +4,6 @@
 
 #include "ash/wm/snap_group/snap_group.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/display/display_move_window_util.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
@@ -25,7 +24,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/new_window/chrome_new_window_client.h"
@@ -177,17 +175,7 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenBrowserTest,
 // -----------------------------------------------------------------------------
 // SnapGroupBrowserTest:
 
-class SnapGroupBrowserTest : public InProcessBrowserTest {
- public:
-  SnapGroupBrowserTest() = default;
-  SnapGroupBrowserTest(const SnapGroupBrowserTest&) = delete;
-  SnapGroupBrowserTest& operator=(const SnapGroupBrowserTest&) = delete;
-  ~SnapGroupBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ash::features::kForestFeature};
-};
+using SnapGroupBrowserTest = InProcessBrowserTest;
 
 // Tests that creating a snap group in a rotated display works correctly.
 // Regression test for http://335323173.

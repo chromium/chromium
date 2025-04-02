@@ -25,6 +25,7 @@
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/variations_seed.pb.h"
+#include "components/variations/seed_reader_writer.h"
 #include "components/variations/variations_safe_seed_store_local_state.h"
 #include "components/variations/variations_switches.h"
 #include "components/version_info/version_info.h"
@@ -192,7 +193,7 @@ VariationsSeedStore::VariationsSeedStore(
           std::make_unique<SeedReaderWriter>(local_state,
                                              seed_file_dir,
                                              kSeedFilename,
-                                             prefs::kVariationsCompressedSeed,
+                                             kRegularSeedFieldsPrefs,
                                              channel,
                                              entropy_providers)) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

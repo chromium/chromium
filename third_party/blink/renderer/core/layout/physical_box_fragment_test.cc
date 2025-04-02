@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 
-#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 
 namespace blink {
 

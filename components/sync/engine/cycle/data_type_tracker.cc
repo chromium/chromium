@@ -107,7 +107,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(DataType data_type) {
     case WEBAUTHN_CREDENTIAL:
     case PLUS_ADDRESS:
     case PLUS_ADDRESS_SETTING:
-    case AUTOFILL_LOYALTY_CARD:
+    case AUTOFILL_VALUABLE:
     case SHARED_TAB_GROUP_ACCOUNT_DATA:
       return kMediumLocalChangeNudgeDelay;
     case UNSPECIFIED:
@@ -177,7 +177,7 @@ bool CanGetCommitsFromExtensions(DataType data_type) {
     case PLUS_ADDRESS_SETTING:
     case PRODUCT_COMPARISON:
     case COOKIES:
-    case AUTOFILL_LOYALTY_CARD:
+    case AUTOFILL_VALUABLE:
     case SHARED_TAB_GROUP_ACCOUNT_DATA:
       return false;
     case UNSPECIFIED:

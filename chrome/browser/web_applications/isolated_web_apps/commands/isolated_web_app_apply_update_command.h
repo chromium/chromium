@@ -45,6 +45,29 @@ struct IsolatedWebAppApplyUpdateCommandError {
   std::string message;
 };
 
+class IsolatedWebAppApplyUpdateCommandSuccess {
+ public:
+  IsolatedWebAppApplyUpdateCommandSuccess(
+      const base::Version& updated_version,
+      const IsolatedWebAppStorageLocation& updated_location);
+
+  IsolatedWebAppApplyUpdateCommandSuccess(
+      const IsolatedWebAppApplyUpdateCommandSuccess& other);
+  IsolatedWebAppApplyUpdateCommandSuccess& operator=(
+      IsolatedWebAppApplyUpdateCommandSuccess&& other);
+  ~IsolatedWebAppApplyUpdateCommandSuccess();
+
+  bool operator==(const IsolatedWebAppApplyUpdateCommandSuccess& other) const;
+
+  base::Version updated_version() { return updated_version_; }
+
+  IsolatedWebAppStorageLocation updated_location() { return updated_location_; }
+
+ private:
+  base::Version updated_version_;
+  IsolatedWebAppStorageLocation updated_location_;
+};
+
 std::ostream& operator<<(std::ostream& os,
                          const IsolatedWebAppApplyUpdateCommandError& error);
 
@@ -55,7 +78,8 @@ std::ostream& operator<<(std::ostream& os,
 class IsolatedWebAppApplyUpdateCommand
     : public WebAppCommand<
           AppLock,
-          base::expected<void, IsolatedWebAppApplyUpdateCommandError>> {
+          base::expected<IsolatedWebAppApplyUpdateCommandSuccess,
+                         IsolatedWebAppApplyUpdateCommandError>> {
  public:
   // This command is safe to run even if the IWA is not installed or already
   // updated, in which case it will gracefully fail.
@@ -65,8 +89,8 @@ class IsolatedWebAppApplyUpdateCommand
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
       base::OnceCallback<
-          void(base::expected<void, IsolatedWebAppApplyUpdateCommandError>)>
-          callback,
+          void(base::expected<IsolatedWebAppApplyUpdateCommandSuccess,
+                              IsolatedWebAppApplyUpdateCommandError>)> callback,
       std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper);
 
   IsolatedWebAppApplyUpdateCommand(const IsolatedWebAppApplyUpdateCommand&) =

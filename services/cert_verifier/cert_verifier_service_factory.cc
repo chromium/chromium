@@ -242,6 +242,7 @@ void CertVerifierServiceFactoryImpl::GetNewCertVerifier(
     mojo::PendingReceiver<mojom::CertVerifierServiceUpdater> updater_receiver,
     mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
     mojom::CertVerifierCreationParamsPtr creation_params) {
+  InitializeRootStoreDataIfNecessary();
   internal::CertVerifierServiceImpl* service_impl = GetNewCertVerifierImpl(
       std::move(service_receiver), std::move(updater_receiver),
       std::move(client), std::move(creation_params), proc_params_,
@@ -257,6 +258,7 @@ void CertVerifierServiceFactoryImpl::GetNewCertVerifierForTesting(
     mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
     mojom::CertVerifierCreationParamsPtr creation_params,
     scoped_refptr<CertNetFetcherURLLoader>* cert_net_fetcher_ptr) {
+  InitializeRootStoreDataIfNecessary();
   GetNewCertVerifierImpl(std::move(service_receiver),
                          std::move(updater_receiver), std::move(client),
                          std::move(creation_params), proc_params_,
@@ -355,7 +357,7 @@ void CertVerifierServiceFactoryImpl::UpdateChromeRootStore(
   }
 
   std::optional<net::ChromeRootStoreData> root_store_data =
-      net::ChromeRootStoreData::CreateChromeRootStoreData(message.value());
+      net::ChromeRootStoreData::CreateFromRootStoreProto(message.value());
   if (!root_store_data) {
     LOG(ERROR) << "error interpreting proto for Chrome Root Store";
     return;
@@ -377,16 +379,10 @@ void CertVerifierServiceFactoryImpl::GetChromeRootStoreInfo(
     GetChromeRootStoreInfoCallback callback) {
   mojom::ChromeRootStoreInfoPtr info_ptr = mojom::ChromeRootStoreInfo::New();
 
-  std::vector<net::ChromeRootStoreData::Anchor> anchors;
-  if (proc_params_.root_store_data) {
-    info_ptr->version = proc_params_.root_store_data->version();
-    anchors = proc_params_.root_store_data->anchors();
-  } else {
-    info_ptr->version = net::CompiledChromeRootStoreVersion();
-    anchors = net::CompiledChromeRootStoreAnchors();
-  }
+  InitializeRootStoreDataIfNecessary();
+  info_ptr->version = proc_params_.root_store_data->version();
 
-  for (const auto& anchor : anchors) {
+  for (const auto& anchor : proc_params_.root_store_data->anchors()) {
     if (!IsAnchorTrustedOnThisChromeVersion(anchor)) {
       continue;
     }
@@ -435,6 +431,7 @@ void CertVerifierServiceFactoryImpl::SetUseChromeRootStore(
     SetUseChromeRootStoreCallback callback) {
   if (use_crs != proc_params_.use_chrome_root_store) {
     proc_params_.use_chrome_root_store = use_crs;
+    InitializeRootStoreDataIfNecessary();
     UpdateVerifierServices();
   }
   std::move(callback).Run();
@@ -444,6 +441,21 @@ void CertVerifierServiceFactoryImpl::SetUseChromeRootStore(
 void CertVerifierServiceFactoryImpl::RemoveService(
     internal::CertVerifierServiceImpl* service_impl) {
   verifier_services_.erase(service_impl);
+}
+
+void CertVerifierServiceFactoryImpl::InitializeRootStoreDataIfNecessary() {
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+  if (!proc_params_.use_chrome_root_store) {
+    return;
+  }
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+
+  if (!proc_params_.root_store_data) {
+    proc_params_.root_store_data =
+        net::ChromeRootStoreData::CreateFromCompiledRootStore();
+  }
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 }
 
 void CertVerifierServiceFactoryImpl::UpdateVerifierServices() {

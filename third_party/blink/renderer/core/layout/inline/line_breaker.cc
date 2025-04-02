@@ -2574,8 +2574,7 @@ bool LineBreaker::ComputeTrailingCollapsibleSpaceHelper(LineInfo& line_info) {
   for (auto& item_result : base::Reversed(*line_info.MutableResults())) {
     DCHECK(item_result.item);
     const InlineItem& item = *item_result.item;
-    if (RuntimeEnabledFeatures::NoCollapseSpaceBeforeRubyEnabled() &&
-        item_result.IsRubyColumn()) {
+    if (item_result.IsRubyColumn()) {
       if (ComputeTrailingCollapsibleSpaceHelper(
               item_result.ruby_column->base_line)) {
         if (trailing_collapsible_space_ &&
@@ -2592,8 +2591,7 @@ bool LineBreaker::ComputeTrailingCollapsibleSpaceHelper(LineInfo& line_info) {
       continue;
     }
     if (item.Type() == InlineItem::kText) {
-      if (RuntimeEnabledFeatures::NoCollapseSpaceBeforeRubyEnabled() &&
-          item_result.Length() == 0) {
+      if (item_result.Length() == 0) {
         continue;
       }
       DCHECK_GT(item_result.EndOffset(), 0u);
@@ -3436,10 +3434,8 @@ LineInfo LineBreaker::CreateSubLineInfo(
   sub_line_breaker.disallow_auto_wrap_ = disallow_auto_wrap;
   sub_line_breaker.SetInputRange(start, end_item_index,
                                  initial_whitespace_state, this);
-  if (RuntimeEnabledFeatures::NoCollapseSpaceBeforeRubyEnabled()) {
-    sub_line_breaker.disable_trailing_whitespace_collapsing_ =
-        disable_trailing_whitespace_collapsing;
-  }
+  sub_line_breaker.disable_trailing_whitespace_collapsing_ =
+      disable_trailing_whitespace_collapsing;
   // OverrideAvailableWidth() prevents HandleFloat() from updating
   // available_width_.
   sub_line_breaker.OverrideAvailableWidth(limit);
@@ -3518,10 +3514,7 @@ InlineItemResult* LineBreaker::AddRubyColumnResult(
       position_ -= overhang.start;
     }
   }
-  trailing_whitespace_ =
-      RuntimeEnabledFeatures::NoCollapseSpaceBeforeRubyEnabled()
-          ? WhitespaceState::kUnknown
-          : WhitespaceState::kNone;
+  trailing_whitespace_ = WhitespaceState::kUnknown;
   return column_result;
 }
 

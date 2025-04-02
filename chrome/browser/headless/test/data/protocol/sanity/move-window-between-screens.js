@@ -37,10 +37,10 @@
         `, screen ${screen}`);
   }
 
-  await moveWindowAndLogScreen({left: 1, top: 1, width: 400, height: 300});
-  await moveWindowAndLogScreen({left: 801, top: 1, width: 400, height: 301});
-  await moveWindowAndLogScreen({left: 1, top: 601, width: 400, height: 302});
-  await moveWindowAndLogScreen({left: 801, top: 601, width: 400, height: 303});
+  await moveWindowAndLogScreen({left: 1, top: 1, width: 500, height: 300});
+  await moveWindowAndLogScreen({left: 801, top: 1, width: 500, height: 301});
+  await moveWindowAndLogScreen({left: 1, top: 601, width: 500, height: 302});
+  await moveWindowAndLogScreen({left: 801, top: 601, width: 500, height: 303});
 
   testRunner.completeTest();
 })

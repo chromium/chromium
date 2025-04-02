@@ -45,6 +45,7 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
   int GetButtons() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
+  void InfoBarDismissed() override;
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;

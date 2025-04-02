@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Luettelotiedosto on virheellinen.</translation>
 <translation id="7217838517480956708">Koneen ylläpitäjä vaatii laajennuksen <ph name="EXTENSION_NAME" /> asennusta. Sitä ei voi poistaa tai muuttaa.</translation>
 <translation id="7612608473764576263">Yksityisen avaimen syöttöarvon on oltava kelvollisessa muodossa (PEM-merkkijärjestelmää käyttävä PKCS#8-muotoinen RSA-avain).</translation>
+<translation id="7876803335449432072">Tiedostoa <ph name="RELATIVE_PATH" /> ei voitu ladata sisältöskriptille. Sisältöskriptin tyylisivut voidaan ladata vain tuetuista tyylisivutiedostoista, kuten .css-tiedostoista.</translation>
 <translation id="7939686037314084444">Laajennus ei latautunut oikein. Se ei välttämättä havaitse verkkopyyntöjä.</translation>
 <translation id="7972881773422714442">Vaihtoehdot: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Käyttäjää kuvaava</translation>
 <translation id="8047248493720652249">Laajennus ei voinut antaa lataukselle nimeä <ph name="ATTEMPTED_FILENAME" />, koska toinen laajennus (<ph name="EXTENSION_NAME" />) määritti toisen tiedostonimen (<ph name="ACTUAL_FILENAME" />).</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> myyjältä <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Luettelotiedosto puuttuu tai sitä ei voi lukea.</translation>
+<translation id="8621383749470166852">Tiedostoa <ph name="RELATIVE_PATH" /> ei voitu ladata sisältöskriptille. Sisältöskriptit voidaan ladata vain tuetuista JavaScript-tiedostoista, kuten .js-tiedostoista.</translation>
 <translation id="8636666366616799973">Paketti on virheellinen. Tietoja: <ph name="ERROR_MESSAGE" />.</translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> pyytää oikeutta käyttää yhtä laitteistasi:</translation>
 <translation id="8885905466771744233">Kyseiselle laajennukselle on jo olemassa yksityinen avain. Käytä tätä avainta tai poista se ensin.</translation>

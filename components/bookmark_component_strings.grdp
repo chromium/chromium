@@ -3,6 +3,9 @@
   <message name="IDS_BOOKMARK_EDITOR_TITLE" desc="Title of the window the bookmark editor is in.">
     Edit bookmark
   </message>
+  <message name="IDS_BOOKMARK_MOVE_DIALOG_TITLE" desc="Title of the bookmark move dialog.">
+    Move to...
+  </message>
   <message name="IDS_BOOKMARK_EDITOR_NEW_FOLDER_NAME" desc="Name for newly created groups">
     New folder
   </message>

@@ -28,6 +28,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1342274909142618978">Supprimer également les données de Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">La fonctionnalité a été épinglée! Vous pouvez à nouveau accéder à la recherche d'images à partir du nouveau bouton de la barre d'outils</translation>
 <translation id="1356661055722410047">Nouveau! Vous pouvez traduire à la fois le texte et les images sur votre écran</translation>
+<translation id="1383876407941801731">Rechercher</translation>
 <translation id="1414495520565016063">Vous êtes connecté à Chromium!</translation>
 <translation id="1465192221147974788">Pour partager votre fenêtre, autorisez l'enregistrement de l'écran pour Chromium dans les Réglages système.</translation>
 <translation id="1478370723027452770">Obtenir de l'aide avec Chrome for Testing</translation>
@@ -119,6 +120,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2583187216237139145">L'administrateur du profil professionnel peut retirer toutes les données Chromium générées durant l'utilisation de ce profil (comme la création de favoris, l'historique, les mots de passe et d'autres paramètres). <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Continuer à utiliser Chromium</translation>
 <translation id="259935314519650377">Échec de la mise en cache du programme d'installation téléchargé. Erreur : <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2620436844016719705">Système</translation>
 <translation id="2629740064077610681">Votre organisation peut consulter et gérer les données de navigation, comme vos favoris, votre historique et vos mots de passe. Elle ne peut pas consulter les données de navigation dans d'autres profils Chromium</translation>
 <translation id="2635452620547538388">Confirmez votre identité pour utiliser et enregistrer les données Chromium dans votre compte, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="264613044588233783">Chromium s'exécute plus rapidement, et les fonctionnalités qui utilisent JavaScript devraient fonctionner comme prévu (recommandé)</translation>
@@ -499,6 +501,7 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="7937630085815544518">Vous étiez connecté à Chromium en tant que <ph name="USER_EMAIL_ADDRESS" />. Veuillez utiliser le même compte pour vous reconnecter.</translation>
 <translation id="7975919845073681630">Cette installation de Chromium est secondaire. Celui-ci ne peut donc pas servir de navigateur par défaut.</translation>
 <translation id="7997934263947464652">Les extensions, les applications et les thèmes provenant de sources inconnues peuvent endommager votre appareil. Chromium recommande de les installer uniquement à partir de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
+<translation id="8004582292198964060">Navigateur</translation>
 <translation id="8010081455002666927">Détection automatique</translation>
 <translation id="8013436988911883588">Lorsque Chromium y aura accès, les sites Web pourront vous demander l'accès.</translation>
 <translation id="80471789339884597">Merci pour l'installation. Vous devez redémarrer tous vos navigateurs avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>

@@ -98,6 +98,22 @@ ProfileNameToGaiaIds GetMappingFromProfileAttributes(
   return result;
 }
 
+// Enum for `Signin.IOSHostedDomainFetchEvent` histogram.
+// Entries should not be renumbered and numeric values should never be reused.
+// LINT.IfChange(IOSHostedDomainFetchEvent)
+enum class HostedDomainFetchEvent {
+  kStarted = 0,
+  kFinishedWithSuccess = 1,
+  kFinishedWithErrorWillRetry = 2,
+  kFinishedWithErrorFinal = 3,
+  kMaxValue = kFinishedWithErrorFinal
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:IOSHostedDomainFetchEvent)
+
+void RecordHostedDomainFetchEvent(HostedDomainFetchEvent event) {
+  base::UmaHistogramEnumeration("Signin.IOSHostedDomainFetchEvent", event);
+}
+
 }  // namespace
 
 // Helper class that handles assignment of accounts to profiles. Specifically,
@@ -199,6 +215,8 @@ class AccountProfileMapper::Assigner
   // Called when the hosted domain for `identity` has been fetched
   // asynchronously. Triggers the assignment to an appropriate profile.
   void HostedDomainFetched(NSString* hosted_domain, NSError* error);
+  HostedDomainFetchEvent HostedDomainFetchedImpl(NSString* hosted_domain,
+                                                 NSError* error);
   // Ensure that each identity is fetched at least twice, and
   // kMinimalNumberOfRetry fetches are tried.
   void ResetNumberOfFetchTries();
@@ -663,6 +681,7 @@ void AccountProfileMapper::Assigner::FetchHostedDomainNow() {
       identity,
       base::BindOnce(&AccountProfileMapper::Assigner::HostedDomainFetched,
                      weak_ptr_factory_.GetWeakPtr()));
+  RecordHostedDomainFetchEvent(HostedDomainFetchEvent::kStarted);
 }
 
 void AccountProfileMapper::Assigner::FetchHostedDomain() {
@@ -676,23 +695,31 @@ void AccountProfileMapper::Assigner::FetchHostedDomain() {
 void AccountProfileMapper::Assigner::HostedDomainFetched(
     NSString* hosted_domain,
     NSError* error) {
+  HostedDomainFetchEvent outcome =
+      HostedDomainFetchedImpl(hosted_domain, error);
+  RecordHostedDomainFetchEvent(outcome);
+}
+
+HostedDomainFetchEvent AccountProfileMapper::Assigner::HostedDomainFetchedImpl(
+    NSString* hosted_domain,
+    NSError* error) {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
   backoff_entry_.InformOfRequest(!error);
   if (error) {
     if (--number_of_remaining_tries_ > 0) {
       // Let’s try again.
       FetchHostedDomain();
-      return;
+      return HostedDomainFetchEvent::kFinishedWithErrorWillRetry;
     }
     // Each identity has failed to be fetched at least twice.
     // We had kMinimalNumberOfRetry consecutive fetch failures.
     // Let’s stop trying (until the next browser restart).
-    // TODO(crbug.com/331783685): Record metrics for how often this happens.
     for (id<SystemIdentity> identity : system_identities_to_fetch_) {
       [gaia_ids_failed_fetching_ addObject:identity.gaiaID];
     }
     [system_identities_to_fetch_ removeAllObjects];
-    return;
+
+    return HostedDomainFetchEvent::kFinishedWithErrorFinal;
   }
 
   id<SystemIdentity> identity = [system_identities_to_fetch_ firstObject];
@@ -707,6 +734,8 @@ void AccountProfileMapper::Assigner::HostedDomainFetched(
   }
 
   MaybeUpdateCachedMappingAndNotify();
+
+  return HostedDomainFetchEvent::kFinishedWithSuccess;
 }
 
 void AccountProfileMapper::Assigner::AssignIdentityToProfile(

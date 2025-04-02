@@ -2434,6 +2434,31 @@ TEST_P(CompositorFrameSinkSupportTest,
   EXPECT_TRUE(region_properties->transform_to_root.IsIdentity());
 }
 
+// Regression test for https://crbug.com/40286473.
+TEST_P(CompositorFrameSinkSupportTest, DoNotSendTheSameBeginFrameIdTwice) {
+  FakeExternalBeginFrameSource begin_frame_source(0.f, false);
+
+  MockCompositorFrameSinkClient mock_client;
+  auto support = std::make_unique<CompositorFrameSinkSupport>(
+      &mock_client, manager_.get(), kAnotherArbitraryFrameSinkId,
+      /*is_root=*/true);
+  support->SetBeginFrameSource(&begin_frame_source);
+  support->SetNeedsBeginFrame(true);
+
+  BeginFrameArgs args1 = CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 7,
+                                                        42, base::TimeTicks());
+  EXPECT_CALL(mock_client, OnBeginFrame(args1, _, _, _));
+  begin_frame_source.TestOnBeginFrame(args1);
+  testing::Mock::VerifyAndClearExpectations(&mock_client);
+
+  BeginFrameArgs args2 = CreateBeginFrameArgsForTesting(
+      BEGINFRAME_FROM_HERE, args1.frame_id.source_id,
+      args1.frame_id.sequence_number, base::TimeTicks());
+  EXPECT_CALL(mock_client, OnBeginFrame(_, _, _, _)).Times(0);
+  begin_frame_source.TestOnBeginFrame(args2);
+  testing::Mock::VerifyAndClearExpectations(&mock_client);
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          CompositorFrameSinkSupportTest,
                          testing::Bool(),

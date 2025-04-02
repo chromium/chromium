@@ -15,7 +15,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IDP_BRAND_ICON;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HEADER_ICON;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_BRAND_ICON;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.TYPE;
 
@@ -58,8 +58,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                     Arrays.asList(mNewUserAccount),
                     Arrays.asList(mIdpData),
                     /* isAutoReauthn= */ false,
-                    /* newAccounts= */ Collections.EMPTY_LIST,
-                    /* favicon= */ null);
+                    /* newAccounts= */ Collections.EMPTY_LIST);
             mMediator.showVerifySheet(mAnaAccount);
 
             // There is no account shown in the verify sheet on active mode.
@@ -84,8 +83,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                     Arrays.asList(mAnaAccount),
                     Arrays.asList(mIdpData),
                     /* isAutoReauthn= */ true,
-                    /* newAccounts= */ Collections.EMPTY_LIST,
-                    /* favicon= */ null);
+                    /* newAccounts= */ Collections.EMPTY_LIST);
 
             // There is no account shown on the loading dialog in active mode.
             assertEquals(0, mSheetAccountItems.size());
@@ -115,8 +113,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 Arrays.asList(mAnaAccount, mBobAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
 
         // For accounts dialog, we expect dragbar handle + header + two accounts.
@@ -133,8 +130,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 Arrays.asList(mNewUserAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
         mMediator.showRequestPermissionModalSheet(mNewUserAccount);
 
         // For request permission dialog, we expect drag handlebar + header + account chip +
@@ -157,8 +153,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 Arrays.asList(mAnaAccount),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
 
         assertNotNull(mModel.get(ItemProperties.HEADER).get(RP_BRAND_ICON));
     }
@@ -170,13 +165,12 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 Arrays.asList(mAnaAccountWithoutBrandIcons),
                 Arrays.asList(mIdpDataWithoutIcons),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST,
-                /* favicon= */ null);
+                /* newAccounts= */ Collections.EMPTY_LIST);
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         // Unlike passive mode, brand icons should not be available because we do not show any
         // placeholder icon.
-        assertNull(headerModel.get(IDP_BRAND_ICON));
+        assertNull(headerModel.get(HEADER_ICON));
         assertNull(mModel.get(ItemProperties.HEADER).get(RP_BRAND_ICON));
     }
 
@@ -188,8 +182,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 Arrays.asList(),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                mNewAccountsSingleNewAccount,
-                /* favicon= */ null);
+                mNewAccountsSingleNewAccount);
 
         // Request permission modal dialog is NOT skipped for a single newly signed-in new account.
         // Since
@@ -208,8 +201,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 Arrays.asList(),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                mNewAccountsSingleNewAccount,
-                /* favicon= */ null);
+                mNewAccountsSingleNewAccount);
 
         // Account chooser dialog is shown for a single newly signed-in new account where request
         // permission is false. Since this is a new account and request permission is false, we need
@@ -227,8 +219,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 Arrays.asList(),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                mNewAccountsSingleReturningAccount,
-                /* favicon= */ null);
+                mNewAccountsSingleReturningAccount);
 
         // Account chooser dialog is shown for a single newly signed-in returning account. Although
         // this is a returning account, we cannot skip directly to signing in because we have to
@@ -247,8 +238,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 Arrays.asList(),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                mNewAccountsSingleReturningAccount,
-                /* favicon= */ null);
+                mNewAccountsSingleReturningAccount);
         mMediator.showErrorDialog(
                 mTestEtldPlusOne,
                 mTestEtldPlusOne2,
@@ -285,8 +275,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 Arrays.asList(),
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
-                mNewAccountsSingleReturningAccount,
-                /* favicon= */ null);
+                mNewAccountsSingleReturningAccount);
         mMediator.showErrorDialog(
                 mTestEtldPlusOne, mTestEtldPlusOne2, mIdpMetadata, RpContext.SIGN_IN, mTokenError);
 

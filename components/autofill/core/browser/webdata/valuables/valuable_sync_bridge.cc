@@ -52,7 +52,7 @@ void ValuableSyncBridge::CreateForWebDataServiceAndBackend(
       &kAutofillValuableSyncBridgeUserDataKey,
       std::make_unique<ValuableSyncBridge>(
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
-              syncer::AUTOFILL_LOYALTY_CARD,
+              syncer::AUTOFILL_VALUABLE,
               /*dump_stack=*/base::DoNothing()),
           web_data_backend));
 }
@@ -79,7 +79,7 @@ std::unique_ptr<syncer::MetadataChangeList>
 ValuableSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
-      GetSyncMetadataStore(), syncer::AUTOFILL_LOYALTY_CARD,
+      GetSyncMetadataStore(), syncer::AUTOFILL_VALUABLE,
       base::BindRepeating(&syncer::DataTypeLocalChangeProcessor::ReportError,
                           change_processor()->GetWeakPtr()));
 }
@@ -127,8 +127,7 @@ std::optional<syncer::ModelError> ValuableSyncBridge::MergeFullSyncData(
   if (transaction) {
     transaction->Commit();
   }
-  web_data_backend_->NotifyOnAutofillChangedBySync(
-      syncer::AUTOFILL_LOYALTY_CARD);
+  web_data_backend_->NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE);
   return std::nullopt;
 }
 
@@ -202,8 +201,7 @@ void ValuableSyncBridge::ApplyDisableSyncChanges(
 
   // False positives can occur here if there were no loyalty cards to begin
   // with.
-  web_data_backend_->NotifyOnAutofillChangedBySync(
-      syncer::AUTOFILL_LOYALTY_CARD);
+  web_data_backend_->NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE);
 }
 
 sync_pb::EntitySpecifics
@@ -253,10 +251,11 @@ bool ValuableSyncBridge::SyncMetadataCacheContainsSupportedFields(
 
 void ValuableSyncBridge::LoadMetadata() {
   auto batch = std::make_unique<syncer::MetadataBatch>();
-  if (!GetSyncMetadataStore()->GetAllSyncMetadata(syncer::AUTOFILL_LOYALTY_CARD,
+  if (!GetSyncMetadataStore()->GetAllSyncMetadata(syncer::AUTOFILL_VALUABLE,
                                                   batch.get())) {
     change_processor()->ReportError(
-        {FROM_HERE, "Failed reading LOYALTY_CARD metadata from WebDatabase."});
+        {FROM_HERE,
+         "Failed reading AUTOFILL_VALUABLE metadata from WebDatabase."});
     return;
   } else if (SyncMetadataCacheContainsSupportedFields(
                  batch->GetAllMetadata())) {
@@ -266,7 +265,7 @@ void ValuableSyncBridge::LoadMetadata() {
     // we should force the initial sync flow to propagate the cached data into
     // the local model.
     GetSyncMetadataStore()->DeleteAllSyncMetadata(
-        syncer::DataType::AUTOFILL_LOYALTY_CARD);
+        syncer::DataType::AUTOFILL_VALUABLE);
 
     batch = std::make_unique<syncer::MetadataBatch>();
   }

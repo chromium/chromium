@@ -166,6 +166,24 @@ class Speedometer30(_Speedometer3):
 
 @benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
                 component='Blink>JavaScript',
+                documentation_url='https://browserbench.org/Speedometer3.1')
+class Speedometer31(_Speedometer3):
+  """Speedometer3.1 benchmark.
+  Explicitly named version."""
+
+  _SOURCE_DIR = os.path.join(_SPEEDOMETER_DIR, 'v3.1')
+
+  @classmethod
+  def GetStoryClass(cls):
+    return speedometer3_pages.Speedometer31Story
+
+  @classmethod
+  def Name(cls):
+    return 'UNSCHEDULED_speedometer3.1'
+
+
+@benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
+                component='Blink>JavaScript',
                 documentation_url='https://github.com/WebKit/Speedometer')
 class Speedometer3(Speedometer30):
   """The latest version of the Speedometer3 benchmark."""

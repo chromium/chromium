@@ -387,8 +387,8 @@ class ClientCertResolverTest : public testing::Test,
   void SetManagedNetworkPolicy(::onc::ONCSource onc_source,
                                std::string_view policy_json) {
     auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-        policy_json,
-        base::JSON_ALLOW_TRAILING_COMMAS | base::JSON_ALLOW_CONTROL_CHARS);
+        policy_json, base::JSON_ALLOW_TRAILING_COMMAS |
+                         base::JSON_ALLOW_NEWLINES_IN_STRINGS);
     ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
     ASSERT_TRUE(parsed_json->is_list());
 

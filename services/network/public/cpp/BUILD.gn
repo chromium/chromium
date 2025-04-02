@@ -431,6 +431,7 @@ component("shared_storage_support") {
     "shared_storage_utils.h",
   ]
   public_deps = [
+    ":flags_and_switches",
     "//base",
     "//mojo/public/mojom/base",
     "//services/network/public/mojom:mojom_shared_storage",

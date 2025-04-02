@@ -77,6 +77,7 @@ class CONTENT_EXPORT InterestGroupLazyFiller : public PersistedLazyFiller {
                                    base::optional_ref<const std::string>,
                                    base::optional_ref<const std::string>)>
           is_reporting_id_set_excluded,
+      std::optional<size_t> selectable_reporting_ids_limit,
       const std::vector<blink::InterestGroup::Ad>& ads,
       v8::Local<v8::ObjectTemplate>& lazy_filler_template);
 

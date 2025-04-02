@@ -44,6 +44,7 @@ class ComputedAppSizeWithOrigin;
 class IsolatedWebAppInstallSource;
 class IsolatedWebAppUrlInfo;
 class IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo;
+class IsolatedWebAppApplyUpdateCommandSuccess;
 class IsolationData;
 class SignedWebBundleMetadata;
 class WebApp;
@@ -260,8 +261,8 @@ class WebAppCommandScheduler {
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
       base::OnceCallback<
-          void(base::expected<void, IsolatedWebAppApplyUpdateCommandError>)>
-          callback,
+          void(base::expected<IsolatedWebAppApplyUpdateCommandSuccess,
+                              IsolatedWebAppApplyUpdateCommandError>)> callback,
       const base::Location& call_location = FROM_HERE);
 
   // Given the |bundle_metadata| of a Signed Web Bundle, schedules a command to

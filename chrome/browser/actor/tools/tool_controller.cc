@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/safe_ref.h"
 #include "base/notimplemented.h"
+#include "chrome/browser/actor/tools/history_tool.h"
 #include "chrome/browser/actor/tools/navigate_tool.h"
 #include "chrome/browser/actor/tools/page_tool.h"
 #include "chrome/browser/actor/tools/tool.h"
@@ -61,14 +62,14 @@ std::unique_ptr<Tool> ToolController::CreateTool(
       GURL url(invocation.GetActionInfo().navigate().url());
       return std::make_unique<NavigateTool>(*tab, url);
     }
-    case ActionInformation::kBack:
-      // TODO(crbug.com/402730958): Implement
-      NOTIMPLEMENTED();
-      return nullptr;
-    case ActionInformation::kForward:
-      // TODO(crbug.com/402730309): Implement
-      NOTIMPLEMENTED();
-      return nullptr;
+    case ActionInformation::kBack: {
+      TabInterface* tab = invocation.FindTargetTab();
+      return std::make_unique<HistoryTool>(*tab, HistoryTool::kBack);
+    }
+    case ActionInformation::kForward: {
+      TabInterface* tab = invocation.FindTargetTab();
+      return std::make_unique<HistoryTool>(*tab, HistoryTool::kForward);
+    }
     case ActionInformation::kWait:
       // TODO(crbug.com/402730309): Implement
       NOTIMPLEMENTED();

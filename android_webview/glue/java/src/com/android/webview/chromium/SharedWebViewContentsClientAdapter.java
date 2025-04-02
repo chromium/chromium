@@ -86,7 +86,7 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
     public final boolean shouldOverrideUrlLoading(AwWebResourceRequest request) {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICallback.WebViewClient.shouldOverrideUrlLoading")) {
-            if (TRACE) Log.i(TAG, "shouldOverrideUrlLoading=" + request.url);
+            if (TRACE) Log.i(TAG, "shouldOverrideUrlLoading=" + request.getUrl());
             boolean result;
             if (mSupportLibClient.isFeatureAvailable(Features.SHOULD_OVERRIDE_WITH_REDIRECTS)) {
                 result =
@@ -139,7 +139,7 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
                 // case for intercepted requests) AwContents will pass in null.
                 error.description = mWebViewDelegate.getErrorString(mContext, error.errorCode);
             }
-            if (TRACE) Log.i(TAG, "onReceivedError=" + request.url);
+            if (TRACE) Log.i(TAG, "onReceivedError=" + request.getUrl());
             if (mSupportLibClient.isFeatureAvailable(Features.RECEIVE_WEB_RESOURCE_ERROR)) {
                 mSupportLibClient.onReceivedError(
                         mWebView, new WebResourceRequestAdapter(request), error);
@@ -183,7 +183,7 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
                 TraceEvent.scoped("WebViewContentsClientAdapter.onReceivedHttpError")) {
             AwHistogramRecorder.recordCallbackInvocation(
                     AwHistogramRecorder.WebViewCallbackType.ON_RECEIVED_HTTP_ERROR);
-            if (TRACE) Log.i(TAG, "onReceivedHttpError=" + request.url);
+            if (TRACE) Log.i(TAG, "onReceivedHttpError=" + request.getUrl());
             if (mSupportLibClient.isFeatureAvailable(Features.RECEIVE_HTTP_ERROR)) {
                 // Note: we use the @SystemApi constructor here because it relaxes several
                 // requirements:

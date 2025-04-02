@@ -86,7 +86,7 @@ def _GetMachineGroup(build_properties):
     raise ValueError(
         'Must set perf_dashboard_machine_group or have a valid '
         'mapping in '
-        'src/tools/perf/core/perf_dashboard_machine_group_mapping.json'
+        'src/tools/perf/core/perf_dashboard_machine_group_mapping.json. '
         'See bit.ly/perf-dashboard-machine-group for more details')
   return machine_group
 

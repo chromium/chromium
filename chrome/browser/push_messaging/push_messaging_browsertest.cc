@@ -71,7 +71,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/prerender_test_util.h"
-#include "content/public/test/test_utils.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -2241,15 +2240,14 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   EXPECT_EQ("permission status - granted",
             RunScript("pushManagerPermissionState()"));
 
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner =
-      new content::MessageLoopRunner;
+  base::RunLoop run_loop;
   push_service()->SetContentSettingChangedCallbackForTesting(
-      base::BarrierClosure(1, message_loop_runner->QuitClosure()));
+      run_loop.QuitClosure());
 
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->ClearSettingsForOneType(ContentSettingsType::NOTIFICATIONS);
 
-  message_loop_runner->Run();
+  run_loop.Run();
 
   EXPECT_EQ("permission status - prompt",
             RunScript("pushManagerPermissionState()"));
@@ -2272,10 +2270,9 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   EXPECT_EQ("permission status - granted",
             RunScript("pushManagerPermissionState()"));
 
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner =
-      new content::MessageLoopRunner;
+  base::RunLoop run_loop;
   push_service()->SetContentSettingChangedCallbackForTesting(
-      base::BarrierClosure(1, message_loop_runner->QuitClosure()));
+      run_loop.QuitClosure());
 
   GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
@@ -2283,7 +2280,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
                                       ContentSettingsType::NOTIFICATIONS,
                                       CONTENT_SETTING_DEFAULT);
 
-  message_loop_runner->Run();
+  run_loop.Run();
 
   EXPECT_EQ("permission status - prompt",
             RunScript("pushManagerPermissionState()"));
@@ -2306,10 +2303,9 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   EXPECT_EQ("permission status - granted",
             RunScript("pushManagerPermissionState()"));
 
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner =
-      new content::MessageLoopRunner;
+  base::RunLoop run_loop;
   push_service()->SetContentSettingChangedCallbackForTesting(
-      base::BarrierClosure(1, message_loop_runner->QuitClosure()));
+      run_loop.QuitClosure());
 
   GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
@@ -2317,7 +2313,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
                                       ContentSettingsType::NOTIFICATIONS,
                                       CONTENT_SETTING_BLOCK);
 
-  message_loop_runner->Run();
+  run_loop.Run();
 
   EXPECT_EQ("permission status - denied",
             RunScript("pushManagerPermissionState()"));
@@ -2340,15 +2336,14 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   EXPECT_EQ("permission status - granted",
             RunScript("pushManagerPermissionState()"));
 
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner =
-      new content::MessageLoopRunner;
+  base::RunLoop run_loop;
   push_service()->SetContentSettingChangedCallbackForTesting(
-      base::BarrierClosure(1, message_loop_runner->QuitClosure()));
+      run_loop.QuitClosure());
 
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->ClearSettingsForOneType(ContentSettingsType::NOTIFICATIONS);
 
-  message_loop_runner->Run();
+  run_loop.Run();
 
   EXPECT_EQ("permission status - prompt",
             RunScript("pushManagerPermissionState()"));
@@ -2371,10 +2366,9 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   EXPECT_EQ("permission status - granted",
             RunScript("pushManagerPermissionState()"));
 
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner =
-      new content::MessageLoopRunner;
+  base::RunLoop run_loop;
   push_service()->SetContentSettingChangedCallbackForTesting(
-      base::BarrierClosure(1, message_loop_runner->QuitClosure()));
+      run_loop.QuitClosure());
 
   GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
@@ -2382,7 +2376,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
                                       ContentSettingsType::NOTIFICATIONS,
                                       CONTENT_SETTING_DEFAULT);
 
-  message_loop_runner->Run();
+  run_loop.Run();
 
   EXPECT_EQ("permission status - prompt",
             RunScript("pushManagerPermissionState()"));
@@ -2405,10 +2399,9 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   EXPECT_EQ("permission status - granted",
             RunScript("pushManagerPermissionState()"));
 
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner =
-      new content::MessageLoopRunner;
+  base::RunLoop run_loop;
   push_service()->SetContentSettingChangedCallbackForTesting(
-      base::BarrierClosure(1, message_loop_runner->QuitClosure()));
+      run_loop.QuitClosure());
 
   GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
@@ -2416,7 +2409,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
                                       ContentSettingsType::NOTIFICATIONS,
                                       CONTENT_SETTING_BLOCK);
 
-  message_loop_runner->Run();
+  run_loop.Run();
 
   EXPECT_EQ("permission status - denied",
             RunScript("pushManagerPermissionState()"));
@@ -2439,10 +2432,9 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   EXPECT_EQ("permission status - granted",
             RunScript("pushManagerPermissionState()"));
 
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner =
-      new content::MessageLoopRunner;
+  base::RunLoop run_loop;
   push_service()->SetContentSettingChangedCallbackForTesting(
-      base::BarrierClosure(1, message_loop_runner->QuitClosure()));
+      run_loop.QuitClosure());
 
   GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
@@ -2450,7 +2442,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
                                       ContentSettingsType::NOTIFICATIONS,
                                       CONTENT_SETTING_ALLOW);
 
-  message_loop_runner->Run();
+  run_loop.Run();
 
   EXPECT_EQ("permission status - granted",
             RunScript("pushManagerPermissionState()"));
@@ -2473,10 +2465,9 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   EXPECT_EQ("permission status - granted",
             RunScript("pushManagerPermissionState()"));
 
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner =
-      new content::MessageLoopRunner;
+  base::RunLoop run_loop;
   push_service()->SetContentSettingChangedCallbackForTesting(
-      base::BarrierClosure(2, message_loop_runner->QuitClosure()));
+      base::BarrierClosure(2, run_loop.QuitClosure()));
 
   GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
@@ -2487,7 +2478,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
                                       ContentSettingsType::NOTIFICATIONS,
                                       CONTENT_SETTING_DEFAULT);
 
-  message_loop_runner->Run();
+  run_loop.Run();
 
   // The two first rules should give |origin| the permission to use Push even
   // if the rules it used to have have been reset.

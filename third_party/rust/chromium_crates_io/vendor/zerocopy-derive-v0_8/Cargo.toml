@@ -1,0 +1,28 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/removed_Cargo.toml
+# by tools/crates/gnrt. Do not edit!
+
+# This is an empty crate that has replaced the 'zerocopy-derive' crate, since
+# it was listed in `resolve.remove_crates` in gnrt_config.toml.
+
+[package]
+name = "zerocopy-derive"
+version = "0.8.24"
+
+[features]
+
+[dependencies.proc-macro2]
+version = "^1.0.1"
+default_features = true
+features = []
+[dependencies.quote]
+version = "^1.0.10"
+default_features = true
+features = []
+[dependencies.syn]
+version = "^2.0.46"
+default_features = true
+features = []

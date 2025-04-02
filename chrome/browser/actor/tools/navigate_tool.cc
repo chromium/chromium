@@ -16,11 +16,11 @@ using tabs::TabInterface;
 namespace actor {
 
 NavigateTool::NavigateTool(TabInterface& tab, const GURL& url)
-    : WebContentsObserver(tab.GetContents()), url_(url) {}
-
-NavigateTool::~NavigateTool() {
-  CHECK(invoke_callback_.is_null());
+    : WebContentsObserver(tab.GetContents()), url_(url) {
+  CHECK(tab.GetContents());
 }
+
+NavigateTool::~NavigateTool() = default;
 
 void NavigateTool::Validate(ValidateCallback callback) {
   if (!url_.is_valid()) {
@@ -44,6 +44,9 @@ void NavigateTool::Invoke(InvokeCallback callback) {
 
   invoke_callback_ = std::move(callback);
 
+  // TODO(crbug.com/406545255): If the page has a BeforeUnload handler the user
+  // may be prompted to confirm/abort the navigation, what should we do in those
+  // cases?
   web_contents()->OpenURL(
       params, base::BindOnce(&NavigateTool::NavigationHandleCallback,
                              weak_ptr_factory_.GetWeakPtr()));

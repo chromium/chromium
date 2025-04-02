@@ -4,6 +4,8 @@
 
 #include "chrome/browser/password_manager/android/password_store_empty_backend.h"
 
+#include "components/password_manager/core/browser/password_store/password_data_type_controller_delegate_android.h"
+
 namespace password_manager {
 
 namespace {
@@ -96,7 +98,10 @@ void PasswordStoreEmptyBackend::RemoveLoginsCreatedBetweenAsync(
 void PasswordStoreEmptyBackend::DisableAutoSignInForOriginsAsync(
     const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
     base::OnceClosure completion) {
-  NOTREACHED() << "The empty store backend cannot hold data.";
+  // Technically there is no auto sign-in enabled, since there is nothing stored
+  // so it's safe to just invoke `completion` here.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(completion));
 }
 
 SmartBubbleStatsStore* PasswordStoreEmptyBackend::GetSmartBubbleStatsStore() {
@@ -105,7 +110,7 @@ SmartBubbleStatsStore* PasswordStoreEmptyBackend::GetSmartBubbleStatsStore() {
 
 std::unique_ptr<syncer::DataTypeControllerDelegate>
 PasswordStoreEmptyBackend::CreateSyncControllerDelegate() {
-  return nullptr;
+  return std::make_unique<PasswordDataTypeControllerDelegateAndroid>();
 }
 
 void PasswordStoreEmptyBackend::OnSyncServiceInitialized(

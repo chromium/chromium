@@ -199,7 +199,7 @@ void FeaturedSearchProvider::AddFeaturedKeywordMatches(
   if (input.GetFeaturedKeywordMode() !=
       AutocompleteInput::FeaturedKeywordMode::kFalse) {
     TemplateURLService::TemplateURLVector turls;
-    template_url_service_->AddMatchingKeywords(input.text(), &turls);
+    template_url_service_->AddMatchingKeywords(input.text(), false, &turls);
     for (TemplateURL* turl : turls) {
       if (turl->starter_pack_id() > 0 &&
           turl->is_active() == TemplateURLData::ActiveStatus::kTrue) {

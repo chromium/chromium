@@ -216,6 +216,11 @@ class BookmarkEditorView : public BookmarkEditor,
   // internally by NewFolder and broken into a separate method for testing.
   EditorNode* AddNewFolder(EditorNode* parent);
 
+  // Creates a title and a URL field if the dialog is adding/editing a bookmark
+  // that is not a folder. If the dialog is for adding/editing a folder, creates
+  // only a title field.
+  void AddLabels();
+
   // If |editor_node| is expanded it's added to |expanded_nodes| and this is
   // recursively invoked for all the children.
   void UpdateExpandedNodes(EditorNode* editor_node,
@@ -246,10 +251,11 @@ class BookmarkEditorView : public BookmarkEditor,
   // Used to create a new folder.
   raw_ptr<views::LabelButton> new_folder_button_ = nullptr;
 
-  // The text field used for editing the URL.
+  // The text field used for editing the URL. Null if this is a `MOVE` dialog or
+  // treating a folder rather than a bookmark.
   raw_ptr<views::Textfield> url_tf_ = nullptr;
 
-  // The text field used for editing the title.
+  // The text field used for editing the title. Null if this is a `MOVE` dialog.
   raw_ptr<views::Textfield> title_tf_ = nullptr;
 
   const EditDetails details_;

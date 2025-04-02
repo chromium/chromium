@@ -440,6 +440,7 @@
 <translation id="2783161812871838616">Заявка за настолния сайт</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Паролата е запазена в профила ви в Google {EMAIL}}other{Паролите са запазени в профила ви в Google {EMAIL}}}</translation>
 <translation id="2791174088547598693">Добавяне на парола…</translation>
+<translation id="2793703503584038325">Изберете парола и докоснете иконата за споделяне.</translation>
 <translation id="2797302972324086597">Код на държавата</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} файл}other{{COUNT} файла}}</translation>
 <translation id="2816489851009559785">Меню → Настройки → Браузър по подразбиране</translation>
@@ -579,6 +580,7 @@
 <translation id="35083190962747987">Отваряне на ${url}</translation>
 <translation id="3511519535430890904">Добавяне на защита при сърфиране</translation>
 <translation id="3517216995152707259">С изтриването на данните за сърфирането няма да излезете от профила си в Google. За да направите това, <ph name="BEGIN_LINK" />излезте от профила си в Chrome<ph name="END_LINK" />.</translation>
+<translation id="3519792890877853853">Тази карта показва отзиви за продуктите в отворените ви раздели</translation>
 <translation id="3519905498307021260">{count,plural, =1{Отваряне на раздела}other{Отваряне на {count} раздела}}</translation>
 <translation id="3523513363815970085">Скриване на „Вашите водещи сайтове“</translation>
 <translation id="3523789730715594198">Можете да спрете синхронизирането по всяко време от настройките. Google може да персонализира Търсене и други услуги въз основа на историята ви.</translation>
@@ -819,6 +821,7 @@
 <translation id="4565377596337484307">Скриване на паролата</translation>
 <translation id="4568230126482344545">Скриване на „Скорошни раздели“</translation>
 <translation id="4578835633387306383">Включване на…</translation>
+<translation id="4580716718466706433">Към Мениджър на пароли</translation>
 <translation id="4587589328781138893">Сайтове</translation>
 <translation id="4592672037257622855">{count,plural, =1{Страницата бе добавена към списъка ви за четене}other{{count} страници бяха добавени към списъка ви за четене}}</translation>
 <translation id="459644946100970322">Искате ли да включите известията за цени?</translation>
@@ -858,6 +861,7 @@
 <translation id="4717844083556844785">Текущата уеб страница е в режим „инкогнито“</translation>
 <translation id="4719927025381752090">Предложения за превод</translation>
 <translation id="4720530280568305198">Избраното от вас се отвори в нов раздел</translation>
+<translation id="472259426228234149">Цена: 100 – 180 щ.д.</translation>
 <translation id="473775607612524610">Актуализиране</translation>
 <translation id="474209246745757965">Пазарувайте и превеждайте посредством камерата си</translation>
 <translation id="4742407542027196863">Управление на паролите…</translation>

@@ -37,6 +37,20 @@ BASE_FEATURE(kKillSpareRenderOnMemoryPressure,
              "KillSpareRenderOnMemoryPressure",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, MEMORY_PRESSURE_LEVEL_CRITICAL is used as the threshold that
+// determines when a spare RPH can be created or killed. By default,
+// MEMORY_PRESSURE_LEVEL_MODERATE is used.
+BASE_FEATURE(kSpareRPHUseCriticalMemoryPressure,
+             "SpareRPHUseCriticalMemoryPressure",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, only the extra RPHs (controlled by the MultipleSpareRPHs
+// experiment) are killed on memory pressure. Does nothing if
+// kKillSpareRenderOnMemoryPressure is disabled.
+BASE_FEATURE(kSpareRPHKeepOneAliveOnMemoryPressure,
+             "kSpareRPHKeepOneAliveOnMemoryPressure",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, boosts the priority of spare renderer processes by adding a
 // non-perceptible binding on Android, to decrease the chance of the spare
 // process getting killed before it is taken.
@@ -269,6 +283,18 @@ void LogSpareProcessTakeActionUMAs(
   }
 }
 
+// Returns the MemoryPressureLevel threshold that determines when a spare RPH
+// can be created or killed.
+base::MemoryPressureListener::MemoryPressureLevel
+GetMemoryPressureLevelThreshold() {
+  if (base::FeatureList::IsEnabled(kSpareRPHUseCriticalMemoryPressure)) {
+    return base::MemoryPressureListener::MemoryPressureLevel::
+        MEMORY_PRESSURE_LEVEL_CRITICAL;
+  }
+  return base::MemoryPressureListener::MemoryPressureLevel::
+      MEMORY_PRESSURE_LEVEL_MODERATE;
+}
+
 }  // namespace
 
 SpareRenderProcessHostManagerImpl::SpareRenderProcessHostManagerImpl()
@@ -444,9 +470,8 @@ void SpareRenderProcessHostManagerImpl::WarmupSpare(
   // currently approximated by only looking at the memory pressure.  See also
   // https://crbug.com/852905.
   auto* memory_monitor = base::MemoryPressureMonitor::Get();
-  if (memory_monitor &&
-      memory_monitor->GetCurrentPressureLevel() >=
-          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) {
+  if (memory_monitor && memory_monitor->GetCurrentPressureLevel() >=
+                            GetMemoryPressureLevelThreshold()) {
     no_spare_renderer_reason_ = NoSpareRendererReason::kMemoryPressure;
     return;
   }
@@ -724,6 +749,27 @@ void SpareRenderProcessHostManagerImpl::CleanupSpares(
   }
 }
 
+void SpareRenderProcessHostManagerImpl::CleanupExtraSpares(
+    std::optional<SpareRendererDispatchResult> dispatch_result) {
+  if (spare_rphs_.size() <= 1u) {
+    // There is either zero or one spare. Nothing to do.
+    return;
+  }
+
+  // Pop the front element, as we want to preserve it.
+  RenderProcessHost* first_spare = spare_rphs_.front();
+
+  // Swap the front and back to efficient removal.
+  std::swap(spare_rphs_.front(), spare_rphs_.back());
+  spare_rphs_.pop_back();
+
+  // Cleanup all remaining spares in the vector.
+  CleanupSpares(dispatch_result);
+
+  // Re-add the spare to the vector.
+  spare_rphs_.push_back(first_spare);
+}
+
 void SpareRenderProcessHostManagerImpl::SetDeferTimerTaskRunnerForTesting(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   deferred_warmup_timer_.SetTaskRunner(task_runner);
@@ -820,6 +866,10 @@ void SpareRenderProcessHostManagerImpl::SetIsBrowserIdle(bool is_browser_idle) {
 
 void SpareRenderProcessHostManagerImpl::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  if (memory_pressure_level < GetMemoryPressureLevelThreshold()) {
+    return;
+  }
+
   CHECK_NE(memory_pressure_level,
            base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
   if (check_memory_pressure_timer_.IsRunning() ||
@@ -827,8 +877,13 @@ void SpareRenderProcessHostManagerImpl::OnMemoryPressure(
     return;
   }
 
-  CleanupSpares(SpareRendererDispatchResult::kMemoryPressure);
-  CHECK(no_spare_renderer_reason_ == NoSpareRendererReason::kMemoryPressure);
+  if (base::FeatureList::IsEnabled(kSpareRPHKeepOneAliveOnMemoryPressure)) {
+    CleanupExtraSpares(SpareRendererDispatchResult::kMemoryPressure);
+  } else {
+    CleanupSpares(SpareRendererDispatchResult::kMemoryPressure);
+    CHECK(no_spare_renderer_reason_ == NoSpareRendererReason::kMemoryPressure);
+  }
+
   // `reset()` will start the timer.
   check_memory_pressure_timer_.Reset();
 }

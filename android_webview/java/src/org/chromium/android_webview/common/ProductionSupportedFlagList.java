@@ -213,8 +213,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.OPTIMIZE_LOADING_DATA_URLS, "Enables optimizing loading data: URLs."),
         Flag.baseFeature(
-                NetFeatures.OPTIMIZE_PARSING_DATA_URLS, "Enables optimizing parsing data: URLs."),
-        Flag.baseFeature(
                 NetFeatures.SIMDUTF_BASE64_SUPPORT,
                 "Use the simdutf library to base64 decode data: URLs."),
         Flag.baseFeature(
@@ -503,10 +501,6 @@ public final class ProductionSupportedFlagList {
                 ContentSwitches.DISABLE_DOMAIN_BLOCKING_FOR3DAP_IS,
                 "Disable the per-domain blocking for 3D APIs after GPU reset. "
                         + "This switch is intended only for tests."),
-        Flag.baseFeature(
-                BlinkFeatures.MEDIA_RECORDER_USE_MEDIA_VIDEO_ENCODER,
-                "When enabled, media::VideoEncoder implementation is used in MediaRecorder API"
-                        + " instead of using MediaRecorder own video encoder implementation."),
         Flag.baseFeature(
                 MetricsFeatures.FLUSH_PERSISTENT_SYSTEM_PROFILE_ON_WRITE,
                 "Controls whether to schedule a flush of persistent histogram memory "

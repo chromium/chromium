@@ -90,7 +90,6 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
   std::optional<content::PermissionResult> GetEmbargoResult(
       ContentSettingsType type) override;
 
-  bool IsTrackingProtection3pcdEnabled() override;
   void GetMerchantTrustInfo(page_info::MerchantDataCallback callback) override;
   void RecordPageInfoWithMerchantTrustOpenTime();
   void RecordMerchantTrustButtonShown();

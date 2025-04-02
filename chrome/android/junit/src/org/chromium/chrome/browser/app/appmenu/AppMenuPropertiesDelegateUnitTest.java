@@ -134,7 +134,10 @@ import java.util.Optional;
 /** Unit tests for {@link AppMenuPropertiesDelegateImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
-@DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)
+@DisableFeatures({
+    ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY,
+    ChromeFeatureList.READER_MODE_DEV_ENTRY_POINT
+})
 public class AppMenuPropertiesDelegateUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -722,7 +725,10 @@ public class AppMenuPropertiesDelegateUnitTest {
         assertMenuItemsHaveIcons(menu, expectedItems);
     }
 
-    private void checkOverviewMenuItemsPhone(int tabSelectionEditorMenuItemId) {
+    @Test
+    @Config(qualifiers = "sw320dp")
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
+    public void testOverviewMenuItems_Phone_SelectTabs() {
         setUpMocksForOverviewMenu(LayoutType.TAB_SWITCHER);
         when(mIncognitoTabModel.getCount()).thenReturn(0);
         Assert.assertFalse(mAppMenuPropertiesDelegate.shouldShowPageMenu());
@@ -736,7 +742,7 @@ public class AppMenuPropertiesDelegateUnitTest {
             R.id.new_tab_menu_id,
             R.id.new_incognito_tab_menu_id,
             R.id.close_all_tabs_menu_id,
-            tabSelectionEditorMenuItemId,
+            R.id.menu_select_tabs,
             R.id.quick_delete_menu_id,
             R.id.preferences_id
         };
@@ -745,8 +751,27 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
-    public void testOverviewMenuItems_Phone_SelectTabs() {
-        checkOverviewMenuItemsPhone(R.id.menu_select_tabs);
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
+    public void testOverviewMenuItems_Phone_SelectTabs_tabGroupEntryPointsFeatureEnabled() {
+        setUpMocksForOverviewMenu(LayoutType.TAB_SWITCHER);
+        when(mIncognitoTabModel.getCount()).thenReturn(0);
+        Assert.assertFalse(mAppMenuPropertiesDelegate.shouldShowPageMenu());
+        Assert.assertEquals(
+                MenuGroup.OVERVIEW_MODE_MENU, mAppMenuPropertiesDelegate.getMenuGroup());
+
+        Menu menu = createTestMenu();
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+
+        Integer[] expectedItems = {
+            R.id.new_tab_menu_id,
+            R.id.new_incognito_tab_menu_id,
+            R.id.new_tab_group_menu_id,
+            R.id.close_all_tabs_menu_id,
+            R.id.menu_select_tabs,
+            R.id.quick_delete_menu_id,
+            R.id.preferences_id
+        };
+        assertMenuItemsAreEqual(menu, expectedItems);
     }
 
     @Test

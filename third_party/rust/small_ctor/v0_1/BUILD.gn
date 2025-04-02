@@ -13,9 +13,9 @@ cargo_crate("lib") {
   epoch = "0.1"
   crate_type = "proc-macro"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/small_ctor-0.1.2/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/small_ctor-v0_1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/small_ctor-0.1.2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/small_ctor-v0_1/src/lib.rs",
   ]
   inputs = []
 

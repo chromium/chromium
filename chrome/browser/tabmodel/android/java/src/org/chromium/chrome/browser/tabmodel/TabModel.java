@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -18,16 +17,22 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
  * TabModel organizes all the open tabs and allows you to create new ones. Regular and Incognito
  * tabs are kept in different TabModels.
  */
+@NullMarked
 public interface TabModel extends SupportsTabModelObserver, TabList {
     /** Returns the profile associated with the current model. */
-    Profile getProfile();
+    @Nullable Profile getProfile();
 
     /** Returns the matching tab that has the given id, or null if there is none. */
-    @Nullable
-    Tab getTabById(int tabId);
+    @Nullable Tab getTabById(int tabId);
+
+    /** Returns the matching tab that has the given id, or null if there is none. */
+    default Tab getTabByIdChecked(int tabId) {
+        Tab t = getTabById(tabId);
+        assert t != null;
+        return t;
+    }
 
     /** Returns the tab remover for this tab model. */
-    @NonNull
     TabRemover getTabRemover();
 
     /**
@@ -37,7 +42,7 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      * @param uponExit If the next tab is being selected upon exit or backgrounding of the app.
      * @return The id of the next tab that would be visible.
      */
-    Tab getNextTabIfClosed(int id, boolean uponExit);
+    @Nullable Tab getNextTabIfClosed(int id, boolean uponExit);
 
     /**
      * @return Whether or not this model supports pending closures.
@@ -86,8 +91,7 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      * the model or selected. The contained tab should always match the result of {@code
      * getTabAt(index())}.
      */
-    @NonNull
-    ObservableSupplier<Tab> getCurrentTabSupplier();
+    ObservableSupplier<@Nullable Tab> getCurrentTabSupplier();
 
     /**
      * Selects a tab by its index.
@@ -115,11 +119,9 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      * Returns a supplier for the number of tabs in this tab model. This does not count tabs that
      * are pending closure.
      */
-    @NonNull
     ObservableSupplier<Integer> getTabCountSupplier();
 
     /** Returns the tab creator for this tab model. */
-    @NonNull
     TabCreator getTabCreator();
 
     /**

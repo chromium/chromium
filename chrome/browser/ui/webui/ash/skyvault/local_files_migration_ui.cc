@@ -48,7 +48,7 @@ LocalFilesMigrationUI::LocalFilesMigrationUI(content::WebUI* web_ui)
        IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_TITLE_MINUTES},
       // Body
       {"uploadStartMessage",
-       IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_START_MESSAGE},
+       IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_START_ON_MESSAGE},
       {"uploadDoneMessage",
        IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_DONE_MESSAGE},
       // Buttons

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script>
+let changeEventReceived = false;
+
+function addViewportSegmentsChangeListener() {
+  const horizontalMQL = window.matchMedia('(horizontal-viewport-segments: 2)');
+  horizontalMQL.addEventListener("change", () => {
+    changeEventReceived = true;
+  });
+}
+</script>

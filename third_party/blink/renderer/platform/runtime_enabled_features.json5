@@ -311,6 +311,10 @@
       base_feature: "none",
     },
     {
+      name: "AIPageContentPaidContentAnnotation",
+      status: "stable"
+    },
+    {
       name: "AIPromptAPI",
       public: true,
       status: "test",
@@ -656,6 +660,11 @@
       status: "stable",
     },
     {
+      // Enables bypassing CSP checks when we consume a preload.
+      // https://crbug.com/348442535
+      name: "BypassCSPForPreloads",
+    },
+    {
       // Bypasses the enforcement of the Page Embedded Permission Control
       // security checks. This flag is disabled by default and should only be
       // enabled in automated tests in order to allow them to avoid needing to
@@ -720,6 +729,7 @@
       // process.
       name: "CanvasInterventions",
       browser_process_read_write_access: true,
+      base_feature: "none",
     },
     {
       // This allows testing the canvas noise interventions in tests (which in
@@ -1927,7 +1937,7 @@
     {
       name: "FedCmMultipleIdentityProviders",
       depends_on: ["FedCm"],
-      status: "experimental",
+      status: "stable",
       base_feature: "none",
       public: true,
       origin_trial_feature_name: "FedCmMultipleIdentityProviders",
@@ -2621,9 +2631,6 @@
       name: "LayoutIgnoreMarginsForSticky",
     },
     {
-      name: "LayoutImageForceAspectRatioOfOneOnError",
-    },
-    {
       name: "LayoutImageRevalidationCheckForSvgImages",
     },
     {
@@ -2786,6 +2793,7 @@
     {
       name: "MediaPlaybackWhileNotVisiblePermissionPolicy",
       status: "test",
+      origin_trial_feature_name: "MediaPlaybackWhileNotVisiblePermissionPolicy",
     },
     {
       name: "MediaPreviewsOptOut",
@@ -2795,12 +2803,6 @@
     },
     {
       name: "MediaQueryNavigationControls",
-    },
-    {
-      // This uses media::VideoEncoder implementation in MediaRecorder API
-      // instead of using MediaRecorder own video encoder implementation.
-      name: "MediaRecorderUseMediaVideoEncoder",
-      status: "stable",
     },
     {
       name: "MediaSession",
@@ -2963,11 +2965,6 @@
       // on delegatesFocus shadow hosts. This flag can be removed in M127 if
       // things are stable.
       name: "NewGetFocusableAreaBehavior",
-      status: "stable",
-    },
-    {
-      // crbug.com/376097115
-      name: "NoCollapseSpaceBeforeRuby",
       status: "stable",
     },
     {
@@ -3341,7 +3338,7 @@
     {
       // crbug.com/389726691.
       name: "PlainTextPainter",
-      status: "experimental",
+      status: "stable",
     },
     // This is a reverse OT used for a phased deprecation.
     // https://crbug.com/918374
@@ -3406,6 +3403,7 @@
     },
     {
       // Used to allow preloading data: URLs with link rel=preload.
+      // https://crbug.com/348442535
       name: "PreloadLinkRelDataUrls",
     },
     {
@@ -3547,10 +3545,6 @@
      // in M135 and can be removed after M138.
      name: "RadioInputNextButtonInScope",
      status: "stable",
-    },
-    {
-      name: "RangeBasedTextFind",
-      status: "stable",
     },
     {
       name: "RasterInducingScroll",
@@ -3808,6 +3802,11 @@
       status: "stable",
     },
     {
+      // crbug.com/394983447
+      name: "RubyJustificationFix",
+      status: "stable",
+    },
+    {
       // crbug.com/329776386
       name: "RubyOverhangOverlapFix",
       status: "stable",
@@ -3868,11 +3867,12 @@
       name: "ScriptRunIteratorCombiningMarks",
       status: "stable",
     },
-    // Killswitch to be removed after M134 reaches stable.
-    // With it enabled, LocalFrameView uses an optimized iteration over just
-    // scrollable areas with scroll nodes.
+    // Killswitch added in M134, as two flags
+    // ScrollableAreasWithScrollNodeOptimization and UnifiedScrollableArea
+    // before M137. We are keeping this flag for new optimizations and as a
+    // finch holdback experiment feature.
     {
-      name: "ScrollableAreasWithScrollNodeOptimization",
+      name: "ScrollableAreaOptimization",
       status: "stable",
     },
     {
@@ -4613,14 +4613,6 @@
     {
       name: "UnexposedTaskIds",
     },
-    // Killswitch to be removed after M133 or M134 reaches stable.
-    // With it enabled, LocalFrameView::ScrollableAreas() includes all
-    // scrollable areas in the frame's document, otherwise only user scrollable
-    // ones.
-    {
-      name: "UnifiedScrollableAreas",
-      status: "stable",
-    },
     {
       name: "UnrestrictedMeasureUserAgentSpecificMemory",
     },
@@ -4786,9 +4778,6 @@
       // rendering is forced withing content-visibility subtrees (both
       // content-visibility: auto and content-visibility: hidden).
       name: "WarnOnContentVisibilityRenderAccess",
-    },
-    {
-      name: "WebAnimationsSVG"
     },
     {
       name: "WebAppInstallation",

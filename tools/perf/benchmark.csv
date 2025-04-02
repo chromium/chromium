@@ -17,6 +17,7 @@ UNSCHEDULED_speedometer1.0,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaSc
 UNSCHEDULED_speedometer2.0,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer2.0,all
 UNSCHEDULED_speedometer2.1,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer2.1,all
 UNSCHEDULED_speedometer3.0,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer3.0,all
+UNSCHEDULED_speedometer3.1,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer3.1,all
 UNSCHEDULED_v8.loading_desktop,"cbruni@chromium.org, vahl@chromium.org, almuthanna@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2016,2018,2019,2020,emerging_market,health_check,international,javascript_heavy"
 UNSCHEDULED_v8.loading_mobile,"cbruni@chromium.org, leszeks@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2016,2018,2019,2020,2023,emerging_market,health_check,international,javascript_heavy"
 ad_frames.fencedframe,lbrady@google.com,Blink>FencedFrames,https://tinyurl.com/fenced-frame-benchmark,

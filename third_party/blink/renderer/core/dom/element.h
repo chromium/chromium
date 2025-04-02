@@ -158,7 +158,7 @@ struct AttributeToNameTransform {
 using AttributeNamesView =
     bindings::TransformedView<AttributeCollection, AttributeToNameTransform>;
 
-using ColumnPseudoElementsVector = HeapVector<Member<ColumnPseudoElement>>;
+using ColumnPseudoElementsVector = GCedHeapVector<Member<ColumnPseudoElement>>;
 
 enum SpellcheckAttributeState {
   kSpellcheckAttributeTrue,
@@ -349,7 +349,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   Element* GetElementAttributeResolvingReferenceTarget(
       const QualifiedName& name) const;
   void SetElementAttribute(const QualifiedName&, Element*);
-  HeapVector<Member<Element>>* GetAttrAssociatedElements(
+  GCedHeapVector<Member<Element>>* GetAttrAssociatedElements(
       const QualifiedName& name,
       bool resolve_reference_target) const;
 
@@ -361,19 +361,22 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                                const AtomicString& id) const;
 
   FrozenArray<Element>* ariaControlsElements();
-  void setAriaControlsElements(HeapVector<Member<Element>>* given_elements);
+  void setAriaControlsElements(GCedHeapVector<Member<Element>>* given_elements);
   FrozenArray<Element>* ariaDescribedByElements();
-  void setAriaDescribedByElements(HeapVector<Member<Element>>* given_elements);
+  void setAriaDescribedByElements(
+      GCedHeapVector<Member<Element>>* given_elements);
   FrozenArray<Element>* ariaDetailsElements();
-  void setAriaDetailsElements(HeapVector<Member<Element>>* given_elements);
+  void setAriaDetailsElements(GCedHeapVector<Member<Element>>* given_elements);
   FrozenArray<Element>* ariaErrorMessageElements();
-  void setAriaErrorMessageElements(HeapVector<Member<Element>>* given_elements);
+  void setAriaErrorMessageElements(
+      GCedHeapVector<Member<Element>>* given_elements);
   FrozenArray<Element>* ariaFlowToElements();
-  void setAriaFlowToElements(HeapVector<Member<Element>>* given_elements);
+  void setAriaFlowToElements(GCedHeapVector<Member<Element>>* given_elements);
   FrozenArray<Element>* ariaLabelledByElements();
-  void setAriaLabelledByElements(HeapVector<Member<Element>>* given_elements);
+  void setAriaLabelledByElements(
+      GCedHeapVector<Member<Element>>* given_elements);
   FrozenArray<Element>* ariaOwnsElements();
-  void setAriaOwnsElements(HeapVector<Member<Element>>* given_elements);
+  void setAriaOwnsElements(GCedHeapVector<Member<Element>>* given_elements);
 
   // Call this to get the value of an attribute that is known not to be the
   // style attribute or one of the SVG animatable attributes.
@@ -2160,7 +2163,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   FrozenArray<Element>* GetElementArrayAttribute(const QualifiedName& name);
   void SetElementArrayAttribute(
       const QualifiedName& name,
-      const HeapVector<Member<Element>>* given_elements);
+      const GCedHeapVector<Member<Element>>* given_elements);
 
   // Find the scroll-marker that should be active when told to scroll |this|
   // into view.

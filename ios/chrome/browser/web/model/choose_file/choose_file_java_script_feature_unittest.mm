@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_event.h"
+#import "ios/chrome/browser/web/model/choose_file/choose_file_event_holder.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
@@ -341,14 +342,13 @@ TEST_F(ChooseFileJavaScriptFeatureTest,
         ASSERT_TRUE(
             web::test::TapWebViewElementWithId(web_state(), "choose_file"));
         const std::optional<ChooseFileEvent> event =
-            ChooseFileJavaScriptFeature::GetInstance()
-                ->ResetLastChooseFileEvent();
+            ChooseFileEventHolder::GetInstance()->ResetLastChooseFileEvent();
         ASSERT_TRUE(event.has_value());
         EXPECT_EQ(expected_file_extensions, event->accept_file_extensions);
         EXPECT_EQ(multiple_attribute, event->allow_multiple_files);
         EXPECT_EQ(has_file_attributes, event->has_selected_file);
-        EXPECT_FALSE(ChooseFileJavaScriptFeature::GetInstance()
-                         ->ResetLastChooseFileEvent());
+        EXPECT_FALSE(
+            ChooseFileEventHolder::GetInstance()->ResetLastChooseFileEvent());
       }
     }
   }
@@ -389,14 +389,13 @@ TEST_F(ChooseFileJavaScriptFeatureTest, TestResetLastChooseFileEventMimeTypes) {
         ASSERT_TRUE(
             web::test::TapWebViewElementWithId(web_state(), "choose_file"));
         const std::optional<ChooseFileEvent> event =
-            ChooseFileJavaScriptFeature::GetInstance()
-                ->ResetLastChooseFileEvent();
+            ChooseFileEventHolder::GetInstance()->ResetLastChooseFileEvent();
         ASSERT_TRUE(event.has_value());
         EXPECT_EQ(expected_mime_types, event->accept_mime_types);
         EXPECT_EQ(multiple_attribute, event->allow_multiple_files);
         EXPECT_EQ(has_file_attributes, event->has_selected_file);
-        EXPECT_FALSE(ChooseFileJavaScriptFeature::GetInstance()
-                         ->ResetLastChooseFileEvent());
+        EXPECT_FALSE(
+            ChooseFileEventHolder::GetInstance()->ResetLastChooseFileEvent());
       }
     }
   }

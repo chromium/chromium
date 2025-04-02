@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/base_paths.h"
@@ -67,11 +68,11 @@ TEST(ModuleInfoUtilTest, GetCertificateInfoUnsigned) {
 
 TEST(ModuleInfoUtilTest, GetCertificateInfoSigned) {
   std::unique_ptr<base::Environment> env = base::Environment::Create();
-  std::string sysroot;
-  ASSERT_TRUE(env->GetVar("SYSTEMROOT", &sysroot));
+  std::optional<std::string> sysroot = env->GetVar("SYSTEMROOT");
+  ASSERT_TRUE(sysroot.has_value());
 
-  base::FilePath path =
-      base::FilePath::FromUTF8Unsafe(sysroot).Append(L"system32\\kernel32.dll");
+  base::FilePath path = base::FilePath::FromUTF8Unsafe(sysroot.value())
+                            .Append(L"system32\\kernel32.dll");
 
   CertificateInfo cert_info;
   GetCertificateInfo(path, &cert_info);

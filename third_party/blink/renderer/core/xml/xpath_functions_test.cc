@@ -41,7 +41,7 @@ class XPathContext {
   xpath::EvaluationContext context_;
 };
 
-using XPathArguments = HeapVector<Member<xpath::Expression>>;
+using XPathArguments = GCedHeapVector<Member<xpath::Expression>>;
 
 static String Substring(XPathArguments* args) {
   XPathContext xpath;

@@ -93,11 +93,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoScreenSecondaryButtonMatcher()
-                      scrollViewIdentifier:
-                          kPromoStyleScrollViewAccessibilityIdentifier]
-      performAction:grey_tap()];
+  // Skip remaining screens.
+  [[self class] dismissDefaultBrowserAndRemainingScreens];
   [ChromeEarlGreyUI waitForAppToIdle];
   // Tests that the sentinel file has been created.
   GREYAssertTrue([ChromeEarlGrey hasFirstRunSentinel],
@@ -323,7 +320,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
-  [[self class] dismissDefaultBrowser];
+  [[self class] dismissDefaultBrowserAndRemainingScreens];
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:YES];
 }
@@ -351,7 +348,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
-  [[self class] dismissDefaultBrowser];
+  [[self class] dismissDefaultBrowserAndRemainingScreens];
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:YES];
 }
@@ -383,7 +380,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is off.
-  [[self class] dismissDefaultBrowser];
+  [[self class] dismissDefaultBrowserAndRemainingScreens];
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:NO];
 }
@@ -437,7 +434,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
-  [[self class] dismissDefaultBrowser];
+  [[self class] dismissDefaultBrowserAndRemainingScreens];
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:YES];
   // Close settings.
@@ -475,7 +472,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
-  [[self class] dismissDefaultBrowser];
+  [[self class] dismissDefaultBrowserAndRemainingScreens];
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:NO];
   // Close settings.
@@ -508,7 +505,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
-  [[self class] dismissDefaultBrowser];
+  [[self class] dismissDefaultBrowserAndRemainingScreens];
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:NO];
 }
@@ -638,7 +635,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeSupervisedIdentity];
   // Check sync is on.
-  [[self class] dismissDefaultBrowser];
+  [[self class] dismissDefaultBrowserAndRemainingScreens];
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:YES];
 }
@@ -1329,7 +1326,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 
 @end
 
-// Test first run stages with the updated FRE sequence.
+// Test first run stages with the updated FRE sequence. The Best Features screen
+// feature is disabled when the updated FRE sequence feature is enabled.
 @interface FirstRunWithUpdatedFRESequenceTestCase : FirstRunTestCaseBase
 
 @end

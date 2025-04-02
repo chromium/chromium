@@ -12,7 +12,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,8 +29,8 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -52,13 +51,9 @@ public class TabObserverTest {
         }
     }
 
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private static ChromeTabbedActivity sActivity;
     private static Tab sTab;
@@ -69,9 +64,9 @@ public class TabObserverTest {
         sTabObserver = new TestTabObserver();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    sTab = sActivityTestRule.getActivity().getActivityTab();
+                    sTab = mActivityTestRule.getActivity().getActivityTab();
                     sTab.addObserver(sTabObserver);
-                    sActivity = sActivityTestRule.getActivity();
+                    sActivity = mActivityTestRule.getActivity();
                 });
     }
 

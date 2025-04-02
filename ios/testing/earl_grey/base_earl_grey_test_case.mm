@@ -16,6 +16,7 @@
 #import "ios/testing/earl_grey/coverage_utils.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/system_alert_handler.h"
+#import "ui/display/screen.h"
 
 #if DCHECK_IS_ON()
 #import "ui/display/screen_base.h"
@@ -27,7 +28,7 @@ namespace {
 // ensure that +setUpForTestCase is called exactly once per unique XCTestCase
 // and is reset in +tearDown.
 bool g_needs_set_up_for_test_case = true;
-
+std::unique_ptr<display::ScopedNativeScreen> g_screen;
 }  // namespace
 
 @implementation BaseEarlGreyTestCase
@@ -66,6 +67,8 @@ bool g_needs_set_up_for_test_case = true;
 - (void)setUp {
   [super setUp];
 
+  g_screen = std::make_unique<display::ScopedNativeScreen>();
+
   // Before starting a new test, relaunch the app and wipe the profile.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   if ([BaseEarlGreyTestCase forceRestartAndWipe]) {
@@ -94,7 +97,6 @@ bool g_needs_set_up_for_test_case = true;
 
 + (void)tearDown {
 #if DCHECK_IS_ON()
-  // The same screen object is shared across multiple test runs on IOS build.
   // Make sure that all display observers are removed at the end of each
   // test.
   if (display::Screen::HasScreen()) {
@@ -104,6 +106,7 @@ bool g_needs_set_up_for_test_case = true;
   }
 #endif
   g_needs_set_up_for_test_case = true;
+  g_screen.reset();
   [super tearDown];
 }
 

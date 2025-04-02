@@ -44,6 +44,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
+#include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"

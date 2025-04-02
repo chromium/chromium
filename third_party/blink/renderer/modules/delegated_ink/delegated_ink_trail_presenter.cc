@@ -56,7 +56,7 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
   }
 
   Color color;
-  if (!CSSParser::ParseColor(color, style->color(), true /*strict*/)) {
+  if (!CSSParser::ParseColor(color, style->color())) {
     exception_state.ThrowTypeError("Unknown color.");
     return;
   }

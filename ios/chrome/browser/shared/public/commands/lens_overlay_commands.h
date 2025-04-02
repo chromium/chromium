@@ -43,6 +43,9 @@
 - (void)destroyLensUI:(BOOL)animated
                reason:(lens::LensOverlayDismissalSource)dismissalSource;
 
+/// Prepares for a tab change that is about to happen in the background.
+- (void)prepareLensUIForBackgroundTabChange;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_LENS_OVERLAY_COMMANDS_H_

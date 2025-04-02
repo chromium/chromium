@@ -52,7 +52,6 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kManagePlusAddress:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
-    case SuggestionType::kShowAccountCards:
     case SuggestionType::kUndoOrClear:
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kPendingStateSignin:

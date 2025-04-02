@@ -26,6 +26,7 @@
 <translation id="1342274909142618978">Elimina i dati anche da Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Riquadro bloccato. Puoi accedere nuovamente alla ricerca immagini dal nuovo pulsante sulla barra degli strumenti</translation>
 <translation id="1356661055722410047">Novità. Puoi tradurre sia testo che immagini sullo schermo</translation>
+<translation id="1383876407941801731">Cerca</translation>
 <translation id="1414495520565016063">Hai eseguito l'accesso a Chromium.</translation>
 <translation id="1465192221147974788">Per condividere la finestra, consenti la Registrazione dello schermo per Chromium nelle Impostazioni di sistema.</translation>
 <translation id="1478370723027452770">Richiedi assistenza per Chrome for Testing</translation>
@@ -117,6 +118,7 @@
 <translation id="2583187216237139145">Tutti i dati di Chromium generati durante l'utilizzo di questo profilo (come i preferiti, la cronologia, le password e altre impostazioni) possono essere rimossi dall'amministratore del profilo di lavoro. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Continua a utilizzare Chromium</translation>
 <translation id="259935314519650377">Impossibile memorizzare nella cache il programma di installazione scaricato. Errore: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2620436844016719705">Sistema</translation>
 <translation id="2629740064077610681">La tua organizzazione può vedere e gestire i dati di navigazione, ad esempio i preferiti, la cronologia e le password. Non può vedere i dati di navigazione in altri profili Chromium.</translation>
 <translation id="2635452620547538388">Verifica la tua identità per usare e salvare i dati di Chromium nel tuo account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="264613044588233783">Chromium esegue ogni operazione con la massima rapidità e le funzionalità che utilizzano JavaScript dovrebbero avere il comportamento previsto (consigliato)</translation>
@@ -146,6 +148,7 @@
 <translation id="2977470724722393594">Chromium è aggiornato</translation>
 <translation id="2977506796191543575">Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chromium potrebbe anche inviare gli URL, inclusi frammenti dei contenuti delle pagine, a Navigazione sicura</translation>
 <translation id="2981563588585023386">Per navigare online in modo più sicuro con le scelte del tuo genitore, accedi a Chromium</translation>
+<translation id="3003694935412297923">Tutte le attività</translation>
 <translation id="3013473503895162900">Apri <ph name="URL" /> in una nuova scheda in Chromium.</translation>
 <translation id="3032706164202344641">Chromium non può controllare le tue password. Riprova più tardi.</translation>
 <translation id="3032787606318309379">Aggiunta a Chromium in corso...</translation>
@@ -261,6 +264,7 @@
 <translation id="4570813286784708942">Chromium ha bloccato questo download perché hai disattivato Navigazione sicura e non è possibile verificare il file</translation>
 <translation id="4594305310729380060">In Gestore delle password su questo dispositivo</translation>
 <translation id="459535195905078186">Applicazioni Chromium</translation>
+<translation id="4598116752460667024">Cerca qualsiasi procedura nell'elenco.</translation>
 <translation id="4613863813562375431">Versione di Chromium OS</translation>
 <translation id="4621240073146040695">Aggiornamento quasi completato. Riavvia Chromium per terminare l'aggiornamento.</translation>
 <translation id="4665829708273112819">Avviso: Chromium non è in grado di impedire alle estensioni di registrare la tua cronologia di navigazione. Per disattivare questa estensione in modalità di navigazione in incognito, deseleziona questa opzione.</translation>
@@ -451,6 +455,7 @@ Alcune funzioni potrebbero non essere disponibili. Specifica un'altra directory 
 <translation id="7223968959479464213">Task Manager - Chromium</translation>
 <translation id="7246575524853130370">I tuoi interessi stimati da Chromium</translation>
 <translation id="7274695763216404502">Riquadro bloccato. Usa di nuovo la ricerca immagini dalla barra degli strumenti</translation>
+<translation id="7288567540154601580">Schede ed estensioni</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium ti consiglia di rimuoverla}other{Chromium ti consiglia di rimuoverle}}</translation>
 <translation id="7309928523159922338">Ad measurement consente ai siti che visiti di chiedere a Chromium informazioni che li aiutino a valutare il rendimento dei loro annunci. Ad measurement limita il tracciamento tra siti trasferendo il minor numero possibile di informazioni tra i siti.</translation>
 <translation id="731795002583552498">Aggiornamento di Chromium in corso</translation>
@@ -497,6 +502,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="7937630085815544518">Hai eseguito l'accesso a Chromium come <ph name="USER_EMAIL_ADDRESS" />. Utilizza lo stesso account per eseguire di nuovo l'accesso.</translation>
 <translation id="7975919845073681630">Questa è un'installazione secondaria, di conseguenza Chromium non può essere impostato come browser predefinito.</translation>
 <translation id="7997934263947464652">Estensioni, app e temi da origini sconosciute possono danneggiare il tuo dispositivo. Chromium consiglia di installare questi elementi soltanto dal <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
+<translation id="8004582292198964060">Browser</translation>
 <translation id="8010081455002666927">Rileva automaticamente</translation>
 <translation id="8013436988911883588">Dopo che Chromium avrà ottenuto l'accesso, i siti web potranno chiederti l'accesso.</translation>
 <translation id="80471789339884597">L'installazione è terminata. Dovrai riavviare tutti i browser per poter utilizzare <ph name="BUNDLE_NAME" />.</translation>

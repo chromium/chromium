@@ -911,6 +911,15 @@ void WebContentsAndroid::SetDisplayCutoutSafeArea(JNIEnv* env,
       gfx::Insets::TLBR(top, left, bottom, right));
 }
 
+void WebContentsAndroid::SetContextMenuInsets(JNIEnv* env,
+                                              int top,
+                                              int left,
+                                              int bottom,
+                                              int right) {
+  auto rect = gfx::Rect(left, top, right - left, bottom - top);
+  web_contents()->SetContextMenuInsets(rect);
+}
+
 void WebContentsAndroid::NotifyRendererPreferenceUpdate(JNIEnv* env) {
   web_contents_->OnWebPreferencesChanged();
 }

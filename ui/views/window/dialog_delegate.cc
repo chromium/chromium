@@ -607,8 +607,6 @@ std::unique_ptr<View> DialogDelegate::DisownFootnoteView() {
 ////////////////////////////////////////////////////////////////////////////////
 // DialogDelegateView:
 
-DialogDelegateView::DialogDelegateView() = default;
-
 DialogDelegateView::~DialogDelegateView() = default;
 
 Widget* DialogDelegateView::GetWidget() {
@@ -622,6 +620,8 @@ const Widget* DialogDelegateView::GetWidget() const {
 View* DialogDelegateView::GetContentsView() {
   return this;
 }
+
+DialogDelegateView::DialogDelegateView() = default;
 
 BEGIN_METADATA(DialogDelegateView)
 END_METADATA

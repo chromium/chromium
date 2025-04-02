@@ -38,6 +38,7 @@
 <translation id="19085484004813472">এটি একটি নতুন ফিচার</translation>
 <translation id="2006524834898217237">এই ডিভাইস ইন্টারনেটে কানেক্ট করা আছে কিনা দেখে নিন।</translation>
 <translation id="208586643495776849">আবার চেষ্টা করুন</translation>
+<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />ছদ্মবেশী মোডে অনুমতি দিন<ph name="END_BOLD" /> বিকল্প চালু করুন</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{১ দিন}one{# দিন}other{# দিন}}</translation>
 <translation id="2148716181193084225">আজ</translation>
 <translation id="2168039046890040389">পৃষ্ঠা নিচে</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">আপনার স্ক্রীনে স্পর্শ লক্ষ্যগুলি আলতা চাপুন।</translation>
 <translation id="2295140143284145483">সমীক্ষা</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{আইডি সহ <ph name="BEGIN_LIST" /><ph name="END_LIST" /> একটি এক্সটেনশন শনাক্ত করা যাবে না। আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।}one{আইডি সহ <ph name="BEGIN_LIST" /><ph name="END_LIST" /> একটি এক্সটেনশন শনাক্ত করা যাবে না। আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।}other{আইডি সহ <ph name="BEGIN_LIST" /><ph name="END_LIST" /> একটি এক্সটেনশন শনাক্ত করা যাবে না। আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।}}</translation>
 <translation id="2353636109065292463">আপনার ইন্টারনেট কানেকশন ঠিক আছে কিনা সেটি দেখা হচ্ছে</translation>
 <translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="2388990488038464401">আপনার ফোন থেকে এই নম্বরে কল করতে চান?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">সব মুছুন</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{১ দিনের মধ্যে}one{# দিনের মধ্যে}other{# দিনের মধ্যে}}</translation>
 <translation id="2922712708897119705"><ph name="COLUMN_NAME" /> কলামটি বড় থেকে ছোট ক্রম অনুসারে সাজানো হয়েছে।</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{এক্সটেনশন খুঁজে পাওয়া যাচ্ছে না}one{এক্সটেনশন খুঁজে পাওয়া যাচ্ছে না}other{এক্সটেনশন খুঁজে পাওয়া যাচ্ছে না}}</translation>
 <translation id="3036649622769666520">ফাইল খুলুন</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> এমবি</translation>
 <translation id="3087734570205094154">নিচে</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">এগুলি দিয়ে কল করুন</translation>
 <translation id="3306688585798492231">আগে থেকেই তৈরি করা আভ্যন্তরীণ ডিসপ্লে</translation>
 <translation id="335581015389089642">স্পিচ</translation>
+<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />বিবরণ<ph name="END_BOLD" /> বিকল্পে ক্লিক করুন</translation>
 <translation id="3389286852084373014">টেক্সটটি অনেক বড়</translation>
 <translation id="3406306243914553062">HTML কন্টেন্ট</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{১ দিন বাকি}one{# দিন বাকি}other{# দিন বাকি}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> কলামটি ছোট থেকে বড় ক্রম অনুসারে সাজানো হয়েছে।</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{১টি অপঠিত বিজ্ঞপ্তি}one{#টি অপঠিত বিজ্ঞপ্তি}other{#টি অপঠিত বিজ্ঞপ্তি}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{ছদ্মবেশী মোডে নিম্নলিখিত এক্সটেনশনটি চালু করুন:}one{ছদ্মবেশী মোডে নিম্নলিখিত এক্সটেনশনটি চালু করুন:}other{ছদ্মবেশী মোডে নিম্নলিখিত এক্সটেনশনটি চালু করুন:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{১ মাস আগে}one{# মাস আগে}other{# মাস আগে}}</translation>
 <translation id="4289300219472526559">কথা বলা শুরু করুন</translation>
 <translation id="4289540628985791613">ওভারভিউ</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">নম্বর</translation>
 <translation id="4746179598275229723">এক্সটেনশন আনপিন করা হয়েছে</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{১ মাস বাকি}one{# মাস বাকি}other{# মাস বাকি}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{ছদ্মবেশী মোড ব্যবহার করতে, আপনার প্রতিষ্ঠানের একটি এক্সটেনশন প্রয়োজন}one{ছদ্মবেশী মোড ব্যবহার করতে, আপনার প্রতিষ্ঠানের একটি এক্সটেনশন প্রয়োজন}other{ছদ্মবেশী মোড ব্যবহার করতে, আপনার প্রতিষ্ঠানের একটি এক্সটেনশন প্রয়োজন}}</translation>
+<translation id="482932175346970750">আপনার ব্রাউজারে <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> টাইপ করুন</translation>
 <translation id="4888938634149558681">কল করুন</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{১ সেকেন্ড}one{# সেকেন্ড}other{# সেকেন্ড}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;পেস্ট করুন</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">পাঠানো যায়নি</translation>
+<translation id="5283101102242354279">ছদ্মবেশী মোডে এক্সটেনশনটি চালু করুন:</translation>
 <translation id="528468243742722775">শেষ</translation>
 <translation id="5329858601952122676">&amp;মুছুন</translation>
 <translation id="5361107212971249203">টেক্সট</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">আপনার অ্যাপ্লিকেশনের ডিসপ্লে সেটিংস তখনই কার্যকর হবে পরে যখন এটি রিস্টার্ট করা হবে।</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{১ মিনিট বাকি}one{# মিনিট বাকি}other{# মিনিট বাকি}}</translation>
+<translation id="7252604552361840748">উপরের এক্সটেনশনটি খুঁজুন</translation>
 <translation id="7363164521834647158">উত্তর পাঠান</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{১ মিনিট পূর্বে}one{# মিনিট পূর্বে}other{# মিনিট পূর্বে}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>

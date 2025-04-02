@@ -131,7 +131,7 @@ sessions::LiveTab* LiveTabContextBrowserAgent::AddRestoredTab(
     const sessions::tab_restore::Tab& tab,
     int tab_index,
     bool select,
-    bool restored_from_group_or_window_context,
+    bool is_restoring_group_or_window,
     sessions::tab_restore::Type original_session_type) {
   // TODO(crbug.com/40491734): Handle tab-switch animation somehow...
   web_state_list_->InsertWebState(

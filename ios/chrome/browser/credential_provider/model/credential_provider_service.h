@@ -93,6 +93,9 @@ class CredentialProviderService
   // Syncs the credential store to disk.
   void SyncStore();
 
+  // Helper function for asynchronous portion of `SyncStore`.
+  void CompleteSync(NSArray<id<Credential>>* credentials);
+
   // Returns the primary account's gaia id.
   NSString* PrimaryAccountId() const;
 

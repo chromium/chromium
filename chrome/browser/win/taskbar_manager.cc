@@ -237,14 +237,21 @@ void PinAppToTaskbarInternal(const std::wstring& app_user_model_id,
 
 void ShouldOfferToPin(const std::wstring& app_user_model_id,
                       PinResultCallback callback) {
+  auto callback_on_current_thread =
+      base::BindPostTaskToCurrentDefault(std::move(callback), FROM_HERE);
+
   PinAppToTaskbarInternal(app_user_model_id, /*check_only=*/true,
-                          std::move(callback));
+                          std::move(callback_on_current_thread));
 }
 
 void PinAppToTaskbar(const std::wstring& app_user_model_id,
                      PinResultCallback callback) {
+  auto callback_on_current_thread =
+      base::BindPostTaskToCurrentDefault(std::move(callback), FROM_HERE);
+
   PinAppToTaskbarInternal(app_user_model_id,
-                          /*check_only=*/false, std::move(callback));
+                          /*check_only=*/false,
+                          std::move(callback_on_current_thread));
 }
 
 }  // namespace browser_util

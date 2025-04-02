@@ -5,6 +5,8 @@
 #ifndef CC_TREES_CLIP_NODE_H_
 #define CC_TREES_CLIP_NODE_H_
 
+#include <string>
+
 #include "cc/cc_export.h"
 #include "cc/trees/property_ids.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
@@ -73,6 +75,7 @@ struct CC_EXPORT ClipNode {
 
 #if DCHECK_IS_ON()
   bool operator==(const ClipNode& other) const;
+  std::string ToString() const;
 #endif
 
   void AsValueInto(base::trace_event::TracedValue* value) const;

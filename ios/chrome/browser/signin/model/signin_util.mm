@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/signin/model/signin_util.h"
 
+#import "base/check_is_test.h"
 #import "base/containers/to_vector.h"
 #import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
@@ -35,6 +36,12 @@ const char kAccountInfoKeyGivenName[] = "given_name";
 const char kAccountInfoKeyPictureUrl[] = "picture_url";
 const char kHistorySyncEnabled[] = "history_sync_enabled";
 
+// Information about the device restore. The value is loaded by
+// `LoadDeviceRestoreData()`.
+static std::optional<signin::RestoreData> g_restore_data;
+static_assert(
+    std::is_trivially_destructible<std::optional<signin::RestoreData>>::value);
+
 // Copies a string value from a dictionary if the given key is present.
 void CopyStringFromDict(std::string& to,
                         const base::Value::Dict& dict,
@@ -61,6 +68,16 @@ AccountInfo DictToAccountInfo(const base::Value::Dict& dict) {
   CopyStringFromDict(account.given_name, dict, kAccountInfoKeyGivenName);
   CopyStringFromDict(account.picture_url, dict, kAccountInfoKeyPictureUrl);
   return account;
+}
+
+// Loads data related to the device restore. This method needs to be called
+// before IO is disallowed on UI thread. This method is called by
+// `IsFirstSessionAfterDeviceRestore()` or `LastDeviceRestoreTimestamp()`.
+const signin::RestoreData& LoadDeviceRestoreData() {
+  if (!g_restore_data.has_value()) {
+    g_restore_data = LoadDeviceRestoreDataInternal();
+  }
+  return g_restore_data.value();
 }
 
 }  // namespace
@@ -102,14 +119,13 @@ signin::Tribool IsFirstSessionAfterDeviceRestore() {
   if (SimulatePostDeviceRestore()) {
     return signin::Tribool::kTrue;
   }
-  static signin::Tribool is_first_session_after_device_restore =
-      signin::Tribool::kUnknown;
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    is_first_session_after_device_restore =
-        IsFirstSessionAfterDeviceRestoreInternal();
-  });
-  return is_first_session_after_device_restore;
+  const signin::RestoreData& restore_data = LoadDeviceRestoreData();
+  return restore_data.is_first_session_after_device_restore;
+}
+
+std::optional<base::Time> LastDeviceRestoreTimestamp() {
+  const signin::RestoreData& restore_data = LoadDeviceRestoreData();
+  return restore_data.last_restore_timestamp;
 }
 
 void StorePreRestoreIdentity(PrefService* profile_pref,
@@ -169,4 +185,9 @@ bool SimulatePostDeviceRestore() {
   // or test flag.
   return tests_hook::SimulatePostDeviceRestore() ||
          experimental_flags::SimulatePostDeviceRestore();
+}
+
+void ResetDeviceRestoreDataForTesting() {
+  CHECK_IS_TEST();
+  g_restore_data.reset();
 }

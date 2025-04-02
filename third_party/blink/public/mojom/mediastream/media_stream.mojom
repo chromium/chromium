@@ -329,12 +329,10 @@ interface MediaStreamDispatcherHost {
   // Deliver a wheel event from a capturing app to a captured tab.
   //
   // `session_id` identifies the captured tab.
-  // `action` is the action (mouse event) to be delivered.
-  // `callback` will be invoked with the result.
+  // `action` is the action (wheel event) to be delivered.
   [EnableIfNot=is_android|is_ios]
   SendWheel(mojo_base.mojom.UnguessableToken session_id,
-            CapturedWheelAction action)
-      => (CapturedSurfaceControlResult result);
+            CapturedWheelAction action);
 
   // Updates the zoom level of the captured tab.
   //

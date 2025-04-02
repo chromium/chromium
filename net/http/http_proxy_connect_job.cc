@@ -679,7 +679,8 @@ int HttpProxyConnectJob::DoSpdyProxyCreateStream() {
         common_connect_job_params()
             ->spdy_session_pool->CreateAvailableSessionFromSocket(
                 key, nested_connect_job_->PassSocket(),
-                nested_connect_job_->connect_timing(), net_log());
+                nested_connect_job_->connect_timing(), net_log(),
+                SpdySessionInitiator::kHttpProxyConnectJob);
     nested_connect_job_.reset();
     if (!spdy_session_result.has_value()) {
       return spdy_session_result.error();

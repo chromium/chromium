@@ -32,12 +32,12 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "remoting/host/base/loggable.h"
+#include "remoting/host/base/pointer_utils.h"
 #include "remoting/host/linux/gvariant_type.h"
 
 // Provides a scoped wrapper, GVariantRef, around a GLib Variant to handle
@@ -335,15 +335,14 @@ class GVariantBase {
   friend bool operator==(const GVariantBase& lhs, const GVariantBase& rhs);
 
  protected:
-  // clang-format off
-  static constexpr struct {} kTake;
-  static constexpr struct {} kRef;
-  static constexpr struct {} kRefSink;
-  // clang-format on
+  using GVariantPtr = CRefCounted<GVariant,
+                                  g_variant_ref,
+                                  g_variant_unref,
+                                  g_variant_take_ref,
+                                  g_variant_ref_sink>;
+
   GVariantBase();
-  GVariantBase(decltype(kTake), GVariant* variant);
-  GVariantBase(decltype(kRef), GVariant* variant);
-  GVariantBase(decltype(kRefSink), GVariant* variant);
+  explicit GVariantBase(GVariantPtr variant);
   GVariantBase(const GVariantBase& other);
   GVariantBase(GVariantBase&& other);
   GVariantBase& operator=(const GVariantBase& other);
@@ -351,7 +350,7 @@ class GVariantBase {
   ~GVariantBase();
 
  private:
-  raw_ptr<GVariant> variant_;
+  GVariantPtr variant_;
 };
 
 bool operator==(const GVariantBase& lhs, const GVariantBase& rhs);
@@ -790,13 +789,13 @@ template <Type C>
 template <Type D>
 GVariantRef<C>::GVariantRef(const GVariantRef<D>& other)
   requires(D.IsSubtypeOf(C))
-    : GVariantBase(kRef, other.raw()) {}
+    : GVariantBase(other) {}
 
 template <Type C>
 template <Type D>
 GVariantRef<C>::GVariantRef(GVariantRef<D>&& other)
   requires(D.IsSubtypeOf(C))
-    : GVariantBase(kTake, std::move(other).release()) {}
+    : GVariantBase(std::move(other)) {}
 
 // static
 template <Type C>
@@ -1027,21 +1026,21 @@ const char* GVariantRef<C>::c_string() const
 template <Type C>
 GVariantRef<C> GVariantRef<C>::TakeUnchecked(GVariant* variant) {
   DCHECK(g_variant_is_of_type(variant, C.gvariant_type()));
-  return GVariantRef<C>(kTake, variant);
+  return GVariantRef<C>(GVariantPtr::Take(variant));
 }
 
 // static
 template <Type C>
 GVariantRef<C> GVariantRef<C>::RefUnchecked(GVariant* variant) {
   DCHECK(g_variant_is_of_type(variant, C.gvariant_type()));
-  return GVariantRef<C>(kRef, variant);
+  return GVariantRef<C>(GVariantPtr::Ref(variant));
 }
 
 // static
 template <Type C>
 GVariantRef<C> GVariantRef<C>::RefSinkUnchecked(GVariant* variant) {
   DCHECK(g_variant_is_of_type(variant, C.gvariant_type()));
-  return GVariantRef<C>(kRefSink, variant);
+  return GVariantRef<C>(GVariantPtr::RefSink(variant));
 }
 
 // Wrapper implementation

@@ -17,6 +17,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
@@ -149,14 +150,20 @@ class FromGwsAbandonedPageLoadMetricsObserverBrowserTest
       ukm::TestAutoSetUkmRecorder& ukm_recorder,
       NavigationMilestone abandon_milestone,
       GURL target_url,
+      std::optional<GURL> recorded_url = std::nullopt,
       std::optional<std::string> impression_name = std::nullopt,
-      int entry_index = 0) {
+      int entry_index = 0,
+      std::optional<uint32_t> category_id = std::nullopt) {
     bool has_redirect = (target_url == url_non_srp_redirect());
     // There should be UKM entries corresponding to the navigation.
     auto ukm_entries = ukm_recorder.GetEntriesByName(
         "Navigation.FromGoogleSearch.TimingInformation");
+
+    if (!recorded_url.has_value()) {
+      recorded_url = url_non_srp_2();
+    }
     const ukm::mojom::UkmEntry* ukm_entry = ukm_entries[entry_index].get();
-    ukm_recorder.ExpectEntrySourceHasUrl(ukm_entry, url_non_srp_2());
+    ukm_recorder.ExpectEntrySourceHasUrl(ukm_entry, recorded_url.value());
 
     bool post_commit =
         (abandon_milestone >= NavigationMilestone::kDidCommit &&
@@ -168,6 +175,13 @@ class FromGwsAbandonedPageLoadMetricsObserverBrowserTest
     if (impression_name.has_value()) {
       ukm_recorder.ExpectEntryMetric(ukm_entry, "IsEmptyAttributionSrc",
                                      impression_name->empty());
+    }
+
+    if (category_id.has_value()) {
+      ukm_recorder.ExpectEntryMetric(ukm_entry, "Category",
+                                     category_id.value());
+    } else {
+      EXPECT_FALSE(ukm_recorder.EntryHasMetric(ukm_entry, "Category"));
     }
 
     int expected_redirects = 0;
@@ -600,7 +614,7 @@ IN_PROC_BROWSER_TEST_F(FromGwsAbandonedPageLoadMetricsObserverBrowserTest,
   // milestones.
   CheckTimingInformationMetrics(
       ukm_recorder, NavigationMilestone::kLastEssentialLoadingEvent,
-      url_non_srp_2(), std::nullopt, /* entry_index = */ 1);
+      url_non_srp_2(), std::nullopt, std::nullopt, /* entry_index = */ 1);
 }
 
 // Test that if the `OnComplete` will record the TimingInformation
@@ -883,9 +897,10 @@ IN_PROC_BROWSER_TEST_F(
   // There should be no new entry for the navigation abandonment metrics.
   ExpectEmptyAbandonedHistogramUntilCommit(ukm_recorder);
 
-  CheckTimingInformationMetrics(
-      ukm_recorder, NavigationMilestone::kLastEssentialLoadingEvent,
-      url_non_srp_2(), std::optional<std::string>(kAttributionSrc));
+  CheckTimingInformationMetrics(ukm_recorder,
+                                NavigationMilestone::kLastEssentialLoadingEvent,
+                                url_non_srp_2(), std::nullopt,
+                                std::optional<std::string>(kAttributionSrc));
 }
 
 // Test that we record successful navigation with the impression with
@@ -905,7 +920,120 @@ IN_PROC_BROWSER_TEST_F(
   // There should be no new entry for the navigation abandonment metrics.
   ExpectEmptyAbandonedHistogramUntilCommit(ukm_recorder);
 
-  CheckTimingInformationMetrics(
-      ukm_recorder, NavigationMilestone::kLastEssentialLoadingEvent,
-      url_non_srp_2(), std::optional<std::string>(kAttributionSrc));
+  CheckTimingInformationMetrics(ukm_recorder,
+                                NavigationMilestone::kLastEssentialLoadingEvent,
+                                url_non_srp_2(), std::nullopt,
+                                std::optional<std::string>(kAttributionSrc));
+}
+
+class FromGwsAbandonedPageLoadMetricsObserverWithCategoryBrowserTest
+    : public FromGwsAbandonedPageLoadMetricsObserverBrowserTest {
+ public:
+  static constexpr std::string_view kCategoryPrefix = "category:";
+  FromGwsAbandonedPageLoadMetricsObserverWithCategoryBrowserTest() {
+    std::map<std::string, std::string> params;
+    params["category_prefix"] = kCategoryPrefix;
+
+    feature_list_.InitAndEnableFeatureWithParameters(
+        page_load_metrics::features::kBeaconLeakageLogging, params);
+  }
+  ~FromGwsAbandonedPageLoadMetricsObserverWithCategoryBrowserTest() override =
+      default;
+
+  GURL url_non_srp_with_category(const std::string& category) {
+    GURL target = url_non_srp_2();
+    auto new_path = base::StrCat({target.path(), "?category=", category});
+
+    GURL url(current_test_server()->GetURL(target.host(), new_path));
+    EXPECT_FALSE(page_load_metrics::IsGoogleSearchResultUrl(url));
+    return url;
+  }
+
+ protected:
+  void SetUpOnMainThread() override {
+    FromGwsAbandonedPageLoadMetricsObserverBrowserTest::SetUpOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that a successful navigation from SRP will log all the navigation
+// milestones metrics and none of the abandonment metrics, with a valid
+// category.
+IN_PROC_BROWSER_TEST_F(
+    FromGwsAbandonedPageLoadMetricsObserverWithCategoryBrowserTest,
+    FromSearch) {
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_srp()));
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  auto target = url_non_srp_with_category(base::StrCat({kCategoryPrefix, "1"}));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), target));
+
+  // Navigate to a new page to flush the metrics.
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_non_srp()));
+
+  // There should be no new entry for the navigation abandonment metrics.
+  ExpectEmptyAbandonedHistogramUntilCommit(ukm_recorder);
+
+  CheckTimingInformationMetrics(ukm_recorder,
+                                NavigationMilestone::kLastEssentialLoadingEvent,
+                                target, target, std::nullopt, /*entry_index*/ 0,
+                                /*category_id=*/1);
+}
+
+// Test that a successful navigation from SRP will log all the navigation
+// milestones metrics and none of the abandonment metrics with an invalid
+// category id.
+IN_PROC_BROWSER_TEST_F(
+    FromGwsAbandonedPageLoadMetricsObserverWithCategoryBrowserTest,
+    FromSearchInvalidCategoryId) {
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_srp()));
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  auto target =
+      url_non_srp_with_category(base::StrCat({kCategoryPrefix, "Invalid"}));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), target));
+
+  // Navigate to a new page to flush the metrics.
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_non_srp()));
+
+  // There should be no new entry for the navigation abandonment metrics.
+  ExpectEmptyAbandonedHistogramUntilCommit(ukm_recorder);
+
+  // Since this is an invalid category id, we should not record the category
+  // metric.
+  CheckTimingInformationMetrics(ukm_recorder,
+                                NavigationMilestone::kLastEssentialLoadingEvent,
+                                target, target, std::nullopt, /*entry_index*/ 0,
+                                /*category_id=*/std::nullopt);
+}
+
+// Test that a successful navigation from SRP will log all the navigation
+// milestones metrics and none of the abandonment metrics, with no category
+// prefix specified.
+IN_PROC_BROWSER_TEST_F(
+    FromGwsAbandonedPageLoadMetricsObserverWithCategoryBrowserTest,
+    FromSearchInvalidCategoryPrefix) {
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_srp()));
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  auto target = url_non_srp_with_category("Invalid");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), target));
+
+  // Navigate to a new page to flush the metrics.
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_non_srp()));
+
+  // There should be no new entry for the navigation abandonment metrics.
+  ExpectEmptyAbandonedHistogramUntilCommit(ukm_recorder);
+
+  // Since this is an invalid category prefix, we should not record the category
+  // metric.
+  CheckTimingInformationMetrics(ukm_recorder,
+                                NavigationMilestone::kLastEssentialLoadingEvent,
+                                target, target, std::nullopt, /*entry_index*/ 0,
+                                /*category_id=*/std::nullopt);
 }

@@ -899,7 +899,7 @@ chromium-metrics-reviews@google.com.
   <int value="66" label="Product Comparison"/>
   <int value="67" label="Cookies"/>
   <int value="68" label="Plus Address Settings"/>
-  <int value="69" label="Autofill Loyalty Card"/>
+  <int value="69" label="Autofill Valuable"/>
   <int value="70" label="Shared Tab Group Account Data"/>
 </enum>
 

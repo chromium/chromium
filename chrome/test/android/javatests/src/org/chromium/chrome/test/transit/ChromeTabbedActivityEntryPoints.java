@@ -64,8 +64,9 @@ public class ChromeTabbedActivityEntryPoints {
     }
 
     /**
-     * Start the ChromeTabbedActivity with an Intent. The caller needs to specify the expected state
-     * reached by passing |expectedStation|.
+     * Start the ChromeTabbedActivity with an Intent.
+     *
+     * <p>The caller needs to specify the expected state reached by passing |expectedStation|.
      */
     public static <T extends Station<?>> T startWithIntent(
             ChromeTabbedActivityTestRule ctaTestRule, Intent intent, T expectedStation) {
@@ -73,6 +74,22 @@ public class ChromeTabbedActivityEntryPoints {
         sentinel.setAsEntryPoint();
         return sentinel.travelToSync(
                 expectedStation, () -> ctaTestRule.startActivityCompletely(intent));
+    }
+
+    /**
+     * Start the ChromeTabbedActivity with an Intent, adding a URL to it.
+     *
+     * <p>The caller needs to specify the expected state reached by passing |expectedStation|.
+     */
+    public static <T extends Station<?>> T startWithIntentPlusUrl(
+            ChromeTabbedActivityTestRule ctaTestRule,
+            Intent intent,
+            String url,
+            T expectedStation) {
+        EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
+        sentinel.setAsEntryPoint();
+        return sentinel.travelToSync(
+                expectedStation, () -> ctaTestRule.startMainActivityFromIntent(intent, url));
     }
 
     /**

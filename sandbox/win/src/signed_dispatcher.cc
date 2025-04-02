@@ -10,6 +10,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/win_util.h"
 #include "sandbox/win/src/crosscall_client.h"
 #include "sandbox/win/src/interception.h"
 #include "sandbox/win/src/interceptors.h"
@@ -39,7 +40,14 @@ bool SignedDispatcher::SetupService(InterceptionManager* manager,
 }
 
 bool SignedDispatcher::CreateSection(IPCInfo* ipc, HANDLE file_handle) {
-  // Duplicate input handle from target to broker.
+  // `file_handle` is not trusted so reject non-handle values.
+  if (base::win::IsPseudoHandle(file_handle)) {
+    return false;
+  }
+  if (!file_handle) {
+    return false;
+  }
+  // Duplicate input `file_handle` from target to broker.
   HANDLE local_file_handle = nullptr;
   if (!::DuplicateHandle((*ipc->client_info).process, file_handle,
                          ::GetCurrentProcess(), &local_file_handle,

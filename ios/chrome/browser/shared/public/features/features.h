@@ -864,15 +864,6 @@ BASE_DECLARE_FEATURE(kBlueDotOnToolsMenuButton);
 // Returns whether `kBlueDotOnToolsMenuButton` is enabled.
 bool IsBlueDotOnToolsMenuButtoneEnabled();
 
-// Feature flag to use IdentityManager APIs instead of
-// ChromeAccountManagerService APIs for getting the list of accounts, and for
-// listening to account changes.
-BASE_DECLARE_FEATURE(kUseAccountListFromIdentityManager);
-
-// Returns whether the feature to use IdentityManager APIs instead of
-// ChromeAccountManagerService APIs is enabled.
-bool IsUseAccountListFromIdentityManagerEnabled();
-
 // Feature flag to assign each managed account to its own separate profile.
 // DO NOT CHECK DIRECTLY, use AreSeparateProfilesForManagedAccountsEnabled()!
 BASE_DECLARE_FEATURE(kSeparateProfilesForManagedAccounts);

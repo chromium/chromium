@@ -124,6 +124,7 @@ class BoxShadowPaintImageGenerator;
 class ClipPathPaintImageGenerator;
 class Color;
 class ContentCaptureManager;
+class ContextMenuInsetsChangedObserver;
 class CoreProbeSink;
 class Document;
 class Editor;
@@ -376,6 +377,13 @@ class CORE_EXPORT LocalFrame final
   // Notify |virtual_keyboard_overlay_changed_observers_| that keyboard overlay
   // rect has changed.
   void NotifyVirtualKeyboardOverlayRectObservers(const gfx::Rect&) const;
+
+  void RegisterContextMenuInsetsChangedObserver(
+      ContextMenuInsetsChangedObserver*);
+
+  // Notify observers that the context menu insets have changes. If the passed
+  // rect is empty, the insets should be removed.
+  void NotifyContextMenuInsetsObservers(const gfx::Rect&) const;
 
   // Bubbles a logical scroll to the parent frame, if one exists. For a local
   // frame, this will continue the scroll synchronously. For remote frames and
@@ -1045,6 +1053,10 @@ class CORE_EXPORT LocalFrame final
   // Keeps track of all the registered VK observers.
   HeapHashSet<WeakMember<VirtualKeyboardOverlayChangedObserver>>
       virtual_keyboard_overlay_changed_observers_;
+
+  // Keeps track of all the registered context menu insets observers.
+  HeapHashSet<WeakMember<ContextMenuInsetsChangedObserver>>
+      context_menu_insets_changed_observers_;
 
   HeapHashSet<WeakMember<WidgetCreationObserver>> widget_creation_observers_;
 

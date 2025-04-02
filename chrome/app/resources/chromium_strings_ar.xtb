@@ -27,6 +27,7 @@
 <translation id="1342274909142618978">‏حذف البيانات من Chromium أيضًا (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">تمّ تثبيت اللوحة. يمكنك الوصول إلى ميزة "البحث بالصور" مرة أخرى من خلال الزر الجديد في شريط الأدوات</translation>
 <translation id="1356661055722410047">ميزة جديدة: يمكنك ترجمة كل من النص والصور على شاشتك</translation>
+<translation id="1383876407941801731">البحث</translation>
 <translation id="1414495520565016063">‏تم تسجيل دخولك إلى Chromium!</translation>
 <translation id="1465192221147974788">‏لمشاركة النافذة، يجب السماح بتسجيل الشاشة في Chromium ضِمن "إعدادات النظام" (System Settings).</translation>
 <translation id="1478370723027452770">‏الحصول على مساعدة بشأن Chrome for Testing</translation>
@@ -118,6 +119,7 @@
 <translation id="2583187216237139145">‏يمكن لمشرف ملف العمل إزالة أي بيانات مرتبطة بمتصفِّح Chromium والتي يتم إنشاؤها أثناء استخدام هذا الملف الشخصي (مثل إنشاء الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى).<ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">‏مواصلة استخدام Chromium</translation>
 <translation id="259935314519650377">تعذَّر إجراء تخزين مؤقت للمثبّت الذي تم تنزيله. الخطأ: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2620436844016719705">النظام</translation>
 <translation id="2629740064077610681">‏يمكن لمؤسستك الاطّلاع على بيانات التصفّح وإدارتها، مثل الإشارات المرجعية والسجلّ وكلمات المرور. ولا يمكنها الاطّلاع على بيانات التصفّح في الملفات الشخصية الأخرى على Chromium</translation>
 <translation id="2635452620547538388">‏يُرجى إثبات هويتك لاستخدام بيانات Chromium وحفظها في حسابك (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="264613044588233783">‏سيعمل Chromium بشكل أسرع ومن المفترض أن تعمل الميزات التي تستخدِم JavaScript على النحو المطلوب (خيار يُنصَح به).</translation>
@@ -498,6 +500,7 @@
 <translation id="7937630085815544518">‏تم تسجيل دخولك إلى Chromium باعتبارك <ph name="USER_EMAIL_ADDRESS" />. يُرجى استخدام الحساب نفسه لتسجيل الدخول مرة أخرى.</translation>
 <translation id="7975919845073681630">‏هذا تثبيت ثانوي من Chromium، ولا يمكن جعله متصفحك التلقائي.</translation>
 <translation id="7997934263947464652">‏إنّ الإضافات والتطبيقات والمظاهر الواردة من مصادر غير معروفة يمكن أن تتسبّب في إلحاق الضرر بجهازك. ينصح Chromium بإجراء عملية التثبيت من خلال <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> فقط.</translation>
+<translation id="8004582292198964060">المتصفّح</translation>
 <translation id="8010081455002666927">الرصد التلقائي</translation>
 <translation id="8013436988911883588">‏بعد حصول Chromium على إمكانية الوصول، ستتمكن المواقع الإلكترونية من مطالبتك بإمكانية الوصول.</translation>
 <translation id="80471789339884597">شكرًا على التثبيت. عليك إعادة تشغيل جميع المتصفِّحات قبل استخدام <ph name="BUNDLE_NAME" />.</translation>

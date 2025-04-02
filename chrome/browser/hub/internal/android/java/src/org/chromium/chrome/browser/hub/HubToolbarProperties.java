@@ -10,6 +10,7 @@ import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -46,6 +47,9 @@ class HubToolbarProperties {
     public static final WritableBooleanPropertyKey APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION =
             new WritableBooleanPropertyKey();
 
+    public static final ReadableObjectPropertyKey<Runnable> MENU_BUTTON_ENTER_PRESSED_RUNNABLE =
+            new ReadableObjectPropertyKey<>();
+
     @FunctionalInterface
     public interface PaneButtonLookup {
         View get(int index);
@@ -67,5 +71,6 @@ class HubToolbarProperties {
         IS_INCOGNITO,
         APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION,
         HUB_SEARCH_ENABLED_STATE,
+        MENU_BUTTON_ENTER_PRESSED_RUNNABLE,
     };
 }

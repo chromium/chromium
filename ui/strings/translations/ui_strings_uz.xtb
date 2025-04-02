@@ -38,6 +38,7 @@
 <translation id="19085484004813472">Bu yangi funksiya</translation>
 <translation id="2006524834898217237">Bu qurilma internetga ulanganini tekshiring.</translation>
 <translation id="208586643495776849">Qayta urining</translation>
+<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />Inkognito rejimidan foydalanishga ruxsat berish<ph name="END_BOLD" /> parametrini yoqing</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 kun}other{# kun}}</translation>
 <translation id="2148716181193084225">Bugun</translation>
 <translation id="2168039046890040389">Tepaga o‘tkazish</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">Ekrandagi interaktiv elementlarga tegining.</translation>
 <translation id="2295140143284145483">So‘rovnoma</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> identifikatorli kengaytma topilmaydi. Administratorga murojaat qiling.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> identifikatorli kengaytmalar topilmaydi. Administratorga murojaat qiling.}}</translation>
 <translation id="2353636109065292463">Internet aloqasini tekshirish</translation>
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2388990488038464401">Bu raqamga telefoningizdan chaqiruv bajarilsinmi?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">Hammasini tozalash</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 kundan keyin}other{# kundan keyin}}</translation>
 <translation id="2922712708897119705"><ph name="COLUMN_NAME" /> ustuni kamayish tartibida saralandi.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Kengaytma topilmadi}other{Kengaytmalar topilmadi}}</translation>
 <translation id="3036649622769666520">Ochiq fayllar</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">Pastga</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">Telefon qilish</translation>
 <translation id="3306688585798492231">Ichki displey</translation>
 <translation id="335581015389089642">Ovoz berish</translation>
+<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />Batafsil<ph name="END_BOLD" /> tugmasini bosing</translation>
 <translation id="3389286852084373014">Matn juda katta</translation>
 <translation id="3406306243914553062">HTML kontent</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{ 1 kun qoldi}other{ # kun qoldi}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> ustuni oshib borish tartibida saralandi.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 ta yangi bildirishnoma}other{# ta yangi bildirishnoma}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Inkognito rejimida quyidagi kengaytmani yoqish:}other{Inkognito rejimida quyidagi kengaytmalarni yoqish:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 oy oldin}other{# oy oldin}}</translation>
 <translation id="4289300219472526559">Gapirishni boshlang</translation>
 <translation id="4289540628985791613">Umumiy</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">raqam</translation>
 <translation id="4746179598275229723">Kengaytma olib tashlandi</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 oy qoldi}other{# oy qoldi}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Tashkilot Inkognito rejimidan foydalanish uchun kengaytmani talab qiladi}other{Tashkilot Inkognito rejimidan foydalanish uchun ayrim kengaytmalarni talab qiladi}}</translation>
+<translation id="482932175346970750">Brauzerda <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> manzilini yozing</translation>
 <translation id="4888938634149558681">Telefon qilish</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 soniya}other{# soniya}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;Qo‘shib qo‘yish</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Yuborilmadi</translation>
+<translation id="5283101102242354279">Inkognito rejimida kengaytmani yoqing:</translation>
 <translation id="528468243742722775">Tugatish</translation>
 <translation id="5329858601952122676">&amp;O‘chirish</translation>
 <translation id="5361107212971249203">matn</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">Ilovangizdagi ekran sozlamalari keyingi safar ishga tushganda kuchga kiradi.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 daqiqa qoldi}other{# daqiqa qoldi}}</translation>
+<translation id="7252604552361840748">Yuqoridagi kengaytmani toping</translation>
 <translation id="7363164521834647158">Javobni yuborish</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 daqiqa oldin}other{# daqiqa oldin}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>

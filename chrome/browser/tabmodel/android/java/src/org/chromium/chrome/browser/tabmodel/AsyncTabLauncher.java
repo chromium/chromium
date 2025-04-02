@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.content_public.browser.LoadUrlParams;
 
+@NullMarked
 public interface AsyncTabLauncher {
     /**
      * Creates and launches a new tab with the given LoadUrlParams.

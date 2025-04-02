@@ -1,6 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
-  "+ios/chrome/browser/iph_for_new_chrome_user/model/utils.h",
+  "+ios/chrome/browser/bubble/model/utils.h",
   "+ios/chrome/browser/metrics/model/metrics_app_interface.h",
   "+ios/chrome/browser/content_settings/model",
   "+ios/chrome/browser/discover_feed/model",

@@ -173,7 +173,7 @@ class AXNativeWidgetMacTest : public test::WidgetTest {
 // on a retained accessibility object after the source view is deleted.
 TEST_F(AXNativeWidgetMacTest, Lifetime) {
   Textfield* view = AddChildTextfield(widget()->GetContentsView()->size());
-  NSObject* ax_node = view->GetNativeViewAccessible();
+  id ax_node = view->GetNativeViewAccessible().Get();
   id<NSAccessibility> ax_obj = ToNSAccessibility(ax_node);
 
   EXPECT_TRUE(AXObjectHandlesSelector(ax_obj, @selector(accessibilityValue)));
@@ -249,10 +249,10 @@ TEST_F(AXNativeWidgetMacTest, FocusableElementsAreLeafNodes) {
   widget()->GetContentsView()->AddChildView(button);
 
   id<NSAccessibility> ax_button =
-      ToNSAccessibility(button->GetNativeViewAccessible());
+      ToNSAccessibility(button->GetNativeViewAccessible().Get());
   EXPECT_NSEQ(NSAccessibilityButtonRole, ax_button.accessibilityRole);
   id<NSAccessibility> ax_label =
-      ToNSAccessibility(button->label()->GetNativeViewAccessible());
+      ToNSAccessibility(button->label()->GetNativeViewAccessible().Get());
 
   EXPECT_EQ(0u, ax_button.accessibilityChildren.count);
 
@@ -272,7 +272,7 @@ TEST_F(AXNativeWidgetMacTest, FocusableElementsAreLeafNodes) {
 TEST_F(AXNativeWidgetMacTest, ChildrenAttribute) {
   // The ContentsView initially has a single child, a NativeFrameView.
   id<NSAccessibility> ax_node =
-      widget()->GetContentsView()->GetNativeViewAccessible();
+      widget()->GetContentsView()->GetNativeViewAccessible().Get();
   EXPECT_EQ(1u, ax_node.accessibilityChildren.count);
 
   const size_t kNumChildren = 3;

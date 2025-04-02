@@ -91,6 +91,7 @@ For more settings that use data to improve your Chromium experience, go to <ph n
 <translation id="3054480780637153380">Open Chromium settings in iOS, then tap on 'Default browser app' and select Chromium.</translation>
 <translation id="3102849287235003384">To sign out of your Google Account on all websites, <ph name="BEGIN_LINK" />sign out of Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Make Chromium your default browser?</translation>
+<translation id="3180939591219927904">Turn on 'Lock Incognito tabs when you close Chromium'</translation>
 <translation id="3242612358525156339">From your device's settings, open '<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />' and select 'Chromium'</translation>
 <translation id="328933489847748230">{count,plural, =1{Now showing 1 Chromium window}other{Now showing {count} Chromium windows}}</translation>
 <translation id="3344973607274501920">Chromium couldn't check your passwords. Try checking your Internet connection.</translation>
@@ -260,6 +261,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">The selected data has been removed from Chromium and synced devices. Your Google Account may have other forms of browsing history such as searches and activity from other Google services at history.google.com.</translation>
 <translation id="7395825497086981028">Your password will be saved to Password Manager for <ph name="EMAIL" />.</translation>
+<translation id="7504829997542308412">Open Chromium</translation>
 <translation id="7531461704633548377">From Chromium</translation>
 <translation id="7554983317097061001">Chromium tip: Move Chromium to the dock</translation>
 <translation id="7576863740961052505">Manage Chromium settings</translation>

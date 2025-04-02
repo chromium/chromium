@@ -47,6 +47,7 @@
 #include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/spdy/spdy_http_stream.h"
 #include "net/spdy/spdy_session.h"
+#include "net/spdy/spdy_session_pool.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
@@ -1316,9 +1317,25 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
   size_t num_attempts = 0;
   const bool using_tls = UsingTls();
   while (IsConnectionAttemptReady()) {
-    // TODO(crbug.com/346835898): Change to DCHECK once we stabilize the
-    // implementation.
-    CHECK(!HasAvailableSpdySession());
+    // TODO(crbug.com/346835898, crbug.com/406932139, crbug.com/406936736):
+    // Change to DCHECK once we identify the cause of bugs.
+    if (HasAvailableSpdySession()) {
+      base::WeakPtr<SpdySession> spdy_session =
+          pool()->FindAvailableSpdySession(stream_key(), spdy_session_key(),
+                                           IsIpBasedPoolingEnabled());
+      CHECK(spdy_session);
+      std::string destination = stream_key().destination().Serialize();
+      SpdySessionInitiator spdy_session_initiator =
+          spdy_session->spdy_session_initiator();
+      std::vector<std::string> pooled_aliases;
+      for (const auto& alias : spdy_session->pooled_aliases()) {
+        pooled_aliases.emplace_back(alias.host_port_pair().ToString());
+      }
+      base::debug::Alias(&destination);
+      base::debug::Alias(&spdy_session_initiator);
+      base::debug::Alias(&pooled_aliases);
+      NOTREACHED();
+    }
     std::optional<IPEndPoint> ip_endpoint =
         GetIPEndPointToAttempt(exclude_ip_endpoint);
     if (!ip_endpoint.has_value()) {
@@ -2002,7 +2019,8 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptComplete(
     int create_result =
         spdy_session_pool()->CreateAvailableSessionFromSocketHandle(
             spdy_session_key(), std::move(handle), net_log(),
-            MultiplexedSessionCreationInitiator::kUnknown, &spdy_session);
+            MultiplexedSessionCreationInitiator::kUnknown, &spdy_session,
+            SpdySessionInitiator::kHttpStreamPoolAttemptManager);
     if (create_result != OK) {
       HandleAttemptFailure(std::move(in_flight_attempt), create_result);
       return;

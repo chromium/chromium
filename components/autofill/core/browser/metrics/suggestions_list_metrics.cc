@@ -108,13 +108,6 @@ void LogSuggestionAcceptedIndex(int index,
                             off_the_record);
 }
 
-void LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
-    ShowCardsFromGoogleAccountButtonEvent event) {
-  base::UmaHistogramEnumeration(
-      "Autofill.ButterForPayments.ShowCardsFromGoogleAccountButtonEvents",
-      event);
-}
-
 void LogAutofillRankingSuggestionDifference(
     SuggestionRankingContext::RelativePosition ranking_difference) {
   base::UmaHistogramEnumeration(

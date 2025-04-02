@@ -57,7 +57,7 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
   content::WebContents* web_contents = nullptr;
 
   // If the extension specified a tab, that takes priority.
-  // Get web_contents if tab_id is valid, or dispoosition.
+  // Get web_contents if tab_id is valid, or disposition.
   if (tab_id) {
     if (!ExtensionTabUtil::GetTabById(
             *tab_id, profile, include_incognito_information(), &web_contents)) {

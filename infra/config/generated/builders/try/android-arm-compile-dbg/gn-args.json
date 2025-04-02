@@ -1,5 +1,6 @@
 {
   "gn_args": {
+    "android_static_analysis": "on",
     "debuggable_apks": false,
     "is_component_build": true,
     "is_debug": true,

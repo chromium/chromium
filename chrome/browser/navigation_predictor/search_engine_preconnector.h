@@ -28,8 +28,6 @@ BASE_DECLARE_FEATURE(kPreconnectToSearchWithPrivacyModeEnabled);
 // app is currently in the foreground or not.
 class WebContentVisibilityManager {
  public:
-  static WebContentVisibilityManager* GetInstance();
-
   WebContentVisibilityManager();
   ~WebContentVisibilityManager();
   // Notifies |this| that the visibility of web contents tracked by |client| has

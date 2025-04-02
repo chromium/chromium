@@ -10,6 +10,7 @@
 #import "components/lens/lens_overlay_metrics.h"
 #import "components/lens/lens_overlay_mime_type.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_sheet_detent_state.h"
 #import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/web/public/web_state.h"
 

@@ -190,8 +190,6 @@ class HTMLToken {
     return data_;
   }
 
-  ALWAYS_INLINE bool IsAll8BitData() const { return data_.Is8Bit(); }
-
   const DataVector& GetName() const {
     DCHECK(type_ == kStartTag || type_ == kEndTag || type_ == DOCTYPE);
     return data_;

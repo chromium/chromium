@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/animation/timeline_range.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -34,6 +35,16 @@ Interpolation* Keyframe::PropertySpecificKeyframe::CreateInterpolation(
   return MakeGarbageCollected<InvalidatableInterpolation>(
       property_handle, const_cast<PropertySpecificKeyframe*>(this),
       const_cast<PropertySpecificKeyframe*>(&end));
+}
+
+Vector<PropertyHandle> Keyframe::PropertiesVector() const {
+  Vector<PropertyHandle> result;
+  const auto& properties = Properties();
+  result.ReserveInitialCapacity(properties.size());
+  for (const auto& property : properties) {
+    result.push_back(property);
+  }
+  return result;
 }
 
 void Keyframe::AddKeyframePropertiesToV8Object(V8ObjectBuilder& object_builder,

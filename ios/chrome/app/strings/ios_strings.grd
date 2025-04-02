@@ -1475,7 +1475,7 @@ See your search engine’s instructions for deleting your search history, if app
         Article suggestions
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_DROP_CONTEXT_MENU_TITLE" desc="Customize cards title for Price Drops on Tab Resumption">
-          This card shows a price drop on a tracked product from one of your synced devices
+          This card shows price drops on products in your open tabs
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_DROP_OPEN_TABS_ACCESSIBILITY_LABEL" desc="Accessibility label for Price Drop on Open Tabs">
           Price drop on your open tab, from <ph name="PREVIOUS_PRICE">$1<ex>$799</ex></ph> to <ph name="PRICE">$2<ex>$699</ex></ph>, <ph name="PRODUCT_NAME">$3<ex>Pixel phone</ex></ph>, <ph name="DOMAIN">$4<ex>store.google.com</ex></ph>
@@ -3561,6 +3561,15 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_NEW_TAB_RECENT_TABS" desc="The header of the panel containing the list of recently closed tabs and the tabs synced from other devices.[Length: 17em]">
         Recent tabs
+      </message>
+      <message name="IDS_IOS_NON_MODAL_SIGNIN_PROMO_ADD_BOOKMARK" desc="Infobar subtitle for non modal signin promo when user adds a bookmark.">
+        Sign in to get your bookmarks and more on all your devices
+      </message>
+      <message name="IDS_IOS_NON_MODAL_SIGNIN_PROMO_SAVE_PASSWORD" desc="Infobar subtitle for non modal signin promo when user saves a password.">
+        Sign in to get your passwords and more on all your devices
+      </message>
+      <message name="IDS_IOS_NON_MODAL_SIGNIN_PROMO_SIGNIN_BUTTON" desc="Sign in button text for non modal signin promo.">
+        Sign in
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_ALERT_CANCEL" desc="The label for the alert's cancel button">
         No, thanks
@@ -5879,6 +5888,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SHARE_GPLUS_COMPLETE" desc="Message shown when Google+ share has been posted. [Length: Unknown. Keep it short.] [iOS only]">
         Google+ post completed.
       </message>
+      <message name="IDS_IOS_SHARE_KIT_BLOCK_AND_LEAVE_MESSAGE" desc="The message shown when the user tries to block another user and leave a tab group.">
+        You'll immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>" tab group, and <ph name="USER_NAME">$2<ex>John Doe</ex></ph> (<ph name="USER_EMAIL">$3<ex>john.doe@gmail.com</ex></ph>) will no longer be able to interact with you across Google services.
+      </message>
+      <message name="IDS_IOS_SHARE_KIT_BLOCK_MESSAGE" desc="The message shown when the user tries to block another user.">
+        <ph name="USER_NAME">$1<ex>John Doe</ex></ph> (<ph name="USER_EMAIL">$2<ex>john.doe@gmail.com</ex></ph>) will immediately lose access to the “<ph name="GROUP_NAME">$3<ex>Vacation</ex></ph>" tab group, and will no longer be able to interact with you across Google services.
+      </message>
       <message name="IDS_IOS_SHARE_KIT_JOIN_ALERT_EXPIRED_ACTION_TITLE" desc="The title of the button in the alert displayed when the shared link has expired.">
         Got it
       </message>
@@ -5925,6 +5940,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SHARE_KIT_MANAGE_DISCLAIMER" desc="Disclaimer for managing a tab group.">
         Anyone with the link can edit all tabs.
+      </message>
+      <message name="IDS_IOS_SHARE_KIT_REMOVE_MESSAGE" desc="The message shown when the user tries to remove another user from a tab group.">
+        <ph name="USER_NAME">$1<ex>John Doe</ex></ph> (<ph name="USER_EMAIL">$2<ex>john.doe@gmail.com</ex></ph>) will immediately lose access to the “<ph name="GROUP_NAME">$3<ex>Vacation</ex></ph>" tab group.
       </message>
       <message name="IDS_IOS_SHARE_KIT_SHARE_GROUP_DISCLAIMER" desc="Disclaimer for sharing a tab group.">
         Anyone with the link can edit all tabs, so share wisely. Link expires in 48 hours.
@@ -6578,6 +6596,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_TAB_GROUP_NEW_ACTIVITY_LABEL_TEXT" desc="Text in the new activity label on a shared tab group cell in the tab grid.">
         New activity
+      </message>
+      <message name="IDS_IOS_TAB_GROUP_RECENT_ACTIVITY_SHEET_EMPTY_MESSAGE" desc="Message displayed when the recent activity sheet is empty.">
+        No recent activity
       </message>
       <message name="IDS_IOS_TAB_GROUP_RECENT_ACTIVITY_SHEET_TITLE" desc="Title of a half sheet for recent activity logs in a shared tab group.">
         Recent activity

@@ -9,9 +9,11 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.url.GURL;
 
@@ -121,5 +123,35 @@ class BaseCtaTransitTestRule {
 
     public KeyboardVisibilityDelegate getKeyboardDelegate() {
         return mActivityTestRule.getKeyboardDelegate();
+    }
+
+    public AppMenuCoordinator getAppMenuCoordinator() {
+        return mActivityTestRule.getAppMenuCoordinator();
+    }
+
+    // TODO(crbug.com/406324209): Support tracking pause/resume state in Public Transit.
+    public void resumeMainActivityFromLauncher() throws Exception {
+        mActivityTestRule.resumeMainActivityFromLauncher();
+    }
+
+    // TODO(crbug.com/406324209): ChromeTabbedActivityTestRule#startActivityCompletely() already
+    // calls this. Double check that callers are using those entry points and remove this.
+    public void waitForActivityNativeInitializationComplete() {
+        mActivityTestRule.waitForActivityNativeInitializationComplete();
+    }
+
+    // TODO(crbug.com/406324209): ChromeTabbedActivityTestRule#startActivityCompletely() already
+    // calls this. Double check that callers are using those entry points and remove this.
+    public void waitForActivityCompletelyLoaded() {
+        mActivityTestRule.waitForActivityCompletelyLoaded();
+    }
+
+    // TODO(crbug.com/406324209): Support recreate() in Public Transit.
+    public void recreateActivity() {
+        mActivityTestRule.recreateActivity();
+    }
+
+    public EmbeddedTestServerRule getEmbeddedTestServerRule() {
+        return mActivityTestRule.getEmbeddedTestServerRule();
     }
 }

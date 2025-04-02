@@ -47,10 +47,6 @@
 
 ### Android
 
- * android-new-pixel-perf: Android T.
- * android-new-pixel-perf-pgo: Android T.
- * android-new-pixel-pro-perf: Android T.
- * android-new-pixel-pro-perf-pgo: Android T.
  * android-pixel4-perf-pgo: Android R.
  * android-pixel6-pro-perf-pgo: Android T.
 

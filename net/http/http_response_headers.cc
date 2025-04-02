@@ -249,21 +249,11 @@ HttpResponseHeaders::HttpResponseHeaders(const std::string& raw_input)
   // that would actually create a double call between the original
   // HttpResponseHeader that was serialized, and initialization of the
   // new object from that pickle.
-  if (base::FeatureList::IsEnabled(features::kOptimizeParsingDataUrls)) {
-    std::optional<HttpStatusCode> status_code =
-        TryToGetHttpStatusCode(response_code_);
-    if (status_code.has_value()) {
-      UMA_HISTOGRAM_ENUMERATION("Net.HttpResponseCode2", status_code.value(),
-                                net::HttpStatusCode::HTTP_STATUS_CODE_MAX);
-    }
-  } else {
-    UMA_HISTOGRAM_CUSTOM_ENUMERATION(
-        "Net.HttpResponseCode",
-        HttpUtil::MapStatusCodeForHistogram(response_code_),
-        // Note the third argument is only
-        // evaluated once, see macro
-        // definition for details.
-        HttpUtil::GetStatusCodesForHistogram());
+  std::optional<HttpStatusCode> status_code =
+      TryToGetHttpStatusCode(response_code_);
+  if (status_code.has_value()) {
+    UMA_HISTOGRAM_ENUMERATION("Net.HttpResponseCode2", status_code.value(),
+                              net::HttpStatusCode::HTTP_STATUS_CODE_MAX);
   }
 }
 

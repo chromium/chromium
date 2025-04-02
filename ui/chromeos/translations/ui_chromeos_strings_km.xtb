@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">កំពុងបង្ហាញ​កាយវិការ​អរគុណ</translation>
 <translation id="2088690981887365033">បណ្ដាញ VPN</translation>
 <translation id="209653272837065803">មិនមាន​ទំហំផ្ទុក​គ្រប់គ្រាន់ ដើម្បី​បន្តធ្វើ​សមកាលកម្ម​ឯកសារទេ</translation>
-<translation id="2111134541987263231">បើក <ph name="BEGIN_BOLD" />អនុញ្ញាតនៅក្នុងមុខងារឯកជន<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">ធាតុ <ph name="NUMBER_OF_ITEMS" /> នឹង​ត្រូ​វបាន​លុប ហើយ​អ្នកនឹង​មិន​អាច​ស្ដារ​ធាតុ​ទាំងនេះ​បាន​ទេ។</translation>
 <translation id="2122305276694332719">ការតភ្ជាប់ទៅបណ្ដាញដែលបានលាក់ដោយស្វ័យប្រវត្តិ​​អាចឱ្យអ្នកដទៃ​អាចមើលឃើញការកំណត់បណ្ដាញមួយចំនួន​ និងឧបករណ៍​របស់អ្នក ដូច្នេះយើង​សូមណែនាំមិន​ឱ្យធ្វើការតភ្ជាប់​ទេ។</translation>
 <translation id="2125607626296734455">ភាសា​ខ្មែរ</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">ភព</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ត្រូវបាន​ដកចេញ។</translation>
 <translation id="2307462900900812319">តំឡើងបណ្តាញ</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{មិន​អាច​កំណត់​ទីតាំង​កម្មវិធី​ដែលមាន​លេខម្គាល់ <ph name="BEGIN_LIST" /><ph name="END_LIST" /> បាន​ទេ។ សូមទាក់ទងទៅ​អ្នកគ្រប់គ្រង​របស់អ្នក។}other{មិន​អាច​កំណត់​ទីតាំង​កម្មវិធី​ដែលមាន​លេខម្គាល់ <ph name="BEGIN_LIST" /><ph name="END_LIST" /> បាន​ទេ។ សូមទាក់ទងទៅ​អ្នកគ្រប់គ្រង​របស់អ្នក។}}</translation>
 <translation id="2325650632570794183">ប្រភេទឯកសារនេះមិនត្រូវបានគាំទ្រទេ។ សូមទៅកាន់ Chrome Web Store ដើម្បិស្វែងរកកម្មវិធីដែលអាចបើកប្រភេទឯកសារនេះបាន។</translation>
 <translation id="2326539130272988168">ភាសា​ប៊ុលហ្ការី</translation>
 <translation id="233822363739146957">មិនមាន​ទំហំផ្ទុក​គ្រប់គ្រាន់ ដើម្បី​ធ្វើសម​កាលកម្ម​ឯកសារ​ទាំងអស់​របស់អ្នកទេ</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">ភាសា​ម៉ារ៉ាទី</translation>
 <translation id="2923240520113693977">ភាសាអេស្តូនី</translation>
 <translation id="2938685643439809023">ភាសាមុងហ្គោលី</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{រកមិនឃើញកម្មវិធីបន្ថែម​ទេ}other{រកមិនឃើញកម្មវិធីបន្ថែម​ទេ}}</translation>
 <translation id="2943503720238418293">ប្រើ​ឈ្មោះ​ខ្លី​ជាងនេះ</translation>
 <translation id="2949781154072577687">កំពុងសម្អាត <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">ខ្ញែសមុទ្រ</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">រួចរាល់</translation>
 <translation id="3358452157379365236">ហ្គីតា</translation>
 <translation id="3368922792935385530">បានភ្ជាប់</translation>
-<translation id="3372635229069101468">ចុច<ph name="BEGIN_BOLD" />ព័ត៌មានលម្អិត<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">ភាសានេប៉ាល់​ដែលប្រើ​ក្ដារចុច InScript</translation>
 <translation id="338691029516748599">បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" />%, គ្រប់គ្រងដោយអ្នកគ្រប់គ្រងរបស់អ្នក, ភ្ជាប់</translation>
 <translation id="3408072735282270043">បើកដំណើរការ, <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">សេះមាន​ស្នែង</translation>
 <translation id="4131235941541910880">ផ្លាស់ទី​ធាតុ​ដែល​អ្នក​មិនត្រូវការ​ទៅក្នុង​ធុង​សំរាម</translation>
 <translation id="4134804435730168042">បណ្ដាញទី <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, បើក​ដំណើរការ​បន្ទាប់ពី​រៀបចំ​ឧបករណ៍</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{បើកកម្មវិធីបន្ថែម​ខាងក្រោមនៅក្នុងមុខងារឯកជន៖}other{បើកកម្មវិធីបន្ថែម​ខាងក្រោមនៅក្នុងមុខងារឯកជន៖}}</translation>
 <translation id="4153015322587141338">ចុច​កណ្ដុរ​ខាងស្ដាំ​លើ​ឯកសារ រួច​ជ្រើសរើស "<ph name="PIN_COMMAND" />" ដើម្បីចូលប្រើប្រាស់​ឯកសារ​របស់អ្នក​នៅក្នុង​ធ្នើ​របាន​រហ័ស។</translation>
 <translation id="4157569377477607576">គោលការណ៍អ្នកគ្រប់គ្រងមិនណែនាំឱ្យ៖</translation>
 <translation id="4159731583141908892">បានផ្លាស់ទី <ph name="FILE_NAME" />។</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">រក្សាទាំងពីរ</translation>
 <translation id="4804827417948292437">ផ្លែបឺរ</translation>
 <translation id="4805966553127040832">កំពុងស្ដារធាតុ <ph name="COUNT" /></translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{ដើម្បីប្រើមុខងារឯកជន ស្ថាប័នរបស់អ្នកតម្រូវឱ្យប្រើកម្មវិធីបន្ថែម}other{ដើម្បីប្រើមុខងារឯកជន ស្ថាប័នរបស់អ្នកតម្រូវឱ្យប្រើកម្មវិធីបន្ថែម​មួយចំនួន}}</translation>
 <translation id="4826849268470072925">ភាសាតាមិល ITRANS</translation>
-<translation id="482932175346970750">វាយបញ្ចូល <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ទៅក្នុងកម្មវិធីរុករកតាមអ៊ីនធឺណិតរបស់អ្នក</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">មើល</translation>
 <translation id="485316830061041779">ភាសាអាល្លឺម៉ង់</translation>
@@ -561,7 +554,6 @@
     នៅលើឯកសារជាមួយអ្នកដ៏ទៃនៅក្នុងកន្លែងតែមួយ។<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">ឯកសារដែលបានសង្គ្រោះពី Google Drive</translation>
 <translation id="5278111733643988471">ដើម្បី​ស្ដារ​ធាតុ​នេះ សូម​អូស​ធាតុ​ទៅ​ថត​ថ្មី​នៅក្រៅ​ធុង​សំរាម។ ថត​ដើម "<ph name="PARENT_FOLDER_NAME" />" សម្រាប់​ធាតុ​នេះ​ត្រូវ​បាន​លុប។</translation>
-<translation id="5283101102242354279">បើកកម្មវិធីបន្ថែម​នៅក្នុងមុខងារឯកជន៖</translation>
 <translation id="5288441970121584418">ប៊ឺហ្គឺ</translation>
 <translation id="5293615890992542006">ការផ្លាស់ទី​ឯកសារ​នេះ​ត្រូវបាន​ទប់ស្កាត់​ដោយ​គោលការណ៍​របស់អ្នកគ្រប់គ្រង</translation>
 <translation id="5305688511332277257">គ្មានអ្វីត្រូវបានតំឡើងទេ</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, ព័ត៌មាន​លម្អិត</translation>
 <translation id="7246947237293279874">ប្រូកស៊ី FTP</translation>
 <translation id="7248671827512403053">កម្មវិធី</translation>
-<translation id="7252604552361840748">ស្វែងរកកម្មវិធីបន្ថែម​ខាងលើ</translation>
 <translation id="7256405249507348194">កំហុសឆ្គងដែលមិនបានសម្គាល់៖ <ph name="DESC" /></translation>
 <translation id="7268659760406822741">មានសេវាកម្ម</translation>
 <translation id="7291818353625820805">ចង់ឱ្យ​គ្រាប់ចុច​ចុច​ឡើងវិញ​ឬ? សូមបិទ​សញ្ញា​សម្គាល់​សំឡេង​នៅក្នុងការកំណត់​ក្ដារចុច</translation>

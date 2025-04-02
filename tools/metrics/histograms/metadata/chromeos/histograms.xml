@@ -3561,7 +3561,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Settings.Device.ButtonRemapping.Pressed"
-    enum="PeripheralCustomizationMetricsType" expires_after="2025-07-27">
+    enum="PeripheralCustomizationMetricsType" expires_after="2025-09-28">
   <owner>dpad@google.com</owner>
   <owner>wangdanny@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>

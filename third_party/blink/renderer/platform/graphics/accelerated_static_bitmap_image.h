@@ -75,7 +75,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       const gfx::Size& size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
-      sk_sp<SkColorSpace> sk_color_space,
+      const gfx::ColorSpace& color_space,
       base::OnceCallback<void(const gpu::SyncToken&)> release_callback);
 
   bool CurrentFrameKnownToBeOpaque() override;
@@ -98,9 +98,9 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
                      GLuint dest_texture_id,
                      GLint dest_level,
                      bool unpack_premultiply_alpha,
-                     bool unpack_flip_y,
+                     GrSurfaceOrigin destination_origin,
                      const gfx::Point& dest_point,
-                     const gfx::Rect& source_sub_rectangle) override;
+                     const gfx::Rect& src_rect) override;
 
   bool CopyToResourceProvider(CanvasResourceProvider* resource_provider,
                               const gfx::Rect& copy_rect) override;
@@ -136,11 +136,9 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
     return viz::ToClosestSkColorType(format_);
   }
   sk_sp<SkColorSpace> GetSkColorSpace() const override {
-    return sk_color_space_;
+    return color_space_.ToSkColorSpace();
   }
-  gfx::ColorSpace GetColorSpace() const override {
-    return SkColorSpaceToGfxColorSpace(GetSkColorSpace());
-  }
+  gfx::ColorSpace GetColorSpace() const override { return color_space_; }
   viz::SharedImageFormat GetSharedImageFormat() const override {
     return format_;
   }
@@ -161,7 +159,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       const gfx::Size& size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
-      sk_sp<SkColorSpace> sk_color_space,
+      const gfx::ColorSpace& color_space,
       const ImageOrientation& orientation,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::PlatformThreadRef context_thread_ref,
@@ -175,7 +173,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   gfx::Size size_;
   viz::SharedImageFormat format_;
   SkAlphaType alpha_type_;
-  sk_sp<SkColorSpace> sk_color_space_;
+  gfx::ColorSpace color_space_;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   scoped_refptr<MailboxRef> mailbox_ref_;

@@ -304,7 +304,7 @@ gfx::NativeViewAccessible NativeViewHostMac::GetNativeViewAccessible() {
   if (native_view_hostable_) {
     return native_view_hostable_->ViewsHostableGetAccessibilityElement();
   } else {
-    return native_view_;
+    return gfx::NativeViewAccessible(native_view_);
   }
 }
 
@@ -345,7 +345,7 @@ void NativeViewHostMac::SetParentAccessible(
 gfx::NativeViewAccessible NativeViewHostMac::GetParentAccessible() {
   return native_view_hostable_
              ? native_view_hostable_->ViewsHostableGetParentAccessible()
-             : nullptr;
+             : gfx::NativeViewAccessible();
 }
 
 ui::Layer* NativeViewHostMac::GetUILayer() {

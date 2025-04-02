@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_delegate.h"
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_item.h"
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -55,6 +56,9 @@ const CGFloat kTableViewSectionFooterHeight = 3;
 }
 
 - (void)viewDidLoad {
+  self.view.accessibilityIdentifier =
+      first_run::kBestFeaturesMainScreenAccessibilityIdentifier;
+
   _tableView = [self createTableView];
   _dataSource = [self createAndFillDataSource];
   _tableView.dataSource = _dataSource;

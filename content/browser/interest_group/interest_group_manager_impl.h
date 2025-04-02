@@ -27,6 +27,7 @@
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/bidding_and_auction_serializer.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
+#include "content/browser/interest_group/data_decoder_manager.h"
 #include "content/browser/interest_group/for_debugging_only_report_util.h"
 #include "content/browser/interest_group/interest_group_caching_storage.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
@@ -405,6 +406,8 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     return *auction_process_manager_;
   }
 
+  DataDecoderManager& data_decoder_manager() { return data_decoder_manager_; }
+
   void AddInterestGroupObserver(InterestGroupObserver* observer) {
     observers_.AddObserver(observer);
   }
@@ -736,6 +739,9 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // InterestGroupStorage. Returns cached values for GetInterestGroupsForOwner
   // when available.
   InterestGroupCachingStorage caching_storage_;
+
+  // This must be above the `trusted_signals_cache_`, which depends on it.
+  DataDecoderManager data_decoder_manager_;
 
   // Cache for trusted browser signals version 2. Only populated if
   // kFledgeTrustedSignalsKVv2Support and kFledgeUseKvv2SignalsCache features

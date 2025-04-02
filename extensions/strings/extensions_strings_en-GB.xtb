@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Manifest file is invalid</translation>
 <translation id="7217838517480956708">The administrator of this machine requires <ph name="EXTENSION_NAME" /> to be installed. It cannot be removed or modified.</translation>
 <translation id="7612608473764576263">Input value for private key must be a valid format (PKCS#8-format PEM-encoded RSA key).</translation>
+<translation id="7876803335449432072">Could not load file '<ph name="RELATIVE_PATH" />' for content script, content script style sheets can only be loaded from supported style sheet files such as .css files.</translation>
 <translation id="7939686037314084444">The extension failed to load properly. It might not be able to intercept network requests.</translation>
 <translation id="7972881773422714442">Options: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">User-facing</translation>
 <translation id="8047248493720652249">This extension failed to name the download "<ph name="ATTEMPTED_FILENAME" />" because another extension (<ph name="EXTENSION_NAME" />) determined a different filename "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> from <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Manifest file is missing or unreadable</translation>
+<translation id="8621383749470166852">Could not load file '<ph name="RELATIVE_PATH" />' for content script, content scripts can only be loaded from supported JavaScript files such as .js files.</translation>
 <translation id="8636666366616799973">Package is invalid. Details: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" is requesting access to one of your devices:</translation>
 <translation id="8885905466771744233">A private key for specified extension already exists. Reuse that key or delete it first.</translation>

@@ -405,7 +405,8 @@ public class AccessibilityNodeInfoBuilder {
             int clickableScore,
             String display,
             String brailleLabel,
-            String brailleRoleDescription) {
+            String brailleRoleDescription,
+            int expandedState) {
         node.setUniqueId(String.valueOf(virtualViewId));
         node.setClassName(className);
 
@@ -439,6 +440,7 @@ public class AccessibilityNodeInfoBuilder {
         node.setMultiLine(multiLine);
         node.setInputType(inputType);
         node.setHintText(hint);
+        node.setExpandedState(expandedState);
 
         // Deliberately don't call setLiveRegion because TalkBack speaks the entire region anytime
         // it changes. Instead Chrome will call announceLiveRegionText() only on the nodes that

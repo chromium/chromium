@@ -13908,6 +13908,71 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWithMainFrameThresholdTest,
   }
 }
 
+// Tests that renderer process is not reused when it hangs:
+// 1. For OOP iframe in a different tab;
+// 2. For main frame in a different tab.
+IN_PROC_BROWSER_TEST_P(SitePerProcessWithMainFrameThresholdTest,
+                       DoNotReuseRenderProcessAfterHung) {
+  const GURL kUrl_a_b(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+
+  const GURL kUrl_c_b(embedded_test_server()->GetURL(
+      "c.com", "/cross_site_iframe_factory.html?c(b)"));
+
+  const GURL kUrl_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Ensure the reuse of processes for same-site URLs, to test
+  // that the process is not reused when it becomes unresponsive.
+  RenderProcessHost::SetMaxRendererProcessCount(1);
+
+  ASSERT_TRUE(NavigateToURL(shell(), kUrl_a_b));
+  RenderFrameHostImpl* main_frame =
+      static_cast<WebContentsImpl*>(shell()->web_contents())
+          ->GetPrimaryMainFrame();
+  RenderFrameHostImpl* subframe = main_frame->child_at(0)->current_frame_host();
+  RenderProcessHost* main_frame_process = main_frame->GetProcess();
+  RenderProcessHost* b_subframe_process = subframe->GetProcess();
+  ASSERT_NE(main_frame_process, b_subframe_process);
+
+  // Hang b.com process with OOP iframe.
+  {
+    UnresponsiveRendererObserver unresponsive_renderer_observer(
+        shell()->web_contents());
+
+    // This is to simulate renderer hung event. Class
+    // SimulateUnresponsiveRenderer does not work here, because it hits only
+    // WebContents, while we need widget to know that it is unresponsive.
+    static_cast<RenderWidgetHostImpl*>(subframe->GetRenderWidgetHost())
+        ->OnInputEventAckTimeout();
+
+    RenderProcessHost* hung_process = unresponsive_renderer_observer.Wait();
+    EXPECT_EQ(hung_process, b_subframe_process);
+  }
+
+  // 1. Navigate to url with b.com iframe, for which process is unresponsive.
+  Shell* cb_shell = CreateShellAndNavigateToURL(kUrl_c_b);
+  RenderFrameHostImpl* cb_main_frame =
+      static_cast<WebContentsImpl*>(cb_shell->web_contents())
+          ->GetPrimaryMainFrame();
+
+  RenderFrameHostImpl* cb_subframe =
+      cb_main_frame->child_at(0)->current_frame_host();
+
+  // Check that b.com iframe is not reusing existing unresponsive process with
+  // b.com.
+  ASSERT_NE(b_subframe_process, cb_subframe->GetProcess());
+
+  // 2. Navigate main frame to b.com, for which process is unresponsive.
+  Shell* b_shell = CreateShellAndNavigateToURL(kUrl_b);
+  RenderFrameHostImpl* b_main_frame =
+      static_cast<WebContentsImpl*>(b_shell->web_contents())
+          ->GetPrimaryMainFrame();
+
+  // Check that b.com main frame is not reusing existing unresponsive process
+  // with b.com.
+  ASSERT_NE(b_subframe_process, b_main_frame->GetProcess());
+}
+
 // A test fixture that provides an upper limit of 4 bytes, so should fail the
 // assignment of another outermost main frame into the process.
 class SitePerProcessWithMainFrameThresholdWithTotalLimitTest

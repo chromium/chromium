@@ -287,6 +287,11 @@ bool PrerendererImpl::MaybePrerender(
             url::Origin::Create(candidate->url).Serialize().c_str()));
   }
 
+  std::optional<SpeculationRulesTags> tags;
+  if (!candidate->tags.empty()) {
+    tags = SpeculationRulesTags(candidate->tags);
+  }
+
   std::optional<net::HttpNoVarySearchData> no_vary_search_hint;
   if (candidate->no_vary_search_hint) {
     no_vary_search_hint = no_vary_search::ParseHttpNoVarySearchDataFromMojom(
@@ -299,8 +304,7 @@ bool PrerendererImpl::MaybePrerender(
           candidate->injection_type),
       /*embedder_histogram_suffix=*/"",
       SpeculationRulesParams(candidate->target_browsing_context_name_hint,
-                             candidate->eagerness,
-                             SpeculationRulesTags(candidate->tags)),
+                             candidate->eagerness, std::move(tags)),
       Referrer{*candidate->referrer}, no_vary_search_hint, &rfhi,
       web_contents->GetWeakPtr(), ui::PAGE_TRANSITION_LINK,
       /*should_warm_up_compositor=*/false,

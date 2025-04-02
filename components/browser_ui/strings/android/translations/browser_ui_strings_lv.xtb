@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">Tālummaiņas piespiedu iespējošana</translation>
 <translation id="3905475044299942653">Apturiet pārmērīgus paziņojumus</translation>
 <translation id="3908288065506437185">Bloķēt trešo pušu sīkfailus inkognito režīmā</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Dažas funkcijas var nedarboties. Saistītās vietnes joprojām var izmantot trešo pušu sīkfailus.</translation>
 <translation id="3922092564198021702">Tālrunī atveriet sadaļu Iestatījumi.</translation>
 <translation id="3933121352599513978">Sakļaut nevēlamos pieprasījumus (ieteicams)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">Detalizēta informācija</translation>
 <translation id="4598549027014564149">Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbības vietnēs, pat saistītajās vietnēs. Jūsu pārlūkošanas darbības netiek izmantotas, piemēram, reklāmu personalizēšanai. Noteiktās vietnēs funkcijas var nedarboties.</translation>
 <translation id="461356340001513807">Ļauj jums pierakstīties vietnēs, izmantojot kontu, kuram darbojas identitātes pakalpojums.</translation>
-<translation id="4619615317237390068">Cilnes no citām ierīcēm</translation>
 <translation id="4635969503923889910">Neļaut vietnēm izmantot NFC ierīces</translation>
 <translation id="4644713492825682049">Dzēst un atiestatīt</translation>
 <translation id="4645575059429386691">Pārvalda viens no jūsu vecākiem</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">Kopīgošanas veids:</translation>
 <translation id="5001526427543320409">Trešo pušu sīkfaili</translation>
 <translation id="5007392906805964215">Pārskatīt</translation>
-<translation id="5014182796621173645">Jūs apmeklējāt <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Atļaut</translation>
 <translation id="5048398596102334565">Atļaut vietnēm piekļūt kustību sensoriem (ieteicams)</translation>
 <translation id="5048841907079026162">Pārlūkošanas datu pārvaldība</translation>

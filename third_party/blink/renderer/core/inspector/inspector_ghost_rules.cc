@@ -94,8 +94,7 @@ void InspectorGhostRules::ActivateTreeScope(TreeScope& tree_scope) {
     // Note that `alternative_stylesheets` contains the original vector at
     // this point. We keep track of it so we can restore it in the destructor.
     affected_tree_scopes.insert(&tree_scope,
-                                MakeGarbageCollected<ActiveStyleSheetVector>(
-                                    std::move(alternative_stylesheets)));
+                                std::move(alternative_stylesheets));
   }
 }
 
@@ -106,7 +105,7 @@ InspectorGhostRules::~InspectorGhostRules() {
   // Restore original active stylesheets.
   for (auto [tree_scope, active_stylesheet_vector] : affected_tree_scopes) {
     tree_scope->GetScopedStyleResolver()->QuietlySwapActiveStyleSheets(
-        *active_stylesheet_vector);
+        active_stylesheet_vector);
   }
 }
 

@@ -92,6 +92,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
+  using FinalizedPrivateAggregationRequests = std::vector<
+      auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr>;
+
   using PrivateAggregationAllParticipantsData =
       std::array<PrivateAggregationParticipantData,
                  base::checked_cast<size_t>(
@@ -249,8 +252,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       const url::Origin& frame_origin,
       network::mojom::ClientSecurityStatePtr client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      auction_worklet::mojom::KAnonymityBidMode kanon_mode,
-      bool bid_is_kanon,
+      auction_worklet::mojom::KAnonymityStatus kanon_status,
       WinningBidInfo winning_bid_info,
       SellerWinningBidInfo top_level_seller_winning_bid_info,
       std::optional<SellerWinningBidInfo> component_seller_winning_bid_info,
@@ -258,9 +260,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       std::vector<GURL> debug_win_report_urls,
       std::vector<GURL> debug_loss_report_urls,
       base::flat_set<std::string> k_anon_keys_to_join,
-      std::map<PrivateAggregationKey, PrivateAggregationRequests>
+      std::map<PrivateAggregationKey, FinalizedPrivateAggregationRequests>
           private_aggregation_requests_reserved,
-      std::map<std::string, PrivateAggregationRequests>
+      std::map<std::string, FinalizedPrivateAggregationRequests>
           private_aggregation_requests_non_reserved,
       PrivateAggregationAllParticipantsData all_participants_data,
       std::map<url::Origin, RealTimeReportingContributions>
@@ -330,7 +332,8 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       const url::Origin& main_frame_origin,
       std::map<
           PrivateAggregationKey,
-          std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
+          std::vector<
+              auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr>>
           private_aggregation_requests);
 
   static double RoundBidStochastically(double bid);
@@ -505,8 +508,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   const network::mojom::ClientSecurityStatePtr client_security_state_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  const auction_worklet::mojom::KAnonymityBidMode kanon_mode_;
-  const bool bid_is_kanon_;
+  const auction_worklet::mojom::KAnonymityStatus kanon_status_;
 
   const WinningBidInfo winning_bid_info_;
   const SellerWinningBidInfo top_level_seller_winning_bid_info_;
@@ -536,9 +538,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // Stores all pending Private Aggregation API report requests until they have
   // been flushed. Keyed by the origin of the script that issued the request
   // (i.e. the reporting origin).
-  std::map<PrivateAggregationKey, PrivateAggregationRequests>
+  std::map<PrivateAggregationKey, FinalizedPrivateAggregationRequests>
       private_aggregation_requests_reserved_;
-  std::map<std::string, PrivateAggregationRequests>
+  std::map<std::string, FinalizedPrivateAggregationRequests>
       private_aggregation_requests_non_reserved_;
   // Metrics from the parties that took part in winning, in case they want to
   // request them from the reporting scripts.

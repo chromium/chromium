@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_PROPERTIES_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_PROPERTIES_H_
 
-#include <optional>
-
+#include "base/containers/fixed_flat_map.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "ui/actions/action_id.h"
 
@@ -15,16 +14,17 @@ namespace page_actions {
 // Defines the static properties that a page action can have. The page action in
 // mainly configured using the ActionItem. But the ActionItem is global.
 // Therefore, for some properties, they should be scoped to page actions only.
-struct PageActionProperties {
+struct PageActionControllerProperties {
   const char* histogram_name = nullptr;
   bool is_ephemeral = false;
   PageActionIconType type;
 };
 
-// Get the properties associated with the given action id. The provided action
-// id is expected to exist in the configs array.
-std::optional<PageActionProperties> GetPageActionProperties(
-    actions::ActionId page_action_id);
+using PageActionControllerPropertiesMap =
+    base::fixed_flat_map<actions::ActionId, PageActionControllerProperties, 6>;
+
+// Get the properties require to configure the page action controller.
+const PageActionControllerPropertiesMap& GetPageActionControllerProperties();
 
 }  // namespace page_actions
 

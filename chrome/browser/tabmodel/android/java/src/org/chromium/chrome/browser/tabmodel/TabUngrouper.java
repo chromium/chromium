@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Token;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.List;
@@ -18,6 +17,7 @@ import java.util.List;
  * <p>This interface, combined with {@link TabRemover}, facilitates a shared implementation with the
  * ability to show warning dialogs when events may be destructive to tab groups.
  */
+@NullMarked
 public interface TabUngrouper {
     /**
      * Ungroups one or more tabs from a tab group.
@@ -32,7 +32,7 @@ public interface TabUngrouper {
      *     process.
      */
     void ungroupTabs(
-            @NonNull List<Tab> tabs,
+            List<Tab> tabs,
             boolean trailing,
             boolean allowDialog,
             @Nullable TabModelActionListener listener);
@@ -41,7 +41,7 @@ public interface TabUngrouper {
      * {@link #ungroupTabs(List<Tab>, boolean, boolean, TabModelActionListener)} without the {@code
      * listener}
      */
-    default void ungroupTabs(@NonNull List<Tab> tabs, boolean trailing, boolean allowDialog) {
+    default void ungroupTabs(List<Tab> tabs, boolean trailing, boolean allowDialog) {
         ungroupTabs(tabs, trailing, allowDialog, /* listener= */ null);
     }
 
@@ -58,7 +58,7 @@ public interface TabUngrouper {
      *     process.
      */
     void ungroupTabGroup(
-            @NonNull Token tabGroupId,
+            Token tabGroupId,
             boolean trailing,
             boolean allowDialog,
             @Nullable TabModelActionListener listener);
@@ -67,7 +67,7 @@ public interface TabUngrouper {
      * {@link #ungroupTabGroup(Token, boolean, boolean, TabModelActionListener)} without the {@code
      * listener}
      */
-    default void ungroupTabs(@NonNull Token tabGroupId, boolean trailing, boolean allowDialog) {
+    default void ungroupTabs(Token tabGroupId, boolean trailing, boolean allowDialog) {
         ungroupTabGroup(tabGroupId, trailing, allowDialog, /* listener= */ null);
     }
 }

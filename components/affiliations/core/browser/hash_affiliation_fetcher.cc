@@ -293,6 +293,7 @@ void HashAffiliationFetcher::OnSimpleLoaderComplete(
     base::UmaHistogramSparse(
         "PasswordManager.AffiliationFetcher.FetchErrorCode",
         -simple_url_loader_->NetError());
+    // TODO(crbug.com/371938601): clean up delegate.
     delegate_->OnFetchFailed(this);
     std::move(callback_local_copy).Run(std::move(fetch_result));
     return;
@@ -303,12 +304,14 @@ void HashAffiliationFetcher::OnSimpleLoaderComplete(
     LogFetchResult(AffiliationFetchOutcome::kSuccess, fetch_time,
                    response_body->size());
     fetch_result.data = result_data;
+    // TODO(crbug.com/371938601): clean up delegate.
     delegate_->OnFetchSucceeded(
         this, std::make_unique<ParsedFetchResponse>(result_data));
     std::move(callback_local_copy).Run(std::move(fetch_result));
   } else {
     LogFetchResult(AffiliationFetchOutcome::kMalformed, fetch_time,
                    response_body->size());
+    // TODO(crbug.com/371938601): clean up delegate.
     delegate_->OnMalformedResponse(this);
     std::move(callback_local_copy).Run(std::move(fetch_result));
   }

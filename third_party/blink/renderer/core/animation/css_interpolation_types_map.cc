@@ -116,13 +116,7 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
   std::unique_ptr<InterpolationTypes> applicable_types =
       std::make_unique<InterpolationTypes>();
 
-  const CSSProperty& css_property = property.IsCSSProperty()
-                                        ? property.GetCSSProperty()
-                                        : property.PresentationAttribute();
-  // We treat presentation attributes identically to their CSS property
-  // equivalents when interpolating.
-  PropertyHandle used_property =
-      property.IsCSSProperty() ? property : PropertyHandle(css_property);
+  const CSSProperty& css_property = property.GetCSSProperty();
 
   if (!reduce_motion) {
     switch (css_property.PropertyID()) {
@@ -182,29 +176,28 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
       case CSSPropertyID::kX:
       case CSSPropertyID::kY:
         applicable_types->push_back(
-            std::make_unique<CSSLengthInterpolationType>(used_property));
+            std::make_unique<CSSLengthInterpolationType>(property));
         break;
       case CSSPropertyID::kAspectRatio:
         applicable_types->push_back(
-            std::make_unique<CSSAspectRatioInterpolationType>(used_property));
+            std::make_unique<CSSAspectRatioInterpolationType>(property));
         break;
       case CSSPropertyID::kGridTemplateColumns:
       case CSSPropertyID::kGridTemplateRows:
         applicable_types->push_back(
             std::make_unique<CSSGridTemplatePropertyInterpolationType>(
-                used_property));
+                property));
         break;
       case CSSPropertyID::kContainIntrinsicWidth:
       case CSSPropertyID::kContainIntrinsicHeight:
         applicable_types->push_back(
-            std::make_unique<CSSIntrinsicLengthInterpolationType>(
-                used_property));
+            std::make_unique<CSSIntrinsicLengthInterpolationType>(property));
         break;
       case CSSPropertyID::kDynamicRangeLimit:
         if (RuntimeEnabledFeatures::CSSDynamicRangeLimitEnabled()) {
           applicable_types->push_back(
               std::make_unique<CSSDynamicRangeLimitInterpolationType>(
-                  used_property));
+                  property));
         }
         break;
       case CSSPropertyID::kFlexGrow:
@@ -224,19 +217,19 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
       case CSSPropertyID::kWidows:
       case CSSPropertyID::kZIndex:
         applicable_types->push_back(
-            std::make_unique<CSSNumberInterpolationType>(used_property));
+            std::make_unique<CSSNumberInterpolationType>(property));
         break;
       case CSSPropertyID::kLineHeight:
       case CSSPropertyID::kTabSize:
         applicable_types->push_back(
-            std::make_unique<CSSLengthInterpolationType>(used_property));
+            std::make_unique<CSSLengthInterpolationType>(property));
         applicable_types->push_back(
-            std::make_unique<CSSNumberInterpolationType>(used_property));
+            std::make_unique<CSSNumberInterpolationType>(property));
         break;
       case CSSPropertyID::kInterestTargetShowDelay:
       case CSSPropertyID::kInterestTargetHideDelay:
         applicable_types->push_back(
-            std::make_unique<CSSTimeInterpolationType>(used_property));
+            std::make_unique<CSSTimeInterpolationType>(property));
         break;
       case CSSPropertyID::kAccentColor:
       case CSSPropertyID::kBackgroundColor:
@@ -256,110 +249,108 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
       case CSSPropertyID::kRowRuleColor:
       case CSSPropertyID::kWebkitTextStrokeColor:
         applicable_types->push_back(
-            std::make_unique<CSSColorInterpolationType>(used_property));
+            std::make_unique<CSSColorInterpolationType>(property));
         break;
       case CSSPropertyID::kFill:
       case CSSPropertyID::kStroke:
         applicable_types->push_back(
-            std::make_unique<CSSPaintInterpolationType>(used_property));
+            std::make_unique<CSSPaintInterpolationType>(property));
         break;
       case CSSPropertyID::kOffsetPath:
         applicable_types->push_back(
-            std::make_unique<CSSBasicShapeInterpolationType>(used_property));
+            std::make_unique<CSSBasicShapeInterpolationType>(property));
         applicable_types->push_back(
-            std::make_unique<CSSRayInterpolationType>(used_property));
+            std::make_unique<CSSRayInterpolationType>(property));
         [[fallthrough]];
       case CSSPropertyID::kD:
         applicable_types->push_back(
-            std::make_unique<CSSPathInterpolationType>(used_property));
+            std::make_unique<CSSPathInterpolationType>(property));
         break;
       case CSSPropertyID::kBoxShadow:
       case CSSPropertyID::kTextShadow:
         applicable_types->push_back(
-            std::make_unique<CSSShadowListInterpolationType>(used_property));
+            std::make_unique<CSSShadowListInterpolationType>(property));
         break;
       case CSSPropertyID::kBorderImageSource:
       case CSSPropertyID::kListStyleImage:
       case CSSPropertyID::kWebkitMaskBoxImageSource:
         applicable_types->push_back(
-            std::make_unique<CSSImageInterpolationType>(used_property));
+            std::make_unique<CSSImageInterpolationType>(property));
         break;
       case CSSPropertyID::kBackgroundImage:
         applicable_types->push_back(
-            std::make_unique<CSSImageListInterpolationType>(used_property));
+            std::make_unique<CSSImageListInterpolationType>(property));
         break;
       case CSSPropertyID::kStrokeDasharray:
         applicable_types->push_back(
-            std::make_unique<CSSLengthListInterpolationType>(used_property));
+            std::make_unique<CSSLengthListInterpolationType>(property));
         break;
       case CSSPropertyID::kFontWeight:
         applicable_types->push_back(
-            std::make_unique<CSSFontWeightInterpolationType>(used_property));
+            std::make_unique<CSSFontWeightInterpolationType>(property));
         break;
       case CSSPropertyID::kFontStretch:
         applicable_types->push_back(
-            std::make_unique<CSSFontStretchInterpolationType>(used_property));
+            std::make_unique<CSSFontStretchInterpolationType>(property));
         break;
       case CSSPropertyID::kFontStyle:
         applicable_types->push_back(
-            std::make_unique<CSSFontStyleInterpolationType>(used_property));
+            std::make_unique<CSSFontStyleInterpolationType>(property));
         break;
       case CSSPropertyID::kFontVariationSettings:
         applicable_types->push_back(
             std::make_unique<CSSFontVariationSettingsInterpolationType>(
-                used_property));
+                property));
         break;
       case blink::CSSPropertyID::kFontPalette:
         applicable_types->push_back(
-            std::make_unique<CSSFontPaletteInterpolationType>(used_property));
+            std::make_unique<CSSFontPaletteInterpolationType>(property));
         break;
       case CSSPropertyID::kVisibility:
         applicable_types->push_back(
-            std::make_unique<CSSVisibilityInterpolationType>(used_property));
+            std::make_unique<CSSVisibilityInterpolationType>(property));
         break;
       case CSSPropertyID::kClip:
         applicable_types->push_back(
-            std::make_unique<CSSClipInterpolationType>(used_property));
+            std::make_unique<CSSClipInterpolationType>(property));
         break;
       case CSSPropertyID::kOffsetRotate:
         applicable_types->push_back(
-            std::make_unique<CSSOffsetRotateInterpolationType>(used_property));
+            std::make_unique<CSSOffsetRotateInterpolationType>(property));
         break;
       case CSSPropertyID::kBackgroundPositionX:
       case CSSPropertyID::kBackgroundPositionY:
       case CSSPropertyID::kWebkitMaskPositionX:
       case CSSPropertyID::kWebkitMaskPositionY:
         applicable_types->push_back(
-            std::make_unique<CSSPositionAxisListInterpolationType>(
-                used_property));
+            std::make_unique<CSSPositionAxisListInterpolationType>(property));
         break;
       case CSSPropertyID::kObjectPosition:
       case CSSPropertyID::kOffsetAnchor:
       case CSSPropertyID::kOffsetPosition:
       case CSSPropertyID::kPerspectiveOrigin:
         applicable_types->push_back(
-            std::make_unique<CSSPositionInterpolationType>(used_property));
+            std::make_unique<CSSPositionInterpolationType>(property));
         break;
       case CSSPropertyID::kBorderBottomLeftRadius:
       case CSSPropertyID::kBorderBottomRightRadius:
       case CSSPropertyID::kBorderTopLeftRadius:
       case CSSPropertyID::kBorderTopRightRadius:
         applicable_types->push_back(
-            std::make_unique<CSSLengthPairInterpolationType>(used_property));
+            std::make_unique<CSSLengthPairInterpolationType>(property));
         break;
       case CSSPropertyID::kTranslate:
         applicable_types->push_back(
-            std::make_unique<CSSTranslateInterpolationType>(used_property));
+            std::make_unique<CSSTranslateInterpolationType>(property));
         break;
       case CSSPropertyID::kTransformOrigin:
         applicable_types->push_back(
-            std::make_unique<CSSTransformOriginInterpolationType>(
-                used_property));
+            std::make_unique<CSSTransformOriginInterpolationType>(property));
         break;
       case CSSPropertyID::kBackgroundSize:
       case CSSPropertyID::kMaskSize:
         applicable_types->push_back(
-            std::make_unique<CSSSizeListInterpolationType>(used_property));
+            std::make_unique<CSSSizeListInterpolationType>(property));
         break;
       case CSSPropertyID::kBorderImageOutset:
       case CSSPropertyID::kBorderImageWidth:
@@ -367,79 +358,76 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
       case CSSPropertyID::kWebkitMaskBoxImageWidth:
         applicable_types->push_back(
             std::make_unique<CSSBorderImageLengthBoxInterpolationType>(
-                used_property));
+                property));
         break;
       case CSSPropertyID::kScale:
         applicable_types->push_back(
-            std::make_unique<CSSScaleInterpolationType>(used_property));
+            std::make_unique<CSSScaleInterpolationType>(property));
         break;
       case CSSPropertyID::kFontSize:
         applicable_types->push_back(
-            std::make_unique<CSSFontSizeInterpolationType>(used_property));
+            std::make_unique<CSSFontSizeInterpolationType>(property));
         break;
       case CSSPropertyID::kFontSizeAdjust:
         applicable_types->push_back(
-            std::make_unique<CSSFontSizeAdjustInterpolationType>(
-                used_property));
+            std::make_unique<CSSFontSizeAdjustInterpolationType>(property));
         break;
       case CSSPropertyID::kTextIndent:
         applicable_types->push_back(
-            std::make_unique<CSSTextIndentInterpolationType>(used_property));
+            std::make_unique<CSSTextIndentInterpolationType>(property));
         break;
       case CSSPropertyID::kBorderImageSlice:
       case CSSPropertyID::kWebkitMaskBoxImageSlice:
         applicable_types->push_back(
-            std::make_unique<CSSImageSliceInterpolationType>(used_property));
+            std::make_unique<CSSImageSliceInterpolationType>(property));
         break;
       case CSSPropertyID::kClipPath:
         applicable_types->push_back(
-            std::make_unique<CSSBasicShapeInterpolationType>(used_property));
+            std::make_unique<CSSBasicShapeInterpolationType>(property));
         applicable_types->push_back(
-            std::make_unique<CSSPathInterpolationType>(used_property));
+            std::make_unique<CSSPathInterpolationType>(property));
         applicable_types->push_back(
-            std::make_unique<CSSShapeInterpolationType>(used_property));
+            std::make_unique<CSSShapeInterpolationType>(property));
         break;
       case CSSPropertyID::kShapeOutside:
         applicable_types->push_back(
-            std::make_unique<CSSBasicShapeInterpolationType>(used_property));
+            std::make_unique<CSSBasicShapeInterpolationType>(property));
         break;
       case CSSPropertyID::kRotate:
         applicable_types->push_back(
-            std::make_unique<CSSRotateInterpolationType>(used_property));
+            std::make_unique<CSSRotateInterpolationType>(property));
         break;
       case CSSPropertyID::kBackdropFilter:
       case CSSPropertyID::kFilter:
         applicable_types->push_back(
-            std::make_unique<CSSFilterListInterpolationType>(used_property));
+            std::make_unique<CSSFilterListInterpolationType>(property));
         break;
       case CSSPropertyID::kTransform:
         applicable_types->push_back(
-            std::make_unique<CSSTransformInterpolationType>(used_property));
+            std::make_unique<CSSTransformInterpolationType>(property));
         break;
       case CSSPropertyID::kVariable:
         DCHECK_EQ(GetRegistration(registry_, property), nullptr);
         break;
       case CSSPropertyID::kObjectViewBox:
         applicable_types->push_back(
-            std::make_unique<CSSBasicShapeInterpolationType>(used_property));
+            std::make_unique<CSSBasicShapeInterpolationType>(property));
         break;
       case CSSPropertyID::kDisplay:
         applicable_types->push_back(
-            std::make_unique<CSSDisplayInterpolationType>(used_property));
+            std::make_unique<CSSDisplayInterpolationType>(property));
         break;
       case CSSPropertyID::kContentVisibility:
         applicable_types->push_back(
-            std::make_unique<CSSContentVisibilityInterpolationType>(
-                used_property));
+            std::make_unique<CSSContentVisibilityInterpolationType>(property));
         break;
       case CSSPropertyID::kOverlay:
         applicable_types->push_back(
-            std::make_unique<CSSOverlayInterpolationType>(used_property));
+            std::make_unique<CSSOverlayInterpolationType>(property));
         break;
       case CSSPropertyID::kScrollbarColor:
         applicable_types->push_back(
-            std::make_unique<CSSScrollbarColorInterpolationType>(
-                used_property));
+            std::make_unique<CSSScrollbarColorInterpolationType>(property));
         break;
       default:
         DCHECK(!css_property.IsInterpolable());
@@ -448,7 +436,7 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
   }
 
   applicable_types->push_back(
-      std::make_unique<CSSDefaultInterpolationType>(used_property));
+      std::make_unique<CSSDefaultInterpolationType>(property));
 
   auto add_result =
       applicable_types_map.insert(property, std::move(applicable_types));

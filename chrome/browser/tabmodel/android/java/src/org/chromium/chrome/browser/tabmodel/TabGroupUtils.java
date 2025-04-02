@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.Token;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -12,6 +15,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import java.util.List;
 
 /** Helper class to handle tab groups related utilities. */
+@NullMarked
 public class TabGroupUtils {
     /**
      * This method gets the selected tab of the group where {@code tab} is in.
@@ -21,7 +25,7 @@ public class TabGroupUtils {
      * @return The selected tab of the group which contains the {@code tab}
      */
     public static Tab getSelectedTabInGroupForTab(TabGroupModelFilter filter, Tab tab) {
-        return filter.getRepresentativeTabAt(filter.representativeIndexOf(tab));
+        return assumeNonNull(filter.getRepresentativeTabAt(filter.representativeIndexOf(tab)));
     }
 
     /**
@@ -105,7 +109,7 @@ public class TabGroupUtils {
 
         // 4. Apply the tab group attributes (color, collapsed state, and title).
         tabGroupModelFilter.setTabGroupColor(rootId, tabGroupColor);
-        tabGroupModelFilter.setTabGroupCollapsed(rootId, tabGroupCollapsed);
+        tabGroupModelFilter.setTabGroupCollapsed(rootId, tabGroupCollapsed, /* animate= */ false);
         tabGroupModelFilter.setTabGroupTitle(rootId, tabGroupTitle);
     }
 }

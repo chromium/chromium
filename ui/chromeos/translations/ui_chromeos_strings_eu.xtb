@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">"Eskerrik asko" hitzekin sinatzen</translation>
 <translation id="2088690981887365033">VPN sarea</translation>
 <translation id="209653272837065803">Ez dago fitxategiak sinkronizatzen jarraitzeko behar adina toki biltegian</translation>
-<translation id="2111134541987263231">Aktibatu <ph name="BEGIN_BOLD" />Baimendu ezkutuko moduan<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> elementu ezabatuko dira, eta ezingo dituzu leheneratu.</translation>
 <translation id="2122305276694332719">Automatikoki konektatzen bazara ezkutuko sare batera, zure gailua eta sarearen zenbait ezarpen ikusi ahalko dituzte besteek, eta hori ez da komeni.</translation>
 <translation id="2125607626296734455">Khmertarra</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">Kanporatu da <ph name="VOLUME_NAME" />.</translation>
 <translation id="2307462900900812319">Konfiguratu sarea</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Ezin da aurkitu <ph name="BEGIN_LIST" /><ph name="END_LIST" /> identifikatzailearekin lotutako luzapenik. Jarri administratzailearekin harremanetan.}other{Ezin da aurkitu <ph name="BEGIN_LIST" /><ph name="END_LIST" /> identifikatzaileekin lotutako luzapenik. Jarri administratzailearekin harremanetan.}}</translation>
 <translation id="2325650632570794183">Ez dira mota horretako fitxategiak onartzen. Horrelako fitxategiak ireki ditzaketen aplikazioak aurkitzeko, zoaz Chrome Web Store-ra.</translation>
 <translation id="2326539130272988168">Bulgariarra</translation>
 <translation id="233822363739146957">Ez dago fitxategi guztiak sinkronizatzeko behar adina toki biltegian</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">Maratharra</translation>
 <translation id="2923240520113693977">Estoniarra</translation>
 <translation id="2938685643439809023">Mongoliarra</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Ezin da aurkitu luzapena}other{Ezin dira aurkitu luzapenak}}</translation>
 <translation id="2943503720238418293">Erabili izen laburrago bat</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> formateatzen…</translation>
 <translation id="2951236788251446349">Marmoka</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">Osatuta</translation>
 <translation id="3358452157379365236">Gitarra</translation>
 <translation id="3368922792935385530">Konektatuta</translation>
-<translation id="3372635229069101468">Sakatu <ph name="BEGIN_BOLD" />Xehetasunak<ph name="END_BOLD" />.</translation>
 <translation id="3382143449143186018">Nepaldarra, InScript teklatuarekin</translation>
 <translation id="338691029516748599"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="SECURITY_STATUS" />). Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua. Konektatu.</translation>
 <translation id="3408072735282270043">Aktibatu, <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">Adarbakarra</translation>
 <translation id="4131235941541910880">Eraman zaborrontzira behar ez dituzun elementuak</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_COUNT" /> saretatik <ph name="NETWORK_INDEX" />garrena, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktibatu gailua konfiguratu ondoren</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Aktibatu luzapen hau ezkutuko moduan:}other{Aktibatu luzapen hauek ezkutuko moduan:}}</translation>
 <translation id="4153015322587141338">Apaleko fitxategiak bizkor atzitzeko, egin klik fitxategi batean eskuineko botoiarekin eta hautatu "<ph name="PIN_COMMAND" />".</translation>
 <translation id="4157569377477607576">Administratzailearen gidalerroek ez dituzte hauek gomendatzen:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> mugitu da.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">Mantendu biak</translation>
 <translation id="4804827417948292437">Ahuakatea</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> elementu leheneratzen</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Ezkutuko modua erabiltzeko, zure erakundeak luzapen bat eskatzen du}other{Ezkutuko modua erabiltzeko, zure erakundeak luzapen batzuk eskatzen ditu}}</translation>
 <translation id="4826849268470072925">Tamildarra (ITRANS)</translation>
-<translation id="482932175346970750">Idatzi <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> arakatzailean.</translation>
 <translation id="4843566743023903107">Chromebase-ak</translation>
 <translation id="4850886885716139402">Ikusi</translation>
 <translation id="485316830061041779">Alemana</translation>
@@ -561,7 +554,6 @@
     beste erabiltzaile batzuekin. Toki bakarrean egin dezakezu hori guztia.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Drive-tik berreskuratutako fitxategiak</translation>
 <translation id="5278111733643988471">Elementua leheneratzeko, arrasta ezazu zaborrontzitik kanpoko beste karpeta batera. Elementu horren jatorrizko karpeta (<ph name="PARENT_FOLDER_NAME" />) ezabatu egin da.</translation>
-<translation id="5283101102242354279">Aktibatu luzapen bat ezkutuko moduan:</translation>
 <translation id="5288441970121584418">Hanburgesa</translation>
 <translation id="5293615890992542006">Administratzailearen gidalerroek ez dute uzten fitxategi hau mugitzen</translation>
 <translation id="5305688511332277257">Ez dago ziurtagiririk instalatuta</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553">Xehetasunak (<ph name="NETWORK_NAME" />)</translation>
 <translation id="7246947237293279874">FTP proxya</translation>
 <translation id="7248671827512403053">Aplikazioa</translation>
-<translation id="7252604552361840748">Aurkitu goiko luzapena.</translation>
 <translation id="7256405249507348194">Errore ezezaguna: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Zerbitzu erabilgarriak</translation>
 <translation id="7291818353625820805">Teklak errepikatzea nahi duzu? Desaktibatu azentu-markak teklatuaren ezarpenetan.</translation>

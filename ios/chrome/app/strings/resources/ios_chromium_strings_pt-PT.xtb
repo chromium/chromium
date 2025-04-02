@@ -91,6 +91,7 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="3054480780637153380">Abra as definições do Chromium no iOS, toque em "App de navegador predefinida" e selecione o Chromium.</translation>
 <translation id="3102849287235003384">Para terminar sessão na sua Conta Google em todos os Websites, <ph name="BEGIN_LINK" />termine sessão no Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Tornar o Chromium o navegador predefinido?</translation>
+<translation id="3180939591219927904">Ative a opção "Bloquear separadores de navegação anónima quando fecha o Chromium"</translation>
 <translation id="3242612358525156339">Nas definições do dispositivo, abra "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" e selecione "Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{A mostrar 1 janela do Chromium agora}other{A mostrar {count} janelas do Chromium agora}}</translation>
 <translation id="3344973607274501920">O Chromium não conseguiu verificar as suas palavras-passe. Experimente verificar a sua ligação à Internet.</translation>
@@ -186,6 +187,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 1. Abra as Definições
 2. Toque em App de navegador predefinida
 3. Selecione o Chromium</translation>
+<translation id="5482686278086727777">Para receber lembretes de separadores do Chromium, ative as notificações nas definições do iOS.</translation>
 <translation id="5521125884468363740">Para ver os seus separadores onde quer que esteja a utilizar o Chromium, inicie sessão e ative a sincronização.</translation>
 <translation id="5534584691915394889">Isto vai ser usado para criar eventos no seu Calendário Apple a partir do Chromium e Google Lens.</translation>
 <translation id="5571094606370987472">Abre os separadores recentes do Chromium.</translation>
@@ -260,6 +262,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Os dados selecionados foram removidos do Chromium e dos dispositivos sincronizados. A sua Conta Google pode ter outras formas do histórico de navegação, como pesquisas e atividade de outros serviços Google, em history.google.com.</translation>
 <translation id="7395825497086981028">A palavra-passe será guardada no Gestor de palavras-passe para <ph name="EMAIL" />.</translation>
+<translation id="7504829997542308412">Abra o Chromium</translation>
 <translation id="7531461704633548377">Do Chromium</translation>
 <translation id="7554983317097061001">Sugestão do Chromium: mova o Chromium para a dock</translation>
 <translation id="7576863740961052505">Faça a gestão das definições do Chromium</translation>

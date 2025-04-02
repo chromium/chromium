@@ -209,6 +209,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Account fetching succeeded"/>
 </enum>
 
+<enum name="BooleanIsNewOptIn">
+  <int value="0" label="Existing opt-in"/>
+  <int value="1" label="New opt-in"/>
+</enum>
+
 <enum name="BooleanIsShared">
   <int value="0" label="Not Shared"/>
   <int value="1" label="Is Shared"/>
@@ -458,6 +463,17 @@ chromium-metrics-reviews@google.com.
       label="User signed in before iOS device restore, and signed out after"/>
   <int value="2" label="User signed in before and after iOS device restore"/>
 </enum>
+
+<!-- LINT.IfChange(IOSHostedDomainFetchEvent) -->
+
+<enum name="IOSHostedDomainFetchEvent">
+  <int value="0" label="Started"/>
+  <int value="1" label="Finished with success"/>
+  <int value="2" label="Finished with error, will retry"/>
+  <int value="3" label="Finished with error, giving up"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/signin/model/account_profile_mapper.mm:IOSHostedDomainFetchEvent) -->
 
 <enum name="IOSIdentityAvailableInProfile">
   <int value="0"

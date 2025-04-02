@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_service_factory.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/impression_limit_service_factory.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model_service_factory.h"
 #import "ios/chrome/browser/contextual_panel/sample/model/sample_panel_model_factory.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
@@ -103,6 +104,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_profile_service_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_download_service_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
+#import "ios/chrome/browser/safe_browsing/model/chrome_enterprise_url_lookup_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_password_protection_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/hash_realtime_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/ohttp_key_service_factory.h"
@@ -232,6 +234,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   ios::WebHistoryServiceFactory::GetInstance();
   ios::ZeroSuggestCacheServiceFactory::GetInstance();
   policy::UserPolicySigninServiceFactory::GetInstance();
+  safe_browsing::ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetInstance();
   segmentation_platform::SegmentationPlatformServiceFactory::GetInstance();
   tab_groups::TabGroupSyncServiceFactory::GetInstance();
   translate::TranslateRankerFactory::GetInstance();
@@ -266,6 +269,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   HashRealTimeServiceFactory::GetInstance();
   HttpsUpgradeServiceFactory::GetInstance();
   IdentityManagerFactory::GetInstance();
+  ImpressionLimitServiceFactory::GetInstance();
   InactiveTabsServiceFactory::GetInstance();
   IOSChromeAccountPasswordStoreFactory::GetInstance();
   IOSChromeAffiliationServiceFactory::GetInstance();

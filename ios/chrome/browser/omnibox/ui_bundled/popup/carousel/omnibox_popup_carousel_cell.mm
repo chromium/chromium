@@ -243,14 +243,15 @@ UIStackView* CarouselStackView() {
 #pragma mark - OmniboxKeyboardDelegate
 
 - (BOOL)canPerformKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
+  using enum OmniboxKeyboardAction;
   switch (keyboardAction) {
-    case OmniboxKeyboardActionUpArrow:
+    case kUpArrow:
       return NO;
-    case OmniboxKeyboardActionDownArrow:
+    case kDownArrow:
       return NO;
-    case OmniboxKeyboardActionLeftArrow:
+    case kLeftArrow:
       return self.isHighlighted;
-    case OmniboxKeyboardActionRightArrow:
+    case kRightArrow:
       return self.isHighlighted;
   }
   return NO;
@@ -275,12 +276,11 @@ UIStackView* CarouselStackView() {
   NSArray<OmniboxPopupCarouselControl*>* allTiles =
       self.suggestionsStackView.arrangedSubviews;
 
-  OmniboxKeyboardAction nextTileAction = base::i18n::IsRTL()
-                                             ? OmniboxKeyboardActionLeftArrow
-                                             : OmniboxKeyboardActionRightArrow;
+  using enum OmniboxKeyboardAction;
+  OmniboxKeyboardAction nextTileAction =
+      base::i18n::IsRTL() ? kLeftArrow : kRightArrow;
   OmniboxKeyboardAction previousTileAction =
-      base::i18n::IsRTL() ? OmniboxKeyboardActionRightArrow
-                          : OmniboxKeyboardActionLeftArrow;
+      base::i18n::IsRTL() ? kRightArrow : kLeftArrow;
 
   if (keyboardAction == nextTileAction) {
     nextHighlightedIndex =

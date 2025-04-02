@@ -20,7 +20,8 @@ manta::proto::Request CreateTestMantaRequest(std::string_view query,
                                              std::optional<uint32_t> seed,
                                              const gfx::Size& size,
                                              int num_outputs,
-                                             bool use_query_rewritter);
+                                             bool use_query_rewritter,
+                                             bool use_i18n);
 
 std::unique_ptr<manta::proto::Response> CreateFakeMantaResponse(
     const std::vector<std::string>& queries_returned_from_server,

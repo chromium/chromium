@@ -119,15 +119,6 @@ ViewTransitionRequest::ConstructDirective(
       std::move(shared_elements), display_color_spaces);
 }
 
-bool ViewTransitionRequest::HasSubframeSnapshot() const {
-  for (const auto& id : capture_resource_ids_) {
-    if (id.for_subframe_snapshot()) {
-      return true;
-    }
-  }
-  return false;
-}
-
 std::string ViewTransitionRequest::ToString() const {
   std::ostringstream str;
   str << "[type: " << TypeToString(type_) << " sequence_id: " << sequence_id_

@@ -8,8 +8,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.core.util.Pair;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,6 +21,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -96,9 +95,12 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         assertNotNull(model);
         assertNotNull(model.get(TabGroupRowProperties.CLUSTER_DATA));
         assertEquals(TEST_COLOR, model.get(TabGroupRowProperties.COLOR_INDEX));
-        Pair<String, Integer> titleData = model.get(TabGroupRowProperties.TITLE_DATA);
-        assertEquals(TEST_TITLE, titleData.first);
-        assertEquals(1, titleData.second.intValue());
+        TabGroupRowViewTitleData titleData = model.get(TabGroupRowProperties.TITLE_DATA);
+        assertEquals(TEST_TITLE, titleData.title);
+        assertEquals(1, titleData.numTabs);
+        assertEquals(
+                R.string.tab_group_bottom_sheet_row_accessibility_text,
+                titleData.rowAccessibilityTextResId);
         assertNotNull(model.get(TabGroupRowProperties.TIMESTAMP_EVENT));
     }
 

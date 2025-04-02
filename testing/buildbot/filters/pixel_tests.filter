@@ -14,6 +14,7 @@ AskGoogleForSuggestionsDialogTest.*
 BatchUploadDialogViewPixelTest.*
 BookmarkBubbleViewBrowserTest.*
 BookmarkEditorViewBrowserTest.*
+BookmarkEditorViewBrowserTestMoveDialog.*
 BookmarkEditorViewBrowserTestWithAccountBookmarks.*
 BrowserViewScrimPixelTest.*
 BubbleFrameViewBrowserTest.*

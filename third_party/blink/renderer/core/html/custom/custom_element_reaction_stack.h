@@ -56,7 +56,7 @@ class CORE_EXPORT CustomElementReactionStack final
       Agent& agent,
       CustomElementReactionStack* new_stack);
 
-  using ElementQueue = HeapVector<Member<Element>, 1>;
+  using ElementQueue = GCedHeapVector<Member<Element>, 1>;
   HeapVector<Member<ElementQueue>> stack_;
   Member<ElementQueue> backup_queue_;
 

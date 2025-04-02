@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Manifest fayli yaroqsiz</translation>
 <translation id="7217838517480956708">Ushbu kompyuterda “<ph name="EXTENSION_NAME" />” kengaytmasini o‘chirish yoki o‘zgartirish administrator tomonidan taqiqlangan.</translation>
 <translation id="7612608473764576263">Yopiq kalit qiymati yaroqli formatda kiritilishi shart (PKCS#8-format PEM-encoded RSA kalit).</translation>
+<translation id="7876803335449432072">Kontentni qayta ishlash skripti uchun “<ph name="RELATIVE_PATH" />” fayli yuklanmadi. Bunday skript uchun uslublar jadvalini faqatgina CSS kabi muvofiq formatdagi fayllardan yuklash mumkin.</translation>
 <translation id="7939686037314084444">Kengaytma yaxshi yuklanmadi. Bunga tarmoq so‘rovlaridagi uzilishlar sabab bo‘lishi mumkin.</translation>
 <translation id="7972881773422714442"><ph name="EXTENSIONOPTIONS_TAG_NAME" /> sozlamalari</translation>
 <translation id="8035920974645200807">Old kamera</translation>
 <translation id="8047248493720652249">Bu kengaytma yuklamaga "<ph name="ATTEMPTED_FILENAME" />" nomini bera olmadi, chunki boshqa kengaytma (<ph name="EXTENSION_NAME" />) unga "<ph name="ACTUAL_FILENAME" />" nomini berdi.</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> dan <ph name="PRODUCT_NAME" /></translation>
 <translation id="8517576857589387417">Manifest fayli mavjud emas yoki o‘qish uchun yaroqsiz</translation>
+<translation id="8621383749470166852">Kontentni qayta ishlash skripti uchun “<ph name="RELATIVE_PATH" />” fayli yuklanmadi. Bunday skriptlarni faqatgina JS kabi muvofiq formatdagi JavaScript fayllaridan yuklash mumkin.</translation>
 <translation id="8636666366616799973">Yaroqsiz paket. Batafsil: “<ph name="ERROR_MESSAGE" />”</translation>
 <translation id="8761756413268424715">“<ph name="APP_NAME" />” ilovasi qurilmalaringizdan biriga ruxsat so‘ramoqda.</translation>
 <translation id="8885905466771744233">Ko‘rsatilgan kengaytma uchun allaqachon xususiy kalit mavjud. Bu kalitni o‘chirib yuboring yoki qaytadan foydalaning.</translation>

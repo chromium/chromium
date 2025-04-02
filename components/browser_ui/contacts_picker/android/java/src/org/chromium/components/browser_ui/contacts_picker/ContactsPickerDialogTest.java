@@ -255,7 +255,9 @@ public class ContactsPickerDialogTest
                                                 tels,
                                                 addresses,
                                                 icons,
-                                                formattedOrigin);
+                                                formattedOrigin,
+                                                /* shouldPadForContent= */ false);
+
                                 mDialog.show();
                                 return true;
                             });

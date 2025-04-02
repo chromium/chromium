@@ -91,9 +91,11 @@ using base::UserMetricsAction;
       [[UINavigationController alloc] initWithNavigationBarClass:nil
                                                     toolbarClass:nil];
   _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-  _navigationController.presentationController.delegate = self;
 
   [self presentScreen:[_screenProvider nextScreenType]];
+  // Set the presentation delegate after the child coordinator creation to
+  // override the default implementation.
+  _navigationController.presentationController.delegate = self;
 
   [_navigationController setNavigationBarHidden:YES animated:NO];
   [self.baseViewController presentViewController:_navigationController

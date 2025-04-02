@@ -30,8 +30,8 @@ function convertMojoTimeToJs(mojoTime: Time): Date {
 
 export class EventLogMessage {
   eventTime: Date;
-  sourceLinkText: string;
-  sourceLinkURL: string;
+  sourceLinkText: string = '';
+  sourceLinkURL: string = '';
   message: string;
 
   constructor(

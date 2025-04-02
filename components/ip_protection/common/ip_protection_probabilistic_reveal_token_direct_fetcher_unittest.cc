@@ -318,16 +318,15 @@ TEST_F(IpProtectionProbabilisticRevealTokenDirectFetcherTest,
   EXPECT_EQ(tokens[0].version, 1);
   EXPECT_THAT(tokens[0].u, StartsWith("token0-u"));
   EXPECT_THAT(tokens[0].e, StartsWith("token0-e"));
-  EXPECT_THAT(tokens[0].epoch_id, std::string(8, '0'));
   EXPECT_EQ(tokens[1].version, 1);
   EXPECT_THAT(tokens[1].u, StartsWith("token1-u"));
   EXPECT_THAT(tokens[1].e, StartsWith("token1-e"));
-  EXPECT_THAT(tokens[1].epoch_id, std::string(8, '0'));
 
   EXPECT_EQ(outcome.public_key, public_key_bytes_);
   EXPECT_EQ(outcome.expiration_time_seconds, expiration_time_);
   EXPECT_EQ(outcome.next_epoch_start_time_seconds, next_epoch_start_time_);
   EXPECT_EQ(outcome.num_tokens_with_signal, 10);
+  EXPECT_EQ(outcome.epoch_id, std::string(8, '0'));
 
   const auto& result = future.Get<1>();
   EXPECT_EQ(result.status, TryGetProbabilisticRevealTokensStatus::kSuccess);

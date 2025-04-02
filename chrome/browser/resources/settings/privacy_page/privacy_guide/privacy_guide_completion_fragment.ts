@@ -14,6 +14,7 @@ import '../../settings_shared.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -108,7 +109,10 @@ export class PrivacyGuideCompletionFragmentElement extends
   }
 
   override focus() {
-    this.shadowRoot!.querySelector<HTMLElement>('.headline')!.focus();
+    const header = this.shadowRoot!.querySelector<HTMLElement>(
+        '.welcome-completion-header-label');
+    assert(header);
+    header.focus();
   }
 
   private onViewEnterStart_() {

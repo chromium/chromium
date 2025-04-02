@@ -328,8 +328,7 @@ void UserPolicySigninServiceBase::SetDeviceDMTokenCallbackForTesting(
 }
 
 void UserPolicySigninServiceBase::RegisterCloudPolicyService() {
-  DCHECK(
-      identity_manager()->HasPrimaryAccount(GetConsentLevelForRegistration()));
+  DCHECK(identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   DCHECK(policy_manager()->core()->client());
   DCHECK(!policy_manager()->IsClientRegistered());
 
@@ -348,7 +347,7 @@ void UserPolicySigninServiceBase::RegisterCloudPolicyService() {
       policy_manager()->core()->client(), kCloudPolicyRegistrationType);
   registration_helper_->StartRegistration(
       identity_manager(),
-      identity_manager()->GetPrimaryAccountId(GetConsentLevelForRegistration()),
+      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
       base::BindOnce(&UserPolicySigninServiceBase::OnRegistrationComplete,
                      base::Unretained(this)));
 }
@@ -418,10 +417,5 @@ bool UserPolicySigninServiceBase::CanApplyPolicies(
 }
 
 void UserPolicySigninServiceBase::UpdateLastPolicyCheckTime() {}
-
-signin::ConsentLevel
-UserPolicySigninServiceBase::GetConsentLevelForRegistration() {
-  return signin::ConsentLevel::kSignin;
-}
 
 }  // namespace policy

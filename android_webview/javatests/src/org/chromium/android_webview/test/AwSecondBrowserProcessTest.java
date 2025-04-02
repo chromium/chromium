@@ -143,7 +143,7 @@ public class AwSecondBrowserProcessTest extends AwParameterizedTest {
     }
 
     private boolean tryStartingBrowserProcess() {
-        final Boolean success[] = new Boolean[1];
+        final Boolean[] success = new Boolean[1];
         // The activity must be launched in order for proper webview statics to be setup.
         mActivityTestRule.getActivity();
         // runOnMainSync does not catch RuntimeExceptions, they just terminate the test.
@@ -153,7 +153,7 @@ public class AwSecondBrowserProcessTest extends AwParameterizedTest {
                             try {
                                 AwTestContainerView.installDrawFnFunctionTable(
                                         /* useVulkan= */ false);
-                                AwBrowserProcess.start();
+                                AwBrowserProcess.startForTesting();
                                 success[0] = true;
                             } catch (RuntimeException e) {
                                 success[0] = false;

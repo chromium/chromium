@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/types/optional_ref.h"
+#include "services/network/public/mojom/shared_storage.mojom-forward.h"
 
 namespace network {
 
@@ -19,10 +20,22 @@ static constexpr size_t kMaxSharedStorageBytesPerOrigin = 5242880;
 COMPONENT_EXPORT(NETWORK_CPP_SHARED_STORAGE)
 extern const char kReservedLockNameErrorMessage[];
 
+COMPONENT_EXPORT(NETWORK_CPP_SHARED_STORAGE)
+extern const char kBatchUpdateMethodsArgumentValidationErrorMessage[];
+
 // Whether `lock_name` is a reserved lock resource name.
 // See https://w3c.github.io/web-locks/#resource-name
 COMPONENT_EXPORT(NETWORK_CPP_SHARED_STORAGE)
 bool IsReservedLockName(base::optional_ref<const std::string> lock_name);
+
+// Whether `methods_with_options` is a valid batchUpdate() argument: according
+// to the specification (https://wicg.github.io/shared-storage/#batch-update),
+// none of the inner methods should specify the `with_lock` option.
+COMPONENT_EXPORT(NETWORK_CPP_SHARED_STORAGE)
+bool IsValidSharedStorageBatchUpdateMethodsArgument(
+    const std::vector<
+        network::mojom::SharedStorageModifierMethodWithOptionsPtr>&
+        methods_with_options);
 
 // Whether the length of a shared storage's key is valid.
 COMPONENT_EXPORT(NETWORK_CPP_SHARED_STORAGE)

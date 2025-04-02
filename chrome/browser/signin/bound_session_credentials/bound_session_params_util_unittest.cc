@@ -96,6 +96,18 @@ TEST(BoundSessionParamsUtilTest, ParamsValidWithCookieDomainWithoutLeadingDot) {
   EXPECT_TRUE(AreParamsValid(params));
 }
 
+TEST(BoundSessionParamsUtilTest, ParamsValidWithoutWsbetaParam) {
+  BoundSessionParams params = CreateValidBoundSessionParams();
+  params.clear_is_wsbeta();
+  EXPECT_TRUE(AreParamsValid(params));
+}
+
+TEST(BoundSessionParamsUtilTest, ParamsValidWithExplicitWsbetaParam) {
+  BoundSessionParams params = CreateValidBoundSessionParams();
+  params.set_is_wsbeta(true);
+  EXPECT_TRUE(AreParamsValid(params));
+}
+
 TEST(BoundSessionParamsUtilTest, ParamsInvalidMissingSessionId) {
   BoundSessionParams params = CreateValidBoundSessionParams();
   params.set_session_id("");

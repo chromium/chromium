@@ -91,6 +91,7 @@
 <translation id="3054480780637153380">Откройте настройки Chromium в iOS, затем нажмите "Приложение браузера по умолчанию" и выберите Chromium.</translation>
 <translation id="3102849287235003384">Чтобы выйти из аккаунта Google на всех сайтах, <ph name="BEGIN_LINK" />выйдите из Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Сделать Chromium браузером по умолчанию?</translation>
+<translation id="3180939591219927904">Включите параметр "Блокировать доступ к вкладкам инкогнито при закрытии Chromium".</translation>
 <translation id="3242612358525156339">В настройках устройства откройте раздел "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" и выберите Chromium</translation>
 <translation id="328933489847748230">{count,plural, =1{Показано 1 окно Chromium}one{Показано {count} окно Chromium}few{Показано {count} окна Chromium}many{Показано {count} окон Chromium}other{Показано {count} окна Chromium}}</translation>
 <translation id="3344973607274501920">Не удается проверить пароли в браузере Chromium. Проверьте подключение к Интернету.</translation>
@@ -260,6 +261,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Выбранные данные удалены из Chromium и с синхронизированных устройств. Остальная история ваших действий в Интернете может храниться в аккаунте Google, например в виде поисковых запросов и сведений из наших сервисов. Она доступна на странице history.google.com.</translation>
 <translation id="7395825497086981028">Ваш пароль будет сохранен в Менеджере паролей для аккаунта <ph name="EMAIL" />.</translation>
+<translation id="7504829997542308412">Откройте Chromium.</translation>
 <translation id="7531461704633548377">В Chromium</translation>
 <translation id="7554983317097061001">Совет по работе с Chromium: добавьте браузер на панель Dock</translation>
 <translation id="7576863740961052505">Открыть настройки Chromium</translation>

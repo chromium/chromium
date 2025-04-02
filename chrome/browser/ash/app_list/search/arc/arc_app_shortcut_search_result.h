@@ -26,21 +26,18 @@ class IconDecodeRequest;
 
 namespace app_list {
 
-namespace {
-using ::ash::string_matching::TokenizedString;
-}
-
 class ArcAppShortcutSearchResult : public ChromeSearchResult,
                                    public AppIconLoaderDelegate {
  public:
   // Constructor for ArcAppShortcutSearchResult. `is_recommendation`
   // defines the display type of search results.
-  ArcAppShortcutSearchResult(arc::mojom::AppShortcutItemPtr data,
-                             Profile* profile,
-                             AppListControllerDelegate* list_controller,
-                             bool is_recommendation,
-                             const TokenizedString& tokenized_query,
-                             const std::string& details);
+  ArcAppShortcutSearchResult(
+      arc::mojom::AppShortcutItemPtr data,
+      Profile* profile,
+      AppListControllerDelegate* list_controller,
+      bool is_recommendation,
+      const ::ash::string_matching::TokenizedString& tokenized_query,
+      const std::string& details);
 
   ArcAppShortcutSearchResult(const ArcAppShortcutSearchResult&) = delete;
   ArcAppShortcutSearchResult& operator=(const ArcAppShortcutSearchResult&) =

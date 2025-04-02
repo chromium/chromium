@@ -209,7 +209,7 @@ void RecordChoiceScreenPositions(
 }
 
 void WipeSearchEngineChoicePrefs(PrefService& profile_prefs,
-                                 WipeSearchEngineChoiceReason reason) {
+                                 SearchEngineChoiceWipeReason reason) {
   base::UmaHistogramEnumeration(kSearchEngineChoiceWipeReasonHistogram, reason);
   profile_prefs.ClearPref(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp);

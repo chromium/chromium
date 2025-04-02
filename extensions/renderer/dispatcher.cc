@@ -124,9 +124,10 @@ namespace extensions {
 
 namespace {
 
+// A feature flag for the crash issue in crbug.com/389971360.
 BASE_FEATURE(kSpeculativeFixForServiceWorkerDataInDidStartServiceWorkerContext,
              "SpeculativeFixForServiceWorkerDataInDidStartServiceWorkerContext",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 static const char kOnSuspendEvent[] = "runtime.onSuspend";
 static const char kOnSuspendCanceledEvent[] = "runtime.onSuspendCanceled";

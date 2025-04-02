@@ -91,7 +91,6 @@ class SVGAnimatedPropertyBase : public GarbageCollectedMixin {
     kRemoved,
   };
   void BaseValueChanged(BaseValueChangeType);
-  void EnsureAnimValUpdated();
 
  protected:
   SVGAnimatedPropertyBase(AnimatedPropertyType,
@@ -229,7 +228,6 @@ class SVGAnimatedProperty : public SVGAnimatedPropertyCommon<Property> {
   }
 
   PrimitiveType animVal() {
-    this->EnsureAnimValUpdated();
     return this->CurrentValue()->Value();
   }
 

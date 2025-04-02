@@ -42,6 +42,8 @@ mojom::NetworkRequestStatus ConvertInterruptReasonToMojoNetworkRequestStatus(
       return mojom::NetworkRequestStatus::USER_CANCELED;
     case DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED:
       return mojom::NetworkRequestStatus::NETWORK_FAILED;
+    case DOWNLOAD_INTERRUPT_REASON_FILE_TRANSIENT_ERROR:
+      return mojom::NetworkRequestStatus::NETWORK_FAILED;
     default:
       NOTREACHED();
   }

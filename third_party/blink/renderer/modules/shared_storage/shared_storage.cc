@@ -683,6 +683,13 @@ ScriptPromise<IDLAny> SharedStorage::batchUpdate(
     mojom_methods.push_back(method->CloneMojomMethod());
   }
 
+  if (!IsValidSharedStorageBatchUpdateMethodsArgument(mojom_methods)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        network::kBatchUpdateMethodsArgumentValidationErrorMessage);
+    return promise;
+  }
+
   String with_lock = options->getWithLockOr(/*fallback_value=*/String());
   if (IsReservedLockName(with_lock)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,

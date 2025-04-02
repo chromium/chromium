@@ -741,6 +741,8 @@ std::vector<std::string> AiDataKeyedService::GetAllowlistedExtensions() {
                                        "bgbpcgpcobgjpnpiginpidndjpggappi",
                                        // https://issues.chromium.org/376699519
                                        "eefninhhiifgcimjkmkongegpoaikmhm",
+                                       // https://issues.chromium.org/393435942
+                                       "fjhpgileahdpnmfmaggobehbipojhlce",
                                        // https://issues.chromium.org/403366603
                                        "abdciamfdmknaeggbnmafmbdfdmhfgfa"});
   allowlisted_extensions.insert(allowlisted_extensions.end(),

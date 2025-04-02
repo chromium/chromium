@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -30,6 +31,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
+#include "google_apis/gaia/oauth2_response.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/http/http_request_headers.h"
@@ -38,12 +40,12 @@
 
 namespace {
 
-const char kValueFalse[] = "false";
-const char kValueTrue[] = "true";
-const char kResponseTypeValueNone[] = "none";
-const char kResponseTypeValueToken[] = "token";
+constexpr char kValueFalse[] = "false";
+constexpr char kValueTrue[] = "true";
+constexpr char kResponseTypeValueNone[] = "none";
+constexpr char kResponseTypeValueToken[] = "token";
 
-const char kOAuth2IssueTokenBodyFormat[] =
+constexpr char kOAuth2IssueTokenBodyFormat[] =
     "force=%s"
     "&response_type=%s"
     "&scope=%s"
@@ -51,65 +53,175 @@ const char kOAuth2IssueTokenBodyFormat[] =
     "&client_id=%s"
     "&lib_ver=%s"
     "&release_channel=%s";
-const char kOAuth2IssueTokenBodyFormatExtensionIdAddendum[] = "&origin=%s";
-const char kOAuth2IssueTokenBodyFormatSelectedUserIdAddendum[] =
+constexpr char kOAuth2IssueTokenBodyFormatExtensionIdAddendum[] = "&origin=%s";
+constexpr char kOAuth2IssueTokenBodyFormatSelectedUserIdAddendum[] =
     "&selected_user_id=%s";
-const char kOAuth2IssueTokenBodyFormatDeviceIdAddendum[] =
+constexpr char kOAuth2IssueTokenBodyFormatDeviceIdAddendum[] =
     "&device_id=%s&device_type=chrome";
-const char kOAuth2IssueTokenBodyFormatConsentResultAddendum[] =
+constexpr char kOAuth2IssueTokenBodyFormatConsentResultAddendum[] =
     "&consent_result=%s";
-const char kIssueAdviceKey[] = "issueAdvice";
-const char kIssueAdviceValueRemoteConsent[] = "remoteConsent";
-const char kAccessTokenKey[] = "token";
-const char kExpiresInKey[] = "expiresIn";
-const char kGrantedScopesKey[] = "grantedScopes";
-const char kError[] = "error";
-const char kMessage[] = "message";
+constexpr char kIssueAdviceKey[] = "issueAdvice";
+constexpr char kIssueAdviceValueRemoteConsent[] = "remoteConsent";
+constexpr char kAccessTokenKey[] = "token";
+constexpr char kExpiresInKey[] = "expiresIn";
+constexpr char kGrantedScopesKey[] = "grantedScopes";
+constexpr char kError[] = "error";
+constexpr char kErrors[] = "errors";
+constexpr char kMessage[] = "message";
+constexpr char kReason[] = "reason";
 
-const char kTokenBindingChallengeHeader[] =
+constexpr char kTokenBindingChallengeHeader[] =
     "X-Chrome-Auth-Token-Binding-Challenge";
 constexpr char kTokenBindingResponseKey[] = "tokenBindingResponse";
 constexpr char kDirectedResponseKey[] = "directedResponse";
 
-static GoogleServiceAuthError CreateAuthError(
+constexpr auto kOAuth2ResponseByErrorReason =
+    base::MakeFixedFlatMap<std::string_view, OAuth2Response>({
+        {"authError", OAuth2Response::kInvalidGrant},
+        {"badRequest", OAuth2Response::kInvalidRequest},
+        {"internalError", OAuth2Response::kInternalFailure},
+        {"invalidClientId", OAuth2Response::kInvalidClient},
+        {"invalidScope", OAuth2Response::kInvalidScope},
+        {"rateLimitExceeded", OAuth2Response::kRateLimitExceeded},
+        {"restrictedClient", OAuth2Response::kRestrictedClient},
+    });
+
+const std::string* FindMessageInErrorResponse(
+    const std::optional<base::Value::Dict>& response) {
+  if (!response) {
+    return nullptr;
+  }
+
+  const base::Value::Dict* error = response->FindDict(kError);
+  if (!error) {
+    return nullptr;
+  }
+
+  return error->FindString(kMessage);
+}
+
+const std::string* FindReasonInErrorResponse(
+    const std::optional<base::Value::Dict>& response) {
+  if (!response) {
+    return nullptr;
+  }
+
+  const base::Value::Dict* error = response->FindDict(kError);
+  if (!error) {
+    return nullptr;
+  }
+
+  const base::Value::List* errors = error->FindList(kErrors);
+  if (!errors || errors->empty()) {
+    return nullptr;
+  }
+
+  const base::Value::Dict* first_error = errors->front().GetIfDict();
+  if (!first_error) {
+    return nullptr;
+  }
+
+  return first_error->FindString(kReason);
+}
+
+OAuth2Response GetOAuth2ResponseFromErrorReason(const std::string* reason) {
+  using enum OAuth2Response;
+  if (!reason) {
+    return kErrorUnexpectedFormat;
+  }
+
+  auto it = kOAuth2ResponseByErrorReason.find(*reason);
+  if (it != kOAuth2ResponseByErrorReason.end()) {
+    return it->second;
+  }
+
+  return kUnknownError;
+}
+
+GoogleServiceAuthError CreateAuthError(
     int net_error,
     const network::mojom::URLResponseHead* head,
     std::unique_ptr<std::string> body) {
-  if (net_error == net::ERR_ABORTED)
+  if (net_error == net::ERR_ABORTED) {
     return GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED);
+  }
 
-  if (net_error != net::OK) {
+  if (net_error != net::OK || !head || !head->headers) {
     DLOG(WARNING) << "Server returned error: errno " << net_error;
     return GoogleServiceAuthError::FromConnectionError(net_error);
   }
 
-  std::string response_body;
-  if (body)
-    response_body = std::move(*body);
+  std::string_view response_body;
+  if (body) {
+    response_body = *body;
+  }
 
-  std::optional<base::Value::Dict> value =
+  std::optional<base::Value::Dict> dict =
       base::JSONReader::ReadDict(response_body);
-  if (!value) {
-    int http_response_code = -1;
-    if (head && head->headers)
-      http_response_code = head->headers->response_code();
-    return GoogleServiceAuthError::FromUnexpectedServiceResponse(
-        base::StringPrintf("Not able to parse a JSON object from "
-                           "a service response. "
-                           "HTTP Status of the response is: %d",
-                           http_response_code));
+  const std::string* message = FindMessageInErrorResponse(dict);
+  const std::string* reason = FindReasonInErrorResponse(dict);
+  OAuth2Response oauth2_response = GetOAuth2ResponseFromErrorReason(reason);
+  int http_response_code = head->headers->response_code();
+  auto GetDisplayMessage = [&] {
+    if (message) {
+      return *message;
+    } else if (reason) {
+      return *reason;
+    } else {
+      return base::StringPrintf("Couldn't parse an error. HTTP code %d",
+                                http_response_code);
+    }
+  };
+  std::string display_message = GetDisplayMessage();
+
+  using enum OAuth2Response;
+  switch (oauth2_response) {
+    case kOk:
+    case kOkUnexpectedFormat:
+    case kAccessDenied:
+    case kAdminPolicyEnforced:
+    case kUnauthorizedClient:
+    case kUnsuportedGrantType:
+      NOTREACHED();
+
+    // Transient errors:
+    case kRateLimitExceeded:
+    case kInternalFailure:
+      return GoogleServiceAuthError::FromServiceUnavailable(display_message);
+
+    // Scope persistent errors that can't be fixed by user action:
+    case kInvalidScope:
+      return GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+              kInvalidScope);
+    case kRestrictedClient:
+      return GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+              kRestrictedClient);
+
+    // Persistent errors:
+    case kInvalidGrant:
+      return GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER);
+    case kInvalidRequest:
+    case kInvalidClient:
+      return GoogleServiceAuthError::FromServiceError(display_message);
+
+    // Unknown errors fall back to HTTP response codes:
+    case kUnknownError:
+    case kErrorUnexpectedFormat:
+      break;
   }
-  const base::Value::Dict* error = value->FindDict(kError);
-  if (!error) {
-    return GoogleServiceAuthError::FromUnexpectedServiceResponse(
-        "Not able to find a detailed error in a service response.");
+
+  if (http_response_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED ||
+      http_response_code >= net::HTTP_INTERNAL_SERVER_ERROR) {
+    // HTTP_PROXY_AUTHENTICATION_REQUIRED (407): is treated as a network error.
+    // HTTP_INTERNAL_SERVER_ERROR: 5xx is always treated as transient.
+    return GoogleServiceAuthError::FromServiceUnavailable(display_message);
   }
-  const std::string* message = error->FindString(kMessage);
-  if (!message) {
-    return GoogleServiceAuthError::FromUnexpectedServiceResponse(
-        "Not able to find an error message within a service error.");
-  }
-  return GoogleServiceAuthError::FromServiceError(*message);
+
+  return GoogleServiceAuthError::FromServiceError(display_message);
 }
 
 std::string FindTokenBindingChallenge(

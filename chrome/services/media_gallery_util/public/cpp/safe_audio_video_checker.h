@@ -5,6 +5,8 @@
 #ifndef CHROME_SERVICES_MEDIA_GALLERY_UTIL_PUBLIC_CPP_SAFE_AUDIO_VIDEO_CHECKER_H_
 #define CHROME_SERVICES_MEDIA_GALLERY_UTIL_PUBLIC_CPP_SAFE_AUDIO_VIDEO_CHECKER_H_
 
+#include <utility>
+
 #include "base/files/file.h"
 #include "chrome/services/media_gallery_util/public/cpp/media_parser_provider.h"
 
@@ -28,6 +30,14 @@ class SafeAudioVideoChecker : public MediaParserProvider {
   // Note that the callback specified in the constructor will be called on the
   // thread from which this method is called.
   void Start();
+
+  // Test only. Simulates a connection error.
+  void OnConnectionErrorForTesting() { OnConnectionError(); }
+
+  // Test only. Sets the `callback_` member.
+  void SetResultCallbackForTesting(ResultCallback callback) {
+    callback_ = std::move(callback);
+  }
 
  private:
   // MediaParserProvider implementation:

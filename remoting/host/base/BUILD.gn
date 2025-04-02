@@ -15,6 +15,7 @@ source_set("base") {
     "desktop_environment_options.h",
     "host_exit_codes.h",
     "loggable.h",
+    "pointer_utils.h",
     "process_util.h",
     "screen_controls.h",
     "screen_resolution.h",

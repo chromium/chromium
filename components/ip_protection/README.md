@@ -21,6 +21,15 @@ requests. These tokens are blind-signed, meaning that the signer cannot
 correlate the (user-authenticated) token signature with the (otherwise
 un-authenticated) token sent to the proxy.
 
+See [the IP Protection
+explainer](https://github.com/GoogleChrome/ip-protection/blob/main/README.md)
+for more details on the design.
+
+## Bug Tracker
+
+Find or file bugs for IP Protection in the [Chromium Tracker "IP Protection"
+component](https://issues.chromium.org/u/1/issues?q=status:open%20componentid:1456782&s=created_time:desc).
+
 ## Guide to the Implementation
 
 ### General Principles

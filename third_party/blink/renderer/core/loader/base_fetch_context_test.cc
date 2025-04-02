@@ -125,8 +125,14 @@ class MockBaseFetchContext final : public BaseFetchContext {
   Member<const FetchClientSettingsObjectImpl> fetch_client_settings_object_;
 };
 
-class BaseFetchContextTest : public testing::Test {
+class BaseFetchContextTest
+    : public testing::Test,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  protected:
+  BaseFetchContextTest()
+      : has_preloaded_response_candidate_(std::get<0>(GetParam())),
+        preload_link_rel_data_urls_(PreloadLinkRelDataUrlsForTestEnabled()),
+        bypass_csp_for_preloads_(BypassCSPForPreloadsEnabled()) {}
   ~BaseFetchContextTest() override {
     execution_context_->NotifyContextDestroyed();
   }
@@ -158,44 +164,75 @@ class BaseFetchContextTest : public testing::Test {
     return GetFetchClientSettingsObject().GetSecurityOrigin();
   }
 
+  bool PreloadLinkRelDataUrlsForTestEnabled() {
+    return std::get<1>(GetParam());
+  }
+  bool BypassCSPForPreloadsEnabled() { return std::get<2>(GetParam()); }
+
   test::TaskEnvironment task_environment_;
   Persistent<ExecutionContext> execution_context_;
   Persistent<MockBaseFetchContext> fetch_context_;
   Persistent<ResourceFetcher> resource_fetcher_;
   Persistent<TestResourceFetcherProperties> resource_fetcher_properties_;
+  FetchParameters::HasPreloadedResponseCandidate
+      has_preloaded_response_candidate_;
+
+ private:
+  ScopedPreloadLinkRelDataUrlsForTest preload_link_rel_data_urls_;
+  ScopedBypassCSPForPreloadsForTest bypass_csp_for_preloads_;
 };
 
+INSTANTIATE_TEST_SUITE_P(BaseFetchContextTest,
+                         BaseFetchContextTest,
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
+
 // Tests that CanRequest() checks the enforced CSP headers.
-TEST_F(BaseFetchContextTest, CanRequest) {
+// We use non-script resource types to make sure we are actually getting CSP
+// as the blocked reason because of a CSP policy, instead of having disallowed
+// scripts. See https://crbug.com/600795.
+TEST_P(BaseFetchContextTest, CanRequest) {
   ContentSecurityPolicy* policy =
       execution_context_->GetContentSecurityPolicy();
   policy->AddPolicies(ParseContentSecurityPolicies(
-      "script-src https://foo.test",
+      "img-src https://foo.test",
       network::mojom::ContentSecurityPolicyType::kEnforce,
       network::mojom::ContentSecurityPolicySource::kHTTP,
       *(execution_context_->GetSecurityOrigin())));
   policy->AddPolicies(ParseContentSecurityPolicies(
-      "script-src https://bar.test",
+      "img-src https://bar.test",
       network::mojom::ContentSecurityPolicyType::kReport,
       network::mojom::ContentSecurityPolicySource::kHTTP,
       *(execution_context_->GetSecurityOrigin())));
 
   KURL url(NullURL(), "http://baz.test");
   ResourceRequest resource_request(url);
-  resource_request.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);
+  resource_request.SetRequestContext(mojom::blink::RequestContextType::IMAGE);
   resource_request.SetRequestorOrigin(GetSecurityOrigin());
 
   ResourceLoaderOptions options(nullptr /* world */);
 
-  EXPECT_EQ(ResourceRequestBlockedReason::kCSP,
-            fetch_context_->CanRequest(
-                ResourceType::kScript, resource_request, url, options,
-                ReportingDisposition::kReport, std::nullopt));
-  EXPECT_EQ(1u, policy->violation_reports_sent_.size());
+  if (PreloadLinkRelDataUrlsForTestEnabled() && BypassCSPForPreloadsEnabled() &&
+      has_preloaded_response_candidate_) {
+    EXPECT_EQ(std::nullopt,
+              fetch_context_->CanRequest(
+                  ResourceType::kImage, resource_request, url, options,
+                  ReportingDisposition::kReport, std::nullopt,
+                  has_preloaded_response_candidate_));
+    EXPECT_EQ(0u, policy->violation_reports_sent_.size());
+  } else {
+    EXPECT_EQ(ResourceRequestBlockedReason::kCSP,
+              fetch_context_->CanRequest(
+                  ResourceType::kImage, resource_request, url, options,
+                  ReportingDisposition::kReport, std::nullopt,
+                  has_preloaded_response_candidate_));
+    EXPECT_EQ(1u, policy->violation_reports_sent_.size());
+  }
 }
 
 // Tests that CheckCSPForRequest() checks the report-only CSP headers.
-TEST_F(BaseFetchContextTest, CheckCSPForRequest) {
+TEST_P(BaseFetchContextTest, CheckCSPForRequest) {
   ContentSecurityPolicy* policy =
       execution_context_->GetContentSecurityPolicy();
   policy->AddPolicies(ParseContentSecurityPolicies(
@@ -224,7 +261,7 @@ TEST_F(BaseFetchContextTest, CheckCSPForRequest) {
   EXPECT_EQ(1u, policy->violation_reports_sent_.size());
 }
 
-TEST_F(BaseFetchContextTest, CanRequestWhenDetached) {
+TEST_P(BaseFetchContextTest, CanRequestWhenDetached) {
   KURL url(NullURL(), "http://www.example.com/");
   ResourceRequest request(url);
   request.SetRequestorOrigin(GetSecurityOrigin());
@@ -232,17 +269,17 @@ TEST_F(BaseFetchContextTest, CanRequestWhenDetached) {
   keepalive_request.SetRequestorOrigin(GetSecurityOrigin());
   keepalive_request.SetKeepalive(true);
 
-  EXPECT_EQ(std::nullopt,
-            fetch_context_->CanRequest(
-                ResourceType::kRaw, request, url,
-                ResourceLoaderOptions(nullptr /* world */),
-                ReportingDisposition::kSuppressReporting, std::nullopt));
+  EXPECT_EQ(std::nullopt, fetch_context_->CanRequest(
+                              ResourceType::kRaw, request, url,
+                              ResourceLoaderOptions(nullptr /* world */),
+                              ReportingDisposition::kSuppressReporting,
+                              std::nullopt, has_preloaded_response_candidate_));
 
-  EXPECT_EQ(std::nullopt,
-            fetch_context_->CanRequest(
-                ResourceType::kRaw, keepalive_request, url,
-                ResourceLoaderOptions(nullptr /* world */),
-                ReportingDisposition::kSuppressReporting, std::nullopt));
+  EXPECT_EQ(std::nullopt, fetch_context_->CanRequest(
+                              ResourceType::kRaw, keepalive_request, url,
+                              ResourceLoaderOptions(nullptr /* world */),
+                              ReportingDisposition::kSuppressReporting,
+                              std::nullopt, has_preloaded_response_candidate_));
 
   ResourceRequest::RedirectInfo redirect_info(
       KURL(NullURL(), "http://www.redirecting.com/"),
@@ -251,13 +288,15 @@ TEST_F(BaseFetchContextTest, CanRequestWhenDetached) {
             fetch_context_->CanRequest(
                 ResourceType::kRaw, request, url,
                 ResourceLoaderOptions(nullptr /* world */),
-                ReportingDisposition::kSuppressReporting, redirect_info));
+                ReportingDisposition::kSuppressReporting, redirect_info,
+                has_preloaded_response_candidate_));
 
   EXPECT_EQ(std::nullopt,
             fetch_context_->CanRequest(
                 ResourceType::kRaw, keepalive_request, url,
                 ResourceLoaderOptions(nullptr /* world */),
-                ReportingDisposition::kSuppressReporting, redirect_info));
+                ReportingDisposition::kSuppressReporting, redirect_info,
+                has_preloaded_response_candidate_));
 
   resource_fetcher_->ClearContext();
 
@@ -265,29 +304,33 @@ TEST_F(BaseFetchContextTest, CanRequestWhenDetached) {
             fetch_context_->CanRequest(
                 ResourceType::kRaw, request, url,
                 ResourceLoaderOptions(nullptr /* world */),
-                ReportingDisposition::kSuppressReporting, std::nullopt));
+                ReportingDisposition::kSuppressReporting, std::nullopt,
+                has_preloaded_response_candidate_));
 
   EXPECT_EQ(ResourceRequestBlockedReason::kOther,
             fetch_context_->CanRequest(
                 ResourceType::kRaw, keepalive_request, url,
                 ResourceLoaderOptions(nullptr /* world */),
-                ReportingDisposition::kSuppressReporting, std::nullopt));
+                ReportingDisposition::kSuppressReporting, std::nullopt,
+                has_preloaded_response_candidate_));
 
   EXPECT_EQ(ResourceRequestBlockedReason::kOther,
             fetch_context_->CanRequest(
                 ResourceType::kRaw, request, url,
                 ResourceLoaderOptions(nullptr /* world */),
-                ReportingDisposition::kSuppressReporting, redirect_info));
+                ReportingDisposition::kSuppressReporting, redirect_info,
+                has_preloaded_response_candidate_));
 
   EXPECT_EQ(std::nullopt,
             fetch_context_->CanRequest(
                 ResourceType::kRaw, keepalive_request, url,
                 ResourceLoaderOptions(nullptr /* world */),
-                ReportingDisposition::kSuppressReporting, redirect_info));
+                ReportingDisposition::kSuppressReporting, redirect_info,
+                has_preloaded_response_candidate_));
 }
 
 // Test that User Agent CSS can only load images with data urls.
-TEST_F(BaseFetchContextTest, UACSSTest) {
+TEST_P(BaseFetchContextTest, UACSSTest) {
   KURL test_url("https://example.com");
   KURL data_url("data:image/png;base64,test");
 
@@ -302,21 +345,24 @@ TEST_F(BaseFetchContextTest, UACSSTest) {
   EXPECT_EQ(ResourceRequestBlockedReason::kOther,
             fetch_context_->CanRequest(
                 ResourceType::kScript, resource_request, test_url, options,
-                ReportingDisposition::kReport, redirect_info));
+                ReportingDisposition::kReport, redirect_info,
+                has_preloaded_response_candidate_));
 
   EXPECT_EQ(ResourceRequestBlockedReason::kOther,
             fetch_context_->CanRequest(
                 ResourceType::kImage, resource_request, test_url, options,
-                ReportingDisposition::kReport, redirect_info));
+                ReportingDisposition::kReport, redirect_info,
+                has_preloaded_response_candidate_));
 
   EXPECT_EQ(std::nullopt,
             fetch_context_->CanRequest(
                 ResourceType::kImage, resource_request, data_url, options,
-                ReportingDisposition::kReport, redirect_info));
+                ReportingDisposition::kReport, redirect_info,
+                has_preloaded_response_candidate_));
 }
 
 // Test that User Agent CSS can bypass CSP to load embedded images.
-TEST_F(BaseFetchContextTest, UACSSTest_BypassCSP) {
+TEST_P(BaseFetchContextTest, UACSSTest_BypassCSP) {
   ContentSecurityPolicy* policy =
       execution_context_->GetContentSecurityPolicy();
   policy->AddPolicies(ParseContentSecurityPolicies(
@@ -337,11 +383,12 @@ TEST_F(BaseFetchContextTest, UACSSTest_BypassCSP) {
   EXPECT_EQ(std::nullopt,
             fetch_context_->CanRequest(
                 ResourceType::kImage, resource_request, data_url, options,
-                ReportingDisposition::kReport, redirect_info));
+                ReportingDisposition::kReport, redirect_info,
+                has_preloaded_response_candidate_));
 }
 
 // Tests that CanRequest() checks for data: URL in SVGUseElement.
-TEST_F(BaseFetchContextTest, CanRequestSVGImage) {
+TEST_P(BaseFetchContextTest, CanRequestSVGImage) {
   base::test::ScopedCommandLine scoped_command_line;
   ScopedRemoveDataUrlInSvgUseForTest runtime_flag(true);
 
@@ -359,14 +406,15 @@ TEST_F(BaseFetchContextTest, CanRequestSVGImage) {
   EXPECT_EQ(ResourceRequestBlockedReason::kOrigin,
             fetch_context_->CanRequest(
                 ResourceType::kImage, resource_request, url, options,
-                ReportingDisposition::kReport, std::nullopt));
+                ReportingDisposition::kReport, std::nullopt,
+                has_preloaded_response_candidate_));
 
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(
       blink::switches::kDataUrlInSvgUseEnabled);
-  EXPECT_EQ(std::nullopt,
-            fetch_context_->CanRequest(
-                ResourceType::kImage, resource_request, url, options,
-                ReportingDisposition::kReport, std::nullopt));
+  EXPECT_EQ(std::nullopt, fetch_context_->CanRequest(
+                              ResourceType::kImage, resource_request, url,
+                              options, ReportingDisposition::kReport,
+                              std::nullopt, has_preloaded_response_candidate_));
 }
 
 }  // namespace blink

@@ -188,7 +188,7 @@ class AutofillDriverIOS final : public AutofillDriver,
 
   // Fetches forms filtered by `form_name` and calls `caller_completion` with
   // the form fetch results upon completion of the fetch.
-  void FetchFromsFilteredByName(const std::u16string& form_name,
+  void FetchFormsFilteredByName(const std::u16string& form_name,
                                 FormFetchCompletion completion);
 
  private:

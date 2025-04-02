@@ -70,7 +70,6 @@
 <translation id="1122714970786750095">Elektronik und Elektrik</translation>
 <translation id="1123753900084781868">Die Funktion „Automatische Untertitel“ ist derzeit nicht verfügbar</translation>
 <translation id="1125453215844207206">Grafik ohne Label. Text wird mit KI‑Technologie von Google extrahiert.</translation>
-<translation id="1125573121925420732">Wenn die Sicherheitsfunktionen von Websites aktualisiert werden, können Warnungen häufiger auftreten. Dies sollte sich bald verbessern.</translation>
 <translation id="112840717907525620">Richtlinien-Cache einwandfrei</translation>
 <translation id="1131264053432022307">Von dir kopiertes Bild</translation>
 <translation id="1138458427267715730">Du kannst dich benachrichtigen lassen, wenn der Preis auf einer Website sinkt</translation>
@@ -297,7 +296,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1492194039220927094">Richtlinien per Push-Benachrichtigung:</translation>
 <translation id="1495677929897281669">Zurück zum Tab</translation>
 <translation id="1500286806237135498">Kameras (<ph name="CAMERAS_COUNT" />)</translation>
-<translation id="1501859676467574491">Zeige Karten von deinem Google-Konto</translation>
 <translation id="1504042622576912555">Gewellt</translation>
 <translation id="1507202001669085618">&lt;p&gt;Diese Fehlermeldung wird angezeigt, wenn du ein WLAN-Portal verwendest, bei dem eine Anmeldung erforderlich ist, bevor du online gehen kannst.&lt;/p&gt;
     &lt;p&gt;Klicke auf der Seite, die du öffnen möchtest, auf &lt;strong&gt;Verbinden&lt;/strong&gt;, um den Fehler zu beheben.&lt;/p&gt;</translation>
@@ -568,6 +566,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1975584088563498795">Ablage 10</translation>
 <translation id="1978555033938440688">Firmwareversion</translation>
 <translation id="1979156660928743046">Medieninformationen</translation>
+<translation id="1987486584747170374">Deine Suchanfragen, die besten Ergebnisse und die zugehörigen Seiteninhalte werden an Google gesendet. Sie werden nicht von Prüfern verwendet, um die KI zu verbessern. Diese Einstellungen können jederzeit von deiner Organisation geändert werden.</translation>
 <translation id="1988881251331415125">Wenn die URL keinen Tippfehler enthält, <ph name="BEGIN_LINK" />kannst du die Verbindungsdiagnose durchführen<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> möchte umfangreiche Daten dauerhaft auf deinem lokalen Computer speichern</translation>
@@ -763,6 +762,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2301098101308036335">Welche Websites zu welchem Zeitpunkt besucht werden.</translation>
 <translation id="230286397113210245">Schaltfläche „Inkognitofenster öffnen“ – aktivieren, um ein neues Inkognitofenster zu öffnen und privat zu surfen</translation>
 <translation id="2306124309679506798">Immersive Nutzung zulassen?</translation>
+<translation id="2307711332257985952">Deine Privat- und deine Arbeitsadresse sind jetzt in Chrome verfügbar</translation>
 <translation id="2312234273148520048">Würzmittel und Dressings</translation>
 <translation id="2316087952091171402">Weniger als <ph name="UPPER_ESTIMATE" />. Einige Websites werden beim nächsten Besuch möglicherweise langsamer geladen.</translation>
 <translation id="2316159751672436664">Bedienungshilfen in den Chrome OS-Einstellungen personalisieren</translation>
@@ -1178,6 +1178,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3102312643185441063">Sparkonto</translation>
 <translation id="3103188521861412364">Aktien und Anleihen</translation>
 <translation id="3103535543639438037">Ähnliche Produkte nebeneinander vergleichen</translation>
+<translation id="3103993932858740905">Wenn du in Raten bezahlst, wird eine einmalige virtuelle Kartennummer ausgefüllt. Diese Nummer gilt nur für diesen Kauf.</translation>
 <translation id="3105172416063519923">Asset-ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Konfiguration der sicheren DNS-Abfragen prüfen<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Mittleres Fach</translation>

@@ -14,6 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/back_forward_cache_test_util.h"
 #include "content/browser/browsing_data/shared_storage_clear_site_data_tester.h"
@@ -1214,7 +1215,7 @@ class BrowsingDataRemoverCanvasNoiseTokenBrowserTest
     : public CookiesBrowsingDataRemoverImplBrowserTest {
  private:
   base::test::ScopedFeatureList features_{
-      blink::features::kCanvasInterventions};
+      fingerprinting_protection_interventions::features::kCanvasNoise};
 };
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverCanvasNoiseTokenBrowserTest,

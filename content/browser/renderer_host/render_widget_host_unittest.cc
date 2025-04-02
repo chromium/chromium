@@ -86,6 +86,9 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "content/browser/renderer_host/test_render_widget_host_view_mac_factory.h"
+#endif
+
+#if BUILDFLAG(IS_APPLE)
 #include "ui/display/test/test_screen.h"
 #endif
 
@@ -615,7 +618,7 @@ class RenderWidgetHostTest : public testing::Test {
     // calls display::Screen::SetScreenInstance().
     ui::SetScreenAndroid(false /* use_display_wide_color_gamut */);
 #endif
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
     screen_ = std::make_unique<display::test::TestScreen>();
     display::Screen::SetScreenInstance(screen_.get());
 #endif
@@ -682,7 +685,7 @@ class RenderWidgetHostTest : public testing::Test {
 #if defined(USE_AURA) || BUILDFLAG(IS_APPLE)
     ImageTransportFactory::Terminate();
 #endif
-#if defined(USE_AURA) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+#if defined(USE_AURA) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
     display::Screen::SetScreenInstance(nullptr);
     screen_.reset();
 #endif

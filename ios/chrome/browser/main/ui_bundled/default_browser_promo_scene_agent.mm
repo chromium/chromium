@@ -9,12 +9,14 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
+#import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/post_default_abandonment/features.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 
 @interface DefaultBrowserPromoSceneAgent () <ProfileStateObserver>
 
@@ -158,6 +160,7 @@
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   [self updatePromoRegistrationIfUIReady];
+  [self shareLikelyDefaultBrowserStatus];
 }
 
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
@@ -166,6 +169,23 @@
 }
 
 #pragma mark - Private properties
+
+// Shares the status of whether Chrome is likely the default browser
+// with 1P apps.
+- (void)shareLikelyDefaultBrowserStatus {
+  if (!IsShareDefaultBrowserStatusEnabled()) {
+    return;
+  }
+
+  if (self.sceneState.activationLevel != SceneActivationLevelBackground) {
+    return;
+  }
+
+  NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
+
+  [sharedDefaults setBool:IsChromeLikelyDefaultBrowser()
+                   forKey:app_group::kChromeLikelyDefaultBrowser];
+}
 
 - (BOOL)isSignedIn {
   ProfileIOS* profile = self.sceneState.profileState.profile;

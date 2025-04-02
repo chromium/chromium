@@ -116,6 +116,11 @@ struct CORE_EXPORT LogicalRect {
     size.block_size = new_block_size;
   }
 
+  // Update inline-end offset without changing the inline-start offset.
+  void ShiftInlineEndEdgeTo(LayoutUnit edge) {
+    size.inline_size = (edge - offset.inline_offset).ClampNegativeToZero();
+  }
+
   // Update block-end offset without changing the block-start offset.
   void ShiftBlockEndEdgeTo(LayoutUnit edge) {
     size.block_size = (edge - offset.block_offset).ClampNegativeToZero();

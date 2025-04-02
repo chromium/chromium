@@ -65,20 +65,13 @@ class PasswordSyncTokenVerifierTest : public testing::Test {
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   raw_ptr<TestingProfile> primary_profile_ = nullptr;
 
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged> user_manager_ = nullptr;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  user_manager::TypedScopedUserManager<FakeChromeUserManager> user_manager_;
   std::unique_ptr<PasswordSyncTokenVerifier> verifier_;
   std::unique_ptr<user_manager::KnownUser> known_user_;
 };
 
-PasswordSyncTokenVerifierTest::PasswordSyncTokenVerifierTest() {
-  std::unique_ptr<FakeChromeUserManager> fake_user_manager =
-      std::make_unique<FakeChromeUserManager>();
-  scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-      std::move(fake_user_manager));
-
-  user_manager_ =
-      static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
+PasswordSyncTokenVerifierTest::PasswordSyncTokenVerifierTest()
+    : user_manager_(std::make_unique<FakeChromeUserManager>()) {
   known_user_ = std::make_unique<user_manager::KnownUser>(
       g_browser_process->local_state());
 }

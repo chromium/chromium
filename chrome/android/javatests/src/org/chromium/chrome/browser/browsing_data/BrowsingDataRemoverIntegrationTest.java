@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.verification.ChromeVerificationResultStore;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge.OnClearBrowsingDataListener;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
 import org.chromium.chrome.browser.webapps.TestFetchStorageCallback;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -49,6 +50,14 @@ public class BrowsingDataRemoverIntegrationTest {
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
+    public BrowsingDataRemoverIntegrationTest() {
+        // This test suite relies on the real password store. However, that can only store
+        // passwords if the device it runs on has the required min GMS Core version.
+        // To ensure the tests don't depend on the device configuration, set up a fake GMS
+        // Core version instead.
+        PasswordManagerTestHelper.setUpPwmRequiredMinGmsVersion();
+    }
 
     @Before
     public void setUp() throws InterruptedException {

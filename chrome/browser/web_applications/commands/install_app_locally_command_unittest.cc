@@ -200,12 +200,9 @@ TEST_F(InstallAppLocallyCommandTest, BasicBehavior) {
       updated_state.value();
   ASSERT_TRUE(updated_os_states.has_shortcut());
 
-  if (base::FeatureList::IsEnabled(
-          features::kWebAppDontAddExistingAppsToSync)) {
-    EXPECT_TRUE(
-        provider().registrar_unsafe().GetAppById(app_id)->GetSources().Has(
-            WebAppManagement::kUserInstalled));
-  }
+  EXPECT_TRUE(
+      provider().registrar_unsafe().GetAppById(app_id)->GetSources().Has(
+          WebAppManagement::kUserInstalled));
 
   // OS integration should be triggered now.
   if (HasShortcutsOsIntegration()) {

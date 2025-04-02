@@ -52,7 +52,7 @@ namespace blink {
 
 namespace {
 
-void QuotedPrintableDecode(base::span<const char> data, Vector<char>& out) {
+void QuotedPrintableDecode(base::span<const char> data, Vector<uint8_t>& out) {
   out.clear();
   if (data.empty()) {
     return;
@@ -431,7 +431,7 @@ ArchiveResource* MHTMLParser::ParseNextPart(
     return nullptr;
   }
 
-  Vector<char> data;
+  Vector<uint8_t> data;
   switch (content_transfer_encoding) {
     case MIMEHeader::Encoding::kBase64:
       if (!Base64Decode(StringView(base::as_byte_span(content)), data)) {

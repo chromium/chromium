@@ -12,6 +12,7 @@
   self = [super initWithType:type];
   if (self) {
     self.cellClass = [AutofillEditProfileButtonFooterCell class];
+    _enabled = YES;
   }
   return self;
 }
@@ -21,6 +22,8 @@
   [super configureHeaderFooterView:footer withStyler:styler];
 
   SetConfigurationTitle(footer.button, self.buttonText);
+  footer.button.enabled = self.enabled;
+  [footer updateButtonColorBasedOnStatus];
 }
 
 @end

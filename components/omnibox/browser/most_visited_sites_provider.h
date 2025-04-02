@@ -37,9 +37,16 @@ class MostVisitedSitesProvider : public AutocompleteProvider {
   void DeleteMatchElement(const AutocompleteMatch& match,
                           size_t element) override;
 
+  // Whether zero-prefix suggestions are allowed in the given context.
+  // Invoked early, confirms all the external conditions for Most Visited Sites
+  // suggestions are met.
+  static bool AllowMostVisitedSitesSuggestions(
+      const AutocompleteProviderClient* client,
+      const AutocompleteInput& input);
+
+  size_t GetRequestedResultSize(const AutocompleteInput& input) const;
+
  private:
-  FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest,
-                           AllowMostVisitedSitesSuggestions);
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest, NoSRPCoverage);
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest,
                            DesktopProviderDoesNotAllowChromeSites);
@@ -47,6 +54,7 @@ class MostVisitedSitesProvider : public AutocompleteProvider {
                            PrefetchingUpdatesCachedSites);
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest,
                            StartDoesNotUpdateMatchesWhenPrefetchEnabled);
+  FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest, BlocklistedURLs);
 
   ~MostVisitedSitesProvider() override;
 
@@ -62,11 +70,6 @@ class MostVisitedSitesProvider : public AutocompleteProvider {
   // directly in the provider.
   void OnMostVisitedUrlsFromHistoryAvailable(AutocompleteInput input,
                                              history::MostVisitedURLList sites);
-
-  // Whether zero suggest suggestions are allowed in the given context.
-  // Invoked early, confirms all the external conditions for ZeroSuggest are
-  // met.
-  bool AllowMostVisitedSitesSuggestions(const AutocompleteInput& input) const;
 
   void BlockURL(const GURL& site_url);
 

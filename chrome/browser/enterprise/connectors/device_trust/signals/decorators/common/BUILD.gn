@@ -22,7 +22,6 @@ source_set("common") {
   ]
 
   deps = [
-    "//chrome/browser/enterprise/signals:utils",
     "//components/device_signals/core/common",
     "//components/policy/core/common",
     "//components/version_info",

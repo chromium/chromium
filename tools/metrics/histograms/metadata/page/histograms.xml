@@ -717,7 +717,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.AMP.Experimental.PageTiming.InputToNavigation.Subframe"
-    units="ms" expires_after="2025-07-03">
+    units="ms" expires_after="2025-09-28">
   <owner>iclelland@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -1315,6 +1315,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.GoogleSearch.NavigationTiming.CreateStreamDelay"
+    units="ms" expires_after="2025-10-01">
+  <owner>hayato@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time taken for HTTP stream creation to finish, for Google Search page
+    loads. Recorded every time HttpStream::CreateStream() is called, for Google
+    Search page loads. Emitted when the navigation is completed or the app is
+    backgrounded on Android.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.GoogleSearch.NavigationTiming.InitializeStreamDelay"
     units="ms" expires_after="2025-09-01">
   <owner>hayato@chromium.org</owner>
@@ -1443,6 +1456,20 @@ chromium-metrics-reviews@google.com.
   <token key="BrowserInitializationStatus"
       variants="BrowserInitializationStatus"/>
   <token key="TabInitializationStatus" variants="TabInitializationStatus"/>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.NavigationTiming.UrlRequestDelegateConnectedDelay"
+    units="ms" expires_after="2025-10-01">
+  <owner>hayato@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time between when a URLRequest calls a CONNECTED delegate that can block
+    it, and when the delegate is completed, for Google Search page loads.
+    Recorded every time the delegate is called and completed, for Google Search
+    page loads. Emitted when the navigation is completed or the app is
+    backgrounded on Android.
+  </summary>
 </histogram>
 
 <histogram
@@ -1974,7 +2001,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.LinkPreview.Usage" enum="LinkPreviewUsage"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>toyoshim@chromium.org</owner>
   <owner>src/chrome/browser/preloading/preview/OWNERS</owner>
   <summary>
@@ -2099,7 +2126,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.PerformanceManager.LCPWithoutLoadedIdle{LoadedIdleVisibility}"
-    units="ms" expires_after="2025-06-22">
+    units="ms" expires_after="2025-09-28">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -2117,7 +2144,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.PerformanceManager.LoadedIdleWithoutLCP{LoadedIdleVisibility}"
-    units="ms" expires_after="2025-06-22">
+    units="ms" expires_after="2025-09-28">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -2294,7 +2321,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.ServiceWorker2.PaintTiming.{Timing}.RaceNetworkRequestEligible"
-    units="ms" expires_after="2025-07-27">
+    units="ms" expires_after="2025-09-28">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -2842,7 +2869,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.DocumentTiming.NavigationToLoadEventFired" units="ms"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -3782,7 +3809,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Internal.Prerender2.DomContentLoadedToActivation3{PreloadingTriggerType}"
-    units="ms" expires_after="2025-07-27">
+    units="ms" expires_after="2025-09-28">
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -4309,7 +4336,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.PaintTiming.NavigationToFirstPaint" units="ms"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -4585,7 +4612,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.ParseTiming.NavigationToParseStart" units="ms"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>

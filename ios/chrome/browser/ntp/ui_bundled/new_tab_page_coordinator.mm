@@ -1601,14 +1601,9 @@
 #pragma mark - Private
 
 - (bool)hasIdentitiesOnDevice {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
-    return !IdentityManagerFactory::GetForProfile(self.profile)
-                ->GetAccountsOnDevice()
-                .empty();
-  } else {
-    return ChromeAccountManagerServiceFactory::GetForProfile(self.profile)
-        ->HasIdentities();
-  }
+  return !IdentityManagerFactory::GetForProfile(self.profile)
+              ->GetAccountsOnDevice()
+              .empty();
 }
 
 // Update the state, to take into account that the account menu coordinator is

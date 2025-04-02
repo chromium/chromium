@@ -206,12 +206,12 @@ PhysicalSize LayoutTableColumn::Size() const {
   return ToPhysicalSize(size, table->StyleRef().GetWritingMode());
 }
 
-LayoutPoint LayoutTableColumn::LocationInternal() const {
+DeprecatedLayoutPoint LayoutTableColumn::LocationInternal() const {
   NOT_DESTROYED();
   auto* table = Table();
   DCHECK(table);
   if (table->PhysicalFragmentCount() == 0) {
-    return LayoutPoint();
+    return DeprecatedLayoutPoint();
   }
 
   WritingDirectionMode direction = StyleRef().GetWritingDirection();
@@ -236,11 +236,11 @@ LayoutPoint LayoutTableColumn::LocationInternal() const {
       // table column geometries, or if the geometry at that index doesn't point
       // to this layout box, we return early.
       if (column_idx_ >= fragment.TableColumnGeometries()->size()) {
-        return LayoutPoint();
+        return DeprecatedLayoutPoint();
       }
       const auto& geometry = (*fragment.TableColumnGeometries())[column_idx_];
       if (geometry.node.GetLayoutBox() != this) {
-        return LayoutPoint();
+        return DeprecatedLayoutPoint();
       }
 
       found_geometries = true;
@@ -279,7 +279,7 @@ LayoutPoint LayoutTableColumn::LocationInternal() const {
   }
   PhysicalSize inner_size = ToPhysicalSize(size, direction.GetWritingMode());
   return offset.ConvertToPhysical(direction, outer_size, inner_size)
-      .ToLayoutPoint();
+      .FaultyToDeprecatedLayoutPoint();
 }
 
 }  // namespace blink

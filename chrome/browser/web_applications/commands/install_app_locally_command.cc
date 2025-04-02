@@ -58,10 +58,7 @@ void InstallAppLocallyCommand::StartWithLock(
     if (web_app_to_update) {
       web_app_to_update->SetInstallState(
           proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
-      if (base::FeatureList::IsEnabled(
-              features::kWebAppDontAddExistingAppsToSync)) {
         web_app_to_update->AddSource(WebAppManagement::kUserInstalled);
-      }
     }
   }
 

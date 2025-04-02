@@ -29,11 +29,11 @@ class OmniboxPopupViewControllerTest : public PlatformTest {
   }
 
   BOOL MoveHighlightUp() {
-    return PerformKeyboardAction(OmniboxKeyboardActionUpArrow);
+    return PerformKeyboardAction(OmniboxKeyboardAction::kUpArrow);
   }
 
   BOOL MoveHighlightDown() {
-    return PerformKeyboardAction(OmniboxKeyboardActionDownArrow);
+    return PerformKeyboardAction(OmniboxKeyboardAction::kDownArrow);
   }
 
   NSArray<id<AutocompleteSuggestion>>* GenerateMockSuggestions(

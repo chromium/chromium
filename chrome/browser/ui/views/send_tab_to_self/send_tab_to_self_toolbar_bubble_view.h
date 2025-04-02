@@ -52,9 +52,6 @@ class SendTabToSelfToolbarBubbleView : public views::BubbleDialogDelegateView {
 
   void Timeout();
 
-  void LogNotificationOpened();
-  void LogNotificationDismissed();
-
   base::OnceCallback<void(NavigateParams*)> navigate_callback_;
 
   bool opened_ = false;

@@ -38,6 +38,7 @@
 <translation id="19085484004813472">Toto je nová funkce</translation>
 <translation id="2006524834898217237">Zkontrolujte, zda je toto zařízení připojeno k internetu.</translation>
 <translation id="208586643495776849">Zkuste to znovu</translation>
+<translation id="2111134541987263231">Zapněte možnost <ph name="BEGIN_BOLD" />Povolit v anonymním režimu<ph name="END_BOLD" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d}few{# d}many{# d}other{# d}}</translation>
 <translation id="2148716181193084225">Dnes</translation>
 <translation id="2168039046890040389">Klávesa PageUp</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">Klepněte na cíle klepnutí na obrazovce.</translation>
 <translation id="2295140143284145483">Průzkum</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Rozšíření s ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nelze najít. Kontaktujte svého administrátora.}few{Rozšíření s ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nelze najít. Kontaktujte svého administrátora.}many{Rozšíření s ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nelze najít. Kontaktujte svého administrátora.}other{Rozšíření s ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nelze najít. Kontaktujte svého administrátora.}}</translation>
 <translation id="2353636109065292463">Kontrola připojení k internetu</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2388990488038464401">Zavolat toto číslo z vašeho telefonu?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">Smazat vše</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{za 1 d}few{za # d}many{za # d}other{za # d}}</translation>
 <translation id="2922712708897119705">Sloupec <ph name="COLUMN_NAME" /> je seřazen sestupně.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Rozšíření nelze najít}few{Rozšíření nelze najít}many{Rozšíření nelze najít}other{Rozšíření nelze najít}}</translation>
 <translation id="3036649622769666520">Otevřít soubory</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">Až dolů</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">Zavolat pomocí služby</translation>
 <translation id="3306688585798492231">Integrovaný displej</translation>
 <translation id="335581015389089642">Řeč</translation>
+<translation id="3372635229069101468">Klikněte na <ph name="BEGIN_BOLD" />Podrobnosti<ph name="END_BOLD" />.</translation>
 <translation id="3389286852084373014">Text je příliš dlouhý</translation>
 <translation id="3406306243914553062">Obsah ve formátu HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{Zbývá 1 den}few{Zbývají # dny}many{Zbývá # dne}other{Zbývá # dnů}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">Sloupec <ph name="COLUMN_NAME" /> je seřazen vzestupně.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 nepřečtené oznámení}few{# nepřečtená oznámení}many{# nepřečteného oznámení}other{# nepřečtených oznámení}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Zapněte v anonymním režimu následující rozšíření:}few{Zapněte v anonymním režimu následující rozšíření:}many{Zapněte v anonymním režimu následující rozšíření:}other{Zapněte v anonymním režimu následující rozšíření:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{před 1 měsícem}few{před # měsíci}many{před # měsíce}other{před # měsíci}}</translation>
 <translation id="4289300219472526559">Začít mluvit</translation>
 <translation id="4289540628985791613">Přehled</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">číslo</translation>
 <translation id="4746179598275229723">Rozšíření bylo uvolněno</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{zbývá 1 měsíc}few{zbývají # měsíce}many{zbývá # měsíce}other{zbývá # měsíců}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{K použití anonymního režimu vaše organizace vyžaduje rozšíření}few{K použití anonymního režimu vaše organizace vyžaduje určitá rozšíření}many{K použití anonymního režimu vaše organizace vyžaduje určitá rozšíření}other{K použití anonymního režimu vaše organizace vyžaduje určitá rozšíření}}</translation>
+<translation id="482932175346970750">Do prohlížeče zadejte adresu <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />.</translation>
 <translation id="4888938634149558681">Volat</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekunda}few{# sekundy}many{# sekundy}other{# sekund}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">Vložit</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Odeslání se nezdařilo</translation>
+<translation id="5283101102242354279">Zapnutí rozšíření v anonymním režimu:</translation>
 <translation id="528468243742722775">Konec</translation>
 <translation id="5329858601952122676">&amp;Smazat</translation>
 <translation id="5361107212971249203">text</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">Nastavení zobrazení aplikace se projeví poté, co ji restartujete.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Zbývá 1 min}few{Zbývají # min}many{Zbývá # min}other{Zbývá # min}}</translation>
+<translation id="7252604552361840748">Najděte výše uvedené rozšíření.</translation>
 <translation id="7363164521834647158">Odeslat odpověď</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Před 1 min}few{Před # min}many{Před # min}other{Před # min}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>

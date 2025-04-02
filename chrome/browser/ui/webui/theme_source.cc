@@ -26,6 +26,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
+#include "chrome/browser/ui/webui/current_channel_logo.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache_factory.h"
 #include "chrome/common/channel_info.h"
@@ -126,31 +127,7 @@ void ThemeSource::StartDataRequest(
 
   int resource_id = -1;
   if (parsed_path == "current-channel-logo") {
-    switch (chrome::GetChannel()) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      case version_info::Channel::CANARY:
-        resource_id = IDR_PRODUCT_LOGO_32_CANARY;
-        break;
-      case version_info::Channel::DEV:
-        resource_id = IDR_PRODUCT_LOGO_32_DEV;
-        break;
-      case version_info::Channel::BETA:
-        resource_id = IDR_PRODUCT_LOGO_32_BETA;
-        break;
-      case version_info::Channel::STABLE:
-        resource_id = IDR_PRODUCT_LOGO_32;
-        break;
-#else
-      case version_info::Channel::CANARY:
-      case version_info::Channel::DEV:
-      case version_info::Channel::BETA:
-      case version_info::Channel::STABLE:
-        NOTREACHED();
-#endif
-      case version_info::Channel::UNKNOWN:
-        resource_id = IDR_PRODUCT_LOGO_32;
-        break;
-    }
+    resource_id = webui::CurrentChannelLogoResourceId();
   } else {
     resource_id = ResourcesUtil::GetThemeResourceId(parsed_path);
   }

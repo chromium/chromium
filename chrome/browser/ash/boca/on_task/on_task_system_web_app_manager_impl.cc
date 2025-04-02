@@ -327,6 +327,7 @@ void OnTaskSystemWebAppManagerImpl::PrepareSystemWebAppWindowForOnTask(
   // transitions.
   browser->SetLockedForOnTask(true);
   MakeWindowResizable(browser->window());
+  browser->set_force_skip_warning_user_on_close(true);
 
   // Remove the floating button on the browser window for OnTask.
   aura::Window* const native_window = browser->window()->GetNativeWindow();

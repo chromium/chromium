@@ -353,6 +353,15 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
                                                    : BookmarkEditor::NO_TREE);
       break;
 
+    case IDC_BOOKMARK_BAR_MOVE:
+      base::RecordAction(UserMetricsAction("BookmarkBar_ContextMenu_Move"));
+
+      BookmarkEditor::Show(parent_window_, profile_,
+                           BookmarkEditor::EditDetails::MoveNodes(
+                               bookmark_service_->bookmark_model(), selection_),
+                           BookmarkEditor::SHOW_TREE);
+      break;
+
     case IDC_BOOKMARK_BAR_ADD_TO_BOOKMARKS_BAR: {
       base::RecordAction(
           UserMetricsAction("BookmarkBar_ContextMenu_AddToBookmarkBar"));
@@ -601,6 +610,9 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
     case IDC_BOOKMARK_BAR_RENAME_FOLDER:
     case IDC_BOOKMARK_BAR_EDIT:
       return selection_.size() == 1 && !is_any_node_permanent && can_edit;
+
+    case IDC_BOOKMARK_BAR_MOVE:
+      return !is_any_node_permanent && can_edit;
 
     case IDC_BOOKMARK_BAR_ADD_TO_BOOKMARKS_BAR:
       for (const bookmarks::BookmarkNode* node : selection_) {

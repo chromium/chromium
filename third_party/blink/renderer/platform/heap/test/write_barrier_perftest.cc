@@ -47,15 +47,15 @@ base::TimeDelta TimedRun(base::RepeatingCallback<void()> callback) {
 TEST_F(WriteBarrierPerfTest, MemberWritePerformance) {
   // Setup.
   constexpr wtf_size_t kNumElements = 100000;
-  Persistent<HeapVector<Member<PerfDummyObject>>> holder(
-      MakeGarbageCollected<HeapVector<Member<PerfDummyObject>>>());
+  Persistent<GCedHeapVector<Member<PerfDummyObject>>> holder(
+      MakeGarbageCollected<GCedHeapVector<Member<PerfDummyObject>>>());
   for (wtf_size_t i = 0; i < kNumElements; ++i) {
     holder->push_back(MakeGarbageCollected<PerfDummyObject>());
   }
   PreciselyCollectGarbage();
   // Benchmark.
   base::RepeatingCallback<void()> benchmark = base::BindRepeating(
-      [](const Persistent<HeapVector<Member<PerfDummyObject>>>& holder) {
+      [](const Persistent<GCedHeapVector<Member<PerfDummyObject>>>& holder) {
         for (wtf_size_t i = 0; i < kNumElements / 2; ++i) {
           (*holder)[i].Swap((*holder)[kNumElements / 2 + i]);
         }

@@ -26,6 +26,7 @@
 <translation id="1342274909142618978">Chromium'daki verileri de sil (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Sabitlendi. Araç çubuğundaki yeni düğmeyi kullanarak Görsel Arama'ya tekrar erişebilirsiniz</translation>
 <translation id="1356661055722410047">Yeni! Ekranınızdaki metinleri ve resimleri çevirebilirsiniz</translation>
+<translation id="1383876407941801731">Ara</translation>
 <translation id="1414495520565016063">Chromium'da oturum açtınız!</translation>
 <translation id="1465192221147974788">Pencerenizi paylaşmak için Sistem Ayarları'nda Chromium'un ekranı kaydetmesine izin verin.</translation>
 <translation id="1478370723027452770">Chrome for Testing ile ilgili yardım alın</translation>
@@ -117,6 +118,7 @@
 <translation id="2583187216237139145">Bu profil kullanılırken oluşturulan tüm Chromium verileri (yer işaretleri, geçmiş, şifreler ve diğer ayarlar gibi) iş profili yöneticisi tarafından kaldırılabilir. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromium'u kullanmaya devam et</translation>
 <translation id="259935314519650377">İndirilen yükleyici önbelleğe alınamadı. Hata: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2620436844016719705">Sistem</translation>
 <translation id="2629740064077610681">Kuruluşunuz; yer işaretleri, geçmiş ve şifreler gibi tarama verilerini görüp yönetebilir. Diğer Chromium profillerindeki tarama verilerini göremez</translation>
 <translation id="2635452620547538388">Chromium verilerini kullanmak ve <ph name="ACCOUNT_EMAIL" /> hesabınıza kaydetmek için kimliğinizi doğrulayın</translation>
 <translation id="264613044588233783">Chromium daha hızlı çalışır ve JavaScript kullanan özellikler tasarlandığı şekilde çalışır (önerilir)</translation>
@@ -495,6 +497,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7937630085815544518">Chromium'da <ph name="USER_EMAIL_ADDRESS" /> olarak oturum açtınız. Tekrar oturum açmak için lütfen aynı hesabı kullanın.</translation>
 <translation id="7975919845073681630">Bu, Chromium'un ikincil bir yüklemesidir ve varsayılan tarayıcınız yapılamaz.</translation>
 <translation id="7997934263947464652">Bilinmeyen kaynaklardan gelen uzantılar, uygulamalar ve temalar cihazınıza zarar verebilir. Chromium bunların yalnızca <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> kaynağından yüklenmesini önerir.</translation>
+<translation id="8004582292198964060">Tarayıcı</translation>
 <translation id="8010081455002666927">Otomatik algıla</translation>
 <translation id="8013436988911883588">Chromium erişim izni aldıktan sonra, web siteleri de erişim için sizden izin isteyebilecek.</translation>
 <translation id="80471789339884597">Yüklediğiniz için teşekkür ederiz. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce tüm tarayıcılarınızı yeniden başlatmanız gerekir.</translation>

@@ -4,6 +4,7 @@
 
 #include "media/audio/audio_device_description.h"
 
+#include "media/audio/application_loopback_device_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 namespace media {
 
@@ -47,7 +48,24 @@ TEST(AudioDeviceDescriptionTest, IsLoopbackDevice) {
       AudioDeviceDescription::kLoopbackWithMuteDeviceId));
   EXPECT_TRUE(AudioDeviceDescription::IsLoopbackDevice(
       AudioDeviceDescription::kLoopbackWithoutChromeId));
+  EXPECT_TRUE(AudioDeviceDescription::IsLoopbackDevice(
+      AudioDeviceDescription::kApplicationLoopbackDeviceId));
   EXPECT_FALSE(AudioDeviceDescription::IsLoopbackDevice(
+      AudioDeviceDescription::kDefaultDeviceId));
+}
+
+TEST(AudioDeviceDescriptionTest, IsApplicationLoopbackDevice) {
+  EXPECT_TRUE(AudioDeviceDescription::IsApplicationLoopbackDevice(
+      AudioDeviceDescription::kApplicationLoopbackDeviceId));
+  EXPECT_TRUE(AudioDeviceDescription::IsApplicationLoopbackDevice(
+      CreateApplicationLoopbackDeviceId(12345)));
+  EXPECT_FALSE(AudioDeviceDescription::IsApplicationLoopbackDevice(
+      AudioDeviceDescription::kLoopbackInputDeviceId));
+  EXPECT_FALSE(AudioDeviceDescription::IsApplicationLoopbackDevice(
+      AudioDeviceDescription::kLoopbackWithMuteDeviceId));
+  EXPECT_FALSE(AudioDeviceDescription::IsApplicationLoopbackDevice(
+      AudioDeviceDescription::kLoopbackWithoutChromeId));
+  EXPECT_FALSE(AudioDeviceDescription::IsApplicationLoopbackDevice(
       AudioDeviceDescription::kDefaultDeviceId));
 }
 

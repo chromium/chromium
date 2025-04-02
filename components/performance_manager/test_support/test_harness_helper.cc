@@ -40,11 +40,7 @@ void PerformanceManagerTestHarnessHelper::TearDown() {
   registry_->TearDown();
   registry_.reset();
 
-  base::RunLoop run_loop;
-  PerformanceManagerImpl::SetOnDestroyedCallbackForTesting(
-      run_loop.QuitClosure());
   PerformanceManagerImpl::Destroy(std::move(perf_man_));
-  run_loop.Run();
 }
 
 void PerformanceManagerTestHarnessHelper::OnWebContentsCreated(

@@ -112,15 +112,6 @@ String GetDOMExceptionMessage(V8TestingScope& v8_scope,
   return GetDOMExceptionMessage(v8_scope.GetScriptState(), value);
 }
 
-// Extract the MediaStreamVideoTrack which the test has previously injected
-// into the track. CHECKs and casts used here are valid because this is a
-// controlled test environment.
-MediaStreamVideoTrack* GetMediaStreamVideoTrack(MediaStreamTrack* track) {
-  MediaStreamComponent* const component = track->Component();
-  CHECK(component);
-  return MediaStreamVideoTrack::From(component);
-}
-
 MediaStreamTrack* MakeTrack(
     ExecutionContext* execution_context,
     SurfaceType display_surface,
@@ -180,14 +171,6 @@ MediaStreamTrack* MakeTrack(
   return MakeTrack(testing_scope.GetExecutionContext(), display_surface,
                    initial_zoom_level, use_session_id);
 }
-
-void SimulateFrameArrival(MediaStreamTrack* track,
-                          gfx::Size frame_size = gfx::Size(1000, 1000)) {
-  GetMediaStreamVideoTrack(track)->SetTargetSize(frame_size.width(),
-                                                 frame_size.height());
-}
-
-}  // namespace
 
 class CaptureControllerTestSupport {
  protected:
@@ -875,46 +858,6 @@ TEST_P(CaptureControllerUpdateZoomLevelTest,
             "Invalid capture");
 }
 
-// Test suite for CaptureController functionality from the
-// Captured Surface Control spec, focusing on scroll-control.
-class CaptureControllerScrollTest : public CaptureControllerBaseTest {
- public:
-  ~CaptureControllerScrollTest() override = default;
-};
-
-// This test:
-// * Simulates the arrival of a frame of a given size.
-// * Simulates a call to sendWheel() at a specific point.
-// * Expects scaling.
-TEST_F(CaptureControllerScrollTest, SendWheelScalesCorrectly) {
-  V8TestingScope v8_scope;
-  CaptureController* controller =
-      MakeController(v8_scope.GetExecutionContext());
-  controller->SetIsBound(true);
-  MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
-  controller->SetVideoTrack(track, "descriptor");
-  SimulateFrameArrival(track, gfx::Size(200, 4000));
-
-  CapturedWheelAction* const action = CapturedWheelAction::Create();
-  action->setX(100);
-  action->setY(250);
-  action->setWheelDeltaX(111);
-  action->setWheelDeltaY(222);
-
-  mojom::blink::CapturedWheelAction dispatcher_action;
-  EXPECT_CALL(DispatcherHost(), SendWheel(_, _, _))
-      .WillOnce(DoAll(SaveArgPointee<1>(&dispatcher_action),
-                      RunOnceCallbackRepeatedly<2>(CscResult::kSuccess)));
-  const auto promise = controller->SendWheel(v8_scope.GetScriptState(), action);
-  ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
-  promise_tester.WaitUntilSettled();
-  EXPECT_TRUE(promise_tester.IsFulfilled());
-  EXPECT_EQ(dispatcher_action.relative_x, 100.0 / 200.0);
-  EXPECT_EQ(dispatcher_action.relative_y, 250.0 / 4000.0);
-  EXPECT_EQ(dispatcher_action.wheel_delta_x, 111);
-  EXPECT_EQ(dispatcher_action.wheel_delta_y, 222);
-}
-
 class CaptureControllerForwardWheelTest : public PageTestBase,
                                           public CaptureControllerTestSupport {
  public:
@@ -942,9 +885,8 @@ TEST_F(CaptureControllerForwardWheelTest, Success) {
   EXPECT_TRUE(promise_tester.IsFulfilled());
 
   base::RunLoop run_loop;
-  EXPECT_CALL(DispatcherHost(), SendWheel(_, _, _))
-      .WillOnce(DoAll(Invoke(&run_loop, &base::RunLoop::Quit),
-                      RunOnceCallback<2>(CscResult::kSuccess)));
+  EXPECT_CALL(DispatcherHost(), SendWheel(_, _))
+      .WillOnce(Invoke(&run_loop, &base::RunLoop::Quit));
   element->DispatchEvent(
       *WheelEvent::Create(event_type_names::kWheel, WheelEventInit::Create()));
   run_loop.Run();
@@ -957,7 +899,7 @@ TEST_F(CaptureControllerForwardWheelTest, Success) {
   auto* mock_listener = MakeGarbageCollected<MockEventListener>();
   element->addEventListener(event_type_names::kWheel, mock_listener);
   base::RunLoop run_loop2;
-  EXPECT_CALL(DispatcherHost(), SendWheel(_, _, _)).Times(0);
+  EXPECT_CALL(DispatcherHost(), SendWheel(_, _)).Times(0);
   EXPECT_CALL(*mock_listener, Invoke)
       .WillOnce(Invoke(&run_loop2, &base::RunLoop::Quit));
   element->DispatchEvent(
@@ -983,7 +925,7 @@ TEST_F(CaptureControllerForwardWheelTest, DropUntrustedEvent) {
                       controller->forwardWheel(script_state, element))
       .WaitUntilSettled();
 
-  EXPECT_CALL(DispatcherHost(), SendWheel(_, _, _)).Times(0);
+  EXPECT_CALL(DispatcherHost(), SendWheel(_, _)).Times(0);
   DummyExceptionStateForTesting exception_state;
   // Events dispatched with dispatchEventForBindings are always untrusted.
   element->dispatchEventForBindings(
@@ -1116,7 +1058,7 @@ TEST_P(CaptureControllerForwardWheelBackendErrorTest, Test) {
   HTMLDivElement* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
 
-  EXPECT_CALL(DispatcherHost(), SendWheel(_, _, _)).Times(0);
+  EXPECT_CALL(DispatcherHost(), SendWheel(_, _)).Times(0);
 
   ScriptState::Scope scope(script_state);
   EXPECT_CALL(DispatcherHost(), RequestCapturedSurfaceControlPermission(_, _))
@@ -1183,22 +1125,45 @@ TEST_P(CaptureControllerForwardWheelUnsupportedSurfacesTest, Fails) {
 }
 
 // Test the validation of forwarded wheel parameters.
+using ScrollTestParams =
+    std::tuple<gfx::Point, gfx::Point, ScrollDirection, ScrollDirection>;
 class CaptureControllerScrollParametersValidationTest
-    : public CaptureControllerBaseTest,
-      public WithParamInterface<
-          std::tuple<std::tuple<ScrollDirection, ScrollDirection>,
-                     std::tuple<gfx::Point, bool>>> {
+    : public PageTestBase,
+      public CaptureControllerTestSupport,
+      public WithParamInterface<ScrollTestParams> {
  public:
-  static constexpr int kWidth = 1000;
-  static constexpr int kHeight = 2000;
+  static constexpr int kDivWidth = 100;
+  static constexpr int kDivHeight = 200;
+
+  static constexpr gfx::Point kTopLeft = gfx::Point(0, 0);
+  static constexpr gfx::Point kTopRight = gfx::Point(0, kDivWidth - 1);
+  static constexpr gfx::Point kBottomLeft = gfx::Point(kDivHeight - 1, 0);
+  static constexpr gfx::Point kBottomRight =
+      gfx::Point(kDivHeight - 1, kDivWidth - 1);
+  static constexpr gfx::Point kCenter =
+      gfx::Point((kDivWidth - 1) / 2, (kDivHeight - 1) / 2);
 
   CaptureControllerScrollParametersValidationTest()
-      : vertical_scroll_direction_(std::get<0>(std::get<0>(GetParam()))),
-        horizontal_scroll_direction_(std::get<1>(std::get<0>(GetParam()))),
-        scroll_coordinates_(std::get<0>(std::get<1>(GetParam()))),
-        expect_success_(std::get<1>(std::get<1>(GetParam()))) {}
+      : div_origin_(std::get<1>(GetParam())),
+        gesture_coordinates_(std::get<1>(GetParam())),
+        horizontal_scroll_direction_(std::get<2>(GetParam())),
+        vertical_scroll_direction_(std::get<3>(GetParam())) {}
   ~CaptureControllerScrollParametersValidationTest() override = default;
 
+ protected:
+  gfx::Point div_origin() const { return div_origin_; }
+
+  gfx::Point gesture_coordinates() const { return gesture_coordinates_; }
+
+  int wheel_deltax_x() const {
+    return GetScrollValue(horizontal_scroll_direction_);
+  }
+
+  int wheel_deltax_y() const {
+    return GetScrollValue(vertical_scroll_direction_);
+  }
+
+ private:
   static int GetScrollValue(ScrollDirection direction) {
     switch (direction) {
       case ScrollDirection::kNone:
@@ -1210,95 +1175,89 @@ class CaptureControllerScrollParametersValidationTest
     }
   }
 
-  int wheel_deltax_x() const {
-    return GetScrollValue(horizontal_scroll_direction_);
-  }
-
-  int wheel_deltax_y() const {
-    return GetScrollValue(vertical_scroll_direction_);
-  }
-
- protected:
-  const ScrollDirection vertical_scroll_direction_;
+  const gfx::Point div_origin_;
+  const gfx::Point gesture_coordinates_;
   const ScrollDirection horizontal_scroll_direction_;
-  const gfx::Point scroll_coordinates_;
-  const bool expect_success_;
+  const ScrollDirection vertical_scroll_direction_;
 };
-
-namespace {
-constexpr int kLeftmost = 0;
-constexpr int kRightmost =
-    CaptureControllerScrollParametersValidationTest::kWidth - 1;
-constexpr int kTop = 0;
-constexpr int kBottom =
-    CaptureControllerScrollParametersValidationTest::kHeight - 1;
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     CaptureControllerScrollParametersValidationTest,
     Combine(
-        // Scroll direction.
-        Combine(
-            // Vertical scroll.
-            Values(ScrollDirection::kNone,
-                   ScrollDirection::kForwards,
-                   ScrollDirection::kBackwards),
-            // Horizontal scroll.
-            Values(ScrollDirection::kNone,
-                   ScrollDirection::kForwards,
-                   ScrollDirection::kBackwards)),
-        // Scroll coordinates and expectation.
-        Values(
-            // Corners
-            std::make_tuple(gfx::Point(kLeftmost, kTop), true),
-            std::make_tuple(gfx::Point(kLeftmost, kBottom), true),
-            std::make_tuple(gfx::Point(kRightmost, kTop), true),
-            std::make_tuple(gfx::Point(kRightmost, kBottom), true),
-            // Just beyond top-left
-            std::make_tuple(gfx::Point(kLeftmost - 1, kTop), false),
-            std::make_tuple(gfx::Point(kLeftmost, kTop - 1), false),
-            // Just beyond bottom-left
-            std::make_tuple(gfx::Point(kLeftmost - 1, kBottom), false),
-            std::make_tuple(gfx::Point(kLeftmost, kBottom + 1), false),
-            // Just beyond top-right
-            std::make_tuple(gfx::Point(kRightmost + 1, kTop), false),
-            std::make_tuple(gfx::Point(kRightmost, kTop - 1), false),
-            // Just beyond bottom-right
-            std::make_tuple(gfx::Point(kRightmost + 1, kBottom), false),
-            std::make_tuple(gfx::Point(kRightmost, kBottom + 1), false))));
-}  // namespace
+        // div_origin_
+        Values(gfx::Point(0, 0), gfx::Point(40, 80)),
+        // gesture_coordinates_
+        Values(CaptureControllerScrollParametersValidationTest::kTopLeft,
+               CaptureControllerScrollParametersValidationTest::kTopRight,
+               CaptureControllerScrollParametersValidationTest::kBottomLeft,
+               CaptureControllerScrollParametersValidationTest::kBottomRight,
+               CaptureControllerScrollParametersValidationTest::kCenter),
+        // horizontal_scroll_direction_
+        Values(ScrollDirection::kNone,
+               ScrollDirection::kForwards,
+               ScrollDirection::kBackwards),
+        // vertical_scroll_direction_
+        Values(ScrollDirection::kNone,
+               ScrollDirection::kForwards,
+               ScrollDirection::kBackwards)));
 
 TEST_P(CaptureControllerScrollParametersValidationTest, ValidateCoordinates) {
-  V8TestingScope v8_scope;
+  SetHtmlInnerHTML(base::StringPrintf(
+      R"HTML(
+        <body style="margin: 0;">
+          <div id="div"
+               style="position: absolute; left: %d; top: %d;
+               width: %dpx; height: %dpx;" />
+        </body>
+      )HTML",
+      div_origin().x(), div_origin().x(), kDivWidth, kDivHeight));
+
   CaptureController* controller =
-      MakeController(v8_scope.GetExecutionContext());
+      MakeController(GetDocument().GetExecutionContext());
   controller->SetIsBound(true);
-  MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
+  MediaStreamTrack* track =
+      MakeTrack(GetDocument().GetExecutionContext(), SurfaceType::BROWSER);
   controller->SetVideoTrack(track, "descriptor");
-  SimulateFrameArrival(track, gfx::Size(kWidth, kHeight));
 
-  if (expect_success_) {
-    EXPECT_CALL(DispatcherHost(), SendWheel(_, _, _))
-        .WillOnce(RunOnceCallback<2>(CscResult::kSuccess));
-  }
-  CapturedWheelAction* const action = CapturedWheelAction::Create();
-  action->setX(scroll_coordinates_.x());
-  action->setY(scroll_coordinates_.y());
-  action->setWheelDeltaX(wheel_deltax_x());
-  action->setWheelDeltaY(wheel_deltax_y());
-  const auto promise = controller->SendWheel(v8_scope.GetScriptState(), action);
+  HTMLElement* const element = reinterpret_cast<HTMLElement*>(
+      GetDocument().getElementById(AtomicString("div")));
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
 
-  ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
+  ScriptState::Scope scope(script_state);
+  EXPECT_CALL(DispatcherHost(), RequestCapturedSurfaceControlPermission(_, _))
+      .WillOnce(RunOnceCallback<1>(CscResult::kSuccess));
+  auto promise = controller->forwardWheel(script_state, element);
+
+  ScriptPromiseTester promise_tester(script_state, promise);
   promise_tester.WaitUntilSettled();
-  EXPECT_TRUE(expect_success_ ? promise_tester.IsFulfilled()
-                              : promise_tester.IsRejected());
+  EXPECT_TRUE(promise_tester.IsFulfilled());
 
-  // Avoid false-positives through different error paths terminating in
-  // exception with the same code.
-  if (!expect_success_) {
-    EXPECT_EQ(GetDOMExceptionMessage(v8_scope, promise_tester.Value()),
-              "Coordinates out of bounds.");
-  }
+  mojom::blink::CapturedWheelAction dispatcher_action;
+  base::RunLoop run_loop;
+  EXPECT_CALL(DispatcherHost(), SendWheel(_, _))
+      .WillOnce(DoAll(SaveArgPointee<1>(&dispatcher_action),
+                      Invoke(&run_loop, &base::RunLoop::Quit)));
+
+  // Deliver the wheel event.
+  WheelEventInit* const init = WheelEventInit::Create();
+  init->setClientX(gesture_coordinates().x());
+  init->setClientY(gesture_coordinates().y());
+  init->setDeltaX(wheel_deltax_x());
+  init->setDeltaY(wheel_deltax_y());
+  WheelEvent* const wheel_event =
+      WheelEvent::Create(event_type_names::kWheel, init);
+
+  element->DispatchEvent(*wheel_event);
+  run_loop.Run();
+
+  EXPECT_EQ(dispatcher_action.relative_x,
+            1.0 * gesture_coordinates().x() / kDivWidth);
+  EXPECT_EQ(dispatcher_action.relative_y,
+            1.0 * gesture_coordinates().y() / kDivHeight);
+  EXPECT_EQ(dispatcher_action.wheel_delta_x, -wheel_deltax_x());
+  EXPECT_EQ(dispatcher_action.wheel_delta_y, -wheel_deltax_y());
 }
 
+}  // namespace
 }  // namespace blink

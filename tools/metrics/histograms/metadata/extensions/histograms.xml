@@ -276,7 +276,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.AppLaunch" enum="AppLaunch"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>benwells@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <owner>tapted@chromium.org</owner>
@@ -515,7 +515,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ContentSettings.PrimaryPatternUniqueSecondaryPatternWildcard"
-    enum="ContentType" expires_after="2025-07-27">
+    enum="ContentType" expires_after="2025-09-28">
   <owner>erikchen@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -543,7 +543,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ContentSettings.PrimaryPatternWildcardSecondaryPatternWildcard"
-    enum="ContentType" expires_after="2025-07-27">
+    enum="ContentType" expires_after="2025-09-28">
   <owner>erikchen@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2793,7 +2793,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Functions.SucceededTotalExecutionTime" units="ms"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2887,7 +2887,7 @@ This is emitted for two scenarios when a worker may be unregistered:
   <summary>
     Whether there were any permissions present in an extension when it was
     installed . To find places where this histogram may be emitted, look for
-    calls to ExtensionService::RecordPermissionMessagesHistogram with the
+    calls to InstalledLoader::RecordPermissionMessagesHistogram with the
     argument Install. For Sync users, this is reported for each device.
 
     Histogram is in the process of being removed in favor of its incremented
@@ -2908,7 +2908,7 @@ This is emitted for two scenarios when a worker may be unregistered:
     installed for &quot;user profiles&quot; (profiles where people can install
     extensions, specifically profiles that can have non-component extensions
     installed). To find places where this histogram may be emitted, look for
-    calls to ExtensionService::RecordPermissionMessagesHistogram with the
+    calls to InstalledLoader::RecordPermissionMessagesHistogram with the
     argument Install. For Sync users, this is reported for each device.
   </summary>
 </histogram>
@@ -2921,7 +2921,7 @@ This is emitted for two scenarios when a worker may be unregistered:
     Whether there were any permissions present in an extension when it was
     loaded (which happens at profile open or extension install). To find places
     where this histogram may be emitted, look for calls to
-    ExtensionService::RecordPermissionMessagesHistogram with the argument Load.
+    InstalledLoader::RecordPermissionMessagesHistogram with the argument Load.
 
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -2942,7 +2942,7 @@ This is emitted for two scenarios when a worker may be unregistered:
     profiles&quot; (profiles where people can install extensions, specifically
     profiles that can have non-component extensions installed). To find places
     where this histogram may be emitted, look for calls to
-    ExtensionService::RecordPermissionMessagesHistogram with the argument Load.
+    InstalledLoader::RecordPermissionMessagesHistogram with the argument Load.
   </summary>
 </histogram>
 
@@ -3260,7 +3260,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.InstallSource" enum="ExtensionLocation"
-    expires_after="2025-09-21">
+    expires_after="2025-09-28">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4357,7 +4357,7 @@ This is emitted for two scenarios when a worker may be unregistered:
   <summary>
     The permissions present in an extension when it was installed. To find
     places where this histogram may be emitted, look for calls to
-    ExtensionService::RecordPermissionMessagesHistogram with the argument
+    InstalledLoader::RecordPermissionMessagesHistogram with the argument
     Install. For Sync users, this is reported for each device.
 
     Histogram is in the process of being removed in favor of its incremented
@@ -4376,7 +4376,7 @@ This is emitted for two scenarios when a worker may be unregistered:
   <summary>
     The permissions present in an extension when it was installed. To find
     places where this histogram may be emitted, look for calls to
-    ExtensionService::RecordPermissionMessagesHistogram with the argument
+    InstalledLoader::RecordPermissionMessagesHistogram with the argument
     Install. Emitted once per &quot;user profile&quot; (profiles where people
     can install extensions, specifically profiles that can have non-component
     extensions installed) open. For Sync users, this is reported for each
@@ -4392,7 +4392,7 @@ This is emitted for two scenarios when a worker may be unregistered:
     The permissions present in an extension when it was loaded (which happens at
     profile open or extension install). To find places where this histogram may
     be emitted, look for calls to
-    ExtensionService::RecordPermissionMessagesHistogram with the argument Load.
+    InstalledLoader::RecordPermissionMessagesHistogram with the argument Load.
 
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
@@ -4413,7 +4413,7 @@ This is emitted for two scenarios when a worker may be unregistered:
     profiles&quot; (profiles where people can install extensions, specifically
     profiles that can have non-component extensions installed). To find places
     where this histogram may be emitted, look for calls to
-    ExtensionService::RecordPermissionMessagesHistogram with the argument Load.
+    InstalledLoader::RecordPermissionMessagesHistogram with the argument Load.
   </summary>
 </histogram>
 
@@ -5278,7 +5278,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram name="Extensions.WebRequest.ProxyDecisionDetailsForExtension"
     enum="WebRequest.ProxyDecisionDetailsForExtension"
-    expires_after="2025-05-18">
+    expires_after="2025-09-28">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -5681,7 +5681,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="GuestView.GuestViewCreated" enum="GuestViewType"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>mcnee@chromium.org</owner>
   <owner>wjmaclean@chromium.org</owner>
   <owner>src/components/guest_view/OWNERS</owner>

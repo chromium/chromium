@@ -6,11 +6,10 @@ package org.chromium.chrome.browser.tabmodel;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.FileUtils;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.external_intents.ExternalNavigationHandler;

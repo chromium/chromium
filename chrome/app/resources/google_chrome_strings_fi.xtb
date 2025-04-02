@@ -29,6 +29,7 @@
 <translation id="1356661055722410047">Uutta! Voit kääntää näytöllä näkyvän tekstin ja kuvat</translation>
 <translation id="1363996462118479832">Chrome-käyttöjärjestelmä ei voi synkronoida dataa sisäänkirjautumisvirheen vuoksi.</translation>
 <translation id="137466361146087520">Google Chromen betaversio</translation>
+<translation id="1383876407941801731">Haku</translation>
 <translation id="1399397803214730675">Tietokoneessa on jo Google Chromen uudempi versio. Jos sovellus ei toimi, poista Google Chrome ja yritä uudelleen.</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen.}=1{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen. Incognito-ikkunaasi ei avata uudelleen.}other{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen. # incognito-ikkunaasi ei avata uudelleen.}}</translation>
 <translation id="1434626383986940139">Chrome Canary -sovellukset</translation>
@@ -119,6 +120,7 @@
 <translation id="2580411288591421699">Ei voi asentaa samaa Google Chromen versiota, joka tällä hetkellä on käytössä. Sulje Google Chrome ja yritä uudelleen.</translation>
 <translation id="2586406160782125153">Selaustiedot poistetaan tältä laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromeen käyttäjänä <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Ladatun asennusohjelman siirtäminen välimuistiin epäonnistui. Virhe: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2620436844016719705">Järjestelmä</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome tarkistaa säännöllisesti, että selaimen asetukset ovat mahdollisimman turvalliset. Ilmoitamme, jos jotain on tarkistettava.</translation>
 <translation id="2652691236519827073">Avaa linkki uudella Chromen välilehdellä</translation>
@@ -520,6 +522,7 @@
 <translation id="7951272445806340501">ChromeOS Flex täytyy käynnistää uudelleen, jotta päivitys voidaan ottaa käyttöön.</translation>
 <translation id="7959172989483770734">Ylläpidä Chrome-profiileja</translation>
 <translation id="7962410387636238736">Tämän tietokoneen Google Chromea ei enää päivitetä, koska Windows XP:tä ja Windows Vistaa ei enää tueta.</translation>
+<translation id="8004582292198964060">Selain</translation>
 <translation id="8005666035647241369">Googlen Salasanojen ylläpitoon tällä laitteella</translation>
 <translation id="8008534537613507642">Asenna Chrome uudelleen</translation>
 <translation id="8009904340233602924">Käytä Chromea ilman tiliä</translation>

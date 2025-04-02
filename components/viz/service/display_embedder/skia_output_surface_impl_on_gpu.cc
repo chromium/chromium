@@ -715,6 +715,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     if (insert_success) {
       skia_representation->SetCleared();
     } else {
+      DLOG(ERROR) << "Failed to insert recording";
       draw_render_pass_failed_ = true;
     }
     return;

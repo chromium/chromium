@@ -4,6 +4,8 @@
 
 #include "net/socket/transport_client_socket.h"
 
+#include "base/notimplemented.h"
+
 namespace net {
 
 TransportClientSocket::TransportClientSocket() = default;

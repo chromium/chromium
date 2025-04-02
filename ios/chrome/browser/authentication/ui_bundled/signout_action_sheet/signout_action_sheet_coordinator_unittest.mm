@@ -114,17 +114,19 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
 
   // Sign-out coordinator.
   SignoutActionSheetCoordinator* CreateCoordinator() {
+    constexpr signin_metrics::ProfileSignout metricSignOut =
+        signin_metrics::ProfileSignout::kUserClickedSignoutSettings;
+
     signout_coordinator_ = [[SignoutActionSheetCoordinator alloc]
         initWithBaseViewController:view_controller_
                            browser:browser_.get()
                               rect:view_controller_.view.frame
                               view:view_controller_.view
           forceSnackbarOverToolbar:NO
-                        withSource:signin_metrics::ProfileSignout::
-                                       kUserClickedSignoutSettings];
-    signout_coordinator_.signoutCompletion = ^(BOOL success) {
-      completion_callback_.Run(success);
-    };
+                        withSource:metricSignOut
+                        completion:^(BOOL success) {
+                          completion_callback_.Run(success);
+                        }];
     return signout_coordinator_;
   }
 

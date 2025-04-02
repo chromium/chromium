@@ -20,14 +20,16 @@ void FakeAffiliationFetcher::SimulateSuccess(
     const ParsedFetchResponse& fake_result_data) {
   FetchResult result;
   result.data = fake_result_data;
-  std::move(result_callback_).Run(std::move(result));
+  // TODO(crbug.com/371938601): clean up delegate.
   delegate_->OnFetchSucceeded(
       this, std::make_unique<ParsedFetchResponse>(fake_result_data));
+  std::move(result_callback_).Run(std::move(result));
 }
 
 void FakeAffiliationFetcher::SimulateFailure() {
-  std::move(result_callback_).Run(FetchResult());
+  // TODO(crbug.com/371938601): clean up delegate.
   delegate_->OnFetchFailed(this);
+  std::move(result_callback_).Run(FetchResult());
 }
 
 void FakeAffiliationFetcher::StartRequest(

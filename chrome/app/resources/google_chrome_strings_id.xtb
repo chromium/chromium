@@ -29,6 +29,7 @@
 <translation id="1356661055722410047">Baru! Anda dapat menerjemahkan teks dan gambar di layar</translation>
 <translation id="1363996462118479832">ChromeOS tidak dapat menyinkronkan data Anda karena terjadi error saat login.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
+<translation id="1383876407941801731">Telusuri</translation>
 <translation id="1399397803214730675">Komputer ini telah memiliki versi Google Chrome yang lebih anyar. Jika software tidak bekerja, uninstal Google Chrome dan coba lagi.</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome selesai diupdate. Anda dapat menggunakan versi terbaru segera setelah diluncurkan kembali. Setelah itu, tab saat ini akan dibuka kembali.}=1{Chrome selesai diupdate. Anda dapat menggunakan versi terbaru segera setelah diluncurkan kembali. Setelah itu, tab saat ini akan dibuka kembali. Jendela Samaran Anda tidak akan dibuka kembali.}other{Chrome selesai diupdate. Anda dapat menggunakan versi terbaru segera setelah diluncurkan kembali. Setelah itu, tab saat ini akan dibuka kembali. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
 <translation id="1434626383986940139">Aplikasi Chrome Canary</translation>
@@ -119,6 +120,7 @@
 <translation id="2580411288591421699">Tak dapat memasang Google Chrome dengan versi yang sama dengan yang sedang aktif. Tutup dulu, baru coba lagi.</translation>
 <translation id="2586406160782125153">Tindakan ini akan menghapus data browsing dari perangkat ini. Untuk mengambil data nanti, login ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Gagal menyimpan cache penginstal yang didownload. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2620436844016719705">Sistem</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome memeriksa secara berkala untuk memastikan browser Anda memiliki setelan yang paling aman. Kami akan memberi tahu Anda jika ada yang perlu ditinjau.</translation>
 <translation id="2652691236519827073">Buka Link di &amp;tab Chrome Baru</translation>
@@ -520,6 +522,7 @@
 <translation id="7951272445806340501">ChromeOS Flex perlu dimulai ulang untuk menerapkan update.</translation>
 <translation id="7959172989483770734">Kelola Profil Chrome</translation>
 <translation id="7962410387636238736">Komputer ini tidak akan menerima update Google Chrome lagi karena Windows XP dan Windows Vista sudah tidak didukung</translation>
+<translation id="8004582292198964060">Browser</translation>
 <translation id="8005666035647241369">Ke Pengelola Sandi Google di perangkat ini</translation>
 <translation id="8008534537613507642">Instal Ulang Chrome</translation>
 <translation id="8009904340233602924">Gunakan Chrome tanpa akun</translation>

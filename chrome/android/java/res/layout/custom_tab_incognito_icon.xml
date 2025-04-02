@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- LINT.IfChange(IncognitoIcon) -->
+<org.chromium.ui.widget.ChromeImageView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/incognito_cct_logo_image_view"
+    style="@style/LocationBarButton"
+    android:layout_width="@dimen/custom_tabs_incognito_icon_width"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:paddingEnd="8dp"
+    android:scaleType="center"
+    app:srcCompat="@drawable/ic_incognito_cct_24dp"
+    android:contentDescription="@string/accessibility_incognito_badge" />
+<!-- LINT.ThenChange(//chrome/android/java/res/layout/custom_tabs_toolbar.xml:IncognitoIcon) -->

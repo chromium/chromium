@@ -28,7 +28,6 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
@@ -330,7 +329,7 @@ class TabGridViewBinder {
             ViewLookupCachingFrameLayout rootView,
             PropertyModel model,
             @Nullable ShoppingPersistedTabData.PriceDrop priceDrop) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
+        if (TabUiUtils.isDataSharingFunctionalityEnabled()) {
             // TODO(crbug.com/361169665): Do activity updates or price drops take priority. Assume
             // activity updates win for now.
             if (model.get(TabProperties.TAB_CARD_LABEL_DATA) != null) return;

@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Manifestu-fitxategiak ez du balio</translation>
 <translation id="7217838517480956708">Gailu honen administratzaileak <ph name="EXTENSION_NAME" /> instalatzea eskatzen du. Ezin izango da kendu edo aldatu.</translation>
 <translation id="7612608473764576263">Gako pribatuak balio duen formatu bat eduki behar du (PKCS#8 formatua eta PEM kodetzea dituen RSA gakoa).</translation>
+<translation id="7876803335449432072">Ezin izan da kargatu "<ph name="RELATIVE_PATH" />" fitxategia eduki-scripta lortzeko. Eduki-scripten estilo-orriak estilo-orrien fitxategi bateragarrietatik (adibidez, .css fitxategiak) karga daitezke soilik.</translation>
 <translation id="7939686037314084444">Ez da kargatu luzapena. Baliteke sare-eskaerak atzemateko gai ez izatea.</translation>
 <translation id="7972881773422714442">Aukerak: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Aurreko kamera</translation>
 <translation id="8047248493720652249">Luzapenak ezin izan dio izena jarri "<ph name="ATTEMPTED_FILENAME" />" deskargari, beste luzapen batek (<ph name="EXTENSION_NAME" />) "<ph name="ACTUAL_FILENAME" />" fitxategi-izena jarri diolako.</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> (<ph name="VENDOR_NAME" />)</translation>
 <translation id="8517576857589387417">Manifestu-fitxategia falta da edo ezin da irakurri</translation>
+<translation id="8621383749470166852">Ezin izan da kargatu "<ph name="RELATIVE_PATH" />" fitxategia eduki-scripta lortzeko. Eduki-scriptak JavaScript-eko fitxategi bateragarrietatik (adibidez, .js fitxategiak) karga daitezke soilik.</translation>
 <translation id="8636666366616799973">Paketeak ez du balio. Xehetasunak: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">Gailuetako baterako sarbidea eskatzen ari da "<ph name="APP_NAME" />" aplikazioa:</translation>
 <translation id="8885905466771744233">Adierazitako luzapenak gako pribatua zuen lehendik ere. Jarraitzeko, berrerabili edo ezabatu gako hori.</translation>

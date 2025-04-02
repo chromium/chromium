@@ -43,10 +43,41 @@ found in the LICENSE file.
                 android:layout_width="match_parent"
                 android:scaleType="centerInside"/>
 
+            <!-- Issuer and network icons row -->
+            <LinearLayout
+                android:id="@+id/issuer_network_icons_row"
+                android:layout_below="@id/secure_payment_confirmation_image"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/secure_payment_confirmation_ui_medium_padding"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/issuer_icon"
+                    android:layout_height="@dimen/secure_payment_confirmation_ui_header_icon_height"
+                    android:layout_width="@dimen/secure_payment_confirmation_ui_header_icon_width"
+                    android:scaleType="fitEnd"
+                    android:importantForAccessibility="no"/>
+
+                <View
+                    style="@style/VerticalDivider"
+                    android:id="@+id/issuer_network_icons_divider"
+                    android:layout_marginHorizontal="@dimen/secure_payment_confirmation_ui_medium_padding"/>
+
+                <ImageView
+                    android:id="@+id/network_icon"
+                    android:layout_height="@dimen/secure_payment_confirmation_ui_header_icon_height"
+                    android:layout_width="@dimen/secure_payment_confirmation_ui_header_icon_width"
+                    android:scaleType="fitStart"
+                    android:importantForAccessibility="no"/>
+            </LinearLayout>
+
             <!-- "Verify your purchase" label -->
             <TextView
                 android:id="@+id/secure_payment_confirmation_title"
-                android:layout_below="@id/secure_payment_confirmation_image"
+                android:layout_below="@id/issuer_network_icons_row"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginBottom="@dimen/secure_payment_confirmation_ui_medium_padding"

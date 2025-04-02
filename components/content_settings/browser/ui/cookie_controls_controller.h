@@ -258,9 +258,6 @@ class CookieControlsController final
 
   bool waiting_for_page_load_finish_ = false;
 
-  bool is_subresource_blocked_ = false;
-  bool is_subresource_proxied_ = false;
-
   base::ObserverList<CookieControlsObserver> observers_;
 
   base::WeakPtrFactory<CookieControlsController> weak_ptr_factory_{this};

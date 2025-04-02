@@ -10,6 +10,7 @@ import android.os.Handler;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -41,18 +42,24 @@ public class JniPaymentApp extends PaymentApp {
 
     private @Nullable AbortCallback mAbortCallback;
     private @Nullable InstrumentDetailsCallback mInvokeCallback;
+    private @Nullable final Bitmap mIssuerIcon;
+    private @Nullable final Bitmap mNetworkIcon;
 
     @CalledByNative
     private JniPaymentApp(
             String id,
             String label,
             String sublabel,
-            Bitmap icon,
+            @JniType("const SkBitmap*") @Nullable final Bitmap icon,
             @PaymentAppType int paymentAppType,
-            long nativeObject) {
+            long nativeObject,
+            @JniType("const SkBitmap*") @Nullable final Bitmap issuerIcon,
+            @JniType("const SkBitmap*") @Nullable final Bitmap networkIcon) {
         super(id, label, sublabel, new BitmapDrawable(icon));
         mPaymentAppType = paymentAppType;
         mNativeObject = nativeObject;
+        mIssuerIcon = issuerIcon;
+        mNetworkIcon = networkIcon;
     }
 
     @CalledByNative
@@ -253,6 +260,16 @@ public class JniPaymentApp extends PaymentApp {
                 JniPaymentAppJni.get()
                         .setAppSpecificResponseFields(mNativeObject, response.serialize());
         return PaymentResponse.deserialize(ByteBuffer.wrap(byteResult));
+    }
+
+    @Override
+    public @Nullable Bitmap getIssuerIcon() {
+        return mIssuerIcon;
+    }
+
+    @Override
+    public @Nullable Bitmap getNetworkIcon() {
+        return mNetworkIcon;
     }
 
     @NativeMethods

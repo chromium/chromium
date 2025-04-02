@@ -70,7 +70,6 @@
 <translation id="1122714970786750095">Elektronika va elektrika</translation>
 <translation id="1123753900084781868">Jonli izoh hozirda mavjud emas</translation>
 <translation id="1125453215844207206">Yorliqsiz tasvir. Matn Google AI yordamida chiqarilmoqda</translation>
-<translation id="1125573121925420732">Saytlar xavfsizlik sozlamalarini yangilayotganda ogohlantirishlar umumiy bo‘lishi mumkin. Bu tezda yashilanadi.</translation>
 <translation id="112840717907525620">Siyosat keshida xatoliklar yo‘q</translation>
 <translation id="1131264053432022307">Nusxalangan rasm</translation>
 <translation id="1138458427267715730">Internetdagi istalgan saytda narx tushganda bildirishnoma oling</translation>
@@ -297,7 +296,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1492194039220927094">Push-xabar orqali yuboriladigan siyosatlar:</translation>
 <translation id="1495677929897281669">Varaqqa qaytish</translation>
 <translation id="1500286806237135498">Kameralar (<ph name="CAMERAS_COUNT" />)</translation>
-<translation id="1501859676467574491">Google hisobingizdagi kartalarni ochish</translation>
 <translation id="1504042622576912555">Gofr</translation>
 <translation id="1507202001669085618">&lt;p&gt;Wi-Fi portaldan foydalanayotganingizda onlayn bo‘lishingiz uchun sizdan kirishni so‘raganda shunday xatolik ko‘rsatiladi.&lt;/p&gt;
     &lt;p&gt;Muammoni hal qilish uchun ochilishi kerak bo‘lgan sahifadagi &lt;strong&gt;Ulanish&lt;/strong&gt; tugmasini bosing.&lt;/p&gt;</translation>
@@ -567,6 +565,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1975584088563498795">Pochta qutisi 10</translation>
 <translation id="1978555033938440688">Mikrodastur versiyasi</translation>
 <translation id="1979156660928743046">Media axborot</translation>
+<translation id="1987486584747170374">Soʻrovlar, eng mos natijalar hamda topilgan sahifalardagi kontent Googlega yuboriladi. Bu maʼlumotlar AI sifatini yaxshilashda xodimlar tomonidan ishlatilmaydi. Tashkilotingiz bu sozlamalarni istalgan vaqt oʻzgartirishi mumkin.</translation>
 <translation id="1988881251331415125">Xatosiz kiritilgan boʻlsa, <ph name="BEGIN_LINK" />Ulanish diagnostikasini<ph name="END_LINK" /> ishga tushiring.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> sayti katta hajmdagi ma’lumotlarni kompyuteringizda doimiy saqlashga ruxsat so‘ramoqda</translation>
@@ -762,6 +761,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2301098101308036335">Foydalanuvchilar qaysi saytlarga kiryapti va qachon.</translation>
 <translation id="230286397113210245">Inkognito oyna ochish tugmasi, yangi Inkognito oynani ochish va Internetdan maxfiy foydalanish uchun faollashtiring</translation>
 <translation id="2306124309679506798">Immersiv rejim yoqilsinmi?</translation>
+<translation id="2307711332257985952">Endi Chrome orqali uy va ish manzilidan foydalanish mumkin</translation>
 <translation id="2312234273148520048">Ziravorlar va taom bezatish</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> dam kam Ayrim saytlar keyingi kirishda sekinroq yuklanishi mumkin.</translation>
 <translation id="2316159751672436664">ChromeOS sozlamalari orqali qulaylik vositalarini moslashtirish</translation>
@@ -1177,6 +1177,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3102312643185441063">Jamgʻarma</translation>
 <translation id="3103188521861412364">Qimmatli qogʻozlar va obligatsiyalar</translation>
 <translation id="3103535543639438037">Oʻxshash mahsulotlarni yonma-yon taqqoslash</translation>
+<translation id="3103993932858740905">Vaqt oʻtishi bilan bir martalik virtual karta raqami kiritiladi. Bu raqam faqat mazkur xaridga talluqli.</translation>
 <translation id="3105172416063519923">Obyekt identifikatori:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />DNS sozlamalar himoyasini tekshirish<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Oʻrta tarnov</translation>

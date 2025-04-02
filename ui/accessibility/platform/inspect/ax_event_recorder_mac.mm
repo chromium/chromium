@@ -21,6 +21,7 @@
 #include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_mac.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace ui {
 
@@ -149,8 +150,9 @@ void AXEventRecorderMac::EventReceived(AXUIElementRef element,
   formatter.SetPropertyFilters(property_filters_,
                                AXTreeFormatter::kFiltersDefaultSet);
 
+  gfx::NativeViewAccessible element_accessible((__bridge id)element);
   std::string element_str =
-      formatter.FormatTree(formatter.BuildNode((__bridge id)element));
+      formatter.FormatTree(formatter.BuildNode(element_accessible));
 
   // Element dumps contain a new line character at the end, remove it.
   if (!element_str.empty() && element_str.back() == '\n') {

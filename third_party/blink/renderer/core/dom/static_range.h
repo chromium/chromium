@@ -67,6 +67,7 @@ class CORE_EXPORT StaticRange final : public AbstractRange {
 };
 
 using StaticRangeVector = HeapVector<Member<StaticRange>>;
+using GCedStaticRangeVector = GCedHeapVector<Member<StaticRange>>;
 
 template <>
 struct DowncastTraits<StaticRange> {

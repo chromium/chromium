@@ -70,7 +70,6 @@
 <translation id="1122714970786750095">電子與電機產品</translation>
 <translation id="1123753900084781868">目前無法使用即時字幕功能</translation>
 <translation id="1125453215844207206">圖片沒有標籤。系統正在運用 Google AI 技術擷取文字</translation>
-<translation id="1125573121925420732">網站更新安全性設定期間，可能會經常顯示警告。這項行為將於近期內改善。</translation>
 <translation id="112840717907525620">政策快取正確</translation>
 <translation id="1131264053432022307">你複製的圖片</translation>
 <translation id="1138458427267715730">如果產品在任何網站上降價，透過快訊取得通知</translation>
@@ -296,7 +295,6 @@
 <translation id="1492194039220927094">政策通知推送：</translation>
 <translation id="1495677929897281669">返回分頁</translation>
 <translation id="1500286806237135498">攝影機 (<ph name="CAMERAS_COUNT" />)</translation>
-<translation id="1501859676467574491">顯示你 Google 帳戶中的卡片</translation>
 <translation id="1504042622576912555">溝紋</translation>
 <translation id="1507202001669085618">&lt;p&gt;如果您使用的 Wi-Fi 入口網站必須先登入才能連上網路，系統就會顯示這則錯誤訊息。&lt;/p&gt;
     &lt;p&gt;如要修正這個錯誤，請在您要嘗試開啟的網頁上按一下 [連線]&lt;strong&gt;&lt;/strong&gt;。&lt;/p&gt;</translation>
@@ -567,6 +565,7 @@
 <translation id="1975584088563498795">出紙槽 10</translation>
 <translation id="1978555033938440688">韌體版本</translation>
 <translation id="1979156660928743046">媒體資訊</translation>
+<translation id="1987486584747170374">你的搜尋字詞、最相符的搜尋結果和網頁內容會傳送給 Google。人工審查員不會將這些資料用於提升 AI 技術。貴機構隨時可以變更這些設定。</translation>
 <translation id="1988881251331415125">如果拼字正確，<ph name="BEGIN_LINK" />請嘗試執行連線診斷<ph name="END_LINK" />。</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> 要求在你的本機電腦上永久儲存大量資料</translation>
@@ -762,6 +761,7 @@
 <translation id="2301098101308036335">造訪過哪些網站和造訪時間。</translation>
 <translation id="230286397113210245">「開啟無痕視窗」按鈕，啟動後即可開啟新的無痕視窗進行私密瀏覽</translation>
 <translation id="2306124309679506798">要享有沉浸式體驗嗎？</translation>
+<translation id="2307711332257985952">你的住家和公司地址已可在 Chrome 中使用</translation>
 <translation id="2312234273148520048">調味品和醬料</translation>
 <translation id="2316087952091171402">低於 <ph name="UPPER_ESTIMATE" />。下次造訪某些網站時，載入速度可能會變慢。</translation>
 <translation id="2316159751672436664">在 Chrome OS 設定中依個人需求調整無障礙工具</translation>
@@ -1177,6 +1177,7 @@
 <translation id="3102312643185441063">存款</translation>
 <translation id="3103188521861412364">股票與債券</translation>
 <translation id="3103535543639438037">並排比較類似產品</translation>
+<translation id="3103993932858740905">分期付款時，系統會填入一次性虛擬卡號。這個號碼僅適用於這筆交易。</translation>
 <translation id="3105172416063519923">資產 ID：</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />檢查安全 DNS 設定<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">中匣</translation>

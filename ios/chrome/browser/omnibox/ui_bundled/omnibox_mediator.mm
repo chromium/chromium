@@ -166,6 +166,16 @@ using base::UserMetricsAction;
   [self.omniboxTextController clearText];
 }
 
+- (void)prepareForScribble {
+  [self.omniboxTextController prepareForScribble];
+}
+
+- (void)cleanupAfterScribble {
+  [self.omniboxTextController cleanupAfterScribble];
+}
+
+#pragma mark Textfield delegate forwaring
+
 - (void)onDidBeginEditing {
   [self.omniboxTextController onDidBeginEditing];
 }

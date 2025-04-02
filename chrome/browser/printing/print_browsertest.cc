@@ -727,6 +727,7 @@ class SitePerProcessPrintBrowserTest : public PrintBrowserTest {
 
   // content::BrowserTestBase
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    PrintBrowserTest::SetUpCommandLine(command_line);
     content::IsolateAllSitesForTesting(command_line);
   }
 };
@@ -861,6 +862,7 @@ class SitePerProcessPrintExtensionBrowserTest
  public:
   // content::BrowserTestBase
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    PrintExtensionBrowserTest::SetUpCommandLine(command_line);
     content::IsolateAllSitesForTesting(command_line);
   }
 };

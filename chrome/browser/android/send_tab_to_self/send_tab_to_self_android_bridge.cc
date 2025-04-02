@@ -10,7 +10,8 @@
 #include "base/android/jni_string.h"
 #include "chrome/browser/android/send_tab_to_self/android_notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/send_tab_to_self/receiving_ui_handler_registry.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -113,8 +114,9 @@ static void JNI_SendTabToSelfAndroidBridge_UpdateActiveWebContents(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   if (!web_contents->GetBrowserContext()->IsOffTheRecord()) {
-    send_tab_to_self::ReceivingUiHandlerRegistry::GetInstance()
-        ->GetAndroidNotificationHandlerForProfile(profile)
+    static_cast<AndroidNotificationHandler*>(
+        SendTabToSelfClientServiceFactory::GetForProfile(profile)
+            ->GetReceivingUiHandler())
         ->UpdateWebContents(web_contents);
   }
 }

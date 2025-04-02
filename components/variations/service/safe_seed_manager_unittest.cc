@@ -53,9 +53,7 @@ class FakeSeedStore : public VariationsSeedStore {
                                 /*entropy_providers=*/nullptr),
                             version_info::Channel::UNKNOWN,
                             /*seed_file_dir=*/base::FilePath(),
-                            /*entropy_providers=*/nullptr) {
-    VariationsSeedStore::RegisterPrefs(local_state->registry());
-  }
+                            /*entropy_providers=*/nullptr) {}
 
   FakeSeedStore(const FakeSeedStore&) = delete;
   FakeSeedStore& operator=(const FakeSeedStore&) = delete;
@@ -143,6 +141,7 @@ class SafeSeedManagerTest : public ::testing::Test {
   SafeSeedManagerTest() {
     metrics::CleanExitBeacon::RegisterPrefs(prefs_.registry());
     SafeSeedManager::RegisterPrefs(prefs_.registry());
+    VariationsSeedStore::RegisterPrefs(prefs_.registry());
   }
   ~SafeSeedManagerTest() override = default;
 

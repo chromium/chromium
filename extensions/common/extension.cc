@@ -244,8 +244,8 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
                            utf8_error);
 }
 
-// TODO(sungguk): Continue removing std::string errors and replacing
-// with std::u16string. See http://crbug.com/71980.
+// TODO(crbug.com/41317803): Continue removing std::string errors and replacing
+// with std::u16string.
 scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
                                            ManifestLocation location,
                                            const base::Value::Dict& value,

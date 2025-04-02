@@ -170,7 +170,7 @@ void AnimationTimeline::getReplaceableAnimations(
     auto inserted = replaceable_animations_map->insert(target, nullptr);
     if (inserted.is_new_entry) {
       inserted.stored_value->value =
-          MakeGarbageCollected<HeapVector<Member<Animation>>>();
+          MakeGarbageCollected<GCedHeapVector<Member<Animation>>>();
     }
     inserted.stored_value->value->push_back(animation);
   }

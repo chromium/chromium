@@ -100,11 +100,7 @@ UrlIdentity CreateIsolatedWebAppIdentityFromUrl(Profile* profile,
 
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForWebApps(profile);
-  if (!provider) {  // fallback to default
-    // WebAppProvider can be null in ChromeOS depending on whether Lacros is
-    // enabled or not.
-    return CreateDefaultUrlIdentityFromUrl(url, options);
-  }
+  DCHECK(provider);
 
   std::optional<webapps::AppId> app_id = GetIsolatedWebAppIdFromUrl(url);
   if (!app_id.has_value()) {  // fallback to default

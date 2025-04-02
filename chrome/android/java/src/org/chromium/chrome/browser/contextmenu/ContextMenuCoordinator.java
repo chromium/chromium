@@ -35,6 +35,7 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUi;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
 import org.chromium.content_public.browser.LoadCommittedDetails;
+import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -81,6 +82,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
     private ContextMenuDialog mDialog;
     private Runnable mOnMenuClosed;
     private ContextMenuNativeDelegate mNativeDelegate;
+    private boolean mIsInterestTarget;
 
     /**
      * Constructor that also sets the content offset.
@@ -133,18 +135,18 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         Activity activity = window.getActivity().get();
 
         final boolean isDragDropEnabled = ContextMenuUtils.isDragDropEnabled(activity);
-        final boolean isInterestTarget = params.getOpenedFromInterestTarget();
+        mIsInterestTarget = params.getOpenedFromInterestTarget();
         final boolean usePopupWindow =
                 isDragDropEnabled
                         || ContextMenuUtils.isMouseOrHighlightPopup(params)
-                        || isInterestTarget;
+                        || mIsInterestTarget;
 
         final View layout =
                 LayoutInflater.from(activity)
                         .inflate(R.layout.context_menu_fullscreen_container, null);
 
         // Calculate the Rect used to display the context menu dialog.
-        Rect rect =
+        Rect contextMenuRect =
                 ContextMenuUtils.getContextMenuAnchorRect(
                         activity,
                         window.getWindow(),
@@ -161,15 +163,23 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         //  1. For larger screens, simply provide a rectangular area around the
         //     tapped screen location, and let the context menu position itself
         //     relative to that.
-        //  2. Expose the available space back to Blink as env() variables.
-        if (isInterestTarget) {
+        if (mIsInterestTarget) {
             var displayMetrics = activity.getResources().getDisplayMetrics();
-            var displayWidth = displayMetrics.widthPixels;
-            var displayHeight = displayMetrics.heightPixels;
+            float displayWidth = (float) displayMetrics.widthPixels;
+            float displayHeight = (float) displayMetrics.heightPixels;
+            float page_scale_factor =
+                    RenderCoordinates.fromWebContents(webContents).getPageScaleFactor();
+            float device_scale_factor =
+                    webContents.getTopLevelNativeWindow().getDisplay().getDipScale();
+            float scale_factor = device_scale_factor * page_scale_factor;
+            float safeAreaWidth;
+            float safeAreaHeight;
             if (displayWidth < displayHeight) {
                 // Portrait - leave the top half of the screen available to the
                 // site.
-                rect = new Rect(0, 0, displayWidth, displayHeight / 2);
+                contextMenuRect = new Rect(0, 0, (int) displayWidth, (int) (displayHeight / 2));
+                safeAreaWidth = displayWidth / scale_factor;
+                safeAreaHeight = ((displayHeight / 2) - mTopContentOffsetPx) / scale_factor;
             } else {
                 // Landscape - leave the left half of the screen available to
                 // the site.
@@ -177,10 +187,18 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                 // width of the screen, the context menu will be simply shown at
                 // the top left. Likely the context menu needs to be made
                 // narrower in this case.
-                rect = new Rect(0, 0, displayWidth / 2, displayHeight);
+                contextMenuRect = new Rect(0, 0, (int) (displayWidth / 2), (int) displayHeight);
+                safeAreaWidth = displayWidth / 2 / scale_factor;
+                safeAreaHeight = (displayHeight - mTopContentOffsetPx) / scale_factor;
             }
             // Remove the darkened "scrim" behind the context menu.
             shouldRemoveScrim = true;
+
+            // Notify Blink of the new still-open "safe area" not covered by the context menu. It is
+            // in DIPs, and is adjusted for page zoom.
+            Rect safeAreaRect =
+                    new Rect(0, 0, Math.round(safeAreaWidth), Math.round(safeAreaHeight));
+            webContents.setContextMenuInsets(safeAreaRect);
         }
 
         int dialogTopMarginPx = ContextMenuDialog.NO_CUSTOM_MARGIN;
@@ -243,9 +261,16 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                         popupMargin,
                         desiredPopupContentWidth,
                         dragDispatchingTargetView,
-                        rect);
+                        contextMenuRect);
         mDialog.setOnShowListener(dialogInterface -> onMenuShown.run());
-        mDialog.setOnDismissListener(dialogInterface -> mOnMenuClosed.run());
+        mDialog.setOnDismissListener(
+                (dialogInterface) -> {
+                    mOnMenuClosed.run();
+                    if (mIsInterestTarget) {
+                        // Remove context menu insets when the menu closes.
+                        webContents.setContextMenuInsets(new Rect());
+                    }
+                });
 
         mWebContents = webContents;
         mHeaderCoordinator =
@@ -468,6 +493,10 @@ public class ContextMenuCoordinator implements ContextMenuUi {
             mChipController.dismissChipIfShowing();
         }
         mDialog.dismiss();
+        if (mIsInterestTarget) {
+            // Remove context menu insets if the menu is dismissed.
+            mWebContents.setContextMenuInsets(new Rect());
+        }
     }
 
     Callback<ChipRenderParams> getChipRenderParamsCallbackForTesting(ChipDelegate chipDelegate) {

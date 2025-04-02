@@ -351,7 +351,7 @@ void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
 
   if (discovered_ats & kZdsr) {
     base::debug::SetCrashKeyString(ax_zdsr_crash_key, "true");
-    most_important_assistive_tech = ui::AssistiveTech::kSupernova;
+    most_important_assistive_tech = ui::AssistiveTech::kZdsr;
   } else {
     base::debug::ClearCrashKeyString(ax_zdsr_crash_key);
   }

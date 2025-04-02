@@ -17,8 +17,9 @@ system_image_name: "system-images;android-36;google_apis;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-36/google_apis/x86_64"
-  # Created in https://ci.chromium.org/ui/b/8720024301491062353
-  version: "82XLuMTOqwjLvBDQguJx0XxSLujjA3AOXCcMiMDjlbIC"
+  # Created in https://ci.chromium.org/ui/b/8719089370664121393
+  # Patched gmscore version 25.07.33 in https://crrev.com/c/6377466
+  version: "VCVQhXDf0qBFQsvGl7irQ1QEBV1Y1ctiZPLWRsTwu4UC"
 }
 avd_name: "android_36_google_apis_x64"
 

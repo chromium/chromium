@@ -133,6 +133,7 @@ source_set("impl") {
       "//chrome/browser/sync",
       "//chrome/browser/sync:factories",
       "//chrome/browser/ui:browser_navigator_params_headers",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/promos:utils",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/page_action:page_action",
@@ -142,6 +143,7 @@ source_set("impl") {
       "//components/prefs",
       "//components/strings:components_strings_grit",
       "//components/sync/service",
+      "//components/tab_collections:public",
       "//components/user_prefs",
       "//components/webauthn/content/browser",
     ]

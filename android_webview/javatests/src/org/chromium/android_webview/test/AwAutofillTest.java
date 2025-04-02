@@ -1150,7 +1150,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                     public WebResourceResponseInfo shouldInterceptRequest(
                             AwWebResourceRequest request) {
                         try {
-                            if (url.equals(request.url)) {
+                            if (url.equals(request.getUrl())) {
                                 // Only intercept the iframe's request.
                                 if (mCallCount == 1) {
                                     final String encoding = "UTF-8";

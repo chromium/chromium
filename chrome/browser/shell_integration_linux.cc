@@ -429,9 +429,11 @@ bool GetNoDisplayFromDesktopFile(const std::string& shortcut_contents) {
 base::FilePath GetChromeExePath() {
   // Try to get the name of the wrapper script that launched Chrome.
   std::unique_ptr<base::Environment> environment(base::Environment::Create());
-  std::string wrapper_script;
-  if (environment->GetVar("CHROME_WRAPPER", &wrapper_script))
-    return base::FilePath(wrapper_script);
+  std::optional<std::string> wrapper_script =
+      environment->GetVar("CHROME_WRAPPER");
+  if (wrapper_script.has_value()) {
+    return base::FilePath(wrapper_script.value());
+  }
 
   // Just return the name of the executable path for Chrome.
   base::FilePath chrome_exe_path;

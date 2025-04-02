@@ -420,6 +420,8 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
       boca_app_browser->window()->GetNativeWindow()));
   EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 1);
+  EXPECT_FALSE(boca_app_browser->ShouldRunUnloadListenerBeforeClosing(
+      boca_app_browser->tab_strip_model()->GetActiveWebContents()));
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
@@ -444,6 +446,8 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
       boca_app_browser->session_id(), /*close_bundle_content=*/false);
   EXPECT_TRUE(boca_app_browser->IsLockedForOnTask());
   EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
+  EXPECT_FALSE(boca_app_browser->ShouldRunUnloadListenerBeforeClosing(
+      boca_app_browser->tab_strip_model()->GetActiveWebContents()));
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,

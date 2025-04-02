@@ -16,6 +16,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -127,16 +128,15 @@ bool ProxyConfigServiceLinux::Delegate::GetProxyFromEnvVarForScheme(
     std::string_view variable,
     ProxyServer::Scheme scheme,
     ProxyChain* result_chain) {
-  std::string env_value;
-  if (!env_var_getter_->GetVar(variable, &env_value))
+  std::optional<std::string> env_value = env_var_getter_->GetVar(variable);
+  if (!env_value.has_value() || env_value->empty()) {
     return false;
+  }
 
-  if (env_value.empty())
-    return false;
-
-  env_value = FixupProxyHostScheme(scheme, std::move(env_value));
+  std::string fixed_host =
+      FixupProxyHostScheme(scheme, std::move(env_value.value()));
   ProxyChain proxy_chain =
-      ProxyUriToProxyChain(env_value, ProxyServer::SCHEME_HTTP);
+      ProxyUriToProxyChain(fixed_host, ProxyServer::SCHEME_HTTP);
   if (proxy_chain.IsValid() &&
       (proxy_chain.is_direct() || proxy_chain.is_single_proxy())) {
     *result_chain = proxy_chain;
@@ -161,14 +161,14 @@ ProxyConfigServiceLinux::Delegate::GetConfigFromEnv() {
   // "auto_proxy". Possibly only the "environment_proxy" firefox
   // extension has ever used this, but it still sounds like a good
   // idea.
-  std::string auto_proxy;
-  if (env_var_getter_->GetVar("auto_proxy", &auto_proxy)) {
-    if (auto_proxy.empty()) {
+  std::optional<std::string> auto_proxy = env_var_getter_->GetVar("auto_proxy");
+  if (auto_proxy.has_value()) {
+    if (auto_proxy->empty()) {
       // Defined and empty => autodetect
       config.set_auto_detect(true);
     } else {
       // specified autoconfig URL
-      config.set_pac_url(GURL(auto_proxy));
+      config.set_pac_url(GURL(auto_proxy.value()));
     }
     return ProxyConfigWithAnnotation(
         config, NetworkTrafficAnnotationTag(traffic_annotation_));
@@ -204,18 +204,18 @@ ProxyConfigServiceLinux::Delegate::GetConfigFromEnv() {
     // For environment variables, we default to version 5, per the gnome
     // documentation: http://library.gnome.org/devel/gnet/stable/gnet-socks.html
     ProxyServer::Scheme scheme = ProxyServer::SCHEME_SOCKS5;
-    std::string env_version;
-    if (env_var_getter_->GetVar("SOCKS_VERSION", &env_version)
-        && env_version == "4")
+    std::optional<std::string> env_version =
+        env_var_getter_->GetVar("SOCKS_VERSION");
+    if (env_version.has_value() && env_version.value() == "4") {
       scheme = ProxyServer::SCHEME_SOCKS4;
+    }
     if (GetProxyFromEnvVarForScheme("SOCKS_SERVER", scheme, &proxy_chain)) {
       config.proxy_rules().type = ProxyConfig::ProxyRules::Type::PROXY_LIST;
       config.proxy_rules().single_proxies.SetSingleProxyChain(proxy_chain);
     }
   }
   // Look for the proxy bypass list.
-  std::string no_proxy;
-  env_var_getter_->GetVar("no_proxy", &no_proxy);
+  std::string no_proxy = env_var_getter_->GetVar("no_proxy").value_or("");
   if (config.proxy_rules().empty()) {
     // Having only "no_proxy" set, presumably to "*", makes it
     // explicit that env vars do specify a configuration: having no
@@ -531,16 +531,18 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
     ScopedAllowBlockingForSettingGetter allow_blocking;
 
     // Derive the location(s) of the kde config dir from the environment.
-    std::string home;
-    if (env_var_getter->GetVar("KDEHOME", &home) && !home.empty()) {
+    std::string home = env_var_getter->GetVar("KDEHOME").value_or("");
+    if (!home.empty()) {
       // $KDEHOME is set. Use it unconditionally.
       kde_config_dirs_.emplace_back(KDEHomeToConfigPath(base::FilePath(home)));
     } else {
       // $KDEHOME is unset. Try to figure out what to use. This seems to be
       // the common case on most distributions.
-      if (!env_var_getter->GetVar(base::env_vars::kHome, &home))
+      home = env_var_getter->GetVar(base::env_vars::kHome).value_or("");
+      if (home.empty()) {
         // User has no $HOME? Give up. Later we'll report the failure.
         return;
+      }
       auto desktop = base::nix::GetDesktopEnvironment(env_var_getter);
       if (desktop == base::nix::DESKTOP_ENVIRONMENT_KDE3) {
         // KDE3 always uses .kde for its configuration.
@@ -584,8 +586,9 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
         kde_config_dirs_.emplace_back(base::FilePath(home).Append(".config"));
 
         // kioslaverc also can be stored in any of XDG_CONFIG_DIRS
-        std::string config_dirs;
-        if (env_var_getter_->GetVar("XDG_CONFIG_DIRS", &config_dirs)) {
+        std::string config_dirs =
+            env_var_getter_->GetVar("XDG_CONFIG_DIRS").value_or("");
+        if (!config_dirs.empty()) {
           auto dirs = base::SplitString(config_dirs, ":", base::KEEP_WHITESPACE,
                                         base::SPLIT_WANT_NONEMPTY);
           for (const auto& dir : dirs) {
@@ -821,23 +824,30 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
   void ResolveIndirect(StringSetting key) {
     auto it = string_table_.find(key);
     if (it != string_table_.end()) {
-      std::string value;
-      if (env_var_getter_->GetVar(it->second.c_str(), &value))
-        it->second = value;
-      else
+      std::optional<std::string> value =
+          env_var_getter_->GetVar(it->second.c_str());
+      if (value.has_value() && !value->empty()) {
+        it->second = value.value();
+      } else {
         string_table_.erase(it);
+      }
     }
   }
 
   void ResolveIndirectList(StringListSetting key) {
     auto it = strings_table_.find(key);
     if (it != strings_table_.end()) {
-      std::string value;
-      if (!it->second.empty() &&
-          env_var_getter_->GetVar(it->second[0].c_str(), &value))
-        AddHostList(key, value);
-      else
+      if (!it->second.empty()) {
+        std::optional<std::string> value =
+            env_var_getter_->GetVar(it->second[0].c_str());
+        if (value.has_value() && !value->empty()) {
+          AddHostList(key, value.value());
+        } else {
+          strings_table_.erase(it);
+        }
+      } else {
         strings_table_.erase(it);
+      }
     }
   }
 

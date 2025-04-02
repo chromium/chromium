@@ -36,6 +36,7 @@
 #include "base/values.h"
 #include "components/cbor/writer.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
+#include "content/browser/interest_group/data_decoder_manager.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
@@ -294,9 +295,9 @@ class TrustedSignalsFetcherTest : public testing::Test {
     TrustedSignalsFetcher::SignalsFetchResult out;
     TrustedSignalsFetcher trusted_signals_fetcher;
     trusted_signals_fetcher.FetchBiddingSignals(
-        url_loader_factory_.get(), FrameTreeNodeId(), kAuctionDevtoolsIds,
-        kDefaultMainFrameOrigin, ip_address_space_, network_partition_nonce_,
-        GetScriptOrigin(), url,
+        data_decoder_manager_, url_loader_factory_.get(), FrameTreeNodeId(),
+        kAuctionDevtoolsIds, kDefaultMainFrameOrigin, ip_address_space_,
+        network_partition_nonce_, GetScriptOrigin(), url,
         BiddingAndAuctionServerKey{
             std::string(reinterpret_cast<const char*>(kTestPublicKey),
                         sizeof(kTestPublicKey)),
@@ -307,6 +308,11 @@ class TrustedSignalsFetcherTest : public testing::Test {
               out = std::move(result);
               run_loop.Quit();
             }));
+    // Check that the correct DataDecoder is constructed on fetch start, to
+    // prewarm the data decoder process.
+    EXPECT_EQ(data_decoder_manager_.GetHandleCountForTesting(
+                  kDefaultMainFrameOrigin, GetScriptOrigin()),
+              1u);
     run_loop.Run();
 
     base::AutoLock auto_lock(lock_);
@@ -329,9 +335,9 @@ class TrustedSignalsFetcherTest : public testing::Test {
     TrustedSignalsFetcher::SignalsFetchResult out;
     TrustedSignalsFetcher trusted_signals_fetcher;
     trusted_signals_fetcher.FetchScoringSignals(
-        url_loader_factory_.get(), FrameTreeNodeId(), kAuctionDevtoolsIds,
-        kDefaultMainFrameOrigin, ip_address_space_, network_partition_nonce_,
-        GetScriptOrigin(), url,
+        data_decoder_manager_, url_loader_factory_.get(), FrameTreeNodeId(),
+        kAuctionDevtoolsIds, kDefaultMainFrameOrigin, ip_address_space_,
+        network_partition_nonce_, GetScriptOrigin(), url,
         BiddingAndAuctionServerKey{
             std::string(reinterpret_cast<const char*>(kTestPublicKey),
                         sizeof(kTestPublicKey)),
@@ -342,6 +348,11 @@ class TrustedSignalsFetcherTest : public testing::Test {
               out = std::move(result);
               run_loop.Quit();
             }));
+    // Check that the correct DataDecoder is constructed on fetch start, to
+    // prewarm the data decoder process.
+    EXPECT_EQ(data_decoder_manager_.GetHandleCountForTesting(
+                  kDefaultMainFrameOrigin, GetScriptOrigin()),
+              1u);
     run_loop.Run();
 
     base::AutoLock auto_lock(lock_);
@@ -606,6 +617,8 @@ class TrustedSignalsFetcherTest : public testing::Test {
   // Default values used by CreateBasicScoringSignalsRequest().
   const GURL kDefaultRenderUrl{"https://render_url.test/foo"};
   const std::set<GURL> kDefaultAdComponentRenderUrls;
+
+  DataDecoderManager data_decoder_manager_;
 
   // Values returned for requests to the test server for
   // `kTrustedBiddingSignalsPath`.
@@ -2545,9 +2558,10 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsIsolationInfo) {
   network::TestURLLoaderFactory url_loader_factory;
   TrustedSignalsFetcher trusted_signals_fetcher;
   trusted_signals_fetcher.FetchBiddingSignals(
-      &url_loader_factory, FrameTreeNodeId(), kAuctionDevtoolsIds,
-      kDefaultMainFrameOrigin, network::mojom::IPAddressSpace::kLocal,
-      network_partition_nonce_, GetScriptOrigin(), TrustedBiddingSignalsUrl(),
+      data_decoder_manager_, &url_loader_factory, FrameTreeNodeId(),
+      kAuctionDevtoolsIds, kDefaultMainFrameOrigin,
+      network::mojom::IPAddressSpace::kLocal, network_partition_nonce_,
+      GetScriptOrigin(), TrustedBiddingSignalsUrl(),
       BiddingAndAuctionServerKey{
           std::string(reinterpret_cast<const char*>(kTestPublicKey),
                       sizeof(kTestPublicKey)),
@@ -2582,9 +2596,10 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsIsolationInfo) {
   network::TestURLLoaderFactory url_loader_factory;
   TrustedSignalsFetcher trusted_signals_fetcher;
   trusted_signals_fetcher.FetchScoringSignals(
-      &url_loader_factory, FrameTreeNodeId(), kAuctionDevtoolsIds,
-      kDefaultMainFrameOrigin, network::mojom::IPAddressSpace::kLocal,
-      network_partition_nonce_, GetScriptOrigin(), TrustedScoringSignalsUrl(),
+      data_decoder_manager_, &url_loader_factory, FrameTreeNodeId(),
+      kAuctionDevtoolsIds, kDefaultMainFrameOrigin,
+      network::mojom::IPAddressSpace::kLocal, network_partition_nonce_,
+      GetScriptOrigin(), TrustedScoringSignalsUrl(),
       BiddingAndAuctionServerKey{
           std::string(reinterpret_cast<const char*>(kTestPublicKey),
                       sizeof(kTestPublicKey)),
@@ -2619,6 +2634,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsIsolationInfo) {
 TEST(TrustedSignalsFetcherTimeoutTest, BiddingSignalsTimeout) {
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   // URLLoaderFactory that's never configured to return any results, so requests
   // to it hang.
   network::TestURLLoaderFactory url_loader_factory;
@@ -2639,10 +2655,12 @@ TEST(TrustedSignalsFetcherTimeoutTest, BiddingSignalsTimeout) {
 
   // Start a request that should complete with a timeout error.
   base::RunLoop run_loop;
+  DataDecoderManager data_decoder_manager;
   TrustedSignalsFetcher::SignalsFetchResult out;
   TrustedSignalsFetcher trusted_signals_fetcher;
   trusted_signals_fetcher.FetchBiddingSignals(
-      &url_loader_factory, FrameTreeNodeId(), {"auction_devtools_id"},
+      data_decoder_manager, &url_loader_factory, FrameTreeNodeId(),
+      {"auction_devtools_id"},
       /*main_frame_origin=*/kSignalsOrigin,
       network::mojom::IPAddressSpace::kLocal,
       /*network_partition_nonce=*/base::UnguessableToken::Create(),

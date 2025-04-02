@@ -50,12 +50,13 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -78,16 +79,18 @@ import java.util.concurrent.TimeUnit;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class NavigateTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String HTTPS_SCHEME = "https://";
 
     private OmniboxTestUtils mOmnibox;
     private EmbeddedTestServer mTestServer;
+    private RegularNewTabPageStation mStartingNtp;
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
+        mStartingNtp = mActivityTestRule.startOnNtp();
         mTestServer =
                 EmbeddedTestServer.createAndStartHTTPSServer(
                         ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
@@ -676,7 +679,7 @@ public class NavigateTest {
                             checkAction);
 
             // Navigate to the spoofable URL
-            mActivityTestRule.loadUrl(
+            mStartingNtp.loadWebPageProgrammatically(
                     UrlUtils.encodeHtmlDataUri(
                             "<head>  <meta name=\"viewport\"     "
                                 + " content=\"initial-scale=0.5,maximum-scale=0.5,user-scalable=no\"></head><script>"

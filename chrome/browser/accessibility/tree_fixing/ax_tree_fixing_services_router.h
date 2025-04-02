@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <queue>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -41,7 +42,6 @@ class WebContents;
 
 namespace ui {
 struct AXTreeUpdate;
-struct AXUpdatesAndEvents;
 }  // namespace ui
 
 namespace tree_fixing {
@@ -61,18 +61,21 @@ class AXTreeFixingServicesRouter
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 {
  public:
-  class WebContentsObserver : public content::WebContentsObserver {
+  class AXTreeFixingWebContentsObserver : public content::WebContentsObserver {
    public:
-    explicit WebContentsObserver(content::WebContents& web_contents);
-    WebContentsObserver(WebContentsObserver&&) = delete;
-    WebContentsObserver(const WebContentsObserver&) = delete;
-    WebContentsObserver& operator=(WebContentsObserver&&) = delete;
-    WebContentsObserver& operator=(const WebContentsObserver&) = delete;
-    ~WebContentsObserver() override;
+    explicit AXTreeFixingWebContentsObserver(
+        content::WebContents& web_contents);
+    AXTreeFixingWebContentsObserver(AXTreeFixingWebContentsObserver&&) = delete;
+    AXTreeFixingWebContentsObserver(const AXTreeFixingWebContentsObserver&) =
+        delete;
+    AXTreeFixingWebContentsObserver& operator=(
+        AXTreeFixingWebContentsObserver&&) = delete;
+    AXTreeFixingWebContentsObserver& operator=(
+        const AXTreeFixingWebContentsObserver&) = delete;
+    ~AXTreeFixingWebContentsObserver() override;
 
     // content::WebContentsObserver:
-    void AccessibilityEventReceived(
-        const ui::AXUpdatesAndEvents& details) override;
+    void DidStopLoading() override;
   };
 
   explicit AXTreeFixingServicesRouter(Profile* profile);
@@ -103,15 +106,22 @@ class AXTreeFixingServicesRouter
                             int request_id) override;
   void OnServiceStateChanged(bool service_ready) override;
 
+  void MakeMainNodeRequestToScreenAI(const ui::AXTreeUpdate& ax_tree,
+                                     MainNodeIdentificationCallback callback);
+
   // ScreenAI related objects: service instance, and a list of callbacks/ids.
   std::unique_ptr<AXTreeFixingScreenAIService> screen_ai_service_;
   std::list<std::pair<int, MainNodeIdentificationCallback>> pending_callbacks_;
   int next_request_id_ = 0;
   bool can_make_main_node_identification_requests_ = false;
+  using QueuedRequest =
+      std::tuple<ui::AXTreeUpdate, MainNodeIdentificationCallback>;
+  std::queue<QueuedRequest> request_queue_;
 
   void ToggleEnabledState();
 
-  std::vector<std::unique_ptr<WebContentsObserver>> web_contents_observers_;
+  std::vector<std::unique_ptr<AXTreeFixingWebContentsObserver>>
+      web_contents_observers_;
   const raw_ptr<Profile> profile_;
   PrefChangeRegistrar pref_change_registrar_;
 

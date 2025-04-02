@@ -11,9 +11,11 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -53,6 +55,26 @@
 
 namespace web_app {
 
+IsolatedWebAppApplyUpdateCommandSuccess::
+    IsolatedWebAppApplyUpdateCommandSuccess(
+        const base::Version& updated_version,
+        const IsolatedWebAppStorageLocation& updated_location)
+    : updated_version_(updated_version), updated_location_(updated_location) {}
+
+IsolatedWebAppApplyUpdateCommandSuccess::
+    IsolatedWebAppApplyUpdateCommandSuccess(
+        const IsolatedWebAppApplyUpdateCommandSuccess& other) = default;
+
+IsolatedWebAppApplyUpdateCommandSuccess&
+IsolatedWebAppApplyUpdateCommandSuccess::operator=(
+    IsolatedWebAppApplyUpdateCommandSuccess&& other) = default;
+
+IsolatedWebAppApplyUpdateCommandSuccess::
+    ~IsolatedWebAppApplyUpdateCommandSuccess() = default;
+
+bool IsolatedWebAppApplyUpdateCommandSuccess::operator==(
+    const IsolatedWebAppApplyUpdateCommandSuccess& other) const = default;
+
 std::ostream& operator<<(std::ostream& os,
                          const IsolatedWebAppApplyUpdateCommandError& error) {
   return os << "IsolatedWebAppApplyUpdateCommandError { "
@@ -65,12 +87,13 @@ IsolatedWebAppApplyUpdateCommand::IsolatedWebAppApplyUpdateCommand(
     std::unique_ptr<content::WebContents> web_contents,
     std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-    base::OnceCallback<void(
-        base::expected<void, IsolatedWebAppApplyUpdateCommandError>)> callback,
+    base::OnceCallback<
+        void(base::expected<IsolatedWebAppApplyUpdateCommandSuccess,
+                            IsolatedWebAppApplyUpdateCommandError>)> callback,
     std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper)
-    : WebAppCommand<
-          AppLock,
-          base::expected<void, IsolatedWebAppApplyUpdateCommandError>>(
+    : WebAppCommand<AppLock,
+                    base::expected<IsolatedWebAppApplyUpdateCommandSuccess,
+                                   IsolatedWebAppApplyUpdateCommandError>>(
           "IsolatedWebAppApplyUpdateCommand",
           AppLockDescription(url_info.app_id()),
           std::move(callback), /*args_for_shutdown=*/
@@ -274,8 +297,14 @@ void IsolatedWebAppApplyUpdateCommand::CleanupOnFailure(
 }
 
 void IsolatedWebAppApplyUpdateCommand::ReportSuccess() {
+  const WebApp& updated_iwa =
+      CHECK_DEREF(lock_->registrar().GetAppById(url_info_.app_id()));
+
   GetMutableDebugValue().Set("result", "success");
-  CompleteAndSelfDestruct(CommandResult::kSuccess, base::ok());
+  CompleteAndSelfDestruct(CommandResult::kSuccess,
+                          IsolatedWebAppApplyUpdateCommandSuccess(
+                              updated_iwa.isolation_data()->version(),
+                              updated_iwa.isolation_data()->location()));
 }
 
 Profile& IsolatedWebAppApplyUpdateCommand::profile() {

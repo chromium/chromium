@@ -75,6 +75,9 @@ class FromGWSAbandonedPageLoadMetricsObserver
   base::TimeTicks second_redirect_response_start_time_;
 
   std::optional<std::set<NavigationMilestone>> last_logged_ukm_milestones_;
+
+  // The value of `category=` URL parameter in the initial navigated url.
+  std::optional<uint32_t> category_parameter_id_;
 };
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_GOOGLE_BROWSER_FROM_GWS_ABANDONED_PAGE_LOAD_METRICS_OBSERVER_H_

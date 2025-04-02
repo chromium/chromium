@@ -44,6 +44,7 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -719,6 +720,87 @@ TEST_F(OmniboxEditModelPopupTest, SetSelectedLine) {
   EXPECT_TRUE(model()->IsPopupSelectionOnInitialLine());
   model()->SetPopupSelection(Selection(0), false, false);
   EXPECT_TRUE(model()->IsPopupSelectionOnInitialLine());
+}
+
+TEST_F(OmniboxEditModelPopupTest,
+       GetPopupAccessibilityLabelForCurrentSelection_KeywordMode) {
+  // Populate the TemplateURLService with starter pack entries.
+  std::vector<std::unique_ptr<TemplateURLData>> turls =
+      TemplateURLStarterPackData::GetStarterPackEngines();
+  for (auto& starter_turl : turls) {
+    controller()->client()->GetTemplateURLService()->Add(
+        std::make_unique<TemplateURL>(std::move(*starter_turl)));
+  }
+
+  // Populate the TemplateURLService with site search entries.
+  TemplateURLData featured_data;
+  featured_data.SetShortName(u"SiteSearch");
+  featured_data.SetKeyword(u"@sitesearch");
+  featured_data.SetURL("https://sitesearch.com");
+  TemplateURL* turl = controller()->client()->GetTemplateURLService()->Add(
+      std::make_unique<TemplateURL>(featured_data));
+  ASSERT_TRUE(turl);
+
+  TemplateURLData nonfeatured_data;
+  nonfeatured_data.SetShortName(u"SiteSearch");
+  nonfeatured_data.SetKeyword(u"sitesearch");
+  nonfeatured_data.SetURL("https://sitesearch.com");
+  TemplateURL* nonfeatured_turl =
+      controller()->client()->GetTemplateURLService()->Add(
+          std::make_unique<TemplateURL>(nonfeatured_data));
+  ASSERT_TRUE(nonfeatured_turl);
+
+  // Create matches
+  AutocompleteMatch gemini_match(nullptr, 0, false,
+                                 AutocompleteMatchType::STARTER_PACK);
+  gemini_match.keyword = u"@gemini";
+  gemini_match.associated_keyword =
+      std::make_unique<AutocompleteMatch>(gemini_match);
+
+  AutocompleteMatch sitesearch_featured_match(
+      nullptr, 0, false, AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH);
+  sitesearch_featured_match.keyword = u"@sitesearch";
+  sitesearch_featured_match.associated_keyword =
+      std::make_unique<AutocompleteMatch>(sitesearch_featured_match);
+
+  AutocompleteMatch sitesearch_other_engine(
+      nullptr, 0, false, AutocompleteMatchType::SEARCH_OTHER_ENGINE);
+  sitesearch_other_engine.keyword = u"sitesearch";
+  AutocompleteMatch sitesearch_nonfeatured_match(
+      nullptr, 0, false, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
+  sitesearch_nonfeatured_match.keyword = u"google.com";
+  sitesearch_nonfeatured_match.associated_keyword =
+      std::make_unique<AutocompleteMatch>(sitesearch_other_engine);
+
+  // Create a result with matches.
+  ACMatches matches;
+  matches.push_back(gemini_match);
+  matches.push_back(sitesearch_featured_match);
+  matches.push_back(sitesearch_nonfeatured_match);
+  AutocompleteResult* result =
+      &controller()->autocomplete_controller()->published_result_;
+  result->AppendMatches(matches);
+
+  // Test cases.
+  struct {
+    int line;
+    std::u16string input_text;
+    std::u16string expected_label;
+  } test_cases[] = {
+      {0, u"@gemini", u"@gemini, Ask Gemini"},
+      {1, u"@sitesearch", u"@sitesearch, Search SiteSearch"},
+      {2, u"sitesearch", u"Search SiteSearch"},
+  };
+
+  int label_prefix_length = 0;
+  for (const auto& test_case : test_cases) {
+    model()->SetPopupSelection(OmniboxPopupSelection(
+        test_case.line, OmniboxPopupSelection::KEYWORD_MODE));
+    std::u16string label =
+        model()->GetPopupAccessibilityLabelForCurrentSelection(
+            test_case.input_text, true, &label_prefix_length);
+    EXPECT_EQ(test_case.expected_label, label);
+  }
 }
 
 TEST_F(OmniboxEditModelPopupTest, SetSelectedLineWithNoDefaultMatches) {

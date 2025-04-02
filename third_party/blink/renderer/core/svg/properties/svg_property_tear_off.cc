@@ -90,10 +90,4 @@ void SVGPropertyTearOffBase::CommitChange(SVGPropertyCommitReason reason) {
           : SVGAnimatedPropertyBase::BaseValueChangeType::kUpdated);
 }
 
-void SVGPropertyTearOffBase::EnsureAnimValUpdated() {
-  DCHECK(IsImmutable());
-  DCHECK(binding_);
-  binding_->EnsureAnimValUpdated();
-}
-
 }  // namespace blink

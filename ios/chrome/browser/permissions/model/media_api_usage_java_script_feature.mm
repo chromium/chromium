@@ -48,12 +48,18 @@ MediaAPIUsageJavaScriptFeature* MediaAPIUsageJavaScriptFeature::GetInstance() {
 // static
 bool MediaAPIUsageJavaScriptFeature::ShouldOverrideAPI() {
   // Install JS overrides if access is `...Undetermined` or `...Denied`.
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
   if (@available(iOS 17.0, *)) {
     return [AVAudioApplication sharedInstance].recordPermission !=
            AVAudioApplicationRecordPermissionGranted;
+  } else {
+    return [AVAudioSession sharedInstance].recordPermission !=
+           AVAudioSessionRecordPermissionGranted;
   }
-  return [AVAudioSession sharedInstance].recordPermission !=
-         AVAudioSessionRecordPermissionGranted;
+#else
+  return [AVAudioApplication sharedInstance].recordPermission !=
+         AVAudioApplicationRecordPermissionGranted;
+#endif
 }
 
 MediaAPIUsageJavaScriptFeature::MediaAPIUsageJavaScriptFeature()
@@ -96,7 +102,9 @@ void MediaAPIUsageJavaScriptFeature::ScriptMessageReceived(
         metric_name = kMediaAPIAccessedHistogramUndetermined;
         break;
     }
-  } else {
+  }
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+  else {
     switch ([AVAudioSession sharedInstance].recordPermission) {
       case AVAudioSessionRecordPermissionDenied:
         metric_name = kMediaAPIAccessedHistogramDenied;
@@ -109,6 +117,7 @@ void MediaAPIUsageJavaScriptFeature::ScriptMessageReceived(
         break;
     }
   }
+#endif
 
   if (!audio || !video) {
     base::UmaHistogramEnumeration(metric_name, MediaAPIParams::kUnknown);

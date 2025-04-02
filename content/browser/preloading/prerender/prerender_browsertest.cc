@@ -90,6 +90,7 @@
 #include "content/public/test/mojo_capability_control_test_util.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "content/public/test/prefetch_test_util.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
@@ -853,9 +854,128 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     return content_preloading_predictor::kSpeculationRules;
   }
 
+  void ResetPointerPosition() {
+#if !BUILDFLAG(IS_ANDROID)
+    InputEventAckWaiter waiter(
+        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+        blink::WebInputEvent::Type::kMouseMove);
+    SimulateMouseEvent(web_contents(), blink::WebMouseEvent::Type::kMouseMove,
+                       blink::WebMouseEvent::Button::kNoButton,
+                       gfx::Point(0, 0));
+    waiter.Wait();
+#else
+    // TODO(crbug.com/40269669): Simulate |WebGestureEvent| to make this
+    // function work for Android.
+#endif  // !BUILDFLAG(IS_ANDROID)
+  }
+
+  void PointerHoverToAnchor(const GURL& url) {
+    ResetPointerPosition();
+
+#if !BUILDFLAG(IS_ANDROID)
+    const auto point = CalculateCenterPointOfAnchorElement(url);
+    InputEventAckWaiter waiter(
+        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+        blink::WebInputEvent::Type::kMouseMove);
+    SimulateMouseEvent(web_contents(), blink::WebMouseEvent::Type::kMouseMove,
+                       blink::WebMouseEvent::Button::kNoButton, point);
+    waiter.Wait();
+#else
+    // TODO(crbug.com/40269669): Simulate |WebGestureEvent| to make this
+    // function work for Android.
+#endif  // !BUILDFLAG(IS_ANDROID)
+  }
+
+  void PointerDownToAnchor(const GURL& url) {
+    ResetPointerPosition();
+
+#if !BUILDFLAG(IS_ANDROID)
+    const auto point = CalculateCenterPointOfAnchorElement(url);
+    InputEventAckWaiter waiter(
+        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+        blink::WebInputEvent::Type::kMouseDown);
+    SimulateMouseEventForClick(blink::WebMouseEvent::Type::kMouseDown,
+                               blink::WebMouseEvent::Button::kLeft, point);
+    waiter.Wait();
+#else
+    // TODO(crbug.com/40269669): Simulate |WebGestureEvent| to make this
+    // function work for Android.
+#endif  // !BUILDFLAG(IS_ANDROID)
+  }
+
+  void PointerUpToAnchor(const GURL& url) {
+#if !BUILDFLAG(IS_ANDROID)
+    const auto point = CalculateCenterPointOfAnchorElement(url);
+    InputEventAckWaiter waiter(
+        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+        blink::WebInputEvent::Type::kMouseUp);
+    SimulateMouseEventForClick(blink::WebMouseEvent::Type::kMouseUp,
+                               blink::WebMouseEvent::Button::kLeft, point);
+    waiter.Wait();
+#else
+    // TODO(crbug.com/40269669): Simulate |WebGestureEvent| to make this
+    // function work for Android.
+#endif  // !BUILDFLAG(IS_ANDROID)
+  }
+
+  void InsertAnchor(const GURL url) {
+    const std::string script = R"(
+      const anchor = document.createElement('a');
+      anchor.href = $1;
+      anchor.text = $1;
+      document.body.appendChild(anchor);
+    )";
+    ASSERT_TRUE(ExecJs(web_contents(), JsReplace(script, url.spec())));
+  }
+
+  void ClickAnchor(const GURL url) {
+    PointerDownToAnchor(url);
+    PointerUpToAnchor(url);
+  }
+
  private:
   void DidStartNavigation(NavigationHandle* handle) override {
     navigation_ids_.push_back(handle->GetNavigationId());
+  }
+
+  void SimulateMouseEventForClick(blink::WebInputEvent::Type type,
+                                  blink::WebMouseEvent::Button button,
+                                  const gfx::Point& point) {
+    auto* web_contents_impl = static_cast<WebContentsImpl*>(web_contents());
+    auto* rwhvb = static_cast<RenderWidgetHostViewBase*>(
+        web_contents()->GetRenderWidgetHostView());
+    blink::WebMouseEvent mouse_event(type, 0, ui::EventTimeForNow());
+    mouse_event.button = button;
+    mouse_event.SetPositionInWidget(point.x(), point.y());
+    // Mac needs positionInScreen for events to plugins.
+    gfx::Rect offset = web_contents()->GetContainerBounds();
+    mouse_event.SetPositionInScreen(point.x() + offset.x(),
+                                    point.y() + offset.y());
+    mouse_event.click_count = 1;
+
+    web_contents_impl->GetInputEventRouter()->RouteMouseEvent(
+        rwhvb, &mouse_event, ui::LatencyInfo());
+  }
+
+  gfx::Point CalculateCenterPointOfAnchorElement(const GURL& url) {
+    const std::string script_get_x = R"(
+      const anchor = document.querySelector('a[href=$1]');
+      const bounds = anchor.getBoundingClientRect();
+      Math.floor(bounds.left + bounds.width / 2);
+    )";
+
+    const std::string script_get_y = R"(
+      const anchor = document.querySelector('a[href=$1]');
+      const bounds = anchor.getBoundingClientRect();
+      Math.floor(bounds.top + bounds.height / 2);
+    )";
+
+    const float x = EvalJs(web_contents(), JsReplace(script_get_x, url.spec()))
+                        .ExtractDouble();
+    const float y = EvalJs(web_contents(), JsReplace(script_get_y, url.spec()))
+                        .ExtractDouble();
+
+    return gfx::ToFlooredPoint(gfx::PointF(x, y));
   }
 
   base::ScopedMockElapsedTimersForTest scoped_test_timer_;
@@ -10057,6 +10177,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesScript) {
 
 class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
  public:
+  PrerenderEagernessBrowserTest() {
+    // Input suppression during paintholding interferes with the input event
+    // dispatch to top frames.  Disabling the input suppression because the
+    // tests here are not about top frame paintholding.
+    feature_list_.InitWithFeatures(
+        {}, {blink::features::kDropInputEventsWhilePaintHolding});
+  }
+
   void SetUp() override {
 #if !BUILDFLAG(IS_ANDROID)
     PrerenderBrowserTest::SetUp();
@@ -10067,125 +10195,8 @@ class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
-  void InsertAnchor(const GURL url) {
-    const std::string script = R"(
-      const anchor = document.createElement('a');
-      anchor.href = $1;
-      anchor.text = $1;
-      document.body.appendChild(anchor);
-    )";
-    ASSERT_TRUE(ExecJs(web_contents(), JsReplace(script, url.spec())));
-  }
-
-  void ResetPointerPosition() {
-#if !BUILDFLAG(IS_ANDROID)
-    InputEventAckWaiter waiter(
-        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
-        blink::WebInputEvent::Type::kMouseMove);
-    SimulateMouseEvent(web_contents(), blink::WebMouseEvent::Type::kMouseMove,
-                       blink::WebMouseEvent::Button::kNoButton,
-                       gfx::Point(0, 0));
-    waiter.Wait();
-#else
-    // TODO(crbug.com/40269669): Simulate |WebGestureEvent| to make this
-    // function work for Android.
-#endif  // !BUILDFLAG(IS_ANDROID)
-  }
-
-  void PointerHoverToAnchor(const GURL& url) {
-    ResetPointerPosition();
-
-#if !BUILDFLAG(IS_ANDROID)
-    const auto point = CalculateCenterPointOfAnchorElement(url);
-    InputEventAckWaiter waiter(
-        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
-        blink::WebInputEvent::Type::kMouseMove);
-    SimulateMouseEvent(web_contents(), blink::WebMouseEvent::Type::kMouseMove,
-                       blink::WebMouseEvent::Button::kNoButton, point);
-    waiter.Wait();
-#else
-    // TODO(crbug.com/40269669): Simulate |WebGestureEvent| to make this
-    // function work for Android.
-#endif  // !BUILDFLAG(IS_ANDROID)
-  }
-
-  void PointerDownToAnchor(const GURL& url) {
-    ResetPointerPosition();
-
-#if !BUILDFLAG(IS_ANDROID)
-    const auto point = CalculateCenterPointOfAnchorElement(url);
-    InputEventAckWaiter waiter(
-        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
-        blink::WebInputEvent::Type::kMouseDown);
-    SimulateMouseEventForClick(blink::WebMouseEvent::Type::kMouseDown,
-                               blink::WebMouseEvent::Button::kLeft, point);
-    waiter.Wait();
-#else
-    // TODO(crbug.com/40269669): Simulate |WebGestureEvent| to make this
-    // function work for Android.
-#endif  // !BUILDFLAG(IS_ANDROID)
-  }
-
-  void PointerUpToAnchor(const GURL& url) {
-#if !BUILDFLAG(IS_ANDROID)
-    const auto point = CalculateCenterPointOfAnchorElement(url);
-    InputEventAckWaiter waiter(
-        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
-        blink::WebInputEvent::Type::kMouseUp);
-    SimulateMouseEventForClick(blink::WebMouseEvent::Type::kMouseUp,
-                               blink::WebMouseEvent::Button::kLeft, point);
-    waiter.Wait();
-#else
-    // TODO(crbug.com/40269669): Simulate |WebGestureEvent| to make this
-    // function work for Android.
-#endif  // !BUILDFLAG(IS_ANDROID)
-  }
-
-  void ClickAnchor(const GURL url) {
-    PointerDownToAnchor(url);
-    PointerUpToAnchor(url);
-  }
-
  private:
-  void SimulateMouseEventForClick(blink::WebInputEvent::Type type,
-                                  blink::WebMouseEvent::Button button,
-                                  const gfx::Point& point) {
-    auto* web_contents_impl = static_cast<WebContentsImpl*>(web_contents());
-    auto* rwhvb = static_cast<RenderWidgetHostViewBase*>(
-        web_contents()->GetRenderWidgetHostView());
-    blink::WebMouseEvent mouse_event(type, 0, ui::EventTimeForNow());
-    mouse_event.button = button;
-    mouse_event.SetPositionInWidget(point.x(), point.y());
-    // Mac needs positionInScreen for events to plugins.
-    gfx::Rect offset = web_contents()->GetContainerBounds();
-    mouse_event.SetPositionInScreen(point.x() + offset.x(),
-                                    point.y() + offset.y());
-    mouse_event.click_count = 1;
-
-    web_contents_impl->GetInputEventRouter()->RouteMouseEvent(
-        rwhvb, &mouse_event, ui::LatencyInfo());
-  }
-
-  gfx::Point CalculateCenterPointOfAnchorElement(const GURL& url) {
-    const std::string script_get_x = R"(
-      const anchor = document.querySelector('a[href=$1]');
-      const bounds = anchor.getBoundingClientRect();
-      Math.floor(bounds.left + bounds.width / 2);
-    )";
-
-    const std::string script_get_y = R"(
-      const anchor = document.querySelector('a[href=$1]');
-      const bounds = anchor.getBoundingClientRect();
-      Math.floor(bounds.top + bounds.height / 2);
-    )";
-
-    const float x = EvalJs(web_contents(), JsReplace(script_get_x, url.spec()))
-                        .ExtractDouble();
-    const float y = EvalJs(web_contents(), JsReplace(script_get_y, url.spec()))
-                        .ExtractDouble();
-
-    return gfx::ToFlooredPoint(gfx::PointF(x, y));
-  }
+  base::test::ScopedFeatureList feature_list_;
 };
 
 namespace {
@@ -12475,10 +12486,21 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, VerifyPrerenderProcessVisibility) {
             base::Process::Priority::kBestEffort);
 }
 
-class PrerenderPurposePrefetchBrowserTest : public PrerenderBrowserTest {
+class PrerenderRequestHeadersBrowserTest
+    : public PrerenderBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
-  PrerenderPurposePrefetchBrowserTest() = default;
-  ~PrerenderPurposePrefetchBrowserTest() override = default;
+  PrerenderRequestHeadersBrowserTest() {
+    if (IsSpeculationRulesTagsEnabled()) {
+      // Explicitly enables blink::features::kSpeculationRulesTag to enable
+      // SpeculationRulesTag.
+      feature_list_.InitAndEnableFeature(blink::features::kSpeculationRulesTag);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          blink::features::kSpeculationRulesTag);
+    }
+  }
+  ~PrerenderRequestHeadersBrowserTest() override = default;
 
   void SetUp() override {
     ssl_server().RegisterRequestHandler(
@@ -12524,6 +12546,8 @@ class PrerenderPurposePrefetchBrowserTest : public PrerenderBrowserTest {
     return true;
   }
 
+  bool IsSpeculationRulesTagsEnabled() const { return GetParam(); }
+
   bool HasSecSpeculationTagsHeader(const GURL& url) {
     net::test_server::HttpRequest::HeaderMap headers = GetRequestHeaders(url);
     return headers.contains(blink::kSecSpeculationTagsHeaderName);
@@ -12534,12 +12558,22 @@ class PrerenderPurposePrefetchBrowserTest : public PrerenderBrowserTest {
     EXPECT_TRUE(headers.contains(blink::kSecSpeculationTagsHeaderName));
     return headers[blink::kSecSpeculationTagsHeaderName];
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrerenderRequestHeadersBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "TagsEnabled" : "TagsDisabled";
+                         });
 
 // Tests that a request for the initial prerender navigation has the
 // Purpose, Sec-Purpose, and Sec-Speculation-Tags headers.
 // TODO(nhiroki): Move this test to WPT.
-IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest, InitialNavigation) {
+IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest, InitialNavigation) {
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
 
@@ -12549,13 +12583,17 @@ IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest, InitialNavigation) {
 
   // The prerender request should have the headers.
   EXPECT_TRUE(TestPurposePrefetchHeader(kPrerenderingUrl));
-  EXPECT_TRUE(HasSecSpeculationTagsHeader(kPrerenderingUrl));
-  EXPECT_EQ(GetSecSpeculationTagsHeader(kPrerenderingUrl), "null");
+  if (IsSpeculationRulesTagsEnabled()) {
+    EXPECT_TRUE(HasSecSpeculationTagsHeader(kPrerenderingUrl));
+    EXPECT_EQ(GetSecSpeculationTagsHeader(kPrerenderingUrl), "null");
+  } else {
+    EXPECT_FALSE(HasSecSpeculationTagsHeader(kPrerenderingUrl));
+  }
 }
 
 // Tests that a request for the initial prerender navigation has the
 // Purpose and Sec-Purpose headers, but not the Sec-Speculation-Tags header.
-IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
                        InitialNavigation_Embedder) {
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
@@ -12575,7 +12613,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest,
 // Tests that a redirected request for the initial prerender navigation has the
 // Purpose, Sec-Purpose, and Sec-Speculation-Tags headers.
 // TODO(nhiroki): Move this test to WPT.
-IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
                        RedirectionOnInitialNavigation) {
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
@@ -12594,17 +12632,25 @@ IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest,
   // Both the initial request and the redirected request should have the
   // headers.
   EXPECT_TRUE(TestPurposePrefetchHeader(kPrerenderingUrl));
-  EXPECT_TRUE(HasSecSpeculationTagsHeader(kPrerenderingUrl));
-  EXPECT_EQ(GetSecSpeculationTagsHeader(kPrerenderingUrl), "null");
+  if (IsSpeculationRulesTagsEnabled()) {
+    EXPECT_TRUE(HasSecSpeculationTagsHeader(kPrerenderingUrl));
+    EXPECT_EQ(GetSecSpeculationTagsHeader(kPrerenderingUrl), "null");
+  } else {
+    EXPECT_FALSE(HasSecSpeculationTagsHeader(kPrerenderingUrl));
+  }
   EXPECT_TRUE(TestPurposePrefetchHeader(kRedirectedUrl));
-  EXPECT_TRUE(HasSecSpeculationTagsHeader(kRedirectedUrl));
-  EXPECT_EQ(GetSecSpeculationTagsHeader(kRedirectedUrl), "null");
+  if (IsSpeculationRulesTagsEnabled()) {
+    EXPECT_TRUE(HasSecSpeculationTagsHeader(kRedirectedUrl));
+    EXPECT_EQ(GetSecSpeculationTagsHeader(kRedirectedUrl), "null");
+  } else {
+    EXPECT_FALSE(HasSecSpeculationTagsHeader(kRedirectedUrl));
+  }
 }
 
 // Tests that requests from a prerendered page have the Purpose and
 // Sec-Purpose headers, but not the Sec-Speculation-Tags header.
 // TODO(nhiroki): Move this test to WPT.
-IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest, ResourceRequests) {
+IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest, ResourceRequests) {
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
 
@@ -12617,8 +12663,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest, ResourceRequests) {
 
   // The prerender request should have the "Purpose: prefetch" header.
   TestPurposePrefetchHeader(kPrerenderingUrl);
-  EXPECT_TRUE(HasSecSpeculationTagsHeader(kPrerenderingUrl));
-  EXPECT_EQ(GetSecSpeculationTagsHeader(kPrerenderingUrl), "null");
+  if (IsSpeculationRulesTagsEnabled()) {
+    EXPECT_TRUE(HasSecSpeculationTagsHeader(kPrerenderingUrl));
+    EXPECT_EQ(GetSecSpeculationTagsHeader(kPrerenderingUrl), "null");
+  } else {
+    EXPECT_FALSE(HasSecSpeculationTagsHeader(kPrerenderingUrl));
+  }
 
   // Issue iframe and subresource requests in the prerendered page.
   EXPECT_TRUE(ExecJs(prerender_main_frame.get(), "run('before');",
@@ -12683,7 +12733,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest, ResourceRequests) {
 
 // Tests that a request for main frame navigation in a prerendered page has the
 // Purpose and Sec-Purpose headers, but not the Sec-Speculation-Tags header.
-IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
                        MainFrameNavigation) {
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
@@ -12695,8 +12745,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest,
 
   // The prerender request should have the headers.
   EXPECT_TRUE(TestPurposePrefetchHeader(prerender_url));
-  EXPECT_TRUE(HasSecSpeculationTagsHeader(prerender_url));
-  EXPECT_EQ(GetSecSpeculationTagsHeader(prerender_url), "null");
+  if (IsSpeculationRulesTagsEnabled()) {
+    EXPECT_TRUE(HasSecSpeculationTagsHeader(prerender_url));
+    EXPECT_EQ(GetSecSpeculationTagsHeader(prerender_url), "null");
+  } else {
+    EXPECT_FALSE(HasSecSpeculationTagsHeader(prerender_url));
+  }
 
   // Navigate the main frame in the prerendered page.
   const GURL next_url = GetUrl("/empty.html?next");
@@ -12709,6 +12763,101 @@ IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest,
   // the Sec-Speculation-Tags header.
   EXPECT_TRUE(TestPurposePrefetchHeader(next_url));
   EXPECT_FALSE(HasSecSpeculationTagsHeader(next_url));
+}
+
+IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
+                       SpeculationRulesTagsMergingForEagerCandidates) {
+  const GURL initial_url =
+      GetUrl("/prerender/multiple_prerender_with_tags.html");
+  const GURL prerender_url = GetUrl("/prerender/empty.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  WaitForPrerenderLoadCompletion(prerender_url);
+
+  if (IsSpeculationRulesTagsEnabled()) {
+    EXPECT_TRUE(HasSecSpeculationTagsHeader(prerender_url));
+    EXPECT_EQ(GetSecSpeculationTagsHeader(prerender_url), "\"tag1\", \"tag2\"");
+  } else {
+    EXPECT_FALSE(HasSecSpeculationTagsHeader(prerender_url));
+  }
+}
+
+// This prefetch test is tentatively implemented here to reuse the test infra.
+// TODO(crbug.com/381687257): Move this test to prefetch browser tests.
+IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest, Prefetch) {
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
+
+  test::TestPrefetchWatcher test_prefetch_watcher;
+
+  // Start prefetching.
+  const GURL prefetch_url = GetUrl("/empty.html?prefetch");
+  AddPrefetchAsync(prefetch_url);
+
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+      static_cast<RenderFrameHostImpl*>(
+          shell()->web_contents()->GetPrimaryMainFrame())
+          ->GetDocumentToken(),
+      prefetch_url);
+
+  if (IsSpeculationRulesTagsEnabled()) {
+    EXPECT_TRUE(HasSecSpeculationTagsHeader(prefetch_url));
+    EXPECT_EQ(GetSecSpeculationTagsHeader(prefetch_url), "null");
+  } else {
+    EXPECT_FALSE(HasSecSpeculationTagsHeader(prefetch_url));
+  }
+}
+
+// Test that there is no tags merging if both of the candidates are enacted.
+IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
+                       SpeculationRulesTagsMergingForNonEagerCandidates) {
+#if !BUILDFLAG(IS_ANDROID)
+  const GURL initial_url = GetUrl(
+      "/prerender/multiple_prerender_with_tags_and_different_eagerness.html");
+  const GURL prerender_url = GetUrl("/prerender/empty.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  InsertAnchor(prerender_url);
+  PointerDownToAnchor(prerender_url);
+  WaitForPrerenderLoadCompletion(prerender_url);
+
+  if (IsSpeculationRulesTagsEnabled()) {
+    EXPECT_TRUE(HasSecSpeculationTagsHeader(prerender_url));
+    EXPECT_EQ(GetSecSpeculationTagsHeader(prerender_url),
+              "\"conservative\", \"moderate\"");
+  } else {
+    EXPECT_FALSE(HasSecSpeculationTagsHeader(prerender_url));
+  }
+#else
+  // Android doesn't support pointer interaction.
+  GTEST_SKIP();
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+// Test that there is no tags merging if only one of the candidates is enacted.
+IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
+                       SpeculationRulesTagsNoMergingForNonEagerCandidates) {
+#if !BUILDFLAG(IS_ANDROID)
+  const GURL initial_url = GetUrl(
+      "/prerender/multiple_prerender_with_tags_and_different_eagerness.html");
+  const GURL prerender_url = GetUrl("/prerender/empty.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  InsertAnchor(prerender_url);
+  PointerHoverToAnchor(prerender_url);
+  WaitForPrerenderLoadCompletion(prerender_url);
+
+  if (IsSpeculationRulesTagsEnabled()) {
+    EXPECT_TRUE(HasSecSpeculationTagsHeader(prerender_url));
+    EXPECT_EQ(GetSecSpeculationTagsHeader(prerender_url), "\"moderate\"");
+  } else {
+    EXPECT_FALSE(HasSecSpeculationTagsHeader(prerender_url));
+  }
+#else
+  // Android doesn't support pointer interaction.
+  GTEST_SKIP();
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, EnterFullscreen) {
@@ -14112,6 +14261,14 @@ class PrerenderSessionHistoryBrowserTest
     : public PrerenderBrowserTest,
       public testing::WithParamInterface<bool> {
  public:
+  PrerenderSessionHistoryBrowserTest() {
+    // Input suppression during paintholding interferes with the input event
+    // dispatch to top frames.  Disabling the input suppression because the
+    // tests here are not about top frame paintholding.
+    feature_list_.InitWithFeatures(
+        {}, {blink::features::kDropInputEventsWhilePaintHolding});
+  }
+
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
     return info.param ? "FromBrowser" : "FromRenderer";
@@ -14210,6 +14367,9 @@ class PrerenderSessionHistoryBrowserTest
     EXPECT_EQ(attempts[0], expected_entry)
         << test::ActualVsExpectedUkmEntryToString(attempts[0], expected_entry);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

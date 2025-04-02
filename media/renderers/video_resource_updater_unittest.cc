@@ -507,7 +507,6 @@ TEST_F(VideoResourceUpdaterTestWithR16, HighBitFrame) {
   // With multiplanar shared images, a TextureDrawQuad is created instead of
   // a YUVDrawQuad.
   EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
-  EXPECT_EQ(resource.bits_per_channel, 10u);
 
   // Create the resource again, to test the path where the
   // resource are cached.
@@ -515,8 +514,7 @@ TEST_F(VideoResourceUpdaterTestWithR16, HighBitFrame) {
       updater->CreateExternalResourceFromVideoFrame(video_frame);
   // With multiplanar shared images, a TextureDrawQuad is created instead of
   // a YUVDrawQuad.
-  EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
-  EXPECT_EQ(resource2.bits_per_channel, 10u);
+  EXPECT_EQ(VideoFrameResourceType::RGB, resource2.type);
 }
 
 TEST_F(VideoResourceUpdaterTest, NV12FrameSoftwareCompositor) {

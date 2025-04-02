@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
+import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -66,6 +67,14 @@ public class PasswordAccessoryIntegrationTest {
     private EmbeddedTestServer mTestServer;
     private PasswordStoreBridge mPasswordStoreBridge;
     private final ManualFillingTestHelper mHelper = new ManualFillingTestHelper(mActivityTestRule);
+
+    public PasswordAccessoryIntegrationTest() {
+        // This test suite relies on the real password store. However, that can only store
+        // passwords if the device it runs on has the required min GMS Core version.
+        // To ensure the tests don't depend on the device configuration, set up a fake GMS
+        // Core version instead.
+        PasswordManagerTestHelper.setUpPwmRequiredMinGmsVersion();
+    }
 
     @After
     public void tearDown() {

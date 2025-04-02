@@ -67,7 +67,7 @@ public class ShareButtonController extends BaseButtonDataProvider {
                 /* iphCommandBuilder= */ null,
                 AdaptiveToolbarButtonVariant.SHARE,
                 /* tooltipTextResId= */ R.string.adaptive_toolbar_button_preference_share,
-                /* showHoverHighlight= */ true);
+                /* showBackgroundHighlight= */ true);
 
         mShareDelegateSupplier = shareDelegateSupplier;
         mTrackerSupplier = trackerSupplier;
