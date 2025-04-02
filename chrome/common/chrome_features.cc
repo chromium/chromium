@@ -345,9 +345,6 @@ const base::FeatureParam<int> kGlicInitialWidth{&kGlic, "glic-initial-width",
 const base::FeatureParam<int> kGlicInitialHeight{&kGlic, "glic-initial-height",
                                                  48};
 
-const base::FeatureParam<int> kGlicMaxHeightPercentOfScreen{
-    &kGlic, "glic-max-height-percent-of-screen", 60};
-
 const base::FeatureParam<int> kGlicFreInitialWidth{
     &kGlic, "glic-fre-initial-width", 512};
 const base::FeatureParam<int> kGlicFreInitialHeight{

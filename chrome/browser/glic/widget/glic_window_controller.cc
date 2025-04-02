@@ -65,6 +65,7 @@ namespace {
 constexpr static int kAttachmentBuffer = 20;
 constexpr static int kDetachYDistance = 36;
 constexpr static int kInitialPositionBuffer = 4;
+constexpr static int kMaxWidgetSize = 16'384;
 
 constexpr static base::TimeDelta kAnimationDuration = base::Milliseconds(300);
 
@@ -1473,10 +1474,7 @@ gfx::Size GlicWindowController::GetLastRequestedSizeClamped(
     }
   }
 
-  gfx::Size max(
-      min.width(),
-      display_height * features::kGlicMaxHeightPercentOfScreen.Get() / 100);
-
+  gfx::Size max(kMaxWidgetSize, kMaxWidgetSize);
   gfx::Size result = glic_size_ ? *glic_size_ : min;
 
   result.SetToMax(min);
