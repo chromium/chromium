@@ -68,6 +68,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/autofill/ui_bundled/authentication:card_unmask_authentication_coordinator",
     "//ios/chrome/browser/autofill/ui_bundled/authentication:otp_input_dialog",
     "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet",
+    "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet:save_card_bottom_sheet_coordinator",
     "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet:virtual_card_enrollment_bottom_sheet_coordinator",
     "//ios/chrome/browser/autofill/ui_bundled/error_dialog",
     "//ios/chrome/browser/autofill/ui_bundled/form_input_accessory",
