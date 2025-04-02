@@ -17,6 +17,10 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "content/public/test/browser_test.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace {
 
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
@@ -139,6 +143,13 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
 // topic toggle is ON (checked == true).
 IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
                        UnblockOneTopicOnAdTopicsPage) {
+#if BUILDFLAG(IS_MAC)
+  // https://crbug.com/407801060
+  if (base::mac::MacOSMajorVersion() == 15) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia.";
+  }
+#endif
+
   BlockTopic(1);
   RunTestSequence(
       InstrumentTab(kPrivacySandboxTopicsElementId),
@@ -151,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
       ExecuteJsAt(kPrivacySandboxTopicsElementId, firstBlockedItemButton,
                   "(el) => el.click()"),
       CheckResult([this]() { return GetBlockedTopicsSize(); }, 0u,
-                  "Checking that there is 0 blocked topics"),
+                  "Checking that there are 0 blocked topics"),
       NavigateWebContents(kPrivacySandboxTopicsElementId,
                           GURL(chrome::kPrivacySandboxManageTopicsURL)),
       CheckJsResultAt(kPrivacySandboxTopicsElementId, firstToggle,
