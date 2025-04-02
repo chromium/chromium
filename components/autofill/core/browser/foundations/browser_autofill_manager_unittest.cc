@@ -1688,9 +1688,9 @@ TEST_F(BrowserAutofillManagerTest,
   external_delegate()->CheckSuggestions(
       form.fields()[0].global_id(),
       {Suggestion("Charles", std::vector<std::vector<Suggestion::Text>>{},
-                  Suggestion::Icon::kNoIcon, SuggestionType::kAddressEntry),
+                  Suggestion::Icon::kAccount, SuggestionType::kAddressEntry),
        Suggestion("Elvis", std::vector<std::vector<Suggestion::Text>>{},
-                  Suggestion::Icon::kNoIcon, SuggestionType::kAddressEntry),
+                  Suggestion::Icon::kAccount, SuggestionType::kAddressEntry),
        CreateSeparator(), CreateManageAddressesSuggestion()});
 
   // Check that there are no suggestions for the field without the autocomplete
@@ -1851,9 +1851,9 @@ TEST_F(BrowserAutofillManagerTest,
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       firstname_field.global_id(),
-      {Suggestion("Charles", "", Suggestion::Icon::kNoIcon,
+      {Suggestion("Charles", "", Suggestion::Icon::kAccount,
                   SuggestionType::kAddressFieldByFieldFilling),
-       Suggestion("Elvis", "", Suggestion::Icon::kNoIcon,
+       Suggestion("Elvis", "", Suggestion::Icon::kAccount,
                   SuggestionType::kAddressFieldByFieldFilling),
        CreateSeparator(), CreateUndoOrClearFormSuggestion(),
        CreateManageAddressesSuggestion()});
@@ -3048,9 +3048,9 @@ TEST_F(BrowserAutofillManagerTest, GetFieldSuggestionsWithDuplicateValues) {
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       field.global_id(),
-      {Suggestion("Elvis", "", Suggestion::Icon::kNoIcon,
+      {Suggestion("Elvis", "", Suggestion::Icon::kAccount,
                   SuggestionType::kAddressFieldByFieldFilling),
-       Suggestion("Charles", "", Suggestion::Icon::kNoIcon,
+       Suggestion("Charles", "", Suggestion::Icon::kAccount,
                   SuggestionType::kAddressFieldByFieldFilling),
        CreateSeparator(), CreateUndoOrClearFormSuggestion(),
        CreateManageAddressesSuggestion()});
@@ -3139,7 +3139,7 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_FieldSwapping) {
   external_delegate()->CheckSuggestions(
       form.fields()[0].global_id(),
       {Suggestion("John H. Doe", std::vector<std::vector<Suggestion::Text>>{},
-                  Suggestion::Icon::kNoIcon,
+                  Suggestion::Icon::kAccount,
                   SuggestionType::kAddressFieldByFieldFilling),
        CreateSeparator(), CreateUndoOrClearFormSuggestion(),
        CreateManageAddressesSuggestion()});
