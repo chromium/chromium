@@ -11,6 +11,7 @@
 
 #include <utility>
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
@@ -52,6 +53,16 @@ TEST(TypedBufferTest, Basic) {
 
   // Make sure that operator->() syntax works.
   EXPECT_EQ(buffer->data[9], 0x12345678);
+}
+
+// Test creating a const (reference to) buffer. (This is something of a
+// compilation test.)
+TEST(TypedBufferTest, ConstTypedBuffer) {
+  TypedBuffer<Data> buffer(sizeof(int) * 10);
+  ASSERT_THAT(buffer.get(), testing::NotNull());
+  (*buffer).data[0] = 0x12345678;
+  const auto& buffer_reference = buffer;
+  ASSERT_EQ(buffer_reference.get()->data[0], 0x12345678);
 }
 
 // Test passing ownership.

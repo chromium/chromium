@@ -14,8 +14,8 @@
 #include <stdint.h>
 
 #include <algorithm>
-
-#include "base/memory/raw_ptr.h"
+#include <memory>
+#include <type_traits>
 
 namespace remoting {
 
@@ -24,14 +24,15 @@ namespace remoting {
 // length data, so the size may not match sizeof(T). The class supports
 // move-only semantics and typed buffer getters.
 template <typename T>
+  requires std::is_trivially_destructible_v<T>
 class TypedBuffer {
  public:
   TypedBuffer() = default;
 
   // Creates an instance of the object allocating a buffer of the given size.
-  explicit TypedBuffer(uint32_t length) : length_(length) {
+  constexpr explicit TypedBuffer(uint32_t length) : length_(length) {
     if (length_ > 0) {
-      buffer_ = reinterpret_cast<T*>(new uint8_t[length_]);
+      buffer_ = std::make_unique<uint8_t[]>(length);
     }
   }
 
@@ -40,11 +41,7 @@ class TypedBuffer {
   TypedBuffer(const TypedBuffer&) = delete;
   TypedBuffer& operator=(const TypedBuffer&) = delete;
 
-  ~TypedBuffer() {
-    if (buffer_) {
-      delete[] reinterpret_cast<uint8_t*>(buffer_.ExtractAsDangling().get());
-    }
-  }
+  ~TypedBuffer() = default;
 
   TypedBuffer& operator=(TypedBuffer&& rvalue) {
     Swap(rvalue);
@@ -53,20 +50,32 @@ class TypedBuffer {
 
   // Accessors to get the owned buffer.
   // operator* and operator-> will assert() if there is no current buffer.
-  T& operator*() const {
+  T& operator*() {
     assert(buffer_);
-    return *buffer_;
+    return *(reinterpret_cast<T*>(buffer_.get()));
   }
-  T* operator->() const {
+  T* operator->() {
     assert(buffer_);
-    return buffer_;
+    return reinterpret_cast<T*>(buffer_.get());
   }
-  T* get() const { return buffer_; }
+  T* get() { return buffer_ ? reinterpret_cast<T*>(&buffer_[0]) : nullptr; }
+
+  // `const` variants of the above.
+  const T& operator*() const {
+    assert(buffer_);
+    return *(reinterpret_cast<const T*>(buffer_.get()));
+  }
+  const T* operator->() const {
+    assert(buffer_);
+    return reinterpret_cast<const T*>(buffer_.get());
+  }
+  const T* get() const {
+    return buffer_ ? reinterpret_cast<const T*>(&buffer_[0]) : nullptr;
+  }
 
   uint32_t length() const { return length_; }
 
-  // Allow TypedBuffer<T> to be used in boolean expressions.
-  explicit operator bool() const { return buffer_ != nullptr; }
+  explicit operator bool() const { return buffer_.operator bool(); }
 
   // Swap two buffers.
   void Swap(TypedBuffer& other) {
@@ -76,7 +85,7 @@ class TypedBuffer {
 
  private:
   // Points to the owned buffer.
-  raw_ptr<T> buffer_ = nullptr;
+  std::unique_ptr<uint8_t[]> buffer_;
 
   // Length of the owned buffer in bytes.
   uint32_t length_ = 0;
