@@ -10,7 +10,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/hash/md5_constexpr.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
@@ -24,10 +23,12 @@
 namespace gpu {
 namespace {
 uint64_t GetTaskFlowId(uint32_t sequence_id, uint32_t order_num) {
-  // Xor with a mask to ensure that the flow id does not collide with non-gpu
-  // tasks.
-  static constexpr uint64_t kMask = base::MD5Hash64Constexpr("gpu::Scheduler");
-  return kMask ^ (sequence_id) ^ (static_cast<uint64_t>(order_num) << 32);
+  // Xor with a mask to reduce likelihood of flow id collision with non-surface
+  // tasks. First 64-bits of SHA256 hash of "SurfaceControl::Transaction",
+  // interpreted as a big-endian integer. Python snippet:
+  // hashlib.sha256(b'gpu::Scheduler').hexdigest()[:8]
+  static constexpr uint64_t kMask = 0x03af6247;
+  return kMask ^ (sequence_id) ^ (uint64_t{order_num} << 32);
 }
 }  // namespace
 
