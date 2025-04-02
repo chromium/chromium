@@ -598,10 +598,6 @@ external/wpt/html/links/stylesheet/quirk-origin-check-recursive-import.html
 external/wpt/html/rendering/non-replaced-elements/form-controls/select-sizing-001.html
 external/wpt/html/rendering/non-replaced-elements/form-controls/text-transform.html
 external/wpt/html/rendering/non-replaced-elements/tables/table-background-print.html
-external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-display.html
-external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-transform-translatez.html
-external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-align.html
-external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-sans-fieldset-display.html
 external/wpt/html/rendering/pixel-length-attributes.html
 external/wpt/html/rendering/widgets/baseline-alignment-and-overflow.tentative.html
 external/wpt/html/rendering/widgets/input-time-content-size.html
