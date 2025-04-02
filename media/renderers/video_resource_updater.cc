@@ -157,18 +157,6 @@ VideoFrameResourceType ExternalResourceTypeForHardware(const VideoFrame& frame,
   return VideoFrameResourceType::NONE;
 }
 
-// For frames that we receive in software format, determine the dimensions of
-// first plane in the frame.
-gfx::Size SoftwareFirstPlaneDimension(VideoFrame* input_frame,
-                                      bool software_compositor) {
-  if (software_compositor)
-    return input_frame->coded_size();
-
-  int plane_width = input_frame->columns(/*plane=*/0);
-  int plane_height = input_frame->rows(/*plane=*/0);
-  return gfx::Size(plane_width, plane_height);
-}
-
 viz::SharedImageFormat GetRGBSharedImageFormat(VideoPixelFormat format) {
 #if BUILDFLAG(IS_MAC)
   // macOS IOSurfaces are always BGRA_8888.
@@ -872,13 +860,10 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwareFrame(
     return external_resource;
   }
 
-  const size_t width = video_frame->columns(/*plane=*/0);
-  const size_t height = video_frame->rows(/*plane=*/0);
-  const gfx::Size size(width, height);
   auto transfer_resource = viz::TransferableResource::MakeGpu(
       shared_image->mailbox(), shared_image->GetTextureTarget(),
-      video_frame->acquire_sync_token(), size, shared_image->format(),
-      video_frame->metadata().allow_overlay,
+      video_frame->acquire_sync_token(), video_frame->coded_size(),
+      shared_image->format(), video_frame->metadata().allow_overlay,
       viz::TransferableResource::ResourceSource::kVideo);
   transfer_resource.origin = shared_image->surface_origin();
   transfer_resource.color_space = video_frame->ColorSpace();
@@ -1290,8 +1275,7 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
   // For multiplanar shared images, we only need to store size for first plane
   // (subplane sizes are handled automatically within shared images) and
   // create a single multiplanar resource.
-  gfx::Size output_resource_size =
-      SoftwareFirstPlaneDimension(video_frame.get(), software_compositor());
+  gfx::Size output_resource_size = video_frame->coded_size();
   if (output_resource_size.IsEmpty() ||
       output_resource_size.width() > max_resource_size_ ||
       output_resource_size.height() > max_resource_size_) {
