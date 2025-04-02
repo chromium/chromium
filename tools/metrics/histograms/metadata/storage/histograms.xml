@@ -524,6 +524,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IndexedDB.ValueDecompressionCount" units="count"
+    expires_after="2025-09-24">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the number of times a single compressed `IDBValue` is decompressed when
+    converting into a script value. Zeroes are not logged. This is logged once
+    in each IDBValue instance's lifetime (on destruction).
+  </summary>
+</histogram>
+
 <histogram name="IndexedDB.WrappedBlobLoadTime" units="ms"
     expires_after="2025-08-17">
   <owner>estade@chromium.org</owner>
