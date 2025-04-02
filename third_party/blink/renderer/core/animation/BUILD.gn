@@ -232,7 +232,6 @@ blink_core_sources("animation") {
     "interpolation.h",
     "interpolation_effect.cc",
     "interpolation_effect.h",
-    "interpolation_environment.h",
     "interpolation_type.h",
     "interpolation_types_map.h",
     "interpolation_value.h",

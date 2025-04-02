@@ -20,7 +20,7 @@ DEFINE_NON_INTERPOLABLE_VALUE_TYPE(CSSDefaultNonInterpolableValue);
 
 InterpolationValue CSSDefaultInterpolationType::MaybeConvertSingle(
     const PropertySpecificKeyframe& keyframe,
-    const InterpolationEnvironment& environment,
+    const CSSInterpolationEnvironment& environment,
     const InterpolationValue&,
     ConversionCheckers&) const {
   const auto& property_specific = To<CSSPropertySpecificKeyframe>(keyframe);
@@ -32,8 +32,7 @@ InterpolationValue CSSDefaultInterpolationType::MaybeConvertSingle(
     return nullptr;
   }
 
-  css_value = To<CSSInterpolationEnvironment>(environment)
-                  .Resolve(GetProperty(), css_value, tree_scope);
+  css_value = environment.Resolve(GetProperty(), css_value, tree_scope);
   if (!css_value)
     return nullptr;
 
@@ -45,12 +44,11 @@ InterpolationValue CSSDefaultInterpolationType::MaybeConvertSingle(
 void CSSDefaultInterpolationType::Apply(
     const InterpolableValue&,
     const NonInterpolableValue* non_interpolable_value,
-    InterpolationEnvironment& environment) const {
+    CSSInterpolationEnvironment& environment) const {
   DCHECK(
       To<CSSDefaultNonInterpolableValue>(non_interpolable_value)->CssValue());
   StyleBuilder::ApplyProperty(
-      GetProperty().GetCSSPropertyName(),
-      To<CSSInterpolationEnvironment>(environment).GetState(),
+      GetProperty().GetCSSPropertyName(), environment.GetState(),
       *To<CSSDefaultNonInterpolableValue>(non_interpolable_value)->CssValue());
 }
 

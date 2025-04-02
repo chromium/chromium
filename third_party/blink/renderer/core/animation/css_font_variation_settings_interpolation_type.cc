@@ -65,7 +65,7 @@ class UnderlyingTagsChecker final
   ~UnderlyingTagsChecker() final = default;
 
  private:
-  bool IsValid(const InterpolationEnvironment&,
+  bool IsValid(const CSSInterpolationEnvironment&,
                const InterpolationValue& underlying) const final {
     return tags_ == GetTags(*underlying.non_interpolable_value);
   }
