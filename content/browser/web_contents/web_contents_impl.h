@@ -448,6 +448,7 @@ class CONTENT_EXPORT WebContentsImpl
                              size_t max_nodes,
                              base::TimeDelta timeout,
                              AXTreeSnapshotPolicy policy) override;
+  ui::AXTreeUpdate RequestAXTreeSnapshotWithinBrowserProcess() override;
   uint64_t GetUploadSize() override;
   uint64_t GetUploadPosition() override;
   const std::string& GetEncoding() override;
@@ -2198,6 +2199,11 @@ class CONTENT_EXPORT WebContentsImpl
 
   // See GetPartitionedPopinEmbedderOrigin for details.
   GURL GetPartitionedPopinEmbedderOriginImpl() const;
+
+  // Recursively constructs a vector of AXNodeData objects for the children of
+  // the given |node|.
+  void RecursivelyConstructAXTree(ui::AXNode* node,
+                                  std::vector<ui::AXNodeData>& nodes);
 
   // Data for core operation ---------------------------------------------------
 

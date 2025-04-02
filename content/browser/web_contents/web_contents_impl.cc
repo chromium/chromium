@@ -9302,6 +9302,62 @@ void WebContentsImpl::DidStopLoading() {
 #endif
 }
 
+ui::AXTreeUpdate WebContentsImpl::RequestAXTreeSnapshotWithinBrowserProcess() {
+  ui::BrowserAccessibilityManager* root_manager =
+      GetRootBrowserAccessibilityManager();
+  CHECK(root_manager && root_manager->ax_tree())
+      << "RequestAXTreeSnapshotWithinBrowserProcess() only supports "
+         "consumption of existing AXTrees already stored in the browser "
+         "process.";
+  CHECK(GetAccessibilityMode().has_mode(ui::AXMode::kWebContents));
+
+  ui::AXTreeUpdate combined_update;
+  ui::AXTreeCombiner combiner;
+
+  GetPrimaryMainFrame()->ForEachRenderFrameHostImplWithAction(
+      [this, &combiner](RenderFrameHostImpl* rfhi) {
+        ui::BrowserAccessibilityManager* manager =
+            rfhi->browser_accessibility_manager();
+        if (!manager) {
+          return RenderFrameHost::FrameIterationAction::kContinue;
+        }
+
+        ui::AXTree* tree = manager->ax_tree();
+        if (!tree || !tree->root()) {
+          return RenderFrameHost::FrameIterationAction::kContinue;
+        }
+
+        ui::AXTreeUpdate update_for_frame;
+        update_for_frame.root_id = tree->root()->id();
+        update_for_frame.tree_data = tree->data();
+
+        std::vector<ui::AXNodeData> nodes;
+        RecursivelyConstructAXTree(tree->root(), nodes);
+        update_for_frame.nodes = nodes;
+
+        combiner.AddTree(update_for_frame, rfhi->AccessibilityIsRootFrame());
+
+        return RenderFrameHost::FrameIterationAction::kContinue;
+      });
+
+  // Combine all the individual frame tree updates into one.
+  combiner.Combine();
+  CHECK(combiner.combined());
+  combined_update = std::move(combiner.combined().value());
+  return combined_update;
+}
+
+void WebContentsImpl::RecursivelyConstructAXTree(
+    ui::AXNode* node,
+    std::vector<ui::AXNodeData>& nodes) {
+  nodes.push_back(node->data());
+
+  for (auto iter = node->AllChildrenBegin(); iter != node->AllChildrenEnd();
+       ++iter) {
+    RecursivelyConstructAXTree(&(*iter), nodes);
+  }
+}
+
 void WebContentsImpl::DidChangeLoadProgressForMainFrame(
     RenderFrameHostImpl* render_frame_host) {
   OPTIONAL_TRACE_EVENT0("content",

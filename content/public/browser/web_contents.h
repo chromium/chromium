@@ -557,6 +557,14 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
                                      base::TimeDelta timeout,
                                      AXTreeSnapshotPolicy policy) = 0;
 
+  // Request a one-time snapshot of the accessibility tree, without going
+  // through the renderer process. This method constructs the tree based on the
+  // current AXTree's in the browser-side RenderFrameHosts. This will only work
+  // if an accessibility mode is already enabled. Unlike RequestAXTreeSnapshot,
+  // the AXMode is not an input; rather, the AXMode that was used to construct
+  // the existing tree must be used.
+  virtual ui::AXTreeUpdate RequestAXTreeSnapshotWithinBrowserProcess() = 0;
+
   // Causes the current page to be closed, including running its onunload event
   // handler.
   virtual void ClosePage() = 0;
