@@ -8151,6 +8151,7 @@ data/shared_dictionary/with_dict_header.html
 data/shared_dictionary/with_dict_header.html.mock-http-headers
 data/shared_storage/customizable_module.js
 data/shared_storage/customizable_script.js
+data/shared_storage/customizable_selecturl_module.js
 data/shared_storage/erroneous_function_module.js
 data/shared_storage/erroneous_module.js
 data/shared_storage/getter_module.js

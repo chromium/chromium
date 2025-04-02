@@ -4,6 +4,8 @@
 
 #include "content/browser/shared_storage/shared_storage_event_params.h"
 
+#include <stdint.h>
+
 #include <algorithm>
 #include <ostream>
 #include <sstream>
@@ -13,6 +15,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "content/browser/private_aggregation/private_aggregation_host.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
 
 namespace content {
 
@@ -22,7 +26,7 @@ using SharedStorageUrlSpecWithMetadata =
 
 const size_t kSharedStorageSerializedDataLengthLimitForEventParams = 1024;
 
-std::string SerializeOptionalString(std::optional<std::string> str) {
+std::string SerializeOptionalString(const std::optional<std::string>& str) {
   if (str) {
     return *str;
   }
@@ -88,9 +92,18 @@ std::string Escape(std::string text) {
   return escaped;
 }
 
-std::string SerializeAndEscapeOptionalString(std::optional<std::string> str) {
+std::string SerializeAndEscapeOptionalString(
+    const std::optional<std::string>& str) {
   if (str) {
     return Escape(*str);
+  }
+
+  return "std::nullopt";
+}
+
+std::string SerializeOptionalOrigin(const std::optional<url::Origin>& origin) {
+  if (origin) {
+    return origin->Serialize();
   }
 
   return "std::nullopt";
@@ -112,8 +125,28 @@ std::string SerializeOptionalInt(std::optional<int> i) {
   return "std::nullopt";
 }
 
+std::string SerializeOptionalUInt16(std::optional<uint16_t> i) {
+  if (i) {
+    return base::NumberToString(static_cast<unsigned int>(*i));
+  }
+
+  return "std::nullopt";
+}
+
+std::string SerializeOptionalPrivateAggregationConfigWrapper(
+    const std::optional<
+        SharedStorageEventParams::PrivateAggregationConfigWrapper>& wrapper) {
+  if (!wrapper) {
+    return "std::nullopt";
+  }
+
+  std::ostringstream ss;
+  ss << *wrapper;
+  return ss.str();
+}
+
 std::string SerializeOptionalUrlsWithMetadata(
-    std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
+    const std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>&
         urls_with_metadata) {
   if (!urls_with_metadata) {
     return "std::nullopt";
@@ -147,6 +180,63 @@ std::string MaybeTruncateSerializedData(
 }
 
 }  // namespace
+
+SharedStorageEventParams::PrivateAggregationConfigWrapper::
+    PrivateAggregationConfigWrapper()
+    : config(blink::mojom::PrivateAggregationConfig::New()) {
+  config->filtering_id_max_bytes =
+      PrivateAggregationHost::kDefaultFilteringIdMaxBytes;
+}
+
+SharedStorageEventParams::PrivateAggregationConfigWrapper::
+    PrivateAggregationConfigWrapper(
+        const std::optional<url::Origin>& aggregation_coordinator_origin,
+        const std::optional<std::string>& context_id,
+        uint32_t filtering_id_max_bytes,
+        std::optional<uint16_t> max_contributions)
+    : config(blink::mojom::PrivateAggregationConfig::New(
+          aggregation_coordinator_origin,
+          context_id,
+          filtering_id_max_bytes,
+          max_contributions)) {}
+
+SharedStorageEventParams::PrivateAggregationConfigWrapper::
+    PrivateAggregationConfigWrapper(
+        const blink::mojom::PrivateAggregationConfigPtr& config)
+    : config(config.Clone()) {}
+
+SharedStorageEventParams::PrivateAggregationConfigWrapper::
+    PrivateAggregationConfigWrapper(
+        const PrivateAggregationConfigWrapper& other)
+    : config(other.config.Clone()) {}
+
+SharedStorageEventParams::PrivateAggregationConfigWrapper::
+    ~PrivateAggregationConfigWrapper() = default;
+
+SharedStorageEventParams::PrivateAggregationConfigWrapper&
+SharedStorageEventParams::PrivateAggregationConfigWrapper::operator=(
+    const PrivateAggregationConfigWrapper& other) {
+  if (this != &other) {
+    config = other.config.Clone();
+  }
+  return *this;
+}
+
+bool SharedStorageEventParams::PrivateAggregationConfigWrapper::operator==(
+    const PrivateAggregationConfigWrapper& other) const = default;
+
+std::ostream& operator<<(
+    std::ostream& os,
+    const SharedStorageEventParams::PrivateAggregationConfigWrapper& wrapper) {
+  os << "{ Aggregation Coordinator Origin: "
+     << SerializeOptionalOrigin(wrapper.config->aggregation_coordinator_origin)
+     << "; Context ID: " << SerializeOptionalString(wrapper.config->context_id)
+     << "; Filtering ID Max Bytes: " << wrapper.config->filtering_id_max_bytes
+     << "; Max Contributions: "
+     << SerializeOptionalUInt16(wrapper.config->max_contributions) << " }";
+
+  return os;
+}
 
 SharedStorageEventParams::SharedStorageUrlSpecWithMetadata::
     SharedStorageUrlSpecWithMetadata() = default;
@@ -207,6 +297,8 @@ SharedStorageEventParams::SharedStorageEventParams(
     std::optional<std::string> script_source_url,
     std::optional<std::string> data_origin,
     std::optional<std::string> operation_name,
+    std::optional<bool> keep_alive,
+    std::optional<PrivateAggregationConfigWrapper> private_aggregation_config,
     std::optional<std::string> serialized_data,
     std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
         urls_with_metadata,
@@ -217,6 +309,8 @@ SharedStorageEventParams::SharedStorageEventParams(
     : script_source_url(std::move(script_source_url)),
       data_origin(std::move(data_origin)),
       operation_name(std::move(operation_name)),
+      keep_alive(keep_alive),
+      private_aggregation_config(std::move(private_aggregation_config)),
       serialized_data(std::move(serialized_data)),
       urls_with_metadata(std::move(urls_with_metadata)),
       key(std::move(key)),
@@ -244,22 +338,51 @@ SharedStorageEventParams SharedStorageEventParams::CreateForCreateWorklet(
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForRun(
     const std::string& operation_name,
+    bool keep_alive,
+    const blink::mojom::PrivateAggregationConfigPtr& private_aggregation_config,
     const blink::CloneableMessage& serialized_data,
     int worklet_id) {
   return SharedStorageEventParams::CreateForWorkletOperation(
-      operation_name, serialized_data,
+      operation_name, keep_alive, private_aggregation_config, serialized_data,
+      /*urls_with_metadata=*/std::nullopt, worklet_id);
+}
+
+// static
+SharedStorageEventParams SharedStorageEventParams::CreateForRunForTesting(
+    const std::string& operation_name,
+    bool keep_alive,
+    PrivateAggregationConfigWrapper config_wrapper,
+    const blink::CloneableMessage& serialized_data,
+    int worklet_id) {
+  return SharedStorageEventParams::CreateForWorkletOperationForTesting(
+      operation_name, keep_alive, std::move(config_wrapper), serialized_data,
       /*urls_with_metadata=*/std::nullopt, worklet_id);
 }
 
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForSelectURL(
     const std::string& operation_name,
+    bool keep_alive,
+    const blink::mojom::PrivateAggregationConfigPtr& private_aggregation_config,
     const blink::CloneableMessage& serialized_data,
     std::vector<SharedStorageUrlSpecWithMetadata> urls_with_metadata,
     int worklet_id) {
   return SharedStorageEventParams::CreateForWorkletOperation(
-      operation_name, serialized_data, std::move(urls_with_metadata),
-      worklet_id);
+      operation_name, keep_alive, private_aggregation_config, serialized_data,
+      std::move(urls_with_metadata), worklet_id);
+}
+
+// static
+SharedStorageEventParams SharedStorageEventParams::CreateForSelectURLForTesting(
+    const std::string& operation_name,
+    bool keep_alive,
+    PrivateAggregationConfigWrapper config_wrapper,
+    const blink::CloneableMessage& serialized_data,
+    std::vector<SharedStorageUrlSpecWithMetadata> urls_with_metadata,
+    int worklet_id) {
+  return SharedStorageEventParams::CreateForWorkletOperationForTesting(
+      operation_name, keep_alive, std::move(config_wrapper), serialized_data,
+      std::move(urls_with_metadata), worklet_id);
 }
 
 // static
@@ -314,6 +437,8 @@ SharedStorageEventParams SharedStorageEventParams::CreateForWorkletCreation(
   return SharedStorageEventParams(
       script_source_url.spec(), std::move(data_origin),
       /*operation_name=*/std::nullopt,
+      /*keep_alive=*/std::nullopt,
+      /*private_aggregation_config=*/std::nullopt,
       /*serialized_data=*/std::nullopt,
       /*urls_with_metadata=*/std::nullopt,
       /*key=*/std::nullopt,
@@ -324,18 +449,43 @@ SharedStorageEventParams SharedStorageEventParams::CreateForWorkletCreation(
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForWorkletOperation(
     const std::string& operation_name,
+    bool keep_alive,
+    const blink::mojom::PrivateAggregationConfigPtr& private_aggregation_config,
     const blink::CloneableMessage& serialized_data,
     std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
         urls_with_metadata,
     int worklet_id) {
-  return SharedStorageEventParams(/*script_source_url=*/std::nullopt,
-                                  /*data_origin=*/std::nullopt, operation_name,
-                                  MaybeTruncateSerializedData(serialized_data),
-                                  std::move(urls_with_metadata),
-                                  /*key=*/std::nullopt,
-                                  /*value=*/std::nullopt,
-                                  /*ignore_if_present=*/std::nullopt,
-                                  worklet_id);
+  return SharedStorageEventParams(
+      /*script_source_url=*/std::nullopt,
+      /*data_origin=*/std::nullopt, operation_name, keep_alive,
+      PrivateAggregationConfigWrapper(private_aggregation_config),
+      MaybeTruncateSerializedData(serialized_data),
+      std::move(urls_with_metadata),
+      /*key=*/std::nullopt,
+      /*value=*/std::nullopt,
+      /*ignore_if_present=*/std::nullopt, worklet_id);
+}
+
+// static
+SharedStorageEventParams
+SharedStorageEventParams::CreateForWorkletOperationForTesting(
+    const std::string& operation_name,
+    bool keep_alive,
+    PrivateAggregationConfigWrapper config_wrapper,
+    const blink::CloneableMessage& serialized_data,
+    std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
+        urls_with_metadata,
+    int worklet_id) {
+  return SharedStorageEventParams(
+      /*script_source_url=*/std::nullopt,
+      /*data_origin=*/std::nullopt, operation_name, keep_alive,
+      /*private_aggregation_config=*/
+      std::make_optional(std::move(config_wrapper)),
+      MaybeTruncateSerializedData(serialized_data),
+      std::move(urls_with_metadata),
+      /*key=*/std::nullopt,
+      /*value=*/std::nullopt,
+      /*ignore_if_present=*/std::nullopt, worklet_id);
 }
 
 // static
@@ -348,6 +498,8 @@ SharedStorageEventParams SharedStorageEventParams::CreateForModifierMethod(
       /*script_source_url=*/std::nullopt,
       /*data_origin=*/std::nullopt,
       /*operation_name=*/std::nullopt,
+      /*keep_alive=*/std::nullopt,
+      /*private_aggregation_config=*/std::nullopt,
       /*serialized_data*/ std::nullopt,
       /*urls_with_metadata=*/std::nullopt, std::move(key), std::move(value),
       ignore_if_present, worklet_id);
@@ -359,6 +511,8 @@ bool operator==(const SharedStorageEventParams& lhs,
   return lhs.script_source_url == rhs.script_source_url &&
          lhs.data_origin == rhs.data_origin &&
          lhs.operation_name == rhs.operation_name &&
+         lhs.keep_alive == rhs.keep_alive &&
+         lhs.private_aggregation_config == rhs.private_aggregation_config &&
          !!lhs.serialized_data == !!rhs.serialized_data &&
          lhs.urls_with_metadata == rhs.urls_with_metadata &&
          lhs.key == rhs.key && lhs.value == rhs.value &&
@@ -372,6 +526,10 @@ std::ostream& operator<<(std::ostream& os,
      << SerializeOptionalString(params.script_source_url)
      << "; Data Origin: " << SerializeOptionalString(params.data_origin)
      << "; Operation Name: " << SerializeOptionalString(params.operation_name)
+     << "; Keep Alive: " << SerializeOptionalBool(params.keep_alive)
+     << "; Private Aggregation Config: "
+     << SerializeOptionalPrivateAggregationConfigWrapper(
+            params.private_aggregation_config)
      << "; Serialized Data: "
      << SerializeAndEscapeOptionalString(params.serialized_data)
      << "; URLs With Metadata: "

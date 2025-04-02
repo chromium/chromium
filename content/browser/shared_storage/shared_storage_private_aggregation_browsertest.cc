@@ -28,6 +28,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
@@ -36,8 +37,10 @@
 #include "content/browser/private_aggregation/private_aggregation_pending_contributions.h"
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
 #include "content/browser/shared_storage/shared_storage_browsertest_base.h"
+#include "content/browser/shared_storage/shared_storage_event_params.h"
 #include "content/browser/shared_storage/shared_storage_runtime_manager.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
+#include "content/browser/shared_storage/test_shared_storage_observer.h"
 #include "content/browser/shared_storage/test_shared_storage_runtime_manager.h"
 #include "content/browser/shared_storage/test_shared_storage_worklet_host.h"
 #include "content/browser/storage_partition_impl.h"
@@ -76,6 +79,8 @@ using testing::Eq;
 using testing::FieldsAre;
 using testing::Ne;
 using testing::Optional;
+using AccessScope = blink::SharedStorageAccessScope;
+using AccessMethod = TestSharedStorageObserver::AccessMethod;
 
 class SharedStoragePrivateAggregationDisabledBrowserTest
     : public SharedStorageBrowserTestBase {
@@ -355,6 +360,18 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   EXPECT_TRUE(console_observer.messages().empty());
 
   run_loop.Run();
+
+  ExpectAccessObserved(
+      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+        a_test_origin_.Serialize(),
+        SharedStorageEventParams::CreateForAddModule(out_script_url,
+                                                     /*worklet_id=*/0)},
+       {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
+        a_test_origin_.Serialize(),
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
@@ -574,6 +591,22 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   EXPECT_TRUE(console_observer.messages().empty());
 
   run_loop.Run();
+
+  ExpectAccessObserved(
+      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+        a_test_origin_.Serialize(),
+        SharedStorageEventParams::CreateForAddModule(out_script_url,
+                                                     /*worklet_id=*/0)},
+       {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
+        a_test_origin_.Serialize(),
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(
+                /*aggregation_coordinator_origin=*/std::nullopt,
+                /*context_id=*/"example_context_id",
+                /*filtering_id_max_bytes=*/1,
+                /*max_contributions=*/std::nullopt),
+            blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
@@ -631,6 +664,21 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   EXPECT_TRUE(console_observer.messages().empty());
 
   run_loop.Run();
+
+  ExpectAccessObserved(
+      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+        a_test_origin_.Serialize(),
+        SharedStorageEventParams::CreateForAddModule(out_script_url,
+                                                     /*worklet_id=*/0)},
+       {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
+        a_test_origin_.Serialize(),
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(
+                /*aggregation_coordinator_origin=*/std::nullopt,
+                /*context_id=*/std::string(), /*filtering_id_max_bytes=*/1,
+                /*max_contributions=*/std::nullopt),
+            blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
@@ -693,6 +741,23 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   EXPECT_TRUE(console_observer.messages().empty());
 
   run_loop.Run();
+
+  ExpectAccessObserved(
+      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+        a_test_origin_.Serialize(),
+        SharedStorageEventParams::CreateForAddModule(out_script_url,
+                                                     /*worklet_id=*/0)},
+       {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
+        a_test_origin_.Serialize(),
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(
+                /*aggregation_coordinator_origin=*/std::nullopt, /*context_id=*/
+                "an_example_of_a_context_id_with_the_exact_maximum_allowed_"
+                "length",
+                /*filtering_id_max_bytes=*/1,
+                /*max_contributions=*/std::nullopt),
+            blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
@@ -1242,6 +1307,21 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   EXPECT_TRUE(console_observer.messages().empty());
 
   run_loop.Run();
+
+  ExpectAccessObserved(
+      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+        a_test_origin_.Serialize(),
+        SharedStorageEventParams::CreateForAddModule(out_script_url,
+                                                     /*worklet_id=*/0)},
+       {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
+        a_test_origin_.Serialize(),
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(
+                /*aggregation_coordinator_origin=*/std::nullopt,
+                /*context_id=*/std::nullopt, /*filtering_id_max_bytes=*/8,
+                /*max_contributions=*/std::nullopt),
+            blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
@@ -1317,6 +1397,21 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   EXPECT_TRUE(console_observer.messages().empty());
 
   run_loop.Run();
+
+  ExpectAccessObserved(
+      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+        a_test_origin_.Serialize(),
+        SharedStorageEventParams::CreateForAddModule(out_script_url,
+                                                     /*worklet_id=*/0)},
+       {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
+        a_test_origin_.Serialize(),
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(
+                /*aggregation_coordinator_origin=*/std::nullopt,
+                /*context_id=*/std::nullopt, /*filtering_id_max_bytes=*/8,
+                /*max_contributions=*/std::nullopt),
+            blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
@@ -1383,6 +1478,21 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   EXPECT_TRUE(console_observer.messages().empty());
 
   run_loop.Run();
+
+  ExpectAccessObserved(
+      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+        a_test_origin_.Serialize(),
+        SharedStorageEventParams::CreateForAddModule(out_script_url,
+                                                     /*worklet_id=*/0)},
+       {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
+        a_test_origin_.Serialize(),
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(
+                /*aggregation_coordinator_origin=*/std::nullopt,
+                /*context_id=*/std::nullopt, /*filtering_id_max_bytes=*/8,
+                /*max_contributions=*/std::nullopt),
+            blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
@@ -2065,6 +2175,30 @@ IN_PROC_BROWSER_TEST_P(
       /*max_contributions=*/base::NumberToString(GetParam().max_contributions));
   EXPECT_TRUE(console_observer.messages().empty());
   run_loop.Run();
+
+  std::optional<uint16_t> expected_max_contributions;
+  if (GetParam().is_feature_enabled) {
+    expected_max_contributions = static_cast<uint16_t>(
+        std::min(GetParam().max_contributions,
+                 static_cast<size_t>(std::numeric_limits<uint16_t>::max())));
+  }
+  auto expected_config_to_observe =
+      SharedStorageEventParams::PrivateAggregationConfigWrapper(
+          /*aggregation_coordinator_origin=*/std::nullopt,
+          /*context_id=*/"example_context_id",
+          /*filtering_id_max_bytes=*/1,
+          /*max_contributions=*/expected_max_contributions);
+  ExpectAccessObserved(
+      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+        a_test_origin_.Serialize(),
+        SharedStorageEventParams::CreateForAddModule(out_script_url,
+                                                     /*worklet_id=*/0)},
+       {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
+        a_test_origin_.Serialize(),
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true, expected_config_to_observe,
+            blink::CloneableMessage(),
+            /*worklet_id=*/0)}});
 }
 
 class SharedStoragePrivateAggregationErrorReportingDisabledBrowserTest
@@ -2991,6 +3125,247 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(console_observer.messages().empty());
 
   run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       RunWithExplicitAggregationCoordinatorOriginValue) {
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_callback(), Run)
+      .WillOnce(testing::Invoke(
+          [&](PrivateAggregationHost::ReportRequestGenerator generator,
+              PrivateAggregationPendingContributions::Wrapper contributions,
+              PrivateAggregationBudgetKey budget_key,
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
+            AggregatableReportRequest request = GenerateReportRequest(
+                std::move(generator), std::move(contributions),
+                null_report_behavior);
+            ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
+            EXPECT_EQ(request.payload_contents().contributions[0].bucket, 1);
+            EXPECT_EQ(request.payload_contents().contributions[0].value, 2);
+            EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
+            EXPECT_EQ(budget_key.origin(), a_test_origin_);
+            EXPECT_EQ(budget_key.caller_api(),
+                      PrivateAggregationCallerApi::kSharedStorage);
+            EXPECT_TRUE(request.additional_fields().empty());
+            EXPECT_EQ(
+                null_report_behavior,
+                PrivateAggregationHost::NullReportBehavior::kDontSendReport);
+            run_loop.Quit();
+          }));
+
+  EXPECT_CALL(browser_client(),
+              LogWebFeatureForCurrentPage(
+                  shell()->web_contents()->GetPrimaryMainFrame(),
+                  blink::mojom::WebFeature::kPrivateAggregationApiAll));
+  EXPECT_CALL(
+      browser_client(),
+      LogWebFeatureForCurrentPage(
+          shell()->web_contents()->GetPrimaryMainFrame(),
+          blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage));
+  ON_CALL(browser_client(), IsPrivateAggregationAllowed)
+      .WillByDefault(testing::Return(true));
+  ON_CALL(browser_client(), IsSharedStorageAllowed)
+      .WillByDefault(testing::Return(true));
+
+  std::string worklet_script = R"(
+      privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
+    )";
+
+  base::StringPairs run_function_body_replacement;
+  run_function_body_replacement.emplace_back("{{RUN_FUNCTION_BODY}}",
+                                             worklet_script);
+
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  std::string host = rfh->GetLastCommittedOrigin().host();
+
+  GURL out_script_url = https_server()->GetURL(
+      host, net::test_server::GetFilePathWithReplacements(
+                "/shared_storage/customizable_module.js",
+                run_function_body_replacement));
+
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("sharedStorage.worklet.addModule($1)",
+                                        out_script_url)));
+
+  auto* worklet_host =
+      test_runtime_manager().GetLastAttachedWorkletHostForFrameWithScriptSrc(
+          rfh, out_script_url);
+  ASSERT_TRUE(worklet_host);
+
+  EXPECT_EQ(1u, test_runtime_manager().GetAttachedWorkletHostsCount());
+
+  EXPECT_EQ(worklet_host->creation_method(),
+            blink::mojom::SharedStorageWorkletCreationMethod::kAddModule);
+
+  // There is 1 more "worklet operation": `run()`.
+  worklet_host->SetExpectedWorkletResponsesCount(1);
+
+  std::string private_aggregation_config_js = JsReplace(
+      "privateAggregationConfig: {aggregationCoordinatorOrigin: $1, }",
+      aggregation_service::GetDefaultAggregationCoordinatorOrigin()
+          .Serialize());
+
+  std::string run_operation_script =
+      base::StrCat({"sharedStorage.run('test-operation', {",
+                    private_aggregation_config_js, "});"});
+
+  EXPECT_TRUE(ExecJs(shell(), run_operation_script));
+
+  CHECK(worklet_host);
+  worklet_host->WaitForWorkletResponses();
+
+  EXPECT_TRUE(console_observer.messages().empty());
+
+  run_loop.Run();
+
+  ExpectAccessObserved(
+      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+        a_test_origin_.Serialize(),
+        SharedStorageEventParams::CreateForAddModule(out_script_url,
+                                                     /*worklet_id=*/0)},
+       {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
+        a_test_origin_.Serialize(),
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/false,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(
+                /*aggregation_coordinator_origin=*/aggregation_service::
+                    GetDefaultAggregationCoordinatorOrigin(),
+                /*context_id=*/std::nullopt, /*filtering_id_max_bytes=*/1,
+                /*max_contributions=*/std::nullopt),
+            blink::CloneableMessage(), /*worklet_id=*/0)}});
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       SelectURLWithExplicitAggregationCoordinatorOriginValue) {
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_callback(), Run)
+      .WillOnce(testing::Invoke(
+          [&](PrivateAggregationHost::ReportRequestGenerator generator,
+              PrivateAggregationPendingContributions::Wrapper contributions,
+              PrivateAggregationBudgetKey budget_key,
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
+            AggregatableReportRequest request = GenerateReportRequest(
+                std::move(generator), std::move(contributions),
+                null_report_behavior);
+            ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
+            EXPECT_EQ(request.payload_contents().contributions[0].bucket, 1);
+            EXPECT_EQ(request.payload_contents().contributions[0].value, 2);
+            EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
+            EXPECT_EQ(budget_key.origin(), a_test_origin_);
+            EXPECT_EQ(budget_key.caller_api(),
+                      PrivateAggregationCallerApi::kSharedStorage);
+            EXPECT_TRUE(request.additional_fields().empty());
+            EXPECT_EQ(
+                null_report_behavior,
+                PrivateAggregationHost::NullReportBehavior::kDontSendReport);
+            run_loop.Quit();
+          }));
+
+  EXPECT_CALL(browser_client(),
+              LogWebFeatureForCurrentPage(
+                  shell()->web_contents()->GetPrimaryMainFrame(),
+                  blink::mojom::WebFeature::kPrivateAggregationApiAll));
+  EXPECT_CALL(
+      browser_client(),
+      LogWebFeatureForCurrentPage(
+          shell()->web_contents()->GetPrimaryMainFrame(),
+          blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage));
+  ON_CALL(browser_client(), IsPrivateAggregationAllowed)
+      .WillByDefault(testing::Return(true));
+  ON_CALL(browser_client(), IsSharedStorageAllowed)
+      .WillByDefault(testing::Return(true));
+
+  std::string worklet_script = R"(
+      privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
+    )";
+
+  base::StringPairs run_function_body_replacement;
+  run_function_body_replacement.emplace_back("{{RUN_FUNCTION_BODY}}",
+                                             worklet_script);
+
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  std::string host = rfh->GetLastCommittedOrigin().host();
+
+  GURL out_script_url = https_server()->GetURL(
+      host, net::test_server::GetFilePathWithReplacements(
+                "/shared_storage/customizable_selecturl_module.js",
+                run_function_body_replacement));
+
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("sharedStorage.worklet.addModule($1)",
+                                        out_script_url)));
+
+  auto* worklet_host =
+      test_runtime_manager().GetLastAttachedWorkletHostForFrameWithScriptSrc(
+          rfh, out_script_url);
+  ASSERT_TRUE(worklet_host);
+
+  EXPECT_EQ(1u, test_runtime_manager().GetAttachedWorkletHostsCount());
+
+  EXPECT_EQ(worklet_host->creation_method(),
+            blink::mojom::SharedStorageWorkletCreationMethod::kAddModule);
+
+  // There is 1 more "worklet operation": `selectURL()`.
+  worklet_host->SetExpectedWorkletResponsesCount(1);
+
+  std::string select_url_operation_script = JsReplace(
+      R"(
+      (async function() {
+        window.select_url_result = await sharedStorage.selectURL(
+          'test-url-selection-operation',
+          [
+            {
+              url: "fenced_frames/title0.html"
+            }
+          ],
+          {
+            privateAggregationConfig: {aggregationCoordinatorOrigin: $1},
+            resolveToConfig: true
+          }
+        );
+        if (!(select_url_result instanceof FencedFrameConfig)) {
+          throw new Error('selectURL() did not return a FencedFrameConfig.');
+        }
+        return window.select_url_result;
+      })()
+    )",
+      aggregation_service::GetDefaultAggregationCoordinatorOrigin()
+          .Serialize());
+
+  EvalJsResult result = EvalJs(shell(), select_url_operation_script);
+  EXPECT_TRUE(result.error.empty());
+
+  CHECK(worklet_host);
+  worklet_host->WaitForWorkletResponses();
+
+  EXPECT_TRUE(console_observer.messages().empty());
+
+  run_loop.Run();
+
+  ExpectAccessObserved(
+      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+        a_test_origin_.Serialize(),
+        SharedStorageEventParams::CreateForAddModule(out_script_url,
+                                                     /*worklet_id=*/0)},
+       {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
+        a_test_origin_.Serialize(),
+        SharedStorageEventParams::CreateForSelectURLForTesting(
+            "test-url-selection-operation", /*keep_alive=*/false,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(
+                /*aggregation_coordinator_origin=*/aggregation_service::
+                    GetDefaultAggregationCoordinatorOrigin(),
+                /*context_id=*/std::nullopt, /*filtering_id_max_bytes=*/1,
+                /*max_contributions=*/std::nullopt),
+            blink::CloneableMessage(),
+            std::vector<
+                SharedStorageEventParams::SharedStorageUrlSpecWithMetadata>(
+                {{https_server()->GetURL(host, "/fenced_frames/title0.html"),
+                  {}}}),
+            /*worklet_id=*/0)}});
 }
 
 // TODO(alexmt): Consider testing that reserved.uncaught-exception not triggered
