@@ -218,6 +218,16 @@ float Length::NonNanCalculatedValue(float max_value,
   return result;
 }
 
+bool Length::HasOnlyFixedAndPercent() const {
+  if (GetType() == kFixed || GetType() == kPercent) {
+    return true;
+  }
+  if (GetType() == kCalculated) {
+    return GetCalculationValue().HasOnlyFixedAndPercent();
+  }
+  return false;
+}
+
 bool Length::HasAuto() const {
   if (GetType() == kCalculated) {
     return GetCalculationValue().HasAuto();
