@@ -1959,24 +1959,22 @@ ci.thin_tester(
         # the gpu_noop_sleep_telemetry_test test should be used. Otherwise, this
         # should have the same test_suites as 'Dawn Mac x64 Release (Intel)'.
         targets = [
-            "gpu_dawn_telemetry_tests",
-            "gpu_dawn_integration_gtests_passthrough",
-            "gpu_dawn_isolated_scripts",
+            "gpu_noop_sleep_telemetry_test",
         ],
         mixins = [
             "limited_capacity_bot",
             "mac_mini_intel_gpu_experimental",
         ],
         per_test_modifications = {
-            "webgpu_cts_dedicated_worker_tests": targets.remove(
-                reason = "We only need coverage on one GPU per OS, so remove from lower capacity configs.",
-            ),
-            "webgpu_cts_service_worker_tests": targets.remove(
-                reason = "We only need coverage on one GPU per OS, so remove from lower capacity configs.",
-            ),
-            "webgpu_cts_shared_worker_tests": targets.remove(
-                reason = "We only need coverage on one GPU per OS, so remove from lower capacity configs.",
-            ),
+            # "webgpu_cts_dedicated_worker_tests": targets.remove(
+            #     reason = "We only need coverage on one GPU per OS, so remove from lower capacity configs.",
+            # ),
+            # "webgpu_cts_service_worker_tests": targets.remove(
+            #     reason = "We only need coverage on one GPU per OS, so remove from lower capacity configs.",
+            # ),
+            # "webgpu_cts_shared_worker_tests": targets.remove(
+            #     reason = "We only need coverage on one GPU per OS, so remove from lower capacity configs.",
+            # ),
         },
     ),
     targets_settings = targets.settings(
@@ -1984,10 +1982,10 @@ ci.thin_tester(
         os_type = targets.os_type.MAC,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT|Mac|Intel",
-        short_name = "exp",
-    ),
+    #console_view_entry = consoles.console_view_entry(
+    #    category = "ToT|Mac|Intel",
+    #    short_name = "exp",
+    #),
     list_view = "chromium.gpu.experimental",
 )
 
