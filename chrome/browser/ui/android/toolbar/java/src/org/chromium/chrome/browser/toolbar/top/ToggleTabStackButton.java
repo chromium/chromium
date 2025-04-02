@@ -115,7 +115,9 @@ public class ToggleTabStackButton extends ListMenuButton implements TabSwitcherD
     public void onDrawableStateChanged() {
         @PluralsRes
         int drawableDescRes = R.plurals.accessibility_toolbar_btn_tabswitcher_toggle_default;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+        // TODO(ritikagup) : Use utility for the check.
+        if ((ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+                        || ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_JOIN_ONLY))
                 && mTabSwitcherButtonDrawable.getShowIconNotificationStatus()) {
             drawableDescRes =
                     R.plurals

@@ -176,7 +176,7 @@ public class TabUiUtils {
             ActionConfirmationManager actionConfirmationManager,
             ModalDialogManager modalDialogManager,
             int tabId) {
-        assert ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING);
+        assert isDataSharingFunctionalityEnabled();
         assert actionConfirmationManager != null;
 
         TabModel tabModel = filter.getTabModel();
@@ -441,5 +441,14 @@ public class TabUiUtils {
         boolean isSensitive = anySensitiveContent(tabList);
         contentSensitivitySetter.onResult(isSensitive);
         RecordHistogram.recordBooleanHistogram(histogram, isSensitive);
+    }
+
+    /**
+     * Returns whether the data sharing feature is allowed to be used. Returns true if the data
+     * sharing or join only flag is enabled.
+     */
+    public static boolean isDataSharingFunctionalityEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+                || ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_JOIN_ONLY);
     }
 }

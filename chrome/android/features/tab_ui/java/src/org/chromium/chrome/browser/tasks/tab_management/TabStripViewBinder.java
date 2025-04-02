@@ -19,7 +19,6 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
 import org.chromium.chrome.tab_ui.R;
@@ -93,7 +92,7 @@ class TabStripViewBinder {
         } else if (TabProperties.HAS_NOTIFICATION_BUBBLE == propertyKey) {
             ImageView notificationView = view.fastFindViewById(R.id.tab_strip_notification_bubble);
 
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
+            if (TabUiUtils.isDataSharingFunctionalityEnabled()) {
                 int visibility =
                         model.get(TabProperties.HAS_NOTIFICATION_BUBBLE) ? View.VISIBLE : View.GONE;
                 notificationView.setVisibility(visibility);
@@ -162,7 +161,7 @@ class TabStripViewBinder {
         if (model.get(TabProperties.IS_SELECTED)) {
             contentDescRes = R.string.accessibility_tabstrip_btn_close_tab;
         } else {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+            if (TabUiUtils.isDataSharingFunctionalityEnabled()
                     && model.get(TabProperties.HAS_NOTIFICATION_BUBBLE)) {
                 contentDescRes = R.string.accessibility_tabstrip_tab_notification;
             } else {

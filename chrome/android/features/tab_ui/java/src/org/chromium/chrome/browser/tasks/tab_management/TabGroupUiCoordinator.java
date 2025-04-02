@@ -112,7 +112,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
 
             @LayoutRes
             int layoutId =
-                    ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+                    TabUiUtils.isDataSharingFunctionalityEnabled()
                             ? R.layout.dynamic_bottom_tab_strip_toolbar
                             : R.layout.bottom_tab_strip_toolbar;
             mToolbarView =

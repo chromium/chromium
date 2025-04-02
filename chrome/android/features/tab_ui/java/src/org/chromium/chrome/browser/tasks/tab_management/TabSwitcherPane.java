@@ -461,7 +461,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
 
     private @PluralsRes int getTabSwitcherDrawableDescription(TabSwitcherDrawable drawable) {
         @PluralsRes int drawableDescRes = R.plurals.accessibility_tab_switcher_standard_stack;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+        if (TabUiUtils.isDataSharingFunctionalityEnabled()
                 && drawable.getShowIconNotificationStatus()) {
             drawableDescRes = R.plurals.accessibility_tab_switcher_standard_stack_with_notification;
         }

@@ -42,7 +42,6 @@ import androidx.core.widget.ImageViewCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.RoundedCornerAnimatorUtil;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.tab_ui.R;
@@ -379,8 +378,7 @@ public class TabGridDialogView extends FrameLayout {
             if (view == TabGridDialogView.this) {
                 continue;
             }
-            // TODO(b/395153186) : Investigate and see if any changes needed for join only flow.
-            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
+            if (!TabUiUtils.isDataSharingFunctionalityEnabled()) {
                 assert mAccessibilityImportanceMap.containsKey(view);
             }
             Integer importance = mAccessibilityImportanceMap.get(view);
