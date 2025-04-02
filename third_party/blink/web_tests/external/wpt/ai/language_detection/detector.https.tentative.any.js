@@ -28,11 +28,13 @@ promise_test(async t => {
   let options = {};
   const downloadComplete = new Promise(resolve => {
     options.monitor = (m) => {
-      m.addEventListener("downloadprogress", e => {
+      m.addEventListener('downloadprogress', e => {
         assert_equals(createResult, undefined);
         assert_equals(e.total, 1);
         progressEvents.push(e);
-        if (e.loaded == 1) { resolve(); }
+        if (e.loaded == 1) {
+          resolve();
+        }
       });
     };
   });
@@ -114,9 +116,8 @@ promise_test(async t => {
 }, 'Aborting LanguageDetector.measureInputUsage().');
 
 promise_test(async () => {
-  const expected_languages = ['en', 'es'];
-  const detector = await languageDetector.create({
-    expectedInputLanguages: expected_languages
-  });
-  assert_array_equals(detector.expectedInputLanguages(), expected_languages);
+  const expectedLanguages = ['en', 'es'];
+  const detector = await LanguageDetector.create(
+      {expectedInputLanguages: expectedLanguages});
+  assert_array_equals(detector.expectedInputLanguages, expectedLanguages);
 }, 'Creating LanguageDetector with expectedInputLanguages');
