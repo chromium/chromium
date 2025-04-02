@@ -302,7 +302,8 @@ void BaseRenderingContext2D::DispatchContextRestoredEvent(TimerBase*) {
 }
 
 void BaseRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
-  if (GetCanvasRenderingContextHost() == nullptr) [[unlikely]] {
+  const CanvasRenderingContextHost* host = GetCanvasRenderingContextHost();
+  if (host == nullptr) [[unlikely]] {
     // The host was disposed while this callback was pending.
     try_restore_context_event_timer_.Stop();
     return;
@@ -321,6 +322,15 @@ void BaseRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
         return;
       }
     }
+  }
+
+  // The GPU context is restored, but the canvas was changed to an invalid size
+  // since the canvas was lost. We can't restore the context until the canvas is
+  // given a valid size.
+  if (!IsValidImageSize(host->Size()) && !host->Size().IsEmpty()) {
+    context_lost_mode_ = kInvalidCanvasSize;
+    try_restore_context_event_timer_.Stop();
+    return;
   }
 
   RestoreGuard context_is_being_restored(*this);
