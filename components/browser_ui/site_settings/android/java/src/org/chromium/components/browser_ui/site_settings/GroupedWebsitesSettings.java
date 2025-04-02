@@ -295,15 +295,19 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
         return true;
     }
 
+    private boolean isCurrentSite(WebsiteEntry entry) {
+        return mSiteGroup.getDomainAndRegistry().equals(entry.getDomainAndRegistry());
+    }
+
     private void setUpRelatedSitesPreferences() {
-        PreferenceCategory relatedSitesHeader = findPreference(PREF_RELATED_SITES);
+        PreferenceCategory relatedSitesSection = findPreference(PREF_RELATED_SITES);
         TextMessagePreference relatedSitesText = new TextMessagePreference(getContext(), null);
         var rwsInfo = mSiteGroup.getRwsInfo();
         boolean shouldRelatedSitesPrefBeVisible =
                 getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
                         && rwsInfo != null;
         relatedSitesText.setVisible(shouldRelatedSitesPrefBeVisible);
-        relatedSitesHeader.setVisible(shouldRelatedSitesPrefBeVisible);
+        relatedSitesSection.setVisible(shouldRelatedSitesPrefBeVisible);
         ButtonPreference relatedSitesClearDataButton =
                 findPreference(PREF_RELATED_SITES_CLEAR_DATA);
         relatedSitesClearDataButton
@@ -346,27 +350,26 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                                                                     WebsiteSettingsConstants
                                                                             .RWS_LEARN_MORE_URL);
                                                 }))));
-                relatedSitesHeader.addPreference(relatedSitesText);
+                relatedSitesSection.addPreference(relatedSitesText);
                 for (WebsiteEntry entry : rwsInfo.getMembersGroupedByDomain()) {
                     WebsiteRowPreference preference =
                             new WebsiteRowPreference(
-                                    relatedSitesHeader.getContext(),
+                                    relatedSitesSection.getContext(),
                                     getSiteSettingsDelegate(),
                                     entry,
                                     getActivity().getLayoutInflater(),
-                                    /* showRwsMembershipLabels= */ false);
-                    // Remove preference upon single site deletion
+                                    /* showRwsMembershipLabels= */ false,
+                                    /* isClickable= */ false);
+                    // If the row is for the current site, deleting the data will bounce back to the
+                    // previous page to refresh
                     preference.setOnDeleteCallback(
-                            () -> {
-                                relatedSitesHeader.removePreference(preference);
-                                // Remove RWS section if only remaining preference is the
-                                // description
-                                if (relatedSitesHeader.getPreferenceCount() == 1) {
-                                    removePreferenceSafely(PREF_RELATED_SITES);
-                                    removePreferenceSafely(PREF_RELATED_SITES_CLEAR_DATA);
-                                }
-                            });
-                    relatedSitesHeader.addPreference(preference);
+                            isCurrentSite(entry)
+                                    // If deleting data for the current site, pop back to refresh
+                                    ? mDataClearedCallback
+                                    : () -> {
+                                        relatedSitesSection.removePreference(preference);
+                                    });
+                    relatedSitesSection.addPreference(preference);
                 }
                 relatedSitesClearDataButton.setOnPreferenceClickListener(
                         new Preference.OnPreferenceClickListener() {
@@ -384,7 +387,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                                         rwsInfo.getMembersCount(),
                                         Integer.toString(rwsInfo.getMembersCount()),
                                         rwsInfo.getOwner()));
-                relatedSitesHeader.addPreference(relatedSitesText);
+                relatedSitesSection.addPreference(relatedSitesText);
             }
         }
     }
@@ -399,21 +402,13 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                             getSiteSettingsDelegate(),
                             site,
                             getActivity().getLayoutInflater(),
-                            /* showRwsMembershipLabels= */ false);
+                            /* showRwsMembershipLabels= */ false,
+                            /* isClickable= */ true);
             preference.setOnDeleteCallback(
                     () -> {
                         category.removePreference(preference);
                     });
             category.addPreference(preference);
         }
-    }
-
-    /**
-     * Ensures preference exists before removing to avoid NPE in {@link
-     * PreferenceScreen#removePreference}.
-     */
-    private void removePreferenceSafely(CharSequence prefKey) {
-        Preference preference = findPreference(prefKey);
-        if (preference != null) getPreferenceScreen().removePreference(preference);
     }
 }
