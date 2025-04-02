@@ -37,18 +37,75 @@ namespace {
 const wchar_t kNarratorRegistryKey[] = L"Software\\Microsoft\\Narrator\\NoRoam";
 const wchar_t kNarratorRunningStateValueName[] = L"RunningState";
 
-static constexpr uint32_t kJaws = 0x01 << 0;
-static constexpr uint32_t kNvda = 0x01 << 1;
-static constexpr uint32_t kNarrator = 0x01 << 2;
-static constexpr uint32_t kSupernova = 0x01 << 3;
-static constexpr uint32_t kZdsr = 0x01 << 4;
-static constexpr uint32_t kZoomtext = 0x01 << 5;
-static constexpr uint32_t kUia = 0x01 << 6;  // API support, not a specific AT.
-static constexpr uint32_t kStickyKeys = 0x01 << 7;
+enum class AccessibilityTarget {
+  kStickyKeys,
+  kUia,
+  kJaws,
+  kNarrator,
+  kNvda,
+  kSupernova,
+  kZoomText,
+  kZdsr,
+};
 
-// Returns a bitfield indicating the set of assistive techs that are active.
-uint32_t DiscoverAssistiveTech() {
-  uint32_t discovered_ats = 0;
+struct ModuleVersion {
+  uint16_t major = 0, minor = 0, build = 0, revision = 0;
+
+  bool IsLowerThan(const ModuleVersion& other) const {
+    if (major != other.major) {
+      return major < other.major;
+    }
+    if (minor != other.minor) {
+      return minor < other.minor;
+    }
+    if (build != other.build) {
+      return build < other.build;
+    }
+    return revision < other.revision;
+  }
+
+  std::string ToString() const {
+    return base::StringPrintf("%u.%u.%u.%u", major, minor, build, revision);
+  }
+};
+
+struct AssistiveTechInfo {
+  AccessibilityTarget tech;
+  std::optional<ModuleVersion> version;
+};
+
+std::optional<ModuleVersion> GetModuleVersion(const std::wstring& filename) {
+  DWORD dummy = 0;
+  DWORD size = ::GetFileVersionInfoSizeW(filename.c_str(), &dummy);
+  if (size == 0) {
+    return std::nullopt;
+  }
+
+  std::vector<BYTE> buffer(size);
+  if (!::GetFileVersionInfoW(filename.c_str(), dummy, size, buffer.data())) {
+    return std::nullopt;
+  }
+
+  VS_FIXEDFILEINFO* ffi = nullptr;
+  UINT len = 0;
+  if (::VerQueryValueW(buffer.data(), L"\\", reinterpret_cast<void**>(&ffi),
+                       &len) &&
+      len != 0 && ffi->dwSignature == VS_FFI_SIGNATURE) {
+    uint16_t major = HIWORD(ffi->dwProductVersionMS);
+    uint16_t minor = LOWORD(ffi->dwProductVersionMS);
+    uint16_t build = HIWORD(ffi->dwProductVersionLS);
+    uint16_t revision = LOWORD(ffi->dwProductVersionLS);
+    return ModuleVersion{major, minor, build, revision};
+  }
+  return std::nullopt;
+}
+
+// Returns a vector of all Assistive Technologies that are currently running,
+// and their versions if available. We return a vector instead of a map
+// because it's technically possible to have multiple versions of the same
+// AT running at the same time.
+std::vector<AssistiveTechInfo> DiscoverAssistiveTech() {
+  std::vector<AssistiveTechInfo> discovered_ats;
 
   // NOTE: this method is run from another thread to reduce jank, since
   // there's no guarantee these system calls will return quickly.
@@ -56,7 +113,7 @@ uint32_t DiscoverAssistiveTech() {
   STICKYKEYS sticky_keys = {.cbSize = sizeof(STICKYKEYS)};
   SystemParametersInfo(SPI_GETSTICKYKEYS, 0, &sticky_keys, 0);
   if (sticky_keys.dwFlags & SKF_STICKYKEYSON) {
-    discovered_ats |= kStickyKeys;
+    discovered_ats.push_back({AccessibilityTarget::kStickyKeys, std::nullopt});
   }
 
   // Narrator detection. Narrator is not injected in process so it needs to be
@@ -66,13 +123,14 @@ uint32_t DiscoverAssistiveTech() {
                         KEY_QUERY_VALUE)
           .ReadValueDW(kNarratorRunningStateValueName, &narrator_value) &&
       narrator_value) {
-    discovered_ats |= kNarrator;
+    discovered_ats.push_back({AccessibilityTarget::kNarrator, std::nullopt});
   }
 
   std::vector<HMODULE> snapshot;
   if (!base::win::GetLoadedModulesSnapshot(::GetCurrentProcess(), &snapshot)) {
     return discovered_ats;
   }
+
   TCHAR filename[MAX_PATH];
   for (HMODULE module : snapshot) {
     auto name_length =
@@ -80,29 +138,36 @@ uint32_t DiscoverAssistiveTech() {
     if (name_length == 0 || name_length >= std::size(filename)) {
       continue;
     }
+
     std::string module_name(base::FilePath(filename).BaseName().AsUTF8Unsafe());
     if (base::EqualsCaseInsensitiveASCII(module_name, "fsdomsrv.dll")) {
-      discovered_ats |= kJaws;
+      discovered_ats.push_back(
+          {AccessibilityTarget::kJaws, GetModuleVersion(filename)});
     }
     if (base::EqualsCaseInsensitiveASCII(module_name,
                                          "vbufbackend_gecko_ia2.dll") ||
         base::EqualsCaseInsensitiveASCII(module_name, "nvdahelperremote.dll")) {
-      discovered_ats |= kNvda;
+      discovered_ats.push_back(
+          {AccessibilityTarget::kNvda, GetModuleVersion(filename)});
     }
     if (base::EqualsCaseInsensitiveASCII(module_name, "dolwinhk.dll")) {
-      discovered_ats |= kSupernova;
+      discovered_ats.push_back(
+          {AccessibilityTarget::kSupernova, GetModuleVersion(filename)});
     }
     if (base::EqualsCaseInsensitiveASCII(module_name, "outhelper.dll") ||
         base::EqualsCaseInsensitiveASCII(module_name, "outhelper_x64.dll")) {
-      discovered_ats |= kZdsr;  // Zhengdu screen reader.
+      discovered_ats.push_back(
+          {AccessibilityTarget::kZdsr, GetModuleVersion(filename)});
     }
     if (base::EqualsCaseInsensitiveASCII(module_name, "zslhook.dll") ||
         base::EqualsCaseInsensitiveASCII(module_name, "zslhook64.dll")) {
-      discovered_ats |= kZoomtext;
+      discovered_ats.push_back(
+          {AccessibilityTarget::kZoomText, GetModuleVersion(filename)});
     }
     if (base::EqualsCaseInsensitiveASCII(module_name, "uiautomation.dll") ||
         base::EqualsCaseInsensitiveASCII(module_name, "uiautomationcore.dll")) {
-      discovered_ats |= kUia;
+      discovered_ats.push_back(
+          {AccessibilityTarget::kUia, GetModuleVersion(filename)});
     }
   }
 
@@ -235,7 +300,8 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
   void OnUiaProviderRequested(bool uia_provider_enabled) override;
 
  private:
-  void OnDiscoveredAssistiveTech(uint32_t discovered_ats);
+  void OnDiscoveredAssistiveTech(
+      const std::vector<AssistiveTechInfo>& discovered_ats);
 
   std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
 
@@ -269,23 +335,33 @@ void BrowserAccessibilityStateImplWin::RefreshAssistiveTech() {
 }
 
 void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
-    uint32_t discovered_ats) {
+    const std::vector<AssistiveTechInfo>& at_infos) {
   awaiting_known_assistive_tech_computation_ = false;
 
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinJAWS", (discovered_ats & kJaws) != 0);
+  // Helper lambda to check for a specific AT.
+  auto HasTarget = [&at_infos](AccessibilityTarget target) -> bool {
+    for (const auto& info : at_infos) {
+      if (info.tech == target) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinJAWS",
+                        HasTarget(AccessibilityTarget::kJaws));
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNarrator",
-                        (discovered_ats & kNarrator) != 0);
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNVDA", (discovered_ats & kNvda) != 0);
+                        HasTarget(AccessibilityTarget::kNarrator));
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNVDA",
+                        HasTarget(AccessibilityTarget::kNvda));
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinSupernova",
-                        (discovered_ats & kZdsr) != 0);
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZDSR",
-                        (discovered_ats & kZoomtext) != 0);
+                        HasTarget(AccessibilityTarget::kSupernova));
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZoomText",
-                        (discovered_ats & kJaws) != 0);
+                        HasTarget(AccessibilityTarget::kZoomText));
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinAPIs.UIAutomation",
-                        (discovered_ats & kUia) != 0);
+                        HasTarget(AccessibilityTarget::kUia));
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinStickyKeys",
-                        (discovered_ats & kStickyKeys) != 0);
+                        HasTarget(AccessibilityTarget::kStickyKeys));
 
   static auto* ax_jaws_crash_key = base::debug::AllocateCrashKeyString(
       "ax_jaws", base::debug::CrashKeySize::Size32);
@@ -303,7 +379,7 @@ void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
       "ax_ui_automation", base::debug::CrashKeySize::Size32);
 
   // API support library, not an actual AT.
-  if (discovered_ats & kUia) {
+  if (HasTarget(AccessibilityTarget::kUia)) {
     base::debug::SetCrashKeyString(ax_uia_crash_key, "true");
   } else {
     base::debug::ClearCrashKeyString(ax_uia_crash_key);
@@ -314,42 +390,42 @@ void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
   // because screen readers have the strongest effect on the user experience.
   ui::AssistiveTech most_important_assistive_tech = ui::AssistiveTech::kNone;
 
-  if (discovered_ats & kZoomtext) {
+  if (HasTarget(AccessibilityTarget::kZoomText)) {
     base::debug::SetCrashKeyString(ax_zoomtext_crash_key, "true");
     most_important_assistive_tech = ui::AssistiveTech::kZoomText;
   } else {
     base::debug::ClearCrashKeyString(ax_zoomtext_crash_key);
   }
 
-  if (discovered_ats & kJaws) {
+  if (HasTarget(AccessibilityTarget::kJaws)) {
     base::debug::SetCrashKeyString(ax_jaws_crash_key, "true");
     most_important_assistive_tech = ui::AssistiveTech::kJaws;
   } else {
     base::debug::ClearCrashKeyString(ax_jaws_crash_key);
   }
 
-  if (discovered_ats & kNarrator) {
-    most_important_assistive_tech = ui::AssistiveTech::kNarrator;
+  if (HasTarget(AccessibilityTarget::kNarrator)) {
     base::debug::SetCrashKeyString(ax_narrator_crash_key, "true");
+    most_important_assistive_tech = ui::AssistiveTech::kNarrator;
   } else {
     base::debug::ClearCrashKeyString(ax_narrator_crash_key);
   }
 
-  if (discovered_ats & kNvda) {
-    most_important_assistive_tech = ui::AssistiveTech::kNvda;
+  if (HasTarget(AccessibilityTarget::kNvda)) {
     base::debug::SetCrashKeyString(ax_nvda_crash_key, "true");
+    most_important_assistive_tech = ui::AssistiveTech::kNvda;
   } else {
     base::debug::ClearCrashKeyString(ax_nvda_crash_key);
   }
 
-  if (discovered_ats & kSupernova) {
+  if (HasTarget(AccessibilityTarget::kSupernova)) {
     base::debug::SetCrashKeyString(ax_supernova_crash_key, "true");
     most_important_assistive_tech = ui::AssistiveTech::kSupernova;
   } else {
     base::debug::ClearCrashKeyString(ax_supernova_crash_key);
   }
 
-  if (discovered_ats & kZdsr) {
+  if (HasTarget(AccessibilityTarget::kZdsr)) {
     base::debug::SetCrashKeyString(ax_zdsr_crash_key, "true");
     most_important_assistive_tech = ui::AssistiveTech::kZdsr;
   } else {
