@@ -15598,6 +15598,21 @@
             ]
         }
     ],
+    "OfferPinToTaskbarWhenSettingDefault": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OfferPinToTaskbarWhenSettingDefault"
+                    ]
+                }
+            ]
+        }
+    ],
     "OidcAuthProfileManagement": [
         {
             "platforms": [
