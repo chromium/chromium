@@ -119,6 +119,7 @@ public class ReadAloudMetrics {
         ReasonForStoppingPlayback.ACTIVITY_ATTACHEMENT_CHANGED,
         ReasonForStoppingPlayback.EXTERNAL_PLAYBACK_REQUEST,
         ReasonForStoppingPlayback.TAB_CLOSED,
+        ReasonForStoppingPlayback.PLAYBACK_MODE_CHANGE,
     })
     public @interface ReasonForStoppingPlayback {
         int UNKNOWN_REASON = 0;
