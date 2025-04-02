@@ -1526,36 +1526,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.SyntheticResponse.AllHeadersExpected"
-    enum="Boolean" expires_after="2025-08-10">
-  <owner>sisidovski@chromium.org</owner>
-  <owner>chrome-loading@google.com</owner>
-  <summary>
-    Records whether the response headers from SERP are consistent with the ones
-    that the browser internally expects in `GWSPageLoadMetricsObserver`. If
-    either of them is mismatched from the expected one, or the expected header
-    does not actually exist, or there is an unexpected header in the actual SERP
-    header list, this is reported with `false`. This indicates the potential hit
-    rate of synthetic response for SERP.
-
-    This is recorded at the timing of navigation commit.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Clients.GoogleSearch.SyntheticResponse.HeaderMismatchType"
-    enum="HeaderMismatchType" expires_after="2025-08-01">
-  <owner>sisidovski@chromium.org</owner>
-  <owner>chrome-loading@google.com</owner>
-  <summary>
-    When the response headers from SERP are mismatched from the expected ones,
-    reports the bitmask of mismatched type.
-
-    This is recorded at the timing of navigation commit.
-  </summary>
-</histogram>
-
-<histogram
     name="PageLoad.Clients.GoogleSearch{Granularity}.PaintTiming.NavigationToLargestContentfulPaint"
     units="ms" expires_after="2025-08-17">
   <owner>spelchat@chromium.org</owner>
