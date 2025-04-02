@@ -45,9 +45,8 @@
        .addTick();
     await actions.send();
 
-    assert_equals(document.activeElement, document.body,
-      "Invalid permission element should not be focusable even by user.\
-      Instead the parent elements gets focus.");
+    assert_equals(document.activeElement, invalid_permission_element,
+      "Permission elements with an invalid-type can be focused like any other HTML element");
 }, "Permission element is not focusable by script");
 </script>
 </body>

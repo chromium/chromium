@@ -159,6 +159,10 @@
       Symbol: "kPseudoInternalDatetimeContainer",
     },
     {
+      name: "-internal-permission-fallback-slot",
+      Symbol: "kPseudoInternalPermissionFallbackSlot",
+    },
+    {
       name: "-internal-permission-text",
       Symbol: "kPseudoInternalPermissionTextSpan",
     },

@@ -466,6 +466,13 @@ class CORE_EXPORT HTMLPermissionElement final
   // time of the events to match the recently_attached cooldown time.
   std::optional<base::TimeDelta> GetRecentlyAttachedTimeoutRemaining() const;
 
+  // When the element's type is invalid it enters "fallback" mode where it
+  // starts behaving more or less like a HTMLUnknownElement. Child nodes are no
+  // longer hidden and it no longer handles DOMActivation events to trigger
+  // permission requests. Once fallback mode is entered the element does not
+  // revert back.
+  void EnableFallbackMode();
+
   bool IsClickingDisabledIndefinitely(DisableReason reason) const {
     auto it = clicking_disabled_reasons_.find(reason);
     return it != clicking_disabled_reasons_.end() &&
@@ -559,6 +566,9 @@ class CORE_EXPORT HTMLPermissionElement final
   // base::TimeTicks::Max()), which is the timetick of the longest alive
   // temporary disabling reason in `clicking_disabled_reasons_`.
   DisableReasonExpireTimer disable_reason_expire_timer_;
+
+  // Whether the elements has entered fallback mode. See |EnableFallbackMode|.
+  bool fallback_mode_ = false;
 };
 
 // The custom type casting is required for the PermissionElement OT because the
