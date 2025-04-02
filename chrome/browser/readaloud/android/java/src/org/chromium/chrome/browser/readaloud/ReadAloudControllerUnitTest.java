@@ -364,16 +364,6 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
-    public void testDontHidePlayer_nonTabSwitcherUi() {
-        requestAndStartPlayback();
-        mLayoutStateObserver.getValue().onStartedShowing(LayoutType.START_SURFACE);
-        verify(mPlayerCoordinator, never()).hidePlayers();
-
-        mLayoutStateObserver.getValue().onFinishedHiding(LayoutType.START_SURFACE);
-        verify(mPlayerCoordinator, never()).restorePlayers();
-    }
-
-    @Test
     public void testHidePlayer_FullScreen() {
         requestAndStartPlayback();
         mFullscreenObserver.getValue().onEnterFullscreen(mTab, new FullscreenOptions(true, true));
