@@ -1165,6 +1165,10 @@ const char kDisableProcessReuseDescription[] =
     "unrelated tabs. This is an experimental mode that will result in more "
     "processes being created.";
 
+const char kDisableSystemBlur[] = "Disable system blur";
+const char kDisableSystemBlurDescription[] =
+    "Removes background blur from system UI";
+
 const char kDisallowDocWrittenScriptsUiName[] =
     "Block scripts loaded via document.write";
 const char kDisallowDocWrittenScriptsUiDescription[] =

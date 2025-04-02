@@ -611,6 +611,9 @@ extern const char kClipboardContentsIdDescription[];
 extern const char kDisableProcessReuse[];
 extern const char kDisableProcessReuseDescription[];
 
+extern const char kDisableSystemBlur[];
+extern const char kDisableSystemBlurDescription[];
+
 extern const char kDoubleBufferCompositingName[];
 extern const char kDoubleBufferCompositingDescription[];
 
