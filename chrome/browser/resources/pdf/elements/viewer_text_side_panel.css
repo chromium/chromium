@@ -12,8 +12,6 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --cr-icon-button-margin-end: 6px;
-  --cr-icon-button-margin-start: 6px;
   --cr-radio-group-item-padding: 6px;
 }
 
@@ -43,7 +41,7 @@ cr-icon-button.active {
   border-radius: 50%;
 }
 
-cr-radio-group, .style-buttons {
+cr-radio-group, text-styles-selector {
   padding-top: 16px;
 }
 

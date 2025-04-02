@@ -590,6 +590,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2TextSidePanel) {
   RunTestsInJsModule("ink2_text_side_panel_test.js", "test.pdf");
 }
 
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2TextStylesSelector) {
+  RunTestsInJsModule("ink2_text_styles_selector_test.js", "test.pdf");
+}
+
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2BrushSelector) {
   RunTestsInJsModule("ink2_brush_selector_test.js", "test.pdf");
 }
