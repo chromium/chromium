@@ -307,6 +307,41 @@ struct EffectNode {
   // image.
   cc.mojom.ElementId? backdrop_mask_element_id;
 
+  bool cache_render_surface;
+  // Whether the contents should continue to be visible when rotated such that
+  // its back face is facing toward the camera. It's true by default.
+  bool double_sided;
+  bool trilinear_filtering;
+
+  // TODO(crbug.com/40461368): Delete this after implementation of
+  // SetHideLayerAndSubtree is cleaned up.
+  bool subtree_hidden;
+  // Whether this node has a potentially running (i.e., irrespective
+  // of exact timeline) filter animation.
+  bool has_potential_filter_animation;
+  // Whether this node has a potentially running (i.e., irrespective
+  // of exact timeline) backdrop-filter animation.
+  bool has_potential_backdrop_filter_animation;
+  // Whether this node has a potentially running (i.e., irrespective
+  // of exact timeline) opacity animation.
+  bool has_potential_opacity_animation;
+
+  // If set, the node's subtree has a copy request and the layer should
+  // not be skipped for draw property computation.
+  // TODO(crbug.com/406652614): Compute subtree_has_copy_request in
+  // EffectTree::UpdateEffects() instead of serializing it.
+  bool subtree_has_copy_request;
+
+  // If set, the effect node tries to not trigger a render surface due to it
+  // having a rounded corner.
+  bool is_fast_rounded_corner;
+  // True if a backdrop effect may be present on this effect (and therefore
+  // any side-effects on ancestors should be taken into account).
+  bool may_have_backdrop_effect;
+  // Whether this effect is related to a non-identity 2D scale transform (and no
+  // other transform).
+  bool has_2d_scale_transform;
+
   // The CopyOutputRequests that have been made for this node.
   array<CopyOutputRequest> copy_output_requests;
 };

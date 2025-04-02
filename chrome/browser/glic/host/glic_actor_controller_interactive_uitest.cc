@@ -40,8 +40,7 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   ~GlicActorControllerUiTest() override = default;
 
   void SetUpOnMainThread() override {
-    embedded_test_server()->ServeFilesFromSourceDirectory(
-        "chrome/test/data/actor");
+    embedded_test_server()->ServeFilesFromSourceDirectory(actor::kTestDataPath);
     test::InteractiveGlicTest::SetUpOnMainThread();
   }
 
@@ -169,6 +168,26 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
       ExecuteActionExpectingError(
           encodedProto, UpdatedContextOptions(),
           glic::mojom::ActInFocusedTabErrorReason::kTargetNotFound));
+}
+
+// TODO(crbug.com/402730309): Test is hangs flakily in a CopyOutputRequest for
+// the observation, unrelated to the HistoryTool code. Re-enable once that's
+// resolved.
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, DISABLED_HistoryTool) {
+  std::string encodedProtoBack = EncodeActionProto(actor::MakeHistoryBack());
+  std::string encodedProtoForward =
+      EncodeActionProto(actor::MakeHistoryForward());
+  const GURL url_1 = embedded_test_server()->GetURL("/blank.html?1");
+  const GURL url_2 = embedded_test_server()->GetURL("/blank.html?2");
+
+  RunTestSequence(InstrumentTab(kActiveTabId),
+                  NavigateWebContents(kActiveTabId, url_1),
+                  NavigateWebContents(kActiveTabId, url_2),
+                  OpenGlicWindow(GlicWindowMode::kAttached),
+                  ExecuteAction(encodedProtoBack, UpdatedContextOptions()),
+                  WaitForWebContentsReady(kActiveTabId, url_1),
+                  ExecuteAction(encodedProtoForward, UpdatedContextOptions()),
+                  WaitForWebContentsReady(kActiveTabId, url_2));
 }
 
 class GlicActorControllerWithActorDisabledUiTest

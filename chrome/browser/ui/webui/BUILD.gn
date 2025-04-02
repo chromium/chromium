@@ -84,6 +84,8 @@ source_set("webui") {
   sources = [
     "constrained_web_dialog_ui.cc",
     "constrained_web_dialog_ui.h",
+    "current_channel_logo.cc",
+    "current_channel_logo.h",
   ]
 
   sources += get_target_outputs(":webui_url_hashes")

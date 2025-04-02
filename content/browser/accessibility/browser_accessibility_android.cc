@@ -55,6 +55,15 @@ enum {
   ANDROID_VIEW_VIEW_ACCESSIBILITY_LIVE_REGION_ASSERTIVE = 2
 };
 
+// These are enums from android.view.accessibility.AccessibilityNodeInfo in
+// Java:
+enum {
+  ANDROID_VIEW_ACCESSIBILITY_EXPANDED_STATE_UNDEFINED = 0,
+  ANDROID_VIEW_ACCESSIBILITY_EXPANDED_STATE_COLLAPSED = 1,
+  ANDROID_VIEW_ACCESSIBILITY_EXPANDED_STATE_PARTIAL = 2,
+  ANDROID_VIEW_ACCESSIBILITY_EXPANDED_STATE_FULL = 3,
+};
+
 // These are enums from
 // android.view.accessibility.AccessibilityNodeInfo.RangeInfo in Java:
 enum { ANDROID_VIEW_ACCESSIBILITY_RANGE_TYPE_FLOAT = 1 };
@@ -221,6 +230,7 @@ bool BrowserAccessibilityAndroid::IsCollection() const {
     case ax::mojom::Role::kTree:
     case ax::mojom::Role::kMenu:
     case ax::mojom::Role::kMenuBar:
+    case ax::mojom::Role::kMenuListPopup:
       return true;
     default:
       return ui::IsTableLike(GetRole());
@@ -236,6 +246,7 @@ bool BrowserAccessibilityAndroid::IsCollectionItem() const {
     case ax::mojom::Role::kMenuItem:
     case ax::mojom::Role::kMenuItemCheckBox:
     case ax::mojom::Role::kMenuItemRadio:
+    case ax::mojom::Role::kMenuListOption:
       return true;
     default:
       return ui::IsCellOrTableHeader(GetRole());
@@ -555,6 +566,18 @@ int BrowserAccessibilityAndroid::ClickableScore() const {
     case ax::mojom::DefaultActionVerb::kNone:
     default:
       return kNotClickable;
+  }
+}
+
+int BrowserAccessibilityAndroid::ExpandedState() const {
+  if (IsExpanded() && IsCollapsed()) {
+    return ANDROID_VIEW_ACCESSIBILITY_EXPANDED_STATE_PARTIAL;
+  } else if (IsExpanded()) {
+    return ANDROID_VIEW_ACCESSIBILITY_EXPANDED_STATE_FULL;
+  } else if (IsCollapsed()) {
+    return ANDROID_VIEW_ACCESSIBILITY_EXPANDED_STATE_COLLAPSED;
+  } else {
+    return ANDROID_VIEW_ACCESSIBILITY_EXPANDED_STATE_UNDEFINED;
   }
 }
 
@@ -1438,13 +1461,30 @@ int BrowserAccessibilityAndroid::GetSelectedItemCount() const {
 int BrowserAccessibilityAndroid::GetSelectionMode() const {
   if (IsMultiselectable()) {
     return ANDROID_VIEW_ACCESSIBILITY_SELECTION_MODE_MULTIPLE;
-  } else if (HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb) &&
-             (GetData().GetDefaultActionVerb() ==
-              ax::mojom::DefaultActionVerb::kSelect)) {
+  } else if (HasSelectActionVerbChildren()) {
     return ANDROID_VIEW_ACCESSIBILITY_SELECTION_MODE_SINGLE;
   } else {
     return ANDROID_VIEW_ACCESSIBILITY_SELECTION_MODE_NONE;
   }
+}
+
+bool BrowserAccessibilityAndroid::HasSelectActionVerb() const {
+  return HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb) &&
+         (GetData().GetDefaultActionVerb() ==
+          ax::mojom::DefaultActionVerb::kSelect);
+}
+
+bool BrowserAccessibilityAndroid::HasSelectActionVerbChildren() const {
+  // This is called from IsLeaf, so don't call PlatformChildCount
+  // from within this!
+  for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
+    BrowserAccessibilityAndroid* child =
+        static_cast<BrowserAccessibilityAndroid*>(it.get());
+    if (child->HasSelectActionVerb()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool BrowserAccessibilityAndroid::CanScrollForward() const {
@@ -1793,15 +1833,15 @@ int BrowserAccessibilityAndroid::ColumnCount() const {
     return 0;
   }
 
-  // For <ol> and <ul> elements on Android (e.g. role kList, kListBox, kMenu and
-  // kMenuBar), the AX code will consider these 0 columns, but on Android they
-  // are 1.
+  // For <ol> and <ul> elements on Android (e.g. role kList, kListBox, kMenu,
+  // kMenuBar and kMenuListPopup), the AX code may consider these 0 columns (or
+  // more if the element is inside of a table), but on Android they are 1.
   int ax_cols = node()->GetTableColCount().value_or(0);
   if (GetRole() == ax::mojom::Role::kList ||
       GetRole() == ax::mojom::Role::kListBox ||
       GetRole() == ax::mojom::Role::kMenu ||
-      GetRole() == ax::mojom::Role::kMenuBar) {
-    DCHECK_EQ(ax_cols, 0);
+      GetRole() == ax::mojom::Role::kMenuBar ||
+      GetRole() == ax::mojom::Role::kMenuListPopup) {
     ax_cols = 1;
   }
 

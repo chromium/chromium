@@ -23,6 +23,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessibility/view_ax_platform_node_delegate.h"
 #include "ui/views/controls/button/button.h"
@@ -186,9 +187,10 @@ TEST_F(AXVirtualViewTest, FocusableAndEnabledState) {
 TEST_F(AXVirtualViewTest, VirtualLabelIsChildOfButton) {
   EXPECT_EQ(1u, GetButtonAccessibility()->GetChildCount());
   EXPECT_EQ(0u, virtual_label_->GetChildCount());
-  ASSERT_NE(nullptr, virtual_label_->GetParent());
+  ASSERT_NE(gfx::NativeViewAccessible(), virtual_label_->GetParent());
   EXPECT_EQ(button_->GetNativeViewAccessible(), virtual_label_->GetParent());
-  ASSERT_NE(nullptr, GetButtonAccessibility()->ChildAtIndex(0));
+  ASSERT_NE(gfx::NativeViewAccessible(),
+            GetButtonAccessibility()->ChildAtIndex(0));
   EXPECT_EQ(virtual_label_->GetNativeObject(),
             GetButtonAccessibility()->ChildAtIndex(0));
 }
@@ -206,16 +208,16 @@ TEST_F(AXVirtualViewTest, RemoveFromParentView) {
   ASSERT_EQ(1u, GetButtonAccessibility()->GetChildCount());
   std::unique_ptr<AXVirtualView> removed_label =
       std::exchange(virtual_label_, nullptr)->RemoveFromParentView();
-  EXPECT_EQ(nullptr, removed_label->GetParent());
+  EXPECT_EQ(gfx::NativeViewAccessible(), removed_label->GetParent());
   EXPECT_TRUE(GetButtonAccessibility()->virtual_children().empty());
 
   AXVirtualView* virtual_child_1 = new AXVirtualView;
   removed_label->AddChildView(base::WrapUnique(virtual_child_1));
   ASSERT_EQ(1u, removed_label->GetChildCount());
-  ASSERT_NE(nullptr, virtual_child_1->GetParent());
+  ASSERT_NE(gfx::NativeViewAccessible(), virtual_child_1->GetParent());
   std::unique_ptr<AXVirtualView> removed_child_1 =
       virtual_child_1->RemoveFromParentView();
-  EXPECT_EQ(nullptr, removed_child_1->GetParent());
+  EXPECT_EQ(gfx::NativeViewAccessible(), removed_child_1->GetParent());
   EXPECT_EQ(0u, removed_label->GetChildCount());
 }
 
@@ -256,9 +258,9 @@ TEST_F(AXVirtualViewTest, AddingAndRemovingVirtualChildren) {
   AXVirtualView* virtual_child_1 = new AXVirtualView;
   virtual_label_->AddChildView(base::WrapUnique(virtual_child_1));
   EXPECT_EQ(1u, virtual_label_->GetChildCount());
-  ASSERT_NE(nullptr, virtual_child_1->GetParent());
+  ASSERT_NE(gfx::NativeViewAccessible(), virtual_child_1->GetParent());
   EXPECT_EQ(virtual_label_->GetNativeObject(), virtual_child_1->GetParent());
-  ASSERT_NE(nullptr, virtual_label_->ChildAtIndex(0));
+  ASSERT_NE(gfx::NativeViewAccessible(), virtual_label_->ChildAtIndex(0));
   EXPECT_EQ(virtual_child_1->GetNativeObject(),
             virtual_label_->ChildAtIndex(0));
   ExpectReceivedAccessibilityEvents({std::make_pair(
@@ -267,9 +269,9 @@ TEST_F(AXVirtualViewTest, AddingAndRemovingVirtualChildren) {
   AXVirtualView* virtual_child_2 = new AXVirtualView;
   virtual_label_->AddChildView(base::WrapUnique(virtual_child_2));
   EXPECT_EQ(2u, virtual_label_->GetChildCount());
-  ASSERT_NE(nullptr, virtual_child_2->GetParent());
+  ASSERT_NE(gfx::NativeViewAccessible(), virtual_child_2->GetParent());
   EXPECT_EQ(virtual_label_->GetNativeObject(), virtual_child_2->GetParent());
-  ASSERT_NE(nullptr, virtual_label_->ChildAtIndex(1));
+  ASSERT_NE(gfx::NativeViewAccessible(), virtual_label_->ChildAtIndex(1));
   EXPECT_EQ(virtual_child_2->GetNativeObject(),
             virtual_label_->ChildAtIndex(1));
   ExpectReceivedAccessibilityEvents({std::make_pair(
@@ -280,9 +282,9 @@ TEST_F(AXVirtualViewTest, AddingAndRemovingVirtualChildren) {
   EXPECT_EQ(2u, virtual_label_->GetChildCount());
   EXPECT_EQ(0u, virtual_child_1->GetChildCount());
   EXPECT_EQ(1u, virtual_child_2->GetChildCount());
-  ASSERT_NE(nullptr, virtual_child_3->GetParent());
+  ASSERT_NE(gfx::NativeViewAccessible(), virtual_child_3->GetParent());
   EXPECT_EQ(virtual_child_2->GetNativeObject(), virtual_child_3->GetParent());
-  ASSERT_NE(nullptr, virtual_child_2->ChildAtIndex(0));
+  ASSERT_NE(gfx::NativeViewAccessible(), virtual_child_2->ChildAtIndex(0));
   EXPECT_EQ(virtual_child_3->GetNativeObject(),
             virtual_child_2->ChildAtIndex(0));
   ExpectReceivedAccessibilityEvents({std::make_pair(
@@ -319,20 +321,20 @@ TEST_F(AXVirtualViewTest, ReorderingVirtualChildren) {
   virtual_label_->ReorderChildView(virtual_child_1, 100);
   ASSERT_EQ(2u, virtual_label_->GetChildCount());
   EXPECT_EQ(virtual_label_->GetNativeObject(), virtual_child_2->GetParent());
-  ASSERT_NE(nullptr, virtual_label_->ChildAtIndex(0));
+  ASSERT_NE(gfx::NativeViewAccessible(), virtual_label_->ChildAtIndex(0));
   EXPECT_EQ(virtual_child_2->GetNativeObject(),
             virtual_label_->ChildAtIndex(0));
-  ASSERT_NE(nullptr, virtual_label_->ChildAtIndex(1));
+  ASSERT_NE(gfx::NativeViewAccessible(), virtual_label_->ChildAtIndex(1));
   EXPECT_EQ(virtual_child_1->GetNativeObject(),
             virtual_label_->ChildAtIndex(1));
 
   virtual_label_->ReorderChildView(virtual_child_1, 0);
   ASSERT_EQ(2u, virtual_label_->GetChildCount());
   EXPECT_EQ(virtual_label_->GetNativeObject(), virtual_child_1->GetParent());
-  ASSERT_NE(nullptr, virtual_label_->ChildAtIndex(0));
+  ASSERT_NE(gfx::NativeViewAccessible(), virtual_label_->ChildAtIndex(0));
   EXPECT_EQ(virtual_child_1->GetNativeObject(),
             virtual_label_->ChildAtIndex(0));
-  ASSERT_NE(nullptr, virtual_label_->ChildAtIndex(1));
+  ASSERT_NE(gfx::NativeViewAccessible(), virtual_label_->ChildAtIndex(1));
   EXPECT_EQ(virtual_child_2->GetNativeObject(),
             virtual_label_->ChildAtIndex(1));
 
@@ -412,8 +414,9 @@ TEST_F(AXVirtualViewTest, InvisibleVirtualViews) {
 
 TEST_F(AXVirtualViewTest, OverrideFocus) {
   ViewAccessibility& button_accessibility = button_->GetViewAccessibility();
-  ASSERT_NE(nullptr, button_accessibility.GetNativeObject());
-  ASSERT_NE(nullptr, virtual_label_->GetNativeObject());
+  ASSERT_NE(gfx::NativeViewAccessible(),
+            button_accessibility.GetNativeObject());
+  ASSERT_NE(gfx::NativeViewAccessible(), virtual_label_->GetNativeObject());
   ExpectReceivedAccessibilityEvents({});
 
   button_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
@@ -473,10 +476,10 @@ TEST_F(AXVirtualViewTest, OverrideFocus) {
   button_->SetFocusBehavior(View::FocusBehavior::NEVER);
   button_->RequestFocus();
   ExpectReceivedAccessibilityEvents({});
-  EXPECT_EQ(nullptr, virtual_label_->GetFocus());
-  EXPECT_EQ(nullptr, virtual_child_1->GetFocus());
-  EXPECT_EQ(nullptr, virtual_child_2->GetFocus());
-  EXPECT_EQ(nullptr, virtual_child_3->GetFocus());
+  EXPECT_EQ(gfx::NativeViewAccessible(), virtual_label_->GetFocus());
+  EXPECT_EQ(gfx::NativeViewAccessible(), virtual_child_1->GetFocus());
+  EXPECT_EQ(gfx::NativeViewAccessible(), virtual_child_2->GetFocus());
+  EXPECT_EQ(gfx::NativeViewAccessible(), virtual_child_3->GetFocus());
 
   button_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   button_->RequestFocus();
@@ -564,33 +567,33 @@ TEST_F(AXVirtualViewTest, TreeNavigation) {
   EXPECT_EQ(virtual_child_1->GetNativeObject(),
             virtual_label_->GetFirstChild());
   EXPECT_EQ(virtual_child_3->GetNativeObject(), virtual_label_->GetLastChild());
-  EXPECT_EQ(nullptr, virtual_child_1->GetFirstChild());
-  EXPECT_EQ(nullptr, virtual_child_1->GetLastChild());
+  EXPECT_EQ(gfx::NativeViewAccessible(), virtual_child_1->GetFirstChild());
+  EXPECT_EQ(gfx::NativeViewAccessible(), virtual_child_1->GetLastChild());
   EXPECT_EQ(virtual_child_4->GetNativeObject(),
             virtual_child_2->GetFirstChild());
   EXPECT_EQ(virtual_child_4->GetNativeObject(),
             virtual_child_2->GetLastChild());
-  EXPECT_EQ(nullptr, virtual_child_4->GetFirstChild());
-  EXPECT_EQ(nullptr, virtual_child_4->GetLastChild());
+  EXPECT_EQ(gfx::NativeViewAccessible(), virtual_child_4->GetFirstChild());
+  EXPECT_EQ(gfx::NativeViewAccessible(), virtual_child_4->GetLastChild());
 
-  EXPECT_EQ(nullptr, virtual_label_->GetNextSibling());
-  EXPECT_EQ(nullptr, virtual_label_->GetPreviousSibling());
+  EXPECT_EQ(gfx::NativeViewAccessible(), virtual_label_->GetNextSibling());
+  EXPECT_EQ(gfx::NativeViewAccessible(), virtual_label_->GetPreviousSibling());
 
   EXPECT_EQ(virtual_child_2->GetNativeObject(),
             virtual_child_1->GetNextSibling());
-  EXPECT_EQ(nullptr, virtual_child_1->GetPreviousSibling());
+  EXPECT_EQ(gfx::NativeViewAccessible(), virtual_child_1->GetPreviousSibling());
 
   EXPECT_EQ(virtual_child_3->GetNativeObject(),
             virtual_child_2->GetNextSibling());
   EXPECT_EQ(virtual_child_1->GetNativeObject(),
             virtual_child_2->GetPreviousSibling());
 
-  EXPECT_EQ(nullptr, virtual_child_3->GetNextSibling());
+  EXPECT_EQ(gfx::NativeViewAccessible(), virtual_child_3->GetNextSibling());
   EXPECT_EQ(virtual_child_2->GetNativeObject(),
             virtual_child_3->GetPreviousSibling());
 
-  EXPECT_EQ(nullptr, virtual_child_4->GetNextSibling());
-  EXPECT_EQ(nullptr, virtual_child_4->GetPreviousSibling());
+  EXPECT_EQ(gfx::NativeViewAccessible(), virtual_child_4->GetNextSibling());
+  EXPECT_EQ(gfx::NativeViewAccessible(), virtual_child_4->GetPreviousSibling());
 }
 
 TEST_F(AXVirtualViewTest, TreeNavigationWithIgnoredVirtualViews) {

@@ -56,7 +56,7 @@ CreateTokenFromPlaintext(uint64_t private_key, const std::string& plaintext) {
   ASSIGN_OR_RETURN(std::string u_compressed, ciphertext.u.ToBytesCompressed());
   ASSIGN_OR_RETURN(std::string e_compressed, ciphertext.e.ToBytesCompressed());
   return ip_protection::ProbabilisticRevealToken{
-      1, std::move(u_compressed), std::move(e_compressed), std::string(8, '0')};
+      1, std::move(u_compressed), std::move(e_compressed)};
 }
 
 }  // namespace
@@ -67,12 +67,13 @@ CreateTokenFromPlaintext(uint64_t private_key, const std::string& plaintext) {
 // key and ciphertext are returned from the issuer server.
 void CreateDoesNotCrash(const std::string& serialized_public_key,
                         const std::string& u,
-                        const std::string& e,
-                        const std::string& epoch_id) {
+                        const std::string& e) {
   auto crypter =
       ip_protection::IpProtectionProbabilisticRevealTokenCrypter::Create(
           serialized_public_key,
-          {ip_protection::ProbabilisticRevealToken{1, u, e, epoch_id}});
+          {
+              ip_protection::ProbabilisticRevealToken{1, u, e},
+          });
 }
 
 // Fuzz test for probabilistic reveal token randomization of ciphertexts.

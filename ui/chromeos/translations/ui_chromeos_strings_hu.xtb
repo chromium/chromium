@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">A köszönet jelét mutató ember</translation>
 <translation id="2088690981887365033">VPN-hálózat</translation>
 <translation id="209653272837065803">Nincs elég tárhely a fájlok szinkronizálásának folytatásához</translation>
-<translation id="2111134541987263231">Kapcsolja be az <ph name="BEGIN_BOLD" />Engedélyezés inkognitó módban<ph name="END_BOLD" /> beállítást.</translation>
 <translation id="2114191879048183086">A rendszer töröl <ph name="NUMBER_OF_ITEMS" /> fájlt, a visszaállításuk nem lehetséges.</translation>
 <translation id="2122305276694332719">A rejtett hálózatra való automatikus csatlakozás láthatóvá teszi mások számára az eszközt és bizonyos hálózati beállításokat, ezért nem ajánlott a használata.</translation>
 <translation id="2125607626296734455">khmer</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">Bolygó</translation>
 <translation id="2305020378527873881">A(z) <ph name="VOLUME_NAME" /> kiadása megtörtént.</translation>
 <translation id="2307462900900812319">Hálózat beállítása</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Nem található a(z) <ph name="BEGIN_LIST" /><ph name="END_LIST" /> azonosítójú bővítmény. Forduljon a rendszergazdához.}other{Nem találhatók a(z) <ph name="BEGIN_LIST" /><ph name="END_LIST" /> azonosítójú bővítmények. Forduljon a rendszergazdához.}}</translation>
 <translation id="2325650632570794183">Ez a fájltípus nem támogatott. Kérjük, látogasson el a Chrome Internetes áruházba olyan alkalmazás kereséséhez, amely meg tudja nyitni ezt a fájltípust.</translation>
 <translation id="2326539130272988168">bolgár</translation>
 <translation id="233822363739146957">Nincs elég tárhely az összes fájl szinkronizálásához</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">marathi</translation>
 <translation id="2923240520113693977">észt</translation>
 <translation id="2938685643439809023">mongol</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Hiányzó bővítmény}other{Hiányzó bővítmények}}</translation>
 <translation id="2943503720238418293">Rövidebb nevet adjon meg</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> formázása…</translation>
 <translation id="2951236788251446349">Medúza</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">Kész</translation>
 <translation id="3358452157379365236">Gitár</translation>
 <translation id="3368922792935385530">Kapcsolódva</translation>
-<translation id="3372635229069101468">Kattintson a <ph name="BEGIN_BOLD" />Részletek<ph name="END_BOLD" /> lehetőségre.</translation>
 <translation id="3382143449143186018">nepáli, InScript-billentyűzettel</translation>
 <translation id="338691029516748599"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, a rendszergazdája kezeli, csatlakozás</translation>
 <translation id="3408072735282270043">Aktiválás, <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">Egyszarvú</translation>
 <translation id="4131235941541910880">Helyezze a kukába azokat az elemeket, amelyekre nincs szüksége.</translation>
 <translation id="4134804435730168042">Hálózat száma: <ph name="NETWORK_INDEX" />., összes hálózat: <ph name="NETWORK_COUNT" />, hálózat neve: <ph name="NETWORK_NAME" />, hálózat szolgáltatója: <ph name="NETWORK_PROVIDER_NAME" />, Aktiválás eszközbeállítás után</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Kapcsolja be a következő bővítményt inkognitó módban:}other{Kapcsolja be a következő bővítményeket inkognitó módban:}}</translation>
 <translation id="4153015322587141338">Kattintson a kívánt fájlra a jobb egérgombbal, és válassza a(z) „<ph name="PIN_COMMAND" />” lehetőséget, így gyorsan hozzáférhet a polcon lévő fájlokhoz.</translation>
 <translation id="4157569377477607576">A rendszergazda által beállított házirend nem javasolja a következőket:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> áthelyezve.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">Mindkettő megtartása</translation>
 <translation id="4804827417948292437">Avokádó</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> elem visszaállítása</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Az inkognitó mód használatához szervezetének szüksége van egy bővítményre}other{Az inkognitó mód használatához szervezetének szüksége van bizonyos bővítményekre}}</translation>
 <translation id="4826849268470072925">tamil, ITRANS</translation>
-<translation id="482932175346970750">Írja be a <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> kifejezést a böngészőbe.</translation>
 <translation id="4843566743023903107">Chromebase-ek</translation>
 <translation id="4850886885716139402">Nézet</translation>
 <translation id="485316830061041779">német</translation>
@@ -561,7 +554,6 @@
     másokkal – mindezt egy helyen.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">A Google Drive-ról visszaállított fájlok</translation>
 <translation id="5278111733643988471">Az elem visszaállításához húzza a kukán kívülre, egy új mappába. Az elem eredeti „<ph name="PARENT_FOLDER_NAME" />” mappája törlésre került.</translation>
-<translation id="5283101102242354279">Bővítmény bekapcsolása inkognitó módban:</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5293615890992542006">Egy rendszergazdai házirend tiltja a fájl áthelyezését</translation>
 <translation id="5305688511332277257">Nincs telepítve</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, részletek</translation>
 <translation id="7246947237293279874">FTP-proxy</translation>
 <translation id="7248671827512403053">Alkalmazás</translation>
-<translation id="7252604552361840748">Keresse meg a fenti bővítményt.</translation>
 <translation id="7256405249507348194">Ismeretlen hiba: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Igénybe vehető szolgáltatások</translation>
 <translation id="7291818353625820805">Szeretne ismétlődő billentyűlenyomást? Kapcsolja ki az ékezeteket a billentyűzet beállításaiban.</translation>

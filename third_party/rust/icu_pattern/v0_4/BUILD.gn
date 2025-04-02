@@ -12,22 +12,23 @@ cargo_crate("lib") {
   crate_name = "icu_pattern"
   epoch = "0.4"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/icu_pattern-0.4.0/src/lib.rs"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/icu_pattern-v0_4/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-0.4.0/src/builder.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-0.4.0/src/common.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-0.4.0/src/double.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-0.4.0/src/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-0.4.0/src/frontend/databake.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-0.4.0/src/frontend/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-0.4.0/src/frontend/serde.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-0.4.0/src/implementations.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-0.4.0/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-0.4.0/src/multi_named.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-0.4.0/src/parser/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-0.4.0/src/parser/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-0.4.0/src/parser/token.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-0.4.0/src/single.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-v0_4/src/builder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-v0_4/src/common.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-v0_4/src/double.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-v0_4/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-v0_4/src/frontend/databake.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-v0_4/src/frontend/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-v0_4/src/frontend/serde.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-v0_4/src/implementations.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-v0_4/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-v0_4/src/multi_named.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-v0_4/src/parser/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-v0_4/src/parser/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-v0_4/src/parser/token.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-v0_4/src/single.rs",
   ]
   inputs = []
 

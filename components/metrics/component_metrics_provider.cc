@@ -172,6 +172,8 @@ SystemProfileProto_ComponentId ComponentMetricsProvider::CrxIdToComponentId(
        SystemProfileProto_ComponentId_MASKED_DOMAIN_LIST},
       {"kgdbnmlfakkebekbaceapiaenjgmlhan",
        SystemProfileProto_ComponentId_FINGERPRINTING_PROTECTION_FILTER_RULES},
+      {"lbimbicckdokpoicboneldipejkhjgdg",
+       SystemProfileProto_ComponentId_TRANSLATE_KIT},
   });
 
   const auto result = kComponentMap.find(app_id);

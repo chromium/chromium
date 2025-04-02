@@ -641,7 +641,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AndroidDeviceAccountsNumberWhenEnteringFRE"
-    units="count" expires_after="2025-07-27">
+    units="count" expires_after="2025-09-28">
   <owner>bsazonov@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1288,6 +1288,19 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.Extensions.ExplicitSigninFromExtensionInstallBubble"
+    enum="BooleanIsNewOptIn" expires_after="2026-04-11">
+  <owner>kelvinjiang@chromium.org</owner>
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records whether the user explicitly signed in through the extension install
+    bubble entry point for the first time or if they have previously done so
+    before in the same profile. Recorded upon signing in through the extension
+    install bubble entry point only.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Extensions.GaiaRemoteConsentFlowResult"
     enum="GaiaRemoteConsentFlowResult" expires_after="2025-06-05">
   <owner>alexilin@chromium.org</owner>
@@ -1634,16 +1647,6 @@ prefs when the profile is loaded.  -->
   </token>
 </histogram>
 
-<histogram name="Signin.Intercept.HeuristicLatency" units="ms"
-    expires_after="2025-05-11">
-  <owner>ljjlee@google.com</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Records the latency for determining the signin interception heuristic, which
-    runs for each signin interception.
-  </summary>
-</histogram>
-
 <histogram name="Signin.Intercept.HeuristicOutcome"
     enum="SigninInterceptHeuristicOutcome" expires_after="2025-09-14">
   <owner>droger@chromium.org</owner>
@@ -1846,6 +1849,20 @@ prefs when the profile is loaded.  -->
     authentication cookies and that could be disrupted if an external force
     (e.g. Apple's ITP) were to remove these cookies. This logging is limited to
     once every hour due to performance constraints.
+  </summary>
+</histogram>
+
+<histogram name="Signin.IOSHostedDomainFetchEvent"
+    enum="IOSHostedDomainFetchEvent" expires_after="2026-03-01">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Records when fetching the hosted domain for an account starts or finishes,
+    while determining which profile to assign the account into. A fetch is
+    started as soon as an account is detected (i.e. independent of Chrome signin
+    state), if the hosted domain isn't locally cached already. Only recorded if
+    kSeparateProfilesForManagedAccounts is enabled.
   </summary>
 </histogram>
 
@@ -2609,7 +2626,7 @@ OAuth Multilogin call. -->
 </histogram>
 
 <histogram name="Signin.SigninManager.SigninAccessPoint"
-    enum="SigninAccessPoint" expires_after="2025-07-27">
+    enum="SigninAccessPoint" expires_after="2025-09-28">
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

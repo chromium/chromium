@@ -19,11 +19,7 @@ class SelectBnplIssuerView;
 class SelectBnplIssuerDialogControllerImpl
     : public SelectBnplIssuerDialogController {
  public:
-  SelectBnplIssuerDialogControllerImpl(
-      std::vector<BnplIssuerContext> issuer_contexts,
-      std::string app_locale,
-      base::OnceCallback<void(const std::string&)> selected_issuer_callback,
-      base::OnceClosure cancel_callback);
+  SelectBnplIssuerDialogControllerImpl();
   SelectBnplIssuerDialogControllerImpl(
       const SelectBnplIssuerDialogControllerImpl&) = delete;
   SelectBnplIssuerDialogControllerImpl& operator=(
@@ -32,14 +28,18 @@ class SelectBnplIssuerDialogControllerImpl
 
   // Show the dialog with the given issuers.
   void ShowDialog(base::OnceCallback<std::unique_ptr<SelectBnplIssuerView>()>
-                      create_and_show_dialog_callback);
+                      create_and_show_dialog_callback,
+                  std::vector<BnplIssuerContext> issuer_contexts,
+                  std::string app_locale,
+                  base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+                  base::OnceClosure cancel_callback);
 
   base::WeakPtr<SelectBnplIssuerDialogControllerImpl> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
   // SelectBnplIssuerDialogController:
-  void OnIssuerSelected(const std::string& issuer_id) override;
+  void OnIssuerSelected(BnplIssuer issuer) override;
   void OnUserCancelled() override;
   void Dismiss() override;
   const std::vector<BnplIssuerContext>& GetIssuerContexts() const override;
@@ -57,10 +57,10 @@ class SelectBnplIssuerDialogControllerImpl
   // selection view.
   std::vector<BnplIssuerContext> issuer_contexts_;
 
-  const std::string app_locale_;
+  std::string app_locale_;
 
   // Callback invoked when the user confirmed an issuer to use.
-  base::OnceCallback<void(const std::string&)> selected_issuer_callback_;
+  base::OnceCallback<void(BnplIssuer)> selected_issuer_callback_;
 
   // Callback invoked when the user cancelled the dialog.
   base::OnceClosure cancel_callback_;

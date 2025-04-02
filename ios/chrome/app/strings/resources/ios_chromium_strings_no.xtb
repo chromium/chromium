@@ -91,6 +91,7 @@ For å se flere innstillinger som bruker data for å forbedre Chromium-opplevels
 <translation id="3054480780637153380">Åpne Chromium-innstillingene i iOS, trykk på «Standard nettleserapp», og velg Chromium.</translation>
 <translation id="3102849287235003384">For å logge av Google-kontoen din på alle nettsteder, <ph name="BEGIN_LINK" />logg av Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Vil du gjøre Chromium til standardnettleseren din?</translation>
+<translation id="3180939591219927904">Slå på «Lås inkognitofaner når du lukker Chromium»</translation>
 <translation id="3242612358525156339">Åpne «<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />» i enhetsinnstillingene, og velg «Chromium»</translation>
 <translation id="328933489847748230">{count,plural, =1{Viser nå 1 Chromium-vindu}other{Viser nå {count} Chromium-vinduer}}</translation>
 <translation id="3344973607274501920">Chromium kunne ikke sjekke passordene dine. Se om du er koblet til internett.</translation>
@@ -260,6 +261,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">De valgte dataene er fjernet fra Chromium og alle synkroniserte enheter. Det kan hende Google-kontoen din har andre typer nettleserlogger, for eksempel for søk og aktivitet fra andre Google-tjenester, på history.google.com.</translation>
 <translation id="7395825497086981028">Passordet blir lagret i Passordlagring for <ph name="EMAIL" />.</translation>
+<translation id="7504829997542308412">Åpne Chromium</translation>
 <translation id="7531461704633548377">Fra Chromium</translation>
 <translation id="7554983317097061001">Chromium-tips: Flytt Chromium til dokken</translation>
 <translation id="7576863740961052505">Administrer Chromium-innstillingene</translation>

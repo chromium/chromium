@@ -406,24 +406,31 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     // after the settings UI was created.
     return;
   }
+  constexpr signin_metrics::ProfileSignout metricSignOut =
+      signin_metrics::ProfileSignout::kUserClickedSignoutSettings;
+
+  __weak ManageSyncSettingsCoordinator* weakSelf = self;
   self.signoutActionSheetCoordinator = [[SignoutActionSheetCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
                             rect:targetRect
                             view:self.viewController.view
         forceSnackbarOverToolbar:NO
-                      withSource:signin_metrics::ProfileSignout::
-                                     kUserClickedSignoutSettings];
+                      withSource:metricSignOut
+                      completion:^(BOOL success) {
+                        [weakSelf handleSignOutCompleted:success];
+                      }];
   self.signoutActionSheetCoordinator.delegate = self;
-  __weak ManageSyncSettingsCoordinator* weakSelf = self;
-  self.signoutActionSheetCoordinator.signoutCompletion = ^(BOOL success) {
-    [weakSelf.signoutActionSheetCoordinator stop];
-    weakSelf.signoutActionSheetCoordinator = nil;
-    if (success) {
-      [weakSelf closeManageSyncSettings];
-    }
-  };
   [self.signoutActionSheetCoordinator start];
+}
+
+// Handles signout operation with `success` or failure.
+- (void)handleSignOutCompleted:(BOOL)success {
+  [self.signoutActionSheetCoordinator stop];
+  self.signoutActionSheetCoordinator = nil;
+  if (success) {
+    [self closeManageSyncSettings];
+  }
 }
 
 - (void)showAdressesNotEncryptedDialog {

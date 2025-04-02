@@ -72,6 +72,7 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.MessageUtils;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
@@ -981,6 +982,7 @@ public class TabGridDialogMediator
                     mActivity,
                     /* syncId= */ null,
                     new LocalTabGroupId(tabGroupId),
+                    CollaborationServiceShareOrManageEntryPoint.ANDROID_TAB_GRID_DIALOG_MANAGE,
                     /* createGroupFinishedCallback= */ null);
         } else if (menuId == R.id.recent_activity) {
             RecordUserAction.record("TabGridDialogMenu.RecentActivity");
@@ -1059,7 +1061,12 @@ public class TabGridDialogMediator
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
 
         TabUiUtils.startShareTabGroupFlow(
-                mActivity, filter, mDataSharingTabManager, mCurrentTabId, tabGroupDisplayName);
+                mActivity,
+                filter,
+                mDataSharingTabManager,
+                mCurrentTabId,
+                tabGroupDisplayName,
+                CollaborationServiceShareOrManageEntryPoint.DIALOG_TOOLBAR_BUTTON);
     }
 
     private void updateTabGroupId() {

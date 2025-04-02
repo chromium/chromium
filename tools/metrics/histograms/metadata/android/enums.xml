@@ -436,6 +436,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Disable Safe Browsing"/>
   <int value="7" label="Reset Component Updater"/>
   <int value="8" label="Disable Supervision Checks"/>
+  <int value="9" label="Disable Startup Tasks Logic"/>
 <!-- LINT.ThenChange(/android_webview/java/src/org/chromium/android_webview/common/SafeModeActionIds.java:SafeModeActionIds) -->
 
 </enum>
@@ -1113,7 +1114,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="SafetyTip"/>
   <int value="6" label="SaveAddressProfile"/>
   <int value="7" label="MerchantTrust"/>
-  <int value="9" label="SendTabToSelf"/>
+  <int value="9" label="(obsolete) SendTabToSelf"/>
   <int value="10" label="ReaderMode"/>
   <int value="11" label="ChromeSurvey"/>
   <int value="12" label="SaveCard"/>
@@ -2179,6 +2180,17 @@ chromium-metrics-reviews@google.com.
   <int value="39" label="WebViewClient.onScaleChanged"/>
 </enum>
 
+<!-- LINT.IfChange(WebViewChromiumStartupMode) -->
+
+<enum name="WebViewChromiumStartupMode">
+  <int value="0" label="FULLY_SYNC"/>
+  <int value="1" label="FULLY_ASYNC"/>
+  <int value="2" label="PARTIAL_ASYNC_THEN_SYNC"/>
+  <int value="3" label="ASYNC_BUT_FULLY_SYNC"/>
+</enum>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/android/histograms.xml:WebViewChromiumStartupMode) -->
+
 <enum name="WebViewClientMethod">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="boolean shouldOverrideUrlLoading(WebView, String)"/>
@@ -2334,9 +2346,14 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="WebViewShouldInterceptRequestOverridden">
-  <int value="0" label="shouldInterceptRequest is not overridden."/>
-  <int value="1" label="shouldInterceptRequest is overridden."/>
-  <int value="2" label="Error while determining if it was overridden."/>
+  <int value="0"
+      label="shouldInterceptRequest is not overridden by WebViewClient."/>
+  <int value="1"
+      label="shouldInterceptRequest is overridden by WebViewClient."/>
+  <int value="2"
+      label="Error while determining if it was overridden by WebViewClient."/>
+  <int value="3" label="ServiceWorkerClient is null."/>
+  <int value="4" label="ServiceWorkerClient is non-null."/>
 </enum>
 
 <enum name="WebViewStartupCallSite">

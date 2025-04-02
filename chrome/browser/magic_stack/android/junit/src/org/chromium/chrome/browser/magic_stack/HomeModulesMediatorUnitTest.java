@@ -610,58 +610,6 @@ public class HomeModulesMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
-    public void testGetFilteredEnabledModuleSet_CombineTabs_TabResumptionEnabled() {
-        ChromeFeatureList.sTabResumptionModuleAndroidCombineTabs.setForTesting(true);
-        Set<Integer> activeModules = HomeModulesMetricsUtils.getAllActiveModulesForTesting();
-        for (@ModuleType int moduleType : activeModules) {
-            mHomeModulesConfigManager.registerModuleEligibilityChecker(
-                    moduleType, mModuleConfigChecker);
-        }
-        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
-
-        // Verifies that the tab resumption module will be added to the list without the single tab
-        // module.
-        Set<Integer> expectedModuleSet =
-                Set.of(
-                        ModuleType.PRICE_CHANGE,
-                        ModuleType.TAB_RESUMPTION,
-                        ModuleType.SAFETY_HUB,
-                        ModuleType.AUXILIARY_SEARCH,
-                        ModuleType.DEFAULT_BROWSER_PROMO,
-                        ModuleType.TAB_GROUP_PROMO,
-                        ModuleType.TAB_GROUP_SYNC_PROMO,
-                        ModuleType.QUICK_DELETE_PROMO);
-        assertEquals(expectedModuleSet, mMediator.getFilteredEnabledModuleSet());
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures({
-        ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
-    })
-    public void testGetFilteredEnabledModuleSet_CombineTabs_TabResumptionDisabled() {
-        ChromeFeatureList.sTabResumptionModuleAndroidCombineTabs.setForTesting(true);
-        mHomeModulesConfigManager.registerModuleEligibilityChecker(
-                ModuleType.PRICE_CHANGE, mModuleConfigChecker);
-        mHomeModulesConfigManager.registerModuleEligibilityChecker(
-                ModuleType.SINGLE_TAB, mModuleConfigChecker);
-
-        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
-        // Verifies that the single tab module will be added to the set if the tab resumption
-        // feature flag is disabled.
-        Set<Integer> expectedModuleSet = Set.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
-        assertEquals(expectedModuleSet, mMediator.getFilteredEnabledModuleSet());
-
-        when(mModuleDelegateHost.isHomeSurface()).thenReturn(false);
-        // Verifies that the single tab module won't be added to the list if it isn't on home
-        // surface.
-        expectedModuleSet = Set.of(ModuleType.PRICE_CHANGE);
-        assertEquals(expectedModuleSet, mMediator.getFilteredEnabledModuleSet());
-    }
-
-    @Test
-    @SmallTest
     @EnableFeatures({
         ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER,
         ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2
@@ -732,8 +680,8 @@ public class HomeModulesMediatorUnitTest {
     @Test
     @SmallTest
     public void testInput() {
-        @ModuleType int moduleType = ModuleType.TAB_RESUMPTION;
-        String expectedFreshnessString = "tab_resumption_freshness";
+        @ModuleType int moduleType = ModuleType.SINGLE_TAB;
+        String expectedFreshnessString = "single_tab_freshness";
         TextUtils.equals(
                 expectedFreshnessString,
                 HomeModulesUtils.getFreshnessInputContextString(moduleType));

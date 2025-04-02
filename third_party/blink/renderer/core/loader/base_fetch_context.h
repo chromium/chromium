@@ -41,7 +41,9 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       const KURL&,
       const ResourceLoaderOptions&,
       ReportingDisposition,
-      base::optional_ref<const ResourceRequest::RedirectInfo>) const override;
+      base::optional_ref<const ResourceRequest::RedirectInfo>,
+      FetchParameters::HasPreloadedResponseCandidate
+          has_preloaded_response_candidate) const override;
   std::optional<ResourceRequestBlockedReason>
   CanRequestBasedOnSubresourceFilterOnly(
       ResourceType,
@@ -147,8 +149,9 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       const KURL&,
       const ResourceLoaderOptions&,
       ReportingDisposition,
-      base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info)
-      const;
+      base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info,
+      FetchParameters::HasPreloadedResponseCandidate
+          has_preloaded_response_candidate) const;
 
   std::optional<ResourceRequestBlockedReason> CheckCSPForRequestInternal(
       mojom::blink::RequestContextType,

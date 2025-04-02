@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">고맙다는 노래를 부르는 사람</translation>
 <translation id="2088690981887365033">VPN 네트워크</translation>
 <translation id="209653272837065803">저장공간이 부족하여 파일 동기화를 계속 진행할 수 없습니다.</translation>
-<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />시크릿 모드에서 허용<ph name="END_BOLD" />을 사용 설정합니다.</translation>
 <translation id="2114191879048183086">항목 <ph name="NUMBER_OF_ITEMS" />개가 삭제되며 복원할 수 없습니다.</translation>
 <translation id="2122305276694332719">숨겨진 네트워크에 자동 연결하면 다른 사용자가 내 기기 및 일부 네트워크 설정을 볼 수 있으므로 권장되지 않습니다.</translation>
 <translation id="2125607626296734455">크메르어</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">행성</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" />이(가) 제거되었습니다.</translation>
 <translation id="2307462900900812319">네트워크 설정</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{ID가 <ph name="BEGIN_LIST" /><ph name="END_LIST" />인 확장 프로그램을 찾을 수 없습니다. 관리자에게 문의하세요.}other{ID가 <ph name="BEGIN_LIST" /><ph name="END_LIST" />인 확장 프로그램을 찾을 수 없습니다. 관리자에게 문의하세요.}}</translation>
 <translation id="2325650632570794183">이 파일 형식은 지원되지 않습니다. Chrome 웹 스토어에서 이 파일 형식을 열 수 있는 앱을 검색하세요.</translation>
 <translation id="2326539130272988168">불가리아어</translation>
 <translation id="233822363739146957">저장공간이 부족하여 일부 파일을 동기화할 수 없습니다.</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">마라타어</translation>
 <translation id="2923240520113693977">에스토니아어</translation>
 <translation id="2938685643439809023">몽고어</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{확장 프로그램을 찾을 수 없음}other{확장 프로그램을 찾을 수 없음}}</translation>
 <translation id="2943503720238418293">더 짧은 이름을 입력해 주세요.</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" />을(를) 포맷 중...</translation>
 <translation id="2951236788251446349">해파리</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">완료</translation>
 <translation id="3358452157379365236">기타</translation>
 <translation id="3368922792935385530">연결됨</translation>
-<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />세부정보<ph name="END_BOLD" />를 클릭합니다.</translation>
 <translation id="3382143449143186018">네팔어(인스크립트 키보드)</translation>
 <translation id="338691029516748599">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 관리자가 관리함, 연결</translation>
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> 활성화</translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">유니콘</translation>
 <translation id="4131235941541910880">필요하지 않은 항목은 휴지통으로 옮기세요.</translation>
 <translation id="4134804435730168042">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, 기기 설정 후 활성화</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{시크릿 모드에서 다음 확장 프로그램을 사용 설정합니다.}other{시크릿 모드에서 다음 확장 프로그램을 사용 설정합니다.}}</translation>
 <translation id="4153015322587141338">파일을 마우스 오른쪽 버튼으로 클릭하고 앱 표시줄에서 파일에 빠르게 액세스할 수 있도록 "<ph name="PIN_COMMAND" />"을 선택합니다.</translation>
 <translation id="4157569377477607576">관리자 정책에서 권장되지 않는 사항:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> 항목을 이동했습니다.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">모두 보관</translation>
 <translation id="4804827417948292437">아보카도</translation>
 <translation id="4805966553127040832">항목 <ph name="COUNT" />개 복원 중</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{시크릿 모드를 사용하려면 조직에 확장 프로그램이 필요합니다}other{시크릿 모드를 사용하려면 조직에 일부 확장 프로그램이 필요합니다}}</translation>
 <translation id="4826849268470072925">타밀어(ITRANS)</translation>
-<translation id="482932175346970750">브라우저에 <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />를 입력합니다.</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">보기</translation>
 <translation id="485316830061041779">독일어</translation>
@@ -561,7 +554,6 @@
     공유하고 만들고 공동작업하세요.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Drive에서 복구된 파일</translation>
 <translation id="5278111733643988471">항목을 복원하려면 휴지통 외부의 새 폴더로 드래그하세요. 이 항목의 원래 폴더인 "<ph name="PARENT_FOLDER_NAME" />"이(가) 삭제되었습니다</translation>
-<translation id="5283101102242354279">시크릿 모드에서 확장 프로그램을 사용 설정하려면 다음 단계를 따르세요.</translation>
 <translation id="5288441970121584418">햄버거</translation>
 <translation id="5293615890992542006">관리자 정책에 의해 이 파일의 이동이 차단되었습니다.</translation>
 <translation id="5305688511332277257">설치된 인증서 없음</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, 세부정보</translation>
 <translation id="7246947237293279874">FTP 프록시</translation>
 <translation id="7248671827512403053">애플리케이션</translation>
-<translation id="7252604552361840748">위에 나열된 확장 프로그램을 찾습니다.</translation>
 <translation id="7256405249507348194">알 수 없는 오류(<ph name="DESC" />)입니다.</translation>
 <translation id="7268659760406822741">사용 가능한 서비스</translation>
 <translation id="7291818353625820805">키를 반복하고 싶으신가요? 키보드 설정에서 악센트 표시를 사용 중지하세요.</translation>

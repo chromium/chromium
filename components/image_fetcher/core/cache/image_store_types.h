@@ -33,7 +33,7 @@ enum class CacheOption {
 };
 
 // Returns the resulting raw image data as a std::string. Data will be returned
-// using move semantics. If |needs_transcoding| is true, this data must be
+// using move semantics. If `needs_transcoding` is true, this data must be
 // decoded in a sandbox process.
 using ImageDataCallback =
     base::OnceCallback<void(bool needs_transcoding, std::string)>;

@@ -134,6 +134,12 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   void CleanupSpares(
       std::optional<SpareRendererDispatchResult> dispatch_result);
 
+  // Gracefully removes and cleanups any extra spare RenderProcessHost beyond
+  // the first one. This is always a nop if the kMultipleSpareRPHs feature is
+  // disabled.
+  void CleanupExtraSpares(
+      std::optional<SpareRendererDispatchResult> dispatch_result);
+
   void SetDeferTimerTaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 

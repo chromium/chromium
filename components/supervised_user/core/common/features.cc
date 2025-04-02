@@ -148,7 +148,7 @@ BASE_FEATURE(kEnableSupervisedUserVersionSignOutDialog,
 
 BASE_FEATURE(kForceSupervisedUserReauthenticationForYouTube,
              "ForceSupervisedUserReauthenticationForYouTube",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/378636321): Clean-up this flag once
 // `ForceSupervisedUserReauthenticationForYouTube` is enabled.

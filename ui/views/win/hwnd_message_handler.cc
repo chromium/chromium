@@ -33,6 +33,7 @@
 #include "base/win/dark_mode_support.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/win_util.h"
+#include "base/win/windows_version.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_window_handle_event_info.pbzero.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -1803,6 +1804,13 @@ LRESULT HWNDMessageHandler::OnCreate(CREATESTRUCT* create_struct) {
     DwmExtendFrameIntoClientArea(hwnd(), &margins);
 
     ::SetProp(hwnd(), ui::kWindowTranslucent, reinterpret_cast<HANDLE>(1));
+  }
+
+  if (base::win::GetVersion() >= base::win::Version::WIN11 &&
+      use_rounded_corner_) {
+    DWM_WINDOW_CORNER_PREFERENCE corner_pref = DWMWCP_ROUND;
+    DwmSetWindowAttribute(hwnd(), DWMWA_WINDOW_CORNER_PREFERENCE, &corner_pref,
+                          sizeof(corner_pref));
   }
 
   fullscreen_handler_->set_hwnd(hwnd());

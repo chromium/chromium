@@ -1005,30 +1005,6 @@ ANDROID_GO_WEMBLEY = PerfPlatform('android-go-wembley-perf', 'Android U',
 ANDROID_GO_WEMBLEY_WEBVIEW = PerfPlatform(
     'android-go-wembley_webview-perf', 'Android U',
     _ANDROID_GO_WEBVIEW_BENCHMARK_CONFIGS, 20, 'android')
-ANDROID_NEW_PIXEL = PerfPlatform('android-new-pixel-perf',
-                                 'Android T',
-                                 PerfSuite([]),
-                                 1,
-                                 'android',
-                                 pinpoint_only=True)
-ANDROID_NEW_PIXEL_PGO = PerfPlatform('android-new-pixel-perf-pgo',
-                                     'Android T',
-                                     PerfSuite([]),
-                                     1,
-                                     'android',
-                                     pinpoint_only=True)
-ANDROID_NEW_PIXEL_PRO = PerfPlatform('android-new-pixel-pro-perf',
-                                     'Android T',
-                                     PerfSuite([]),
-                                     1,
-                                     'android',
-                                     pinpoint_only=True)
-ANDROID_NEW_PIXEL_PRO_PGO = PerfPlatform('android-new-pixel-pro-perf-pgo',
-                                         'Android T',
-                                         PerfSuite([]),
-                                         1,
-                                         'android',
-                                         pinpoint_only=True)
 
 # Cros
 FUCHSIA_PERF_NELSON = PerfPlatform('fuchsia-perf-nsn',

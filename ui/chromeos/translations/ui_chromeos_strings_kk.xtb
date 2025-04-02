@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">Рақмет деп ымдап жатқан адам</translation>
 <translation id="2088690981887365033">VPN желісі</translation>
 <translation id="209653272837065803">Файлдарды синхрондауды жалғастыру үшін жад көлемі жеткіліксіз.</translation>
-<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />Инкогнито режимінде рұқсат беру<ph name="END_BOLD" /> мүмкіндігін қосу</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> элемент жойылады және оларды қалпына келтіре алмайсыз.</translation>
 <translation id="2122305276694332719">Жасырын желіге автоматты түрде қосылсаңыз, басқалар сіздің құрылғыңызды және кейбір желілік параметрлеріңізді көре алады. Сондықтан жасырын желіге автоматты түрде қосылмағаныңыз жөн.</translation>
 <translation id="2125607626296734455">Кхмер</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> шығарылды.</translation>
 <translation id="2307462900900812319">Желіні реттеу</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> идентификаторы бар кеңейтімді табу мүмкін емес. Әкімшіңізге хабарласыңыз.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> идентификаторлары бар кеңейтімдерді табу мүмкін емес Әкімшіңізге хабарласыңыз.}}</translation>
 <translation id="2325650632570794183">Бұл файл түріне қолдау көрсетілмеген. Бұл файл түрін ашатын қолданбаны табу үшін Chrome веб-дүкеніне кіріңіз.</translation>
 <translation id="2326539130272988168">Болгар</translation>
 <translation id="233822363739146957">Барлық файлды синхрондау үшін жад көлемі жеткіліксіз.</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">Маратхи</translation>
 <translation id="2923240520113693977">эстон</translation>
 <translation id="2938685643439809023">монғол</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Кеңейтімді табу мүмкін емес}other{Кеңейтімдерді табу мүмкін емес}}</translation>
 <translation id="2943503720238418293">Қысқарақ атау енгізіңіз</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> форматталуда...</translation>
 <translation id="2951236788251446349">Медуза</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">Аяқталған</translation>
 <translation id="3358452157379365236">Гитара</translation>
 <translation id="3368922792935385530">Қосылған</translation>
-<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />Мәліметтер<ph name="END_BOLD" /> түймесін басыңыз</translation>
 <translation id="3382143449143186018">Непал (InScript пернетақтасымен)</translation>
 <translation id="338691029516748599"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, әкімшіңіз басқарады, қосылу</translation>
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> іске қосу</translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">Пырақ</translation>
 <translation id="4131235941541910880">Қажетсіз элементтерді себетке жіберіңіз.</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Құрылғыны орнатудан кейін белсендіру</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Инкогнито режимінде келесі кеңейтімді қосу:}other{Инкогнито режимінде келесі кеңейтімдерді қосу:}}</translation>
 <translation id="4153015322587141338">Сөредегі файлдарға жылдам кіру үшін файлды тінтуірдің оң жақ түймесімен басып, "<ph name="PIN_COMMAND" />" пәрменін таңдаңыз.</translation>
 <translation id="4157569377477607576">Әкімші саясаты бойынша ұсынылмайды:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> жылжытылды.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">Екеуін де сақтау</translation>
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> элемент қалпына келтірілуде…</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Инкогнито режимін пайдалану үшін ұйымыңыз кеңейтімді қажет етеді}other{Инкогнито режимін пайдалану үшін ұйымыңыз кейбір кеңейтімдерді қажет етеді}}</translation>
 <translation id="4826849268470072925">Тамиль (ITRANS)</translation>
-<translation id="482932175346970750">Браузеріңізге <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> деп теріңіз</translation>
 <translation id="4843566743023903107">Chromebase құрылғылары</translation>
 <translation id="4850886885716139402">Көрініс</translation>
 <translation id="485316830061041779">неміс</translation>
@@ -561,7 +554,6 @@
     басқалармен бірлесіп жұмыс істеңіз.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Drive жүйесінен қалпына келтірілген файлдар</translation>
 <translation id="5278111733643988471">Бұл элементті қалпына келтіру үшін оны себеттен жаңа қалтаға сүйреңіз. Элементке арналған "<ph name="PARENT_FOLDER_NAME" />" деп аталатын бастапқы қалта жойылған.</translation>
-<translation id="5283101102242354279">Инкогнито режимінде кеңейтімді қосу:</translation>
 <translation id="5288441970121584418">Бургер</translation>
 <translation id="5293615890992542006">Әкімші саясаты бұл файлды тасымалдауға тыйым салды.</translation>
 <translation id="5305688511332277257">Ешбірі орнатылмаған</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Мәліметтер</translation>
 <translation id="7246947237293279874">FTP прокси-сервері</translation>
 <translation id="7248671827512403053">Қолданба</translation>
-<translation id="7252604552361840748">Жоғарыдағы кеңейтімді табу</translation>
 <translation id="7256405249507348194">Танылмаған қате: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Қолжетімді қызметтер</translation>
 <translation id="7291818353625820805">Таңбалар қайталанып енгізілуі керек пе? Пернетақта параметрлерінде екпін белгілерін өшіріңіз.</translation>

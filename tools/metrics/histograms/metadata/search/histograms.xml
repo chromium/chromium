@@ -288,6 +288,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.AuxiliarySearch.TopSites.ExpirationDuration" units="ms"
+    expires_after="2025-09-15">
+  <owner>hanxi@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the expiration duration of the lastest fetch results of the most
+    visited sites. The histogram is logged when Chrome is paused and a set of
+    documents are built to donate for the auxiliary search. Android-only.
+  </summary>
+</histogram>
+
 <histogram name="Search.ChoiceDebug.ScrollStateWithMoreButtonClick"
     enum="SearchEngineChoiceScrollState" expires_after="2025-08-24">
   <owner>jyammine@google.com</owner>
@@ -1383,8 +1395,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.SaveGuestModeEligible" enum="BooleanEligible"
-    expires_after="2025-04-06">
+    expires_after="2025-09-01">
   <owner>dullweber@chromium.org</owner>
+  <owner>dgn@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
     Records whether the guest profile that showed a search engine choice dialog
@@ -1395,8 +1408,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.SaveGuestModeSelection" enum="BooleanYesNo"
-    expires_after="2025-08-10">
+    expires_after="2025-09-01">
   <owner>dullweber@chromium.org</owner>
+  <owner>dgn@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
     Records whether users chose to save the Guest search engine. Recorded for

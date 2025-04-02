@@ -1474,6 +1474,9 @@ class CONTENT_EXPORT WebContentsImpl
   // Called by WebContentsAndroid to send the Display Cutout safe area to
   // DisplayCutoutHostImpl.
   void SetDisplayCutoutSafeArea(gfx::Insets insets);
+  // Called by WebContentsAndroid to send the context menu insets over to
+  // the RenderWidgetHostView, and on to the Page.
+  void SetContextMenuInsets(gfx::Rect);
 #endif
 
   // Notify observers that the viewport fit value changed. This is called by

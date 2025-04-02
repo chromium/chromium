@@ -204,11 +204,7 @@ TEST_F(RegionalCapabilitiesServiceClientTest,
 #endif
 
 TEST_F(RegionalCapabilitiesServiceClientTest, GetFallbackCountryId) {
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   RegionalCapabilitiesServiceClient client(/* variations_service= */ nullptr);
-#else
-  RegionalCapabilitiesServiceClient client;
-#endif
 
   EXPECT_EQ(client.GetFallbackCountryId(),
             country_codes::GetCurrentCountryID());
@@ -217,7 +213,7 @@ TEST_F(RegionalCapabilitiesServiceClientTest, GetFallbackCountryId) {
 #if BUILDFLAG(IS_ANDROID)
 
 TEST_F(RegionalCapabilitiesServiceClientTest, FetchCountryId_Sync) {
-  RegionalCapabilitiesServiceClient client;
+  RegionalCapabilitiesServiceClient client(/* variations_service= */ nullptr);
 
   TestSupportAndroid test_support;
   test_support.ReturnDeviceCountry(kBelgiumCountryCode);
@@ -231,7 +227,7 @@ TEST_F(RegionalCapabilitiesServiceClientTest, FetchCountryId_Sync) {
 }
 
 TEST_F(RegionalCapabilitiesServiceClientTest, FetchCountryId_Async) {
-  RegionalCapabilitiesServiceClient client;
+  RegionalCapabilitiesServiceClient client(/* variations_service= */ nullptr);
 
   TestSupportAndroid test_support;
 
@@ -248,7 +244,7 @@ TEST_F(RegionalCapabilitiesServiceClientTest, FetchCountryId_Async) {
 }
 
 TEST_F(RegionalCapabilitiesServiceClientTest, FetchCountryId_Failure) {
-  RegionalCapabilitiesServiceClient client;
+  RegionalCapabilitiesServiceClient client(/* variations_service= */ nullptr);
 
   TestSupportAndroid test_support;
   test_support.TriggerDeviceCountryFailure();

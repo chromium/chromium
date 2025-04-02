@@ -13,9 +13,9 @@ cargo_crate("lib") {
   epoch = "0.1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/core_maths-0.1.1/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/core_maths-v0_1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/core_maths-0.1.1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core_maths-v0_1/src/lib.rs",
   ]
   inputs = []
 

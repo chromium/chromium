@@ -18,6 +18,8 @@
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/page_action_menu/page_action_menu_entrypoint_view.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_entrypoint_view.h"
@@ -130,7 +132,11 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   // faded out) and defocus transitions (when it is faded in).
   UIView* _fakeboxButtonsSnapshot;
 
+  // The location bar button to access Lens.
   LensOverlayEntrypointButton* _lensOverlayPlaceholderView;
+
+  // The location bar button to access the page action menu.
+  PageActionMenuEntrypointView* _pageActionMenuEntrypointView;
 }
 
 #pragma mark - public
@@ -238,7 +244,9 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   DCHECK(self.badgeView) << "The badge view must be set at this point";
   [self.locationBarSteadyView setBadgeView:self.badgeView];
 
-  if (IsLensOverlayAvailable(_profilePrefs)) {
+  if (IsPageActionMenuEnabled()) {
+    _pageActionMenuEntrypointView = [[PageActionMenuEntrypointView alloc] init];
+  } else if (IsLensOverlayAvailable(_profilePrefs)) {
     _lensOverlayPlaceholderView = [[LensOverlayEntrypointButton alloc]
         initWithProfilePrefs:_profilePrefs];
     [self.layoutGuideCenter referenceView:_lensOverlayPlaceholderView
@@ -1026,6 +1034,11 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
       break;
     case LocationBarPlaceholderType::kLensOverlay:
       self.locationBarSteadyView.placeholderView = _lensOverlayPlaceholderView;
+      break;
+    case LocationBarPlaceholderType::kPageActionMenu:
+      CHECK(IsPageActionMenuEnabled());
+      self.locationBarSteadyView.placeholderView =
+          _pageActionMenuEntrypointView;
       break;
   }
 }

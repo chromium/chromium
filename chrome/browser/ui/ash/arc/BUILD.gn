@@ -88,6 +88,7 @@ source_set("browser_tests") {
     ":arc",
     "//base",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/link_capturing:test_support",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/chromeos/arc",
     "//chrome/browser/ui",

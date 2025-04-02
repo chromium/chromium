@@ -73,6 +73,8 @@ TEST_F(SharedCrdSessionImplTest, StartCrdHostShouldStartSharedSession) {
   input_parameters.allow_file_transfer = false;
   input_parameters.show_confirmation_dialog = false;
   input_parameters.terminate_upon_input = false;
+  input_parameters.allow_remote_input = false;
+  input_parameters.allow_clipboard_sync = false;
 
   ASSERT_FALSE(delegate().HasActiveSession());
   shared_crd_session_->StartCrdHost(input_parameters,
@@ -89,6 +91,10 @@ TEST_F(SharedCrdSessionImplTest, StartCrdHostShouldStartSharedSession) {
             output_parameters.show_confirmation_dialog);
   ASSERT_EQ(input_parameters.terminate_upon_input,
             output_parameters.terminate_upon_input);
+  ASSERT_EQ(input_parameters.allow_remote_input,
+            output_parameters.allow_remote_input);
+  ASSERT_EQ(input_parameters.allow_clipboard_sync,
+            output_parameters.allow_clipboard_sync);
   ASSERT_EQ("robot@account.com", output_parameters.user_name);
 }
 

@@ -148,8 +148,9 @@ int AddLoginButtonSeparator(views::View* scroller_content,
                             const std::unique_ptr<views::View>& button) {
   auto separator = std::make_unique<views::Separator>();
   separator->SetBorder(views::CreateEmptyBorder(
-      is_multi_idp ? gfx::Insets::TLBR(0, kLoginButtonSeparatorLeftMargin, 0,
-                                       kLoginButtonSeparatorRightMargin)
+      is_multi_idp ? gfx::Insets::TLBR(
+                         kTopBottomPadding, kLoginButtonSeparatorLeftMargin,
+                         kTopBottomPadding, kLoginButtonSeparatorRightMargin)
                    : gfx::Insets::VH(kVerticalSpacing + kTopBottomPadding, 0)));
   int separator_size = separator->GetPreferredSize().height();
   scroller_content->AddChildView(std::move(separator));
@@ -179,10 +180,15 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
       rp_context_(rp_context) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_fixed_width(kBubbleWidth);
+  // If `idp_title` is std::nullopt, we are going to show multi-IDP UI. DCHECK
+  // that we do not get to this when the flag is disabled.
+  DCHECK(
+      idp_title.has_value() ||
+      base::FeatureList::IsEnabled(features::kFedCmMultipleIdentityProviders));
   set_margins(idp_title.has_value()
                   ? gfx::Insets::VH(kTopBottomPadding + kVerticalSpacing, 0)
                   : gfx::Insets::TLBR(kTopBottomPadding + kVerticalSpacing, 0,
-                                      kVerticalSpacing, 0));
+                                      kTopBottomPadding, 0));
   // TODO(crbug.com/40224637): we are currently using a custom header because
   // the icon, title, and close buttons from a bubble are not customizable
   // enough to satisfy the UI requirements. However, this adds complexity to the
@@ -191,12 +197,6 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
   SetShowTitle(false);
   SetShowCloseButton(false);
   set_close_on_deactivate(false);
-
-  // If `idp_title` is std::nullopt, we are going to show multi-IDP UI. DCHECK
-  // that we do not get to this when the flag is disabled.
-  DCHECK(
-      idp_title.has_value() ||
-      base::FeatureList::IsEnabled(features::kFedCmMultipleIdentityProviders));
 
   title_ = GetTitle(rp_for_display_, idp_title, rp_context);
   SetAccessibleTitle(title_);

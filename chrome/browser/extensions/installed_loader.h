@@ -14,10 +14,12 @@ class Profile;
 
 namespace extensions {
 
+class Extension;
 class ExtensionPrefs;
 class ExtensionRegistry;
-class ExtensionService;
 struct ExtensionInfo;
+class ExtensionManagement;
+class ManagementPolicy;
 
 // Used in histogram Extensions.HostPermissions.GrantedAccess,
 // Extensions.HostPermissions.GrantedAccessForBroadRequests and
@@ -38,8 +40,7 @@ enum class HostPermissionsAccess {
 // Loads installed extensions from the prefs.
 class InstalledLoader {
  public:
-  // TODO(crbug.com/404917682): Pass a Profile instead of ExtensionService.
-  explicit InstalledLoader(ExtensionService* extension_service);
+  explicit InstalledLoader(Profile* profile);
   virtual ~InstalledLoader();
 
   // Loads extension from prefs.
@@ -50,6 +51,15 @@ class InstalledLoader {
 
   // Loads all installed extensions (used by testing code).
   void LoadAllExtensions(Profile* profile);
+
+  // Record a histogram using the PermissionMessage enum values for each
+  // permission in |e|.
+  // NOTE: If this is ever called with high frequency, the implementation may
+  // need to be made more efficient.
+  static void RecordPermissionMessagesHistogram(
+      const Extension* extension,
+      const char* histogram,
+      bool log_user_profile_histograms);
 
   // Allows tests to verify metrics without needing to go through
   // LoadAllExtensions().
@@ -69,10 +79,23 @@ class InstalledLoader {
   // installed. This causes incremented histograms to emit.
   void RecordExtensionsMetrics(Profile* profile, bool is_user_profile);
 
-  raw_ptr<ExtensionService> extension_service_;
+  // Handles a load request for a corrupted extension.
+  void HandleCorruptExtension(const Extension& extension,
+                              const ManagementPolicy& policy);
+
+  // Returns true if this extension's update URL is from webstore, including any
+  // policy overrides.
+  bool UpdatesFromWebstore(const Extension& extension);
+
+  raw_ptr<Profile> profile_;
   raw_ptr<ExtensionRegistry> extension_registry_;
 
   raw_ptr<ExtensionPrefs> extension_prefs_;
+
+  // ExtensionManager pointer is cached for performance as we loop through
+  // extensions.
+  // TODO(crbug.com/394876083): Port ExtensionManagement to desktop Android.
+  raw_ptr<ExtensionManagement> extension_management_ = nullptr;
 
   // Paths to invalid extension manifests, which should not be loaded.
   std::set<base::FilePath> invalid_extensions_;

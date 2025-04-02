@@ -3,7 +3,7 @@ URL: https://crates.io/crates/winapi-util
 Version: 0.1.9
 Revision: 1ba3b31fedf941f345732331dada2362245c97f4
 License: MIT
-License File: //third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.9/LICENSE-MIT
+License File: //third_party/rust/chromium_crates_io/vendor/winapi-util-v0_1/LICENSE-MIT
 Shipped: no
 Security Critical: yes
 

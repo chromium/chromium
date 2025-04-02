@@ -15,12 +15,13 @@
 #include "chrome/browser/ui/tabs/test/mock_tab_interface.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
-#include "chrome/browser/ui/views/page_action/mock_page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"
+#include "chrome/browser/ui/views/page_action/test_support/mock_page_action_model.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_properties.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/vector_icons/vector_icons.h"
@@ -101,8 +102,8 @@ class PageActionViewWithControllerTest : public ChromeViewsTestBase {
 
   std::unique_ptr<PageActionController> NewPageActionController(
       tabs::TabInterface& tab) const {
-    auto controller =
-        std::make_unique<PageActionController>(pinned_actions_model_.get());
+    auto controller = std::make_unique<PageActionController>(
+        GetPageActionControllerTestProperties(), pinned_actions_model_.get());
     controller->Initialize(tab, {action_item_->GetActionId().value()});
     return controller;
   }

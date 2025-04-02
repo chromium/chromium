@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Файлът на манифеста е невалиден</translation>
 <translation id="7217838517480956708">Администраторът на тази машина изисква разширението <ph name="EXTENSION_NAME" /> да е инсталирано. То не може да бъде премахнато или променено.</translation>
 <translation id="7612608473764576263">Въведената стойност за частния ключ трябва да е във валиден формат (RSA ключ, кодиран в PEM, във формат PKCS#8).</translation>
+<translation id="7876803335449432072">Файлът <ph name="RELATIVE_PATH" /> за скрипта за съдържание не се зареди. Стиловите листове за скрипта за съдържание могат да се зареждат само от поддържани файлове (например .css) за стилови листове.</translation>
 <translation id="7939686037314084444">Разширението не се зареди правилно. То може да не е в състояние да прехваща мрежовите заявки.</translation>
 <translation id="7972881773422714442">Опции: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Предна</translation>
 <translation id="8047248493720652249">Това разширение не успя да наименува изтеглянето „<ph name="ATTEMPTED_FILENAME" />“, защото друго разширение (<ph name="EXTENSION_NAME" />) определи различно файлово име – „<ph name="ACTUAL_FILENAME" />“.</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> от <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Файлът на манифеста липсва или не може да бъде прочетен</translation>
+<translation id="8621383749470166852">Файлът <ph name="RELATIVE_PATH" /> за скрипта за съдържание не се зареди. Скриптовете за съдържание могат да се зареждат само от поддържани JavaScript файлове (например .js).</translation>
 <translation id="8636666366616799973">Пакетът е невалиден. Подробности: „<ph name="ERROR_MESSAGE" />“.</translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> иска достъп до едно от устройствата ви:</translation>
 <translation id="8885905466771744233">Вече съществува личен ключ за посоченото разширение. Използвайте го отново или първо го изтрийте.</translation>

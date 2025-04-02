@@ -73,6 +73,7 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/app:command_ids",
+      "//chrome/browser:browser_process",
       "//chrome/browser:primitives",
       "//chrome/browser/bitmap_fetcher",
       "//chrome/browser/extensions/api/omnibox",
@@ -84,6 +85,7 @@ source_set("impl") {
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/hats:hats",
       "//chrome/browser/ui/lens:lens",
+      "//chrome/common",
       "//components/bookmarks/browser",
       "//components/favicon/content",
       "//components/favicon/core",

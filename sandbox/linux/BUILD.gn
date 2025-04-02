@@ -295,15 +295,6 @@ if (is_linux || is_chromeos) {
       "suid/process_util_linux.c",
       "suid/sandbox.c",
     ]
-
-    cflags = [
-      # For ULLONG_MAX
-      "-std=gnu99",
-
-      # These files have a suspicious comparison.
-      # TODO fix this and re-enable this warning.
-      "-Wno-sign-compare",
-    ]
   }
 }
 

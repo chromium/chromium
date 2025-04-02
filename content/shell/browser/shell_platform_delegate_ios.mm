@@ -227,14 +227,16 @@ std::unique_ptr<content::ScopedAccessibilityMode> _scoped_accessibility_mode;
   ]];
 
   _contentView.translatesAutoresizingMaskIntoConstraints = NO;
+
   [NSLayoutConstraint activateConstraints:@[
     [_contentView.topAnchor
         constraintEqualToAnchor:_headerBackgroundView.bottomAnchor],
     [_contentView.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor],
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
     [_contentView.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
-    [_contentView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
+    [_contentView.bottomAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor],
   ]];
 
   // Enable Accessibility if VoiceOver is already running.

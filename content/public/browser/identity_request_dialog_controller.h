@@ -159,8 +159,9 @@ class CONTENT_EXPORT IdentityRequestDialogController {
     kBackPress = 6,
     // Android-specific
     kTapScrim = 7,
+    kSuppressed = 8,
 
-    kMaxValue = kTapScrim,
+    kMaxValue = kSuppressed,
   };
 
   // A Java counterpart will be generated for this enum.

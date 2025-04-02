@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/platform/browser_accessibility_manager_mac.h"
 
+#include "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -135,8 +136,9 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
   BrowserAccessibilityManager::FireGeneratedEvent(event_type, node);
   BrowserAccessibility* wrapper = GetFromAXNode(node);
   DCHECK(wrapper);
-  BrowserAccessibilityCocoa* native_node = wrapper->GetNativeViewAccessible();
-  DCHECK(native_node);
+  BrowserAccessibilityCocoa* native_node =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          wrapper->GetNativeViewAccessible().Get());
 
   // Refer to |AXObjectCache::postPlatformNotification| in WebKit source code.
   NSString* mac_notification = nullptr;
@@ -201,9 +203,9 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         return;
 
       NSAccessibilityPostNotificationWithUserInfo(
-          focus->GetNativeViewAccessible(), mac_notification, user_info);
+          focus->GetNativeViewAccessible().Get(), mac_notification, user_info);
       NSAccessibilityPostNotificationWithUserInfo(
-          root->GetNativeViewAccessible(), mac_notification, user_info);
+          root->GetNativeViewAccessible().Get(), mac_notification, user_info);
       return;
     }
     case AXEventGenerator::Event::EXPANDED:
@@ -359,7 +361,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         NSAccessibilityPostNotificationWithUserInfo(
             native_node, mac_notification, user_info);
         NSAccessibilityPostNotificationWithUserInfo(
-            root->GetNativeViewAccessible(), mac_notification, user_info);
+            root->GetNativeViewAccessible().Get(), mac_notification, user_info);
         return;
       }
       break;
@@ -471,8 +473,9 @@ void BrowserAccessibilityManagerMac::FireNativeMacNotification(
     NSString* mac_notification,
     BrowserAccessibility* node) {
   DCHECK(mac_notification);
-  BrowserAccessibilityCocoa* native_node = node->GetNativeViewAccessible();
-  DCHECK(native_node);
+  BrowserAccessibilityCocoa* native_node =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          node->GetNativeViewAccessible().Get());
   // TODO(accessibility) We should look into why background tabs return null for
   // GetWindow. Is it safe to fire notifications when there is no window? We've
   // had trouble in the past with "Chrome is not responding" lockups in AppKit
@@ -501,9 +504,11 @@ void BrowserAccessibilityManagerMac::OnAtomicUpdateFinished(
       if (ancestor) {
         BrowserAccessibility* obj = GetFromAXNode(ancestor);
         const BrowserAccessibilityCocoa* editable_root =
-            obj->GetNativeViewAccessible();
-        if ([editable_root instanceActive])
+            base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+                obj->GetNativeViewAccessible().Get());
+        if ([editable_root instanceActive]) {
           changed_editable_roots.insert(editable_root);
+        }
       }
     }
   }
@@ -561,7 +566,8 @@ NSDictionary* BrowserAccessibilityManagerMac::
 
   focus_object = focus_object->PlatformGetLowestPlatformAncestor();
   BrowserAccessibilityCocoa* native_focus_object =
-      focus_object->GetNativeViewAccessible();
+      base::apple::ObjCCast<BrowserAccessibilityCocoa>(
+          focus_object->GetNativeViewAccessible().Get());
   if (native_focus_object && [native_focus_object instanceActive]) {
     user_info[NSAccessibilityTextChangeElement] = native_focus_object;
 
@@ -628,11 +634,11 @@ BrowserAccessibilityManagerMac::GetUserInfoForValueChangedNotification(
 }
 
 id BrowserAccessibilityManagerMac::GetParentView() {
-  return delegate()->AccessibilityGetNativeViewAccessible();
+  return delegate()->AccessibilityGetNativeViewAccessible().Get();
 }
 
 id BrowserAccessibilityManagerMac::GetWindow() {
-  return delegate()->AccessibilityGetNativeViewAccessibleForWindow();
+  return delegate()->AccessibilityGetNativeViewAccessibleForWindow().Get();
 }
 
 bool BrowserAccessibilityManagerMac::ShouldFireLoadCompleteNotification() {

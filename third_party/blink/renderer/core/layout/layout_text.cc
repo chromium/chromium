@@ -802,8 +802,9 @@ void LayoutText::LogicalStartingPointAndHeight(
       return;
     }
     PhysicalSize outer_size = ContainingBlock()->Size();
-    logical_starting_point = physical_offset.ConvertToLogical(
-        StyleRef().GetWritingDirection(), outer_size, cursor.Current().Size());
+    logical_starting_point =
+        WritingModeConverter(StyleRef().GetWritingDirection(), outer_size)
+            .ToLogical(physical_offset, cursor.Current().Size());
     cursor.MoveToLastForSameLayoutObject();
     PhysicalRect last_physical_rect =
         cursor.Current().RectInContainerFragment();

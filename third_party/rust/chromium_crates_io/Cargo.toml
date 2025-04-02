@@ -68,6 +68,14 @@ version = "0.4"
 # when debug asserts are off, which is when DCHECK_IS_ON() is false.
 features = [ "std", "release_max_level_info" ]
 
+# Temporarily inform our cargo tooling that we need a new version of rand_core. Remove
+# default features to align with authenticated-pseudonyms use case (crbug.com/404604413)
+# TODO(crbug.com/404598090) Remove this when all upstreams have updated, and rand_core
+# moves to be a transitive dependency only.
+[dependencies.rand_core]
+version = "0.9.0"
+default-features = false
+
 # Temporarily inform our cargo tooling that we care about
 # the new version of serde_json_lenient. We are in the midst
 # of CLs that move from the older to the newer.

@@ -29,6 +29,8 @@ found in the LICENSE file.
     <dimen name="secure_payment_confirmation_ui_drag_handle_spacing">6dp</dimen>
     <dimen name="secure_payment_confirmation_ui_icon_width">20dp</dimen>
     <dimen name="secure_payment_confirmation_ui_icon_height">32dp</dimen>
+    <dimen name="secure_payment_confirmation_ui_header_icon_width">104dp</dimen>
+    <dimen name="secure_payment_confirmation_ui_header_icon_height">24dp</dimen>
     <dimen name="secure_payment_confirmation_authn_ui_label_size">60dp</dimen>
     <dimen name="secure_payment_confirmation_authn_ui_amount_currency_spacing">4dp</dimen>
 </resources>

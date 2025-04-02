@@ -3,7 +3,7 @@ URL: https://crates.io/crates/rand
 Version: 0.8.5
 Revision: 937320cbfeebd4352a23086d9c6e68f067f74644
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/rand-0.8.5/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/rand-v0_8/LICENSE-APACHE
 Shipped: no
 Security Critical: no
 

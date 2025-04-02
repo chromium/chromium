@@ -40,6 +40,7 @@ public interface ModuleDelegate {
     @interface ModuleType {
         int SINGLE_TAB = 0;
         int PRICE_CHANGE = 1;
+        // TODO(crbug.com/400479745): Rename to DEPRECATED_TAB_RESUMPTION and remote dead code.
         int TAB_RESUMPTION = 2;
         int SAFETY_HUB = 3;
         int DEPRECATED_EDUCATIONAL_TIP = 4;

@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Utilities concerning all incognito tabs in all {@link IncognitoTabHost}s. */
+@NullMarked
 public class IncognitoTabHostUtils {
     /** Determine whether there are any incognito tabs. */
     public static boolean doIncognitoTabsExist() {

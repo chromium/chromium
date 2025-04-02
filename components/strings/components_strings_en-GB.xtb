@@ -70,7 +70,6 @@
 <translation id="1122714970786750095">Electronics and Electrical</translation>
 <translation id="1123753900084781868">Live Caption is not available at the moment</translation>
 <translation id="1125453215844207206">Unlabelled graphic. Extracting text, powered by Google AI</translation>
-<translation id="1125573121925420732">Warnings may be common while websites update their security. This should improve soon.</translation>
 <translation id="112840717907525620">Policy cache OK</translation>
 <translation id="1131264053432022307">Image that you copied</translation>
 <translation id="1138458427267715730">Get alerts when the price drops on any site across the web</translation>
@@ -297,7 +296,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1492194039220927094">Policies push:</translation>
 <translation id="1495677929897281669">Back to tab</translation>
 <translation id="1500286806237135498">Cameras (<ph name="CAMERAS_COUNT" />)</translation>
-<translation id="1501859676467574491">Show cards from your Google Account</translation>
 <translation id="1504042622576912555">Flute</translation>
 <translation id="1507202001669085618">&lt;p&gt;You'll see this error if you're using a Wi-Fi portal where you have to sign in before you can get online.&lt;/p&gt;
     &lt;p&gt;To fix the error, click &lt;strong&gt;Connect&lt;/strong&gt; on the page that you're trying to open.&lt;/p&gt;</translation>
@@ -568,6 +566,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1975584088563498795">Mailbox 10</translation>
 <translation id="1978555033938440688">Firmware Version</translation>
 <translation id="1979156660928743046">Media information</translation>
+<translation id="1987486584747170374">Your searches, best matches and their page contents are sent to Google. It will not be used by human reviewers to improve AI. Your organisation may change these settings at any time.</translation>
 <translation id="1988881251331415125">If spelling is correct, <ph name="BEGIN_LINK" />try running connectivity Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> wants to permanently store large data on your local computer</translation>
@@ -763,6 +762,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2301098101308036335">Which websites are visited and when.</translation>
 <translation id="230286397113210245">Open Incognito window button, activate to open a new Incognito window to browse privately</translation>
 <translation id="2306124309679506798">Allow an immersive experience?</translation>
+<translation id="2307711332257985952">Your home and work addresses are now available in Chrome</translation>
 <translation id="2312234273148520048">Condiments and Dressings</translation>
 <translation id="2316087952091171402">Less than <ph name="UPPER_ESTIMATE" />. Some sites may load more slowly on your next visit.</translation>
 <translation id="2316159751672436664">Personalise your accessibility tools in Chrome OS settings</translation>
@@ -1178,6 +1178,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3102312643185441063">Savings</translation>
 <translation id="3103188521861412364">Stocks and bonds</translation>
 <translation id="3103535543639438037">Compare similar products side by side</translation>
+<translation id="3103993932858740905">When you pay over time, a one-time virtual card number is filled. This number is only for this purchase.</translation>
 <translation id="3105172416063519923">Asset ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Checking the secure DNS configuration<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Middle tray</translation>

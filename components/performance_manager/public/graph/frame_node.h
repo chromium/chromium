@@ -219,12 +219,10 @@ class FrameNode : public TypedNode<FrameNode> {
   virtual bool HasFreezingOriginTrialOptOut() const = 0;
 
   // Returns the ViewportIntersection of this frame. For the outermost main
-  // frame, this always returns a valid value indicating that the frame fully
-  // intersects with the viewport. For child frames, this is initially null on
-  // node creation and is initialized during layout when the viewport
+  // frame, this always returns kIntersecting. For child frames, this is
+  // initially kUnknown, and is initialized during layout when the viewport
   // intersection is first calculated.
-  virtual std::optional<ViewportIntersection> GetViewportIntersection()
-      const = 0;
+  virtual ViewportIntersection GetViewportIntersection() const = 0;
 
   // Returns true if the frame is visible. This value is based on the viewport
   // intersection of the frame, and the visibility of the page.
@@ -232,6 +230,12 @@ class FrameNode : public TypedNode<FrameNode> {
   // Note that for the visibility of the page, page mirroring *is* taken into
   // account, as opposed to `PageNode::IsVisible()`.
   virtual Visibility GetVisibility() const = 0;
+
+  // Returns true if this frame is intersecting with a large area of the
+  // viewport. Note that this can not return true if `GetViewportIntersection()`
+  // returns kNotIntersecting. Also, this property is assumed to be true if its
+  // value is unknown.
+  virtual bool IsIntersectingLargeArea() const = 0;
 
   // Returns true if the frame is deemed important. This means that the frame
   // had been interacted with by the user, or is intersecting with a large area
@@ -391,13 +395,17 @@ class FrameNodeObserver : public base::CheckedObserver {
       const FrameNode* frame_node) {}
 
   // Invoked when a frame's intersection with the viewport changes. Will only be
-  // invoked for a child frame, as the outermost main frame is always considered
-  // to be fully intersecting with the viewport.
+  // invoked for a child frame, or the main frame of an embedded page, as the
+  // outermost main frame is always considered to be intersecting with the
+  // viewport.
   virtual void OnViewportIntersectionChanged(const FrameNode* frame_node) {}
 
   // Invoked when the visibility property changes.
   virtual void OnFrameVisibilityChanged(const FrameNode* frame_node,
                                         FrameNode::Visibility previous_value) {}
+
+  // Invoked when the `IsIntersectingLargeArea()` property changes.
+  virtual void OnIsIntersectingLargeAreaChanged(const FrameNode* frame_node) {}
 
   // Invoked when the `IsImportant` property changes.
   virtual void OnIsImportantChanged(const FrameNode* frame_node) {}

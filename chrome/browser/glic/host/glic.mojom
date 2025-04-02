@@ -13,13 +13,23 @@ import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
+// The ready state of the profile.
+enum ProfileReadyState {
+  // The profile is not ready for Glic.
+  kUnknownError,
+  // The account state is paused, and requires sign in.
+  kSignInRequired,
+  // The profile is ready for Glic.
+  kReady,
+};
+
 // Functions provided by the WebUI page.
 interface Page {
   // Called before the page is shown.
   IntentToShow();
   // Called any time the ready state of the profile changes.
-  // `profile_is_ready` = `GlicEnabling::IsReadyForProfile()`.
-  SetProfileIsReady(bool profile_is_ready);
+  // `ready_state` = `GlicEnabling::GetProfileReadyState()`.
+  SetProfileReadyState(ProfileReadyState ready_state);
 };
 
 // Factory for PageHandler used in chrome://glic.
@@ -34,31 +44,43 @@ interface PageHandlerFactory {
 // LINT.IfChange(WebUiState)
 enum WebUiState {
   // Glic app controller not started.
-  kUninitialized,
+  kUninitialized = 0,
   // Web client begins loading; no visible UI.
-  kBeginLoad,
+  kBeginLoad = 1,
   // Loading panel is displayed. This state, combined with the `hold-loading`
   // state, will be held for `kMinHoldLoadingTimeMs` if entered.
-  kShowLoading,
+  kShowLoading = 2,
   // Loading panel is still displayed, but the web client is ready. This
   // state will be held for the remainder of `kMinHoldLoadingTimeMs`.
-  kHoldLoading,
+  kHoldLoading = 3,
   // Loading panel is displayed until web client is ready, or until
   // `kMaxWaitTimeMs` timeout is reached.
-  kFinishLoading,
+  kFinishLoading = 4,
   // "Something went wrong" error panel is displayed.
-  kError,
+  kError = 5,
   // Connection offline panel is displayed.
-  kOffline,
+  kOffline = 6,
   // Glic is not available for profile; "Unavailable" panel is displayed.
-  kUnavailable,
+  kUnavailable = 7,
   // Web view is displayed.
-  kReady,
+  kReady = 8,
   // Glic is unresponsive. Currently this will show the same UI as kError.
   // TODO(crbug.com/394162784): create an unresponsive UI.
-  kUnresponsive,
+  kUnresponsive = 9,
+  // Sign in panel is displayed.
+  kSignIn = 10,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebUiState)
+
+// The result of `PrepareForClient()`.
+enum PrepareForClientResult {
+  // Ready to load the web client.
+  kSuccess,
+  // An unknown error occurred.
+  kUnknownError,
+  // The account state is paused, and requires sign in.
+  kRequiresSignIn,
+};
 
 // Page handler for the glic WebUI.
 interface PageHandler {
@@ -67,14 +89,17 @@ interface PageHandler {
 
   // Prepare the webview for loading the client. Sync Google account sign-in
   // cookies to the webview, if necessary, so that it can sign-in automatically.
-  // If this returns false, the web client cannot be created due to an error.
-  PrepareForClient() => (bool success);
+  // If this returns an error, the web client cannot be created.
+  PrepareForClient() => (PrepareForClientResult result);
 
   // Called whenever the webview mainframe commits.
   WebviewCommitted(url.mojom.Url url);
 
   // Closes the Glic panel.
   ClosePanel();
+
+  // Opens the sign-in page, and closes the Glic panel.
+  SignInAndClosePanel();
 
   // Resize the widget hosting the WebUI to the given size.
   // If `duration` is 0 or less, instantly resize, otherwise run an animation.
@@ -465,6 +490,8 @@ enum InvocationSource {
   [Default] kUnsupported = 8,
   // From the What's New page.
   [ MinVersion=1 ] kWhatsNew = 9,
+  // User clicked the sign-in button and signed in.
+  [ MinVersion=2 ] kAfterSignIn = 10,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/glic_metrics.h:ResponseSegmentation)
 

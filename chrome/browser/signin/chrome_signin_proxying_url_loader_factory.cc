@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/browser/signin/header_modification_delegate.h"
 #include "chrome/browser/signin/header_modification_delegate_impl.h"
@@ -516,7 +517,7 @@ void ProxyingURLLoaderFactory::MaybeProxyRequest(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   if (profile->IsOffTheRecord()) {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    if (!switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs())) {
+    if (!BoundSessionCookieRefreshServiceFactory::GetForProfile(profile)) {
       return;
     }
 #else

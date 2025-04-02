@@ -21,7 +21,6 @@
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_cycle/window_cycle_view.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window_tree_host.h"
@@ -47,8 +46,6 @@ class SnapGroupPixelTest : public AshTestBase {
       const override {
     return pixel_test::InitParams();
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_{features::kForestFeature};
 };
 
 // -----------------------------------------------------------------------------
@@ -115,8 +112,6 @@ TEST_F(SnapGroupPixelTest, PartialSplit) {
 
 // Visual regression test for `OverviewGroupItem`.
 TEST_F(SnapGroupPixelTest, OverviewGroupItem) {
-  base::test::ScopedFeatureList scoped_feature_list{features::kForestFeature};
-
   ScopedOverviewTransformWindow::SetImmediateCloseForTests(/*immediate=*/true);
 
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
@@ -253,8 +248,6 @@ TEST_F(SnapGroupPixelTest, SnapGroupDividerBasicInPortrait) {
 
 // Visual regression test for `OverviewGroupItem` in portrait mode.
 TEST_F(SnapGroupPixelTest, OverviewGroupItemInPortrait) {
-  base::test::ScopedFeatureList scoped_feature_list{features::kForestFeature};
-
   UpdateDisplay("900x1200");
 
   ScopedOverviewTransformWindow::SetImmediateCloseForTests(/*immediate=*/true);

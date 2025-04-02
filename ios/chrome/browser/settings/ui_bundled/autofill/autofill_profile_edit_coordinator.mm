@@ -94,7 +94,8 @@
       initWithDelegate:_mediator
              userEmail:[self userEmail]
             controller:_viewController
-          settingsView:YES];
+          settingsView:YES
+      addManualAddress:NO];
   _mediator.consumer = _sharedViewController;
   _viewController.handler = _sharedViewController;
   _viewController.snackbarCommandsHandler = HandlerForProtocol(

@@ -22,15 +22,15 @@ namespace autofill {
 // -----------------------------------------------------------------------------
 // loyalty_cards
 //
-//   guid                         Uniquely identifies the loyalty card instance
-//                                (primary key).
-//   merchant_name                The name of the loyalty card provider e.g.
-//                                "Deutsche Bahn".
-//   program_name                 The name of the program from the loyalty card
-//                                provider e.g. "BahnBonus".
-//   program_logo                 The url of the logo icon for the card.
-//   unmasked_loyalty_card_suffix A string representation of the unmasked
-//                                loyalty card number suffix.
+//   loyalty_card_id      Uniquely identifies the loyalty card instance (primary
+//                        key).
+//   merchant_name        The name of the loyalty card provider e.g.
+//                        "Deutsche Bahn".
+//   program_name         The name of the program from the loyalty card provider
+//                        e.g. "BahnBonus".
+//   program_logo         The url of the logo icon for the card.
+//   loyalty_card_number  A string representation of the unmasked loyalty card
+//                        number suffix.
 class ValuablesTable : public WebDatabaseTable {
  public:
   ValuablesTable();
@@ -73,6 +73,12 @@ class ValuablesTable : public WebDatabaseTable {
 
  private:
   bool InitLoyaltyCardsTable();
+
+  // Renames the database table from `loyalty_card` to `loyalty_cards` and
+  // renames the following columns:
+  //   * `guid` to `loyalty_card_id`.
+  //   * `unmasked_loyalty_card_suffix` to `loyalty_card_number`.
+  bool MigrateToVersion138();
 };
 
 }  // namespace autofill

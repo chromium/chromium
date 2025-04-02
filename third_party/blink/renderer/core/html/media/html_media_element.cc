@@ -185,7 +185,20 @@ enum class ProgressEventTimerState {
   kMaxValue = kStalledEventAlreadyScheduled
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class MediaPlaybackInterruptionType {
+  kPlayAttemptWhileFrameHidden = 0,
+  kFrameHiddenWhilePlaying = 1,
+  kMaxValue = kFrameHiddenWhilePlaying
+};
+
 static const base::TimeDelta kStalledNotificationInterval = base::Seconds(3);
+
+void RecordMediaPlaybackInterruptionType(MediaPlaybackInterruptionType type) {
+  base::UmaHistogramEnumeration(
+      "Media.MediaPlaybackWhileNotVisible.InterruptionType", type);
+}
 
 String UrlForLoggingMedia(const KURL& url) {
   static const unsigned kMaximumURLLengthForLogging = 128;
@@ -676,6 +689,19 @@ bool HTMLMediaElement::ShouldReusePlayer(Document& old_document,
   return (old_document.domWindow()->IsPictureInPictureWindow() &&
           old_document.GetFrame()->Opener() == new_document.GetFrame()) &&
          opener_document_ == &new_document;
+}
+
+bool HTMLMediaElement::CanPlayWhileHidden() const {
+  return GetDocument().GetExecutionContext()->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kMediaPlaybackWhileNotVisible,
+      ReportOptions::kDoNotReport);
+}
+
+bool HTMLMediaElement::IsFrameHidden() const {
+  auto* view = GetDocument().View();
+  return view && (view->GetFrameVisibility().value_or(
+                      mojom::blink::FrameVisibility::kRenderedInViewport) ==
+                  mojom::blink::FrameVisibility::kNotRendered);
 }
 
 void HTMLMediaElement::AttachToNewFrame() {
@@ -1633,12 +1659,28 @@ void HTMLMediaElement::StartPlayerLoad() {
       FastHasAttribute(html_names::kDisableremoteplaybackAttr));
 
   if (RuntimeEnabledFeatures::
-          MediaPlaybackWhileNotVisiblePermissionPolicyEnabled()) {
+          MediaPlaybackWhileNotVisiblePermissionPolicyEnabled(
+              GetExecutionContext())) {
+    UseCounter::Count(
+        GetDocument(),
+        WebFeature::kMediaPlaybackWhileNotVisiblePermissionPolicy);
     web_media_player_->SetShouldPauseWhenFrameIsHidden(
         !GetDocument().GetExecutionContext()->IsFeatureEnabled(
             network::mojom::PermissionsPolicyFeature::
                 kMediaPlaybackWhileNotVisible,
             ReportOptions::kDoNotReport));
+  }
+
+  if (!CanPlayWhileHidden()) {
+    // The "media-playback-while-not-visible" permission policy default value
+    // was overridden, which means that either this frame or an ancestor frame
+    // changed the permission policy's default value. This should only happen if
+    // the MediaPlaybackWhileNotVisiblePermissionPolicyEnabled runtime flag is
+    // enabled.
+    UseCounter::Count(
+        GetDocument(),
+        WebFeature::kMediaPlaybackWhileNotVisiblePermissionPolicy);
+    web_media_player_->SetShouldPauseWhenFrameIsHidden(true);
   }
 
   bool is_cache_disabled = false;
@@ -2893,6 +2935,15 @@ std::optional<DOMExceptionCode> HTMLMediaElement::Play() {
       autoplay_policy_->RequestPlay();
 
   if (exception_code == DOMExceptionCode::kNotAllowedError) {
+    if (IsFrameHidden() && web_media_player_ &&
+        web_media_player_->GetShouldPauseWhenFrameIsHidden()) {
+      // The HTMLMediaElement is not allowed to start because the frame has the
+      // MediaPlaybackWhileNotVisible policy applied and is hidden. Record this
+      // in a histogram.
+      RecordMediaPlaybackInterruptionType(
+          MediaPlaybackInterruptionType::kPlayAttemptWhileFrameHidden);
+    }
+
     // If we're already playing, then this play would do nothing anyway.
     // Call playInternal to handle scheduling the promise resolution.
     if (!paused_) {
@@ -4651,6 +4702,8 @@ void HTMLMediaElement::RejectScheduledPlayPromises() {
       reason =
           " because the media playback is not allowed by the "
           "media-playback-while-not-visible permission policy";
+      RecordMediaPlaybackInterruptionType(
+          MediaPlaybackInterruptionType::kFrameHiddenWhilePlaying);
       break;
     case PlayPromiseError::kPaused_LetAudioDescriptionFinish:
       reason = " because the audio description has not finished yet";

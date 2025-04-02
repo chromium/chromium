@@ -145,7 +145,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.CLD3.LanguageDetected" enum="LocaleCodeISO639"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -328,7 +328,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Translate.OnDeviceTranslation.{OnDeviceTranslationAction}.LanguagePair"
-    units="int" expires_after="2025-07-27">
+    units="int" expires_after="2025-09-28">
   <owner>gjc@google.com</owner>
   <owner>chrome-builtin-ai@google.com</owner>
   <summary>
@@ -447,7 +447,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PageLoad.InitialTargetLanguage.Origin"
-    enum="TranslateTargetLanguageOrigin" expires_after="2025-07-27">
+    enum="TranslateTargetLanguageOrigin" expires_after="2025-09-28">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

@@ -445,8 +445,10 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     PrefetchingMetricsTestBase::TearDown();
   }
 
-  virtual void InitScopedFeatureList() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
+  virtual void InitScopedFeatureList() = 0;
+
+  void InitBaseParams() {
+    scoped_feature_list_base_params_.InitWithFeaturesAndParameters(
         {{features::kPrefetchUseContentRefactor,
           {{"ineligible_decoy_request_probability", "0"},
            {"prefetch_container_lifetime_s", "-1"}}}},
@@ -1184,8 +1186,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
 
-  base::test::ScopedFeatureList scoped_feature_list_for_new_wait_loop_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_base_params_;
   // Disable sampling of UKM preloading logs.
   content::test::PreloadingConfigOverride preloading_config_override_;
 
@@ -1209,6 +1210,11 @@ class PrefetchServiceTest
       public ::testing::WithParamInterface<PrefetchServiceRearchParam::Arg> {
  public:
   PrefetchServiceTest() : WithPrefetchServiceRearchParam(GetParam()) {}
+
+  void InitScopedFeatureList() override {
+    InitBaseParams();
+    InitRearchFeatures();
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1783,14 +1789,19 @@ class PrefetchServiceAllowAllDomainsTest
       : WithPrefetchServiceRearchParam(GetParam()) {}
 
   void InitScopedFeatureList() override {
+    InitBaseParams();
+    InitRearchFeatures();
+    // Override `kPrefetchUseContentRefactor`.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kPrefetchUseContentRefactor,
           {{"ineligible_decoy_request_probability", "0"},
            {"prefetch_container_lifetime_s", "-1"},
            {"allow_all_domains", "true"}}}},
         {});
-    InitRearchFeatures();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1841,14 +1852,19 @@ class PrefetchServiceAllowAllDomainsForExtendedPreloadingTest
       : WithPrefetchServiceRearchParam(GetParam()) {}
 
   void InitScopedFeatureList() override {
+    InitBaseParams();
+    InitRearchFeatures();
+    // Override `kPrefetchUseContentRefactor`.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kPrefetchUseContentRefactor,
           {{"ineligible_decoy_request_probability", "0"},
            {"prefetch_container_lifetime_s", "-1"},
            {"allow_all_domains_for_extended_preloading", "true"}}}},
         {});
-    InitRearchFeatures();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -2980,14 +2996,19 @@ class PrefetchServiceWithHTMLOnlyTest
       : WithPrefetchServiceRearchParam(GetParam()) {}
 
   void InitScopedFeatureList() override {
+    InitBaseParams();
+    InitRearchFeatures();
+    // Override `kPrefetchUseContentRefactor`.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kPrefetchUseContentRefactor,
           {{"ineligible_decoy_request_probability", "0"},
            {"prefetch_container_lifetime_s", "-1"},
            {"html_only", "true"}}}},
         {});
-    InitRearchFeatures();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -3035,13 +3056,18 @@ class PrefetchServiceAlwaysMakeDecoyRequestTest
       : WithPrefetchServiceRearchParam(GetParam()) {}
 
   void InitScopedFeatureList() override {
+    InitBaseParams();
+    InitRearchFeatures();
+    // Override `kPrefetchUseContentRefactor`.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kPrefetchUseContentRefactor,
           {{"ineligible_decoy_request_probability", "1"},
            {"prefetch_container_lifetime_s", "-1"}}}},
         {});
-    InitRearchFeatures();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -3198,7 +3224,7 @@ class PrefetchServiceIncognitoTest
   PrefetchServiceIncognitoTest() : WithPrefetchServiceRearchParam(GetParam()) {}
 
   void InitScopedFeatureList() override {
-    PrefetchServiceTestBase::InitScopedFeatureList();
+    InitBaseParams();
     InitRearchFeatures();
   }
 
@@ -4078,6 +4104,9 @@ class PrefetchServiceAlwaysBlockUntilHeadTest
   const int kPrefetchTimeout = 10000;
   const int kBlockUntilHeadTimeout = 1000;
   void InitScopedFeatureList() override {
+    InitBaseParams();
+    InitRearchFeatures();
+    // Override `kPrefetchUseContentRefactor`.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kPrefetchUseContentRefactor,
           {
@@ -4090,12 +4119,14 @@ class PrefetchServiceAlwaysBlockUntilHeadTest
               {"block_until_head_timeout_conservative_prefetch", "1000"},
           }}},
         {});
-    InitRearchFeatures();
   }
 
   blink::mojom::SpeculationEagerness GetEagernessParam() {
     return std::get<1>(GetParam());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -5726,14 +5757,12 @@ class PrefetchServiceNewLimitsTest
   PrefetchServiceNewLimitsTest() : WithPrefetchServiceRearchParam(GetParam()) {}
 
   void InitScopedFeatureList() override {
+    InitBaseParams();
+    InitRearchFeatures();
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPrefetchUseContentRefactor,
-          {{"ineligible_decoy_request_probability", "0"},
-           {"prefetch_container_lifetime_s", "-1"}}},
-         {features::kPrefetchNewLimits,
+        {{features::kPrefetchNewLimits,
           {{"max_eager_prefetches", "2"}, {"max_non_eager_prefetches", "2"}}}},
         {});
-    InitRearchFeatures();
   }
 
   PrefetchContainer::Reader CompletePrefetch(
@@ -5759,6 +5788,9 @@ class PrefetchServiceNewLimitsTest
     NavigateInitiatedByRenderer(url);
     return GetPrefetchToServe(url);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -6096,6 +6128,7 @@ TEST_P(PrefetchServiceNewLimitsTest,
 // Test to see if we can re-prefetch a url whose previous prefetch expired.
 TEST_P(PrefetchServiceNewLimitsTest, PrefetchReset) {
   base::test::ScopedFeatureList scoped_feature_list;
+  // Override `kPrefetchUseContentRefactor`.
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{features::kPrefetchUseContentRefactor,
         {{"ineligible_decoy_request_probability", "0"},
@@ -6178,6 +6211,7 @@ TEST_P(PrefetchServiceNewLimitsTest, PrefetchReset) {
 
 TEST_P(PrefetchServiceNewLimitsTest, NextPrefetchQueuedImmediatelyAfterReset) {
   base::test::ScopedFeatureList scoped_feature_list;
+  // Override `kPrefetchUseContentRefactor`.
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{features::kPrefetchUseContentRefactor,
         {{"ineligible_decoy_request_probability", "0"},
@@ -6283,6 +6317,7 @@ TEST_P(PrefetchServiceNewLimitsTest,
 TEST_P(PrefetchServiceNewLimitsTest, PrefetchFailsAndIsReset) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
+  // Override `kPrefetchUseContentRefactor`.
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{features::kPrefetchUseContentRefactor,
         {{"ineligible_decoy_request_probability", "0"},
@@ -6550,7 +6585,7 @@ class PrefetchServiceClientHintsTest
       : WithPrefetchServiceRearchParam(GetParam()) {}
 
   void InitScopedFeatureList() override {
-    PrefetchServiceTestBase::InitScopedFeatureList();
+    InitBaseParams();
     InitRearchFeatures();
   }
 
@@ -7447,9 +7482,8 @@ class PrefetchServiceAddPrefetchContainerTest
       : WithPrefetchServiceRearchParam(GetParam()) {}
 
   void InitScopedFeatureList() override {
-    PrefetchServiceTestBase::InitScopedFeatureList();
+    InitBaseParams();
     InitRearchFeatures();
-
     scoped_feature_list_for_prerender2_fallback_.InitWithFeatures(
         {features::kPrerender2FallbackPrefetchSpecRules}, {});
   }

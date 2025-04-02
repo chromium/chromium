@@ -5,10 +5,13 @@
 #include "chrome/browser/extensions/api/autofill_private/autofill_ai_util.h"
 
 #include <optional>
+#include <string>
 
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -17,8 +20,10 @@
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill_ai/core/browser/autofill_ai_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -28,6 +33,10 @@ namespace extensions::autofill_ai_util {
 
 namespace {
 
+// Arbitrary delimiter to use when concatenating labels to decide whether
+// a series of labels for different entities are unique.
+constexpr char16_t kLabelsDelimiter[] = u" - - ";
+
 using autofill::AttributeInstance;
 using autofill::AttributeType;
 using autofill::AttributeTypeName;
@@ -35,21 +44,117 @@ using autofill::EntityInstance;
 using autofill::EntityType;
 using autofill::EntityTypeName;
 
-// Converts an `autofill::EntityInstance` object to an
-// `api::autofill_private::EntityInstanceWithLabels` object, according to a
-// given `app_locale`.
-autofill_private::EntityInstanceWithLabels
-EntityInstanceToPrivateApiEntityInstanceWithLabels(
-    const EntityInstance& entity_instance,
-    const std::string& app_locale) {
-  autofill_private::EntityInstanceWithLabels entity_instance_with_labels;
-  entity_instance_with_labels.guid = entity_instance.guid().AsLowercaseString();
-  // TODO(crbug.com/393318055): Use better labels.
-  entity_instance_with_labels.entity_instance_label = base::UTF16ToUTF8(
-      entity_instance.attributes()[0].GetCompleteInfo(app_locale));
-  entity_instance_with_labels.entity_instance_sub_label =
-      base::UTF16ToUTF8(entity_instance.type().GetNameForI18n());
-  return entity_instance_with_labels;
+// Converts a vector of `autofill::EntityInstance` objects into a vector of
+// `api::autofill_private::EntityInstanceWithLabels`, according to a
+// given `app_locale`. Appends the result to `output`.
+// This function works as follows:
+//
+// 1. Retrieve all available labels for each entity using
+//    `GetLabelsForEntities()`.
+//
+// 2. Initialize `autofill_ai::EntitiesLabels`, which will be a vector
+//    of final labels for each entity. Also sets the maximum number of
+//    labels to use, which will be same as the entity with the largest
+//    number of available labels.
+//
+// 3. Adds labels to each entity final list of labels, until the
+//    concatenation of such labels are unique across entities.
+//
+// 4. Finally, creates for each entity an
+//    `api::autofill_private::EntityInstanceWithLabels`,
+//    setting its label (first line in the settings page list) as the entity
+//    name, and its sublabel (second line) as the concatenation of the final
+//    list of labels defined in 3#. Appends
+//    `api::autofill_private::EntityInstanceWithLabels` to the output.
+void EntityInstanceToPrivateApiEntityInstanceWithLabels(
+    base::span<const EntityInstance*> entity_instances,
+    const std::string& app_locale,
+    std::vector<autofill_private::EntityInstanceWithLabels>& output) {
+  // Step 1#, get all available labels for `entity_instances`.
+  autofill_ai::EntitiesLabels entities_labels_available =
+      autofill_ai::GetLabelsForEntities(
+          entity_instances, /*attribute_types_to_exclude=*/{}, app_locale);
+  //  Step 2#
+  //  Initialize the final list of labels to be used by each entity.
+  autofill_ai::EntitiesLabels entities_labels_output =
+      autofill_ai::EntitiesLabels(std::vector<std::vector<std::u16string>>(
+          entity_instances.size(), std::vector<std::u16string>()));
+
+  // The max number of labels is defined by the entity that has the largest
+  // number of available labels.
+  size_t max_number_of_labels = 0;
+  for (const std::vector<std::u16string>& entity_labels_available :
+       *entities_labels_available) {
+    max_number_of_labels =
+        std::max(max_number_of_labels, entity_labels_available.size());
+  }
+
+  // Step 3#
+  for (size_t label_count = 1; label_count <= max_number_of_labels;
+       label_count++) {
+    // Used to check whether the list of labels for the entities is unique.
+    std::set<std::u16string> current_labels;
+
+    // Iterate over the available labels for each entity and add labels to
+    // the final `entity_labels_available`, until the concatenation of all
+    // labels leads to unique strings across all entities. Note that
+    // `entity_labels_available` contains for each entity a vector of labels
+    // (strings) to be used.
+    CHECK_EQ(entities_labels_available->size(), entities_labels_output->size());
+    for (size_t i = 0; i < entities_labels_available->size(); ++i) {
+      std::vector<std::u16string>& entity_labels_available =
+          (*entities_labels_available)[i];
+      std::vector<std::u16string>& entity_labels_output =
+          (*entities_labels_output)[i];
+      std::u16string current_label =
+          base::JoinString(entity_labels_output, kLabelsDelimiter);
+      // If there is no more available labels for an entity, simply add the
+      // concatenation of all labels already used to the Set.
+      if (entity_labels_available.empty()) {
+        current_labels.insert(std::move(current_label));
+        continue;
+      }
+
+      // Otherwise add the current top label, update the set and remove the
+      // label from the available list. Note that the labels are sorted from
+      // lowest to highest priority.
+      entity_labels_output.push_back(entity_labels_available.back());
+      current_labels.insert(base::StrCat(
+          {current_label, kLabelsDelimiter, entity_labels_available.back()}));
+
+      // Label uniqueness was reached if the number of unique main_text + labels
+      // concatenated strings is same as the entities size
+      if (current_labels.size() == entity_instances.size()) {
+        goto found_unique_labels;
+      }
+      entity_labels_available.pop_back();
+    }
+  }
+found_unique_labels:
+  // Step 4#
+  // Now that we have all labels, we just need to update the `output` with each
+  // entity's respective `autofill_private::EntityInstanceWithLabels`, making
+  // sure to set the label and sublabels. In the context of the settings page,
+  // `autofill_private::EntityInstanceWithLabels::entity_instance_label` is the
+  // first line of each entities list (the equivalent of a filling suggestion
+  // main text) while
+  // `autofill_private::EntityInstanceWithLabels::entity_instance_sub_label` is
+  // the second line.
+  std::vector<autofill_private::EntityInstanceWithLabels>
+      entities_instances_with_labels;
+  CHECK_EQ(entity_instances.size(), entities_labels_output->size());
+  for (size_t i = 0; i < entity_instances.size(); i++) {
+    const EntityInstance& entity_instance = *entity_instances[i];
+    autofill_private::EntityInstanceWithLabels& entity_instance_with_labels =
+        output.emplace_back();
+    entity_instance_with_labels.guid =
+        entity_instance.guid().AsLowercaseString();
+    entity_instance_with_labels.entity_instance_label =
+        base::UTF16ToUTF8(entity_instance.type().GetNameForI18n());
+    entity_instance_with_labels.entity_instance_sub_label =
+        base::UTF16ToUTF8(base::JoinString((*entities_labels_output)[i],
+                                           autofill_ai::kLabelSeparator));
+  }
 }
 
 }  // namespace
@@ -226,11 +331,19 @@ std::vector<autofill_private::EntityInstanceWithLabels>
 EntityInstancesToPrivateApiEntityInstancesWithLabels(
     base::span<const EntityInstance> entity_instances,
     const std::string& app_locale) {
-  return base::ToVector(
-      entity_instances, [&](const EntityInstance& entity_instance) {
-        return EntityInstanceToPrivateApiEntityInstanceWithLabels(
-            entity_instance, app_locale);
-      });
+  // Entity labels should be generated based on other entities of the same
+  // type. This is because the disambiguation values of attributes are only
+  // relevant inside a specific entity type.
+  std::map<EntityType, std::vector<const EntityInstance*>> entities_per_type;
+  for (const EntityInstance& entity : entity_instances) {
+    entities_per_type[entity.type()].push_back(&entity);
+  }
+  std::vector<autofill_private::EntityInstanceWithLabels> response;
+  response.reserve(entity_instances.size());
+  for (auto& [entity_type, entities] : entities_per_type) {
+    EntityInstanceToPrivateApiEntityInstanceWithLabels(entities, app_locale,
+                                                       response);
+  }
+  return response;
 }
-
 }  // namespace extensions::autofill_ai_util

@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationMultiDataSourceHistoryContentTtlHours;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -26,9 +26,11 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /** The Controller to handle the communication between Chrome and {@link AuxiliarySearchDonor}. */
 public class AuxiliarySearchControllerImpl
@@ -36,29 +38,32 @@ public class AuxiliarySearchControllerImpl
                 AuxiliarySearchConfigManager.ShareTabsWithOsStateListener,
                 AuxiliarySearchProvider.Observer {
     private static final String TAG = "AuxiliarySearch";
-    private final @NonNull Context mContext;
-    private final @NonNull Profile mProfile;
-    private final @NonNull FaviconHelper mFaviconHelper;
-    private final @NonNull AuxiliarySearchProvider mAuxiliarySearchProvider;
-    private final @NonNull AuxiliarySearchDonor mDonor;
+    private final Context mContext;
+    private final Profile mProfile;
+    private final FaviconHelper mFaviconHelper;
+    private final AuxiliarySearchProvider mAuxiliarySearchProvider;
+    private final AuxiliarySearchDonor mDonor;
     private final boolean mIsFaviconEnabled;
     private final boolean mSupportMultiDataSource;
     private final int mZeroStateFaviconNumber;
     private final int mDefaultFaviconSize;
+    private final long mHistoryTtlMillis;
 
-    private @NonNull ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private boolean mHasDeletingTask;
     private int mTaskFinishedCount;
     private boolean mIsObserving;
     private CallbackController mCallbackController = new CallbackController();
+    private long mTopSiteLastFetchTimestamp;
+    @Nullable private List<AuxiliarySearchDataEntry> mCurrentSiteSuggestionEntries;
 
     @VisibleForTesting
     public AuxiliarySearchControllerImpl(
-            @NonNull Context context,
-            @NonNull Profile profile,
-            @NonNull AuxiliarySearchProvider auxiliarySearchProvider,
-            @NonNull AuxiliarySearchDonor auxiliarySearchDonor,
-            @NonNull FaviconHelper faviconHelper) {
+            Context context,
+            Profile profile,
+            AuxiliarySearchProvider auxiliarySearchProvider,
+            AuxiliarySearchDonor auxiliarySearchDonor,
+            FaviconHelper faviconHelper) {
         mContext = context;
         mProfile = profile;
         mAuxiliarySearchProvider = auxiliarySearchProvider;
@@ -71,6 +76,9 @@ public class AuxiliarySearchControllerImpl
         mZeroStateFaviconNumber =
                 sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber.getValue();
         mDefaultFaviconSize = AuxiliarySearchUtils.getFaviconSize(mContext.getResources());
+        mHistoryTtlMillis =
+                TimeUnit.HOURS.toMillis(
+                        sAndroidAppIntegrationMultiDataSourceHistoryContentTtlHours.getValue());
 
         AuxiliarySearchConfigManager.getInstance().addListener(this);
     }
@@ -81,9 +89,7 @@ public class AuxiliarySearchControllerImpl
      * @param tabModelSelector The instance of {@link TabModelSelector}.
      */
     public AuxiliarySearchControllerImpl(
-            @NonNull Context context,
-            @NonNull Profile profile,
-            @Nullable TabModelSelector tabModelSelector) {
+            Context context, Profile profile, @Nullable TabModelSelector tabModelSelector) {
         this(
                 context,
                 profile,
@@ -133,9 +139,9 @@ public class AuxiliarySearchControllerImpl
 
     @Override
     public <T> void onBackgroundTaskStart(
-            @NonNull List<T> entries,
-            @NonNull Map<T, Bitmap> entryToFaviconMap,
-            @NonNull Callback<Boolean> callback,
+            List<T> entries,
+            Map<T, Bitmap> entryToFaviconMap,
+            Callback<Boolean> callback,
             long startTimeMillis) {
         if (!mDonor.canDonate()) return;
 
@@ -289,9 +295,48 @@ public class AuxiliarySearchControllerImpl
             @Nullable List<AuxiliarySearchDataEntry> entries, long startTimeMs) {
         AuxiliarySearchMetrics.recordQueryHistoryDataTime(TimeUtils.uptimeMillis() - startTimeMs);
 
-        if (entries == null || entries.isEmpty()) return;
+        List<AuxiliarySearchDataEntry> donationList = getMergedList(entries);
+        if (donationList == null || donationList.isEmpty()) return;
 
-        onNonSensitiveDataAvailable(entries, startTimeMs);
+        onNonSensitiveDataAvailable(donationList, startTimeMs);
+    }
+
+    /** Merges the fetched list of Tabs and CCTs with list of the most visited sites together. */
+    @VisibleForTesting
+    @Nullable
+    List<AuxiliarySearchDataEntry> getMergedList(
+            @Nullable List<AuxiliarySearchDataEntry> historyEntryList) {
+        if (historyEntryList == null && mCurrentSiteSuggestionEntries == null) return null;
+
+        if (mCurrentSiteSuggestionEntries == null || mCurrentSiteSuggestionEntries.isEmpty()) {
+            return historyEntryList;
+        }
+
+        // Don't donate most visited sites if they were calculated 24 hours ago.
+        long topSiteExpirationDuration =
+                TimeUtils.uptimeMillis() - mTopSiteLastFetchTimestamp - mHistoryTtlMillis;
+        if (topSiteExpirationDuration > 0) {
+            AuxiliarySearchMetrics.recordTopSiteExpirationDuration(topSiteExpirationDuration);
+            return historyEntryList;
+        }
+
+        List<AuxiliarySearchDataEntry> donationList = new ArrayList<>();
+        if (historyEntryList == null || historyEntryList.isEmpty()) {
+            donationList.addAll(mCurrentSiteSuggestionEntries);
+            return donationList;
+        }
+
+        // Adds the most visited site suggestion with the highest score as the first one in
+        // tht list to donate. This allows to include at least one most visited site
+        // suggestion in the first five entries to fetch icons.
+        donationList.add(mCurrentSiteSuggestionEntries.get(0));
+        // Adds the Tabs and Custom Tabs.
+        donationList.addAll(historyEntryList);
+        // Adds the remaining most visited sites suggestions.
+        for (int i = 1; i < mCurrentSiteSuggestionEntries.size(); i++) {
+            donationList.add(mCurrentSiteSuggestionEntries.get(i));
+        }
+        return donationList;
     }
 
     private void deleteAllTabs() {
@@ -322,9 +367,8 @@ public class AuxiliarySearchControllerImpl
     // AuxiliarySearchProvider.Observer implementations.
     @Override
     public void onSiteSuggestionsAvailable(@Nullable List<AuxiliarySearchDataEntry> entries) {
-        if (entries == null) return;
-
-        // TODO(crbug.com/397457989): Caches the suggestion entries.
+        mCurrentSiteSuggestionEntries = entries;
+        mTopSiteLastFetchTimestamp = TimeUtils.uptimeMillis();
     }
 
     @Override

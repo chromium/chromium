@@ -42,6 +42,8 @@ class CORE_EXPORT HTMLPermissionElement final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static bool isTypeSupported(const AtomicString& type);
+
   explicit HTMLPermissionElement(Document&);
 
   ~HTMLPermissionElement() override;

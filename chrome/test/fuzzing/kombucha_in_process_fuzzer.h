@@ -115,8 +115,6 @@ class KombuchaInProcessFuzzer
   // Cleans the browser once the fuzzing iteration is over. This helps
   // determinism when trying to reproduce.
   void CleanInProcessBrowserState();
-  // List that enables browser startup with custom features
-  base::test::ScopedFeatureList scoped_feature_list_;
 
 #if BUILDFLAG(IS_WIN)
   std::unique_ptr<base::win::ScopedCOMInitializer> com_initializer_;

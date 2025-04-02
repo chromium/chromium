@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -37,6 +38,7 @@
 namespace glic {
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSettingsTab);
 std::vector<std::string> GetTestSuiteNames() {
   return {
       "GlicApiTest",
@@ -187,14 +189,19 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testAllTestsAreRegistered) {
 
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testCreateTab) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+                                 GlicInstrumentMode::kHostAndContents),
+                  CheckTabCount(1));
   ExecuteJsTest();
-  // TODO(harringtond): Add assertions to verify a tab was created.
+  RunTestSequence(CheckTabCount(2));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testOpenGlicSettingsPage) {
   ExecuteJsTest();
-  // TODO(harringtond): Add assertions to verify the settings page opened.
+
+  RunTestSequence(
+      InstrumentTab(kSettingsTab),
+      WaitForWebContentsReady(
+          kSettingsTab, chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage)));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testClosePanel) {
@@ -430,5 +437,63 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetOsHotkeyState) {
   ContinueJsTest();
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testSetWindowDraggableAreas) {
+  ExecuteJsTest();
+  const int x = 10;
+  const int y = 20;
+  const int width = 30;
+  const int height = 40;
+
+  RunTestSequence(
+      // Test points within the draggable area.
+      CheckPointIsWithinDraggableArea(gfx::Point(x, y), true),
+      CheckPointIsWithinDraggableArea(gfx::Point(x + width - 1, y), true),
+      CheckPointIsWithinDraggableArea(gfx::Point(x, y + height - 1), true),
+      CheckPointIsWithinDraggableArea(gfx::Point(x + width - 1, y + height - 1),
+                                      true),
+      // Test points at the edges of the draggable area.
+      CheckPointIsWithinDraggableArea(gfx::Point(x - 1, y), false),
+      CheckPointIsWithinDraggableArea(gfx::Point(x, y - 1), false),
+      CheckPointIsWithinDraggableArea(gfx::Point(x + width, y), false),
+      CheckPointIsWithinDraggableArea(gfx::Point(x, y + height), false));
+
+  ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
+                       testSetWindowDraggableAreasDefault) {
+  // TODO(crbug.com/404845792): Default draggable area is currently hardcoded in
+  // glic_page_handler.cc. This should be moved to a shared location and updated
+  // here.
+  const int x = 0;
+  const int y = 0;
+  const int width = 400;
+  const int height = 80;
+
+  ExecuteJsTest();
+  RunTestSequence(
+      // Test points within the draggable area.
+      CheckPointIsWithinDraggableArea(gfx::Point(x, y), true),
+      CheckPointIsWithinDraggableArea(gfx::Point(x + width - 1, y), true),
+      CheckPointIsWithinDraggableArea(gfx::Point(x, y + height - 1), true),
+      CheckPointIsWithinDraggableArea(gfx::Point(x + width - 1, y + height - 1),
+                                      true),
+      // Test points at the edges of the draggable area.
+      CheckPointIsWithinDraggableArea(gfx::Point(x - 1, y), false),
+      CheckPointIsWithinDraggableArea(gfx::Point(x, y - 1), false),
+      CheckPointIsWithinDraggableArea(gfx::Point(x + width, y), false),
+      CheckPointIsWithinDraggableArea(gfx::Point(x, y + height), false));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testSetMinimumWidgetSize) {
+  ExecuteJsTest();
+  ASSERT_TRUE(step_data()->is_dict());
+  const auto& min_size = step_data()->GetDict();
+  const int width = min_size.FindInt("width").value();
+  const int height = min_size.FindInt("height").value();
+
+  RunTestSequence(CheckWidgetMinimumSize(gfx::Size(width, height)));
+  ContinueJsTest();
+}
 }  // namespace
 }  // namespace glic

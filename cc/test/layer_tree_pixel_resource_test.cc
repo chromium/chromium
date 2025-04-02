@@ -13,6 +13,7 @@
 #include "cc/resources/resource_pool.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/ipc/client/client_shared_image_interface.h"
 
 namespace cc {
 
@@ -77,7 +78,8 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
       EXPECT_TRUE(use_software_renderer());
 
       return std::make_unique<ZeroCopyRasterBufferProvider>(
-          host_impl->layer_tree_frame_sink());
+          host_impl->layer_tree_frame_sink()->shared_image_interface(),
+          raster_caps);
     case TestRasterType::kGpu:
       EXPECT_TRUE(compositor_context_provider);
       EXPECT_TRUE(worker_context_provider);

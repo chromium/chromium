@@ -8,6 +8,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include <optional>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
@@ -39,13 +40,14 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXElementWrapper final {
 
   // Returns the children of an accessible object, either AXUIElement or
   // BrowserAccessibilityCocoa.
-  static NSArray* ChildrenOf(id node);
+  static std::vector<gfx::NativeViewAccessible> ChildrenOf(
+      const gfx::NativeViewAccessible node);
 
   // Returns the DOM id of a given node (either AXUIElement or
   // BrowserAccessibilityCocoa).
-  static std::string DOMIdOf(id node);
+  static std::string DOMIdOf(const gfx::NativeViewAccessible node);
 
-  explicit AXElementWrapper(id node) : node_(node) {}
+  explicit AXElementWrapper(id node);
 
   // Returns true if the object is either an NSAccessibilityElement or
   // AXUIElement.

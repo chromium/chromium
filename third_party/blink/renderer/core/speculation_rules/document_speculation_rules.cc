@@ -663,16 +663,19 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
               action == mojom::blink::SpeculationAction::kPrefetch);
 
         Vector<WTF::String> tags;
-        if (rule->rule_tag()) {
-          tags.push_back(rule->rule_tag());
-        }
-        if (rule->ruleset_tag()) {
-          tags.push_back(rule->ruleset_tag());
-        }
+        if (RuntimeEnabledFeatures::SpeculationRulesTagEnabled(
+                document.domWindow())) {
+          if (rule->rule_tag()) {
+            tags.push_back(rule->rule_tag());
+          }
+          if (rule->ruleset_tag()) {
+            tags.push_back(rule->ruleset_tag());
+          }
 
-        // Put the default value.
-        if (tags.empty()) {
-          tags.push_back(g_null_atom);
+          // Put the default value.
+          if (tags.empty()) {
+            tags.push_back(g_null_atom);
+          }
         }
 
         candidates.push_back(MakeGarbageCollected<SpeculationCandidate>(
@@ -776,8 +779,8 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
   while (!pending_links_.empty()) {
     auto it = pending_links_.begin();
     HTMLAnchorElementBase* link = *it;
-    HeapVector<Member<SpeculationCandidate>>* link_candidates =
-        MakeGarbageCollected<HeapVector<Member<SpeculationCandidate>>>();
+    GCedHeapVector<Member<SpeculationCandidate>>* link_candidates =
+        MakeGarbageCollected<GCedHeapVector<Member<SpeculationCandidate>>>();
     Document& document = *GetSupplementable();
     ExecutionContext* execution_context = document.GetExecutionContext();
     CHECK(execution_context);

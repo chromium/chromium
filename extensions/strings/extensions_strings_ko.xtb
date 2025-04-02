@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">매니페스트 파일이 잘못되었습니다</translation>
 <translation id="7217838517480956708">이 기기를 설치할 때 관리자가 <ph name="EXTENSION_NAME" />을(를) 요구합니다. 삭제 또는 수정할 수 없습니다.</translation>
 <translation id="7612608473764576263">비공개 키 입력 값이 유효한 형식이어야 합니다(PKCS#8 형식 PEM 인코딩된 RSA 키).</translation>
+<translation id="7876803335449432072">콘텐츠 스크립트용 파일('<ph name="RELATIVE_PATH" />')을 로드할 수 없습니다. 콘텐츠 스크립트 스타일 시트는 .css 파일과 같이 지원되는 스타일 시트 파일에서만 로드할 수 있습니다.</translation>
 <translation id="7939686037314084444">확장 프로그램이 제대로 로드되지 않아 네트워크 요청을 가로채지 못할 수도 있습니다.</translation>
 <translation id="7972881773422714442">옵션: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">전면</translation>
 <translation id="8047248493720652249">다른 확장 프로그램(<ph name="EXTENSION_NAME" />)에서 파일 이름을 '<ph name="ACTUAL_FILENAME" />'(으)로 지정했기 때문에 이 확장 프로그램에서 다운로드하는 파일의 이름을 '<ph name="ATTEMPTED_FILENAME" />'(으)로 지정하지 못했습니다.</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" />의 <ph name="PRODUCT_NAME" /></translation>
 <translation id="8517576857589387417">매니페스트 파일이 없거나 읽을 수 없습니다</translation>
+<translation id="8621383749470166852">콘텐츠 스크립트용 파일('<ph name="RELATIVE_PATH" />')을 로드할 수 없습니다. 콘텐츠 스크립트는 .js 파일과 같이 지원되는 JavaScript 파일에서만 로드할 수 있습니다.</translation>
 <translation id="8636666366616799973">패키지가 잘못되었습니다. 세부정보: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">'<ph name="APP_NAME" />'이(가) 사용자의 기기 중 하나에 액세스 권한을 요청하고 있습니다.</translation>
 <translation id="8885905466771744233">지정한 확장 프로그램에 대한 비공개 키가 이미 있습니다. 해당 키를 다시 사용하거나 먼저 삭제하세요.</translation>

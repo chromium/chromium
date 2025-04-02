@@ -156,7 +156,6 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLAnchorElementBase {
  public:
   explicit HTMLAnchorElement(Document& document);
 
-  void AttachLayoutTree(AttachContext& context) override;
   void DetachLayoutTree(bool performing_reattach) override;
 
   // Gets the element which is referenced by this anchor fragment

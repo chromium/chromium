@@ -70,7 +70,6 @@
 <translation id="1122714970786750095">El och elektronik</translation>
 <translation id="1123753900084781868">Live Caption är inte tillgängligt just nu</translation>
 <translation id="1125453215844207206">Bild utan etikett. Extraherar text med Google AI</translation>
-<translation id="1125573121925420732">Varningar kan förekomma medan en webbplats uppdaterar säkerheten. Detta förbättras inom kort.</translation>
 <translation id="112840717907525620">Cacheminnet för policyn är OK</translation>
 <translation id="1131264053432022307">Bilden som du kopierade</translation>
 <translation id="1138458427267715730">Få aviseringar när priset sänks på någon webbplats på webben</translation>
@@ -297,7 +296,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1492194039220927094">Skicka principer:</translation>
 <translation id="1495677929897281669">Tillbaka till flik</translation>
 <translation id="1500286806237135498">Kameror (<ph name="CAMERAS_COUNT" />)</translation>
-<translation id="1501859676467574491">Visa kort från ditt Google-konto</translation>
 <translation id="1504042622576912555">Vågor</translation>
 <translation id="1507202001669085618">&lt;p&gt;Felmeddelandet visas om du använder en wifi-portal där du måste logga in innan du kommer ut på internet.&lt;/p&gt;
     &lt;p&gt;Åtgärda problemet genom att klicka på &lt;strong&gt;Anslut&lt;/strong&gt; på sidan du försöker öppna.&lt;/p&gt;</translation>
@@ -568,6 +566,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1975584088563498795">Postfack 10</translation>
 <translation id="1978555033938440688">Firmwareversion</translation>
 <translation id="1979156660928743046">Medieuppgifter</translation>
+<translation id="1987486584747170374">Dina sökningar, dina bästa matchningar och deras sidinnehåll skickas till Google. Det används inte av mänskliga granskare för att förbättra AI. Din organisation kan ändra dessa inställningar när som helst.</translation>
 <translation id="1988881251331415125">Om stavningen är rätt <ph name="BEGIN_LINK" />testar du att köra anslutningsdiagnostik<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> vill lagra stora mängder data permanent på din lokala dator</translation>
@@ -763,6 +762,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2301098101308036335">Vilka webbplatser som besöks och när</translation>
 <translation id="230286397113210245">Knappen Öppna ett inkognitofönster: aktivera om du vill öppna ett nytt inkognitofönster och surfa privat</translation>
 <translation id="2306124309679506798">Vill du tillåta en uppslukande upplevelse?</translation>
+<translation id="2307711332257985952">Dina hem- och jobbadresser är nu tillgängliga i Chrome</translation>
 <translation id="2312234273148520048">Smakförstärkare och dressingar</translation>
 <translation id="2316087952091171402">Mindre än <ph name="UPPER_ESTIMATE" /> Vissa webbplatser kan läsas in långsammare nästa gång du besöker dem.</translation>
 <translation id="2316159751672436664">Anpassa tillgänglighetsverktygen i inställningarna för ChromeOS</translation>
@@ -1178,6 +1178,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3102312643185441063">Sparkonto</translation>
 <translation id="3103188521861412364">Aktier och obligationer</translation>
 <translation id="3103535543639438037">Jämför liknande produkter sida vid sida</translation>
+<translation id="3103993932858740905">När du betalar över tid fylls ett virtuellt kortnummer i. Detta nummer gäller endast detta köp.</translation>
 <translation id="3105172416063519923">Tillgångs-id:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Kontrollera den säkra DNS-konfigurationen<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Mittenfack</translation>
@@ -2024,6 +2025,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4521280267704259211">Monarch-kuvert</translation>
 <translation id="4521916730539354575">Vänster fack</translation>
 <translation id="4522570452068850558">Detaljer</translation>
+<translation id="4523580145196408446">Länkad</translation>
 <translation id="4523643381056109546">Skyltar</translation>
 <translation id="4524138615196389145">Verifiera kreditkort snabbare genom att använda WebAuthn från och med nu</translation>
 <translation id="45243788195988825">Blockera <ph name="TOPIC" /></translation>
@@ -3089,6 +3091,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6405181733356710802">Vill du fortsätta till <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Ange utgångsdatum och CVC-kod för <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4 x 8</translation>
+<translation id="6412543105195503444">Dialogruta för föräldragodkännande</translation>
 <translation id="6414010576370319452">Hud- och nagelvård</translation>
 <translation id="6415778972515849510">Du kan skydda Google-kontot genom att byta lösenord.</translation>
 <translation id="6416877227920300343">EDP</translation>

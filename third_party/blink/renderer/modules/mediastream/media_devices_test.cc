@@ -581,12 +581,9 @@ class MockMediaPermission : public media::MediaPermission {
 
 class MediaDevicesTest : public PageTestBase {
  public:
-  using MediaDeviceInfos = HeapVector<Member<MediaDeviceInfo>>;
-
   MediaDevicesTest()
       : platform_(std::make_unique<MockMediaPermission>()),
-        dispatcher_host_(std::make_unique<MockMediaDevicesDispatcherHost>()),
-        device_infos_(MakeGarbageCollected<MediaDeviceInfos>()) {}
+        dispatcher_host_(std::make_unique<MockMediaDevicesDispatcherHost>()) {}
 
   MediaDevices* GetMediaDevices(LocalDOMWindow& window) {
     if (!media_devices_) {
@@ -679,7 +676,6 @@ class MediaDevicesTest : public PageTestBase {
                                std::unique_ptr<media::MediaPermission>>
       platform_;
   std::unique_ptr<MockMediaDevicesDispatcherHost> dispatcher_host_;
-  Persistent<MediaDeviceInfos> device_infos_;
   bool listener_connection_error_ = false;
   Persistent<MediaDevices> media_devices_;
   base::HistogramTester histogram_tester_;

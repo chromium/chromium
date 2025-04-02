@@ -5,8 +5,8 @@
     min-height: calc(400px - var(--privacy-guide-footer-total-height));
   }
 
-  .headline {
-    outline: none;
+  .welcome-completion-header {
+    padding: 24px 0 16px 0;
   }
 
   cr-link-row {
@@ -35,16 +35,16 @@
     width: calc(100% - 48px);  /* 48px = 2x :host horizontal padding */
   }
 </style>
-<div class="header-phase2">
+<div class="welcome-completion-header">
   <picture>
     <source
         srcset="./images/privacy_guide/completion_banner_dark_v2.svg"
         media="(prefers-color-scheme: dark)">
     <img alt="" src="./images/privacy_guide/completion_banner_v2.svg">
   </picture>
-  <div class="headline" tabindex="-1">
+  <h2 class="welcome-completion-header-label" tabindex="-1">
     $i18n{privacyGuideCompletionCardHeader}
-  </div>
+  </h2>
   <div class="cr-secondary-text">[[getSubheader_(isNoLinkLayout_)]]</div>
 </div>
 <template is="dom-if" if="[[shouldShowPrivacySandbox_]]">

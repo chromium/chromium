@@ -121,7 +121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Accessibility.ModeFlag" enum="AccessibilityModeFlagEnum"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@chromium.org</owner>
   <summary>
@@ -242,7 +242,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Animation.CompositedAnimationFailureReason"
-    enum="CompositorAnimationsFailureReason" expires_after="2025-07-27">
+    enum="CompositorAnimationsFailureReason" expires_after="2025-09-28">
   <owner>smcgruer@chromium.org</owner>
   <owner>animations-dev@chromium.org</owner>
   <summary>
@@ -719,7 +719,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.CompositingInputs.UpdateTime{BlinkUpdateTimeSuffixes}"
-    units="microseconds" expires_after="2025-07-27">
+    units="microseconds" expires_after="2025-09-28">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -3348,7 +3348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.PotentiallyLCPResourcePriorityBoosts2"
-    units="count" expires_after="2025-06-22">
+    units="count" expires_after="2025-09-28">
   <owner>kouhei@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -4033,7 +4033,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.ParseStyleSheet.UpdateTime{BlinkUpdateTimeSuffixes}"
-    units="microseconds" expires_after="2025-07-13">
+    units="microseconds" expires_after="2025-09-28">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>

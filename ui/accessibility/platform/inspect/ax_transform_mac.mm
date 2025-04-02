@@ -132,7 +132,8 @@ base::Value AXNSObjectToBaseValue(id value, const AXTreeIndexerMac* indexer) {
 }
 
 base::Value AXElementToBaseValue(id node, const AXTreeIndexerMac* indexer) {
-  return base::Value(AXMakeConst(indexer->IndexBy(node)));
+  return base::Value(
+      AXMakeConst(indexer->IndexBy(gfx::NativeViewAccessible(node))));
 }
 
 base::Value AXPositionToBaseValue(
@@ -154,8 +155,9 @@ base::Value AXPositionToBaseValue(
     return AXNilToBaseValue();
   }
 
-  AXPlatformNodeCocoa* cocoa_anchor = static_cast<AXPlatformNodeCocoa*>(
-      platform_node_anchor->GetNativeViewAccessible());
+  AXPlatformNodeCocoa* cocoa_anchor =
+      base::apple::ObjCCast<AXPlatformNodeCocoa>(
+          platform_node_anchor->GetNativeViewAccessible().Get());
   if (!cocoa_anchor) {
     return AXNilToBaseValue();
   }

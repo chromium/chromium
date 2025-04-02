@@ -430,8 +430,9 @@ class IntegrationTest : public ::testing::Test {
         app_id, command_id, parameters, expected_exit_code);
   }
 
-  void ExpectLegacyPolicyStatusSucceeds() {
-    test_commands_->ExpectLegacyPolicyStatusSucceeds();
+  void ExpectLegacyPolicyStatusSucceeds(
+      const base::Version& updater_version = base::Version(kUpdaterVersion)) {
+    test_commands_->ExpectLegacyPolicyStatusSucceeds(updater_version);
   }
 
   void LegacyInstallApp(const std::string& app_id,
@@ -461,8 +462,9 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->SetupFakeUpdaterLowerVersion();
   }
 
-  void SetupRealUpdater(const base::FilePath& updater_path) {
-    test_commands_->SetupRealUpdater(updater_path);
+  void SetupRealUpdater(const base::FilePath& updater_path,
+                        const base::flat_set<std::string>& switches = {}) {
+    test_commands_->SetupRealUpdater(updater_path, SetToList(switches));
   }
 
   void SetActive(const std::string& app_id) {
@@ -4451,7 +4453,8 @@ class IntegrationLegacyAppCommandWebTest
     }
 
     test_server_ = std::make_unique<ScopedServer>(test_commands_);
-    ASSERT_NO_FATAL_FAILURE(SetupRealUpdater(GetParam().updater_setup_path));
+    ASSERT_NO_FATAL_FAILURE(
+        SetupRealUpdater(GetParam().updater_setup_path, switches()));
   }
 
   void TearDown() override {
@@ -4466,6 +4469,8 @@ class IntegrationLegacyAppCommandWebTest
 
     IntegrationTest::TearDown();
   }
+
+  virtual base::flat_set<std::string> switches() const { return {}; }
 
   std::unique_ptr<ScopedServer> test_server_;
 };
@@ -4591,23 +4596,29 @@ TEST_P(IntegrationLegacyProcessLauncherTest, Test) {
   ASSERT_NO_FATAL_FAILURE(ExpectLegacyProcessLauncherSucceeds());
 }
 
-TEST_F(IntegrationTest, LegacyPolicyStatus) {
-  ScopedServer test_server(test_commands_);
-  ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
+class IntegrationLegacyPolicyStatusTest
+    : public IntegrationLegacyAppCommandWebTest {
+ protected:
+  base::flat_set<std::string> switches() const override {
+    return {kEnableCecaExperimentSwitch};
+  }
+};
 
+INSTANTIATE_TEST_SUITE_P(IntegrationLegacyPolicyStatusTestCases,
+                         IntegrationLegacyPolicyStatusTest,
+                         ::testing::ValuesIn(GetRealUpdaterVersions()));
+
+TEST_P(IntegrationLegacyPolicyStatusTest, Test) {
   const std::string kAppId("test");
   ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
   base::Version v1("1");
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
-      &test_server, kAppId, "", UpdateService::Priority::kBackground,
-      base::Version("0.1"), v1));
-  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+      test_server_.get(), kAppId, "", UpdateService::Priority::kBackground,
+      base::Version("0.1"), v1, {}, {}, GetParam().version));
+  ASSERT_NO_FATAL_FAILURE(RunWake(0, GetParam().version));
   ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
 
-  ASSERT_NO_FATAL_FAILURE(ExpectLegacyPolicyStatusSucceeds());
-
-  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
-  ASSERT_NO_FATAL_FAILURE(Uninstall());
+  ASSERT_NO_FATAL_FAILURE(ExpectLegacyPolicyStatusSucceeds(GetParam().version));
 }
 
 TEST_F(IntegrationTest, UninstallCmdLine) {

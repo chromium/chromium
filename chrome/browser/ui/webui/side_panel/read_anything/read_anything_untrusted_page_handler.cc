@@ -803,8 +803,12 @@ void ReadAnythingUntrustedPageHandler::OnTabWillDetach() {
     return;
   }
 
-  tab_will_detach_ = true;
-  page_->OnTabWillDetach();
+  // When multiple tabs are open, we receive this call multiple times, so only
+  // inform once.
+  if (!tab_will_detach_) {
+    tab_will_detach_ = true;
+    page_->OnTabWillDetach();
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

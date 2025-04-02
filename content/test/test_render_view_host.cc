@@ -99,7 +99,7 @@ gfx::NativeView TestRenderWidgetHostView::GetNativeView() {
 }
 
 gfx::NativeViewAccessible TestRenderWidgetHostView::GetNativeViewAccessible() {
-  return nullptr;
+  return gfx::NativeViewAccessible();
 }
 
 ui::TextInputClient* TestRenderWidgetHostView::GetTextInputClient() {

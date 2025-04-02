@@ -1607,7 +1607,7 @@ gfx::QuadF LocalToAbsoluteQuadOf(const LocalCaretRect& caret_rect) {
   return caret_rect.layout_object->LocalRectToAbsoluteQuad(caret_rect.rect);
 }
 
-const StaticRangeVector* TargetRangesForInputEvent(const Node& node) {
+const GCedStaticRangeVector* TargetRangesForInputEvent(const Node& node) {
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited. see http://crbug.com/590369 for more details.
   node.GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
@@ -1620,14 +1620,15 @@ const StaticRangeVector* TargetRangesForInputEvent(const Node& node) {
                                 .ComputeVisibleSelectionInDOMTree());
   if (range.IsNull())
     return nullptr;
-  return MakeGarbageCollected<StaticRangeVector>(1, StaticRange::Create(range));
+  return MakeGarbageCollected<GCedStaticRangeVector>(
+      1, StaticRange::Create(range));
 }
 
 DispatchEventResult DispatchBeforeInputInsertText(
     Node* target,
     const String& data,
     InputEvent::InputType input_type,
-    const StaticRangeVector* ranges) {
+    const GCedStaticRangeVector* ranges) {
   if (!target)
     return DispatchEventResult::kNotCanceled;
   // TODO(editing-dev): Pass appropriate |ranges| after it's defined on spec.
@@ -1641,7 +1642,7 @@ DispatchEventResult DispatchBeforeInputInsertText(
 DispatchEventResult DispatchBeforeInputEditorCommand(
     Node* target,
     InputEvent::InputType input_type,
-    const StaticRangeVector* ranges) {
+    const GCedStaticRangeVector* ranges) {
   if (!target)
     return DispatchEventResult::kNotCanceled;
   InputEvent* before_input_event = InputEvent::CreateBeforeInput(

@@ -91,6 +91,10 @@
 #       absolute paths, such as for third_party or generated .proto files.
 #       http://crbug.com/691451 tracks fixing this.
 #
+#   generator_visiblility (optional)
+#       This is added to visibility of code generation target so that other
+#       targets can depend on them to have generated codes as their inputs.
+#
 # Parameters for compiling the generated code:
 #
 #   force_source_set (Default=false)
@@ -367,6 +371,9 @@ template("proto_library") {
       ":$py_runtime_name",
       ":$source_set_name",
     ]
+    if (defined(invoker.generator_visibility)) {
+      visibility += invoker.generator_visibility
+    }
     script = "//tools/protoc_wrapper/protoc_wrapper.py"
     args = protos
 

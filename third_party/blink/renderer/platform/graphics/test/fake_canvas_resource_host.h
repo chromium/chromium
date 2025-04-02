@@ -24,6 +24,7 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
   explicit FakeCanvasResourceHost(gfx::Size size) : CanvasResourceHost(size) {}
   ~FakeCanvasResourceHost() override = default;
   void NotifyGpuContextLost() override {}
+  bool IsContextLost() const override { return false; }
   void SetNeedsCompositingUpdate() override {}
   void InitializeForRecording(cc::PaintCanvas*) const override {}
   void UpdateMemoryUsage() override {}

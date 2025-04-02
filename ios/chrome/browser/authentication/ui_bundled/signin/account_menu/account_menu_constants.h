@@ -29,5 +29,9 @@ extern NSString* const kAccountMenuActivityIndicatorId;
 extern NSString* const kAccountMenuOpenSettingsButtonId;
 // The accessibility identifier of manage accounts button.
 extern NSString* const kAccountMenuManageAccountsButtonId;
+// The accessibility identifier for the "edit account list" menu entry.
+extern NSString* const kAccountMenuEditAccountListId;
+// The accessibility ideentifier for the "manage your account" menu entry.
+extern NSString* const kAccountMenuManageYourGoogleAccountId;
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_ACCOUNT_MENU_ACCOUNT_MENU_CONSTANTS_H_

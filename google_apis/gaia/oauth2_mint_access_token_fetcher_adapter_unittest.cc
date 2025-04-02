@@ -377,11 +377,11 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, UnexpectedConsentResult) {
   EXPECT_CALL(*mock_consumer(),
               OnGetTokenFailure(Property(
                   "state", &GoogleServiceAuthError::state,
-                  GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE)));
+                  GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR)));
   mock_flow()->SimulateRemoteConsentSuccess(RemoteConsentResolutionData());
   histogram_tester().ExpectUniqueSample(
       kFetchAuthErrorHistogram,
-      GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE,
+      GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR,
       /*expected_bucket_count=*/1);
 }
 

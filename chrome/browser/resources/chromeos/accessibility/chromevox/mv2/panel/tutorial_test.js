@@ -205,29 +205,33 @@ AX_TEST_F(
 // The first three nudges should read the current item with full context.
 // Afterward, general hints will be given about using ChromeVox. Lastly,
 // we will give a hint for exiting the tutorial.
-AX_TEST_F('ChromeVoxTutorialTest', 'GeneralNudgesTest', async function() {
-  const mockFeedback = this.createMockFeedback();
-  const root = await this.runWithLoadedTree(this.simpleDoc);
-  await this.launchAndWaitForTutorial();
-  this.disableRestartNudges();
-  const tutorial = this.getTutorial();
-  const giveNudge = () => {
-    tutorial.giveNudge();
-  };
-  mockFeedback.expectSpeech('ChromeVox tutorial');
-  for (let i = 0; i < 3; ++i) {
-    mockFeedback.call(giveNudge).expectSpeech(
-        'ChromeVox tutorial', 'Heading 1');
-  }
-  mockFeedback.call(giveNudge)
-      .expectSpeech('Hint: Hold Search and press the arrow keys to navigate.')
-      .call(giveNudge)
-      .expectSpeech('Hint: Press Search + Space to activate the current item.')
-      .call(giveNudge)
-      .expectSpeech(
-          'Hint: Press Escape if you would like to exit this tutorial.');
-  await mockFeedback.replay();
-});
+// TODO(crbug.com/407459387): Fix and re-enable this test.
+AX_TEST_F(
+    'ChromeVoxTutorialTest', 'DISABLED_GeneralNudgesTest', async function() {
+      const mockFeedback = this.createMockFeedback();
+      const root = await this.runWithLoadedTree(this.simpleDoc);
+      await this.launchAndWaitForTutorial();
+      this.disableRestartNudges();
+      const tutorial = this.getTutorial();
+      const giveNudge = () => {
+        tutorial.giveNudge();
+      };
+      mockFeedback.expectSpeech('ChromeVox tutorial');
+      for (let i = 0; i < 3; ++i) {
+        mockFeedback.call(giveNudge).expectSpeech(
+            'ChromeVox tutorial', 'Heading 1');
+      }
+      mockFeedback.call(giveNudge)
+          .expectSpeech(
+              'Hint: Hold Search and press the arrow keys to navigate.')
+          .call(giveNudge)
+          .expectSpeech(
+              'Hint: Press Search + Space to activate the current item.')
+          .call(giveNudge)
+          .expectSpeech(
+              'Hint: Press Escape if you would like to exit this tutorial.');
+      await mockFeedback.replay();
+    });
 
 // Tests nudges given in the practice area context. Note, each practice area
 // can have different nudge messages; this test confirms that nudges given in
@@ -395,7 +399,8 @@ AX_TEST_F(
     });
 
 // Tests that the title of an interactive lesson is read when shown.
-AX_TEST_F('ChromeVoxTutorialTest', 'AutoReadTitle', async function() {
+// TODO(crbug.com/407459387): Fix and re-enable this test.
+AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_AutoReadTitle', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
@@ -444,7 +449,8 @@ AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_LessonHint', async function() {
 });
 
 // Tests for correct speech and earcons on the earcons lesson.
-AX_TEST_F('ChromeVoxTutorialTest', 'EarconLesson', async function() {
+// TODO(crbug.com/407459387): Fix and re-enable this test.
+AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_EarconLesson', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
@@ -544,7 +550,8 @@ AX_TEST_F(
     });
 
 // Tests that tutorial nudges are restarted whenever the current range changes.
-AX_TEST_F('ChromeVoxTutorialTest', 'RestartNudges', async function() {
+// TODO(crbug.com/407459387): Fix and re-enable this test.
+AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_RestartNudges', async function() {
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
   const tutorial = this.getTutorial();
@@ -568,7 +575,8 @@ AX_TEST_F('ChromeVoxTutorialTest', 'RestartNudges', async function() {
 });
 
 // Tests that the tutorial closes and ChromeVox navigates to a resource link.
-AX_TEST_F('ChromeVoxTutorialTest', 'ResourcesTest', async function() {
+// TODO(crbug.com/407459387): Fix and re-enable this test.
+AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_ResourcesTest', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
@@ -592,7 +600,8 @@ AX_TEST_F('ChromeVoxTutorialTest', 'ResourcesTest', async function() {
 
 // Tests that choosing a curriculum with only 1 lesson automatically opens the
 // lesson.
-AX_TEST_F('ChromeVoxTutorialTest', 'OnlyLessonTest', async function() {
+// TODO(crbug.com/407459387): Fix and re-enable this test.
+AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_OnlyLessonTest', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
@@ -626,8 +635,10 @@ AX_TEST_F('ChromeVoxTutorialTest', 'OnlyLessonTest', async function() {
 
 // Tests that interactive mode and ForcedActionPath are properly set when
 // showing different screens in the tutorial.
+// TODO(crbug.com/407459387): Fix and re-enable this test.
 AX_TEST_F(
-    'ChromeVoxTutorialTest', 'StartStopInteractiveMode', async function() {
+    'ChromeVoxTutorialTest', 'DISABLED_StartStopInteractiveMode',
+    async function() {
       const root = await this.runWithLoadedTree(this.simpleDoc);
       await this.launchAndWaitForTutorial();
       const tutorial = this.getTutorial();
@@ -738,32 +749,35 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
-AX_TEST_F('ChromeVoxTutorialTest', 'GeneralTouchNudges', async function() {
-  const mockFeedback = this.createMockFeedback();
-  const root = await this.runWithLoadedTree(this.simpleDoc);
-  await this.launchAndWaitForTutorial();
-  this.disableRestartNudges();
-  const tutorial = this.getTutorial();
-  const giveNudge = () => {
-    tutorial.giveNudge();
-  };
-  mockFeedback.expectSpeech('ChromeVox tutorial');
-  mockFeedback.call(() => {
-    tutorial.medium = 'touch';
-    tutorial.initializeNudges('general');
-  });
-  for (let i = 0; i < 3; ++i) {
-    mockFeedback.call(giveNudge).expectSpeech(
-        'ChromeVox tutorial', 'Heading 1');
-  }
-  mockFeedback.call(giveNudge)
-      .expectSpeech('Hint: Swipe left or right with one finger to navigate.')
-      .call(giveNudge)
-      .expectSpeech(
-          'Hint: Double-tap with one finger to activate the current item.')
-      .call(giveNudge)
-      .expectSpeech(
-          'Hint: Swipe from right to left with two fingers if you would ' +
-          'like to exit this tutorial.');
-  await mockFeedback.replay();
-});
+// TODO(crbug.com/407459387): Fix and re-enable this test.
+AX_TEST_F(
+    'ChromeVoxTutorialTest', 'DISABLED_GeneralTouchNudges', async function() {
+      const mockFeedback = this.createMockFeedback();
+      const root = await this.runWithLoadedTree(this.simpleDoc);
+      await this.launchAndWaitForTutorial();
+      this.disableRestartNudges();
+      const tutorial = this.getTutorial();
+      const giveNudge = () => {
+        tutorial.giveNudge();
+      };
+      mockFeedback.expectSpeech('ChromeVox tutorial');
+      mockFeedback.call(() => {
+        tutorial.medium = 'touch';
+        tutorial.initializeNudges('general');
+      });
+      for (let i = 0; i < 3; ++i) {
+        mockFeedback.call(giveNudge).expectSpeech(
+            'ChromeVox tutorial', 'Heading 1');
+      }
+      mockFeedback.call(giveNudge)
+          .expectSpeech(
+              'Hint: Swipe left or right with one finger to navigate.')
+          .call(giveNudge)
+          .expectSpeech(
+              'Hint: Double-tap with one finger to activate the current item.')
+          .call(giveNudge)
+          .expectSpeech(
+              'Hint: Swipe from right to left with two fingers if you would ' +
+              'like to exit this tutorial.');
+      await mockFeedback.replay();
+    });

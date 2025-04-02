@@ -276,10 +276,44 @@ bool IsCaptureWindowSelectable(aura::Window* window) {
 
 std::u16string GetA11yNameForFineTunePosition(
     FineTunePosition fine_tune_position) {
-  return l10n_util::GetStringUTF16(
-      fine_tune_position == FineTunePosition::kCenter
-          ? IDS_ASH_SCREEN_CAPTURE_SELECTED_AREA_ACCESSIBLE_NAME
-          : IDS_ASH_SCREEN_CAPTURE_SELECTED_DRAG_HANDLE_ACCESSIBLE_TITLE);
+  int message_id;
+  switch (fine_tune_position) {
+    case FineTunePosition::kCenter:
+      message_id = IDS_ASH_SCREEN_CAPTURE_SELECTED_AREA_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kTopLeftVertex:
+      message_id = IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_TOP_LEFT_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kTopRightVertex:
+      message_id = IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_TOP_RIGHT_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kBottomRightVertex:
+      message_id =
+          IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_BOTTOM_RIGHT_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kBottomLeftVertex:
+      message_id =
+          IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_BOTTOM_LEFT_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kTopEdge:
+      message_id = IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_TOP_EDGE_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kRightEdge:
+      message_id =
+          IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_RIGHT_EDGE_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kBottomEdge:
+      message_id =
+          IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_BOTTOM_EDGE_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kLeftEdge:
+      message_id = IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_LEFT_EDGE_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kNone:
+      return u"";
+  }
+
+  return l10n_util::GetStringUTF16(message_id);
 }
 
 }  // namespace
@@ -1251,23 +1285,24 @@ bool CaptureModeSessionFocusCycler::FindFocusedViewAndUpdateFocusIndex(
 void CaptureModeSessionFocusCycler::UpdateA11yAnnotation() {
   std::vector<views::Widget*> a11y_widgets;
 
+  auto maybe_add_widget = [&a11y_widgets](views::Widget* widget) {
+    if (widget && !widget->IsClosed()) {
+      a11y_widgets.push_back(widget);
+    }
+  };
+
   // Add the search results panel if it exists.
-  if (auto* panel_widget =
-          CaptureModeController::Get()->search_results_panel_widget()) {
-    a11y_widgets.push_back(panel_widget);
-  }
+  maybe_add_widget(CaptureModeController::Get()->search_results_panel_widget());
 
   // If the bar widget is not available, then this is called while shutting
   // down the capture mode session.
-  views::Widget* bar_widget = session_->capture_mode_bar_widget_.get();
-  if (bar_widget)
-    a11y_widgets.push_back(bar_widget);
+  maybe_add_widget(session_->capture_mode_bar_widget_.get());
 
   // Add the label widget only if the button is visible.
   if (auto* capture_label_view = session_->capture_label_view_.get();
       capture_label_view && capture_label_view->IsViewInteractable() &&
       capture_label_view->GetWidget()->IsVisible()) {
-    a11y_widgets.push_back(capture_label_view->GetWidget());
+    maybe_add_widget(capture_label_view->GetWidget());
   }
 
   // Add the action container widget if it exists and it contains action
@@ -1275,20 +1310,12 @@ void CaptureModeSessionFocusCycler::UpdateA11yAnnotation() {
   if (auto* action_container_widget = session_->action_container_widget_.get();
       action_container_widget && session_->action_container_view_ &&
       !session_->action_container_view_->children().empty()) {
-    a11y_widgets.push_back(action_container_widget);
+    maybe_add_widget(action_container_widget);
   }
 
-  // Add the recording type widget if it exists.
-  if (auto* recording_type_menu_widget =
-          session_->recording_type_menu_widget_.get()) {
-    a11y_widgets.push_back(recording_type_menu_widget);
-  }
-
-  // Add the settings widget if it exists.
-  if (auto* settings_menu_widget =
-          session_->capture_mode_settings_widget_.get()) {
-    a11y_widgets.push_back(settings_menu_widget);
-  }
+  // Add the recording type and settings widgets if they exist.
+  maybe_add_widget(session_->recording_type_menu_widget_.get());
+  maybe_add_widget(session_->capture_mode_settings_widget_.get());
 
   // Helper to update |target|'s a11y focus with |previous| and |next|, which
   // can be null.

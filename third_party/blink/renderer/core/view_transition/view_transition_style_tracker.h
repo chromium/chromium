@@ -18,12 +18,12 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/style_view_transition_group.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
@@ -355,7 +355,10 @@ class ViewTransitionStyleTracker
       PhysicalRect& visual_overflow_rect_in_layout_space,
       std::optional<gfx::RectF>& captured_rect_in_layout_space) const;
 
-  gfx::Transform ComputeViewportTransform(const LayoutObject&) const;
+  // Computes a transform for the participant's border box relative to the
+  // viewport in the case of a document transition, or the padding box rect of
+  // the scope element in the case of a scoped transition.
+  gfx::Transform ComputeTransformForParticipant(const LayoutObject&) const;
 
   viz::ViewTransitionElementResourceId GenerateResourceId(
       bool for_subframe_snapshot = false) const;

@@ -12,10 +12,11 @@ cargo_crate("lib") {
   crate_name = "yoke_derive"
   epoch = "0.8"
   crate_type = "proc-macro"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/yoke-derive-0.8.0/src/lib.rs"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/yoke-derive-v0_8/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/yoke-derive-0.8.0/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/yoke-derive-0.8.0/src/visitor.rs",
+    "//third_party/rust/chromium_crates_io/vendor/yoke-derive-v0_8/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/yoke-derive-v0_8/src/visitor.rs",
   ]
   inputs = []
 

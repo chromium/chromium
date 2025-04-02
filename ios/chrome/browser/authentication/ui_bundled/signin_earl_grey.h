@@ -148,6 +148,12 @@ class GURL;
     (policy::ProfileSeparationDataMigrationSettings)
         profileSeparationDataMigrationSettings;
 
+// Returns whether the feature to put each managed account into its own separate
+// profile is enabled. This depends on the `kSeparateProfilesForManagedAccounts`
+// feature flag, plus some additional conditions which can't be directly checked
+// in the test app.
+- (BOOL)areSeparateProfilesForManagedAccountsEnabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_EARL_GREY_H_

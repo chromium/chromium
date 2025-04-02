@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
@@ -19,20 +19,20 @@ import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
  * through to {@link TabModel}.
  */
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+@NullMarked
 public class PassthroughTabRemover implements TabRemover {
     private final Supplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
 
     /**
      * @param tabGroupModelFilterSupplier The supplier of the {@link TabGroupModelFilter}.
      */
-    public PassthroughTabRemover(
-            @NonNull Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
+    public PassthroughTabRemover(Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
         mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
     }
 
     @Override
     public void closeTabs(
-            @NonNull TabClosureParams tabClosureParams,
+            TabClosureParams tabClosureParams,
             boolean allowDialog,
             @Nullable TabModelActionListener listener) {
         prepareCloseTabs(tabClosureParams, allowDialog, listener, this::forceCloseTabs);
@@ -40,10 +40,10 @@ public class PassthroughTabRemover implements TabRemover {
 
     @Override
     public void prepareCloseTabs(
-            @NonNull TabClosureParams tabClosureParams,
+            TabClosureParams tabClosureParams,
             boolean allowDialog,
             @Nullable TabModelActionListener listener,
-            @NonNull Callback<TabClosureParams> onPreparedCallback) {
+            Callback<TabClosureParams> onPreparedCallback) {
         if (listener != null) {
             listener.willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
         }
@@ -55,14 +55,13 @@ public class PassthroughTabRemover implements TabRemover {
     }
 
     @Override
-    public void forceCloseTabs(@NonNull TabClosureParams tabClosureParams) {
+    public void forceCloseTabs(TabClosureParams tabClosureParams) {
         TabGroupModelFilterInternal tabGroupModelFilter = getTabGroupModelFilter();
         doCloseTabs(tabGroupModelFilter, tabClosureParams);
     }
 
     @Override
-    public void removeTab(
-            @NonNull Tab tab, boolean allowDialog, @Nullable TabModelActionListener listener) {
+    public void removeTab(Tab tab, boolean allowDialog, @Nullable TabModelActionListener listener) {
         if (listener != null) {
             listener.willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
         }
@@ -74,21 +73,20 @@ public class PassthroughTabRemover implements TabRemover {
         }
     }
 
-    private @NonNull TabGroupModelFilterInternal getTabGroupModelFilter() {
-        @Nullable
-        TabGroupModelFilterInternal tabGroupModelFilter =
+    private TabGroupModelFilterInternal getTabGroupModelFilter() {
+
+        @Nullable TabGroupModelFilterInternal tabGroupModelFilter =
                 (TabGroupModelFilterInternal) mTabGroupModelFilterSupplier.get();
         assert tabGroupModelFilter != null;
         return tabGroupModelFilter;
     }
 
     static boolean doCloseTabs(
-            @NonNull TabGroupModelFilterInternal filter,
-            @NonNull TabClosureParams tabClosureParams) {
+            TabGroupModelFilterInternal filter, TabClosureParams tabClosureParams) {
         return filter.closeTabs(tabClosureParams);
     }
 
-    static void doRemoveTab(@NonNull TabModel model, @NonNull Tab tab) {
+    static void doRemoveTab(TabModel model, Tab tab) {
         ((TabModelInternal) model).removeTab(tab);
     }
 }

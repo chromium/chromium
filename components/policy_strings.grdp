@@ -1397,6 +1397,9 @@ Additional details:
   <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_START_MESSAGE" desc="The message for the dialog body informing the user that file upload to the cloud provider will start at a specified time.">
     Your administrator will start uploading your files to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> at <ph name="DATE_TIME">$2<ex>8/25/24 2:44:30 PM PST</ex></ph>. Keep your device connected until your file upload is complete. During the upload, you will only be able to read local files.
   </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_START_ON_MESSAGE" desc="The message for the dialog body informing the user that file upload to the cloud provider will start at a specified time.">
+    Your administrator will start uploading your files to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> on <ph name="DATE_TIME">$2<ex>8/25/24 2:44:30 PM PST</ex></ph>. Keep your device connected until your file upload is complete. During the upload, you will only be able to read local files.
+  </message>
   <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_DONE_MESSAGE" desc="The message for the dialog body informing the user that local storage will be disabled once the migration of existing files to the cloud provider completes.">
    Once the upload is complete, you can modify your files in <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph>. Local storage, including any files in Trash, will be automatically removed.
   </message>

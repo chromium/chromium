@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
-#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/input_event_activation_protector.h"
@@ -78,9 +77,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   };
 
   FedCmAccountSelectionView(AccountSelectionView::Delegate* delegate,
-                            tabs::TabInterface* tab,
-                            segmentation_platform::SegmentationPlatformService*
-                                segmentation_platform_service = nullptr);
+                            tabs::TabInterface* tab);
   ~FedCmAccountSelectionView() override;
 
   // AccountSelectionView:
@@ -272,8 +269,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                            DisclosureDialogResultMetric);
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
                            RequestPermissionFalseAndNewIdpDataDisclosureText);
-  FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
-                           SegmentationPlatformUserActionMetric);
 
   enum class State {
     // User is shown message that they are not currently signed-in to IdP.
@@ -404,19 +399,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
     kMaxValue = kTapScrim
   };
 
-  // This enum describes the user action taken when the UI shown uses
-  // segmentation platform's UI volume recommendation and is used for
-  // histograms. Do not remove or modify existing values, but you may add new
-  // values at the end. This enum should be kept in sync with FedCmUserAction in
-  // tools/metrics/histograms/enums.xml.
-  enum class UserAction {
-    kSuccess = 0,
-    kIgnored = 1,
-    kClosed = 2,
-
-    kMaxValue = kClosed
-  };
-
   // Called when the tab's WebContents is discarded.
   void WillDiscardContents(tabs::TabInterface* tab,
                            content::WebContents* old_contents,
@@ -488,11 +470,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // Called when any of the Show*() methods is called.
   void ResetDialogWidgetStateOnAnyShow();
-
-  // Called when the segmentation platform which recommends UI volume returns a
-  // result.
-  void OnClassificationResultReturned(
-      const segmentation_platform::ClassificationResult& result);
 
   std::vector<IdentityProviderDataPtr> idp_list_;
 
@@ -595,20 +572,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // Widget that owns the view.
   std::unique_ptr<views::Widget> dialog_widget_;
-
-  // The current action that the user has taken. This is nullopt when
-  // segmentation platform is not used. Initially, this is set to kIgnored until
-  // the user closes the UI or proceeds with signing in.
-  std::optional<UserAction> user_action_state_;
-
-  // Request ID associated with a |GetClassificationResult| call to
-  // |segmentation_platform_service_|. This is nullopt when the
-  // |GetClassificationResult| call has not returned a result yet.
-  std::optional<segmentation_platform::TrainingRequestId> training_request_id_;
-
-  // Service which returns a recommendation for UI volume.
-  raw_ptr<segmentation_platform::SegmentationPlatformService>
-      segmentation_platform_service_;
 
   // This view controls the contents of the dialog_widget_. Conceptually there
   // is a view if and only if there is a widget. The two are constructed

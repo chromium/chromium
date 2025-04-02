@@ -116,7 +116,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
               AUTOFILL_WALLET_DATA,
               {AUTOFILL_WALLET_CREDENTIAL, AUTOFILL_WALLET_DATA,
                AUTOFILL_WALLET_METADATA, AUTOFILL_WALLET_OFFER,
-               AUTOFILL_WALLET_USAGE, AUTOFILL_LOYALTY_CARD}};
+               AUTOFILL_WALLET_USAGE, AUTOFILL_VALUABLE}};
     case UserSelectableType::kProductComparison:
       return {
           kProductComparisonTypeName, PRODUCT_COMPARISON, {PRODUCT_COMPARISON}};

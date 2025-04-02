@@ -92,9 +92,10 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionPageCaptureApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
-// TODO(crbug.com/326868086, crbug.com/342254075, crbug.com/374409662): Test is
-// flaky on MSan, Windows, and Linux.
-#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/326868086, crbug.com/342254075, crbug.com/374409662,
+// crbug.com/406917890): Test is flaky on MSan, Windows, Linux, and ChromeOS.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SaveAsMHTMLWithoutFileAccess DISABLED_SaveAsMHTMLWithoutFileAccess
 #else
 #define MAYBE_SaveAsMHTMLWithoutFileAccess SaveAsMHTMLWithoutFileAccess

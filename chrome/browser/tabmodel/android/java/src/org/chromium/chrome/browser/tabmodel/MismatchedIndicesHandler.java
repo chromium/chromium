@@ -7,11 +7,14 @@ package org.chromium.chrome.browser.tabmodel;
 import android.app.Activity;
 import android.app.ActivityManager;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Contains methods for activities to handle scenarios where a new activity attempts to use a
  * window/tab model selector index that is already assigned, thereby leading to potentially
  * erroneous circumstances.
  */
+@NullMarked
 public interface MismatchedIndicesHandler {
 
     /**

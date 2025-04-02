@@ -203,7 +203,7 @@ TEST_F(TraceWrapperV8ReferenceTest, HeapVector) {
   V8TestingScope testing_scope;
   SetIsolate(testing_scope.GetIsolate());
 
-  using VectorContainer = HeapVector<TraceWrapperV8Reference<v8::Value>>;
+  using VectorContainer = GCedHeapVector<TraceWrapperV8Reference<v8::Value>>;
   Persistent<VectorContainer> holder(MakeGarbageCollected<VectorContainer>());
   v8::Persistent<v8::Value> observer;
   {

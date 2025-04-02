@@ -105,8 +105,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                             Arrays.asList(mReturningAna, mNewBob),
                             Arrays.asList(mIdpData),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                 });
         pollUiThread(() -> getBottomSheetState() == mExpectedSheetState);
 
@@ -126,8 +125,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                             Arrays.asList(mReturningAna, mNewBob),
                             Arrays.asList(mIdpData),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                 });
         pollUiThread(() -> getBottomSheetState() == mExpectedSheetState);
         BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
@@ -147,8 +145,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                             Arrays.asList(mNewBob),
                             Arrays.asList(mIdpData),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                 });
         pollUiThread(() -> getBottomSheetState() == mExpectedSheetState);
 
@@ -221,8 +218,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                             Arrays.asList(mReturningAna, mNewBob),
                             Arrays.asList(mIdpData),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                 });
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         verify(mMockBridge, never()).onAccountSelected(any());
@@ -368,8 +364,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                             Arrays.asList(mNewBobWithAddAccount, mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == mExpectedSheetState);

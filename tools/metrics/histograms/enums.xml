@@ -1777,14 +1777,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="2" label="Cache miss"/>
 </enum>
 
-<enum name="CanExtractVisualFeaturesResult">
-  <int value="0" label="Can extract visual features"/>
-  <int value="1" label="User is not subscribed to SBER"/>
-  <int value="2" label="User is off the record"/>
-  <int value="3" label="Frame is below minimal width and/or height"/>
-  <int value="4" label="Zoom level is above maximum value"/>
-</enum>
-
 <enum name="CanvasRenderingAPI">
   <int value="0" label="2d"/>
   <int value="1" label="webgl"/>
@@ -2749,6 +2741,9 @@ Called by update_net_error_codes.py.-->
   <int value="41" label="Save page"/>
   <int value="42" label="Share page"/>
   <int value="43" label="Print page"/>
+  <int value="44" label="Navigate back"/>
+  <int value="45" label="Navigate forward"/>
+  <int value="46" label="Reload page"/>
 </enum>
 
 <!-- LINT.IfChange(ConversionCreateAggregatableReportStatus) -->
@@ -5109,6 +5104,35 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
 
 <!-- LINT.ThenChange(//services/network/url_loader.h:FetchKeepAliveRequestNetworkMetricType) -->
 
+<!-- LINT.IfChange(FetchKeepAliveRequestStage) -->
+
+<enum name="FetchKeepAliveRequestStage">
+  <int value="0" label="kLoaderCreated"/>
+  <int value="1" label="kRequestStarted"/>
+  <int value="2" label="kFirstRedirectReceived"/>
+  <int value="3" label="kSecondRedirectReceived"/>
+  <int value="4" label="kThirdOrLaterRedirectReceived"/>
+  <int value="5" label="kResponseReceived"/>
+  <int value="6" label="kRequestFailed"/>
+  <int value="7" label="kLoaderDisconnectedFromRenderer"/>
+  <int value="8" label="kRequestCancelledByRenderer"/>
+  <int value="9" label="kRequestCancelledAfterTimeLimit"/>
+  <int value="10" label="kBrowserShutdown"/>
+  <int value="11" label="kLoaderComplated"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/public/browser/keep_alive_request_tracker.h:RequestStageType) -->
+
+<!-- LINT.IfChange(FetchKeepAliveRequestType) -->
+
+<enum name="FetchKeepAliveRequestType">
+  <int value="0" label="kFetch"/>
+  <int value="1" label="kAttribution"/>
+  <int value="2" label="kFetchLater"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/public/browser/keep_alive_request_tracker.h:RequestType) -->
+
 <enum name="FetchLaterBrowserMetricType">
   <int value="0"
       label="kAbortedByInitiator: FetchLater request is aborted by its
@@ -7316,8 +7340,8 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
 <enum name="KioskLaunchType">
   <int value="0" label="Enterprise auto launch"/>
   <int value="1" label="Enterprise manual launch"/>
-  <int value="2" label="Consumer auto launch"/>
-  <int value="3" label="Consumer manual launch"/>
+  <int value="2" label="Consumer auto launch (deprecated in M136)"/>
+  <int value="3" label="Consumer manual launch (deprecated in M136)"/>
 </enum>
 
 <enum name="KioskLowDiskSeverity">
@@ -9021,6 +9045,7 @@ from previous Chrome versions.
   <int value="-2020024440" label="scroll-end-effect"/>
   <int value="-2019050827" label="AIPromptAPIMultimodalInput:enabled"/>
   <int value="-2018579114" label="ImprovedKeyboardShortcuts:enabled"/>
+  <int value="-2018182952" label="ContextMenuEmptySpace:disabled"/>
   <int value="-2018008457" label="ClipboardContentsId:disabled"/>
   <int value="-2017953534" label="enable-hosted-app-shim-creation"/>
   <int value="-2017821808" label="PrivacySandboxAdsAPIsOverride:disabled"/>
@@ -10357,6 +10382,7 @@ from previous Chrome versions.
   <int value="-1496051102" label="PageInfoV2Desktop:disabled"/>
   <int value="-1495973732"
       label="ResamplingScrollEventsExperimentalPrediction:disabled"/>
+  <int value="-1495145881" label="ReaderModeDevEntryPoint:enabled"/>
   <int value="-1493620195"
       label="kFileSystemAccessPersistentPermissions:enabled"/>
   <int value="-1493308731" label="WebIdentityDigitalCredentials:disabled"/>
@@ -11386,6 +11412,7 @@ from previous Chrome versions.
   <int value="-1106191827" label="VirtualKeyboardNewHeader:enabled"/>
   <int value="-1105925767"
       label="StorageAccessApiFollowsSameOriginPolicy:disabled"/>
+  <int value="-1105697919" label="GridTabSwitcherUpdate:enabled"/>
   <int value="-1105686819" label="ShareUsageRanking:enabled"/>
   <int value="-1105637876" label="FilteringScrollPrediction:enabled"/>
   <int value="-1105274313"
@@ -12340,6 +12367,7 @@ from previous Chrome versions.
       label="ShowRelatedWebsiteSetsPermissionGrants:enabled"/>
   <int value="-730917842"
       label="NtpMostRelevantTabResumptionModuleLocal:enabled"/>
+  <int value="-730596576" label="ReaderModeDevEntryPoint:disabled"/>
   <int value="-729456213" label="BluetoothBtsnoopInternals:enabled"/>
   <int value="-729269661" label="PPAPISharedImagesSwapChain:enabled"/>
   <int value="-728878937" label="NtpFooter:disabled"/>
@@ -12519,6 +12547,7 @@ from previous Chrome versions.
   <int value="-661978438" label="enable-data-reduction-proxy-lo-fi"/>
   <int value="-660160292" label="enable-apps-show-on-first-paint"/>
   <int value="-659763527" label="AccessCodeCastTabSwitchingUI:disabled"/>
+  <int value="-658543308" label="AndroidTabDeclutterArchiveTabGroups:enabled"/>
   <int value="-658319177" label="VaapiAV1Decoder:disabled"/>
   <int value="-657808907" label="CopyLinkToText:disabled"/>
   <int value="-657656374" label="AppListBubble:disabled"/>
@@ -13742,6 +13771,7 @@ from previous Chrome versions.
   <int value="-179541740" label="bookmarks-tree-view:disabled"/>
   <int value="-178744239" label="DriveFsMirroring:enabled"/>
   <int value="-178709425" label="PwaRestoreUiAtStartup:disabled"/>
+  <int value="-178464783" label="GridTabSwitcherUpdate:disabled"/>
   <int value="-178364053" label="TerminalSystemAppLegacySettings:enabled"/>
   <int value="-178359490" label="DrawImmediatelyWhenInteractive:enabled"/>
   <int value="-177974995" label="CrostiniShowMicSetting:disabled"/>
@@ -15077,6 +15107,7 @@ from previous Chrome versions.
   <int value="336830575" label="DeviceForceScheduledReboot:enabled"/>
   <int value="337637199" label="HttpsFirstModeIncognito:disabled"/>
   <int value="338061950" label="ChromeWebStoreNavigationThrottle:disabled"/>
+  <int value="338353369" label="AndroidSurfaceColorUpdate:disabled"/>
   <int value="338662897" label="AndroidNightModeTabReparenting:disabled"/>
   <int value="339388667" label="SyncAndroidPromosWithTitle:enabled"/>
   <int value="339419844" label="EmojiSuggestAddition:enabled"/>
@@ -16643,6 +16674,7 @@ from previous Chrome versions.
   <int value="951133343" label="UseSharedImagesForPepperVideo:disabled"/>
   <int value="951338017" label="SidePanelJourneysQueryless:enabled"/>
   <int value="952085142" label="AndroidThemeModule:enabled"/>
+  <int value="952504626" label="ProcessRankPolicyAndroid:disabled"/>
   <int value="952558794" label="enable-remote-assistance"/>
   <int value="952625847"
       label="AboutThisSitePersistentSidePanelEntry:disabled"/>
@@ -16651,6 +16683,7 @@ from previous Chrome versions.
   <int value="955340765" label="ChromeHomeOptOutSnackbar:enabled"/>
   <int value="955425932" label="EnterpriseReportingInChromeOS:enabled"/>
   <int value="955901619" label="EmojiSuggestAddition:disabled"/>
+  <int value="956587578" label="ProcessRankPolicyAndroid:enabled"/>
   <int value="956709316"
       label="HappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSite:disabled"/>
   <int value="956716414" label="GlobalMediaControlsPictureInPicture:disabled"/>
@@ -17780,6 +17813,7 @@ from previous Chrome versions.
   <int value="1382107019" label="LevelDBPerformRewrite:disabled"/>
   <int value="1382500494" label="disable-drive-apps-in-app-list"/>
   <int value="1382727025" label="SeparateLocalAndAccountThemes:disabled"/>
+  <int value="1382972493" label="AndroidSurfaceColorUpdate:enabled"/>
   <int value="1383197819" label="IncognitoScreenshot:enabled"/>
   <int value="1383526461" label="QuickAnswersRichUi:enabled"/>
   <int value="1383591631" label="enable-gesture-typing"/>
@@ -19565,6 +19599,7 @@ from previous Chrome versions.
   <int value="2053479012" label="PersistDeviceBoundSessions:disabled"/>
   <int value="2055184887" label="LocalHistoryZeroSuggestBeyondNTP:enabled"/>
   <int value="2056572020" label="EnableUsernameCorrection:disabled"/>
+  <int value="2057084644" label="AndroidTabDeclutterArchiveTabGroups:disabled"/>
   <int value="2057964838"
       label="AdjustCanCreateCanvas2dResourceProvider:enabled"/>
   <int value="2058148069" label="UseMessagesStagingUrl:enabled"/>
@@ -19711,6 +19746,7 @@ from previous Chrome versions.
   <int value="2104340988" label="CrostiniUsername:disabled"/>
   <int value="2104439359"
       label="OmniboxDefaultTypedNavigationsToHttps:enabled"/>
+  <int value="2104737697" label="ContextMenuEmptySpace:enabled"/>
   <int value="2104788328" label="use-winrt-midi-api"/>
   <int value="2105594942" label="OmniboxIgnoreIntermediateResults:disabled"/>
   <int value="2106254561" label="lacros-data-backward-migration-policy"/>
@@ -21030,6 +21066,8 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Navigated Away Through Browser History"/>
 </enum>
 
+<!-- LINT.IfChange(OAuth2Response) -->
+
 <enum name="OAuth2Response">
   <int value="0" label="Unknown error"/>
   <int value="1" label="200 OK"/>
@@ -21047,6 +21085,8 @@ Called by update_net_error_codes.py.-->
   <int value="13" label="Admin Policy Enforced"/>
   <int value="14" label="Access Denied"/>
 </enum>
+
+<!-- LINT.ThenChange(//google_apis/gaia/oauth2_response.h:OAuth2Response) -->
 
 <enum name="OCSPResponseStatus">
   <int value="0" label="Not checked"/>
@@ -22944,7 +22984,7 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="Shown"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/privacy_sandbox/privacy_sandbox_notice_storage.h:NoticeEvent) -->
+<!-- LINT.ThenChange(/components/privacy_sandbox/privacy_sandbox_notice.mojom:PrivacySandboxNoticeEvent) -->
 
 <!-- LINT.IfChange(PrivacySandboxNoticeStartupState) -->
 

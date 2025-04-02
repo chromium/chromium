@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
@@ -2365,6 +2366,732 @@ TEST_F(AIPageContentAgentTest, Title) {
   ASSERT_TRUE(content->root_node);
 
   EXPECT_EQ(content->frame_data->title, "test title");
+}
+
+bool ContainsRole(const Vector<mojom::blink::AIPageContentAnnotatedRole>& roles,
+                  mojom::blink::AIPageContentAnnotatedRole role) {
+  for (const auto& r : roles) {
+    if (r == role) {
+      return true;
+    }
+  }
+  return false;
+}
+
+TEST_F(AIPageContentAgentTest, PaidContent) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"HTML(
+  <script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "NewsArticle",
+    "mainEntityOfPage": "https://www.evergreengazette.com/dailyplanet.com/world/world-news/",
+    "headline": "City Council Debates Future of Automated Transit System",
+    "alternativeHeadline": "City Council Debates Future of Automated Transit System",
+    "dateModified": "2025-03-25T19:17:05.541Z",
+    "datePublished": "2025-03-25T09:02:58.131Z",
+    "description": "The City Council has been asked to discuss the future of automated transit systems, including the feasibility of a bus-on-rails system, in a special meeting on Thursday, March 28.",
+    "author": [
+        {
+            "@type": "Person",
+            "name": "Finlay Joy",
+            "url": "https://www.evergreengazette.com/people/finlay-joy/"
+        },
+        {
+            "@type": "Person",
+            "name": "Calum Gerhard",
+            "url": "https://www.evergreengazette.com/people/calum-gerhard/"
+        }
+    ],
+    "isPartOf": {
+        "@type": [
+            "CreativeWork",
+            "Product"
+        ],
+        "name": "The Evergreen Gazette",
+        "productID": "evergreengazette.com:basic",
+        "description": "The Evergreen Gazette is your trusted source for comprehensive local news, insightful analysis, and community-focused reporting.",
+        "sku": "https://subscribe.evergreengazette.com",
+        "image": "https://www.evergreengazette.com/evergreen-gazette-logo.png",
+        "brand": {
+            "@type": "brand",
+            "name": "The Evergreen Gazette"
+        },
+        "offers": {
+            "@type": "offer",
+            "url": "https://subscribe.evergreengazette.com/acquisition?promo=h97"
+        }
+    },
+    "publisher": {
+        "@id": "evergreengazette.com",
+        "@type": "NewsMediaOrganization",
+        "name": "The Evergreen Gazette"
+    },
+    "isAccessibleForFree": false,
+    "hasPart": {
+        "@type": "WebPageElement",
+        "cssSelector": ".paidContent",
+        "isAccessibleForFree": false
+    }
+  }</script>
+  <body>
+    Content
+    <div class="paidContent">Paid Content</div>
+  </body>
+  )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  // The root node contains paid content.
+  EXPECT_TRUE(content->frame_data->contains_paid_content);
+
+  const auto& root = *content->root_node;
+
+  // The text node should not have the paid content role.
+  const auto& text_node = *root.children_nodes[0];
+  EXPECT_FALSE(
+      ContainsRole(text_node.content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+
+  // The paid content node should have the paid content role.
+  const auto& paid_node = *root.children_nodes[1];
+  EXPECT_TRUE(
+      ContainsRole(paid_node.content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+}
+
+TEST_F(AIPageContentAgentTest, PaidContentContextMismatch) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"HTML(
+      <script type="application/ld+json">{
+        "@context": "http://acme.org",
+        "@type": "NewsArticle",
+        "isAccessibleForFree": false,
+        "hasPart": {
+            "@type": "WebPageElement",
+            "cssSelector": ".paidContent",
+            "isAccessibleForFree": false
+        }
+      }</script>
+      <body>
+        Content
+        <div class="paidContent">Paid Content</div>
+      </body>
+  )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  // The root node does not contain paid content.
+  EXPECT_FALSE(content->frame_data->contains_paid_content);
+
+  const auto& root = *content->root_node;
+
+  // The text node should not have the paid content role.
+  const auto& text_node = *root.children_nodes[0];
+  EXPECT_FALSE(
+      ContainsRole(text_node.content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+
+  // The paid content node should have the paid content role.
+  const auto& paid_node = *root.children_nodes[1];
+  EXPECT_FALSE(
+      ContainsRole(paid_node.content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+}
+
+TEST_F(AIPageContentAgentTest, PaidContentRootOnly) {
+  // Note that isAccessibleForFree = "False" to match real world examples.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"HTML(
+      <script type="application/ld+json">{
+        "@context": "http://schema.org",
+        "@type": "NewsArticle",
+        "isAccessibleForFree": "False"
+      }</script>
+      <body>
+        Content
+        <div class="paidContent">Paid Content</div>
+      </body>
+  )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  // The root node contains paid content.
+  EXPECT_TRUE(content->frame_data->contains_paid_content);
+
+  const auto& root = *content->root_node;
+
+  // The text node should not have the paid content role.
+  const auto& text_node = *root.children_nodes[0];
+  EXPECT_FALSE(
+      ContainsRole(text_node.content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+
+  // The paid content node should have the paid content role.
+  const auto& paid_node = *root.children_nodes[1];
+  EXPECT_FALSE(
+      ContainsRole(paid_node.content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+}
+
+TEST_F(AIPageContentAgentTest, PaidContentMicrodata) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"HTML(
+      <script type="application/ld+json">{
+        "@context": "http://schema.org",
+        "@type": "NewsArticle",
+        "isAccessibleForFree": false
+      }</script>
+      <body>
+        Content
+        <div class="paidContent">
+        <meta itemprop="isAccessibleForFree" content="false">
+        Paid Content
+        </div>
+      </body>
+  )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  // The root node contains paid content.
+  EXPECT_TRUE(content->frame_data->contains_paid_content);
+
+  const auto& root = *content->root_node;
+
+  // The text node should not have the paid content role.
+  const auto& text_node = *root.children_nodes[0];
+  EXPECT_FALSE(
+      ContainsRole(text_node.content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+
+  // The paid content node should have the paid content role.
+  const auto& paid_node = *root.children_nodes[1];
+  EXPECT_TRUE(
+      ContainsRole(paid_node.content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+}
+
+TEST_F(AIPageContentAgentTest, PaidContentSomeYesSomeNo) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"HTML(
+      <script type="application/ld+json">{
+        "@context": "http://schema.org",
+        "@type": "NewsArticle",
+        "isAccessibleForFree": false,
+        "hasPart": {
+            "@type": "WebPageElement",
+            "cssSelector": ".paidContent",
+            "isAccessibleForFree": false
+        }
+      }</script>
+      <body>
+        Content
+        <div class="paidContent">Paid Content</div>
+        <div>Free Content</div>
+        <div class="paidContent">Paid Content</div>
+        <div>Free Content</div>
+      </body>
+  )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  // The root node contains paid content.
+  EXPECT_TRUE(content->frame_data->contains_paid_content);
+
+  const auto& root = *content->root_node;
+
+  auto& nodes = root.children_nodes;
+
+  // Every other node should have the paid content role.
+  EXPECT_FALSE(
+      ContainsRole(nodes[0]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+  EXPECT_TRUE(
+      ContainsRole(nodes[1]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+  EXPECT_FALSE(
+      ContainsRole(nodes[2]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+  EXPECT_TRUE(
+      ContainsRole(nodes[3]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+  EXPECT_FALSE(
+      ContainsRole(nodes[4]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+}
+
+TEST_F(AIPageContentAgentTest, PaidContentMultipleHasParts) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"HTML(
+      <script type="application/ld+json">{
+        "@context": "https://schema.org",
+        "@type": "NewsArticle",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "https://example.org/article"
+          },
+        "isAccessibleForFree": false,
+        "hasPart": [
+          {
+            "@type": "WebPageElement",
+            "isAccessibleForFree": false,
+            "cssSelector": ".section1"
+          }, {
+            "@type": "WebPageElement",
+            "isAccessibleForFree": false,
+            "cssSelector": ".section2"
+          }
+        ]
+      }</script>
+      <body>
+        Content
+        <div class="section1">Paid Content</div>
+        <div class="section2">Paid Content</div>
+      </body>
+  )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  // The root node contains paid content.
+  EXPECT_TRUE(content->frame_data->contains_paid_content);
+
+  const auto& root = *content->root_node;
+
+  auto& nodes = root.children_nodes;
+  EXPECT_FALSE(
+      ContainsRole(nodes[0]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+  EXPECT_TRUE(
+      ContainsRole(nodes[1]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+  EXPECT_TRUE(
+      ContainsRole(nodes[2]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+}
+
+TEST_F(AIPageContentAgentTest, PaidContentSubframe) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"HTML(
+      <body>
+      Parent doc is free!
+      <iframe srcdoc='
+        <script type="application/ld+json">{
+          "@context": "http://schema.org",
+          "@type": "NewsArticle",
+          "isAccessibleForFree": false,
+          "hasPart": {
+              "@type": "WebPageElement",
+              "cssSelector": ".paidContent",
+              "isAccessibleForFree": false
+          }
+        }</script>
+        <body>
+          Content
+          <div class="paidContent">Paid Content</div>
+        </body>
+      '></iframe>
+      </body>
+  )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  // The root node does not contain paid content.
+  EXPECT_FALSE(content->frame_data->contains_paid_content);
+
+  const auto& root = *content->root_node;
+  auto& nodes = root.children_nodes;
+
+  EXPECT_FALSE(
+      ContainsRole(nodes[0]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+
+  const auto& iframe = nodes[1];
+  EXPECT_EQ(iframe->content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kIframe);
+  EXPECT_TRUE(iframe->content_attributes->iframe_data->local_frame_data
+                  ->contains_paid_content);
+
+  auto& children = iframe->children_nodes[0]->children_nodes;
+  EXPECT_FALSE(
+      ContainsRole(children[0]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+  EXPECT_TRUE(
+      ContainsRole(children[1]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+}
+
+void CheckMatchesNode(
+    const mojom::blink::AIPageContentHitTestNode& hit_test_node,
+    const mojom::blink::AIPageContentNode& node) {
+  EXPECT_EQ(hit_test_node.dom_node_id, node.content_attributes->dom_node_id);
+  EXPECT_EQ(hit_test_node.visible_bounding_box,
+            node.content_attributes->geometry->visible_bounding_box);
+}
+
+TEST_F(AIPageContentAgentTest, HitTestElementsBasic) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <p style='background:red'>Text 1</p>"
+      "  <p>Text 2</p>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& hit_test_nodes_in_viewport =
+      content->frame_data->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_viewport.size(), 7u);
+
+  // The first 3 nodes correspond to the document, HTML and body elements.
+  const auto& document = *helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  EXPECT_EQ(hit_test_nodes_in_viewport[0]->dom_node_id,
+            DOMNodeIds::ExistingIdForNode(&document));
+  EXPECT_EQ(
+      hit_test_nodes_in_viewport[0]->visible_bounding_box,
+      content->root_node->content_attributes->geometry->visible_bounding_box);
+
+  EXPECT_EQ(hit_test_nodes_in_viewport[1]->dom_node_id,
+            DOMNodeIds::ExistingIdForNode(document.documentElement()));
+  EXPECT_EQ(
+      hit_test_nodes_in_viewport[1]->visible_bounding_box,
+      content->root_node->content_attributes->geometry->visible_bounding_box);
+
+  EXPECT_EQ(hit_test_nodes_in_viewport[2]->dom_node_id,
+            DOMNodeIds::ExistingIdForNode(document.body()));
+  EXPECT_EQ(hit_test_nodes_in_viewport[2]->visible_bounding_box,
+            gfx::Rect(8, 8, 984, 984));
+
+  const auto& p1 = content->root_node->children_nodes[0];
+  const auto& text1 = p1->children_nodes[0];
+  CheckTextNode(*text1, "Text 1");
+  const auto& p2 = content->root_node->children_nodes[1];
+  const auto& text2 = p2->children_nodes[0];
+  CheckTextNode(*text2, "Text 2");
+
+  CheckMatchesNode(*hit_test_nodes_in_viewport[3], *p1);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[4], *p2);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[5], *text1);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[6], *text2);
+}
+
+TEST_F(AIPageContentAgentTest, HitTestElementsFixedPos) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <p style='position: fixed; top: 10px;'>Text 1</p>"
+      "  <p>Text 2</p>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& hit_test_nodes_in_viewport =
+      content->frame_data->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_viewport.size(), 7u);
+
+  const auto& p1 = content->root_node->children_nodes[0];
+  const auto& text1 = p1->children_nodes[0];
+  CheckTextNode(*text1, "Text 1");
+  const auto& p2 = content->root_node->children_nodes[1];
+  const auto& text2 = p2->children_nodes[0];
+  CheckTextNode(*text2, "Text 2");
+
+  CheckMatchesNode(*hit_test_nodes_in_viewport[3], *p2);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[4], *text2);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[5], *p1);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[6], *text1);
+}
+
+TEST_F(AIPageContentAgentTest, HitTestElementsPointerNone) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <p style='pointer-events:none'>Text 1</p>"
+      "  <p>Text 2</p>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& hit_test_nodes_in_viewport =
+      content->frame_data->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_viewport.size(), 5u);
+
+  const auto& p1 = content->root_node->children_nodes[0];
+  const auto& text1 = p1->children_nodes[0];
+  CheckTextNode(*text1, "Text 1");
+  const auto& p2 = content->root_node->children_nodes[1];
+  const auto& text2 = p2->children_nodes[0];
+  CheckTextNode(*text2, "Text 2");
+
+  CheckMatchesNode(*hit_test_nodes_in_viewport[3], *p2);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[4], *text2);
+}
+
+TEST_F(AIPageContentAgentTest, HitTestElementsIframe) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <iframe srcdoc='<p>Text 1</p>'></iframe>"
+      "  <p>Text 2</p>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& hit_test_nodes_in_viewport =
+      content->frame_data->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_viewport.size(), 6u);
+
+  const auto& iframe = content->root_node->children_nodes[0];
+  const auto& p = content->root_node->children_nodes[1];
+  const auto& text = p->children_nodes[0];
+  CheckTextNode(*text, "Text 2");
+
+  CheckMatchesNode(*hit_test_nodes_in_viewport[3], *p);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[4], *iframe);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[5], *text);
+
+  const auto& hit_test_nodes_in_iframe =
+      iframe->content_attributes->iframe_data->local_frame_data
+          ->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_iframe.size(), 5u);
+
+  const auto& root_iframe = iframe->children_nodes[0];
+  const auto& p_iframe = root_iframe->children_nodes[0];
+  const auto& text_iframe = p_iframe->children_nodes[0];
+  CheckTextNode(*text_iframe, "Text 1");
+  CheckMatchesNode(*hit_test_nodes_in_iframe[3], *p_iframe);
+  CheckMatchesNode(*hit_test_nodes_in_iframe[4], *text_iframe);
+}
+
+TEST_F(AIPageContentAgentTest, HitTestElementsInOverflowScroll) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div style='width: 100px; height: 100px; overflow-y: scroll;'>"
+      "  <article style='width: 50px; height: 300px;'></article>"
+      "</div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& hit_test_nodes_in_viewport =
+      content->frame_data->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_viewport.size(), 5u);
+
+  const auto& outer = content->root_node->children_nodes[0];
+  const auto& article = outer->children_nodes[0];
+  CheckAnnotatedRole(*article,
+                     mojom::blink::AIPageContentAnnotatedRole::kArticle);
+
+  CheckMatchesNode(*hit_test_nodes_in_viewport[3], *outer);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[4], *article);
+
+  CheckGeometry(*outer, gfx::Rect(8, 8, 100, 100), gfx::Rect(8, 8, 100, 100));
+  CheckGeometry(*article, gfx::Rect(8, 8, 50, 300), gfx::Rect(8, 8, 50, 100));
+}
+
+TEST_F(AIPageContentAgentTest, HitTestElementsInOverflowHidden) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div style='width: 100px; height: 100px; overflow-y: hidden;'>"
+      "  <article style='width: 50px; height: 300px;'></article>"
+      "</div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& hit_test_nodes_in_viewport =
+      content->frame_data->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_viewport.size(), 5u);
+
+  const auto& outer = content->root_node->children_nodes[0];
+  const auto& article = outer->children_nodes[0];
+  CheckAnnotatedRole(*article,
+                     mojom::blink::AIPageContentAnnotatedRole::kArticle);
+
+  CheckMatchesNode(*hit_test_nodes_in_viewport[3], *outer);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[4], *article);
+
+  CheckGeometry(*outer, gfx::Rect(8, 8, 100, 100), gfx::Rect(8, 8, 100, 100));
+  CheckGeometry(*article, gfx::Rect(8, 8, 50, 300), gfx::Rect(8, 8, 50, 100));
+}
+
+TEST_F(AIPageContentAgentTest, HitTestElementsInOverflowVisible) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <section style='width: 100px; height: 100px; overflow-y: visible;'>"
+      "  <article style='width: 50px; height: 300px;'></article>"
+      "</section>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& hit_test_nodes_in_viewport =
+      content->frame_data->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_viewport.size(), 5u);
+
+  const auto& outer = content->root_node->children_nodes[0];
+  const auto& article = outer->children_nodes[0];
+  CheckAnnotatedRole(*article,
+                     mojom::blink::AIPageContentAnnotatedRole::kArticle);
+
+  CheckMatchesNode(*hit_test_nodes_in_viewport[3], *outer);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[4], *article);
+
+  CheckGeometry(*outer, gfx::Rect(8, 8, 100, 100), gfx::Rect(8, 8, 100, 100));
+  CheckGeometry(*article, gfx::Rect(8, 8, 50, 300), gfx::Rect(8, 8, 50, 300));
+}
+
+TEST_F(AIPageContentAgentTest, HitTestElementsBlur) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <section style='width: 100px; height: 100px; filter: "
+      "blur(10px);'></section>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& hit_test_nodes_in_viewport =
+      content->frame_data->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_viewport.size(), 4u);
+
+  const auto& section = content->root_node->children_nodes[0];
+  CheckAnnotatedRole(*section,
+                     mojom::blink::AIPageContentAnnotatedRole::kSection);
+
+  CheckMatchesNode(*hit_test_nodes_in_viewport[3], *section);
+  CheckGeometry(*section, gfx::Rect(8, 8, 100, 100), gfx::Rect(8, 8, 100, 100));
+}
+
+TEST_F(AIPageContentAgentTest, HitTestElementsAbsPos) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <section style='width: 100px; height: 100px; position: absolute; top: "
+      "200px; left: 200px;'>"
+      "</section>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& hit_test_nodes_in_viewport =
+      content->frame_data->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_viewport.size(), 4u);
+
+  const auto& section = content->root_node->children_nodes[0];
+  CheckAnnotatedRole(*section,
+                     mojom::blink::AIPageContentAnnotatedRole::kSection);
+
+  CheckMatchesNode(*hit_test_nodes_in_viewport[3], *section);
+  CheckGeometry(*section, gfx::Rect(200, 200, 100, 100),
+                gfx::Rect(200, 200, 100, 100));
+}
+
+TEST_F(AIPageContentAgentTest, HitTestElementsRelativePos) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <section style='width: 100px; height: 100px; position: relative; "
+      "overflow: clip;'>"
+      "  <article style='width: 50px; height: 50px; position: absolute; left: "
+      "150px; top:0px;'></article>"
+      "</section>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& hit_test_nodes_in_viewport =
+      content->frame_data->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_viewport.size(), 4u);
+
+  const auto& outer = content->root_node->children_nodes[0];
+  const auto& article = outer->children_nodes[0];
+  CheckAnnotatedRole(*article,
+                     mojom::blink::AIPageContentAnnotatedRole::kArticle);
+
+  CheckMatchesNode(*hit_test_nodes_in_viewport[3], *outer);
+
+  CheckGeometry(*outer, gfx::Rect(8, 8, 100, 100), gfx::Rect(8, 8, 100, 100));
+  CheckGeometry(*article, gfx::Rect(158, 8, 50, 50), gfx::Rect());
+}
+
+TEST_F(AIPageContentAgentTest, HitTestElementsTransform) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <section style='width: 100px; height: 100px; transform: "
+      "translate(200px, 200px)'>"
+      "</section>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& hit_test_nodes_in_viewport =
+      content->frame_data->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_viewport.size(), 4u);
+
+  const auto& section = content->root_node->children_nodes[0];
+  CheckAnnotatedRole(*section,
+                     mojom::blink::AIPageContentAnnotatedRole::kSection);
+
+  CheckMatchesNode(*hit_test_nodes_in_viewport[3], *section);
+  CheckGeometry(*section, gfx::Rect(208, 208, 100, 100),
+                gfx::Rect(208, 208, 100, 100));
 }
 
 }  // namespace

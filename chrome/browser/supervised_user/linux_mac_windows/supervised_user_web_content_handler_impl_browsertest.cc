@@ -282,6 +282,33 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
+                       ParentApprovalNotInitiatedWhenHostEmpty) {
+  base::HistogramTester histogram_tester;
+
+  CHECK(contents());
+  auto handler = std::make_unique<SupervisedUserWebContentHandlerImpl>(
+      contents(), content::FrameTreeNodeId(), 0);
+
+  supervised_user::UrlFormatter url_formatter(
+      *GetUrlFilter(), supervised_user::FilteringBehaviorReason::DEFAULT);
+  GURL blocked_invalid_url;
+
+  bool approval_initiated;
+  auto approval_initiated_lambda = [](bool& result,
+                                      bool actual_approval_initiated) {
+    result = actual_approval_initiated;
+  };
+
+  // Makes a local approval request and checks that the PACP dialog is created.
+  handler->RequestLocalApproval(
+      blocked_invalid_url, u"child_display_name", url_formatter,
+      supervised_user::FilteringBehaviorReason::MANUAL,
+      /*callback=*/
+      base::BindOnce(approval_initiated_lambda, std::ref(approval_initiated)));
+  EXPECT_EQ(false, approval_initiated);
+}
+
+IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
                        UniqueDialogWhenLocalApprovalRequestInProgress) {
   base::HistogramTester histogram_tester;
 

@@ -70,11 +70,12 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   unsigned hash = StringHasher::HashMemory(data_span);
 
   SerializedScriptValue::DeserializeOptions options;
+  MessagePortArray message_ports;
 
   // If message ports are requested, make some.
   if (hash & kFuzzMessagePorts) {
-    MessagePortArray* message_ports = MakeGarbageCollected<MessagePortArray>(3);
-    std::generate(message_ports->begin(), message_ports->end(), [&]() {
+    message_ports = MessagePortArray(3);
+    std::generate(message_ports.begin(), message_ports.end(), [&]() {
       auto* port = MakeGarbageCollected<MessagePort>(
           *page_holder->GetFrame().DomWindow());
       // Let the other end of the pipe close itself.
@@ -82,7 +83,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       port->Entangle(pipe.TakePort0(), nullptr);
       return port;
     });
-    options.message_ports = message_ports;
+    options.message_ports = &message_ports;
   }
 
   // If blobs are requested, supply blob info.

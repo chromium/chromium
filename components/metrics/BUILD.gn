@@ -296,7 +296,6 @@ if (!is_cronet_build || is_ios) {
       sources += [
         "android_metrics_provider.cc",
         "android_metrics_provider.h",
-        "drive_metrics_provider_android.cc",
         "gms_metrics_provider.cc",
         "gms_metrics_provider.h",
       ]
@@ -306,15 +305,11 @@ if (!is_cronet_build || is_ios) {
     }
 
     if (is_ios) {
-      sources += [
-        "clean_exit_beacon_ios.mm",
-        "drive_metrics_provider_ios.mm",
-      ]
+      sources += [ "clean_exit_beacon_ios.mm" ]
     }
 
     if (is_linux || is_chromeos) {
       sources += [
-        "drive_metrics_provider_linux.cc",
         "psi_memory_parser.h",
         "psi_memory_parser_linux.cc",
       ]
@@ -329,20 +324,8 @@ if (!is_cronet_build || is_ios) {
       deps += [ ":system_stack_sampled_metrics_status_proto" ]
     }
 
-    if (is_mac) {
-      sources += [ "drive_metrics_provider_mac.mm" ]
-      frameworks = [
-        # The below are all needed for drive_metrics_provider_mac.mm.
-        "CoreFoundation.framework",
-        "DiskArbitration.framework",
-        "Foundation.framework",
-        "IOKit.framework",
-      ]
-    }
-
     if (is_win) {
       sources += [
-        "drive_metrics_provider_win.cc",
         "machine_id_provider_win.cc",
         "system_session_analyzer/system_session_analyzer_win.cc",
         "system_session_analyzer/system_session_analyzer_win.h",
@@ -350,10 +333,6 @@ if (!is_cronet_build || is_ios) {
       libs = [ "wevtapi.lib" ]
     } else {
       sources += [ "machine_id_provider_nonwin.cc" ]
-    }
-
-    if (is_fuchsia) {
-      sources += [ "drive_metrics_provider_fuchsia.cc" ]
     }
 
     if (is_win || is_linux) {
@@ -613,7 +592,6 @@ if (!is_cronet_build) {
       "daily_event_unittest.cc",
       "data_use_tracker_unittest.cc",
       "date_changed_helper_unittest.cc",
-      "drive_metrics_provider_unittest.cc",
       "entropy_state_provider_unittest.cc",
       "entropy_state_unittest.cc",
       "environment_recorder_unittest.cc",

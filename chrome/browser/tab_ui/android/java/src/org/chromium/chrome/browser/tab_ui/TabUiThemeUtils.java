@@ -126,14 +126,9 @@ public class TabUiThemeUtils {
                             : R.color.incognito_tab_bg_color;
             return ContextCompat.getColor(context, colorRes);
         } else {
-            float tabElevation = context.getResources().getDimension(R.dimen.tab_bg_elevation);
-            @ColorInt
-            int colorInt =
-                    isSelected
-                            ? MaterialColors.getColor(context, R.attr.colorPrimary, TAG)
-                            : new ElevationOverlayProvider(context)
-                                    .compositeOverlayWithThemeSurfaceColorIfNeeded(tabElevation);
-            return colorInt;
+            return isSelected
+                    ? MaterialColors.getColor(context, R.attr.colorPrimary, TAG)
+                    : ContextCompat.getColor(context, R.color.tab_card_view_bg_color);
         }
     }
 }

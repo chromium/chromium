@@ -99,7 +99,7 @@ import java.util.function.DoubleConsumer;
 
 /** Unit tests for {@link TabSwitcherPane} and {@link TabSwitcherPaneBase}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures(ChromeFeatureList.DATA_SHARING)
+@DisableFeatures({ChromeFeatureList.DATA_SHARING, ChromeFeatureList.DATA_SHARING_JOIN_ONLY})
 public class TabSwitcherPaneUnitTest {
     private static final int TAB_ID = 723849;
 
@@ -153,6 +153,7 @@ public class TabSwitcherPaneUnitTest {
     @Mock private Runnable mRunnable;
     @Mock private Tab mTab;
     @Mock private SavedTabGroup mSavedTabGroup;
+    @Mock private TabGroupCreationUiFlow mUiFlow;
 
     @Captor private ArgumentCaptor<ObservableSupplier<Boolean>> mIsAnimatingSupplierCaptor;
 
@@ -264,7 +265,8 @@ public class TabSwitcherPaneUnitTest {
                         mOnAlphaChange,
                         mUserEducationHelper,
                         mEdgeToEdgeSupplier,
-                        mCompositorViewHolderSupplier);
+                        mCompositorViewHolderSupplier,
+                        mUiFlow);
         ShadowLooper.runUiThreadTasks();
         verify(mSharedPreferences)
                 .registerOnSharedPreferenceChangeListener(

@@ -6,6 +6,7 @@
 
 #import "base/check_op.h"
 #import "base/memory/raw_ptr.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/central_account_view.h"
@@ -334,6 +335,8 @@ TEST_P(AccountMenuViewControllerTest, TestTapSignOut) {
 
 // Tests tapping on error action button.
 TEST_P(AccountMenuViewControllerTest, TestSetError) {
+  base::HistogramTester histogram_tester;
+
   AccountErrorUIInfo* errorInfo = [[AccountErrorUIInfo alloc]
        initWithErrorType:syncer::SyncService::UserActionableError::
                              kNeedsPassphrase
@@ -368,6 +371,11 @@ TEST_P(AccountMenuViewControllerTest, TestSetError) {
 
   OCMExpect([mutator_ didTapErrorButton]);
   SelectCell(path_for_error_button);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.AccountMenu.UserActionableError",
+      syncer::SyncService::UserActionableError::kNeedsPassphrase,
+      /*expected_bucket_count=*/1);
 }
 
 // Tests that adding an account adds an extra row in the secondary account

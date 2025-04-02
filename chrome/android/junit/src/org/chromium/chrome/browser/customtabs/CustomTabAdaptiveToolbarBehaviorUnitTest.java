@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.SHARE;
+import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.TRANSLATE;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.UNKNOWN;
 
 import android.content.Context;
@@ -112,13 +113,15 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
         when(openInBrowser.getType()).thenReturn(ButtonType.CCT_OPEN_IN_BROWSER_BUTTON);
         CustomButtonParams share = Mockito.mock(CustomButtonParams.class);
         when(share.getType()).thenReturn(ButtonType.CCT_SHARE_BUTTON);
-        List<Integer> segmentationResults = List.of(OPEN_IN_BROWSER, SHARE);
+        List<Integer> segmentationResults = List.of(OPEN_IN_BROWSER, SHARE, TRANSLATE);
 
         assertEquals(OPEN_IN_BROWSER, mBehavior.resultFilter(segmentationResults));
 
         initBehavior(List.of(openInBrowser));
         assertEquals(SHARE, mBehavior.resultFilter(segmentationResults));
 
+        // Verify that the segmentation results down to the 2nd one can be picked up,
+        // and the 3rd one (translate) is ignored.
         initBehavior(List.of(openInBrowser, share));
         assertEquals(UNKNOWN, mBehavior.resultFilter(segmentationResults));
     }

@@ -107,13 +107,6 @@ CSSPrimitiveValue* ConsumeIntegerOrNumberCalc(
     CSSPrimitiveValue::ValueRange = CSSPrimitiveValue::ValueRange::kInteger);
 CSSPrimitiveValue* ConsumePositiveInteger(CSSParserTokenStream&,
                                           const CSSParserContext&);
-// All <numbers> should allow calc() expressions, and calc() expressions are not
-// always possible to reduce to a number at parse time. This method will fail
-// for valid values like `sibling-index()` and `sign(1em - 20px)`.
-// Use ConsumeNumber() instead.
-bool ConsumeNumberRaw_DO_NOT_USE(CSSParserTokenStream&,
-                                 const CSSParserContext& context,
-                                 double& result);
 CSSPrimitiveValue* ConsumeNumber(CSSParserTokenStream&,
                                  const CSSParserContext&,
                                  CSSPrimitiveValue::ValueRange);

@@ -34,7 +34,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/speech/speech_recognition_context.h"
+#include "third_party/blink/renderer/modules/speech/speech_recognition_phrase_list.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
@@ -67,7 +67,7 @@ class MODULES_EXPORT SpeechRecognitionController final
       mojo::PendingRemote<media::mojom::blink::SpeechRecognitionSessionClient>
           session_client,
       const SpeechGrammarList& grammars,
-      const SpeechRecognitionContext* context,
+      const SpeechRecognitionPhraseList* phrases,
       const String& lang,
       bool continuous,
       bool interim_results,

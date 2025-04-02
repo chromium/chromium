@@ -19,7 +19,6 @@ mojom("mojom") {
     "device_oauth2_token_service.mojom",
     "diagnostics_service.mojom",
     "document_scan.mojom",
-    "echo_private.mojom",
     "file_change_service_bridge.mojom",
     "file_system_access_cloud_identifier.mojom",
     "file_system_provider.mojom",

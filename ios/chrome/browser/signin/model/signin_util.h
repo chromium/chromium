@@ -20,6 +20,9 @@
 
 class PrefService;
 
+namespace base {
+class Time;
+}  // namespace base
 namespace signin {
 enum class Tribool;
 }  // namespace signin
@@ -37,9 +40,18 @@ bool ShouldHandleSigninError(NSError* error);
 CGSize GetSizeForIdentityAvatarSize(IdentityAvatarSize avatar_size);
 
 // Returns whether Chrome has been started after a device restore. This method
-// needs to be called for the first time before IO is disallowed on UI thread.
-// The value is cached. The result is cached for later calls.
+// needs to be called once before IO is disallowed on UI thread (or
+// `LastDeviceRestoreTimestamp()`).
 signin::Tribool IsFirstSessionAfterDeviceRestore();
+
+// Returns the last device restore timestamp. This method needs to be called
+// once before IO is disallowed on UI thread (or
+// `LastDeviceRestoreTimestamp()`).
+// No value is returned:
+//   - if the current session after the device restore,
+//   - or if, no device restore was done,
+//   - or if, it was not possible to know if a device restore was done.
+std::optional<base::Time> LastDeviceRestoreTimestamp();
 
 // Stores a user's account info and whether history sync was enabled or not,
 // when we detect that it was forgotten during a device restore.
@@ -68,5 +80,8 @@ void RunSystemCapabilitiesPrefetch(NSArray<id<SystemIdentity>>* identities);
 // Whether a phone backup/restore state should be simulated.
 // This can be triggered either by EG test flag or by Experimental settings.
 bool SimulatePostDeviceRestore();
+
+// Resets the data related to device restore. This is for test only.
+void ResetDeviceRestoreDataForTesting();
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_UTIL_H_

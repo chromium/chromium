@@ -80,7 +80,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."calendrical_calculations:0.1.3"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cc:1.2.16"]
+[policy."cc:1.2.17"]
 criteria = []
 
 [policy."cfg-if:1.0.0"]
@@ -95,7 +95,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."clap_lex:0.7.4"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."codespan-reporting:0.11.1"]
+[policy."codespan-reporting:0.12.0"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."core-foundation-sys:0.8.7"]
@@ -107,16 +107,16 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."crc32fast:1.4.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxx:1.0.146"]
+[policy."cxx:1.0.150"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-cmd:1.0.146"]
+[policy."cxxbridge-cmd:1.0.150"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."cxxbridge-flags:1.0.146"]
+[policy."cxxbridge-flags:1.0.150"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-macro:1.0.146"]
+[policy."cxxbridge-macro:1.0.150"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."diplomat-runtime:0.10.0"]
@@ -167,7 +167,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."iana-time-zone-haiku:0.1.2"]
 criteria = []
 
-[policy."iana-time-zone:0.1.61"]
+[policy."iana-time-zone:0.1.62"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."icu_calendar:2.0.0-beta2"]
@@ -299,7 +299,7 @@ criteria = []
 [policy."litemap:0.7.5"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."log:0.4.26"]
+[policy."log:0.4.27"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."memchr:2.7.4"]
@@ -356,16 +356,19 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."rand_core:0.6.4"]
 criteria = ["crypto-safe", "safe-to-run"]
 
+[policy."rand_core:0.9.3"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
 [policy."rand_pcg:0.3.1"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."read-fonts:0.27.3"]
+[policy."read-fonts:0.27.5"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."regex-automata:0.4.9"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."rust_decimal:1.37.0"]
+[policy."rust_decimal:1.37.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."rustc-demangle-capi:0.1.0"]
@@ -398,7 +401,7 @@ criteria = []
 [policy."simd-adler32:0.3.7"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."skrifa:0.29.0"]
+[policy."skrifa:0.29.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."small_ctor:0.1.2"]
@@ -521,10 +524,10 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."yoke:0.8.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."zerocopy-derive:0.8.23"]
+[policy."zerocopy-derive:0.8.24"]
 criteria = []
 
-[policy."zerocopy:0.8.23"]
+[policy."zerocopy:0.8.24"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."zerofrom-derive:0.1.6"]

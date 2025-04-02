@@ -91,6 +91,7 @@
 <translation id="3054480780637153380">iOS ನಲ್ಲಿ Chromium ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ, ನಂತರ "ಡೀಫಾಲ್ಟ್‌ ಬ್ರೌಸರ್‌ ಆ್ಯಪ್‌" ಎಂಬುದನ್ನು ಟ್ಯಾಪ್‌ ಮಾಡಿ ಮತ್ತು Chromium ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="3102849287235003384">ಎಲ್ಲಾ ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಲು, <ph name="BEGIN_LINK" />Chromium ನಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಿ<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromium ಅನ್ನು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಮಾಡಬೇಕೇ?</translation>
+<translation id="3180939591219927904">"ನೀವು Chromium ಅನ್ನು ಮುಚ್ಚಿದಾಗ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಲಾಕ್ ಮಾಡಿ" ಎಂಬುದನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="3242612358525156339">ನಿಮ್ಮ ಸಾಧನದ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಂದ, "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ಎಂಬುದನ್ನು ತೆರೆಯಿರಿ ಮತ್ತು "Chromium" ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="328933489847748230">{count,plural, =1{ಈಗ 1 Chromium ವಿಂಡೋವನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ}one{ಈಗ {count} Chromium ವಿಂಡೋಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ}other{ಈಗ {count} Chromium ವಿಂಡೋಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ}}</translation>
 <translation id="3344973607274501920">Chromium ಗೆ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಕನೆಕ್ಷನ್ ಪರಿಶೀಲಿಸಿ ನೋಡಿ.</translation>
@@ -260,6 +261,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">ಆಯ್ಕೆ ಮಾಡಲಾದ ಡೇಟಾವನ್ನು Chromium ಮತ್ತು ಸಿಂಕ್ ಮಾಡಲ್ಪಟ್ಟ ಸಾಧನಗಳಿಂದ ತೆಗೆದುಹಾಕಲಾಗಿದೆ. ನಿಮ್ಮ Google ಖಾತೆಯು history.google.com ನಲ್ಲಿ ಇತರ Google ಸೇವೆಗಳಿಂದ ಹುಡುಕಾಟಗಳು ಮತ್ತು ಚಟುವಟಿಕೆಯಂತಹ ಬ್ರೌಸಿಂಗ್ ಹುಡುಕಾಟದ ಇತರ ಪ್ರಕಾರಗಳನ್ನು ಹೊಂದಿರಬಹುದು.</translation>
 <translation id="7395825497086981028">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು <ph name="EMAIL" /> ನ ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕದಲ್ಲಿ ಉಳಿಸಲಾಗುತ್ತದೆ.</translation>
+<translation id="7504829997542308412">Chromium ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="7531461704633548377">Chromium ನಿಂದ</translation>
 <translation id="7554983317097061001">Chromium ಸಲಹೆ: Chromium ಅನ್ನು ಡಾಕ್‌ಗೆ ಸರಿಸಿ</translation>
 <translation id="7576863740961052505">Chromium ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>

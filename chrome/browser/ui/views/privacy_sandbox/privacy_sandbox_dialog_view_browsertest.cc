@@ -116,6 +116,7 @@ std::string ClickLearnMoreButton3TimesScript() {
 class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
  public:
   PrivacySandboxDialogViewBrowserTest() {
+    set_baseline("crrev.com/c/6391455");
     scoped_feature_list_.InitAndDisableFeature(
         privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements);
   }
@@ -382,8 +383,7 @@ class PrivacySandboxDialogViewAdsApiUxEnhancementsLearnMoreBrowserTest
         // Enabled Features
         {privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements},
         // Disabled Features
-        {privacy_sandbox::kPrivacySandboxAdTopicsContentParity,
-         privacy_sandbox::kPrivacySandboxEqualizedPromptButtons});
+        {privacy_sandbox::kPrivacySandboxAdTopicsContentParity});
   }
 
   // DialogBrowserTest:

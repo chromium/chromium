@@ -52,6 +52,7 @@
 #include "content/browser/interest_group/auction_nonce_manager.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
+#include "content/browser/interest_group/data_decoder_manager.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 #include "content/browser/interest_group/debuggable_auction_worklet_tracker.h"
 #include "content/browser/interest_group/interest_group_auction.h"
@@ -130,6 +131,8 @@ using RealTimeReportingType =
 using RealTimeReportingContributions =
     std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>;
 
+using KAnonymityStatus = auction_worklet::mojom::KAnonymityStatus;
+
 // Same as the key in ad_auction_service_impl_unittest.cc.
 // Randomly generated using EVP_HPKE_KEY_generate.
 const uint8_t kTestPublicKey[] = {
@@ -178,6 +181,8 @@ const char kSellerDebugLossReportBaseUrl[] =
     "https://seller-debug-loss-reporting.com/";
 const char kSellerDebugWinReportBaseUrl[] =
     "https://seller-debug-win-reporting.com/";
+
+const char kBuyerReportingUrl[] = "https://buyer-reporting.example.com/";
 
 constexpr std::string_view kCoordinatorOrigin("https://coordinator.test");
 
@@ -452,15 +457,67 @@ const auction_worklet::mojom::PrivateAggregationRequestPtr
             blink::mojom::AggregationServiceMode::kDefault,
             blink::mojom::DebugModeDetails::New());
 
+// gTest helper to allow both finalized and non-finalized requests to be
+// compared for equality.
+template <typename T>
+concept IsPrivateAggregationRequestPtr =
+    std::same_as<T, auction_worklet::mojom::PrivateAggregationRequestPtr> ||
+    std::same_as<T,
+                 auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr>;
+
+template <typename T>
+  requires IsPrivateAggregationRequestPtr<T>
+bool RequestsEqual(const T& request1, const T& request2) {
+  return request1 == request2;
+}
+bool RequestsEqual(
+    const auction_worklet::mojom::PrivateAggregationRequestPtr& request,
+    const auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr&
+        finalized) {
+  if (!request->contribution->is_histogram_contribution()) {
+    return false;
+  }
+
+  return request->contribution->get_histogram_contribution() ==
+             finalized->contribution &&
+         request->aggregation_mode == finalized->aggregation_mode &&
+         request->debug_mode_details == finalized->debug_mode_details;
+}
+bool RequestsEqual(
+    const auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr&
+        finalized,
+    const auction_worklet::mojom::PrivateAggregationRequestPtr& request) {
+  return RequestsEqual(request, finalized);
+}
+
+template <typename T>
+  requires IsPrivateAggregationRequestPtr<T>
+const T& MaybeUnwrapRequestRef(const T& request) {
+  return request;
+}
+template <typename T>
+  requires IsPrivateAggregationRequestPtr<T>
+const T& MaybeUnwrapRequestRef(std::reference_wrapper<const T> request) {
+  return request;
+}
+
+MATCHER_P(RequestEq, request, "") {
+  return RequestsEqual(MaybeUnwrapRequestRef(arg),
+                       MaybeUnwrapRequestRef(request));
+}
+
 // Helper to avoid excess boilerplate.
 template <typename... Ts>
 auto ElementsAreRequests(const Ts&... requests) {
   static_assert(
-      std::conjunction<std::is_same<
-          std::remove_const_t<Ts>,
-          auction_worklet::mojom::PrivateAggregationRequestPtr>...>::value);
+      std::conjunction<std::disjunction<
+          std::is_same<std::remove_const_t<Ts>,
+                       auction_worklet::mojom::PrivateAggregationRequestPtr>,
+          std::is_same<std::remove_const_t<Ts>,
+                       auction_worklet::mojom::
+                           FinalizedPrivateAggregationRequestPtr>>...>::value);
   // Need to use `std::ref` as `mojo::StructPtr`s are move-only.
-  return testing::UnorderedElementsAre(testing::Eq(std::ref(requests))...);
+  return testing::UnorderedElementsAre(RequestEq(std::ref(requests))...);
 }
 
 // Helper to avoid excess boilerplate.
@@ -720,6 +777,7 @@ std::string MakeBidScript(const url::Origin& seller,
             '&madeHighestScoringOtherBid=' +
             browserSignals.madeHighestScoringOtherBid +
             '&bidCurrency=' + browserSignals.bidCurrency +
+            '&kAnonStatus=' + browserSignals.kAnonStatus +
             '&bid=';
       }
       sendReportTo(sendReportUrl + bid);
@@ -752,7 +810,7 @@ constexpr char kReportWinNoUrl[] = R"(
 )";
 
 constexpr char kSimpleReportWin[] = R"(
-  function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
+function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
                        browserSignals) {
     sendReportTo(
         "https://buyer-reporting.example.com/" +
@@ -762,6 +820,7 @@ constexpr char kSimpleReportWin[] = R"(
         '&madeHighestScoringOtherBid=' +
         browserSignals.madeHighestScoringOtherBid +
         '&bidCurrency=' + browserSignals.bidCurrency +
+        '&kAnonStatus=' + browserSignals.kAnonStatus +
         '&bid=' + browserSignals.bid);
   }
 )";
@@ -1234,6 +1293,7 @@ std::string MakeBidScriptSupportsTie() {
           '&madeHighestScoringOtherBid=' +
           browserSignals.madeHighestScoringOtherBid +
           '&bidCurrency=' + browserSignals.bidCurrency +
+          '&kAnonStatus=' + browserSignals.kAnonStatus +
           '&bid=' + browserSignals.bid);
     }
   )";
@@ -1415,16 +1475,34 @@ const GURL ReportWinUrl(
     double highest_scoring_other_bid,
     const std::optional<blink::AdCurrency>& highest_scoring_other_bid_currency,
     bool made_highest_scoring_other_bid,
-    const std::string& url = "https://buyer-reporting.example.com/") {
+    const std::string& url = kBuyerReportingUrl,
+    KAnonymityStatus kanon_status = KAnonymityStatus::kBelowThreshold) {
   // Only keeps integer part of bid values for simplicity for now.
+  const char* kanon_status_str;
+  switch (kanon_status) {
+    case KAnonymityStatus::kUnknown:
+      kanon_status_str = "notCalculated";
+      break;
+    case KAnonymityStatus::kBelowThreshold:
+      kanon_status_str = "belowThreshold";
+      break;
+    case KAnonymityStatus::kPassingNotEnforced:
+      kanon_status_str = "passedNotEnforced";
+      break;
+    case KAnonymityStatus::kPassingAndEnforced:
+      kanon_status_str = "passedAndEnforced";
+      break;
+    default:
+      NOTREACHED();
+  }
   return GURL(base::StringPrintf(
       "%s"
       "?highestScoringOtherBid=%.0f&highestScoringOtherBidCurrency=%s"
-      "&madeHighestScoringOtherBid=%s&bidCurrency=%s&bid=%.0f",
+      "&madeHighestScoringOtherBid=%s&bidCurrency=%s&kAnonStatus=%s&bid=%.0f",
       url.c_str(), highest_scoring_other_bid,
       blink::PrintableAdCurrency(highest_scoring_other_bid_currency).c_str(),
       base::ToString(made_highest_scoring_other_bid),
-      blink::PrintableAdCurrency(bid_currency).c_str(), bid));
+      blink::PrintableAdCurrency(bid_currency).c_str(), kanon_status_str, bid));
 }
 
 // Returns a report URL with given parameters for forDebuggingOnly win/loss
@@ -1781,8 +1859,9 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
     }
   };
 
-  MockTrustedSignalsCacheImpl()
+  explicit MockTrustedSignalsCacheImpl(DataDecoderManager* data_decoder_manager)
       : TrustedSignalsCacheImpl(
+            data_decoder_manager,
             base::BindRepeating(
                 &MockTrustedSignalsCacheImpl::GetCoordinatorKeyCallback,
                 base::Unretained(this))) {}
@@ -1867,6 +1946,7 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
     ~MockTrustedSignalsFetcher() override = default;
 
     void FetchBiddingSignals(
+        DataDecoderManager& data_decoder_manager,
         network::mojom::URLLoaderFactory* url_loader_factory,
         FrameTreeNodeId /*frame_tree_node_id*/,
         base::flat_set<std::string> /*devtools_auction_ids*/,
@@ -1904,6 +1984,7 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
     }
 
     void FetchScoringSignals(
+        DataDecoderManager& data_decoder_manager,
         network::mojom::URLLoaderFactory* url_loader_factory,
         FrameTreeNodeId /*frame_tree_node_id*/,
         base::flat_set<std::string> /*devtools_auction_ids*/,
@@ -1999,7 +2080,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     base::flat_map<blink::FencedFrame::ReportingDestination,
                    FencedFrameReporter::ReportingMacros>
         ad_macros;
-    std::map<std::string, PrivateAggregationRequests>
+    std::map<std::string, FinalizedPrivateAggregationRequests>
         private_aggregation_event_map;
     std::vector<blink::InterestGroupKey> interest_groups_that_bid;
 
@@ -3701,7 +3782,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   // auction.
   virtual std::unique_ptr<TrustedSignalsCacheImpl> GetTrustedSignalsCache() {
     // Use one by default. This should fail the test if it's unexpected used.
-    return std::make_unique<MockTrustedSignalsCacheImpl>();
+    return std::make_unique<MockTrustedSignalsCacheImpl>(
+        &data_decoder_manager_);
   }
 
   data_decoder::test::InProcessDataDecoder data_decoder_;
@@ -3836,6 +3918,11 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   // Delay between joining interest groups and starting the auction.
   base::TimeDelta between_join_run_auction_delay_;
 
+  // Tests often create and configure false responses in the TrustedSignalsCache
+  // before creating the InterestGroupManager, so a DataDecoderManager is needed
+  // other than the one created by the IntersetGroupManager.
+  DataDecoderManager data_decoder_manager_;
+
   network::TestURLLoaderFactory url_loader_factory_;
 
   // ScopedURLLoaderFactory used for reports. The FencedFrameReporter is never
@@ -3927,7 +4014,8 @@ class AuctionRunnerTrustedSignalsTest
       return std::move(trusted_signals_cache_impl_);
     }
 
-    return std::make_unique<MockTrustedSignalsCacheImpl>();
+    return std::make_unique<MockTrustedSignalsCacheImpl>(
+        &data_decoder_manager_);
   }
 
   // Populates `trusted_signals_cache_impl_`, if needed, and adds the specified
@@ -3939,7 +4027,7 @@ class AuctionRunnerTrustedSignalsTest
     CHECK(UsingKVv2Signals());
     if (!trusted_signals_cache_impl_) {
       trusted_signals_cache_impl_ =
-          std::make_unique<MockTrustedSignalsCacheImpl>();
+          std::make_unique<MockTrustedSignalsCacheImpl>(&data_decoder_manager_);
     }
     trusted_signals_cache_impl_->AddBidderSignalsResult(
         std::move(bidder_request_info), std::move(signals_fetch_result));
@@ -4004,7 +4092,7 @@ class AuctionRunnerTrustedSignalsTest
     CHECK(UsingKVv2Signals());
     if (!trusted_signals_cache_impl_) {
       trusted_signals_cache_impl_ =
-          std::make_unique<MockTrustedSignalsCacheImpl>();
+          std::make_unique<MockTrustedSignalsCacheImpl>(&data_decoder_manager_);
     }
     trusted_signals_cache_impl_->AddSellerSignalsResult(
         std::move(seller_request_info), std::move(signals_fetch_result));
@@ -16621,12 +16709,8 @@ TEST_F(AuctionRunnerTest, PrivateAggregationReservedOnceRandomlyChosen) {
     const auto& seller_requests = pa_requests_map[kSeller];
 
     ASSERT_EQ(bidder_requests.size(), 1u);
-    ASSERT_TRUE(bidder_requests[0]->contribution->is_histogram_contribution());
-    EXPECT_EQ(
-        10,
-        bidder_requests[0]->contribution->get_histogram_contribution()->bucket);
-    switch (
-        bidder_requests[0]->contribution->get_histogram_contribution()->value) {
+    EXPECT_EQ(10, bidder_requests[0]->contribution->bucket);
+    switch (bidder_requests[0]->contribution->value) {
       case 1:
         saw_bid1 = true;
         break;
@@ -16638,12 +16722,8 @@ TEST_F(AuctionRunnerTest, PrivateAggregationReservedOnceRandomlyChosen) {
     }
 
     ASSERT_EQ(seller_requests.size(), 1u);
-    ASSERT_TRUE(seller_requests[0]->contribution->is_histogram_contribution());
-    EXPECT_EQ(
-        20,
-        seller_requests[0]->contribution->get_histogram_contribution()->bucket);
-    switch (
-        seller_requests[0]->contribution->get_histogram_contribution()->value) {
+    EXPECT_EQ(20, seller_requests[0]->contribution->bucket);
+    switch (seller_requests[0]->contribution->value) {
       case 3:
         saw_score3 = true;
         break;
@@ -16767,12 +16847,8 @@ TEST_F(AuctionRunnerTest, PrivateAggregationReservedOnceAdditionalBid) {
     const auto& seller_requests = pa_requests_map[kSeller];
 
     ASSERT_EQ(seller_requests.size(), 1u);
-    ASSERT_TRUE(seller_requests[0]->contribution->is_histogram_contribution());
-    EXPECT_EQ(
-        20,
-        seller_requests[0]->contribution->get_histogram_contribution()->bucket);
-    switch (
-        seller_requests[0]->contribution->get_histogram_contribution()->value) {
+    EXPECT_EQ(20, seller_requests[0]->contribution->bucket);
+    switch (seller_requests[0]->contribution->value) {
       case 3:
         saw_score3 = true;
         break;
@@ -24458,7 +24534,8 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
             /*bid=*/2, /*bid_currency=*/blink::AdCurrency::From("USD"),
             /*highest_scoring_other_bid=*/1,
             /*highest_scoring_other_bid_currency=*/std::nullopt,
-            /*made_highest_scoring_other_bid=*/false));
+            /*made_highest_scoring_other_bid=*/false, kBuyerReportingUrl,
+            KAnonymityStatus::kBelowThreshold));
         {
           auto requests =
               private_aggregation_manager_.TakePrivateAggregationRequests();
@@ -24520,7 +24597,8 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
             /*bid=*/1, /*bid_currency=*/blink::AdCurrency::From("USD"),
             /*highest_scoring_other_bid=*/0,
             /*highest_scoring_other_bid_currency=*/std::nullopt,
-            /*made_highest_scoring_other_bid=*/false));
+            /*made_highest_scoring_other_bid=*/false, kBuyerReportingUrl,
+            KAnonymityStatus::kPassingAndEnforced));
         {
           auto requests =
               private_aggregation_manager_.TakePrivateAggregationRequests();
@@ -24583,7 +24661,8 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
             /*bid=*/2, /*bid_currency=*/blink::AdCurrency::From("USD"),
             /*highest_scoring_other_bid=*/1,
             /*highest_scoring_other_bid_currency=*/std::nullopt,
-            /*made_highest_scoring_other_bid=*/false));
+            /*made_highest_scoring_other_bid=*/false, kBuyerReportingUrl,
+            KAnonymityStatus::kBelowThreshold));
         {
           auto requests =
               private_aggregation_manager_.TakePrivateAggregationRequests();
@@ -24728,7 +24807,8 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
             /*bid=*/2, /*bid_currency=*/blink::AdCurrency::From("USD"),
             /*highest_scoring_other_bid=*/1,
             /*highest_scoring_other_bid_currency=*/std::nullopt,
-            /*made_highest_scoring_other_bid=*/false));
+            /*made_highest_scoring_other_bid=*/false, kBuyerReportingUrl,
+            KAnonymityStatus::kBelowThreshold));
         {
           auto requests =
               private_aggregation_manager_.TakePrivateAggregationRequests();
@@ -24780,7 +24860,8 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
             /*bid=*/1, /*bid_currency=*/blink::AdCurrency::From("USD"),
             /*highest_scoring_other_bid=*/0,
             /*highest_scoring_other_bid_currency=*/std::nullopt,
-            /*made_highest_scoring_other_bid=*/false));
+            /*made_highest_scoring_other_bid=*/false, kBuyerReportingUrl,
+            KAnonymityStatus::kPassingAndEnforced));
         {
           auto requests =
               private_aggregation_manager_.TakePrivateAggregationRequests();
@@ -24829,7 +24910,8 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
             /*bid=*/2, /*bid_currency=*/blink::AdCurrency::From("USD"),
             /*highest_scoring_other_bid=*/1,
             /*highest_scoring_other_bid_currency=*/std::nullopt,
-            /*made_highest_scoring_other_bid=*/false));
+            /*made_highest_scoring_other_bid=*/false, kBuyerReportingUrl,
+            KAnonymityStatus::kBelowThreshold));
         {
           auto requests =
               private_aggregation_manager_.TakePrivateAggregationRequests();
@@ -25067,7 +25149,8 @@ TEST_P(AuctionRunnerKAnonTest, KAnonHigher) {
           /*bid=*/2, /*bid_currency=*/blink::AdCurrency::From("USD"),
           /*highest_scoring_other_bid=*/1,
           /*highest_scoring_other_bid_currency=*/std::nullopt,
-          /*made_highest_scoring_other_bid=*/false));
+          /*made_highest_scoring_other_bid=*/false, kBuyerReportingUrl,
+          KAnonymityStatus::kPassingNotEnforced));
       {
         auto requests =
             private_aggregation_manager_.TakePrivateAggregationRequests();
@@ -25094,7 +25177,8 @@ TEST_P(AuctionRunnerKAnonTest, KAnonHigher) {
           /*bid=*/2, /*bid_currency=*/blink::AdCurrency::From("USD"),
           /*highest_scoring_other_bid=*/0,
           /*highest_scoring_other_bid_currency=*/std::nullopt,
-          /*made_highest_scoring_other_bid=*/false));
+          /*made_highest_scoring_other_bid=*/false, kBuyerReportingUrl,
+          KAnonymityStatus::kPassingAndEnforced));
       {
         auto requests =
             private_aggregation_manager_.TakePrivateAggregationRequests();
@@ -25116,7 +25200,8 @@ TEST_P(AuctionRunnerKAnonTest, KAnonHigher) {
           /*bid=*/2, /*bid_currency=*/blink::AdCurrency::From("USD"),
           /*highest_scoring_other_bid=*/1,
           /*highest_scoring_other_bid_currency=*/std::nullopt,
-          /*made_highest_scoring_other_bid=*/false));
+          /*made_highest_scoring_other_bid=*/false, kBuyerReportingUrl,
+          KAnonymityStatus::kPassingNotEnforced));
       {
         auto requests =
             private_aggregation_manager_.TakePrivateAggregationRequests();
@@ -27426,7 +27511,8 @@ TEST_P(
   // Manually set up trusted signals cache, and retain raw pointer. This test
   // can't use the AddScoringSignalsCacheResult() helper used by most tests,
   // since it only adds a result after starting the auction.
-  trusted_signals_cache_impl_ = std::make_unique<MockTrustedSignalsCacheImpl>();
+  trusted_signals_cache_impl_ =
+      std::make_unique<MockTrustedSignalsCacheImpl>(&data_decoder_manager_);
   raw_ptr<MockTrustedSignalsCacheImpl> trusted_signals_cache_impl =
       trusted_signals_cache_impl_.get();
 

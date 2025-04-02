@@ -72,4 +72,8 @@
   return _userEmail;
 }
 
+- (BOOL)addingManualAddress {
+  return YES;
+}
+
 @end

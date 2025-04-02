@@ -96,6 +96,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
   std::unique_ptr<HttpStream> RenewStreamForAuth() override;
   const std::set<std::string>& GetDnsAliases() const override;
   std::string_view GetAcceptChViaAlps() const override;
+  void SetHTTP11Required() override;
 
   // WebSocketHandshakeStreamBase methods.
 

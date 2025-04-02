@@ -2985,6 +2985,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3045447014237878114">Ce site a automatiquement téléchargé plusieurs fichiers</translation>
 <translation id="3046178388369461825">L'espace disque Linux est presque saturé</translation>
 <translation id="304644035656848980">Aperçu de votre microphone</translation>
+<translation id="3046892784550338476">Version <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Page Web, terminé</translation>
 <translation id="304747341537320566">Moteurs de reconnaissance vocale</translation>
 <translation id="3047678109605649715">Il n'y a aucune voix en <ph name="LANGUAGE" /> sur votre appareil. Libérez de l'espace sur votre appareil et réessayez.</translation>

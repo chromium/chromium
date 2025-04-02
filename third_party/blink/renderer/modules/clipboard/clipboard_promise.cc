@@ -72,7 +72,7 @@ class ClipboardPromise::ClipboardItemDataPromiseFulfill final
   void React(ScriptState* script_state,
              HeapVector<Member<V8UnionBlobOrString>> clipboard_item_list) {
     auto* list_copy =
-        MakeGarbageCollected<HeapVector<Member<V8UnionBlobOrString>>>(
+        MakeGarbageCollected<GCedHeapVector<Member<V8UnionBlobOrString>>>(
             std::move(clipboard_item_list));
     clipboard_promise_->HandlePromiseWrite(list_copy);
   }
@@ -436,7 +436,7 @@ void ClipboardPromise::HandleReadTextWithPermission(
 }
 
 void ClipboardPromise::HandlePromiseWrite(
-    HeapVector<Member<V8UnionBlobOrString>>* clipboard_item_list) {
+    GCedHeapVector<Member<V8UnionBlobOrString>>* clipboard_item_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   GetClipboardTaskRunner()->PostTask(
@@ -446,7 +446,7 @@ void ClipboardPromise::HandlePromiseWrite(
 }
 
 void ClipboardPromise::WriteClipboardItemData(
-    HeapVector<Member<V8UnionBlobOrString>>* clipboard_item_list) {
+    GCedHeapVector<Member<V8UnionBlobOrString>>* clipboard_item_list) {
   wtf_size_t clipboard_item_index = 0;
   CHECK_EQ(write_clipboard_item_types_.size(), clipboard_item_list->size());
   for (const auto& clipboard_item_data : *clipboard_item_list) {

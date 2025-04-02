@@ -151,7 +151,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
     historyCounter.Init(prefs(), browsing_data::ClearBrowsingDataTab::ADVANCED,
                         browsing_data::BrowsingDataCounter::ResultCallback());
     const browsing_data::HistoryCounter::HistoryResult historyResult(
-        &historyCounter, num_history_items, false, false);
+        &historyCounter, num_history_items, false, false, "", 0);
     OCMExpect([consumer_
         setHistorySummary:quick_delete_util::GetCounterTextFromResult(
                               historyResult, timeRange())]);
@@ -270,7 +270,7 @@ TEST_F(QuickDeleteMediatorTest, TestBrowsingHistorySummary) {
   for (const TestCase& test_case : kTestCases) {
     const browsing_data::HistoryCounter::HistoryResult result(
         &counter, test_case.num_sites, test_case.sync_enabled,
-        test_case.sync_enabled);
+        test_case.sync_enabled, "", 0);
     OCMExpect([consumer_ setBrowsingDataSummary:test_case.expected_output]);
     OCMExpect([consumer_
         setHistorySummary:quick_delete_util::GetCounterTextFromResult(

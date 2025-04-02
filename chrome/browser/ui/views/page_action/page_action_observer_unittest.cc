@@ -5,10 +5,11 @@
 #include "chrome/browser/ui/views/page_action/page_action_observer.h"
 
 #include "chrome/browser/ui/tabs/test/mock_tab_interface.h"
-#include "chrome/browser/ui/views/page_action/mock_page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
+#include "chrome/browser/ui/views/page_action/test_support/mock_page_action_model.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_properties.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -76,8 +77,8 @@ class PageActionObserverTest : public ::testing::Test {
  public:
   void SetUp() override {
     model_factory_ = std::make_unique<FakePageActionModelFactory>();
-    controller_ =
-        std::make_unique<PageActionController>(nullptr, model_factory_.get());
+    controller_ = std::make_unique<PageActionController>(
+        GetPageActionControllerTestProperties(), nullptr, model_factory_.get());
     controller_->Initialize(tab_, {kTestPageActionId});
   }
 

@@ -4400,7 +4400,7 @@ TEST_F(ExtensionServiceTest, ManagementPolicyProhibitsLoadFromPrefs) {
   // Ensure we can load it with no management policy in place.
   GetManagementPolicy()->UnregisterAllProviders();
   EXPECT_EQ(0u, registry()->enabled_extensions().size());
-  InstalledLoader(service()).Load(extension_info, false);
+  InstalledLoader(profile()).Load(extension_info, false);
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
 
   const Extension* extension =
@@ -4414,7 +4414,7 @@ TEST_F(ExtensionServiceTest, ManagementPolicyProhibitsLoadFromPrefs) {
       TestManagementPolicyProvider::PROHIBIT_LOAD);
   GetManagementPolicy()->RegisterProvider(&provider_);
 
-  InstalledLoader(service()).Load(extension_info, false);
+  InstalledLoader(profile()).Load(extension_info, false);
   EXPECT_EQ(0u, registry()->enabled_extensions().size());
 }
 

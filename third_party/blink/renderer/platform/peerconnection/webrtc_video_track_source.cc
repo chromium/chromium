@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
+#include "third_party/webrtc/rtc_base/time_utils.h"
 
 namespace {
 

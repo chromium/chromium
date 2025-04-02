@@ -58,6 +58,8 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/color-night/tab_card_view_bg_color.xml",
+    "java/res/color/tab_card_view_bg_color.xml",
     "java/res/drawable/ic_group_icon_16dp.xml",
     "java/res/drawable/ic_tab_placeholder.xml",
     "java/res/drawable/iph_drag_and_drop_animated_drawable.xml",

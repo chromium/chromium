@@ -105,5 +105,6 @@ proto_library("optimization_guide_proto_descriptors") {
   generate_cc = false
   generate_python = false
   generate_descriptor = "optimization_guide_proto.descriptor"
+  generator_visibility = [ "//components/optimization_guide/core:on_device_model_execution_proto_generator" ]
   import_dirs = [ "//third_party/metrics_proto/" ]
 }

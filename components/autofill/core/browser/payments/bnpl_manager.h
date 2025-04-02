@@ -22,11 +22,7 @@
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 
-namespace autofill {
-
-class BnplIssuer;
-
-namespace payments {
+namespace autofill::payments {
 
 using UpdateSuggestionsCallback =
     base::RepeatingCallback<void(std::vector<Suggestion>,
@@ -34,6 +30,7 @@ using UpdateSuggestionsCallback =
 
 struct BnplFetchVcnResponseDetails;
 struct BnplFetchUrlResponseDetails;
+struct BnplIssuerContext;
 
 // Owned by PaymentsAutofillClient. There is one instance of this class per Web
 // Contents. This class manages the flow for BNPL to complete a payment
@@ -158,7 +155,7 @@ class BnplManager {
 
   // Runs after users select a BNPL issuer, and will redirect to plan selection
   // or terms of services depending on the issuer.
-  void OnIssuerSelected(const BnplIssuer& selected_issuer);
+  void OnIssuerSelected(BnplIssuer selected_issuer);
 
   // This function makes the appropriate call to the payments server to get info
   // from the server for creating an instrument for the selected issuer.
@@ -236,6 +233,11 @@ class BnplManager {
       PaymentsAutofillClient::PaymentsRpcResult result,
       std::string instrument_id);
 
+  // Return all BNPL Issuer contexts including eligibility in order of:
+  // eligible + linked, eligible + unlinked, uneligible + linked,
+  // uneligible + unlinked.
+  std::vector<BnplIssuerContext> GetSortedBnplIssuerContext();
+
   PaymentsAutofillClient& payments_autofill_client() {
     return *autofill_client_->GetPaymentsAutofillClient();
   }
@@ -251,6 +253,10 @@ class BnplManager {
   // ongoing. Set when a flow is initiated, and reset upon flow completion.
   std::unique_ptr<OngoingFlowState> ongoing_flow_state_;
 
+  // Set to true after the first time a BNPL suggestion not being shown is
+  // logged. Ensures that logging occurs only once per page load.
+  bool has_logged_bnpl_suggestion_not_shown_reason_ = false;
+
   // Callback to collect the current shown suggestion list and checkout
   // amount, and insert BNPL suggestion if the amount is eligible.
   std::optional<base::RepeatingCallback<void(
@@ -260,7 +266,6 @@ class BnplManager {
   base::WeakPtrFactory<BnplManager> weak_factory_{this};
 };
 
-}  // namespace payments
-}  // namespace autofill
+}  // namespace autofill::payments
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_BNPL_MANAGER_H_

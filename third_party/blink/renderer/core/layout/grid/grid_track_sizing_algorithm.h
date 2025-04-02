@@ -103,6 +103,11 @@ class GridTrackSizingAlgorithm {
 
   void StretchAutoTracks(GridSizingTrackCollection* track_collection) const;
 
+  void ExpandFlexibleTracks(
+      const ContributionSizeFunctionRef& contribution_size,
+      GridSizingTrackCollection* track_collection,
+      GridItems* grid_items) const;
+
   LayoutUnit DetermineFreeSpace(
       const GridSizingTrackCollection& track_collection) const;
 

@@ -13,14 +13,14 @@ cargo_crate("lib") {
   epoch = "1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/anstyle-1.0.10/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/anstyle-v1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/anstyle-1.0.10/src/color.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anstyle-1.0.10/src/effect.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anstyle-1.0.10/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anstyle-1.0.10/src/macros.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anstyle-1.0.10/src/reset.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anstyle-1.0.10/src/style.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anstyle-v1/src/color.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anstyle-v1/src/effect.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anstyle-v1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anstyle-v1/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anstyle-v1/src/reset.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anstyle-v1/src/style.rs",
   ]
   inputs = []
 

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.data_sharing;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -57,6 +58,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.collaboration.CollaborationControllerDelegate;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.collaboration.messaging.ActivityLogItem;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
@@ -248,7 +250,7 @@ public class DataSharingTabManagerUnitTest {
         mockSuccessfulParseDataSharingUrl();
         mDataSharingTabManager.initiateJoinFlow(TEST_URL);
 
-        verify(mCollaborationService).startJoinFlow(any(), eq(TEST_URL));
+        verify(mCollaborationService).startJoinFlow(any(), eq(TEST_URL), anyInt());
     }
 
     @Test
@@ -274,9 +276,10 @@ public class DataSharingTabManagerUnitTest {
     public void testShareOrManageFlowWithCollaborationService() {
         doReturn(mProfile).when(mProfile).getOriginalProfile();
         doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(LOCAL_ID);
-        mDataSharingTabManager.createOrManageFlow(mActivity, /* syncId= */ null, LOCAL_ID, null);
+        mDataSharingTabManager.createOrManageFlow(
+                mActivity, /* syncId= */ null, LOCAL_ID, anyInt(), null);
 
-        verify(mCollaborationService).startShareOrManageFlow(any(), eq(SYNC_GROUP_ID1));
+        verify(mCollaborationService).startShareOrManageFlow(any(), eq(SYNC_GROUP_ID1), anyInt());
     }
 
     @Test
@@ -299,10 +302,13 @@ public class DataSharingTabManagerUnitTest {
         doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(LOCAL_ID);
 
         mDataSharingTabManager.createTabGroupAndShare(
-                mActivity, mTab, mCreateGroupFinishedCallback);
+                mActivity,
+                mTab,
+                CollaborationServiceShareOrManageEntryPoint.UNKNOWN,
+                mCreateGroupFinishedCallback);
 
         verify(mTabGroupModelFilter).createSingleTabGroup(eq(mTab));
-        verify(mCollaborationService).startShareOrManageFlow(any(), eq(SYNC_GROUP_ID1));
+        verify(mCollaborationService).startShareOrManageFlow(any(), eq(SYNC_GROUP_ID1), anyInt());
     }
 
     @Test
@@ -325,9 +331,12 @@ public class DataSharingTabManagerUnitTest {
         doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(LOCAL_ID);
 
         mDataSharingTabManager.createTabGroupAndShare(
-                mActivity, mTab, mCreateGroupFinishedCallback);
+                mActivity,
+                mTab,
+                CollaborationServiceShareOrManageEntryPoint.UNKNOWN,
+                mCreateGroupFinishedCallback);
 
-        verify(mCollaborationService).startShareOrManageFlow(any(), eq(SYNC_GROUP_ID1));
+        verify(mCollaborationService).startShareOrManageFlow(any(), eq(SYNC_GROUP_ID1), anyInt());
     }
 
     @Test

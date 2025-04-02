@@ -1182,6 +1182,70 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
   }
 }
 
+void CountPseudoElementUsage(const Element& element, PseudoId id) {
+  switch (id) {
+    case kPseudoIdFirstLine: {
+      element.GetDocument().CountUse(WebFeature::kFirstLinePseudoElement);
+      break;
+    }
+    case kPseudoIdFirstLetter: {
+      element.GetDocument().CountUse(WebFeature::kFirstLetterPseudoElement);
+      break;
+    }
+    case kPseudoIdCheckMark: {
+      element.GetDocument().CountUse(WebFeature::kCheckMarkPseudoElement);
+      break;
+    }
+    case kPseudoIdBefore: {
+      element.GetDocument().CountUse(WebFeature::kBeforePseudoElement);
+      break;
+    }
+    case kPseudoIdAfter: {
+      element.GetDocument().CountUse(WebFeature::kAfterPseudoElement);
+      break;
+    }
+    case kPseudoIdPickerIcon: {
+      element.GetDocument().CountUse(WebFeature::kPickerIconPseudoElement);
+      break;
+    }
+    case kPseudoIdMarker: {
+      element.GetDocument().CountUse(WebFeature::kMarkerPseudoElement);
+      break;
+    }
+    case kPseudoIdBackdrop: {
+      element.GetDocument().CountUse(WebFeature::kBackdropPseudoElement);
+      break;
+    }
+    case kPseudoIdSelection: {
+      element.GetDocument().CountUse(WebFeature::kSelectionPseudoElement);
+      break;
+    }
+    case kPseudoIdSearchText: {
+      element.GetDocument().CountUse(WebFeature::kSearchTextPseudoElement);
+      break;
+    }
+    case kPseudoIdTargetText: {
+      element.GetDocument().CountUse(WebFeature::kTargetTextPseudoElement);
+      break;
+    }
+    case kPseudoIdHighlight: {
+      element.GetDocument().CountUse(WebFeature::kCustomHighlightPseudoElement);
+      break;
+    }
+    case kPseudoIdSpellingError: {
+      element.GetDocument().CountUse(WebFeature::kSpellingErrorPseudoElement);
+      break;
+    }
+    case kPseudoIdGrammarError: {
+      element.GetDocument().CountUse(WebFeature::kGrammarErrorPseudoElement);
+      break;
+    }
+
+    default:
+      return;
+  }
+}
+
 void ElementRuleCollector::DidMatchRule(
     const RuleData* rule_data,
     uint16_t layer_order,
@@ -1213,6 +1277,7 @@ void ElementRuleCollector::DidMatchRule(
     }
 
     result_.SetHasPseudoElementStyle(dynamic_pseudo);
+    CountPseudoElementUsage(context_.GetElement(), dynamic_pseudo);
 
     if (IsHighlightPseudoElement(dynamic_pseudo)) {
       // Determine whether the selector definitely matches the highlight pseudo

@@ -1,0 +1,17 @@
+source_set("impression_limits") {
+  sources = [
+    "impression_limit_service.cc",
+    "impression_limit_service.h",
+    "impression_limit_service_factory.cc",
+    "impression_limit_service_factory.h",
+  ]
+  deps = [
+    "//base:base",
+    "//components/history/core/browser:browser",
+    "//components/keyed_service/core:core",
+    "//components/prefs:prefs",
+    "//ios/chrome/browser/history/model:model",
+    "//ios/chrome/browser/shared/model/profile:profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+  ]
+}

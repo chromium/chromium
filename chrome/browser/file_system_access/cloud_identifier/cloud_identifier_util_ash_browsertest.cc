@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/drive/drive_integration_service_browser_test_base.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/volume.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
@@ -185,6 +186,9 @@ using GetProvidedFsCloudIdentifierBrowserTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(GetProvidedFsCloudIdentifierBrowserTest,
                        GetHandleSuccess) {
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler;
+
   base::WeakPtr<file_manager::Volume> fsp_volume =
       file_manager::test::InstallFileSystemProviderChromeApp(
           browser()->profile());
@@ -230,6 +234,9 @@ IN_PROC_BROWSER_TEST_F(GetProvidedFsCloudIdentifierBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GetProvidedFsCloudIdentifierBrowserTest,
                        GetHandleError) {
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler;
+
   base::WeakPtr<file_manager::Volume> fsp_volume =
       file_manager::test::InstallFileSystemProviderChromeApp(
           browser()->profile());

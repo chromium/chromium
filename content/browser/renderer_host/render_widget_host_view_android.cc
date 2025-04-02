@@ -758,6 +758,15 @@ RenderWidgetHostViewAndroid::GetVirtualKeyboardMode() {
   return frame_host->GetPage().virtual_keyboard_mode();
 }
 
+void RenderWidgetHostViewAndroid::NotifyContextMenuInsetsObservers(
+    const gfx::Rect& safe_area) {
+  host()
+      ->frame_tree()
+      ->GetMainFrame()
+      ->GetPage()
+      .NotifyContextMenuInsetsObservers(safe_area);
+}
+
 viz::SurfaceId RenderWidgetHostViewAndroid::GetFallbackSurfaceIdForTesting()
     const {
   return delegated_frame_host_->GetFallbackSurfaceIdForTesting();  // IN-TEST

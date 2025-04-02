@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">Forcer l'activation du zoom</translation>
 <translation id="3905475044299942653">Bloquer beaucoup de notifications</translation>
 <translation id="3908288065506437185">Bloquer les témoins tiers en mode de navigation privée</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Certaines fonctionnalités pourraient ne pas fonctionner. Les sites associés peuvent toujours utiliser des témoins tiers.</translation>
 <translation id="3922092564198021702">Sur votre téléphone, ouvrez Paramètres.</translation>
 <translation id="3933121352599513978">Réduire les requêtes indésirables (recommandé)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">Détails</translation>
 <translation id="4598549027014564149">En mode navigation privée, les sites ne peuvent pas utiliser de témoins pour suivre votre activité de navigation sur les sites ni même sur les sites connexes. Votre activité de navigation n'utilise pas les options telles que la personnalisation des publicités. Les fonctionnalités de certains sites pourraient ne pas fonctionner.</translation>
 <translation id="461356340001513807">Vous permet de vous connecter à des sites Web en utilisant le compte que vous détenez auprès d'un service de vérification de l'identité</translation>
-<translation id="4619615317237390068">Onglets ouverts sur d'autres appareils</translation>
 <translation id="4635969503923889910">Ne pas autoriser les sites à utiliser des appareils CCP</translation>
 <translation id="4644713492825682049">Supprimer et réinitialiser</translation>
 <translation id="4645575059429386691">Géré par l’un de tes parents</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">Partager par</translation>
 <translation id="5001526427543320409">Témoins tiers</translation>
 <translation id="5007392906805964215">Examiner</translation>
-<translation id="5014182796621173645">Consulté <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Autoriser</translation>
 <translation id="5048398596102334565">Autoriser les sites à accéder à vos capteurs de mouvements (recommandé)</translation>
 <translation id="5048841907079026162">Gérer vos données de navigation</translation>

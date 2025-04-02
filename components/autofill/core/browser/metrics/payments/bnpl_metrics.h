@@ -9,6 +9,19 @@
 
 namespace autofill::autofill_metrics {
 
+// The reason why a BNPL suggestion was not shown on the page.
+enum class BnplSuggestionNotShownReason {
+  // The checkout amount could not be extracted from the page. This value is
+  // necessary to determine BNPL eligibility for the purchase.
+  kAmountExtractionFailure = 0,
+
+  // The checkout amount extracted from the page is not supported by any of the
+  // available BNPL issuers.
+  kCheckoutAmountNotSupported = 1,
+
+  kMaxValue = kCheckoutAmountNotSupported,
+};
+
 // Logs if the buy-now-pay-later preference is changed by the user through the
 // pay-over-time toggle in the payment methods settings page. Records true when
 // the user switches on buy-now-pay-later. Records false when the user switches
@@ -20,6 +33,9 @@ void LogBnplIssuersSyncedCountAtStartup(int count);
 
 // Logs that the BNPL ToS dialog was shown.
 void LogBnplTosDialogShown(std::string_view issuer_id);
+
+// Logs that the BNPL suggestion was not shown and the reason why.
+void LogBnplSuggestionNotShownReason(BnplSuggestionNotShownReason reason);
 
 }  // namespace autofill::autofill_metrics
 

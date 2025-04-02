@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">O ficheiro de manifesto non é válido</translation>
 <translation id="7217838517480956708">O administrador deste equipo require a instalación de <ph name="EXTENSION_NAME" />. Non se pode eliminar nin modificar.</translation>
 <translation id="7612608473764576263">O valor de entrada da clave privada debe ter un formato válido (clave RSA en formato PKCS #8 e con codificación PEM).</translation>
+<translation id="7876803335449432072">Non se puido cargar o ficheiro "<ph name="RELATIVE_PATH" />" para o script de contido porque as follas de estilo dos script de contido só se poden cargar desde ficheiros de follas de estilo admitidos, como os .css.</translation>
 <translation id="7939686037314084444">Produciuse un erro ao cargar a extensión, polo que podería non interceptar solicitudes de rede.</translation>
 <translation id="7972881773422714442">Opcións: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Cámara dianteira</translation>
 <translation id="8047248493720652249">Esta extensión non logrou asignar un nome á descarga "<ph name="ATTEMPTED_FILENAME" />" porque outra extensión (<ph name="EXTENSION_NAME" />) determinou un nome de ficheiro diferente "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> de <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Falta o ficheiro de manifesto ou non se pode ler</translation>
+<translation id="8621383749470166852">Non se puido cargar o ficheiro "<ph name="RELATIVE_PATH" />" para o script de contido porque os script de contido só se poden cargar desde ficheiros JavaScript admitidos, como os .js.</translation>
 <translation id="8636666366616799973">O paquete non é válido. Detalles: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" solicita acceso a un dos teus dispositivos:</translation>
 <translation id="8885905466771744233">Xa existe unha clave privada para a extensión especificada. Volve utilizar esa clave ou elimínaa primeiro.</translation>

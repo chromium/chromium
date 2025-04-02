@@ -42,6 +42,8 @@ class FakeRegionalCapabilitiesServiceClient
 
   CountryId GetFallbackCountryId() override;
 
+  CountryId GetVariationsLatestCountryId() override;
+
  private:
   const CountryId country_id_;
 };

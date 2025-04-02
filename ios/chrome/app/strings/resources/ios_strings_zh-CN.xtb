@@ -440,6 +440,7 @@
 <translation id="2783161812871838616">请求切换到桌面版网站</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{密码已保存到您的 Google 账号 {EMAIL}}other{密码已保存到您的 Google 账号 {EMAIL}}}</translation>
 <translation id="2791174088547598693">添加密码…</translation>
+<translation id="2793703503584038325">选择一个密码，然后点按“分享”图标</translation>
 <translation id="2797302972324086597">国家/地区代码</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} 个文件}other{{COUNT} 个文件}}</translation>
 <translation id="2816489851009559785">菜单 → 设置 → 默认浏览器</translation>
@@ -579,6 +580,7 @@
 <translation id="35083190962747987">打开 ${url}</translation>
 <translation id="3511519535430890904">添加浏览保护功能</translation>
 <translation id="3517216995152707259">删除浏览数据不会让您退出 Google 账号。若要退出账号，请<ph name="BEGIN_LINK" />从 Chrome 中退出<ph name="END_LINK" />。</translation>
+<translation id="3519792890877853853">此卡片会显示您打开的标签页中商品的评价</translation>
 <translation id="3519905498307021260">{count,plural, =1{打开标签页}other{打开 {count} 个标签页}}</translation>
 <translation id="3523513363815970085">隐藏“您最常访问的网站”</translation>
 <translation id="3523789730715594198">您可以随时在“设置”中停止同步。Google 可能会根据您的历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
@@ -819,6 +821,7 @@
 <translation id="4565377596337484307">隐藏密码</translation>
 <translation id="4568230126482344545">隐藏“最近打开的标签页”</translation>
 <translation id="4578835633387306383">开启…</translation>
+<translation id="4580716718466706433">前往“密码管理工具”</translation>
 <translation id="4587589328781138893">网站</translation>
 <translation id="4592672037257622855">{count,plural, =1{此页面已添加到您的阅读清单中}other{{count} 个页面已添加到您的阅读清单中}}</translation>
 <translation id="459644946100970322">开启票价变更提醒？</translation>
@@ -858,6 +861,7 @@
 <translation id="4717844083556844785">当前网页处于无痕模式</translation>
 <translation id="4719927025381752090">提供翻译</translation>
 <translation id="4720530280568305198">您选择的内容已在新标签页中打开</translation>
+<translation id="472259426228234149">价格：100 美元 - 180 美元</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="474209246745757965">使用摄像头拍照购物和进行翻译</translation>
 <translation id="4742407542027196863">管理密码…</translation>

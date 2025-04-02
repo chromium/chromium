@@ -13,6 +13,7 @@
 #import "base/memory/scoped_refptr.h"
 #import "base/rand_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -122,6 +123,16 @@ class CredentialProviderServiceTest : public PlatformTest {
         &affiliation_service_, &favicon_loader_);
   }
 
+  bool WaitForCredentialCount(NSUInteger count) {
+    // For add and remove operations to propagate to the credential store, both
+    // the message loop and the NSRunLoop need to spin.
+    return base::test::ios::WaitUntilConditionOrTimeout(
+        base::test::ios::kWaitForActionTimeout,
+        /* run_message_loop = */ true, ^{
+          return credential_store_.credentials.count == count;
+        });
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -175,7 +186,7 @@ TEST_F(CredentialProviderServiceTest, TwoStores) {
   CreateCredentialProviderService(/*with_account_store=*/true);
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 2u);
+  ASSERT_TRUE(WaitForCredentialCount(2u));
   EXPECT_THAT(GetServiceNames(credential_store_.credentials),
               UnorderedElementsAre("local.com", "account.com"));
 
@@ -185,7 +196,7 @@ TEST_F(CredentialProviderServiceTest, TwoStores) {
   account_password_store_->AddLogin(local_and_account_form);
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 3u);
+  ASSERT_TRUE(WaitForCredentialCount(3u));
   EXPECT_THAT(GetServiceNames(credential_store_.credentials),
               UnorderedElementsAre("local.com", "account.com",
                                    "local-and-account.com"));
@@ -199,9 +210,8 @@ TEST_F(CredentialProviderServiceTest, TwoStores) {
                                    "local-and-account.com"));
 
   account_password_store_->RemoveLogin(FROM_HERE, local_and_account_form);
-  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(WaitForCredentialCount(2u));
 
-  ASSERT_EQ(credential_store_.credentials.count, 2u);
   EXPECT_THAT(GetServiceNames(credential_store_.credentials),
               UnorderedElementsAre("local.com", "account.com"));
 }
@@ -221,22 +231,25 @@ TEST_F(CredentialProviderServiceTest, PasswordChanges) {
   password_store_->AddLogin(form);
   task_environment_.RunUntilIdle();
 
-  // Expect the store to be populated with 1 credential.
-  ASSERT_EQ(1u, credential_store_.credentials.count);
+  ASSERT_TRUE(WaitForCredentialCount(1u));
 
   form.password_value = u"Qwerty123!";
   password_store_->UpdateLogin(form);
-  task_environment_.RunUntilIdle();
 
   // Expect that the credential in the store now has the same password.
-  ASSERT_EQ(1u, credential_store_.credentials.count);
-  EXPECT_NSEQ(credential_store_.credentials[0].password, @"Qwerty123!");
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout,
+      /* run_message_loop = */ true, ^{
+        return credential_store_.credentials.count == 1 &&
+               [credential_store_.credentials[0].password
+                   isEqualToString:@"Qwerty123!"];
+      }));
 
   password_store_->RemoveLogin(FROM_HERE, form);
   task_environment_.RunUntilIdle();
 
   // Expect the store to be empty.
-  EXPECT_EQ(0u, credential_store_.credentials.count);
+  EXPECT_TRUE(WaitForCredentialCount(0u));
 }
 
 // Test that CredentialProviderService observes changes in the primary identity.
@@ -297,7 +310,7 @@ TEST_F(CredentialProviderServiceTest, AndroidCredential) {
   task_environment_.RunUntilIdle();
 
   // Expect the store to be populated with 1 credential.
-  EXPECT_EQ(1u, credential_store_.credentials.count);
+  EXPECT_TRUE(WaitForCredentialCount(1u));
 }
 
 // Test that the CredentialProviderService observes changes in the preference
@@ -423,7 +436,7 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsWithValidURL) {
   password_store_->AddLogin(valid_password_form);
   task_environment_.RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 1u);
+  ASSERT_TRUE(WaitForCredentialCount(1u));
 
   // Don't add password with invalid URL to store.
   // No favicon should be fetched for invalid URLs.
@@ -448,7 +461,7 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsWithValidURL) {
   password_store_->AddLogin(android_password_form);
   task_environment_.RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 2u);
+  ASSERT_TRUE(WaitForCredentialCount(2u));
 }
 
 TEST_F(CredentialProviderServiceTest, AddCredentialsRefactored) {
@@ -468,7 +481,7 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsRefactored) {
   password_store_->AddLogin(valid_password_form);
   task_environment_.RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 1u);
+  ASSERT_TRUE(WaitForCredentialCount(1u));
 
   // Don't add password with invalid URL to store.
   // No favicon should be fetched for invalid URLs.
@@ -493,7 +506,7 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsRefactored) {
   password_store_->AddLogin(android_password_form);
   task_environment_.RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 2u);
+  ASSERT_TRUE(WaitForCredentialCount(2u));
 }
 
 TEST_F(CredentialProviderServiceTest,
@@ -521,7 +534,7 @@ TEST_F(CredentialProviderServiceTest,
                                                 change_list);
   task_environment_.RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 1u);
+  ASSERT_TRUE(WaitForCredentialCount(1u));
   EXPECT_NSEQ(credential_store_.credentials[0].username, @"username");
   EXPECT_NSEQ(credential_store_.credentials[0].password, @"12345");
   histogram_tester.ExpectTotalCount(kSyncStoreHistogramName, 1);
@@ -551,7 +564,7 @@ TEST_F(CredentialProviderServiceTest,
                                                 change_list);
   task_environment_.RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 0u);
+  ASSERT_TRUE(WaitForCredentialCount(0u));
   histogram_tester.ExpectTotalCount(kSyncStoreHistogramName, 3);
 }
 
@@ -585,7 +598,7 @@ TEST_F(CredentialProviderServiceTest,
                                                 change_list);
   task_environment_.RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 2u);
+  ASSERT_TRUE(WaitForCredentialCount(2u));
 
   // Prepare simultaneous ADD, UPDATE and REMOVE operations.
   password_manager::PasswordForm test_form3;
@@ -647,7 +660,7 @@ TEST_F(
                                                 change_list);
   task_environment_.RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 1u);
+  ASSERT_TRUE(WaitForCredentialCount(1u));
 
   // Update the PasswordForm without changing its username, url or password.
   // This mimicks a password usage.
@@ -685,7 +698,7 @@ TEST_F(CredentialProviderServiceTest, AddPasskeys) {
   test_passkey_model_->AddNewPasskeyForTesting(valid_passkey);
   task_environment_.RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 1u);
+  ASSERT_TRUE(WaitForCredentialCount(1u));
 
   // Add passkey with invalid URL to store.
   // No favicon should be fetched for invalid URLs.
@@ -695,7 +708,7 @@ TEST_F(CredentialProviderServiceTest, AddPasskeys) {
   test_passkey_model_->AddNewPasskeyForTesting(invalid_passkey);
   task_environment_.RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 2u);
+  ASSERT_TRUE(WaitForCredentialCount(2u));
 
   // Don't add hidden passkeys to the store.
   // No favicon should be fetched for hidden passkeys.
@@ -715,7 +728,7 @@ TEST_F(CredentialProviderServiceTest, AddPasskeys) {
   test_passkey_model_->AddNewPasskeyForTesting(valid_passkey2);
   task_environment_.RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 3u);
+  EXPECT_TRUE(WaitForCredentialCount(3u));
 }
 
 TEST_F(CredentialProviderServiceTest, DeletePasskey) {
@@ -730,12 +743,12 @@ TEST_F(CredentialProviderServiceTest, DeletePasskey) {
   test_passkey_model_->AddNewPasskeyForTesting(passkey);
   task_environment_.RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 1u);
+  ASSERT_TRUE(WaitForCredentialCount(1u));
 
   test_passkey_model_->DeletePasskey(passkey.credential_id(), FROM_HERE);
   task_environment_.RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 0u);
+  EXPECT_TRUE(WaitForCredentialCount(0u));
 }
 
 TEST_F(CredentialProviderServiceTest, UpdatePasskey) {
@@ -753,7 +766,7 @@ TEST_F(CredentialProviderServiceTest, UpdatePasskey) {
   test_passkey_model_->AddNewPasskeyForTesting(passkey);
   task_environment_.RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 1u);
+  ASSERT_TRUE(WaitForCredentialCount(1u));
 
   test_passkey_model_->UpdatePasskey(
       passkey.credential_id(),

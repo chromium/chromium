@@ -162,10 +162,7 @@ void BackgroundHTMLScanner::ScriptTokenScanner::ScanToken(
   switch (token.GetType()) {
     case HTMLToken::kCharacter: {
       if (in_script_) {
-        if (token.IsAll8BitData())
-          script_builder_.Append(token.Data().AsString8());
-        else
-          script_builder_.Append(token.Data().AsString());
+        script_builder_.Append(token.Data().AsString());
       }
       return;
     }

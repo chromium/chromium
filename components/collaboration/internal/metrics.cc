@@ -161,6 +161,30 @@ std::string_view CollaborationServiceShareOrManageEntryPointToString(
   switch (entry) {
     case CollaborationServiceShareOrManageEntryPoint::kUnknown:
       return "Unknown";
+    case CollaborationServiceShareOrManageEntryPoint::
+        kAndroidTabGridDialogShare:
+      return "AndroidTabGridDialogShare";
+    case CollaborationServiceShareOrManageEntryPoint::
+        kAndroidTabGridDialogManage:
+      return "AndroidTabGridDialogManage";
+    case CollaborationServiceShareOrManageEntryPoint::kRecentActivity:
+      return "RecentActivity";
+    case CollaborationServiceShareOrManageEntryPoint::
+        kAndroidTabGroupContextMenuShare:
+      return "AndroidTabGroupContextMenuShare";
+    case CollaborationServiceShareOrManageEntryPoint::
+        kAndroidTabGroupContextMenuManage:
+      return "AndroidTabGroupContextMenuManage";
+    case CollaborationServiceShareOrManageEntryPoint::kNotification:
+      return "Notification";
+    case CollaborationServiceShareOrManageEntryPoint::kAndroidMessage:
+      return "AndroidMessage";
+    case CollaborationServiceShareOrManageEntryPoint::kTabGroupItemMenuShare:
+      return "TabGroupItemMenuShare";
+    case CollaborationServiceShareOrManageEntryPoint::kAndroidShareSheetExtra:
+      return "AndroidShareSheetExtra";
+    case CollaborationServiceShareOrManageEntryPoint::kDialogToolbarButton:
+      return "DialogToolbarButton";
   }
 }
 

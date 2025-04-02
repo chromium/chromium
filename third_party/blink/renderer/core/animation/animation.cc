@@ -3462,7 +3462,7 @@ void Animation::commitStyles(ExceptionState& exception_state) {
   //    that are a target property for at least one animation effect
   //    associated with animation whose effect target is target.
   PropertyHandleSet animation_properties =
-      To<KeyframeEffect>(effect())->Model()->Properties();
+      To<KeyframeEffect>(effect())->Model()->Properties().UniqueProperties();
 
   // 5. For each property, property, in targeted properties:
   //   5.1 Let partialEffectStack be a copy of the effect stack for property

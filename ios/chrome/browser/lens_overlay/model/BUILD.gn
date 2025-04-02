@@ -127,6 +127,7 @@ source_set("metrics_recorder") {
     "lens_view_finder_metrics_recorder.mm",
   ]
   deps = [
+    ":detent_state_header",
     "//base",
     "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/browser/shared/model/utils",

@@ -16,7 +16,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,9 +43,9 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
@@ -61,14 +60,9 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class ToolbarSwipeTest {
-
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private float mPxToDp = 1.0f;
     private float mTabsViewWidthDp;
@@ -88,7 +82,7 @@ public class ToolbarSwipeTest {
 
     @After
     public void tearDown() {
-        sActivityTestRule
+        mActivityTestRule
                 .getActivity()
                 .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
@@ -149,7 +143,7 @@ public class ToolbarSwipeTest {
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.LEFT, 1, true);
 
         final TabModel tabModel =
-                sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+                mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         Assert.assertEquals("Incorrect tab index after first swipe.", 1, tabModel.index());
 
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.RIGHT, 0, true);
@@ -165,7 +159,7 @@ public class ToolbarSwipeTest {
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.LEFT, 1, true);
 
         final TabModel tabModel =
-                sActivityTestRule.getActivity().getTabModelSelector().getModel(true);
+                mActivityTestRule.getActivity().getTabModelSelector().getModel(true);
         Assert.assertEquals("Incorrect tab index after first swipe.", 1, tabModel.index());
 
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.RIGHT, 0, true);
@@ -182,22 +176,22 @@ public class ToolbarSwipeTest {
     private void initToolbarSwipeTest(boolean useTwoTabs, int selectedTab, boolean incognito) {
         if (incognito) {
             // If incognito, there is no default tab, so open a new one and switch to it.
-            sActivityTestRule.loadUrlInNewTab(generateSolidColorUrl("#00ff00"), true);
-            sActivityTestRule.getActivity().getTabModelSelector().selectModel(true);
+            mActivityTestRule.loadUrlInNewTab(generateSolidColorUrl("#00ff00"), true);
+            mActivityTestRule.getActivity().getTabModelSelector().selectModel(true);
         } else {
             // If not incognito, use the tab the test started on.
-            sActivityTestRule.loadUrl(generateSolidColorUrl("#00ff00"));
+            mActivityTestRule.loadUrl(generateSolidColorUrl("#00ff00"));
         }
 
         if (useTwoTabs) {
-            sActivityTestRule.loadUrlInNewTab(generateSolidColorUrl("#0000ff"), incognito);
+            mActivityTestRule.loadUrlInNewTab(generateSolidColorUrl("#0000ff"), incognito);
         }
 
-        ChromeTabUtils.switchTabInCurrentTabModel(sActivityTestRule.getActivity(), selectedTab);
+        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), selectedTab);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         final TabModelSelector tabModelSelector =
-                sActivityTestRule.getActivity().getTabModelSelector();
+                mActivityTestRule.getActivity().getTabModelSelector();
         final TabModel tabModel = tabModelSelector.getModel(incognito);
 
         Assert.assertEquals(
@@ -212,7 +206,7 @@ public class ToolbarSwipeTest {
             @ScrollDirection int direction, int finalIndex, boolean expectsSelection)
             throws TimeoutException {
         final CallbackHelper selectCallback = new CallbackHelper();
-        final ChromeTabbedActivity activity = sActivityTestRule.getActivity();
+        final ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         final int id = activity.getCurrentTabModel().getTabAt(finalIndex).getId();
         final TabModelSelectorTabModelObserver observer =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -263,7 +257,7 @@ public class ToolbarSwipeTest {
         Assert.assertTrue(
                 "Unexpected direction for side swipe " + direction,
                 direction == ScrollDirection.LEFT || direction == ScrollDirection.RIGHT);
-        final View toolbar = sActivityTestRule.getActivity().findViewById(R.id.toolbar);
+        final View toolbar = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
 
         int[] toolbarPos = new int[2];
         toolbar.getLocationOnScreen(toolbarPos);
@@ -277,7 +271,7 @@ public class ToolbarSwipeTest {
         final long duration = 500;
 
         View toolbarRoot =
-                sActivityTestRule
+                mActivityTestRule
                         .getActivity()
                         .getRootUiCoordinatorForTesting()
                         .getToolbarManager()
@@ -291,7 +285,7 @@ public class ToolbarSwipeTest {
     @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"Android-TabSwitcher"})
     public void testOSKIsNotShownDuringSwipe() throws InterruptedException {
-        final View urlBar = sActivityTestRule.getActivity().findViewById(R.id.url_bar);
+        final View urlBar = mActivityTestRule.getActivity().findViewById(R.id.url_bar);
         final LayoutManagerChrome layoutManager = updateTabsViewSize();
         final SwipeHandler swipeHandler = layoutManager.getToolbarSwipeHandler();
 
@@ -302,14 +296,14 @@ public class ToolbarSwipeTest {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> urlBar.clearFocus());
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
         ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
 
         Assert.assertFalse(
                 "Keyboard somehow got shown",
-                sActivityTestRule
+                mActivityTestRule
                         .getKeyboardDelegate()
-                        .isKeyboardShowing(sActivityTestRule.getActivity(), urlBar));
+                        .isKeyboardShowing(mActivityTestRule.getActivity(), urlBar));
 
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
@@ -326,7 +320,7 @@ public class ToolbarSwipeTest {
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    return !sActivityTestRule
+                    return !mActivityTestRule
                             .getActivity()
                             .getLayoutManager()
                             .getActiveLayout()
@@ -338,30 +332,30 @@ public class ToolbarSwipeTest {
                 () -> {
                     Assert.assertFalse(
                             "Keyboard should be hidden while swiping",
-                            sActivityTestRule
+                            mActivityTestRule
                                     .getKeyboardDelegate()
-                                    .isKeyboardShowing(sActivityTestRule.getActivity(), urlBar));
+                                    .isKeyboardShowing(mActivityTestRule.getActivity(), urlBar));
                     swipeHandler.onSwipeFinished();
                 });
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    LayoutManagerImpl driver = sActivityTestRule.getActivity().getLayoutManager();
+                    LayoutManagerImpl driver = mActivityTestRule.getActivity().getLayoutManager();
                     return driver.getActiveLayout().shouldDisplayContentOverlay();
                 },
                 "Layout not requesting Tab Android view be attached");
 
         Assert.assertFalse(
                 "Keyboard should not be shown",
-                sActivityTestRule
+                mActivityTestRule
                         .getKeyboardDelegate()
-                        .isKeyboardShowing(sActivityTestRule.getActivity(), urlBar));
+                        .isKeyboardShowing(mActivityTestRule.getActivity(), urlBar));
     }
 
     private LayoutManagerChrome updateTabsViewSize() {
-        View tabsView = sActivityTestRule.getActivity().getTabsView();
+        View tabsView = mActivityTestRule.getActivity().getTabsView();
         mTabsViewWidthDp = tabsView.getWidth() * mPxToDp;
-        return sActivityTestRule.getActivity().getLayoutManager();
+        return mActivityTestRule.getActivity().getLayoutManager();
     }
 
     /**

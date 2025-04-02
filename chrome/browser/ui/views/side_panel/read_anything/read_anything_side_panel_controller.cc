@@ -181,12 +181,12 @@ void ReadAnythingSidePanelController::TabForegrounded(tabs::TabInterface* tab) {
 void ReadAnythingSidePanelController::TabWillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason reason) {
+  observers_.Notify(
+      &ReadAnythingSidePanelController::Observer::OnTabWillDetach);
+
   if (!tab_->IsActivated()) {
     return;
   }
-
-  observers_.Notify(
-      &ReadAnythingSidePanelController::Observer::OnTabWillDetach);
   auto* coordinator =
       tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
   // TODO(https://crbug.com/360163254): BrowserWithTestWindowTest currently does

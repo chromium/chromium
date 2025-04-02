@@ -1075,7 +1075,7 @@ void LayoutMultiColumnFlowThread::ToggleSpannersInSubtree(
   }
 }
 
-LayoutPoint LayoutMultiColumnFlowThread::LocationInternal() const {
+DeprecatedLayoutPoint LayoutMultiColumnFlowThread::LocationInternal() const {
   NOT_DESTROYED();
   if (!HasValidCachedGeometry() && EverHadLayout()) {
     // const_cast in order to update the cached value.
@@ -1096,7 +1096,7 @@ PhysicalSize LayoutMultiColumnFlowThread::Size() const {
 void LayoutMultiColumnFlowThread::UpdateGeometry() {
   NOT_DESTROYED();
   SetHasValidCachedGeometry(true);
-  frame_location_ = LayoutPoint();
+  frame_location_ = DeprecatedLayoutPoint();
   LogicalSize thread_size;
   const LayoutBlockFlow* container = MultiColumnBlockFlow();
   if (container->PhysicalFragmentCount() == 0u) {

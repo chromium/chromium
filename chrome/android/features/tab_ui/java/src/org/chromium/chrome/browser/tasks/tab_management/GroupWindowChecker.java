@@ -70,7 +70,7 @@ public class GroupWindowChecker {
 
         TabList tabList = mFilter.getTabModel().getComprehensiveModel();
         for (int i = 0; i < tabList.getCount(); i++) {
-            Tab tab = tabList.getTabAt(i);
+            Tab tab = tabList.getTabAtChecked(i);
             if (groupId.equals(tab.getTabGroupId())) {
                 foundGroup = true;
                 isFullyClosing &= tab.isClosing();

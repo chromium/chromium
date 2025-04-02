@@ -2919,6 +2919,7 @@ TEST_F(WebContentsImplTest, RegisterProtocolHandlerInvalidURLSyntax) {
   GURL url("https://www.google.com");
   GURL handler_url1("https://www.google.com/handler/%s");
   GURL handler_url2("https://www.google.com/handler/");
+  GURL handler_url3("http://%s.com");
 
   contents()->NavigateAndCommit(url);
 
@@ -2937,6 +2938,10 @@ TEST_F(WebContentsImplTest, RegisterProtocolHandlerInvalidURLSyntax) {
   }
   {
     contents()->RegisterProtocolHandler(main_test_rfh(), "mailto", handler_url2,
+                                        /*user_gesture=*/true);
+  }
+  {
+    contents()->RegisterProtocolHandler(main_test_rfh(), "mailto", handler_url3,
                                         /*user_gesture=*/true);
   }
 

@@ -104,6 +104,7 @@ public class NewTabAnimationLayoutUnitTest {
     @Mock private Tab mNewTab;
     @Mock private LayoutTab mLayoutTab;
     @Mock private ToggleTabStackButton mTabSwitcherButton;
+    @Mock private ObservableSupplier<Boolean> mScrimVisibilitySupplier;
 
     private NewTabAnimationLayout mNewTabAnimationLayout;
     private FrameLayout mContentContainer;
@@ -147,6 +148,7 @@ public class NewTabAnimationLayoutUnitTest {
         when(mCurrentTab.getUserDataHost()).thenReturn(mUserDataHost);
         when(mNewTab.getId()).thenReturn(NEW_TAB_ID);
         when(mCompositorViewHolderSupplier.get()).thenReturn(mCompositorViewHolder);
+        when(mScrimVisibilitySupplier.get()).thenReturn(false);
         when(mLayoutTab.isInitFromHostNeeded()).thenReturn(true);
         doAnswer(
                         invocation -> {
@@ -173,7 +175,8 @@ public class NewTabAnimationLayoutUnitTest {
                                 mCompositorViewHolderSupplier,
                                 mAnimationHostView,
                                 mToolbarManager,
-                                mBrowserControlsManager));
+                                mBrowserControlsManager,
+                                mScrimVisibilitySupplier));
         mNewTabAnimationLayout.setTabModelSelector(mTabModelSelector);
         mNewTabAnimationLayout.setTabContentManager(mTabContentManager);
         when(mAnimationHostView.findViewById(R.id.tab_switcher_button))

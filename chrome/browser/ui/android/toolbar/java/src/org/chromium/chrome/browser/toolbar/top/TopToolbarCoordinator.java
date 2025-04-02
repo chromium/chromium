@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.widget.ImageButton;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -29,6 +30,7 @@ import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.LocationBar;
+import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
@@ -38,6 +40,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
@@ -95,7 +98,7 @@ public class TopToolbarCoordinator implements Toolbar {
     private OptionalBrowsingModeButtonController mOptionalButtonController;
 
     private MenuButtonCoordinator mMenuButtonCoordinator;
-    private @Nullable final ReloadButtonCoordinator mReloadButtonCoordinator;
+    private @Nullable ReloadButtonCoordinator mReloadButtonCoordinator;
     private ObservableSupplier<AppMenuButtonHelper> mAppMenuButtonHelperSupplier;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
@@ -118,6 +121,7 @@ public class TopToolbarCoordinator implements Toolbar {
     private TabObscuringHandler mTabObscuringHandler;
     private @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private OneshotSupplier<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier;
+    private ObservableSupplierImpl<Boolean> mNtpLoadingSupplier;
 
     /** Token used to block the tab strip transition when find in page toolbar is showing. */
     private int mFindToolbarToken = TokenHolder.INVALID_TOKEN;
@@ -187,11 +191,10 @@ public class TopToolbarCoordinator implements Toolbar {
             OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier,
             @Nullable OnLongClickListener onLongClickListener,
             ToolbarProgressBar progressBar,
-            @Nullable ReloadButtonCoordinator reloadButtonCoordinator) {
+            ObservableSupplier<Tab> tabSupplier) {
         mControlContainer = controlContainer;
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
-        mReloadButtonCoordinator = reloadButtonCoordinator;
         mOptionalButtonController =
                 new OptionalBrowsingModeButtonController(
                         buttonDataProviders,
@@ -205,8 +208,29 @@ public class TopToolbarCoordinator implements Toolbar {
         mTabObscuringHandler = tabObscuringHandler;
         mDesktopWindowStateManager = desktopWindowStateManager;
         mTrackerSupplier = new ObservableSupplierImpl<>();
+        mNtpLoadingSupplier = new ObservableSupplierImpl<>();
         mTabStripTransitionDelegateSupplier = tabStripTransitionDelegateSupplier;
         mToolbarLayout.setOnLongClickListener(onLongClickListener);
+
+        ImageButton reloadButton = mControlContainer.findViewById(R.id.refresh_button);
+        if (reloadButton != null) {
+            mReloadButtonCoordinator =
+                    new ReloadButtonCoordinator(
+                            reloadButton,
+                            ignoreCache -> {
+                                var omniboxStub = getLocationBar().getOmniboxStub();
+                                if (omniboxStub != null) {
+                                    getLocationBar()
+                                            .getOmniboxStub()
+                                            .setUrlBarFocus(
+                                                    false, null, OmniboxFocusReason.UNFOCUS);
+                                }
+                                tabController.stopOrReloadCurrentTab(ignoreCache);
+                            },
+                            tabSupplier,
+                            mNtpLoadingSupplier,
+                            normalThemeColorProvider);
+        }
 
         controlContainer.setPostInitializationDependencies(
                 this,
@@ -391,6 +415,11 @@ public class TopToolbarCoordinator implements Toolbar {
             mOptionalButtonController = null;
         }
 
+        if (mReloadButtonCoordinator != null) {
+            mReloadButtonCoordinator.destroy();
+            mReloadButtonCoordinator = null;
+        }
+
         if (mAppMenuButtonHelperSupplier != null) {
             mAppMenuButtonHelperSupplier = null;
         }
@@ -491,17 +520,8 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     /**
-     * Gives inheriting classes the chance to update the visibility of the
-     * back button.
-     * @param canGoBack Whether or not the current tab has any history to go back to.
-     */
-    public void updateBackButtonVisibility(boolean canGoBack) {
-        mToolbarLayout.updateBackButtonVisibility(canGoBack);
-    }
-
-    /**
-     * Gives inheriting classes the chance to update the visibility of the
-     * forward button.
+     * Gives inheriting classes the chance to update the visibility of the forward button.
+     *
      * @param canGoForward Whether or not the current tab has any history to go forward to.
      */
     public void updateForwardButtonVisibility(boolean canGoForward) {
@@ -510,8 +530,7 @@ public class TopToolbarCoordinator implements Toolbar {
 
     @Override
     public void updateReloadButtonVisibility(boolean isReloading) {
-        if (mReloadButtonCoordinator == null) return;
-        mReloadButtonCoordinator.setReloading(isReloading);
+        mNtpLoadingSupplier.set(isReloading);
     }
 
     /**

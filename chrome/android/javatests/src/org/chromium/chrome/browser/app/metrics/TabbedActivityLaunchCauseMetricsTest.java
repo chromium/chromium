@@ -66,7 +66,12 @@ import org.chromium.url.GURL;
 import java.util.Collections;
 import java.util.List;
 
-/** Integration tests for TabbedActivityLaunchCauseMetrics. */
+/**
+ * Integration tests for TabbedActivityLaunchCauseMetrics.
+ *
+ * <p>TODO(crbug.com/399877997): Difficult to migrate to Public Transit entry points because
+ * depending on batching order, the home screen launch intent might go to a blank page or the NTP.
+ */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)

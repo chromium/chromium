@@ -59,8 +59,4 @@ dictionary MediaTrackSettings {
 
     // Capture Surface Resolution API
     [RuntimeEnabled=CapturedSurfaceResolution] double screenPixelRatio;
-    [RuntimeEnabled=CapturedSurfaceResolution] long physicalWidth;
-    [RuntimeEnabled=CapturedSurfaceResolution] long physicalHeight;
-    [RuntimeEnabled=CapturedSurfaceResolution] long logicalWidth;
-    [RuntimeEnabled=CapturedSurfaceResolution] long logicalHeight;
 };

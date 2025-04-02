@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -47,6 +48,9 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
 
     /* package */ final Context mContext;
     /* package */ final ImageView mHeaderImage;
+    /* package */ final LinearLayout mIssuerNetworkIconsRow;
+    /* package */ final ImageView mIssuerIcon;
+    /* package */ final ImageView mNetworkIcon;
     /* package */ final TextView mStoreLabel;
     /* package */ final TextView mPaymentInstrumentLabel;
     /* package */ final ImageView mPaymentIcon;
@@ -65,6 +69,10 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
         mContext = context;
         mHeaderImage =
                 (ImageView) mContentView.findViewById(R.id.secure_payment_confirmation_image);
+        mIssuerNetworkIconsRow =
+                (LinearLayout) mContentView.findViewById(R.id.issuer_network_icons_row);
+        mIssuerIcon = (ImageView) mContentView.findViewById(R.id.issuer_icon);
+        mNetworkIcon = (ImageView) mContentView.findViewById(R.id.network_icon);
         mStoreLabel = (TextView) mContentView.findViewById(R.id.store);
         mPaymentInstrumentLabel = (TextView) mContentView.findViewById(R.id.payment);
         mPaymentIcon = (ImageView) mContentView.findViewById(R.id.payment_icon);

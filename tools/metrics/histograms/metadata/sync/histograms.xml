@@ -30,9 +30,9 @@ chromium-metrics-reviews@google.com.
   <variant name=".APP_SETTING" summary="APP_SETTING"/>
   <variant name=".ARC_PACKAGE" summary="ARC_PACKAGE"/>
   <variant name=".AUTOFILL" summary="AUTOFILL"/>
-  <variant name=".AUTOFILL_LOYALTY_CARD" summary="AUTOFILL_LOYALTY_CARD"/>
   <variant name=".AUTOFILL_OFFER" summary="AUTOFILL_OFFER"/>
   <variant name=".AUTOFILL_PROFILE" summary="AUTOFILL_PROFILE"/>
+  <variant name=".AUTOFILL_VALUABLE" summary="AUTOFILL_VALUABLE"/>
   <variant name=".AUTOFILL_WALLET" summary="AUTOFILL_WALLET"/>
   <variant name=".AUTOFILL_WALLET_CREDENTIAL"
       summary="AUTOFILL_WALLET_CREDENTIAL"/>
@@ -140,6 +140,22 @@ chromium-metrics-reviews@google.com.
       summary="Includes data for users that went through migration during the
                last day (wrt recording the metrics)."/>
 </variants>
+
+<histogram name="Sync.AccountMenu.UserActionableError"
+    enum="UserActionableError" expires_after="2025-11-14">
+  <owner>rgod@google.com</owner>
+  <owner>ylahodiuk@google.com</owner>
+  <summary>
+    iOS only.
+
+    Account menu settings page displays an error on top whenever there is any
+    user actionable error.
+
+    Records the type of an error that is visible to the user when they navigate
+    to the account menu settings page or when it appears while the user is on
+    that page.
+  </summary>
+</histogram>
 
 <histogram name="Sync.AndroidExplicitPassphrasePlatformApiResponse"
     enum="AndroidExplicitPassphrasePlatformApiResponse"
@@ -542,7 +558,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.CrossUserSharingKeyPairState"
-    enum="CrossUserSharingKeyPairState" expires_after="2025-07-27">
+    enum="CrossUserSharingKeyPairState" expires_after="2025-09-28">
   <owner>rushans@google.com</owner>
   <owner>mmoskvitin@google.com</owner>
   <summary>
@@ -1066,7 +1082,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.FCMInstanceIdTokenRetrievalStatus"
-    enum="InstanceIDResult" expires_after="2025-07-27">
+    enum="InstanceIDResult" expires_after="2025-09-28">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -1077,7 +1093,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.FcmRegistrationTokenFetchTime" units="ms"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -1783,7 +1799,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.Startup.AccountInfoFullyLoaded2" enum="BooleanLoaded"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>mastiz@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
@@ -1871,6 +1887,19 @@ chromium-metrics-reviews@google.com.
     interacts with the card (i.e. presses the button to resolve the error).
   </summary>
   <token key="SyncErrorReason" variants="SyncErrorReason"/>
+</histogram>
+
+<histogram name="Sync.SyncErrorInfobarDismissed" enum="SyncErrorInfobarTypes"
+    expires_after="2025-08-10">
+  <owner>rgod@google.com</owner>
+  <owner>ylahodiuk@google.com</owner>
+  <summary>
+    Records whenever user dismisses a sync error infobar displayed for a
+    specific error. iOS only.
+
+    Note: Recorded from M135. Keep in mind when comparing with
+    Sync.SyncErrorInfobarDisplayed histogram that was introduced much earlier.
+  </summary>
 </histogram>
 
 <histogram name="Sync.SyncErrorInfobarDisplayed" enum="SyncErrorInfobarTypes"
@@ -2314,7 +2343,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.URLFetchResponse"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-07-27">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-09-28">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -2325,7 +2354,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.URLFetchTimedOut" enum="BooleanTimedOut"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <owner>rushans@google.com</owner>

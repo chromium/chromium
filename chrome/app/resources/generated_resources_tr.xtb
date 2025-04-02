@@ -2980,6 +2980,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3045447014237878114">Bu site birden fazla dosyayı otomatik olarak indirdi</translation>
 <translation id="3046178388369461825">Linux diskinde boş alan kritik düzeyde</translation>
 <translation id="304644035656848980">Mikrofonunuzun önizlemesi</translation>
+<translation id="3046892784550338476">Sürüm <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Web Sayfası, Tamamı</translation>
 <translation id="304747341537320566">Konuşma Motorları</translation>
 <translation id="3047678109605649715">Cihazınızda <ph name="LANGUAGE" /> ses yok. Cihazınızda yer açıp tekrar deneyin.</translation>

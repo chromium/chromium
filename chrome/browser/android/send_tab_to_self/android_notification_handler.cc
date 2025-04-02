@@ -13,18 +13,13 @@
 #include "base/time/time.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
-#include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
-#include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
-#include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -39,51 +34,35 @@ using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::ScopedJavaLocalRef;
 
+namespace send_tab_to_self {
+
 namespace {
-
-content::WebContents* GetWebContentsForProfile(Profile* profile) {
-  for (const TabModel* tab_model : TabModelList::models()) {
-    if (tab_model->GetProfile() != profile) {
-      continue;
-    }
-
-    int tab_count = tab_model->GetTabCount();
-    for (int i = 0; i < tab_count; i++) {
-      content::WebContents* web_contents = tab_model->GetWebContentsAt(i);
-      if (web_contents) {
-        return web_contents;
-      }
-    }
-  }
-  return nullptr;
-}
 
 void LogDismissReason(messages::DismissReason dismiss_reason) {
   switch (dismiss_reason) {
     case messages::DismissReason::PRIMARY_ACTION:
-      send_tab_to_self::RecordNotificationOpened();
+      RecordNotificationOpened();
       break;
     case messages::DismissReason::TIMER:
-      send_tab_to_self::RecordNotificationTimedOut();
+      RecordNotificationTimedOut();
       break;
     case messages::DismissReason::GESTURE:
-      send_tab_to_self::RecordNotificationDismissed();
+      RecordNotificationDismissed();
       break;
     case messages::DismissReason::UNKNOWN:
-      send_tab_to_self::RecordNotificationDismissReasonUnknown();
+      RecordNotificationDismissReasonUnknown();
       break;
     default:
-      send_tab_to_self::RecordNotificationDismissed();
+      RecordNotificationDismissed();
       break;
   }
 }
 
 }  // namespace
 
-namespace send_tab_to_self {
-
-AndroidNotificationHandler::AndroidNotificationHandler(Profile* profile)
-    : profile_(profile) {}
+AndroidNotificationHandler::AndroidNotificationHandler(
+    SendTabToSelfModel* send_tab_to_self_model)
+    : send_tab_to_self_model_((send_tab_to_self_model)) {}
 
 AndroidNotificationHandler::~AndroidNotificationHandler() {
   while (!queued_messages_.empty()) {
@@ -110,62 +89,22 @@ void AndroidNotificationHandler::DisplayNewEntries(
 void AndroidNotificationHandler::DisplayNewEntriesOnUIThread(
     const std::vector<SendTabToSelfEntry>& new_entries) {
   for (const SendTabToSelfEntry& entry : new_entries) {
-    if (base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfV2)) {
-      if (profile_ != nullptr &&
-          GetWebContentsForProfile(profile_) != nullptr) {
-        web_contents_ = GetWebContentsForProfile(profile_)->GetWeakPtr();
-      } else {
-        web_contents_ = nullptr;
-      }
-      std::unique_ptr<messages::MessageWrapper> message =
-          std::make_unique<messages::MessageWrapper>(
-              messages::MessageIdentifier::SEND_TAB_TO_SELF);
+    JNIEnv* env = AttachCurrentThread();
 
-      message->SetActionClick(base::BindOnce(
-          &AndroidNotificationHandler::OnMessageOpened,
-          weak_factory_.GetWeakPtr(), entry.GetURL(), entry.GetGUID()));
-      message->SetDismissCallback(base::BindOnce(
-          &AndroidNotificationHandler::OnMessageDismissed,
-          weak_factory_.GetWeakPtr(), message.get(), entry.GetGUID()));
+    // Set the expiration to 10 days from when the notification is displayed.
+    base::Time expiraton_time = entry.GetSharedTime() + base::Days(10);
 
-      message->SetTitle(
-          l10n_util::GetStringFUTF16(IDS_SEND_TAB_TO_SELF_MESSAGE,
-                                     base::UTF8ToUTF16(entry.GetDeviceName())));
-      message->SetDescription(
-          url_formatter::FormatUrlForSecurityDisplay(entry.GetURL()));
-      message->SetDescriptionMaxLines(1);
-      message->SetPrimaryButtonText(
-          l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_MESSAGE_OPEN));
-      message->SetIconResourceId(
-          ResourceMapper::MapToJavaDrawableId(IDR_SEND_TAB_TO_SELF));
+    ScopedJavaLocalRef<jclass> send_tab_to_self_notification_receiver_class =
+        Java_SendTabToSelfNotificationReceiver_getSendTabToSelfNotificationReciever(
+            env);
 
-      // TODO(crbug.com/40772682): A valid WebContents shouldn't be needed here.
-      if (web_contents_) {
-        messages::MessageDispatcherBridge::Get()->EnqueueWindowScopedMessage(
-            message.get(), web_contents_->GetTopLevelNativeWindow(),
-            messages::MessagePriority::kNormal);
-        queued_messages_.push_back(std::move(message));
-      } else {
-        pending_messages_.push(std::move(message));
-      }
-    } else {
-      JNIEnv* env = AttachCurrentThread();
-
-      // Set the expiration to 10 days from when the notification is displayed.
-      base::Time expiraton_time = entry.GetSharedTime() + base::Days(10);
-
-      ScopedJavaLocalRef<jclass> send_tab_to_self_notification_receiver_class =
-          Java_SendTabToSelfNotificationReceiver_getSendTabToSelfNotificationReciever(
-              env);
-
-      Java_NotificationManager_showNotification(
-          env, ConvertUTF8ToJavaString(env, entry.GetGUID()),
-          ConvertUTF8ToJavaString(env, entry.GetURL().spec()),
-          ConvertUTF8ToJavaString(env, entry.GetTitle()),
-          ConvertUTF8ToJavaString(env, entry.GetDeviceName()),
-          expiraton_time.InMillisecondsSinceUnixEpoch(),
-          send_tab_to_self_notification_receiver_class);
-    }
+    Java_NotificationManager_showNotification(
+        env, ConvertUTF8ToJavaString(env, entry.GetGUID()),
+        ConvertUTF8ToJavaString(env, entry.GetURL().spec()),
+        ConvertUTF8ToJavaString(env, entry.GetTitle()),
+        ConvertUTF8ToJavaString(env, entry.GetDeviceName()),
+        expiraton_time.InMillisecondsSinceUnixEpoch(),
+        send_tab_to_self_notification_receiver_class);
   }
 }
 
@@ -189,9 +128,7 @@ void AndroidNotificationHandler::OnMessageOpened(GURL url, std::string guid) {
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
   params.should_replace_current_entry = false;
   web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
-  auto* model = SendTabToSelfSyncServiceFactory::GetForProfile(profile_)
-                    ->GetSendTabToSelfModel();
-  model->DismissEntry(guid);
+  send_tab_to_self_model_->DismissEntry(guid);
 }
 
 void AndroidNotificationHandler::OnMessageDismissed(
@@ -205,16 +142,10 @@ void AndroidNotificationHandler::OnMessageDismissed(
   for (unsigned int i = 0; i < queued_messages_.size(); i++) {
     if (queued_messages_.at(i).get() == message) {
       queued_messages_.erase(queued_messages_.begin() + i);
-      auto* model = SendTabToSelfSyncServiceFactory::GetForProfile(profile_)
-                        ->GetSendTabToSelfModel();
-      model->DismissEntry(guid);
+      send_tab_to_self_model_->DismissEntry(guid);
       LogDismissReason(dismiss_reason);
     }
   }
-}
-
-const Profile* AndroidNotificationHandler::profile() const {
-  return profile_;
 }
 
 void AndroidNotificationHandler::UpdateWebContents(

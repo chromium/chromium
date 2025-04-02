@@ -179,6 +179,7 @@ public abstract class ChromeFeatureList {
             "AndroidNoVisibleHintForDifferentTLD";
     public static final String ANDROID_OPEN_PDF_INLINE_BACKPORT = "AndroidOpenPdfInlineBackport";
     public static final String ANDROID_PDF_ASSIST_CONTENT = "AndroidPdfAssistContent";
+    public static final String ANDROID_SURFACE_COLOR_UPDATE = "AndroidSurfaceColorUpdate";
     public static final String ANDROID_TAB_DECLUTTER = "AndroidTabDeclutter";
     public static final String ANDROID_TAB_DECLUTTER_ARCHIVE_ALL_BUT_ACTIVE =
             "AndroidTabDeclutterArchiveAllButActiveTab";
@@ -232,8 +233,6 @@ public abstract class ChromeFeatureList {
     public static final String AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID =
             "AutofillEnableSecurityTouchEventFilteringAndroid";
     public static final String AUTOFILL_SYNC_EWALLET_ACCOUNTS = "AutofillSyncEwalletAccounts";
-    public static final String AUTOMOTIVE_FULLSCREEN_TOOLBAR_IMPROVEMENTS =
-            "AutomotiveFullscreenToolbarImprovements";
     public static final String AVOID_SELECTED_TAB_FOCUS_ON_LAYOUT_DONE_SHOWING =
             "AvoidSelectedTabFocusOnLayoutDoneShowing";
     public static final String BACKGROUND_THREAD_POOL = "BackgroundThreadPool";
@@ -311,6 +310,7 @@ public abstract class ChromeFeatureList {
             "ContextualSearchDisableOnlineDetection";
     public static final String CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW =
             "ContextualSearchSuppressShortView";
+    public static final String CONTEXT_MENU_EMPTY_SPACE = "ContextMenuEmptySpace";
     public static final String CONTEXT_MENU_SYS_UI_MATCHES_ACTIVITY =
             "ContextMenuSysUiMatchesActivity";
     public static final String CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS =
@@ -322,7 +322,7 @@ public abstract class ChromeFeatureList {
     public static final String DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING =
             "DarkenWebsitesCheckboxInThemesSetting";
     public static final String DATA_SHARING = "DataSharing";
-    public static final String DATA_SHARING_JOIN_ONLY_FOR_TESTING = "DataSharingJoinOnly";
+    public static final String DATA_SHARING_JOIN_ONLY = "DataSharingJoinOnly";
     public static final String DATA_SHARING_NON_PRODUCTION_ENVIRONMENT =
             "DataSharingNonProductionEnvironment";
     public static final String DEFAULT_BROWSER_PROMO_ANDROID2 = "DefaultBrowserPromoAndroid2";
@@ -372,6 +372,7 @@ public abstract class ChromeFeatureList {
     public static final String FULLSCREEN_INSETS_API_MIGRATION = "FullscreenInsetsApiMigration";
     public static final String FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE =
             "FullscreenInsetsApiMigrationOnAutomotive";
+    public static final String GRID_TAB_SWITCHER_UPDATE = "GridTabSwitcherUpdate";
     public static final String GROUP_NEW_TAB_WITH_PARENT = "GroupNewTabWithParent";
     public static final String GROUP_SUGGESTION_SERVICE = "GroupSuggestionService";
     public static final String LOCK_BACK_PRESS_HANDLER_AT_START = "LockBackPressHandlerAtStart";
@@ -452,8 +453,6 @@ public abstract class ChromeFeatureList {
     public static final String PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS =
             "PrivacySandboxAdsApiUxEnhancements";
     public static final String PRIVACY_SANDBOX_ADS_NOTICE_CCT = "PrivacySandboxAdsNoticeCCT";
-    public static final String PRIVACY_SANDBOX_EQUALIZED_PROMPT_BUTTONS =
-            "PrivacySandboxEqualizedPromptButtons";
     public static final String PRIVACY_SANDBOX_RELATED_WEBSITE_SETS_UI =
             "PrivacySandboxRelatedWebsiteSetsUi";
     public static final String PRIVACY_SANDBOX_SETTINGS_4 = "PrivacySandboxSettings4";
@@ -463,6 +462,7 @@ public abstract class ChromeFeatureList {
     public static final String PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY =
             "PrivacySandboxAdTopicsContentParity";
     public static final String PRIVACY_SANDBOX_PRIVACY_POLICY = "PrivacySandboxPrivacyPolicy";
+    public static final String PROCESS_RANK_POLICY_ANDROID = "ProcessRankPolicyAndroid";
     public static final String PUSH_MESSAGING_DISALLOW_SENDER_IDS =
             "PushMessagingDisallowSenderIDs";
     public static final String PWA_UPDATE_DIALOG_FOR_ICON = "PwaUpdateDialogForIcon";
@@ -479,6 +479,7 @@ public abstract class ChromeFeatureList {
     public static final String READALOUD_TAP_TO_SEEK = "ReadAloudTapToSeek";
     public static final String READALOUD_IPH_MENU_BUTTON_HIGHLIGHT_CCT =
             "ReadAloudIPHMenuButtonHighlightCCT";
+    public static final String READER_MODE_DEV_ENTRY_POINT = "ReaderModeDevEntryPoint";
     public static final String RECORD_SUPPRESSION_METRICS = "RecordSuppressionMetrics";
     public static final String REENGAGEMENT_NOTIFICATION = "ReengagementNotification";
     public static final String RELATED_SEARCHES_SWITCH = "RelatedSearchesSwitch";
@@ -518,7 +519,6 @@ public abstract class ChromeFeatureList {
     public static final String SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER =
             "SegmentationPlatformEphemeralCardRanker";
 
-    public static final String SEND_TAB_TO_SELF_V2 = "SendTabToSelfV2";
     public static final String SENSITIVE_CONTENT = "SensitiveContent";
     public static final String SENSITIVE_CONTENT_WHILE_SWITCHING_TABS =
             "SensitiveContentWhileSwitchingTabs";
@@ -748,6 +748,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(FULLSCREEN_INSETS_API_MIGRATION, false);
     public static final CachedFlag sFullscreenInsetsApiMigrationOnAutomotive =
             newCachedFlag(FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE, true);
+    public static final CachedFlag sGridTabSwitcherUpdate =
+            newCachedFlag(GRID_TAB_SWITCHER_UPDATE, false);
     public static final CachedFlag sHideTabletToolbarDownloadButton =
             newCachedFlag(
                     HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON,
@@ -817,11 +819,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(TAB_CLOSURE_METHOD_REFACTOR, false);
     public static final CachedFlag sTabGroupPaneAndroid =
             newCachedFlag(TAB_GROUP_PANE_ANDROID, /* defaultValue= */ true);
-    public static final CachedFlag sTabResumptionModuleAndroid =
-            newCachedFlag(
-                    TAB_RESUMPTION_MODULE_ANDROID,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
     public static final CachedFlag sTabStateFlatBuffer =
             newCachedFlag(
                     TAB_STATE_FLAT_BUFFER,
@@ -913,6 +910,7 @@ public abstract class ChromeFeatureList {
                     sForceTranslucentNotificationTrampoline,
                     sFullscreenInsetsApiMigration,
                     sFullscreenInsetsApiMigrationOnAutomotive,
+                    sGridTabSwitcherUpdate,
                     sHideTabletToolbarDownloadButton,
                     sHistoryPaneAndroid,
                     sLockBackPressHandlerAtStart,
@@ -944,7 +942,6 @@ public abstract class ChromeFeatureList {
                     sStartSurfaceReturnTime,
                     sTabClosureMethodRefactor,
                     sTabGroupPaneAndroid,
-                    sTabResumptionModuleAndroid,
                     sTabStateFlatBuffer,
                     sTabStripGroupCollapse,
                     sTabStripIncognitoMigration,
@@ -1355,28 +1352,6 @@ public abstract class ChromeFeatureList {
                     START_SURFACE_RETURN_TIME,
                     "start_surface_return_time_on_tablet_seconds",
                     14400); // 4 hours
-    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidShowDefaultReason =
-            newBooleanCachedFeatureParam(
-                    TAB_RESUMPTION_MODULE_ANDROID, "show_default_reason", false);
-    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidFetchHistoryBackend =
-            newBooleanCachedFeatureParam(
-                    TAB_RESUMPTION_MODULE_ANDROID, "fetch_history_backend", false);
-    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidDisableBlend =
-            newBooleanCachedFeatureParam(TAB_RESUMPTION_MODULE_ANDROID, "disable_blend", false);
-    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidUseDefaultAppFilter =
-            newBooleanCachedFeatureParam(
-                    TAB_RESUMPTION_MODULE_ANDROID, "use_default_app_filter", false);
-    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidShowSeeMore =
-            newBooleanCachedFeatureParam(TAB_RESUMPTION_MODULE_ANDROID, "show_see_more", false);
-    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidUseSalientImage =
-            newBooleanCachedFeatureParam(TAB_RESUMPTION_MODULE_ANDROID, "use_salient_image", false);
-    public static final IntCachedFeatureParam sTabResumptionModuleAndroidMaxTilesNumber =
-            newIntCachedFeatureParam(TAB_RESUMPTION_MODULE_ANDROID, "max_tiles_number", 2);
-    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidEnableV2 =
-            newBooleanCachedFeatureParam(TAB_RESUMPTION_MODULE_ANDROID, "enable_v2", false);
-    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidCombineTabs =
-            newBooleanCachedFeatureParam(
-                    TAB_RESUMPTION_MODULE_ANDROID, "show_tabs_in_one_module", false);
     public static final BooleanCachedFeatureParam sTabStateFlatBufferMigrateStaleTabs =
             newBooleanCachedFeatureParam(TAB_STATE_FLAT_BUFFER, "migrate_stale_tabs", true);
     public static final IntCachedFeatureParam
@@ -1457,15 +1432,6 @@ public abstract class ChromeFeatureList {
                     sSearchinCctApplyReferrerId,
                     sSearchinCctOmniboxAllowedPackageNames,
                     sStartSurfaceReturnTimeTabletSecs,
-                    sTabResumptionModuleAndroidShowDefaultReason,
-                    sTabResumptionModuleAndroidFetchHistoryBackend,
-                    sTabResumptionModuleAndroidDisableBlend,
-                    sTabResumptionModuleAndroidUseDefaultAppFilter,
-                    sTabResumptionModuleAndroidShowSeeMore,
-                    sTabResumptionModuleAndroidUseSalientImage,
-                    sTabResumptionModuleAndroidMaxTilesNumber,
-                    sTabResumptionModuleAndroidEnableV2,
-                    sTabResumptionModuleAndroidCombineTabs,
                     sTabStateFlatBufferMigrateStaleTabs,
                     sTabWindowManagerReportIndicesMismatchTimeDiffThresholdMs,
                     sUseChimeAndroidSdkAlwaysRegister,

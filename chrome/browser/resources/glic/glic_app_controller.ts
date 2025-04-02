@@ -6,7 +6,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {WebUiState} from './glic.mojom-webui.js';
+import {PrepareForClientResult, ProfileReadyState, WebUiState} from './glic.mojom-webui.js';
 import type {PageInterface} from './glic.mojom-webui.js';
 import type {ApiHostEmbedder} from './glic_api_impl/glic_api_host.js';
 import {WebClientState} from './glic_api_impl/glic_api_host.js';
@@ -38,9 +38,11 @@ interface PageElementTypes {
   offlinePanel: HTMLElement;
   errorPanel: HTMLElement;
   unavailablePanel: HTMLElement;
+  signInPanel: HTMLElement;
   guestPanel: HTMLElement;
   webviewHeader: HTMLDivElement;
   webviewContainer: HTMLDivElement;
+  signInButton: HTMLButtonElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -49,8 +51,8 @@ const $: PageElementTypes = new Proxy({}, {
   },
 });
 
-type PanelId =
-    'loadingPanel'|'guestPanel'|'offlinePanel'|'errorPanel'|'unavailablePanel';
+type PanelId = 'loadingPanel'|'guestPanel'|'offlinePanel'|'errorPanel'|
+    'unavailablePanel'|'signInPanel';
 
 interface StateDescriptor {
   onEnter?: () => void;
@@ -72,8 +74,8 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
   // Present only when loading or after loading is finished. Removed on error.
   private webview?: WebviewController;
 
-  private profileIsReady: boolean|undefined = undefined;
-  private profileIsReadyInitialState = Promise.withResolvers<void>();
+  private profileReadyState: ProfileReadyState|undefined = undefined;
+  private profileReadyInitialState = Promise.withResolvers<void>();
 
   state: WebUiState|undefined;
 
@@ -99,6 +101,9 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     } else {
       this.setState(WebUiState.kOffline);
     }
+    $.signInButton.addEventListener('click', () => {
+      this.signIn();
+    });
 
     document.addEventListener('keydown', ev => {
       if (this.state !== WebUiState.kReady) {
@@ -222,6 +227,15 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
         onExit: this.exitUnresponsiveUiPlaceholder,
       },
     ],
+    [
+      WebUiState.kSignIn,
+      {
+        onEnter: () => {
+          this.destroyWebview();
+          this.showPanel('signInPanel');
+        },
+      },
+    ],
   ]);
 
   private enterUnresponsiveUiPlaceholder(): void {
@@ -250,22 +264,34 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     // Time to show the loading panel if the web client is not ready.
     const showLoadingTime = performance.now() + kPreHoldLoadingTimeMs;
 
-    // profileIsReady isn't available right away. Wait until it's ready.
-    await this.profileIsReadyInitialState.promise;
+    // profileReadyState isn't available right away. Wait until it's ready.
+    await this.profileReadyInitialState.promise;
 
-    const isEnabled = this.profileIsReady;
-    if (!isEnabled) {
-      this.setState(WebUiState.kUnavailable);
-      return;
+    const readyState = this.profileReadyState;
+    switch (readyState) {
+      case ProfileReadyState.kUnknownError:
+        this.setState(WebUiState.kUnavailable);
+        return;
+      case ProfileReadyState.kSignInRequired:
+        this.setState(WebUiState.kSignIn);
+        return;
+      case ProfileReadyState.kReady:
+        break;
     }
 
     // Blocking on cookie syncing here introduces latency, we should consider
     // ways to avoid it.
-    const {success} = await this.browserProxy.handler.prepareForClient();
-    if (!success) {
-      console.warn('prepareForClient in beginLoad() failed.');
-      this.setState(WebUiState.kError);
-      return;
+    const {result} = await this.browserProxy.handler.prepareForClient();
+    switch (result) {
+      case PrepareForClientResult.kSuccess:
+        break;
+      case PrepareForClientResult.kUnknownError:
+        console.warn('prepareForClient in beginLoad() failed.');
+        this.setState(WebUiState.kError);
+        return;
+      case PrepareForClientResult.kRequiresSignIn:
+        this.setState(WebUiState.kSignIn);
+        return;
     }
 
     // Load the web client only after cookie sync is complete.
@@ -456,6 +482,10 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     this.setState(WebUiState.kBeginLoad);
   }
 
+  private signIn(): void {
+    this.browserProxy.handler.signInAndClosePanel();
+  }
+
   // PageInterface implementation.
 
   // Called before the WebUI is shown. If we're in an error state, automatically
@@ -466,22 +496,30 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     }
   }
 
-  setProfileIsReady(profileIsReady: boolean) {
-    if (this.profileIsReady === profileIsReady) {
+  setProfileReadyState(state: ProfileReadyState) {
+    if (this.profileReadyState === state) {
       return;
     }
-    const initialCall = this.profileIsReady === undefined;
-    this.profileIsReady = profileIsReady;
+    const initialCall = this.profileReadyState === undefined;
+    this.profileReadyState = state;
 
     if (initialCall) {
-      this.profileIsReadyInitialState.resolve();
+      // The initial state is handled in `beginLoad()`.
+      this.profileReadyInitialState.resolve();
     } else {
-      if (!profileIsReady) {
-        this.setState(WebUiState.kUnavailable);
-      } else {
-        if (this.state === WebUiState.kUnavailable) {
-          this.setState(WebUiState.kBeginLoad);
-        }
+      switch (this.profileReadyState) {
+        case ProfileReadyState.kUnknownError:
+          this.setState(WebUiState.kUnavailable);
+          break;
+        case ProfileReadyState.kSignInRequired:
+          this.setState(WebUiState.kSignIn);
+          break;
+        case ProfileReadyState.kReady:
+          if (this.state === WebUiState.kUnavailable ||
+              this.state === WebUiState.kSignIn) {
+            this.setState(WebUiState.kBeginLoad);
+          }
+          break;
       }
     }
   }

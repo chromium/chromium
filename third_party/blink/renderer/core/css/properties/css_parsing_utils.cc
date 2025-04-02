@@ -189,20 +189,33 @@ std::optional<cssvalue::CSSLinearStop> ConsumeLinearStop(
     if (stream.Peek().GetType() == kCommaToken) {
       break;
     }
+    // linear() functions do not handle element-dependent calc() expressions
+    // because the spec says sorting of stops happen before computed value time,
+    // which is why we currently make stops invalid when containing
+    // sibling-index() and font- and container-relative units in sign() below..
     CSSPrimitiveValue* value =
         ConsumeNumber(stream, context, CSSPrimitiveValue::ValueRange::kAll);
     if (!number.has_value() && value && value->IsNumber()) {
-      number = value->GetDoubleValue();
-      continue;
+      number = value->GetValueIfKnown();
+      if (number.has_value()) {
+        continue;
+      }
+      return {};
     }
     value =
         ConsumePercent(stream, context, CSSPrimitiveValue::ValueRange::kAll);
     if (!length_a.has_value() && value && value->IsPercentage()) {
-      length_a = value->GetDoubleValue();
+      length_a = value->GetValueIfKnown();
+      if (!length_a.has_value()) {
+        return {};
+      }
       value =
           ConsumePercent(stream, context, CSSPrimitiveValue::ValueRange::kAll);
       if (value && value->IsPercentage()) {
-        length_b = value->GetDoubleValue();
+        length_b = value->GetValueIfKnown();
+        if (!length_b.has_value()) {
+          return {};
+        }
       }
       continue;
     }
@@ -387,30 +400,33 @@ CSSValue* ConsumeSteps(CSSParserTokenStream& stream,
 CSSValue* ConsumeCubicBezier(CSSParserTokenStream& stream,
                              const CSSParserContext& context) {
   DCHECK_EQ(stream.Peek().FunctionId(), CSSValueID::kCubicBezier);
-  CSSValue* result = nullptr;
-  {
-    CSSParserTokenStream::RestoringBlockGuard guard(stream);
-    stream.ConsumeWhitespace();
+  std::array<double, 4> args;
+  CSSParserTokenStream::RestoringBlockGuard guard(stream);
+  stream.ConsumeWhitespace();
 
-    double x1, y1, x2, y2;
-    if (ConsumeNumberRaw_DO_NOT_USE(stream, context, x1) && x1 >= 0 &&
-        x1 <= 1 && ConsumeCommaIncludingWhitespace(stream) &&
-        ConsumeNumberRaw_DO_NOT_USE(stream, context, y1) &&
-        ConsumeCommaIncludingWhitespace(stream) &&
-        ConsumeNumberRaw_DO_NOT_USE(stream, context, x2) && x2 >= 0 &&
-        x2 <= 1 && ConsumeCommaIncludingWhitespace(stream) &&
-        ConsumeNumberRaw_DO_NOT_USE(stream, context, y2) && stream.AtEnd()) {
-      guard.Release();
-      result =
-          MakeGarbageCollected<cssvalue::CSSCubicBezierTimingFunctionValue>(
-              x1, y1, x2, y2);
+  for (size_t i = 0; i < 4; i++) {
+    CSSPrimitiveValue* number_value =
+        ConsumeNumber(stream, context, CSSPrimitiveValue::ValueRange::kAll);
+    bool consumed_trail =
+        i < 3 ? ConsumeCommaIncludingWhitespace(stream) : stream.AtEnd();
+    if (!number_value || !consumed_trail) {
+      return nullptr;
     }
+    // TODO(crbug.com/407420298): Support element-dependent calc() expressions
+    // as numeric arguments.
+    std::optional<double> number = number_value->GetValueIfKnown();
+    if (!number.has_value()) {
+      return nullptr;
+    }
+    args[i] = number.value();
   }
-  if (result) {
-    stream.ConsumeWhitespace();
+  if (args[0] < 0 || args[0] > 1 || args[2] < 0 || args[2] > 1) {
+    return nullptr;
   }
-
-  return result;
+  guard.Release();
+  stream.ConsumeWhitespace();
+  return MakeGarbageCollected<cssvalue::CSSCubicBezierTimingFunctionValue>(
+      args[0], args[1], args[2], args[3]);
 }
 
 CSSIdentifierValue* ConsumeBorderImageRepeatKeyword(
@@ -780,15 +796,13 @@ CSSFunctionValue* ConsumeFilterFunction(CSSParserTokenStream& stream,
         // and will be clamped in
         // FilterOperationResolver::ResolveNumericArgumentForFunction() instead,
         // when we can resolve e.g. length units.
-        if (parsed_value &&
-            !To<CSSPrimitiveValue>(parsed_value)->IsCalculated() &&
-            filter_type != CSSValueID::kSaturate &&
+        if (auto* literal_value =
+                DynamicTo<CSSNumericLiteralValue>(parsed_value);
+            literal_value && filter_type != CSSValueID::kSaturate &&
             filter_type != CSSValueID::kContrast) {
-          bool is_percentage =
-              To<CSSPrimitiveValue>(parsed_value)->IsPercentage();
+          bool is_percentage = literal_value->IsPercentage();
           double max_allowed = is_percentage ? 100.0 : 1.0;
-          if (To<CSSPrimitiveValue>(parsed_value)->GetDoubleValue() >
-              max_allowed) {
+          if (literal_value->GetDoubleValue() > max_allowed) {
             parsed_value = CSSNumericLiteralValue::Create(
                 max_allowed, is_percentage
                                  ? CSSPrimitiveValue::UnitType::kPercentage
@@ -1012,18 +1026,6 @@ class MathFunctionParser {
     return result;
   }
 
-  // TODO: Remove this method once ConsumeNumberRaw_DO_NOT_USE is removed.
-  bool ConsumeNumberRaw(double& result) {
-    if (!calc_value_ || calc_value_->Category() != kCalcNumber ||
-        !calc_value_->ExpressionNode()->IsNumericLiteral()) {
-      return false;
-    }
-    DCHECK(!has_consumed_);  // Cannot consume twice.
-    has_consumed_ = true;
-    result = calc_value_->GetDoubleValue();
-    return true;
-  }
-
  private:
   bool has_consumed_ = false;
   CSSParserTokenStream* stream_;
@@ -1131,18 +1133,6 @@ CSSPrimitiveValue* ConsumeIntegerOrNumberCalc(
 CSSPrimitiveValue* ConsumePositiveInteger(CSSParserTokenStream& stream,
                                           const CSSParserContext& context) {
   return ConsumeInteger(stream, context, 1);
-}
-
-bool ConsumeNumberRaw_DO_NOT_USE(CSSParserTokenStream& stream,
-                                 const CSSParserContext& context,
-                                 double& result) {
-  if (stream.Peek().GetType() == kNumberToken) {
-    result = stream.ConsumeIncludingWhitespace().NumericValue();
-    return true;
-  }
-  MathFunctionParser math_parser(stream, context,
-                                 CSSPrimitiveValue::ValueRange::kAll);
-  return math_parser.ConsumeNumberRaw(result);
 }
 
 CSSPrimitiveValue* ConsumeNumber(CSSParserTokenStream& stream,
@@ -2072,7 +2062,6 @@ CSSValue* ConsumeColorContrast(CSSParserTokenStream& stream,
 
     std::optional<double> target_contrast;
     if (ConsumeIdent<CSSValueID::kTo>(stream)) {
-      double target_contrast_temp;
       if (ConsumeIdent<CSSValueID::kAA>(stream)) {
         target_contrast = 4.5;
       } else if (ConsumeIdent<CSSValueID::kAALarge>(stream)) {
@@ -2081,9 +2070,15 @@ CSSValue* ConsumeColorContrast(CSSParserTokenStream& stream,
         target_contrast = 7;
       } else if (ConsumeIdent<CSSValueID::kAAALarge>(stream)) {
         target_contrast = 4.5;
-      } else if (ConsumeNumberRaw_DO_NOT_USE(stream, context,
-                                             target_contrast_temp)) {
-        target_contrast = target_contrast_temp;
+      } else if (const CSSPrimitiveValue* target_contrast_value = ConsumeNumber(
+                     stream, context, CSSPrimitiveValue::ValueRange::kAll)) {
+        target_contrast = target_contrast_value->GetValueIfKnown();
+        if (!target_contrast.has_value()) {
+          // TODO(crbug.com/40142548): Some calc() expressions can only be
+          // evaluated to a number at computed value time, such as
+          // sibling-index() and sign(1em - 20px).
+          return nullptr;
+        }
       } else {
         return nullptr;
       }

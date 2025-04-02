@@ -2968,6 +2968,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3045447014237878114">Ta strona automatycznie pobrała wiele plików</translation>
 <translation id="3046178388369461825">Na dysku Linuksa już prawie nie ma miejsca</translation>
 <translation id="304644035656848980">Podgląd mikrofonu</translation>
+<translation id="3046892784550338476">Wersja <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Strona internetowa, kompletna</translation>
 <translation id="304747341537320566">Mechanizmy syntezy mowy</translation>
 <translation id="3047678109605649715">Na urządzeniu nie ma głosów w języku: <ph name="LANGUAGE" />. Zwolnij miejsce i spróbuj ponownie.</translation>

@@ -69,7 +69,7 @@ SpeechRecognitionController::BuildStartSpeechRecognitionRequestParams(
     mojo::PendingRemote<media::mojom::blink::SpeechRecognitionSessionClient>
         session_client,
     const SpeechGrammarList& grammars,
-    const SpeechRecognitionContext* context,
+    const SpeechRecognitionPhraseList* phrases,
     const String& lang,
     bool continuous,
     bool interim_results,
@@ -87,11 +87,11 @@ SpeechRecognitionController::BuildStartSpeechRecognitionRequestParams(
         media::mojom::blink::SpeechRecognitionGrammar::New(grammar->src(),
                                                            grammar->weight()));
   }
-  if (context && context->phrases()) {
+  if (phrases && phrases->length() > 0) {
     params->recognition_context =
         media::mojom::blink::SpeechRecognitionRecognitionContext::New();
-    for (unsigned i = 0; i < context->phrases()->length(); i++) {
-      SpeechRecognitionPhrase* phrase = context->phrases()->item(i);
+    for (unsigned i = 0; i < phrases->length(); i++) {
+      SpeechRecognitionPhrase* phrase = phrases->item(i);
       params->recognition_context->phrases.push_back(
           media::mojom::blink::SpeechRecognitionPhrase::New(phrase->phrase(),
                                                             phrase->boost()));

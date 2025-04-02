@@ -310,11 +310,12 @@ class PictureInPictureBrowserFrameViewTest : public WebRtcTestBase,
   std::unique_ptr<ModalWidgetDelegate> delegate_;
 };
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) && defined(NDEBUG)
 // TODO(jazzhsu): Fix test on MAC and Wayland. Test currently not working on
 // those platforms because if we send mouse move event outside of the pip window
 // in ui_test_utils::SendMouseMoveSync, the pip window will not receive the
 // event.
+// TODO(crbug.com/403599401): Fails on Win11 debug.
 #define MAYBE_TitleActivation TitleActivation
 #else
 #define MAYBE_TitleActivation DISABLED_TitleActivation

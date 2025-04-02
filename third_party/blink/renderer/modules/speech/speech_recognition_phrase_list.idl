@@ -8,8 +8,9 @@
     SecureContext
 ]
 interface SpeechRecognitionPhraseList {
-    constructor();
+    constructor(sequence<SpeechRecognitionPhrase> phrases);
     readonly attribute unsigned long length;
-    getter SpeechRecognitionPhrase item(unsigned long index);
+    [RaisesException] SpeechRecognitionPhrase item(unsigned long index);
     void addItem(SpeechRecognitionPhrase item);
+    [RaisesException] void removeItem(unsigned long index);
 };

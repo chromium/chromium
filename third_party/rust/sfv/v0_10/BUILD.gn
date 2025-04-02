@@ -13,15 +13,15 @@ cargo_crate("lib") {
   epoch = "0.10"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/sfv-0.10.4/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/sfv-v0_10/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/sfv-0.10.4/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/sfv-0.10.4/src/parser.rs",
-    "//third_party/rust/chromium_crates_io/vendor/sfv-0.10.4/src/ref_serializer.rs",
-    "//third_party/rust/chromium_crates_io/vendor/sfv-0.10.4/src/serializer.rs",
-    "//third_party/rust/chromium_crates_io/vendor/sfv-0.10.4/src/test_parser.rs",
-    "//third_party/rust/chromium_crates_io/vendor/sfv-0.10.4/src/test_serializer.rs",
-    "//third_party/rust/chromium_crates_io/vendor/sfv-0.10.4/src/utils.rs",
+    "//third_party/rust/chromium_crates_io/vendor/sfv-v0_10/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/sfv-v0_10/src/parser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/sfv-v0_10/src/ref_serializer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/sfv-v0_10/src/serializer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/sfv-v0_10/src/test_parser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/sfv-v0_10/src/test_serializer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/sfv-v0_10/src/utils.rs",
   ]
   inputs = []
 

@@ -119,6 +119,11 @@ bool SyncErrorInfoBarDelegate::Accept() {
   return false;
 }
 
+void SyncErrorInfoBarDelegate::InfoBarDismissed() {
+  LogSyncErrorInfobarDismissed(error_state_);
+  ConfirmInfoBarDelegate::InfoBarDismissed();
+}
+
 void SyncErrorInfoBarDelegate::OnStateChanged(syncer::SyncService* sync) {
   // If the inforbar is in the process of being removed, nothing must be done.
   infobars::InfoBar* infobar = this->infobar();

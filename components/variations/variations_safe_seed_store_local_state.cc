@@ -29,7 +29,7 @@ VariationsSafeSeedStoreLocalState::VariationsSafeSeedStoreLocalState(
           local_state,
           seed_file_dir,
           kSafeSeedFilename,
-          prefs::kVariationsSafeCompressedSeed,
+          kSafeSeedFieldsPrefs,
           channel,
           entropy_providers)) {}
 

@@ -47,6 +47,10 @@ BASE_FEATURE(kClearUndecryptablePasswordsOnSync,
 #endif
 );
 
+BASE_FEATURE(kFailedLoginDetectionBasedOnResourceLoadingErrors,
+             "FailedLoginDetectionBasedOnResourceLoadingErrors",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kFetchGaiaHashOnSignIn,
              "FetchGaiaHashOnSignIn",

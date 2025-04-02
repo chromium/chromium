@@ -481,6 +481,7 @@ class ScopedBrowserShower {
       if (params_->is_tab_modal_popup) {
         CHECK_EQ(params_->disposition, WindowOpenDisposition::NEW_POPUP);
         CHECK_NE(source_contents_, nullptr);
+        window->SetIsTabModalPopup(true);
         constrained_window::ShowModalDialog(window->GetNativeWindow(),
                                             source_contents_);
       } else {

@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
@@ -96,6 +97,7 @@ public class NewTabAnimationLayout extends Layout {
 
     private static final long FOREGROUND_ANIMATION_DURATION_MS = 300L;
     private static final long FOREGROUND_FADE_DURATION_MS = 150L;
+    private static final long ANIMATION_TIMEOUT_MS = 800L;
     private final ViewGroup mContentContainer;
     private final ViewGroup mAnimationHostView;
     private final CompositorViewHolder mCompositorViewHolder;
@@ -103,6 +105,7 @@ public class NewTabAnimationLayout extends Layout {
     private final Handler mHandler;
     private final ToolbarManager mToolbarManager;
     private final BrowserControlsManager mBrowserControlsManager;
+    private final ObservableSupplier<Boolean> mScrimVisibilitySupplier;
 
     private @Nullable StaticTabSceneLayer mSceneLayer;
     private AnimatorSet mTabCreatedForegroundAnimation;
@@ -111,6 +114,8 @@ public class NewTabAnimationLayout extends Layout {
     private ShrinkExpandImageView mRectView;
     private NewBackgroundTabAnimationHostView mBackgroundHostView;
     private Runnable mAnimationRunnable;
+    private Runnable mTimeoutRunnable;
+    private Callback<Boolean> mVisibilityObserver;
     private @TabId int mNextTabId = Tab.INVALID_TAB_ID;
 
     /**
@@ -123,6 +128,7 @@ public class NewTabAnimationLayout extends Layout {
      * @param compositorViewHolderSupplier Supplier to the {@link CompositorViewHolder} instance.
      * @param animationHostView The host view for animations.
      * @param toolbarManager The {@link ToolbarManager} instance.
+     * @param scrimVisibilitySupplier Supplier for the Scrim visibility.
      */
     public NewTabAnimationLayout(
             Context context,
@@ -132,7 +138,8 @@ public class NewTabAnimationLayout extends Layout {
             ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             ViewGroup animationHostView,
             ToolbarManager toolbarManager,
-            BrowserControlsManager browserControlsManager) {
+            BrowserControlsManager browserControlsManager,
+            ObservableSupplier<Boolean> scrimVisibilitySupplier) {
         super(context, updateHost, renderHost);
         mContentContainer = contentContainer;
         mCompositorViewHolder = compositorViewHolderSupplier.get();
@@ -141,6 +148,7 @@ public class NewTabAnimationLayout extends Layout {
         mHandler = new Handler();
         mToolbarManager = toolbarManager;
         mBrowserControlsManager = browserControlsManager;
+        mScrimVisibilitySupplier = scrimVisibilitySupplier;
     }
 
     @Override
@@ -274,7 +282,12 @@ public class NewTabAnimationLayout extends Layout {
                 x = Math.round(originX);
                 y = Math.round(originY);
             }
-            tabCreatedInBackground(isRegularNtp, oldTab.isIncognitoBranded(), x, y);
+            ObservableSupplier<Boolean> visibilitySupplier =
+                    data != null && !isRegularNtp
+                            ? data.getTabContextMenuVisibilitySupplier()
+                            : mScrimVisibilitySupplier;
+            tabCreatedInBackground(
+                    isRegularNtp, oldTab.isIncognitoBranded(), x, y, visibilitySupplier);
         } else {
             tabCreatedInForeground(
                     id, sourceId, newIsIncognito, getForegroundRectStart(oldTab, newTab));
@@ -408,18 +421,23 @@ public class NewTabAnimationLayout extends Layout {
     }
 
     /**
-     * Runs the queued animation runnable immediately, if it exists.
+     * Runs the queued runnable immediately, if it exists.
      *
-     * <p>This ensures the animation has a valid status before calling {@link AnimatorSet#end()}
-     * when forcing the animation to finish, and prevents the animation from starting due to the
-     * queued runnable.
+     * <p>It checks for and executes either {@link #mTimeoutRunnable} or {@link #mAnimationRunnable}
+     * and removes the queued runnable from {@link #mHandler}. If {@link #mAnimationRunnable} is
+     * found, it's executed to ensure a valid animation status before calling {@link
+     * AnimatorSet#end()}.
      */
     private void runQueuedRunnableIfExists() {
-        if (mAnimationRunnable != null) {
+        if (mTimeoutRunnable != null) {
+            mHandler.removeCallbacks(mTimeoutRunnable);
+            mTimeoutRunnable.run();
+        } else if (mAnimationRunnable != null) {
             mHandler.removeCallbacks(mAnimationRunnable);
             mAnimationRunnable.run();
-            assert mAnimationRunnable == null;
         }
+        assert mTimeoutRunnable == null;
+        assert mAnimationRunnable == null;
     }
 
     /**
@@ -464,7 +482,7 @@ public class NewTabAnimationLayout extends Layout {
      *
      * @param id The id of the new tab to animate.
      * @param sourceId The id of the tab that spawned this new tab.
-     * @param newIsIncognito true if the new tab is an incognito tab.
+     * @param newIsIncognito True if the new tab is an incognito tab.
      */
     private void tabCreatedInForeground(
             @TabId int id, @TabId int sourceId, boolean newIsIncognito, @RectStart int rectStart) {
@@ -593,13 +611,19 @@ public class NewTabAnimationLayout extends Layout {
     /**
      * Animates opening a tab in the background.
      *
-     * @param isRegularNtp true if the old tab is regular NTP.
-     * @param isIncognito true if the old tab is an incognito tab.
-     * @param x the x coordinate of the originating touch input in px.
-     * @param y the y coordinate of the originating touch input in px.
+     * @param isRegularNtp True if the old tab is regular NTP.
+     * @param isIncognito True if the old tab is an incognito tab.
+     * @param x The x coordinate of the originating touch input in px.
+     * @param y The y coordinate of the originating touch input in px.
+     * @param visibilitySupplier The visibility supplier for either the context menu or the NTP
+     *     bottom sheet's scrim.
      */
     private void tabCreatedInBackground(
-            boolean isRegularNtp, boolean isIncognito, @Px int x, @Px int y) {
+            boolean isRegularNtp,
+            boolean isIncognito,
+            @Px int x,
+            @Px int y,
+            ObservableSupplier<Boolean> visibilitySupplier) {
         // TODO(crbug.com/40282469): Investigate why NTP presents lower quality during the
         // animation and how to stop forcing browser controls in the NTP.
         assert mLayoutTabs.length == 1;
@@ -662,14 +686,42 @@ public class NewTabAnimationLayout extends Layout {
                                     mAnimationHostView.removeView(mBackgroundHostView);
                                 }
                             });
-                    // TODO(crbug.com/40282469): Check with UX regarding this delay and potentially
-                    // replace it to run the animation  when the context menu disappears. It seems
-                    // the context menu takes a while to close, thus the animation starts when it is
-                    // still on screen.
-                    if (!isRegularNtp) mTabCreatedBackgroundAnimation.setStartDelay(100L);
                     mTabCreatedBackgroundAnimation.start();
                 };
-        mHandler.post(mAnimationRunnable);
+
+        mTimeoutRunnable =
+                () -> {
+                    mHandler.removeCallbacks(mAnimationRunnable);
+                    mTimeoutRunnable = null;
+                    mTabCreatedBackgroundAnimation = null;
+                    mAnimationRunnable = null;
+                    startHiding();
+                    mAnimationHostView.removeView(mBackgroundHostView);
+                    if (mVisibilityObserver != null) {
+                        visibilitySupplier.removeObserver(mVisibilityObserver);
+                        mVisibilityObserver = null;
+                    }
+                };
+
+        mVisibilityObserver =
+                visible -> {
+                    if (!visible) {
+                        mHandler.removeCallbacks(mTimeoutRunnable);
+                        mTimeoutRunnable = null;
+                        mHandler.post(mAnimationRunnable);
+                        visibilitySupplier.removeObserver(mVisibilityObserver);
+                        mVisibilityObserver = null;
+                    }
+                };
+
+        if (visibilitySupplier.get()) {
+            visibilitySupplier.addObserver(mVisibilityObserver);
+            // TODO(crbug.com/40282469): Check with UX about the NTP bottom sheet's scrim taking a
+            // bit to disappear and decrease the timeout.
+            mHandler.postDelayed(mTimeoutRunnable, ANIMATION_TIMEOUT_MS);
+        } else {
+            mHandler.post(mAnimationRunnable);
+        }
     }
 
     protected void setNextTabIdForTesting(@TabId int nextTabId) {

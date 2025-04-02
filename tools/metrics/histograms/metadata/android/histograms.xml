@@ -196,7 +196,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".SaveCard"/>
   <variant name=".SaveCardFailure"/>
   <variant name=".SavePassword"/>
-  <variant name=".SendTabToSelf"/>
   <variant name=".SharedHighlighting"/>
   <variant name=".SyncError"/>
   <variant name=".TabNavigatedThroughCollaboration"/>
@@ -334,6 +333,32 @@ chromium-metrics-reviews@google.com.
   <variant name=".NTPSnippets" summary="NTP snippets"/>
 </variants>
 
+<!-- LINT.IfChange(WebViewChromiumStartupMode) -->
+
+<variants name="WebViewChromiumStartupMode">
+  <variant name="" summary="all startupModes"/>
+  <variant name=".AsyncButFullySync"
+      summary="Startup was triggered on a background thread, the posted task
+               was not run yet. Then another init call on the UI thread was
+               started before the posted task and startup fully completed
+               synchronously"/>
+  <variant name=".FullyAsync"
+      summary="Startup was triggered on a background thread and completed
+               asynchronously"/>
+  <variant name=".FullySync"
+      summary="Startup was triggered on the UI thread and completed
+               synchronously"/>
+  <variant name=".PartialAsyncThenSync"
+      summary="Startup was triggered on a background thread, some tasks ran
+               asynchronously. Then another init call on the UI thread
+               preempted the async run and startup completed synchronously"/>
+  <variant name=".Unknown"
+      summary="Something went wrong in our metrics. (The histogram may need
+               to be re-reviewed.)"/>
+</variants>
+
+<!--  LINT.ThenChange(//android_webview/glue/java/src/com/android/webview/chromium/WebViewChromiumAwInit.java:WebViewChromiumStartupMode) -->
+
 <variants name="WVScrollJankOperator">
   <variant name="Max"
       summary="maximum number of vsyncs a frame was delayed by"/>
@@ -386,7 +411,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.AdaptiveToolbarButton.Clicked"
-    enum="AdaptiveToolbarButtonVariant" expires_after="2025-07-27">
+    enum="AdaptiveToolbarButtonVariant" expires_after="2025-09-28">
   <owner>bttk@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -395,7 +420,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.AdaptiveToolbarButton.SessionVariant"
-    enum="AdaptiveToolbarButtonVariant" expires_after="2025-07-27">
+    enum="AdaptiveToolbarButtonVariant" expires_after="2025-09-28">
   <owner>bttk@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -895,7 +920,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackPress.IncorrectEdgeSwipe" enum="SwipeEdge"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>eleanorlee@google.com</owner>
   <owner>lazzzis@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -908,7 +933,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackPress.IncorrectEdgeSwipe.CountChained"
-    units="count" expires_after="2025-07-27">
+    units="count" expires_after="2025-09-28">
   <owner>eleanorlee@google.com</owner>
   <owner>lazzzis@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -922,7 +947,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackPress.Intercept.CustomTab{Task}"
-    enum="BackPressConsumer" expires_after="2025-05-15">
+    enum="BackPressConsumer" expires_after="M143">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/chrome/browser/back_press/android/OWNERS</owner>
   <summary>
@@ -961,8 +986,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.BackPress.MinimizeAppAndCloseTab.CustomTab.{Task}"
-    enum="MinimizeAppAndCloseTabType" expires_after="2025-05-15">
+<histogram name="Android.BackPress.MinimizeAppAndCloseTab.CustomTab{Task}"
+    enum="MinimizeAppAndCloseTabType" expires_after="M143">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/chrome/browser/back_press/android/OWNERS</owner>
   <summary>
@@ -1275,7 +1300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.CustomTab.CannotOpenUrlInBrowser.IsPdf" enum="Boolean"
-    expires_after="2025-06-02">
+    expires_after="2025-09-28">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -1653,7 +1678,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DragDrop.Image.UriCreatedInterval" units="ms"
-    expires_after="2025-05-11">
+    expires_after="2025-09-07">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -1663,7 +1688,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DragDrop.Tab.Duration.WithinDestStrip" units="ms"
-    expires_after="2025-05-11">
+    expires_after="2025-09-07">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -1703,7 +1728,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DragDrop.Tab.MaxInstanceFailureCount" units="failures"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>aishwaryarj@google.com</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>
@@ -1716,7 +1741,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DragDrop.Tab.ReorderStripWithDragDrop" enum="Boolean"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -1854,7 +1879,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.FocusChanged.FocusOwningWebContents" enum="Boolean"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>amanvr@google.com</owner>
   <owner>nuskos@chromium.org</owner>
   <summary>
@@ -1870,7 +1895,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.FocusChanged.RenderWidgetHostViewChildFrame.RootViewFocusState"
-    enum="RootViewFocusState" expires_after="2025-07-27">
+    enum="RootViewFocusState" expires_after="2025-09-28">
   <owner>amanvr@google.com</owner>
   <owner>nuskos@chromium.org</owner>
   <summary>
@@ -2101,7 +2126,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.GridTabSwitcher.TimeToTabStateInitializedFromShown"
-    units="ms" expires_after="2025-07-27">
+    units="ms" expires_after="2025-09-28">
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
@@ -2653,7 +2678,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MediaPickerShown" enum="MediaPickerShown"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -2679,7 +2704,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.DismissedWithoutFullyVisible"
-    enum="MessageIdentifier" expires_after="2025-07-27">
+    enum="MessageIdentifier" expires_after="2025-09-28">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
@@ -2971,7 +2996,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.MultiInstance.NumActivities.DesktopWindow.{InstanceAllocationType}"
-    units="activities" expires_after="2025-07-06">
+    units="activities" expires_after="2025-09-28">
   <owner>aishwaryarj@google.com</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>
@@ -3117,7 +3142,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MultiWindowMode.Configuration" enum="WindowingMode"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>aishwaryarj@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -4601,7 +4626,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RestoreResult" enum="AndroidRestoreResult"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>triploblastic@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -7406,7 +7431,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Android.WebView.Startup.ChromiumInitTime.LongestUiBlockingTaskTime"
+    name="Android.WebView.Startup.ChromiumInitTime.AsyncToSyncSwitchReason"
+    enum="WebViewStartupCallSite" expires_after="2025-12-31">
+  <owner>colibie@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    For asynchronous initialization, this metric tells us the callsite that
+    caused us to switch from a previously scheduled or running async startup, to
+    a synchronous startup.
+
+    This metric is only recorded for async startup and upon successful
+    completion of the initialization process.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.WebView.Startup.ChromiumInitTime.LongestUiBlockingTaskTime{StartupMode}"
     units="ms" expires_after="2025-12-31">
   <owner>colibie@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -7421,6 +7461,21 @@ chromium-metrics-reviews@google.com.
     This histogram is recorded in the last step of chromium init and so, is not
     recorded when init does not complete for any reason or if init had been
     completed in previous runs.
+  </summary>
+  <token key="StartupMode" variants="WebViewChromiumStartupMode"/>
+</histogram>
+
+<histogram name="Android.WebView.Startup.ChromiumInitTime.StartupMode"
+    enum="WebViewChromiumStartupMode" expires_after="2025-12-31">
+  <owner>colibie@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the completion sequence of the WebView's Chromium initialization,
+    indicating whether startup was fully synchronous, fully asynchronous, or a
+    hybrid approach.
+
+    This metric is only recorded upon successful completion of the
+    initialization process.
   </summary>
 </histogram>
 
@@ -7561,7 +7616,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.Startup.CreationTime.StartChromiumLocked"
+<histogram
+    name="Android.WebView.Startup.CreationTime.StartChromiumLocked{StartupMode}"
     units="ms" expires_after="2025-12-31">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -7582,6 +7638,7 @@ chromium-metrics-reviews@google.com.
     recorded when init does not complete for any reason or if init had been
     completed in previous runs.
   </summary>
+  <token key="StartupMode" variants="WebViewChromiumStartupMode"/>
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.TotalFactoryInitTime"
@@ -7645,7 +7702,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.StorageAccessRelation2"
-    enum="WebViewStorageAccessAppRelation" expires_after="2025-07-26">
+    enum="WebViewStorageAccessAppRelation" expires_after="2025-09-28">
   <owner>bewise@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>

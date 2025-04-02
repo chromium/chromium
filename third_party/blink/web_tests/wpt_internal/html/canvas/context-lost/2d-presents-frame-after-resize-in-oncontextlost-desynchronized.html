@@ -1,0 +1,17 @@
+<!doctype html>
+<html class="reftest-wait">
+<link rel="match" href="2d-presents-frame-after-resize-in-oncontextlost-expected.html">
+<script src="./2d-presents-frame-after-resize-in-oncontextlost-impl.js"></script>
+
+<title>
+  Tests that a desynchronized 2D HTMLCanvasElement can send frames to the
+  compositor after being resized from inside the oncontextlost event.
+</title>
+
+<canvas id="canvas" width="200" height="200"></canvas>
+<script type="module">
+  const canvas = document.getElementById('canvas');
+  await TestResizeInOnContextLost(canvas, {desynchronized: true});
+  document.documentElement.classList.remove('reftest-wait');
+</script>
+</html>

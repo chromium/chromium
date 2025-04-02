@@ -169,12 +169,14 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   // restored tab.
   // |original_session_type| indicates the type of session entry the tab
   // belongs to.
+  // |is_restoring_group_or_window| indicates if the tab is being restored
+  // alongside other tabs inside the same group or window.
   LiveTabContext* RestoreTab(const Tab& tab,
                              LiveTabContext* context,
                              WindowOpenDisposition disposition,
                              sessions::tab_restore::Type session_restore_type,
                              LiveTab** live_tab,
-                             bool restored_from_group_or_window_context);
+                             bool is_restoring_group_or_window);
 
   // This is a helper function for RestoreEntryById(). Restores a single entry
   // from the `window`. The entry to restore is denoted by `id` and can either

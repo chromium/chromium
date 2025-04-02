@@ -91,7 +91,7 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromiumu id
 <translation id="3054480780637153380">Otvorite postavke Chromiuma u iOS-u, a zatim dodirnite "Zadana aplikacija preglednika" i odaberite Chromium.</translation>
 <translation id="3102849287235003384">Da se odjavite s Google računa na svim web lokacijama, <ph name="BEGIN_LINK" />odjavite se iz Chromiuma<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Postaviti Chromium kao zadani preglednik?</translation>
-<translation id="3180939591219927904">Uključite opciju Zaključaj anonimne kartice pri zatvaranju Chromiuma</translation>
+<translation id="3180939591219927904">Uključite "Zaključaj anonimne kartice prilikom zatvaranja Chromiuma"</translation>
 <translation id="3242612358525156339">U postavkama uređaja otvorite "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" i odaberite "Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{Trenutno se prikazuje 1 prozor Chromiuma}one{Trenutno se prikazuje {count} prozor Chromiuma}few{Trenutno se prikazuju {count} prozora Chromiuma}other{Trenutno se prikazuje {count} prozora Chromiuma}}</translation>
 <translation id="3344973607274501920">Chromium nije mogao provjeriti vaše lozinke. Predlažemo da provjerite internetsku vezu.</translation>
@@ -187,6 +187,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromium
 1. Otvorite Postavke.
 2. Dodirnite Zadana aplikacija preglednika.
 3. Odaberite Chromium.</translation>
+<translation id="5482686278086727777">Da biste primali podsjetnike o karticama iz Chromiuma, uključite obavijesti u postavkama iOS-a.</translation>
 <translation id="5521125884468363740">Da vidite svoje kartice s bilo kojeg uređaja na kojem koristite Chromium, prijavite se i uključite sinhronizaciju</translation>
 <translation id="5534584691915394889">Ovo će se koristiti za kreiranje događaja u vašem Apple Calendaru iz Chromiuma i Google Objektiva.</translation>
 <translation id="5571094606370987472">Otvaranje nedavnih kartica u Chromiumu.</translation>

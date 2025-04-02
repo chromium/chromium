@@ -139,7 +139,7 @@ class MODULES_EXPORT UserMediaProcessor
   // test requesting local media streams. The function notifies WebKit that the
   // |request| have completed.
   virtual void GetUserMediaRequestSucceeded(
-      MediaStreamDescriptorVector* descriptors,
+      GCedMediaStreamDescriptorVector* descriptors,
       UserMediaRequest* user_media_request);
   virtual void GetUserMediaRequestFailed(
       blink::mojom::blink::MediaStreamRequestResult result,
@@ -201,7 +201,7 @@ class MODULES_EXPORT UserMediaProcessor
   bool IsCurrentRequestInfo(UserMediaRequest* user_media_request) const;
   void DelayedGetUserMediaRequestSucceeded(
       int32_t request_id,
-      MediaStreamDescriptorVector* descriptors,
+      GCedMediaStreamDescriptorVector* descriptors,
       UserMediaRequest* user_media_request);
   void DelayedGetUserMediaRequestFailed(
       int32_t request_id,

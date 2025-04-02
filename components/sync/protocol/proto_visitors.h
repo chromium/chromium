@@ -2006,7 +2006,7 @@ VISIT_PROTO_FIELDS(
   VISIT(merchant_name);
   VISIT(program_name);
   VISIT(program_logo);
-  VISIT(loyalty_card_suffix);
+  VISIT(loyalty_card_number);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SharedTabDetails& proto) {

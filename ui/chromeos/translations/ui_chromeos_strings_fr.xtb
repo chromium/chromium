@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">Dit merci en langue des signes</translation>
 <translation id="2088690981887365033">Réseau VPN</translation>
 <translation id="209653272837065803">Espace de stockage insuffisant pour continuer la synchronisation des fichiers</translation>
-<translation id="2111134541987263231">Activez l'option <ph name="BEGIN_BOLD" />Autoriser en navigation privée<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> éléments seront supprimés et vous ne pourrez pas les restaurer.</translation>
 <translation id="2122305276694332719">La connexion automatique à un réseau masqué permet à d'autres personnes de voir votre appareil, ainsi que certains paramètres du réseau, ce qui n'est pas recommandé.</translation>
 <translation id="2125607626296734455">Khmer</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">Planète</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> a été éjecté.</translation>
 <translation id="2307462900900812319">Configurer le réseau</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Impossible de trouver l'extension associée à l'ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Contactez votre administrateur.}one{Impossible de trouver l'extension associée à l'ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Contactez votre administrateur.}other{Impossible de trouver les extensions associées aux ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Contactez votre administrateur.}}</translation>
 <translation id="2325650632570794183">Ce type de fichier n'est pas compatible. Veuillez accéder au Chrome Web Store pour trouver une application pouvant l'ouvrir.</translation>
 <translation id="2326539130272988168">Bulgare</translation>
 <translation id="233822363739146957">Espace de stockage insuffisant pour synchroniser tous vos fichiers</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estonien</translation>
 <translation id="2938685643439809023">Mongol</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Extension introuvable}one{Extension introuvable}other{Extensions introuvables}}</translation>
 <translation id="2943503720238418293">Utilisez un nom plus court.</translation>
 <translation id="2949781154072577687">Formatage de <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Méduse</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">Terminé</translation>
 <translation id="3358452157379365236">Guitare</translation>
 <translation id="3368922792935385530">Connecté</translation>
-<translation id="3372635229069101468">Cliquez sur <ph name="BEGIN_BOLD" />Détails<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">Népalais avec clavier InScript</translation>
 <translation id="338691029516748599">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, connexion</translation>
 <translation id="3408072735282270043">Activer <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">Licorne</translation>
 <translation id="4131235941541910880">Placez dans la corbeille les éléments dont vous n'avez pas besoin</translation>
 <translation id="4134804435730168042">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, activer après la configuration de l'appareil</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Activez l'extension suivante en mode navigation privée :}one{Activez l'extension suivante en mode navigation privée :}other{Activez les extensions suivantes en mode navigation privée :}}</translation>
 <translation id="4153015322587141338">Effectuez un clic droit sur un fichier, puis sélectionnez "<ph name="PIN_COMMAND" />" pour y accéder rapidement sur l'étagère.</translation>
 <translation id="4157569377477607576">Une règle de l'administrateur déconseille :</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> déplacé.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">Garder les deux</translation>
 <translation id="4804827417948292437">Avocat</translation>
 <translation id="4805966553127040832">Restauration de <ph name="COUNT" /> éléments…</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Pour utiliser la navigation privée, votre organisation requiert une extension}one{Pour utiliser la navigation privée, votre organisation requiert une extension}other{Pour utiliser la navigation privée, votre organisation requiert certaines extensions}}</translation>
 <translation id="4826849268470072925">Tamoul (ITRANS)</translation>
-<translation id="482932175346970750">Saisissez <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> dans votre navigateur</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">Afficher</translation>
 <translation id="485316830061041779">Allemand</translation>
@@ -561,7 +554,6 @@
     des fichiers depuis une seule et même interface.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Fichiers récupérés sur Google Drive</translation>
 <translation id="5278111733643988471">Pour restaurer cet élément, faites-le glisser vers un nouveau dossier hors de la corbeille. Le dossier d'origine de cet élément, "<ph name="PARENT_FOLDER_NAME" />", a été supprimé.</translation>
-<translation id="5283101102242354279">Pour activer une extension en mode navigation privée :</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5293615890992542006">Une règle de l'administrateur a bloqué le déplacement de ce fichier</translation>
 <translation id="5305688511332277257">Aucun certificat installé</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, détails</translation>
 <translation id="7246947237293279874">Proxy FTP</translation>
 <translation id="7248671827512403053">Application</translation>
-<translation id="7252604552361840748">Repérez l'extension ci-dessus</translation>
 <translation id="7256405249507348194">Erreur non reconnue : <ph name="DESC" />.</translation>
 <translation id="7268659760406822741">Services disponibles</translation>
 <translation id="7291818353625820805">Vous souhaitez utiliser la répétition des touches ? Désactivez les accents dans les paramètres du clavier.</translation>

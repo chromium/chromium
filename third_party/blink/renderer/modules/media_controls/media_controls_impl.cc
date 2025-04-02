@@ -1134,41 +1134,63 @@ bool MediaControlsImpl::ShouldHideMediaControls(unsigned behavior_flags) const {
 
   // Keep the controls visible as long as the timer is running.
   const bool ignore_wait_for_timer = behavior_flags & kIgnoreWaitForTimer;
-  if (!ignore_wait_for_timer && keep_showing_until_timer_fires_)
+  if (!ignore_wait_for_timer && keep_showing_until_timer_fires_) {
     return false;
+  }
 
   // Don't hide if the mouse is over the controls.
   // Touch focus shouldn't affect controls visibility.
   const bool ignore_controls_hover = behavior_flags & kIgnoreControlsHover;
   if (!ignore_controls_hover && AreVideoControlsHovered() &&
-      !is_touch_interaction_)
+      !is_touch_interaction_) {
     return false;
+  }
 
   // Don't hide if the mouse is over the video area.
   const bool ignore_video_hover = behavior_flags & kIgnoreVideoHover;
-  if (!ignore_video_hover && is_mouse_over_controls_)
+  if (!ignore_video_hover && is_mouse_over_controls_) {
     return false;
+  }
 
   // Don't hide if focus is on the HTMLMediaElement or within the
   // controls/shadow tree. (Perform the checks separately to avoid going
   // through all the potential ancestor hosts for the focused element.)
   const bool ignore_focus = behavior_flags & kIgnoreFocus;
-  if (!ignore_focus && (MediaElement().IsFocused() ||
-                        contains(GetDocument().FocusedElement()))) {
+  const bool has_focus =
+      MediaElement().IsFocused() || contains(GetDocument().FocusedElement());
+  if (!ignore_focus && has_focus) {
+    return false;
+  }
+
+  // If anything on the panel has the focus, and that focus would trigger the
+  // focus ring [1], then also keep the controls visible.  Otherwise, the
+  // controls will fade out when the timer expires since we ignore focus.
+  // Getting focus back with the keyboard is tricky since there's no equivalent
+  // of hovering / mouse-overing.
+  //
+  // [1] from SelectorChecker::MatchesFocusVisiblePseudoClass()
+  const bool last_focus_from_mouse =
+      GetDocument().LastFocusType() == mojom::blink::FocusType::kMouse;
+  const bool had_keyboard_event = GetDocument().HadKeyboardEvent();
+  const bool focus_from_keyboard = !last_focus_from_mouse || had_keyboard_event;
+  if (has_focus && focus_from_keyboard) {
     return false;
   }
 
   // Don't hide the media controls when a panel is showing.
   if (text_track_list_->IsWanted() || playback_speed_list_->IsWanted() ||
-      overflow_list_->IsWanted())
+      overflow_list_->IsWanted()) {
     return false;
+  }
 
   // Don't hide if we have accessiblity focus.
-  if (panel_->KeepDisplayedForAccessibility())
+  if (panel_->KeepDisplayedForAccessibility()) {
     return false;
+  }
 
-  if (MediaElement().seeking())
+  if (MediaElement().seeking()) {
     return false;
+  }
 
   return true;
 }

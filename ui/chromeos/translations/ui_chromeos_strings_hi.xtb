@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">जेस्चर से धन्यवाद बोलता हुआ व्यक्ति</translation>
 <translation id="2088690981887365033">वीपीएन नेटवर्क</translation>
 <translation id="209653272837065803">फ़ाइलों को सिंक करना जारी रखने के लिए, डिवाइस में ज़रूरत के मुताबिक स्टोरेज उपलब्ध नहीं है</translation>
-<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />गुप्त मोड में एक्सटेंशन इस्तेमाल करने की अनुमति दें<ph name="END_BOLD" /> को चालू करें</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> आइटम मिटा दिए जाएंगे और इन्हें वापस नहीं लाया जा सकेगा.</translation>
 <translation id="2122305276694332719">दिखाई न देने वाले नेटवर्क से अपने आप जुड़ने से दूसरे लोग आपके डिवाइस और कुछ नेटवर्क सेटिंग को देख सकते हैं. ऐसा करने का सुझाव नहीं दिया जाता.</translation>
 <translation id="2125607626296734455">खमेर</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">ग्रह</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> को निकाल लिया गया है.</translation>
 <translation id="2307462900900812319">नेटवर्क कॉन्फ़िगर करें</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> आईडी वाला एक्सटेंशन नहीं मिला. अपने एडमिन से संपर्क करें.}one{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> आईडी वाला एक्सटेंशन नहीं मिला. अपने एडमिन से संपर्क करें.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> आईडी वाले एक्सटेंशन नहीं मिले. अपने एडमिन से संपर्क करें.}}</translation>
 <translation id="2325650632570794183">इस तरह की फ़ाइल नहीं खुल सकती है. वैसा ऐप्लिकेशन जिसमें ऐसी फ़ाइल खुल सके, उसे ढूंढने के लिए कृपया 'Chrome वेब स्टोर' पर जाएं.</translation>
 <translation id="2326539130272988168">बुल्गेरियन</translation>
 <translation id="233822363739146957">आपकी सभी फ़ाइलों को सिंक करने के लिए, डिवाइस में ज़रूरत के मुताबिक स्टोरेज उपलब्ध नहीं है</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">मराठी</translation>
 <translation id="2923240520113693977">एस्टोनियाई</translation>
 <translation id="2938685643439809023">मंगोलियाई</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{एक्सटेंशन नहीं मिला}one{एक्सटेंशन नहीं मिला}other{एक्सटेंशन नहीं मिले}}</translation>
 <translation id="2943503720238418293">थोड़े छोटे नाम का इस्तेमाल करें</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> को फ़ॉर्मैट किया जा रहा है...</translation>
 <translation id="2951236788251446349">जेलीफ़िश</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">पूरा हुआ</translation>
 <translation id="3358452157379365236">गिटार</translation>
 <translation id="3368922792935385530">कनेक्ट है</translation>
-<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />जानकारी<ph name="END_BOLD" /> पर क्लिक करें</translation>
 <translation id="3382143449143186018">इनस्क्रिप्ट कीबोर्ड के साथ नेपाली</translation>
 <translation id="338691029516748599"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, आपका एडमिन प्रबंधित करता है, कनेक्ट करें</translation>
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> चालू करें</translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">यूनिकॉर्न</translation>
 <translation id="4131235941541910880">ग़ैर-ज़रूरी आइटम को ट्रैश में ले जाएं</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> को डिवाइस सेटअप होने के बाद चालू करें</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{इस एक्सटेंशन को गुप्त मोड में चालू करें:}one{इस एक्सटेंशन को गुप्त मोड में चालू करें:}other{इन एक्सटेंशन को गुप्त मोड में चालू करें:}}</translation>
 <translation id="4153015322587141338">शेल्फ़ में अपनी फ़ाइलों को तुरंत ऐक्सेस करने के लिए, किसी फ़ाइल पर दायां क्लिक करें. इसके बाद, "<ph name="PIN_COMMAND" />" चुनें.</translation>
 <translation id="4157569377477607576">एडमिन नीति, ये सुझाव नहीं देती:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> को भेज दिया गया.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">दोनों रखें</translation>
 <translation id="4804827417948292437">एवोकैडो</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> आइटम वापस लाए जा रहे हैं</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{गुप्त मोड का इस्तेमाल करने के लिए, आपके संगठन के पास कोई एक्सटेंशन होना चाहिए}one{गुप्त मोड का इस्तेमाल करने के लिए, आपके संगठन के पास कोई एक्सटेंशन होना चाहिए}other{गुप्त मोड का इस्तेमाल करने के लिए, आपके संगठन के पास कुछ एक्सटेंशन होने चाहिए}}</translation>
 <translation id="4826849268470072925">तमिल ITRANS</translation>
-<translation id="482932175346970750">अपने ब्राउज़र में <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> टाइप करें</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">देखें</translation>
 <translation id="485316830061041779">जर्मन</translation>
@@ -561,7 +554,6 @@
 <ph name="MARKUP_7" />शेयर करें, बनाएं और सहयोग करें<ph name="MARKUP_8" />.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google डिस्क से पुनर्प्राप्त की गई फ़ाइलें</translation>
 <translation id="5278111733643988471">इस आइटम को वापस लाने के लिए, इसे खींचकर ट्रैश के बाहर किसी नए फ़ोल्डर में ले जाएं. इस आइटम के मूल फ़ोल्डर "<ph name="PARENT_FOLDER_NAME" />" को मिटा दिया गया है.</translation>
-<translation id="5283101102242354279">गुप्त मोड में कोई एक्सटेंशन चालू करने के लिए:</translation>
 <translation id="5288441970121584418">बर्गर</translation>
 <translation id="5293615890992542006">एडमिन नीति के तहत, इस फ़ाइल को एक जगह से दूसरी जगह पर ट्रांसफ़र करने की अनुमति नहीं है</translation>
 <translation id="5305688511332277257">कुछ भी इंस्टॉल नहीं है</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, जानकारी</translation>
 <translation id="7246947237293279874">FTP प्रॉक्सी</translation>
 <translation id="7248671827512403053">ऐप्स </translation>
-<translation id="7252604552361840748">ऊपर दिया गया एक्सटेंशन ढूंढें</translation>
 <translation id="7256405249507348194">अपरिचित गड़बड़ी: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">उपलब्ध सेवाएं</translation>
 <translation id="7291818353625820805">क्या आपको बटन दबाकर रखना है? कीबोर्ड सेटिंग में उच्चारण के चिह्न बंद करें</translation>

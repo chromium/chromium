@@ -602,14 +602,10 @@ public class HomeModulesMediator {
         Set<Integer> set = new HashSet<>(mEnabledModuleSet);
         assert !set.contains(ModuleType.DEPRECATED_EDUCATIONAL_TIP);
 
-        boolean combinedTabModules =
-                combinedTabModules() && set.contains(ModuleType.TAB_RESUMPTION);
         boolean isHomeSurface = mModuleDelegateHost.isHomeSurface();
         boolean addAll = ChromeFeatureList.sMagicStackAndroidShowAllModules.getValue();
 
-        if (combinedTabModules) {
-            set.remove(ModuleType.SINGLE_TAB);
-        } else if (isHomeSurface && !addAll) {
+        if (isHomeSurface && !addAll) {
             set.remove(ModuleType.TAB_RESUMPTION);
         } else if (!isHomeSurface) {
             set.remove(ModuleType.SINGLE_TAB);
@@ -663,12 +659,6 @@ public class HomeModulesMediator {
         }
 
         mEnabledModuleSet = mHomeModulesConfigManager.getEnabledModuleSet();
-    }
-
-    @VisibleForTesting
-    boolean combinedTabModules() {
-        return ChromeFeatureList.sTabResumptionModuleAndroidCombineTabs.getValue()
-                && ChromeFeatureList.sTabResumptionModuleAndroid.isEnabled();
     }
 
     Map<Integer, ModuleProvider> getModuleTypeToModuleProviderMapForTesting() {

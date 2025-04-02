@@ -524,6 +524,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IndexedDB.ValueDecompressionCount" units="count"
+    expires_after="2025-09-24">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the number of times a single compressed `IDBValue` is decompressed when
+    converting into a script value. Zeroes are not logged. This is logged once
+    in each IDBValue instance's lifetime (on destruction).
+  </summary>
+</histogram>
+
 <histogram name="IndexedDB.WrappedBlobLoadTime" units="ms"
     expires_after="2025-08-17">
   <owner>estade@chromium.org</owner>
@@ -1105,7 +1117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.InterestGroup.AdProtoCompressionTime" units="ms"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>caraitto@chromium.org</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -1127,7 +1139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.InterestGroup.AdProtoDecompressionTime" units="ms"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>caraitto@chromium.org</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -2339,7 +2351,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.Worklet.Timing.UsefulResourceDuration"
-    units="%" expires_after="2025-07-27">
+    units="%" expires_after="2025-09-28">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>

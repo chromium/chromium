@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
@@ -112,6 +113,7 @@ public interface TabManagementDelegate {
      * @param shareDelegateSupplier Supplies the {@link ShareDelegate} that will be used to share
      *     the tab's URL when the user selects the "Share" option.
      * @param tabBookmarkerSupplier Supplier of {@link TabBookmarker} for bookmarking a given tab.
+     * @param tabGroupCreationUiFlow Orchestrates the tab group creation UI flow.
      */
     Pair<TabSwitcher, Pane> createTabSwitcherPane(
             @NonNull Activity activity,
@@ -137,7 +139,8 @@ public interface TabManagementDelegate {
             @NonNull ObservableSupplier<Boolean> tabModelNotificationDotSupplier,
             @NonNull ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             @NonNull ObservableSupplier<ShareDelegate> shareDelegateSupplier,
-            @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier);
+            @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            @NonNull TabGroupCreationUiFlow tabGroupCreationUiFlow);
 
     /**
      * Create a {@link TabGroupsPane} for the Hub.
@@ -162,4 +165,18 @@ public interface TabManagementDelegate {
             @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier);
+
+    /**
+     * Create a {@link TabGroupCreationUiFlow} for tab group creation UI flows.
+     *
+     * @param context The {@link Context} for this UI flow.
+     * @param modalDialogManager The modal dialog manager for the activity.
+     * @param hubManagerSupplier Supplier ultimately used to get the pane manager to switch panes.
+     * @param tabGroupModelFilterSupplier Supplies the current tab group model filter.
+     */
+    TabGroupCreationUiFlow createTabGroupCreationUiFlow(
+            @NonNull Context context,
+            @NonNull ModalDialogManager modalDialogManager,
+            @NonNull OneshotSupplier<HubManager> hubManagerSupplier,
+            @NonNull Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier);
 }

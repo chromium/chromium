@@ -30,6 +30,7 @@
 <translation id="1356661055722410047">नवीन! तुम्ही तुमच्या स्क्रीनवरील मजकूर आणि इमेज दोन्हींचे भाषांतर करू शकता</translation>
 <translation id="1363996462118479832">साइन इन करताना एरर आल्यामुळे, ChromeOS ला तुमचा डेटा सिंक करता आला नाही.</translation>
 <translation id="137466361146087520">Google Chrome बीटा</translation>
+<translation id="1383876407941801731">शोधा</translation>
 <translation id="1399397803214730675">या कॉंप्युटरत आधीपासून Google Chrome ची अगदी अलिकडील आवृत्ती आहे. सॉफ्टवेअर काम करत नसल्यास, कृपया Google Chrome अनइंस्टॉल करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome is done updating. You can use the latest version as soon as you relaunch. After, your current tabs will reopen.}=1{Chrome अपडेट केले आहे. तुम्ही पुन्हा लाँच केल्यावर नवीनतम आवृत्ती वापरू शकता. त्यानंतर, तुमचे सद्य टॅब पुन्हा उघडतील. तुमची गुप्त विंडो पुन्हा उघडणार नाही.}other{Chrome अपडेट केले आहे. तुम्ही पुन्हा लाँच केल्यावर नवीनतम आवृत्ती वापरू शकता. त्यानंतर, तुमचे सद्य टॅब पुन्हा उघडतील. तुमच्या # गुप्त विंडो पुन्हा उघडणार नाहीत.}}</translation>
 <translation id="1434626383986940139">Chrome Canary Apps</translation>
@@ -122,6 +123,7 @@
 <translation id="2580411288591421699">सध्या चालत असलेली Google Chrome ची समान आवृत्ती इंस्टॉल करू शकत नाही. कृपया Google Chrome बंद करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="2586406160782125153">हे या डिव्‍हाइस मधून तुमचा ब्राउझिंग डेटा हटवेल. नंतर तुमचा डेटा पुनर्प्राप्त करण्‍यासाठी, Chrome मध्ये <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>
 <translation id="259935314519650377">डाउनलोड केलेला इंस्टॉलर कॅशे करता आला नाही. एरर: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2620436844016719705">सिस्टीम</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">तुमच्या ब्राउझरमध्ये सर्वात सुरक्षित सेटिंग्ज असल्याची खात्री करण्यासाठी Chrome नियमितपणे तपासते. तुम्ही एखाद्या गोष्टीचे पुनरावलोकन करणे आवश्यक असल्यास, आम्ही तुम्हाला कळवू.</translation>
 <translation id="2652691236519827073">लिंक नवीन Chrome &amp;टॅबमध्ये उघडा</translation>
@@ -526,6 +528,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7951272445806340501">अपडेट लागू करण्यासाठी ChromeOS Flex रीस्टार्ट करणे आवश्यक आहे.</translation>
 <translation id="7959172989483770734">Chrome ची प्रोफाइल व्यवस्थापित करा</translation>
 <translation id="7962410387636238736">Windows XP आणि Windows Vista ला आता सपोर्ट नसल्याने या कॉंप्युटरला यापुढे Google Chrome अपडेट मिळणार नाहीत</translation>
+<translation id="8004582292198964060">ब्राउझर</translation>
 <translation id="8005666035647241369">या डिव्हाइसवरील Google पासवर्ड व्यवस्थापक मध्ये</translation>
 <translation id="8008534537613507642">Chrome पुनर्स्थापित करा</translation>
 <translation id="8009904340233602924">खात्याशिवाय Chrome वापरा</translation>

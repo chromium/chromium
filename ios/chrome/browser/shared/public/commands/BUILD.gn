@@ -113,6 +113,7 @@ source_set("commands") {
     "//components/plus_addresses",
     "//components/supervised_user/core/common",
     "//ios/chrome/browser/browsing_data/model:model_remove_mask",
+    "//ios/chrome/browser/bubble/public",
     "//ios/chrome/browser/discover_feed/model:constants",
     "//ios/chrome/browser/google_one/shared",
     "//ios/chrome/browser/promos_manager/model:constants",

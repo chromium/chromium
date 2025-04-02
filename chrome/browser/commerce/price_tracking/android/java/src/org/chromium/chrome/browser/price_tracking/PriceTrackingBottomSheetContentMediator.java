@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -27,6 +28,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
+import org.chromium.components.commerce.core.PriceBucket;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.Toast;
 
@@ -40,6 +42,7 @@ public class PriceTrackingBottomSheetContentMediator {
             this::updatePriceTrackingButtonModel;
 
     private ObservableSupplier<Boolean> mPriceTrackingStateSupplier;
+    private @PriceBucket int mPriceBucket;
 
     public PriceTrackingBottomSheetContentMediator(
             @NonNull Context context,
@@ -57,6 +60,7 @@ public class PriceTrackingBottomSheetContentMediator {
                 mPriceInsightsDelegate.getPriceTrackingStateSupplier(mTabSupplier.get());
         mPriceTrackingStateSupplier.addObserver(mUpdatePriceTrackingButtonModelCallback);
 
+        fetchPriceBucket();
         updatePriceTrackingButtonModel(mPriceTrackingStateSupplier.get());
         contentReadyCallback.onResult(true);
     }
@@ -79,8 +83,21 @@ public class PriceTrackingBottomSheetContentMediator {
                 createPriceTrackingButtonListener(!isPriceTracked));
     }
 
+    private void fetchPriceBucket() {
+        ShoppingServiceFactory.getForProfile(mTabSupplier.get().getProfile())
+                .getPriceInsightsInfoForUrl(
+                        mTabSupplier.get().getUrl(),
+                        (url, info) -> {
+                            if (info != null) {
+                                mPriceBucket = info.priceBucket;
+                            }
+                        });
+    }
+
     public void closeContent() {
-        mPriceTrackingStateSupplier.removeObserver(mUpdatePriceTrackingButtonModelCallback);
+        if (mPriceTrackingStateSupplier != null) {
+            mPriceTrackingStateSupplier.removeObserver(mUpdatePriceTrackingButtonModelCallback);
+        }
         mPriceTrackingStateSupplier = null;
     }
 
@@ -127,6 +144,7 @@ public class PriceTrackingBottomSheetContentMediator {
 
     private OnClickListener createPriceTrackingButtonListener(boolean shouldBeTracked) {
         return view -> {
+            logPriceTrackingButtonClicked(shouldBeTracked);
             Callback<Boolean> callback =
                     (success) -> {
                         updatePriceTrackingButtonModel(mPriceTrackingStateSupplier.get());
@@ -136,6 +154,14 @@ public class PriceTrackingBottomSheetContentMediator {
             mPriceInsightsDelegate.setPriceTrackingStateForTab(
                     mTabSupplier.get(), shouldBeTracked, callback);
         };
+    }
+
+    private void logPriceTrackingButtonClicked(boolean shouldBeTracked) {
+        String histogramActionName = shouldBeTracked ? "Track" : "Untrack";
+        RecordHistogram.recordEnumeratedHistogram(
+                "Commerce.PriceInsights.PriceTracking." + histogramActionName,
+                mPriceBucket,
+                PriceBucket.MAX_VALUE);
     }
 
     private void showToastMessage(boolean shouldBeTracked, boolean success) {

@@ -31,6 +31,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1356661055722410047">¡Novedad! Puedes traducir tanto texto como imágenes en tu pantalla.</translation>
 <translation id="1363996462118479832">ChromeOS no ha podido sincronizar tus datos debido a un error de inicio de sesión.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
+<translation id="1383876407941801731">Buscar</translation>
 <translation id="1399397803214730675">Este ordenador tiene instalada una versión más reciente de Google Chrome. Si el software no funciona, desinstala Google Chrome y vuelve a intentarlo.</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome ha terminado de actualizarse. Puedes usar la versión más reciente cuando lo reinicies. A continuación, se reabrirán las pestañas que tuvieras abiertas.}=1{Chrome ha terminado de actualizarse. Puedes usar la versión más reciente cuando lo reinicies. A continuación, se reabrirán las pestañas que tuvieras abiertas. No se reabrirá 1 ventana de Incógnito.}other{Chrome ha terminado de actualizarse. Puedes usar la versión más reciente cuando lo reinicies. A continuación, se reabrirán las pestañas que tuvieras abiertas. No se reabrirán # ventanas de Incógnito.}}</translation>
 <translation id="1434626383986940139">Aplicaciones de Chrome Canary</translation>
@@ -123,6 +124,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2580411288591421699">No se puede instalar la misma versión de Google Chrome que se está ejecutando. Cierra el navegador y vuelve a intentarlo.</translation>
 <translation id="2586406160782125153">Se eliminarán tus datos de navegación de este dispositivo. Para recuperar tus datos en otro momento, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">No se ha podido guardar en caché el instalador descargado. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2620436844016719705">Sistema</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome comprueba periódicamente si tu navegador tiene la configuración más segura. Te avisaremos si tienes que revisar algo.</translation>
 <translation id="2652691236519827073">Abrir enlace en una pes&amp;taña nueva de Chrome</translation>
@@ -528,6 +530,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7951272445806340501">ChromeOS Flex debe reiniciarse para aplicar la actualización.</translation>
 <translation id="7959172989483770734">Gestionar perfiles de Chrome</translation>
 <translation id="7962410387636238736">Este ordenador dejará de recibir actualizaciones de Google Chrome porque ya no es compatible con Windows XP ni Windows Vista.</translation>
+<translation id="8004582292198964060">Navegador</translation>
 <translation id="8005666035647241369">En el Gestor de contraseñas de Google de este dispositivo</translation>
 <translation id="8008534537613507642">Reinstalar Chrome</translation>
 <translation id="8009904340233602924">Usar Chrome sin una cuenta</translation>

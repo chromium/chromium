@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_detents_manager.h"
 
+#import "base/metrics/histogram_macros.h"
+
 namespace {
 
 NSString* const kConsentSheetDetentIdentifier =
@@ -41,8 +43,9 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
 // state. Also notifies the delegate of any change in detents.
 - (void)setDetentsForState:(SheetDetentState)state;
 
-// Informs the delegate when a change in the sheet dimension occurs.
-- (void)reportDimensionChangeIfNeeded;
+// Reports to the delegate and logs metrics as necessary.
+// Pass `isUserGestureInitiated` when the change is due to a user gesture.
+- (void)reportDimensionChangeIfNeeded:(BOOL)isUserGestureInitiated;
 
 // A detent for the sheet that’s approximately the full height of the screen
 // (excluding the top safe area which is not covered).
@@ -88,7 +91,7 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
   self = [super init];
   if (self) {
     _sheet = sheet;
-    _latestReportedDimension = SheetDimensionStateHidden;
+    _latestReportedDimension = SheetDimensionState::kHidden;
     _window = window;
     _sheet.delegate = self;
     _presentationStrategy = presentationStrategy;
@@ -112,22 +115,22 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
 
 - (SheetDimensionState)sheetDimension {
   if ([self isInLargeDetent]) {
-    return SheetDimensionStateLarge;
+    return SheetDimensionState::kLarge;
   }
   if ([self isInMediumDetent]) {
-    return SheetDimensionStateMedium;
+    return SheetDimensionState::kMedium;
   }
 
   NSString* identifier = _sheet.selectedDetentIdentifier;
   if ([identifier isEqualToString:kPeakSheetDetentIdentifier]) {
-    return SheetDimensionStatePeaking;
+    return SheetDimensionState::kPeaking;
   }
 
   if ([identifier isEqualToString:kConsentSheetDetentIdentifier]) {
-    return SheetDimensionStateConsent;
+    return SheetDimensionState::kConsent;
   }
 
-  return SheetDimensionStateHidden;
+  return SheetDimensionState::kHidden;
 }
 
 - (void)setPresentationStrategy:
@@ -152,7 +155,7 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
     _sheet.selectedDetentIdentifier =
         UISheetPresentationControllerDetentIdentifierLarge;
   }];
-  [self reportDimensionChangeIfNeeded];
+  [self reportDimensionChangeIfNeeded:NO];
 }
 
 - (void)requestMinimizeBottomSheet {
@@ -160,18 +163,21 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
     _sheet.selectedDetentIdentifier =
         UISheetPresentationControllerDetentIdentifierMedium;
   }];
-  [self reportDimensionChangeIfNeeded];
+  [self reportDimensionChangeIfNeeded:NO];
 }
 
 #pragma mark - UISheetPresentationControllerDelegate
 
 - (void)sheetPresentationControllerDidChangeSelectedDetentIdentifier:
     (UISheetPresentationController*)sheetPresentationController {
-  [self reportDimensionChangeIfNeeded];
+  [self reportDimensionChangeIfNeeded:YES];
 }
 
 - (BOOL)presentationControllerShouldDismiss:
     (UIPresentationController*)presentationController {
+  UMA_HISTOGRAM_ENUMERATION("Lens.BottomSheet.PositionAfterSwipe",
+                            SheetDimensionState::kHidden);
+
   if (!_delegate) {
     return YES;
   }
@@ -222,10 +228,11 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
       break;
   }
 
-  [self reportDimensionChangeIfNeeded];
+  [self reportDimensionChangeIfNeeded:NO];
 }
 
-- (void)reportDimensionChangeIfNeeded {
+// Reports to the delegate and logs metrics as necessary.
+- (void)reportDimensionChangeIfNeeded:(BOOL)isUserGestureInitiated {
   // Maintain a strong reference to self throughout this method to prevent
   // premature deallocation. `lensOverlayDetentsManagerDidChangeDimensionState`
   // could trigger self's deallocation if the dimension state change results in
@@ -233,6 +240,11 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
   LensOverlayDetentsManager* strongSelf = self;
 
   if (self.sheetDimension != _latestReportedDimension) {
+    if (isUserGestureInitiated) {
+      UMA_HISTOGRAM_ENUMERATION("Lens.BottomSheet.PositionAfterSwipe",
+                                self.sheetDimension);
+    }
+
     _latestReportedDimension = strongSelf.sheetDimension;
     [_delegate lensOverlayDetentsManagerDidChangeDimensionState:strongSelf];
   }

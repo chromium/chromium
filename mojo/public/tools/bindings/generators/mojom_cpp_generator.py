@@ -280,6 +280,9 @@ class Generator(generator.Generator):
       all_enums.extend(interface.enums)
       if interface.uuid:
         headers.add('base/token.h')
+      for method in interface.methods:
+        if not method.result_response is None:
+          headers.add('base/types/expected.h')
 
     types = set(self._GetFullMojomNameForKind(typename)
                 for typename in

@@ -11,14 +11,14 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "autofill_ai_client.h",
       "autofill_ai_import_utils.cc",
       "autofill_ai_import_utils.h",
-      "autofill_ai_logger.cc",
-      "autofill_ai_logger.h",
       "autofill_ai_manager.cc",
       "autofill_ai_manager.h",
-      "autofill_ai_ukm_logger.cc",
-      "autofill_ai_ukm_logger.h",
       "autofill_ai_utils.cc",
       "autofill_ai_utils.h",
+      "metrics/autofill_ai_logger.cc",
+      "metrics/autofill_ai_logger.h",
+      "metrics/autofill_ai_ukm_logger.cc",
+      "metrics/autofill_ai_ukm_logger.h",
       "suggestion/autofill_ai_suggestions.cc",
       "suggestion/autofill_ai_suggestions.h",
     ]
@@ -31,6 +31,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "//components/optimization_guide/core:core",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/strings",
+      "//net",
       "//services/metrics/public/cpp:metrics_cpp",
       "//services/metrics/public/cpp:ukm_builders",
       "//ui/native_theme:native_theme",
@@ -49,6 +50,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "//base",
       "//components/autofill/core/browser:test_support",
       "//components/autofill/core/common",
+      "//components/optimization_guide/core:test_support",
       "//testing/gmock",
     ]
   }
@@ -57,8 +59,8 @@ if (is_win || is_mac || is_linux || is_chromeos) {
     testonly = true
     sources = [
       "autofill_ai_import_utils_unittest.cc",
-      "autofill_ai_logger_unittest.cc",
       "autofill_ai_manager_unittest.cc",
+      "metrics/autofill_ai_logger_unittest.cc",
       "suggestion/autofill_ai_suggestions_unittest.cc",
     ]
     deps = [
@@ -68,6 +70,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "//base/test:test_support",
       "//components/autofill/core/browser:test_support",
       "//components/autofill/core/common",
+      "//components/optimization_guide/core:test_support",
       "//components/prefs:test_support",
       "//testing/gmock",
       "//testing/gtest",

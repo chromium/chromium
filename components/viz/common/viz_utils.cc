@@ -67,39 +67,6 @@ bool AlwaysUseWideColorGamut() {
 }
 #endif
 
-bool GetScaledRegion(const gfx::Rect& rect,
-                     const gfx::QuadF* clip,
-                     gfx::QuadF* scaled_region) {
-  if (!clip)
-    return false;
-
-  gfx::PointF p1(((clip->p1().x() - rect.x()) / rect.width()) - 0.5f,
-                 ((clip->p1().y() - rect.y()) / rect.height()) - 0.5f);
-  gfx::PointF p2(((clip->p2().x() - rect.x()) / rect.width()) - 0.5f,
-                 ((clip->p2().y() - rect.y()) / rect.height()) - 0.5f);
-  gfx::PointF p3(((clip->p3().x() - rect.x()) / rect.width()) - 0.5f,
-                 ((clip->p3().y() - rect.y()) / rect.height()) - 0.5f);
-  gfx::PointF p4(((clip->p4().x() - rect.x()) / rect.width()) - 0.5f,
-                 ((clip->p4().y() - rect.y()) / rect.height()) - 0.5f);
-  *scaled_region = gfx::QuadF(p1, p2, p3, p4);
-  return true;
-}
-
-bool GetScaledRRectF(const gfx::Rect& space,
-                     const gfx::RRectF& rect,
-                     gfx::RRectF* scaled_rect) {
-  float x_scale = 1.0f / space.width();
-  float y_scale = 1.0f / space.height();
-  float new_x = (rect.rect().x() - space.x()) * x_scale - 0.5f;
-  float new_y = (rect.rect().y() - space.y()) * y_scale - 0.5f;
-  *scaled_rect = rect;
-  scaled_rect->Scale(x_scale, y_scale);
-  scaled_rect->Offset(-scaled_rect->rect().origin().x(),
-                      -scaled_rect->rect().origin().y());
-  scaled_rect->Offset(new_x, new_y);
-  return true;
-}
-
 bool GatherFDStats(base::TimeDelta* delta_time_taken,
                    int* fd_max,
                    int* active_fd_count,

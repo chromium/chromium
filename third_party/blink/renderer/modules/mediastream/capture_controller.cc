@@ -64,59 +64,6 @@ bool IsCaptureType(const MediaStreamTrack* track,
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-struct ScaledCoordinates {
-  ScaledCoordinates(double relative_x, double relative_y)
-      : relative_x(relative_x), relative_y(relative_y) {
-    CHECK(0.0 <= relative_x && relative_x < 1.0);
-    CHECK(0.0 <= relative_y && relative_y < 1.0);
-  }
-
-  const double relative_x;
-  const double relative_y;
-};
-
-// Attempt to scale the coordinates to relative coordinates based on the last
-// frame emitted for the given track.
-base::expected<ScaledCoordinates, String> ScaleCoordinates(
-    MediaStreamTrack* track,
-    CapturedWheelAction* action) {
-  CHECK(track);  // Validated by ValidateCapturedSurfaceControlCall().
-
-  MediaStreamComponent* const component = track->Component();
-  if (!component) {
-    return base::unexpected("Unexpected error - no component.");
-  }
-
-  MediaStreamVideoTrack* const video_track =
-      MediaStreamVideoTrack::From(component);
-  if (!video_track) {
-    return base::unexpected("Unexpected error - no video track.");
-  }
-
-  // Determine the size of the last video frame observed by the app for this
-  // capture session.
-  const gfx::Size last_frame_size = video_track->GetVideoSize();
-
-  // Validate (x, y) prior to scaling.
-  if (last_frame_size.width() <= 0 || last_frame_size.height() <= 0) {
-    return base::unexpected("No frames observed yet.");
-  }
-  if (action->x() < 0 || action->x() >= last_frame_size.width() ||
-      action->y() < 0 || action->y() >= last_frame_size.height()) {
-    return base::unexpected("Coordinates out of bounds.");
-  }
-
-  // Scale (x, y) to reflect their position relative to the video size.
-  // This allows the browser process to scale these coordinates to
-  // the coordinate space of the captured surface, which is unknown
-  // to the capturer.
-  const double relative_x =
-      static_cast<double>(action->x()) / last_frame_size.width();
-  const double relative_y =
-      static_cast<double>(action->y()) / last_frame_size.height();
-  return ScaledCoordinates(relative_x, relative_y);
-}
-
 bool ShouldFocusCapturedSurface(V8CaptureStartFocusBehavior focus_behavior) {
   switch (focus_behavior.AsEnum()) {
     case V8CaptureStartFocusBehavior::Enum::kFocusCapturedSurface:
@@ -522,23 +469,6 @@ void CaptureController::OnForwardWheelPermissionResult(
   resolver->Resolve();
 }
 
-void CaptureController::SendWheel(double relative_x,
-                                  double relative_y,
-                                  int32_t wheel_delta_x,
-                                  int32_t wheel_delta_y) {
-  const std::optional<base::UnguessableToken>& session_id =
-      GetCaptureSessionId(video_track_);
-  if (!session_id.has_value()) {
-    return;
-  }
-
-  GetMediaStreamDispatcherHost()->SendWheel(
-      *session_id,
-      blink::mojom::blink::CapturedWheelAction::New(
-          relative_x, relative_y, wheel_delta_x, wheel_delta_y),
-      WTF::BindOnce([](CapturedSurfaceControlResult) {}));
-}
-
 mojom::blink::MediaStreamDispatcherHost*
 CaptureController::GetMediaStreamDispatcherHost() {
   DCHECK(IsMainThread());
@@ -631,57 +561,21 @@ ScriptPromise<IDLUndefined> CaptureController::UpdateZoomLevel(
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
-ScriptPromise<IDLUndefined> CaptureController::SendWheel(
-    ScriptState* script_state,
-    CapturedWheelAction* action) {
-  DCHECK(IsMainThread());
-  CHECK(action);
-  CHECK(action->hasX());
-  CHECK(action->hasY());
-  CHECK(action->hasWheelDeltaX());
-  CHECK(action->hasWheelDeltaY());
-
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
-
-  const auto promise = resolver->Promise();
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
-                                   "Unsupported.");
-  return promise;
-#else
-  ValidationResult validation_result = ValidateCapturedSurfaceControlCall();
-  if (validation_result.code != DOMExceptionCode::kNoError) {
-    resolver->RejectWithDOMException(validation_result.code,
-                                     validation_result.message);
-    return promise;
-  }
-
-  const base::expected<ScaledCoordinates, String> scaled_coordinates =
-      ScaleCoordinates(video_track_, action);
-  if (!scaled_coordinates.has_value()) {
-    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
-                                     scaled_coordinates.error());
-    return promise;
-  }
-
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+void CaptureController::SendWheel(double relative_x,
+                                  double relative_y,
+                                  int32_t wheel_delta_x,
+                                  int32_t wheel_delta_y) {
   const std::optional<base::UnguessableToken>& session_id =
       GetCaptureSessionId(video_track_);
   if (!session_id.has_value()) {
-    resolver->RejectWithDOMException(DOMExceptionCode::kUnknownError,
-                                     "Invalid capture");
-    return promise;
+    return;
   }
 
   GetMediaStreamDispatcherHost()->SendWheel(
-      *session_id,
-      blink::mojom::blink::CapturedWheelAction::New(
-          scaled_coordinates->relative_x, scaled_coordinates->relative_y,
-          action->wheelDeltaX(), action->wheelDeltaY()),
-      WTF::BindOnce(&OnCapturedSurfaceControlResult, WrapPersistent(resolver)));
-
-  return promise;
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+      *session_id, blink::mojom::blink::CapturedWheelAction::New(
+                       relative_x, relative_y, wheel_delta_x, wheel_delta_y));
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace blink

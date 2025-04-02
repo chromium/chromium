@@ -52,8 +52,8 @@ AutofillSyncMetadataTable* AutofillSyncMetadataTable::FromWebDatabase(
 bool AutofillSyncMetadataTable::SupportsMetadataForDataType(
     syncer::DataType data_type) {
   return data_type == syncer::AUTOFILL ||
-         data_type == syncer::AUTOFILL_LOYALTY_CARD ||
          data_type == syncer::AUTOFILL_PROFILE ||
+         data_type == syncer::AUTOFILL_VALUABLE ||
          data_type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
          data_type == syncer::AUTOFILL_WALLET_DATA ||
          data_type == syncer::AUTOFILL_WALLET_METADATA ||

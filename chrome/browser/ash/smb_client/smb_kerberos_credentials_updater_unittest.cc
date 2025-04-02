@@ -41,14 +41,11 @@ constexpr char kConfig[] = "[libdefaults]";
 class SmbKerberosCredentialsUpdaterTest : public testing::Test {
  public:
   SmbKerberosCredentialsUpdaterTest()
-      : scoped_user_manager_(std::make_unique<FakeChromeUserManager>()),
-        local_state_(TestingBrowserProcess::GetGlobal()) {
+      : local_state_(TestingBrowserProcess::GetGlobal()) {
     // Enable Kerberos via policy.
     SetPref(prefs::kKerberosEnabled, base::Value(true));
 
-    auto* user_manager =
-        static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
-    user_manager->AddUser(AccountId::FromUserEmail(kProfileEmail));
+    user_manager_->AddUser(AccountId::FromUserEmail(kProfileEmail));
 
     // Initialize User, Profile and KerberosCredentialsManager.
     KerberosClient::InitializeFake();
@@ -89,8 +86,9 @@ class SmbKerberosCredentialsUpdaterTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  user_manager::ScopedUserManager scoped_user_manager_;
   ScopedTestingLocalState local_state_;
+  user_manager::TypedScopedUserManager<FakeChromeUserManager> user_manager_{
+      std::make_unique<FakeChromeUserManager>()};
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<KerberosCredentialsManager> credentials_manager_;
   std::unique_ptr<SmbKerberosCredentialsUpdater> credentials_updater_;

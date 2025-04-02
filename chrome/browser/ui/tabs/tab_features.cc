@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/views/intent_picker/intent_picker_view_page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/action_ids.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
+#include "chrome/browser/ui/views/page_action/page_action_properties.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
@@ -59,8 +60,8 @@
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
-#include "components/fingerprinting_protection_filter/interventions/browser/interventions_features.h"
 #include "components/fingerprinting_protection_filter/interventions/browser/interventions_web_contents_helper.h"
+#include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/ip_protection/common/ip_protection_status.h"
 #include "components/metrics/content/dwa_web_contents_observer.h"
@@ -203,6 +204,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     CHECK(pinned_actions_model);
     page_action_controller_ =
         std::make_unique<page_actions::PageActionController>(
+            page_actions::GetPageActionControllerProperties(),
             pinned_actions_model);
     page_action_controller_->Initialize(
         tab, std::vector<actions::ActionId>(page_actions::kActionIds.begin(),

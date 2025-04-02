@@ -2997,6 +2997,7 @@
 <translation id="3045447014237878114">ਇਸ ਸਾਈਟ ਨੇ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਇੱਕ ਤੋਂ ਵੱਧ ਫ਼ਾਈਲਾਂ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ</translation>
 <translation id="3046178388369461825">Linux ਡਿਸਕ ਵਿੱਚ ਜਗ੍ਹਾ ਬਹੁਤ ਘੱਟ ਹੈ</translation>
 <translation id="304644035656848980">ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਪੂਰਵ-ਝਲਕ</translation>
+<translation id="3046892784550338476">ਵਰਜਨ <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">ਵੈਬਸਫ਼ਾ, ਪੂਰਾ</translation>
 <translation id="304747341537320566">ਬੋਲੀ ਇੰਜਣ</translation>
 <translation id="3047678109605649715">ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਕੋਈ <ph name="LANGUAGE" /> ਅਵਾਜ਼ ਨਹੀਂ ਹੈ। ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਜਗ੍ਹਾ ਖਾਲੀ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
@@ -3089,6 +3090,7 @@
 <translation id="3122883569442693641">ਹੋਰ ਵੇਰਵੇ</translation>
 <translation id="3124111068741548686">ਵਰਤੋਂਕਾਰ ਹੈਂਡਲ</translation>
 <translation id="3124332159330678621">ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਨੂੰ ਨਵੀਂ ਦਿੱਖ ਦੇਣ ਲਈ Chrome ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
+<translation id="3125816458150005808">ਤੁਸੀਂ ਇਸਨੂੰ ਅਣਪਿੰਨ ਕਰ ਸਕਦੇ ਹੋ ਅਤੇ ਇਸਨੂੰ ਮੀਨੂ ਤੋਂ ਖੋਲ੍ਹ ਸਕਦੇ ਹੋ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">ਚਾਰਜਿੰਗ ਅਤੇ ਕਾਰਗੁਜ਼ਾਰੀ ਸੰਬੰਧੀ ਸਮੱਸਿਆਵਾਂ ਤੋਂ ਬਚਣ ਲਈ, ਅਨੁਰੂਪ Dell ਜਾਂ USB ਪ੍ਰਕਾਰ-C ਪਾਵਰ ਅਡਾਪਟਰ ਵਰਤੋ।</translation>
 <translation id="3127862849166875294">Linux ਡਿਸਕ ਦਾ ਆਕਾਰ ਬਦਲਣਾ</translation>
@@ -5339,6 +5341,7 @@
 <translation id="4723140812774948886">ਅਗਲੇ ਨਾਲ ਅਦਲਾ-ਬਦਲੀ ਕਰੋ</translation>
 <translation id="4724450788351008910">ਸੰਬੰਧੀਕਰਨ ਬਦਲਿਆ</translation>
 <translation id="4725511304875193254">ਕੋਰਗੀ</translation>
+<translation id="4725762702191453794">ਟੈਬ ਖੋਜ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਹੁਣ ਤੁਹਾਡੀ ਟੂਲਬਾਰ 'ਤੇ ਪਿੰਨ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="4726710355753484204">ਜ਼ੂਮ ਵਧਾਉਣ ਲਈ Ctrl + Alt + ਚਮਕ ਵਧਾਓ ਬਟਨ ਵਰਤੋ।
 ਜ਼ੂਮ ਘਟਾਉਣ ਲਈ Ctrl + Alt + ਚਮਕ ਘਟਾਓ ਬਟਨ ਵਰਤੋ।</translation>
 <translation id="4726710629007580002">ਉਦੋਂ ਚਿਤਾਵਨੀਆਂ ਦਿੱਤੀਆਂ ਗਈਆਂ ਸਨ ਜਦੋਂ ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ ਜਾ ਰਹੀ ਸੀ:</translation>

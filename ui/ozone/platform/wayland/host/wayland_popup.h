@@ -11,7 +11,7 @@
 namespace ui {
 
 class WaylandConnection;
-class ShellPopupWrapper;
+class XdgPopup;
 
 class WaylandPopup final : public WaylandWindow {
  public:
@@ -24,7 +24,7 @@ class WaylandPopup final : public WaylandWindow {
 
   ~WaylandPopup() override;
 
-  ShellPopupWrapper* shell_popup() { return shell_popup_.get(); }
+  XdgPopup* xdg_popup() { return xdg_popup_.get(); }
 
   // Configure related:
   void HandleSurfaceConfigure(uint32_t serial) override;
@@ -57,9 +57,7 @@ class WaylandPopup final : public WaylandWindow {
   // Returns bounds with origin relative to parent window's origin.
   gfx::Rect AdjustPopupWindowPosition();
 
-  // Wrappers around xdg v5 and xdg v6 objects. WaylandPopup doesn't
-  // know anything about the version.
-  std::unique_ptr<ShellPopupWrapper> shell_popup_;
+  std::unique_ptr<XdgPopup> xdg_popup_;
 
   PlatformWindowShadowType shadow_type_ = PlatformWindowShadowType::kNone;
 

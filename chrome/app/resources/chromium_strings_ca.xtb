@@ -27,6 +27,7 @@
 <translation id="1342274909142618978">Suprimeix també les dades de Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">S'ha fixat. Pots tornar a accedir a la cerca d'imatges des del botó nou de la barra d'eines.</translation>
 <translation id="1356661055722410047">Novetat! Pots traduir tant el text com les imatges en pantalla</translation>
+<translation id="1383876407941801731">Cerca</translation>
 <translation id="1414495520565016063">Teniu la sessió iniciada a Chromium.</translation>
 <translation id="1465192221147974788">Per compartir la finestra, permet que Chromium gravi la pantalla a Configuració del sistema.</translation>
 <translation id="1478370723027452770">Obtén ajuda amb Chrome for Testing</translation>
@@ -118,6 +119,7 @@
 <translation id="2583187216237139145">L'administrador del perfil de treball pot suprimir qualsevol dada de Chromium que es generi durant l'ús d'aquest perfil, com ara les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Continua utilitzant Chromium</translation>
 <translation id="259935314519650377">No s'ha pogut desar l'instal·lador baixat a la memòria cau. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2620436844016719705">Sistema</translation>
 <translation id="2629740064077610681">La teva organització pot veure i gestionar les dades de navegació, com ara les adreces d'interès, l'historial i les contrasenyes. No pot veure les dades de navegació dels altres perfils de Chromium.</translation>
 <translation id="2635452620547538388">Verifica la teva identitat per utilitzar i desar les dades de Chromium al teu compte, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="264613044588233783">Chromium s'executa més ràpidament i les funcions que utilitzen JavaScript haurien de funcionar tal com es van dissenyar (opció recomanada)</translation>
@@ -498,6 +500,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="7937630085815544518">Teníeu la sessió iniciada a Chromium com a <ph name="USER_EMAIL_ADDRESS" />. Utilitzeu el mateix compte per tornar a iniciar-hi la sessió.</translation>
 <translation id="7975919845073681630">Aquesta és una instal·lació secundària de Chromium i no pot definir-se com a navegador predeterminat.</translation>
 <translation id="7997934263947464652">Les extensions, les aplicacions i els temes de fonts desconegudes poden malmetre el dispositiu. Chromium recomana que només n'instal·lis de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
+<translation id="8004582292198964060">Navegador</translation>
 <translation id="8010081455002666927">Detecta automàticament</translation>
 <translation id="8013436988911883588">Un cop Chromium tingui accés, els llocs web et podran demanar accés.</translation>
 <translation id="80471789339884597">T'agraïm la instal·lació. Has de reiniciar tots els navegadors abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>

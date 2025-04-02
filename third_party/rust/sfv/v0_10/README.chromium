@@ -3,7 +3,7 @@ URL: https://crates.io/crates/sfv
 Version: 0.10.4
 Revision: 77924643df77c89e99835172b086c49fe8bcfe60
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/sfv-0.10.4/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/sfv-v0_10/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes
 

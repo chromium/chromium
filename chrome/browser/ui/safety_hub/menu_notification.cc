@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/safety_hub/safe_browsing_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 
 SafetyHubMenuNotification::SafetyHubMenuNotification(
     safety_hub::SafetyHubModuleType type)

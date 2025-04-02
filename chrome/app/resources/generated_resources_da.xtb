@@ -2997,6 +2997,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3045447014237878114">Dette website har downloadet flere filer automatisk</translation>
 <translation id="3046178388369461825">Der er næsten ikke mere Linux-diskplads</translation>
 <translation id="304644035656848980">Forhåndsvisning af din mikrofon</translation>
+<translation id="3046892784550338476">Version <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Webside, komplet</translation>
 <translation id="304747341537320566">Oplæsningsmaskiner</translation>
 <translation id="3047678109605649715">Der er ingen <ph name="LANGUAGE" /> stemmer på din enhed. Frigør plads på din enhed, og prøv igen.</translation>
@@ -3089,6 +3090,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3122883569442693641">Flere oplysninger</translation>
 <translation id="3124111068741548686">BRUGER-håndtag</translation>
 <translation id="3124332159330678621">Tilpas Chrome for at give din browser et nyt udseende</translation>
+<translation id="3125816458150005808">Du kan frigøre den og åbne den via menuen</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Brug en kompatibel Dell- eller USB-C-strømadapter for at undgå problemer med opladning og effektivitet.</translation>
 <translation id="3127862849166875294">Vælg en anden størrelse på disken i Linux</translation>
@@ -5339,6 +5341,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4723140812774948886">Byt rundt med næste</translation>
 <translation id="4724450788351008910">Affiliering er blevet ændret</translation>
 <translation id="4725511304875193254">Corgi</translation>
+<translation id="4725762702191453794">Fanesøgning er nu fastgjort til din værktøjslinje</translation>
 <translation id="4726710355753484204">Brug Ctrl+Alt+Lysstyrke op for at zoome ind.
 Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4726710629007580002">Der blev vist advarsler ved forsøg på at installere denne udvidelse:</translation>

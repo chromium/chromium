@@ -8,6 +8,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -21,6 +22,7 @@ import java.util.Objects;
 public class ButtonDataImpl implements ButtonData {
     private boolean mCanShow;
     private boolean mIsEnabled;
+    private @DrawableRes int mBackgroundResId;
 
     private ButtonSpec mButtonSpec;
 
@@ -36,7 +38,7 @@ public class ButtonDataImpl implements ButtonData {
             boolean isEnabled,
             @AdaptiveToolbarButtonVariant int buttonVariant,
             int tooltipTextResId,
-            boolean showHoverhighlight) {
+            boolean showBackgroundHighlight) {
         this(
                 canShow,
                 drawable,
@@ -48,7 +50,7 @@ public class ButtonDataImpl implements ButtonData {
                 isEnabled,
                 buttonVariant,
                 tooltipTextResId,
-                showHoverhighlight);
+                showBackgroundHighlight);
     }
 
     public ButtonDataImpl(
@@ -62,9 +64,12 @@ public class ButtonDataImpl implements ButtonData {
             boolean isEnabled,
             @AdaptiveToolbarButtonVariant int buttonVariant,
             @StringRes int tooltipTextResId,
-            boolean showHoverHighlight) {
+            boolean showBackgroundHighlight) {
         mCanShow = canShow;
         mIsEnabled = isEnabled;
+        if (showBackgroundHighlight) {
+            mBackgroundResId = R.drawable.default_icon_background;
+        }
         mButtonSpec =
                 new ButtonSpec(
                         drawable,
@@ -76,7 +81,7 @@ public class ButtonDataImpl implements ButtonData {
                         buttonVariant,
                         actionChipLabelResId,
                         tooltipTextResId,
-                        showHoverHighlight,
+                        showBackgroundHighlight,
                         /* hasErrorBadge= */ false);
     }
 
@@ -88,6 +93,16 @@ public class ButtonDataImpl implements ButtonData {
     @Override
     public boolean isEnabled() {
         return mIsEnabled;
+    }
+
+    @Override
+    public void setBackgroundResource(@DrawableRes int resId) {
+        mBackgroundResId = resId;
+    }
+
+    @Override
+    public int getBackgroundResource() {
+        return mBackgroundResId;
     }
 
     @Override
@@ -121,7 +136,7 @@ public class ButtonDataImpl implements ButtonData {
                         currentSpec.getButtonVariant(),
                         currentSpec.getActionChipLabelResId(),
                         currentSpec.getHoverTooltipTextId(),
-                        currentSpec.getShouldShowHoverHighlight(),
+                        currentSpec.shouldShowBackgroundHighlight(),
                         currentSpec.hasErrorBadge());
         setButtonSpec(newSpec);
     }
@@ -140,7 +155,7 @@ public class ButtonDataImpl implements ButtonData {
                         currentSpec.getButtonVariant(),
                         newActionChipResourceId,
                         currentSpec.getHoverTooltipTextId(),
-                        currentSpec.getShouldShowHoverHighlight(),
+                        currentSpec.shouldShowBackgroundHighlight(),
                         currentSpec.hasErrorBadge());
         setButtonSpec(newSpec);
     }
@@ -159,7 +174,7 @@ public class ButtonDataImpl implements ButtonData {
                         currentSpec.getButtonVariant(),
                         currentSpec.getActionChipLabelResId(),
                         currentSpec.getHoverTooltipTextId(),
-                        currentSpec.getShouldShowHoverHighlight(),
+                        currentSpec.shouldShowBackgroundHighlight(),
                         currentSpec.hasErrorBadge());
         setButtonSpec(newSpec);
     }

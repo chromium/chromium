@@ -12,10 +12,6 @@
 #include "components/metrics/metrics_provider.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
-namespace base {
-class FilePath;
-}
-
 namespace metrics {
 
 // Provides metrics about the local drives on a user's computer. Currently only
@@ -44,14 +40,11 @@ class DriveMetricsProvider : public metrics::MetricsProvider {
   };
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(DriveMetricsProviderTest, HasSeekPenalty);
-
   // A response to querying a drive as to whether it incurs a seek penalty.
   // |has_seek_penalty| is set if |success| is true.
   struct SeekPenaltyResponse {
     SeekPenaltyResponse();
     std::optional<bool> has_seek_penalty;
-    std::optional<bool> has_seek_penalty_base;
     std::optional<bool> is_removable;
     std::optional<bool> is_usb;
   };
@@ -60,11 +53,6 @@ class DriveMetricsProvider : public metrics::MetricsProvider {
     SeekPenaltyResponse app_drive;
     SeekPenaltyResponse user_data_drive;
   };
-
-  // Determine whether the device that services |path| has a seek penalty.
-  // Returns false if it couldn't be determined (e.g., |path| doesn't exist).
-  static bool HasSeekPenalty(const base::FilePath& path,
-                             bool* has_seek_penalty);
 
   // Gather metrics about various drives. Should be run on a background thread.
   static DriveMetrics GetDriveMetricsOnBackgroundThread(

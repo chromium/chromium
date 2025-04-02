@@ -39,6 +39,9 @@
 // Returns the user's email address.
 - (NSString*)userEmail;
 
+// Returns if the address is being added manually.
+- (BOOL)addingManualAddress;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_AUTOFILL_EDIT_PROFILE_BOTTOM_SHEET_HANDLER_H_

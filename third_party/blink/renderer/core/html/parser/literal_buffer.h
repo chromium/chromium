@@ -226,7 +226,7 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
     if (this->data() == other.data())
       return *this;
     this->Copy(other);
-    is_8bit_ = other.is_8bit_;
+    bitwise_or_all_chars_ = other.bitwise_or_all_chars_;
     return *this;
   }
 
@@ -234,28 +234,28 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
     if (this == &other)
       return *this;
     this->Copy(other);
-    is_8bit_ = other.is_8bit_;
+    bitwise_or_all_chars_ = other.bitwise_or_all_chars_;
     return *this;
   }
 
   UCharLiteralBuffer& operator=(UCharLiteralBuffer&& other) {
     if (this == &other)
       return *this;
-    const bool other_is_8bit = other.is_8bit_;
+    const UChar other_bitwise_or_all_chars = other.bitwise_or_all_chars_;
     this->Move(std::move(other));
-    is_8bit_ = other_is_8bit;
+    bitwise_or_all_chars_ = other_bitwise_or_all_chars;
     return *this;
   }
 
   // Clear without freeing any storage.
   ALWAYS_INLINE void clear() {
     this->ClearImpl();
-    is_8bit_ = true;
+    bitwise_or_all_chars_ = 0;
   }
 
   ALWAYS_INLINE void AddChar(UChar val) {
     this->AddCharImpl(val);
-    is_8bit_ &= (val <= 0xFF);
+    bitwise_or_all_chars_ |= val;
   }
 
   template <wtf_size_t kOtherSize>
@@ -270,24 +270,26 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
     return String(*this);
   }
 
-  String AsString8() const {
-    return String::Make8BitFrom16BitSource(base::span(*this));
-  }
-
   AtomicString AsAtomicString() const {
     return AtomicString(*this, Is8Bit()
                                    ? WTF::AtomicStringUCharEncoding::kIs8Bit
                                    : WTF::AtomicStringUCharEncoding::kIs16Bit);
   }
 
-  ALWAYS_INLINE bool Is8Bit() const { return is_8bit_; }
+  ALWAYS_INLINE bool Is8Bit() const {
+    return (bitwise_or_all_chars_ & ~0xff) == 0;
+  }
 
  private:
   // Needed for operator=.
   template <wtf_size_t kOtherInlineSize>
   friend class UCharLiteralBuffer;
 
-  bool is_8bit_ = true;
+  // Bitwise OR of all characters in our buffer. We actually
+  // only ever care if anyone of them have any high (>= 8) bits set,
+  // but just checking that at the end is faster than branching
+  // all the time.
+  UChar bitwise_or_all_chars_ = 0;
 };
 
 #undef BUFFER_INLINE_CAPACITY

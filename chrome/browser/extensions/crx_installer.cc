@@ -565,7 +565,7 @@ void CrxInstaller::OnUnpackSuccessOnSharedFileThread(
 
   original_manifest_ = std::move(original_manifest);
 
-  // We don't have to delete the unpack dir explicity since it is a child of
+  // We don't have to delete the unpack dir explicitly since it is a child of
   // the temp dir.
   unpacked_extension_root_ = extension_dir;
 

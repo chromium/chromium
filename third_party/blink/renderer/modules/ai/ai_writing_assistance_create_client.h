@@ -80,6 +80,12 @@ class AIWritingAssistanceCreateClient
     if (!this->GetResolver()) {
       return;
     }
+    if (pending_remote && monitor_) {
+      // Ensure that a download completion event is sent.
+      monitor_->OnDownloadProgressUpdate(kNormalizedDownloadProgressMax,
+                                         kNormalizedDownloadProgressMax);
+    }
+
     if (GetExecutionContext() && pending_remote) {
       this->GetResolver()->Resolve(MakeGarbageCollected<V8SessionObjectType>(
           GetExecutionContext(), task_runner_, std::move(pending_remote),

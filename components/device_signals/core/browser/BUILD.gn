@@ -5,7 +5,6 @@
 static_library("browser") {
   public = [
     "base_signals_collector.h",
-    "browser_utils.h",
     "file_system_signals_collector.h",
     "metrics_utils.h",
     "pref_names.h",
@@ -44,12 +43,24 @@ static_library("browser") {
   deps = [
     "//components/device_signals/core/common",
     "//components/device_signals/core/common:features",
+    "//components/enterprise/connectors/core",
     "//components/policy/core/common",
     "//components/prefs",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/signin/public/identity_manager",
     "//components/version_info",
     "//net",
   ]
+
+  if (!is_android && !is_ios) {
+    public += [ "browser_utils.h" ]
+    sources += [ "browser_utils.cc" ]
+
+    deps += [
+      "//components/policy/content",
+      "//content/public/browser",
+    ]
+  }
 
   if (is_win || is_mac || is_linux) {
     public += [ "os_signals_collector.h" ]

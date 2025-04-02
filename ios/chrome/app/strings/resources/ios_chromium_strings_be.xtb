@@ -91,6 +91,7 @@
 <translation id="3054480780637153380">Адкрыйце налады Chromium у iOS, затым націсніце "Стандартны браўзер" і выберыце Chromium.</translation>
 <translation id="3102849287235003384">Каб выйсці з Уліковага запісу Google на ўсіх вэб-сайтах, <ph name="BEGIN_LINK" />выйдзіце з Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Зрабіць Chromium стандартным браўзерам?</translation>
+<translation id="3180939591219927904">Уключыце параметр "Блакіраваць укладкі ў рэжыме інкогніта пры закрыцці Chromium".</translation>
 <translation id="3242612358525156339">У наладах прылады адкрыйце пункт меню "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" і выберыце "Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{Зараз паказана 1 акно Chromium}one{Зараз паказана {count} акно Chromium}few{Зараз паказаны {count} акны Chromium}many{Зараз паказаны {count} акон Chromium}other{Зараз паказаны {count} акна Chromium}}</translation>
 <translation id="3344973607274501920">Браўзеру Chromium не ўдалося праверыць паролі. Паспрабуйце праверыць падключэнне да інтэрнэту.</translation>
@@ -260,6 +261,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Выбраныя даныя выдалены з браўзера Chromium і сінхранізаваных прылад. На сайце history.google.com могуць быць размешчаны іншыя формы гісторыі праглядаў сайтаў з вашага ўліковага запісу Google, напрыклад пошукавыя запыты і дзеянні ў іншых сэрвісах.</translation>
 <translation id="7395825497086981028">Пароль будзе захаваны ў Менеджары пароляў уліковага запісу <ph name="EMAIL" />.</translation>
+<translation id="7504829997542308412">Адкрыйце Chromium.</translation>
 <translation id="7531461704633548377">З браўзера Chromium</translation>
 <translation id="7554983317097061001">Парада Chromium: перамясціце Chromium на панэль Dock</translation>
 <translation id="7576863740961052505">Кіраванне наладамі Chromium</translation>

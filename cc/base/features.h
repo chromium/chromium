@@ -211,6 +211,14 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDynamicSafeAreaInsetsSupportedByCC);
 // frame production to 60Hz.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleMainFrameTo60Hz);
 
+// We only want to test the feature value if the client satisfies an eligibility
+// criteria, as testing the value enters the client into an experimental group,
+// and we only want the groups (including control) to only contain eligibilie
+// clients. This is also used for other feature that want to select from the
+// samt pool.
+CC_BASE_EXPORT bool IsEligibleForThrottleMainFrameTo60Hz();
+CC_BASE_EXPORT void SetIsEligibleForThrottleMainFrameTo60Hz(bool is_eligible);
+
 // A mode of ViewTransition capture that does not display unstyled frame,
 // instead displays the properly constructed frame while at the same doing
 // capture.

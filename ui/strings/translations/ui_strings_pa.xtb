@@ -38,6 +38,7 @@
 <translation id="19085484004813472">ਇਹ ਇੱਕ ਨਵੀਂ ਵਿਸ਼ੇਸ਼ਤਾ ਹੈ</translation>
 <translation id="2006524834898217237">ਪੱਕਾ ਕਰੋ ਕਿ ਇਹ ਡੀਵਾਈਸ ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਹੋਵੇ।</translation>
 <translation id="208586643495776849">ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
+<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />ਇਨਕੋਗਨਿਟੋ ਵਿੱਚ ਆਗਿਆ ਦਿਓ<ph name="END_BOLD" /> ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 ਦਿਨ}one{# ਦਿਨ}other{# ਦਿਨ}}</translation>
 <translation id="2148716181193084225">ਅੱਜ</translation>
 <translation id="2168039046890040389">ਸਫ਼ਾ ਉੱਪਰ</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ 'ਤੇ 'ਟੀਚੇ ਸਪੱਰਸ਼ ਕਰੋ' ਨੂੰ ਟੈਪ ਕਰੋ।</translation>
 <translation id="2295140143284145483">ਸਰਵੇਖਣ</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{ਆਈਡੀ ਵਾਲੀ ਐਕਸਟੈਂਸ਼ਨ <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ਨੂੰ ਲੱਭਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ ਹੈ। ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।}one{ਆਈਡੀ ਵਾਲੀ ਐਕਸਟੈਂਸ਼ਨ <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ਨੂੰ ਲੱਭਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ ਹੈ। ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।}other{ਆਈਡੀਆਂ ਵਾਲੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ਨੂੰ ਲੱਭਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ ਹੈ। ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।}}</translation>
 <translation id="2353636109065292463">ਤੁਹਾਡੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="2359808026110333948">ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="2388990488038464401">ਕੀ ਤੁਹਾਡੇ ਫ਼ੋਨ ਤੋਂ ਇਸ ਨੰਬਰ 'ਤੇ ਕਾਲ ਕਰਨੀ ਹੈ?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">ਸਭ ਮਿਟਾਓ</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 ਦਿਨ ਵਿੱਚ}one{# ਦਿਨ ਵਿੱਚ}other{# ਦਿਨ ਵਿੱਚ}}</translation>
 <translation id="2922712708897119705">ਕਾਲਮ <ph name="COLUMN_NAME" /> ਨੂੰ ਘਟਦੇ ਕ੍ਰਮ ਵਿੱਚ ਕ੍ਰਮ-ਬੱਧ ਕੀਤਾ ਗਿਆ।</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਲੱਭਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ}one{ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਲੱਭਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ}other{ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਲੱਭਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ}}</translation>
 <translation id="3036649622769666520">ਫਾਈਲਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">ਹੇਠਲਾ</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">ਇਸ ਰਾਹੀਂ ਕਾਲ ਕਰੋ</translation>
 <translation id="3306688585798492231">ਬਿਲਟ-ਇਨ ਡਿਸਪਲੇ</translation>
 <translation id="335581015389089642">ਸਪੀਚ</translation>
+<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />ਵੇਰਵੇ<ph name="END_BOLD" /> 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="3389286852084373014">ਲਿਖਤ ਬਹੁਤ ਜ਼ਿਆਦਾ ਵੱਡੀ ਹੈ</translation>
 <translation id="3406306243914553062">HTML ਸਮੱਗਰੀ</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 ਦਿਨ ਬਾਕੀ}one{# ਦਿਨ ਬਾਕੀ}other{# ਦਿਨ ਬਾਕੀ}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">ਕਾਲਮ <ph name="COLUMN_NAME" /> ਨੂੰ ਵਧਦੇ ਕ੍ਰਮ ਵਿੱਚ ਕ੍ਰਮ-ਬੱਧ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 ਨਾ-ਪੜ੍ਹੀ ਹੋਈ ਸੂਚਨਾ}one{# ਨਾ-ਪੜ੍ਹੀ ਹੋਈ ਸੂਚਨਾ}other{# ਨਾ-ਪੜ੍ਹੀਆਂ ਹੋਈਆਂ ਸੂਚਨਾਵਾਂ}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{ਇਨਕੋਗਨਿਟੋ ਵਿੱਚ ਅੱਗੇ ਦਿੱਤੀ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਚਾਲੂ ਕਰੋ:}one{ਇਨਕੋਗਨਿਟੋ ਵਿੱਚ ਅੱਗੇ ਦਿੱਤੀ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਚਾਲੂ ਕਰੋ:}other{ਇਨਕੋਗਨਿਟੋ ਵਿੱਚ ਅੱਗੇ ਦਿੱਤੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਚਾਲੂ ਕਰੋ:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ਮਹੀਨਾ ਪਹਿਲਾਂ}one{# ਮਹੀਨਾ ਪਹਿਲਾਂ}other{# ਮਹੀਨੇ ਪਹਿਲਾਂ}}</translation>
 <translation id="4289300219472526559">ਬੋਲਣਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="4289540628985791613">ਓਵਰਵਿਊ</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">ਨੰਬਰ</translation>
 <translation id="4746179598275229723">ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਅਣਪਿੰਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 ਮਹੀਨਾ ਬਾਕੀ}one{# ਮਹੀਨਾ ਬਾਕੀ}other{# ਮਹੀਨੇ ਬਾਕੀ}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{ਇਨਕੋਗਨਿਟੋ ਵਰਤਣ ਲਈ, ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੂੰ ਐਕਸਟੈਂਸ਼ਨ ਦੀ ਲੋੜ ਪਵੇਗੀ}one{ਇਨਕੋਗਨਿਟੋ ਵਰਤਣ ਲਈ, ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੂੰ ਐਕਸਟੈਂਸ਼ਨ ਦੀ ਲੋੜ ਪਵੇਗੀ}other{ਇਨਕੋਗਨਿਟੋ ਵਰਤਣ ਲਈ, ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੂੰ ਕੁਝ ਐਕਸਟੈਂਸ਼ਨਾਂ ਦੀ ਲੋੜ ਪਵੇਗੀ}}</translation>
+<translation id="482932175346970750">ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ਟਾਈਪ ਕਰੋ</translation>
 <translation id="4888938634149558681">ਕਾਲ ਕਰੋ</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 ਸਕਿੰਟ}one{# ਸਕਿੰਟ }other{# ਸਕਿੰਟ }}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;ਪੇਸਟ ਕਰੋ</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">ਭੇਜਣਾ ਅਸਫਲ ਰਿਹਾ</translation>
+<translation id="5283101102242354279">ਇਨਕੋਗਨਿਟੋ ਵਿੱਚ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਚਾਲੂ ਕਰੋ:</translation>
 <translation id="528468243742722775">ਸਮਾਪਤੀ</translation>
 <translation id="5329858601952122676">&amp;ਮਿਟਾਓ</translation>
 <translation id="5361107212971249203">ਲਿਖਤ</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">ਤੁਹਾਡੀ ਐਪਲੀਕੇਸ਼ਨ ਦੀਆਂ ਡਿਸਪਲੇ ਸੈਟਿੰਗਾਂ ਉਦੋਂ ਲਾਗੂ ਹੋਣਗੀਆਂ ਜਦੋਂ ਇਸਨੂੰ ਅਗਲੀ ਵਾਰ ਮੁੜ-ਸ਼ੁਰੂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 ਮਿੰਟ ਬਾਕੀ}one{# ਮਿੰਟ ਬਾਕੀ}other{# ਮਿੰਟ ਬਾਕੀ}}</translation>
+<translation id="7252604552361840748">ਉੱਪਰ ਦਿੱਤੀ ਐਕਸਟੈਂਸ਼ਨ ਲੱਭੋ</translation>
 <translation id="7363164521834647158">ਜਵਾਬ ਭੇਜੋ</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 ਮਿੰਟ ਪਹਿਲਾਂ}one{# ਮਿੰਟ ਪਹਿਲਾਂ}other{# ਮਿੰਟ ਪਹਿਲਾਂ}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>

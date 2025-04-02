@@ -8,9 +8,11 @@
 
 #include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/lobster/lobster_image_fetcher.h"
+#include "ui/base/l10n/l10n_util.h"
 
 LobsterCandidateResizer::LobsterCandidateResizer(LobsterImageFetcher* fetcher)
     : image_fetcher_(fetcher) {}
@@ -25,7 +27,8 @@ void LobsterCandidateResizer::InflateImage(
     LOG(ERROR) << "No image fetcher found";
     std::move(callback).Run(base::unexpected(ash::LobsterError(
         /*status_code=*/ash::LobsterErrorCode::kUnknown,
-        /*message=*/"Provider is not available")));
+        /*message=*/l10n_util::GetStringUTF8(
+            IDS_LOBSTER_NO_SERVER_RESPONSE_ERROR_MESSAGE))));
     return;
   }
 
@@ -45,7 +48,8 @@ void LobsterCandidateResizer::InflateImage(
               LOG(ERROR) << "No inflated image found.";
               std::move(callback).Run(base::unexpected(ash::LobsterError(
                   /*status_code=*/ash::LobsterErrorCode::kUnknown,
-                  /*message=*/"empty candidate response")));
+                  /*message=*/l10n_util::GetStringUTF8(
+                      IDS_LOBSTER_NO_SERVER_RESPONSE_ERROR_MESSAGE))));
               return;
             }
 

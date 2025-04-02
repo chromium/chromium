@@ -2994,6 +2994,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3045447014237878114">Tämä sivusto latasi useita tiedostoja automaattisesti</translation>
 <translation id="3046178388369461825">Linux-levytila erittäin vähissä</translation>
 <translation id="304644035656848980">Esikatsele mikrofonia</translation>
+<translation id="3046892784550338476">Versio <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Verkkosivu, täydellinen</translation>
 <translation id="304747341537320566">Puhemoottorit</translation>
 <translation id="3047678109605649715">Laitteella ei ole ääniä, joiden kieli on <ph name="LANGUAGE" />. Vapauta tilaa laitteelta ja yritä uudelleen.</translation>
@@ -3086,6 +3087,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3122883569442693641">Lisätietoja</translation>
 <translation id="3124111068741548686">KÄYTTÄJÄ-kahvat</translation>
 <translation id="3124332159330678621">Tee Chromesta näköisesi muokkaamalla selaimen tyyliä</translation>
+<translation id="3125816458150005808">Voit irrottaa kiinnityksen ja avata sen valikosta</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Käytä yhteensopivaa Dell- tai USB Type-C ‑virtalähdettä välttääksesi lataus- ja suorituskykyongelmat.</translation>
 <translation id="3127862849166875294">Linux-levyn koon muutos</translation>
@@ -5333,6 +5335,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4723140812774948886">Vaihda seuraavan kanssa</translation>
 <translation id="4724450788351008910">Yhteys muuttunut</translation>
 <translation id="4725511304875193254">Corgi</translation>
+<translation id="4725762702191453794">Välilehtihaku on nyt kiinnitetty yläpalkkiin</translation>
 <translation id="4726710355753484204">Lähennä painamalla Ctrl + Alt + kirkkauden lisäys.
 Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4726710629007580002">Laajennusta asennettaessa annettiin varoituksia:</translation>

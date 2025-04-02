@@ -407,8 +407,6 @@ TEST_F(AutofillExperimentsTest, WalletSyncTransportPref_GetAndSet) {
 }
 
 TEST_F(AutofillExperimentsTest, WalletSyncTransportPrefExplicitSignin) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillRemovePaymentsButterDropdown};
   ASSERT_FALSE(pref_service_.GetBoolean(::prefs::kExplicitBrowserSignin));
 
   const CoreAccountId account1 = CoreAccountId::FromGaiaId(GaiaId("account1"));

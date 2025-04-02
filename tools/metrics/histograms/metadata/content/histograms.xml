@@ -1262,7 +1262,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.RefreshTrigger"
-    enum="FeedRefreshTrigger" expires_after="2025-07-27">
+    enum="FeedRefreshTrigger" expires_after="2025-09-28">
   <owner>adamta@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1749,7 +1749,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.WebFeed.UnfollowResult"
-    enum="WebFeedSubscriptionRequestStatus" expires_after="2025-07-27">
+    enum="WebFeedSubscriptionRequestStatus" expires_after="2025-09-28">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1816,7 +1816,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.Activity"
-    enum="FeedActivityBucket" expires_after="2025-07-27">
+    enum="FeedActivityBucket" expires_after="2025-09-28">
   <owner>guiperez@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>

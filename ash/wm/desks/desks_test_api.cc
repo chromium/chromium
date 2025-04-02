@@ -184,12 +184,6 @@ void DesksTestApi::WaitForDeskBarUiUpdate(DeskBarViewBase* desk_bar_view) {
 }
 
 // static
-void DesksTestApi::SetDeskBarUiUpdateCallback(DeskBarViewBase* desk_bar_view,
-                                              base::OnceClosure done) {
-  desk_bar_view->on_update_ui_closure_for_testing_ = std::move(done);
-}
-
-// static
 DeskActionContextMenu* DesksTestApi::GetContextMenuForDesk(
     DeskBarViewBase::Type type,
     int index) {

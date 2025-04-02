@@ -440,6 +440,7 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="2783161812871838616">Zahtevaj spletno mesto za namizni računalnik</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Geslo je shranjeno v računu Google, {EMAIL}}one{Gesla so shranjena v računu Google, {EMAIL}}two{Gesla so shranjena v računu Google, {EMAIL}}few{Gesla so shranjena v računu Google, {EMAIL}}other{Gesla so shranjena v računu Google, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Dodajanje gesla …</translation>
+<translation id="2793703503584038325">Izberite geslo in se dotaknite ikone za deljenje</translation>
 <translation id="2797302972324086597">Koda države</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} datoteka}one{{COUNT} datoteka}two{{COUNT} datoteki}few{{COUNT} datoteke}other{{COUNT} datotek}}</translation>
 <translation id="2816489851009559785">Meni → Nastavitve → Privzeti brskalnik</translation>
@@ -579,6 +580,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="35083190962747987">Open ${url}</translation>
 <translation id="3511519535430890904">Dodajte zaščito brskanja</translation>
 <translation id="3517216995152707259">Če izbrišete podatke brskanja, se ne odjavite iz računa Google. To storite tako, da se <ph name="BEGIN_LINK" />odjavite iz Chroma<ph name="END_LINK" />.</translation>
+<translation id="3519792890877853853">Ta kartica prikazuje mnenja za izdelke na odprtih zavihkih</translation>
 <translation id="3519905498307021260">{count,plural, =1{Odpri zavihek}one{Odpri {count} zavihek}two{Odpri {count} zavihka}few{Odpri {count} zavihke}other{Odpri {count} zavihkov}}</translation>
 <translation id="3523513363815970085">Skrij »Vaša najbolj priljubljena spletna mesta«</translation>
 <translation id="3523789730715594198">Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
@@ -819,6 +821,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4565377596337484307">Skrij geslo</translation>
 <translation id="4568230126482344545">Skrij nedavne zavihke</translation>
 <translation id="4578835633387306383">Vklopi …</translation>
+<translation id="4580716718466706433">Odprite »Upravitelja gesel«</translation>
 <translation id="4587589328781138893">Spletna mesta</translation>
 <translation id="4592672037257622855">{count,plural, =1{Stran je bila dodana na bralni seznam}one{{count} stran je bila dodana na bralni seznam}two{{count} strani sta bili dodani na bralni seznam}few{{count} strani so bile dodane na bralni seznam}other{{count} strani je bilo dodanih na bralni seznam}}</translation>
 <translation id="459644946100970322">Želite vklopiti opozorila o ceni?</translation>
@@ -858,6 +861,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4717844083556844785">Trenutna spletna stran je v anonimnem načinu</translation>
 <translation id="4719927025381752090">Ponudi prevajanje</translation>
 <translation id="4720530280568305198">Izbira se je odprla na novem zavihku</translation>
+<translation id="472259426228234149">Cena 100–180 USD</translation>
 <translation id="473775607612524610">Posodobi</translation>
 <translation id="474209246745757965">Nakupujte in prevajajte s fotoaparatom</translation>
 <translation id="4742407542027196863">Upravljaj gesla …</translation>

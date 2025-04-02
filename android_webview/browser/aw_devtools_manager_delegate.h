@@ -33,6 +33,7 @@ class AwDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
   // Returns all targets embedder would like to report as debuggable remotely.
   content::DevToolsAgentHost::List RemoteDebuggingTargets(
       TargetType target_type) override;
+  content::BrowserContext* GetDefaultBrowserContext() override;
 };
 
 } //  namespace android_webview

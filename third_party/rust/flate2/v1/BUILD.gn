@@ -13,28 +13,28 @@ cargo_crate("lib") {
   epoch = "1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/flate2-1.1.0/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/flate2-1.1.0/src/bufreader.rs",
-    "//third_party/rust/chromium_crates_io/vendor/flate2-1.1.0/src/crc.rs",
-    "//third_party/rust/chromium_crates_io/vendor/flate2-1.1.0/src/deflate/bufread.rs",
-    "//third_party/rust/chromium_crates_io/vendor/flate2-1.1.0/src/deflate/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/flate2-1.1.0/src/deflate/read.rs",
-    "//third_party/rust/chromium_crates_io/vendor/flate2-1.1.0/src/deflate/write.rs",
-    "//third_party/rust/chromium_crates_io/vendor/flate2-1.1.0/src/ffi/c.rs",
-    "//third_party/rust/chromium_crates_io/vendor/flate2-1.1.0/src/ffi/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/flate2-1.1.0/src/ffi/rust.rs",
-    "//third_party/rust/chromium_crates_io/vendor/flate2-1.1.0/src/gz/bufread.rs",
-    "//third_party/rust/chromium_crates_io/vendor/flate2-1.1.0/src/gz/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/flate2-1.1.0/src/gz/read.rs",
-    "//third_party/rust/chromium_crates_io/vendor/flate2-1.1.0/src/gz/write.rs",
-    "//third_party/rust/chromium_crates_io/vendor/flate2-1.1.0/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/flate2-1.1.0/src/mem.rs",
-    "//third_party/rust/chromium_crates_io/vendor/flate2-1.1.0/src/zio.rs",
-    "//third_party/rust/chromium_crates_io/vendor/flate2-1.1.0/src/zlib/bufread.rs",
-    "//third_party/rust/chromium_crates_io/vendor/flate2-1.1.0/src/zlib/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/flate2-1.1.0/src/zlib/read.rs",
-    "//third_party/rust/chromium_crates_io/vendor/flate2-1.1.0/src/zlib/write.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/bufreader.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/crc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/deflate/bufread.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/deflate/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/deflate/read.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/deflate/write.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/ffi/c.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/ffi/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/ffi/rust.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/gz/bufread.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/gz/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/gz/read.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/gz/write.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/mem.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/zio.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/zlib/bufread.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/zlib/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/zlib/read.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/zlib/write.rs",
   ]
   inputs = []
 

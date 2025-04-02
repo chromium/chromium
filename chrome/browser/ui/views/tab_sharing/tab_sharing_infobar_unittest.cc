@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_infobar.h"
 
+#include <numeric>
+
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -51,23 +53,31 @@ class TestInfoBarManager : public infobars::InfoBarManager {
   void OpenURL(const GURL& url, WindowOpenDisposition disposition) override {}
 };
 
-std::u16string GetInfoText(const TabSharingStatusMessageView& info_view) {
-  std::u16string text;
-  for (views::View* button_or_label : info_view.children()) {
-    text += GetButtonOrLabelText(*button_or_label);
+std::vector<std::u16string> GetChildTexts(
+    const TabSharingStatusMessageView& info_view) {
+  std::vector<std::u16string> texts;
+  for (const views::View* button_or_label : info_view.children()) {
+    texts.emplace_back(GetButtonOrLabelText(*button_or_label));
   }
-  return text;
+  return texts;
 }
 
-std::u16string GetInfoText(const TabSharingInfoBar& infobar) {
-  const views::View& view = *infobar.GetStatusMessageViewForTesting();
-  if (view.GetClassName() == "Label") {
-    return std::u16string(static_cast<const views::Label&>(view).GetText());
-  } else if (view.GetClassName() == "TabSharingStatusMessageView") {
-    return GetInfoText(static_cast<const TabSharingStatusMessageView&>(view));
+void CheckStatusMessage(const TabSharingInfoBar& infobar,
+                        const std::vector<std::u16string>& message_fragments) {
+  const views::View* view = infobar.GetStatusMessageViewForTesting();
+  if (view->GetClassName() == "Label") {
+    EXPECT_EQ(static_cast<const views::Label*>(view)->GetText(),
+              std::accumulate(message_fragments.begin(),
+                              message_fragments.end(), std::u16string()));
+  } else if (view->GetClassName() == "TabSharingStatusMessageView") {
+    EXPECT_THAT(
+        GetChildTexts(static_cast<const TabSharingStatusMessageView&>(*view)),
+        testing::ElementsAreArray(message_fragments));
+  } else {
+    NOTREACHED();
   }
-  NOTREACHED();
 }
+
 }  // namespace
 
 class TabSharingInfoBarTest : public testing::TestWithParam<bool> {
@@ -85,8 +95,8 @@ class TabSharingInfoBarTest : public testing::TestWithParam<bool> {
                                               GetParam());
   }
 
-  TabSharingInfoBar* CreateInfobar(const Preferences& prefs) {
-    return static_cast<TabSharingInfoBar*>(TabSharingInfoBarDelegate::Create(
+  const TabSharingInfoBar& CreateInfobar(const Preferences& prefs) {
+    return *static_cast<TabSharingInfoBar*>(TabSharingInfoBarDelegate::Create(
         infobar_manager_.get(), nullptr, content::GlobalRenderFrameHostId(),
         content::GlobalRenderFrameHostId(), prefs.shared_tab_name,
         prefs.capturer_name, /*web_contents=*/nullptr, prefs.role,
@@ -122,42 +132,51 @@ INSTANTIATE_TEST_SUITE_P(, TabSharingInfoBarTest, testing::Bool());
 
 // Test that the infobar on the capturing tab has the correct text:
 // "|icon| Sharing this tab to |app|"
-TEST_P(TabSharingInfoBarTest, InfobarOnCapturingTab) {
-  TabSharingInfoBar* const infobar =
-      CreateInfobar({.shared_tab_name = std::u16string(),
+TEST_P(TabSharingInfoBarTest, InfobarOnCapturingTabWhenCapturingTitledTab) {
+  SCOPED_TRACE("InfobarOnCapturingTab");
+  const TabSharingInfoBar& infobar =
+      CreateInfobar({.shared_tab_name = kSharedTabName,
                      .capturer_name = kAppName,
                      .role = TabRole::kCapturingTab});
 
-  EXPECT_EQ(GetInfoText(*infobar),
-            l10n_util::GetStringFUTF16(
-                IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_UNTITLED_TAB_LABEL,
-                kAppName));
+  if (base::FeatureList::IsEnabled(features::kTabCaptureInfobarLinks)) {
+    CheckStatusMessage(infobar, {u"Sharing ", kSharedTabName, u" to this tab"});
+  } else {
+    CheckStatusMessage(infobar,
+                       {u"Sharing ", kSharedTabName, u" to ", kAppName});
+  }
+}
+
+// Test that the infobar on the capturing tab has the correct text:
+// "|icon| Sharing this tab to |app|"
+TEST_P(TabSharingInfoBarTest, InfobarOnCapturingTabWhenCapturingUntitledTab) {
+  const TabSharingInfoBar& infobar =
+      CreateInfobar({.shared_tab_name = std::u16string(),
+                     .capturer_name = kAppName,
+                     .role = TabRole::kCapturingTab});
+  CheckStatusMessage(infobar, {u"Sharing a tab to ", kAppName});
 }
 
 // Test that the infobar on the shared tab has the correct text:
 // "Sharing this tab to |app|"
 TEST_P(TabSharingInfoBarTest, InfobarOnCapturedTab) {
-  TabSharingInfoBar* const infobar =
+  SCOPED_TRACE("InfobarOnCapturedTab");
+  const TabSharingInfoBar& infobar =
       CreateInfobar({.shared_tab_name = std::u16string(),
                      .capturer_name = kAppName,
                      .role = TabRole::kCapturedTab});
-
-  EXPECT_EQ(GetInfoText(*infobar),
-            l10n_util::GetStringFUTF16(
-                IDS_TAB_SHARING_INFOBAR_SHARING_CURRENT_TAB_LABEL, kAppName));
+  CheckStatusMessage(infobar, {u"Sharing this tab to ", kAppName});
 }
 
 // Test that the infobar on another not share tab has the correct text:
 // Sharing |shared_tab| to |app|
 TEST_P(TabSharingInfoBarTest, InfobarOnNotSharedTab) {
-  TabSharingInfoBar* const infobar =
+  SCOPED_TRACE("InfobarOnNotSharedTab");
+  const TabSharingInfoBar& infobar =
       CreateInfobar({.shared_tab_name = kSharedTabName,
                      .capturer_name = kAppName,
                      .role = TabRole::kOtherTab});
-  EXPECT_EQ(GetInfoText(*infobar),
-            l10n_util::GetStringFUTF16(
-                IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_TAB_LABEL,
-                kSharedTabName, kAppName));
+  CheckStatusMessage(infobar, {u"Sharing ", kSharedTabName, u" to ", kAppName});
 }
 
 // Test that if the app preferred self-capture, but the user either chose
@@ -166,58 +185,47 @@ TEST_P(TabSharingInfoBarTest, InfobarOnNotSharedTab) {
 // Sharing |shared_tab| to |app|
 TEST_P(TabSharingInfoBarTest,
        InfobarOnCapturingTabIfCapturedAnotherTabButSelfCapturePreferred) {
-  TabSharingInfoBar* const infobar =
+  SCOPED_TRACE(
+      "InfobarOnCapturingTabIfCapturedAnotherTabButSelfCapturePreferred");
+  const TabSharingInfoBar& infobar =
       CreateInfobar({.shared_tab_name = std::u16string(),
                      .capturer_name = kAppName,
                      .role = TabRole::kCapturedTab});
-
-  EXPECT_EQ(GetInfoText(*infobar),
-            l10n_util::GetStringFUTF16(
-                IDS_TAB_SHARING_INFOBAR_SHARING_CURRENT_TAB_LABEL, kAppName));
+  CheckStatusMessage(infobar, {u"Sharing this tab to ", kAppName});
 }
 
 // Test that the infobar on another not cast tab has the correct text:
 // "Casting |tab_being_cast| to |sink|"
 TEST_P(TabSharingInfoBarTest, InfobarOnNotCastTab) {
+  SCOPED_TRACE("InfobarOnNotCastTab");
   Preferences preferences = {
       .shared_tab_name = kSharedTabName,
       .capturer_name = kSinkName,
       .role = TabRole::kOtherTab,
       .capture_type = TabSharingInfoBarDelegate::TabShareType::CAST};
-  TabSharingInfoBar* const infobar = CreateInfobar(preferences);
-  EXPECT_EQ(GetInfoText(*infobar),
-            l10n_util::GetStringFUTF16(
-                IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_TAB_LABEL,
-                kSharedTabName, kSinkName));
-
+  const TabSharingInfoBar& infobar = CreateInfobar(preferences);
+  CheckStatusMessage(infobar,
+                     {u"Casting ", kSharedTabName, u" to ", kSinkName});
   // Without sink name.
   preferences.capturer_name = std::u16string();
-  TabSharingInfoBar* const infobar2 = CreateInfobar(preferences);
-  EXPECT_EQ(
-      GetInfoText(*infobar2),
-      l10n_util::GetStringFUTF16(
-          IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_TAB_NO_DEVICE_NAME_LABEL,
-          kSharedTabName));
+  const TabSharingInfoBar& infobar2 = CreateInfobar(preferences);
+  CheckStatusMessage(infobar2, {u"Casting ", kSharedTabName});
 }
 
 // Test that the infobar on the tab being cast has the correct text:
 // "Casting this tab to |sink|"
 TEST_P(TabSharingInfoBarTest, InfobarOnCastTab) {
+  SCOPED_TRACE("InfobarOnCastTab");
   Preferences preferences = {
       .shared_tab_name = std::u16string(),
       .capturer_name = kSinkName,
       .role = TabRole::kCapturedTab,
       .capture_type = TabSharingInfoBarDelegate::TabShareType::CAST};
-  TabSharingInfoBar* const infobar = CreateInfobar(preferences);
-  EXPECT_EQ(GetInfoText(*infobar),
-            l10n_util::GetStringFUTF16(
-                IDS_TAB_CASTING_INFOBAR_CASTING_CURRENT_TAB_LABEL, kSinkName));
+  const TabSharingInfoBar& infobar = CreateInfobar(preferences);
+  CheckStatusMessage(infobar, {u"Casting this tab to ", kSinkName});
 
   // Without sink name.
   preferences.capturer_name = std::u16string();
-  TabSharingInfoBar* const infobar2 = CreateInfobar(preferences);
-  EXPECT_EQ(
-      GetInfoText(*infobar2),
-      l10n_util::GetStringUTF16(
-          IDS_TAB_CASTING_INFOBAR_CASTING_CURRENT_TAB_NO_DEVICE_NAME_LABEL));
+  const TabSharingInfoBar& infobar2 = CreateInfobar(preferences);
+  CheckStatusMessage(infobar2, {u"Casting this tab"});
 }

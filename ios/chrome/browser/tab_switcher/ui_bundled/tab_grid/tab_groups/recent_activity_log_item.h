@@ -17,6 +17,7 @@ enum class ActivityLogType : NSUInteger {
   kMemberRemoved,
   kGroupColorChanged,
   kGroupNameChanged,
+  kEmptyActivity,  // Used when there are no activity to display
   kUndefined,
 };
 

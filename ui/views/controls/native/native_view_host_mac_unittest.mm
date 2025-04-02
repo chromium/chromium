@@ -21,13 +21,15 @@
 class TestViewsHostable : public ui::ViewsHostableView {
  public:
   id parent_accessibility_element() const {
-    return parent_accessibility_element_;
+    return parent_accessibility_element_.Get();
   }
 
  private:
   // ui::ViewsHostableView:
   void ViewsHostableAttach(ui::ViewsHostableView::Host* host) override {}
-  void ViewsHostableDetach() override { parent_accessibility_element_ = nil; }
+  void ViewsHostableDetach() override {
+    parent_accessibility_element_ = gfx::NativeViewAccessible();
+  }
   void ViewsHostableSetBounds(const gfx::Rect& bounds_in_window) override {}
   void ViewsHostableSetVisible(bool visible) override {}
   void ViewsHostableMakeFirstResponder() override {}
@@ -39,10 +41,10 @@ class TestViewsHostable : public ui::ViewsHostableView {
     return parent_accessibility_element_;
   }
   gfx::NativeViewAccessible ViewsHostableGetAccessibilityElement() override {
-    return nil;
+    return gfx::NativeViewAccessible();
   }
 
-  id parent_accessibility_element_ = nil;
+  gfx::NativeViewAccessible parent_accessibility_element_;
 };
 
 @interface TestViewsHostableView : NSView <ViewsHostable>
@@ -228,7 +230,7 @@ TEST_F(NativeViewHostMacTest, AccessibilityParent) {
 
   host()->Attach(gfx::NativeView(view));
   EXPECT_NSEQ(views_hostable.parent_accessibility_element(),
-              toplevel()->GetRootView()->GetNativeViewAccessible());
+              toplevel()->GetRootView()->GetNativeViewAccessible().Get());
 
   host()->Detach();
   DestroyHost();

@@ -28,4 +28,6 @@ interface HTMLPermissionElement : HTMLElement {
   attribute EventHandler onpromptaction;
   attribute EventHandler onpromptdismiss;
   attribute EventHandler onvalidationstatuschange;
+
+  static boolean isTypeSupported(DOMString type);
 };

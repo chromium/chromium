@@ -931,7 +931,7 @@ TEST_F(InterestGroupStorageTest,
   {
     base::test::ScopedFeatureList scoped_feature_to_enforce_limit;
     scoped_feature_to_enforce_limit.InitAndEnableFeatureWithParameters(
-        features::
+        blink::features::
             kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon,
         {{"SelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit", "1"}});
 
@@ -954,7 +954,7 @@ TEST_F(InterestGroupStorageTest,
   {
     base::test::ScopedFeatureList scoped_feature_to_enforce_limit;
     scoped_feature_to_enforce_limit.InitAndEnableFeatureWithParameters(
-        features::
+        blink::features::
             kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon,
         {{"SelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit", "-1"}});
 
@@ -1009,62 +1009,6 @@ TEST_F(InterestGroupStorageTest,
     EXPECT_EQ(interest_groups[0].next_update_after,
               base::Time::Now() +
                   InterestGroupStorage::kUpdateSucceededBackoffPeriod);
-  }
-}
-
-TEST_F(InterestGroupStorageTest,
-       GetInterestGroupTruncatesSelectableReportingIdsBeyondKAnonLimit) {
-  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
-
-  url::Origin test_origin =
-      url::Origin::Create(GURL("https://owner.example.com"));
-  GURL ad1_url = GURL("https://owner.example.com/ad1");
-  GURL ad2_url = GURL("https://owner.example.com/ad2");
-  GURL ad3_url = GURL("https://owner.example.com/ad3");
-
-  InterestGroup g = NewInterestGroup(test_origin, "name");
-  blink::InterestGroupKey group_key(g.owner, g.name);
-  g.ads.emplace();
-  g.ads->emplace_back(
-      ad1_url, "metadata1",
-      /*size_group=*/std::nullopt,
-      /*buyer_reporting_id=*/"brid1",
-      /*buyer_and_seller_reporting_id=*/"shrid1",
-      /*selectable_buyer_and_seller_reporting_ids=*/
-      std::vector<std::string>{"selectable_id1", "selectable_id2"});
-  storage->JoinInterestGroup(g, test_origin.GetURL());
-
-  // Validate the interest groups's 'next_update_after' field, and that all of
-  // the `selectableBuyerAndSellerReportingIds` were loaded.
-  {
-    std::vector<StorageInterestGroup> interest_groups =
-        storage->GetInterestGroupsForOwner(test_origin);
-    ASSERT_THAT(interest_groups, testing::SizeIs(1u));
-    ASSERT_TRUE(interest_groups[0].interest_group.ads.has_value());
-    const InterestGroup::Ad& ad = interest_groups[0].interest_group.ads->at(0);
-    ASSERT_TRUE(ad.selectable_buyer_and_seller_reporting_ids.has_value());
-    EXPECT_THAT(*ad.selectable_buyer_and_seller_reporting_ids,
-                testing::ElementsAre("selectable_id1", "selectable_id2"));
-  }
-
-  // With the 'TruncateToKAnonLimit' parameter set to true, this time we only
-  // get the `selectableBuyerAndSellerReportingIds` within that limit.
-  {
-    base::test::ScopedFeatureList scoped_feature_to_enforce_limit;
-    scoped_feature_to_enforce_limit.InitAndEnableFeatureWithParameters(
-        features::
-            kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon,
-        {{"SelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit", "1"},
-         {"SelectableBuyerAndSellerReportingIdsTruncateToKAnonLimit", "true"}});
-
-    std::vector<StorageInterestGroup> interest_groups =
-        storage->GetInterestGroupsForOwner(test_origin);
-    ASSERT_THAT(interest_groups, testing::SizeIs(1u));
-    ASSERT_TRUE(interest_groups[0].interest_group.ads.has_value());
-    const InterestGroup::Ad& ad = interest_groups[0].interest_group.ads->at(0);
-    ASSERT_TRUE(ad.selectable_buyer_and_seller_reporting_ids.has_value());
-    EXPECT_THAT(*ad.selectable_buyer_and_seller_reporting_ids,
-                testing::ElementsAre("selectable_id1"));
   }
 }
 

@@ -72,8 +72,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
                                  "?p=new_tab&co=GENIE.Platform%3DiOS&oco=1";
 }  // namespace
 
-@interface NewTabPageMediator () <ChromeAccountManagerServiceObserver,
-                                  IdentityManagerObserverBridgeDelegate,
+@interface NewTabPageMediator () <IdentityManagerObserverBridgeDelegate,
                                   PrefObserverDelegate,
                                   SearchEngineObserving,
                                   SyncObserverModelBridge>
@@ -93,8 +92,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 @end
 
 @implementation NewTabPageMediator {
-  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountManagerServiceObserver;
   // Listen for default search engine changes.
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
   // Observes changes in identity and updates the Identity Disc.
@@ -149,9 +146,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     _URLLoader = URLLoader;
     _authService = authService;
     _accountManagerService = accountManagerService;
-    _accountManagerServiceObserver =
-        std::make_unique<ChromeAccountManagerServiceObserverBridge>(
-            self, _accountManagerService);
     _identityManager = identityManager;
     _identityObserverBridge =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
@@ -189,7 +183,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 - (void)shutdown {
   _searchEngineObserver.reset();
   _identityObserverBridge.reset();
-  _accountManagerServiceObserver.reset();
   self.accountManagerService = nil;
   self.discoverFeedService = nullptr;
   _prefChangeRegistrar.reset();
@@ -256,19 +249,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   [self openMenuItemWebPage:url];
 }
 
-#pragma mark - ChromeAccountManagerServiceObserver
-
-- (void)identityUpdated:(id<SystemIdentity>)identity {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
-    // Listening to `onExtendedAccountInfoUpdated` instead.
-    return;
-  }
-  if (![identity isEqual:_signedInIdentity]) {
-    return;
-  }
-  [self handleIdentityUpdated];
-}
-
 #pragma mark - SearchEngineObserving
 
 - (void)searchEngineChanged {
@@ -294,10 +274,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  if (!IsUseAccountListFromIdentityManagerEnabled()) {
-    // Listening to `identityUpdated` instead.
-    return;
-  }
   if (info.gaia != GaiaId(_signedInIdentity.gaiaID)) {
     return;
   }

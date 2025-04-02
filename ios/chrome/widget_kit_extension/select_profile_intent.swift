@@ -17,7 +17,8 @@ struct AccountQuery: EntityQuery {
   }
 
   func defaultResult() async -> AccountDetail? {
-    let noAccount = AccountDetail(id: "No account", gaia: "Default")
+    let noAccount = AccountDetail(
+      id: "IDS_IOS_WIDGET_KIT_EXTENSION_NO_ACCOUNT_LABEL", gaia: "Default")
 
     guard let accounts = try? await suggestedEntities()
     else { return noAccount }
@@ -73,7 +74,7 @@ struct SelectAccountIntent: WidgetConfigurationIntent {
   static var title: LocalizedStringResource = "Select Account"
   static var description = IntentDescription("Selects the account to display shortcuts for.")
 
-  @Parameter(title: "Account")
+  @Parameter(title: "IDS_IOS_WIDGET_KIT_EXTENSION_SELECT_ACCOUNT_LABEL")
   var account: AccountDetail?
 
   // Returns the avatar linked to the account.

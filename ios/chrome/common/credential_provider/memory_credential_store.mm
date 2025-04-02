@@ -9,10 +9,12 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
+#import "ios/chrome/common/credential_provider/credential_store_util.h"
 
 @interface MemoryCredentialStore ()
 
-// Working queue used to sync the mutable set operations.
+// Working queue used to sync the mutable set and offload expensive get
+// operations.
 @property(nonatomic) dispatch_queue_t workingQueue;
 
 // The in-memory storage.
@@ -43,9 +45,19 @@
   return credentials;
 }
 
+- (void)getCredentialsWithCompletion:
+    (void (^)(NSArray<id<Credential>>*))completion {
+  CHECK(completion);
+  dispatch_async(self.workingQueue, ^{
+    completion([self.memoryStorage allValues]);
+  });
+}
+
 - (void)saveDataWithCompletion:(void (^)(NSError* error))completion {
   // No-op.
-  completion(nil);
+  if (completion) {
+    completion(nil);
+  }
 }
 
 - (void)removeAllCredentials {

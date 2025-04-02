@@ -130,7 +130,7 @@ void CreateDefaultTabGroupAndOpenMenu(
 
 // Creates a shared tab group and opens the tab group indicator menu.
 void CreateSharedGroupAndOpenMenu() {
-  [TabGroupAppInterface prepareFakeSharedTabGroups:1];
+  [TabGroupAppInterface prepareFakeSharedTabGroups:1 asOwner:NO];
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:TabGridCloseButtonForCellAtIndex(0)]
       performAction:grey_tap()];

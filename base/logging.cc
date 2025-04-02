@@ -463,33 +463,41 @@ void SetLogFatalCrashKey(LogMessage* log_message) {
 #endif  // !BUILDFLAG(IS_NACL)
 }
 
-std::string BuildCrashString(const char* file,
+std::string BuildCrashString(std::string_view file,
                              int line,
-                             const char* message_without_prefix) {
+                             std::string_view message_without_prefix) {
   // Only log last path component.
-  if (file) {
-    const char* slash = UNSAFE_TODO(strrchr(file,
+  char separator =
 #if BUILDFLAG(IS_WIN)
-                                            '\\'
+      '\\';
 #else
-                                            '/'
+      '/';
 #endif  // BUILDFLAG(IS_WIN)
-                                            ));
-    if (slash) {
-      file = UNSAFE_TODO(slash + 1);
-    }
+
+  auto pos = file.rfind(separator);
+  if (pos == std::string_view::npos) {
+    pos = 0;
+  } else {
+    pos += 1;
   }
 
-  return base::StringPrintf("%s:%d: %s", file, line, message_without_prefix);
+  file = file.substr(pos);
+
+  return base::StringPrintf("%.*s:%d: %.*s", static_cast<int>(file.length()),
+                            file.data(), line,
+                            static_cast<int>(message_without_prefix.length()),
+                            message_without_prefix.data());
 }
 
 // Invokes macro to record trace event when a log message is emitted.
-void TraceLogMessage(const char* file, int line, const std::string& message) {
+void TraceLogMessage(std::string_view file,
+                     int line,
+                     const std::string& message) {
   TRACE_EVENT_INSTANT("log", "LogMessage", [&](perfetto::EventContext ctx) {
     perfetto::protos::pbzero::LogMessage* log = ctx.event()->set_log_message();
     log->set_source_location_iid(base::trace_event::InternedSourceLocation::Get(
-        &ctx, base::trace_event::TraceSourceLocation(/*function_name=*/nullptr,
-                                                     file, line)));
+        &ctx, base::trace_event::TraceSourceLocation(
+                  /*function_name=*/std::string_view(), file, line)));
     log->set_body_iid(
         base::trace_event::InternedLogMessage::Get(&ctx, message));
   });
@@ -613,14 +621,11 @@ int GetVlogVerbosity() {
   return std::max(-1, LOGGING_INFO - GetMinLogLevel());
 }
 
-int GetVlogLevelHelper(const char* file, size_t N) {
-  DCHECK_GT(N, 0U);
-
+int GetVlogLevelHelper(std::string_view file) {
   // Note: |g_vlog_info| may change on a different thread during startup
   // (but will always be valid or nullptr).
   VlogInfo* vlog_info = GetVlogInfo();
-  return vlog_info ? vlog_info->GetVlogLevel(std::string_view(file, N - 1))
-                   : GetVlogVerbosity();
+  return vlog_info ? vlog_info->GetVlogLevel(file) : GetVlogVerbosity();
 }
 
 void SetLogItems(bool enable_process_id,
@@ -653,7 +658,7 @@ namespace {
   // This simulates a NOTREACHED() at file:line instead of here. This is used
   // instead of base::ImmediateCrash() to give better error messages locally
   // (printed stack for one).
-  LogMessageFatal(file, line, LOGGING_FATAL).stream()
+  LogMessageFatal(std::string_view(file), line, LOGGING_FATAL).stream()
       << "NOTREACHED hit. " << prefix_end;
 }
 
@@ -712,10 +717,13 @@ void DisplayDebugMessageInDialog(const std::string& str) {
 }
 #endif  // !defined(NDEBUG)
 
-LogMessage::LogMessage(const char* file, int line, LogSeverity severity)
+LogMessage::LogMessage(std::string_view file, int line, LogSeverity severity)
     : severity_(severity), file_(file), line_(line) {
   Init(file, line);
 }
+
+LogMessage::LogMessage(const char* file, int line, LogSeverity severity)
+    : LogMessage(std::string_view(file), line, severity) {}
 
 LogMessage::~LogMessage() {
   Flush();
@@ -951,12 +959,12 @@ void LogMessage::Flush() {
 }
 
 std::string LogMessage::BuildCrashString() const {
-  return logging::BuildCrashString(file(), line(),
-                                   UNSAFE_TODO(str().c_str() + message_start_));
+  return logging::BuildCrashString(
+      file(), line(), std::string_view(str()).substr(message_start_));
 }
 
 // writes the common header info to the stream
-void LogMessage::Init(const char* file, int line) {
+void LogMessage::Init(std::string_view file, int line) {
   // Don't let actions from this method affect the system error after returning.
   base::ScopedClearLastError scoped_clear_last_error;
 
@@ -971,15 +979,14 @@ void LogMessage::Init(const char* file, int line) {
   // TODO(pbos): Consider migrating LogMessage and the LOG() macros to use
   // base::Location directly. See base/check.h for inspiration.
   const std::string_view filename =
-      file[0] == '.' ? std::string_view(file).substr(
-                           std::min(std::size_t{6}, strlen(file)))
+      file[0] == '.' ? file.substr(std::min(std::size_t{6}, file.length()))
                      : file;
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (g_log_format == LogFormat::LOG_FORMAT_SYSLOG) {
-    InitWithSyslogPrefix(
-        filename, line, TickCount(), log_severity_name(severity_), g_log_prefix,
-        g_log_process_id, g_log_thread_id, g_log_timestamp, g_log_tickcount);
+    InitWithSyslogPrefix(file, line, TickCount(), log_severity_name(severity_),
+                         g_log_prefix, g_log_process_id, g_log_thread_id,
+                         g_log_timestamp, g_log_tickcount);
   } else
 #endif  // BUILDFLAG(IS_CHROMEOS)
   {
@@ -1117,7 +1124,7 @@ BASE_EXPORT std::string SystemErrorCodeToString(SystemErrorCode error_code) {
 }
 
 #if BUILDFLAG(IS_WIN)
-Win32ErrorLogMessage::Win32ErrorLogMessage(const char* file,
+Win32ErrorLogMessage::Win32ErrorLogMessage(std::string_view file,
                                            int line,
                                            LogSeverity severity,
                                            SystemErrorCode err)
@@ -1145,7 +1152,7 @@ Win32ErrorLogMessageFatal::~Win32ErrorLogMessageFatal() {
 }
 
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-ErrnoLogMessage::ErrnoLogMessage(const char* file,
+ErrnoLogMessage::ErrnoLogMessage(std::string_view file,
                                  int line,
                                  LogSeverity severity,
                                  SystemErrorCode err)

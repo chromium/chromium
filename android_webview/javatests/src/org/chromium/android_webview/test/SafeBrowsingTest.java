@@ -525,7 +525,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
 
         // Check onSafeBrowsingHit arguments
         final String responseUrl = mTestServer.getURL(BILLING_HTML_PATH);
-        Assert.assertEquals(responseUrl, mContentsClient.getLastRequest().url);
+        Assert.assertEquals(responseUrl, mContentsClient.getLastRequest().getUrl());
         // The expectedCode intentionally depends on targetSdk (and is disconnected from SDK_INT).
         // This is for backwards compatibility with apps with a lower targetSdk.
         int expectedCode =
@@ -599,12 +599,12 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         Assert.assertEquals(
                 "Network error is for the malicious page",
                 WEB_UI_MALWARE_URL,
-                errorHelper.getRequest().url);
+                errorHelper.getRequest().getUrl());
 
         assertGreenPageShowing();
 
         // Check onSafeBrowsingHit arguments
-        Assert.assertEquals(WEB_UI_MALWARE_URL, mContentsClient.getLastRequest().url);
+        Assert.assertEquals(WEB_UI_MALWARE_URL, mContentsClient.getLastRequest().getUrl());
         Assert.assertEquals(
                 AwSafeBrowsingConversionHelper.SAFE_BROWSING_THREAT_MALWARE,
                 mContentsClient.getLastThreatType());
@@ -693,7 +693,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         Assert.assertEquals(
                 "Network error is for the malicious page",
                 responseUrl,
-                errorHelper.getRequest().url);
+                errorHelper.getRequest().getUrl());
     }
 
     @Test
@@ -773,7 +773,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         Assert.assertEquals(
                 "Network error is for the malicious page",
                 responseUrl,
-                errorHelper.getRequest().url);
+                errorHelper.getRequest().getUrl());
     }
 
     @Test
@@ -848,7 +848,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
 
         // Check onSafeBrowsingHit arguments
         final String responseUrl = mTestServer.getURL(PHISHING_HTML_PATH);
-        Assert.assertEquals(responseUrl, mContentsClient.getLastRequest().url);
+        Assert.assertEquals(responseUrl, mContentsClient.getLastRequest().getUrl());
         Assert.assertEquals(
                 AwSafeBrowsingConversionHelper.SAFE_BROWSING_THREAT_PHISHING,
                 mContentsClient.getLastThreatType());
@@ -868,7 +868,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         assertTargetPageHasLoaded(PHISHING_PAGE_BACKGROUND_COLOR);
 
         // Check onSafeBrowsingHit arguments
-        Assert.assertEquals(responseUrl, mContentsClient.getLastRequest().url);
+        Assert.assertEquals(responseUrl, mContentsClient.getLastRequest().getUrl());
         Assert.assertEquals(
                 AwSafeBrowsingConversionHelper.SAFE_BROWSING_THREAT_PHISHING,
                 mContentsClient.getLastThreatType());
@@ -891,12 +891,12 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         Assert.assertEquals(
                 "Network error is for the malicious page",
                 responseUrl,
-                errorHelper.getRequest().url);
+                errorHelper.getRequest().getUrl());
 
         assertGreenPageShowing();
 
         // Check onSafeBrowsingHit arguments
-        Assert.assertEquals(responseUrl, mContentsClient.getLastRequest().url);
+        Assert.assertEquals(responseUrl, mContentsClient.getLastRequest().getUrl());
         Assert.assertEquals(
                 AwSafeBrowsingConversionHelper.SAFE_BROWSING_THREAT_MALWARE,
                 mContentsClient.getLastThreatType());
@@ -1109,7 +1109,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         AwWebResourceRequest requestsForUrl =
                 mContentsClient.getShouldInterceptRequestHelper().getRequestsForUrl(linkUrl);
         // Make sure the URL was seen for a main frame navigation.
-        Assert.assertTrue(requestsForUrl.isOutermostMainFrame);
+        Assert.assertTrue(requestsForUrl.isOutermostMainFrame());
     }
 
     @Test

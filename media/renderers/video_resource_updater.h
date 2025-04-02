@@ -62,8 +62,6 @@ class MEDIA_EXPORT VideoFrameExternalResource {
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback;
 
-  uint32_t bits_per_channel = 8;
-
   VideoFrameExternalResource();
   VideoFrameExternalResource(VideoFrameExternalResource&& other);
   VideoFrameExternalResource& operator=(VideoFrameExternalResource&& other);

@@ -49,6 +49,9 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       {"offlineNoticeAction", IDS_GLIC_OFFLINE_NOTICE_ACTION},
       {"offlineNoticeActionButton", IDS_GLIC_OFFLINE_NOTICE_ACTION_BUTTON},
       {"offlineNoticeHeader", IDS_GLIC_OFFLINE_NOTICE_HEADER},
+      {"signInNotice", IDS_GLIC_SIGN_IN_NOTICE},
+      {"signInNoticeActionButton", IDS_GLIC_SIGN_IN_NOTICE_ACTION_BUTTON},
+      {"signInNoticeHeader", IDS_GLIC_SIGN_IN_NOTICE_HEADER},
   };
 
   content::BrowserContext* browser_context =

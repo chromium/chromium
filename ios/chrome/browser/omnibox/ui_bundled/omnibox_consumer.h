@@ -31,9 +31,6 @@
 // in an omnibox with empty text
 - (void)setEmptyTextLeadingImage:(UIImage*)icon;
 
-// Notifies the consumer to update the text immediately.
-- (void)updateText:(NSAttributedString*)text;
-
 /// Sets the thumbnail image used for image search. Set to`nil` to hide the
 /// thumbnail.
 - (void)setThumbnailImage:(UIImage*)image;

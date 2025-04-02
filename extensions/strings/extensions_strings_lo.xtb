@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">ໄຟລ໌ Manifest ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="7217838517480956708">ຜູ້​ບໍ​ລິ​ຫານ​​ເຄື່ອງຈັກ​ນີ້​ໄດ້​ຮຽກ​ຮ້ອງ​ໃຫ້ <ph name="EXTENSION_NAME" /> ທີ່​ຈະ​ຕິດ​ຕັ້ງ​. ມັນ​ບໍ່​ສາ​ມາດ​ໄດ້​ຮັບ​ການ​ໂຍກ​ຍ້າຍ​ຫຼື​ດັດ​ແກ້​.</translation>
 <translation id="7612608473764576263">ຄ່າປ້ອນເຂົ້າສໍາລັບປຸ່ມສ່ວນຕົວຕ້ອງມີຮູບແບບທີ່ຖືກຕ້ອງ (ປຸ່ມ RSA ທີ່ເຂົ້າລະຫັດ PEM ໃນຮູບແບບ PKCS#8).</translation>
+<translation id="7876803335449432072">ບໍ່ສາມາດໂຫຼດໄຟລ໌ '<ph name="RELATIVE_PATH" />' ສຳລັບສະຄຣິບເນື້ອຫາໄດ້, ສະໄຕລ໌ຊີດຂອງສະຄຣິບເນື້ອຫາສາມາດໂຫຼດໄດ້ສະເພາະຈາກໄຟລ໌ສະໄຕລ໌ຊີດທີ່ຮອງຮັບເທົ່ານັ້ນ ເຊັ່ນ: ໄຟລ໌ .css.</translation>
 <translation id="7939686037314084444">ສ່ວນຂະຫຍາຍບໍ່ສາມາດໂຫຼດຢ່າງຖືກຕ້ອງໄດ້. ມັນອາດຈະບໍ່ສາມາດສະກັດຄຳຂໍຂອງເຄືອຂ່າຍໄດ້.</translation>
 <translation id="7972881773422714442">ທາງ​ເລືອກ​: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">ປິ່ນໜ້າໃສ່ຜູ້ໃຊ້</translation>
 <translation id="8047248493720652249">ສ່ວນຂະຫຍາຍນີ້ໃສ່ຊື່ດາວໂຫຼດ "<ph name="ATTEMPTED_FILENAME" />" ບໍ່ໄດ້ ເພາະວ່າສ່ວນຂະຫຍາຍອື່ນ (<ph name="EXTENSION_NAME" />) ໄດ້ກໍານົດຊື່ໄຟລ໌ອື່ນ "<ph name="ACTUAL_FILENAME" />" ແລ້ວ.</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> ຈາກ <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">ໄຟລ໌ Manifest ຫາຍໄປ ຫຼື ບໍ່ສາມາດອ່ານໄດ້</translation>
+<translation id="8621383749470166852">ບໍ່ສາມາດໂຫຼດໄຟລ໌ '<ph name="RELATIVE_PATH" />' ສຳລັບສະຄຣິບເນື້ອຫາໄດ້, ສະຄຣິບເນື້ອຫາສາມາດໂຫຼດໄດ້ສະເພາະຈາກໄຟລ໌ JavaScript ທີ່ຮອງຮັບເທົ່ານັ້ນ ເຊັ່ນ: ໄຟລ໌ .js.</translation>
 <translation id="8636666366616799973">ແພັກເກດໃຊ້ບໍ່ໄດ້. ລາຍລະອຽດ: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" ກຳລັງຮ້ອງຂໍການເຂົ້າເຖິງອຸປະກອນຂອງທ່ານໜຶ່ງເຄື່ອງ:</translation>
 <translation id="8885905466771744233">ມີລະຫັດສ່ວນຕົວສໍາລັບສ່ວນຂະຫຍາຍທີ່ລະບຸໄວ້ຢູ່ແລ້ວ. ໃຊ້ລະຫັດນັ້ນໃໝ່ ຫຼືລຶບມັນກ່ອນ.</translation>

@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -35,6 +36,7 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable, SystemBarCo
      * @param androidView The Android view for the bottom chin.
      * @param keyboardVisibilityDelegate A {@link KeyboardVisibilityDelegate} for watching keyboard
      *     visibility events.
+     * @param insetObserver The {@link InsetObserver} for checking IME insets.
      * @param layoutManager The {@link LayoutManager} for adding new scene overlays.
      * @param requestRenderRunnable Runnable that requests a re-render of the scene overlay.
      * @param edgeToEdgeController The {@link EdgeToEdgeController} for observing the edge-to-edge
@@ -46,6 +48,7 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable, SystemBarCo
     public EdgeToEdgeBottomChinCoordinator(
             View androidView,
             @NonNull KeyboardVisibilityDelegate keyboardVisibilityDelegate,
+            @NonNull InsetObserver insetObserver,
             @NonNull LayoutManager layoutManager,
             @NonNull Runnable requestRenderRunnable,
             @NonNull EdgeToEdgeController edgeToEdgeController,
@@ -54,6 +57,7 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable, SystemBarCo
         this(
                 androidView,
                 keyboardVisibilityDelegate,
+                insetObserver,
                 layoutManager,
                 edgeToEdgeController,
                 bottomControlsStacker,
@@ -65,6 +69,7 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable, SystemBarCo
     EdgeToEdgeBottomChinCoordinator(
             View androidView,
             @NonNull KeyboardVisibilityDelegate keyboardVisibilityDelegate,
+            @NonNull InsetObserver insetObserver,
             @NonNull LayoutManager layoutManager,
             @NonNull EdgeToEdgeController edgeToEdgeController,
             @NonNull BottomControlsStacker bottomControlsStacker,
@@ -91,6 +96,7 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable, SystemBarCo
                 new EdgeToEdgeBottomChinMediator(
                         model,
                         keyboardVisibilityDelegate,
+                        insetObserver,
                         mLayoutManager,
                         edgeToEdgeController,
                         bottomControlsStacker,

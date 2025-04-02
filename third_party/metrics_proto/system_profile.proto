@@ -1168,6 +1168,7 @@ message SystemProfileProto {
     MASKED_DOMAIN_LIST = 65;
     AMOUNT_EXTRACTION_HEURISTIC_REGEXES = 66;
     FINGERPRINTING_PROTECTION_FILTER_RULES = 67;
+    TRANSLATE_KIT = 68;
   }
 
   // Information about what Chrome components are registered and at which

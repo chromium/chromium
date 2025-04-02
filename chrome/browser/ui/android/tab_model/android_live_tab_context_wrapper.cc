@@ -104,10 +104,10 @@ sessions::LiveTab* AndroidLiveTabContextRestoreWrapper::AddRestoredTab(
     const sessions::tab_restore::Tab& tab,
     int tab_index,
     bool select,
-    bool restored_from_group_or_window_context,
+    bool is_restoring_group_or_window,
     sessions::tab_restore::Type original_session_type) {
   auto* live_tab = AndroidLiveTabContext::AddRestoredTab(
-      tab, tab_index, select, restored_from_group_or_window_context,
+      tab, tab_index, select, is_restoring_group_or_window,
       original_session_type);
   if (tab.group) {
     TabAndroid* restored_tab = TabAndroid::FromWebContents(

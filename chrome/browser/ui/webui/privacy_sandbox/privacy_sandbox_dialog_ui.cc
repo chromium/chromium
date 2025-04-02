@@ -290,12 +290,6 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
               IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_DESKTOP_ARIA_DESCRIPTION),
           kPrivacyPolicyFunc));
 
-  // Equalized buttons variation.
-  source->AddBoolean(
-      "isEqualizedPromptButtons",
-      base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxEqualizedPromptButtons));
-
   const GURL& url = web_ui->GetWebContents()->GetVisibleURL();
   if (url.query().find("debug") != std::string::npos) {
     // Not intended to be hooked to anything. The dialog will not initialize

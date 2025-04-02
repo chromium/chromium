@@ -513,18 +513,6 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
     return keyframe;
   }
 
-  StringKeyframe* CreateSVGKeyframe(const QualifiedName& name,
-                                    const String& value,
-                                    double offset) {
-    auto* keyframe = MakeGarbageCollected<StringKeyframe>();
-    keyframe->SetSVGAttributeValue(name, value);
-    keyframe->SetComposite(EffectModel::kCompositeReplace);
-    keyframe->SetOffset(offset);
-    keyframe->SetEasing(LinearTimingFunction::Shared());
-
-    return keyframe;
-  }
-
   StringKeyframeEffectModel* CreateKeyframeEffectModel(
       StringKeyframe* from,
       StringKeyframe* to,
@@ -1265,7 +1253,7 @@ TEST_P(AnimationCompositorAnimationsTest,
       *effect1->GetPropertySpecificKeyframes(target_property1h);
   EXPECT_EQ(2u, keyframes1.size());
   EXPECT_FALSE(keyframes1[0]->GetCompositorKeyframeValue());
-  EXPECT_EQ(1u, effect1->Properties().size());
+  EXPECT_EQ(1u, effect1->Properties().UniqueProperties().size());
   EXPECT_TRUE(CheckCanStartEffectOnCompositor(timing_, *element_.Get(),
                                               animation1, *effect1) &
               CompositorAnimations::kUnsupportedCSSProperty);
@@ -1288,7 +1276,7 @@ TEST_P(AnimationCompositorAnimationsTest,
       *effect2->GetPropertySpecificKeyframes(target_property2h);
   EXPECT_EQ(2u, keyframes2.size());
   EXPECT_TRUE(keyframes2[0]->GetCompositorKeyframeValue());
-  EXPECT_EQ(1u, effect2->Properties().size());
+  EXPECT_EQ(1u, effect2->Properties().UniqueProperties().size());
   EXPECT_TRUE(CheckCanStartEffectOnCompositor(timing_, *inline_.Get(),
                                               animation2, *effect2) &
               CompositorAnimations::
@@ -1314,7 +1302,7 @@ TEST_P(AnimationCompositorAnimationsTest,
       *effect3->GetPropertySpecificKeyframes(target_property3h);
   EXPECT_EQ(2u, keyframes3.size());
   EXPECT_TRUE(keyframes3[0]->GetCompositorKeyframeValue());
-  EXPECT_EQ(1u, effect3->Properties().size());
+  EXPECT_EQ(1u, effect3->Properties().UniqueProperties().size());
   EXPECT_TRUE(CheckCanStartEffectOnCompositor(timing_, *element_.Get(),
                                               animation3, *effect3) &
               CompositorAnimations::kUnsupportedCSSProperty);
@@ -1571,22 +1559,6 @@ TEST_P(AnimationCompositorAnimationsTest, CanStartEffectOnCompositorBasic) {
       non_allowed_frames_vector);
   EXPECT_TRUE(CanStartEffectOnCompositor(timing_, *non_allowed_frames) &
               CompositorAnimations::kEffectHasNonReplaceCompositeMode);
-
-  // Set SVGAttribute keeps a pointer to this thing for the lifespan of
-  // the Keyframe.  This is ugly but sufficient to work around it.
-  QualifiedName fake_name(AtomicString("prefix"), AtomicString("local"),
-                          AtomicString("uri"));
-
-  StringKeyframeVector non_css_frames_vector;
-  non_css_frames_vector.push_back(CreateSVGKeyframe(fake_name, "cargo", 0.0));
-  non_css_frames_vector.push_back(CreateSVGKeyframe(fake_name, "Fargo", 1.0));
-  auto* non_css_frames =
-      MakeGarbageCollected<StringKeyframeEffectModel>(non_css_frames_vector);
-  EXPECT_TRUE(CanStartEffectOnCompositor(timing_, *non_css_frames) &
-              CompositorAnimations::kAnimationAffectsNonCSSProperties);
-  EXPECT_TRUE(non_css_frames->RequiresPropertyNode());
-  // NB: Important that non_css_frames_vector goes away and cleans up
-  // before fake_name.
 }
 
 // -----------------------------------------------------------------------
@@ -2541,13 +2513,6 @@ TEST_P(AnimationCompositorAnimationsTest,
 
   EXPECT_FALSE(CanStartAnimation("svg-zoomed"));
   EXPECT_FALSE(CanStartAnimation("rect-zoomed"));
-
-  To<SVGElement>(GetDocument().getElementById(AtomicString("rect")))
-      ->SetWebAnimatedAttribute(
-          svg_names::kXAttr,
-          MakeGarbageCollected<SVGLength>(SVGLength::Initial::kPercent50,
-                                          SVGLengthMode::kOther));
-  EXPECT_FALSE(CanStartAnimation("rect"));
 }
 
 TEST_P(AnimationCompositorAnimationsTest, UnsupportedSVGCSSProperty) {

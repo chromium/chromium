@@ -2998,6 +2998,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3045447014237878114">Ši svetainė automatiškai atsisiuntė kelis failus</translation>
 <translation id="3046178388369461825">„Linux“ diske labai mažai vietos</translation>
 <translation id="304644035656848980">Mikrofono peržiūra</translation>
+<translation id="3046892784550338476"><ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> versija (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Tinklalapis, baigti</translation>
 <translation id="304747341537320566">Kalbų varikliai</translation>
 <translation id="3047678109605649715">Jūsų įrenginyje nėra balsų <ph name="LANGUAGE" />. Išvalykite erdvę įrenginyje ir bandykite dar kartą.</translation>
@@ -3090,6 +3091,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3122883569442693641">Daugiau išsamios informacijos</translation>
 <translation id="3124111068741548686">NAUDOTOJO tvarkomi elementai</translation>
 <translation id="3124332159330678621">Tinkinkite „Chrome“ ir suteikite naršyklei naują išvaizdą</translation>
+<translation id="3125816458150005808">Galite atsegti ir atidaryti meniu</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Norėdami išvengti įkrovimo ir veikimo problemų naudokite suderinamą „Dell“ arba „Type-C“ USB maitinimo adapterį.</translation>
 <translation id="3127862849166875294">„Linux“ disko dydžio keitimas</translation>
@@ -4089,6 +4091,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3820749202859700794">SECG elipsės formos kreivės secp521r1 (taip pat vadinama NIST P-521)</translation>
 <translation id="3821074617718452587">„Phone Hub“ pranešimai</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Plėtinys patvirtintas}one{Patvirtintas # plėtinys}few{Patvirtinti # plėtiniai}many{Patvirtinta # plėtinio}other{Patvirtinta # plėtinių}}</translation>
+<translation id="3822426549715448461">DD</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">„Linux“ rekomenduojama turėti bent <ph name="INSTALL_SIZE" /> vietos.</translation>
 <translation id="3824621460022590830">Netinkamas įrenginio registracijos prieigos raktas. Susisiekite su įrenginio savininku ar administratoriumi. Klaidos kodas: <ph name="ERROR_CODE" />.</translation>
@@ -4617,6 +4620,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4203769790323223880">Fotoaparatas neleidžiamas</translation>
 <translation id="4204415812590935863">Šiuo metu negalima sukurti temos.</translation>
 <translation id="4205157409548006256">Konfigūruojant „Linux“ įvyko klaida.</translation>
+<translation id="4205643719206044108">Kad būtų galima pateikti pasiūlymų, su „Google“ bendrinamos svetainės, kuriose lankotės, ir puslapių turinys</translation>
 <translation id="4206144641569145248">Ateivis</translation>
 <translation id="4206323443866416204">Pranešimai apie atsiliepimus</translation>
 <translation id="4206585797409671301">Leidžiama rodyti užklausas</translation>
@@ -5340,6 +5344,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4723140812774948886">Apkeisti su tolesniu</translation>
 <translation id="4724450788351008910">Ryšys pakeistas</translation>
 <translation id="4725511304875193254">Korgis</translation>
+<translation id="4725762702191453794">Skirtukų paieška dabar prisegta prie įrankių juostos</translation>
 <translation id="4726710355753484204">Jei norite priartinti, naudokite „Ctrl“ + „Alt“ + šviesumo didinimo klavišus.
 Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo klavišus.</translation>
 <translation id="4726710629007580002">Bandant įdiegti šį plėtinį buvo pateikti šie įspėjimai:</translation>
@@ -8758,6 +8763,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7199452998289813782">Pristabdyti perdavimą į „<ph name="DEVICE_NAME" />“</translation>
 <translation id="720110658997053098">Įgalinti nuolatinį šio įrenginio veikimą viešojo terminalo režimu</translation>
 <translation id="7201118060536064622">„<ph name="DELETED_ITEM_NAME" />“ ištrintas (-a)</translation>
+<translation id="7201336084980086208">Naudojant automatinį pildymą gali būti siūloma išsaugoti informaciją, pvz., vairuotojo pažymėjimo ar paso numerį, kai pateikiate formas</translation>
 <translation id="7201420661433230412">Peržiūrėti failus</translation>
 <translation id="7201432510117121839">Stalinio kompiuterio garso perdavimas šiame įrenginyje nepalaikomas</translation>
 <translation id="7201535955609308429">Palaukite, kol vykdomas patvirtinimas</translation>

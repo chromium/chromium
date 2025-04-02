@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/check_op.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -30,10 +31,6 @@
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-
-const char kEditAccountListIdentifier[] = "kEditAccountListIdentifier";
-const char kManageYourGoogleAccountIdentifier[] =
-    "kManageYourGoogleAccountIdentifier";
 
 namespace {
 
@@ -289,8 +286,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
               IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_GOOGLE_ACCOUNT_ITEM)
                 image:DefaultSymbolWithConfiguration(@"arrow.up.right.square",
                                                      symbolConfiguration)
-           identifier:base::SysUTF8ToNSString(
-                          kManageYourGoogleAccountIdentifier)
+           identifier:kAccountMenuManageYourGoogleAccountId
               handler:^(UIAction* action) {
                 base::RecordAction(base::UserMetricsAction(
                     "Signin_AccountMenu_ManageAccount"));
@@ -304,7 +300,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
                           IDS_IOS_ACCOUNT_MENU_EDIT_ACCOUNT_LIST)
                 image:DefaultSymbolWithConfiguration(@"pencil",
                                                      symbolConfiguration)
-           identifier:base::SysUTF8ToNSString(kEditAccountListIdentifier)
+           identifier:kAccountMenuEditAccountListId
               handler:^(UIAction* action) {
                 base::RecordAction(base::UserMetricsAction(
                     "Signin_AccountMenu_EditAccountList"));
@@ -496,6 +492,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
       @(RowIdentifierErrorExplanation), @(RowIdentifierErrorButton)
     ]
                intoSectionWithIdentifier:@(SyncErrorsSectionIdentifier)];
+    [self recordAccountMenuUserActionableError:error.errorType];
   }
 
   [snapshot appendSectionsWithIdentifiers:@[ @(AccountsSectionIdentifier) ]];
@@ -540,6 +537,14 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 - (CGFloat)preferredHeightForSheetContent {
   // This is the size of the content of the table view and the navigation bar.
   return self.tableView.contentSize.height + [self navigationBarHeight];
+}
+
+// Records that the `error` has been displayed to the user (either that it was
+// visible when they navigated to account menu setting page or that it appeared
+// while they were in that page).
+- (void)recordAccountMenuUserActionableError:
+    (syncer::SyncService::UserActionableError)error {
+  base::UmaHistogramEnumeration("Sync.AccountMenu.UserActionableError", error);
 }
 
 #pragma mark - UITableViewDelegate
@@ -683,18 +688,18 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
              0);
     [snapshot
         deleteSectionsWithIdentifiers:@[ @(SyncErrorsSectionIdentifier) ]];
-  } else if ([snapshot
-                 indexOfSectionIdentifier:@(SyncErrorsSectionIdentifier)] ==
-             NSNotFound) {
-    // The error appeared.
-    [snapshot insertSectionsWithIdentifiers:@[ @(SyncErrorsSectionIdentifier) ]
-                beforeSectionWithIdentifier:@(AccountsSectionIdentifier)];
-    [snapshot appendItemsWithIdentifiers:@[
-      @(RowIdentifierErrorExplanation), @(RowIdentifierErrorButton)
-    ]
-               intoSectionWithIdentifier:@(SyncErrorsSectionIdentifier)];
   } else {
-    // The error changed. No need to change the sections, only their content.
+    [self recordAccountMenuUserActionableError:error.errorType];
+    if ([snapshot indexOfSectionIdentifier:@(SyncErrorsSectionIdentifier)] ==
+        NSNotFound) {
+      [snapshot
+          insertSectionsWithIdentifiers:@[ @(SyncErrorsSectionIdentifier) ]
+            beforeSectionWithIdentifier:@(AccountsSectionIdentifier)];
+      [snapshot appendItemsWithIdentifiers:@[
+        @(RowIdentifierErrorExplanation), @(RowIdentifierErrorButton)
+      ]
+                 intoSectionWithIdentifier:@(SyncErrorsSectionIdentifier)];
+    }
   }
   [_accountMenuDataSource applySnapshot:snapshot animatingDifferences:YES];
   [self resize];

@@ -814,10 +814,10 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), redirectUrl);
         AwWebResourceRequest request = mContentsClient.waitForShouldOverrideUrlLoading();
-        Assert.assertEquals(redirectTarget, request.url);
-        Assert.assertEquals(serverSideRedirect, request.isRedirect);
-        Assert.assertFalse(request.hasUserGesture);
-        Assert.assertTrue(request.isOutermostMainFrame);
+        Assert.assertEquals(redirectTarget, request.getUrl());
+        Assert.assertEquals(serverSideRedirect, request.isRedirect());
+        Assert.assertFalse(request.hasUserGesture());
+        Assert.assertTrue(request.isOutermostMainFrame());
         waitForRedirectsToFinish(redirectUrl, redirectTarget);
 
         // Test clicking with JS, hasUserGesture must be false.
@@ -838,16 +838,16 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         clickOnLinkUsingJs();
 
         request = mContentsClient.waitForShouldOverrideUrlLoading();
-        Assert.assertEquals(redirectUrl, request.url);
-        Assert.assertFalse(request.isRedirect);
-        Assert.assertFalse(request.hasUserGesture);
-        Assert.assertTrue(request.isOutermostMainFrame);
+        Assert.assertEquals(redirectUrl, request.getUrl());
+        Assert.assertFalse(request.isRedirect());
+        Assert.assertFalse(request.hasUserGesture());
+        Assert.assertTrue(request.isOutermostMainFrame());
 
         request = mContentsClient.waitForShouldOverrideUrlLoading();
-        Assert.assertEquals(redirectTarget, request.url);
-        Assert.assertEquals(serverSideRedirect, request.isRedirect);
-        Assert.assertFalse(request.hasUserGesture);
-        Assert.assertTrue(request.isOutermostMainFrame);
+        Assert.assertEquals(redirectTarget, request.getUrl());
+        Assert.assertEquals(serverSideRedirect, request.isRedirect());
+        Assert.assertFalse(request.hasUserGesture());
+        Assert.assertTrue(request.isOutermostMainFrame());
         waitForRedirectsToFinish(redirectUrl, redirectTarget);
 
         indirectLoadCallCount = mShouldOverrideUrlLoadingHelper.getCallCount();
@@ -869,16 +869,16 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "link");
 
         request = mContentsClient.waitForShouldOverrideUrlLoading();
-        Assert.assertEquals(redirectUrl, request.url);
-        Assert.assertFalse(request.isRedirect);
-        Assert.assertTrue(request.hasUserGesture);
-        Assert.assertTrue(request.isOutermostMainFrame);
+        Assert.assertEquals(redirectUrl, request.getUrl());
+        Assert.assertFalse(request.isRedirect());
+        Assert.assertTrue(request.hasUserGesture());
+        Assert.assertTrue(request.isOutermostMainFrame());
 
         request = mContentsClient.waitForShouldOverrideUrlLoading();
-        Assert.assertEquals(redirectTarget, request.url);
-        Assert.assertEquals(serverSideRedirect, request.isRedirect);
-        Assert.assertFalse(request.hasUserGesture);
-        Assert.assertTrue(request.isOutermostMainFrame);
+        Assert.assertEquals(redirectTarget, request.getUrl());
+        Assert.assertEquals(serverSideRedirect, request.isRedirect());
+        Assert.assertFalse(request.hasUserGesture());
+        Assert.assertTrue(request.isOutermostMainFrame());
         waitForRedirectsToFinish(redirectUrl, redirectTarget);
     }
 
@@ -1020,7 +1020,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
             @Override
             public boolean shouldOverrideUrlLoading(AwWebResourceRequest request) {
                 super.shouldOverrideUrlLoading(request);
-                mAwContents.loadUrl(request.url);
+                mAwContents.loadUrl(request.getUrl());
                 return true;
             }
         }
@@ -1416,7 +1416,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
 
         @Override
         public boolean shouldOverrideUrlLoading(AwWebResourceRequest request) {
-            if (request.url.startsWith(BAD_SCHEME)) {
+            if (request.getUrl().startsWith(BAD_SCHEME)) {
                 mLatch.countDown();
                 return true;
             }
@@ -1426,7 +1426,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         @Override
         public void onReceivedError(AwWebResourceRequest request, AwWebResourceError error) {
             super.onReceivedError(request, error);
-            throw new RuntimeException("we should not receive an error code! " + request.url);
+            throw new RuntimeException("we should not receive an error code! " + request.getUrl());
         }
 
         public void waitForLatch() {

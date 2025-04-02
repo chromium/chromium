@@ -91,6 +91,7 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="3054480780637153380">Abre a configuración de Chromium en iOS, toca Default Browser App (Aplicación de navegador predeterminada) e selecciona Chromium.</translation>
 <translation id="3102849287235003384">Para pechar sesión na túa Conta de Google en todos os sitios web, <ph name="BEGIN_LINK" />pecha sesión en Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Queres que Chromium sexa o teu navegador predeterminado?</translation>
+<translation id="3180939591219927904">Activa Bloquear pestanas do modo de incógnito ao pechar Chromium</translation>
 <translation id="3242612358525156339">Na configuración do teu dispositivo, abre <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> e selecciona Chromium</translation>
 <translation id="328933489847748230">{count,plural, =1{Mostrando 1 ventá de Chromium}other{Mostrando {count} ventás de Chromium}}</translation>
 <translation id="3344973607274501920">Chromium non puido comprobar os teus contrasinais. Verifica a conexión a Internet.</translation>
@@ -260,6 +261,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Os datos seleccionados elimináronse de Chromium e dos dispositivos sincronizados. É posible que a túa conta de Google teña outras formas do historial de navegación, como buscas e actividade doutros servizos de Google, en history.google.com.</translation>
 <translation id="7395825497086981028">O teu contrasinal gardarase no xestor de contrasinais para <ph name="EMAIL" />.</translation>
+<translation id="7504829997542308412">Abre Chromium</translation>
 <translation id="7531461704633548377">De Chromium</translation>
 <translation id="7554983317097061001">Consello de Chromium: Move Chromium á barra de aplicacións</translation>
 <translation id="7576863740961052505">Xestiona a configuración de Chromium</translation>

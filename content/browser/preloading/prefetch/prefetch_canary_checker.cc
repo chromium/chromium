@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "content/browser/preloading/prefetch/prefetch_dns_prober.h"
 #include "content/public/browser/browser_context.h"
@@ -175,12 +176,14 @@ base::WeakPtr<PrefetchCanaryChecker> PrefetchCanaryChecker::GetWeakPtr() {
 void PrefetchCanaryChecker::UpdateCacheEntry(
     PrefetchCanaryChecker::CacheEntry entry,
     std::string key) {
+  TRACE_EVENT0("loading", "PrefetchCanaryChecker::UpdateCacheEntry");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   latest_cache_key_ = key;
   cache_.Put(key, entry);
 }
 
 void PrefetchCanaryChecker::UpdateCacheKey(std::string key) {
+  TRACE_EVENT0("loading", "PrefetchCanaryChecker::UpdateCacheKey");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   latest_cache_key_ = key;
 }
@@ -257,6 +260,8 @@ void PrefetchCanaryChecker::ProcessTimeout() {
 }
 
 void PrefetchCanaryChecker::ProcessFailure(int net_error) {
+  TRACE_EVENT1("loading", "PrefetchCanaryChecker::ProcessFailure", "net_error",
+               net_error);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!retry_timer_ || !retry_timer_->IsRunning());
   DCHECK(!timeout_timer_ || !timeout_timer_->IsRunning());
@@ -284,6 +289,7 @@ void PrefetchCanaryChecker::ProcessFailure(int net_error) {
 }
 
 void PrefetchCanaryChecker::ProcessSuccess() {
+  TRACE_EVENT0("loading", "PrefetchCanaryChecker::ProcessSuccess");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!retry_timer_ || !retry_timer_->IsRunning());
   DCHECK(!timeout_timer_ || !timeout_timer_->IsRunning());
@@ -301,6 +307,7 @@ void PrefetchCanaryChecker::ProcessSuccess() {
 }
 
 std::optional<bool> PrefetchCanaryChecker::CanaryCheckSuccessful() {
+  TRACE_EVENT0("loading", "PrefetchCanaryChecker::CanaryCheckSuccessful");
   std::optional<bool> result = LookupAndRunChecksIfNeeded();
   CanaryCheckLookupResult result_enum;
   if (!result.has_value()) {
@@ -324,6 +331,7 @@ void PrefetchCanaryChecker::RunChecksIfNeeded() {
 }
 
 std::optional<bool> PrefetchCanaryChecker::LookupAndRunChecksIfNeeded() {
+  TRACE_EVENT0("loading", "PrefetchCanaryChecker::LookupAndRunChecksIfNeeded");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Asynchronously update the network cache key. On Android, getting the
@@ -366,6 +374,7 @@ std::string PrefetchCanaryChecker::AppendNameToHistogram(
 }
 
 void PrefetchCanaryChecker::StartDNSResolution(const GURL& url) {
+  TRACE_EVENT0("loading", "PrefetchCanaryChecker::StartDNSResolution");
   net::NetworkAnonymizationKey nak =
       net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url))
           .network_anonymization_key();
@@ -407,6 +416,7 @@ void PrefetchCanaryChecker::StartDNSResolution(const GURL& url) {
 void PrefetchCanaryChecker::OnDNSResolved(
     int net_error,
     const std::optional<net::AddressList>& resolved_addresses) {
+  TRACE_EVENT0("loading", "PrefetchCanaryChecker::OnDNSResolved");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   timeout_timer_.reset();

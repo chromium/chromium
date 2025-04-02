@@ -653,11 +653,7 @@ TEST_F(PublisherTest, WebAppsOnApps) {
   app_service_test_.SetUp(profile());
   auto app_id = CreateWebApp(kAppName);
 
-  InstallReason expected_install_reason = InstallReason::kSync;
-  if (base::FeatureList::IsEnabled(
-          features::kWebAppDontAddExistingAppsToSync)) {
-    expected_install_reason = InstallReason::kUser;
-  }
+  InstallReason expected_install_reason = InstallReason::kUser;
 
   VerifyApp(AppType::kWeb, app_id, kAppName, Readiness::kReady,
             expected_install_reason, InstallSource::kBrowser, {}, base::Time(),

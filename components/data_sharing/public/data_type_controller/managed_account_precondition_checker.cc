@@ -8,44 +8,12 @@
 #include "base/functional/bind.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "ui/base/device_form_factor.h"
 
 namespace data_sharing {
 namespace {
 
 using PreconditionState = syncer::DataTypeController::PreconditionState;
-
-// Determines if the `finder`'s account is eligible to use the
-// SHARED_TAB_GROUP_DATA type based on its managed state. Dasher users are
-// currently not supported.
-PreconditionState GetPreconditionStateFromAccountManagedStatus(
-    const signin::AccountManagedStatusFinder* finder) {
-  // The finder should generally exist, but if it doesn't, "stop and keep data"
-  // is a safe default.
-  if (!finder) {
-    return syncer::DataTypeController::PreconditionState::kMustStopAndKeepData;
-  }
-
-  switch (finder->GetOutcome()) {
-    case signin::AccountManagedStatusFinder::Outcome::kConsumerGmail:
-    case signin::AccountManagedStatusFinder::Outcome::kConsumerWellKnown:
-    case signin::AccountManagedStatusFinder::Outcome::kConsumerNotWellKnown:
-      // Regular consumer accounts are supported.
-      return syncer::DataTypeController::PreconditionState::kPreconditionsMet;
-    case signin::AccountManagedStatusFinder::Outcome::kEnterpriseGoogleDotCom:
-    case signin::AccountManagedStatusFinder::Outcome::kEnterprise:
-      // Not supported for Dasher a.k.a. enterprise accounts (including
-      // @google.com accounts).
-      return syncer::DataTypeController::PreconditionState::
-          kMustStopAndClearData;
-    case signin::AccountManagedStatusFinder::Outcome::kPending:
-    case signin::AccountManagedStatusFinder::Outcome::kError:
-    case signin::AccountManagedStatusFinder::Outcome::kTimeout:
-      // While the enterprise-ness of the account isn't known yet, or if the
-      // detection failed, "stop and keep data" is a safe default.
-      return syncer::DataTypeController::PreconditionState::
-          kMustStopAndKeepData;
-  }
-}
 
 }  // namespace
 
@@ -74,9 +42,8 @@ ManagedAccountPreconditionChecker::~ManagedAccountPreconditionChecker() =
 
 PreconditionState ManagedAccountPreconditionChecker::GetPreconditionState()
     const {
-  // Exclude Dasher accounts.
-  return GetPreconditionStateFromAccountManagedStatus(
-      managed_status_finder_.get());
+  // Exclude Dasher and automotive users.
+  return GetPreconditionStateFromAccountManagedStatus();
 }
 
 void ManagedAccountPreconditionChecker::OnStateChanged(
@@ -98,6 +65,43 @@ void ManagedAccountPreconditionChecker::OnStateChanged(
 
 void ManagedAccountPreconditionChecker::AccountTypeDetermined() {
   on_precondition_changed_.Run();
+}
+
+// Dasher and automotive users are currently not supported.
+PreconditionState ManagedAccountPreconditionChecker::
+    GetPreconditionStateFromAccountManagedStatus() const {
+  // The finder should generally exist, but if it doesn't, "stop and keep data"
+  // is a safe default.
+  if (!managed_status_finder_) {
+    return syncer::DataTypeController::PreconditionState::kMustStopAndKeepData;
+  }
+
+  // TODO(crbug.com/405174548): Remove automotive check from the precondition
+  // checker after adding collaboration service check.
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_AUTOMOTIVE) {
+    return syncer::DataTypeController::PreconditionState::kMustStopAndClearData;
+  }
+
+  switch (managed_status_finder_->GetOutcome()) {
+    case signin::AccountManagedStatusFinder::Outcome::kConsumerGmail:
+    case signin::AccountManagedStatusFinder::Outcome::kConsumerWellKnown:
+    case signin::AccountManagedStatusFinder::Outcome::kConsumerNotWellKnown:
+      // Regular consumer accounts are supported.
+      return syncer::DataTypeController::PreconditionState::kPreconditionsMet;
+    case signin::AccountManagedStatusFinder::Outcome::kEnterpriseGoogleDotCom:
+    case signin::AccountManagedStatusFinder::Outcome::kEnterprise:
+      // Not supported for Dasher a.k.a. enterprise accounts (including
+      // @google.com accounts).
+      return syncer::DataTypeController::PreconditionState::
+          kMustStopAndClearData;
+    case signin::AccountManagedStatusFinder::Outcome::kPending:
+    case signin::AccountManagedStatusFinder::Outcome::kError:
+    case signin::AccountManagedStatusFinder::Outcome::kTimeout:
+      // While the enterprise-ness of the account isn't known yet, or if the
+      // detection failed, "stop and keep data" is a safe default.
+      return syncer::DataTypeController::PreconditionState::
+          kMustStopAndKeepData;
+  }
 }
 
 }  // namespace data_sharing

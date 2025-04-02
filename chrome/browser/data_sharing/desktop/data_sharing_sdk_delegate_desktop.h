@@ -83,6 +83,9 @@ class DataSharingSDKDelegateDesktop : public DataSharingSDKDelegate,
       const std::string& group_id,
       const std::string& access_token,
       base::OnceCallback<void(const std::optional<GURL>&)> callback) override;
+  void OnGroupAction(
+      data_sharing::mojom::GroupAction action,
+      data_sharing::mojom::GroupActionProgress progress) override;
 
   void AddAccessToken(
       const data_sharing_pb::AddAccessTokenParams& params,

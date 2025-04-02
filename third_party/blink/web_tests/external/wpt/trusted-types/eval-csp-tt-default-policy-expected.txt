@@ -18,3 +18,4 @@ This is a testharness.js-based test.
 [FAIL] AsyncGeneratorFunction constructor of string and TrustedScript works.
   Refused to evaluate a string as JavaScript because this document requires 'Trusted Type' assignment.
 Harness: the test ran to completion.
+

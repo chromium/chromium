@@ -98,6 +98,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @Mock private HubLayoutDependencyHolder mHubLayoutDependencyHolder;
     @Mock private TabWindowManager mTabWindowManager;
     @Mock private ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    @Mock private ObservableSupplier<Boolean> mScrimVisibilitySupplier;
     @Mock private ToolbarManager mToolbarManager;
     @Mock private ViewGroup mContentView;
 
@@ -226,7 +227,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                         mHubLayoutDependencyHolder,
                         mCompositorViewHolderSupplier,
                         mContentView,
-                        mToolbarManager);
+                        mToolbarManager,
+                        mScrimVisibilitySupplier);
 
         tabContentManagerSupplier.set(tabContentManager);
         mManager = mManagerPhone;

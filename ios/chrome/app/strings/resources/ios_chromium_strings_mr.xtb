@@ -91,6 +91,7 @@
 <translation id="3054480780637153380">iOS मध्ये Chromium सेटिंग्ज उघडा, त्यानंतर "डीफॉल्ट ब्राउझर ॲप" यावर टॅप करा आणि Chromium निवडा.</translation>
 <translation id="3102849287235003384">सर्व वेबसाइटवरील तुमच्या Google खाते मधून साइन आउट करण्यासाठी, <ph name="BEGIN_LINK" />Chromium मधून साइन आउट करणे<ph name="END_LINK" /> हे करा.</translation>
 <translation id="3115956258722352278">Chromium ला तुमचा डीफॉल्‍ट ब्राउझर बनवायचे आहे का?</translation>
+<translation id="3180939591219927904">"तुम्ही Chromium बंद करता, तेव्हा गुप्त टॅब लॉक करा" हे सुरू करा</translation>
 <translation id="3242612358525156339">तुमच्या डिव्हाइसच्या सेटिंग्जमधून, "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" उघडा आणि "Chromium" निवडा</translation>
 <translation id="328933489847748230">{count,plural, =1{आता १ Chromium विंडो दाखवत आहे}other{आता {count} Chromium विंडो दाखवत आहे}}</translation>
 <translation id="3344973607274501920">Chromium ला तुमचे पासवर्ड तपासता आले नाहीत. तुमचे इंटरनेट कनेक्शन तपासून पहा.</translation>
@@ -260,6 +261,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">निवडलेला डेटा Chromium आणि सिंक केलेल्या डिव्हाइसमधून काढला गेला आहे. तुमच्या Google खात्यामध्ये history.google.com येथे Google च्या इतर सेवांमधील शोध आणि ॲक्टिव्हिटी यासारख्या ब्राउझिंग इतिहासाची इतर रूपे असू शकतात.</translation>
 <translation id="7395825497086981028"><ph name="EMAIL" /> साठी तुमचा पासवर्ड हा पासवर्ड व्यवस्थापक यामध्ये सेव्ह केला जाईल.</translation>
+<translation id="7504829997542308412">Chromium उघडा</translation>
 <translation id="7531461704633548377">Chromium मधून</translation>
 <translation id="7554983317097061001">Chromium टीप: Chromium डॉकवर हलवा</translation>
 <translation id="7576863740961052505">Chromium सेटिंग्ज व्यवस्थापित करा</translation>

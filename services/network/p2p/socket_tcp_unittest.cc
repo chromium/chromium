@@ -36,6 +36,7 @@
 #include "services/network/proxy_resolving_client_socket_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/webrtc/rtc_base/time_utils.h"
 
 using ::testing::_;
 using ::testing::DeleteArg;

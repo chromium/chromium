@@ -142,7 +142,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MachineLearningService.ImageAnnotator.AnnotateEncodedImage.Event"
-    enum="Boolean" expires_after="2025-05-04">
+    enum="Boolean" expires_after="2026-05-04">
   <owner>chenjih@google.com</owner>
   <owner>nbowe@chromium.org</owner>
   <summary>

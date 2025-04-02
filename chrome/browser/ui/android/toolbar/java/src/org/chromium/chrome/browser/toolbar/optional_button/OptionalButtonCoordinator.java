@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.toolbar.optional_button;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Rect;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -172,23 +171,13 @@ public class OptionalButtonCoordinator {
 
         // Reset background alpha, in case the IPH onDismiss callback doesn't fire.
         mMediator.setBackgroundAlpha(255);
-        mMediator.updateButton(buttonData);
-
-        if (buttonData == null || buttonData.getButtonSpec() == null) return;
-        // Set hover highlight for profile, voice search, share and new tab button on tablets. Set
-        // box hover highlight for the rest of button variants.
-        if (buttonData.getButtonSpec().getShouldShowHoverHighlight()) {
-            mView.setBackgroundResource(
+        if (buttonData != null) {
+            buttonData.setBackgroundResource(
                     isIncognito
                             ? R.drawable.default_icon_background_baseline
                             : R.drawable.default_icon_background);
-        } else {
-            TypedValue themeRes = new TypedValue();
-            mView.getContext()
-                    .getTheme()
-                    .resolveAttribute(R.attr.selectableItemBackground, themeRes, true);
-            mView.setBackgroundResource(themeRes.resourceId);
         }
+        mMediator.updateButton(buttonData);
     }
 
     /**

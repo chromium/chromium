@@ -139,7 +139,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void SetBrowserAXMode(JNIEnv* env,
                         jboolean needs_full_engine,
                         jboolean form_controls_mode,
-                        jboolean is_screen_reader_running);
+                        jboolean is_screen_reader_running,
+                        jboolean on_screen_mode);
 
   base::android::ScopedJavaLocalRef<jstring> GetSupportedHtmlElementTypes(
       JNIEnv* env);
@@ -386,9 +387,11 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void HandleDescriptionChangedSubtree(int32_t unique_id);
   void HandleStateDescriptionChanged(int32_t unique_id);
   void HandleClicked(int32_t unique_id);
+  void HandleMenuOpened(int32_t unique_id);
   void HandleScrollPositionChanged(int32_t unique_id);
   void HandleScrolledToAnchor(int32_t unique_id);
   void HandlePaneOpened(int32_t unique_id);
+  void HandleExpandedStateChanged(int32_t root_id);
   void AnnounceLiveRegionText(const std::u16string& text);
   void HandleTextContentChanged(int32_t unique_id);
   void HandleTextSelectionChanged(int32_t unique_id);

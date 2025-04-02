@@ -368,6 +368,8 @@ enum WebDXFeature {
   kDRAFT_CssFunction = 310,
   kDRAFT_CssIf = 311,
   kWebAppManifestUpdateToken = 312,
+  kReadingFlow = 313,
+  kComposedRanges = 314,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -271,7 +271,7 @@ class AXRelationCache {
   // exist in the DOM, and are a descendant of a shadow including ancestor.
   void UpdateAriaOwnsFromAttrAssociatedElementsWithCleanLayout(
       AXObject* owner,
-      const HeapVector<Member<Element>>& attr_associated_elements,
+      const GCedHeapVector<Member<Element>>& attr_associated_elements,
       HeapVector<Member<AXObject>>& owned_children,
       bool force);
 
@@ -279,8 +279,8 @@ class AXRelationCache {
   // aria-describedby or aria-labeledby, update the text for the related object.
   void UpdateRelatedText(Node*);
 
-  static Vector<QualifiedName>& GetTextRelationAttributes();
-  static Vector<QualifiedName>& GetOtherRelationAttributes();
+  static base::span<QualifiedName> GetTextRelationAttributes();
+  static base::span<QualifiedName> GetOtherRelationAttributes();
 
   bool IsValidOwnsRelation(AXObject* owner, Node& child_node) const;
   void UnmapOwnedChildrenWithCleanLayout(const AXObject* owner,

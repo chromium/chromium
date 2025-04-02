@@ -24,7 +24,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
 import androidx.annotation.LayoutRes;
-import androidx.core.util.Pair;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -42,6 +41,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupTimeAgo.TimestampEvent;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -144,7 +144,12 @@ public class TabGroupRowViewRenderTest {
                     builder.with(CLUSTER_DATA, makeCornerData(urls));
                     builder.with(TabGroupRowProperties.COLOR_INDEX, TabGroupColorId.GREY);
                     builder.with(OPEN_RUNNABLE, () -> {});
-                    builder.with(TITLE_DATA, new Pair<>("Title", 1));
+                    builder.with(
+                            TITLE_DATA,
+                            new TabGroupRowViewTitleData(
+                                    "Title",
+                                    1,
+                                    R.string.tab_group_bottom_sheet_row_accessibility_text));
                     builder.with(
                             TIMESTAMP_EVENT,
                             new TabGroupTimeAgo(
@@ -166,8 +171,10 @@ public class TabGroupRowViewRenderTest {
                     builder.with(TabGroupRowProperties.COLOR_INDEX, TabGroupColorId.GREY);
                     builder.with(
                             TITLE_DATA,
-                            new Pair<>(
-                                    "VeryLongTitleThatGetsTruncatedOrSplitOverMultipleLines", 1));
+                            new TabGroupRowViewTitleData(
+                                    "VeryLongTitleThatGetsTruncatedOrSplitOverMultipleLines",
+                                    1,
+                                    R.string.tab_group_bottom_sheet_row_accessibility_text));
                     builder.with(
                             TIMESTAMP_EVENT,
                             new TabGroupTimeAgo(
@@ -217,7 +224,12 @@ public class TabGroupRowViewRenderTest {
                     PropertyModel.Builder builder = new PropertyModel.Builder(ALL_KEYS);
                     builder.with(CLUSTER_DATA, makeCornerData(JUnitTestGURLs.RED_1));
                     builder.with(TabGroupRowProperties.COLOR_INDEX, TabGroupColorId.GREY);
-                    builder.with(TITLE_DATA, new Pair<>("A generic title", 1));
+                    builder.with(
+                            TITLE_DATA,
+                            new TabGroupRowViewTitleData(
+                                    "A generic title",
+                                    1,
+                                    R.string.tab_group_bottom_sheet_row_accessibility_text));
                     builder.with(
                             TIMESTAMP_EVENT,
                             new TabGroupTimeAgo(

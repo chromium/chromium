@@ -39,8 +39,11 @@ enum class FREDefaultBrowserIntent {
 // Base test class for egtests for first run.
 @interface FirstRunTestCaseBase : ChromeTestCase
 
-// Dismisses the remaining screens in FRE after the default browser screen.
+// Dismisses the default browser screen.
 + (void)dismissDefaultBrowser;
+
+// Dismisses the remaining screens in FRE after the default browser screen.
++ (void)dismissDefaultBrowserAndRemainingScreens;
 
 // Returns GREYElementInteraction for `matcher`, using `scrollViewMatcher` to
 // scroll.

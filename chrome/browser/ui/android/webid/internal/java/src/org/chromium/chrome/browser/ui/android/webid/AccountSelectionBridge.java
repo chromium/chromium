@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.android.webid;
 
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 
 import androidx.annotation.Nullable;
 
@@ -107,7 +106,6 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      * @param idpDataList is the list of IDP datas.
      * @param isAutoReauthn represents whether this is an auto re-authn flow.
      * @param newAccounts represents the newly logged in accounts.
-     * @param favicon represents the favicon to be used when multi IDP UI is to be shown.
      * @return whether the invocation is successful. If false is returned, the caller must assume
      *     that onDismiss was called and must return early.
      */
@@ -117,16 +115,14 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
             Account[] accounts,
             IdentityProviderData[] idpDataList,
             boolean isAutoReauthn,
-            Account[] newAccounts,
-            Bitmap favicon) {
+            Account[] newAccounts) {
         assert accounts != null && accounts.length > 0;
         return mAccountSelectionComponent.showAccounts(
                 rpForDisplay,
                 Arrays.asList(accounts),
                 Arrays.asList(idpDataList),
                 isAutoReauthn,
-                Arrays.asList(newAccounts),
-                favicon);
+                Arrays.asList(newAccounts));
     }
 
     /**

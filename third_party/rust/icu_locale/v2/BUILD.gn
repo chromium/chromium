@@ -12,16 +12,17 @@ cargo_crate("lib") {
   crate_name = "icu_locale"
   epoch = "2"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/icu_locale-2.0.0-beta2/src/lib.rs"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale-2.0.0-beta2/src/canonicalizer.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale-2.0.0-beta2/src/directionality.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale-2.0.0-beta2/src/exemplar_chars.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale-2.0.0-beta2/src/expander.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale-2.0.0-beta2/src/fallback/algorithms.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale-2.0.0-beta2/src/fallback/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale-2.0.0-beta2/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale-2.0.0-beta2/src/provider.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/canonicalizer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/directionality.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/exemplar_chars.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/expander.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/fallback/algorithms.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/fallback/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/provider.rs",
   ]
   inputs = []
 

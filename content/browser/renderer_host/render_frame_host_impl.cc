@@ -3763,13 +3763,13 @@ RenderFrameHostImpl::AccessibilityGetNativeViewAccessible() {
     // |AccessibilityGetNativeViewAccessible()| should be only accessible when
     // we process AX events. Otherwise this should not be used while in
     // back/forward cache and the document should be evicted.
-    return nullptr;
+    return gfx::NativeViewAccessible();
   }
   RenderWidgetHostViewBase* view = static_cast<RenderWidgetHostViewBase*>(
       render_view_host_->GetWidget()->GetView());
   if (view)
     return view->AccessibilityGetNativeViewAccessible();
-  return nullptr;
+  return gfx::NativeViewAccessible();
 }
 
 gfx::NativeViewAccessible
@@ -3779,13 +3779,13 @@ RenderFrameHostImpl::AccessibilityGetNativeViewAccessibleForWindow() {
   // expected.
   if (IsInactiveAndDisallowActivation(
           DisallowActivationReasonId::kAXGetNativeViewForWindow))
-    return nullptr;
+    return gfx::NativeViewAccessible();
 
   RenderWidgetHostViewBase* view = static_cast<RenderWidgetHostViewBase*>(
       render_view_host_->GetWidget()->GetView());
   if (view)
     return view->AccessibilityGetNativeViewAccessibleForWindow();
-  return nullptr;
+  return gfx::NativeViewAccessible();
 }
 
 void RenderFrameHostImpl::AccessibilityHitTest(

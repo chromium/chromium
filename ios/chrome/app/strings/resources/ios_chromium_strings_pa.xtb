@@ -91,6 +91,7 @@
 <translation id="3054480780637153380">iOS 'ਤੇ Chromium Settings ਖੋਲ੍ਹੋ, ਫਿਰ "Default Browser App" 'ਤੇ ਟੈਪ ਕਰੋ ਅਤੇ Chromium ਚੁਣੋ।</translation>
 <translation id="3102849287235003384">ਸਾਰੀਆਂ ਵੈੱਬਸਾਈਟਾਂ 'ਤੇ ਆਪਣੇ Google ਖਾਤੇ ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK" />Chromium ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰੋ<ph name="END_LINK" />।</translation>
 <translation id="3115956258722352278">ਕੀ Chromium ਨੂੰ ਆਪਣਾ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਬਣਾਉਣਾ ਹੈ?</translation>
+<translation id="3180939591219927904">"Chromium ਬੰਦ ਕਰਨ 'ਤੇ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਨੂੰ ਲਾਕ ਕਰੋ" ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="3242612358525156339">ਆਪਣੇ ਡੀਵਾਈਸ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਤੋਂ, "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ਨੂੰ ਖੋਲ੍ਹੋ ਅਤੇ "Chromium" ਚੁਣੋ</translation>
 <translation id="328933489847748230">{count,plural, =1{ਹੁਣ 1 Chromium ਵਿੰਡੋ ਦਿਖਾਈ ਜਾ ਰਹੀ ਹੈ}one{ਹੁਣ {count} Chromium ਵਿੰਡੋ ਦਿਖਾਈ ਜਾ ਰਹੀ ਹੈ}other{ਹੁਣ {count} Chromium ਵਿੰਡੋਆਂ ਦਿਖਾਈਆਂ ਜਾ ਰਹੀਆਂ ਹਨ}}</translation>
 <translation id="3344973607274501920">Chromium ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਿਆ। ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰਕੇ ਦੇਖੋ।</translation>
@@ -260,6 +261,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">ਚੁਣੇ ਗਏ ਡਾਟਾ ਨੂੰ Chromium ਅਤੇ ਸਿੰਕ ਕੀਤੇ ਡੀਵਾਈਸਾਂ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ history.google.com 'ਤੇ ਹੋਰ ਸੇਵਾਵਾਂ ਤੋਂ ਖੋਜਾਂ ਅਤੇ ਸਰਗਰਮੀ ਵਰਗਾ ਹੋਰ ਪ੍ਰਕਾਰ ਦਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਵੀ ਸ਼ਾਮਲ ਹੋ ਸਕਦਾ ਹੈ।</translation>
 <translation id="7395825497086981028">ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਨੂੰ <ph name="EMAIL" /> ਲਈ ਪਾਸਵਰਡ ਪ੍ਰਬੰਧਕ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
+<translation id="7504829997542308412">Chromium ਖੋਲ੍ਹੋ</translation>
 <translation id="7531461704633548377">Chromium ਤੋਂ</translation>
 <translation id="7554983317097061001">Chromium ਨੁਕਤਾ: Chromium ਨੂੰ ਡੌਕ 'ਤੇ ਲਿਜਾਓ</translation>
 <translation id="7576863740961052505">Chromium ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>

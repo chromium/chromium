@@ -73,7 +73,7 @@ public class ClientOnReceivedErrorTest extends AwParameterizedTest {
                 /* numberOfCallsToWaitFor= */ 1,
                 WAIT_TIMEOUT_MS,
                 TimeUnit.MILLISECONDS);
-        Assert.assertEquals(BAD_HTML_URL, onReceivedErrorHelper.getRequest().url);
+        Assert.assertEquals(BAD_HTML_URL, onReceivedErrorHelper.getRequest().getUrl());
         Assert.assertNotNull(onReceivedErrorHelper.getError().description);
     }
 
@@ -91,7 +91,7 @@ public class ClientOnReceivedErrorTest extends AwParameterizedTest {
         Assert.assertEquals(
                 WebviewErrorCode.ERROR_UNSUPPORTED_SCHEME,
                 onReceivedErrorHelper.getError().errorCode);
-        Assert.assertEquals(url, onReceivedErrorHelper.getRequest().url);
+        Assert.assertEquals(url, onReceivedErrorHelper.getRequest().getUrl());
         Assert.assertNotNull(onReceivedErrorHelper.getError().description);
     }
 
@@ -126,7 +126,7 @@ public class ClientOnReceivedErrorTest extends AwParameterizedTest {
         onReceivedErrorHelper.waitForCallback(onReceivedErrorCount);
         Assert.assertEquals(
                 WebviewErrorCode.ERROR_UNKNOWN, onReceivedErrorHelper.getError().errorCode);
-        Assert.assertEquals(url, onReceivedErrorHelper.getRequest().url);
+        Assert.assertEquals(url, onReceivedErrorHelper.getRequest().getUrl());
         Assert.assertNotNull(onReceivedErrorHelper.getError().description);
     }
 
@@ -142,7 +142,7 @@ public class ClientOnReceivedErrorTest extends AwParameterizedTest {
         onReceivedErrorHelper.waitForCallback(onReceivedErrorCount);
         Assert.assertEquals(
                 WebviewErrorCode.ERROR_UNKNOWN, onReceivedErrorHelper.getError().errorCode);
-        Assert.assertEquals(url, onReceivedErrorHelper.getRequest().url);
+        Assert.assertEquals(url, onReceivedErrorHelper.getRequest().getUrl());
         Assert.assertNotNull(onReceivedErrorHelper.getError().description);
     }
 
@@ -161,7 +161,7 @@ public class ClientOnReceivedErrorTest extends AwParameterizedTest {
         onReceivedErrorHelper.waitForCallback(onReceivedErrorCount);
         Assert.assertEquals(
                 WebviewErrorCode.ERROR_UNKNOWN, onReceivedErrorHelper.getError().errorCode);
-        Assert.assertEquals(url, onReceivedErrorHelper.getRequest().url);
+        Assert.assertEquals(url, onReceivedErrorHelper.getRequest().getUrl());
         Assert.assertFalse(onReceivedErrorHelper.getError().description.isEmpty());
     }
 }

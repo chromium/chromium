@@ -302,7 +302,8 @@ void NativeWidgetMac::InitNativeWidget(Widget::InitParams params) {
   DCHECK(GetWidget()->GetRootView());
   ns_window_host_->SetRootView(GetWidget()->GetRootView());
   GetNSWindowMojo()->CreateContentView(ns_window_host_->GetRootViewNSViewId(),
-                                       GetWidget()->GetRootView()->bounds());
+                                       GetWidget()->GetRootView()->bounds(),
+                                       params.corner_radius);
   if (auto* focus_manager = GetWidget()->GetFocusManager()) {
     GetNSWindowMojo()->MakeFirstResponder();
     // Only one ZoomFocusMonitor is needed per FocusManager, so create one only

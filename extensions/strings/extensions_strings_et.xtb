@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Manifestifail on kehtetu</translation>
 <translation id="7217838517480956708">Seadme administraator nõuab, et <ph name="EXTENSION_NAME" /> oleks installitud. Seda ei saa eemaldada ega muuta.</translation>
 <translation id="7612608473764576263">Privaatvõtme jaoks sisestatud väärtus peab olema sobivas vormingus (PKCS#8 vormingus PEM-kodeeringuga RSA-võti).</translation>
+<translation id="7876803335449432072">Faili „<ph name="RELATIVE_PATH" />“ ei saanud sisu skripti jaoks laadida. Sisu skripti stiililehti saab laadida ainult toetatud stiililehefailidest (nt CSS-failid).</translation>
 <translation id="7939686037314084444">Laienduse laadimine nurjus. See ei saa võib-olla võrgutaotlusi suunata.</translation>
 <translation id="7972881773422714442">Valikud: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Kasutaja poole suunatud</translation>
 <translation id="8047248493720652249">Laiendus ei saanud määrata allalaaditavale failile nimeks „<ph name="ATTEMPTED_FILENAME" />”, sest teine laiendus (<ph name="EXTENSION_NAME" />) määras teise failinime „<ph name="ACTUAL_FILENAME" />”.</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> teenusepakkujalt <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Manifestifail puudub või ei ole seda võimalik lugeda</translation>
+<translation id="8621383749470166852">Faili „<ph name="RELATIVE_PATH" />“ ei saanud sisu skripti jaoks laadida. Sisu skripte saab laadida ainult toetatud JavaScripti failidest (nt JS-failid).</translation>
 <translation id="8636666366616799973">Vale pakett. Üksikasjad: „<ph name="ERROR_MESSAGE" />”.</translation>
 <translation id="8761756413268424715">Rakendus „<ph name="APP_NAME" />” taotleb juurdepääsu ühele teie seadmele:</translation>
 <translation id="8885905466771744233">Määratud laiendusel on juba privaatvõti. Kasutage uuesti seda võtit või kustutage see kõigepealt.</translation>

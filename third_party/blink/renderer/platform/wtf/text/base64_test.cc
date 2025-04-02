@@ -80,10 +80,10 @@ TEST(Base64Test, DecodeNoPaddingValidation) {
 
   for (const auto& test : kTestCases) {
     SCOPED_TRACE(::testing::Message() << test.in);
-    Vector<char> out;
+    Vector<uint8_t> out;
     String in = String(test.in);
     bool expected_success = test.expected_out != nullptr;
-    Vector<char> expected_out;
+    Vector<uint8_t> expected_out;
     if (expected_success) {
       expected_out.insert(0, test.expected_out, strlen(test.expected_out));
     }
@@ -142,10 +142,10 @@ TEST(Base64Test, ForgivingBase64Decode) {
 
   for (const auto& test : kTestCases) {
     SCOPED_TRACE(::testing::Message() << test.in);
-    Vector<char> out;
+    Vector<uint8_t> out;
     String in = String(test.in);
     bool expected_success = test.expected_out != nullptr;
-    Vector<char> expected_out;
+    Vector<uint8_t> expected_out;
     if (expected_success) {
       expected_out.insert(0, test.expected_out, strlen(test.expected_out));
     }

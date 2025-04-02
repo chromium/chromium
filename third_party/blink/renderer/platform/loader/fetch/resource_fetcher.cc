@@ -1407,8 +1407,8 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     if (!is_stale_revalidation && !archive_) {
       preloads_list_iterator =
           preloads_.find(PreloadKey(params.Url(), resource_type));
-      params.SetHasPreloadedResponseCandidate(preloads_list_iterator !=
-                                              preloads_.end());
+      params.SetIsPreloadedResponseCandidatePresent(preloads_list_iterator !=
+                                                    preloads_.end());
     }
   }
 
@@ -1442,7 +1442,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
 
   if (!is_stale_revalidation &&
       (archive_ || (is_data_url && defer_policy != DeferPolicy::kDefer))) {
-    if (!(is_data_url && params.HasPreloadedResponseCandidate())) {
+    if (!(is_data_url && params.IsPreloadedResponseCandidatePresent())) {
       prepare_helper.UpgradeForLoaderIfNecessary(pauser);
       resource = CreateResourceForStaticData(params, factory);
       if (resource) {
@@ -1465,7 +1465,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
 
   if (!is_stale_revalidation && !resource) {
     if (!prepare_helper.WasUpgradeForLoaderCalled() &&
-        (params.HasPreloadedResponseCandidate() ||
+        (params.IsPreloadedResponseCandidatePresent() ||
          (!RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled() &&
           preloads_.find(PreloadKey(params.Url(), resource_type)) !=
               preloads_.end()))) {
@@ -3028,7 +3028,8 @@ void ResourceFetcher::EmulateLoadStartedForInspector(
   Context().CanRequest(resource->GetType(), last_resource_request,
                        last_resource_request.Url(), params.Options(),
                        ReportingDisposition::kReport,
-                       last_resource_request.GetRedirectInfo());
+                       last_resource_request.GetRedirectInfo(),
+                       params.IsPreloadedResponseCandidatePresent());
   if (resource->GetStatus() == ResourceStatus::kNotStarted ||
       resource->GetStatus() == ResourceStatus::kPending) {
     // If the loading has not started, then we return here because loading
@@ -3593,7 +3594,7 @@ ResourceFetcher::ResourcePrepareHelper::PrepareRequestForCacheAccess(
   }
   ResourceRequest& resource_request = params_.MutableResourceRequest();
   if (!RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled() &&
-      !params_.HasPreloadedResponseCandidate()) {
+      !params_.IsPreloadedResponseCandidatePresent()) {
     bundle_url_for_uuid_resources_ =
         fetcher_.PrepareRequestForWebBundle(resource_request);
   }

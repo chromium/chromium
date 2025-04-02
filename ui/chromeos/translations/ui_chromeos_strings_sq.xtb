@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">Duke nënshkruar me faleminderit</translation>
 <translation id="2088690981887365033">Rrjeti VPN</translation>
 <translation id="209653272837065803">Nuk ka hapësirë ruajtëse të mjaftueshme për të vazhduar me sinkronizimin e skedarëve</translation>
-<translation id="2111134541987263231">Aktivizo <ph name="BEGIN_BOLD" />Lejo në modalitetin "e fshehtë"<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> artikuj do të fshihen dhe nuk do të mund t'i restaurosh.</translation>
 <translation id="2122305276694332719">Lidhja automatike me një rrjet të fshehtë u lejon të tjerëve të të shohin pajisjen dhe disa prej cilësimeve të rrjetit, dhe nuk rekomandohet.</translation>
 <translation id="2125607626296734455">Kmerisht</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> është nxjerrë.</translation>
 <translation id="2307462900900812319">Konfiguro rrjetin</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Një shtesë me ID-në <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nuk mund të lokalizohet. Kontakto me administratorin tënd.}other{Shtesat me ID-të <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nuk mund të lokalizohen. Kontakto me administratorin tënd.}}</translation>
 <translation id="2325650632570794183">Ky lloj skedari nuk mbështetet. Vizito Dyqanin e uebit të Chrome për të gjetur një aplikacion që mund të hapë këtë lloj skedari.</translation>
 <translation id="2326539130272988168">Bullgarisht</translation>
 <translation id="233822363739146957">Nuk ka hapësirë ruajtëse të mjaftueshme për të sinkronizuar të gjithë skedarët e tu</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">Maratisht</translation>
 <translation id="2923240520113693977">Estonisht</translation>
 <translation id="2938685643439809023">Mongolisht</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Shtesa nuk mund të gjendet}other{Shtesat nuk mund të gjenden}}</translation>
 <translation id="2943503720238418293">Përdor një emër më të shkurtër</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> po formatohet...</translation>
 <translation id="2951236788251446349">Kandili i detit</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">Përfundo</translation>
 <translation id="3358452157379365236">Kitarë</translation>
 <translation id="3368922792935385530">Lidhur</translation>
-<translation id="3372635229069101468">Kliko te <ph name="BEGIN_BOLD" />Detajet<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">Nepalisht me tastierë InScript</translation>
 <translation id="338691029516748599">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, menaxhuar nga administratori yt, lidhu</translation>
 <translation id="3408072735282270043">Aktivizo <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">Njëbrirësh</translation>
 <translation id="4131235941541910880">Zhvendosi artikujt që nuk të duhen te koshi.</translation>
 <translation id="4134804435730168042">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivizoje pas konfigurimit të pajisjes</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Aktivizo shtesën e mëposhtme në modalitetin "e fshehtë":}other{Aktivizo shtesat e mëposhtme në modalitetin "e fshehtë":}}</translation>
 <translation id="4153015322587141338">Kliko me butonin djathtas te një skedar dhe zgjidh "<ph name="PIN_COMMAND" />" për qasje të shpejtë te skedarët e tu në raft.</translation>
 <translation id="4157569377477607576">Politika e administratorit nuk rekomandon:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> është zhvendosur.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">Mbaji të dyja</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> artikuj po restaurohen</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Për të përdorur modalitetin "e fshehtë", organizata jote kërkon një shtesë}other{Për të përdorur modalitetin "e fshehtë", organizata jote kërkon disa shtesa}}</translation>
 <translation id="4826849268470072925">Tamilisht ITRANS</translation>
-<translation id="482932175346970750">Shkruaj <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> në shfletuesin tënd</translation>
 <translation id="4843566743023903107">Pajisjet Chromebase</translation>
 <translation id="4850886885716139402">Pamja</translation>
 <translation id="485316830061041779">Gjermanisht</translation>
@@ -561,7 +554,6 @@
     me të tjerët për skedarët, të gjitha në një vend të vetëm.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Skedarët e rikuperuar nga "Disku i Google"</translation>
 <translation id="5278111733643988471">Për ta restauruar këtë artikull, zvarrite atë te një dosje e re jashtë koshit. Dosja origjinale "<ph name="PARENT_FOLDER_NAME" />" për këtë artikull është fshirë.</translation>
-<translation id="5283101102242354279">Aktivizo një shtesë në modalitetin "e fshehtë":</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5293615890992542006">Zhvendosja e këtij skedari është bllokuar nga politika e administratorit</translation>
 <translation id="5305688511332277257">Nuk është instaluar asnjë</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, detaje</translation>
 <translation id="7246947237293279874">Përfaqësuesi i FTP-së</translation>
 <translation id="7248671827512403053">Aplikacion</translation>
-<translation id="7252604552361840748">Gjej shtesën më sipër</translation>
 <translation id="7256405249507348194">Gabim i panjohur: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Shërbimet që ofrohen</translation>
 <translation id="7291818353625820805">Dëshiron që tastet të përsëriten? Çaktivizo shenjat e theksimit te "Cilësimet e tastierës"</translation>

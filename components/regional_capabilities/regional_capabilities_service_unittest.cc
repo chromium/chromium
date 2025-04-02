@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/country_codes/country_codes.h"
+#include "components/regional_capabilities/regional_capabilities_metrics.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -22,7 +23,6 @@
 using ::country_codes::CountryId;
 
 namespace regional_capabilities {
-
 namespace {
 
 class AsyncRegionalCapabilitiesServiceClient
@@ -35,6 +35,8 @@ class AsyncRegionalCapabilitiesServiceClient
   ~AsyncRegionalCapabilitiesServiceClient() override = default;
 
   CountryId GetFallbackCountryId() override { return fallback_country_id_; }
+
+  CountryId GetVariationsLatestCountryId() override { return CountryId(); }
 
   void FetchCountryId(CountryIdCallback country_id_fetched_callback) override {
     ASSERT_FALSE(cached_country_id_callback_) << "Test setup error";
@@ -74,8 +76,6 @@ CountryId GetCountryId(RegionalCapabilitiesService& service) {
   return service.GetCountryId().GetForTesting();
 }
 
-}  // namespace
-
 class RegionalCapabilitiesServiceTest : public ::testing::Test {
  public:
   RegionalCapabilitiesServiceTest() {
@@ -95,7 +95,7 @@ class RegionalCapabilitiesServiceTest : public ::testing::Test {
         switches::kSearchEngineChoiceCountry, country_code);
   }
 
-  std::optional<int> GetPrefCountry() {
+  std::optional<int> GetPrefSerializedCountry() {
     if (!pref_service().HasPrefPath(country_codes::kCountryIDAtInstall)) {
       return std::nullopt;
     }
@@ -145,7 +145,7 @@ TEST_F(RegionalCapabilitiesServiceTest, GetCountryIdCommandLineOverride) {
   EXPECT_EQ(GetCountryId(*service), kBelgiumCountryId);
 
   // When the command line value is not two uppercase basic Latin alphabet
-  // characters, the country code should be unknown.
+  // characters, the country code should not be valid.
   SetCommandLineCountry("??");
   EXPECT_FALSE(GetCountryId(*service).IsValid());
 
@@ -154,6 +154,15 @@ TEST_F(RegionalCapabilitiesServiceTest, GetCountryIdCommandLineOverride) {
 
   SetCommandLineCountry("USA");
   EXPECT_FALSE(GetCountryId(*service).IsValid());
+
+  histogram_tester().ExpectTotalCount(
+      "RegionalCapabilities.FetchedCountryMatching", 0);
+  histogram_tester().ExpectTotalCount(
+      "RegionalCapabilities.FallbackCountryMatching", 0);
+  histogram_tester().ExpectTotalCount(
+      "RegionalCapabilities.PersistedCountryMatching", 0);
+  histogram_tester().ExpectTotalCount(
+      "RegionalCapabilities.LoadedCountrySource", 0);
 }
 
 TEST_F(RegionalCapabilitiesServiceTest, GetCountryId_FetchedSync) {
@@ -168,7 +177,17 @@ TEST_F(RegionalCapabilitiesServiceTest, GetCountryId_FetchedSync) {
   // right away.
   EXPECT_EQ(GetCountryId(*service), kBelgiumCountryId);
   // The pref should be updated as well.
-  EXPECT_EQ(GetPrefCountry(), kBelgiumCountryId.Serialize());
+  EXPECT_EQ(GetPrefSerializedCountry(), kBelgiumCountryId.Serialize());
+
+  histogram_tester().ExpectUniqueSample(
+      "RegionalCapabilities.FetchedCountryMatching", 2, 1);
+  histogram_tester().ExpectTotalCount(
+      "RegionalCapabilities.FallbackCountryMatching", 0);
+  histogram_tester().ExpectUniqueSample(
+      "RegionalCapabilities.PersistedCountryMatching", 1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "RegionalCapabilities.LoadedCountrySource",
+      static_cast<int>(LoadedCountrySource::kCurrentOnly), 1);
 }
 
 TEST_F(RegionalCapabilitiesServiceTest, GetCountryId_FetchedAsyncUsesFallback) {
@@ -181,15 +200,27 @@ TEST_F(RegionalCapabilitiesServiceTest, GetCountryId_FetchedAsyncUsesFallback) {
   // was invoked, so the fallback country should be used.
   EXPECT_EQ(GetCountryId(*service), kFallbackCountryId);
   // The pref should not be updated.
-  EXPECT_EQ(GetPrefCountry(), std::nullopt);
+  EXPECT_EQ(GetPrefSerializedCountry(), std::nullopt);
 
   // Simulate a response arriving after the first `GetCountryId` call.
   client()->SetFetchedCountry(kBelgiumCountryId);
 
   // The pref should be updated so the new country can be used the next run.
-  EXPECT_EQ(GetPrefCountry(), kBelgiumCountryId.Serialize());
+  EXPECT_EQ(GetPrefSerializedCountry(), kBelgiumCountryId.Serialize());
   // However, the `GetCountryId()` result shouldn't change until the next run.
   EXPECT_EQ(GetCountryId(*service), kFallbackCountryId);
+
+  histogram_tester().ExpectTotalCount(
+      "RegionalCapabilities.FetchedCountryMatching", 0);
+  histogram_tester().ExpectUniqueSample(
+      "RegionalCapabilities.FallbackCountryMatching",
+      2 /* kVariationsCountryMissing */, 1);
+  histogram_tester().ExpectUniqueSample(
+      "RegionalCapabilities.PersistedCountryMatching", 1 /* kCountryMissing */,
+      1);
+  histogram_tester().ExpectUniqueSample(
+      "RegionalCapabilities.LoadedCountrySource",
+      static_cast<int>(LoadedCountrySource::kCurrentOnly), 1);
 }
 
 TEST_F(RegionalCapabilitiesServiceTest, GetCountryId_PrefAlreadyWritten) {
@@ -207,7 +238,17 @@ TEST_F(RegionalCapabilitiesServiceTest, GetCountryId_PrefAlreadyWritten) {
   EXPECT_EQ(GetCountryId(*service), kBelgiumCountryId);
 
   // The fetched value from the client does not overwrite the prefs either.
-  EXPECT_EQ(GetPrefCountry(), kBelgiumCountryId.Serialize());
+  EXPECT_EQ(GetPrefSerializedCountry(), kBelgiumCountryId.Serialize());
+
+  histogram_tester().ExpectUniqueSample(
+      "RegionalCapabilities.FetchedCountryMatching", 2, 1);
+  histogram_tester().ExpectTotalCount(
+      "RegionalCapabilities.FallbackCountryMatching", 0);
+  histogram_tester().ExpectUniqueSample(
+      "RegionalCapabilities.PersistedCountryMatching", 2, 1);
+  histogram_tester().ExpectUniqueSample(
+      "RegionalCapabilities.LoadedCountrySource",
+      static_cast<int>(LoadedCountrySource::kPersistedPreferred), 1);
 }
 
 TEST_F(RegionalCapabilitiesServiceTest, GetCountryId_PrefChangesAfterReading) {
@@ -225,8 +266,6 @@ TEST_F(RegionalCapabilitiesServiceTest, GetCountryId_PrefChangesAfterReading) {
   // The value returned by `GetCountryId` shouldn't change.
   EXPECT_EQ(GetCountryId(*service), kBelgiumCountryId);
 }
-
-// TODO: make it parameterized?
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 TEST_F(RegionalCapabilitiesServiceTest, ClearPrefForUnknownCountry) {
@@ -247,7 +286,7 @@ TEST_F(RegionalCapabilitiesServiceTest, ClearPrefForUnknownCountry) {
   EXPECT_EQ(GetCountryId(*service), kBelgiumCountryId);
   histogram_tester().ExpectUniqueSample(
       "Search.ChoiceDebug.UnknownCountryIdStored", 2 /* kClearedPref */, 1);
-  EXPECT_EQ(GetPrefCountry(), kBelgiumCountryId.Serialize());
+  EXPECT_EQ(GetPrefSerializedCountry(), kBelgiumCountryId.Serialize());
 }
 
 TEST_F(RegionalCapabilitiesServiceTest, ClearPrefForUnknownCountry_Disabled) {
@@ -265,7 +304,7 @@ TEST_F(RegionalCapabilitiesServiceTest, ClearPrefForUnknownCountry_Disabled) {
   histogram_tester().ExpectUniqueSample(
       "Search.ChoiceDebug.UnknownCountryIdStored",
       1 /* kDontClearInvalidCountry */, 1);
-  EXPECT_EQ(GetPrefCountry(), country_codes::CountryId().Serialize());
+  EXPECT_EQ(GetPrefSerializedCountry(), country_codes::CountryId().Serialize());
 }
 
 TEST_F(RegionalCapabilitiesServiceTest, ClearPrefForUnknownCountry_Valid) {
@@ -281,7 +320,7 @@ TEST_F(RegionalCapabilitiesServiceTest, ClearPrefForUnknownCountry_Valid) {
   EXPECT_EQ(GetCountryId(*service), kBelgiumCountryId);
   histogram_tester().ExpectUniqueSample(
       "Search.ChoiceDebug.UnknownCountryIdStored", 0 /* kValidCountryId */, 1);
-  EXPECT_EQ(GetPrefCountry(), kBelgiumCountryId.Serialize());
+  EXPECT_EQ(GetPrefSerializedCountry(), kBelgiumCountryId.Serialize());
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_LINUX)
@@ -307,4 +346,5 @@ TEST_F(RegionalCapabilitiesServiceTest, IsInEeaCountry) {
   EXPECT_TRUE(service->IsInEeaCountry());
 }
 
+}  // namespace
 }  // namespace regional_capabilities

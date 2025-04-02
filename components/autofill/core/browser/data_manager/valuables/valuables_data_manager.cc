@@ -45,7 +45,7 @@ void ValuablesDataManager::LoadLoyaltyCards() {
 }
 
 void ValuablesDataManager::OnAutofillChangedBySync(syncer::DataType data_type) {
-  if (data_type == syncer::DataType::AUTOFILL_LOYALTY_CARD) {
+  if (data_type == syncer::DataType::AUTOFILL_VALUABLE) {
     LoadLoyaltyCards();
   }
 }

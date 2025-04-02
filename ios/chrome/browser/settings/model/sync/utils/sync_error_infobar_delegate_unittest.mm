@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/test/metrics/histogram_tester.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
@@ -44,6 +45,7 @@ class SyncErrorInfobarDelegateTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(SyncErrorInfobarDelegateTest, SyncServiceSignInNeedsUpdate) {
@@ -111,6 +113,25 @@ TEST_F(SyncErrorInfobarDelegateTest,
       new SyncErrorInfoBarDelegate(profile_.get(), presenter));
 
   EXPECT_FALSE(delegate->Accept());
+}
+
+TEST_F(SyncErrorInfobarDelegateTest, LogsMetricOnDismissal) {
+  ON_CALL(*mock_sync_service(), GetUserActionableError())
+      .WillByDefault(Return(syncer::SyncService::UserActionableError::
+                                kNeedsTrustedVaultKeyForPasswords));
+
+  id presenter = OCMStrictProtocolMock(@protocol(SyncPresenter));
+  [[presenter expect]
+      showTrustedVaultReauthForFetchKeysWithTrigger:
+          syncer::TrustedVaultUserActionTriggerForUMA::kNewTabPageInfobar];
+  std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
+      new SyncErrorInfoBarDelegate(profile_.get(), presenter));
+
+  delegate->InfoBarDismissed();
+  constexpr int kSyncNeedsTrustedVaultKeyBucket = 6;
+  histogram_tester_.ExpectUniqueSample("Sync.SyncErrorInfobarDismissed",
+                                       kSyncNeedsTrustedVaultKeyBucket,
+                                       /*count=*/1);
 }
 
 }  // namespace

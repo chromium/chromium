@@ -86,9 +86,6 @@ class WebAppDatabase {
   void MigrateInstallSourceAddUserInstalled(
       ProtobufState& state,
       std::set<webapps::AppId>& changed_apps);
-  void MigrateInstallSourceRemoveUserInstalled(
-      ProtobufState& state,
-      std::set<webapps::AppId>& changed_apps);
 
   void OnDatabaseOpened(RegistryOpenedCallback callback,
                         const std::optional<syncer::ModelError>& error,

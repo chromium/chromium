@@ -440,6 +440,7 @@
 <translation id="2783161812871838616">ဒက်စ်တော့ဝဘ်ဆိုက် တောင်းဆိုရန်</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{စကားဝှက်ကို သင်၏ Google Account {EMAIL} တွင် သိမ်းလိုက်သည်}other{စကားဝှက်များကို သင်၏ Google Account {EMAIL} တွင် သိမ်းလိုက်သည်}}</translation>
 <translation id="2791174088547598693">စကားဝှက် ထည့်ရန်…</translation>
+<translation id="2793703503584038325">စကားဝှက်ရွေးပြီး “မျှဝေရန်” သင်္ကေတကို တို့ပါ</translation>
 <translation id="2797302972324086597">နိုင်ငံကုဒ်</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} ဖိုင်}other{{COUNT} ဖိုင်}}</translation>
 <translation id="2816489851009559785">မီနူး → ဆက်တင်များ → မူရင်း ဘရောင်ဇာ</translation>
@@ -579,6 +580,7 @@
 <translation id="35083190962747987">${url} ကို ဖွင့်ရန်</translation>
 <translation id="3511519535430890904">အကာအကွယ်ဖြင့် ဘရောက်စ်လုပ်ခြင်း ထည့်ပါ</translation>
 <translation id="3517216995152707259">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ဖျက်ပါက Google Account မှ မထွက်ပါ။ ထိုသို့ပြုလုပ်ရန်အတွက် <ph name="BEGIN_LINK" />Chrome မှထွက်ပါ<ph name="END_LINK" />။</translation>
+<translation id="3519792890877853853">ဤကတ်သည် သင်ဖွင့်ထားသော တဘ်များတွင် ကုန်ပစ္စည်းများအတွက် သုံးသပ်ချက်များကို ပြသည်</translation>
 <translation id="3519905498307021260">{count,plural, =1{တဘ်ဖွင့်ရန်}other{တဘ် {count} ခု ဖွင့်ရန်}}</translation>
 <translation id="3523513363815970085">“သင်၏ ထိပ်တန်းဝဘ်ဆိုက်များ” ဖျောက်ရန်</translation>
 <translation id="3523789730715594198">စင့်ခ်လုပ်ခြင်းကို ဆက်တင်များတွင် အချိန်မရွေး ရပ်နိုင်သည်။ Google က Search နှင့် အခြားဝန်ဆောင်မှုများကို သင့်မှတ်တမ်းပေါ်မူတည်၍ ပုဂ္ဂိုလ်ရေးသီးသန့် ပြုလုပ်နိုင်သည်။</translation>
@@ -819,6 +821,7 @@
 <translation id="4565377596337484307">စကားဝှက်ကို ဖျောက်ရန်</translation>
 <translation id="4568230126482344545">‘မကြာသေးမီက’ တဘ်များကို ဖျောက်ရန်</translation>
 <translation id="4578835633387306383">ဖွင့်ရန်…</translation>
+<translation id="4580716718466706433">“Password Manager” သို့ သွားပါ</translation>
 <translation id="4587589328781138893">ဝဘ်ဆိုက်များ</translation>
 <translation id="4592672037257622855">{count,plural, =1{သင်၏ ဖတ်ရန် စာရင်းတွင် စာမျက်နှာ ထည့်လိုက်ပါပြီ}other{သင်၏ ဖတ်ရန် စာရင်းတွင် စာမျက်နှာ {count} မျက်နှာ ထည့်လိုက်ပါပြီ}}</translation>
 <translation id="459644946100970322">ဈေးနှုန်းသတိပေးချက်များ ဖွင့်မလား။</translation>
@@ -858,6 +861,7 @@
 <translation id="4717844083556844785">လက်ရှိဝဘ်စာမျက်နှာကို ရုပ်ဖျက်မုဒ်တွင် ဖွင့်ထားသည်</translation>
 <translation id="4719927025381752090">ဘာသာပြန်ရန် ပေးအပ်ချက်</translation>
 <translation id="4720530280568305198">သင်၏ရွေးချယ်မှုကို တဘ်အသစ်တွင် ဖွင့်ထားသည်</translation>
+<translation id="472259426228234149">ဈေးနှုန်း $100 - $180</translation>
 <translation id="473775607612524610">အပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="474209246745757965">သင့်ကင်မရာဖြင့် ဈေးဝယ်ရန်နှင့် ဘာသာပြန်ရန်</translation>
 <translation id="4742407542027196863">စကားဝှက်များ စီမံရန်…</translation>

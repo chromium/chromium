@@ -236,7 +236,7 @@ void DocumentAnimations::RemoveReplacedAnimations(
     DocumentAnimations::ReplaceableAnimationsMap* replaceable_animations_map) {
   HeapVector<Member<Animation>> animations_to_remove;
   for (auto& elem_it : *replaceable_animations_map) {
-    HeapVector<Member<Animation>>* animations = elem_it.value;
+    GCedHeapVector<Member<Animation>>* animations = elem_it.value;
 
     // Only elements with multiple animations in the replaceable state need to
     // be checked.
@@ -260,9 +260,8 @@ void DocumentAnimations::RemoveReplacedAnimations(
       // the process of iterating over properties if not removable to update
       // the set of properties being replaced.
       bool replace = (*anim_it)->ReplaceStateActive();
-      PropertyHandleSet animation_properties =
-          To<KeyframeEffect>((*anim_it)->effect())->Model()->Properties();
-      for (const auto& property : animation_properties) {
+      for (const auto& property :
+           To<KeyframeEffect>((*anim_it)->effect())->Model()->Properties()) {
         auto inserted = replaced_properties.insert(property);
         if (inserted.is_new_entry) {
           // Top-most compositor order animation affecting this property.

@@ -63,8 +63,7 @@ public class AccountSelectionWidgetModeIntegrationTest extends AccountSelectionI
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
-                            /* newAccounts= */ Collections.EMPTY_LIST,
-                            /* favicon= */ null);
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);

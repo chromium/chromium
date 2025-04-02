@@ -78,6 +78,9 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
     kOtherTab,
   };
 
+  static bool IsCapturedTab(TabRole role);
+  static bool IsCapturingTab(TabRole role);
+
   class TabSharingInfoBarDelegateButton;
   class StopButton;
   class ShareTabInsteadButton;

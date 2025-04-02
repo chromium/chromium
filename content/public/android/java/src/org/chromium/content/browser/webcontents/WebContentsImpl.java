@@ -1141,6 +1141,18 @@ public class WebContentsImpl
     }
 
     @Override
+    public void setContextMenuInsets(Rect insets) {
+        if (mNativeWebContentsAndroid == 0) return;
+        WebContentsImplJni.get()
+                .setContextMenuInsets(
+                        mNativeWebContentsAndroid,
+                        insets.top,
+                        insets.left,
+                        insets.bottom,
+                        insets.right);
+    }
+
+    @Override
     public void notifyRendererPreferenceUpdate() {
         if (mNativeWebContentsAndroid == 0) return;
         WebContentsImplJni.get().notifyRendererPreferenceUpdate(mNativeWebContentsAndroid);
@@ -1421,6 +1433,9 @@ public class WebContentsImpl
         void setFocus(long nativeWebContentsAndroid, boolean focused);
 
         void setDisplayCutoutSafeArea(
+                long nativeWebContentsAndroid, int top, int left, int bottom, int right);
+
+        void setContextMenuInsets(
                 long nativeWebContentsAndroid, int top, int left, int bottom, int right);
 
         void notifyRendererPreferenceUpdate(long nativeWebContentsAndroid);

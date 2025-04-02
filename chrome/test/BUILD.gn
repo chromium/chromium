@@ -844,8 +844,8 @@ static_library("test_support") {
       "../browser/ui/test/test_browser_dialog.h",
       "../browser/ui/test/test_browser_ui.cc",
       "../browser/ui/test/test_browser_ui.h",
-      "../browser/ui/views/page_action/page_action_interactive_test_mixin.cc",
-      "../browser/ui/views/page_action/page_action_interactive_test_mixin.h",
+      "../browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.cc",
+      "../browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h",
       "../browser/ui/views/performance_controls/test_support/discard_mock_navigation_handle.cc",
       "../browser/ui/views/performance_controls/test_support/discard_mock_navigation_handle.h",
       "../browser/ui/views/performance_controls/test_support/memory_saver_unit_test_mixin.h",
@@ -1613,6 +1613,7 @@ if (is_android) {
       "../browser/password_manager/android/password_manager_android_browsertest.cc",
       "../browser/password_manager/passwords_navigation_observer.cc",
       "../browser/password_manager/passwords_navigation_observer.h",
+      "../browser/policy/test/v8_optimizer_policy_browsertest.cc",
       "../browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_component_installer_android_browsertest.cc",
       "../browser/profiles/profile_browsertest_android.cc",
       "../browser/ssl/chrome_security_state_client_browsertest.cc",
@@ -2130,6 +2131,7 @@ if (!is_android) {
       "//chrome/browser/data_saver",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
+      "//chrome/browser/enterprise/incognito",
       "//chrome/browser/enterprise/watermark:watermark_view_lib",
       "//chrome/browser/error_reporting:test_support",
       "//chrome/browser/favicon",
@@ -2720,7 +2722,6 @@ if (!is_android) {
         "//chrome/browser/chromeos:browser_tests",
         "//chrome/browser/chromeos/app_mode",
         "//chrome/browser/chromeos/arc",
-        "//chrome/browser/chromeos/enterprise",
         "//chrome/browser/chromeos/enterprise/cloud_storage",
         "//chrome/browser/chromeos/network",
         "//chrome/browser/chromeos/platform_keys",
@@ -2953,6 +2954,7 @@ if (!is_android) {
       "../browser/engagement/site_engagement_helper_browsertest.cc",
       "../browser/enterprise/browser_management/management_service_browsertest.cc",
       "../browser/enterprise/connectors/reporting/crash_reporting_context_browsertest.cc",
+      "../browser/enterprise/incognito/incognito_navigation_throttle_browsertest.cc",
       "../browser/enterprise/util/managed_browser_utils_browsertest.cc",
       "../browser/enterprise/watermark/watermark_browsertest.cc",
       "../browser/error_reporting/crash_client_upload_info_browsertest.cc",
@@ -3389,6 +3391,8 @@ if (!is_android) {
       "../browser/ui/views/intent_picker_bubble_view_browsertest.cc",
       "../browser/ui/views/intent_picker_dialog_browsertest.cc",
       "../browser/ui/views/location_bar/intent_chip_button_browsertest.cc",
+      "../browser/ui/views/location_bar/intent_chip_button_test_base.cc",
+      "../browser/ui/views/location_bar/intent_chip_button_test_base.h",
       "../browser/ui/views/passwords/password_change/password_change_ui_browsertest.cc",
       "../browser/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_browsertest.cc",
       "../browser/ui/views/profiles/avatar_toolbar_button_browsertest.cc",
@@ -3822,7 +3826,6 @@ if (!is_android) {
       ]
       sources += [
         "../browser/browser_process_platform_part_chromeos_browsertest.cc",
-        "../browser/chromeos/enterprise/incognito_navigation_throttle_browsertest.cc",
         "../browser/download/notification/download_notification_browsertest.cc",
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_cros_browsertest.cc",
         "../browser/net/network_annotation_monitor_browsertest.cc",
@@ -6019,6 +6022,7 @@ test("unit_tests") {
     "../browser/k_anonymity_service/remote_trust_token_query_answerer_unittest.cc",
     "../browser/language/language_model_manager_factory_unittest.cc",
     "../browser/language/url_language_histogram_factory_unittest.cc",
+    "../browser/loader/keep_alive_request_tracker_unittest.cc",
     "../browser/logging_chrome_unittest.cc",
     "../browser/login_detection/login_detection_prefs_unittest.cc",
     "../browser/login_detection/login_detection_tab_helper_unittest.cc",
@@ -6143,8 +6147,8 @@ test("unit_tests") {
     "../browser/preloading/prefetch/prefetch_service/prefetch_origin_decider_unittest.cc",
     "../browser/preloading/preloading_prefs_unittest.cc",
     "../browser/privacy/privacy_metrics_service_unittest.cc",
-    "../browser/privacy_sandbox/notice/notice_framework_unittest.cc",
     "../browser/privacy_sandbox/notice/notice_model_unittest.cc",
+    "../browser/privacy_sandbox/notice/notice_service_unittest.cc",
     "../browser/privacy_sandbox/privacy_sandbox_policy_handler_unittest.cc",
     "../browser/privacy_sandbox/privacy_sandbox_service_impl_unittest.cc",
     "../browser/privacy_sandbox/privacy_sandbox_settings_delegate_unittest.cc",
@@ -8802,6 +8806,7 @@ test("unit_tests") {
     sources += [
       "../browser/extensions/extension_install_prompt_unittest.cc",
       "../browser/extensions/install_tracker_unittest.cc",
+      "../browser/extensions/installed_loader_unittest.cc",
       "../common/extensions/chrome_manifest_url_handlers_unittest.cc",
       "../common/extensions/manifest_handlers/automation_unittest.cc",
       "../common/extensions/manifest_handlers/content_scripts_manifest_unittest.cc",
@@ -8998,7 +9003,6 @@ test("unit_tests") {
       "../browser/extensions/forced_extensions/force_installed_test_base.h",
       "../browser/extensions/forced_extensions/force_installed_tracker_unittest.cc",
       "../browser/extensions/install_verifier_unittest.cc",
-      "../browser/extensions/installed_loader_unittest.cc",
       "../browser/extensions/manifest_v2_experiment_manager_unittest.cc",
       "../browser/extensions/menu_manager_unittest.cc",
       "../browser/extensions/mv2_deprecation_impact_checker_unittest.cc",
@@ -11955,6 +11959,9 @@ source_set("sync_integration_test_support") {
       "//chrome/browser/android/webapk:webapk_sources",
       "//components/saved_tab_groups/public:conversion_utils",
     ]
+    if (enable_extensions_core) {
+      deps += [ "//chrome/browser/extensions" ]
+    }
   } else {
     deps += [
       "//chrome/browser/apps/app_service",

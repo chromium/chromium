@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -20,10 +19,9 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests starting the activity with URLs. */
@@ -32,19 +30,16 @@ import org.chromium.ui.base.DeviceFormFactor;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class MainActivityWithURLTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     /** Verify launch the activity with URL. */
     @Test
     @SmallTest
     @Feature({"Navigation"})
     public void testLaunchActivityWithURL() {
-        EmbeddedTestServer testServer =
-                EmbeddedTestServer.createAndStartServer(
-                        ApplicationProvider.getApplicationContext());
         // Launch chrome
-        mActivityTestRule.startMainActivityWithURL(
-                testServer.getURL("/chrome/test/data/android/simple.html"));
+        mActivityTestRule.startOnTestServerUrl("/chrome/test/data/android/simple.html");
         String expectedTitle = "Activity test page";
         TabModel model = mActivityTestRule.getActivity().getCurrentTabModel();
         String title = ChromeTabUtils.getTitleOnUiThread(model.getTabAt(model.index()));
@@ -58,7 +53,7 @@ public class MainActivityWithURLTest {
     @Restriction(DeviceFormFactor.TABLET) // https://crbug.com/1392547
     public void testLaunchActivity() {
         // Launch chrome
-        mActivityTestRule.startMainActivityFromLauncher();
+        mActivityTestRule.startFromLauncher();
         String currentUrl =
                 ChromeTabUtils.getUrlStringOnUiThread(
                         mActivityTestRule.getActivity().getActivityTab());
@@ -75,7 +70,7 @@ public class MainActivityWithURLTest {
     @Feature({"Navigation"})
     public void testNewTabPageLaunch() {
         // Launch chrome with NTP.
-        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
+        mActivityTestRule.startOnNtp();
         String currentUrl =
                 ChromeTabUtils.getUrlStringOnUiThread(
                         mActivityTestRule.getActivity().getActivityTab());

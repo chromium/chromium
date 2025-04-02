@@ -169,8 +169,9 @@ void InitialPreferences::InitializeFromCommandLine(
   // the kGoogleUpdateIsMachineEnvVar environment variable.
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   if (env) {
-    std::string is_machine_var;
-    env->GetVar(env_vars::kGoogleUpdateIsMachineEnvVar, &is_machine_var);
+    std::string is_machine_var =
+        env->GetVar(env_vars::kGoogleUpdateIsMachineEnvVar)
+            .value_or(std::string());
     if (is_machine_var == "1") {
       VLOG(1) << "Taking system-level from environment.";
       name.assign(installer::initial_preferences::kDistroDict);

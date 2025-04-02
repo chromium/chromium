@@ -189,6 +189,13 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
     this.completeAttributeTypesList_ =
         await this.entityDataManager_.getAllAttributeTypesForEntityTypeName(
             this.entityInstance.type.typeName);
+
+    // TODO(crbug.com/407794687): Decide whether the code should show a spinner
+    // instead of delaying the display of the dialog. Keep this decision
+    // consistent with all Autofill dialogs (Autofill Ai, Autofill, Payments,
+    // etc.).
+    // Open the modal only after all the properties are computed.
+    this.$.dialog.showModal();
   }
 
   private computeCompleteAttributeInstanceList_(): AttributeInstance[] {
@@ -272,6 +279,16 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
 
   private getMonthName_(month: string): string {
     const date = new Date();
+    // `date` contains the current month, day and year. This becomes problematic
+    // if the current day is 31, and the month is overridden to February (for
+    // example), because `date` will overflow into March, because February 31st
+    // doesn't exist.
+    // Therefore, the code also has to override the day, to a day that is
+    // present in all months.
+    // Moreover, the day shouldn't be at the beginning of the month. If the code
+    // sets the day to 1, and the month to January, the date will be January 1st
+    // in UTC, but December 31st in Pacific Time.
+    date.setDate(10);
     date.setMonth(Number(month) - 1);
     const formatter = new Intl.DateTimeFormat(
         document.documentElement.lang, {month: 'short'});

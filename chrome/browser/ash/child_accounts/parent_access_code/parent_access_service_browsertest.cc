@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_test_utils.h"
 #include "chrome/browser/ash/login/test/feature_parameter_interface.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,6 +23,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -269,9 +269,8 @@ IN_PROC_BROWSER_TEST_P(ParentAccessServiceTest, InvalidAccountId) {
 
 IN_PROC_BROWSER_TEST_P(ParentAccessServiceTest,
                        ChildDeviceOwner_IsApprovalRequired) {
-  auto* const user_manager =
-      static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
-  user_manager->SetOwnerId(logged_in_user_mixin_.GetAccountId());
+  user_manager::UserManager::Get()->SetOwnerId(
+      logged_in_user_mixin_.GetAccountId());
 
   // No configuration available - reauth does not require PAC.
   // Login screen.
@@ -306,10 +305,11 @@ IN_PROC_BROWSER_TEST_P(ParentAccessServiceTest,
 
 IN_PROC_BROWSER_TEST_P(ParentAccessServiceTest,
                        RegularDeviceOwner_IsApprovalRequired) {
-  auto* const user_manager =
-      static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
-  const AccountId regular_user = AccountId::FromUserEmail("regular@gmail.com");
-  user_manager->AddUser(regular_user);
+  auto* user_manager = user_manager::UserManager::Get();
+  const AccountId regular_user =
+      AccountId::FromUserEmailGaiaId("regular@gmail.com", GaiaId("test-gaia"));
+  ASSERT_TRUE(
+      user_manager::TestHelper(user_manager).AddRegularUser(regular_user));
   user_manager->SetOwnerId(regular_user);
 
   // No configuration available - reauth does not require PAC.

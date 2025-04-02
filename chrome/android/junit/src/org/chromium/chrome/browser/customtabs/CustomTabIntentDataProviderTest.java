@@ -45,6 +45,7 @@ import android.view.ContextThemeWrapper;
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSession;
+import androidx.browser.trusted.LaunchHandlerClientMode;
 import androidx.browser.trusted.ScreenOrientation;
 import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
 import androidx.test.core.app.ApplicationProvider;
@@ -65,6 +66,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
@@ -1676,5 +1678,37 @@ public class CustomTabIntentDataProviderTest {
         assertNotNull(dataProvider.getCloseButtonDrawable());
         assertEquals(
                 CustomTabsIntent.CLOSE_BUTTON_POSITION_END, dataProvider.getCloseButtonPosition());
+    }
+
+    @Test
+    public void launchHandlerClientMode() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(
+                TrustedWebActivityIntentBuilder.EXTRA_LAUNCH_HANDLER_CLIENT_MODE,
+                LaunchHandlerClientMode.FOCUS_EXISTING);
+
+        BrowserServicesIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals(
+                LaunchHandlerClientMode.FOCUS_EXISTING, dataProvider.getLaunchHandlerClientMode());
+    }
+
+    @Test
+    public void launchHandlerClientMode_noValue() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+
+        BrowserServicesIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals(LaunchHandlerClientMode.AUTO, dataProvider.getLaunchHandlerClientMode());
+    }
+
+    @Test
+    public void launchHandlerClientMode_wrongValue() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(TrustedWebActivityIntentBuilder.EXTRA_LAUNCH_HANDLER_CLIENT_MODE, 45);
+
+        BrowserServicesIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals(LaunchHandlerClientMode.AUTO, dataProvider.getLaunchHandlerClientMode());
     }
 }

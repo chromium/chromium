@@ -38,6 +38,11 @@ void IOSWebContentHandlerImpl::RequestLocalApproval(
     ApprovalRequestInitiatedCallback callback) {
   CHECK(base::FeatureList::IsEnabled(supervised_user::kLocalWebApprovals));
 
+  if (!url.has_host()) {
+    // A host must exist, because this is allow-listed at the end of the flow.
+    std::move(callback).Run(false);
+    return;
+  }
   GURL target_url = url_formatter.FormatUrl(url);
   base::OnceCallback<void(
       supervised_user::LocalApprovalResult,

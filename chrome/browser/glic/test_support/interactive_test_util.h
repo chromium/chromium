@@ -62,20 +62,31 @@ class GlicAppStateObserver : public ui::test::ObservationStateObserver<
 
 DECLARE_STATE_IDENTIFIER_VALUE(GlicAppStateObserver, kGlicAppState);
 
-// Observes the Log In state of the controller.
-class LogInAndOpenStateObserver
-    : public ui::test::PollingStateObserver<
-          GlicWindowController::LogInAndOpen::State> {
+// True when the timer is not running. Use `Start()` to start the timer.
+class WaitingStateObserver : public ui::test::StateObserver<bool> {
  public:
-  explicit LogInAndOpenStateObserver(GlicWindowController& controller);
-  ~LogInAndOpenStateObserver() override;
+  WaitingStateObserver() { OnStateObserverStateChanged(true); }
+  ~WaitingStateObserver() override = default;
+
+  void Start(base::TimeDelta timeout) {
+    OnStateObserverStateChanged(false);
+    timer_.Start(FROM_HERE, timeout,
+                 base::BindOnce(&WaitingStateObserver::OnTimeout,
+                                base::Unretained(this)));
+  }
+
+ private:
+  void OnTimeout() { OnStateObserverStateChanged(true); }
+
+  base::OneShotTimer timer_;
 };
 
-DECLARE_STATE_IDENTIFIER_VALUE(LogInAndOpenStateObserver, kLogInAndOpenState);
-
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(WaitingStateObserver, kDelayState);
 }  // namespace internal
 
+// The glic WebUI web contents.
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicHostElementId);
+// The glic webview contents.
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicContentsElementId);
 
 }  // namespace glic::test

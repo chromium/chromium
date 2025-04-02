@@ -1181,6 +1181,14 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       const GURL& url) override;
 
+  std::unique_ptr<content::KeepAliveRequestTracker>
+  MaybeCreateKeepAliveRequestTracker(
+      const network::ResourceRequest& request,
+      std::optional<ukm::SourceId> ukm_source_id,
+      bool is_attribution_reporting_eligible_request,
+      content::KeepAliveRequestTracker::IsContextDetachedCallback
+          is_context_detached_callback) override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,

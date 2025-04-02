@@ -309,17 +309,50 @@ TEST(BoundSessionDisabledHeaderModificationDelegateImplTest,
 
   signin::HeaderModificationDelegateImpl header_modification_delegate(
       profile.get());
-  TestResponseAdapter gaia_response_adapter(
-      GURL("https://accounts.google.com"));
+  const GURL response_url("https://accounts.google.com");
+  TestResponseAdapter gaia_response_adapter(response_url);
   SetValidRegistrationHeader(&gaia_response_adapter);
   ASSERT_THAT(
       BoundSessionRegistrationFetcherParam::CreateFromHeaders(
           gaia_response_adapter.GetUrl(), gaia_response_adapter.GetHeaders()),
       testing::SizeIs(1));
 
-  EXPECT_CALL(*mock_service, MaybeTerminateSession).Times(0);
-  EXPECT_CALL(*mock_service, CreateRegistrationRequest).Times(0);
+  EXPECT_CALL(*mock_service, MaybeTerminateSession(response_url, _));
+  EXPECT_CALL(*mock_service, CreateRegistrationRequest);
   header_modification_delegate.ProcessResponse(&gaia_response_adapter, GURL());
 }
+
+TEST(BoundSessionDisabledHeaderModificationDelegateImplTest,
+     BoundSessionCookieRefreshServiceIsNull) {
+  content::BrowserTaskEnvironment task_environment;
+  // The feature state doesn't matter so let's pretend it's enabled.
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kEnableBoundSessionCredentials};
+
+  TestingProfile::Builder profile_builder;
+  profile_builder.AddTestingFactory(
+      BoundSessionCookieRefreshServiceFactory::GetInstance(),
+      base::BindRepeating(
+          [](content::BrowserContext* context)
+              -> std::unique_ptr<KeyedService> { return nullptr; }));
+
+  std::unique_ptr<TestingProfile> profile = profile_builder.Build();
+  ASSERT_FALSE(
+      BoundSessionCookieRefreshServiceFactory::GetForProfile(profile.get()));
+
+  signin::HeaderModificationDelegateImpl header_modification_delegate(
+      profile.get());
+  const GURL response_url("https://accounts.google.com");
+  TestResponseAdapter gaia_response_adapter(response_url);
+  SetValidRegistrationHeader(&gaia_response_adapter);
+  ASSERT_THAT(
+      BoundSessionRegistrationFetcherParam::CreateFromHeaders(
+          gaia_response_adapter.GetUrl(), gaia_response_adapter.GetHeaders()),
+      testing::SizeIs(1));
+
+  // This mainly verifies that no crashes happen.
+  header_modification_delegate.ProcessResponse(&gaia_response_adapter, GURL());
+}
+
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 }  // namespace

@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/dom/observable.h"
 #include "third_party/blink/renderer/core/dom/subscriber.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/event_util.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
@@ -62,12 +63,14 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/pointer_type_names.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_activity_logger.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
@@ -703,6 +706,17 @@ void EventTarget::AddedEventListener(
     } else if (RuntimeEnabledFeatures::WindowOnMoveEventEnabled() &&
                (event_type == event_type_names::kMove)) {
       UseCounter::Count(*document, WebFeature::kMoveEvent);
+    }
+  }
+
+  if (WorkerOrWorkletGlobalScope* worker =
+          DynamicTo<WorkerOrWorkletGlobalScope>(GetExecutionContext())) {
+    if (event_type == event_type_names::kPush) {
+      UseCounter::Count(*worker, WebFeature::kServiceWorkerPushEventListener);
+    } else if (event_type == event_type_names::kPushsubscriptionchange) {
+      UseCounter::Count(
+          *worker,
+          WebFeature::kServiceWorkerPushSubscriptionChangeEventListener);
     }
   }
 

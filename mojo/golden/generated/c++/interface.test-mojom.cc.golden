@@ -86,14 +86,13 @@ const char* IFace::MessageToMethodName_(mojo::Message& message) {
 
 #if !BUILDFLAG(IS_FUCHSIA)
 uint32_t IFace::Method_Sym::IPCStableHash() {
-  // This method's address is used for indetifiying the mojo method name after
+  // This method's address is used for identifiying the mojo method name after
   // symbolization. So each IPCStableHash should have a unique address.
   // We cannot use NO_CODE_FOLDING() here - it relies on the uniqueness of
   // __LINE__ value, which is not unique accross different mojo modules.
   // The code below is very similar to NO_CODE_FOLDING, but it uses a unique
   // hash instead of __LINE__.
-  constexpr uint32_t kHash = base::MD5Hash32Constexpr(
-          "(Impl)golden::IFace::Method");
+  static constexpr uint32_t kHash = 0x8f16d37f;  // IPCStableHash for golden::IFace::Method
   const uint32_t hash = kHash;
   base::debug::Alias(&hash);
   return hash;
@@ -235,9 +234,10 @@ bool IFace_Method_ForwardToCallback::Accept(
         IFace::Name_, 0, true);
     return false;
   }
-  if (!callback_.is_null())
+  if (!callback_.is_null()) {
     std::move(callback_).Run(
 std::move(p_result));
+  }
   return true;
 }
 
@@ -338,7 +338,7 @@ bool IFaceStubDispatch::AcceptWithResponder(
             IFace::Name_, 0, false);
         return false;
       }
-      IFace::MethodCallback callback =
+      auto callback =
           IFace_Method_ProxyToResponder::CreateCallback(
               *message, std::move(responder));
       // A null |impl| means no implementation was bound.
@@ -392,6 +392,7 @@ IFaceAsyncWaiter::IFaceAsyncWaiter(
     IFace* proxy) : proxy_(proxy) {}
 
 IFaceAsyncWaiter::~IFaceAsyncWaiter() = default;
+
 
 void IFaceAsyncWaiter::Method(
     bool param, std::string* out_result) {

@@ -232,6 +232,11 @@ class NET_EXPORT_PRIVATE HttpStream {
   // the stream has been initialized. Use PopulateNetErrorDetails() for errors
   // that happened during the initialization.
   virtual std::optional<QuicConnectionDetails> GetQuicConnectionDetails() const;
+
+  // Called when the underlying connection requires HTTP/1.x. If this stream is
+  // not HTTP/1.x (Or HTTP/0.9, though that shouldn't happen), the HttpStream
+  // should make sure the underlying connection is not available for reuse.
+  virtual void SetHTTP11Required() {}
 };
 
 }  // namespace net

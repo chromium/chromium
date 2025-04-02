@@ -44,6 +44,21 @@ class WebAudioLatencyHint {
     return seconds_;
   }
 
+  static const char* AsString(const WebAudioLatencyHint& hint) {
+    switch (hint.Category()) {
+      case kCategoryInteractive:
+        return "LatencyInteractive";
+      case kCategoryBalanced:
+        return "LatencyBalanced";
+      case kCategoryPlayback:
+        return "LatencyPlayback";
+      case kCategoryExact:
+        return "LatencyExactMs";
+      default:
+        return "LatencyUnknown";
+    }
+  }
+
  private:
   AudioContextLatencyCategory category_;
   double seconds_;

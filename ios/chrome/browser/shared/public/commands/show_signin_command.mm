@@ -24,6 +24,7 @@
     _promoAction = promoAction;
     _completion = [completion copy];
     _optionalHistorySync = YES;
+    _fullScreenPromo = NO;
   }
   return self;
 }

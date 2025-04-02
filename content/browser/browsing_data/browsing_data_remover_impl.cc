@@ -28,6 +28,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/browsing_data/core/cookie_or_cache_deletion_choice.h"
+#include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/browsing_data/browsing_data_filter_builder_impl.h"
 #include "content/browser/btm/btm_service_impl.h"
@@ -721,7 +722,8 @@ void BrowsingDataRemoverImpl::RemoveImpl(
   // regeneration of the randomized token must occur to prevent creating a
   // stable identifier.
   if (remove_mask & DATA_TYPE_COOKIES &&
-      base::FeatureList::IsEnabled(blink::features::kCanvasInterventions) &&
+      base::FeatureList::IsEnabled(
+          fingerprinting_protection_interventions::features::kCanvasNoise) &&
       filter_builder->MatchesMostOriginsAndDomains()) {
     content::CanvasNoiseTokenData::SetNewToken(browser_context_);
   }

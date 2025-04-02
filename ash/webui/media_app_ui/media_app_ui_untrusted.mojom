@@ -203,6 +203,11 @@ interface MantisUntrustedService {
   // TODO(http://crbug.com/370820145): change the opaque `array<uint8>` type.
   ClassifyImageSafety(array<uint8> image)
       => (mantis.mojom.SafetyClassifierVerdict verdict);
+
+  // Infers the segmentation mode (e.g., scribble or lasso) from a list of
+  // touch events.
+  InferSegmentationMode(array<mantis.mojom.TouchPoint> gesture)
+      => (mantis.mojom.SegmentationMode mode);
 };
 
 // Interface implemented in JavaScript by the chrome-untrusted:// page for Media

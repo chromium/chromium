@@ -27,8 +27,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GEOMETRY_TRANSFORM_STATE_H_
 
 #include <memory>
+
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/point_f.h"

@@ -2980,6 +2980,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3045447014237878114">Ky sajt shkarkoi shumë skedarë automatikisht</translation>
 <translation id="3046178388369461825">Hapësira e diskut të Linux është tepër e ulët</translation>
 <translation id="304644035656848980">Pamja paraprake e mikrofonit tënd</translation>
+<translation id="3046892784550338476">Versioni <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Faqja e uebit, e plotë</translation>
 <translation id="304747341537320566">Motorët e ligjërimit</translation>
 <translation id="3047678109605649715">Nuk ka zëra në <ph name="LANGUAGE" /> për pajisjen tënde. Pastro hapësirën në pajisjen tënde dhe provo përsëri.</translation>

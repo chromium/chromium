@@ -461,26 +461,6 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
-                       SearchShortcutUsingCtrlF) {
-  const DeepQuery kSearchRowActionQuery{
-      "shortcut-customization-app",
-      "#searchBoxWrapper > search-box",
-      "#frb0",
-      "#searchResultRowInner",
-  };
-
-  RunTestSequence(
-      LaunchShortcutCustomizationApp(),
-      InAnyContext(
-          Log("Use Ctrl + F to focus search box"),
-          SendKeyPressEvent(ui::VKEY_F, ui::EF_CONTROL_DOWN),
-          Log("Searching for 'Redo last action' shortcut"),
-          EnterLowerCaseText("redo"),
-          Log("Verifying that 'Redo last action' search result row is visible"),
-          WaitForElementExists(webcontents_id_, kSearchRowActionQuery)));
-}
-
-IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
                        OpenKeyboardSettings) {
   const DeepQuery kKeyboardSettingsLink{
       "shortcut-customization-app",

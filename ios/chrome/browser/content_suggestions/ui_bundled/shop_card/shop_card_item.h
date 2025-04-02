@@ -9,6 +9,7 @@
 
 @protocol ShopCardCommands;
 @class ShopCardData;
+@protocol ShopCardFaviconConsumerSource;
 
 // Item containing the configurations for the Shopcard view.
 @interface ShopCardItem : MagicStackModule
@@ -19,6 +20,9 @@
 // Shopping data including the card type, and card-specific data.
 @property(nonatomic, strong) ShopCardData* shopCardData;
 
+// Consumer source (e.g. mediator) that receives the favicon update.
+@property(nonatomic, strong) id<ShopCardFaviconConsumerSource>
+    shopCardFaviconConsumerSource;
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SHOP_CARD_SHOP_CARD_ITEM_H_

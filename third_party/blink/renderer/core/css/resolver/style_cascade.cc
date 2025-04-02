@@ -144,8 +144,7 @@ PropertyHandle ToPropertyHandle(const CSSProperty& property,
     DCHECK(IsA<CustomProperty>(property));
     return PropertyHandle(property.GetPropertyNameAtomicString());
   }
-  return PropertyHandle(CSSProperty::Get(id),
-                        DecodeIsPresentationAttribute(position));
+  return PropertyHandle(CSSProperty::Get(id));
 }
 
 // https://drafts.csswg.org/css-cascade-4/#default
@@ -486,8 +485,7 @@ void StyleCascade::AnalyzeInterpolations() {
   for (wtf_size_t i = 0; i < entries.size(); ++i) {
     for (const auto& active_interpolation : *entries[i].map) {
       auto name = active_interpolation.key.GetCSSPropertyName();
-      uint32_t position = EncodeInterpolationPosition(
-          name.Id(), i, active_interpolation.key.IsPresentationAttribute());
+      uint32_t position = EncodeInterpolationPosition(name.Id(), i);
       CascadePriority priority(entries[i].origin,
                                /* important */ false,
                                /* tree_order */ 0,
@@ -782,8 +780,7 @@ void StyleCascade::ApplyInterpolationMap(const ActiveInterpolationsMap& map,
                                          CascadeResolver& resolver) {
   for (const auto& entry : map) {
     auto name = entry.key.GetCSSPropertyName();
-    uint32_t position = EncodeInterpolationPosition(
-        name.Id(), index, entry.key.IsPresentationAttribute());
+    uint32_t position = EncodeInterpolationPosition(name.Id(), index);
     CascadePriority priority(origin,
                              /* important */ false,
                              /* tree_order */ 0,

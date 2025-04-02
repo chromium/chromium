@@ -213,6 +213,7 @@ Jei ją ištrinsite, visi iš karto neteks prieigos prie skirtukų grupės „<p
 <translation id="8820741577754260431">Žr. sumažintas kainas skirtukuose</translation>
 <translation id="8887921976452567404">Uždarytus skirtukus ir grupes galima iš naujo atidaryti skiltyse „Naujausi skirtukai“ ir „Skirtukų grupės“.</translation>
 <translation id="8915916167043355778">Uždaryti viską</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Perkelti į naują langą}one{Perkelti į kitą langą}few{Perkelti į kitą langą}many{Perkelti į kitą langą}other{Perkelti į kitą langą}}</translation>
 <translation id="9090098097337832354">Informacija apie šią parduotuvę uždaryta</translation>
 <translation id="9114502155681725011">Atidaryti skirtukų grupės „<ph name="TITLE_OF_GROUP" />“, kurios spalva <ph name="COLOR_NAME" />, veiksmų meniu.</translation>
 <translation id="9169141410816678175">Visi iš karto neteks prieigos prie skirtukų grupės „<ph name="GROUP_NAME" />“, o ji bus ištrinta iš visų įrenginių</translation>

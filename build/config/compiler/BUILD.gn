@@ -404,17 +404,6 @@ config("compiler") {
     }
   }
 
-  if (is_clang && is_debug) {
-    # Allow comparing the address of references and 'this' against 0
-    # in debug builds. Technically, these can never be null in
-    # well-defined C/C++ and Clang can optimize such checks away in
-    # release builds, but they may be used in asserts in debug builds.
-    cflags_cc += [
-      "-Wno-undefined-bool-conversion",
-      "-Wno-tautological-undefined-compare",
-    ]
-  }
-
   # Non-Apple Posix and Fuchsia compiler flags setup.
   # -----------------------------------
   if ((is_posix && !is_apple) || is_fuchsia) {
@@ -2015,11 +2004,9 @@ config("default_warnings") {
         "-Wno-nullability-completeness",
       ]
 
-      if (!is_nacl) {
-        cflags_cc += [
-          # TODO(crbug.com/41486292): Fix and re-enable.
-          "-Wno-c++11-narrowing-const-reference",
-        ]
+      if (llvm_force_head_revision) {
+        # TODO(crbug.com/407622661): Enable broadly, suppress selectively.
+        cflags_cc += [ "-Wno-unnecessary-virtual-specifier" ]
       }
     }
 
@@ -2100,14 +2087,11 @@ config("default_warnings") {
 config("prevent_unsafe_narrowing") {
   if (is_clang) {
     cflags = [
+      "-Wimplicit-int-conversion",
       "-Wshorten-64-to-32",
       "-Wsign-compare",
       "-Wsign-conversion",
     ]
-    if (!is_fuchsia) {
-      # TODO(crbug.com/402154971): Fix fuchsia/ui/composition/cpp/fidl.h
-      cflags += [ "-Wimplicit-int-conversion" ]
-    }
     if (!is_nacl) {
       cflags += [
         # Avoid bugs of the form `if (size_t i = size; i >= 0; --i)` while
@@ -2267,9 +2251,6 @@ config("no_chromium_code") {
       cflags += [
         # Disabled for similar reasons as -Wunused-variable.
         "-Wno-unused-but-set-variable",
-
-        # TODO(crbug.com/40762742): Clean up and enable.
-        "-Wno-misleading-indentation",
       ]
     }
   }

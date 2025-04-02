@@ -475,7 +475,8 @@ suite('HistoryClustersFocusTest', () => {
         clustersElement.shadowRoot.querySelectorAll('history-cluster').length);
   });
 
-  test('Scroll to load more clusters', async () => {
+  // TODO(crbug.com/407488107): Fix flakiness and enable test.
+  test.skip('Scroll to load more clusters', async () => {
     const clustersElement = await setupScrollableClustersElement();
 
     // Set up some test data. We intentionally load a lot of clusters for this

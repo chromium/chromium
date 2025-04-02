@@ -292,9 +292,7 @@ bool IsUserOptedInWalletSyncTransport(const PrefService* prefs,
   // On mobile, no specific opt-in is required.
   return true;
 #else
-  if (prefs->GetBoolean(::prefs::kExplicitBrowserSignin) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillRemovePaymentsButterDropdown)) {
+  if (prefs->GetBoolean(::prefs::kExplicitBrowserSignin)) {
     // Explicit browser signin makes the explicit opt-in unnecessary.
     return true;
   }

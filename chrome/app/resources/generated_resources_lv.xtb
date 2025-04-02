@@ -2984,6 +2984,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3045447014237878114">Šajā vietnē tika automātiski lejupielādēti vairāki faili</translation>
 <translation id="3046178388369461825">Linux diskā gandrīz nav vietas</translation>
 <translation id="304644035656848980">Jūsu mikrofona priekšskatījums</translation>
+<translation id="3046892784550338476">Versija <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />), <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Tīmekļa lapa, pabeigta</translation>
 <translation id="304747341537320566">Runas programmas</translation>
 <translation id="3047678109605649715">Jūsu ierīcē nav balss <ph name="LANGUAGE" /> valodā. Atbrīvojiet nepieciešamo vietu savā ierīcē un mēģiniet vēlreiz.</translation>

@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">マニフェスト ファイルが無効です</translation>
 <translation id="7217838517480956708">このパソコンの管理者にとって <ph name="EXTENSION_NAME" /> がインストールされている必要があります。削除や修正はできません。</translation>
 <translation id="7612608473764576263">秘密鍵の入力値は有効な形式でなければなりません（PKCS#8 形式の PEM エンコード RSA 鍵）。</translation>
+<translation id="7876803335449432072">コンテンツ スクリプトのファイル「<ph name="RELATIVE_PATH" />」を読み込めませんでした。コンテンツ スクリプトのスタイルシートは、.css ファイルなどのサポートされているスタイルシート ファイルからのみ読み込むことができます。</translation>
 <translation id="7939686037314084444">拡張機能を正しく読み込めませんでした。ネットワーク リクエストを取得できない可能性があります。</translation>
 <translation id="7972881773422714442">オプション: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">ユーザー向き</translation>
 <translation id="8047248493720652249">この拡張機能は、ダウンロード ファイル「<ph name="ATTEMPTED_FILENAME" />」に名前を付けることができませんでした。別の拡張機能（<ph name="EXTENSION_NAME" />）が異なるファイル名「<ph name="ACTUAL_FILENAME" />」を指定しました。</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" />、提供元: <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">マニフェスト ファイルが見つからないか読み取れません</translation>
+<translation id="8621383749470166852">コンテンツ スクリプトのファイル「<ph name="RELATIVE_PATH" />」を読み込めませんでした。コンテンツ スクリプトは、.js ファイルなどのサポートされている JavaScript ファイルからのみ読み込むことができます。</translation>
 <translation id="8636666366616799973">パッケージが無効です。詳細: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="8761756413268424715">「<ph name="APP_NAME" />」が次のデバイスへのアクセスをリクエストしています:</translation>
 <translation id="8885905466771744233">指定した拡張機能の秘密鍵は既に存在します。その鍵を再利用するか、先に削除してください。</translation>

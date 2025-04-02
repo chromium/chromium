@@ -19,6 +19,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/numerics/checked_math.h"
 #include "base/process/launch.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/platform_thread.h"
@@ -31,6 +32,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/util/win_util.h"
+#include "chrome/updater/win/scoped_handle.h"
 #include "chrome/updater/win/win_constants.h"
 #include "components/update_client/update_client.h"
 
@@ -475,6 +477,71 @@ Installer::Result MakeInstallerResult(
   return result;
 }
 
+HRESULT CreateInstallerOutputPipe(ScopedKernelHANDLE& read_handle,
+                                  ScopedKernelHANDLE& write_handle) {
+  SECURITY_ATTRIBUTES sa = {sizeof(SECURITY_ATTRIBUTES)};
+  sa.bInheritHandle = FALSE;
+
+  // Buffer size of 64KB should be large enough to avoid blocking the installer
+  // when writing output. If the installer produces more than `kBufferSize`
+  // output per `kWaitForInstallerProgressSec` duration then the installer may
+  // be blocked until the pipe's buffer is read.
+  constexpr DWORD kBufferSize = 64 * 1024;
+  if (!::CreatePipe(ScopedKernelHANDLE::Receiver(read_handle).get(),
+                    ScopedKernelHANDLE::Receiver(write_handle).get(), &sa,
+                    kBufferSize)) {
+    return HRESULTFromLastError();
+  }
+
+  // Ensure only the write handle is inheritable by child processes. This allows
+  // the installer child process to inherit the write handle to write its
+  // output.
+  return ::SetHandleInformation(write_handle.get(), HANDLE_FLAG_INHERIT,
+                                HANDLE_FLAG_INHERIT)
+             ? S_OK
+             : HRESULTFromLastError();
+}
+
+bool ReadAndAppendInstallerOutput(const ScopedKernelHANDLE& read_handle,
+                                  std::string& output) {
+  DWORD bytes_available = 0;
+  if (!::PeekNamedPipe(read_handle.get(), nullptr, 0, nullptr, &bytes_available,
+                       nullptr)) {
+    // If the pipe's write handle has been closed AND all data has been read
+    // then ERROR_BROKEN_PIPE is returned. Consider this a success assuming the
+    // child process has exited and we've already polled all output.
+    return ::GetLastError() == ERROR_BROKEN_PIPE;
+  }
+  if (bytes_available == 0) {
+    // There is no data available to read so consider this a success.
+    return true;
+  }
+
+  base::CheckedNumeric<size_t> total_bytes_read =
+      base::CheckedNumeric<size_t>(output.size());
+  base::CheckedNumeric<size_t> new_size =
+      total_bytes_read + base::CheckedNumeric<size_t>(bytes_available);
+  if (!new_size.IsValid() || !total_bytes_read.IsValid()) {
+    // Ignore the rest of the output.
+    return false;
+  }
+  output.resize(new_size.ValueOrDie());
+
+  DWORD read_this_pass = 0;
+  do {
+    if (!::ReadFile(read_handle.get(), &output[total_bytes_read.ValueOrDie()],
+                    bytes_available, &read_this_pass, nullptr)) {
+      return false;
+    }
+    total_bytes_read += base::CheckedNumeric<size_t>(read_this_pass);
+    if (!total_bytes_read.IsValid()) {
+      return false;
+    }
+    bytes_available -= read_this_pass;
+  } while (read_this_pass > 0 && bytes_available > 0);
+  return true;
+}
+
 // Clears the previous installer output, runs the application installer,
 // queries the installer progress, then collects the process exit code, if
 // waiting for the installer does not time out.
@@ -508,9 +575,7 @@ InstallerResult RunApplicationInstaller(
           : BuildExeCommandLine(argsw, installer_data_file, app_installer);
   VLOG(1) << "Running application installer: " << cmdline;
 
-  base::LaunchOptions options;
-  options.start_hidden = true;
-  options.environment = {
+  base::EnvironmentMap env{
       {ENV_GOOGLE_UPDATE_IS_MACHINE,
        IsSystemInstall(app_info.scope) ? L"1" : L"0"},
       {base::UTF8ToWide(kUsageStatsEnabled),
@@ -521,7 +586,9 @@ InstallerResult RunApplicationInstaller(
   int num_tries = 0;
   base::TimeDelta retry_delay = kAlreadyRunningRetryInitialDelay;
   int exit_code = -1;
+  std::string output;
   const base::ElapsedTimer timer;
+  ScopedKernelHANDLE read_handle;
   base::Process process;
   do {
     if (!num_tries || exit_code == ERROR_INSTALL_ALREADY_RUNNING) {
@@ -531,6 +598,24 @@ InstallerResult RunApplicationInstaller(
         retry_delay *= 2;  // Double the retry delay each time.
       }
       ++num_tries;
+
+      base::LaunchOptions options;
+      options.start_hidden = true;
+      options.environment = env;
+
+      ScopedKernelHANDLE write_handle;
+      HRESULT hr = CreateInstallerOutputPipe(read_handle, write_handle);
+      if (SUCCEEDED(hr)) {
+        options.stdin_handle = INVALID_HANDLE_VALUE;
+        options.stdout_handle = write_handle.get();
+        options.stderr_handle = write_handle.get();
+        options.handles_to_inherit = {write_handle.get()};
+      } else {
+        LOG(ERROR) << "Failed to create pipe for child process, skipping "
+                      "installer output: "
+                   << std::hex << hr;
+      }
+      output.clear();
 
       process = base::LaunchProcess(cmdline, options);
       if (!process.IsValid()) {
@@ -544,11 +629,17 @@ InstallerResult RunApplicationInstaller(
     auto progress = GetInstallerProgress(app_info.scope, app_info.app_id);
     VLOG(3) << "installer progress: " << progress;
     progress_callback.Run(progress);
+
+    if (read_handle.is_valid() &&
+        !ReadAndAppendInstallerOutput(read_handle, output)) {
+      LOG(ERROR) << "Failed to poll child process output.";
+    }
+
     if (wait_result) {
       const Installer::Result installer_result = MakeInstallerResult(
           GetInstallerOutcome(app_info.scope, app_info.app_id), exit_code);
       exit_code = installer_result.result.code_;
-      VLOG(1) << "Installer exit code " << exit_code;
+      VLOG(1) << "Installer exit code " << exit_code << "; Output: " << output;
       if (exit_code == ERROR_INSTALL_ALREADY_RUNNING) {
         continue;
       }
@@ -556,9 +647,11 @@ InstallerResult RunApplicationInstaller(
     }
   } while (timer.Elapsed() < timeout && num_tries < kNumAlreadyRunningMaxTries);
 
-  return InstallerResult(exit_code == ERROR_INSTALL_ALREADY_RUNNING
-                             ? GOOPDATEINSTALL_E_INSTALL_ALREADY_RUNNING
-                             : GOOPDATEINSTALL_E_INSTALLER_TIMED_OUT);
+  if (exit_code == ERROR_INSTALL_ALREADY_RUNNING) {
+    return InstallerResult(GOOPDATEINSTALL_E_INSTALL_ALREADY_RUNNING);
+  }
+  VLOG(1) << "Installer timed out with output: " << output;
+  return InstallerResult(GOOPDATEINSTALL_E_INSTALLER_TIMED_OUT);
 }
 
 std::string LookupString(const base::FilePath& path,

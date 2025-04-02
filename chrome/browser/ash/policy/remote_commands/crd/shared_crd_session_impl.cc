@@ -65,6 +65,8 @@ void SharedCrdSessionImpl::StartCrdHost(const SessionParameters& parameters,
   session_parameters.show_confirmation_dialog =
       parameters.show_confirmation_dialog;
   session_parameters.terminate_upon_input = parameters.terminate_upon_input;
+  session_parameters.allow_remote_input = parameters.allow_remote_input;
+  session_parameters.allow_clipboard_sync = parameters.allow_clipboard_sync;
 
   CRD_VLOG(1) << "Starting CRD host and retrieving CRD access code";
   delegate_->StartCrdHostAndGetCode(

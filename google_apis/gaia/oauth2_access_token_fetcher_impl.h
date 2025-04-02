@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
+#include "google_apis/gaia/oauth2_response.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
@@ -43,28 +44,6 @@ class SharedURLLoaderFactory;
 class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenFetcherImpl
     : public OAuth2AccessTokenFetcher {
  public:
-  // Enumerated constants of server responses, matching RFC 6749.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum OAuth2Response {
-    kUnknownError = 0,
-    kOk = 1,
-    kOkUnexpectedFormat = 2,
-    kErrorUnexpectedFormat = 3,
-    kInvalidRequest = 4,
-    kInvalidClient = 5,
-    kInvalidGrant = 6,
-    kUnauthorizedClient = 7,
-    kUnsuportedGrantType = 8,
-    kInvalidScope = 9,
-    kRestrictedClient = 10,
-    kRateLimitExceeded = 11,
-    kInternalFailure = 12,
-    kAdminPolicyEnforced = 13,
-    kAccessDenied = 14,
-    kMaxValue = kAccessDenied,
-  };
-
   OAuth2AccessTokenFetcherImpl(
       OAuth2AccessTokenConsumer* consumer,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,

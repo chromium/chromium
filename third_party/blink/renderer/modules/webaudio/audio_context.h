@@ -319,6 +319,10 @@ class MODULES_EXPORT AudioContext final
   // Handles a disconnection from the MediaPlayerHost.
   void OnMediaPlayerDisconnect();
 
+  // Returns whether the media-playback-while-not-visible permission policy
+  // allows this audio context to play while not visible.
+  bool CanPlayWhileHidden() const;
+
   // https://webaudio.github.io/web-audio-api/#dom-audiocontext-suspended-by-user-slot
   bool suspended_by_user_ = false;
 

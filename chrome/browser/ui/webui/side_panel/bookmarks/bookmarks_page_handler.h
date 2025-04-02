@@ -37,6 +37,8 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler {
       side_panel::mojom::ActionSource source) override;
   void ExecuteEditCommand(const std::vector<int64_t>& node_ids,
                           side_panel::mojom::ActionSource source) override;
+  void ExecuteMoveCommand(const std::vector<int64_t>& node_ids,
+                          side_panel::mojom::ActionSource source) override;
   void ExecuteAddToBookmarksBarCommand(
       int64_t node_id,
       side_panel::mojom::ActionSource source) override;

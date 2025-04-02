@@ -83,6 +83,15 @@ public class BackButtonCoordinator {
     }
 
     /**
+     * Indicates that parent entered a tab switcher mode.
+     *
+     * @param isTabSwitcherMode whether tab switcher is showing or not.
+     */
+    public void setTabSwitcherMode(boolean isTabSwitcherMode) {
+        mMediator.setTabSwitcherMode(isTabSwitcherMode);
+    }
+
+    /**
      * Cleans up coordinator resources and unsubscribes from external events. An instance can't be
      * used after this method is called.
      */

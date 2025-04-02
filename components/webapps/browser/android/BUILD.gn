@@ -51,6 +51,7 @@ android_library("java") {
     "//build/android:build_java",
     "//chrome/browser/android/webapk/proto:proto_java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/edge_to_edge/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/webapk/android/libs/client:java",
     "//content/public/android:content_java",

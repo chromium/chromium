@@ -61,14 +61,15 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
 
   // Methods overridden by AcceleratedStaticBitmapImage only
   // Assumes the destination texture has already been allocated.
-  virtual bool CopyToTexture(gpu::gles2::GLES2Interface*,
-                             GLenum,
-                             GLuint,
-                             GLint,
-                             bool,
-                             bool,
-                             const gfx::Point&,
-                             const gfx::Rect&) {
+  // `src_rect` is always in top-left coordinate space.
+  virtual bool CopyToTexture(gpu::gles2::GLES2Interface* dest_gl,
+                             GLenum dest_target,
+                             GLuint dest_texture_id,
+                             GLint dest_level,
+                             bool unpack_premultiply_alpha,
+                             GrSurfaceOrigin destination_origin,
+                             const gfx::Point& dest_point,
+                             const gfx::Rect& src_rect) {
     NOTREACHED();
   }
 

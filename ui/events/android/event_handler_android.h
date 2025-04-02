@@ -49,6 +49,7 @@ class EVENTS_EXPORT EventHandlerAndroid {
   virtual bool ScrollBy(float delta_x, float delta_y);
   virtual bool ScrollTo(float x, float y);
   virtual void NotifyVirtualKeyboardOverlayRect(const gfx::Rect& keyboard_rect);
+  virtual void NotifyContextMenuInsetsObservers(const gfx::Rect&);
 };
 
 }  // namespace ui

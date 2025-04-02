@@ -221,17 +221,18 @@ using base::UserMetricsAction;
 }
 
 - (void)prepareOmniboxForScribble {
-  [self.textField exitPreEditState];
-  [self.textField setText:[[NSAttributedString alloc] initWithString:@""]
-           userTextLength:0];
+  [self.mutator prepareForScribble];
   self.textField.placeholder = nil;
 }
 
 - (void)cleanupOmniboxAfterScribble {
+  [self.mutator cleanupAfterScribble];
   self.textField.placeholder = [self placeholderText];
 }
 
 #pragma mark - OmniboxTextFieldDelegate
+
+#pragma mark UITextFieldDelegate
 
 - (BOOL)textField:(UITextField*)textField
     shouldChangeCharactersInRange:(NSRange)range
@@ -299,7 +300,7 @@ using base::UserMetricsAction;
   [self.mutator onDidBeginEditing];
 }
 
-// Record the metrics as needed.
+// Records the metrics as needed.
 - (void)textFieldDidEndEditing:(UITextField*)textField
                         reason:(UITextFieldDidEndEditingReason)reason {
   if (base::FeatureList::IsEnabled(kEnableLensOverlay)) {
@@ -309,76 +310,6 @@ using base::UserMetricsAction;
   if (!self.omniboxInteractedWhileFocused) {
     RecordAction(
         UserMetricsAction("Mobile_FocusedDefocusedOmnibox_WithNoAction"));
-  }
-}
-
-- (BOOL)textFieldShouldClear:(UITextField*)textField {
-  [self.mutator clearText];
-  self.processingUserEvent = YES;
-  return YES;
-}
-
-- (void)onCopy {
-  self.omniboxInteractedWhileFocused = YES;
-  [self.mutator onCopy];
-}
-
-- (void)willPaste {
-  [self.mutator willPaste];
-}
-
-- (void)onDeleteBackward {
-  // If not in pre-edit, deleting when cursor is at the beginning interacts with
-  // the thumbnail.
-  if (OmniboxTextFieldIOS* textField = self.textField;
-      !textField.isPreEditing && textField.selectedTextRange.empty &&
-      [textField offsetFromPosition:textField.beginningOfDocument
-                         toPosition:textField.selectedTextRange.start] == 0) {
-    [self didTapThumbnailButton];
-  }
-  [self.mutator onDeleteBackward];
-}
-
-- (void)textFieldDidAcceptAutocomplete:(OmniboxTextFieldIOS*)textField {
-  [self.mutator onAcceptAutocomplete];
-}
-
-- (void)textFieldDidRemoveAdditionalText:(OmniboxTextFieldIOS*)textField {
-  base::RecordAction(UserMetricsAction("MobileOmniboxRichInlineRemoved"));
-  [self.mutator removeAdditionalText];
-}
-
-- (BOOL)canPasteItemProviders:(NSArray<NSItemProvider*>*)itemProviders {
-  for (NSItemProvider* itemProvider in itemProviders) {
-    if (((self.searchByImageEnabled || self.shouldUseLensInMenu) &&
-         [itemProvider canLoadObjectOfClass:[UIImage class]]) ||
-        [itemProvider canLoadObjectOfClass:[NSURL class]] ||
-        [itemProvider canLoadObjectOfClass:[NSString class]]) {
-      return YES;
-    }
-  }
-  return NO;
-}
-
-- (void)pasteItemProviders:(NSArray<NSItemProvider*>*)itemProviders {
-  // Interacted while focused.
-  self.omniboxInteractedWhileFocused = YES;
-
-  [self.pasteDelegate didTapPasteToSearchButton:itemProviders];
-}
-
-- (BOOL)canPerformKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
-  return [self.popupKeyboardDelegate canPerformKeyboardAction:keyboardAction] ||
-         [self.textField canPerformKeyboardAction:keyboardAction];
-}
-
-- (void)performKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
-  if ([self.popupKeyboardDelegate canPerformKeyboardAction:keyboardAction]) {
-    [self.popupKeyboardDelegate performKeyboardAction:keyboardAction];
-  } else if ([self.textField canPerformKeyboardAction:keyboardAction]) {
-    [self.textField performKeyboardAction:keyboardAction];
-  } else {
-    NOTREACHED() << "Check canPerformKeyboardAction before!";
   }
 }
 
@@ -434,6 +365,74 @@ using base::UserMetricsAction;
   return [UIMenu menuWithChildren:actions];
 }
 
+#pragma mark OmniboxTextFieldDelegate
+
+- (void)onCopy {
+  self.omniboxInteractedWhileFocused = YES;
+  [self.mutator onCopy];
+}
+
+- (void)willPaste {
+  [self.mutator willPaste];
+}
+
+- (void)onDeleteBackward {
+  // If not in pre-edit, deleting when cursor is at the beginning interacts with
+  // the thumbnail.
+  if (OmniboxTextFieldIOS* textField = self.textField;
+      !textField.isPreEditing && textField.selectedTextRange.empty &&
+      [textField offsetFromPosition:textField.beginningOfDocument
+                         toPosition:textField.selectedTextRange.start] == 0) {
+    [self didTapThumbnailButton];
+  }
+  [self.mutator onDeleteBackward];
+}
+
+- (void)textFieldDidAcceptAutocomplete:(OmniboxTextFieldIOS*)textField {
+  [self.mutator onAcceptAutocomplete];
+}
+
+- (void)textFieldDidRemoveAdditionalText:(OmniboxTextFieldIOS*)textField {
+  base::RecordAction(UserMetricsAction("MobileOmniboxRichInlineRemoved"));
+  [self.mutator removeAdditionalText];
+}
+
+- (BOOL)canPasteItemProviders:(NSArray<NSItemProvider*>*)itemProviders {
+  for (NSItemProvider* itemProvider in itemProviders) {
+    if (((self.searchByImageEnabled || self.shouldUseLensInMenu) &&
+         [itemProvider canLoadObjectOfClass:[UIImage class]]) ||
+        [itemProvider canLoadObjectOfClass:[NSURL class]] ||
+        [itemProvider canLoadObjectOfClass:[NSString class]]) {
+      return YES;
+    }
+  }
+  return NO;
+}
+
+- (void)pasteItemProviders:(NSArray<NSItemProvider*>*)itemProviders {
+  // Interacted while focused.
+  self.omniboxInteractedWhileFocused = YES;
+
+  [self.pasteDelegate didTapPasteToSearchButton:itemProviders];
+}
+
+#pragma mark - OmniboxKeyboardDelegate
+
+- (BOOL)canPerformKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
+  return [self.popupKeyboardDelegate canPerformKeyboardAction:keyboardAction] ||
+         [self.textField canPerformKeyboardAction:keyboardAction];
+}
+
+- (void)performKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
+  if ([self.popupKeyboardDelegate canPerformKeyboardAction:keyboardAction]) {
+    [self.popupKeyboardDelegate performKeyboardAction:keyboardAction];
+  } else if ([self.textField canPerformKeyboardAction:keyboardAction]) {
+    [self.textField performKeyboardAction:keyboardAction];
+  } else {
+    NOTREACHED() << "Check canPerformKeyboardAction before!";
+  }
+}
+
 #pragma mark - OmniboxConsumer
 
 - (void)updateAutocompleteIcon:(UIImage*)icon
@@ -447,10 +446,6 @@ using base::UserMetricsAction;
 
 - (void)updateLensImageSupported:(BOOL)lensImageSupported {
   self.lensImageEnabled = lensImageSupported;
-}
-
-- (void)updateText:(NSAttributedString*)text {
-  [self.textField setText:text userTextLength:text.length];
 }
 
 - (void)setThumbnailImage:(UIImage*)image {
@@ -567,15 +562,9 @@ using base::UserMetricsAction;
 #pragma mark clear button
 
 - (void)clearButtonPressed {
-  // Emulate a system button clear callback.
-  BOOL shouldClear =
-      [self.textField.delegate textFieldShouldClear:self.textField];
-  if (shouldClear) {
-    [self.textField setText:@""];
-    // Calling setText: does not trigger UIControlEventEditingChanged, so update
-    // the clear button visibility manually.
-    [self.textField sendActionsForControlEvents:UIControlEventEditingChanged];
-  }
+  [self.mutator clearText];
+  [self updateClearButtonVisibility];
+  [self updateLeadingImage];
 }
 
 // Hides the clear button if the textfield is empty; shows it otherwise.
@@ -650,23 +639,12 @@ using base::UserMetricsAction;
 
 - (void)scribbleInteractionWillBeginWriting:
     (UIScribbleInteraction*)interaction {
-  if (self.textField.isPreEditing) {
-    [self.textField exitPreEditState];
-    [self.textField setText:[[NSAttributedString alloc] initWithString:@""]
-             userTextLength:0];
-  }
-
-  [self.textField clearAutocompleteText];
+  [self.mutator prepareForScribble];
 }
 
 - (void)scribbleInteractionDidFinishWriting:
     (UIScribbleInteraction*)interaction {
   [self cleanupOmniboxAfterScribble];
-
-  // Dismiss any inline autocomplete. The user expectation is to not have it.
-  [self.textField clearAutocompleteText];
-
-  [self.mutator removeAdditionalText];
 }
 
 /// Handles interaction with the thumbnail button. (tap or keyboard delete)

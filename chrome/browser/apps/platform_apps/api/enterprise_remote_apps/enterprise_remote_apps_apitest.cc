@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/apps/platform_apps/api/enterprise_remote_apps/enterprise_remote_apps_api.h"
-
 #include <string>
 #include <vector>
 
@@ -17,10 +14,12 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/apps/platform_apps/api/enterprise_remote_apps/enterprise_remote_apps_api.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -32,6 +31,7 @@
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_model.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/common/chrome_paths.h"
@@ -215,6 +215,9 @@ class RemoteAppsApitest : public policy::DevicePolicyCrosBrowserTest,
   base::Value::Dict config_;
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler_;
 };
 
 IN_PROC_BROWSER_TEST_P(RemoteAppsApitest, AddApp) {

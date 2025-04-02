@@ -70,7 +70,6 @@
 <translation id="1122714970786750095">Elektroniskās un elektriskās ierīces</translation>
 <translation id="1123753900084781868">Subtitri reāllaikā pašlaik nav pieejami.</translation>
 <translation id="1125453215844207206">Grafisks elements bez iezīmes. Notiek teksta iegūšana. Pakalpojumu nodrošina Google MI.</translation>
-<translation id="1125573121925420732">Tīmekļa vietņu drošības atjauninājumu laikā bieži var tikt rādīti brīdinājumi. Drīzumā tas tiks labots.</translation>
 <translation id="112840717907525620">Politikas kešatmiņa ir labā stāvoklī.</translation>
 <translation id="1131264053432022307">Kopētais attēls</translation>
 <translation id="1138458427267715730">Saņemiet brīdinājumus, kad kādā tīmekļa vietnē tiek konstatēts cenas kritums.</translation>
@@ -297,7 +296,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1492194039220927094">Politiku informatīvie ziņojumi:</translation>
 <translation id="1495677929897281669">Atgriezties cilnē</translation>
 <translation id="1500286806237135498">Kameras (<ph name="CAMERAS_COUNT" />)</translation>
-<translation id="1501859676467574491">Rādī kartes no mana Google konta</translation>
 <translation id="1504042622576912555">Gofrēts papīrs</translation>
 <translation id="1507202001669085618">&lt;p&gt;Šis kļūdas ziņojums tiek rādīts, ja izmantojat Wi-Fi portālu, kurā ir jāpierakstās, lai varētu pāriet tiešsaistē.&lt;/p&gt;
     &lt;p&gt;Lai novērstu šo kļūdu, lapā, kuru mēģināt atvērt, noklikšķiniet uz &lt;strong&gt;Izveidot savienojumu&lt;/strong&gt;.&lt;/p&gt;</translation>
@@ -568,6 +566,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1975584088563498795">10. pastkaste</translation>
 <translation id="1978555033938440688">Aparātprogrammatūras versija</translation>
 <translation id="1979156660928743046">Multivides informācija</translation>
+<translation id="1987486584747170374">Jūsu meklēšanas vaicājumi, precīzākās atbilstības un to lapu saturs tiek nosūtīts Google serveriem. Pārskatītāji to neizmantos, lai uzlabotu MI. Jūsu organizācija var jebkurā laikā mainīt šos iestatījumus.</translation>
 <translation id="1988881251331415125">Ja nav pareizrakstības kļūdu, <ph name="BEGIN_LINK" />mēģiniet palaist savienojamības diagnostiku<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567">Vietnē <ph name="URL" /> tiek pieprasīta atļauja pastāvīgi uzglabāt lielu datu apjomu jūsu lokālajā datorā.</translation>
@@ -763,6 +762,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2301098101308036335">Kuras vietnes tika apmeklētas un to apmeklēšanas laiks.</translation>
 <translation id="230286397113210245">Poga “Atvērt inkognito režīma logu”. Aktivizējiet, lai atvērtu jaunu inkognito režīma logu privātai pārlūkošanai.</translation>
 <translation id="2306124309679506798">Vai atļaut visaptverošu pieredzi?</translation>
+<translation id="2307711332257985952">Jūsu mājas un darbavietas adrese tagad ir pieejama pārlūkā Chrome.</translation>
 <translation id="2312234273148520048">Piedevas un mērces</translation>
 <translation id="2316087952091171402">Mazāk nekā <ph name="UPPER_ESTIMATE" />. Dažas vietnes nākamā apmeklējuma laikā, iespējams, tiks ielādētas lēnāk.</translation>
 <translation id="2316159751672436664">Personalizēt pieejamības rīkus Chrome OS iestatījumos</translation>
@@ -1178,6 +1178,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3102312643185441063">Uzkrājumu konts</translation>
 <translation id="3103188521861412364">Akcijas un obligācijas</translation>
 <translation id="3103535543639438037">Līdzās izvietotu līdzīgu produktu salīdzinājums</translation>
+<translation id="3103993932858740905">Izmantojot maksāšanu pa daļām, tiek ievadīts vienreizējs virtuālās kartes numurs. Šis numurs ir paredzēts tikai šim pirkumam.</translation>
 <translation id="3105172416063519923">Līdzekļa ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Pārbaudīt droša DNS servera konfigurāciju<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Vidējā paplāte</translation>

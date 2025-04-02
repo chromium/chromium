@@ -70,7 +70,6 @@
 <translation id="1122714970786750095">Elektronika a elektrotechnika</translation>
 <translation id="1123753900084781868">Okamžité titulky teď nejsou k dispozici</translation>
 <translation id="1125453215844207206">Neoznačená grafika. Extrahování textu pomocí Google AI</translation>
-<translation id="1125573121925420732">Během aktualizace zabezpečení na webech mohou být upozornění běžná. Brzy by se to mělo zlepšit.</translation>
 <translation id="112840717907525620">Mezipaměť zásady je v pořádku</translation>
 <translation id="1131264053432022307">Obrázek, který jste zkopírovali</translation>
 <translation id="1138458427267715730">Nechte si zaslat upozornění, když na kterémkoli webu klesne cena</translation>
@@ -297,7 +296,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1492194039220927094">Přenesení zásad:</translation>
 <translation id="1495677929897281669">Zpět na kartu</translation>
 <translation id="1500286806237135498">Kamery (<ph name="CAMERAS_COUNT" />)</translation>
-<translation id="1501859676467574491">Zobrazit karty z vašeho účtu Google</translation>
 <translation id="1504042622576912555">Vlna</translation>
 <translation id="1507202001669085618">&lt;p&gt;Tato chyba se zobrazí při použití portálu Wi-Fi, na kterém je třeba se před přístupem na internet přihlásit.&lt;/p&gt;
     &lt;p&gt;Chybu odstraníte tím, že na stránce, kterou se snažíte otevřít, kliknete na &lt;strong&gt;Připojení&lt;/strong&gt;.&lt;/p&gt;</translation>
@@ -568,6 +566,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1975584088563498795">Schránka 10</translation>
 <translation id="1978555033938440688">Verze firmwaru</translation>
 <translation id="1979156660928743046">Informace o médiu</translation>
+<translation id="1987486584747170374">Vaše vyhledávání, nejlepší shody a obsah stránek se odesílají do Googlu. Nebudou je používat kontroloři, kteří pomáhají vylepšovat AI. Vaše organizace může tato nastavení kdykoli změnit.</translation>
 <translation id="1988881251331415125">Pokud je adresa zadána správně, <ph name="BEGIN_LINK" />zkuste spustit Diagnostiku připojení<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567">Stránka <ph name="URL" /> chce trvale ukládat data v místním počítači</translation>
@@ -763,6 +762,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2301098101308036335">Které weby jsou navštěvovány a kdy.</translation>
 <translation id="230286397113210245">Tlačítko Otevřít anonymní okno, aktivací otevřete nové anonymní okno, abyste mohli prohlížet v soukromí</translation>
 <translation id="2306124309679506798">Povolit pohlcující prostředí?</translation>
+<translation id="2307711332257985952">V Chromu teď máte k dispozici svou adresu domů a do práce</translation>
 <translation id="2312234273148520048">Dochucovadla a dresinky</translation>
 <translation id="2316087952091171402">Méně než <ph name="UPPER_ESTIMATE" />. Je možné, že se některé weby při příští návštěvě budou načítat pomaleji.</translation>
 <translation id="2316159751672436664">Přizpůsobte si v nastavení ChromeOS nástroje pro usnadnění přístupu</translation>
@@ -1178,6 +1178,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3102312643185441063">Spořicí účet</translation>
 <translation id="3103188521861412364">Akcie a dluhopisy</translation>
 <translation id="3103535543639438037">Porovnejte podobné produkty vedle sebe</translation>
+<translation id="3103993932858740905">Při placení se vyplní jednorázové číslo virtuální karty. Toto číslo platí jen pro tento nákup.</translation>
 <translation id="3105172416063519923">ID díla:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Zkontrolovat konfiguraci zabezpečeného DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Prostřední zásobník</translation>

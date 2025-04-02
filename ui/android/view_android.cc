@@ -691,6 +691,15 @@ void ViewAndroid::NotifyVirtualKeyboardOverlayRect(
   }
 }
 
+void ViewAndroid::NotifyContextMenuInsetsObservers(const gfx::Rect& safe_area) {
+  if (event_handler_) {
+    event_handler_->NotifyContextMenuInsetsObservers(safe_area);
+  }
+  for (ViewAndroid* child : children_) {
+    child->NotifyContextMenuInsetsObservers(safe_area);
+  }
+}
+
 template <typename E>
 bool ViewAndroid::HitTest(EventHandlerCallback<E> handler_callback,
                           const E& event,

@@ -17,7 +17,8 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 
 import java.util.concurrent.TimeoutException;
 
@@ -27,8 +28,8 @@ import java.util.concurrent.TimeoutException;
 @Batch(Batch.PER_CLASS)
 public class OmahaServiceStartDelayerIntegrationTest {
     @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Test
     @SmallTest
@@ -41,7 +42,7 @@ public class OmahaServiceStartDelayerIntegrationTest {
                                 ChromeActivitySessionTracker.getInstance()
                                         .getOmahaServiceStartDelayerForTesting());
         receiver.setOmahaRunnableForTesting(() -> callback.notifyCalled());
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         try {
             callback.waitForOnly();
         } catch (TimeoutException e) {

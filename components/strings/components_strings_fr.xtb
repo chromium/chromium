@@ -70,7 +70,6 @@
 <translation id="1122714970786750095">Appareils électroniques et électriques</translation>
 <translation id="1123753900084781868">Sous-titres instantanés non disponibles pour l'instant</translation>
 <translation id="1125453215844207206">Image sans libellé. Extraction du texte, optimisée par l'IA de Google…</translation>
-<translation id="1125573121925420732">Les avertissements peuvent être fréquents en attendant que les sites Web finissent de mettre à jour leurs systèmes de sécurité. Ce problème devrait être bientôt résolu.</translation>
 <translation id="112840717907525620">Cache de la règle valide.</translation>
 <translation id="1131264053432022307">Image copiée</translation>
 <translation id="1138458427267715730">Recevez des alertes en cas de baisse de prix sur n'importe quel site Web</translation>
@@ -297,7 +296,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1492194039220927094">Diffusion push des règles : </translation>
 <translation id="1495677929897281669">Retour à l'onglet</translation>
 <translation id="1500286806237135498">Caméras (<ph name="CAMERAS_COUNT" />)</translation>
-<translation id="1501859676467574491">Afficher les cartes de votre compte Google</translation>
 <translation id="1504042622576912555">Cannelure</translation>
 <translation id="1507202001669085618">&lt;p&gt;Ce message s'affiche si vous utilisez un portail Wi-Fi auquel vous devez vous connecter pour accéder à Internet.&lt;/p&gt;
     &lt;p&gt;Pour corriger cette erreur, cliquez sur &lt;strong&gt;Se connecter&lt;/strong&gt; sur la page que vous essayez d'ouvrir.&lt;/p&gt;</translation>
@@ -568,6 +566,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1975584088563498795">Boîte aux lettres 10</translation>
 <translation id="1978555033938440688">Version du micrologiciel</translation>
 <translation id="1979156660928743046">Informations sur le contenu multimédia</translation>
+<translation id="1987486584747170374">Vos recherches, les meilleurs résultats et le contenu des pages correspondantes sont envoyés à Google. Ils ne seront pas utilisés par des réviseurs humains pour améliorer l'IA. Votre organisation peut modifier ces paramètres à tout moment.</translation>
 <translation id="1988881251331415125">S'il n'y a pas d'erreur, essayez de <ph name="BEGIN_LINK" />faire un diagnostic sur la connectivité<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> souhaite stocker de façon permanente des données volumineuses sur votre ordinateur local</translation>
@@ -763,6 +762,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2301098101308036335">Quels sites Web sont consultés et à quel moment.</translation>
 <translation id="230286397113210245">Bouton "Ouvrir une fenêtre de navigation privée" à activer pour ouvrir une nouvelle fenêtre de navigation privée</translation>
 <translation id="2306124309679506798">Autoriser une expérience immersive ?</translation>
+<translation id="2307711332257985952">Vos adresses personnelle et professionnelle sont désormais disponibles dans Chrome</translation>
 <translation id="2312234273148520048">Sauces et condiments</translation>
 <translation id="2316087952091171402">Moins de <ph name="UPPER_ESTIMATE" />. Le chargement de certains sites risque d'être plus lent lors de votre prochaine visite.</translation>
 <translation id="2316159751672436664">Personnaliser vos outils d'accessibilité dans les paramètres Chrome OS</translation>
@@ -1178,6 +1178,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3102312643185441063">Épargne</translation>
 <translation id="3103188521861412364">Actions et obligations</translation>
 <translation id="3103535543639438037">Comparer côte à côte des produits similaires</translation>
+<translation id="3103993932858740905">Lorsque vous payez en plusieurs fois, un numéro de carte virtuelle temporaire est renseigné. Ce numéro est réservé à cet achat.</translation>
 <translation id="3105172416063519923">ID d'élément : </translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Vérifiez la configuration du DNS sécurisé<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Bac intermédiaire</translation>

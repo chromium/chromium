@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.tabmodel;
 import android.content.Context;
 
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** A factory interface for building a {@link TabModelSelector} instance. */
+@NullMarked
 public interface TabModelSelectorFactory {
     /**
      * Builds a {@link TabModelSelector}.

@@ -128,6 +128,12 @@ class CreateLanguageModelClient
       return;
     }
 
+    if (monitor_) {
+      // Ensure that a download completion event is sent.
+      monitor_->OnDownloadProgressUpdate(kNormalizedDownloadProgressMax,
+                                         kNormalizedDownloadProgressMax);
+    }
+
     CHECK(info);
     LanguageModel* language_model = MakeGarbageCollected<LanguageModel>(
         ai_->GetExecutionContext(), std::move(language_model_remote),

@@ -440,6 +440,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="2783161812871838616">Desktopwebsite anfordern</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Passwort in deinem Google-Konto ({EMAIL}) gespeichert}other{Passwörter in deinem Google-Konto ({EMAIL}) gespeichert}}</translation>
 <translation id="2791174088547598693">Passwort hinzufügen…</translation>
+<translation id="2793703503584038325">Wähle ein Passwort aus und tippe auf das Symbol „Teilen“</translation>
 <translation id="2797302972324086597">Ländercode</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} Datei}other{{COUNT} Dateien}}</translation>
 <translation id="2816489851009559785">„Menü“ → Einstellungen → „Standardbrowser“</translation>
@@ -579,6 +580,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="35083190962747987">${url} öffnen</translation>
 <translation id="3511519535430890904">Browsing-Schutz hinzufügen</translation>
 <translation id="3517216995152707259">Durch das Löschen deiner Browserdaten wirst du nicht von deinem Google-Konto abgemeldet. Wenn du dich von deinem Google-Konto abmelden möchtest, <ph name="BEGIN_LINK" />melde dich von Chrome ab<ph name="END_LINK" />.</translation>
+<translation id="3519792890877853853">Auf dieser Karte werden Rezensionen für Produkte auf deinen geöffneten Tabs angezeigt</translation>
 <translation id="3519905498307021260">{count,plural, =1{Tab öffnen}other{{count} Tabs öffnen}}</translation>
 <translation id="3523513363815970085">„Meine Top-Websites“ ausblenden</translation>
 <translation id="3523789730715594198">Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
@@ -819,6 +821,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4565377596337484307">Passwort ausblenden</translation>
 <translation id="4568230126482344545">„Letzte Tabs“ ausblenden</translation>
 <translation id="4578835633387306383">Aktivieren…</translation>
+<translation id="4580716718466706433">Rufe den Passwortmanager auf</translation>
 <translation id="4587589328781138893">Websites</translation>
 <translation id="4592672037257622855">{count,plural, =1{Seite wurde deiner Leseliste hinzugefügt}other{{count} Seiten wurden deiner Leseliste hinzugefügt}}</translation>
 <translation id="459644946100970322">Benachrichtigungen zu Preisaktualisierungen aktivieren?</translation>
@@ -858,6 +861,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4717844083556844785">Aktuelle Webseite ist im Inkognitomodus</translation>
 <translation id="4719927025381752090">Übersetzung anbieten</translation>
 <translation id="4720530280568305198">Deine Auswahl wurde in einem neuen Tab geöffnet</translation>
+<translation id="472259426228234149">Preis: 100–180 $</translation>
 <translation id="473775607612524610">Aktualisieren</translation>
 <translation id="474209246745757965">Mithilfe der Kamera einkaufen und Text übersetzen</translation>
 <translation id="4742407542027196863">Passwörter verwalten…</translation>

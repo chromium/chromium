@@ -29,6 +29,7 @@
 <translation id="1356661055722410047">Novetat! Pots traduir tant el text com les imatges en pantalla</translation>
 <translation id="1363996462118479832">Chrome OS no ha pogut sincronitzar les teves dades a causa d'un error en iniciar la sessió.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
+<translation id="1383876407941801731">Cerca</translation>
 <translation id="1399397803214730675">Aquest equip ja disposa d'una versió més recent de Google Chrome. Si el programari no funciona, desinstal·leu Google Chrome i torneu-ho a provar.</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome s'ha acabat d'actualitzar. Pots utilitzar-ne la versió més recent tan bon punt reiniciïs Chrome. Després, es tornaran a obrir les pestanyes actuals.}=1{Chrome s'ha acabat d'actualitzar. Pots utilitzar-ne la versió més recent tan bon punt reiniciïs Chrome. Després, es tornaran a obrir les pestanyes actuals. La finestra d'incògnit no es tornarà a obrir.}other{Chrome s'ha acabat d'actualitzar. Pots utilitzar-ne la versió més recent tan bon punt reiniciïs Chrome. Després, es tornaran a obrir les pestanyes actuals. Les # finestres d'incògnit no es tornaran a obrir.}}</translation>
 <translation id="1434626383986940139">Aplicacions de Chrome Canary</translation>
@@ -119,6 +120,7 @@
 <translation id="2580411288591421699">No es pot instal·lar la mateixa versió de Google Chrome que s'executa actualment. Tanqueu Google Chrome i torneu-ho a provar.</translation>
 <translation id="2586406160782125153">Amb aquesta acció, se suprimiran les teves dades de navegació d'aquest dispositiu. Per recuperar les teves dades més endavant, inicia la sessió a Chrome com a <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">No s'ha pogut desar l'instal·lador baixat a la memòria cau. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2620436844016719705">Sistema</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome comprova regularment que el navegador tingui la configuració més segura. T'avisarem si hi ha res que hagis de revisar.</translation>
 <translation id="2652691236519827073">Obre l'enllaç en una pes&amp;tanya nova a Chrome</translation>
@@ -520,6 +522,7 @@
 <translation id="7951272445806340501">Cal reiniciar ChromeOS Flex per aplicar l'actualització.</translation>
 <translation id="7959172989483770734">Gestiona els perfils de Chrome</translation>
 <translation id="7962410387636238736">Aquest ordinador ja no rebrà més actualitzacions de Google Chrome perquè Windows XP i Windows Vista ja no són compatibles</translation>
+<translation id="8004582292198964060">Navegador</translation>
 <translation id="8005666035647241369">Ves al gestor de contrasenyes de Google en aquest dispositiu</translation>
 <translation id="8008534537613507642">Torna a instal·lar Chrome</translation>
 <translation id="8009904340233602924">Fes servir Chrome sense cap compte</translation>

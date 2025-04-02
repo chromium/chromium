@@ -74,6 +74,9 @@ decltype(auto) DoValidateEnterpriseOptionsAndRespondOk(
     ASSERT_EQ(options.allow_file_transfer(), params.allow_file_transfer);
     ASSERT_EQ(options.connection_dialog_required(),
               params.connection_dialog_required);
+    ASSERT_EQ(options.allow_remote_input(), params.allow_remote_input);
+    ASSERT_EQ(options.allow_clipboard_sync(), params.allow_clipboard_sync);
+
     if (params.connection_auto_accept_timeout.is_zero()) {
       ASSERT_FALSE(options.has_connection_auto_accept_timeout());
     } else {
@@ -174,6 +177,8 @@ TEST_F(RemotingRegisterSupportHostTest, RegisterWithEnterpriseOptionsDisabled) {
   params.allow_reconnections = false;
   params.allow_file_transfer = false;
   params.connection_dialog_required = false;
+  params.allow_remote_input = false;
+  params.allow_clipboard_sync = false;
   params.connection_auto_accept_timeout = base::Seconds(0);
 
   EXPECT_CALL(*register_host_client_, RegisterSupportHost(_, _))
@@ -200,6 +205,8 @@ TEST_F(RemotingRegisterSupportHostTest, RegisterWithEnterpriseOptionsEnabled) {
   params.allow_reconnections = true;
   params.allow_file_transfer = true;
   params.connection_dialog_required = true;
+  params.allow_remote_input = true;
+  params.allow_clipboard_sync = true;
   params.connection_auto_accept_timeout = base::Seconds(30);
 
   EXPECT_CALL(*register_host_client_, RegisterSupportHost(_, _))

@@ -146,14 +146,12 @@ std::vector<std::string> GetTwoCookiesAttributesLines(
 
 std::unique_ptr<net::test_server::HttpResponse>
 HandleTriggerRegistrationRequest(
-    const std::vector<std::string>& registration_paths,
+    const std::vector<std::string>& registration_header_values,
     const net::test_server::HttpRequest& request) {
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-  for (const std::string& registration_path : registration_paths) {
-    response->AddCustomHeader(
-        "Sec-Session-Google-Registration-List",
-        base::StringPrintf(kSessionRegistrationHeaderFormat.c_str(),
-                           registration_path.c_str(), kChallenge.c_str()));
+  for (const std::string& header_value : registration_header_values) {
+    response->AddCustomHeader("Sec-Session-Google-Registration-List",
+                              header_value);
   }
   response->set_code(net::HTTP_OK);
   return response;
@@ -250,6 +248,7 @@ class FakeServer {
     // `registration_domain` might be different from `domain`.
     std::string registration_domain;
     std::string registration_path;
+    bool is_wsbeta_registration = false;
     std::string rotation_path;
     std::string session_id;
     std::string cookie_name1 = "1P_test_cookie";
@@ -607,16 +606,22 @@ class BoundSessionCookieRefreshServiceImplBrowserTest
     server_hosts_ =
         CreateAndInitializeFakeServerHosts(embedded_https_test_server());
 
-    std::vector<std::string> registration_paths;
+    std::vector<std::string> registration_header_values;
     for (const auto& server_host : server_hosts_) {
-      registration_paths.push_back(server_host->params().registration_path);
+      std::string value = base::StringPrintf(
+          kSessionRegistrationHeaderFormat.c_str(),
+          server_host->params().registration_path.c_str(), kChallenge.c_str());
+      if (server_host->params().is_wsbeta_registration) {
+        value += ";wsbeta";
+      }
+      registration_header_values.push_back(std::move(value));
     }
 
     embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
         &net::test_server::HandlePrefixedRequest,
         std::string(KTriggerRegistrationPath),
         base::BindRepeating(&HandleTriggerRegistrationRequest,
-                            registration_paths)));
+                            registration_header_values)));
 
     embedded_test_server_handle_ =
         embedded_https_test_server().StartAcceptingConnectionsAndReturnHandle();
@@ -857,4 +862,58 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(service()->GetBoundSessionThrottlerParams(),
               UnorderedElementsAre(HasDomainAndPath(kDomain, "/"),
                                    HasDomainAndPath(kSubdomain, "/")));
+}
+
+// Integration test for wsbeta registrations with a disabled feature flag.
+class BoundSessionCookieRefreshServiceImplWsbetaBrowserTest
+    : public BoundSessionCookieRefreshServiceImplBrowserTest {
+ public:
+  BoundSessionCookieRefreshServiceImplWsbetaBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kEnableBoundSessionCredentialsWsbetaBypass},
+        /*disabled_features=*/{switches::kEnableBoundSessionCredentials});
+  }
+
+  void SetUpOnMainThread() override {
+    ASSERT_FALSE(switches::IsBoundSessionCredentialsEnabled(
+        browser()->profile()->GetPrefs()));
+    ASSERT_TRUE(service());
+    BoundSessionCookieRefreshServiceImplBrowserTest::SetUpOnMainThread();
+  }
+
+ protected:
+  std::vector<std::unique_ptr<FakeServerHost>>
+  CreateAndInitializeFakeServerHosts(
+      net::test_server::EmbeddedTestServer& embedded_test_server) override {
+    std::vector<std::unique_ptr<FakeServerHost>> result;
+
+    auto fake_server_host = CreateAndInitializeHealthyFakeServerHost(
+        FakeServer::Params{.domain = std::string(kDomain),
+                           .registration_domain = std::string(kDomain),
+                           .registration_path = "/RegisterSession",
+                           .is_wsbeta_registration = true,  // important bit
+                           .rotation_path = "/RotateBoundCookies",
+                           .session_id = "007"},
+        embedded_test_server);
+
+    result.push_back(std::move(fake_server_host));
+    return result;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplWsbetaBrowserTest,
+                       PRE_WsbetaSessionIsRegisteredAndPersisted) {
+  EXPECT_TRUE(service()->GetBoundSessionThrottlerParams().empty());
+  RegisterNewSession();
+  // Tests that a session was registered successfully.
+  EXPECT_FALSE(service()->GetBoundSessionThrottlerParams().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplWsbetaBrowserTest,
+                       WsbetaSessionIsRegisteredAndPersisted) {
+  // Tests that a session was initialized on startup successfully.
+  EXPECT_FALSE(service()->GetBoundSessionThrottlerParams().empty());
 }

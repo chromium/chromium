@@ -1398,7 +1398,9 @@ CSSValue* ComputedStyleUtils::ValueForFontVariationSettings(
     const FontVariationAxis& variation_axis = variation_settings->at(i);
     cssvalue::CSSFontVariationValue* variation_value =
         MakeGarbageCollected<cssvalue::CSSFontVariationValue>(
-            variation_axis.TagString(), variation_axis.Value());
+            variation_axis.TagString(),
+            MakeGarbageCollected<CSSNumericLiteralValue>(
+                variation_axis.Value(), CSSPrimitiveValue::UnitType::kNumber));
     list->Append(*variation_value);
   }
   return list;

@@ -402,7 +402,7 @@ class DenseSet {
   }
 
   // Returns a raw bitmask. Useful for serialization.
-  constexpr base::span<const Word, kNumWords> data() const {
+  constexpr base::span<const Word, kNumWords> data() const LIFETIME_BOUND {
     return bitset_.data();
   }
 

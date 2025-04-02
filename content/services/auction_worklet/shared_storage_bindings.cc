@@ -654,6 +654,15 @@ void SharedStorageBindings::BatchUpdate(
     return;
   }
 
+  if (!network::IsValidSharedStorageBatchUpdateMethodsArgument(mojom_methods)) {
+    isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
+        isolate,
+        base::StrCat(
+            {kErrorPrefix,
+             network::kBatchUpdateMethodsArgumentValidationErrorMessage}))));
+    return;
+  }
+
   if (network::IsReservedLockName(with_lock)) {
     isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
         isolate,

@@ -22,11 +22,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
+import androidx.annotation.ColorInt;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -57,6 +59,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -85,6 +88,7 @@ import org.chromium.chrome.browser.ui.signin.DialogWhenLargeContentLayout;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.policy.AbstractAppRestrictionsProvider;
@@ -1101,12 +1105,49 @@ public class FirstRunIntegrationTest {
 
     @Test
     @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
+    // Automotive devices do not support coloring the system bars.
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @Features.EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
-    // TODO(crbug.com/378133407): Extend tests
     public void testEdgeToEdgeEverywhere() {
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
-        launchFirstRunActivity();
+        FirstRunActivity activity = launchFirstRunActivity();
+
+        EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper =
+                activity.getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper();
+        @ColorInt int backgroundColor;
+        if (DialogWhenLargeContentLayout.shouldShowAsDialog(activity)) {
+            backgroundColor = DialogWhenLargeContentLayout.getDialogBackgroundColor(activity);
+        } else {
+            backgroundColor = SemanticColorUtils.getDefaultBgColor(activity);
+        }
+        Assert.assertEquals(backgroundColor, edgeToEdgeSystemBarColorHelper.getStatusBarColor());
+        Assert.assertEquals(
+                backgroundColor, edgeToEdgeSystemBarColorHelper.getNavigationBarColor());
+    }
+
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
+    // Automotive devices do not support coloring the system bars.
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    @Features.EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
+    public void testEdgeToEdgeEverywhere_testLargeContentLayout() {
+        DialogWhenLargeContentLayout.enableShouldShowAsDialogForTesting(
+                /* shouldShowAsDialog= */ true);
+        FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
+        initializePreferences(testCase);
+        FirstRunActivity activity = launchFirstRunActivity();
+
+        EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper =
+                activity.getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper();
+
+        @ColorInt
+        int backgroundColor = DialogWhenLargeContentLayout.getDialogBackgroundColor(activity);
+        Assert.assertEquals(backgroundColor, edgeToEdgeSystemBarColorHelper.getStatusBarColor());
+        Assert.assertEquals(
+                backgroundColor, edgeToEdgeSystemBarColorHelper.getNavigationBarColor());
     }
 
     @Test

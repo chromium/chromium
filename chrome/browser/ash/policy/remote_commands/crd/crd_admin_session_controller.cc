@@ -174,6 +174,8 @@ std::ostream& operator<<(std::ostream& os,
             << ", allow_troubleshooting_tools "
             << parameters.allow_troubleshooting_tools
             << ", allow_reconnections " << parameters.allow_reconnections
+            << ", allow_remote_input " << parameters.allow_remote_input
+            << ", allow_clipboard_sync " << parameters.allow_clipboard_sync
             << "}";
 }
 
@@ -365,6 +367,8 @@ remoting::ChromeOsEnterpriseParams GetEnterpriseParameters(
       parameters.connection_auto_accept_timeout.value_or(base::TimeDelta());
   params.maximum_session_duration =
       parameters.maximum_session_duration.value_or(base::TimeDelta());
+  params.allow_remote_input = parameters.allow_remote_input;
+  params.allow_clipboard_sync = parameters.allow_clipboard_sync;
 
   return params;
 }

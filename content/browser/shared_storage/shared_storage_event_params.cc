@@ -12,6 +12,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 
 namespace content {
 
@@ -24,6 +25,72 @@ const size_t kSharedStorageSerializedDataLengthLimitForEventParams = 1024;
 std::string SerializeOptionalString(std::optional<std::string> str) {
   if (str) {
     return *str;
+  }
+
+  return "std::nullopt";
+}
+
+std::string Escape(std::string text) {
+  std::string escaped;
+  escaped.reserve(text.length() * 4);
+  char backslash = '\\';
+  for (size_t i = 0; i < text.length(); ++i) {
+    unsigned char unsigned_ch = static_cast<unsigned char>(text[i]);
+    if (base::IsAsciiPrintable(unsigned_ch)) {
+      char ascii_ch = static_cast<char>(unsigned_ch);
+      if (ascii_ch == '"' || ascii_ch == '\'' || ascii_ch == backslash) {
+        escaped.push_back(backslash);
+      }
+      escaped.push_back(ascii_ch);
+    } else {
+      escaped.push_back(backslash);
+      switch (unsigned_ch) {
+        case '\0':
+          // null
+          escaped.push_back('0');
+          break;
+        case '\a':
+          // bell
+          escaped.push_back('a');
+          break;
+        case '\b':
+          // backspace
+          escaped.push_back('b');
+          break;
+        case '\t':
+          // horizontal tab
+          escaped.push_back('t');
+          break;
+        case '\n':
+          // new line
+          escaped.push_back('n');
+          break;
+        case '\v':
+          // vertical tab
+          escaped.push_back('v');
+          break;
+        case '\f':
+          // new page
+          escaped.push_back('f');
+          break;
+        case '\r':
+          // carriage return
+          escaped.push_back('r');
+          break;
+        default:
+          // hex value
+          escaped.push_back('x');
+          base::AppendHexEncodedByte(text[i], escaped);
+      }
+    }
+  }
+  escaped.shrink_to_fit();
+  return escaped;
+}
+
+std::string SerializeAndEscapeOptionalString(std::optional<std::string> str) {
+  if (str) {
+    return Escape(*str);
   }
 
   return "std::nullopt";
@@ -305,7 +372,8 @@ std::ostream& operator<<(std::ostream& os,
      << SerializeOptionalString(params.script_source_url)
      << "; Data Origin: " << SerializeOptionalString(params.data_origin)
      << "; Operation Name: " << SerializeOptionalString(params.operation_name)
-     << "; Serialized Data: " << SerializeOptionalString(params.serialized_data)
+     << "; Serialized Data: "
+     << SerializeAndEscapeOptionalString(params.serialized_data)
      << "; URLs With Metadata: "
      << SerializeOptionalUrlsWithMetadata(params.urls_with_metadata)
      << "; Key: " << SerializeOptionalString(params.key)

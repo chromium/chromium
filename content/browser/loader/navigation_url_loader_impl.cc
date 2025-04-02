@@ -559,6 +559,11 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequestForNavigation(
 
   new_request->enable_load_timing = true;
 
+  if (base::FeatureList::IsEnabled(
+          network::features::kRendererSideContentDecoding)) {
+    new_request->client_side_content_decoding_enabled = true;
+  }
+
   return new_request;
 }
 
@@ -1329,6 +1334,11 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
     const url::Origin& origin,
     const std::vector<network::mojom::WebClientHintsType>& accept_ch_frame,
     OnAcceptCHFrameReceivedCallback callback) {
+  LogQueueTimeHistogram("Navigation.QueueTime.OnAcceptCHFrameReceived",
+                        resource_request_->is_outermost_main_frame);
+  base::ScopedUmaHistogramTimer timer(
+      "Navigation.URLLoader.OnAcceptCHFrameReceived.ExecutionTime",
+      base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kMicrosecondTimes);
   received_accept_ch_frame_ = true;
   if (!base::FeatureList::IsEnabled(network::features::kAcceptCHFrame)) {
     std::move(callback).Run(net::OK);

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] "pointermove" and its preceding boundary events should be fired on parent if "pointerrawupdate" event listener removes its target
+  assert_equals: expected "pointerover@target,pointerrawupdate@target,pointerover@container,pointermove@container" but got "pointerrawupdate@target,pointerover@container,pointermove@container"
+[FAIL] "pointermove" and its preceding boundary events should be fired on ancestor if "pointerrawupdate" event listener removes its target parent
+  assert_equals: expected "pointerover@target,pointerrawupdate@target,pointerover@container,pointermove@container" but got "pointerrawupdate@target,pointerover@container,pointermove@container"
+[FAIL] "pointermove" and its preceding boundary events should be fired on parent if "pointerrawupdate" event listener removes its document
+  assert_equals: expected "pointerover@target, pointerrawupdate@target, pointerover@container, pointermove@container" but got "pointerrawupdate@target, pointerover@container, pointermove@container"
+Harness: the test ran to completion.
+

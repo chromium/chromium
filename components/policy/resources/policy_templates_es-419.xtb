@@ -278,6 +278,7 @@ Para obtener más información sobre el manejo de datos de las funciones potenci
 <translation id="1214942205301731697">No permitir el uso del modo de desarrollador en la página de extensiones</translation>
 <translation id="1216919699175573511">Habilitar compatibilidad con intercambios HTTP firmados (SXG)</translation>
 <translation id="1219027971768347970">Utilizar la configuración predeterminada para la zona de pruebas de audio</translation>
+<translation id="1219036692926668273">Se usa el algoritmo <ph name="HAPPY_EYEBALLS_V3" />.</translation>
 <translation id="1221359380862872747">Cargar las URL especificadas en el inicio de sesión del demo</translation>
 <translation id="1221955019309484560">Habilitar actualizaciones para todos los componentes</translation>
 <translation id="1222694988453895594">Te permite configurar una lista de protocolos y, para cada uno de ellos, una lista asociada de patrones de origen permitidos, que pueden ejecutar una aplicación externa sin pedirle permiso al usuario. No se debe agregar el separador final cuando se incluye el protocolo en la lista; por lo tanto, usa "skype" en lugar de "skype:" o "skype://".
@@ -4161,15 +4162,6 @@ Esta política es temporal y se quitará en el futuro.</translation>
 <translation id="3956573780915784996">Permite que los usuarios hagan un registro del rendimiento de todo el sistema</translation>
 <translation id="3956686688560604829">Usar la política SiteList de Internet Explorer para la extensión Compatibilidad con navegadores heredados</translation>
 <translation id="3958586912393694012">Permitir el uso de Smart Lock</translation>
-<translation id="3959350391319409669">Esta política controla la configuración de código dinámico de <ph name="PRODUCT_NAME" />.
-
-Inhabilitar el código dinámico mejora la seguridad de <ph name="PRODUCT_NAME" />, ya que se impide que el código dinámico y de terceros potencialmente hostil realicen cambios en el comportamiento de <ph name="PRODUCT_NAME" />, pero podría causar problemas de compatibilidad con el software de terceros que se debe ejecutar en el proceso del navegador.
-
-Si estableces la política con el valor "0" (predeterminado) o no la estableces, <ph name="PRODUCT_NAME" /> usará la configuración predeterminada.
-
-Si estableces la política con el valor "1" (DisabledForBrowser), se impedirá que el proceso del navegador <ph name="PRODUCT_NAME" /> cree código dinámico.
-
-Nota: Obtén más información sobre las políticas de mitigación de procesos ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
 <translation id="3960728283243442805">No permitir que el usuario seleccione desde el menú de <ph name="PRODUCT_NAME" /> dispositivos de transmisión mediante un código QR o de acceso</translation>
 <translation id="3962445567482559878">Usa el modo EDU de la experiencia de integración del Asistente</translation>
 <translation id="396261881101930204">Oculta recomendaciones de contenido multimedia para el usuario</translation>
@@ -5959,6 +5951,17 @@ Si no estableces esta política, o la lista no contiene referencias de imagen v�
       En este período, se le informará reiteradamente al usuario acerca de la necesidad de la actualización. En dispositivos <ph name="PRODUCT_OS_NAME" />, se muestra una notificación de reinicio en la bandeja del sistema, en conformidad con la política <ph name="RELAUNCH_HEADS_UP_PERIOD_POLICY_NAME" />. En navegadores <ph name="PRODUCT_NAME" />, el menú de la app indica que se debe reiniciar después de transcurrido un tercio del período de la notificación. Esta notificación cambia de color tras dos tercios del período de la notificación y una vez más cuando finaliza este período. Las notificaciones adicionales que habilita la política <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> siguen el mismo patrón.
 
       Si no se establece, se utilizará el período predeterminado de 604800000 milisegundos (una semana).</translation>
+<translation id="5212140720192262527">Esta función habilita el algoritmo <ph name="HAPPY_EYEBALLS_V3" /> para realizar intentos de conexión. Consulta https://datatracker.ietf.org/doc/draft-pauly-happy-happyeyeballs-v3 para obtener más información.
+
+Si habilitas la política, <ph name="PRODUCT_NAME" /> usará el algoritmo <ph name="HAPPY_EYEBALLS_V3" /> para los intentos de conexión.
+
+Si la inhabilitas, se desactivará el algoritmo <ph name="HAPPY_EYEBALLS_V3" />.
+
+Si no estableces la política, <ph name="PRODUCT_NAME" /> activará o desactivará el algoritmo <ph name="HAPPY_EYEBALLS_V3" /> según chrome://flags/#happy-eyeballs-v3.
+
+Esta política admite la actualización dinámica.
+
+Esta política es una medida temporal y se eliminará en las futuras versiones de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5212810195096589189">Especifica el permiso de la CLI de VM</translation>
 <translation id="5213038356678567351">Sitios web que nunca deben abrirse en otro navegador</translation>
 <translation id="5216815237712190041">Si ningún usuario accedió todavía a su cuenta en el dispositivo, configura una imagen de fondo de pantalla en el dispositivo que se muestra en la pantalla de acceso. Para establecer la política, especifica la URL de donde el dispositivo con ChromeOS puede descargar la imagen de fondo de pantalla y un hash criptográfico para verificar la integridad de la descarga. La imagen debe estar en formato JPEG y el tamaño no debe superar los 16 MB. Se debe poder acceder a la dirección URL sin autenticación previa. La imagen del fondo de pantalla se descarga y queda almacenada en caché. Cada vez que cambie la URL o el hash, se volverá a descargar la imagen.
@@ -7274,6 +7277,7 @@ disponible hasta la versión 114 de
 NOTA: Solo los procesos del renderizador recién iniciados reflejarán los cambios de esta
 política mientras se esté ejecutando el navegador.</translation>
 <translation id="6083631234867522991">Windows (clientes de Windows):</translation>
+<translation id="6087413944876892918">Usar el algoritmo <ph name="HAPPY_EYEBALLS_V3" /></translation>
 <translation id="608788685013546076">Establecer en porcentaje el umbral de la batería para el cambio de carga fuera del horario de mayor consumo</translation>
 <translation id="6089679180657323464">Supervisa la configuración del controlador de telemetría y diagnósticos wilco.</translation>
 <translation id="6091233616732024397">Obligar a los usuarios a acceder para usar el navegador</translation>
@@ -8452,6 +8456,11 @@ El navegador quitará de forma automática los datos de los tipos seleccionados 
 Los datos caducados se borrarán 15 segundos después del inicio del navegador y, luego, cada media hora mientras se esté ejecutando el navegador.
 
 Hasta la versión 114 de Chrome, esta política requería que se estableciera la política <ph name="SYNC_DISABLED_POLICY_NAME" /> como verdadera. A partir de la versión 115 de Chrome, si estableces esta política, se inhabilitará la sincronización de los tipos de datos correspondientes si no inhabilitas "<ph name="CHROME_SYNC_NAME" />" al establecer la política <ph name="SYNC_DISABLED_POLICY_NAME" /> ni inhabilitas <ph name="BROWSER_SIGNIN_POLICY_NAME" />.</translation>
+<translation id="6762635531429930846">Especifica la antigüedad mínima de lanzamiento a partir de la cual las notificaciones de relanzamiento son más agresivas. La antigüedad se calcula a partir del momento en que se entregó la versión que se está ejecutando para los clientes.
+
+Si hay una versión nueva pendiente, se necesita reiniciar el navegador o el dispositivo, y la versión actual se sustituyó por más de la cantidad de días especificada en esta configuración, la política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> se anulará y se establecerá en 2 horas. Si la política <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> se establece como 1 ("Obligatorio"), los usuarios deberán volver a iniciar sesión o reiniciar el dispositivo al final del período.
+
+Si no se establece o si no se puede determinar la antigüedad de lanzamiento, se usará la política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> para todas las actualizaciones.</translation>
 <translation id="6763023079133439068">Permitir los certificados que carezcan de una extensión subjectAlternativeName cuando son emitidos por anclas de confianza locales</translation>
 <translation id="6766216162565713893">Permitir que los sitios soliciten permiso al usuario para acceder a un dispositivo Bluetooth cercano</translation>
 <translation id="6770454900105963262">Informar datos sobre las sesiones de kiosco activas</translation>
@@ -9917,6 +9926,7 @@ Si la inhabilitas o no la estableces, el SPN de Kerberos que se genere no inclui
 
       Determina la ID de la extensión que se debe utilizar como protector de pantalla en la página de acceso. La extensión debe formar parte del AppPack configurado para este dominio a través de la política DeviceAppPack.</translation>
 <translation id="7882890448959833986">Eliminar la advertencia de SO incompatible</translation>
+<translation id="7884672714405919225">No usar el algoritmo <ph name="HAPPY_EYEBALLS_V3" />.</translation>
 <translation id="788480874436328004">Inhabilitar el guardado de contraseñas en el administrador de contraseñas</translation>
 <translation id="7891884447851425349">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> especificará la URL del motor de búsqueda utilizado en una búsqueda predeterminada. La URL debe incluir la string <ph name="SEARCH_TERM_MARKER" />, que se reemplazará en la búsqueda por los términos del usuario.
 

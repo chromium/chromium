@@ -35,6 +35,7 @@
 #include "chrome/browser/signin/bound_session_credentials/fake_bound_session_refresh_cookie_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/rotation_debug_info.pb.h"
 #include "chrome/common/renderer_configuration.mojom.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unexportable_keys/fake_unexportable_key_service.h"
@@ -332,7 +333,8 @@ bound_session_credentials::Credential CreateCookieCredential(
 bound_session_credentials::BoundSessionParams CreateBoundSessionParams(
     const GURL& site,
     const std::string& session_id,
-    const std::vector<std::string>& cookie_names) {
+    const std::vector<std::string>& cookie_names,
+    bool is_wsbeta = false) {
   bound_session_credentials::BoundSessionParams params;
   params.set_site(site.spec());
   params.set_session_id(session_id);
@@ -343,13 +345,16 @@ bound_session_credentials::BoundSessionParams CreateBoundSessionParams(
   for (const auto& cookie_name : cookie_names) {
     *params.add_credentials() = CreateCookieCredential(cookie_name, site);
   }
+  params.set_is_wsbeta(is_wsbeta);
   return params;
 }
 
 bound_session_credentials::BoundSessionParams CreateBoundSessionParams(
     const BoundSessionKey& key,
-    const std::vector<std::string>& cookie_names) {
-  return CreateBoundSessionParams(key.site, key.session_id, cookie_names);
+    const std::vector<std::string>& cookie_names,
+    bool is_wsbeta = false) {
+  return CreateBoundSessionParams(key.site, key.session_id, cookie_names,
+                                  is_wsbeta);
 }
 
 }  // namespace
@@ -451,11 +456,12 @@ class BoundSessionCookieRefreshServiceImplTestBase : public testing::Test {
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   BoundSessionRegistrationFetcherParam CreateTestRegistrationFetcherParams(
-      std::string_view registration_path) {
+      std::string_view registration_path,
+      bool is_wsbeta = false) {
     return BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
         kTestGoogleURL.Resolve(registration_path),
         {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-        "test_challenge");
+        "test_challenge", is_wsbeta);
   }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
@@ -472,6 +478,7 @@ class BoundSessionCookieRefreshServiceImplTestBase : public testing::Test {
             fake_unexportable_key_service_,
             BoundSessionParamsStorage::CreatePrefsStorageForTesting(prefs_),
             &storage_partition_, content::GetNetworkConnectionTracker(),
+            &pref_service_,
             /*is_off_the_record_profile=*/false);
     cookie_refresh_service->set_controller_factory_for_testing(
         base::BindRepeating(&BoundSessionCookieRefreshServiceImplTestBase::
@@ -490,12 +497,15 @@ class BoundSessionCookieRefreshServiceImplTestBase : public testing::Test {
     return cookie_refresh_service;
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kEnableBoundSessionCredentials};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   std::unique_ptr<BoundSessionParamsStorage> test_storage_;
   content::TestStoragePartition storage_partition_;
+  TestingPrefServiceSimple pref_service_;
   ::testing::StrictMock<MockObserver> mock_observer_;
   std::unique_ptr<BoundSessionCookieRefreshServiceImpl> cookie_refresh_service_;
   unexportable_keys::FakeUnexportableKeyService fake_unexportable_key_service_;
@@ -1112,10 +1122,13 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, CreateRegistrationRequest) {
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
        CreateRegistrationRequestNonDefaultPath) {
+  const std::string kNonDefaultRegistrationPath = "/NonDefaultPath";
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   service->CreateRegistrationRequest(
-      CreateTestRegistrationFetcherParams("/NonDefaultPath"));
-  EXPECT_FALSE(registration_fetcher());
+      CreateTestRegistrationFetcherParams(kNonDefaultRegistrationPath));
+  ASSERT_TRUE(registration_fetcher());
+  EXPECT_THAT(registration_fetcher(), IsBoundSessionRegistrationFetcher(
+                                          kNonDefaultRegistrationPath, true));
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
@@ -1214,7 +1227,8 @@ class BoundSessionCookieRefreshServiceImplMultiSessionTest
 
   void VerifyBoundSessions(
       const std::vector<bound_session_credentials::BoundSessionParams>&
-          all_expected_params) {
+          all_expected_params,
+      bool verify_storage = true) {
     CHECK(cookie_refresh_service());
 
     // Verify throttler params.
@@ -1222,9 +1236,11 @@ class BoundSessionCookieRefreshServiceImplMultiSessionTest
                 UnorderedPointwise(IsThrottlerParams(), all_expected_params));
 
     // Verify storage.
-    EXPECT_THAT(
-        storage()->ReadAllParamsAndCleanStorageIfNecessary(),
-        UnorderedPointwise(base::test::EqualsProto(), all_expected_params));
+    if (verify_storage) {
+      EXPECT_THAT(
+          storage()->ReadAllParamsAndCleanStorageIfNecessary(),
+          UnorderedPointwise(base::test::EqualsProto(), all_expected_params));
+    }
 
     // Verify controllers.
     EXPECT_THAT(cookie_controllers_,
@@ -1647,4 +1663,48 @@ TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest, ReportsCountUma) {
   histogram_tester.ExpectUniqueSample(
       "Signin.BoundSessionCredentials.SessionCountOnInit", all_params.size(),
       /*expected_bucket_count=*/1);
+}
+
+class BoundSessionCookieRefreshServiceImplFeatureDisabledTest
+    : public BoundSessionCookieRefreshServiceImplMultiSessionTest {
+ public:
+  BoundSessionCookieRefreshServiceImplFeatureDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        switches::kEnableBoundSessionCredentials);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(BoundSessionCookieRefreshServiceImplFeatureDisabledTest, Initialize) {
+  std::vector<bound_session_credentials::BoundSessionParams> all_params = {
+      CreateBoundSessionParams(kGoogleSessionKeyOne, {"cookieA", "cookieB"}),
+      CreateBoundSessionParams(kGoogleSessionKeyTwo, {"cookieC"},
+                               /*is_wsbeta=*/true),
+      CreateBoundSessionParams(kYoutubeSessionKeyOne, {"cookieA"})};
+  for (const auto& params : all_params) {
+    ASSERT_TRUE(storage()->SaveParams(params));
+  }
+  GetCookieRefreshServiceImpl();
+  // Only a session with `is_wsbeta` will run.
+  VerifyBoundSessions({all_params[1]}, /*verify_storage=*/false);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplFeatureDisabledTest,
+       CreateRegistrationRequest) {
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  service->CreateRegistrationRequest(
+      CreateTestRegistrationFetcherParams("/RegisterSession"));
+  EXPECT_THAT(registration_fetchers(), IsEmpty());
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplFeatureDisabledTest,
+       CreateRegistrationRequestWithWsbeta) {
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  service->CreateRegistrationRequest(CreateTestRegistrationFetcherParams(
+      "/RegisterSession", /*is_wsbeta=*/true));
+  EXPECT_THAT(
+      registration_fetchers(),
+      ElementsAre(IsBoundSessionRegistrationFetcher("/RegisterSession", true)));
 }

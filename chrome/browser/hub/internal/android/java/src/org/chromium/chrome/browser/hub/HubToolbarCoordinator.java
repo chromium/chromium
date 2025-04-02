@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_ENTER_PRESSED_RUNNABLE;
 
 import android.app.Activity;
 import android.view.View;
@@ -45,6 +46,9 @@ public class HubToolbarCoordinator {
         PropertyModel model =
                 new PropertyModel.Builder(HubToolbarProperties.ALL_KEYS)
                         .with(COLOR_MIXER, hubColorMixer)
+                        .with(
+                                MENU_BUTTON_ENTER_PRESSED_RUNNABLE,
+                                menuButtonCoordinator::onEnterKeyPress)
                         .build();
         PropertyModelChangeProcessor.create(model, hubToolbarView, HubToolbarViewBinder::bind);
 

@@ -721,14 +721,8 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
 
   // Must always be at least one source.
   if (!app->HasAnySources()) {
-    if (base::FeatureList::IsEnabled(
-            features::kWebAppDontAddExistingAppsToSync)) {
       app->AddSource(WebAppManagement::kUserInstalled);
       management_types.push_back(WebAppManagement::kUserInstalled);
-    } else {
-      app->AddSource(WebAppManagement::kSync);
-      management_types.push_back(WebAppManagement::kSync);
-    }
   }
 
   if (random.next_bool()) {

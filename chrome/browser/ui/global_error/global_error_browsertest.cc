@@ -20,6 +20,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_install_error.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/test_blocklist.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/recovery/recovery_install_global_error.h"
@@ -246,6 +247,9 @@ IN_PROC_BROWSER_TEST_F(GlobalErrorBubbleTest,
 
 IN_PROC_BROWSER_TEST_F(GlobalErrorBubbleTest,
                        InvokeUi_ExternalInstallBubbleAlert) {
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler;
+
   extensions::SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
       verifier_format_override(crx_file::VerifierFormat::CRX3);
   extensions::FeatureSwitch::ScopedOverride prompt(

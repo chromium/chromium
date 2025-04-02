@@ -157,7 +157,6 @@ class KeyboardAccessoryMediator
             case SuggestionType.UNDO_OR_CLEAR:
             case SuggestionType.ALL_SAVED_PASSWORDS_ENTRY:
             case SuggestionType.GENERATE_PASSWORD_ENTRY:
-            case SuggestionType.SHOW_ACCOUNT_CARDS:
             case SuggestionType.MANAGE_ADDRESS:
             case SuggestionType.MANAGE_CREDIT_CARD:
             case SuggestionType.MANAGE_IBAN:

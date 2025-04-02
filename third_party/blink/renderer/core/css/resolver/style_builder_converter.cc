@@ -605,7 +605,9 @@ StyleBuilderConverter::ConvertFontVariationSettings(
   // occurrence of each.
   for (int i = 0; i < len; ++i) {
     const auto& feature = To<cssvalue::CSSFontVariationValue>(list.Item(i));
-    axes.Set(AtomicStringToFourByteTag(feature.Tag()), feature.Value());
+    axes.Set(
+        AtomicStringToFourByteTag(feature.Tag()),
+        feature.Value()->ConvertTo<float>(state.CssToLengthConversionData()));
   }
   scoped_refptr<FontVariationSettings> settings =
       FontVariationSettings::Create();

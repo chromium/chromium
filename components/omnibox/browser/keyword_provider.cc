@@ -222,15 +222,12 @@ void KeywordProvider::Start(const AutocompleteInput& input,
 
   // Get the best matches for this keyword.
   //
-  // Only substituting keywords are fetched since support for non-substituting
-  // keywords has been deprecated.
-  //
   // NOTE: We could cache the previous keywords and reuse them here in the
   // |minimal_changes| case, but since we'd still have to recalculate their
   // relevances and we can just recreate the results synchronously anyway, we
   // don't bother.
   TemplateURLService::TemplateURLVector turls;
-  model_->AddMatchingKeywords(keyword, &turls);
+  model_->AddMatchingKeywords(keyword, !remaining_input.empty(), &turls);
 
   for (auto i(turls.begin()); i != turls.end();) {
     const TemplateURL* template_url = *i;
@@ -246,7 +243,8 @@ void KeywordProvider::Start(const AutocompleteInput& input,
     }
 
     // Prune any substituting keywords if there is no substitution.
-    if (remaining_input.empty() && !input.allow_exact_keyword_match()) {
+    if (template_url->SupportsReplacement(model_->search_terms_data()) &&
+        remaining_input.empty() && !input.allow_exact_keyword_match()) {
       i = turls.erase(i);
       continue;
     }
@@ -291,9 +289,12 @@ void KeywordProvider::Start(const AutocompleteInput& input,
     // When creating an exact match (either for the keyword itself, no
     // remaining query or an extension keyword, possibly with remaining
     // input), allow the match to be the default match when appropriate.
+    // For exactly-typed non-substituting keywords, it's always appropriate.
     auto match = CreateAutocompleteMatch(
         template_url, input, keyword.length(), remaining_input,
-        input.allow_exact_keyword_match(), -1, false);
+        input.allow_exact_keyword_match() ||
+            !template_url->SupportsReplacement(model_->search_terms_data()),
+        -1, false);
     if (match.destination_url.is_empty() || match.destination_url.is_valid()) {
       matches_.push_back(std::move(match));
     }
@@ -335,11 +336,14 @@ KeywordProvider::~KeywordProvider() = default;
 // static
 int KeywordProvider::CalculateRelevance(metrics::OmniboxInputType type,
                                         bool complete,
+                                        bool supports_replacement,
                                         bool prefer_keyword,
                                         bool allow_exact_keyword_match) {
   if (!complete) {
     return (type == metrics::OmniboxInputType::URL) ? 700 : 450;
   }
+  if (!supports_replacement)
+    return 1500;
   return SearchProvider::CalculateRelevanceForKeywordVerbatim(
       type, allow_exact_keyword_match, prefer_keyword);
 }
@@ -355,8 +359,6 @@ AutocompleteMatch KeywordProvider::CreateAutocompleteMatch(
   DCHECK(template_url);
   const bool supports_replacement = template_url->url_ref().SupportsReplacement(
       GetTemplateURLService()->search_terms_data());
-  DCHECK(supports_replacement)
-      << "Support for non-substituting keywords has been deprecated.";
 
   // Create an edit entry of "[keyword] [remaining input]".  This is helpful
   // even when [remaining input] is empty, as the user can select the popup
@@ -364,19 +366,23 @@ AutocompleteMatch KeywordProvider::CreateAutocompleteMatch(
   const std::u16string& keyword = template_url->keyword();
   const bool keyword_complete = (prefix_length == keyword.length());
   if (relevance < 0) {
-    relevance = CalculateRelevance(
-        input.type(), keyword_complete,
-        // When the user wants keyword matches to take
-        // preference, score them highly regardless of
-        // whether the input provides query text.
-        input.prefer_keyword(), input.allow_exact_keyword_match());
+    relevance =
+        CalculateRelevance(input.type(), keyword_complete,
+                           // When the user wants keyword matches to take
+                           // preference, score them highly regardless of
+                           // whether the input provides query text.
+                           supports_replacement, input.prefer_keyword(),
+                           input.allow_exact_keyword_match());
   }
 
   AutocompleteMatch match(this, relevance, deletable,
-                          AutocompleteMatchType::SEARCH_OTHER_ENGINE);
+                          supports_replacement
+                              ? AutocompleteMatchType::SEARCH_OTHER_ENGINE
+                              : AutocompleteMatchType::HISTORY_KEYWORD);
   match.allowed_to_be_default_match = allowed_to_be_default_match;
   match.fill_into_edit = keyword;
-  match.fill_into_edit.push_back(L' ');
+  if (!remaining_input.empty() || supports_replacement)
+    match.fill_into_edit.push_back(L' ');
   match.fill_into_edit.append(remaining_input);
   // If we wanted to set |result.inline_autocompletion| correctly, we'd need
   // AutocompleteInput::CleanUserInputKeyword() to return the amount of
@@ -389,9 +395,14 @@ AutocompleteMatch KeywordProvider::CreateAutocompleteMatch(
   // into keyword templates.
   FillInURLAndContents(remaining_input, template_url, &match);
 
-  match.keyword = keyword;
-  match.from_keyword = true;
-  match.transition = ui::PAGE_TRANSITION_KEYWORD;
+  // TODO(manukh) Consider not showing HISTORY_KEYWORD suggestions; i.e. not
+  //   showing keyword matches for keywords that don't support replacement; they
+  //   don't seem useful.
+  if (supports_replacement) {
+    match.keyword = keyword;
+    match.from_keyword = true;
+    match.transition = ui::PAGE_TRANSITION_KEYWORD;
+  }
 
   return match;
 }
@@ -407,13 +418,16 @@ void KeywordProvider::FillInURLAndContents(
     // Allow extension keyword providers to accept empty string input. This is
     // useful to allow extensions to do something in the case where no input is
     // entered.
-    if (element->type() != TemplateURL::OMNIBOX_API_EXTENSION) {
+    if (element_ref.SupportsReplacement(
+            GetTemplateURLService()->search_terms_data()) &&
+        (element->type() != TemplateURL::OMNIBOX_API_EXTENSION)) {
       // No query input; return a generic, no-destination placeholder.
       match->contents.assign(
           l10n_util::GetStringUTF16(IDS_EMPTY_KEYWORD_VALUE));
       match->contents_class.emplace_back(0, ACMatchClassification::DIM);
     } else {
-      // Keyword or extension that has no replacement text.
+      // Keyword or extension that has no replacement text (aka a shorthand for
+      // a URL).
       match->destination_url = GURL(element->url());
       match->contents.assign(element->short_name());
       if (!element->short_name().empty())

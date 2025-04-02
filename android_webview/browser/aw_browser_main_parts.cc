@@ -173,8 +173,7 @@ int AwBrowserMainParts::PreEarlyInitialization() {
         base::MessagePumpType::UI);
   }
 
-  browser_process_ = std::make_unique<AwBrowserProcess>(
-      browser_client_->aw_feature_list_creator());
+  browser_process_ = std::make_unique<AwBrowserProcess>(browser_client_);
 
   auto* origin_trials_settings_storage =
       browser_process_->GetOriginTrialsSettingsStorage();
@@ -309,6 +308,8 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
   bool use_webview_context = Java_AwBrowserMainParts_getUseWebViewContext(env);
   bool partitioned_cookies_enablement_state =
       Java_AwBrowserMainParts_getPartitionedCookiesDefaultState(env);
+  bool webview_startup_tasks_experiment_enabled =
+      isWebViewStartupTasksExperimentEnabled();
   AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       metrics, "WebViewSeparateResourceContextMetrics",
       use_webview_context ? "Enabled" : "Control",
@@ -316,6 +317,10 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
   AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       metrics, "WebViewPartitionedCookiesMetrics",
       partitioned_cookies_enablement_state ? "Control" : "Disabled",
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
+  AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      metrics, "WebViewStartupTasksMetrics",
+      webview_startup_tasks_experiment_enabled ? "Enabled" : "Control",
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
@@ -356,6 +361,11 @@ void AwBrowserMainParts::PostCreateThreads() {
   tracing::SetupPresetTracingFromFieldTrial();
   base::trace_event::EmitNamedTrigger(
       base::trace_event::kStartupTracingTriggerName);
+}
+
+bool AwBrowserMainParts::isWebViewStartupTasksExperimentEnabled() {
+  return Java_AwBrowserMainParts_isWebViewStartupTasksLogicEnabled(
+      base::android::AttachCurrentThread());
 }
 
 }  // namespace android_webview

@@ -1153,16 +1153,20 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   private showEditDialog_(
       bookmarks: chrome.bookmarks.BookmarkTreeNode[], moveOnly: boolean) {
-    if (moveOnly || !this.isBookmarksInTransportModeEnabled) {
-      // TODO(crbug.com/380817651): Replace this with the native move dialog.
+    if (!this.isBookmarksInTransportModeEnabled) {
       this.$.editDialog.showDialog(
           this.activeFolderPath_, this.bookmarksService_.getTopLevelBookmarks(),
           bookmarks, moveOnly);
       return;
     }
 
-    this.bookmarksApi_.contextMenuEdit(
-        bookmarks.map(bookmark => bookmark.id), ActionSource.kBookmark);
+    if (moveOnly) {
+      this.bookmarksApi_.contextMenuMove(
+          bookmarks.map(bookmark => bookmark.id), ActionSource.kBookmark);
+    } else {
+      this.bookmarksApi_.contextMenuEdit(
+          bookmarks.map(bookmark => bookmark.id), ActionSource.kBookmark);
+    }
   }
 
   private onBulkEditMenuClicked_(event: MouseEvent) {

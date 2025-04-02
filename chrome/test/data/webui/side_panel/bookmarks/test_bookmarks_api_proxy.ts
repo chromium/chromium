@@ -33,6 +33,7 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
       'contextMenuOpenBookmarkInIncognitoWindow',
       'contextMenuOpenBookmarkInNewTabGroup',
       'contextMenuEdit',
+      'contextMenuMove',
       'contextMenuAddToBookmarksBar',
       'contextMenuRemoveFromBookmarksBar',
       'contextMenuDelete',
@@ -103,6 +104,10 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
 
   contextMenuEdit(ids: string[], source: ActionSource) {
     this.methodCalled('contextMenuEdit', ids, source);
+  }
+
+  contextMenuMove(ids: string[], source: ActionSource) {
+    this.methodCalled('contextMenuMove', ids, source);
   }
 
   contextMenuAddToBookmarksBar(id: string, source: ActionSource) {
