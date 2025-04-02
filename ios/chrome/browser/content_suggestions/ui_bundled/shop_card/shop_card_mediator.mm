@@ -231,17 +231,16 @@
                                 length:imageData.size()];
   if (data) {
     self->_shopCardItem.shopCardData.productImage = data;
-
-    // Fetch favicon if product image available.
-    // TODO(crbug.com/392970898): add support for no product image case
-    __weak ShopCardMediator* weakSelf = self;
-    _faviconLoader->FaviconForPageUrl(
-        productUrl, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
-        /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
-          [weakSelf onFaviconReceived:attributes];
-        });
   }
   [self.delegate insertShopCard];
+
+  // Fetch favicon, regardless of whether product image available.
+  __weak ShopCardMediator* weakSelf = self;
+  _faviconLoader->FaviconForPageUrl(
+      productUrl, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
+      /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
+        [weakSelf onFaviconReceived:attributes];
+      });
 }
 
 - (void)onFaviconReceived:(FaviconAttributes*)attributes {
