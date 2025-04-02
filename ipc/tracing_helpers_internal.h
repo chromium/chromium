@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_HASH_MD5_CONSTEXPR_INTERNAL_H_
-#define BASE_HASH_MD5_CONSTEXPR_INTERNAL_H_
+#ifndef IPC_TRACING_HELPERS_INTERNAL_H_
+#define IPC_TRACING_HELPERS_INTERNAL_H_
 
 #include <stdint.h>
 
@@ -13,7 +13,7 @@
 #include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
 
-namespace base {
+namespace ipc {
 namespace internal {
 
 // The implementation here is based on the pseudocode provided by Wikipedia:
@@ -217,7 +217,7 @@ struct MD5CE {
   // Processes an entire message.
   static constexpr IntermediateData ProcessMessage(std::string_view message) {
     const uint32_t m =
-        GetPaddedMessageLength(checked_cast<uint32_t>(message.size()));
+        GetPaddedMessageLength(base::checked_cast<uint32_t>(message.size()));
     IntermediateData intermediate0 = kInitialIntermediateData;
     for (uint32_t offset = 0; offset < m; offset += 64) {
       RoundData data = GetRoundData(message, m, offset);
@@ -251,10 +251,10 @@ struct MD5CE {
 
 // Implementations of the functions exposed in the public header.
 
-constexpr uint32_t MD5Hash32Constexpr(std::string_view string) {
+constexpr uint32_t GetLegacyIpcTraceId(std::string_view string) {
   return internal::MD5CE::Hash32(string);
 }
 
-}  // namespace base
+}  // namespace ipc
 
-#endif  // BASE_HASH_MD5_CONSTEXPR_INTERNAL_H_
+#endif  // IPC_TRACING_HELPERS_INTERNAL_H_

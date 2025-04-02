@@ -199,11 +199,11 @@
 #include <tuple>
 
 #include "base/export_template.h"
-#include "base/hash/md5_constexpr.h"
 #include "base/task/common/task_annotator.h"
 #include "ipc/ipc_message_templates.h"
 #include "ipc/ipc_message_utils.h"
 #include "ipc/param_traits_macros.h"
+#include "ipc/tracing_helpers.h"
 
 // Convenience macro for defining structs without inheritance. Should not need
 // to be subsequently redefined.
@@ -324,7 +324,7 @@
 // associated with the incoming IPC message that caused them to be posted.
 #define IPC_TASK_ANNOTATOR_CONTEXT(msg_class)                            \
   static constexpr uint32_t kMessageHash =                               \
-      base::MD5Hash32Constexpr(IPC_TASK_ANNOTATOR_STRINGIFY(msg_class)); \
+      ipc::GetLegacyIpcTraceId(IPC_TASK_ANNOTATOR_STRINGIFY(msg_class)); \
   base::TaskAnnotator::ScopedSetIpcHash scoped_ipc_hash(kMessageHash);
 
 #define IPC_BEGIN_MESSAGE_MAP(class_name, msg)                   \

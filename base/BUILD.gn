@@ -1519,8 +1519,6 @@ component("base") {
   # TODO(crbug.com/40511454) Use only boringssl when NaCl is removed.
   sources += [
     "hash/md5.h",
-    "hash/md5_constexpr.h",
-    "hash/md5_constexpr_internal.h",
     "hash/sha1.h",
   ]
   if (is_nacl) {
@@ -3381,7 +3379,6 @@ test("base_unittests") {
     "gmock_unittest.cc",
     "hash/hash_unittest.cc",
     "hash/legacy_hash_unittest.cc",
-    "hash/md5_constexpr_unittest.cc",
     "hash/md5_unittest.cc",
     "hash/sha1_unittest.cc",
     "i18n/break_iterator_unittest.cc",
