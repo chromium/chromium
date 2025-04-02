@@ -383,6 +383,31 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.CommandLineInstalled" units="count"
+    expires_after="2026-03-05">
+  <owner>richche@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records when a command-line extension is installed. Emitted on every profile
+    open only for &quot;user profiles&quot; (profiles where people can install
+    extensions, specifically profiles that can have non-component extensions
+    installed).
+  </summary>
+</histogram>
+
+<histogram name="Extensions.CommandLineManifestSettingsOverride"
+    enum="ManifestSettingsOverrideType" expires_after="2026-03-05">
+  <owner>richche@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the default search engine, new tab page, both, or none of the
+    overrides in a command-line extension's manifest when installed. Emitted on
+    every profile open only for &quot;user profiles&quot; (profiles where people
+    can install extensions, specifically profiles that can have non-component
+    extensions installed).
+  </summary>
+</histogram>
+
 <histogram
     name="Extensions.CommandLineWith{DeveloperModeState}{ExtensionState}"
     units="count" expires_after="2025-08-10">

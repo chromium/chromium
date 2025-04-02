@@ -4327,6 +4327,7 @@ if (!is_android) {
         "../browser/extensions/startup_helper_browsertest.cc",
         "../browser/extensions/stubs_apitest.cc",
         "../browser/extensions/subscribe_page_action_browsertest.cc",
+        "../browser/extensions/unpacked_installer_browsertest.cc",
         "../browser/extensions/updater/extension_update_client_base_browsertest.cc",
         "../browser/extensions/updater/extension_update_client_base_browsertest.h",
         "../browser/extensions/updater/update_service_browsertest.cc",

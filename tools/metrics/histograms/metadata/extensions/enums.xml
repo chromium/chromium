@@ -3376,6 +3376,17 @@ Called by update_extension_permission.py.-->
   <int value="13" label="Bad App Status"/>
 </enum>
 
+<!-- LINT.IfChange(ManifestSettingsOverrideType) -->
+
+<enum name="ManifestSettingsOverrideType">
+  <int value="0" label="NoOverride"/>
+  <int value="1" label="SearchEngine"/>
+  <int value="2" label="NewTabPage"/>
+  <int value="3" label="SearchEngineAndNewTabPage"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/extensions/unpacked_installer.h:ManifestSettingsOverrideType) -->
+
 <enum name="ManifestVersion">
   <int value="1" label="Manifest Version 1"/>
   <int value="2" label="Manifest Version 2"/>

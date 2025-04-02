@@ -15,12 +15,15 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/extensions/chrome_manifest_url_handlers.h"
+#include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #include "components/crx_file/id_util.h"
 #include "components/sync/model/string_ordinal.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -387,22 +390,55 @@ void UnpackedInstaller::InstallExtension() {
                                  std::move(ruleset_install_prefs_));
 
   // Record metrics here since the registry would contain the extension by now.
-  RecordCommandLineDeveloperModeMetrics();
+  RecordCommandLineMetrics();
 
   if (!callback_.is_null())
     std::move(callback_).Run(extension(), extension_path_, std::string());
 }
 
-void UnpackedInstaller::RecordCommandLineDeveloperModeMetrics() {
+void UnpackedInstaller::RecordCommandLineMetrics() {
   if (!extension()->is_extension() ||
       extension()->location() != mojom::ManifestLocation::kCommandLine) {
     return;
   }
 
+  ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile_);
+  if (!extension_registry->GetInstalledExtension(extension()->id())) {
+    return;
+  }
+
+  // Manifest settings override metrics.
+  base::UmaHistogramCounts100("Extensions.CommandLineInstalled", 1);
+
+  bool new_tab_page_set =
+      URLOverrides::GetChromeURLOverrides(extension()).count("newtab");
+  bool default_search_engine_set = false;
+  // SettingsOverrides are only available on Windows and macOS.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  const SettingsOverrides* settings = SettingsOverrides::Get(extension());
+  default_search_engine_set = settings && settings->search_engine &&
+                              settings->search_engine->is_default;
+#endif
+
+  if (new_tab_page_set && default_search_engine_set) {
+    base::UmaHistogramEnumeration(
+        "Extensions.CommandLineManifestSettingsOverride",
+        kSearchEngineAndNewTabPage);
+  } else if (new_tab_page_set) {
+    base::UmaHistogramEnumeration(
+        "Extensions.CommandLineManifestSettingsOverride", kNewTabPage);
+  } else if (default_search_engine_set) {
+    base::UmaHistogramEnumeration(
+        "Extensions.CommandLineManifestSettingsOverride", kSearchEngine);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Extensions.CommandLineManifestSettingsOverride", kNoOverride);
+  }
+
+  // Developer mode metrics.
   bool dev_mode_enabled =
       GetCurrentDeveloperMode(util::GetBrowserContextId(profile_));
 
-  ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile_);
   if (extension_registry->enabled_extensions().Contains(extension()->id())) {
     if (dev_mode_enabled) {
       base::UmaHistogramCounts100(
