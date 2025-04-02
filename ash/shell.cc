@@ -1816,10 +1816,7 @@ void Shell::Init(
   annotator_controller_ = std::make_unique<AnnotatorController>();
 
   float_controller_ = std::make_unique<FloatController>();
-  if (features::IsForestFeatureEnabled()) {
-    informed_restore_controller_ =
-        std::make_unique<InformedRestoreController>();
-  }
+  informed_restore_controller_ = std::make_unique<InformedRestoreController>();
   pip_controller_ = std::make_unique<PipController>();
 
   multitask_menu_nudge_delegate_ =
