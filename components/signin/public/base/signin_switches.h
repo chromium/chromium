@@ -55,6 +55,19 @@ BASE_DECLARE_FEATURE(kUseHostedDomainForManagementCheckOnSignin);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableHistorySyncOptin);
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableHistorySyncOptinExpansionPill);
+
+enum class HistorySyncOptinExpansionPillOption {
+  kBrowseAcrossDevices,
+  kSyncTabsAndHistory,
+  kSeeTabsFromOtherDevices,
+};
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<HistorySyncOptinExpansionPillOption>
+    kHistorySyncOptinExpansionPillOption;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

@@ -2235,6 +2235,9 @@ extern const char kTranslateForceTriggerOnEnglishName[];
 extern const char kTranslateForceTriggerOnEnglishDescription[];
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+extern const char kEnableHistorySyncOptinExpansionPillName[];
+extern const char kEnableHistorySyncOptinExpansionPillDescription[];
+
 extern const char kEnableHistorySyncOptinName[];
 extern const char kEnableHistorySyncOptinDescription[];
 

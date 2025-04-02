@@ -3853,6 +3853,11 @@ const char kTranslateForceTriggerOnEnglishDescription[] =
     "with the selected language model active.";
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+const char kEnableHistorySyncOptinExpansionPillName[] =
+    "History Sync Opt-in Expansion Pill";
+const char kEnableHistorySyncOptinExpansionPillDescription[] =
+    "Enables the History Sync Opt-in expansion pill on Desktop platforms.";
+
 const char kEnableHistorySyncOptinName[] = "History Sync Opt-in";
 const char kEnableHistorySyncOptinDescription[] =
     "Enables the History Sync Opt-in screen on Desktop platforms. The screen "

@@ -3318,6 +3318,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "enable-history-sync-optin-expansion-pill",
+    "owners": [ "ernn@google.com", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "enable-holding-space-suggestions",
     "owners": [ "//ash/public/cpp/holding_space/OWNERS" ],
     "expiry_milestone": 140

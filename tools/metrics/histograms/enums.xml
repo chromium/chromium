@@ -10310,6 +10310,8 @@ from previous Chrome versions.
   <int value="-1527783093" label="VideoPictureInPictureMinimizeButton:enabled"/>
   <int value="-1527094429" label="ArcRtVcpuQuadCore:disabled"/>
   <int value="-1526934250" label="BorealisProvision:disabled"/>
+  <int value="-1526740682"
+      label="EnableHistorySyncOptinExpansionPill:disabled"/>
   <int value="-1525432906" label="AllowLegacyMV2Extensions:disabled"/>
   <int value="-1525129540"
       label="OmniboxUIExperimentRevealSteadyStateUrlPathQueryAndRefOnHover:disabled"/>
@@ -11422,6 +11424,7 @@ from previous Chrome versions.
   <int value="-1104609838" label="UserMediaCaptureOnFocus:enabled"/>
   <int value="-1104006220" label="AssistantNonPersonalizedVoiceSearch:enabled"/>
   <int value="-1103400515" label="VirtualKeyboardDarkMode:enabled"/>
+  <int value="-1103230059" label="EnableHistorySyncOptinExpansionPill:enabled"/>
   <int value="-1103221768" label="DefaultChatWebApp:enabled"/>
   <int value="-1103099187" label="NotificationStackingBarRedesign:disabled"/>
   <int value="-1102212525" label="enable-tcp-fastopen"/>
