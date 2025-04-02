@@ -799,12 +799,11 @@ DownloadUIModel::DangerUiPattern DownloadUIModel::GetDangerUiPattern() const {
 bool DownloadUIModel::ShouldShowInBubble() const {
   return ShouldShowInShelf();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 bool DownloadUIModel::IsEphemeralWarning() const {
   return false;
 }
-
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 std::string DownloadUIModel::GetMimeType() const {
   return "text/html";

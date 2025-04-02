@@ -1066,8 +1066,13 @@ bool DownloadItemModel::ShouldShowInBubble() const {
 
   return DownloadUIModel::ShouldShowInBubble();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 bool DownloadItemModel::IsEphemeralWarning() const {
+  // On Android, insecure downloads display a InsecureDownloadDialog prior to
+  // the download and do not display any warning in the UI, so there is no
+  // associated warning message to hide/cancel.
+#if !BUILDFLAG(IS_ANDROID)
   switch (GetInsecureDownloadStatus()) {
     case download::DownloadItem::InsecureDownloadStatus::BLOCK:
     case download::DownloadItem::InsecureDownloadStatus::WARN:
@@ -1078,6 +1083,7 @@ bool DownloadItemModel::IsEphemeralWarning() const {
     case download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK:
       break;
   }
+#endif
 
   switch (GetDangerType()) {
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
@@ -1108,8 +1114,6 @@ bool DownloadItemModel::IsEphemeralWarning() const {
       return false;
   }
 }
-
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 offline_items_collection::FailState DownloadItemModel::GetLastFailState()
     const {
