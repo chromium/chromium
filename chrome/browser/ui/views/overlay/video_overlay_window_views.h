@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
-#include "chromeos/ui/frame/highlight_border_overlay.h"
 #include "components/global_media_controls/public/views/media_progress_view.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
@@ -20,6 +19,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ui/frame/highlight_border_overlay.h"
+#endif
 
 namespace views {
 class ImageView;
