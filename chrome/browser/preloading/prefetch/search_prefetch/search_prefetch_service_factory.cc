@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
+#include "chrome/browser/preloading/search_preload/search_preload_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "content/public/browser/browser_context.h"
@@ -34,13 +35,21 @@ ProfileSelections GetProfileSelections() {
 // static
 SearchPrefetchService* SearchPrefetchServiceFactory::GetForProfile(
     Profile* profile) {
-  return static_cast<SearchPrefetchService*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
+  if (auto* self = GetInstance()) {
+    return static_cast<SearchPrefetchService*>(
+        self->GetServiceForBrowserContext(profile, /*create=*/true));
+  }
+
+  return nullptr;
 }
 
 // static
 SearchPrefetchServiceFactory* SearchPrefetchServiceFactory::GetInstance() {
   static base::NoDestructor<SearchPrefetchServiceFactory> factory;
+  if (features::IsDsePreload2Enabled()) {
+    return nullptr;
+  }
+
   return factory.get();
 }
 

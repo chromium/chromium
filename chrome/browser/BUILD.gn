@@ -1954,6 +1954,7 @@ static_library("browser") {
     "//chrome/browser/prefs:util",
     "//chrome/browser/prefs:util_impl",
     "//chrome/browser/preloading:prefs",
+    "//chrome/browser/preloading/search_preload",
     "//chrome/browser/privacy_budget",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
