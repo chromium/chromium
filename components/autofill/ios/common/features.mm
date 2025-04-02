@@ -29,7 +29,7 @@ BASE_FEATURE(kAutofillDynamicallyLoadsFieldsForAddressInput,
 // LINT.IfChange(autofill_fix_post_filling_payment_sheet)
 BASE_FEATURE(kAutofillFixPaymentSheetSpam,
              "AutofillFixPostFillingPaymentSheet",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // LINT.ThenChange(/components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_fix_post_filling_payment_sheet)
 
 BASE_FEATURE(kAutofillFixXhrForXframe,
