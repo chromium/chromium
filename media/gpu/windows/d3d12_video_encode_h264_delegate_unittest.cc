@@ -203,7 +203,8 @@ TEST_F(D3D12VideoEncodeH264DelegateTest, EncodeFrame) {
         return EncoderStatus::Codes::kOk;
       });
   auto result_or_error = encoder_delegate_->Encode(
-      input_frame, 0, gfx::ColorSpace::CreateSRGB(), bitstream_buffer, false);
+      input_frame, 0, gfx::ColorSpace::CreateSRGB(), bitstream_buffer,
+      VideoEncoder::EncodeOptions());
   ASSERT_TRUE(result_or_error.has_value());
 
   BitstreamBufferMetadata metadata =
@@ -262,7 +263,8 @@ TEST_F(D3D12VideoEncodeH264DelegateTest, EncodeFramesAndVerifyKeyFrameFlag) {
           return EncoderStatus::Codes::kOk;
         });
     auto result_or_error = encoder_delegate_->Encode(
-        input_frame, 0, gfx::ColorSpace::CreateSRGB(), bitstream_buffer, false);
+        input_frame, 0, gfx::ColorSpace::CreateSRGB(), bitstream_buffer,
+        VideoEncoder::EncodeOptions());
     ASSERT_TRUE(result_or_error.has_value());
     Mock::VerifyAndClearExpectations(GetVideoEncoderWrapper());
   }

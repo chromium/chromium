@@ -205,16 +205,18 @@ bool D3D12VideoEncodeH265Delegate::UpdateRateControl(const Bitrate& bitrate,
 }
 
 EncoderStatus::Or<BitstreamBufferMetadata>
-D3D12VideoEncodeH265Delegate::EncodeImpl(ID3D12Resource* input_frame,
-                                         UINT input_frame_subresource,
-                                         bool force_keyframe) {
+D3D12VideoEncodeH265Delegate::EncodeImpl(
+    ID3D12Resource* input_frame,
+    UINT input_frame_subresource,
+    const VideoEncoder::EncodeOptions& options) {
   // Filling the |input_arguments_| according to
   // https://github.com/microsoft/DirectX-Specs/blob/master/d3d/D3D12VideoEncoding.md#6120-struct-d3d12_video_encoder_input_arguments
 
   if (++pic_params_.PictureOrderCountNumber == gop_structure_.GOPLength) {
     pic_params_.PictureOrderCountNumber = 0;
   }
-  bool is_keyframe = pic_params_.PictureOrderCountNumber == 0 || force_keyframe;
+  bool is_keyframe =
+      pic_params_.PictureOrderCountNumber == 0 || options.key_frame;
   if (is_keyframe) {
     H265VPS vps = ToVPS();
     H265SPS sps = ToSPS(vps);

@@ -478,9 +478,10 @@ void D3D12VideoEncodeAV1Delegate::FillPictureControlParams(
 }
 
 EncoderStatus::Or<BitstreamBufferMetadata>
-D3D12VideoEncodeAV1Delegate::EncodeImpl(ID3D12Resource* input_frame,
-                                        UINT input_frame_subresource,
-                                        bool force_keyframe) {
+D3D12VideoEncodeAV1Delegate::EncodeImpl(
+    ID3D12Resource* input_frame,
+    UINT input_frame_subresource,
+    const VideoEncoder::EncodeOptions& options) {
   input_arguments_.SequenceControlDesc.Flags =
       D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_FLAG_NONE;
   input_arguments_.SequenceControlDesc.RateControl = {
@@ -491,7 +492,7 @@ D3D12VideoEncodeAV1Delegate::EncodeImpl(ID3D12Resource* input_frame,
   input_arguments_.SequenceControlDesc.PictureTargetResolution = input_size_;
 
   // Fill picture_params_ for next encoded frame.
-  FillPictureControlParams(force_keyframe);
+  FillPictureControlParams(options.key_frame);
 
   bool is_keyframe =
       picture_params_.FrameType == D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_KEY_FRAME;

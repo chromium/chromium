@@ -195,7 +195,7 @@ D3D12VideoEncodeDelegate::Encode(
     UINT input_frame_subresource,
     const gfx::ColorSpace& input_frame_color_space,
     const BitstreamBuffer& bitstream_buffer,
-    bool force_keyframe) {
+    const VideoEncoder::EncodeOptions& options) {
   if (D3D12_RESOURCE_DESC input_frame_desc = input_frame->GetDesc();
       input_frame_desc.Width != input_size_.Width ||
       input_frame_desc.Height != input_size_.Height ||
@@ -227,7 +227,7 @@ D3D12VideoEncodeDelegate::Encode(
   }
 
   auto impl_result =
-      EncodeImpl(input_frame.Get(), input_frame_subresource, force_keyframe);
+      EncodeImpl(input_frame.Get(), input_frame_subresource, options);
   if (!impl_result.has_value()) {
     return std::move(impl_result).error();
   }

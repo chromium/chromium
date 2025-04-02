@@ -54,13 +54,13 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
       UINT input_frame_subresource,
       const gfx::ColorSpace& input_frame_color_space,
       const BitstreamBuffer& bitstream_buffer,
-      bool force_keyframe);
+      const VideoEncoder::EncodeOptions& options);
 
   // Do the codec specific encoding.
   virtual EncoderStatus::Or<BitstreamBufferMetadata> EncodeImpl(
       ID3D12Resource* input_frame,
       UINT input_frame_subresource,
-      bool force_keyframe) = 0;
+      const VideoEncoder::EncodeOptions& options) = 0;
 
   void SetFactoriesForTesting(
       base::RepeatingCallback<decltype(CreateD3D12VideoEncoderWrapper)>

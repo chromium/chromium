@@ -56,10 +56,10 @@ class MockVideoEncoderDelegate : public D3D12VideoEncodeDelegate {
                                       UINT,
                                       const gfx::ColorSpace&,
                                       const BitstreamBuffer&,
-                                      bool));
+                                      const VideoEncoder::EncodeOptions&));
   MOCK_METHOD(EncoderStatus::Or<BitstreamBufferMetadata>,
               EncodeImpl,
-              (ID3D12Resource*, UINT, bool),
+              (ID3D12Resource*, UINT, const VideoEncoder::EncodeOptions&),
               (override));
 
  protected:
@@ -84,12 +84,13 @@ class MockVideoEncoderDelegateFactory
     ON_CALL(*encoder_delegate, GetMaxNumOfRefFrames())
         .WillByDefault(Return(16));
     ON_CALL(*encoder_delegate, Encode(_, _, _, _, _))
-        .WillByDefault(Invoke(
-            [](Microsoft::WRL::ComPtr<ID3D12Resource>, UINT,
-               const gfx::ColorSpace&, const BitstreamBuffer& bitstream_buffer,
-               bool) -> D3D12VideoEncodeDelegate::EncodeResult {
-              return {bitstream_buffer.id()};
-            }));
+        .WillByDefault(Invoke([](Microsoft::WRL::ComPtr<ID3D12Resource>, UINT,
+                                 const gfx::ColorSpace&,
+                                 const BitstreamBuffer& bitstream_buffer,
+                                 const VideoEncoder::EncodeOptions&)
+                                  -> D3D12VideoEncodeDelegate::EncodeResult {
+          return {bitstream_buffer.id()};
+        }));
     return std::move(encoder_delegate);
   }
 

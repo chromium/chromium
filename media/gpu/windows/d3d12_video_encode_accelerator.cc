@@ -61,10 +61,11 @@ class VideoEncodeDelegateFactory
 }  // namespace
 
 struct D3D12VideoEncodeAccelerator::InputFrameRef {
-  InputFrameRef(scoped_refptr<VideoFrame> frame, bool force_keyframe)
-      : frame(std::move(frame)), force_keyframe(force_keyframe) {}
+  InputFrameRef(scoped_refptr<VideoFrame> frame,
+                const VideoEncoder::EncodeOptions& options)
+      : frame(std::move(frame)), options(options) {}
   const scoped_refptr<VideoFrame> frame;
-  const bool force_keyframe;
+  const VideoEncoder::EncodeOptions options;
 };
 
 D3D12VideoEncodeAccelerator::D3D12VideoEncodeAccelerator(
@@ -149,11 +150,16 @@ EncoderStatus D3D12VideoEncodeAccelerator::Initialize(
 
 void D3D12VideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
                                          bool force_keyframe) {
+  Encode(std::move(frame), VideoEncoder::EncodeOptions(force_keyframe));
+}
+
+void D3D12VideoEncodeAccelerator::Encode(
+    scoped_refptr<VideoFrame> frame,
+    const VideoEncoder::EncodeOptions& options) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
   encoder_task_runner_->PostTask(
-      FROM_HERE,
-      BindOnce(&D3D12VideoEncodeAccelerator::EncodeTask, encoder_weak_this_,
-               std::move(frame), force_keyframe));
+      FROM_HERE, BindOnce(&D3D12VideoEncodeAccelerator::EncodeTask,
+                          encoder_weak_this_, std::move(frame), options));
 }
 
 void D3D12VideoEncodeAccelerator::UseOutputBitstreamBuffer(
@@ -280,7 +286,7 @@ void D3D12VideoEncodeAccelerator::UseOutputBitstreamBufferTask(
   bitstream_buffers_.push(std::move(buffer));
   if (!input_frames_queue_.empty()) {
     DoEncodeTask(input_frames_queue_.front().frame,
-                 input_frames_queue_.front().force_keyframe,
+                 input_frames_queue_.front().options,
                  bitstream_buffers_.front());
     input_frames_queue_.pop();
     bitstream_buffers_.pop();
@@ -396,13 +402,14 @@ D3D12VideoEncodeAccelerator::CreateResourceForSharedMemoryVideoFrame(
   return input_texture;
 }
 
-void D3D12VideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
-                                             bool force_keyframe) {
+void D3D12VideoEncodeAccelerator::EncodeTask(
+    scoped_refptr<VideoFrame> frame,
+    const VideoEncoder::EncodeOptions& options) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
-  input_frames_queue_.push({frame, force_keyframe});
+  input_frames_queue_.push({frame, options});
   if (!bitstream_buffers_.empty()) {
     DoEncodeTask(input_frames_queue_.front().frame,
-                 input_frames_queue_.front().force_keyframe,
+                 input_frames_queue_.front().options,
                  bitstream_buffers_.front());
     input_frames_queue_.pop();
     bitstream_buffers_.pop();
@@ -411,7 +418,7 @@ void D3D12VideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
 
 void D3D12VideoEncodeAccelerator::DoEncodeTask(
     scoped_refptr<VideoFrame> frame,
-    bool force_keyframe,
+    const VideoEncoder::EncodeOptions& options,
     const BitstreamBuffer& bitstream_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   Microsoft::WRL::ComPtr<ID3D12Resource> input_texture;
@@ -439,7 +446,7 @@ void D3D12VideoEncodeAccelerator::DoEncodeTask(
   }
 
   auto result_or_error = encoder_->Encode(input_texture, 0, frame->ColorSpace(),
-                                          bitstream_buffer, force_keyframe);
+                                          bitstream_buffer, options);
   if (!result_or_error.has_value()) {
     return NotifyError(std::move(result_or_error).error());
   }
