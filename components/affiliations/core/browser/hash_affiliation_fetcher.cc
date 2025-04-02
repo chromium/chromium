@@ -2,24 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/affiliations/core/browser/hash_affiliation_fetcher.h"
+
 #include <memory>
 #include <utility>
 
 #include "base/functional/callback_forward.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
-#include "components/affiliations/core/browser/hash_affiliation_fetcher.h"
-
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/affiliations/core/browser/affiliation_api.pb.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/lookup_affiliation_response_parser.h"
 #include "components/variations/net/variations_http_headers.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
@@ -60,8 +55,7 @@ uint64_t ComputeHashPrefix(const FacetURI& uri) {
 
   constexpr int bytes_count = kPrefixLength / 8 + (kPrefixLength % 8 != 0);
 
-  uint8_t hash[bytes_count];
-  crypto::SHA256HashString(uri.canonical_spec(), hash, bytes_count);
+  auto hash = crypto::hash::Sha256(base::as_byte_span(uri.canonical_spec()));
   uint64_t result = 0;
 
   for (int i = 0; i < bytes_count; i++) {

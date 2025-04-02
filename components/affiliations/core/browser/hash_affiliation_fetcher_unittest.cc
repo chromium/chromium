@@ -19,7 +19,7 @@
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/mock_affiliation_fetcher_delegate.h"
 #include "components/variations/scoped_variations_ids_provider.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -48,10 +48,9 @@ constexpr char k2ExampleURL[] = "https://2.example.com";
 constexpr uint64_t k2ExampleHash16LenPrefix = 9324421553493901312ULL;
 
 uint64_t ComputeHashPrefix(const FacetURI& uri) {
-  uint8_t hash[2];
-  crypto::SHA256HashString(uri.canonical_spec(), hash, 2);
-  uint64_t result = ((uint64_t)hash[0] << (7 * 8));
-  result |= ((uint64_t)hash[1] << (6 * 8));
+  auto hash = crypto::hash::Sha256(base::as_byte_span(uri.canonical_spec()));
+  uint64_t result = (static_cast<uint64_t>(hash[0]) << (7 * 8));
+  result |= (static_cast<uint64_t>(hash[1]) << (6 * 8));
 
   return result;
 }
