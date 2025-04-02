@@ -687,11 +687,16 @@ bool ChromeOmniboxClient::IsHistoryEmbeddingsEnabled() const {
 
 std::optional<lens::proto::LensOverlaySuggestInputs>
 ChromeOmniboxClient::GetLensOverlaySuggestInputs() const {
-  if (LensSearchboxClient* client = LensOverlayController::GetController(
-          location_bar_->GetWebContents())) {
-    return client->GetLensSuggestInputs();
+  content::WebContents* web_contents = location_bar_->GetWebContents();
+  if (!web_contents) {
+    return std::nullopt;
   }
-  return std::nullopt;
+  LensSearchboxClient* client =
+      LensOverlayController::GetController(web_contents);
+  if (!client) {
+    return std::nullopt;
+  }
+  return client->GetLensSuggestInputs();
 }
 
 base::WeakPtr<OmniboxClient> ChromeOmniboxClient::AsWeakPtr() {
