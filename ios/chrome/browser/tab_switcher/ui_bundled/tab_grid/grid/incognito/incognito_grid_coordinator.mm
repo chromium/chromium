@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_toolbar_commands.h"
@@ -215,8 +214,6 @@
   CHECK(_tabContextMenuHelper);
   IncognitoGridViewController* gridViewController =
       [[IncognitoGridViewController alloc] init];
-  gridViewController.applicationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
   gridViewController.reauthHandler = _reauthAgent;
   gridViewController.menuProvider = _tabContextMenuHelper;
 

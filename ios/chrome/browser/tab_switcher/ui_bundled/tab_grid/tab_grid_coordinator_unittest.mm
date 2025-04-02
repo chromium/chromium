@@ -132,12 +132,6 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
 
     incognito_browser_ = std::make_unique<TestBrowser>(
         profile_->GetOffTheRecordProfile(), scene_state_);
-
-    // Set up ApplicationCommands mock.
-    dispatcher = incognito_browser_->GetCommandDispatcher();
-    [dispatcher startDispatchingToTarget:mock_application_handler
-                             forProtocol:@protocol(ApplicationCommands)];
-
     AddAgentsToBrowser(incognito_browser_.get());
 
     IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]

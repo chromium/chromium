@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/base_grid_view_controller.h"
 
-@protocol ApplicationCommands;
 @protocol IncognitoReauthCommands;
 @protocol GridCommands;
 
@@ -17,8 +16,6 @@
 @interface IncognitoGridViewController
     : BaseGridViewController <IncognitoReauthConsumer>
 
-// Handler for application commands.
-@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
 // Handler for reauth commands.
 @property(nonatomic, weak) id<IncognitoReauthCommands> reauthHandler;
 // Handler for grid content commands.
