@@ -239,6 +239,8 @@
 #include "ui/android/event_forwarder.h"
 #include "ui/android/view_android.h"
 #include "ui/base/device_form_factor.h"
+#else  // !BUILDFLAG(IS_ANDROID)
+#include "ui/accessibility/accessibility_features.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -9356,6 +9358,40 @@ void WebContentsImpl::RecursivelyConstructAXTree(
        ++iter) {
     RecursivelyConstructAXTree(&(*iter), nodes);
   }
+}
+
+void WebContentsImpl::ApplyAXTreeFixingResult(ui::AXTreeID tree_id,
+                                              ui::AXNodeID node_id,
+                                              ax::mojom::Role role) {
+// The AXTreeFixing feature is not currently available on Android.
+#if !BUILDFLAG(IS_ANDROID)
+  CHECK(features::IsAXTreeFixingEnabled());
+
+  GetPrimaryMainFrame()->ForEachRenderFrameHostImplWithAction(
+      [tree_id, node_id, role](RenderFrameHostImpl* rfhi) {
+        ui::BrowserAccessibilityManager* manager =
+            rfhi->browser_accessibility_manager();
+        if (!manager) {
+          return RenderFrameHost::FrameIterationAction::kContinue;
+        }
+
+        ui::AXTree* tree = manager->ax_tree();
+        if (!tree || !tree->root()) {
+          return RenderFrameHost::FrameIterationAction::kContinue;
+        }
+
+        ui::AXNode* node = manager->ax_tree()->GetFromId(node_id);
+        if (!node) {
+          return RenderFrameHost::FrameIterationAction::kContinue;
+        }
+
+        // Update the node's role and stop iterating.
+        ui::AXNodeData new_data = node->data();
+        new_data.role = role;
+        node->SetData(new_data);
+        return RenderFrameHost::FrameIterationAction::kStop;
+      });
+#endif
 }
 
 void WebContentsImpl::DidChangeLoadProgressForMainFrame(

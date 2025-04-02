@@ -47,7 +47,7 @@ struct AXTreeUpdate;
 namespace tree_fixing {
 
 using MainNodeIdentificationCallback =
-    base::OnceCallback<void(std::pair<ui::AXTreeID, ui::AXNodeID>)>;
+    base::OnceCallback<void(ui::AXTreeID, ui::AXNodeID)>;
 
 // This class handles the communication between the browser process and any
 // downstream services used to fix the AXTree, such as: the optimization guide,
@@ -64,7 +64,8 @@ class AXTreeFixingServicesRouter
   class AXTreeFixingWebContentsObserver : public content::WebContentsObserver {
    public:
     explicit AXTreeFixingWebContentsObserver(
-        content::WebContents& web_contents);
+        content::WebContents& web_contents,
+        AXTreeFixingServicesRouter* router);
     AXTreeFixingWebContentsObserver(AXTreeFixingWebContentsObserver&&) = delete;
     AXTreeFixingWebContentsObserver(const AXTreeFixingWebContentsObserver&) =
         delete;
@@ -75,7 +76,12 @@ class AXTreeFixingServicesRouter
     ~AXTreeFixingWebContentsObserver() override;
 
     // content::WebContentsObserver:
-    void DidStopLoading() override;
+    void DocumentOnLoadCompletedInPrimaryMainFrame() override;
+
+   private:
+    void OnMainNodeIdentified(ui::AXTreeID tree_id, ui::AXNodeID node_id);
+
+    raw_ptr<AXTreeFixingServicesRouter> router_;
   };
 
   explicit AXTreeFixingServicesRouter(Profile* profile);

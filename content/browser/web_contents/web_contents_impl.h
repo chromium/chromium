@@ -745,6 +745,9 @@ class CONTENT_EXPORT WebContentsImpl
   std::string DumpAccessibilityTree(
       ui::AXApiType::Type api_type,
       std::vector<ui::AXPropertyFilter> property_filters) override;
+  void ApplyAXTreeFixingResult(ui::AXTreeID tree_id,
+                               ui::AXNodeID node_id,
+                               ax::mojom::Role role) override;
   void RecordAccessibilityEvents(
       bool start_recording,
       std::optional<ui::AXEventCallback> callback) override;
