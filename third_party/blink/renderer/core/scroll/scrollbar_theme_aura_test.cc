@@ -280,10 +280,6 @@ TEST_P(ScrollbarThemeAuraTest, ScrollbarPartsInvalidationTest) {
 // consideration when the scrollbars' width is even to expand the width of the
 // center-patch.
 TEST_P(ScrollbarThemeAuraTest, NinePatchLargerThanMinimalSize) {
-  if (!RuntimeEnabledFeatures::AuraScrollbarUsesNinePatchTrackEnabled()) {
-    GTEST_SKIP();
-  }
-
   ScrollbarThemeAuraButtonOverride theme;
   ASSERT_TRUE(theme.UsesNinePatchTrackAndButtonsResource());
   MockScrollableArea* mock_scrollable_area = CreateMockScrollableArea();
@@ -310,10 +306,6 @@ TEST_P(ScrollbarThemeAuraTest, NinePatchLargerThanMinimalSize) {
 
 // Same as above, but the scrollbar is smaller than the minimal size.
 TEST_P(ScrollbarThemeAuraTest, NinePatchSmallerThanMinimalSize) {
-  if (!RuntimeEnabledFeatures::AuraScrollbarUsesNinePatchTrackEnabled()) {
-    GTEST_SKIP();
-  }
-
   ScrollbarThemeAuraButtonOverride theme;
   ASSERT_TRUE(theme.UsesNinePatchTrackAndButtonsResource());
   MockScrollableArea* mock_scrollable_area = CreateMockScrollableArea();
@@ -347,10 +339,6 @@ TEST_P(ScrollbarThemeAuraTest, NinePatchSmallerThanMinimalSize) {
 }
 
 TEST_P(ScrollbarThemeAuraTest, NinePatchTrackWithoutButtons) {
-  if (!RuntimeEnabledFeatures::AuraScrollbarUsesNinePatchTrackEnabled()) {
-    GTEST_SKIP();
-  }
-
   ScrollbarThemeAuraButtonOverride theme;
   ASSERT_TRUE(theme.UsesNinePatchTrackAndButtonsResource());
   theme.SetHasScrollbarButtons(false);
@@ -376,10 +364,6 @@ TEST_P(ScrollbarThemeAuraTest, NinePatchTrackWithoutButtons) {
 // invalidations when the scrollbar uses nine-patch track and buttons
 // resources.
 TEST_P(ScrollbarThemeAuraTest, TestPaintInvalidationsWhenNinePatchScaled) {
-  if (!RuntimeEnabledFeatures::AuraScrollbarUsesNinePatchTrackEnabled()) {
-    GTEST_SKIP();
-  }
-
   ScrollbarThemeAuraButtonOverride theme;
   ASSERT_TRUE(theme.UsesNinePatchTrackAndButtonsResource());
   Scrollbar* scrollbar = Scrollbar::CreateForTesting(
@@ -426,10 +410,6 @@ TEST_P(ScrollbarThemeAuraTest, TestPaintInvalidationsWhenNinePatchScaled) {
 }
 
 TEST_P(ScrollbarThemeAuraTest, VerticalNinePatchScalesCorrectly) {
-  if (!RuntimeEnabledFeatures::AuraScrollbarUsesNinePatchTrackEnabled()) {
-    GTEST_SKIP();
-  }
-
   ScrollbarThemeAuraButtonOverride theme;
   ASSERT_TRUE(theme.UsesNinePatchTrackAndButtonsResource());
   MockScrollableArea* const mock_scrollable_area = CreateMockScrollableArea();
@@ -450,10 +430,6 @@ TEST_P(ScrollbarThemeAuraTest, VerticalNinePatchScalesCorrectly) {
 }
 
 TEST_P(ScrollbarThemeAuraTest, HorizontalNinePatchScalesCorrectly) {
-  if (!RuntimeEnabledFeatures::AuraScrollbarUsesNinePatchTrackEnabled()) {
-    GTEST_SKIP();
-  }
-
   ScrollbarThemeAuraButtonOverride theme;
   ASSERT_TRUE(theme.UsesNinePatchTrackAndButtonsResource());
   MockScrollableArea* const mock_scrollable_area = CreateMockScrollableArea();
@@ -476,10 +452,6 @@ TEST_P(ScrollbarThemeAuraTest, HorizontalNinePatchScalesCorrectly) {
 // Tests that nine patch functions properly when the scale is greater than the
 // max int size.
 TEST_F(ScrollbarThemeAuraTest, NinePatchScalesCorrectlyWithOverflow) {
-  if (!RuntimeEnabledFeatures::AuraScrollbarUsesNinePatchTrackEnabled()) {
-    GTEST_SKIP();
-  }
-
   ScrollbarThemeAuraButtonOverride theme;
   ASSERT_TRUE(theme.UsesNinePatchTrackAndButtonsResource());
   MockScrollableArea* const mock_scrollable_area =

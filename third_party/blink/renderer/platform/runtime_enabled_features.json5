@@ -502,11 +502,6 @@
       name: "AudioVideoTracks",
       status: "experimental",
     },
-    // Killswitch.
-    {
-      name: "AuraScrollbarUsesNinePatchTrack",
-      status: "stable",
-    },
     {
       name: "AutoDarkMode",
       base_feature: "none",
