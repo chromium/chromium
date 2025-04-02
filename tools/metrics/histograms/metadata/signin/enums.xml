@@ -134,6 +134,16 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(AccountExtensionsSignoutChoice) -->
+
+<enum name="AccountExtensionsSignoutChoice">
+  <int value="0" label="Signout Cancelled"/>
+  <int value="1" label="Signout - Account Extensions Kept"/>
+  <int value="2" label="Signout - Account Extensions Uninstalled"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h:AccountExtensionsSignoutChoice) -->
+
 <enum name="AccountInPrefState">
   <int value="0" label="Account is fully known"/>
   <int value="1" label="Account is unkown"/>

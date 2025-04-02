@@ -78,6 +78,9 @@ constexpr char kConfirmationSupervisedProfileHistogramName[] =
     "Signin.ChromeSignoutConfirmationPrompt.SupervisedProfile";
 constexpr char16_t kTestExtensionName[] = u"Test extension";
 
+constexpr char kAccountExtensionsSignoutChoiceHistogramName[] =
+    "Signin.Extensions.AccountExtensionsSignoutChoice";
+
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExists);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kChecked);
@@ -836,6 +839,8 @@ IN_PROC_BROWSER_TEST_P(SigninViewControllerInteractiveBrowserTest,
     return el.querySelectorAll('.account-extension').length;
   })";
 
+  base::HistogramTester histogram_tester;
+
   // Test sequence setup:
   // - User is signed in and is about to sign out via confirmation prompt.
   // - Use has two account extensions installed while signed in.
@@ -885,6 +890,13 @@ IN_PROC_BROWSER_TEST_P(SigninViewControllerInteractiveBrowserTest,
                               !uninstall_account_extensions()),
       CheckExtensionInstalled(second_account_extension_id,
                               !uninstall_account_extensions()));
+
+  AccountExtensionsSignoutChoice choice =
+      uninstall_account_extensions()
+          ? AccountExtensionsSignoutChoice::kSignoutAccountExtensionsUninstalled
+          : AccountExtensionsSignoutChoice::kSignoutAccountExtensionsKept;
+  histogram_tester.ExpectUniqueSample(
+      kAccountExtensionsSignoutChoiceHistogramName, choice, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

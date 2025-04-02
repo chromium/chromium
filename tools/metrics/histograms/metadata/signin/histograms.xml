@@ -1288,6 +1288,19 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.Extensions.AccountExtensionsSignoutChoice"
+    enum="AccountExtensionsSignoutChoice" expires_after="2026-08-24">
+  <owner>kelvinjiang@chromium.org</owner>
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Logged if the user has account extensions when making a choice on the Chrome
+    signout confirmation prompt. Records if the user has chosen to either keep
+    or uninstall all of their account extensions upon signing out, or if the
+    signout was cancelled.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Extensions.ExplicitSigninFromExtensionInstallBubble"
     enum="BooleanIsNewOptIn" expires_after="2026-04-11">
   <owner>kelvinjiang@chromium.org</owner>
