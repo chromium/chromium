@@ -16,17 +16,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -43,6 +45,10 @@ public class ArchivedTabsCardViewBinderUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Rule
+    public final ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+
     private Activity mActivity;
     private View mArchivedTabsCardView;
     private PropertyModel mModel;
@@ -50,7 +56,7 @@ public class ArchivedTabsCardViewBinderUnitTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mArchivedTabsCardView =
                 LayoutInflater.from(mActivity)
                         .inflate(R.layout.archived_tabs_message_card_view, /* root= */ null);
