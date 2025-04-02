@@ -2733,12 +2733,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   params->vis_tex_coords = cc::MathUtil::ScaleRectProportional(
       uv_rect, gfx::RectF(quad->rect), params->visible_rect);
 
-  // Use provided resource size if not empty, otherwise use the full image size
-  // as the content area
-  gfx::RectF valid_texel_bounds =
-      quad->resource_size_in_pixels().IsEmpty()
-          ? gfx::RectF(image->width(), image->height())
-          : gfx::RectF(gfx::SizeF(quad->resource_size_in_pixels()));
+  gfx::RectF valid_texel_bounds = gfx::RectF(image->width(), image->height());
   // For video frames, `valid_texel_bounds` is VideoFrame::visible_rect which is
   // passed here via `uv_rect`.
   if (quad->is_video_frame) {

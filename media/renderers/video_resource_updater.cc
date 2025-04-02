@@ -662,7 +662,6 @@ void VideoResourceUpdater::AppendQuad(
                            premultiplied_alpha, uv_top_left, uv_bottom_right,
                            SkColors::kTransparent, nearest_neighbor, false,
                            protected_video_type);
-      texture_quad->set_resource_size_in_pixels(coded_size);
       // Set the is_stream_video flag for STREAM_TEXTURE. Is used downstream
       // (e.g. *_layer_overlay.cc).
       texture_quad->is_stream_video =

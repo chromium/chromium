@@ -292,7 +292,6 @@ TEST(DrawQuadTest, CopyTextureDrawQuad) {
   gfx::Rect visible_rect(40, 50, 30, 20);
   bool blending = true;
   ResourceId resource_id(82);
-  gfx::Size resource_size_in_pixels = gfx::Size(40, 41);
   bool premultiplied_alpha = true;
   gfx::PointF uv_top_left(0.5f, 224.f);
   gfx::PointF uv_bottom_right(51.5f, 260.f);
@@ -318,13 +317,11 @@ TEST(DrawQuadTest, CopyTextureDrawQuad) {
   EXPECT_EQ(protected_video_type, copy_quad->protected_video_type);
   EXPECT_FALSE(copy_quad->is_stream_video);
 
-  CREATE_QUAD_ALL(TextureDrawQuad, resource_id, resource_size_in_pixels,
-                  premultiplied_alpha, uv_top_left, uv_bottom_right,
-                  SkColors::kTransparent, nearest_neighbor, secure_output_only,
-                  protected_video_type);
+  CREATE_QUAD_ALL(TextureDrawQuad, resource_id, premultiplied_alpha,
+                  uv_top_left, uv_bottom_right, SkColors::kTransparent,
+                  nearest_neighbor, secure_output_only, protected_video_type);
   EXPECT_EQ(DrawQuad::Material::kTextureContent, copy_quad->material);
   EXPECT_EQ(resource_id, copy_quad->resource_id);
-  EXPECT_EQ(resource_size_in_pixels, copy_quad->resource_size_in_pixels());
   EXPECT_EQ(premultiplied_alpha, copy_quad->premultiplied_alpha);
   EXPECT_EQ(uv_top_left, copy_quad->uv_top_left);
   EXPECT_EQ(uv_bottom_right, copy_quad->uv_bottom_right);

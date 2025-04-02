@@ -281,8 +281,6 @@ void ViewTreeHostRootViewFrameFactory::AppendQuad(
                        /*nearest=*/false,
                        /*secure_output=*/false,
                        gfx::ProtectedVideoType::kClear);
-
-  texture_quad->set_resource_size_in_pixels(resource.size);
 }
 
 std::unique_ptr<ViewTreeHostUiResource>

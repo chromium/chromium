@@ -328,8 +328,6 @@ void RoundedDisplayFrameFactory::AppendQuad(
       /*nearest=*/false,
       /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
 
-  texture_quad->set_resource_size_in_pixels(resource.size);
-
   texture_quad->rounded_display_masks_info =
       MapToRoundedDisplayMasksInfo(gutter.GetGutterCorners());
 }
