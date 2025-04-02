@@ -5334,9 +5334,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="22"
       label="Close search engine choice screen with search engine selected
              (added at M133)"/>
-  <int value="23"
-      label="Close search engine choice screen without search engine selected
-             (added at M133)"/>
+  <int value="23" label="Deprecated"/>
   <int value="24" label="First Run Interrupted (added at M133)"/>
   <int value="25" label="Show Best Features Experience (added in M136)"/>
   <int value="26"
