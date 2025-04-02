@@ -124,17 +124,6 @@
   }
 }
 
-#pragma mark - OmniboxReturnDelegate
-
-- (void)omniboxReturnPressed:(id)sender {
-  CHECK(self.highlightedActionIndex != NSNotFound);
-  CHECK(self.highlightedActionIndex < self.actions.count);
-
-  SuggestAction* action = self.actions[self.highlightedActionIndex];
-  [self.delegate omniboxPopupRowActionSelectedWithConfiguration:self
-                                                         action:action];
-}
-
 #pragma mark - UIContentConfiguration
 
 - (id)copyWithZone:(NSZone*)zone {
@@ -181,6 +170,21 @@
   }
 
   return configuration;
+}
+
+#pragma mark - Private
+
+- (BOOL)canPerformReturnKeyAction {
+  return self.highlightedActionIndex != NSNotFound;
+}
+
+- (void)performReturnKeyAction {
+  CHECK([self canPerformReturnKeyAction]);
+  CHECK(self.highlightedActionIndex < self.actions.count);
+
+  SuggestAction* action = self.actions[self.highlightedActionIndex];
+  [self.delegate omniboxPopupRowActionSelectedWithConfiguration:self
+                                                         action:action];
 }
 
 @end

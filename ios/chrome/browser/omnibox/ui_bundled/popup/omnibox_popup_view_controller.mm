@@ -668,8 +668,8 @@ const CGFloat kHeaderTopPadding = 16.0f;
           base::apple::ObjCCastStrict<
               OmniboxPopupActionsRowContentConfiguration>(
               cell.contentConfiguration);
-      if (config.highlightedActionIndex != NSNotFound) {
-        [config omniboxReturnPressed:sender];
+      if ([config canPerformReturnKeyAction]) {
+        [config performReturnKeyAction];
         return;
       }
     }
