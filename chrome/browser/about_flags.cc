@@ -5140,6 +5140,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContextualPageActionsShareModelDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(
          segmentation_platform::features::kContextualPageActionShareModel)},
+    {"reader-mode-dev-entry-point",
+     flag_descriptions::kReaderModeDevEntryPointName,
+     flag_descriptions::kReaderModeDevEntryPointDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kReaderModeDevEntryPoint)},
     {"reader-mode-heuristics", flag_descriptions::kReaderModeHeuristicsName,
      flag_descriptions::kReaderModeHeuristicsDescription, kOsAndroid,
      MULTI_VALUE_TYPE(kReaderModeHeuristicsChoices)},

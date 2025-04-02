@@ -595,6 +595,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         // Only display reader mode settings menu option if the current page is in reader mode.
         menu.findItem(R.id.reader_mode_prefs_id)
                 .setVisible(isCurrentTabNotNull && shouldShowReaderModePrefs(currentTab));
+        menu.findItem(R.id.reader_mode_menu_id)
+                .setVisible(
+                        ChromeFeatureList.isEnabled(ChromeFeatureList.READER_MODE_DEV_ENTRY_POINT));
 
         updateManagedByMenuItem(menu, currentTab);
 

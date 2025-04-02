@@ -178,6 +178,9 @@ found in the LICENSE file.
         <item android:id="@+id/managed_by_menu_id"
             android:title="@string/managed_browser"
             android:icon="@drawable/ic_business" />
+        <item android:id="@+id/reader_mode_menu_id"
+            android:title="@string/reader_view_text_alt"
+            android:icon="@drawable/ic_reader_mode_24dp" />
     </group>
 
     <!-- Items shown only in the tab switcher -->
