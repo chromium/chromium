@@ -81,6 +81,7 @@
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
@@ -142,9 +143,19 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
 
   Timing timing_;
   CompositorAnimations::CompositorTiming compositor_timing_;
-  Persistent<HeapVector<Member<StringKeyframe>>> keyframe_vector2_;
+
+  using VectorHolder = DisallowNewWrapper<HeapVector<Member<StringKeyframe>>>;
+
+  const HeapVector<Member<StringKeyframe>>& keyframe_vector2() const {
+    return keyframe_vector2_->Value();
+  }
+  const HeapVector<Member<StringKeyframe>>& keyframe_vector5() const {
+    return keyframe_vector5_->Value();
+  }
+
+  Persistent<VectorHolder> keyframe_vector2_;
   Persistent<StringKeyframeEffectModel> keyframe_animation_effect2_;
-  Persistent<HeapVector<Member<StringKeyframe>>> keyframe_vector5_;
+  Persistent<VectorHolder> keyframe_vector5_;
   Persistent<StringKeyframeEffectModel> keyframe_animation_effect5_;
 
   Persistent<Element> element_;
@@ -165,13 +176,15 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
     timing_ = CreateCompositableTiming();
     compositor_timing_ = CompositorAnimations::CompositorTiming();
 
-    keyframe_vector2_ = CreateCompositableFloatKeyframeVector(2);
+    keyframe_vector2_ = MakeGarbageCollected<VectorHolder>(
+        CreateCompositableFloatKeyframeVector(2));
     keyframe_animation_effect2_ =
-        MakeGarbageCollected<StringKeyframeEffectModel>(*keyframe_vector2_);
+        MakeGarbageCollected<StringKeyframeEffectModel>(keyframe_vector2());
 
-    keyframe_vector5_ = CreateCompositableFloatKeyframeVector(5);
+    keyframe_vector5_ = MakeGarbageCollected<VectorHolder>(
+        CreateCompositableFloatKeyframeVector(5));
     keyframe_animation_effect5_ =
-        MakeGarbageCollected<StringKeyframeEffectModel>(*keyframe_vector5_);
+        MakeGarbageCollected<StringKeyframeEffectModel>(keyframe_vector5());
 
     GetAnimationClock().ResetTimeForTesting();
 
@@ -386,7 +399,7 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
     return results;
   }
 
-  HeapVector<Member<StringKeyframe>>* CreateCompositableFloatKeyframeVector(
+  HeapVector<Member<StringKeyframe>> CreateCompositableFloatKeyframeVector(
       size_t n) {
     Vector<double> values;
     for (size_t i = 0; i < n; i++) {
@@ -395,14 +408,13 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
     return CreateCompositableFloatKeyframeVector(values);
   }
 
-  HeapVector<Member<StringKeyframe>>* CreateCompositableFloatKeyframeVector(
+  HeapVector<Member<StringKeyframe>> CreateCompositableFloatKeyframeVector(
       Vector<double>& values) {
-    HeapVector<Member<StringKeyframe>>* frames =
-        MakeGarbageCollected<HeapVector<Member<StringKeyframe>>>();
+    HeapVector<Member<StringKeyframe>> frames;
     for (wtf_size_t i = 0; i < values.size(); i++) {
       double offset = 1.0 / (values.size() - 1) * i;
       String value = String::Number(values[i]);
-      frames->push_back(
+      frames.push_back(
           CreateReplaceOpKeyframe(CSSPropertyID::kOpacity, value, offset));
     }
     return frames;
@@ -1041,13 +1053,13 @@ TEST_P(AnimationCompositorAnimationsTest,
 
 TEST_P(AnimationCompositorAnimationsTest,
        CanStartEffectOnCompositorNonLinearTimingFunctionOnFirstOrLastFrame) {
-  keyframe_vector2_->at(0)->SetEasing(cubic_ease_timing_function_.get());
+  keyframe_vector2().at(0)->SetEasing(cubic_ease_timing_function_.get());
   keyframe_animation_effect2_ =
-      MakeGarbageCollected<StringKeyframeEffectModel>(*keyframe_vector2_);
+      MakeGarbageCollected<StringKeyframeEffectModel>(keyframe_vector2());
 
-  keyframe_vector5_->at(3)->SetEasing(cubic_ease_timing_function_.get());
+  keyframe_vector5().at(3)->SetEasing(cubic_ease_timing_function_.get());
   keyframe_animation_effect5_ =
-      MakeGarbageCollected<StringKeyframeEffectModel>(*keyframe_vector5_);
+      MakeGarbageCollected<StringKeyframeEffectModel>(keyframe_vector5());
 
   timing_.timing_function = cubic_ease_timing_function_;
   EXPECT_EQ(CanStartEffectOnCompositor(timing_, *keyframe_animation_effect2_),
@@ -1453,69 +1465,69 @@ TEST_P(AnimationCompositorAnimationsTest,
 
 TEST_P(AnimationCompositorAnimationsTest,
        CanStartEffectOnCompositorTimingFunctionChainedCubicMatchingOffsets) {
-  keyframe_vector2_->at(0)->SetEasing(cubic_ease_timing_function_.get());
+  keyframe_vector2().at(0)->SetEasing(cubic_ease_timing_function_.get());
   keyframe_animation_effect2_ =
-      MakeGarbageCollected<StringKeyframeEffectModel>(*keyframe_vector2_);
+      MakeGarbageCollected<StringKeyframeEffectModel>(keyframe_vector2());
   EXPECT_EQ(CanStartEffectOnCompositor(timing_, *keyframe_animation_effect2_),
             CompositorAnimations::kNoFailure);
 
-  keyframe_vector2_->at(0)->SetEasing(cubic_custom_timing_function_.get());
+  keyframe_vector2().at(0)->SetEasing(cubic_custom_timing_function_.get());
   keyframe_animation_effect2_ =
-      MakeGarbageCollected<StringKeyframeEffectModel>(*keyframe_vector2_);
+      MakeGarbageCollected<StringKeyframeEffectModel>(keyframe_vector2());
   EXPECT_EQ(CanStartEffectOnCompositor(timing_, *keyframe_animation_effect2_),
             CompositorAnimations::kNoFailure);
 
-  keyframe_vector5_->at(0)->SetEasing(cubic_ease_timing_function_.get());
-  keyframe_vector5_->at(1)->SetEasing(cubic_custom_timing_function_.get());
-  keyframe_vector5_->at(2)->SetEasing(cubic_custom_timing_function_.get());
-  keyframe_vector5_->at(3)->SetEasing(cubic_custom_timing_function_.get());
+  keyframe_vector5().at(0)->SetEasing(cubic_ease_timing_function_.get());
+  keyframe_vector5().at(1)->SetEasing(cubic_custom_timing_function_.get());
+  keyframe_vector5().at(2)->SetEasing(cubic_custom_timing_function_.get());
+  keyframe_vector5().at(3)->SetEasing(cubic_custom_timing_function_.get());
   keyframe_animation_effect5_ =
-      MakeGarbageCollected<StringKeyframeEffectModel>(*keyframe_vector5_);
+      MakeGarbageCollected<StringKeyframeEffectModel>(keyframe_vector5());
   EXPECT_EQ(CanStartEffectOnCompositor(timing_, *keyframe_animation_effect5_),
             CompositorAnimations::kNoFailure);
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
        CanStartEffectOnCompositorTimingFunctionMixedGood) {
-  keyframe_vector5_->at(0)->SetEasing(linear_timing_function_.get());
-  keyframe_vector5_->at(1)->SetEasing(cubic_ease_timing_function_.get());
-  keyframe_vector5_->at(2)->SetEasing(cubic_ease_timing_function_.get());
-  keyframe_vector5_->at(3)->SetEasing(linear_timing_function_.get());
+  keyframe_vector5().at(0)->SetEasing(linear_timing_function_.get());
+  keyframe_vector5().at(1)->SetEasing(cubic_ease_timing_function_.get());
+  keyframe_vector5().at(2)->SetEasing(cubic_ease_timing_function_.get());
+  keyframe_vector5().at(3)->SetEasing(linear_timing_function_.get());
   keyframe_animation_effect5_ =
-      MakeGarbageCollected<StringKeyframeEffectModel>(*keyframe_vector5_);
+      MakeGarbageCollected<StringKeyframeEffectModel>(keyframe_vector5());
   EXPECT_EQ(CanStartEffectOnCompositor(timing_, *keyframe_animation_effect5_),
             CompositorAnimations::kNoFailure);
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
        CanStartEffectOnCompositorTimingFunctionWithStepOrFrameOkay) {
-  keyframe_vector2_->at(0)->SetEasing(step_timing_function_.get());
+  keyframe_vector2().at(0)->SetEasing(step_timing_function_.get());
   keyframe_animation_effect2_ =
-      MakeGarbageCollected<StringKeyframeEffectModel>(*keyframe_vector2_);
+      MakeGarbageCollected<StringKeyframeEffectModel>(keyframe_vector2());
   EXPECT_EQ(CanStartEffectOnCompositor(timing_, *keyframe_animation_effect2_),
             CompositorAnimations::kNoFailure);
 
-  keyframe_vector5_->at(0)->SetEasing(step_timing_function_.get());
-  keyframe_vector5_->at(1)->SetEasing(linear_timing_function_.get());
-  keyframe_vector5_->at(2)->SetEasing(cubic_ease_timing_function_.get());
+  keyframe_vector5().at(0)->SetEasing(step_timing_function_.get());
+  keyframe_vector5().at(1)->SetEasing(linear_timing_function_.get());
+  keyframe_vector5().at(2)->SetEasing(cubic_ease_timing_function_.get());
   keyframe_animation_effect5_ =
-      MakeGarbageCollected<StringKeyframeEffectModel>(*keyframe_vector5_);
+      MakeGarbageCollected<StringKeyframeEffectModel>(keyframe_vector5());
   EXPECT_EQ(CanStartEffectOnCompositor(timing_, *keyframe_animation_effect5_),
             CompositorAnimations::kNoFailure);
 
-  keyframe_vector5_->at(1)->SetEasing(step_timing_function_.get());
-  keyframe_vector5_->at(2)->SetEasing(cubic_ease_timing_function_.get());
-  keyframe_vector5_->at(3)->SetEasing(linear_timing_function_.get());
+  keyframe_vector5().at(1)->SetEasing(step_timing_function_.get());
+  keyframe_vector5().at(2)->SetEasing(cubic_ease_timing_function_.get());
+  keyframe_vector5().at(3)->SetEasing(linear_timing_function_.get());
   keyframe_animation_effect5_ =
-      MakeGarbageCollected<StringKeyframeEffectModel>(*keyframe_vector5_);
+      MakeGarbageCollected<StringKeyframeEffectModel>(keyframe_vector5());
   EXPECT_EQ(CanStartEffectOnCompositor(timing_, *keyframe_animation_effect5_),
             CompositorAnimations::kNoFailure);
 
-  keyframe_vector5_->at(0)->SetEasing(linear_timing_function_.get());
-  keyframe_vector5_->at(2)->SetEasing(cubic_ease_timing_function_.get());
-  keyframe_vector5_->at(3)->SetEasing(step_timing_function_.get());
+  keyframe_vector5().at(0)->SetEasing(linear_timing_function_.get());
+  keyframe_vector5().at(2)->SetEasing(cubic_ease_timing_function_.get());
+  keyframe_vector5().at(3)->SetEasing(step_timing_function_.get());
   keyframe_animation_effect5_ =
-      MakeGarbageCollected<StringKeyframeEffectModel>(*keyframe_vector5_);
+      MakeGarbageCollected<StringKeyframeEffectModel>(keyframe_vector5());
   EXPECT_EQ(CanStartEffectOnCompositor(timing_, *keyframe_animation_effect5_),
             CompositorAnimations::kNoFailure);
 }
@@ -2060,14 +2072,16 @@ TEST_P(AnimationCompositorAnimationsTest, MixedCustomPropertyAnimation) {
 
 TEST_P(AnimationCompositorAnimationsTest,
        CancelIncompatibleCompositorAnimations) {
-  Persistent<HeapVector<Member<StringKeyframe>>> key_frames =
-      MakeGarbageCollected<HeapVector<Member<StringKeyframe>>>(
+  Persistent<GCedHeapVector<Member<StringKeyframe>>> key_frames =
+      MakeGarbageCollected<GCedHeapVector<Member<StringKeyframe>>>(
           CreateDefaultKeyframeVector(CSSPropertyID::kOpacity,
                                       EffectModel::kCompositeReplace));
   KeyframeEffectModelBase* animation_effect1 =
-      MakeGarbageCollected<StringKeyframeEffectModel>(*key_frames);
+      MakeGarbageCollected<StringKeyframeEffectModel>(
+          StringKeyframeEffectModel::KeyframeVector(*key_frames.Get()));
   KeyframeEffectModelBase* animation_effect2 =
-      MakeGarbageCollected<StringKeyframeEffectModel>(*key_frames);
+      MakeGarbageCollected<StringKeyframeEffectModel>(
+          StringKeyframeEffectModel::KeyframeVector(*key_frames.Get()));
 
   Timing timing;
   timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1);

@@ -155,7 +155,7 @@ LayoutOpportunity CreateLayoutOpportunity(
 }  // namespace
 
 ExclusionSpaceInternal::ExclusionSpaceInternal()
-    : exclusions_(MakeGarbageCollected<ExclusionAreaPtrArray>()),
+    : exclusions_(MakeGarbageCollected<GCedExclusionAreaPtrArray>()),
       track_shape_exclusions_(false),
       has_break_before_left_float_(false),
       has_break_before_right_float_(false),
@@ -242,7 +242,7 @@ void ExclusionSpaceInternal::Add(const ExclusionArea* exclusion) {
     } else {
       // Perform a copy-on-write if the number of exclusions has gone out of
       // sync.
-      auto* exclusions = MakeGarbageCollected<ExclusionAreaPtrArray>();
+      auto* exclusions = MakeGarbageCollected<GCedExclusionAreaPtrArray>();
       exclusions->AppendSpan(base::span(*exclusions_).first(num_exclusions_));
       exclusions_ = exclusions;
     }
@@ -285,7 +285,7 @@ void ExclusionSpaceInternal::Add(const ExclusionArea* exclusion) {
       // Perform a copy-on-write if the number of exclusions has gone out of
       // sync.
       const auto& source_exclusions = *exclusions_;
-      exclusions_ = MakeGarbageCollected<ExclusionAreaPtrArray>();
+      exclusions_ = MakeGarbageCollected<GCedExclusionAreaPtrArray>();
       exclusions_->resize(num_exclusions_ + 1);
       const auto source_span =
           base::span(source_exclusions).first(num_exclusions_);

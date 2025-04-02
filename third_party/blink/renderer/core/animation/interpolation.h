@@ -80,7 +80,7 @@ class CORE_EXPORT Interpolation : public GarbageCollected<Interpolation> {
   Interpolation() = default;
 };
 
-using ActiveInterpolations = HeapVector<Member<Interpolation>, 1>;
+using ActiveInterpolations = GCedHeapVector<Member<Interpolation>, 1>;
 using ActiveInterpolationsMap =
     HeapHashMap<PropertyHandle, Member<ActiveInterpolations>>;
 

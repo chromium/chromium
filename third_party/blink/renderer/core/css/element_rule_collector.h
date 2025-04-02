@@ -130,7 +130,7 @@ WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::MatchedRule)
 
 namespace blink {
 
-using StyleRuleList = HeapVector<Member<StyleRule>>;
+using StyleRuleList = GCedHeapVector<Member<StyleRule>>;
 
 // Manages the process of finding what rules in a RuleSet apply to a given
 // Element. These tend to be used several times in different contexts and should
@@ -305,8 +305,8 @@ class CORE_EXPORT ElementRuleCollector {
   ContainerSelectorCache container_selector_cache_;
 
   // Output.
-  Member<RuleIndexList> css_rule_list_;
-  Member<StyleRuleList> style_rule_list_;
+  RuleIndexList* css_rule_list_ = nullptr;
+  StyleRuleList* style_rule_list_ = nullptr;
   MatchResult& result_;
 };
 

@@ -418,7 +418,7 @@ class CORE_EXPORT ExclusionSpaceInternal final {
   //
   // `exclusions_` contains `ExclusionArea` in ascent order of block start
   // offset.
-  Persistent<ExclusionAreaPtrArray> exclusions_;
+  Persistent<GCedExclusionAreaPtrArray> exclusions_;
   wtf_size_t num_exclusions_ = 0;
 
   // These members are used for keeping track of the "lowest" offset for each
