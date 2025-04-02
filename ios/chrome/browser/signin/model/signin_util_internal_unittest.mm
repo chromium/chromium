@@ -10,7 +10,9 @@
 #import "base/files/file_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "components/signin/public/identity_manager/tribool.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 class SigninUtilInternalTest : public PlatformTest {
@@ -92,10 +94,20 @@ class SigninUtilInternalTest : public PlatformTest {
 // sentinel exists.
 TEST_F(SigninUtilInternalTest,
        IsFirstSessionAfterDeviceRestoreInternalNoSentinelFile) {
+  signin::RestoreData restore_data = LoadDeviceRestoreDataInternal();
   EXPECT_EQ(signin::Tribool::kUnknown,
-            IsFirstSessionAfterDeviceRestoreInternal());
+            restore_data.is_first_session_after_device_restore);
+  // Device restore is unknown, so there is no timestamp.
+  EXPECT_FALSE(restore_data.last_restore_timestamp.has_value());
   WaitAndExpectSentinelThatIsBackedUp();
   WaitAndExpectSentinelThatIsNotBackedUp();
+  // Simulate the next run.
+  restore_data = LoadDeviceRestoreDataInternal();
+  // After both sentinel files are created, there is still no device restore
+  // detected.
+  EXPECT_EQ(signin::Tribool::kFalse,
+            restore_data.is_first_session_after_device_restore);
+  EXPECT_FALSE(restore_data.last_restore_timestamp.has_value());
 }
 
 // Tests the result of IsFirstSessionAfterDeviceRestoreInternal(), when only the
@@ -106,9 +118,21 @@ TEST_F(SigninUtilInternalTest,
   [[NSFileManager defaultManager] createFileAtPath:[url path]
                                           contents:nil
                                         attributes:nil];
-  EXPECT_EQ(signin::Tribool::kTrue, IsFirstSessionAfterDeviceRestoreInternal());
+  signin::RestoreData restore_data = LoadDeviceRestoreDataInternal();
+  EXPECT_EQ(signin::Tribool::kTrue,
+            restore_data.is_first_session_after_device_restore);
+  // First run after a device restore, so there is no timestamp.
+  EXPECT_FALSE(restore_data.last_restore_timestamp.has_value());
   WaitAndExpectSentinelThatIsBackedUp();
   WaitAndExpectSentinelThatIsNotBackedUp();
+  // Simulate the next run.
+  restore_data = LoadDeviceRestoreDataInternal();
+  // This is not the first session after the device restore.
+  EXPECT_EQ(signin::Tribool::kFalse,
+            restore_data.is_first_session_after_device_restore);
+  // There is restore timestamp since there was a device restore in a previous
+  // run.
+  EXPECT_TRUE(restore_data.last_restore_timestamp.has_value());
 }
 
 // Tests the result of IsFirstSessionAfterDeviceRestoreInternal(), when only the
@@ -119,22 +143,90 @@ TEST_F(SigninUtilInternalTest,
   [[NSFileManager defaultManager] createFileAtPath:[url path]
                                           contents:nil
                                         attributes:nil];
+  signin::RestoreData restore_data = LoadDeviceRestoreDataInternal();
   EXPECT_EQ(signin::Tribool::kUnknown,
-            IsFirstSessionAfterDeviceRestoreInternal());
+            restore_data.is_first_session_after_device_restore);
+  // Device restore is unknown, so there is no timestamp.
+  EXPECT_FALSE(restore_data.last_restore_timestamp.has_value());
+  WaitAndExpectSentinelThatIsBackedUp();
+  // Simulate the next run.
+  restore_data = LoadDeviceRestoreDataInternal();
+  // This is not the first session after the device restore.
+  EXPECT_EQ(signin::Tribool::kFalse,
+            restore_data.is_first_session_after_device_restore);
+  // No device restore happened in previous run.
+  EXPECT_FALSE(restore_data.last_restore_timestamp.has_value());
 }
 
 // Tests the result of IsFirstSessionAfterDeviceRestoreInternal(), when all
-// sentinel exists.
+// sentinel exists. The backed up sentinel file is created before the not backed
+// up sentinel file, which means that a device restore happened in a previous
+// run.
 TEST_F(SigninUtilInternalTest,
        IsFirstSessionAfterDeviceRestoreInternalWithoutRestore) {
-  NSURL* url = GetSentinelThatIsBackedUpURLPath();
-  [[NSFileManager defaultManager] createFileAtPath:[url path]
+  NSURL* backed_up_url = GetSentinelThatIsBackedUpURLPath();
+  NSDate* backed_up_creation_date =
+      [NSDate dateWithTimeIntervalSinceReferenceDate:42];
+  NSDictionary* backed_up_attributes =
+      @{NSFileCreationDate : backed_up_creation_date};
+  [[NSFileManager defaultManager] createFileAtPath:backed_up_url.path
                                           contents:nil
-                                        attributes:nil];
-  url = GetSentinelThatIsNotBackedUpURLPath();
-  [[NSFileManager defaultManager] createFileAtPath:[url path]
+                                        attributes:backed_up_attributes];
+  NSURL* not_backed_up_url = GetSentinelThatIsNotBackedUpURLPath();
+  NSDate* not_backed_up_creation_date =
+      [NSDate dateWithTimeIntervalSinceReferenceDate:4200];
+  NSDictionary* not_backed_up_attributes =
+      @{NSFileCreationDate : not_backed_up_creation_date};
+  [[NSFileManager defaultManager] createFileAtPath:not_backed_up_url.path
                                           contents:nil
-                                        attributes:nil];
+                                        attributes:not_backed_up_attributes];
+  signin::RestoreData restore_data = LoadDeviceRestoreDataInternal();
   EXPECT_EQ(signin::Tribool::kFalse,
-            IsFirstSessionAfterDeviceRestoreInternal());
+            restore_data.is_first_session_after_device_restore);
+  EXPECT_TRUE(restore_data.last_restore_timestamp.has_value());
+  // The device restore happened on the create timestamp of the not backed up
+  // create date.
+  EXPECT_NSEQ(not_backed_up_creation_date,
+              restore_data.last_restore_timestamp->ToNSDate());
+  // Simulate the next run.
+  restore_data = LoadDeviceRestoreDataInternal();
+  // Expect the values to be the same.
+  EXPECT_EQ(signin::Tribool::kFalse,
+            restore_data.is_first_session_after_device_restore);
+  EXPECT_TRUE(restore_data.last_restore_timestamp.has_value());
+  EXPECT_NSEQ(not_backed_up_creation_date,
+              restore_data.last_restore_timestamp->ToNSDate());
+}
+
+// Tests the result of IsFirstSessionAfterDeviceRestoreInternal(), when all
+// sentinel exists. The backed up sentinel file is created after the not backed
+// up sentinel file, which means that no restore happened
+TEST_F(SigninUtilInternalTest,
+       IsFirstSessionAfterDeviceRestoreInternalWithPreviousRestore) {
+  NSURL* not_backed_up_url = GetSentinelThatIsNotBackedUpURLPath();
+  NSDate* not_backed_up_creation_date =
+      [NSDate dateWithTimeIntervalSinceReferenceDate:42];
+  NSDictionary* not_backed_up_attributes =
+      @{NSFileCreationDate : not_backed_up_creation_date};
+  [[NSFileManager defaultManager] createFileAtPath:not_backed_up_url.path
+                                          contents:nil
+                                        attributes:not_backed_up_attributes];
+  NSURL* backed_up_url = GetSentinelThatIsBackedUpURLPath();
+  NSDate* backed_up_creation_date =
+      [NSDate dateWithTimeIntervalSinceReferenceDate:4200];
+  NSDictionary* backed_up_attributes =
+      @{NSFileCreationDate : backed_up_creation_date};
+  [[NSFileManager defaultManager] createFileAtPath:backed_up_url.path
+                                          contents:nil
+                                        attributes:backed_up_attributes];
+  signin::RestoreData restore_data = LoadDeviceRestoreDataInternal();
+  EXPECT_EQ(signin::Tribool::kFalse,
+            restore_data.is_first_session_after_device_restore);
+  EXPECT_FALSE(restore_data.last_restore_timestamp.has_value());
+  // Simulate the next run.
+  restore_data = LoadDeviceRestoreDataInternal();
+  // Expect the values to be the same.
+  EXPECT_EQ(signin::Tribool::kFalse,
+            restore_data.is_first_session_after_device_restore);
+  EXPECT_FALSE(restore_data.last_restore_timestamp.has_value());
 }

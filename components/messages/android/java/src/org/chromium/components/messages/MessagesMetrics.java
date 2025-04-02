@@ -281,8 +281,6 @@ public class MessagesMetrics {
                 return "SaveAddressProfile";
             case MessageIdentifier.MERCHANT_TRUST:
                 return "MerchantTrust";
-            case MessageIdentifier.SEND_TAB_TO_SELF:
-                return "SendTabToSelf";
             case MessageIdentifier.READER_MODE:
                 return "ReaderMode";
             case MessageIdentifier.SAVE_CARD:

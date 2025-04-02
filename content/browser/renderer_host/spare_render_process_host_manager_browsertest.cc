@@ -974,6 +974,30 @@ IN_PROC_BROWSER_TEST_F(ExtraSpareRenderProcessHostManagerTest, BrowserNotIdle) {
   ASSERT_EQ(spare_manager.GetSpares().size(), 2u);
 }
 
+IN_PROC_BROWSER_TEST_F(ExtraSpareRenderProcessHostManagerTest,
+                       CleanupExtraSpares) {
+  auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
+
+  // Initially zero spares.
+  ASSERT_EQ(spare_manager.GetSpares().size(), 0u);
+
+  // Create 2 spares. First one created manually, second one started
+  // automatically.
+  spare_manager.WarmupSpare(browser_context());
+  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
+  WaitForNextSpareReady();
+  ASSERT_EQ(spare_manager.GetSpares().size(), 2u);
+  WaitForNextSpareReady();
+  ASSERT_EQ(spare_manager.GetSpares().size(), 2u);
+
+  RenderProcessHost* first_spare = spare_manager.GetSpares()[0];
+
+  spare_manager.CleanupExtraSpares(std::nullopt);
+  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
+  ASSERT_EQ(spare_manager.GetSpares()[0], first_spare);
+  EXPECT_TRUE(spare_manager.GetSpares()[0]->IsReady());
+}
+
 class LowMemoryExtraSpareRenderProcessHostManagerTest
     : public ExtraSpareRenderProcessHostManagerTest {
  public:

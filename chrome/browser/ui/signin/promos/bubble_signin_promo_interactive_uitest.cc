@@ -83,8 +83,7 @@ class BubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {switches::kImprovedSigninUIOnDesktop,
-         switches::kSyncEnableBookmarksInTransportMode,
-         switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload},
+         switches::kSyncEnableBookmarksInTransportMode},
         /*disabled_features=*/{});
   }
 

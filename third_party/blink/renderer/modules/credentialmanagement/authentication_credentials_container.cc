@@ -1008,7 +1008,7 @@ const char* validateGetPublicKeyCredentialPRFExtension(
 
   if (prf.hasEvalByCredential()) {
     for (const auto& pair : prf.evalByCredential()) {
-      Vector<char> cred_id;
+      Vector<uint8_t> cred_id;
       if (!pair.first.Is8Bit() ||
           !WTF::Base64UnpaddedURLDecode(pair.first, cred_id)) {
         return "'prf' extension contains invalid base64url data in "
@@ -2138,6 +2138,11 @@ void AuthenticationCredentialsContainer::GetForIdentity(
             context)) {
       UseCounter::Count(resolver->GetExecutionContext(),
                         WebFeature::kFedCmMultipleIdentityProviders);
+      if (identity_options.providers().size() > 10u) {
+        resolver->RejectWithTypeError(
+            "More than 10 providers are not allowed.");
+        return;
+      }
     } else {
       resolver->RejectWithTypeError(
           "Multiple providers specified but FedCmMultipleIdentityProviders "

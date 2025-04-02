@@ -45,4 +45,8 @@ bool DisplaySyncErrors(ProfileIOS* profile,
                        web::WebState* web_state,
                        id<SyncPresenter> presenter);
 
+// Logs sync error infobar dismissal metric for a given `error`.
+void LogSyncErrorInfobarDismissed(
+    syncer::SyncService::UserActionableError error);
+
 #endif  // IOS_CHROME_BROWSER_SETTINGS_MODEL_SYNC_UTILS_SYNC_UTIL_H_

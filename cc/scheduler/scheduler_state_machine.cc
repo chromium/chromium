@@ -1530,14 +1530,20 @@ bool SchedulerStateMachine::ShouldBlockDeadlineIndefinitely() const {
 void SchedulerStateMachine::FrameIntervalUpdated(
     base::TimeDelta frame_interval) {
   unthrottled_frame_interval_ = frame_interval;
-  // Only query the feature (and thus enter the experiment group) if we see a
-  // short interval. This ignores 90Hz displays, on purpose, and adds some
+  // We only want to evaluate the feature on clients that see short VSync
+  // intervals, to have the control and experiment only contain high refresh
+  // rate clients. This ignores 90Hz displays, on purpose, and adds some
   // leeway.
   //
   // Apply some slack, so that if for some reason the interval is a bit larger
   // than 8.33333333333333ms, then we catch it still.
   constexpr float kSlackFactor = .9;
-  if (frame_interval < base::Hertz(120) * (1 / kSlackFactor) &&
+  bool fast_vsync_interval =
+      frame_interval < base::Hertz(120) * (1 / kSlackFactor);
+  if (fast_vsync_interval) {
+    features::SetIsEligibleForThrottleMainFrameTo60Hz(true);
+  }
+  if (fast_vsync_interval &&
       base::FeatureList::IsEnabled(features::kThrottleMainFrameTo60Hz)) {
     // Here as well, use a slack factor, to make sure that small timing
     // variations don't result in uneven pacing.

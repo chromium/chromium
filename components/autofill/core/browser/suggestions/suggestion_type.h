@@ -94,7 +94,7 @@ enum class SuggestionType {
   kViewPasswordDetails = 32,
 
   // Payment suggestions.
-  kShowAccountCards = 24,
+  // kShowAccountCards = 24, // DEPRECATED
   kCreditCardEntry = 33,
   kInsecureContextPaymentDisabledMessage = 34,
   kScanCreditCard = 35,

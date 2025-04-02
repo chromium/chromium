@@ -266,4 +266,13 @@ BASE_FEATURE(kWebViewInterceptedCookieHeaderReadWrite,
 BASE_FEATURE(kWebViewShortCircuitShouldInterceptRequest,
              "WebViewShortCircuitShouldInterceptRequest",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, webview chromium initialization uses the startup tasks logic
+// where it runs the startup tasks asynchronously if startup is triggered from a
+// background thread. Otherwise runs startup synchronously.
+// Also caches any chromium startup exception and rethrows it if startup is
+// retried without a restart.
+BASE_FEATURE(kWebViewUseStartupTasksLogic,
+             "WebViewUseStartupTasksLogic",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace android_webview::features

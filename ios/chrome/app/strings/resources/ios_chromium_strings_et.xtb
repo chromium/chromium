@@ -91,6 +91,7 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chromiu
 <translation id="3054480780637153380">Avage iOS-is Chromiumi seaded, seejärel puudutage valikut „Vaikebrauserirakendus” ja valige Chromium.</translation>
 <translation id="3102849287235003384">Selleks et oma Google'i kontolt kõikidel veebisaitidel välja logida, <ph name="BEGIN_LINK" />logige välja Chromiumist<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Kas soovite Chromiumi vaikebrauseriks määrata?</translation>
+<translation id="3180939591219927904">Lülitage sisse valik „Lukusta Chromiumi sulgemisel inkognito vahelehed”</translation>
 <translation id="3242612358525156339">Tehke seadme seadetes valik „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ ja seejärel valige „Chromium“</translation>
 <translation id="328933489847748230">{count,plural, =1{Nüüd kuvatakse 1 Chromiumi aken}other{Nüüd kuvatakse {count} Chromiumi akent}}</translation>
 <translation id="3344973607274501920">Chromiumil ei õnnestunud teie paroole kontrollida. Kontrollige internetiühendust.</translation>
@@ -260,6 +261,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Valitud andmed eemaldati Chromiumist ja sünkroonitud seadmetest. Aadressil history.google.com võib teie Google'i kontol olla muus vormis sirvimisajalugu, nagu otsingud ja tegevused muudes Google'i teenustes.</translation>
 <translation id="7395825497086981028">Teie parool salvestatakse konto <ph name="EMAIL" /> paroolihaldurisse.</translation>
+<translation id="7504829997542308412">Avage Chromium</translation>
 <translation id="7531461704633548377">Chromiumilt</translation>
 <translation id="7554983317097061001">Chromiumi nõuanne: teisaldage Chromium dokki</translation>
 <translation id="7576863740961052505">Chromiumi seadete haldamine</translation>

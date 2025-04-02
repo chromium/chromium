@@ -14,7 +14,6 @@
 #include <optional>
 #include <string>
 
-#include "base/base_paths_win.h"
 #include "base/environment.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file.h"

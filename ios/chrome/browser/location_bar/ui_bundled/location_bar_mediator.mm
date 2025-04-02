@@ -7,6 +7,7 @@
 #import "base/memory/ptr_util.h"
 #import "components/google/core/common/google_util.h"
 #import "components/lens/lens_url_utils.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
@@ -157,6 +158,11 @@
 
 /// Updates the placeholder.
 - (void)updatePlaceholderType {
+  if (IsPageActionMenuEnabled()) {
+    [self.consumer
+        setPlaceholderType:LocationBarPlaceholderType::kPageActionMenu];
+    return;
+  }
   if (![self isLensOverlayAvailable]) {
     return;
   }

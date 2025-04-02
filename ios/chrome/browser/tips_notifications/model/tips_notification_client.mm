@@ -832,12 +832,7 @@ void TipsNotificationClient::ClassifyUser() {
 }
 
 bool TipsNotificationClient::HasIdentitiesOnDevice(ProfileIOS* profile) const {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
-    return !IdentityManagerFactory::GetForProfile(profile)
-                ->GetAccountsOnDevice()
-                .empty();
-  } else {
-    return ChromeAccountManagerServiceFactory::GetForProfile(profile)
-        ->HasIdentities();
-  }
+  return !IdentityManagerFactory::GetForProfile(profile)
+              ->GetAccountsOnDevice()
+              .empty();
 }

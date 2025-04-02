@@ -105,10 +105,6 @@ def initialize_globals(import_channel: str):
       [('export_include_dirs', {
           "net/third_party/quiche/src",
       })],
-      f'{MODULE_PREFIX}third_party_quic_trace_quic_trace_proto_gen__testing_headers':
-      [('export_include_dirs', {
-          "third_party/quic_trace/src",
-      })],
       # TODO: fix upstream. Both //base:base and
       # //base/allocator/partition_allocator:partition_alloc do not create a
       # dependency on gtest despite using gtest_prod.h.
@@ -1224,9 +1220,22 @@ def create_proto_modules(blueprint, gn, target):
     """
   assert (target.type == 'proto_library')
 
+  original_args = target.args
+
+  def get_value_arg(arg_name):
+    arg_count = original_args.count(arg_name)
+    if arg_count == 0:
+      return None
+    assert arg_count == 1, (arg_name, target.name)
+    value_index = original_args.index(arg_name) + 1
+    assert (value_index < len(original_args)), (arg_name, target.name)
+    return original_args[value_index]
+
   protoc_module_name = get_protoc_module_name(gn)
   tools = {protoc_module_name}
-  cpp_out_dir = '$(genDir)/%s/' % (target.proto_in_dir)
+  cpp_out_dir = get_value_arg('--cc-out-dir')
+  assert cpp_out_dir is not None, target.name
+  cpp_out_dir = cpp_out_dir.removeprefix('gen/')
   target_module_name = label_to_module_name(target.name)
 
   # In GN builds the proto path is always relative to the output directory
@@ -1239,17 +1248,12 @@ def create_proto_modules(blueprint, gn, target):
   if buildtools_protobuf_src in target.proto_paths:
     cmd += ['--proto_path=%s' % android_protobuf_src]
 
-  # We don't generate any targets for source_set proto modules because
-  # they will be inlined into other modules if required.
-  if target.proto_plugin == 'source_set':
-    return None
-
   sources = {gn_utils.label_to_path(src) for src in target.sources}
   absolute_sources = sorted(
       [f"external/cronet/{IMPORT_CHANNEL}/{src}" for src in sources])
 
   # Descriptor targets only generate a single target.
-  if target.proto_plugin == 'descriptor':
+  if any(output.endswith('.descriptor') for output in target.outputs):
     out = '{}.bin'.format(target_module_name)
 
     cmd += ['--descriptor_set_out=$(out)']
@@ -1291,7 +1295,7 @@ def create_proto_modules(blueprint, gn, target):
   # Since the .cc file and .h get created by a different gerule target, they
   # are not put in the same intermediate path, so local includes do not work
   # without explictily exporting the include dir.
-  header_module.export_include_dirs.add(target.proto_in_dir)
+  header_module.export_include_dirs.add(cpp_out_dir)
 
   # This function does not return header_module so setting apex_available attribute here.
   header_module.apex_available.add(tethering_apex)
@@ -1299,12 +1303,8 @@ def create_proto_modules(blueprint, gn, target):
   source_module.genrule_srcs.add(':' + source_module.name)
   source_module.genrule_headers.add(header_module.name)
 
-  if target.proto_plugin == 'proto':
-    suffixes = ['pb']
-    source_module.genrule_shared_libs.add('libprotobuf-cpp-lite')
-    cmd += ['--cpp_out=lite=true:' + cpp_out_dir]
-  else:
-    raise Exception('Unsupported proto plugin: %s' % target.proto_plugin)
+  source_module.genrule_shared_libs.add('libprotobuf-cpp-lite')
+  cmd += [f'--cpp_out=lite=true:$(genDir)/{cpp_out_dir}/']
 
   cmd += absolute_sources
   source_module.cmd = cmd
@@ -1312,11 +1312,11 @@ def create_proto_modules(blueprint, gn, target):
   source_module.tools = tools
   header_module.tools = tools
 
-  for sfx in suffixes:
-    source_module.out.update('%s' % src.replace('.proto', '.%s.cc' % sfx)
-                             for src in source_module.srcs)
-    header_module.out.update('%s' % src.replace('.proto', '.%s.h' % sfx)
-                             for src in header_module.srcs)
+  source_module.out.update(output for output in target.outputs
+                           if output.endswith('.cc'))
+  header_module.out.update(output for output in target.outputs
+                           if output.endswith('.h'))
+
   # This has proto files that will be used for reference resolution
   # but not compiled into cpp files. These additional sources has no output.
   proto_data_sources = sorted([

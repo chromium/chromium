@@ -319,7 +319,8 @@ public class PhotoPickerDialogTest
                                     contentResolver,
                                     PhotoPickerDialogTest.this,
                                     multiselect,
-                                    mimeTypes);
+                                    mimeTypes,
+                                    /* shouldPadForContent= */ false);
                     dialog.show();
                     mSelectionDelegate =
                             dialog.getCategoryViewForTesting().getSelectionDelegateForTesting();

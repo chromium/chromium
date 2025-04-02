@@ -14,6 +14,35 @@ import string
 from signing import commands
 
 
+def _get_unexpired_identities():
+    """Returns a set of the SHA-1 hashes of unexpired code signing identities
+
+    Raises:
+        ValueError: If no unexpired code signing identities are found.
+    """
+    # Avoid -v because it filters out self-signed certificates.
+    command = ['security', 'find-identity', '-p', 'codesigning']
+    output = commands.run_command_output(command)
+
+    matches = re.finditer(
+        rb'\d+\) (?P<id>[0-9A-Fa-f]{40}) "[^"]+"( \((?P<error>[^\)]+)\))?',
+        output,
+        flags=re.MULTILINE)
+
+    identities = set()
+    for match in matches:
+        # Exclude expired certificates. Other errors are ignored.
+        if match.group('error') == b'CSSMERR_TP_CERT_EXPIRED':
+            continue
+
+        identities.add(match.group('id'))
+
+    if not identities:
+        raise ValueError('No code signing identities found')
+
+    return identities
+
+
 def _get_identity_hash(identity):
     """Returns a string of the SHA-1 hash of a specified keychain identity.
 
@@ -29,15 +58,21 @@ def _get_identity_hash(identity):
     if len(identity) == 40 and all(ch in string.hexdigits for ch in identity):
         return identity.lower()
 
+    unexpired_identities = _get_unexpired_identities()
+
     command = ['security', 'find-certificate', '-a', '-c', identity, '-Z']
     output = commands.run_command_output(command)
 
-    hash_match = re.search(
+    hashes = re.findall(
         b'^SHA-1 hash: ([0-9A-Fa-f]{40})$', output, flags=re.MULTILINE)
-    if not hash_match:
+    if not hashes:
         raise ValueError('Cannot find identity', identity)
 
-    return hash_match.group(1).decode('utf-8').lower()
+    valid_hashes = [h for h in hashes if h in unexpired_identities]
+    if not valid_hashes:
+        raise ValueError('Identity found, but expired', identity)
+
+    return valid_hashes[0].decode('utf-8').lower()
 
 
 class CodeSignedProduct(object):

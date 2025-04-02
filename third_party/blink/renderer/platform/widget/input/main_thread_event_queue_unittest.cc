@@ -4,6 +4,7 @@
 
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
+#include "cc/base/features.h"
 #include "third_party/blink/public/common/features.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
@@ -250,6 +251,7 @@ class MainThreadEventQueueTest : public testing::Test,
     queue_ = base::MakeRefCounted<MainThreadEventQueue>(
         this, main_task_runner_, main_task_runner_, widget_scheduler_, true);
     queue_->ClearRafFallbackTimerForTesting();
+    ::features::SetIsEligibleForThrottleMainFrameTo60Hz(true);
   }
 
   void HandleEvent(const WebInputEvent& event,

@@ -33,7 +33,7 @@ GCedHeapVector<Member<const MLOperator>>* GetOperatorsInTopologicalOrder(
 
   // The topologically sorted operators.
   auto* toposorted_operators =
-      MakeGarbageCollected<HeapVector<Member<const MLOperator>>>();
+      MakeGarbageCollected<GCedHeapVector<Member<const MLOperator>>>();
 
   // The to-visit stack and visited set for DFS graph traversal.
   HeapDeque<Member<const MLOperator>> operators_to_visit;

@@ -355,9 +355,10 @@ NativeWidgetMacNSWindow* NativeWidgetMacNSWindowHost::GetInProcessNSWindow()
 gfx::NativeViewAccessible
 NativeWidgetMacNSWindowHost::GetNativeViewAccessibleForNSView() const {
   if (in_process_ns_window_bridge_) {
-    return in_process_ns_window_bridge_->ns_view();
+    return gfx::NativeViewAccessible(in_process_ns_window_bridge_->ns_view());
   }
-  return remote_view_accessible_;
+  return gfx::NativeViewAccessible(
+      (id<NSAccessibility>)remote_view_accessible_);
 }
 
 gfx::NativeViewAccessible
@@ -369,10 +370,12 @@ NativeWidgetMacNSWindowHost::GetNativeViewAccessibleForNSWindow() const {
     // the overlay window's contentView is moved to NSToolbarFullScreenWindow.
     // Regardless of the mode (fullscreen or not), `[ns_view() window]` would
     // always yield the correct NSWindow that contains `ns_view()`.
-    return [in_process_ns_window_bridge_->ns_view() window];
+    return gfx::NativeViewAccessible(
+        [in_process_ns_window_bridge_->ns_view() window]);
   }
 
-  return remote_window_accessible_;
+  return gfx::NativeViewAccessible(
+      (id<NSAccessibility>)remote_window_accessible_);
 }
 
 remote_cocoa::mojom::NativeWidgetNSWindow*
@@ -985,7 +988,7 @@ void NativeWidgetMacNSWindowHost::SetColorMode(
 // NativeWidgetMacNSWindowHost, remote_cocoa::BridgedNativeWidgetHostHelper:
 
 id NativeWidgetMacNSWindowHost::GetNativeViewAccessible() {
-  return root_view_ ? root_view_->GetNativeViewAccessible() : nil;
+  return root_view_ ? root_view_->GetNativeViewAccessible().Get() : nil;
 }
 
 void NativeWidgetMacNSWindowHost::DispatchKeyEvent(ui::KeyEvent* event) {

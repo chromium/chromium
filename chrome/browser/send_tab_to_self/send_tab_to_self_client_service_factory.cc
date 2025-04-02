@@ -21,6 +21,12 @@
 #include "components/user_manager/user.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/send_tab_to_self/android_notification_handler.h"
+#else
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
+#endif
+
 namespace send_tab_to_self {
 // static
 SendTabToSelfClientService* SendTabToSelfClientServiceFactory::GetForProfile(
@@ -81,9 +87,15 @@ SendTabToSelfClientServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 #endif
 
-  // TODO(crbug.com/40632832) refactor profile out of STTSClient constructor.
+  SendTabToSelfModel* model = sync_service->GetSendTabToSelfModel();
   return std::make_unique<SendTabToSelfClientService>(
-      profile, sync_service->GetSendTabToSelfModel());
+#if BUILDFLAG(IS_ANDROID)
+      std::make_unique<AndroidNotificationHandler>(model)
+#else
+      std::make_unique<SendTabToSelfToolbarIconController>(profile)
+#endif
+          ,
+      model);
 }
 
 bool SendTabToSelfClientServiceFactory::ServiceIsCreatedWithBrowserContext()

@@ -179,8 +179,7 @@ AutocompleteProvider::AsOmniboxEventProviderType() const {
     case TYPE_QUERY_TILE:
       return metrics::OmniboxEventProto::QUERY_TILE;
     case TYPE_MOST_VISITED_SITES:
-      // TODO(crbug.com/399872654): Log this as MOST_VISITED_SITES.
-      return metrics::OmniboxEventProto::ZERO_SUGGEST;
+      return metrics::OmniboxEventProto::MOST_VISITED_SITES;
     case TYPE_VERBATIM_MATCH:
       return metrics::OmniboxEventProto::ZERO_SUGGEST;
     case TYPE_VOICE_SUGGEST:

@@ -7,10 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_favicon_consumer.h"
+
 @protocol ShopCardCommands;
 @class ShopCardItem;
+@protocol ShopCardFaviconConsumer;
 
-@interface ShopCardModuleView : UIView
+@interface ShopCardModuleView : UIView <ShopCardFaviconConsumer>
 
 - (instancetype)initWithFrame;
 

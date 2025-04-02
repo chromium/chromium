@@ -25,6 +25,7 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/resource/resource_bundle.h"
 #import "ui/base/resource/resource_scale_factor.h"
+#import "ui/display/screen.h"
 
 #if DCHECK_IS_ON()
 #import "ui/display/screen_base.h"
@@ -32,12 +33,12 @@
 
 namespace ios_web_view {
 
-WebViewWebMainParts::WebViewWebMainParts() = default;
+WebViewWebMainParts::WebViewWebMainParts()
+    : screen_(std::make_unique<display::ScopedNativeScreen>()) {}
 
 WebViewWebMainParts::~WebViewWebMainParts() {
 #if DCHECK_IS_ON()
-  // The screen object is never deleted on IOS. Make sure that all display
-  // observers are removed at the end.
+  // Make sure that all display observers are removed at the end.
   display::ScreenBase* screen =
       static_cast<display::ScreenBase*>(display::Screen::GetScreen());
   DCHECK(!screen->HasDisplayObservers());

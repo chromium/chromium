@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">මැනිෆෙස්ට් ගොනුව අවලංගුයි</translation>
 <translation id="7217838517480956708">මෙම යන්ත්‍රයේ පරිපාලකට <ph name="EXTENSION_NAME" /> ස්ථාපිත කිරීමට අවශ්‍යය. එය ඉවත් කිරීම හෝ වෙනස් කිරීම කළ නොහැක.</translation>
 <translation id="7612608473764576263">පුද්ගලික යතුර සඳහා ආදාන අගය වලංගු ආකෘතියක් විය යුතුය (PKCS#8-ආකෘතිය PEM-සංකේතිත RSA යතුර).</translation>
+<translation id="7876803335449432072">අන්තර්ගත ස්ක්‍රිප්ට් සඳහා '<ph name="RELATIVE_PATH" />' ගොනුව පූරණය කළ නොහැකි විය, අන්තර්ගත ස්ක්‍රිප්ට් විලාස පත්‍ර පූරණය කළ හැක්කේ .css ගොනු වැනි සහය දක්වන විලාස පත්‍ර ගොනු වලින් පමණි.</translation>
 <translation id="7939686037314084444">දිගුව හරියාකාරව පූරණය වීම අසමත් විය. එයට ජාල ඉල්ලීම් අතරමගදී අල්ලා ගැනීමට නොහැකි වනු ඇත.</translation>
 <translation id="7972881773422714442">විකල්ප: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">පරිශීලකට-මුහුණලා</translation>
 <translation id="8047248493720652249">මෙම දිගුව වෙනත් දිගුවක් (<ph name="EXTENSION_NAME" />) වෙනස් ගොනු නාමයක්  "<ph name="ACTUAL_FILENAME" />" නිශ්චය කර ඇති නිසා "<ph name="ATTEMPTED_FILENAME" />" බාගැනීම නම් කිරීමට අසමත් විය.</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> වෙතින් <ph name="PRODUCT_NAME" /></translation>
 <translation id="8517576857589387417">මැනිෆෙස්ට් ගොනුව අස්ථානගතයි නැතහොත් කියවිය නොහැකියි</translation>
+<translation id="8621383749470166852">අන්තර්ගත ස්ක්‍රිප්ට් සඳහා '<ph name="RELATIVE_PATH" />' ගොනුව පූරණය කළ නොහැකි විය, අන්තර්ගත ස්ක්‍රිප්ට් පූරණය කළ හැක්කේ .js ගොනු වැනි සහාය දක්වන ජාවාස්ක්‍රිප්ට් ගොනු වලින් පමණි.</translation>
 <translation id="8636666366616799973">පැකේජය වලංගු නැත. විස්තර: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />"ඔබේ උපාංගවලින් එකකට ප්‍රවේශය ඉල්ලයි:</translation>
 <translation id="8885905466771744233">නිවේශිත දිගුව සඳහා පුද්ගලික යතුරක් දැනටමත් පවතී. එම යතුර භාවිත කරන්න හෝ මකන්න.</translation>

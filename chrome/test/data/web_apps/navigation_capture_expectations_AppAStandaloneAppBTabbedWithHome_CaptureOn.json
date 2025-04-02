@@ -143,7 +143,6 @@
       "AppANavigateExistingAppBFocusExisting_Tab_ScopeA2B2_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "AppANavigateExistingAppBFocusExisting_AppAStandaloneAppBTabbedWithHome_CaptureOn_Tab_ScopeA2B2_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
-         "note": "This should fix if redirection support is implemented for 'home' tab handling",
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -178,7 +177,8 @@
                } ]
             } ],
             "launch_metric_buckets": [ "kFromNavigationCapturing" ]
-         }
+         },
+         "note": "This should fix if redirection support is implemented for 'home' tab handling"
       },
       "AppANavigateExistingAppBFocusExisting_Tab_ScopeA2B2_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppANavigateExistingAppBFocusExisting_AppAStandaloneAppBTabbedWithHome_CaptureOn_Tab_ScopeA2B2_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf",
@@ -540,7 +540,6 @@
       "NavigateExisting_Tab_ScopeA2B2_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "NavigateExisting_AppAStandaloneAppBTabbedWithHome_CaptureOn_Tab_ScopeA2B2_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
-         "note": "This should fix if redirection support is implemented for 'home' tab handling",
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -575,7 +574,8 @@
                } ]
             } ],
             "launch_metric_buckets": [ "kFromNavigationCapturing" ]
-         }
+         },
+         "note": "This should fix if redirection support is implemented for 'home' tab handling"
       },
       "NavigateExisting_Tab_ScopeA2B2_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "NavigateExisting_AppAStandaloneAppBTabbedWithHome_CaptureOn_Tab_ScopeA2B2_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf",
@@ -938,7 +938,6 @@
          "_comments": "Not entirely correct expectations because of https://crbug.com/400761084",
          "_params": "AppAStandaloneAppBTabbedWithHome_CaptureOn_Tab_ScopeA2B2_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
          "disabled": false,
-         "note": "This should fix if redirection support is implemented for 'home' tab handling",
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -973,7 +972,8 @@
                } ]
             } ],
             "launch_metric_buckets": [ "kFromNavigationCapturing" ]
-         }
+         },
+         "note": "This should fix if redirection support is implemented for 'home' tab handling"
       },
       "Tab_ScopeA2B2_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppAStandaloneAppBTabbedWithHome_CaptureOn_Tab_ScopeA2B2_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf",

@@ -2889,6 +2889,24 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, FloatingWorkspaceOnSavedDesksUI) {
   EXPECT_FALSE(library_button && library_button->GetVisible());
 }
 
+// Tests that an empty desk can be captured as a floating workspace template.
+IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureEmptyFloatingWorkspaceDesk) {
+  // Close the browser.
+  CloseBrowserSynchronously(browser());
+  ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
+  // Now capture the desk and verify that we get a valid template with no apps
+  // to restore.
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      CaptureActiveDeskAndSaveTemplate(
+          ash::DeskTemplateType::kFloatingWorkspace);
+  EXPECT_TRUE(desk_template->uuid().is_valid());
+  EXPECT_EQ(desk_template->type(), ash::DeskTemplateType::kFloatingWorkspace);
+  const app_restore::RestoreData* restore_data =
+      desk_template->desk_restore_data();
+  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
+  EXPECT_EQ(0u, app_id_to_launch_list.size());
+}
+
 IN_PROC_BROWSER_TEST_F(DesksClientTest,
                        DisplaysAppUnavailableToastForUnavailableBrowserApp) {
   // Build a saved desk with an unsupoorted browser app.

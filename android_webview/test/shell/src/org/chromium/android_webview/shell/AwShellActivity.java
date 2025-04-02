@@ -137,12 +137,12 @@ public class AwShellActivity extends Activity {
     }
 
     private AwTestContainerView createAwTestContainerView() {
-        final String supportedModels[] = {
+        final String[] supportedModels = {
             "Pixel 6", "Pixel 6 Pro",
         };
         boolean useVulkan = Arrays.asList(supportedModels).contains(Build.MODEL);
         AwTestContainerView.installDrawFnFunctionTable(useVulkan);
-        AwBrowserProcess.start();
+        AwBrowserProcess.startForTesting();
         AwTestContainerView testContainerView = new AwTestContainerView(this, true);
         AwContentsClient awContentsClient =
                 new NullContentsClient() {

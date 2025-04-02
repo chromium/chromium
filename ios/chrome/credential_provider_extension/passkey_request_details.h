@@ -48,6 +48,9 @@
 // The relying party identifier for this request.
 @property(nonatomic, readonly) NSString* relyingPartyIdentifier;
 
+// The user name for this request.
+@property(nonatomic, readonly) NSString* userName;
+
 // A list of allowed credential IDs for this request. An empty list means all
 // credentials are allowed.
 @property(nonatomic, readonly) NSArray<NSData*>* allowedCredentials;

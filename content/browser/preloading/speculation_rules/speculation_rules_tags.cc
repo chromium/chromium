@@ -9,9 +9,12 @@
 
 namespace content {
 
-SpeculationRulesTags::SpeculationRulesTags() = default;
+SpeculationRulesTags::SpeculationRulesTags()
+    : SpeculationRulesTags({std::nullopt}) {}
+
 SpeculationRulesTags::SpeculationRulesTags(
     std::vector<std::optional<std::string>> tags) {
+  CHECK(!tags.empty());
   for (auto& tag : tags) {
     tags_.insert(std::move(tag));
   }
@@ -44,14 +47,6 @@ SpeculationRulesTags::ConvertStringToStructuredHeader() {
               "null", net::structured_headers::Item::kTokenType),
           {}));
     }
-  }
-
-  if (tag_list.size() == 0) {
-    // Put the default value.
-    tag_list.push_back(net::structured_headers::ParameterizedMember(
-        net::structured_headers::Item(
-            "null", net::structured_headers::Item::kTokenType),
-        {}));
   }
 
   return tag_list;

@@ -14,7 +14,6 @@ import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -137,8 +136,7 @@ public class CustomTabToolbarCoordinator {
         }
     }
 
-    @VisibleForTesting
-    void onCustomButtonClick(CustomButtonParams params) {
+    public void onCustomButtonClick(CustomButtonParams params) {
         Tab tab = mTabProvider.getTab();
         if (tab == null) return;
 

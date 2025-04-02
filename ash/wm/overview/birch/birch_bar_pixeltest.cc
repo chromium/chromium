@@ -12,7 +12,6 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/wm/overview/overview_grid_test_api.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
@@ -134,10 +133,6 @@ struct TestParams {
 class BirchBarPixelTest : public AshTestBase,
                           public testing::WithParamInterface<TestParams> {
  public:
-  BirchBarPixelTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kForestFeature);
-  }
-
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
@@ -157,7 +152,6 @@ class BirchBarPixelTest : public AshTestBase,
 
  private:
   StubBirchClient stub_birch_client_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestImageDownloader> image_downloader_;
 };
 

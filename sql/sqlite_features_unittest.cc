@@ -89,28 +89,12 @@ TEST_F(SQLiteFeaturesTest, NoFTS2) {
   EXPECT_TRUE(expecter.SawExpectedErrors());
 }
 
-// fts3 is exposed in WebSQL.
-TEST_F(SQLiteFeaturesTest, FTS3) {
-  EXPECT_TRUE(db_.Execute("CREATE VIRTUAL TABLE foo USING fts3(x)"));
-}
-
-// Originally history used fts2, which Chromium patched to treat "foo*" as a
-// prefix search, though the icu tokenizer would return it as two tokens {"foo",
-// "*"}.  Test that fts3 works correctly.
-TEST_F(SQLiteFeaturesTest, FTS3_Prefix) {
-  db_.Close();
-  sql::Database db(sql::test::kTestTag);
-  db.SetEnableVirtualTablesForTesting(true);
-  ASSERT_TRUE(db.Open(db_path_));
-
-  static constexpr char kCreateSql[] =
-      "CREATE VIRTUAL TABLE foo USING fts3(x, tokenize icu)";
-  ASSERT_TRUE(db.Execute(kCreateSql));
-
-  ASSERT_TRUE(db.Execute("INSERT INTO foo (x) VALUES ('test')"));
-
-  EXPECT_EQ("test",
-            ExecuteWithResult(&db, "SELECT x FROM foo WHERE x MATCH 'te*'"));
+// Do not include fts3 support.
+TEST_F(SQLiteFeaturesTest, NoFTS3) {
+  sql::test::ScopedErrorExpecter expecter;
+  expecter.ExpectError(SQLITE_ERROR);
+  EXPECT_FALSE(db_.Execute("CREATE VIRTUAL TABLE foo USING fts3(x)"));
+  EXPECT_TRUE(expecter.SawExpectedErrors());
 }
 
 // Verify that Chromium's SQLite is compiled with HAVE_USLEEP defined.  With

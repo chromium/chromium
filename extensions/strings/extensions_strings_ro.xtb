@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Fișierul manifest este nevalid</translation>
 <translation id="7217838517480956708">Administratorul acestui dispozitiv solicită instalarea extensiei <ph name="EXTENSION_NAME" />. Aceasta nu poate fi eliminată sau modificată.</translation>
 <translation id="7612608473764576263">Valoarea introdusă pentru cheia privată trebuie să aibă un format valid (cheie RSA codificată PEM în format PKCS#8).</translation>
+<translation id="7876803335449432072">Nu s-a putut încărca fișierul <ph name="RELATIVE_PATH" /> pentru scriptul de conținut. Foile de stil pentru scriptul de conținut pot fi încărcate numai din fișierele de foi de stil acceptate, cum ar fi fișierele .css.</translation>
 <translation id="7939686037314084444">Extensia nu s-a încărcat corect. S-ar putea să nu intercepteze solicitările de rețea.</translation>
 <translation id="7972881773422714442">Opțiuni: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Camera foto frontală</translation>
 <translation id="8047248493720652249">Această extensie nu a reușit să denumească fișierul descărcat „<ph name="ATTEMPTED_FILENAME" />”, deoarece altă extensie (<ph name="EXTENSION_NAME" />) a stabilit alt nume de fișier, „<ph name="ACTUAL_FILENAME" />”.</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> de la <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Fișierul manifest lipsește sau nu poate fi citit</translation>
+<translation id="8621383749470166852">Nu s-a putut încărca fișierul <ph name="RELATIVE_PATH" /> pentru scriptul de conținut. Scripturile de conținut pot fi încărcate numai din fișiere JavaScript acceptate, cum ar fi fișierele .js.</translation>
 <translation id="8636666366616799973">Pachetul nu este valid. Detalii: „<ph name="ERROR_MESSAGE" />”.</translation>
 <translation id="8761756413268424715">„<ph name="APP_NAME" />” solicită accesul la unul dintre dispozitivele tale:</translation>
 <translation id="8885905466771744233">Există deja o cheie privată pentru extensia specificată. Reutilizeaz-o sau șterge-o mai întâi.</translation>

@@ -74,10 +74,6 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   // Removes an observer.
   void RemoveObserver(Observer* observer);
 
-  // Returns the scheduled start time for local file migration or deletion.
-  // TODO(401176561): Remove if we'll switch to a pref instead.
-  base::Time GetMigrationStartTime() const;
-
   // Injects a mock MigrationNotificationManager for tests.
   void SetNotificationManagerForTesting(
       MigrationNotificationManager* notification_manager);
@@ -91,6 +87,12 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
       base::WeakPtr<chromeos::FilesCleanupHandler> cleanup_handler);
 
  private:
+  // Called after the preferences have been loaded.
+  void OnPrefsInitialized(bool success);
+
+  // Initializes this instance, after the preferences have been loaded.
+  void InitializeFromPrefs();
+
   // policy::local_user_files::Observer overrides:
   void OnLocalUserFilesPolicyChanged() override;
 
@@ -110,7 +112,7 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   // After initial delay, informs the user again and schedules the migration to
   // start automatically. From the dialog, the user can also choose to start the
   // migration immediately.
-  void ScheduleMigrationAndInformUser();
+  void ScheduleMigrationAndInformUser(const base::Time scheduled_start_time);
 
   // Bypasses the migration delay and initiates the upload process immediately.
   // Called when the user clicks the "Upload now" button in the info dialog.
@@ -190,9 +192,6 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
 
   // The name of the device-unique upload root folder on Drive
   std::string upload_root_;
-
-  // The time at which the migration will start automatically.
-  base::Time migration_start_time_;
 
   // Context for which this instance is created.
   raw_ptr<content::BrowserContext> context_;

@@ -24,9 +24,9 @@ class GeminiAppTabHelper
     kMinValue = 0,
     kCongratulations = kMinValue,
     kOffer = 1,
-    kTermsAndConditions = 2,
-    kDebug = 3,
-    kMaxValue = kDebug,
+    kTermsAndConditionsCBX = 2,
+    kTermsAndConditionsStandard = 3,
+    kMaxValue = kTermsAndConditionsStandard,
   };
 
   GeminiAppTabHelper(const GeminiAppTabHelper&) = delete;

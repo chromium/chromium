@@ -745,6 +745,13 @@ class CORE_EXPORT HTMLMediaElement
   // |old_document| to |new_document|
   bool ShouldReusePlayer(Document& old_document, Document& new_document) const;
 
+  // Returns whether the media-playback-while-not-visible permission policy
+  // allows this media element to play while not visible.
+  bool CanPlayWhileHidden() const;
+
+  // Returns true if the element is in a frame that is not being rendered.
+  bool IsFrameHidden() const;
+
   // Adds a new MediaPlayerObserver remote that will be notified about media
   // player events and returns a receiver that an observer implementation can
   // bind to.

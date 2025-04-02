@@ -10,6 +10,7 @@
 
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 
 namespace sync_pb {
 class SyncEntity;
@@ -31,6 +32,11 @@ class PersistentTombstoneEntity : public LoopbackServerEntity {
       const std::string& id,
       const std::string& client_tag_hash);
 
+  static std::unique_ptr<LoopbackServerEntity> CreateNewShared(
+      const std::string& id,
+      const std::string& client_tag_hash,
+      const sync_pb::SyncEntity::CollaborationMetadata& collaboration_metadata);
+
   // LoopbackServerEntity implementation.
   bool RequiresParentId() const override;
   std::string GetParentId() const override;
@@ -43,15 +49,21 @@ class PersistentTombstoneEntity : public LoopbackServerEntity {
   static std::unique_ptr<LoopbackServerEntity> CreateNewInternal(
       const std::string& id,
       int64_t version,
-      const std::string& client_tag_hash);
+      const std::string& client_tag_hash,
+      const sync_pb::SyncEntity::CollaborationMetadata& collaboration_metadata);
 
-  PersistentTombstoneEntity(const std::string& id,
-                            int64_t version,
-                            const syncer::DataType& data_type,
-                            const std::string& client_tag_hash);
+  PersistentTombstoneEntity(
+      const std::string& id,
+      int64_t version,
+      const syncer::DataType& data_type,
+      const std::string& client_tag_hash,
+      const sync_pb::SyncEntity::CollaborationMetadata& collaboration_metadata);
 
   // The tag hash for this entity.
   const std::string client_tag_hash_;
+
+  // Collaboration metadata for this entity for shared data types.
+  const sync_pb::SyncEntity::CollaborationMetadata collaboration_metadata_;
 };
 
 }  // namespace syncer

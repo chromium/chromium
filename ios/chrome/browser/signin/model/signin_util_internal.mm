@@ -6,11 +6,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/files/file.h"
 #import "base/files/file_util.h"
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/threading/scoped_blocking_call.h"
+#import "base/time/time.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -92,7 +95,9 @@ base::FilePath PathForSentinel(const base::FilePath::CharType* sentinel_name) {
   return user_data_path.Append(sentinel_name);
 }
 
-signin::Tribool IsFirstSessionAfterDeviceRestoreInternal() {
+signin::RestoreData LoadDeviceRestoreDataInternal() {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
   const base::FilePath backed_up_sentinel_path =
       PathForSentinel(kSentinelThatIsBackedUp);
   const base::FilePath not_backed_up_sentinel_path =
@@ -102,7 +107,10 @@ signin::Tribool IsFirstSessionAfterDeviceRestoreInternal() {
   base::UmaHistogramBoolean("Signin.IOSDeviceRestoreSentinelPathGenerated",
                             path_successfully_generated);
   if (!path_successfully_generated) {
-    return signin::Tribool::kUnknown;
+    signin::RestoreData restore_data;
+    restore_data.is_first_session_after_device_restore =
+        signin::Tribool::kUnknown;
+    return restore_data;
   }
   bool does_backed_up_sentinel_file_exist =
       base::PathExists(backed_up_sentinel_path);
@@ -133,9 +141,28 @@ signin::Tribool IsFirstSessionAfterDeviceRestoreInternal() {
     }
   });
 
-  if (does_backed_up_sentinel_file_exist) {
-    return does_not_backed_up_sentinel_file_exist ? signin::Tribool::kFalse
-                                                  : signin::Tribool::kTrue;
+  signin::RestoreData restore_data;
+  if (!does_backed_up_sentinel_file_exist) {
+    restore_data.is_first_session_after_device_restore =
+        signin::Tribool::kUnknown;
+  } else if (!does_not_backed_up_sentinel_file_exist) {
+    restore_data.is_first_session_after_device_restore = signin::Tribool::kTrue;
+  } else {
+    base::File::Info not_backed_up_sentinel_info;
+    base::File::Info backed_up_sentinel_info;
+    bool file_info_valid =
+        GetFileInfo(not_backed_up_sentinel_path,
+                    &not_backed_up_sentinel_info) &&
+        GetFileInfo(backed_up_sentinel_path, &backed_up_sentinel_info);
+    if (file_info_valid && (backed_up_sentinel_info.creation_time <
+                            not_backed_up_sentinel_info.creation_time)) {
+      // If the not backed up sentinel was created before the backed up sentinel
+      // file, a device restore happened in a previous run.
+      restore_data.last_restore_timestamp =
+          not_backed_up_sentinel_info.creation_time;
+    }
+    restore_data.is_first_session_after_device_restore =
+        signin::Tribool::kFalse;
   }
-  return signin::Tribool::kUnknown;
+  return restore_data;
 }

@@ -17,9 +17,8 @@ import org.chromium.components.webapps.R;
 /** UI for the zoomed image view used for screenshots in the bottom-sheet UI for PWA installs. */
 @NullMarked
 public class ImageZoomView extends FullscreenAlertDialog {
-    public ImageZoomView(Context context, Bitmap bitmap) {
-        // TODO(crbug.com/401075913): Support shouldPadForContent in //components.
-        super(context, /* shouldPadForContent= */ false);
+    public ImageZoomView(Context context, Bitmap bitmap, boolean shouldPadForContent) {
+        super(context, shouldPadForContent);
 
         View view = LayoutInflater.from(context).inflate(R.layout.image_zoom_view, null);
         view.setOnClickListener(v -> dismiss());

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] invalid directive "require-trusted-types-for 'script''script'" (no ascii-whitespace)
-  assert_equals: expected null but got object "TypeError: Failed to set the 'innerHTML' property on 'Element': This document requires 'TrustedHTML' assignment."
-Harness: the test ran to completion.
-

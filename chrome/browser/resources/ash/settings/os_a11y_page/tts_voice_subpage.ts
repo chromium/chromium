@@ -23,6 +23,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import type {PrefsState} from '../common/types.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import type {LanguagesBrowserProxy} from '../os_languages_page/languages_browser_proxy.js';
 import {LanguagesBrowserProxyImpl} from '../os_languages_page/languages_browser_proxy.js';
@@ -171,7 +172,7 @@ export class SettingsTtsVoiceSubpageElement extends
   hasVoices: boolean;
   languagesOpened: boolean;
   languagesToVoices: TtsLanguage[];
-  prefs: {[key: string]: any};
+  prefs: PrefsState;
   private isPreviewing_: boolean;
   private langBrowserProxy_: LanguagesBrowserProxy;
   private previewText_: string;

@@ -55,7 +55,8 @@ enum class ASH_PUBLIC_EXPORT LobsterSystemCheck {
   kUnsupportedInKioskMode,  // In Kiosk mode.
   kUnsupportedFormFactor,
   kUnsupportedPolicy,
-  kMaxValue = kUnsupportedPolicy,
+  kForcedDisabledOnManagedUsers,
+  kMaxValue = kForcedDisabledOnManagedUsers,
 };
 
 enum class ASH_PUBLIC_EXPORT LobsterErrorCode {

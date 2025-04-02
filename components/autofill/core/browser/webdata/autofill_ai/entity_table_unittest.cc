@@ -155,7 +155,7 @@ TEST_F(EntityTableTest, GetEntityInstancesSkipsEmptyInstances) {
   // of the entity schema.
   sql::Statement attributes_update;
   attributes_update.Assign(test_api(table()).db()->GetUniqueStatement(
-      R"(UPDATE attributes
+      R"(UPDATE autofill_ai_attributes
          SET attribute_type = attribute_type || 'some-garbage-suffix'
          WHERE entity_guid = ?)"));
   attributes_update.BindString(0, pp.guid().AsLowercaseString());

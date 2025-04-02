@@ -148,6 +148,7 @@ class CSSRuleSourceData final : public GarbageCollected<CSSRuleSourceData> {
 };
 
 using CSSRuleSourceDataList = HeapVector<Member<CSSRuleSourceData>>;
+using GCedCSSRuleSourceDataList = GCedHeapVector<Member<CSSRuleSourceData>>;
 
 }  // namespace blink
 

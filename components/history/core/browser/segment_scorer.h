@@ -25,8 +25,8 @@ class SegmentScorer {
     virtual float Compute(int days_ago) = 0;
   };
 
-  struct RecencyFactorDefault : public RecencyFactor {
-    ~RecencyFactorDefault() override;
+  struct RecencyFactorClassic : public RecencyFactor {
+    ~RecencyFactorClassic() override;
     float Compute(int days_ago) override;
   };
 

@@ -122,6 +122,13 @@ bool PropertyTree<T>::operator==(const PropertyTree<T>& other) const {
   return nodes() == other.nodes() && needs_update() == other.needs_update() &&
          element_id_to_node_index() == other.element_id_to_node_index();
 }
+
+template <typename T>
+std::string PropertyTree<T>::ToString() const {
+  base::trace_event::TracedValueJSON value;
+  AsValueInto(&value);
+  return value.ToFormattedJSON();
+}
 #endif
 
 template <typename T>
@@ -133,6 +140,7 @@ void PropertyTree<T>::AsValueInto(base::trace_event::TracedValue* value) const {
     value->EndDictionary();
   }
   value->EndArray();
+  value->SetBooleanWithCopiedName("needs_update", needs_update_);
 }
 
 template class PropertyTree<TransformNode>;

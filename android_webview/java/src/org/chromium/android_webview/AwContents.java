@@ -712,7 +712,7 @@ public class AwContents implements SmartClipProvider {
                 AwWebResourceRequest request,
                 WebResponseCallback callback,
                 AsyncShouldInterceptRequestCallback asyncShouldInterceptRequestCallback) {
-            String url = request.url;
+            String url = request.getUrl();
             WebResourceResponseInfo webResourceResponseInfo;
             callback.setAwContentsClient(mContentsClient);
             // Return the response directly if the url is default video poster url.

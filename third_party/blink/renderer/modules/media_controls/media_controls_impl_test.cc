@@ -319,6 +319,29 @@ class MediaControlsImplTest
         HTMLMediaElement::kHaveEnoughData);
   }
 
+  // Set the focus .
+  void FocusElement(
+      Element* element,
+      mojom::blink::FocusType focus_type = blink::mojom::FocusType::kMouse) {
+    // GetDocument().SetLastFocusType(focus_type);
+    FocusParams params(SelectionBehaviorOnFocus::kNone, focus_type, nullptr);
+    GetDocument().SetFocusedElement(element, params);
+    // element->SetFocused(true, focus_type);
+    //  Doesn't matter what, but we want some event to trigger the show / hide
+    //  logic in the controls.
+    // MediaControls().DispatchEvent(*Event::Create(event_type_names::kPointerout));
+  }
+
+  // Clear the focus from `element`, as if some other element was focused.
+  void UnfocusElement(
+      Element* element,
+      mojom::blink::FocusType focus_type = blink::mojom::FocusType::kMouse) {
+    GetDocument().SetLastFocusType(focus_type);
+    element->SetFocused(false, focus_type);
+    MediaControls().DispatchEvent(
+        *Event::Create(event_type_names::kPointerout));
+  }
+
   void MouseDownAt(gfx::PointF pos);
   void MouseMoveTo(gfx::PointF pos);
   void MouseUpAt(gfx::PointF pos);
@@ -1020,8 +1043,8 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
 
   // Mouse move while focused
   MediaControls().DispatchEvent(*Event::Create(event_type_names::kFocusin));
-  MediaControls().MediaElement().SetFocused(true,
-                                            mojom::blink::FocusType::kNone);
+
+  FocusElement(&MediaControls().MediaElement());
   MediaControls().DispatchEvent(
       *CreatePointerEvent(event_type_names::kPointermove));
 
@@ -1048,10 +1071,66 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
 
   // Mouse move out while focused, controls should hide
   MediaControls().DispatchEvent(*Event::Create(event_type_names::kFocusin));
-  MediaControls().MediaElement().SetFocused(true,
-                                            mojom::blink::FocusType::kNone);
+  FocusElement(&MediaControls().MediaElement());
   MediaControls().DispatchEvent(*Event::Create(event_type_names::kPointerout));
   EXPECT_FALSE(IsElementVisible(*panel));
+}
+
+TEST_F(MediaControlsImplTestWithMockScheduler,
+       ControlsDoNotHideOnKeyboardFocus) {
+  EnsureSizing();
+
+  Element* panel = MediaControls().PanelElement();
+  auto* player = &MediaControls().MediaElement();
+  player->SetSrc(AtomicString("http://example.com"));
+  player->Play();
+
+  // Controls start out visible
+  EXPECT_TRUE(IsElementVisible(*panel));
+  EXPECT_TRUE(IsElementVisible(*player));
+  FastForwardBy(base::Seconds(1));
+
+  // Focus via keyboard.
+  EXPECT_TRUE(player->IsFocusable());
+  FocusElement(player, mojom::blink::FocusType::kNone);
+  EXPECT_TRUE(player->IsFocused());
+
+  // Controls should remain visible.
+  FastForwardBy(base::Seconds(5));
+  EXPECT_TRUE(IsElementVisible(*panel));
+
+  // Unfocus the element.  Controls should hide, even if the unfocus was via
+  // keyboard.  They will re-show when the user refocuses the video player.
+  // This behavior was tested above.
+  EXPECT_TRUE(player->IsFocused());
+  UnfocusElement(player, mojom::blink::FocusType::kNone);
+
+  EXPECT_FALSE(player->IsFocused());
+  FastForwardBy(base::Seconds(5));
+  EXPECT_FALSE(IsElementVisible(*panel));
+}
+
+TEST_F(MediaControlsImplTestWithMockScheduler,
+       ControlsDoNotHideIfPlaybackSpeedWanted) {
+  EnsureSizing();
+
+  Element* panel = MediaControls().PanelElement();
+  auto* player = &MediaControls().MediaElement();
+  player->SetSrc(AtomicString("http://example.com"));
+  player->Play();
+
+  // Controls start out visible
+  EXPECT_TRUE(IsElementVisible(*panel));
+  FastForwardBy(base::Seconds(1));
+
+  // Pretend that the user has the playback speed button pressed, and then
+  // unfocuses the panel.
+  MediaControls().TogglePlaybackSpeedList();
+  UnfocusElement(player);
+
+  // Controls should remain visible.
+  FastForwardBy(base::Seconds(5));
+  EXPECT_TRUE(IsElementVisible(*panel));
 }
 
 TEST_F(MediaControlsImplTestWithMockScheduler, CursorHidesWhenControlsHide) {

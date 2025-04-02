@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/accessibility/chromevox/touch_exploration_controller.h"
 
 #include <math.h>
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -1128,7 +1124,8 @@ TEST_F(TouchExplorationTest, GestureSwipe) {
     int move_y;
     int num_fingers;
     ax::mojom::Gesture expected_gesture;
-  } gestures_to_test[] = {
+  };
+  constexpr std::array<GestureInfo, 16> gestures_to_test = {{
       {-1, 0, 1, ax::mojom::Gesture::kSwipeLeft1},
       {0, -1, 1, ax::mojom::Gesture::kSwipeUp1},
       {1, 0, 1, ax::mojom::Gesture::kSwipeRight1},
@@ -1145,18 +1142,18 @@ TEST_F(TouchExplorationTest, GestureSwipe) {
       {0, -1, 4, ax::mojom::Gesture::kSwipeUp4},
       {1, 0, 4, ax::mojom::Gesture::kSwipeRight4},
       {0, 1, 4, ax::mojom::Gesture::kSwipeDown4},
-  };
+  }};
 
   // This value was taken from gesture_recognizer_unittest.cc in a swipe
   // detector test, since it seems to be about the right amount to get a swipe.
   const int kSteps = 15;
 
-  for (size_t i = 0; i < std::size(gestures_to_test); ++i) {
+  for (auto& gesture : gestures_to_test) {
     const float distance = 2 * gesture_detector_config_.touch_slop + 1;
-    int move_x = gestures_to_test[i].move_x * distance;
-    int move_y = gestures_to_test[i].move_y * distance;
-    int num_fingers = gestures_to_test[i].num_fingers;
-    ax::mojom::Gesture expected_gesture = gestures_to_test[i].expected_gesture;
+    int move_x = gesture.move_x * distance;
+    int move_y = gesture.move_y * distance;
+    int num_fingers = gesture.num_fingers;
+    ax::mojom::Gesture expected_gesture = gesture.expected_gesture;
 
     std::vector<gfx::Point> start_points;
     for (int j = 0; j < num_fingers; j++) {
@@ -1193,7 +1190,8 @@ TEST_F(TouchExplorationTest, GestureSwipePortrit) {
     int move_y;
     int num_fingers;
     ax::mojom::Gesture expected_gesture;
-  } gestures_to_test[] = {
+  };
+  constexpr std::array<GestureInfo, 12> gestures_to_test = {{
       {-1, 0, 2, ax::mojom::Gesture::kSwipeDown2},
       {0, -1, 2, ax::mojom::Gesture::kSwipeLeft2},
       {1, 0, 2, ax::mojom::Gesture::kSwipeUp2},
@@ -1206,18 +1204,18 @@ TEST_F(TouchExplorationTest, GestureSwipePortrit) {
       {0, -1, 4, ax::mojom::Gesture::kSwipeLeft4},
       {1, 0, 4, ax::mojom::Gesture::kSwipeUp4},
       {0, 1, 4, ax::mojom::Gesture::kSwipeRight4},
-  };
+  }};
 
   // This value was taken from gesture_recognizer_unittest.cc in a swipe
   // detector test, since it seems to be about the right amount to get a swipe.
   const int kSteps = 15;
 
-  for (size_t i = 0; i < std::size(gestures_to_test); ++i) {
+  for (auto& gesture : gestures_to_test) {
     const float distance = 2 * gesture_detector_config_.touch_slop + 1;
-    int move_x = gestures_to_test[i].move_x * distance;
-    int move_y = gestures_to_test[i].move_y * distance;
-    int num_fingers = gestures_to_test[i].num_fingers;
-    ax::mojom::Gesture expected_gesture = gestures_to_test[i].expected_gesture;
+    int move_x = gesture.move_x * distance;
+    int move_y = gesture.move_y * distance;
+    int num_fingers = gesture.num_fingers;
+    ax::mojom::Gesture expected_gesture = gesture.expected_gesture;
 
     std::vector<gfx::Point> start_points;
     for (int j = 0; j < num_fingers; j++) {

@@ -21,6 +21,9 @@
 // Text for cell button.
 @property(nonatomic, strong) NSString* buttonText;
 
+// Enabled state of the button.
+@property(nonatomic, assign) BOOL enabled;
+
 @end
 
 @interface AutofillEditProfileButtonFooterCell : UITableViewHeaderFooterView

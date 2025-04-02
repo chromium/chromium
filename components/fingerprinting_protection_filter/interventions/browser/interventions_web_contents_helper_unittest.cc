@@ -8,7 +8,7 @@
 
 #include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/fingerprinting_protection_filter/interventions/browser/interventions_features.h"
+#include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"

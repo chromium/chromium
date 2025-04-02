@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "components/affiliations/core/browser/affiliation_fetch_throttler_delegate.h"
 #include "components/affiliations/core/browser/affiliation_fetcher_delegate.h"
+#include "components/affiliations/core/browser/affiliation_fetcher_manager.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/facet_manager_host.h"
@@ -104,22 +105,27 @@ class AffiliationBackend : public FacetManagerHost,
   // database must be closed before calling this.
   static void DeleteCache(const base::FilePath& db_path);
 
+#if defined(UNIT_TEST)
   // Replaces already initialized |fetcher_factory_| implemented by
   // AffiliationFetcherFactoryImpl with a new instance of
   // AffilationFetcherInterface.
   void SetFetcherFactoryForTesting(
-      std::unique_ptr<AffiliationFetcherFactory> fetcher_factory);
-
- private:
-  friend class AffiliationBackendTest;
-  FRIEND_TEST_ALL_PREFIXES(
-      AffiliationBackendTest,
-      DiscardCachedDataIfNoLongerNeededWithEmptyAffiliation);
+      std::unique_ptr<AffiliationFetcherFactory> fetcher_factory) {
+    fetcher_manager_->SetFetcherFactoryForTesting(std::move(fetcher_factory));
+  }
 
   // Retrieves the affiliation database. This should only be called after
   // Initialize(...).
-  AffiliationDatabase& GetAffiliationDatabaseForTesting();
+  AffiliationDatabase& GetAffiliationDatabaseForTesting() {
+    CHECK(cache_);
+    return *cache_;
+  }
 
+  // Returns the number of in-memory FacetManagers. Used only for testing.
+  size_t facet_manager_count() { return facet_managers_.size(); }
+#endif
+
+ private:
   // Retrieves the FacetManager corresponding to |facet_uri|, creating it and
   // storing it into |facet_managers_| if it did not exist.
   FacetManager* GetOrCreateFacetManager(const FacetURI& facet_uri);
@@ -151,17 +157,9 @@ class AffiliationBackend : public FacetManagerHost,
   // AffiliationFetchThrottlerDelegate:
   bool OnCanSendNetworkRequest() override;
 
-  // Returns the number of in-memory FacetManagers. Used only for testing.
-  size_t facet_manager_count_for_testing() { return facet_managers_.size(); }
-
   // Reports the |requested_facet_uri_count| in a single fetch; and the elapsed
   // time before the first fetch, and in-between subsequent fetches.
   void ReportStatistics(size_t requested_facet_uri_count);
-
-  // To be called after Initialize() to use |throttler| instead of the default
-  // one. Used only for testing.
-  void SetThrottlerForTesting(
-      std::unique_ptr<AffiliationFetchThrottler> throttler);
 
   // Ensures that all methods, excluding construction, are called on the same
   // sequence.
@@ -172,9 +170,8 @@ class AffiliationBackend : public FacetManagerHost,
   raw_ptr<base::Clock> clock_;
   raw_ptr<const base::TickClock> tick_clock_;
 
-  std::unique_ptr<AffiliationFetcherFactory> fetcher_factory_;
   std::unique_ptr<AffiliationDatabase> cache_;
-  std::unique_ptr<AffiliationFetcherInterface> fetcher_;
+  std::unique_ptr<AffiliationFetcherManager> fetcher_manager_;
   std::unique_ptr<AffiliationFetchThrottler> throttler_;
 
   base::Time construction_time_;

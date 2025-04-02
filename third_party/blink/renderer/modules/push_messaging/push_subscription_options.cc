@@ -22,19 +22,17 @@ const int kMaxApplicationServerKeyLength = 255;
 Vector<uint8_t> BufferSourceToVector(
     const V8UnionBufferSourceOrString* application_server_key,
     ExceptionState& exception_state) {
-  base::span<const char> input;
-  Vector<char> decoded_application_server_key;
+  base::span<uint8_t> input;
+  Vector<uint8_t> decoded_application_server_key;
   Vector<uint8_t> result;
 
   // Convert the input array into a string of bytes.
   switch (application_server_key->GetContentType()) {
     case V8UnionBufferSourceOrString::ContentType::kArrayBuffer:
-      input = base::as_chars(
-          application_server_key->GetAsArrayBuffer()->ByteSpan());
+      input = application_server_key->GetAsArrayBuffer()->ByteSpan();
       break;
     case V8UnionBufferSourceOrString::ContentType::kArrayBufferView:
-      input = base::as_chars(
-          application_server_key->GetAsArrayBufferView()->ByteSpan());
+      input = application_server_key->GetAsArrayBufferView()->ByteSpan();
       break;
     case V8UnionBufferSourceOrString::ContentType::kString:
       if (!Base64UnpaddedURLDecode(application_server_key->GetAsString(),
@@ -55,7 +53,8 @@ Vector<uint8_t> BufferSourceToVector(
   const bool is_vapid = input.size() == 65 && input[0] == 0x04;
   const bool is_sender_id =
       input.size() > 0 && input.size() < kMaxApplicationServerKeyLength &&
-      (std::ranges::find_if_not(input, WTF::IsASCIIDigit<char>) == input.end());
+      (std::ranges::find_if_not(input, WTF::IsASCIIDigit<uint8_t>) ==
+       input.end());
 
   if (is_vapid || is_sender_id) {
     result.AppendSpan(base::as_bytes(input));

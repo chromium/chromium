@@ -51,6 +51,8 @@ IsValidCustomHandlerScheme(std::string_view scheme,
 URLSyntaxErrorCode BLINK_COMMON_EXPORT
 IsValidCustomHandlerURLSyntax(const GURL& full_url,
                               const std::string_view& user_url);
+URLSyntaxErrorCode BLINK_COMMON_EXPORT
+IsValidCustomHandlerURLSyntax(const GURL& full_url);
 
 // This function returns whether the specified URL is allowed as a protocol
 // handler parameter, as described in steps 6 and 7 (except same origin) of the

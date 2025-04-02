@@ -329,7 +329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Badge.Tapped.{MobileInfobarType}"
-    enum="MobileMessagesBadgeState" expires_after="2025-05-11">
+    enum="MobileMessagesBadgeState" expires_after="2026-05-11">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -379,7 +379,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.Messages.Confirm.Accept.Time{Mobile_Messages_Confirm_Type}"
-    units="ms" expires_after="2025-04-06">
+    units="ms" expires_after="2026-04-06">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@chromium.org</owner>
   <summary>

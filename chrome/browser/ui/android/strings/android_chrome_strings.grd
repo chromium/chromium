@@ -3101,6 +3101,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CONTEXTMENU_PRINT_PAGE" desc="This string is shown in the context menu for printing the current page. [CHAR_LIMIT=30]">
         Print
       </message>
+      <message name="IDS_CONTEXTMENU_BACK" desc="This string is shown in the context menu for going to the previous page in history. [CHAR_LIMIT=30]">
+        Back
+      </message>
+      <message name="IDS_CONTEXTMENU_FORWARD" desc="This string is shown in the context menu for going to the next page in history. [CHAR_LIMIT=30]">
+        Forward
+      </message>
+      <message name="IDS_CONTEXTMENU_RELOAD" desc="This string is shown in the context menu for reloading the current page. [CHAR_LIMIT=30]">
+        Reload
+      </message>
       <message name="IDS_CONTEXTMENU_OPEN_IN_OTHER_WINDOW" desc="Context sensitive menu item to open the selected link in the other window. [CHAR_LIMIT=30]">
         Open in other window
       </message>
@@ -3951,14 +3960,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_N_MINUTES_AGO" desc="A number of minutes in the past. [ICU Syntax]">
         {MINUTES, plural, =1 {# minute ago} other {# minutes ago}}
       </message>
-      <message name="IDS_N_MINUTES_AGO_NARROW" desc="A number of minutes in the past, made narrow to save space, and unit-like to avoid different plural form unless necessary. [ICU Syntax]">
-        {MINUTES, plural, =1 {# min ago} other {# min ago}}
-      </message>
       <message name="IDS_N_HOURS_AGO" desc="A number of hours in the past. [ICU Syntax]">
         {HOURS, plural, =1 {# hour ago} other {# hours ago}}
-      </message>
-      <message name="IDS_N_HOURS_AGO_NARROW" desc="A number of hours in the past, made narrow to save space, and unit-like to avoid different plural form unless necessary. [ICU Syntax]">
-        {HOURS, plural, =1 {# hr ago} other {# hr ago}}
       </message>
       <message name="IDS_N_DAYS_AGO" desc="A number of days in the past. [ICU Syntax]">
         {DAYS, plural, =1 {# day ago} other {# days ago}}
@@ -4330,6 +4333,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_ACCESSIBILITY_INCOGNITO_TAB" desc="Content description for tabs that are in Incognito mode">
         Incognito Tab
+      </message>
+      <message name="IDS_MENU_NEW_TAB_GROUP" desc="Menu item for opening a new tab group. [CHAR_LIMIT=27]">
+        New tab group
       </message>
       <message name="IDS_MENU_ADD_TO_GROUP" desc="Menu item for adding a tab to a group. [CHAR_LIMIT=27]">
         Add to group
@@ -5552,6 +5558,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_KEYBOARD_SHORTCUT_TOGGLE_BOOKMARK_BAR" desc="A text label that appears next to the keyboard shortcut that will toggle the bookmark bar. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
         Show or hide the bookmarks bar
       </message>
+      <message name="IDS_KEYBOARD_SHORTCUT_DEVELOPER_TOOLS" desc="A text label that appears next to the keyboard shortcut that will open Developer Tools. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
+        Open Developer Tools
+      </message>
       <message name="IDS_KEYBOARD_SHORTCUT_TAB_GROUP_HEADER" desc="A text label that appears above a list of shortcuts that are related to the tab window. This group is part of several groups of keyboard shortcuts all shown in a dialog.">
         Tab and window shortcuts
       </message>
@@ -5560,6 +5569,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_KEYBOARD_SHORTCUT_WEBPAGE_GROUP_HEADER" desc="A text label that appears above a list of shortcuts that are related to manipulation of the current tab window. This group is part of several groups of keyboard shortcuts all shown in a dialog.">
         Webpage shortcuts
+      </message>
+      <message name="IDS_KEYBOARD_SHORTCUT_DEVELOPER_GROUP_HEADER" desc="A text label that appears above a list of shortcuts that are related to tools used by developers. This group is part of several groups of keyboard shortcuts all shown in a dialog.">
+        Developer shortcuts
       </message>
 
       <if expr="enable_arcore">
@@ -5581,6 +5593,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
 
       <!-- Custom Context Menu Informations -->
+      <message name="IDS_CONTEXTMENU_PAGE_NAVIGATION_TITLE" desc="The title of a context menu tab when the item pressed contains more than one type. This indicates that all the actions are related to navigating between the pages.">
+        PAGE NAVIGATION
+      </message>
       <message name="IDS_CONTEXTMENU_PAGE_TITLE" desc="The title of a context menu tab when the item pressed contains more than one type. This indicates that all the actions are related to the page.">
         PAGE
       </message>
@@ -5807,18 +5822,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_SEND_TAB_TO_SELF_DEVICE_LAST_ACTIVE_TODAY" desc="String displayed in the device picker indicating the last time the device was synced to the user's account today.">
         Active today
-      </message>
-      <message name="IDS_SEND_TAB_TO_SELF_DEVICE_TYPE_GENERIC" desc="String displayed in the toast message when the type of the selected device can't be determined.">
-        device
-      </message>
-      <message name="IDS_SEND_TAB_TO_SELF_DEVICE_TYPE_PHONE" desc="String displayed in the toast message when the selected device is a phone.">
-        phone
-      </message>
-      <message name="IDS_SEND_TAB_TO_SELF_DEVICE_TYPE_COMPUTER" desc="String displayed in the toast message when the selected device is a computer.">
-        computer
-      </message>
-      <message name="IDS_SEND_TAB_TO_SELF_V2_TOAST" desc="Toast message shown after a device is selected from the device picker.">
-          Page sent. To see it, open Chrome on your <ph name="device_type">%1$s<ex>phone</ex></ph>
       </message>
       <message name="IDS_SEND_TAB_TO_SELF_MANAGE_DEVICES_LINK" desc="Text with a link to a page where the user can manage the devices they can share a tab to.">
         <ph name="BEGIN_LINK">&lt;link&gt;</ph>Your devices<ph name="END_LINK">&lt;/link&gt;</ph> · <ph name="EMAIL">%1$s<ex>foo@gmail.com</ex></ph>

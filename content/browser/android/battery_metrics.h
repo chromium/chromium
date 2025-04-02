@@ -5,11 +5,16 @@
 #ifndef CONTENT_BROWSER_ANDROID_BATTERY_METRICS_H_
 #define CONTENT_BROWSER_ANDROID_BATTERY_METRICS_H_
 
+#include <optional>
+
 #include "base/no_destructor.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
+#include "components/performance_manager/scenario_api/performance_scenario_observer.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
+#include "content/common/content_export.h"
 #include "content/common/process_visibility_tracker.h"
 
 namespace content {
@@ -20,8 +25,32 @@ namespace content {
 class AndroidBatteryMetrics
     : public base::PowerStateObserver,
       public base::PowerThermalObserver,
-      public ProcessVisibilityTracker::ProcessVisibilityObserver {
+      public ProcessVisibilityTracker::ProcessVisibilityObserver,
+      public performance_scenarios::PerformanceScenarioObserver {
  public:
+  // CaptureAndReportMetrics() reports some metrics sliced by loading/input
+  // scenarios. These are not necessarily the last values reported by
+  // OnLoadingScenarioChanged() / OnInputScenarioChanged().
+  // This class tracks observed scenarios over the metrics reporting window, and
+  // computes the combined scenario to be reported.
+  class CONTENT_EXPORT PerformanceScenarioTracker {
+   public:
+    void UpdateLoadingScenario(
+        performance_scenarios::LoadingScenario new_scenario);
+    void UpdateInputScenario(performance_scenarios::InputScenario new_scenario);
+    std::string GetMetricSuffix() const;
+    void UseLatestScenarios();
+
+   private:
+    std::optional<performance_scenarios::LoadingScenario>
+        latest_loading_scenario_;
+    std::optional<performance_scenarios::LoadingScenario>
+        loading_scenario_to_report_;
+    std::optional<performance_scenarios::InputScenario> latest_input_scenario_;
+    std::optional<performance_scenarios::InputScenario>
+        input_scenario_to_report_;
+  };
+
   static void CreateInstance();
 
   AndroidBatteryMetrics(const AndroidBatteryMetrics&) = delete;
@@ -34,8 +63,23 @@ class AndroidBatteryMetrics
 
   void InitializeOnSequence();
 
+  // PerformanceScenarioObserverList is initialized after this class, so the
+  // observer is added lazily by this method.
+  // `is_observing_peformance_scenarios_` enforces it only happens once.
+  void TryObservePerformanceScenarios();
+
   // ProcessVisibilityTracker::ProcessVisibilityObserver implementation:
   void OnVisibilityChanged(bool visible) override;
+
+  // PerformanceScenarioObserver implementation:
+  void OnLoadingScenarioChanged(
+      performance_scenarios::ScenarioScope scope,
+      performance_scenarios::LoadingScenario old_scenario,
+      performance_scenarios::LoadingScenario new_scenario) override;
+  void OnInputScenarioChanged(
+      performance_scenarios::ScenarioScope scope,
+      performance_scenarios::InputScenario old_scenario,
+      performance_scenarios::InputScenario new_scenario) override;
 
   // base::PowerStateObserver implementation:
   void OnBatteryPowerStatusChange(base::PowerStateObserver::BatteryPowerStatus
@@ -68,6 +112,9 @@ class AndroidBatteryMetrics
 
   // Number of consecutive charge drops seen while the app has been visible.
   int observed_capacity_drops_ = 0;
+
+  bool is_observing_performance_scenarios_ = false;
+  PerformanceScenarioTracker performance_scenario_tracker_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

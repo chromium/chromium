@@ -417,6 +417,7 @@ if (is_clang_or_gcc) {
       "freeslot_bitmap_constants.h",
       "gwp_asan_support.cc",
       "gwp_asan_support.h",
+      "in_slot_metadata.cc",
       "in_slot_metadata.h",
       "internal_allocator.cc",
       "internal_allocator.h",

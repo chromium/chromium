@@ -179,6 +179,11 @@ void ConfigureTabResumptionItemForShopCard(
         formatter.get(),
         price_tracking_data->product_update().new_price().amount_micros(),
         price_tracking_data->product_update().old_price().amount_micros());
+    if (price_tracking_data->has_buyable_product() &&
+        price_tracking_data->buyable_product().has_image_url()) {
+      item.shopCardData.productImageURL =
+          price_tracking_data->buyable_product().image_url();
+    }
     item.shopCardData.accessibilityString = l10n_util::GetNSStringF(
         IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_DROP_OPEN_TABS_ACCESSIBILITY_LABEL,
         base::SysNSStringToUTF16(item.shopCardData.priceDrop->previous_price),
@@ -589,10 +594,16 @@ class TabResumptionMediatorProxy {
   if (ShouldShowItemImmediately()) {
     [self showItem:item];
   }
-  if (item.itemType == kMostRecentTab) {
-    [self fetchSnapshotForItem:item];
+  if (item.shopCardData.productImageURL.has_value()) {
+    [self
+        salientImageURLReceived:GURL(item.shopCardData.productImageURL.value())
+                        forItem:item];
   } else {
-    [self fetchSalientImageForItem:item];
+    if (item.itemType == kMostRecentTab) {
+      [self fetchSnapshotForItem:item];
+    } else {
+      [self fetchSalientImageForItem:item];
+    }
   }
   [self fetchFaviconForItem:item];
 }

@@ -1264,6 +1264,58 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Power.ForegroundBatteryDrainPerScenario.30Seconds{Exclusive}{LoadingScenario}{InputScenario}"
+    units="uAh" expires_after="2026-03-26">
+  <owner>kraskevich@google.com</owner>
+  <owner>woa-performance@google.com</owner>
+  <summary>
+    Similar to Power.ForegroundBatteryDrain.30Seconds, with additional Chrome
+    usage scenario classification: {LoadingScenario} and {InputScenario}.
+    {Exclusive}
+  </summary>
+  <token key="Exclusive">
+    <variant name="" summary=""/>
+    <variant name=".Exclusive"
+        summary="However, only battery drain that can be attributed
+                 exclusively to the time Chrome/WebView was visible is
+                 reported: The first drain after becoming foregrounded is not
+                 reported. As a result, this metric typically doesn't include
+                 drain related to app startup. Note that other apps can still
+                 contribute to the power consumed/tracked, e.g. due to using
+                 resources while they are backgrounded or in a multi-window
+                 context."/>
+  </token>
+<!-- LINT.IfChange(LoadingScenarioSuffix) -->
+
+  <token key="LoadingScenario">
+    <variant name=".BackgroundPageLoading"
+        summary="a background (but not focused or visible) page was loading
+                 for some part of the 30s interval"/>
+    <variant name=".FocusedPageLoading"
+        summary="a focused page was loading for some part of the 30s interval"/>
+    <variant name=".NoPageLoading" summary="no page is loading"/>
+    <variant name=".UnknownLoadingScenario"
+        summary="page loading state could not be detected"/>
+    <variant name=".VisiblePageLoading"
+        summary="a visible (but not focused) page was loading for some part
+                 of the 30s interval"/>
+  </token>
+<!-- LINT.ThenChange(/content/browser/android/battery_metrics.cc:LoadingScenarioSuffix) -->
+
+<!-- LINT.IfChange(InputScenarioSuffix) -->
+
+  <token key="InputScenario">
+    <variant name="_NoInput" summary="the user is not typing"/>
+    <variant name="_Typing"
+        summary="the user was typing for some part of the 30s interval"/>
+    <variant name="_UnknownInputScenario"
+        summary="input state could not be detected"/>
+  </token>
+<!-- LINT.ThenChange(/content/browser/android/battery_metrics.cc:InputScenarioSuffix) -->
+
+</histogram>
+
 <histogram name="Power.ForegroundBatteryDrain{Exclusive}" units="0.1 mAh"
     expires_after="2025-09-14">
   <owner>eseckler@chromium.org</owner>
@@ -1674,7 +1726,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.SuspendAttempt" enum="SuspendAttempt"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1894,7 +1946,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PowerML.SmartDimModel.RequestCanceledDuration" units="ms"
-    expires_after="2025-06-30">
+    expires_after="2025-09-28">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>

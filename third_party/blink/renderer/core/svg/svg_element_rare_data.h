@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
@@ -36,8 +35,7 @@ class SVGElementRareData final : public GarbageCollected<SVGElementRareData> {
  public:
   SVGElementRareData()
       : corresponding_element_(nullptr),
-        needs_override_computed_style_update_(false),
-        web_animated_attributes_dirty_(false) {}
+        needs_override_computed_style_update_(false) {}
   SVGElementRareData(const SVGElementRareData&) = delete;
   SVGElementRareData& operator=(const SVGElementRareData&) = delete;
 
@@ -62,17 +60,6 @@ class SVGElementRareData final : public GarbageCollected<SVGElementRareData> {
   }
   void SetCorrespondingElement(SVGElement* corresponding_element) {
     corresponding_element_ = corresponding_element;
-  }
-
-  void SetWebAnimatedAttributesDirty(bool dirty) {
-    web_animated_attributes_dirty_ = dirty;
-  }
-  bool WebAnimatedAttributesDirty() const {
-    return web_animated_attributes_dirty_;
-  }
-
-  HashSet<QualifiedName>& WebAnimatedAttributes() {
-    return web_animated_attributes_;
   }
 
   ElementSMILAnimations* GetSMILAnimations() { return smil_animations_.Get(); }
@@ -110,8 +97,6 @@ class SVGElementRareData final : public GarbageCollected<SVGElementRareData> {
   Member<SVGElementResourceClient> resource_client_;
   Member<ElementSMILAnimations> smil_animations_;
   bool needs_override_computed_style_update_ : 1;
-  bool web_animated_attributes_dirty_ : 1;
-  HashSet<QualifiedName> web_animated_attributes_;
   Member<MutableCSSPropertyValueSet> animated_smil_style_properties_;
   Member<const ComputedStyle> override_computed_style_;
   WeakMember<SVGResourceTarget> resource_target_;

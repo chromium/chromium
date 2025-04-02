@@ -25,6 +25,9 @@ import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_CLOSE_BUTTON_PO
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_WIDTH_PX;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_TOOLBAR_CORNER_RADIUS_DP;
+import static androidx.browser.trusted.LaunchHandlerClientMode.FOCUS_EXISTING;
+import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_EXISTING;
+import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_NEW;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
@@ -53,6 +56,7 @@ import androidx.browser.customtabs.CustomTabsIntent.ActivitySideSheetRoundedCorn
 import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.TrustedWebUtils;
+import androidx.browser.trusted.LaunchHandlerClientMode;
 import androidx.browser.trusted.ScreenOrientation;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode;
 import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
@@ -89,6 +93,7 @@ import org.chromium.net.NetId;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -1609,5 +1614,21 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Override
     public boolean isCloseButtonEnabled() {
         return mIsCloseButtonEnabled;
+    }
+
+    @Override
+    public @LaunchHandlerClientMode.ClientMode int getLaunchHandlerClientMode() {
+        @LaunchHandlerClientMode.ClientMode
+        int clientMode =
+                IntentUtils.safeGetIntExtra(
+                        mIntent,
+                        TrustedWebActivityIntentBuilder.EXTRA_LAUNCH_HANDLER_CLIENT_MODE,
+                        LaunchHandlerClientMode.AUTO);
+
+        if (Arrays.asList(NAVIGATE_EXISTING, FOCUS_EXISTING, NAVIGATE_NEW).contains(clientMode)) {
+            return clientMode;
+        } else {
+            return LaunchHandlerClientMode.AUTO;
+        }
     }
 }

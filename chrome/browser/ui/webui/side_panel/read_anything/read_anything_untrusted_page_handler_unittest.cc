@@ -979,6 +979,17 @@ TEST_F(ReadAnythingUntrustedPageHandlerTest, OnTabWillDetach) {
   EXPECT_CALL(page_, OnReadingModeHidden).Times(0);
 }
 
+TEST_F(ReadAnythingUntrustedPageHandlerTest, OnTabWillDetach_SendsOnce) {
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  OnTabWillDetach();
+  OnTabWillDetach();
+  OnTabWillDetach();
+  EXPECT_CALL(page_, OnTabWillDetach).Times(1);
+  EXPECT_CALL(page_, OnReadingModeHidden).Times(0);
+}
+
 TEST_F(ReadAnythingUntrustedPageHandlerTest,
        Activate_OnDeactivateTab_NotifiesPage) {
   handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(

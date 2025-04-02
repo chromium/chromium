@@ -163,18 +163,18 @@
         "android-desktop-x64-rel-15-tests": {
             "android_browsertests": {
                 "debug": {
-                    "avg_num_builds_per_peak_hour": 109,
-                    "estimated_bot_hour_delta": 21.8,
-                    "prev_avg_pending_time_sec": 7.5,
+                    "avg_num_builds_per_peak_hour": 112,
+                    "estimated_bot_hour_delta": 18.67,
+                    "prev_avg_pending_time_sec": 9.8,
                     "prev_p50_pending_time_sec": 1.0,
-                    "prev_p90_pending_time_sec": 10.0,
-                    "prev_percentile_duration_minutes": 18.31,
-                    "prev_shard_count": 20,
-                    "simulated_max_shard_duration": 14.55,
+                    "prev_p90_pending_time_sec": 12.0,
+                    "prev_percentile_duration_minutes": 17.09,
+                    "prev_shard_count": 26,
+                    "simulated_max_shard_duration": 14.66,
                     "test_overhead_min": 2.0,
                     "try_builder": "android-desktop-x64-rel"
                 },
-                "shards": 26
+                "shards": 31
             }
         }
     },
@@ -363,6 +363,25 @@
                     "try_builder": "fuchsia-x64-cast-receiver-rel"
                 },
                 "shards": "2"
+            }
+        }
+    },
+    "chromium.gpu": {
+        "Win10 x64 Release (NVIDIA)": {
+            "trace_test": {
+                "debug": {
+                    "avg_num_builds_per_peak_hour": 102,
+                    "estimated_bot_hour_delta": 1.7,
+                    "prev_avg_pending_time_sec": 1.2,
+                    "prev_p50_pending_time_sec": 0.0,
+                    "prev_p90_pending_time_sec": 1.0,
+                    "prev_percentile_duration_minutes": 16.74,
+                    "prev_shard_count": 1,
+                    "simulated_max_shard_duration": 8.87,
+                    "test_overhead_min": 1.0,
+                    "try_builder": "win-rel"
+                },
+                "shards": 2
             }
         }
     },
@@ -587,17 +606,17 @@
             "components_unittests": {
                 "debug": {
                     "avg_num_builds_per_peak_hour": 106,
-                    "estimated_bot_hour_delta": -15.05,
-                    "prev_avg_pending_time_sec": 26.1,
+                    "estimated_bot_hour_delta": 2.15,
+                    "prev_avg_pending_time_sec": 46.9,
                     "prev_p50_pending_time_sec": 0.0,
-                    "prev_p90_pending_time_sec": 96.0,
-                    "prev_percentile_duration_minutes": 5.16,
-                    "prev_shard_count": 11,
-                    "simulated_max_shard_duration": 12.06,
+                    "prev_p90_pending_time_sec": 145.0,
+                    "prev_percentile_duration_minutes": 16.35,
+                    "prev_shard_count": 4,
+                    "simulated_max_shard_duration": 13.32,
                     "test_overhead_min": 1.2166666666666666,
                     "try_builder": "linux_chromium_tsan_rel_ng"
                 },
-                "shards": 4
+                "shards": 5
             },
             "content_browsertests": {
                 "debug": {
@@ -770,18 +789,18 @@
             },
             "updater_tests_system": {
                 "debug": {
-                    "avg_num_builds_per_peak_hour": 98,
-                    "estimated_bot_hour_delta": 2.61,
-                    "prev_avg_pending_time_sec": 89.7,
-                    "prev_p50_pending_time_sec": 1.0,
-                    "prev_p90_pending_time_sec": 256.0,
-                    "prev_percentile_duration_minutes": 26.35,
-                    "prev_shard_count": 2,
-                    "simulated_max_shard_duration": 13.58,
-                    "test_overhead_min": 0.8,
+                    "avg_num_builds_per_peak_hour": 102,
+                    "estimated_bot_hour_delta": 1.39,
+                    "prev_avg_pending_time_sec": 202.7,
+                    "prev_p50_pending_time_sec": 21.0,
+                    "prev_p90_pending_time_sec": 669.0,
+                    "prev_percentile_duration_minutes": 16.16,
+                    "prev_shard_count": 4,
+                    "simulated_max_shard_duration": 13.09,
+                    "test_overhead_min": 0.8166666666666667,
                     "try_builder": "win-rel"
                 },
-                "shards": 4
+                "shards": 5
             }
         }
     }

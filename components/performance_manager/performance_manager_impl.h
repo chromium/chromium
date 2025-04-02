@@ -108,11 +108,6 @@ class PerformanceManagerImpl : public PerformanceManager {
   // removing them from the graph in topological order and destroying them.
   static void BatchDeleteNodes(std::vector<std::unique_ptr<NodeBase>> nodes);
 
-  // Allows testing code to know when tear down is complete. This can only be
-  // called from the main thread, and the callback will also be invoked on the
-  // main thread.
-  static void SetOnDestroyedCallbackForTesting(base::OnceClosure callback);
-
  private:
   friend class PerformanceManager;
 
@@ -122,8 +117,6 @@ class PerformanceManagerImpl : public PerformanceManager {
   static std::unique_ptr<NodeType> CreateNodeImpl(Args&&... constructor_args);
 
   GraphImpl graph_ GUARDED_BY_CONTEXT(sequence_checker_);
-  base::OnceClosure on_destroyed_callback_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -90,7 +90,6 @@ class UIImage;
 @class NSView;
 @class NSWindow;
 #else
-struct objc_object;
 class NSImage;
 #endif  // __OBJC__
 #endif
@@ -189,13 +188,9 @@ using NativeViewAccessible = id;
 using NativeViewAccessible = struct objc_object*;
 #endif
 #elif BUILDFLAG(IS_MAC)
-#ifdef __OBJC__
-using NativeViewAccessible = id;
-#else
-using NativeViewAccessible = struct objc_object*;
-#endif
+using NativeViewAccessible = base::apple::OwnedNSAccessibility;
 #elif BUILDFLAG(IS_LINUX)
-// Linux doesn't have a native font type.
+// Linux doesn't have a native accessibility type.
 using NativeViewAccessible = AtkObject*;
 #else
 // Android, Chrome OS, etc.

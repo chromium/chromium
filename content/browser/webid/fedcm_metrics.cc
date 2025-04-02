@@ -226,6 +226,17 @@ void FedCmMetrics::RecordMismatchDialogShownDuration(
 
 void FedCmMetrics::RecordCancelReason(
     IdentityRequestDialogController::DismissReason dismiss_reason) {
+  DCHECK_GT(session_id_, 0);
+  auto RecordUkm = [&](auto& ukm_builder) {
+    ukm_builder.SetCancelReason(
+        static_cast<std::underlying_type_t<
+            IdentityRequestDialogController::DismissReason>>(dismiss_reason));
+    ukm_builder.SetFedCmSessionID(session_id_);
+    ukm_builder.Record(ukm::UkmRecorder::Get());
+  };
+  ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
+  RecordUkm(fedcm_builder);
+
   base::UmaHistogramEnumeration("Blink.FedCm.CancelReason", dismiss_reason);
 }
 

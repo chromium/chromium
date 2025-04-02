@@ -396,6 +396,11 @@ void RecordUserInteractionAccepted(bool accepted) {
 
 }  // namespace
 
+// static
+bool HTMLPermissionElement::isTypeSupported(const AtomicString& type) {
+  return !ParsePermissionDescriptorsFromString(type).empty();
+}
+
 HTMLPermissionElement::HTMLPermissionElement(Document& document)
     : HTMLElement(html_names::kPermissionTag, document),
       ScrollSnapshotClient(GetDocument().GetFrame()),

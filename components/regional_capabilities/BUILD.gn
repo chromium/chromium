@@ -10,6 +10,8 @@ if (is_android) {
 static_library("regional_capabilities") {
   sources = [
     "eea_countries_ids.h",
+    "regional_capabilities_metrics.cc",
+    "regional_capabilities_metrics.h",
     "regional_capabilities_service.cc",
     "regional_capabilities_service.h",
     "regional_capabilities_switches.cc",

@@ -25,7 +25,9 @@
                     (id<AutofillProfileEditTableViewControllerDelegate>)delegate
                        userEmail:(NSString*)userEmail
                       controller:(LegacyChromeTableViewController*)controller
-                    settingsView:(BOOL)settingsView NS_DESIGNATED_INITIALIZER;
+                    settingsView:(BOOL)settingsView
+                addManualAddress:(BOOL)addManualAddress
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

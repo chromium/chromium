@@ -189,6 +189,7 @@ class CORE_EXPORT HTMLCanvasElement final
   void PostFinalizeFrame(FlushReason) override;
 
   CanvasResourceDispatcher* GetOrCreateResourceDispatcher() override;
+  void DiscardResourceDispatcher() override { frame_dispatcher_ = nullptr; }
 
   bool PushFrame(scoped_refptr<CanvasResource>&& image,
                  const SkIRect& damage_rect) override;

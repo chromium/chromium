@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">ありがとうとサインする</translation>
 <translation id="2088690981887365033">VPN ネットワーク</translation>
 <translation id="209653272837065803">空き容量が不足しているため、ファイルの同期を続行できません</translation>
-<translation id="2111134541987263231">[<ph name="BEGIN_BOLD" />シークレット モードでの実行を許可する<ph name="END_BOLD" />] をオンにする</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムが削除され、復元できなくなります。</translation>
 <translation id="2122305276694332719">非公開ネットワークに自動接続すると、お使いのデバイスと一部のネットワーク設定が他のユーザーに公開されます。そのためこの設定はおすすめしません。</translation>
 <translation id="2125607626296734455">クメール語</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">惑星</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> が取り外されました。</translation>
 <translation id="2307462900900812319">ネットワークを設定</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{次の ID の拡張機能<ph name="BEGIN_LIST" /><ph name="END_LIST" />が見つかりません。管理者にお問い合わせください。}other{次の ID の拡張機能<ph name="BEGIN_LIST" /><ph name="END_LIST" />が見つかりません。管理者にお問い合わせください。}}</translation>
 <translation id="2325650632570794183">このファイル形式はサポートされていません。Chrome ウェブストアにアクセスして、この形式のファイルを開くことができるアプリをお探しください。</translation>
 <translation id="2326539130272988168">ブルガリア語</translation>
 <translation id="233822363739146957">空き容量が不足しているため、すべてのファイルを同期できません</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">マラーティー語</translation>
 <translation id="2923240520113693977">エストニア語</translation>
 <translation id="2938685643439809023">モンゴル語</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{拡張機能が見つかりません}other{拡張機能が見つかりません}}</translation>
 <translation id="2943503720238418293">もう少し短い名前にしてください</translation>
 <translation id="2949781154072577687">「<ph name="DRIVE_NAME" />」をフォーマットしています...</translation>
 <translation id="2951236788251446349">クラゲ</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">完了</translation>
 <translation id="3358452157379365236">ギター</translation>
 <translation id="3368922792935385530">接続済み</translation>
-<translation id="3372635229069101468">[<ph name="BEGIN_BOLD" />詳細<ph name="END_BOLD" />] をクリックする</translation>
 <translation id="3382143449143186018">ネパール語（字母）キーボード</translation>
 <translation id="338691029516748599"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によって管理、接続</translation>
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> を有効にする</translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">ユニコーン</translation>
 <translation id="4131235941541910880">不要なアイテムはゴミ箱に移動してください</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" />件）、<ph name="NETWORK_NAME" />、<ph name="NETWORK_PROVIDER_NAME" />、デバイスのセットアップ後に有効化</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{シークレット モードで次の拡張機能をオンにしてください。}other{シークレット モードで次の拡張機能をオンにしてください。}}</translation>
 <translation id="4153015322587141338">ファイルを右クリックして [<ph name="PIN_COMMAND" />] を選択すると、シェルフからファイルに簡単にアクセスできます。</translation>
 <translation id="4157569377477607576">管理者のポリシーでは、次のことは推奨されていません。</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> を移動しました。</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">両方を保持</translation>
 <translation id="4804827417948292437">アボカド</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> 個のアイテムを復元しています</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{シークレット モードを使用するには、拡張機能をオンにするよう組織が求めています}other{シークレット モードを使用するには、拡張機能をオンにするよう組織が求めています}}</translation>
 <translation id="4826849268470072925">タミル語（ITRANS）</translation>
-<translation id="482932175346970750">ブラウザに「<ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />」と入力する</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">表示</translation>
 <translation id="485316830061041779">ドイツ語</translation>
@@ -561,7 +554,6 @@
         他のユーザーとの作業をすべて 1 か所で行うことができます。<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google ドライブから復元されたファイル</translation>
 <translation id="5278111733643988471">このアイテムを復元するには、ゴミ箱から新しいフォルダにドラッグしてください。このアイテムの元のフォルダ「<ph name="PARENT_FOLDER_NAME" />」は削除されています。</translation>
-<translation id="5283101102242354279">シークレット モードで拡張機能をオンにするには:</translation>
 <translation id="5288441970121584418">ハンバーガー</translation>
 <translation id="5293615890992542006">このファイルの移動は管理者が設定したポリシーによってブロックされています</translation>
 <translation id="5305688511332277257">インストールされていません</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />、詳細</translation>
 <translation id="7246947237293279874">FTP プロキシ</translation>
 <translation id="7248671827512403053">アプリケーション</translation>
-<translation id="7252604552361840748">上記の拡張機能を見つける</translation>
 <translation id="7256405249507348194">不明なエラー: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">利用可能なサービス</translation>
 <translation id="7291818353625820805">キー入力を繰り返す場合は、キーボードの設定でアクセント記号をオフにします</translation>

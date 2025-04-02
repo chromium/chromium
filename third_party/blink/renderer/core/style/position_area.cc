@@ -218,66 +218,6 @@ PositionArea PositionArea::ToPhysical(
   return PositionArea(regions[0], regions[1], regions[2], regions[3]);
 }
 
-std::optional<AnchorQuery> PositionArea::UsedTop() const {
-  switch (FirstStart()) {
-    case PositionAreaRegion::kTop:
-      return std::nullopt;
-    case PositionAreaRegion::kCenter:
-      return AnchorTop();
-    case PositionAreaRegion::kBottom:
-      return AnchorBottom();
-    case PositionAreaRegion::kNone:
-      return std::nullopt;
-    default:
-      NOTREACHED();
-  }
-}
-
-std::optional<AnchorQuery> PositionArea::UsedBottom() const {
-  switch (FirstEnd()) {
-    case PositionAreaRegion::kTop:
-      return AnchorTop();
-    case PositionAreaRegion::kCenter:
-      return AnchorBottom();
-    case PositionAreaRegion::kBottom:
-      return std::nullopt;
-    case PositionAreaRegion::kNone:
-      return std::nullopt;
-    default:
-      NOTREACHED();
-  }
-}
-
-std::optional<AnchorQuery> PositionArea::UsedLeft() const {
-  switch (SecondStart()) {
-    case PositionAreaRegion::kLeft:
-      return std::nullopt;
-    case PositionAreaRegion::kCenter:
-      return AnchorLeft();
-    case PositionAreaRegion::kRight:
-      return AnchorRight();
-    case PositionAreaRegion::kNone:
-      return std::nullopt;
-    default:
-      NOTREACHED();
-  }
-}
-
-std::optional<AnchorQuery> PositionArea::UsedRight() const {
-  switch (SecondEnd()) {
-    case PositionAreaRegion::kLeft:
-      return AnchorLeft();
-    case PositionAreaRegion::kCenter:
-      return AnchorRight();
-    case PositionAreaRegion::kRight:
-      return std::nullopt;
-    case PositionAreaRegion::kNone:
-      return std::nullopt;
-    default:
-      NOTREACHED();
-  }
-}
-
 std::pair<StyleSelfAlignmentData, StyleSelfAlignmentData>
 PositionArea::AlignJustifySelfFromPhysical(
     WritingDirectionMode container_writing_direction,

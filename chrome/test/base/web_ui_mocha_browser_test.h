@@ -23,6 +23,18 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace webui {
+
+// Convert all non-alphanumeric characters to underscore in-place. Assumes
+// ASCII. Intended to fit the regular expression used for GTest names.
+void CanonicalizeTestName(std::string* test_name);
+
+// Receive messages from JS.
+bool WaitForTestToFinish(content::WebContents* web_contents,
+                         bool is_sub_test_result_reporting_enabled);
+
+}  // namespace webui
+
 // Inherit from this class to run WebUI tests that are using Mocha.
 class WebUIMochaBrowserTest : public PlatformBrowserTest {
  public:
@@ -66,6 +78,11 @@ class WebUIMochaBrowserTest : public PlatformBrowserTest {
       const std::string& trigger,
       const bool& skip_test_loader);
 
+  // Tests may optionally call this before calling RunTest to opt out of
+  // SubTestResult reporting. This is useful for GTests that run intentionally
+  // failing JS tests.
+  void DisableSubTestResultReporting();
+
   // Hook for subclasses that need to perform additional setup steps that
   // involve the WebContents, before the Mocha test runs.
   virtual void OnWebContentsAvailable(content::WebContents* web_contents);
@@ -100,6 +117,9 @@ class WebUIMochaBrowserTest : public PlatformBrowserTest {
   // content::kChromeUIScheme.
   // Note: It is also used by RunTest even when |skip_test_loader| is true.
   std::string test_loader_scheme_;
+
+  // Determines if SubTestResults should be reported for individual JS tests.
+  bool is_sub_test_result_reporting_enabled_ = true;
 
 #if BUILDFLAG(IS_ANDROID)
   // On Android, JavaScript console messages are only added to test logs if

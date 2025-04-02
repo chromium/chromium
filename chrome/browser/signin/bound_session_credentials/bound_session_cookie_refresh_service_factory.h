@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_REFRESH_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_REFRESH_SERVICE_FACTORY_H_
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
@@ -13,6 +14,10 @@ class BoundSessionCookieRefreshService;
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
+
+// Enables bound sessions marked with "wsbeta" flag even when the main
+// `switches::kBoundSessionCredentialsEnabled` feature is disabled.
+BASE_DECLARE_FEATURE(kEnableBoundSessionCredentialsWsbetaBypass);
 
 class BoundSessionCookieRefreshServiceFactory
     : public ProfileKeyedServiceFactory {
@@ -24,11 +29,13 @@ class BoundSessionCookieRefreshServiceFactory
 
  private:
   friend base::NoDestructor<BoundSessionCookieRefreshServiceFactory>;
+  friend class BoundSessionCookieRefreshServiceFactoryTest;
 
   BoundSessionCookieRefreshServiceFactory();
   ~BoundSessionCookieRefreshServiceFactory() override;
 
   // ProfileKeyedServiceFactory:
+  bool ServiceIsNULLWhileTesting() const override;
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   void RegisterProfilePrefs(

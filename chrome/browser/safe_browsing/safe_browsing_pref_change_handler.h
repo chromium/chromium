@@ -104,8 +104,8 @@ class SafeBrowsingPrefChangeHandler {
   // TabModelObserver::
   void DidAddTab(TabAndroid* tab, TabModel::TabLaunchType type) override;
   // TabModelListObserver::
-  void OnTabModelAdded() override;
-  void OnTabModelRemoved() override;
+  void OnTabModelAdded(TabModel* tab_model) override;
+  void OnTabModelRemoved(TabModel* tab_model) override;
 
   // This tab model is used for the observer based retry mechanism.
   // We can't depend on this being set as a tab can be deleted at

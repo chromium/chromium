@@ -588,14 +588,12 @@ void SetCardArtURL(Suggestion& suggestion,
 
 // Returns non credit card suggestions which are displayed below credit card
 // suggestions in the Autofill popup. `should_show_scan_credit_card` is used
-// to conditionally add scan credit card suggestion,
-// `should_show_cards_from_account` - conditionally add suggestions for
-// showing cards from account. `is_autofilled` is used to conditionally add
-// suggestion for clearing all autofilled fields. `with_gpay_logo` is used to
-// conditionally add GPay logo icon to the manage payment methods suggestion.
+// to conditionally add scan credit card suggestion. `is_autofilled` is used to
+// conditionally add suggestion for clearing all autofilled fields.
+// `with_gpay_logo` is used to conditionally add GPay logo icon to the manage
+// payment methods suggestion.
 std::vector<Suggestion> GetCreditCardFooterSuggestions(
     bool should_show_scan_credit_card,
-    bool should_show_cards_from_account,
     bool is_autofilled,
     bool with_gpay_logo) {
   std::vector<Suggestion> footer_suggestions;
@@ -605,13 +603,6 @@ std::vector<Suggestion> GetCreditCardFooterSuggestions(
         SuggestionType::kScanCreditCard);
     scan_credit_card.icon = Suggestion::Icon::kScanCreditCard;
     footer_suggestions.push_back(scan_credit_card);
-  }
-  if (should_show_cards_from_account) {
-    Suggestion show_card_from_account(
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_SHOW_ACCOUNT_CARDS),
-        SuggestionType::kShowAccountCards);
-    show_card_from_account.icon = Suggestion::Icon::kGoogle;
-    footer_suggestions.push_back(show_card_from_account);
   }
   footer_suggestions.push_back(CreateSeparator());
   if (is_autofilled) {
@@ -1037,7 +1028,6 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     CreditCardSuggestionSummary& summary,
     bool is_complete_form,
     bool should_show_scan_credit_card,
-    bool should_show_cards_from_account,
     const std::vector<std::string>& four_digit_combinations_in_dom,
     const std::u16string& autofilled_last_four_digits_in_form_for_filtering) {
   std::vector<Suggestion> suggestions;
@@ -1047,11 +1037,10 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     bool display_gpay_logo = false;
     suggestions.push_back(
         CreateSaveAndFillSuggestion(client, display_gpay_logo));
-    std::ranges::move(
-        GetCreditCardFooterSuggestions(
-            should_show_scan_credit_card, should_show_cards_from_account,
-            trigger_field.is_autofilled(), display_gpay_logo),
-        std::back_inserter(suggestions));
+    std::ranges::move(GetCreditCardFooterSuggestions(
+                          should_show_scan_credit_card,
+                          trigger_field.is_autofilled(), display_gpay_logo),
+                      std::back_inserter(suggestions));
     return suggestions;
   }
   // Only trigger GetVirtualCreditCardsForStandaloneCvcField if it's standalone
@@ -1077,7 +1066,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     suggestions = GetCreditCardOrCvcFieldSuggestions(
         client, trigger_field, four_digit_combinations_in_dom,
         autofilled_last_four_digits_in_form_for_filtering, trigger_field_type,
-        should_show_scan_credit_card, should_show_cards_from_account, summary);
+        should_show_scan_credit_card, summary);
   }
 
   return suggestions;
@@ -1090,7 +1079,6 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
     const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
     FieldType trigger_field_type,
     bool should_show_scan_credit_card,
-    bool should_show_cards_from_account,
     CreditCardSuggestionSummary& summary) {
   if (trigger_field_type == CREDIT_CARD_STANDALONE_VERIFICATION_CODE &&
       !base::FeatureList::IsEnabled(
@@ -1182,11 +1170,10 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
   const bool display_gpay_logo = std::ranges::none_of(
       cards_to_suggest,
       [](const CreditCard& card) { return CreditCard::IsLocalCard(&card); });
-  std::ranges::move(
-      GetCreditCardFooterSuggestions(
-          should_show_scan_credit_card, should_show_cards_from_account,
-          trigger_field.is_autofilled(), display_gpay_logo),
-      std::back_inserter(suggestions));
+  std::ranges::move(GetCreditCardFooterSuggestions(
+                        should_show_scan_credit_card,
+                        trigger_field.is_autofilled(), display_gpay_logo),
+                    std::back_inserter(suggestions));
   return suggestions;
 }
 
@@ -1250,7 +1237,6 @@ std::vector<Suggestion> GetVirtualCardStandaloneCvcFieldSuggestions(
 
   std::ranges::move(
       GetCreditCardFooterSuggestions(/*should_show_scan_credit_card=*/false,
-                                     /*should_show_cards_from_account=*/false,
                                      trigger_field.is_autofilled(),
                                      /*with_gpay_logo=*/true),
       std::back_inserter(suggestions));
@@ -1340,6 +1326,10 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
     suggestion.main_text.value = card_name;
     suggestion.minor_texts.emplace_back(
         credit_card.ObfuscatedNumberWithVisibleLastFourDigits());
+    suggestion.custom_icon = Suggestion::CustomIconUrl(
+        client.GetPersonalDataManager().payments_data_manager().GetCardArtURL(
+            credit_card));
+    suggestion.icon = credit_card.CardIconForAutofillSuggestion();
     std::optional<Suggestion::Text> benefit_label =
         GetCreditCardBenefitSuggestionLabel(credit_card, client);
     if (benefit_label) {
@@ -1563,7 +1553,6 @@ bool IsCreditCardFooterSuggestion(
       return IsCreditCardFooterSuggestion(suggestions, line_number + 1);
     case SuggestionType::kManageCreditCard:
     case SuggestionType::kScanCreditCard:
-    case SuggestionType::kShowAccountCards:
     case SuggestionType::kUndoOrClear:
       return true;
     case SuggestionType::kAllSavedPasswordsEntry:
@@ -1649,11 +1638,9 @@ Suggestion CreateCreditCardSuggestionForTest(
 
 std::vector<Suggestion> GetCreditCardFooterSuggestionsForTest(
     bool should_show_scan_credit_card,
-    bool should_show_cards_from_account,
     bool is_autofilled,
     bool with_gpay_logo) {
   return GetCreditCardFooterSuggestions(should_show_scan_credit_card,
-                                        should_show_cards_from_account,
                                         is_autofilled, with_gpay_logo);
 }
 

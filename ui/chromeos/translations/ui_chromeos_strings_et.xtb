@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">Tänamisviibe</translation>
 <translation id="2088690981887365033">VPN-võrk</translation>
 <translation id="209653272837065803">Failide sünkroonimise jätkamiseks pole piisavalt salvestusruumi</translation>
-<translation id="2111134541987263231">Lülitage sisse valik <ph name="BEGIN_BOLD" />Luba inkognito režiimis<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> üksust kustutatakse ja te ei saa neid taastada.</translation>
 <translation id="2122305276694332719">Automaatne ühendamine peidetud võrguga võimaldab teistel näha teie seadet ja teatud võrguseadeid, seepärast ei soovita me seda kasutada.</translation>
 <translation id="2125607626296734455">khmeeri</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">Planeet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> on väljutatud.</translation>
 <translation id="2307462900900812319">Seadista võrk</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Laiendust ID-ga <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ei ole võimalik leida. Võtke ühendust administraatoriga.}other{Laiendusi ID-ga <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ei ole võimalik leida. Võtke ühendust administraatoriga.}}</translation>
 <translation id="2325650632570794183">Seda failitüüpi ei toetata. Külastage Chrome'i veebipoodi, et leida rakendus, mis avaks seda tüüpi faili.</translation>
 <translation id="2326539130272988168">bulgaaria</translation>
 <translation id="233822363739146957">Kõigi failide sünkroonimiseks pole piisavalt salvestusruumi</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">marathi</translation>
 <translation id="2923240520113693977">eesti keel</translation>
 <translation id="2938685643439809023">mongoolia keel</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Laiendust ei leita}other{Laiendusi ei leita}}</translation>
 <translation id="2943503720238418293">Kasutage lühemat nime</translation>
 <translation id="2949781154072577687">Ketta <ph name="DRIVE_NAME" /> vormindamine …</translation>
 <translation id="2951236788251446349">Millimallikas</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">Lõpetatud</translation>
 <translation id="3358452157379365236">Kitarr</translation>
 <translation id="3368922792935385530">Ühendatud</translation>
-<translation id="3372635229069101468">Klõpsake valikul <ph name="BEGIN_BOLD" />Üksikasjad<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">nepaali, InScript-klaviatuuriga</translation>
 <translation id="338691029516748599"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, võrku haldab teie administraator, ühenda</translation>
 <translation id="3408072735282270043">Aktiveerimine, <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">Ükssarvik</translation>
 <translation id="4131235941541910880">Teisaldage ebavajalikud üksused prügikasti</translation>
 <translation id="4134804435730168042">Võrk <ph name="NETWORK_INDEX" />, võrke kokku <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktiveerige pärast seadme seadistust</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Lülitage inkognito režiimis sisse järgmine laiendus:}other{Lülitage inkognito režiimis sisse järgmised laiendused:}}</translation>
 <translation id="4153015322587141338">Paremklõpsake failil ja tehke valik „<ph name="PIN_COMMAND" />“, et riiulil olevatele failidele kiirelt juurde pääseda.</translation>
 <translation id="4157569377477607576">Administraatori reegel ei soovita:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> on teisaldatud.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">Säilita mõlemad</translation>
 <translation id="4804827417948292437">Avokaado</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> üksuse taastamine</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Inkognito režiimi kasutamiseks vajab teie organisatsioon laiendust}other{Inkognito režiimi kasutamiseks vajab teie organisatsioon mõningaid laiendusi}}</translation>
 <translation id="4826849268470072925">tamili, ITRANS</translation>
-<translation id="482932175346970750">Tippige brauseris <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
 <translation id="4843566743023903107">Chromebase'id</translation>
 <translation id="4850886885716139402">Kuva</translation>
 <translation id="485316830061041779">saksa keel</translation>
@@ -561,7 +554,6 @@
     ühes kohas.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Drive'ist taastatud failid</translation>
 <translation id="5278111733643988471">Selle üksuse taastamiseks lohistage see uude kausta, prügikastist välja. Selle üksuse algne kaust „<ph name="PARENT_FOLDER_NAME" />“ on kustutatud.</translation>
-<translation id="5283101102242354279">Lülitage inkognito režiimis sisse laiendus:</translation>
 <translation id="5288441970121584418">Burger</translation>
 <translation id="5293615890992542006">Selle faili teisaldamine on administraatori reegliga blokeeritud</translation>
 <translation id="5305688511332277257">Pole ühtegi installitud</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, üksikasjad</translation>
 <translation id="7246947237293279874">FTP-puhverserver</translation>
 <translation id="7248671827512403053">Rakendus</translation>
-<translation id="7252604552361840748">Leidke ülalt laiendus</translation>
 <translation id="7256405249507348194">Tundmatu viga: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Saadaolevad teenused</translation>
 <translation id="7291818353625820805">Kas soovite, et klahvisisestust korrataks? Lülitage klaviatuuri seadetes rõhumärgid välja.</translation>

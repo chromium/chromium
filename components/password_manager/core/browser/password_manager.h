@@ -133,6 +133,7 @@ class PasswordManager : public PasswordManagerInterface {
   bool HaveFormManagersReceivedData(
       const PasswordManagerDriver* driver) const override;
 
+  void OnResourceLoadingFailed(PasswordManagerDriver* driver, const GURL& url);
   PasswordManagerClient* GetClient() override;
 #if BUILDFLAG(IS_IOS)
   void OnSubframeFormSubmission(PasswordManagerDriver* driver,

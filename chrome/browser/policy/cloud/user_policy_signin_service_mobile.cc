@@ -198,8 +198,4 @@ void UserPolicySigninService::UpdateLastPolicyCheckTime() {
                                  base::Time::Now().ToInternalValue());
 }
 
-signin::ConsentLevel UserPolicySigninService::GetConsentLevelForRegistration() {
-  return signin::ConsentLevel::kSignin;
-}
-
 }  // namespace policy

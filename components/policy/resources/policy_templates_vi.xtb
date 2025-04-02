@@ -4059,15 +4059,6 @@ Chính sách này chỉ mang tính tạm thời và sẽ bị loại bỏ trong 
 <translation id="3956573780915784996">Cho phép người dùng thu thập dữ liệu theo dõi hoạt động trên toàn hệ thống.</translation>
 <translation id="3956686688560604829">Sử dụng chính sách SiteList của Internet Explorer để hỗ trợ trình duyệt cũ.</translation>
 <translation id="3958586912393694012">Cho phép sử dụng Smart Lock</translation>
-<translation id="3959350391319409669">Chính sách này kiểm soát chế độ cài đặt mã động cho <ph name="PRODUCT_NAME" />.
-
-Khi bạn tắt mã động, khả năng bảo mật của <ph name="PRODUCT_NAME" /> sẽ được cải thiện bằng cách ngăn mã động có khả năng gây hại và mã bên thứ ba thay đổi hành vi của <ph name="PRODUCT_NAME" />, đồng thời cũng có thể gây ra sự cố về khả năng tương thích với phần mềm bên thứ ba phải chạy trong quy trình của trình duyệt.
-
-Nếu bạn không đặt hoặc đặt chính sách này thành 0 – Mặc định, thì <ph name="PRODUCT_NAME" /> sẽ sử dụng chế độ cài đặt mặc định.
-
-Nếu bạn đặt chính sách này thành 1 – DisabledForBrowser, thì quy trình của trình duyệt <ph name="PRODUCT_NAME" /> sẽ không được tạo mã động.
-
-Lưu ý: Hãy đọc thêm về chính sách giảm thiểu quy trình (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="3960728283243442805">Người dùng sẽ không được chọn thiết bị truyền trong trình đơn của <ph name="PRODUCT_NAME" /> bằng cách dùng mã truy cập hoặc quét mã QR.</translation>
 <translation id="3962445567482559878">Sử dụng chế độ EDU của trải nghiệm làm quen với Trợ lý</translation>
 <translation id="396261881101930204">Ẩn đề xuất nội dung nghe nhìn đối với người dùng</translation>
@@ -4389,6 +4380,9 @@ Lưu ý: Việc chặn các URL nội bộ chrome://* và chrome-untrusted://* c
       Trong các phiên kiosk, sẽ không có thời gian gia hạn và không có thông báo về việc khởi động lại.
 </translation>
 <translation id="4187576366596772431">Chặn API WebHID trên các trang web này</translation>
+<translation id="4188427466177877986">Khi bạn không đặt chính sách này hoặc đặt chính sách này thành Enabled (Bật), thì người dùng có thể theo dõi gói hàng của họ trên <ph name="PRODUCT_NAME" /> qua Trang thẻ mới.
+Khi bạn đặt chính sách này thành Disabled (Tắt), thì người dùng không thể theo dõi gói hàng của họ trên <ph name="PRODUCT_NAME" /> qua Trang thẻ mới.
+Ngừng hoạt động: Kể từ phiên bản M132, tính năng Theo dõi gói hàng đã bị tắt và chính sách này không có hiệu lực.</translation>
 <translation id="4189100643304138928">Danh sách các chế độ cài đặt dịch vụ Chrome Enterprise Connectors sẽ áp dụng cho <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" /> Enterprise Connector (kích hoạt khi có tệp được đính kèm vào Chrome).
 
       Các trường <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> và <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> dùng để xác định xem trình kết nối có gửi tệp đi để phân tích hay không khi tệp được đính kèm vào một trang cụ thể, cũng như thẻ nào cần thêm vào yêu cầu phân tích cho tệp đó. Nếu URL của trang khớp với mẫu liên kết với một thẻ tương ứng với một mẫu "enable", thì hệ thống sẽ thêm thẻ đó vào yêu cầu phân tích chừng nào không còn mẫu "disable" có cùng thẻ như vậy khớp với URL của trang. Quá trình phân tích sẽ diễn ra nếu hệ thống thêm ít nhất 1 thẻ vào yêu cầu.
@@ -7847,6 +7841,15 @@ LƯU Ý: Các thiết bị dành cho người dùng thông thường và doanh n
       2) Ngôn ngữ hệ thống.
       3) Ngôn ngữ dự phòng (en-US).</translation>
 <translation id="6493089139124468815">Cho phép trang web đề nghị người dùng cấp quyền bảng nhớ tạm cho trang web</translation>
+<translation id="6493557163786346587">Khi đặt chính sách này, bạn có thể tạo danh sách các mẫu URL để chỉ định những trang web không được phép yêu cầu người dùng cấp quyền truy cập vào một cổng nối tiếp.
+
+Khi bạn không đặt chính sách này, <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (nếu được đặt) sẽ áp dụng cho tất cả trang web. Nếu không, chế độ cài đặt cá nhân của người dùng sẽ được áp dụng.
+
+Đối với những mẫu URL không khớp với chính sách <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> (nếu có sự trùng khớp), thì <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (nếu được đặt) hoặc chế độ cài đặt cá nhân của người dùng sẽ được ưu tiên theo thứ tự đó.
+
+Nếu các mẫu URL xung đột với <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, thì chính sách này sẽ được ưu tiên.
+
+Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Chúng tôi không chấp nhận giá trị <ph name="WILDCARD_VALUE" /> đối với chính sách này.</translation>
 <translation id="6493918190032622602">Phiên bản <ph name="PRODUCT_OS_NAME" /> tối thiểu được phép</translation>
 <translation id="6495337487202227251">Lưu ý rằng chúng tôi không dùng chính sách này nữa và sẽ xóa khỏi <ph name="PRODUCT_OS_NAME" /> phiên bản 85. Thay vào đó, vui lòng sử dụng <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />.
 
@@ -8291,6 +8294,11 @@ Trình duyệt sẽ tự động xoá dữ liệu thuộc các loại đã chọ
 Dữ liệu hết hạn sẽ bị xoá sau 15 giây kể từ khi trình duyệt khởi động, sau đó sẽ bị xoá sau mỗi 30 phút trong khi trình duyệt đang chạy.
 
 Cho đến Chrome 114, chính sách này yêu cầu đặt chính sách <ph name="SYNC_DISABLED_POLICY_NAME" /> thành true (đúng). Kể từ Chrome 115, việc bạn đặt chính sách này sẽ tắt tính năng đồng bộ hoá đối với các loại dữ liệu tương ứng nếu "<ph name="CHROME_SYNC_NAME" />" không bị tắt bằng cách đặt chính sách <ph name="SYNC_DISABLED_POLICY_NAME" /> và <ph name="BROWSER_SIGNIN_POLICY_NAME" /> cũng không bị tắt.</translation>
+<translation id="6762635531429930846">Chỉ định thời gian tối thiểu kể từ ngày phát hành để thông báo chạy lại được gửi thường xuyên hơn. Thời gian kể từ ngày phát hành được tính từ thời điểm phiên bản đang chạy được phân phát lần gần nhất cho ứng dụng.
+
+Nếu phiên bản mới đang chờ áp dụng, bạn cần chạy lại trình duyệt hoặc khởi động lại thiết bị, ngoài ra, phiên bản hiện tại đã bị thay thế quá số ngày mà chế độ cài đặt này quy định, thì chính sách <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> sẽ được ghi đè thành 2 giờ. Nếu bạn đặt chính sách <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> thành 1 (Bắt buộc), người dùng sẽ buộc phải chạy lại hoặc khởi động lại vào cuối khoảng thời gian đó.
+
+Nếu bạn không đặt chính sách này hoặc không xác định thời gian kể từ ngày phát hành, thì chính sách <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> sẽ được áp dụng cho mọi bản cập nhật.</translation>
 <translation id="6763023079133439068">Cho phép các chứng chỉ thiếu tiện ích subjectAlternativeName nếu chứng chỉ là do các neo tin cậy cục bộ phát hành</translation>
 <translation id="6766216162565713893">Cho phép trang web yêu cầu người dùng cấp quyền truy cập vào thiết bị Bluetooth lân cận</translation>
 <translation id="6770454900105963262">Báo cáo thông tin về các phiên kiosk hiện hoạt</translation>
@@ -10413,6 +10421,15 @@ Lưu ý: Chính sách này là giải pháp tạm thời nhằm hỗ trợ cho q
 <translation id="8371178326720637170">Bật tiện ích được quản lý để sử dụng Enterprise Hardware Platform API</translation>
 <translation id="8373176843640227330">Tắt tính năng báo cáo thông tin về Bluetooth trên thiết bị</translation>
 <translation id="8375817202037102567">Chặn quyền ghi các tệp và thư mục trên những trang web này</translation>
+<translation id="837805585374308454">Khi đặt chính sách này, bạn có thể tạo danh sách các mẫu URL để chỉ định những trang web được phép yêu cầu người dùng cấp quyền truy cập vào một cổng nối tiếp.
+
+Khi bạn không đặt chính sách này, <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (nếu được đặt) sẽ áp dụng cho tất cả trang web. Nếu không, các chế độ cài đặt cá nhân của người dùng sẽ được áp dụng.
+
+Đối với những mẫu URL không khớp với chính sách <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> (nếu có sự trùng khớp), thì <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (nếu được đặt) hoặc chế độ cài đặt cá nhân của người dùng sẽ được ưu tiên theo thứ tự đó.
+
+Các mẫu URL xung đột với <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> sẽ bị bỏ qua.
+
+Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Chúng tôi không chấp nhận giá trị <ph name="WILDCARD_VALUE" /> đối với chính sách này.</translation>
 <translation id="8378266419596669629">Chặn quyền Phông chữ trên máy đối với những trang web này</translation>
 <translation id="8379281645427937253">Danh sách chứng chỉ TLS mà <ph name="PRODUCT_NAME" /> cần tin cậy khi xác thực máy chủ.
 Chứng chỉ cần được mã hoá base64.</translation>

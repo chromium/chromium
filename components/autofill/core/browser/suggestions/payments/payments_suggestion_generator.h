@@ -91,7 +91,6 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     CreditCardSuggestionSummary& summary,
     bool is_complete_form,
     bool should_show_scan_credit_card,
-    bool should_show_cards_from_account,
     const std::vector<std::string>& four_digit_combinations_in_dom,
     const std::u16string& autofilled_last_four_digits_in_form_for_filtering);
 
@@ -109,7 +108,6 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
     const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
     FieldType trigger_field_type,
     bool should_show_scan_credit_card,
-    bool should_show_cards_from_account,
     CreditCardSuggestionSummary& summary);
 
 // Generates suggestions for standalone CVC fields. These only apply to
@@ -220,7 +218,6 @@ Suggestion CreateCreditCardSuggestionForTest(
 // Exposes `GetCreditCardFooterSuggestions` in tests.
 std::vector<Suggestion> GetCreditCardFooterSuggestionsForTest(
     bool should_show_scan_credit_card,
-    bool should_show_cards_from_account,
     bool is_autofilled,
     bool with_gpay_logo);
 

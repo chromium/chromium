@@ -4,14 +4,14 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import androidx.core.util.Pair;
-
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupTimeAgo.TimestampEvent;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
@@ -63,7 +63,11 @@ class TabGroupListBottomSheetRowMediator {
         builder.with(TabGroupRowProperties.COLOR_INDEX, savedTabGroup.color);
 
         String userTitle = savedTabGroup.title;
-        Pair<String, Integer> titleData = new Pair<>(userTitle, numberOfTabs);
+        TabGroupRowViewTitleData titleData =
+                new TabGroupRowViewTitleData(
+                        userTitle,
+                        numberOfTabs,
+                        R.string.tab_group_bottom_sheet_row_accessibility_text);
         builder.with(TabGroupRowProperties.TITLE_DATA, titleData);
 
         builder.with(
@@ -93,6 +97,7 @@ class TabGroupListBottomSheetRowMediator {
 
         SavedTabGroupTab savedTabGroupTab = group.savedTabs.get(0);
         Integer localId = savedTabGroupTab.localId;
+        if (localId == null) return;
         Tab tab = mTabGroupModelFilter.getTabModel().getTabById(localId);
         if (tab == null) return;
 

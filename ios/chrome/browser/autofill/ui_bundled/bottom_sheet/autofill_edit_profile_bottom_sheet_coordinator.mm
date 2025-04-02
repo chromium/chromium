@@ -100,7 +100,8 @@
           initWithDelegate:_autofillProfileEditMediator
                  userEmail:[_handler userEmail]
                 controller:editModalViewController
-              settingsView:NO];
+              settingsView:NO
+          addManualAddress:[_handler addingManualAddress]];
   _autofillProfileEditMediator.consumer =
       _autofillProfileEditTableViewController;
   // `editModalViewController` lays down the bottom sheet view and communicates

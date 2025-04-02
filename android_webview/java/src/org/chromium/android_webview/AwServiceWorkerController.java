@@ -52,6 +52,7 @@ public class AwServiceWorkerController {
         synchronized (mLock) {
             mServiceWorkerClient = client;
         }
+        mShouldInterceptRequestMediator.onServiceWorkerClientUpdated(client);
     }
 
     // Helper classes implementations

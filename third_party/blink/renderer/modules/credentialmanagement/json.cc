@@ -41,7 +41,7 @@ namespace blink {
 namespace {
 
 std::optional<DOMArrayBuffer*> WebAuthnBase64UrlDecode(const String& in) {
-  VectorOf<char> out;
+  VectorOf<uint8_t> out;
   if (!Base64UnpaddedURLDecode(in, out)) {
     return std::nullopt;
   }

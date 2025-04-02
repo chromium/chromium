@@ -129,7 +129,7 @@ const PerformanceMark* UserTiming::FindExistingMark(
   PerformanceEntryMap::const_iterator existing_marks =
       marks_map_.find(mark_name);
   if (existing_marks != marks_map_.end()) {
-    PerformanceEntry* entry = existing_marks->value->back().Get();
+    PerformanceEntry* entry = existing_marks->value.back().Get();
     DCHECK(entry->entryType() == performance_entry_names::kMark);
     return static_cast<PerformanceMark*>(entry);
   }
@@ -318,7 +318,7 @@ PerformanceEntryVector UserTiming::GetMarks() const {
 PerformanceEntryVector UserTiming::GetMarks(const AtomicString& name) const {
   PerformanceEntryMap::const_iterator it = marks_map_.find(name);
   if (it != marks_map_.end()) {
-    return *it->value;
+    return PerformanceEntryVector(it->value);
   }
   return {};
 }
@@ -330,7 +330,7 @@ PerformanceEntryVector UserTiming::GetMeasures() const {
 PerformanceEntryVector UserTiming::GetMeasures(const AtomicString& name) const {
   PerformanceEntryMap::const_iterator it = measures_map_.find(name);
   if (it != measures_map_.end()) {
-    return *it->value;
+    return PerformanceEntryVector(it->value);
   }
   return {};
 }
@@ -344,15 +344,11 @@ void UserTiming::InsertPerformanceEntry(
 
   auto it = performance_entry_map.find(entry.name());
   if (it == performance_entry_map.end()) {
-    PerformanceEntryVector* entries =
-        MakeGarbageCollected<PerformanceEntryVector>();
-    entries->push_back(&entry);
-    performance_entry_map.Set(entry.name(), entries);
+    performance_entry_map.Set(entry.name(), PerformanceEntryVector({&entry}));
     return;
   }
 
-  DCHECK(it->value);
-  performance_->InsertEntryIntoSortedBuffer(*it->value.Get(), entry,
+  performance_->InsertEntryIntoSortedBuffer(it->value, entry,
                                             Performance::kDoNotRecordSwaps);
 }
 

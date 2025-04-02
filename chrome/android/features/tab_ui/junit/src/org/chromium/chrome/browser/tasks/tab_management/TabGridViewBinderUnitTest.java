@@ -412,7 +412,10 @@ public final class TabGridViewBinderUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.DATA_SHARING)
+    @DisableFeatures({
+        ChromeFeatureList.DATA_SHARING,
+        ChromeFeatureList.DATA_SHARING_JOIN_ONLY
+    })
     public void testPriceDrop_PriceCardView() {
         mModel.set(
                 TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER,

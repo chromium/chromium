@@ -52,8 +52,8 @@ class TabDataCollectionUtil::LocalTabModelListObserver
   }
   ~LocalTabModelListObserver() override = default;
 
-  void OnTabModelAdded() override { ResetObservers(); }
-  void OnTabModelRemoved() override { ResetObservers(); }
+  void OnTabModelAdded(TabModel* tab_model) override { ResetObservers(); }
+  void OnTabModelRemoved(TabModel* tab_model) override { ResetObservers(); }
 
   void ResetObservers() {
     observing_models_.clear();

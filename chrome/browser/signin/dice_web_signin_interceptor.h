@@ -413,7 +413,6 @@ class DiceWebSigninInterceptor : public KeyedService,
         interception_bubble_handle_;
 
     // Used for metrics.
-    base::TimeTicks interception_start_time_;
     bool was_interception_ui_displayed_ = false;
 
     // Used to fetch the cloud user level policy value of the profile separation

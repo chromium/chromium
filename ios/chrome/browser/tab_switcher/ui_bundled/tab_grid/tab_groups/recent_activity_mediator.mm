@@ -14,8 +14,10 @@
 #import "ios/chrome/browser/share_kit/model/share_kit_avatar_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_log_item.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 
 namespace {
@@ -110,6 +112,9 @@ ActivityLogType ConvertCollaborationEvent(
     item.title = base::SysUTF16ToNSString(log.title_text);
     item.actionDescription = base::SysUTF16ToNSString(log.description_text);
     item.timestamp = base::SysUTF16ToNSString(log.time_delta_text);
+    item.favicon = SymbolWithPalette(
+        DefaultSymbolWithPointSize(kGlobeAmericasSymbol, kFaviconSize),
+        @[ [UIColor colorNamed:kGrey400Color] ]);
 
     // Get a favicon from the URL and set it to `item`.
     if (log.activity_metadata.tab_metadata.has_value()) {
@@ -117,7 +122,13 @@ ActivityLogType ConvertCollaborationEvent(
           GURL(log.activity_metadata.tab_metadata.value()
                    .last_known_url.value()),
           kFaviconSize, ^(FaviconAttributes* attributes) {
-            item.favicon = attributes.faviconImage;
+            // Skip synchronously returned default favicon.
+            if (attributes.usesDefaultImage) {
+              return;
+            }
+            if (attributes.faviconImage) {
+              item.favicon = attributes.faviconImage;
+            }
           });
     }
 

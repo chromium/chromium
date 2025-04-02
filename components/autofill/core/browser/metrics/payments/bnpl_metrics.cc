@@ -39,4 +39,9 @@ void LogBnplTosDialogShown(std::string_view issuer_id) {
   base::UmaHistogramBoolean(histogram_name, /*sample=*/true);
 }
 
+void LogBnplSuggestionNotShownReason(BnplSuggestionNotShownReason reason) {
+  base::UmaHistogramEnumeration("Autofill.Bnpl.SuggestionNotShownReason",
+                                reason);
+}
+
 }  // namespace autofill::autofill_metrics

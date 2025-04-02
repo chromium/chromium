@@ -57,6 +57,7 @@ SearchResult::OmniboxType MatchTypeToOmniboxType(
     case AutocompleteMatchType::HISTORY_URL:
     case AutocompleteMatchType::HISTORY_TITLE:
     case AutocompleteMatchType::HISTORY_BODY:
+    case AutocompleteMatchType::HISTORY_KEYWORD:
     case AutocompleteMatchType::HISTORY_EMBEDDINGS:
     case AutocompleteMatchType::NAVSUGGEST:
     case AutocompleteMatchType::BOOKMARK_TITLE:

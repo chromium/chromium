@@ -590,22 +590,21 @@ typedef NS_ENUM(NSInteger, AccountsItemType) {
     // An action is already in progress, ignore user's request.
     return;
   }
+
+  constexpr signin_metrics::ProfileSignout metricSignOut =
+      signin_metrics::ProfileSignout::kUserClickedSignoutSettings;
+
+  __weak LegacyAccountsTableViewController* weakSelf = self;
   self.signoutCoordinator = [[SignoutActionSheetCoordinator alloc]
       initWithBaseViewController:self
                          browser:_browser
                             rect:itemView.frame
                             view:itemView
         forceSnackbarOverToolbar:NO
-                      withSource:signin_metrics::ProfileSignout::
-                                     kUserClickedSignoutSettings];
-  __weak LegacyAccountsTableViewController* weakSelf = self;
-  self.signoutCoordinator.signoutCompletion = ^(BOOL success) {
-    [weakSelf.signoutCoordinator stop];
-    weakSelf.signoutCoordinator = nil;
-    if (success) {
-      [weakSelf handleAuthenticationOperationDidFinish];
-    }
-  };
+                      withSource:metricSignOut
+                      completion:^(BOOL success) {
+                        [weakSelf handleSignOutCompleted:success];
+                      }];
   self.signoutCoordinator.delegate = self;
   [self.signoutCoordinator start];
 }
@@ -616,6 +615,15 @@ typedef NS_ENUM(NSInteger, AccountsItemType) {
   // `self.removeOrMyGoogleChooserAlertCoordinator` should not be stopped, since
   // the coordinator has been cancelled.
   self.removeOrMyGoogleChooserAlertCoordinator = nil;
+}
+
+// Handles signout operation with `success` or failure.
+- (void)handleSignOutCompleted:(BOOL)success {
+  [self.signoutCoordinator stop];
+  self.signoutCoordinator = nil;
+  if (success) {
+    [self handleAuthenticationOperationDidFinish];
+  }
 }
 
 // Sets `_authenticationOperationInProgress` to NO and pops this accounts

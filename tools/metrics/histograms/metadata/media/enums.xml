@@ -1284,6 +1284,13 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="All external links protected"/>
 </enum>
 
+<enum name="MediaPlaybackInterruptionType">
+  <int value="0"
+      label="HTMLMediaElement tried to play audio in a hidden frame"/>
+  <int value="1"
+      label="Frame got hidden while the HTMLMediaElement was playing"/>
+</enum>
+
 <enum name="MediaPlayerExitStatus">
   <int value="0" label="No errors"/>
   <int value="1" label="Has errors"/>

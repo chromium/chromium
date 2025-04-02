@@ -13,6 +13,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -156,6 +157,13 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
                                 const std::u16string& description,
                                 const std::u16string& contents,
                                 const std::u16string& fill_into_edit);
+
+  // Helper function for setting the time when the request started.
+  void SetTimeRequestSent();
+
+  // Helper function for logging request times sliced by whether the request was
+  // interrupted or not.
+  void LogResponseTime(bool interrupted);
 
   // Owned by AutocompleteController.
   const raw_ptr<AutocompleteProviderClient> client_;

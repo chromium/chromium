@@ -4532,14 +4532,12 @@ cssvalue::CSSFontVariationValue* ConsumeFontVariationTag(
       return nullptr;
     }
   }
-
-  double tag_value = 0;
-  if (!css_parsing_utils::ConsumeNumberRaw_DO_NOT_USE(stream, context,
-                                                      tag_value)) {
-    return nullptr;
+  if (const CSSPrimitiveValue* tag_value = css_parsing_utils::ConsumeNumber(
+          stream, context, CSSPrimitiveValue::ValueRange::kAll)) {
+    return MakeGarbageCollected<cssvalue::CSSFontVariationValue>(tag,
+                                                                 tag_value);
   }
-  return MakeGarbageCollected<cssvalue::CSSFontVariationValue>(
-      tag, ClampTo<float>(tag_value));
+  return nullptr;
 }
 
 }  // namespace

@@ -55,19 +55,22 @@ def gen_build_target_graph(out_dir: pathlib.Path, include_testonly: bool,
         data = json.load(f)
     outbound = collections.defaultdict(set)
     inbound = collections.defaultdict(set)
+    if include_testonly:
+        print('WARNING: testonly targets are not yet supported by errorprone, '
+              'so they are skipped in this script.')
     skip = set()
-    if not include_testonly:
-        for target, info in data['targets'].items():
-            if not info['testonly']:
-                continue
-        if '__' in target:
-            target = target.split('__')[0]
+    # Remove testonly targets as they do not yet support errorprone.
+    for target, info in data['targets'].items():
+        if not info['testonly']:
+            continue
+        # If it exists, it should always be True.
+        assert info['testonly'], f'{target} has false testonly value.'
         skip.add(target)
     for target, info in data['targets'].items():
-        if '__' in target:
-            target = target.split('__')[0]
         if target in skip:
             continue
+        if '__' in target:
+            target = target.split('__')[0]
         for dep in info['deps']:
             if '__' in dep:
                 dep = dep.split('__')[0]

@@ -67,8 +67,6 @@ PerformanceManagerImpl::~PerformanceManagerImpl() {
   // TODO(crbug.com/40629049): Move this to a TearDown function.
   graph_.TearDown();
   g_performance_manager = nullptr;
-  if (on_destroyed_callback_)
-    std::move(on_destroyed_callback_).Run();
 }
 
 // static
@@ -210,14 +208,6 @@ void PerformanceManagerImpl::BatchDeleteNodes(
     graph->RemoveNode(process_node);
 
   // When |nodes| goes out of scope, all nodes are deleted.
-}
-
-// static
-void PerformanceManagerImpl::SetOnDestroyedCallbackForTesting(
-    base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(g_performance_manager->sequence_checker_);
-  CHECK(g_performance_manager);
-  g_performance_manager->on_destroyed_callback_ = std::move(callback);
 }
 
 PerformanceManagerImpl::PerformanceManagerImpl() {

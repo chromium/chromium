@@ -18,6 +18,7 @@ import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
+import {GroupAction, GroupActionProgress} from './data_sharing.mojom-webui.js';
 import {getTemplate} from './data_sharing_app.html.js';
 import type {DataSharingSdk, DataSharingSdkGetLinkParams, DynamicMessageParams, Logger, LoggingEvent, TranslationMap} from './data_sharing_sdk_types.js';
 import {Code, DataSharingMemberRoleEnum, DynamicMessageKey, LearnMoreUrlType, LoggingIntent, Progress, StaticMessageKey} from './data_sharing_sdk_types.js';
@@ -70,6 +71,34 @@ enum ProgressType {
   STARTED = 'Started',
   FAILED = 'Failed',
   SUCCEEDED = 'Succeeded',
+}
+
+function toMojomGroupAction(intent: LoggingIntent): GroupAction {
+  switch (intent) {
+    case LoggingIntent.DELETE_GROUP:
+      return GroupAction.kDeleteGroup;
+    case LoggingIntent.LEAVE_GROUP:
+      return GroupAction.kLeaveGroup;
+    case LoggingIntent.ACCEPT_JOIN_AND_OPEN:
+      return GroupAction.kJoinGroup;
+    case LoggingIntent.STOP_SHARING:
+      return GroupAction.kStopSharing;
+    default:
+      return GroupAction.kUnknown;
+  }
+}
+
+function toMojomGroupActionProgress(progress: Progress): GroupActionProgress {
+  switch (progress) {
+    case Progress.STARTED:
+      return GroupActionProgress.kStarted;
+    case Progress.SUCCEEDED:
+      return GroupActionProgress.kSuccess;
+    case Progress.FAILED:
+      return GroupActionProgress.kFailed;
+    default:
+      return GroupActionProgress.kUnknown;
+  }
 }
 
 function getGroupOwnerName(params: DynamicMessageParams): string {
@@ -362,6 +391,10 @@ export class DataSharingApp extends CustomElement implements Logger {
         this.browserProxy_.onTabGroupUnShareComplete(this.tabGroupId_);
       }
     }
+
+    this.browserProxy_.onGroupAction(
+        toMojomGroupAction(event.intentType),
+        toMojomGroupActionProgress(event.progress));
   }
 
   setSuccessfullyJoinedForTesting() {

@@ -14,6 +14,10 @@
 #include "ios/chrome/browser/flags/ios_chrome_field_trials.h"
 #include "ios/web/public/init/web_main_parts.h"
 
+namespace display {
+class ScopedNativeScreen;
+}  // namespace display
+
 class ApplicationContextImpl;
 class PrefService;
 class IOSThreadProfiler;
@@ -72,6 +76,8 @@ class IOSChromeMainParts : public web::WebMainParts {
   // A profiler that periodically samples stack traces. Used to understand
   // thread and process startup and normal behavior.
   std::unique_ptr<IOSThreadProfiler> sampling_profiler_;
+
+  std::unique_ptr<display::ScopedNativeScreen> screen_;
 
   memory_system::MemorySystem memory_system_;
 };

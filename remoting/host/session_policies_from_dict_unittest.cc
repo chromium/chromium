@@ -86,6 +86,14 @@ TEST(SessionPoliciesFromDict, FullDict_CreatesFullPolicies) {
   EXPECT_EQ(*policies, GetFullSessionPolicies());
 }
 
+TEST(SessionPoliciesFromDict, FullDict_ExpectNoValueForAllowRemoteInput) {
+  // `SessionPolicies.allow_remote_input` is not set from `PolicyWatcher` so we
+  // expect the value to be empty .
+  std::optional<SessionPolicies> policies =
+      SessionPoliciesFromDict(GetFullSessionPolicyDict());
+  EXPECT_FALSE(policies->allow_remote_input.has_value());
+}
+
 TEST(SessionPoliciesFromDict, PartialDict_CreatesPartialPolicies) {
   base::Value::Dict policy_dict = GetFullSessionPolicyDict().Clone();
   policy_dict.Remove(policy::key::kRemoteAccessHostClipboardSizeBytes);

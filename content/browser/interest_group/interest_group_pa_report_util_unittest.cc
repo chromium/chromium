@@ -23,13 +23,11 @@ namespace {
 
 const PrivateAggregationRequestWithEventType
     kExpectedRequestWithReservedEventType(
-        auction_worklet::mojom::PrivateAggregationRequest::New(
-            auction_worklet::mojom::AggregatableReportContribution::
-                NewHistogramContribution(
-                    blink::mojom::AggregatableReportHistogramContribution::New(
-                        /*bucket=*/123,
-                        /*value=*/45,
-                        /*filtering_id=*/std::nullopt)),
+        auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
+            blink::mojom::AggregatableReportHistogramContribution::New(
+                /*bucket=*/123,
+                /*value=*/45,
+                /*filtering_id=*/std::nullopt),
             blink::mojom::AggregationServiceMode::kDefault,
             blink::mojom::DebugModeDetails::New()),
         /*event_type=*/std::nullopt);
@@ -65,6 +63,20 @@ auction_worklet::mojom::PrivateAggregationRequestPtr CreateHistogramRequest(
           NewHistogramContribution(
               blink::mojom::AggregatableReportHistogramContribution::New(
                   bucket, value, filtering_id)),
+      blink::mojom::AggregationServiceMode::kDefault,
+      blink::mojom::DebugModeDetails::New());
+}
+
+// Creates a FinalizedPrivateAggregationRequest with histogram contribution
+// using uint128 `bucket` and int `value`.
+auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr
+CreateFinalizedHistogramRequest(
+    absl::uint128 bucket,
+    int32_t value,
+    std::optional<uint64_t> filtering_id = std::nullopt) {
+  return auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
+      blink::mojom::AggregatableReportHistogramContribution::New(bucket, value,
+                                                                 filtering_id),
       blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
 }
@@ -145,7 +157,7 @@ CreateForEventRequestWithValueObject(
 
 PrivateAggregationRequestWithEventType
 CreatePrivateAggregationRequestWithEventType(
-    auction_worklet::mojom::PrivateAggregationRequestPtr request,
+    auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr request,
     const std::optional<std::string>& event_type = std::nullopt) {
   PrivateAggregationRequestWithEventType result(std::move(request), event_type);
   return result;
@@ -204,8 +216,16 @@ TEST_F(InterestGroupPaReportUtilTest, AggregationModeAndDebugMode) {
           /*is_enabled=*/true,
           /*debug_key=*/blink::mojom::DebugKey::New(1234u)));
 
+  auction_worklet::mojom::FinalizedPrivateAggregationRequest expected_request(
+      blink::mojom::AggregatableReportHistogramContribution::New(
+          /*bucket=*/123, /*value=*/45, /*filtering_id=*/std::nullopt),
+      blink::mojom::AggregationServiceMode::kExperimentalPoplar,
+      blink::mojom::DebugModeDetails::New(
+          /*is_enabled=*/true,
+          /*debug_key=*/blink::mojom::DebugKey::New(1234u)));
+
   PrivateAggregationRequestWithEventType request_with_event_type(
-      request.Clone(), /*event_type=*/std::nullopt);
+      expected_request.Clone(), /*event_type=*/std::nullopt);
   EXPECT_EQ(std::move(request_with_event_type),
             FillInPrivateAggregationRequest(request.Clone(),
                                             /*winning_bid=*/1,
@@ -307,7 +327,7 @@ TEST_F(InterestGroupPaReportUtilTest,
        ForEventContributionNonReservedEventType) {
   EXPECT_EQ(
       CreatePrivateAggregationRequestWithEventType(
-          CreateHistogramRequest(/*bucket=*/123, /*value=*/45),
+          CreateFinalizedHistogramRequest(/*bucket=*/123, /*value=*/45),
           /*event_type=*/"click"),
       FillInPrivateAggregationRequest(
           CreateForEventRequest(/*bucket=*/123, /*value=*/45,
@@ -319,7 +339,7 @@ TEST_F(InterestGroupPaReportUtilTest,
 
   EXPECT_EQ(
       CreatePrivateAggregationRequestWithEventType(
-          CreateHistogramRequest(/*bucket=*/123, /*value=*/45),
+          CreateFinalizedHistogramRequest(/*bucket=*/123, /*value=*/45),
           /*event_type=*/"arbitrary.non.reserved"),
       FillInPrivateAggregationRequest(
           CreateForEventRequest(
@@ -334,7 +354,7 @@ TEST_F(InterestGroupPaReportUtilTest,
   // event type.
   EXPECT_EQ(
       CreatePrivateAggregationRequestWithEventType(
-          CreateHistogramRequest(/*bucket=*/123, /*value=*/45),
+          CreateFinalizedHistogramRequest(/*bucket=*/123, /*value=*/45),
           /*event_type=*/"reserved-no-dot"),
       FillInPrivateAggregationRequest(
           CreateForEventRequest(/*bucket=*/123, /*value=*/45,
@@ -469,12 +489,10 @@ TEST_F(InterestGroupPaReportUtilTest,
 
   // kNotAvailable is also reported. kNotAvailable is 0, so bucket is 0 * 39 + 6
   PrivateAggregationRequestWithEventType expected_requests_with_event_type(
-      auction_worklet::mojom::PrivateAggregationRequest::New(
-          auction_worklet::mojom::AggregatableReportContribution::
-              NewHistogramContribution(
-                  blink::mojom::AggregatableReportHistogramContribution::New(
-                      /*bucket=*/6, /*value=*/45,
-                      /*filtering_id=*/std::nullopt)),
+      auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
+          blink::mojom::AggregatableReportHistogramContribution::New(
+              /*bucket=*/6, /*value=*/45,
+              /*filtering_id=*/std::nullopt),
           blink::mojom::AggregationServiceMode::kDefault,
           blink::mojom::DebugModeDetails::New()),
       /*event_type=*/std::nullopt);
@@ -521,7 +539,7 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionBaseValueTimings) {
     // 27.
     EXPECT_EQ(
         CreatePrivateAggregationRequestWithEventType(
-            CreateHistogramRequest(/*bucket=*/27, /*value=*/45),
+            CreateFinalizedHistogramRequest(/*bucket=*/27, /*value=*/45),
             /*event_type=*/std::nullopt),
         FillInPrivateAggregationRequest(
             CreateForEventRequestWithBucketObject(
@@ -548,7 +566,7 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionBaseValueTimings) {
     // 61.
     EXPECT_EQ(
         CreatePrivateAggregationRequestWithEventType(
-            CreateHistogramRequest(/*bucket=*/61, /*value=*/46),
+            CreateFinalizedHistogramRequest(/*bucket=*/61, /*value=*/46),
             /*event_type=*/std::nullopt),
         FillInPrivateAggregationRequest(
             CreateForEventRequestWithBucketObject(
@@ -579,7 +597,7 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionBaseParticipantData) {
 
     EXPECT_EQ(
         CreatePrivateAggregationRequestWithEventType(
-            CreateHistogramRequest(/*bucket=*/40, /*value=*/45),
+            CreateFinalizedHistogramRequest(/*bucket=*/40, /*value=*/45),
             /*event_type=*/std::nullopt),
         FillInPrivateAggregationRequest(
             CreateForEventRequestWithBucketObject(
@@ -604,7 +622,7 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionBaseParticipantData) {
 
     EXPECT_EQ(
         CreatePrivateAggregationRequestWithEventType(
-            CreateHistogramRequest(/*bucket=*/4, /*value=*/46),
+            CreateFinalizedHistogramRequest(/*bucket=*/4, /*value=*/46),
             /*event_type=*/std::nullopt),
         FillInPrivateAggregationRequest(
             CreateForEventRequestWithBucketObject(
@@ -626,7 +644,7 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionNegativeValue) {
   // tests that case.
   EXPECT_EQ(
       CreatePrivateAggregationRequestWithEventType(
-          CreateHistogramRequest(/*bucket=*/123, /*value=*/0)),
+          CreateFinalizedHistogramRequest(/*bucket=*/123, /*value=*/0)),
       FillInPrivateAggregationRequest(
           CreateForEventRequest(
               /*bucket=*/123, /*value=*/-10,
@@ -641,7 +659,7 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionNegativeValue) {
   // Calculated negative value should be clamped to 0.
   EXPECT_EQ(
       CreatePrivateAggregationRequestWithEventType(
-          CreateHistogramRequest(/*bucket=*/123, /*value=*/0)),
+          CreateFinalizedHistogramRequest(/*bucket=*/123, /*value=*/0)),
       FillInPrivateAggregationRequest(
           CreateForEventRequestWithValueObject(
               /*bucket=*/123, /*value=*/
@@ -704,7 +722,7 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionZeroScale) {
   // Bucket should be 123 * 0
   EXPECT_EQ(
       CreatePrivateAggregationRequestWithEventType(
-          CreateHistogramRequest(/*bucket=*/0, /*value=*/45)),
+          CreateFinalizedHistogramRequest(/*bucket=*/0, /*value=*/45)),
       FillInPrivateAggregationRequest(
           CreateForEventRequestWithBucketObject(
               /*bucket=*/bucket.Clone(),
@@ -725,7 +743,7 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionZeroScale) {
   // Value should be 45 * 0 + 0
   EXPECT_EQ(
       CreatePrivateAggregationRequestWithEventType(
-          CreateHistogramRequest(/*bucket=*/123, /*value=*/0)),
+          CreateFinalizedHistogramRequest(/*bucket=*/123, /*value=*/0)),
       FillInPrivateAggregationRequest(
           CreateForEventRequestWithValueObject(
               /*bucket=*/123,
@@ -825,10 +843,11 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionCalculateBucket) {
             /*is_winner=*/true);
     if (test_case.expected_bucket.has_value()) {
       ASSERT_TRUE(request.has_value());
-      EXPECT_EQ(CreatePrivateAggregationRequestWithEventType(
-                    CreateHistogramRequest(test_case.expected_bucket.value(),
-                                           /*value=*/45)),
-                request.value());
+      EXPECT_EQ(
+          CreatePrivateAggregationRequestWithEventType(
+              CreateFinalizedHistogramRequest(test_case.expected_bucket.value(),
+                                              /*value=*/45)),
+          request.value());
     } else {
       EXPECT_FALSE(request);
     }
@@ -901,10 +920,10 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionCalculateValue) {
 
     if (test_case.expected_value.has_value()) {
       ASSERT_TRUE(request.has_value());
-      EXPECT_EQ(
-          CreatePrivateAggregationRequestWithEventType(CreateHistogramRequest(
-              /*bucket=*/123, test_case.expected_value.value())),
-          request.value());
+      EXPECT_EQ(CreatePrivateAggregationRequestWithEventType(
+                    CreateFinalizedHistogramRequest(
+                        /*bucket=*/123, test_case.expected_value.value())),
+                request.value());
     } else {
       EXPECT_FALSE(request);
     }
@@ -919,8 +938,8 @@ TEST_F(InterestGroupPaReportUtilTest, FilteringIdPassedUnchanged) {
     std::optional<uint64_t> expected_filtering_id = filtering_id;
     EXPECT_EQ(
         CreatePrivateAggregationRequestWithEventType(
-            CreateHistogramRequest(/*bucket=*/123, /*value=*/45,
-                                   expected_filtering_id),
+            CreateFinalizedHistogramRequest(/*bucket=*/123, /*value=*/45,
+                                            expected_filtering_id),
             /*event_type=*/"click"),
         FillInPrivateAggregationRequest(
             CreateForEventRequest(

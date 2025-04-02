@@ -57,6 +57,10 @@ const CGFloat kLabelStackSpacing = 6.0;
 // Title constants.
 const CGFloat kTitleLineSpacing = 18.0;
 
+// Alpha for start/end gradient for product image overlay.
+const CGFloat kPriceDropOverlayStartAlpha = 0.0;
+const CGFloat kPriceDropOverlayEndAlpha = 0.14;
+
 // Adds the fallback image that should be used if there is no salient nor
 // favicon image.
 void SetFallbackImageToImageView(UIImageView* image_view,
@@ -67,6 +71,13 @@ void SetFallbackImageToImageView(UIImageView* image_view,
   image_view.backgroundColor = [UIColor colorNamed:kBlue500Color];
   background_view.backgroundColor = [UIColor colorNamed:kBlue500Color];
   image_view.tintColor = UIColor.whiteColor;
+}
+
+bool HasPriceDropOnTab(TabResumptionItem* item) {
+  return item.shopCardData &&
+         item.shopCardData.shopCardItemType ==
+             ShopCardItemType::kPriceDropOnTab &&
+         item.shopCardData.priceDrop.has_value();
 }
 
 }  // namespace
@@ -125,10 +136,8 @@ void SetFallbackImageToImageView(UIImageView* image_view,
   [labelStackView addArrangedSubview:hostnameAndSyncTimeLabel];
   [accessibilityLabel addObject:hostnameAndSyncTimeLabel.text];
 
-  if (_item.shopCardData &&
-      _item.shopCardData.shopCardItemType ==
-          ShopCardItemType::kPriceDropOnTab &&
-      _item.shopCardData.priceDrop.has_value()) {
+  if (HasPriceDropOnTab(_item)) {
+    tabTitleLabel.numberOfLines = 1;
     _priceNotificationsChip = [[PriceNotificationsPriceChipView alloc] init];
     _priceNotificationsChip.translatesAutoresizingMaskIntoConstraints = NO;
     _priceNotificationsChip.isAccessibilityElement = YES;
@@ -288,10 +297,21 @@ void SetFallbackImageToImageView(UIImageView* image_view,
   gradientLayer.frame = CGRectMake(0, 0, containerSize, containerSize);
   gradientLayer.startPoint = CGPointMake(0.0, 0.0);
   gradientLayer.endPoint = CGPointMake(0.0, 1.0);
-  gradientLayer.colors = @[
-    static_cast<id>([UIColor clearColor].CGColor),
-    static_cast<id>([UIColor colorWithWhite:0 alpha:0.2].CGColor)
-  ];
+  if (HasPriceDropOnTab(_item)) {
+    gradientLayer.colors = @[
+      static_cast<id>([[UIColor blackColor]
+                          colorWithAlphaComponent:kPriceDropOverlayStartAlpha]
+                          .CGColor),
+      static_cast<id>([[UIColor blackColor]
+                          colorWithAlphaComponent:kPriceDropOverlayEndAlpha]
+                          .CGColor)
+    ];
+  } else {
+    gradientLayer.colors = @[
+      static_cast<id>([UIColor clearColor].CGColor),
+      static_cast<id>([UIColor colorWithWhite:0 alpha:0.2].CGColor)
+    ];
+  }
   [salientView.layer insertSublayer:gradientLayer atIndex:0];
   return salientView;
 }

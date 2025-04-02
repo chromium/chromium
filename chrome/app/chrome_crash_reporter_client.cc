@@ -4,6 +4,8 @@
 
 #include "chrome/app/chrome_crash_reporter_client.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
@@ -48,11 +50,12 @@ void ChromeCrashReporterClient::Create() {
   // By setting the BREAKPAD_DUMP_LOCATION environment variable, an alternate
   // location to write crash dumps can be set.
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  std::string alternate_crash_dump_location;
   base::FilePath crash_dumps_dir_path;
-  if (env->GetVar("BREAKPAD_DUMP_LOCATION", &alternate_crash_dump_location)) {
+  std::optional<std::string> alternate_crash_dump_location =
+      env->GetVar("BREAKPAD_DUMP_LOCATION");
+  if (alternate_crash_dump_location.has_value()) {
     crash_dumps_dir_path =
-        base::FilePath::FromUTF8Unsafe(alternate_crash_dump_location);
+        base::FilePath::FromUTF8Unsafe(alternate_crash_dump_location.value());
   } else if (base::CommandLine::ForCurrentProcess()->HasSwitch(
                  "breakpad-dump-location")) {
     // This is needed for Android tests, where we want dumps to go to a location

@@ -2976,6 +2976,7 @@
 <translation id="3045447014237878114">このサイトで複数のファイルが自動的にダウンロードされました</translation>
 <translation id="3046178388369461825">Linux ディスクの空き容量が非常に少なくなっています</translation>
 <translation id="304644035656848980">マイクのプレビュー</translation>
+<translation id="3046892784550338476">バージョン <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />（<ph name="PRODUCT_CHANNEL" />）<ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">ウェブページ、完全</translation>
 <translation id="304747341537320566">読み上げエンジン</translation>
 <translation id="3047678109605649715">デバイスに <ph name="LANGUAGE" /> の音声がありません。デバイスで容量を確保してから、もう一度お試しください。</translation>
@@ -3068,6 +3069,7 @@
 <translation id="3122883569442693641">詳細</translation>
 <translation id="3124111068741548686">USER ハンドル</translation>
 <translation id="3124332159330678621">Chrome をカスタマイズして、ブラウザのデザインを一新</translation>
+<translation id="3125816458150005808">固定を解除してメニューから開くこともできます</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">充電やパフォーマンスに関する問題を回避するには、対応する Dell または USB Type-C の電源アダプターを使用してください。</translation>
 <translation id="3127862849166875294">Linux のディスクサイズ変更</translation>
@@ -4064,6 +4066,7 @@
 <translation id="3820749202859700794">SECG 楕円曲線 secp521r1（別名 NIST P-521）</translation>
 <translation id="3821074617718452587">スマートフォン ハブの通知</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{1 個の拡張機能が承認されました}other{# 個の拡張機能が承認されました}}</translation>
+<translation id="3822426549715448461">DD</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux 用の推奨される空き容量は <ph name="INSTALL_SIZE" /> 以上です。</translation>
 <translation id="3824621460022590830">デバイス登録トークンが無効です。デバイスの所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
@@ -4591,6 +4594,7 @@
 <translation id="4203769790323223880">カメラは許可されていません</translation>
 <translation id="4204415812590935863">現在、テーマを作成できません。</translation>
 <translation id="4205157409548006256">Linux の設定中にエラーが発生しました。</translation>
+<translation id="4205643719206044108">候補を表示するため、アクセスしたサイトとページのコンテンツが Google と共有されます</translation>
 <translation id="4206144641569145248">エイリアン</translation>
 <translation id="4206323443866416204">ご意見の報告</translation>
 <translation id="4206585797409671301">リクエストの表示を許可するウェブサイト</translation>
@@ -5313,6 +5317,7 @@
 <translation id="4723140812774948886">次と交換</translation>
 <translation id="4724450788351008910">アフィリエーションが変更された</translation>
 <translation id="4725511304875193254">コーギー</translation>
+<translation id="4725762702191453794">タブ検索をツールバーに固定しました</translation>
 <translation id="4726710355753484204">拡大するには、Ctrl+Alt+明るさを上げるキーを使用します。
 縮小するには、Ctrl+Alt+明るさを下げるキーを使用します。</translation>
 <translation id="4726710629007580002">この拡張機能をインストールしようとしたときに、次の警告がありました。</translation>
@@ -8717,6 +8722,7 @@
 <translation id="7199452998289813782"><ph name="DEVICE_NAME" /> へのキャストを一時停止する</translation>
 <translation id="720110658997053098">このデバイスをキオスクモードに固定する</translation>
 <translation id="7201118060536064622">「<ph name="DELETED_ITEM_NAME" />」が削除されました</translation>
+<translation id="7201336084980086208">自動入力機能により、フォームを送信する際に、運転免許証やパスポートの番号などの情報を保存できます</translation>
 <translation id="7201420661433230412">ファイルを表示する</translation>
 <translation id="7201432510117121839">このデバイスでは、デスクトップの音声をキャストできません</translation>
 <translation id="7201535955609308429">確認中のため、しばらくお待ちください</translation>

@@ -829,13 +829,6 @@ void HTMLAnchorElementBase::Trace(Visitor* visitor) const {
 HTMLAnchorElement::HTMLAnchorElement(Document& document)
     : HTMLAnchorElementBase(html_names::kATag, document) {}
 
-void HTMLAnchorElement::AttachLayoutTree(AttachContext& context) {
-  if (Url().HasFragmentIdentifier()) {
-    GetDocument().SetNeedsScrollMarkerGroupRelationsUpdate();
-  }
-  HTMLAnchorElementBase::AttachLayoutTree(context);
-}
-
 void HTMLAnchorElement::DetachLayoutTree(bool performing_reattach) {
   if (ScrollMarkerGroupData* data = GetScrollMarkerGroupContainerData()) {
     data->RemoveFromFocusGroup(*this);

@@ -10,3 +10,4 @@ This is a testharness.js-based test.
 [FAIL] Test sink for script.setAttributeNS(http://www.w3.org/1999/xlink, href)
   assert_equals: expected "SVGScriptElement href" but got "Element setAttributeNS"
 Harness: the test ran to completion.
+

@@ -35,6 +35,7 @@
 #include "base/test/test_future.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "content/browser/btm/btm_service_impl.h"
 #include "content/browser/btm/btm_storage.h"
 #include "content/browser/btm/btm_test_utils.h"
@@ -2298,7 +2299,8 @@ TEST_F(BrowsingDataRemoverImplDipsTest, RemoveBtmEventsByType) {
 
 TEST_F(BrowsingDataRemoverImplTest,
        RemoveBrowsingHistoryRegeneratesNoiseToken) {
-  base::test::ScopedFeatureList features(blink::features::kCanvasInterventions);
+  base::test::ScopedFeatureList features(
+      fingerprinting_protection_interventions::features::kCanvasNoise);
   uint64_t original_token =
       content::CanvasNoiseTokenData::GetToken(GetBrowserContext());
 

@@ -112,7 +112,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Startup.Android.Cold.TimeToFirstContentfulPaint.{StartActivityType}"
-    units="ms" expires_after="2025-07-13">
+    units="ms" expires_after="2025-09-28">
   <owner>pasko@chromium.org</owner>
   <owner>alexilin@chromium.org</owner>
   <summary>
@@ -126,7 +126,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Startup.Android.Cold.TimeToFirstContentfulPaint3.{StartActivityType}"
-    units="ms" expires_after="2025-07-26">
+    units="ms" expires_after="2025-09-28">
   <owner>pasko@chromium.org</owner>
   <owner>nafisabedin@google.com</owner>
   <summary>
@@ -166,7 +166,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Startup.Android.Cold.TimeToFirstNavigationCommit.{StartActivityType}"
-    units="ms" expires_after="2025-07-13">
+    units="ms" expires_after="2025-09-28">
   <owner>pasko@chromium.org</owner>
   <owner>alexilin@chromium.org</owner>
   <summary>
@@ -447,38 +447,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram base="true" name="Startup.Android.FeedContentFirstLoadedTime"
-    units="ms" expires_after="2024-09-15">
-  <owner>hanxi@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Records the time duration from a cold start till the Feeds articles are
-    first loaded on the StartSurface. This histogram is only recorded when
-    StartSurface is shown at launch due to &quot;return to tab switcher&quot;
-    feature.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Startup.Android.FeedStreamCreatedTime" units="ms"
-    expires_after="2024-09-15">
-  <owner>hanxi@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Records the time duration from a cold start till the Feeds stream is created
-    on the StartSurface. This histogram is only recorded when StartSurface is
-    shown at launch due to &quot;return to tab switcher&quot; feature.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Startup.Android.FirstDrawCompletedTime" units="ms"
-    expires_after="2024-09-15">
-  <owner>hanxi@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Records the time duration from a cold start till the first draw completes.
-  </summary>
-</histogram>
-
 <histogram name="Startup.Android.GURLEnsureMainDexInitialized" units="ms"
     expires_after="2025-08-24">
   <owner>mthiesse@chromium.org</owner>
@@ -578,18 +546,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Startup.Android.SingleTabTitleAvailableTime"
-    units="ms" expires_after="2024-09-15">
-  <owner>hanxi@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Records the time duration from a cold start till the title of the single Tab
-    is shown on the StartSurface. This histogram is only recorded when
-    StartSurface is shown at launch due to &quot;return to tab switcher&quot;
-    feature.
-  </summary>
-</histogram>
-
 <histogram name="Startup.Android.Warm.MainIntentTimeToFirstDraw" units="ms"
     expires_after="2025-08-10">
   <owner>nafisabedin@google.com</owner>
@@ -597,16 +553,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time duration from a warm, main intent launch until the first
     draw completes.
-  </summary>
-</histogram>
-
-<histogram name="Startup.BlockForCrashpadHandlerStartupTime" units="ms"
-    expires_after="M85">
-  <owner>mark@chromium.org</owner>
-  <owner>crashpad-dev@chromium.org</owner>
-  <summary>
-    The amount of time that elapsed during in
-    crash_report::BlockUntilHandlerStarted().
   </summary>
 </histogram>
 
@@ -767,7 +713,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.ColdStartFromMain" units="ms"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -824,8 +770,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Startup.CreateProcessLauncher2.{Status}"
-    units="ms" expires_after="2025-02-05">
+<histogram name="Startup.CreateProcessLauncher2.{Status}" units="ms"
+    expires_after="2025-02-05">
   <owner>ganesh@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>
@@ -840,21 +786,6 @@ chromium-metrics-reviews@google.com.
     <variant name="TimedWaitFailedAtStartup"/>
     <variant name="TimedWaitSucceeded"/>
     <variant name="TimedWaitSucceededAtStartup"/>
-  </token>
-</histogram>
-
-<histogram base="true" name="Startup.DoUpgradeTasks.{Status}" units="ms"
-    expires_after="M99">
-  <owner>gab@chromium.org</owner>
-  <owner>etienneb@chromium.org</owner>
-  <summary>
-    Records the time it took to complete upgrade_util::DoUpgradeTasks() when
-    {Status}.
-  </summary>
-  <token key="Status">
-    <variant name="NoRelaunch"/>
-    <variant name="RelaunchFailed"/>
-    <variant name="RelaunchSucceeded"/>
   </token>
 </histogram>
 
@@ -1201,7 +1132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.StartupBrowserCreator.LaunchBrowser" units="ms"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>alemate@chromium.org</owner>
   <owner>xiyuan@chromium.org</owner>
   <owner>cros-sw-perf+metrics@google.com</owner>
@@ -1241,7 +1172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.TimeFromMainToDidFinishLaunchingCall" units="ms"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>olivierrobin@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
@@ -1252,7 +1183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.TimeFromMainToSceneConnection" units="ms"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>olivierrobin@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>

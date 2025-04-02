@@ -440,6 +440,7 @@
 <translation id="2783161812871838616">ଡେସ୍କଟପ ସାଇଟ ପାଇଁ ଅନୁରୋଧ କରନ୍ତୁ</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ {EMAIL}ରେ ପାସୱାର୍ଡ ସେଭ କରାଯାଇଛି}other{ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ {EMAIL}ରେ ପାସୱାର୍ଡଗୁଡ଼ିକ ସେଭ କରାଯାଇଛି}}</translation>
 <translation id="2791174088547598693">ପାସୱାର୍ଡ ଯୋଗ କରନ୍ତୁ…</translation>
+<translation id="2793703503584038325">ଏକ ପାସୱାର୍ଡ ଚୟନ କରି "ସେୟାର କରନ୍ତୁ" ଆଇକନରେ ଟାପ କରନ୍ତୁ</translation>
 <translation id="2797302972324086597">ଦେଶର କୋଡ</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} ଫାଇଲ}other{{COUNT} ଫାଇଲ}}</translation>
 <translation id="2816489851009559785">ମେନୁ → ସେଟିଂସ → ଡିଫଲ୍ଟ ବ୍ରାଉଜର</translation>
@@ -579,6 +580,7 @@
 <translation id="35083190962747987">${url} ଖୋଲନ୍ତୁ</translation>
 <translation id="3511519535430890904">ବ୍ରାଉଜିଂ ସୁରକ୍ଷା ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="3517216995152707259">ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଡାଟାକୁ ଡିଲିଟ କରିବା ଦ୍ୱାରା ଏହା ଆପଣଙ୍କୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରୁ ସାଇନ ଆଉଟ କରେ ନାହିଁ। ଏହା କରିବା ପାଇଁ <ph name="BEGIN_LINK" />Chromeରୁ ସାଇନ ଆଉଟ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
+<translation id="3519792890877853853">ଏହି କାର୍ଡ ଆପଣଙ୍କର ଖୋଲା ଥିବା ଟାବଗୁଡ଼ିକରେ ପ୍ରଡକ୍ଟଗୁଡ଼ିକର ସମୀକ୍ଷା ଦେଖାଏ</translation>
 <translation id="3519905498307021260">{count,plural, =1{ଟାବ ଖୋଲନ୍ତୁ}other{{count}ଟି ଟାବ ଖୋଲନ୍ତୁ}}</translation>
 <translation id="3523513363815970085">"ଆପଣଙ୍କ ଶ୍ରେଷ୍ଠ ସାଇଟ" ଲୁଚାନ୍ତୁ</translation>
 <translation id="3523789730715594198">ଆପଣ ଯେ କୌଣସି ସମୟରେ ସେଟିଂସରେ ସିଙ୍କ କରିବା ବନ୍ଦ କରିପାରିବେ। Google ଆପଣଙ୍କ ଇତିହାସ ଆଧାରରେ Search ଏବଂ ଅନ୍ୟ ସେବାଗୁଡ଼ିକୁ ପର୍ସନାଲାଇଜ କରିପାରେ।</translation>
@@ -819,6 +821,7 @@
 <translation id="4565377596337484307">ପାସୱାର୍ଡ୍ ଲୁଚାନ୍ତୁ</translation>
 <translation id="4568230126482344545">'ବର୍ତ୍ତମାନର ଟାବଗୁଡ଼ିକୁ' ଲୁଚାନ୍ତୁ</translation>
 <translation id="4578835633387306383">ଚାଲୁ କରନ୍ତୁ…</translation>
+<translation id="4580716718466706433">"Password Manager"କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="4587589328781138893">ସାଇଟଗୁଡ଼ିକ</translation>
 <translation id="4592672037257622855">{count,plural, =1{ଆପଣଙ୍କ ପଢ଼ିବା ତାଲିକାରେ ପୃଷ୍ଠା ଯୋଗ କରାଯାଇଛି}other{ଆପଣଙ୍କ ପଢ଼ିବା ତାଲିକାରେ {count} ପୃଷ୍ଠା ଯୋଗ କରାଯାଇଛି}}</translation>
 <translation id="459644946100970322">ମୂଲ୍ୟ ଆଲର୍ଟଗୁଡ଼ିକୁ ଚାଲୁ କରିବେ?</translation>
@@ -858,6 +861,7 @@
 <translation id="4717844083556844785">ବର୍ତ୍ତମାନର ୱେବପୃଷ୍ଠା ଇନକଗ୍ନିଟୋରେ ଅଛି</translation>
 <translation id="4719927025381752090">ଅନୁବାଦ କରିବାକୁ ପ୍ରସ୍ତାବ ଦିଅନ୍ତୁ</translation>
 <translation id="4720530280568305198">ଆପଣଙ୍କ ଚୟନଗୁଡ଼ିକ ଏକ ନୂଆ ଟାବ ଖୋଲେ</translation>
+<translation id="472259426228234149">ମୂଲ୍ୟ $100 - $180</translation>
 <translation id="473775607612524610">ଅପ୍‍‍ଡେଟ୍</translation>
 <translation id="474209246745757965">ଆପଣଙ୍କ କେମେରା ମାଧ୍ୟମରେ କିଣନ୍ତୁ ଏବଂ ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="4742407542027196863">ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକୁ ପରିଚାଳିତ କରନ୍ତୁ…</translation>

@@ -99,6 +99,10 @@
              : nil;
 }
 
+- (BOOL)addingManualAddress {
+  return NO;
+}
+
 #pragma mark - Private
 
 // Retrieves the AutofillSaveUpdateAddressProfileDelegateIOS from the address

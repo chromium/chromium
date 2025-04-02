@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Datoteka manifesta ni veljavna</translation>
 <translation id="7217838517480956708">Skrbnik tega računalnika zahteva namestitev razširitve <ph name="EXTENSION_NAME" />. Ni je mogoče odstraniti ali spremeniti.</translation>
 <translation id="7612608473764576263">Vrednost vnosa za zasebni ključ mora biti veljavne oblike (ključ RSA s kodiranjem PEM v obliki PKCS#8).</translation>
+<translation id="7876803335449432072">Datoteke »<ph name="RELATIVE_PATH" />« ni bilo mogoče naložiti za skript vsebine. Datoteke s slogi skripta vsebine je mogoče naložiti samo iz podprtih datotek s slogi, kot so datoteke .css.</translation>
 <translation id="7939686037314084444">Ta razširitev se ni pravilno naložila. Morda ne more prestrezati omrežnih zahtev.</translation>
 <translation id="7972881773422714442">Možnosti: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Sprednji</translation>
 <translation id="8047248493720652249">Ta razširitev ni mogla prenosa poimenovati »<ph name="ATTEMPTED_FILENAME" />«, ker je druga razširitev (<ph name="EXTENSION_NAME" />) določila drugo ime datoteke: »<ph name="ACTUAL_FILENAME" />«.</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> proizvajalca <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Datoteka manifesta manjka ali pa je ni mogoče prebrati</translation>
+<translation id="8621383749470166852">Datoteke »<ph name="RELATIVE_PATH" />« ni bilo mogoče naložiti za skript vsebine. Skripte vsebine je mogoče naložiti samo iz podprtih datotek JavaScript, kot so datoteke .js.</translation>
 <translation id="8636666366616799973">Paket je neveljaven. Podrobnosti: »<ph name="ERROR_MESSAGE" />«.</translation>
 <translation id="8761756413268424715">Aplikacija »<ph name="APP_NAME" />« zahteva dostop do ene od vaših naprav:</translation>
 <translation id="8885905466771744233">Zasebni ključ za navedeno razširitev že obstaja. Uporabite ga znova ali pa ga izbrišite.</translation>

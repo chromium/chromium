@@ -297,9 +297,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("setup_fake_updater_lower_version");
   }
 
-  void SetupRealUpdater(const base::FilePath& updater_path) const override {
-    RunCommand("setup_real_updater",
-               {Param("updater_path", updater_path.AsUTF8Unsafe())});
+  void SetupRealUpdater(const base::FilePath& updater_path,
+                        const base::Value::List& switches) const override {
+    RunCommand(
+        "setup_real_updater",
+        {Param("updater_path", updater_path.AsUTF8Unsafe()),
+         Param("switches", StringFromValue(base::Value(switches.Clone())))});
   }
 
   void SetExistenceCheckerPath(const std::string& app_id,
@@ -463,8 +466,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                base::NumberToString(expected_exit_code))});
   }
 
-  void ExpectLegacyPolicyStatusSucceeds() const override {
-    RunCommand("expect_legacy_policy_status_succeeds");
+  void ExpectLegacyPolicyStatusSucceeds(
+      const base::Version& updater_version) const override {
+    RunCommand("expect_legacy_policy_status_succeeds",
+               {Param("updater_version", updater_version.GetString())});
   }
 
   void LegacyInstallApp(const std::string& app_id,

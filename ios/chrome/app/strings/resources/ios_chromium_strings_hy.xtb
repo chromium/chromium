@@ -91,6 +91,7 @@
 <translation id="3054480780637153380">Բացեք Chromium-ի կարգավորումները iOS-ում, ապա հպեք «Դիտարկիչի կանխադրված հավելված» և ընտրեք Chromium-ը։</translation>
 <translation id="3102849287235003384">Բոլոր կայքերում ձեր Google հաշվից դուրս գալու համար <ph name="BEGIN_LINK" />դուրս եկեք Chromium-ից<ph name="END_LINK" />։</translation>
 <translation id="3115956258722352278">Դարձնե՞լ Chromium-ը ձեր կանխադրված դիտարկիչը</translation>
+<translation id="3180939591219927904">Միացրեք «Կողպեք ինկոգնիտո ներդիրները, երբ փակեք Chromium-ը»</translation>
 <translation id="3242612358525156339">Ձեր սարքի կարգավորումներում բացեք «<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />» պարամետրը և ընտրեք «Chromium»</translation>
 <translation id="328933489847748230">{count,plural, =1{Այժմ ցուցադրվում է Chromium-ի 1 պատուհան}one{Այժմ ցուցադրվում է Chromium-ի {count} պատուհան}other{Այժմ ցուցադրվում է Chromium-ի {count} պատուհան}}</translation>
 <translation id="3344973607274501920">Chromium-ին չհաջողվեց ստուգել ձեր գաղտնաբառերը։ Ստուգեք ինտերնետ կապը։</translation>
@@ -260,6 +261,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Ընտրված տվյալները հեռացվել են Chromium-ից և համաժամացված սարքերից: Պատմությունը կարող է պահվել նաև ձեր Google հաշվում, օրինակ՝ Google-ի ծառայություններում ձեր գործողությունների և որոնումների տեսքով: Այդ տվյալները կարող եք գտնել history.google.com էջում:</translation>
 <translation id="7395825497086981028">Գաղտնաբառը կպահվի <ph name="EMAIL" /> հաշվի Գաղտնաբառերի կառավարիչում։</translation>
+<translation id="7504829997542308412">Բացեք Chromium-ը</translation>
 <translation id="7531461704633548377">Chromium-ից</translation>
 <translation id="7554983317097061001">Խորհուրդ Chromium-ից․ տեղափոխեք Chromium-ը Dock վահանակ</translation>
 <translation id="7576863740961052505">Chromium-ի կարգավորումների կառավարում</translation>

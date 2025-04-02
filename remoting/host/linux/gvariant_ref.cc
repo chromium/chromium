@@ -33,88 +33,31 @@ GVariantBase::operator GVariantRef<>() const {
 }
 
 GVariant* GVariantBase::raw() const {
-  return variant_;
+  return variant_.get();
 }
 
 GVariant* GVariantBase::release() && {
-  GVariant* ref = variant_;
-  variant_ = nullptr;
-  return ref;
+  return variant_.release();
 }
 
 Type<> GVariantBase::GetType() const {
-  return Type(g_variant_get_type(variant_));
+  return Type(g_variant_get_type(variant_.get()));
 }
 
-GVariantBase::GVariantBase() : variant_(nullptr) {}
+GVariantBase::GVariantBase() = default;
 
-GVariantBase::GVariantBase(decltype(kTake), GVariant* variant)
-    : variant_(variant) {
-  DCHECK(variant != nullptr);
-  g_variant_take_ref(variant);
-}
+GVariantBase::GVariantBase(GVariantPtr variant)
+    : variant_(std::move(variant)) {}
 
-GVariantBase::GVariantBase(decltype(kRef), GVariant* variant)
-    : variant_(variant) {
-  DCHECK(variant != nullptr);
-  g_variant_ref(variant);
-}
+GVariantBase::GVariantBase(const GVariantBase& other) = default;
 
-GVariantBase::GVariantBase(decltype(kRefSink), GVariant* variant)
-    : variant_(variant) {
-  DCHECK(variant != nullptr);
-  g_variant_ref_sink(variant);
-}
+GVariantBase::GVariantBase(GVariantBase&& other) = default;
 
-GVariantBase::GVariantBase(const GVariantBase& other)
-    : variant_(other.variant_) {
-  if (variant_ != nullptr) {
-    g_variant_ref(variant_);
-  }
-}
+GVariantBase& GVariantBase::operator=(const GVariantBase& other) = default;
 
-GVariantBase::GVariantBase(GVariantBase&& other) : variant_(other.variant_) {
-  other.variant_ = nullptr;
-}
+GVariantBase& GVariantBase::operator=(GVariantBase&& other) = default;
 
-GVariantBase& GVariantBase::operator=(const GVariantBase& other) {
-  if (this == &other) {
-    return *this;
-  }
-
-  if (variant_ != nullptr) {
-    g_variant_unref(variant_);
-  }
-
-  variant_ = other.variant_;
-
-  if (variant_ != nullptr) {
-    g_variant_ref(variant_);
-  }
-
-  return *this;
-}
-
-GVariantBase& GVariantBase::operator=(GVariantBase&& other) {
-  if (this == &other) {
-    return *this;
-  }
-
-  if (variant_ != nullptr) {
-    g_variant_unref(variant_);
-  }
-
-  variant_ = other.variant_;
-  other.variant_ = nullptr;
-
-  return *this;
-}
-
-GVariantBase::~GVariantBase() {
-  if (variant_ != nullptr) {
-    g_variant_unref(variant_.ExtractAsDangling());
-  }
-}
+GVariantBase::~GVariantBase() = default;
 
 bool operator==(const GVariantBase& lhs, const GVariantBase& rhs) {
   return g_variant_equal(lhs.raw(), rhs.raw());
@@ -127,7 +70,7 @@ template <Type C>
 GVariantRef<C> GVariantRef<C>::Take(GVariant* variant)
   requires(C == Type("*"))
 {
-  return GVariantRef<C>(kTake, variant);
+  return GVariantRef<C>(GVariantPtr::Take(variant));
 }
 template GVariantRef<Type("*")> GVariantRef<Type("*")>::Take(GVariant* variant);
 
@@ -136,7 +79,7 @@ template <Type C>
 GVariantRef<C> GVariantRef<C>::Ref(GVariant* variant)
   requires(C == Type("*"))
 {
-  return GVariantRef<C>(kRef, variant);
+  return GVariantRef<C>(GVariantPtr::Ref(variant));
 }
 template GVariantRef<Type("*")> GVariantRef<Type("*")>::Ref(GVariant* variant);
 
@@ -145,7 +88,7 @@ template <Type C>
 GVariantRef<C> GVariantRef<C>::RefSink(GVariant* variant)
   requires(C == Type("*"))
 {
-  return GVariantRef<C>(kRefSink, variant);
+  return GVariantRef<C>(GVariantPtr::RefSink(variant));
 }
 template GVariantRef<Type("*")> GVariantRef<Type("*")>::RefSink(
     GVariant* variant);

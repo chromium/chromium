@@ -20,6 +20,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -28,10 +29,10 @@ public class EdgeToEdgeBottomChinCoordinatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private View mView;
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
+    @Mock private InsetObserver mInsetObserver;
     @Mock private LayoutManager mLayoutManager;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private BottomControlsStacker mBottomControlsStacker;
-    @Mock private NavigationBarColorProvider mNavigationBarColorProvider;
     @Mock private EdgeToEdgeBottomChinSceneLayer mEdgeToEdgeBottomChinSceneLayer;
     @Mock private FullscreenManager mFullscreenManager;
 
@@ -41,6 +42,7 @@ public class EdgeToEdgeBottomChinCoordinatorTest {
                 new EdgeToEdgeBottomChinCoordinator(
                         mView,
                         mKeyboardVisibilityDelegate,
+                        mInsetObserver,
                         mLayoutManager,
                         mEdgeToEdgeController,
                         mBottomControlsStacker,

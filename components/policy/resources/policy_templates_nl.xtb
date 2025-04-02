@@ -276,6 +276,7 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
 <translation id="1214942205301731697">Het gebruik van de ontwikkelaarsmodus op de pagina Extensies niet toestaan</translation>
 <translation id="1216919699175573511">Signed HTTP Exchange-ondersteuning (SXG) aanzetten</translation>
 <translation id="1219027971768347970">De standaardconfiguratie gebruiken voor de audio-sandbox</translation>
+<translation id="1219036692926668273">Het algoritme <ph name="HAPPY_EYEBALLS_V3" /> wordt gebruikt.</translation>
 <translation id="1221359380862872747">Gespecificeerde URL's laden in demo-aanmeldvenster</translation>
 <translation id="1221955019309484560">Updates aanzetten voor alle componenten</translation>
 <translation id="1222694988453895594">Hiermee kun je een lijst met protocollen instellen (en voor elk protocol een gekoppelde lijst met toegestane herkomstpatronen) die een externe app kunnen starten zonder prompt aan de gebruiker. Het scheidingsteken achteraan moet niet worden opgenomen bij de vermelding van het protocol. Vermeld bijvoorbeeld 'skype' in plaats van 'skype:' of 'skype://'.
@@ -4004,15 +4005,6 @@ Dit beleid is tijdelijk en wordt in de toekomst verwijderd.</translation>
 <translation id="3956573780915784996">Toestaan dat gebruikers een prestatietracering voor het hele systeem verzamelen.</translation>
 <translation id="3956686688560604829">Gebruik het SiteList-beleid van Internet Explorer voor ondersteuning voor oudere browsers.</translation>
 <translation id="3958586912393694012">Toestaan dat Smart Lock wordt gebruikt</translation>
-<translation id="3959350391319409669">Dit beleid beheert de instellingen voor dynamische code voor <ph name="PRODUCT_NAME" />.
-
-Als je dynamische code uitzet, verbeter je de beveiliging van <ph name="PRODUCT_NAME" /> door te voorkomen dat potentieel schadelijke dynamische code en code van derden wijzigingen aanbrengen in het gedrag van <ph name="PRODUCT_NAME" />. Dit kan wel compatibiliteitsproblemen veroorzaken met software van derden die binnen het browserproces moet worden uitgevoerd.
-
-Als je het beleid instelt op 0 - Default of niet instelt, gebruikt <ph name="PRODUCT_NAME" /> de standaardinstellingen.
-
-Als je het beleid instelt op 1 - DisabledForBrowser, wordt voorkomen dat het browserproces van <ph name="PRODUCT_NAME" /> dynamische code maakt.
-
-Let op: Lees meer informatie over het beleid voor procesbeperking (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="3960728283243442805">Gebruikers zien in het <ph name="PRODUCT_NAME" />-menu niet de optie om cast-apparaten te selecteren met een toegangscode of door een QR-code te scannen.</translation>
 <translation id="3962445567482559878">De EDU-modus voor introductie van de Assistent gebruiken</translation>
 <translation id="396261881101930204">Media-aanbevelingen verbergen voor de gebruiker</translation>
@@ -5704,6 +5696,17 @@ Als dit beleid niet is ingesteld of de lijst geen geldige verwijzingen naar afbe
       Gedurende deze periode krijgt de gebruiker regelmatig de melding dat er een update moet worden uitgevoerd. Voor <ph name="PRODUCT_OS_NAME" />-apparaten wordt een melding over opnieuw opstarten weergegeven in het systeemvak, in overeenstemming met het <ph name="RELAUNCH_HEADS_UP_PERIOD_POLICY_NAME" />-beleid. Voor <ph name="PRODUCT_NAME" />-browsers wordt het app-menu gewijzigd om aan te geven dat er opnieuw moet worden opgestart zodra een derde van de meldingsperiode is verstreken. Deze melding krijgt een andere kleur zodra twee derde van de meldingsperiode is verstreken en dit gebeurt nogmaals als de volledige periode is verstreken. Hetzelfde schema wordt gehanteerd voor aanvullende meldingen die door het <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" />-beleid zijn aangezet.
 
       Als dit beleid niet is ingesteld, wordt de standaardperiode van 604.800.000 milliseconden (één week) gebruikt.</translation>
+<translation id="5212140720192262527">Met deze functie kan het algoritme <ph name="HAPPY_EYEBALLS_V3" /> verbindingspogingen uitvoeren. Zie https://datatracker.ietf.org/doc/draft-pauly-happy-happyeyeballs-v3 voor meer informatie.
+
+Als je het beleid toepast, gebruikt <ph name="PRODUCT_NAME" /> het algoritme <ph name="HAPPY_EYEBALLS_V3" /> voor verbindingspogingen.
+
+Als je het beleid niet toepast, wordt het algoritme <ph name="HAPPY_EYEBALLS_V3" /> uitgezet.
+
+Als je het beleid niet instelt, zet <ph name="PRODUCT_NAME" /> het algoritme <ph name="HAPPY_EYEBALLS_V3" /> aan of uit op basis van chrome://flags/#happy-eyeballs-v3.
+
+Dit beleid ondersteunt dynamische vernieuwing.
+
+Dit beleid is een tijdelijke maatregel en wordt verwijderd in toekomstige versies van <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5212810195096589189">Rechten voor VM-CLI specificeren</translation>
 <translation id="5213038356678567351">Websites die nooit een schakeling tussen browsers veroorzaken.</translation>
 <translation id="5216815237712190041">Configureer een achtergrondafbeelding op apparaatniveau die wordt weergegeven op het inlogscherm als er nog geen gebruiker is ingelogd op het apparaat. Je kunt het beleid instellen door de URL op te geven waar het Chrome OS-apparaat de achtergrondafbeelding kan downloaden, evenals een cryptografische hash waarmee de integriteit van de download kan worden gecheckt. De afbeelding moet een jpeg-indeling hebben en mag niet groter zijn dan 16 MB. De URL moet zonder verificatie toegankelijk zijn. De achtergrondafbeelding wordt gedownload en gecachet. Deze wordt opnieuw gedownload als de URL of de hash wordt gewijzigd.
@@ -6976,6 +6979,7 @@ Dit beleid kan worden gebruikt als de lopende beëindiging van ondersteuning voo
 
 OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestarte weergaveprocessen terwijl de browser actief is.</translation>
 <translation id="6083631234867522991">Windows (Windows-clients):</translation>
+<translation id="6087413944876892918">Het algoritme <ph name="HAPPY_EYEBALLS_V3" /> gebruiken</translation>
 <translation id="608788685013546076">Drempel voor stroompiekverschuiving van batterij instellen in procenten</translation>
 <translation id="6089679180657323464">Hiermee beheer je de instellingen voor wilco DTC.</translation>
 <translation id="6091233616732024397">Gebruikers dwingen in te loggen om de browser te gebruiken</translation>
@@ -9471,6 +9475,7 @@ Als je het beleid niet toepast of niet instelt, bevat de gemaakte Kerberos-SPN g
 
       Hiermee bepaal je de ID van de extensie die moet worden gebruikt als schermbeveiliging voor het inlogvenster. De extensie moet onderdeel zijn van het AppPack dat is geconfigureerd voor dit domein via het beleid DeviceAppPack.</translation>
 <translation id="7882890448959833986">De waarschuwing voor een niet-ondersteund besturingssysteem negeren</translation>
+<translation id="7884672714405919225">Het algoritme <ph name="HAPPY_EYEBALLS_V3" /> niet gebruiken.</translation>
 <translation id="788480874436328004">Opslag van wachtwoorden met de Wachtwoordmanager uitzetten</translation>
 <translation id="7891884447851425349">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> instelt, wordt de URL gespecificeerd van de zoekmachine die tijdens een standaard zoekopdracht wordt gebruikt. De URL moet de tekenreeks <ph name="SEARCH_TERM_MARKER" /> bevatten. Deze tekenreeks wordt tijdens de zoekopdracht vervangen door de zoektermen van de gebruiker.
 

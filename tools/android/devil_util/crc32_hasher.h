@@ -10,7 +10,7 @@
 #include <string_view>
 #include <vector>
 
-const std::string_view kFilePathDelimiter = ":";
+inline constexpr std::string_view kFilePathDelimiter = ":";
 
 class Crc32Hasher {
  public:

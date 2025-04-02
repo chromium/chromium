@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">साङ्केतिक भाषामा धन्यवाद भनिरहेका व्यक्ति</translation>
 <translation id="2088690981887365033">VPN नेटवर्क</translation>
 <translation id="209653272837065803">फाइलहरू सिंक गरिराख्नका निम्ति भण्डारणमा पर्याप्त खाली ठाउँ छैन</translation>
-<translation id="2111134541987263231">"<ph name="BEGIN_BOLD" />इन्कोग्निटो मोडमा अनुमति दिनुहोस्<ph name="END_BOLD" />" अन गर्नुहोस्</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> वटा सामग्री मेटाइने छन् र तपाईं ती सामग्री रिस्टोर गर्न सक्नु हुने छैन।</translation>
 <translation id="2122305276694332719">कुनै लुकाइएको नेटवर्कमा स्वतः जोड्नुले तपाईंको यन्त्र र नेटवर्कसम्बन्धी केही सेटिङ अरूले देख्न सक्ने हुनाले यसो गर्न सिफारिस गरिँदैन।</translation>
 <translation id="2125607626296734455">खमेर</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">ग्रह</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> हटाइएको छ।</translation>
 <translation id="2307462900900812319">नेटवर्क कन्फिगर गर्नुहोस्</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{निम्न ID भएको एक्स्टेन्सन <ph name="BEGIN_LIST" /><ph name="END_LIST" /> भेट्टाउन सकिएन। आफ्ना एड्मिनसँग सम्पर्क गर्नुहोस्।}other{निम्न ID भएका एक्स्टेन्सनहरू <ph name="BEGIN_LIST" /><ph name="END_LIST" /> भेट्टाउन सकिएन। आफ्ना एड्मिनसँग सम्पर्क गर्नुहोस्।}}</translation>
 <translation id="2325650632570794183">यो फाइल प्रकार समर्थन गरिएको छैन। यो फाइल खोल्न सक्ने एक अनु्प्रयोग फेला पार्नको लागि कृपया Chrome वेब भण्डार भ्रमण गर्नुहोस्।</translation>
 <translation id="2326539130272988168">बुल्गेरियाली</translation>
 <translation id="233822363739146957">तपाईंका सबै फाइलहरू सिंक गर्न भण्डारणमा पर्याप्त खाली ठाउँ छैन</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">मराठी</translation>
 <translation id="2923240520113693977">इस्टोनिया</translation>
 <translation id="2938685643439809023">मङ्गोलियन</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{एक्स्टेन्सन भेटिएन}other{एक्स्टेन्सनहरू भेटिएनन्}}</translation>
 <translation id="2943503720238418293">अझ छोटो नाम प्रयोग गर्नुहोस्</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> फर्म्याट गर्दै...</translation>
 <translation id="2951236788251446349">जेलिफिस</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">पूर्ण</translation>
 <translation id="3358452157379365236">गितार</translation>
 <translation id="3368922792935385530">जडित</translation>
-<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />विवरणहरू<ph name="END_BOLD" />मा क्लिक गर्नुहोस्</translation>
 <translation id="3382143449143186018">नेपाली InScript किबोर्ड</translation>
 <translation id="338691029516748599"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, जोड्नुहोस्</translation>
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> अन गर्नुहोस्</translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">एक सिङे घोडा</translation>
 <translation id="4131235941541910880">आफूलाई नचाहिने फाइलहरू सारेर ट्र्यासमा लैजानुहोस्</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, डिभाइस सेटअप गरेपछि एक्टिभेट गर्नुहोस्</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{इन्कोग्निटो मोडमा निम्न एक्स्टेन्सन अन गर्नुहोस्:}other{इन्कोग्निटो मोडमा निम्न एक्स्टेन्सनहरू अन गर्नुहोस्:}}</translation>
 <translation id="4153015322587141338">आफ्ना फाइलहरू सेल्फबाट द्रुत रूपमा हेर्न तथा प्रयोग गर्न कुनै फाइलमा दायाँ क्लिक गर्नुहोस् र "<ph name="PIN_COMMAND" />" चयन गर्नुहोस्।</translation>
 <translation id="4157569377477607576">एड्मिनले तोकेको नीतिअनुसार निम्न कार्य गर्न सिफारिस गरिँदैन:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> सारियो।</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">दुवै राख्नुहोस्</translation>
 <translation id="4804827417948292437">अभोकाडो</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> वटा फाइल रिस्टोर गरिँदै छ</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{तपाईंले आफ्नो सङ्गठनले तोकेको एक्स्टेन्सन अन गरेपछि मात्र तपाईं इन्कोग्निटो मोड प्रयोग गर्न पाउनुहुन्छ}other{तपाईंले आफ्नो सङ्गठनले तोकेका केही एक्स्टेन्सन अन गरेपछि मात्र तपाईं इन्कोग्निटो मोड प्रयोग गर्न पाउनुहुन्छ}}</translation>
 <translation id="4826849268470072925">तमिल ITRANS</translation>
-<translation id="482932175346970750">आफ्नो ब्राउजरमा <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> टाइप गर्नुहोस्</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">हेर्नुहोस्</translation>
 <translation id="485316830061041779">जर्मन</translation>
@@ -561,7 +554,6 @@
     र यो सब एकै ठाउँमा गर्नुहोस्।<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google ड्राइभ फाइलहरू पुन: प्राप्त गरियो</translation>
 <translation id="5278111733643988471">तपाईं यो फाइल रिस्टोर गर्न चाहनुहुन्छ भने यो फाइल ड्र्याग गरेर ट्र्यासबाहिर रहेको नयाँ फोल्डरमा लैजानुहोस्। यो फाइलको मूल फोल्डर "<ph name="PARENT_FOLDER_NAME" />" मेटाइएको छ।</translation>
-<translation id="5283101102242354279">इन्कोग्निटो मोडमा एक्स्टेन्सन अन गर्ने तरिका:</translation>
 <translation id="5288441970121584418">बर्गर</translation>
 <translation id="5293615890992542006">एड्मिनले तोक्नुभएको नीतिअनुसार यो फाइल सार्न पाइँदैन</translation>
 <translation id="5305688511332277257">कुनै स्थापित छैन</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, विवरणहरू</translation>
 <translation id="7246947237293279874">FTP प्रोक्सी</translation>
 <translation id="7248671827512403053">एप</translation>
-<translation id="7252604552361840748">माथि उल्लिखित एक्स्टेन्सन खोज्नुहोस्</translation>
 <translation id="7256405249507348194">पहिचान नभएको त्रुटि: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">उपलब्ध सेवाहरू</translation>
 <translation id="7291818353625820805">कीहरू दोहोर्‍याउन चाहनुहुन्छ? किबोर्डका सेटिङमा गई "एक्सेन्ट चिन्हहरू" अफ गर्नुहोस्</translation>

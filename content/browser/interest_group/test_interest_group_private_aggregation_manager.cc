@@ -129,12 +129,13 @@ TestInterestGroupPrivateAggregationManager::
                              base::Unretained(this));
 }
 
-std::map<url::Origin, InterestGroupAuctionReporter::PrivateAggregationRequests>
+std::map<url::Origin,
+         InterestGroupAuctionReporter::FinalizedPrivateAggregationRequests>
 TestInterestGroupPrivateAggregationManager::TakePrivateAggregationRequests() {
   base::RunLoop().RunUntilIdle();
 
   std::map<url::Origin,
-           InterestGroupAuctionReporter::PrivateAggregationRequests>
+           InterestGroupAuctionReporter::FinalizedPrivateAggregationRequests>
       private_aggregation_requests_map;
 
   for (auto& [receiver_id, contributions] :
@@ -146,16 +147,16 @@ TestInterestGroupPrivateAggregationManager::TakePrivateAggregationRequests() {
           blink::mojom::DebugModeDetails::New();
     }
 
-    InterestGroupAuctionReporter::PrivateAggregationRequests& requests =
-        private_aggregation_requests_map
+    InterestGroupAuctionReporter::FinalizedPrivateAggregationRequests&
+        requests = private_aggregation_requests_map
             [private_aggregation_worklet_origins_[receiver_id]];
 
     for (auto& contribution : contributions) {
-      requests.push_back(auction_worklet::mojom::PrivateAggregationRequest::New(
-          auction_worklet::mojom::AggregatableReportContribution::
-              NewHistogramContribution(std::move(contribution)),
-          blink::mojom::AggregationServiceMode::kDefault,
-          private_aggregation_debug_details_[receiver_id]->Clone()));
+      requests.push_back(
+          auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
+              std::move(contribution),
+              blink::mojom::AggregationServiceMode::kDefault,
+              private_aggregation_debug_details_[receiver_id]->Clone()));
     }
   }
 

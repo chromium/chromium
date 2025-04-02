@@ -129,6 +129,7 @@
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_handler.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
+#include "third_party/blink/renderer/core/frame/context_menu_insets_changed_observer.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
@@ -516,6 +517,7 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(content_capture_manager_);
   visitor->Trace(system_clipboard_);
   visitor->Trace(virtual_keyboard_overlay_changed_observers_);
+  visitor->Trace(context_menu_insets_changed_observers_);
   visitor->Trace(widget_creation_observers_);
   visitor->Trace(pause_handle_receivers_);
   visitor->Trace(frame_color_overlay_);
@@ -3475,6 +3477,28 @@ void LocalFrame::NotifyVirtualKeyboardOverlayRectObservers(
       virtual_keyboard_overlay_changed_observers_);
   for (VirtualKeyboardOverlayChangedObserver* observer : observers)
     observer->VirtualKeyboardOverlayChanged(rect);
+}
+
+void LocalFrame::RegisterContextMenuInsetsChangedObserver(
+    ContextMenuInsetsChangedObserver* observer) {
+  context_menu_insets_changed_observers_.insert(observer);
+}
+
+void LocalFrame::NotifyContextMenuInsetsObservers(
+    const gfx::Rect& safe_area) const {
+  gfx::Size viewport =
+      gfx::ScaleToEnclosingRect(gfx::Rect(GetOutermostMainFrameSize()),
+                                1.0 / DevicePixelRatio())
+          .size();
+  // Convert from a rect within the window to viewport insets.
+  auto insets = gfx::Insets::TLBR(safe_area.y(), safe_area.x(),
+                                  viewport.height() - safe_area.bottom(),
+                                  viewport.width() - safe_area.right());
+  HeapVector<Member<ContextMenuInsetsChangedObserver>, 32> observers(
+      context_menu_insets_changed_observers_);
+  for (ContextMenuInsetsChangedObserver* observer : observers) {
+    observer->ContextMenuInsetsChanged(safe_area.IsEmpty() ? nullptr : &insets);
+  }
 }
 
 void LocalFrame::AddInspectorIssue(AuditsIssue info) {

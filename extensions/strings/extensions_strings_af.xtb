@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Manifeslêer is ongeldig</translation>
 <translation id="7217838517480956708">Die administrateur van hierdie masjien vereis dat <ph name="EXTENSION_NAME" /> geïnstalleer word. Dit kan nie verwyder of aangepas word nie.</translation>
 <translation id="7612608473764576263">Invoerwaarde vir private sleutel moet 'n geldige formaat wees (PKCS#8-formaat- PEM-geënkodeerde RSA-sleutel).</translation>
+<translation id="7876803335449432072">Kon nie die lêer “<ph name="RELATIVE_PATH" />” vir inhoudskrip laai nie – inhoudskripstylblaaie kan net gelaai word vanaf gesteunde stylbladlêers soos .css-lêers.</translation>
 <translation id="7939686037314084444">Die uitbreiding kon nie behoorlik laai nie. Dit sal dalk nie netwerkversoeke kan onderskep nie.</translation>
 <translation id="7972881773422714442">Opsies: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Wys na gebruiker (voorste kamera)</translation>
 <translation id="8047248493720652249">Hierdie uitbreiding kon nie die "<ph name="ATTEMPTED_FILENAME" />" aflaai nie, omdat 'n ander uitbreiding (<ph name="EXTENSION_NAME" />) 'n ander lêernaam "<ph name="ACTUAL_FILENAME" />" bepaal het.</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> vanaf <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Manifeslêer ontbreek of is onleesbaar</translation>
+<translation id="8621383749470166852">Kon nie die lêer “<ph name="RELATIVE_PATH" />” vir inhoudskrip laai nie – inhoudskripte kan net gelaai word vanaf gesteunde JavaScript-lêers soos .js-lêers.</translation>
 <translation id="8636666366616799973">Pakket is ongeldig. Besonderhede: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" versoek tans toegang tot een van jou toestelle:</translation>
 <translation id="8885905466771744233">'n Private sleutel vir gespesifiseerde uitbreiding bestaan reeds. Hergebruik daardie sleutel of vee dit eers uit.</translation>

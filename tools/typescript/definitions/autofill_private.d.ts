@@ -283,6 +283,7 @@ declare global {
       export function getAllEntityTypes(): Promise<EntityType[]>;
       export function getAllAttributeTypesForEntityTypeName(
           entityTypeName: number): Promise<AttributeType[]>;
+      export function getAutofillAiOptInStatus(): Promise<boolean>;
       export function setAutofillAiOptInStatus(optedIn: boolean): void;
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],

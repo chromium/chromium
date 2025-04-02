@@ -195,7 +195,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
     const sessions::tab_restore::Tab& tab,
     int tab_index,
     bool select,
-    bool restored_from_group_or_window_context,
+    bool is_restoring_group_or_window,
     sessions::tab_restore::Type original_session_type) {
   tab_groups::TabGroupSyncService* tab_group_service =
       tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
@@ -268,7 +268,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
               browser_, tab_groups::OpeningSource::kOpenedFromTabRestore));
     }
 
-    if (restored_from_group_or_window_context) {
+    if (is_restoring_group_or_window) {
       // Open the saved tab group as-is if the tab is being restored from a
       // group or window context. This is to enforce that SavedTabGroups are
       // the source or truth.

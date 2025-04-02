@@ -17,7 +17,7 @@ class SearchEngineChoiceMetricsServiceAccessor
     : public metrics::MetricsServiceAccessor {
  private:
   friend class SearchEngineChoiceService;
-  friend class SearchEngineChoiceServiceTest;
+  friend class SearchEngineChoiceServiceTestBase;
   friend class SearchEngineChoiceServiceSimpleTest;
   FRIEND_TEST_ALL_PREFIXES(
       SearchEngineChoiceServiceTest,

@@ -63,7 +63,7 @@ TEST_F(ValuablesTableTest, AddOrUpdateLoyaltyCard) {
   EXPECT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card1));
   EXPECT_THAT(valuables_table().GetLoyaltyCards(), UnorderedElementsAre(card1));
   // Update `card1`.
-  card1.set_loyalty_card_suffix("9876");
+  card1.set_loyalty_card_number("9876");
   EXPECT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card1));
   EXPECT_THAT(valuables_table().GetLoyaltyCards(), UnorderedElementsAre(card1));
   // Add `card2`.

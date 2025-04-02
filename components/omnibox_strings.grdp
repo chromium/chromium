@@ -237,10 +237,16 @@
     <ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Tab then Enter to search
   </message>
   <message name="IDS_ACC_KEYWORD_MODE" desc="Announcement when entering keyword search mode.">
-    Search <ph name="KEYWORD_SUFFIX">$1<ex>Youtube</ex>, type a query and press Enter to search</ph>
+    Search <ph name="KEYWORD_SUFFIX">$1<ex>Youtube</ex></ph>
   </message>
   <message name="IDS_ACC_ASK_KEYWORD_MODE" desc="Announcement when entering keyword mode for an engine that is suitable for asking vs. searching (e.g. Gemini).">
-    Ask <ph name="KEYWORD_SUFFIX">$1<ex>Gemini</ex>, type a question or ask it to do something and press Enter</ph>
+    Ask <ph name="KEYWORD_SUFFIX">$1<ex>Gemini</ex></ph>
+  </message>
+  <message name="IDS_ACC_KEYWORD_MODE_WITH_SHORTCUT" desc="Announcement when entering keyword search mode with shortcut.">
+    <ph name="KEYWORD_SHORTCUT">$1<ex>yt</ex></ph>, Search <ph name="KEYWORD_SUFFIX">$2<ex>Youtube</ex></ph>
+  </message>
+  <message name="IDS_ACC_ASK_KEYWORD_MODE_WITH_SHORTCUT" desc="Announcement when entering keyword mode for an engine that is suitable for asking vs. searching (e.g. Gemini) with shortcut.">
+    <ph name="KEYWORD_SHORTCUT">$1<ex>gemini</ex></ph>, Ask <ph name="KEYWORD_SUFFIX">$2<ex>Gemini</ex></ph>
   </message>
 
   <!-- Accessibility labels for the omnibox thumbs up feedback button. -->

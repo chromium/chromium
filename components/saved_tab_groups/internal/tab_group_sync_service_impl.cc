@@ -1316,6 +1316,21 @@ void TabGroupSyncServiceImpl::HandleTabGroupRemoved(
                   return std::get<1>(entry) == removed_group.saved_guid();
                 });
 
+  if (removed_group.GetOriginatingTabGroupGuid().has_value()) {
+    const SavedTabGroup* originating_group =
+            model_->Get(removed_group.GetOriginatingTabGroupGuid().value());
+    if (originating_group && originating_group->is_hidden()) {
+      // It's possible that the originating saved tab group still exists when
+      // the shared tab group is removed. This can happen if the sharing
+      // operation failed on the remote client. In this case, restore the
+      // originating saved tab group.
+      // In case the shared tab group was unshared on the remote client, the
+      // originating saved tab group will be removed by the client as well, so
+      // it will be deleted from the model eventually.
+      model_->RestoreHiddenGroupFromSync(originating_group->saved_guid());
+    }
+  }
+
   if (is_initialized_) {
     for (auto& observer : observers_) {
       observer.OnTabGroupRemoved(removed_group.saved_guid(), source);

@@ -88,8 +88,6 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
     kStarted,
     // A redirect happened, waiting for FollowRedirect().
     kSentRedirect,
-    // The response head has been sent to |url_loader_client_|.
-    kSentHeader,
     // The data pipe for the response body has been sent to
     // |url_loader_client_|. The body is being written to the pipe.
     kSentBody,
@@ -144,9 +142,6 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   void SetCommitResponsibility(FetchResponseFrom fetch_response_from) override;
 
   // ServiceWorkerResourceLoader overrides:
-  void CommitResponseHeaders(
-      const network::mojom::URLResponseHeadPtr&) override;
-
   // Calls url_loader_client_->OnReceiveResponse() with given |response_head|,
   // |response_body|, and |cached_metadata|.
   void CommitResponseBody(

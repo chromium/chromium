@@ -107,7 +107,7 @@
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
-#include "components/fingerprinting_protection_filter/interventions/browser/interventions_features.h"
+#include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/history/core/browser/features.h"
 #include "components/history_clusters/core/config.h"
@@ -271,6 +271,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/contextmenu/context_menu_features.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/notifications/chime/android/features.h"
 #include "chrome/browser/push_messaging/push_messaging_features.h"
@@ -1539,24 +1540,26 @@ const FeatureEntry::FeatureVariation kMlUrlSearchBlendingVariations[] = {
      std::size(kMlUrlSearchBlendingMappedAggressiveUrls), nullptr},
 };
 
-const FeatureEntry::FeatureParam
+constexpr FeatureEntry::FeatureParam
     kMostVitedTilesNewScoring_DecayStaircaseCap10[] = {
-        {history::kMvtScoringParamRecencyFactor,
+        {history::kMvtScoringParamRecencyFactor.name,
          history::kMvtScoringParamRecencyFactor_DecayStaircase},
-        {history::kMvtScoringParamDailyVisitCountCap, "10"},
+        {history::kMvtScoringParamDailyVisitCountCap.name, "10"},
 };
-const FeatureEntry::FeatureParam kMostVitedTilesNewScoring_DecayCap1[] = {
-    {history::kMvtScoringParamRecencyFactor,
+constexpr FeatureEntry::FeatureParam kMostVitedTilesNewScoring_DecayCap1[] = {
+    {history::kMvtScoringParamRecencyFactor.name,
      history::kMvtScoringParamRecencyFactor_Decay},
     // exp(-1.0 / 11).
-    {history::kMvtScoringParamDecayPerDay, "0.9131007162822623"},
-    {history::kMvtScoringParamDailyVisitCountCap, "1"},
+    {history::kMvtScoringParamDecayPerDay.name, "0.9131007162822623"},
+    {history::kMvtScoringParamDailyVisitCountCap.name, "1"},
 };
-const FeatureEntry::FeatureVariation kMostVisitedTilesNewScoringVariations[] = {
-    {"Decay Staircase, Cap 10", kMostVitedTilesNewScoring_DecayStaircaseCap10,
-     std::size(kMostVitedTilesNewScoring_DecayStaircaseCap10), nullptr},
-    {"Decay, Cap 1", kMostVitedTilesNewScoring_DecayCap1,
-     std::size(kMostVitedTilesNewScoring_DecayCap1), nullptr},
+constexpr FeatureEntry::FeatureVariation
+    kMostVisitedTilesNewScoringVariations[] = {
+        {"Decay Staircase, Cap 10",
+         kMostVitedTilesNewScoring_DecayStaircaseCap10,
+         std::size(kMostVitedTilesNewScoring_DecayStaircaseCap10), nullptr},
+        {"Decay, Cap 1", kMostVitedTilesNewScoring_DecayCap1,
+         std::size(kMostVitedTilesNewScoring_DecayCap1), nullptr},
 };
 
 const FeatureEntry::FeatureVariation kUrlScoringModelVariations[] = {
@@ -2447,209 +2450,6 @@ const FeatureEntry::FeatureVariation
     kSearchResumptionModuleAndroidVariations[] = {
         {"Use New Service", kSearchResumption_use_new_service,
          std::size(kSearchResumption_use_new_service), nullptr},
-};
-
-const FeatureEntry::FeatureParam kTabResumptionModule_defaul_app_filter[] = {
-    {"show_see_more", "true"},
-    {"use_default_app_filter", "true"},
-};
-const FeatureEntry::FeatureParam kTabResumptionModule_salient_image[] = {
-    {"show_see_more", "true"},
-    {"use_default_app_filter", "true"},
-    {"use_salient_image", "true"},
-};
-const FeatureEntry::FeatureParam
-    kTabResumptionModule_single_tile_with_salient_image[] = {
-        {"max_tiles_number", "1"},
-        {"show_see_more", "true"},
-        {"use_default_app_filter", "true"},
-        {"use_salient_image", "true"},
-};
-const FeatureEntry::FeatureParam
-    kTabResumptionModule_single_tile_with_salient_image_show_default_reason[] =
-        {
-            {"max_tiles_number", "1"},     {"show_default_reason", "true"},
-            {"show_see_more", "true"},     {"use_default_app_filter", "true"},
-            {"use_salient_image", "true"},
-};
-const FeatureEntry::FeatureParam
-    kTabResumptionModule_combine_tabs_with_salient_image[] = {
-        {"show_see_more", "true"},
-        {"show_tabs_in_one_module", "true"},
-        {"use_default_app_filter", "true"},
-        {"use_salient_image", "true"},
-};
-const FeatureEntry::FeatureParam
-    kTabResumptionModule_combine_tabs_with_salient_image_single_tab_show_default_reason
-        [] = {
-            {"max_tiles_number", "1"},
-            {"show_default_reason", "true"},
-            {"show_see_more", "true"},
-            {"show_tabs_in_one_module", "true"},
-            {"use_default_app_filter", "true"},
-            {"use_salient_image", "true"},
-};
-const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_arm1[] = {
-    {"disable_blend", "true"},          {"enable_v2", "true"},
-    {"show_see_more", "true"},          {"show_tabs_in_one_module", "true"},
-    {"use_default_app_filter", "true"},
-};
-const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_arm2[] = {
-    {"enable_v2", "true"},
-    {"show_see_more", "true"},
-    {"show_tabs_in_one_module", "true"},
-    {"use_default_app_filter", "true"},
-    {"use_salient_image", "true"},
-};
-const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_arm3[] = {
-    {"disable_blend", "true"},           {"enable_v2", "true"},
-    {"max_tiles_number", "1"},           {"show_see_more", "true"},
-    {"show_tabs_in_one_module", "true"}, {"use_default_app_filter", "true"},
-    {"use_salient_image", "true"},
-};
-const FeatureEntry::FeatureParam
-    kTabResumptionModule_enable_v2_arm3_show_default_reason[] = {
-        {"disable_blend", "true"},          {"enable_v2", "true"},
-        {"max_tiles_number", "1"},          {"show_default_reason", "true"},
-        {"show_see_more", "true"},          {"show_tabs_in_one_module", "true"},
-        {"use_default_app_filter", "true"}, {"use_salient_image", "true"},
-};
-const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_arm4[] = {
-    {"disable_blend", "true"},          {"enable_v2", "true"},
-    {"show_see_more", "true"},          {"show_tabs_in_one_module", "true"},
-    {"use_default_app_filter", "true"}, {"use_salient_image", "true"},
-};
-const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_ml[] = {
-    {"enable_v2", "true"},
-    {"fetch_history_backend", "true"},
-    {"fetch_local_tabs_backend", "true"},
-    {"show_see_more", "true"},
-    {"show_tabs_in_one_module", "true"},
-    {"use_default_app_filter", "true"},
-    {"use_salient_image", "true"},
-};
-const FeatureEntry::FeatureParam
-    kTabResumptionModule_enable_v2_ml_show_decorator_default_reason[] = {
-        {"enable_v2", "true"},
-        {"fetch_history_backend", "true"},
-        {"fetch_local_tabs_backend", "true"},
-        {"max_tiles_number", "1"},
-        {"show_default_reason", "true"},
-        {"show_see_more", "true"},
-        {"show_tabs_in_one_module", "true"},
-        {"use_default_app_filter", "true"},
-        {"use_salient_image", "true"},
-};
-const FeatureEntry::FeatureParam
-    kTabResumptionModule_enable_v2_ml_show_decorator_visited_x_ago[] = {
-        {"enable_v2", "true"},
-        {"fetch_history_backend", "true"},
-        {"fetch_local_tabs_backend", "true"},
-        {"override_decoration", "1"},  // kVisitedXAgo
-        {"max_tiles_number", "1"},
-        {"show_default_reason", "true"},
-        {"show_see_more", "true"},
-        {"show_tabs_in_one_module", "true"},
-        {"use_default_app_filter", "true"},
-        {"use_salient_image", "true"},
-};
-const FeatureEntry::FeatureParam
-    kTabResumptionModule_enable_v2_ml_show_decorator_most_visited[] = {
-        {"enable_v2", "true"},
-        {"fetch_history_backend", "true"},
-        {"fetch_local_tabs_backend", "true"},
-        {"override_decoration", "2"},  // kMostRecent
-        {"max_tiles_number", "1"},
-        {"show_default_reason", "true"},
-        {"show_see_more", "true"},
-        {"show_tabs_in_one_module", "true"},
-        {"use_default_app_filter", "true"},
-        {"use_salient_image", "true"},
-};
-const FeatureEntry::FeatureParam
-    kTabResumptionModule_enable_v2_ml_show_decorator_frequently_visited[] = {
-        {"enable_v2", "true"},
-        {"fetch_history_backend", "true"},
-        {"fetch_local_tabs_backend", "true"},
-        {"override_decoration", "3"},  // kFrequentlyVisited
-        {"max_tiles_number", "1"},
-        {"show_default_reason", "true"},
-        {"show_see_more", "true"},
-        {"show_tabs_in_one_module", "true"},
-        {"use_default_app_filter", "true"},
-        {"use_salient_image", "true"},
-};
-const FeatureEntry::FeatureParam
-    kTabResumptionModule_enable_v2_ml_show_decorator_frequently_visited_at_time
-        [] = {
-            {"enable_v2", "true"},
-            {"fetch_history_backend", "true"},
-            {"fetch_local_tabs_backend", "true"},
-            {"override_decoration", "4"},  // kFrequentlyVisitedAtTime
-            {"max_tiles_number", "1"},
-            {"show_default_reason", "true"},
-            {"show_see_more", "true"},
-            {"show_tabs_in_one_module", "true"},
-            {"use_default_app_filter", "true"},
-            {"use_salient_image", "true"},
-};
-const FeatureEntry::FeatureVariation kTabResumptionModuleAndroidVariations[] = {
-    {"Default app filter", kTabResumptionModule_defaul_app_filter,
-     std::size(kTabResumptionModule_defaul_app_filter), nullptr},
-    {"Default app filter + Salient image", kTabResumptionModule_salient_image,
-     std::size(kTabResumptionModule_salient_image), nullptr},
-    {"Default app filter + Salient image + single tile",
-     kTabResumptionModule_single_tile_with_salient_image,
-     std::size(kTabResumptionModule_single_tile_with_salient_image), nullptr},
-    {"Default app filter + Salient image + one Tab module",
-     kTabResumptionModule_combine_tabs_with_salient_image,
-     std::size(kTabResumptionModule_combine_tabs_with_salient_image), nullptr},
-    {"V2 Arm1", kTabResumptionModule_enable_v2_arm1,
-     std::size(kTabResumptionModule_enable_v2_arm1), nullptr},
-    {"V2 Arm2", kTabResumptionModule_enable_v2_arm2,
-     std::size(kTabResumptionModule_enable_v2_arm2), nullptr},
-    {"V2 Arm3", kTabResumptionModule_enable_v2_arm3,
-     std::size(kTabResumptionModule_enable_v2_arm3), nullptr},
-    {"V2 Arm4", kTabResumptionModule_enable_v2_arm4,
-     std::size(kTabResumptionModule_enable_v2_arm4), nullptr},
-    {"V2 ML (collect data)", kTabResumptionModule_enable_v2_ml,
-     std::size(kTabResumptionModule_enable_v2_ml), nullptr},
-    {"Default app filter + Salient image + single tile + default reason",
-     kTabResumptionModule_single_tile_with_salient_image_show_default_reason,
-     std::size(
-         kTabResumptionModule_single_tile_with_salient_image_show_default_reason),
-     nullptr},
-    {"Default app filter + one Tab module + single tab + default reason",
-     kTabResumptionModule_combine_tabs_with_salient_image_single_tab_show_default_reason,
-     std::size(
-         kTabResumptionModule_combine_tabs_with_salient_image_single_tab_show_default_reason),
-     nullptr},
-    {"V2 Arm3 with default reason",
-     kTabResumptionModule_enable_v2_arm3_show_default_reason,
-     std::size(kTabResumptionModule_enable_v2_arm3_show_default_reason),
-     nullptr},
-    {"V2 ML: with default reason",
-     kTabResumptionModule_enable_v2_ml_show_decorator_default_reason,
-     std::size(kTabResumptionModule_enable_v2_ml_show_decorator_default_reason),
-     nullptr},
-    {"V2 ML: visited x ago decorator",
-     kTabResumptionModule_enable_v2_ml_show_decorator_visited_x_ago,
-     std::size(kTabResumptionModule_enable_v2_ml_show_decorator_visited_x_ago),
-     nullptr},
-    {"V2 ML: most visited decorator",
-     kTabResumptionModule_enable_v2_ml_show_decorator_most_visited,
-     std::size(kTabResumptionModule_enable_v2_ml_show_decorator_most_visited),
-     nullptr},
-    {"V2 ML: frequently visited decorator",
-     kTabResumptionModule_enable_v2_ml_show_decorator_frequently_visited,
-     std::size(
-         kTabResumptionModule_enable_v2_ml_show_decorator_frequently_visited),
-     nullptr},
-    {"V2 ML: frequently visited at time decorator",
-     kTabResumptionModule_enable_v2_ml_show_decorator_frequently_visited_at_time,
-     std::size(
-         kTabResumptionModule_enable_v2_ml_show_decorator_frequently_visited_at_time),
-     nullptr},
 };
 
 const FeatureEntry::FeatureParam
@@ -5340,6 +5140,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContextualPageActionsShareModelDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(
          segmentation_platform::features::kContextualPageActionShareModel)},
+    {"reader-mode-dev-entry-point",
+     flag_descriptions::kReaderModeDevEntryPointName,
+     flag_descriptions::kReaderModeDevEntryPointDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kReaderModeDevEntryPoint)},
     {"reader-mode-heuristics", flag_descriptions::kReaderModeHeuristicsName,
      flag_descriptions::kReaderModeHeuristicsDescription, kOsAndroid,
      MULTI_VALUE_TYPE(kReaderModeHeuristicsChoices)},
@@ -5410,10 +5214,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSysUiShouldHoldbackDriveIntegrationDescription,
      kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSysUiShouldHoldbackDriveIntegration)},
-    {"sys-ui-holdback-forest",
-     flag_descriptions::kSysUiShouldHoldbackForestName,
-     flag_descriptions::kSysUiShouldHoldbackForestDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kSysUiShouldHoldbackForest)},
     {"sys-ui-holdback-task-management",
      flag_descriptions::kSysUiShouldHoldbackTaskManagementName,
      flag_descriptions::kSysUiShouldHoldbackTaskManagementDescription, kOsCrOS,
@@ -5562,12 +5362,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"record-web-app-debug-info", flag_descriptions::kRecordWebAppDebugInfoName,
      flag_descriptions::kRecordWebAppDebugInfoDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kRecordWebAppDebugInfo)},
-#if !BUILDFLAG(IS_ANDROID)
-    {"enable-desktop-pwas-sync-changes",
-     flag_descriptions::kDesktopPWAsSyncChangesName,
-     flag_descriptions::kDesktopPWAsSyncChangesDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kWebAppDontAddExistingAppsToSync)},
-#endif  // !BUILDFLAG(IS_ANDROID)
     {"use-sync-sandbox", flag_descriptions::kSyncSandboxName,
      flag_descriptions::kSyncSandboxDescription, kOsAll,
      SINGLE_VALUE_TYPE_AND_VALUE(
@@ -5890,6 +5684,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabClosureMethodRefactorName,
      flag_descriptions::kTabClosureMethodRefactorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabClosureMethodRefactor)},
+
+    // Grid tab switcher update.
+    {"grid-tab-switcher-update", flag_descriptions::kGridTabSwitcherUpdateName,
+     flag_descriptions::kGridTabSwitcherUpdateDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kGridTabSwitcherUpdate)},
 
 #endif  // BUILDFLAG(IS_ANDROID)
     {"disallow-doc-written-script-loads",
@@ -7515,14 +7314,6 @@ const FeatureEntry kFeatureEntries[] = {
          kSearchResumptionModuleAndroidVariations,
          "kSearchResumptionModuleAndroid")},
 
-    {"enable-tab-resumption-module",
-     flag_descriptions::kTabResumptionModuleAndroidName,
-     flag_descriptions::kTabResumptionModuleAndroidDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kTabResumptionModuleAndroid,
-         kTabResumptionModuleAndroidVariations,
-         "kTabResumptionModuleAndroid")},
-
     {"enable-tabstate-flatbuffer", flag_descriptions::kTabStateFlatBufferName,
      flag_descriptions::kTabStateFlatBufferDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabStateFlatBuffer,
@@ -8521,6 +8312,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"media-app-pdf-mahi", flag_descriptions::kMediaAppPdfMahiName,
      flag_descriptions::kMediaAppPdfMahiDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kMediaAppPdfMahi)},
+    {"media-app-image-mantis-reimagine",
+     flag_descriptions::kMediaAppImageMantisReimagineName,
+     flag_descriptions::kMediaAppImageMantisReimagineDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kMediaAppImageMantisReimagine)},
     {"on-device-app-controls", flag_descriptions::kOnDeviceAppControlsName,
      flag_descriptions::kOnDeviceAppControlsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kForceOnDeviceAppControlsForAllRegions)},
@@ -8957,12 +8752,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPdfXfaFormsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfXfaSupport)},
 #endif  // BUILDFLAG(ENABLE_PDF)
-
-#if BUILDFLAG(IS_ANDROID)
-    {"send-tab-to-self-v2", flag_descriptions::kSendTabToSelfV2Name,
-     flag_descriptions::kSendTabToSelfV2Description, kOsAndroid,
-     FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfV2)},
-#endif  // BUILDFLAG(IS_ANDROID)
 
     {"enable-managed-configuration-web-api",
      flag_descriptions::kEnableManagedConfigurationWebApiName,
@@ -10686,6 +10475,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          chrome::android::kAndroidTabDeclutterArchiveDuplicateTabs)},
 
+    {"android-tab-declutter-archive-tab-groups",
+     flag_descriptions::kAndroidTabDeclutterArchiveTabGroupsName,
+     flag_descriptions::kAndroidTabDeclutterArchiveTabGroupsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidTabDeclutterArchiveTabGroups)},
+
     {"force-list-tab-switcher", flag_descriptions::kForceListTabSwitcherName,
      flag_descriptions::kForceListTabSwitcherDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kForceListTabSwitcher)},
@@ -10820,12 +10615,6 @@ const FeatureEntry kFeatureEntries[] = {
          kEnableFingerprintingProtectionFilterInIncognitoVariations,
          "EnableFingerprintingProtectionFilterInIncognito")},
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"ash-forest-feature", flag_descriptions::kForestFeatureName,
-     flag_descriptions::kForestFeatureDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kForestFeature)},
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
     {"enable-standard-device-bound-session-credentials",
      flag_descriptions::kEnableStandardBoundSessionCredentialsName,
      flag_descriptions::kEnableStandardBoundSessionCredentialsDescription,
@@ -10948,6 +10737,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"payment-link-detection", flag_descriptions::kPaymentLinkDetectionName,
      flag_descriptions::kPaymentLinkDetectionDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kPaymentLinkDetection)},
+
+    {"process-rank-policy-android",
+     flag_descriptions::kProcessRankPolicyAndroidName,
+     flag_descriptions::kProcessRankPolicyAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kProcessRankPolicyAndroid)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -11110,15 +10904,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTranslateOpenSettingsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(language::kTranslateOpenSettings)},
 #endif
-
-#if !BUILDFLAG(IS_ANDROID)
-    {"autofill-remove-payments-butter-dropdown",
-     flag_descriptions::kAutofillRemovePaymentsButterDropdownName,
-     flag_descriptions::kAutofillRemovePaymentsButterDropdownDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillRemovePaymentsButterDropdown)},
-#endif  // !BUILDFLAG(IS_ANDROID)
 
     {"language-detection-api", flag_descriptions::kLanguageDetectionAPIName,
      flag_descriptions::kLanguageDetectionAPIDescription, kOsAll,
@@ -11463,15 +11248,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableCardBenefitsIphDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardBenefitsIph)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"enable-automotive-fullscreen-toolbar-improvements",
-     flag_descriptions::kAutomotiveFullscreenToolbarImprovementsName,
-     flag_descriptions::kAutomotiveFullscreenToolbarImprovementsDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kAutomotiveFullscreenToolbarImprovements)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"privacy-sandbox-privacy-policy",
      flag_descriptions::kPrivacySandboxPrivacyPolicyName,
      flag_descriptions::kPrivacySandboxPrivacyPolicyDescription, kOsAll,
@@ -11807,13 +11583,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWindowsSystemTracingDescription, kOsWin,
      FEATURE_VALUE_TYPE(kWindowsSystemTracing)},
 #endif  // BUILDFLAG(IS_WIN)
-
-    {"privacy-sandbox-equalized-prompt-buttons",
-     flag_descriptions::kPrivacySandboxEqualizedPromptButtonsName,
-     flag_descriptions::kPrivacySandboxEqualizedPromptButtonsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         privacy_sandbox::kPrivacySandboxEqualizedPromptButtons)},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"move-theme-prefs-to-specifics",
@@ -12170,6 +11939,20 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabCaptureInfobarLinksDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabCaptureInfobarLinks)},
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+    {"enable-empty-space-context-menu-clank",
+     flag_descriptions::kContextMenuEmptySpaceName,
+     flag_descriptions::kContextMenuEmptySpaceDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kContextMenuEmptySpace)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+    {"android-surface-color-update",
+     flag_descriptions::kAndroidSurfaceColorUpdateName,
+     flag_descriptions::kAndroidSurfaceColorUpdateDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidSurfaceColorUpdate)},
+#endif  // BUILDFLAG(IS_ANDROID)
 
     // Add new entries above this line.
 

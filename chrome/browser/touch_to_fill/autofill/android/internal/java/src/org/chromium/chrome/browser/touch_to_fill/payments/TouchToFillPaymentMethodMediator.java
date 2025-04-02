@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMeth
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.IbanRecordType;
+import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.payments.ui.InputProtector;
@@ -302,10 +303,13 @@ class TouchToFillPaymentMethodMediator {
             FillableItemCollectionInfo itemCollectionInfo,
             Function<TouchToFillPaymentMethodProperties.CardImageMetaData, Drawable>
                     cardImageFunction) {
-        int drawableId = card.getIssuerIconDrawableId();
+        int drawableId = suggestion.getIconId();
         GURL artUrl =
-                AutofillUiUtils.shouldShowCustomIcon(card.getCardArtUrl(), card.getIsVirtual())
-                        ? card.getCardArtUrl()
+                AutofillUiUtils.shouldShowCustomIcon(
+                                suggestion.getCustomIconUrl(),
+                                suggestion.getSuggestionType()
+                                        == SuggestionType.VIRTUAL_CREDIT_CARD_ENTRY)
+                        ? suggestion.getCustomIconUrl()
                         : new GURL("");
         TouchToFillPaymentMethodProperties.CardImageMetaData cardImageMetaData =
                 new TouchToFillPaymentMethodProperties.CardImageMetaData(drawableId, artUrl);

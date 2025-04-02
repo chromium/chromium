@@ -51,7 +51,6 @@ class DeskProfilesAsh;
 class DeviceAttributesAsh;
 class DeviceOAuth2TokenServiceAsh;
 class DocumentScanAsh;
-class EchoPrivateAsh;
 class FileChangeServiceBridgeAsh;
 class FileSystemAccessCloudIdentifierProviderAsh;
 class FileSystemProviderServiceAsh;
@@ -115,8 +114,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::DiagnosticsService> receiver) override;
   void BindDocumentScan(
       mojo::PendingReceiver<mojom::DocumentScan> receiver) override;
-  void BindEchoPrivate(
-      mojo::PendingReceiver<mojom::EchoPrivate> receiver) override;
   void BindFileChangeServiceBridge(
       mojo::PendingReceiver<mojom::FileChangeServiceBridge> receiver) override;
   void BindFileSystemAccessCloudIdentifierProvider(
@@ -224,8 +221,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   DocumentScanAsh* document_scan_ash() { return document_scan_ash_.get(); }
 
-  EchoPrivateAsh* echo_private_ash() { return echo_private_ash_.get(); }
-
   FileSystemAccessCloudIdentifierProviderAsh*
   file_system_access_cloud_identifier_provider_ash() {
     return file_system_access_cloud_identifier_provider_ash_.get();
@@ -305,7 +300,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<DeviceOAuth2TokenServiceAsh> device_oauth2_token_service_ash_;
   std::unique_ptr<ash::DiagnosticsServiceAsh> diagnostics_service_ash_;
   std::unique_ptr<DocumentScanAsh> document_scan_ash_;
-  std::unique_ptr<EchoPrivateAsh> echo_private_ash_;
   std::unique_ptr<FileChangeServiceBridgeAsh> file_change_service_bridge_ash_;
   std::unique_ptr<FileSystemAccessCloudIdentifierProviderAsh>
       file_system_access_cloud_identifier_provider_ash_;

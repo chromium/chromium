@@ -47,6 +47,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.verification.VerificationMode;
@@ -140,8 +141,8 @@ public class TabGroupModelFilterImplUnitTest {
     @Mock Profile mProfile;
     @Mock Token.Natives mTokenJniMock;
     @Mock TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
-    @Mock TabModelInternal mTabModel;
-    @Mock TabList mComprehensiveModel;
+    @Spy TabModelInternal mTabModel;
+    @Spy TabList mComprehensiveModel;
     @Mock TabGroupModelFilterObserver mTabGroupModelFilterObserver;
     @Mock Context mContext;
     @Mock SharedPreferences mSharedPreferencesTitle;
@@ -2431,14 +2432,25 @@ public class TabGroupModelFilterImplUnitTest {
     public void testSetTabGroupCollapsed() {
         mTabGroupModelFilter.setTabGroupCollapsed(TAB2_ROOT_ID, /* isCollapsed= */ true);
         verify(mTabGroupModelFilterObserver)
-                .didChangeTabGroupCollapsed(TAB2_ROOT_ID, /* isCollapsed= */ true);
+                .didChangeTabGroupCollapsed(
+                        TAB2_ROOT_ID, /* isCollapsed= */ true, /* animate= */ true);
+    }
+
+    @Test
+    public void testSetTabGroupCollapsed_NotAnimated() {
+        mTabGroupModelFilter.setTabGroupCollapsed(
+                TAB2_ROOT_ID, /* isCollapsed= */ true, /* animate= */ false);
+        verify(mTabGroupModelFilterObserver)
+                .didChangeTabGroupCollapsed(
+                        TAB2_ROOT_ID, /* isCollapsed= */ true, /* animate= */ false);
     }
 
     @Test
     public void testDeleteTabGroupCollapsed() {
         mTabGroupModelFilter.deleteTabGroupCollapsed(TAB2_ROOT_ID);
         verify(mTabGroupModelFilterObserver)
-                .didChangeTabGroupCollapsed(TAB2_ROOT_ID, /* isCollapsed= */ false);
+                .didChangeTabGroupCollapsed(
+                        TAB2_ROOT_ID, /* isCollapsed= */ false, /* animate= */ false);
     }
 
     @Test

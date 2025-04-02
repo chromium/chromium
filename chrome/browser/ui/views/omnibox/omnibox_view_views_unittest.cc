@@ -34,7 +34,9 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
@@ -44,6 +46,7 @@
 #include "components/omnibox/browser/test_location_bar_model.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/unified_consent/pref_names.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
@@ -52,6 +55,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
@@ -1136,6 +1140,10 @@ TEST_F(OmniboxViewViewsTest, AccessibleValue) {
 }
 
 TEST_F(OmniboxViewViewsTest, ShowHatsSurvey) {
+  profile()->GetPrefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kSearchSuggestEnabled, true);
+
   omnibox_feature_configs::ScopedConfigForTesting<
       omnibox_feature_configs::HappinessTrackingSurveyForOmniboxOnFocusZps>
       survey_config;
@@ -1147,7 +1155,21 @@ TEST_F(OmniboxViewViewsTest, ShowHatsSurvey) {
       suggest_config;
   suggest_config.Get().enabled = true;
 
-  EXPECT_CALL(*mock_hats_service(), LaunchDelayedSurvey(_, _, _, _)).Times(1);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kFocusTriggersWebAndSRPZeroSuggest);
+
+  EXPECT_CALL(*mock_hats_service(), LaunchDelayedSurvey(_, _, _, _))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [](const std::string& trigger, int timeout_ms,
+             const SurveyBitsData& survey_specific_bits_data,
+             const SurveyStringData& survey_specific_string_data) -> bool {
+            EXPECT_TRUE(
+                trigger == kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness ||
+                trigger == kHatsSurveyTriggerOnFocusZpsSuggestionsUtility);
+            return true;
+          }));
 
   location_bar_model()->set_url(GURL("https://test.com/"));
   for (int i = 0; i < 5; i++) {

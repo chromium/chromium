@@ -81,6 +81,7 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
               SetWebContentsBlocked,
               (content::WebContents*, bool),
               (override));
+  MOCK_METHOD(bool, IsTabModalPopup, (), (const, override));
 
   // PageNavigator methods
   MOCK_METHOD(content::WebContents*,

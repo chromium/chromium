@@ -4803,6 +4803,7 @@ interface HTMLParamElement : HTMLElement
     setter value
     setter valueType
 interface HTMLPermissionElement : HTMLElement
+    static method isTypeSupported
     attribute @@toStringTag
     getter initialPermissionStatus
     getter invalidReason

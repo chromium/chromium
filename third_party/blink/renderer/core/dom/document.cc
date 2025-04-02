@@ -7734,7 +7734,7 @@ std::optional<Color> Document::ThemeColor() {
     }
     Color color;
     if (CSSParser::ParseColor(
-            color, element->Content().GetString().StripWhiteSpace(), true)) {
+            color, element->Content().GetString().StripWhiteSpace())) {
       return color;
     }
   }
@@ -9658,7 +9658,7 @@ void Document::UpdateScrollMarkerGroupRelations() {
   }
   scroll_marker_group_to_scrollable_areas_.clear();
   if (document_element_) {
-    RecalcScrollMarkerContainRelations(*document_element_, nullptr);
+    ::blink::RecalcScrollMarkerContainRelations(*document_element_, nullptr);
   }
   needs_scroll_marker_contain_relations_update_ = false;
 }
@@ -9670,7 +9670,6 @@ void Document::UpdateScrollMarkerGroupToScrollableAreasMap() {
   for (auto& [scroll_marker_group, scrollable_areas] :
        scroll_marker_group_to_scrollable_areas_) {
     scroll_marker_group->UpdateScrollableAreaSubscriptions(scrollable_areas);
-    scroll_marker_group->UpdateSelectedScrollMarker();
   }
   needs_scroll_marker_groups_map_update_ = false;
 }

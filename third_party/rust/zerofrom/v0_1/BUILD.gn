@@ -13,11 +13,11 @@ cargo_crate("lib") {
   epoch = "0.1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/zerofrom-0.1.6/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/zerofrom-v0_1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/zerofrom-0.1.6/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerofrom-0.1.6/src/macro_impls.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerofrom-0.1.6/src/zero_from.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerofrom-v0_1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerofrom-v0_1/src/macro_impls.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerofrom-v0_1/src/zero_from.rs",
   ]
   inputs = []
 

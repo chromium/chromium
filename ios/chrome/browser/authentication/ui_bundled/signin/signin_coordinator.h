@@ -70,14 +70,15 @@ class PrefRegistrySyncable;
                                        promoAction:(signin_metrics::PromoAction)
                                                        promoAction;
 
-// Returns a coordinator for forced sign-in workflow.
+// Returns a coordinator for fullscreen sign-in workflow.
 // `viewController` presents the sign-in.
 + (instancetype)
-    forcedSigninCoordinatorWithBaseViewController:
+    fullscreenSigninCoordinatorWithBaseViewController:
         (UIViewController*)viewController
-                                          browser:(Browser*)browser
-                                      accessPoint:(signin_metrics::AccessPoint)
-                                                      accessPoint;
+                                              browser:(Browser*)browser
+                                          accessPoint:
+                                              (signin_metrics::AccessPoint)
+                                                  accessPoint;
 
 // Returns a coordinator for upgrade sign-in workflow.
 // `viewController` presents the sign-in.
@@ -175,18 +176,21 @@ class PrefRegistrySyncable;
 // the sign in flow was initialized, using which `promoAction` (when relevant),
 // when `optionalHistorySync` is YES, the history sync opt in will be presented
 // if the user hasn't already approved it.
+// `fullscreenPromo`: whether the promo should be displayed in a fullscreen
+// modal.
 + (instancetype)
-    sheetSigninAndHistorySyncCoordinatorWithBaseViewController:
+    signinAndHistorySyncCoordinatorWithBaseViewController:
         (UIViewController*)viewController
-                                                       browser:(Browser*)browser
-                                                   accessPoint:(signin_metrics::
-                                                                    AccessPoint)
-                                                                   accessPoint
-                                                   promoAction:(signin_metrics::
-                                                                    PromoAction)
-                                                                   promoAction
-                                           optionalHistorySync:
-                                               (BOOL)optionalHistorySync;
+                                                  browser:(Browser*)browser
+                                              accessPoint:
+                                                  (signin_metrics::AccessPoint)
+                                                      accessPoint
+                                              promoAction:
+                                                  (signin_metrics::PromoAction)
+                                                      promoAction
+                                      optionalHistorySync:
+                                          (BOOL)optionalHistorySync
+                                          fullscreenPromo:(BOOL)fullscreenPromo;
 
 // Returns a coordinator to switch account.
 + (instancetype)accountMenuCoordinatorWithBaseViewController:

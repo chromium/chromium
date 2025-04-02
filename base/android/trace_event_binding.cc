@@ -349,8 +349,9 @@ static void JNI_TraceEvent_WebViewStartupStartChromiumLocked(
     JNIEnv* env,
     jlong start_time_ms,
     jlong duration_ms,
-    jint call_site,
-    jboolean from_ui_thread) {
+    jint start_call_site,
+    jint finish_call_site,
+    jint startup_mode) {
 #if BUILDFLAG(ENABLE_BASE_TRACING)
   auto t = perfetto::Track::ThreadScoped(
       reinterpret_cast<void*>(trace_event::GetNextGlobalTraceId()));
@@ -362,10 +363,15 @@ static void JNI_TraceEvent_WebViewStartupStartChromiumLocked(
         auto* webview_startup =
             ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
                 ->set_webview_startup();
-        webview_startup->set_from_ui_thread((bool)from_ui_thread);
-        webview_startup->set_call_site(
+        webview_startup->set_start_call_site(
             (perfetto::protos::pbzero::perfetto_pbzero_enum_WebViewStartup::
-                 CallSite)call_site);
+                 CallSite)start_call_site);
+        webview_startup->set_finish_call_site(
+            (perfetto::protos::pbzero::perfetto_pbzero_enum_WebViewStartup::
+                 CallSite)finish_call_site);
+        webview_startup->set_startup_mode(
+            (perfetto::protos::pbzero::perfetto_pbzero_enum_WebViewStartup::
+                 StartupMode)startup_mode);
       });
   TRACE_EVENT_END("android_webview.timeline", t,
                   TimeTicks() + Milliseconds(start_time_ms + duration_ms));

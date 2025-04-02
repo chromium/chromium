@@ -35,10 +35,11 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTabModalDialogViewViewsBrowserTestMac,
 
   // The RootView of a JavaScript alert dialog should have the accessible role
   // of dialog. On the Mac, that is exposed as the subrole of a group.
-  gfx::NativeViewAccessible native_dialog = dialog_views->GetWidget()
-                                                ->GetRootView()
-                                                ->GetViewAccessibility()
-                                                .GetNativeObject();
+  id native_dialog = dialog_views->GetWidget()
+                         ->GetRootView()
+                         ->GetViewAccessibility()
+                         .GetNativeObject()
+                         .Get();
   EXPECT_EQ(NSAccessibilityGroupRole, [native_dialog accessibilityRole]);
   EXPECT_TRUE([@"AXApplicationDialog"
       isEqualToString:(NSString*)[native_dialog accessibilitySubrole]]);
@@ -67,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTabModalDialogViewViewsBrowserTestMac,
   // present to the user, VoiceOver currently does not. Therefore, we set the
   // accessibilityLabel of the native window to contain both the title and
   // the message so that both are presented to the user.
-  gfx::NativeViewAccessible native_window = [native_dialog accessibilityParent];
+  id native_window = [native_dialog accessibilityParent];
   EXPECT_EQ(NSAccessibilityWindowRole, [native_window accessibilityRole]);
   EXPECT_EQ(title + u", " + message,
             base::SysNSStringToUTF16([native_window accessibilityLabel]));

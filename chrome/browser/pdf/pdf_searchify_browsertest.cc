@@ -117,6 +117,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 );
 
 IN_PROC_BROWSER_TEST_P(PDFSearchifyTest, HelloWorld) {
+// TODO(crbug.com/406839385): Re-enable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+  GTEST_SKIP() << "Disable on macOS";
+#endif
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL(
       "/pdf/accessibility/hello-world-in-image.pdf")));
 

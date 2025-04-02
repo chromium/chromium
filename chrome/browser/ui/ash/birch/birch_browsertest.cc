@@ -7,7 +7,6 @@
 #include "ash/birch/birch_data_provider.h"
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
@@ -255,9 +254,7 @@ void ClickOnView(views::View* target_view) {
 
 class BirchBrowserTest : public InProcessBrowserTest {
  public:
-  BirchBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kForestFeature);
-  }
+  BirchBrowserTest() = default;
   ~BirchBrowserTest() override = default;
   BirchBrowserTest(const BirchBrowserTest&) = delete;
   BirchBrowserTest& operator=(const BirchBrowserTest&) = delete;
@@ -282,7 +279,6 @@ class BirchBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<MockNewWindowDelegate> new_window_delegate_;
 };
 

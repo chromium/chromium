@@ -440,6 +440,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="2783161812871838616">Kërko sajtin për desktop</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Fjalëkalimi u ruajt në "Llogarinë tënde të Google", {EMAIL}}other{Fjalëkalimet u ruajtën në "Llogarinë tënde të Google", {EMAIL}}}</translation>
 <translation id="2791174088547598693">Shto fjalëkalimin…</translation>
+<translation id="2793703503584038325">Zgjidh një fjalëkalim dhe trokit tek ikona "ndaj"</translation>
 <translation id="2797302972324086597">Prefiksi i shtetit</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} skedar}other{{COUNT} skedarë}}</translation>
 <translation id="2816489851009559785">Menyja → Cilësimet → Shfletuesi i parazgjedhur</translation>
@@ -579,6 +580,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="35083190962747987">Hap ${url}</translation>
 <translation id="3511519535430890904">Shto mbrojtjen e shfletimit</translation>
 <translation id="3517216995152707259">Fshirja e të dhënave të shfletimit nuk bën që të dalësh nga "Llogaria jote e Google". Për ta bërë këtë, <ph name="BEGIN_LINK" />dil nga llogaria në Chrome<ph name="END_LINK" />.</translation>
+<translation id="3519792890877853853">Kjo kartë shfaq rishikimet për produktet në skedat e tua të hapura</translation>
 <translation id="3519905498307021260">{count,plural, =1{Hap skedën}other{Hap {count} skeda}}</translation>
 <translation id="3523513363815970085">Fshih "Sajtet e tua kryesore"</translation>
 <translation id="3523789730715594198">Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
@@ -819,6 +821,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4565377596337484307">Fshih fjalëkalimin</translation>
 <translation id="4568230126482344545">Fshih "Skedat e fundit"</translation>
 <translation id="4578835633387306383">Aktivizo…</translation>
+<translation id="4580716718466706433">Shko te "Menaxheri i fjalëkalimeve"</translation>
 <translation id="4587589328781138893">Sajtet</translation>
 <translation id="4592672037257622855">{count,plural, =1{Faqja u shtua në listën tënde të leximit}other{{count} faqe u shtuan në listën tënde të leximit}}</translation>
 <translation id="459644946100970322">Të aktivizohen njoftimet për çmimet?</translation>
@@ -858,6 +861,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4717844083556844785">Faqja aktuale e uebit është në modalitetin "i fshehtë"</translation>
 <translation id="4719927025381752090">Ofro që t'i përkthesh</translation>
 <translation id="4720530280568305198">Zgjedhja jote u hap në një skedë të re</translation>
+<translation id="472259426228234149">Çmimi 100 - 180 USD</translation>
 <translation id="473775607612524610">Përditësoje</translation>
 <translation id="474209246745757965">Bli dhe përkthe me kamerën tënde</translation>
 <translation id="4742407542027196863">Menaxho fjalëkalimet…</translation>

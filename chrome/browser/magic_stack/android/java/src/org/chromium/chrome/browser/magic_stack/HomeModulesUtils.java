@@ -12,7 +12,6 @@ import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_SYNC_PROMO;
-import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_RESUMPTION;
 
 import android.content.res.Resources;
 import android.os.SystemClock;
@@ -41,8 +40,6 @@ public class HomeModulesUtils {
     private static final String SINGLE_TAB_FRESHNESS_INPUT_CONTEXT = "single_tab_freshness";
 
     private static final String PRICE_CHANGE_FRESHNESS_INPUT_CONTEXT = "price_change_freshness";
-
-    private static final String TAB_RESUMPTION_FRESHNESS_INPUT_CONTEXT = "tab_resumption_freshness";
 
     private static final String SAFETY_HUB_FRESHNESS_INPUT_CONTEXT = "safety_hub_freshness";
 
@@ -77,8 +74,6 @@ public class HomeModulesUtils {
                 return SINGLE_TAB_FRESHNESS_INPUT_CONTEXT;
             case PRICE_CHANGE:
                 return PRICE_CHANGE_FRESHNESS_INPUT_CONTEXT;
-            case TAB_RESUMPTION:
-                return TAB_RESUMPTION_FRESHNESS_INPUT_CONTEXT;
             case SAFETY_HUB:
                 return SAFETY_HUB_FRESHNESS_INPUT_CONTEXT;
             case AUXILIARY_SEARCH:
@@ -99,8 +94,6 @@ public class HomeModulesUtils {
             @ModuleType int moduleType, @NonNull Resources resources) {
         switch (moduleType) {
             case SINGLE_TAB:
-            case TAB_RESUMPTION:
-                return resources.getQuantityString(R.plurals.home_modules_tab_resumption_title, 1);
             case PRICE_CHANGE:
                 return resources.getString(R.string.price_change_module_name);
             case SAFETY_HUB:

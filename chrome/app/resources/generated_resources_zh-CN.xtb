@@ -434,7 +434,7 @@
 <translation id="1285625592773741684">当前的流量使用设置是“移动数据”</translation>
 <translation id="1285815028662278915">您的移动流量可能不支持热点。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1286901453440314450">不可信证书</translation>
-<translation id="1288037062697528143">护眼模式将于日落时自动开启</translation>
+<translation id="1288037062697528143">夜间光效将于日落时自动开启</translation>
 <translation id="1288300545283011870">语音属性</translation>
 <translation id="1289619947962767206">此选项不再受支持。若要演示某个标签页，请使用 <ph name="GOOGLE_MEET" />。</translation>
 <translation id="1291057703584594733">选择已指定的动作会将其从原始操作中移除。</translation>
@@ -2486,7 +2486,7 @@
 <translation id="2715934493766003251">正在同步文件，无法清理存储空间</translation>
 <translation id="2716986496990888774">此设置由家长管理。</translation>
 <translation id="271749239614426244">忽略光标的细微移动</translation>
-<translation id="2718395828230677721">护眼模式</translation>
+<translation id="2718395828230677721">夜间光效</translation>
 <translation id="2718998670920917754">防病毒软件检测到病毒。</translation>
 <translation id="2719936478972253983">已拦截以下 Cookie</translation>
 <translation id="2721037002783622288">通过<ph name="SEARCH_ENGINE" />搜索图片(&amp;S)</translation>
@@ -2974,6 +2974,7 @@
 <translation id="3045447014237878114">此网站已自动下载多个文件</translation>
 <translation id="3046178388369461825">Linux 磁盘空间严重不足</translation>
 <translation id="304644035656848980">麦克风音频流预览</translation>
+<translation id="3046892784550338476">版本 <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />（<ph name="PRODUCT_CHANNEL" />）<ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">网页，全部</translation>
 <translation id="304747341537320566">语音引擎</translation>
 <translation id="3047678109605649715">您的设备上没有<ph name="LANGUAGE" />语音包。请释放出设备空间，然后重试。</translation>
@@ -3066,6 +3067,7 @@
 <translation id="3122883569442693641">更多详情</translation>
 <translation id="3124111068741548686">USER处理函数</translation>
 <translation id="3124332159330678621">自定义您的 Chrome 浏览器，为它换上全新外观</translation>
+<translation id="3125816458150005808">您可以取消固定并从菜单中打开该功能</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">为避免遇到充电/性能方面的问题，请使用兼容的戴尔或 USB C 型电源适配器。</translation>
 <translation id="3127862849166875294">调整为 Linux 分配的磁盘空间大小</translation>
@@ -4514,7 +4516,7 @@
 <translation id="4133076602192971179">打开应用以更改密码</translation>
 <translation id="4134838386867070505">步骤 1/4：描述问题</translation>
 <translation id="4135746311382563554">Google Chrome 和 Chrome 操作系统附加服务条款</translation>
-<translation id="4136203100490971508">护眼模式将于日出时自动关闭</translation>
+<translation id="4136203100490971508">夜间光效将于日出时自动关闭</translation>
 <translation id="41365691917097717">继续操作会启用 ADB 调试，以创建和测试 Android 应用。请注意，此操作会允许安装未经 Google 验证的 Android 应用，而且一旦安装就无法停用，除非将设备恢复到出厂设置。</translation>
 <translation id="4137923333452716643">选中您想在阅读模式下打开的文字</translation>
 <translation id="4138267921960073861">在登录屏幕上显示用户名和照片</translation>
@@ -5313,6 +5315,7 @@
 <translation id="4723140812774948886">与后一项调换</translation>
 <translation id="4724450788351008910">附属关系已更改</translation>
 <translation id="4725511304875193254">柯基犬</translation>
+<translation id="4725762702191453794">标签页搜索功能现已固定到工具栏</translation>
 <translation id="4726710355753484204">使用 Ctrl + Alt +“调高亮度”键即可放大。
 使用 Ctrl + Alt +“调低亮度”键则可缩小。</translation>
 <translation id="4726710629007580002">尝试安装此扩展程序时出现以下警告：</translation>

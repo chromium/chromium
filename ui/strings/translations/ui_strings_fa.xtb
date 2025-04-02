@@ -38,6 +38,7 @@
 <translation id="19085484004813472">این ویژگی جدید است</translation>
 <translation id="2006524834898217237">مطمئن شوید دستگاه به اینترنت متصل باشد.</translation>
 <translation id="208586643495776849">لطفاً دوباره امتحان کنید</translation>
+<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />در «حالت ناشناس» مجاز است<ph name="END_BOLD" /> را روشن کنید</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{۱ روز}one{# روز}other{# روز}}</translation>
 <translation id="2148716181193084225">امروز</translation>
 <translation id="2168039046890040389">صفحه بالا</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">روی اهداف لمسی در صفحه‌تان تک‌ضرب بزنید.</translation>
 <translation id="2295140143284145483">نظرسنجی</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> ترابایت/ثانیه</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{افزونه‌ای با شناسه <ph name="BEGIN_LIST" /><ph name="END_LIST" /> پیدا نشد. با سرپرست تماس بگیرید.}one{افزونه‌ای با شناسه <ph name="BEGIN_LIST" /><ph name="END_LIST" /> پیدا نشد. با سرپرست تماس بگیرید.}other{افزونه‌هایی با شناسه‌های <ph name="BEGIN_LIST" /><ph name="END_LIST" /> پیدا نشد. با سرپرست تماس بگیرید.}}</translation>
 <translation id="2353636109065292463">بررسی اتصال اینترنت</translation>
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2388990488038464401">با این شماره از تلفنتان تماس می‌گیرید؟</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">حذف همه</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{تا ۱ روز دیگر}one{تا # روز دیگر}other{تا # روز دیگر}}</translation>
 <translation id="2922712708897119705">ستون <ph name="COLUMN_NAME" /> به‌ترتیب نزولی مرتب شد.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{افزونه پیدا نشد}one{افزونه پیدا نشد}other{افزونه‌ها پیدا نشد}}</translation>
 <translation id="3036649622769666520">باز کردن فایل‌ها</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> مگابایت</translation>
 <translation id="3087734570205094154">پایین</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">برقراری تماس از</translation>
 <translation id="3306688585798492231">نمایشگر داخلی</translation>
 <translation id="335581015389089642">صدا</translation>
+<translation id="3372635229069101468">روی <ph name="BEGIN_BOLD" />جزئیات<ph name="END_BOLD" /> کلیک کنید</translation>
 <translation id="3389286852084373014">نوشتار خیلی بزرگ است</translation>
 <translation id="3406306243914553062">‏محتوای HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{۱ روز باقی مانده است}one{# روز باقی مانده است}other{# روز باقی مانده است}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">ستون <ph name="COLUMN_NAME" /> به‌ترتیب صعودی مرتب شد.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{۱ اعلان خوانده‌نشده}one{# اعلان خوانده‌نشده}other{# اعلان خوانده‌نشده}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{افزونه زیر را در «حالت ناشناس» روشن کنید:}one{افزونه زیر را در «حالت ناشناس» روشن کنید:}other{افزونه‌های زیر را در «حالت ناشناس» روشن کنید:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{۱ ماه قبل}one{# ماه قبل}other{# ماه قبل}}</translation>
 <translation id="4289300219472526559">شروع صحبت</translation>
 <translation id="4289540628985791613">نمای کلی</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">شماره</translation>
 <translation id="4746179598275229723">سنجاق افزونه برداشته شد</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{۱ ماه باقی مانده است}one{# ماه باقی مانده است}other{# ماه باقی مانده است}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{برای استفاده از «حالت ناشناس»، سازمانتان به افزونه نیاز دارد}one{برای استفاده از «حالت ناشناس»، سازمانتان به افزونه نیاز دارد}other{برای استفاده از «حالت ناشناس»، سازمانتان به چند افزونه نیاز دارد}}</translation>
+<translation id="482932175346970750">‏<ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> را در مرورگرتان تایپ کنید</translation>
 <translation id="4888938634149558681">برقراری تماس</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />،‏ <ph name="TYPE_2" />،‏ <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{۱ ثانیه}one{# ثانیه}other{# ثانیه}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;جاگذاری</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> پتابایت</translation>
 <translation id="5278860589123563674">ارسال نشد</translation>
+<translation id="5283101102242354279">افزونه‌ای را در «حالت ناشناس» روشن کنید:</translation>
 <translation id="528468243742722775">پایان</translation>
 <translation id="5329858601952122676">&amp;حذف</translation>
 <translation id="5361107212971249203">نوشتار</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">تنظیمات نمایش برنامه‌تان در بازراه‌اندازی بعدی اعمال می‌شود.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{۱ دقیقه باقی مانده است}one{# دقیقه باقی مانده است}other{# دقیقه باقی مانده است}}</translation>
+<translation id="7252604552361840748">افزونه بالا را پیدا کنید</translation>
 <translation id="7363164521834647158">ارسال پاسخ</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{۱ دقیقه قبل}one{# دقیقه قبل}other{# دقیقه قبل}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>

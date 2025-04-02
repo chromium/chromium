@@ -41,9 +41,17 @@ using ash::AshWebViewFactory;
         &mock};                                                            \
     observation.Observe(static_cast<views::View*>(web_view_));             \
                                                                            \
+    constexpr int max_change_count = 3;                                    \
+    int change_count = 0;                                                  \
     base::RunLoop run_loop;                                                \
     EXPECT_CALL(mock, OnViewPreferredSizeChanged)                          \
-        .WillOnce(testing::Invoke([&](views::View* view) {                 \
+        .WillRepeatedly(testing::Invoke([&](views::View* view) {           \
+          if (expected_preferred_size_ != view->GetPreferredSize()) {      \
+            ++change_count;                                                \
+            if (change_count <= max_change_count) {                        \
+              return;                                                      \
+            }                                                              \
+          }                                                                \
           EXPECT_EQ(expected_preferred_size_, view->GetPreferredSize());   \
           run_loop.QuitClosure().Run();                                    \
         }));                                                               \

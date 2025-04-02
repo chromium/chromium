@@ -91,6 +91,7 @@ Chromium təcrübənizi təkmilləşdirmək məqsədilə data istifadə edən di
 <translation id="3054480780637153380">iOS-da Chromium ayarlarını açın, "Defolt brauzer tətbiqi" üzərinə toxunun və Chromium seçin.</translation>
 <translation id="3102849287235003384">Bütün vebsaytlarda Google Hesabınızdan çıxmaq üçün <ph name="BEGIN_LINK" />Chromium'dan çıxın<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromium defolt brauzer edilsin?</translation>
+<translation id="3180939591219927904">"Chromium-u bağladıqda Anonim tabları kilidləyin" funksiyasını yandırın</translation>
 <translation id="3242612358525156339">Cihaz ayarlarında "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" seçimini açın və "Chromium" seçin</translation>
 <translation id="328933489847748230">{count,plural, =1{1 Chromium pəncərəsi göstərilir}other{{count} Chromium pəncərəsi göstərilir}}</translation>
 <translation id="3344973607274501920">Chromium parollarınızı yoxlaya bilmədi. İnternet bağlantınızı yoxlayın.</translation>
@@ -260,6 +261,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Seçilmiş data Chromium və sinxronizasiya olunmuş cihazdan silindi. Google Hesabınızın history.google.com linkində axtarış və digər Google xidmətlərindən fəaliyyət kimi axtarış tarixçəsi formaları ola bilər.</translation>
 <translation id="7395825497086981028">Parolunuz <ph name="EMAIL" /> üçün Parol Menecerində saxlanacaq.</translation>
+<translation id="7504829997542308412">Chromium-u açın</translation>
 <translation id="7531461704633548377">Chromium-dan</translation>
 <translation id="7554983317097061001">Chromium ipucusu: Chromium-u doka köçürün</translation>
 <translation id="7576863740961052505">Chromium ayarlarını idarə edin</translation>

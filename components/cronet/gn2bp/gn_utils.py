@@ -195,8 +195,6 @@ class GnParser(object):
       self.toolchain = None
 
       # These are valid only for type == proto_library.
-      # This is typically: 'proto', 'protozero', 'ipc'.
-      self.proto_plugin = None
       self.proto_paths = set()
       self.proto_exports = set()
       self.proto_in_dir = ""
@@ -519,12 +517,14 @@ class GnParser(object):
       custom_processor(target, desc, deps, build_only_deps)
     elif desc.get("script", "") == "//tools/protoc_wrapper/protoc_wrapper.py":
       target.type = 'proto_library'
-      target.proto_plugin = "proto"
       target.proto_paths.update(self.get_proto_paths(desc))
       target.proto_exports.update(self.get_proto_exports(desc))
       target.proto_in_dir = self.get_proto_in_dir(desc)
       target.arch[arch].sources.update(desc.get('sources', []))
       target.arch[arch].inputs.update(desc.get('inputs', []))
+      target.arch[arch].outputs.update(
+          _remove_out_prefix(output) for output in desc['outputs'])
+      target.arch[arch].args = desc['args']
     elif target.type == 'source_set':
       target.arch[arch].sources.update(source
                                        for source in desc.get('sources', [])

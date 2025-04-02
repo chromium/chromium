@@ -17,7 +17,6 @@ namespace ui {
 
 using AXTreeIndexerAuraLinux = AXTreeIndexer<AtspiAccessible*,
                                              GetDOMId,
-                                             std::vector<AtspiAccessible*>,
                                              ChildrenOf>;
 
 }  // namespace ui

@@ -1,0 +1,20 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++button name='button supports naming with child content'
+++++++++staticText name='This is a button'
+++++++++++inlineTextBox name='This is a button'
+++++++link name='link supports naming with child content'
+++++++++staticText name='This is a link'
+++++++++++inlineTextBox name='This is a link'
+++++++genericContainer name='div does not support naming with child content'
+++++++++staticText name='This is a div'
+++++++++++inlineTextBox name='This is a div'
+++++++genericContainer name='span does not support naming with child content'
+++++++++staticText name='This is a span'
+++++++++++inlineTextBox name='This is a span'
+++++++staticText name=' '
+++++++++inlineTextBox name=' '
+++++++genericContainer name='region does not support naming with child content'
+++++++++staticText name='This is a region'
+++++++++++inlineTextBox name='This is a region'

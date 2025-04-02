@@ -250,7 +250,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CommitResponse() {
   }
   TransitionState(State::kResponseCommitted);
   owner_->RecordFetchResponseFrom();
-  owner_->CommitResponseHeaders(head_);
   owner_->CommitResponseBody(
       head_,
       write_buffer_manager_for_race_network_request_.ReleaseConsumerHandle(),

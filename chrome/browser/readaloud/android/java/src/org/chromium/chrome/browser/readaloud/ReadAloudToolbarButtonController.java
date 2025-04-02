@@ -49,7 +49,7 @@ public class ReadAloudToolbarButtonController extends BaseButtonDataProvider {
                 /* iphCommandBuilder= */ null,
                 AdaptiveToolbarButtonVariant.READ_ALOUD,
                 /* tooltipTextResId= */ Resources.ID_NULL,
-                /* showHoverHighlight= */ true);
+                /* showBackgroundHighlight= */ true);
         mControllerSupplier = controllerSupplier;
         mTrackerSupplier = trackerSupplier;
     }

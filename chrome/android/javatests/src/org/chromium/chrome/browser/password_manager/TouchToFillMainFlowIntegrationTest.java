@@ -64,6 +64,14 @@ public class TouchToFillMainFlowIntegrationTest {
 
     @Rule public SigninTestRule mSigninTestRule = new SigninTestRule();
 
+    public TouchToFillMainFlowIntegrationTest() {
+        // This test suite relies on the real password store. However, that can only store
+        // passwords if the device it runs on has the required min GMS Core version.
+        // To ensure the tests don't depend on the device configuration, set up a fake GMS
+        // Core version instead.
+        PasswordManagerTestHelper.setUpPwmRequiredMinGmsVersion();
+    }
+
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();

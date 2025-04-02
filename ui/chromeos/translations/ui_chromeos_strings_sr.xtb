@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">Особа пише „Хвала вам“</translation>
 <translation id="2088690981887365033">VPN мрежа</translation>
 <translation id="209653272837065803">Нема довољно меморијског простора да бисте и даље синхронизовали фајлове</translation>
-<translation id="2111134541987263231">Укључите <ph name="BEGIN_BOLD" />Дозволи у режиму без архивирања<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">Ставке (<ph name="NUMBER_OF_ITEMS" />) ће бити избрисане и нећете моћи да их вратите.</translation>
 <translation id="2122305276694332719">Ако се аутоматски повежете на скривену мрежу, други могу да виде ваш уређај и нека подешавања мреже, због чега вам то не препоручујемо.</translation>
 <translation id="2125607626296734455">кмерски</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> је избачен.</translation>
 <translation id="2307462900900812319">Конфигуриши мрежу</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Нисмо успели да пронађемо додатак са ИД-ом <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Обратите се администратору.}one{Нисмо успели да пронађемо додатке са ИД-овима <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Обратите се администратору.}few{Нисмо успели да пронађемо додатке са ИД-овима <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Обратите се администратору.}other{Нисмо успели да пронађемо додатке са ИД-овима <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Обратите се администратору.}}</translation>
 <translation id="2325650632570794183">Овај тип датотеке није подржан. Посетите Chrome веб-продавницу и пронађите апликацију која може да отвара овај тип датотеке.</translation>
 <translation id="2326539130272988168">бугарски</translation>
 <translation id="233822363739146957">Нема довољно меморијског простора да бисте синхронизовали све фајлове</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">марати</translation>
 <translation id="2923240520113693977">естонски</translation>
 <translation id="2938685643439809023">монголски</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Нисмо успели да пронађемо додатак}one{Нисмо успели да пронађемо додатке}few{Нисмо успели да пронађемо додатке}other{Нисмо успели да пронађемо додатке}}</translation>
 <translation id="2943503720238418293">Користите краћи назив</translation>
 <translation id="2949781154072577687">Форматира се <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Медуза</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">Завршено</translation>
 <translation id="3358452157379365236">Гитара</translation>
 <translation id="3368922792935385530">Повезан</translation>
-<translation id="3372635229069101468">Кликните на <ph name="BEGIN_BOLD" />Детаљи<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">непалски са индијском тастатуром</translation>
 <translation id="338691029516748599"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, управља администратор, повежи</translation>
 <translation id="3408072735282270043">Активирајте мрежу <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">Једнорог</translation>
 <translation id="4131235941541910880">Преместите ставке које вам не требају у отпад</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, активирај после подешавања уређаја</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Укључите следећи додатак у режиму без архивирања:}one{Укључите следеће додатке у режиму без архивирања:}few{Укључите следеће додатке у режиму без архивирања:}other{Укључите следеће додатке у режиму без архивирања:}}</translation>
 <translation id="4153015322587141338">Кликните десним тастером на фајл и изаберите <ph name="PIN_COMMAND" /> за брз приступ фајловима на полици.</translation>
 <translation id="4157569377477607576">Смернице администратора не препоручују:</translation>
 <translation id="4159731583141908892">Премештених ставки: <ph name="FILE_NAME" />.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">Задржи обе</translation>
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4805966553127040832">Враћају се ставке (<ph name="COUNT" />)</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Да бисте користили режим без архивирања, организација захтева додатак}one{Да бисте користили режим без архивирања, организација захтева неке додатке}few{Да бисте користили режим без архивирања, организација захтева неке додатке}other{Да бисте користили режим без архивирања, организација захтева неке додатке}}</translation>
 <translation id="4826849268470072925">тамилски ITRANS</translation>
-<translation id="482932175346970750">Унесите <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> у прегледач</translation>
 <translation id="4843566743023903107">Chromebase-ови</translation>
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="485316830061041779">немачки</translation>
@@ -561,7 +554,6 @@
     на њима са другима, и све то на једном месту.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Враћене датотеке са Google диска</translation>
 <translation id="5278111733643988471">Да бисте вратили ову ставку, превуците је у нов фолдер изван отпада. Првобитни фолдер <ph name="PARENT_FOLDER_NAME" /> за ову ставку је избрисан.</translation>
-<translation id="5283101102242354279">Укључите додатак у режиму без архивирања:</translation>
 <translation id="5288441970121584418">Пљескавица</translation>
 <translation id="5293615890992542006">Смернице администратора блокирају премештање овог фајла</translation>
 <translation id="5305688511332277257">Ништа није инсталирано</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, детаљи</translation>
 <translation id="7246947237293279874">FTP прокси</translation>
 <translation id="7248671827512403053">Апликација</translation>
-<translation id="7252604552361840748">Пронађите додатак изнад</translation>
 <translation id="7256405249507348194">Непозната грешка: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Доступне услуге</translation>
 <translation id="7291818353625820805">Желите да се тастери понављају? Искључите ознаке акцената у Подешавањима тастатуре</translation>

@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">กำลังเขียนขอบคุณ</translation>
 <translation id="2088690981887365033">เครือข่าย VPN</translation>
 <translation id="209653272837065803">มีพื้นที่เก็บข้อมูลไม่เพียงพอที่จะซิงค์ไฟล์ต่อ</translation>
-<translation id="2111134541987263231">เปิด<ph name="BEGIN_BOLD" />อนุญาตในโหมดไม่ระบุตัวตน<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">ระบบจะลบ <ph name="NUMBER_OF_ITEMS" /> รายการและคุณจะกู้คืนไม่ได้</translation>
 <translation id="2122305276694332719">การเชื่อมต่อเครือข่ายที่ซ่อนอยู่โดยอัตโนมัติจะทำให้คนอื่นๆ เห็นอุปกรณ์ของคุณและการตั้งค่าเครือข่ายบางอย่าง เราไม่แนะนำให้เชื่อมต่อ</translation>
 <translation id="2125607626296734455">เขมร</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">ดาวเคราะห์</translation>
 <translation id="2305020378527873881">นำ <ph name="VOLUME_NAME" /> ออกแล้ว</translation>
 <translation id="2307462900900812319">กำหนดค่าเครือข่าย</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{ไม่พบส่วนขยายที่มีรหัส <ph name="BEGIN_LIST" /><ph name="END_LIST" /> โปรดติดต่อผู้ดูแลระบบ}other{ไม่พบส่วนขยายที่มีรหัส <ph name="BEGIN_LIST" /><ph name="END_LIST" /> โปรดติดต่อผู้ดูแลระบบ}}</translation>
 <translation id="2325650632570794183">ไฟล์ประเภทนี้ไม่ได้รับการสนับสนุน โปรดไปที่ Chrome เว็บสโตร์เพื่อหาแอปพลิเคชันที่สามารถเปิดไฟล์ประเภทนี้</translation>
 <translation id="2326539130272988168">บัลแกเรีย</translation>
 <translation id="233822363739146957">มีพื้นที่เก็บข้อมูลไม่เพียงพอที่จะซิงค์ไฟล์ทั้งหมด</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">มราฐี</translation>
 <translation id="2923240520113693977">เอสโตเนีย</translation>
 <translation id="2938685643439809023">มองโกเลีย</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{ไม่พบส่วนขยาย}other{ไม่พบส่วนขยาย}}</translation>
 <translation id="2943503720238418293">ใช้ชื่อที่สั้นลง</translation>
 <translation id="2949781154072577687">กำลังจัดรูปแบบ <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">แมงกะพรุน</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">เสร็จสมบูรณ์</translation>
 <translation id="3358452157379365236">กีตาร์</translation>
 <translation id="3368922792935385530">เชื่อมต่อแล้ว</translation>
-<translation id="3372635229069101468">คลิก<ph name="BEGIN_BOLD" />รายละเอียด<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">เนปาลด้วยแป้นพิมพ์ InScript</translation>
 <translation id="338691029516748599">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, จัดการโดยผู้ดูแลระบบ, เชื่อมต่อ</translation>
 <translation id="3408072735282270043">เปิดใช้งาน <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">ยูนิคอร์น</translation>
 <translation id="4131235941541910880">ย้ายรายการที่คุณไม่ต้องการไปยังถังขยะ</translation>
 <translation id="4134804435730168042">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, เปิดใช้งานหลังจากตั้งค่าอุปกรณ์</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{เปิดส่วนขยายต่อไปนี้ในโหมดไม่ระบุตัวตน}other{เปิดส่วนขยายต่อไปนี้ในโหมดไม่ระบุตัวตน}}</translation>
 <translation id="4153015322587141338">คลิกขวาที่ไฟล์แล้วเลือก "<ph name="PIN_COMMAND" />" เพื่อให้เข้าถึงไฟล์ในชั้นวางได้อย่างรวดเร็ว</translation>
 <translation id="4157569377477607576">นโยบายของผู้ดูแลระบบไม่แนะนำให้ทำสิ่งต่อไปนี้</translation>
 <translation id="4159731583141908892">ย้าย <ph name="FILE_NAME" /> แล้ว</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">เก็บไว้ทั้งสองเวอร์ชัน</translation>
 <translation id="4804827417948292437">อะโวคาโด</translation>
 <translation id="4805966553127040832">กำลังกู้คืน <ph name="COUNT" /> รายการ</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{องค์กรต้องมีส่วนขยายรายการหนึ่งจึงจะใช้โหมดไม่ระบุตัวตนได้}other{องค์กรต้องมีส่วนขยายบางรายการจึงจะใช้โหมดไม่ระบุตัวตนได้}}</translation>
 <translation id="4826849268470072925">ทมิฬ (ITRANS)</translation>
-<translation id="482932175346970750">พิมพ์ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ลงในเบราว์เซอร์</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">ดู</translation>
 <translation id="485316830061041779">เยอรมัน</translation>
@@ -561,7 +554,6 @@
     กับผู้อื่นบนไฟล์ได้ทั้งหมดในที่เดียว<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">ไฟล์ที่กู้คืนจาก Google ไดรฟ์</translation>
 <translation id="5278111733643988471">หากต้องการกู้คืนรายการนี้ ให้ลากไปที่โฟลเดอร์ใหม่นอกถังขยะ ระบบลบโฟลเดอร์ "<ph name="PARENT_FOLDER_NAME" />" เดิมของรายการนี้แล้ว</translation>
-<translation id="5283101102242354279">วิธีเปิดส่วนขยายในโหมดไม่ระบุตัวตน</translation>
 <translation id="5288441970121584418">เบอร์เกอร์</translation>
 <translation id="5293615890992542006">นโยบายของผู้ดูแลระบบบล็อกการย้ายไฟล์นี้</translation>
 <translation id="5305688511332277257">ไม่มีการติดตั้ง</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, รายละเอียด</translation>
 <translation id="7246947237293279874">พร็อกซี FTP</translation>
 <translation id="7248671827512403053">แอปพลิเคชัน</translation>
-<translation id="7252604552361840748">ค้นหาส่วนขยายด้านบน</translation>
 <translation id="7256405249507348194">ข้อผิดพลาดที่ไม่รู้จัก: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">บริการที่มี</translation>
 <translation id="7291818353625820805">ต้องการให้แป้นทำงานซ้ำไหม โปรดปิดเครื่องหมายการเน้นเสียงในการตั้งค่าแป้นพิมพ์</translation>

@@ -278,6 +278,7 @@ Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI g
 <translation id="1214942205301731697">Jangan izinkan penggunaan mode developer di halaman ekstensi</translation>
 <translation id="1216919699175573511">Aktifkan dukungan Signed HTTP Exchange (SXG)</translation>
 <translation id="1219027971768347970">Gunakan konfigurasi default untuk sandbox audio</translation>
+<translation id="1219036692926668273">Gunakan algoritma <ph name="HAPPY_EYEBALLS_V3" />.</translation>
 <translation id="1221359380862872747">Muat url yang ditentukan di proses masuk demo</translation>
 <translation id="1221955019309484560">Aktifkan update untuk semua komponen</translation>
 <translation id="1222694988453895594">Memungkinkan Anda menyetel daftar protokol, dan daftar terkait pola origin yang diizinkan untuk setiap protokol, yang dapat meluncurkan aplikasi eksternal tanpa meminta izin pengguna. Pemisah di akhir tidak boleh disertakan saat mencantumkan protokol, jadi cantumkan "skype" bukan "skype:" atau "skype://".
@@ -4175,15 +4176,6 @@ Kebijakan ini bersifat sementara dan akan dihapus pada masa mendatang.</translat
 <translation id="3956573780915784996">Izinkan pengguna mengumpulkan jejak performa di seluruh sistem.</translation>
 <translation id="3956686688560604829">Gunakan kebijakan SiteList Internet Explorer untuk Dukungan Browser Lama.</translation>
 <translation id="3958586912393694012">Izinkan Smart Lock digunakan</translation>
-<translation id="3959350391319409669">Kebijakan ini mengontrol setelan kode dinamis untuk <ph name="PRODUCT_NAME" />.
-
-Menonaktifkan kode dinamis akan meningkatkan keamanan <ph name="PRODUCT_NAME" /> dengan mencegah kode dinamis dan kode pihak ketiga yang berpotensi berbahaya agar tidak mengubah perilaku <ph name="PRODUCT_NAME" />, tetapi dapat menyebabkan masalah kompatibilitas dengan software pihak ketiga yang harus berjalan dalam proses browser.
-
-Jika kebijakan disetel ke 0 - Default atau tidak disetel, <ph name="PRODUCT_NAME" /> akan menggunakan setelan default.
-
-Jika kebijakan disetel ke 1 - DisabledForBrowser, proses browser <ph name="PRODUCT_NAME" /> akan mencegah membuat kode dinamis.
-
-Catatan: Baca selengkapnya tentang kebijakan mitigasi proses ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
 <translation id="3960728283243442805">Pengguna tidak akan diberi opsi di menu <ph name="PRODUCT_NAME" /> untuk memilih perangkat transmisi dengan menggunakan kode akses atau dengan memindai kode QR.</translation>
 <translation id="3962445567482559878">Gunakan mode EDU pengalaman aktivasi Asisten</translation>
 <translation id="396261881101930204">Sembunyikan rekomendasi media dari pengguna</translation>
@@ -5972,6 +5964,17 @@ Jika kebijakan ini tidak disetel atau daftar tidak berisi referensi gambar yang 
       Selama jangka waktu ini, pengguna akan berulang-ulang diberi tahu tentang perlunya update. Untuk perangkat <ph name="PRODUCT_OS_NAME" />, notifikasi mulai ulang akan muncul di area notifikasi sesuai dengan kebijakan <ph name="RELAUNCH_HEADS_UP_PERIOD_POLICY_NAME" />. Untuk browser <ph name="PRODUCT_NAME" />, menu aplikasi akan berubah untuk menunjukkan bahwa peluncuran ulang diperlukan setelah sepertiga periode notifikasi berlalu. Warna notifikasi akan berubah setelah dua pertiga periode notifikasi berlalu, dan berubah lagi setelah seluruh periode notifikasi berlalu. Notifikasi tambahan yang diaktifkan oleh kebijakan <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> mengikuti jadwal yang sama seperti ini.
 
       Jika tidak ditetapkan, jangka waktu default selama 604800000 milidetik (satu minggu) akan digunakan.</translation>
+<translation id="5212140720192262527">Fitur ini mengizinkan algoritma <ph name="HAPPY_EYEBALLS_V3" /> melakukan upaya koneksi. Lihat https://datatracker.ietf.org/doc/draft-pauly-happy-happyeyeballs-v3 untuk mengetahui detailnya.
+
+Jika kebijakan ini disetel ke Aktif, <ph name="PRODUCT_NAME" /> akan menggunakan algoritma <ph name="HAPPY_EYEBALLS_V3" /> untuk melakukan upaya koneksi.
+
+Jika kebijakan ini disetel ke Nonaktif, algoritma <ph name="HAPPY_EYEBALLS_V3" /> akan dinonaktifkan.
+
+Jika kebijakan ini tidak disetel, <ph name="PRODUCT_NAME" /> akan mengaktifkan atau menonaktifkan algoritma <ph name="HAPPY_EYEBALLS_V3" /> berdasarkan setelan di chrome://flags/#happy-eyeballs-v3.
+
+Kebijakan ini mendukung pembaruan dinamis.
+
+Kebijakan ini adalah tindakan sementara dan akan dihapus di <ph name="PRODUCT_NAME" /> versi mendatang.</translation>
 <translation id="5212810195096589189">Tentukan izin CLI VM</translation>
 <translation id="5213038356678567351">Situs yang seharusnya tidak pernah memicu pengalihan browser.</translation>
 <translation id="5216815237712190041">Mengonfigurasi gambar wallpaper tingkat perangkat yang akan ditampilkan di layar login jika belum ada pengguna yang login ke perangkat. Kebijakan ini disetel dengan menentukan URL tempat perangkat ChromeOS dapat mendownload gambar wallpaper dan hash kriptografi yang digunakan untuk memverifikasi integritas download. Gambar harus dalam format JPEG dan ukuran filenya tidak boleh lebih dari 16 MB. URL harus dapat diakses tanpa autentikasi apa pun. Gambar wallpaper didownload dan disimpan di cache. File akan didownload ulang setiap kali URL atau hash berubah.
@@ -7286,6 +7289,7 @@ versi 114, setelah itu dukungan untuk API ini akan dihapus tanpa syarat.
 CATATAN: Hanya proses perender yang baru dimulai yang akan menunjukkan perubahan pada
 kebijakan ini saat browser berjalan.</translation>
 <translation id="6083631234867522991">Windows (klien Windows):</translation>
+<translation id="6087413944876892918">Menggunakan algoritma <ph name="HAPPY_EYEBALLS_V3" /></translation>
 <translation id="608788685013546076">Menetapkan ambang batas pergeseran puncak daya baterai dalam persen</translation>
 <translation id="6089679180657323464">Mengontrol setelan pengontrol diagnostik dan telemetri wilco.</translation>
 <translation id="6091233616732024397">Paksa pengguna login untuk menggunakan browser</translation>
@@ -9930,6 +9934,7 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, SPN Kerberos yang dihasil
 
       Menentukan id ekstensi untuk digunakan sebagai tirai layar pada layar masuk. Ekstensi haruslah bagian dari AppPack yang dikonfigurasi untuk domain ini melalui kebijakan DeviceAppPack.</translation>
 <translation id="7882890448959833986">Sembunyikan peringatan OS tidak didukung</translation>
+<translation id="7884672714405919225">Jangan gunakan algoritma <ph name="HAPPY_EYEBALLS_V3" />.</translation>
 <translation id="788480874436328004">Nonaktifkan penyimpanan sandi menggunakan pengelola sandi</translation>
 <translation id="7891884447851425349">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> akan menentukan URL mesin telusur yang digunakan saat penelusuran default. URL harus menyertakan string <ph name="SEARCH_TERM_MARKER" />, yang diganti di kueri dengan istilah penelusuran pengguna.
 

@@ -20,7 +20,8 @@
 namespace blink {
 
 using HitNodeCb =
-    base::MockRepeatingCallback<ListBasedHitTestBehavior(const Node& node)>;
+    base::MockRepeatingCallback<ListBasedHitTestBehavior(const Node& node,
+                                                         DOMNodeId node_id)>;
 using testing::_;
 using testing::Return;
 
@@ -56,7 +57,7 @@ class HitNodeCallbackStopper : public GarbageCollected<HitNodeCallbackStopper> {
   HitNodeCallbackStopper& operator=(const HitNodeCallbackStopper&) = delete;
   ~HitNodeCallbackStopper() = default;
 
-  ListBasedHitTestBehavior StopAtNode(const Node& node) {
+  ListBasedHitTestBehavior StopAtNode(const Node& node, DOMNodeId node_id) {
     did_stop_hit_testing_ = false;
     if (node == stop_node_) {
       did_stop_hit_testing_ = true;
@@ -143,7 +144,7 @@ TEST_F(HitTestingTest, HitTestWithCallback) {
 
   // Perform hit test without stopping, and verify that the result innernode is
   // set to the target.
-  EXPECT_CALL(hit_node_cb, Run(_))
+  EXPECT_CALL(hit_node_cb, Run(_, _))
       .WillRepeatedly(Return(ListBasedHitTestBehavior::kContinueHitTesting));
 
   LocalFrame* frame = GetDocument().GetFrame();
@@ -182,7 +183,7 @@ TEST_F(HitTestingTest, HitTestWithCallback) {
   Node* stop_node = GetElementById("occluder_2");
   HitNodeCallbackStopper* hit_node_callback_stopper =
       MakeGarbageCollected<HitNodeCallbackStopper>(stop_node);
-  EXPECT_CALL(hit_node_cb, Run(_))
+  EXPECT_CALL(hit_node_cb, Run(_, _))
       .WillRepeatedly(testing::Invoke(hit_node_callback_stopper,
                                       &HitNodeCallbackStopper::StopAtNode));
   EXPECT_FALSE(hit_node_callback_stopper->DidStopHitTesting());

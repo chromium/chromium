@@ -192,8 +192,10 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   // Called when an access token request completes (successfully or not).
   void OnAccessTokenAvailableForImageSearch(const gfx::Image& original_image,
                                             const bool is_standalone_session,
+                                            const int request_id,
                                             const std::string& access_token);
   void OnAccessTokenAvailableForCopyText(const std::string vsr_id,
+                                         const int request_id,
                                          const std::string& access_token);
 
   // Called after a resource request is dispatched by a `SimpleURLLoader` and a
@@ -201,10 +203,12 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   void OnDispatchCompleteForImageSearch(
       base::WeakPtr<const network::SimpleURLLoader> url_loader,
       const std::string& access_token,
+      const int request_id,
       std::unique_ptr<std::string> response_body);
   void OnDispatchCompleteForCopyText(
       base::WeakPtr<const network::SimpleURLLoader> url_loader,
       const std::string& access_token,
+      const int request_id,
       std::unique_ptr<std::string> response_body);
 
   // Called after the response to a /qfmetadata GET request (for text detection)
@@ -236,6 +240,9 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
 
   // True when a capture mode session is currently active.
   bool is_session_active_ = false;
+
+  // The current Lens request ID, used to validate the most recent request.
+  int lens_request_id_ = 0;
 
   // Temporary directory to which files will be redirected before being uploaded
   // to OneDrive cloud. Created and destructed asynchronously.

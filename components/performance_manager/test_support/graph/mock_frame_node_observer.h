@@ -84,6 +84,10 @@ class LenientMockFrameNodeObserver : public FrameNodeObserver {
               OnFrameVisibilityChanged,
               (const FrameNode*, FrameNode::Visibility),
               (override));
+  MOCK_METHOD(void,
+              OnIsIntersectingLargeAreaChanged,
+              (const FrameNode*),
+              (override));
   MOCK_METHOD(void, OnIsImportantChanged, (const FrameNode*), (override));
   MOCK_METHOD(void,
               OnNonPersistentNotificationCreated,

@@ -69,13 +69,12 @@ bool ParseBase64Digest(String base64, Vector<uint8_t>& hash) {
   DCHECK(hash.empty());
 
   // We accept base64url-encoded data here by normalizing it to base64.
-  Vector<char> out;
-  if (!Base64Decode(NormalizeToBase64(base64), out))
+  if (!Base64Decode(NormalizeToBase64(base64), hash)) {
     return false;
-  if (out.empty() || out.size() > kMaxDigestSize)
+  }
+  if (hash.empty() || hash.size() > kMaxDigestSize) {
     return false;
-  for (char el : out)
-    hash.push_back(el);
+  }
   return true;
 }
 

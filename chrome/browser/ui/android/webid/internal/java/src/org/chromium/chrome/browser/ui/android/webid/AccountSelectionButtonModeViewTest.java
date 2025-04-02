@@ -231,14 +231,14 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                         .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
                         .with(HeaderProperties.RP_MODE, RpMode.ACTIVE)
                         .with(
-                                HeaderProperties.IDP_BRAND_ICON,
+                                HeaderProperties.HEADER_ICON,
                                 Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888))
                         .with(
                                 HeaderProperties.RP_BRAND_ICON,
                                 Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888))
                         .build());
         assertEquals(View.VISIBLE, mContentView.getVisibility());
-        ImageView idpBrandIcon = mContentView.findViewById(R.id.header_idp_icon);
+        ImageView idpBrandIcon = mContentView.findViewById(R.id.header_icon);
         ImageView rpBrandIcon = mContentView.findViewById(R.id.header_rp_icon);
         ImageView arrowRangeIcon = mContentView.findViewById(R.id.arrow_range_icon);
 
@@ -266,14 +266,14 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                             .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
                             .with(HeaderProperties.RP_MODE, RpMode.ACTIVE)
                             .with(
-                                    HeaderProperties.IDP_BRAND_ICON,
+                                    HeaderProperties.HEADER_ICON,
                                     Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888))
                             .with(
                                     HeaderProperties.RP_BRAND_ICON,
                                     Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888))
                             .build());
             assertEquals(View.VISIBLE, mContentView.getVisibility());
-            ImageView idpBrandIcon = mContentView.findViewById(R.id.header_idp_icon);
+            ImageView idpBrandIcon = mContentView.findViewById(R.id.header_icon);
             ImageView rpBrandIcon = mContentView.findViewById(R.id.header_rp_icon);
             ImageView arrowRangeIcon = mContentView.findViewById(R.id.arrow_range_icon);
 
@@ -294,12 +294,12 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                         .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
                         .with(HeaderProperties.RP_MODE, RpMode.ACTIVE)
                         .with(
-                                HeaderProperties.IDP_BRAND_ICON,
+                                HeaderProperties.HEADER_ICON,
                                 Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888))
                         .with(HeaderProperties.RP_BRAND_ICON, null)
                         .build());
         assertEquals(View.VISIBLE, mContentView.getVisibility());
-        ImageView idpBrandIcon = mContentView.findViewById(R.id.header_idp_icon);
+        ImageView idpBrandIcon = mContentView.findViewById(R.id.header_icon);
         ImageView rpBrandIcon = mContentView.findViewById(R.id.header_rp_icon);
         ImageView arrowRangeIcon = mContentView.findViewById(R.id.arrow_range_icon);
 
@@ -318,13 +318,13 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                         .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                         .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
                         .with(HeaderProperties.RP_MODE, RpMode.ACTIVE)
-                        .with(HeaderProperties.IDP_BRAND_ICON, null)
+                        .with(HeaderProperties.HEADER_ICON, null)
                         .with(
                                 HeaderProperties.RP_BRAND_ICON,
                                 Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888))
                         .build());
         assertEquals(View.VISIBLE, mContentView.getVisibility());
-        ImageView idpBrandIcon = mContentView.findViewById(R.id.header_idp_icon);
+        ImageView idpBrandIcon = mContentView.findViewById(R.id.header_icon);
         ImageView rpBrandIcon = mContentView.findViewById(R.id.header_rp_icon);
         ImageView arrowRangeIcon = mContentView.findViewById(R.id.arrow_range_icon);
 
@@ -343,11 +343,11 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                         .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                         .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
                         .with(HeaderProperties.RP_MODE, RpMode.ACTIVE)
-                        .with(HeaderProperties.IDP_BRAND_ICON, null)
+                        .with(HeaderProperties.HEADER_ICON, null)
                         .with(HeaderProperties.RP_BRAND_ICON, null)
                         .build());
         assertEquals(View.VISIBLE, mContentView.getVisibility());
-        ImageView idpBrandIcon = mContentView.findViewById(R.id.header_idp_icon);
+        ImageView idpBrandIcon = mContentView.findViewById(R.id.header_icon);
         ImageView rpBrandIcon = mContentView.findViewById(R.id.header_rp_icon);
         ImageView arrowRangeIcon = mContentView.findViewById(R.id.arrow_range_icon);
 

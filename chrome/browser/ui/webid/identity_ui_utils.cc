@@ -7,6 +7,8 @@
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/ui/monogram_utils.h"
 #include "chrome/grit/platform_locale_settings.h"
 #include "content/public/browser/identity_request_account.h"
@@ -17,13 +19,23 @@
 
 namespace {
 
+#if BUILDFLAG(IS_ANDROID)
+// The desired size of the IDP icon used as badge for the user account avatar
+// when there are multiple IDPs.
+inline constexpr int kLargeAvatarBadgeSize = 20;
+// The border radius of the background circle containing the IDP icon in an
+// account button.
+constexpr int kIdpBorderRadius = 12;
+#else
 // The desired size of the IDP icon used as badge for the user account avatar
 // when there are multiple IDPs.
 inline constexpr int kLargeAvatarBadgeSize = 16;
 // The border radius of the background circle containing the IDP icon in an
 // account button.
 constexpr int kIdpBorderRadius = 10;
+#endif  // BUILDFLAG(IS_ANDROID)
 
+// A CanvasImageSource that draws a letter in a circle.
 class LetterCircleCroppedImageSkiaSource : public gfx::CanvasImageSource {
  public:
   LetterCircleCroppedImageSkiaSource(const std::u16string& letter, int size)

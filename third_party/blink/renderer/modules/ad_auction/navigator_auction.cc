@@ -1159,7 +1159,7 @@ bool CopyAdditionalBidKeyFromIdlToMojo(
   if (!input.hasAdditionalBidKey()) {
     return true;
   }
-  WTF::Vector<char> decoded_key;
+  WTF::Vector<uint8_t> decoded_key;
   if (!WTF::Base64Decode(input.additionalBidKey(), decoded_key,
                          WTF::Base64DecodePolicy::kForgiving)) {
     exception_state.ThrowTypeError(ErrorInvalidInterestGroup(

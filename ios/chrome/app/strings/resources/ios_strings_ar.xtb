@@ -440,6 +440,7 @@
 <translation id="2783161812871838616">طلب موقع إلكتروني متوافق مع أجهزة الكمبيوتر المكتبي</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{‏تم حفظ كلمة المرور في حسابك على Google، {EMAIL}.}zero{‏تم حفظ كلمات المرور في حسابك على Google، {EMAIL}.}two{‏تم حفظ كلمتَيْ المرور في حسابك على Google، {EMAIL}.}few{‏تم حفظ كلمات المرور في حسابك على Google، {EMAIL}.}many{‏تم حفظ كلمات المرور في حسابك على Google، {EMAIL}.}other{‏تم حفظ كلمات المرور في حسابك على Google، {EMAIL}.}}</translation>
 <translation id="2791174088547598693">إضافة كلمة مرور…</translation>
+<translation id="2793703503584038325">اختيار كلمة مرور والنقر على رمز "المشاركة"</translation>
 <translation id="2797302972324086597">رمز البلد</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{ملف واحد ({COUNT})}zero{‫{COUNT} ملف}two{ملفان ({COUNT})}few{‫{COUNT} ملفات}many{‫{COUNT} ملفًا}other{‫{COUNT} ملف}}</translation>
 <translation id="2816489851009559785">"القائمة" ← "الإعدادات" ← "المتصفِّح التلقائي"</translation>
@@ -579,6 +580,7 @@
 <translation id="35083190962747987">‏فتح عنوان ${url}</translation>
 <translation id="3511519535430890904">إضافة حماية التصفُّح</translation>
 <translation id="3517216995152707259">‏لا يؤدي حذف بيانات التصفّح إلى تسجيل خروجك من حسابك على Google. لإجراء ذلك، <ph name="BEGIN_LINK" />سجِّل الخروج من Chrome<ph name="END_LINK" />.</translation>
+<translation id="3519792890877853853">تعرض هذه البطاقة مراجعات المنتجات في علامات التبويب المفتوحة</translation>
 <translation id="3519905498307021260">{count,plural, =1{فتح علامة التبويب}zero{فتح {count} علامة تبويب}two{فتح علامتَي التبويب ({count})}few{فتح {count} علامات تبويب}many{فتح {count} علامة تبويب}other{فتح {count} علامة تبويب}}</translation>
 <translation id="3523513363815970085">إخفاء بطاقة "المواقع الإلكترونية الأكثر زيارةً"</translation>
 <translation id="3523789730715594198">‏يمكنك إيقاف المزامنة في أي وقت من خلال الإعدادات. وقد تستخدم Google السجلّ لتخصيص "بحث Google" والخدمات الأخرى.</translation>
@@ -819,6 +821,7 @@
 <translation id="4565377596337484307">إخفاء كلمة المرور</translation>
 <translation id="4568230126482344545">إخفاء "علامات التبويب الأخيرة"</translation>
 <translation id="4578835633387306383">تفعيل…</translation>
+<translation id="4580716718466706433">الانتقال إلى "مدير كلمات المرور"</translation>
 <translation id="4587589328781138893">المواقع</translation>
 <translation id="4592672037257622855">{count,plural, =1{تمّت إضافة صفحة واحدة إلى "قائمة القراءة"}zero{تمّت إضافة {count} صفحة إلى "قائمة القراءة"}two{تمّت إضافة صفحتَين ({count}) إلى "قائمة القراءة"}few{تمّت إضافة {count} صفحات إلى "قائمة القراءة"}many{تمّت إضافة {count} صفحة إلى "قائمة القراءة"}other{تمّت إضافة {count} صفحة إلى "قائمة القراءة"}}</translation>
 <translation id="459644946100970322">هل تريد تلقِّي تنبيهات عن تغيير الأسعار؟</translation>
@@ -858,6 +861,7 @@
 <translation id="4717844083556844785">تُعرض صفحة الويب الحالية في وضع التصفّح المتخفي</translation>
 <translation id="4719927025381752090">عرض ترجمة</translation>
 <translation id="4720530280568305198">تمّ فتح العنصر الذي اخترته في علامة تبويب جديدة</translation>
+<translation id="472259426228234149">السعر يتراوح من 100$ إلى 180$</translation>
 <translation id="473775607612524610">تحديث</translation>
 <translation id="474209246745757965">تتيح لك هذه الميزة تسوّق مختلف المنتجات وترجمة النصوص</translation>
 <translation id="4742407542027196863">إدارة كلمات المرور…</translation>

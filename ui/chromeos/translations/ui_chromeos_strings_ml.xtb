@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">നന്ദി അറിയിക്കുന്ന വ്യക്തി</translation>
 <translation id="2088690981887365033">VPN നെറ്റ്‍വർക്ക്</translation>
 <translation id="209653272837065803">നിങ്ങളുടെ എല്ലാ ഫയലുകളും സമന്വയിപ്പിക്കുന്നത് തുടരാൻ ആവശ്യമായ സ്‌റ്റോറേജ് സ്‌പെയ്‌സ് ഇല്ല</translation>
-<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />അദൃശ്യ മോഡിൽ അനുവദിക്കുക<ph name="END_BOLD" /> ഓണാക്കുക</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ ഇല്ലാതാക്കും, നിങ്ങൾക്ക് അവ പുനഃസ്ഥാപിക്കാനാകില്ല.</translation>
 <translation id="2122305276694332719">മറച്ച നെറ്റ്‌വർക്കിലേക്ക് സ്വയമേവ കണക്‌റ്റ് ചെയ്യുന്നതിലൂടെ നിങ്ങളുടെ ഉപകരണവും ചില നെറ്റ്‌വർക്ക് ക്രമീകരണവും കാണാൻ മറ്റുള്ളവരെ അനുവദിക്കുന്നതിനാൽ അത് ശുപാർശചെയ്യുന്നില്ല.</translation>
 <translation id="2125607626296734455">ഖമെർ</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">ഗ്രഹം</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ഒഴിവാക്കി.</translation>
 <translation id="2307462900900812319">നെറ്റ്‌വർക്ക് കോൺഫിഗർ ചെയ്യുക</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> ഐഡിയിൽ ഉള്ള വിപുലീകരണം കണ്ടെത്താനായില്ല. നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> ഐഡികളിൽ ഉള്ള വിപുലീകരണങ്ങൾ കണ്ടെത്താനായില്ല. നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക.}}</translation>
 <translation id="2325650632570794183">ഈ ഫയൽ തരം പിന്തുണയ്‌ക്കുന്നില്ല. ഈ ഫയൽ തരം തുറക്കാൻ കഴിയുന്ന ഒരു ആപ്പ് കണ്ടെത്തുന്നതിന് ഒരു Chrome വെബ് സ്റ്റോർ കണ്ടെത്തുക.</translation>
 <translation id="2326539130272988168">ബൾഗേറിയൻ</translation>
 <translation id="233822363739146957">നിങ്ങളുടെ എല്ലാ ഫയലുകളും സമന്വയിപ്പിക്കാൻ ആവശ്യമായ സ്‌റ്റോറേജ് സ്‌പെയ്‌സ് ഇല്ല</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">മറാഠി</translation>
 <translation id="2923240520113693977">എസ്റ്റോണിയന്‍</translation>
 <translation id="2938685643439809023">മംഗോളിയന്‍</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{വിപുലീകരണം കണ്ടെത്താനാകുന്നില്ല}other{വിപുലീകരണങ്ങൾ കണ്ടെത്താനാകുന്നില്ല}}</translation>
 <translation id="2943503720238418293">ഇതിലും ചെറിയൊരു പേര് നൽകുക</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> ഫോർമാറ്റ് ചെയ്യുന്നു...</translation>
 <translation id="2951236788251446349">ജെല്ലിഫിഷ്</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">പൂര്‍ത്തിയാക്കൂ</translation>
 <translation id="3358452157379365236">ഗിറ്റാർ</translation>
 <translation id="3368922792935385530">കണക്റ്റുചെയ്തു</translation>
-<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />വിശദാംശങ്ങൾ<ph name="END_BOLD" /> എന്നതിൽ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="3382143449143186018">InScript കീബോർഡ് ഉള്ള നേപ്പാളി</translation>
 <translation id="338691029516748599"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്, കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="3408072735282270043">സജീവമാക്കുക, <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">യൂണികോൺ</translation>
 <translation id="4131235941541910880">നിങ്ങൾക്ക് ആവശ്യമില്ലാത്ത ഇനങ്ങൾ ട്രാഷിലേക്ക് നീക്കുക</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_COUNT" /> നെറ്റ്‌വർക്കുകളിൽ <ph name="NETWORK_INDEX" />-ാമത്തേത്, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ഉപകരണം സജ്ജീകരിച്ചതിന് ശേഷം സജീവമാക്കുക</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{അദൃശ്യ മോഡിൽ ചുവടെയുള്ള വിപുലീകരണം ഓണാക്കുക:}other{അദൃശ്യ മോഡിൽ ചുവടെയുള്ള വിപുലീകരണങ്ങൾ ഓണാക്കുക:}}</translation>
 <translation id="4153015322587141338">ഷെൽഫിലെ നിങ്ങളുടെ ഫയലുകളിലേക്ക് അതിവേഗ ആക്‌സസ് ലഭിക്കാൻ, ഒരു ഫയലിൽ വലത് ക്ലിക്ക് ചെയ്‌ത് "<ph name="PIN_COMMAND" />" തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="4157569377477607576">അഡ്‌മിൻ നയം ഇവ നിർദ്ദേശിക്കുന്നില്ല:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> നീക്കി.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">രണ്ടും സൂക്ഷിക്കുക</translation>
 <translation id="4804827417948292437">അവൊക്കാഡോ</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> ഇനങ്ങൾ പുനഃസ്ഥാപിക്കുന്നു</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{അദൃശ്യ മോഡ് ഉപയോഗിക്കാൻ, നിങ്ങളുടെ സ്ഥാപനത്തിന് ഒരു വിപുലീകരണം ആവശ്യമാണ്}other{അദൃശ്യ മോഡ് ഉപയോഗിക്കാൻ, നിങ്ങളുടെ സ്ഥാപനത്തിന് ചില വിപുലീകരണങ്ങൾ ആവശ്യമാണ്}}</translation>
 <translation id="4826849268470072925">തമിഴ് ITRANS</translation>
-<translation id="482932175346970750">നിങ്ങളുടെ ബ്രൗസറിൽ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> എന്ന് ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="4843566743023903107">Chromebase-കൾ</translation>
 <translation id="4850886885716139402">കാണുക</translation>
 <translation id="485316830061041779">ജര്‍മ്മന്‍</translation>
@@ -561,7 +554,6 @@
         പങ്കിടുകയും സൃഷ്‌ടിക്കുകയും സഹകരിക്കുകയും ചെയ്യുക.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google ഡ്രൈവിൽ നിന്നും ഫയലുകൾ വീണ്ടെടുത്തു</translation>
 <translation id="5278111733643988471">ഈ ഇനം പുനഃസ്ഥാപിക്കാൻ, ട്രാഷിന് പുറത്തുള്ള ഒരു പുതിയ ഫോൾഡറിലേക്ക് ഇത് വലിച്ചിടുക. ഈ ഇനത്തിന്റെ ഒറിജിനൽ ഫോൾഡറായ "<ph name="PARENT_FOLDER_NAME" />" ഇല്ലാതാക്കി.</translation>
-<translation id="5283101102242354279">അദൃശ്യ മോഡിൽ ഒരു വിപുലീകരണം ഓണാക്കുക:</translation>
 <translation id="5288441970121584418">ബർഗർ</translation>
 <translation id="5293615890992542006">ഈ ഫയൽ നീക്കുന്നത് അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="5305688511332277257">ഒന്നും ഇന്‍സ്റ്റാള്‍ ചെയ്തിട്ടില്ല</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, വിശദാംശങ്ങൾ</translation>
 <translation id="7246947237293279874">FTP പ്രോക്‌സി</translation>
 <translation id="7248671827512403053">ആപ്പ്</translation>
-<translation id="7252604552361840748">മുകളിലുള്ള വിപുലീകരണം കണ്ടെത്തുക</translation>
 <translation id="7256405249507348194">തിരിച്ചറിയാനാകാത്ത പിശക്: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ലഭ്യമായ സേവനങ്ങൾ</translation>
 <translation id="7291818353625820805">കീകൾ ആവർത്തിക്കണോ? കീബോർഡ് ക്രമീകരണത്തിൽ പോയി ആക്‌സന്റ് അടയാളങ്ങൾ ഓഫാക്കുക</translation>

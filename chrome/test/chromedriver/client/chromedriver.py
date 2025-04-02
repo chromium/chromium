@@ -606,6 +606,13 @@ class ChromeDriver(object):
   def ClearDevicePosture(self):
     return self.ExecuteCommand(Command.CLEAR_DEVICE_POSTURE)
 
+  def SetDisplayFeatures(self, features):
+    return self.ExecuteCommand(Command.SET_DISPLAY_FEATURES,
+                               {'features': features})
+
+  def ClearDisplayFeatures(self):
+    return self.ExecuteCommand(Command.CLEAR_DISPLAY_FEATURES)
+
   def TakeScreenshot(self):
     return self.ExecuteCommand(Command.SCREENSHOT)
 

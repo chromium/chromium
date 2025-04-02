@@ -1344,17 +1344,11 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Conv2d& conv2d) {
     return std::nullopt;
   }
 
-  const mojom::Operand& input_operand = GetOperand(conv2d.input_operand_id);
   const mojom::Operand& output_operand = GetOperand(conv2d.output_operand_id);
-  const uint32_t input_channels = input_operand.descriptor.shape()[3];
   const uint32_t output_channels = output_operand.descriptor.shape()[3];
   // TODO(crbug.com/401281047): Support quantization fusion for transposed
-  // conv2d and depthwise conv2d.
+  // conv2d.
   if (conv2d.kind != mojom::Conv2d::Kind::kDirect) {
-    return std::nullopt;
-  }
-  if (webnn::IsDepthwiseConv2d(input_channels, output_channels,
-                               conv2d.groups)) {
     return std::nullopt;
   }
 
@@ -1426,10 +1420,10 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Conv2d& conv2d) {
     return std::nullopt;
   }
 
-  if (bias_scale_values.size() != 1 ||
-      bias_scale_values.size() != output_channels ||
-      filter_scale_values.size() != 1 ||
-      filter_scale_values.size() != output_channels) {
+  if ((bias_scale_values.size() != 1 &&
+       bias_scale_values.size() != output_channels) ||
+      (filter_scale_values.size() != 1 &&
+       filter_scale_values.size() != output_channels)) {
     return std::nullopt;
   }
 

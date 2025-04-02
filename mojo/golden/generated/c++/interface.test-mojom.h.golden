@@ -83,9 +83,9 @@ class IFace
 #endif // !BUILDFLAG(IS_FUCHSIA)
   virtual ~IFace() = default;
 
-
   using MethodCallback = base::OnceCallback<void(const std::string&)>;
-  
+  using MethodMojoCallback = base::OnceCallback<void(const std::string&)>;
+
   virtual void Method(bool param, MethodCallback callback) = 0;
 };
 

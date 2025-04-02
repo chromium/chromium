@@ -10,6 +10,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/anchor_query.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
+#include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
+#include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_self_alignment_data.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -97,15 +99,6 @@ class CORE_EXPORT PositionArea {
       const WritingDirectionMode& container_writing_direction,
       const WritingDirectionMode& self_writing_direction) const;
 
-  // Return anchor() functions to override auto inset values according to the
-  // resolved position-area. May only be called on PositionAreas returned from
-  // ToPhysical() which ensures physical vertical / horizontal areas.
-  // A return value of nullopt represents 0px rather than an anchor() function.
-  std::optional<AnchorQuery> UsedTop() const;
-  std::optional<AnchorQuery> UsedBottom() const;
-  std::optional<AnchorQuery> UsedLeft() const;
-  std::optional<AnchorQuery> UsedRight() const;
-
   // Anchored elements using position-area align towards the unused area through
   // different 'normal' behavior for align-self and justify-self. Compute the
   // alignments to be passed into ResolvedAlignSelf()/ResolvedJustifySelf().
@@ -127,26 +120,17 @@ class CORE_EXPORT PositionArea {
   PositionAreaRegion span2_end_ = PositionAreaRegion::kNone;
 };
 
-// Used to store inset offsets on ComputedStyle for adjusting the
-// containing-block rectangle. All zeros means a span-all position-area is applied.
-// Non-zero values refer to an anchor edge offset relative to the containing
-// block rectangle.
+// Used to store insets on ComputedStyle for adjusting the containing-block.
 struct PositionAreaOffsets {
-  std::optional<LayoutUnit> top;
-  std::optional<LayoutUnit> bottom;
-  std::optional<LayoutUnit> left;
-  std::optional<LayoutUnit> right;
+  PhysicalBoxStrut insets;
+  PhysicalBoxSides behaves_as_auto;
 
   PositionAreaOffsets() = default;
-  PositionAreaOffsets(std::optional<LayoutUnit> top,
-                      std::optional<LayoutUnit> bottom,
-                      std::optional<LayoutUnit> left,
-                      std::optional<LayoutUnit> right)
-      : top(top), bottom(bottom), left(left), right(right) {}
+  PositionAreaOffsets(PhysicalBoxStrut insets, PhysicalBoxSides behaves_as_auto)
+      : insets(insets), behaves_as_auto(behaves_as_auto) {}
 
   bool operator==(const PositionAreaOffsets& other) const {
-    return top == other.top && bottom == other.bottom && left == other.left &&
-           right == other.right;
+    return insets == other.insets && behaves_as_auto == other.behaves_as_auto;
   }
 };
 

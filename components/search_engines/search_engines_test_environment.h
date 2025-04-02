@@ -71,6 +71,8 @@ class SearchEnginesTestEnvironment {
 
   ~SearchEnginesTestEnvironment();
 
+  void Shutdown();
+
   sync_preferences::TestingPrefServiceSyncable& pref_service();
   sync_preferences::TestingPrefServiceSyncable& pref_service() const;
 

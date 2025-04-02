@@ -115,7 +115,7 @@ bool UnencodedDigest::DoesMatch(WTF::SegmentedBuffer* data) {
     }
 
     // Convert the stored digest into a `DigestValue`
-    Vector<char> digest_bytes;
+    Vector<uint8_t> digest_bytes;
     Base64Decode(digest.digest, digest_bytes);
     DigestValue expected_digest(base::as_byte_span(digest_bytes));
 

@@ -24,19 +24,12 @@ class AnimationAnimationInputHelpersTest : public PageTestBase {
                                                                  *document);
   }
 
-  String PropertyHandleToKeyframeAttribute(
-      const CSSProperty& property,
-      bool is_presentation_attribute = false) {
-    PropertyHandle handle(property, is_presentation_attribute);
-    return AnimationInputHelpers::PropertyHandleToKeyframeAttribute(handle);
-  }
-
-  String PropertyHandleToKeyframeAttribute(AtomicString property) {
+  String PropertyHandleToKeyframeAttribute(const CSSProperty& property) {
     PropertyHandle handle(property);
     return AnimationInputHelpers::PropertyHandleToKeyframeAttribute(handle);
   }
 
-  String PropertyHandleToKeyframeAttribute(QualifiedName property) {
+  String PropertyHandleToKeyframeAttribute(AtomicString property) {
     PropertyHandle handle(property);
     return AnimationInputHelpers::PropertyHandleToKeyframeAttribute(handle);
   }
@@ -163,23 +156,6 @@ TEST_F(AnimationAnimationInputHelpersTest, PropertyHandleToKeyframeAttribute) {
   EXPECT_EQ("--x", PropertyHandleToKeyframeAttribute(AtomicString("--x")));
   EXPECT_EQ("--test-prop",
             PropertyHandleToKeyframeAttribute(AtomicString("--test-prop")));
-
-  // Presentation attributes.
-  EXPECT_EQ("svg-top",
-            PropertyHandleToKeyframeAttribute(GetCSSPropertyTop(), true));
-  EXPECT_EQ("svg-line-height", PropertyHandleToKeyframeAttribute(
-                                   GetCSSPropertyLineHeight(), true));
-  EXPECT_EQ("svg-float",
-            PropertyHandleToKeyframeAttribute(GetCSSPropertyFloat(), true));
-  EXPECT_EQ("svg-offset",
-            PropertyHandleToKeyframeAttribute(GetCSSPropertyOffset(), true));
-
-  // SVG attributes.
-  EXPECT_EQ("calcMode", PropertyHandleToKeyframeAttribute(
-                            QualifiedName(AtomicString("calcMode"))));
-  EXPECT_EQ("overline-position",
-            PropertyHandleToKeyframeAttribute(
-                QualifiedName(AtomicString("overline-position"))));
 }
 
 }  // namespace blink

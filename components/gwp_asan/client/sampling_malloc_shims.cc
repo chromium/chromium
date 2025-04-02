@@ -52,7 +52,7 @@ GuardedPageAllocator* gpa = nullptr;
 extern AllocatorDispatch g_allocator_dispatch;
 
 void* AllocFn(size_t size, void* context) {
-  if (sampling_state.Sample()) [[unlikely]] {
+  if (sampling_state.Sample(size)) [[unlikely]] {
     if (void* allocation = gpa->Allocate(size))
       return allocation;
   }
@@ -61,7 +61,7 @@ void* AllocFn(size_t size, void* context) {
 }
 
 void* AllocUncheckedFn(size_t size, void* context) {
-  if (sampling_state.Sample()) [[unlikely]] {
+  if (sampling_state.Sample(size)) [[unlikely]] {
     if (void* allocation = gpa->Allocate(size))
       return allocation;
   }
@@ -70,7 +70,7 @@ void* AllocUncheckedFn(size_t size, void* context) {
 }
 
 void* AllocZeroInitializedFn(size_t n, size_t size, void* context) {
-  if (sampling_state.Sample()) [[unlikely]] {
+  if (sampling_state.Sample(size)) [[unlikely]] {
     base::CheckedNumeric<size_t> checked_total = size;
     checked_total *= n;
     if (!checked_total.IsValid()) [[unlikely]] {
@@ -89,7 +89,7 @@ void* AllocZeroInitializedFn(size_t n, size_t size, void* context) {
 }
 
 void* AllocAlignedFn(size_t alignment, size_t size, void* context) {
-  if (sampling_state.Sample()) [[unlikely]] {
+  if (sampling_state.Sample(size)) [[unlikely]] {
     if (void* allocation = gpa->Allocate(size, alignment))
       return allocation;
   }
@@ -235,7 +235,7 @@ void TryFreeDefaultFn(void* address, void* context) {
 }
 
 static void* AlignedMallocFn(size_t size, size_t alignment, void* context) {
-  if (sampling_state.Sample()) [[unlikely]] {
+  if (sampling_state.Sample(size)) [[unlikely]] {
     if (void* allocation = gpa->Allocate(size, alignment))
       return allocation;
   }
@@ -247,7 +247,7 @@ static void* AlignedMallocFn(size_t size, size_t alignment, void* context) {
 static void* AlignedMallocUncheckedFn(size_t size,
                                       size_t alignment,
                                       void* context) {
-  if (sampling_state.Sample()) [[unlikely]] {
+  if (sampling_state.Sample(size)) [[unlikely]] {
     if (void* allocation = gpa->Allocate(size, alignment)) {
       return allocation;
     }

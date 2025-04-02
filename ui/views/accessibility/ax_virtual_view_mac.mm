@@ -12,18 +12,18 @@ namespace views {
 gfx::NativeViewAccessible AXVirtualView::GetNSWindow() {
   View* owner = GetOwnerView();
   if (!owner) {
-    return nil;
+    return gfx::NativeViewAccessible();
   }
 
   Widget* widget = owner->GetWidget();
   if (!widget) {
-    return nil;
+    return gfx::NativeViewAccessible();
   }
 
   auto* window_host = NativeWidgetMacNSWindowHost::GetFromNativeWindow(
       widget->GetNativeWindow());
   if (!window_host) {
-    return nil;
+    return gfx::NativeViewAccessible();
   }
 
   return window_host->GetNativeViewAccessibleForNSWindow();

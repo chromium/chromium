@@ -16,6 +16,7 @@
 #include "chrome/browser/bookmarks/bookmark_expanded_state_tracker_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -134,7 +135,22 @@ bool BookmarkEditorView::IsDialogButtonEnabled(
       return false;
     }
 
-    if (details_.GetNodeType() != BookmarkNode::FOLDER) {
+    // Disable if the selected node is a descendant of any of the existing
+    // nodes to move.
+    if (details_.type == BookmarkEditor::EditDetails::MOVE) {
+      const BookmarkNode* selected_node = GetBookmarkNodeByID(
+          bb_model_, tree_model_->AsNode(tree_view_->GetSelectedNode())
+                         ->value.bookmark_node_id);
+
+      while (!bb_model_->is_permanent_node(selected_node)) {
+        if (details_.existing_nodes_to_move.contains(selected_node)) {
+          return false;
+        }
+        selected_node = selected_node->parent();
+      }
+    }
+
+    if (details_.CanChangeUrl()) {
       return GetInputURL().is_valid();
     }
   }
@@ -232,10 +248,13 @@ void BookmarkEditorView::Show(gfx::NativeWindow parent) {
     ExpandAndSelect();
   }
   GetWidget()->Show();
-  // Select all the text in the name Textfield.
-  title_tf_->SelectAll(true);
-  // Give focus to the name Textfield.
-  title_tf_->RequestFocus();
+
+  if (title_tf_) {
+    // Select all the text in the name Textfield.
+    title_tf_->SelectAll(true);
+    // Give focus to the name Textfield.
+    title_tf_->RequestFocus();
+  }
 }
 
 void BookmarkEditorView::ShowContextMenuForViewImpl(
@@ -275,10 +294,24 @@ void BookmarkEditorView::BookmarkNodeRemoved(const BookmarkNode* parent,
                                              const BookmarkNode* node,
                                              const std::set<GURL>& removed_urls,
                                              const base::Location& location) {
-  if ((details_.type == EditDetails::EXISTING_NODE &&
-       details_.existing_node->HasAncestor(node)) ||
+  // Either `existing_nodes_to_move` or `existing_node` has the removed `node`
+  // as an ancestor, and can therefore not be moved/edited anymore.
+  // TODO(crbug.com/407025895): This algorithm has squared complexity. This is
+  // acceptable considering the circumstances that deleting a node while the
+  // move dialog is open is an edge case, and it is not unlikely that the user
+  // moves fewer nodes than can be found in the tree structure of a deleted
+  // folder node. But we should still consider using DFS instead.
+  bool selected_node_removed =
+      (details_.type == EditDetails::MOVE &&
+       std::ranges::any_of(details_.existing_nodes_to_move,
+                           [&node](const BookmarkNode* existing_node) {
+                             return existing_node->HasAncestor(node);
+                           })) ||
+      (details_.type == EditDetails::EXISTING_NODE &&
+       details_.existing_node->HasAncestor(node));
+  if (selected_node_removed ||
       (details_.parent_node && details_.parent_node->HasAncestor(node))) {
-    // The node, or its parent was removed. Close the dialog.
+    // A node, or its parent was removed. Close the dialog.
     GetWidget()->Close();
   } else {
     Reset();
@@ -299,63 +332,15 @@ void BookmarkEditorView::BookmarkNodeChildrenReordered(
 void BookmarkEditorView::Init() {
   bb_model_->AddObserver(this);
 
-  std::u16string title;
-  GURL url;
-  if (details_.type == EditDetails::EXISTING_NODE) {
-    title = details_.existing_node->GetTitle();
-    url = details_.existing_node->url();
-  } else if (details_.type == EditDetails::NEW_FOLDER) {
-    title = l10n_util::GetStringUTF16(IDS_BOOKMARK_EDITOR_NEW_FOLDER_NAME);
-  } else if (details_.type == EditDetails::NEW_URL) {
-    url = details_.bookmark_data.url.value();
-    title = details_.bookmark_data.title;
-  }
-
-  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-          provider->GetDistanceMetric(
+          ChromeLayoutProvider::Get()->GetDistanceMetric(
               views::DISTANCE_RELATED_CONTROL_VERTICAL)));
-  auto* labels = AddChildView(std::make_unique<views::View>());
-  auto* label_layout =
-      labels->SetLayoutManager(std::make_unique<views::TableLayout>());
-  label_layout
-      ->AddColumn(views::LayoutAlignment::kStart,
-                  views::LayoutAlignment::kCenter,
-                  views::TableLayout::kFixedSize,
-                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-      .AddPaddingColumn(views::TableLayout::kFixedSize,
-                        provider->GetDistanceMetric(
-                            views::DISTANCE_RELATED_CONTROL_HORIZONTAL))
-      .AddColumn(views::LayoutAlignment::kStretch,
-                 views::LayoutAlignment::kCenter, 1.0f,
-                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-      .AddRows(1, views::TableLayout::kFixedSize);
 
-  labels->AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_BOOKMARK_EDITOR_NAME_LABEL)));
-  title_tf_ = labels->AddChildView(std::make_unique<views::Textfield>());
-  title_tf_->GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(IDS_BOOKMARK_AX_EDITOR_NAME_LABEL));
-  title_tf_->SetText(title);
-  title_tf_->set_controller(this);
-
-  if (details_.GetNodeType() != BookmarkNode::FOLDER) {
-    label_layout
-        ->AddPaddingRow(views::TableLayout::kFixedSize,
-                        provider->GetDistanceMetric(
-                            views::DISTANCE_RELATED_CONTROL_VERTICAL))
-        .AddRows(1, views::TableLayout::kFixedSize);
-
-    labels->AddChildView(std::make_unique<views::Label>(
-        l10n_util::GetStringUTF16(IDS_BOOKMARK_EDITOR_URL_LABEL)));
-    url_tf_ = labels->AddChildView(std::make_unique<views::Textfield>());
-    url_tf_->SetText(chrome::FormatBookmarkURLForDisplay(url));
-    url_tf_->set_controller(this);
-    url_tf_->GetViewAccessibility().SetName(
-        l10n_util::GetStringUTF16(IDS_BOOKMARK_AX_EDITOR_URL_LABEL));
-    url_tf_->SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_URL);
+  // The `MOVE` version does not have a title or URL text field.
+  if (details_.type != BookmarkEditor::EditDetails::MOVE) {
+    AddLabels();
   }
 
   if (show_tree_) {
@@ -402,7 +387,7 @@ void BookmarkEditorView::Reset() {
 }
 
 GURL BookmarkEditorView::GetInputURL() const {
-  if (details_.GetNodeType() == BookmarkNode::FOLDER) {
+  if (!url_tf_) {
     return GURL();
   }
   return url_formatter::FixupURL(base::UTF16ToUTF8(url_tf_->GetText()),
@@ -410,7 +395,7 @@ GURL BookmarkEditorView::GetInputURL() const {
 }
 
 void BookmarkEditorView::UserInputChanged() {
-  if (details_.GetNodeType() != BookmarkNode::FOLDER) {
+  if (url_tf_) {
     const GURL url(GetInputURL());
     url_tf_->SetInvalid(!url.is_valid());
   }
@@ -437,6 +422,63 @@ BookmarkEditorView::EditorNode* BookmarkEditorView::AddNewFolder(
   new_folder_node->SetPlaceholderAccessibleTitle(
       l10n_util::GetStringUTF16(IDS_UNNAMED_BOOKMARK_FOLDER));
   return tree_model_->Add(parent, std::move(new_folder_node));
+}
+
+void BookmarkEditorView::AddLabels() {
+  std::u16string title;
+  GURL url;
+  if (details_.type == EditDetails::EXISTING_NODE) {
+    title = details_.existing_node->GetTitle();
+    url = details_.existing_node->url();
+  } else if (details_.type == EditDetails::NEW_FOLDER) {
+    title = l10n_util::GetStringUTF16(IDS_BOOKMARK_EDITOR_NEW_FOLDER_NAME);
+  } else if (details_.type == EditDetails::NEW_URL) {
+    url = details_.bookmark_data.url.value();
+    title = details_.bookmark_data.title;
+  }
+
+  auto* labels = AddChildView(std::make_unique<views::View>());
+  auto* label_layout =
+      labels->SetLayoutManager(std::make_unique<views::TableLayout>());
+
+  label_layout
+      ->AddColumn(views::LayoutAlignment::kStart,
+                  views::LayoutAlignment::kCenter,
+                  views::TableLayout::kFixedSize,
+                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(views::TableLayout::kFixedSize,
+                        ChromeLayoutProvider::Get()->GetDistanceMetric(
+                            views::DISTANCE_RELATED_CONTROL_HORIZONTAL))
+      .AddColumn(views::LayoutAlignment::kStretch,
+                 views::LayoutAlignment::kCenter, 1.0f,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddRows(1, views::TableLayout::kFixedSize);
+
+  labels->AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_BOOKMARK_EDITOR_NAME_LABEL)));
+  title_tf_ = labels->AddChildView(std::make_unique<views::Textfield>());
+  title_tf_->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_BOOKMARK_AX_EDITOR_NAME_LABEL));
+  title_tf_->SetText(title);
+  title_tf_->set_controller(this);
+
+  // The URL field does not exist for folders.
+  if (details_.CanChangeUrl()) {
+    label_layout
+        ->AddPaddingRow(views::TableLayout::kFixedSize,
+                        ChromeLayoutProvider::Get()->GetDistanceMetric(
+                            views::DISTANCE_RELATED_CONTROL_VERTICAL))
+        .AddRows(1, views::TableLayout::kFixedSize);
+
+    labels->AddChildView(std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(IDS_BOOKMARK_EDITOR_URL_LABEL)));
+    url_tf_ = labels->AddChildView(std::make_unique<views::Textfield>());
+    url_tf_->SetText(chrome::FormatBookmarkURLForDisplay(url));
+    url_tf_->set_controller(this);
+    url_tf_->GetViewAccessibility().SetName(
+        l10n_util::GetStringUTF16(IDS_BOOKMARK_AX_EDITOR_URL_LABEL));
+    url_tf_->SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_URL);
+  }
 }
 
 void BookmarkEditorView::ExpandAndSelect() {
@@ -558,7 +600,7 @@ void BookmarkEditorView::ApplyEdits(EditorNode* parent) {
   bb_model_->RemoveObserver(this);
 
   GURL new_url(GetInputURL());
-  std::u16string new_title(title_tf_->GetText());
+  std::u16string new_title(title_tf_ ? title_tf_->GetText() : u"");
 
   if (!show_tree_) {
     BookmarkEditor::ApplyEdits(bb_model_, details_.parent_node, details_,

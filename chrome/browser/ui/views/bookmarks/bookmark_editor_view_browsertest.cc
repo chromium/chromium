@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_test_utils.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -103,4 +104,71 @@ IN_PROC_BROWSER_TEST_F(BookmarkEditorViewBrowserTestWithAccountBookmarks,
                          GURL("http://www.google.com"));
 
   ShowAndVerifyUi();
+}
+
+class BookmarkEditorViewBrowserTestMoveDialog
+    : public BookmarkEditorViewBrowserTest {
+ public:
+  // DialogBrowserTest:
+  // Shows the dialog for moving one or multiple bookmarks. This shows a
+  // BookmarkEditorView dialog with a tree view.
+  void ShowUi(const std::string& name) override {
+    BookmarkEditor::Show(
+        browser()->window()->GetNativeWindow(), browser()->profile(),
+        BookmarkEditor::EditDetails::MoveNodes(bookmark_model(), nodes_),
+        BookmarkEditor::SHOW_TREE);
+  }
+
+  void set_nodes(const std::vector<raw_ptr<const bookmarks::BookmarkNode,
+                                           VectorExperimental>>& nodes) {
+    nodes_ = nodes;
+  }
+
+  bookmarks::BookmarkModel* bookmark_model() {
+    return BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  }
+
+ private:
+  std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+      nodes_;
+};
+
+IN_PROC_BROWSER_TEST_F(BookmarkEditorViewBrowserTestMoveDialog,
+                       InvokeUi_MoveNodes) {
+  const std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+      nodes({bookmark_model()->AddURL(bookmark_model()->other_node(), 0,
+                                      u"bookmark 2",
+                                      GURL("http://www.google.com")),
+             bookmark_model()->AddURL(bookmark_model()->other_node(), 0,
+                                      u"bookmark",
+                                      GURL("http://www.google.com"))});
+
+  set_nodes(nodes);
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkEditorViewBrowserTestMoveDialog,
+                       DeleteNodeDuringMoveDialog) {
+  raw_ptr<BookmarkEditorView> editor_raw = nullptr;
+
+  std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>> nodes(
+      {bookmark_model()->AddURL(bookmark_model()->other_node(), 0,
+                                u"bookmark 2", GURL("http://www.google.com")),
+       bookmark_model()->AddURL(bookmark_model()->other_node(), 0, u"bookmark",
+                                GURL("http://www.google.com"))});
+
+  auto editor = std::make_unique<BookmarkEditorView>(
+      browser()->profile(),
+      BookmarkEditor::EditDetails::MoveNodes(bookmark_model(), nodes),
+      BookmarkEditor::SHOW_TREE, base::DoNothing());
+  editor_raw = editor.get();
+  editor->Show(browser()->window()->GetNativeWindow());
+
+  // `BookmarkEditorView` is self-deleting.
+  editor.release();
+
+  ASSERT_FALSE(editor_raw->GetWidget()->IsClosed());
+  bookmark_model()->Remove(
+      nodes[0], bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+  EXPECT_TRUE(editor_raw->GetWidget()->IsClosed());
 }

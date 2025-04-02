@@ -660,6 +660,30 @@ bool TemplateURLService::BothPolicySetKeywordsNotOverriden(
          !turl_without_at->featured_by_policy();
 }
 
+void TemplateURLService::AddMatchingKeywords(const std::u16string& prefix,
+                                             bool supports_replacement_only,
+                                             TemplateURLVector* turls) {
+  // Sanity check args.
+  if (prefix.empty() || !turls) {
+    return;
+  }
+
+  // Find matching keyword range.  Searches the element map for keywords
+  // beginning with |prefix| and stores the endpoints of the resulting set in
+  // |match_range|.
+  const auto match_range(std::equal_range(
+      keyword_to_turl_.begin(), keyword_to_turl_.end(),
+      typename KeywordToTURL::value_type(prefix, nullptr), LessWithPrefix()));
+
+  // Add to vector of matching keywords.
+  for (auto i = match_range.first; i != match_range.second; ++i) {
+    if (!supports_replacement_only ||
+        i->second->url_ref().SupportsReplacement(search_terms_data())) {
+      turls->push_back(i->second);
+    }
+  }
+}
+
 TemplateURL* TemplateURLService::GetTemplateURLForKeyword(
     const std::u16string& keyword) {
   return const_cast<TemplateURL*>(
@@ -3236,28 +3260,6 @@ void TemplateURLService::MaybeSetIsActiveSearchEngines(
       if (web_data_service_) {
         web_data_service_->UpdateKeyword(turl->data());
       }
-    }
-  }
-}
-
-void TemplateURLService::AddMatchingKeywords(const std::u16string& prefix,
-                                             TemplateURLVector* matches) {
-  // Sanity check args.
-  if (prefix.empty() || !matches) {
-    return;
-  }
-
-  // Find matching keyword range.  Searches the element map for keywords
-  // beginning with |prefix| and stores the endpoints of the resulting set in
-  // |match_range|.
-  const auto match_range(std::equal_range(
-      keyword_to_turl_.begin(), keyword_to_turl_.end(),
-      typename KeywordToTURL::value_type(prefix, nullptr), LessWithPrefix()));
-
-  // Add to vector of matching keywords.
-  for (auto i = match_range.first; i != match_range.second; ++i) {
-    if (i->second->url_ref().SupportsReplacement(search_terms_data())) {
-      matches->push_back(i->second);
     }
   }
 }

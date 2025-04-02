@@ -22,23 +22,17 @@ import java.util.Map;
 @NullMarked
 public class AwWebResourceRequest {
 
-    /** Url of the request. */
-    public final String url;
+    private final String mUrl;
 
-    /** Is this for the outermost main frame or a sub-frame? */
-    public final boolean isOutermostMainFrame;
+    private final boolean mIsOutermostMainFrame;
 
-    /** Was a gesture associated with the request? Don't trust can easily be spoofed. */
-    public final boolean hasUserGesture;
+    private final boolean mHasUserGesture;
 
-    /** Was it a result of a server-side redirect? */
-    public final boolean isRedirect;
+    private final boolean mIsRedirect;
 
-    /** Method used (GET/POST/OPTIONS) */
-    public final String method;
+    private final String mMethod;
 
-    /** Headers that would have been sent to server. */
-    public final Map<String, String> requestHeaders;
+    private final Map<String, String> mRequestHeaders;
 
     public AwWebResourceRequest(
             String url,
@@ -47,16 +41,12 @@ public class AwWebResourceRequest {
             boolean isRedirect,
             String method,
             @Nullable Map<String, String> requestHeaders) {
-        this.url = url;
-        this.isOutermostMainFrame = isOutermostMainFrame;
-        this.hasUserGesture = hasUserGesture;
-        this.isRedirect = isRedirect;
-        this.method = method;
-        if (requestHeaders != null) {
-            this.requestHeaders = requestHeaders;
-        } else {
-            this.requestHeaders = new HashMap<>();
-        }
+        this.mUrl = url;
+        this.mIsOutermostMainFrame = isOutermostMainFrame;
+        this.mHasUserGesture = hasUserGesture;
+        this.mIsRedirect = isRedirect;
+        this.mMethod = method;
+        this.mRequestHeaders = requestHeaders != null ? requestHeaders : new HashMap<>();
     }
 
     public AwWebResourceRequest(
@@ -97,5 +87,35 @@ public class AwWebResourceRequest {
             @JniType("std::vector<std::string>") String[] requestHeaderValues) {
         return new AwWebResourceRequest(
                 url, isMainFrame, hasUserGesture, method, requestHeaderNames, requestHeaderValues);
+    }
+
+    /** Url of the request. */
+    public String getUrl() {
+        return mUrl;
+    }
+
+    /** Is this for the outermost main frame or a sub-frame? */
+    public boolean isOutermostMainFrame() {
+        return mIsOutermostMainFrame;
+    }
+
+    /** Was a gesture associated with the request? Don't trust can easily be spoofed. */
+    public boolean hasUserGesture() {
+        return mHasUserGesture;
+    }
+
+    /** Was it a result of a server-side redirect? */
+    public boolean isRedirect() {
+        return mIsRedirect;
+    }
+
+    /** Method used (GET/POST/OPTIONS) */
+    public String getMethod() {
+        return mMethod;
+    }
+
+    /** Headers that would have been sent to server. */
+    public Map<String, String> getRequestHeaders() {
+        return mRequestHeaders;
     }
 }

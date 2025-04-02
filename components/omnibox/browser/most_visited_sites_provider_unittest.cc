@@ -408,31 +408,32 @@ TEST_F(MostVisitedSitesProviderTest, TestMostVisitedNavigateToSearchPage) {
 
 TEST_F(MostVisitedSitesProviderTest, AllowMostVisitedSitesSuggestions) {
   // MostVisited should never deal with prefix suggestions.
-  EXPECT_FALSE(
-      provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
-          WEB_URL, WEB_URL, OEP::OTHER, OFT::INTERACTION_DEFAULT)));
+  EXPECT_FALSE(provider_->AllowMostVisitedSitesSuggestions(
+      &client_, BuildAutocompleteInput(WEB_URL, WEB_URL, OEP::OTHER,
+                                       OFT::INTERACTION_DEFAULT)));
 
   // This should always be true, as otherwise we will break MostVisited.
-  EXPECT_TRUE(
-      provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
-          WEB_URL, WEB_URL, OEP::OTHER, OFT::INTERACTION_FOCUS)));
+  EXPECT_TRUE(provider_->AllowMostVisitedSitesSuggestions(
+      &client_, BuildAutocompleteInput(WEB_URL, WEB_URL, OEP::OTHER,
+                                       OFT::INTERACTION_FOCUS)));
 
   // Verifies that non-permitted schemes are rejected.
-  EXPECT_FALSE(
-      provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
-          FTP_URL, FTP_URL, OEP::OTHER, OFT::INTERACTION_FOCUS)));
+  EXPECT_FALSE(provider_->AllowMostVisitedSitesSuggestions(
+      &client_, BuildAutocompleteInput(FTP_URL, FTP_URL, OEP::OTHER,
+                                       OFT::INTERACTION_FOCUS)));
 
   // Offer MV sites when the User is visiting a website and deletes text.
-  EXPECT_TRUE(
-      provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
-          WEB_URL, WEB_URL, OEP::OTHER, OFT::INTERACTION_FOCUS)));
+  EXPECT_TRUE(provider_->AllowMostVisitedSitesSuggestions(
+      &client_, BuildAutocompleteInput(WEB_URL, WEB_URL, OEP::OTHER,
+                                       OFT::INTERACTION_FOCUS)));
 }
 
 TEST_F(MostVisitedSitesProviderTest, NoSRPCoverage) {
-  EXPECT_FALSE(
-      provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
-          WEB_URL, WEB_URL, OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-          OFT::INTERACTION_FOCUS)));
+  EXPECT_FALSE(provider_->AllowMostVisitedSitesSuggestions(
+      &client_,
+      BuildAutocompleteInput(WEB_URL, WEB_URL,
+                             OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+                             OFT::INTERACTION_FOCUS)));
 }
 
 TEST_F(MostVisitedSitesProviderTest, TestCreateMostVisitedMatch) {
@@ -582,12 +583,12 @@ TEST_F(MostVisitedSitesProviderTest, DesktopProviderDoesNotAllowChromeSites) {
 
   // Verifies that non-permitted schemes are rejected.
   EXPECT_TRUE(provider_->AllowMostVisitedSitesSuggestions(
-      BuildAutocompleteInputForWebOnFocus()));
+      &client_, BuildAutocompleteInputForWebOnFocus()));
 
   // Verifies that non-permitted schemes are rejected.
-  EXPECT_FALSE(
-      provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
-          chrome_url, chrome_url, OEP::OTHER, OFT::INTERACTION_FOCUS)));
+  EXPECT_FALSE(provider_->AllowMostVisitedSitesSuggestions(
+      &client_, BuildAutocompleteInput(chrome_url, chrome_url, OEP::OTHER,
+                                       OFT::INTERACTION_FOCUS)));
 }
 
 TEST_F(MostVisitedSitesProviderTest, TestDesktopQueryingHistoryService) {
@@ -601,9 +602,11 @@ TEST_F(MostVisitedSitesProviderTest, TestDesktopQueryingHistoryService) {
   scoped_config.Get().enabled = true;
   scoped_config.Get().most_visited_recency_window = 4;
   scoped_config.Get().most_visited_recency_factor =
-      history::kMvtScoringParamRecencyFactor_Default;
+      history::kMvtScoringParamRecencyFactor_Classic;
   scoped_config.Get().max_suggestions = 8;
   scoped_config.Get().prefetch_most_visited_sites = false;
+
+  AutocompleteInput input(BuildAutocompleteInputForWebOnFocus());
 
   history::HistoryService::QueryMostVisitedURLsCallback callback;
   EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _))
@@ -614,17 +617,16 @@ TEST_F(MostVisitedSitesProviderTest, TestDesktopQueryingHistoryService) {
                     std::optional<size_t> recency_window_days)
                     -> base::CancelableTaskTracker::TaskId {
         // Add 1 to simulate 1 site being open.
-        EXPECT_EQ(static_cast<int>(scoped_config.Get().max_suggestions) + 1,
+        EXPECT_EQ(static_cast<int>(provider_->GetRequestedResultSize(input)),
                   result_count);
         EXPECT_TRUE(recency_factor_name.has_value());
-        EXPECT_EQ(history::kMvtScoringParamRecencyFactor_Default,
+        EXPECT_EQ(history::kMvtScoringParamRecencyFactor_Classic,
                   recency_factor_name.value());
         EXPECT_TRUE(recency_window_days.has_value());
         EXPECT_EQ(4u, recency_window_days.value());
         callback = std::move(cb);
         return {};
       });
-  AutocompleteInput input(BuildAutocompleteInputForWebOnFocus());
   provider_->Start(input, false);
   EXPECT_FALSE(provider_->done());
   history::MostVisitedURLList result;
@@ -649,6 +651,8 @@ TEST_F(MostVisitedSitesProviderTest, TestDeleteMatch) {
   scoped_config.Get().max_suggestions = 8;
   scoped_config.Get().prefetch_most_visited_sites = false;
 
+  AutocompleteInput input(BuildAutocompleteInputForWebOnFocus());
+
   history::HistoryService::QueryMostVisitedURLsCallback callback;
   EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _))
       .WillOnce([&](int result_count,
@@ -658,13 +662,12 @@ TEST_F(MostVisitedSitesProviderTest, TestDeleteMatch) {
                     std::optional<size_t> recency_window_days)
                     -> base::CancelableTaskTracker::TaskId {
         // Add 1 to simulate 1 site being open.
-        EXPECT_EQ(static_cast<int>(scoped_config.Get().max_suggestions) + 1,
+        EXPECT_EQ(static_cast<int>(provider_->GetRequestedResultSize(input)),
                   result_count);
         callback = std::move(cb);
         return {};
       });
 
-  AutocompleteInput input(BuildAutocompleteInputForWebOnFocus());
   provider_->Start(input, false);
   EXPECT_FALSE(provider_->done());
   history::MostVisitedURLList result;
@@ -702,6 +705,8 @@ TEST_F(MostVisitedSitesProviderTest, PrefetchingUpdatesCachedSites) {
   scoped_config.Get().max_suggestions = 8;
   scoped_config.Get().prefetch_most_visited_sites = true;
 
+  AutocompleteInput input(BuildAutocompletePrefetchInputForWeb());
+
   history::HistoryService::QueryMostVisitedURLsCallback callback;
   EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _))
       .Times(2)
@@ -713,13 +718,13 @@ TEST_F(MostVisitedSitesProviderTest, PrefetchingUpdatesCachedSites) {
               std::optional<size_t> recency_window_days)
               -> base::CancelableTaskTracker::TaskId {
             // Add 1 to simulate 1 site being open.
-            EXPECT_EQ(static_cast<int>(scoped_config.Get().max_suggestions) + 1,
-                      result_count);
+            EXPECT_EQ(
+                static_cast<int>(provider_->GetRequestedResultSize(input)),
+                result_count);
             callback = std::move(cb);
             return {};
           });
 
-  AutocompleteInput input(BuildAutocompletePrefetchInputForWeb());
   // `StartPrefetch()` shouldn't affect provider state.
   EXPECT_TRUE(provider_->done());
   provider_->StartPrefetch(input);
@@ -755,6 +760,8 @@ TEST_F(MostVisitedSitesProviderTest,
   scoped_config.Get().max_suggestions = 8;
   scoped_config.Get().prefetch_most_visited_sites = true;
 
+  AutocompleteInput input(BuildAutocompleteInputForWebOnFocus());
+
   history::HistoryService::QueryMostVisitedURLsCallback callback;
   EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _))
       .WillOnce([&](int result_count,
@@ -764,13 +771,12 @@ TEST_F(MostVisitedSitesProviderTest,
                     std::optional<size_t> recency_window_days)
                     -> base::CancelableTaskTracker::TaskId {
         // Add 1 to simulate 1 site being open.
-        EXPECT_EQ(static_cast<int>(scoped_config.Get().max_suggestions) + 1,
+        EXPECT_EQ(static_cast<int>(provider_->GetRequestedResultSize(input)),
                   result_count);
         callback = std::move(cb);
         return {};
       });
 
-  AutocompleteInput input(BuildAutocompleteInputForWebOnFocus());
   provider_->Start(input, false);
   history::MostVisitedURLList result;
   for (const auto& test_element : DefaultTestData()) {
@@ -784,6 +790,21 @@ TEST_F(MostVisitedSitesProviderTest,
   // but not update the actual provider's matches if the cache is empty.
   ASSERT_EQ(5u, provider_->cached_sites_.size());
   ASSERT_EQ(0u, provider_->matches().size());
+}
+
+TEST_F(MostVisitedSitesProviderTest, BlocklistedURLs) {
+  AutocompleteInput input(BuildAutocompleteInputForWebOnFocus());
+  history::MostVisitedURLList result;
+  std::vector<TestData> test_data = {
+      {false, {GURL("http://www.nonblocked.com"), u"Non blocked"}},
+      {false, {GURL("http://accounts.google.com/signin"), u"Blocked"}}};
+  result.push_back(test_data[0].entry);
+  result.push_back(test_data[1].entry);
+  provider_->OnMostVisitedUrlsFromHistoryAvailable(input, result);
+  // Shouldn't include the "accounts.google.com" URL since it is blocklisted.
+  ASSERT_EQ(1u, provider_->matches().size());
+  ASSERT_EQ("http://www.nonblocked.com/",
+            provider_->matches().at(0).destination_url.spec());
 }
 
 #endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))

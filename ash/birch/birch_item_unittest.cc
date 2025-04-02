@@ -9,7 +9,6 @@
 
 #include "ash/birch/birch_icon_cache.h"
 #include "ash/birch/birch_model.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
@@ -21,7 +20,6 @@
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_clock_override.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -564,10 +562,6 @@ TEST_F(BirchItemTest, SelfShare_PerformAction) {
 // The icon downloader requires ash::Shell, so use AshTestBase.
 class BirchItemIconTest : public AshTestBase {
  public:
-  BirchItemIconTest() {
-    feature_list_.InitAndEnableFeature(features::kForestFeature);
-  }
-
   void SetUp() override {
     AshTestBase::SetUp();
     Shell::Get()->birch_model()->SetClientAndInit(&stub_birch_client_);
@@ -580,7 +574,6 @@ class BirchItemIconTest : public AshTestBase {
 
   StubBirchClient stub_birch_client_;
   TestImageDownloader image_downloader_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(BirchItemIconTest, Calendar_LoadIcon) {

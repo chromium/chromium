@@ -57,6 +57,12 @@ class OmniboxViewIOS;
 /// Clears the Omnibox text.
 - (void)clearText;
 
+/// Prepares the omnibox for scribble.
+- (void)prepareForScribble;
+
+/// Cleans up the omnibox after scribble.
+- (void)cleanupAfterScribble;
+
 /// Called when the omnibox text field starts editing.
 - (void)onDidBeginEditing;
 

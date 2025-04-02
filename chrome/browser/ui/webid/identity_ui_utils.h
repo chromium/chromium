@@ -7,6 +7,8 @@
 
 #include <optional>
 
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace content {
@@ -19,8 +21,13 @@ using IdentityRequestAccountPtr =
 // This file contains helper methods that are used in FedCM UI on both desktop
 // and Android.
 
+#if BUILDFLAG(IS_ANDROID)
+// The desired size of the avatars of user accounts.
+inline constexpr int kDesiredAvatarSize = 40;
+#else
 // The desired size of the avatars of user accounts.
 inline constexpr int kDesiredAvatarSize = 30;
+#endif  // BUILDFLAG(IS_ANDROID)
 // The size of avatars in the modal dialog.
 inline constexpr int kModalAvatarSize = 36;
 // Size of the IDP icon offset when badging the IDP icon in the account button.

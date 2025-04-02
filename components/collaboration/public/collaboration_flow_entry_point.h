@@ -29,7 +29,17 @@ enum class CollaborationServiceJoinEntryPoint {
 //   org.chromium.components.collaboration)
 enum class CollaborationServiceShareOrManageEntryPoint {
   kUnknown = 0,
-  kMaxValue = kUnknown,
+  kAndroidTabGridDialogShare = 1,
+  kAndroidTabGridDialogManage = 2,
+  kRecentActivity = 3,
+  kAndroidTabGroupContextMenuShare = 4,
+  kAndroidTabGroupContextMenuManage = 5,
+  kNotification = 6,
+  kAndroidMessage = 7,
+  kTabGroupItemMenuShare = 8,
+  kAndroidShareSheetExtra = 9,
+  kDialogToolbarButton = 10,
+  kMaxValue = kDialogToolbarButton,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceShareOrManageEntryPoint)
 

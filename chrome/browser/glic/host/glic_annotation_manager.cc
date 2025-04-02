@@ -152,7 +152,7 @@ void GlicAnnotationManager::AnnotationTask::DidFinishAttachment(
     return;
   }
 
-  annotation_agent_->ScrollIntoView();
+  annotation_agent_->ScrollIntoView(/*applies_focus=*/false);
   std::move(scroll_to_callback_).Run(std::nullopt);
 }
 

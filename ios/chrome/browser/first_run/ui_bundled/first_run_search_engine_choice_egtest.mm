@@ -104,7 +104,7 @@
       assertWithMatcher:grey_nil()];
 
   [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
-  [[self class] dismissDefaultBrowser];
+  [[self class] dismissDefaultBrowserAndRemainingScreens];
   [SearchEngineChoiceEarlGreyUI
       verifyDefaultSearchEngineSetting:searchEngineToSelect];
 }
@@ -149,7 +149,7 @@
                               amount:300];
   [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
 
-  [[self class] dismissDefaultBrowser];
+  [[self class] dismissDefaultBrowserAndRemainingScreens];
   [SearchEngineChoiceEarlGreyUI
       verifyDefaultSearchEngineSetting:searchEngineToSelect];
 }
@@ -176,7 +176,7 @@
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
   // Dismiss the default browser screen.
-  [[self class] dismissDefaultBrowser];
+  [[self class] dismissDefaultBrowserAndRemainingScreens];
   // Open the default search engine settings menu.
   [ChromeEarlGreyUI openSettingsMenu];
   // Verify that the correct search engine is selected. The enterprise search
@@ -265,7 +265,7 @@
                        search_engines::SearchEngineChoiceScreenEvents::
                            kFreDefaultWasSet)
       forHistogram:eventHistogram]);
-  [[self class] dismissDefaultBrowser];
+  [[self class] dismissDefaultBrowserAndRemainingScreens];
 }
 
 // Tests that incognito can be forced through the FRE with search engine screen.

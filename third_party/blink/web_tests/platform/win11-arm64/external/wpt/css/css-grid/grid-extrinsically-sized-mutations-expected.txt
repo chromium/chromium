@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] grid-extrinsically-sized-mutations
+  assert_equals: height expected 40 but got 48
+[FAIL] grid-extrinsically-sized-mutations 4
+  assert_equals: height expected 30 but got 24
+[FAIL] grid-extrinsically-sized-mutations 6
+  assert_equals: height expected 30 but got 36
+[FAIL] grid-extrinsically-sized-mutations 7
+  assert_equals: height expected 40 but got 24
+Harness: the test ran to completion.
+

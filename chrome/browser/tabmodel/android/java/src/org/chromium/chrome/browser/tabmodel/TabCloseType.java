@@ -6,12 +6,15 @@ package org.chromium.chrome.browser.tabmodel;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Types of tab closure events. */
 @IntDef({TabCloseType.SINGLE, TabCloseType.MULTIPLE, TabCloseType.ALL})
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 @interface TabCloseType {
     /** A single tab is closing. */
     int SINGLE = 0;

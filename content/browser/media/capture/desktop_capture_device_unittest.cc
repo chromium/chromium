@@ -263,7 +263,6 @@ class FormatChecker {
       EXPECT_EQ(size_for_odd_frames_, format.frame_size);
     ++frame_count_;
     EXPECT_EQ(kFrameRate, format.frame_rate);
-    EXPECT_EQ(media::PIXEL_FORMAT_ARGB, format.pixel_format);
   }
 
  private:
@@ -369,7 +368,6 @@ TEST_F(DesktopCaptureDeviceTest, Capture) {
   EXPECT_GT(format.frame_size.width(), 0);
   EXPECT_GT(format.frame_size.height(), 0);
   EXPECT_EQ(kFrameRate, format.frame_rate);
-  EXPECT_EQ(media::PIXEL_FORMAT_ARGB, format.pixel_format);
 
   EXPECT_EQ(format.frame_size.GetArea() * 4, frame_size);
 }

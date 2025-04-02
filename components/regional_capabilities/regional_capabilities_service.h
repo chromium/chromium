@@ -25,6 +25,20 @@ class CountryIdHolder;
 
 // Service for managing the state related to Search Engine Choice (mostly
 // for the country information).
+//
+// Various kinds of countries:
+// - Variations country: Obtained from the variations service, this is the one
+//   we get through the experiment framework. Exists in 2 variants: "Latest"
+//   (changes once per run) and "Permanent" (changes at each milestone). See
+//   `variations::VariationsService` for more details.
+// - Device country: Represents the country with which the device is associated
+//   and is provided by OS-level APIs. See `country_codes::GetCurrentCountryID`
+//   for the common way we access it. Some platforms (Android or ChromeOS,
+//   notably) need some alternative ways to obtain a more accurate values.
+// - Profile country: The country that the `RegionalCapabilitiesService`
+//   considers to apply to the current profile, and that is used to compute the
+//   capabilities. It is persisted to profile prefs, and how it gets updated
+//   varies by platform.
 class RegionalCapabilitiesService : public KeyedService {
  public:
   // Helper that is responsible for providing the service with country data,
@@ -36,16 +50,22 @@ class RegionalCapabilitiesService : public KeyedService {
 
     virtual ~Client() = default;
 
-    // Synchronously returns a country to use in current run for this profile.
-    //
-    // The default implementation uses `country_codes::GetCurrentCountryID()`.
+    // See `VariationsService::GetLatestCountry()`. Exposed through the
+    // `Client` interface to abstract away platform-specific ways to access
+    // the service.
+    virtual country_codes::CountryId GetVariationsLatestCountryId() = 0;
+
+    // Synchronously returns a country that could be used as the device country
+    // for the current run.
+    // Is called by the service when `FetchCountryId` does not complete
+    // synchronously.
     virtual country_codes::CountryId GetFallbackCountryId() = 0;
 
-    // Computes a country to associate with this profile, returning it by
-    // running `country_id_fetched_callback`. If it is not run synchronously,
-    // `GetFallbackCountryId()` should be used by the service for the current
-    // run. `country_id_fetched_callback` should be called only if a country was
-    // successfully obtained.
+    // Fetches country associated with the device via OS-level APIs, and
+    // when/if successfully obtained, returns it by running
+    // `country_id_fetched_callback`.
+    // If it is not run synchronously, `GetFallbackCountryId()` will be used by
+    // the service for the current run.
     virtual void FetchCountryId(
         CountryIdCallback country_id_fetched_callback) = 0;
   };
@@ -90,8 +110,9 @@ class RegionalCapabilitiesService : public KeyedService {
  private:
   country_codes::CountryId GetCountryIdInternal();
 
-  // Checks whether the persisted
   void InitializeCountryIdCache();
+  std::optional<country_codes::CountryId> GetPersistedCountryId();
+  void TrySetPersistedCountryId(country_codes::CountryId country_id);
 
   const raw_ref<PrefService> profile_prefs_;
   const std::unique_ptr<Client> client_;

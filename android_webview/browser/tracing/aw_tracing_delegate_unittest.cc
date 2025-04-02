@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "android_webview/browser/aw_browser_process.h"
+#include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "base/values.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -24,8 +25,9 @@ class AwTracingDelegateTest : public testing::Test {
   void SetUp() override {
     AwFeatureListCreator* aw_feature_list_creator = new AwFeatureListCreator();
     aw_feature_list_creator->CreateLocalState();
-    browser_process_ =
-        new android_webview::AwBrowserProcess(aw_feature_list_creator);
+    std::unique_ptr<AwContentBrowserClient> aw_content_browser_client =
+        std::make_unique<AwContentBrowserClient>(aw_feature_list_creator);
+    browser_process_ = new AwBrowserProcess(aw_content_browser_client.get());
 
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     pref_service_->registry()->RegisterBooleanPref(

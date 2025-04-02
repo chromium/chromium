@@ -228,7 +228,12 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Sign in with a managed identity.
   FakeSystemIdentity* fakeManagedIdentity =
       [FakeSystemIdentity fakeManagedIdentity];
-  [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    [SigninEarlGrey
+        signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
+  } else {
+    [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
+  }
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeManagedIdentity];
 
   // Turn off "Allow Chrome Sign-in" feature, which prompts the user with a
@@ -250,19 +255,26 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       selectElementWithMatcher:ButtonWithAccessibilityLabelId(
                                    IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)]
       performAction:grey_tap()];
-  WaitForSettingDoneButton();
 
-  // Verify that sign-in is disabled.
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
-      performAction:grey_tap()];
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    WaitForSettingDoneButton();
+
+    // Verify that sign-in is disabled.
+    [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+        performAction:grey_tap()];
+  } else {
+    // Signing out caused a profile switch, which also closed settings.
+    [ChromeEarlGreyUI openSettingsMenu];
+  }
+
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kSettingsSignInCellId)]
       assertWithMatcher:grey_notVisible()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
 
   // Verify signed out.
   [SigninEarlGrey verifySignedOut];
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      performAction:grey_tap()];
 }
 
 // Tests that canceling the "Allow Chrome sign-in" option does not change the

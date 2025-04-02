@@ -24,6 +24,14 @@ enum KAnonymityBidMode {
   kEnforce  // Enforced.
 };
 
+// k-anonymity status of a bid.
+enum KAnonymityStatus {
+  kUnknown,
+  kBelowThreshold,
+  kPassingNotEnforced,
+  kPassingAndEnforced,
+};
+
 // An opaque identifier that identifies an ad configuration used for
 // k-anonymity.
 struct KAnonKey {
@@ -562,11 +570,7 @@ interface BidderWorklet {
   // `seller_signals_json` is a JSON representation of the object returned by
   //  the seller worklet's ReportResult method.
   //
-  // `kanon_mode` indicates whether k-anonymity was used to potentially re-run
-  //  the bidding function with only ads that are k-anonymous and produce an
-  //  alternative bid.
-  //
-  // `bid_is_kanon` is a boolean flag to show if the winner bid is k-anonymous.
+  // `kanon_status` indicates the k-anonymity status of the winning bid.
   //
   // `browser_signal_render_url` is the `render_url` returned by the
   //  BidderWorklet's generateBid() method, invoked as part of BidderWorklet
@@ -665,8 +669,7 @@ interface BidderWorklet {
       url.mojom.Url? direct_from_seller_auction_signals,
       string? direct_from_seller_auction_signals_header_ad_slot,
       string seller_signals_json,
-      KAnonymityBidMode kanon_mode,
-      bool bid_is_kanon,
+      KAnonymityStatus kanon_status,
       url.mojom.Url browser_signal_render_url,
       double browser_signal_bid,
       blink.mojom.AdCurrency? browser_signal_bid_currency,

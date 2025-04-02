@@ -37,8 +37,8 @@ struct AutocompleteMatchType {
     HISTORY_URL           = 1,  // A past page whose URL contains the input.
     HISTORY_TITLE         = 2,  // A past page whose title contains the input.
     HISTORY_BODY          = 3,  // A past page whose body contains the input.
-    HISTORY_KEYWORD [[deprecated]] = 4,  // A past page whose keyword contains
-                                         // the input (deprecated).
+    HISTORY_KEYWORD       = 4,  // A past page whose keyword contains the
+                                // input.
     NAVSUGGEST            = 5,  // A suggested URL.
     SEARCH_WHAT_YOU_TYPED = 6,  // The input as a search query (with the
                                 // default engine).

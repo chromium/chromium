@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router_factory.h"
 
+#include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -42,6 +43,7 @@ AutofillPrivateEventRouterFactory::AutofillPrivateEventRouterFactory()
               .Build()) {
   DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
   DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
+  DependsOn(autofill::AutofillEntityDataManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
 }
 

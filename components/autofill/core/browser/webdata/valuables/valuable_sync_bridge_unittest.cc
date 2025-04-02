@@ -42,7 +42,7 @@ constexpr char kInvalidId[] = "";
 LoyaltyCard TestLoyaltyCard(std::string_view id) {
   return LoyaltyCard(ValuableId(std::string(id)), "merchant_name",
                      "program_name", GURL("http://foobar.com/logo.png"),
-                     "card_suffix");
+                     "card_number");
 }
 
 std::vector<LoyaltyCard> ExtractLoyaltyCardsFromDataBatch(
@@ -170,7 +170,7 @@ TEST_F(ValuableSyncBridgeTest, MergeFullSyncData) {
   EXPECT_CALL(mock_processor(), Delete).Times(0);
   EXPECT_CALL(backend(), CommitChanges);
   EXPECT_CALL(backend(),
-              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_LOYALTY_CARD));
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE));
 
   EXPECT_TRUE(StartSyncing({remote1, remote2}));
 
@@ -184,7 +184,7 @@ TEST_F(ValuableSyncBridgeTest, MergeFullSyncData_ReplacePreviousData) {
 
   EXPECT_CALL(backend(), CommitChanges).Times(2);
   EXPECT_CALL(backend(),
-              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_LOYALTY_CARD))
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE))
       .Times(2);
 
   EXPECT_TRUE(StartSyncing({remote1}));
@@ -211,7 +211,7 @@ TEST_F(ValuableSyncBridgeDeathTest, ApplyIncrementalSyncChanges) {
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(backend(), CommitChanges());
   EXPECT_CALL(backend(),
-              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_LOYALTY_CARD));
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE));
 
   ASSERT_TRUE(StartSyncing(/*loyalty_cards=*/{remote1}));
   EXPECT_THAT(GetAllDataFromTable(), ElementsAre(remote1));
@@ -253,7 +253,7 @@ TEST_F(ValuableSyncBridgeTest, ApplyDisableSyncChanges) {
 
   EXPECT_CALL(backend(), CommitChanges());
   EXPECT_CALL(backend(),
-              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_LOYALTY_CARD));
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE));
 
   bridge().ApplyDisableSyncChanges(bridge().CreateMetadataChangeList());
 
@@ -272,7 +272,7 @@ TEST_F(ValuableSyncBridgeTest,
   loyalty_card->mutable_program_name()->assign("program_name");
   loyalty_card->mutable_program_logo()->assign("program_logo");
   loyalty_card->mutable_merchant_name()->assign("merchant_name");
-  loyalty_card->mutable_loyalty_card_suffix()->assign("card_suffix");
+  loyalty_card->mutable_loyalty_card_number()->assign("card_number");
 
   EXPECT_EQ(bridge()
                 .TrimAllSupportedFieldsFromRemoteSpecifics(specifics)
@@ -298,7 +298,7 @@ TEST_F(ValuableSyncBridgeTest,
   loyalty_card->mutable_program_name()->assign("program_name");
   loyalty_card->mutable_program_logo()->assign("program_logo");
   loyalty_card->mutable_merchant_name()->assign("merchant_name");
-  loyalty_card->mutable_loyalty_card_suffix()->assign("card_suffix");
+  loyalty_card->mutable_loyalty_card_number()->assign("card_number");
 
   EXPECT_EQ(bridge()
                 .TrimAllSupportedFieldsFromRemoteSpecifics(

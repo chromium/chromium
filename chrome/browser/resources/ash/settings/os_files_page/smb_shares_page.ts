@@ -14,6 +14,7 @@ import '../settings_vars.css.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import type {PrefsState} from '../common/types.js';
 import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 
@@ -45,7 +46,7 @@ export class SettingsSmbSharesPageElement extends
     };
   }
 
-  prefs: object;
+  prefs: PrefsState;
   private showAddSmbDialog_: boolean;
 
   /**

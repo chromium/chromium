@@ -1033,7 +1033,8 @@ VectorOf<Node> Node::ConvertNodeUnionsIntoNodes(
     Document& document,
     const char* property_name,
     ExceptionState& exception_state) {
-  bool needs_check = IsA<HTMLScriptElement>(parent) &&
+  bool needs_check = !RuntimeEnabledFeatures::TrustedTypesHTMLEnabled() &&
+                     IsA<HTMLScriptElement>(parent) &&
                      document.GetExecutionContext() &&
                      document.GetExecutionContext()->RequireTrustedTypes();
   VectorOf<Node> nodes;

@@ -396,7 +396,7 @@ DataTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
     types.Remove(APP_LIST);
     // Note: AUTOFILL_WALLET_CREDENTIAL *is* supported - the user can still save
     // CVVs for local credit cards.
-    types.Remove(AUTOFILL_LOYALTY_CARD);
+    types.Remove(AUTOFILL_VALUABLE);
     types.Remove(AUTOFILL_WALLET_DATA);
     types.Remove(AUTOFILL_WALLET_METADATA);
     types.Remove(AUTOFILL_WALLET_OFFER);

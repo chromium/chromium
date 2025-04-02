@@ -208,6 +208,7 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
              completion:completion_block];
 
   command.optionalHistorySync = NO;
+  command.fullScreenPromo = YES;
 
   [application_handler showSignin:command
                baseViewController:base_view_controller_];

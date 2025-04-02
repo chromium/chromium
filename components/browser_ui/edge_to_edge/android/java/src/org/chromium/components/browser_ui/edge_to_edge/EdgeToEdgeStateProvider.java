@@ -45,6 +45,17 @@ public class EdgeToEdgeStateProvider extends ObservableSupplierImpl<Boolean>
         return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }
 
+    /**
+     * Whether edge to edge has been requested by a Chrome owned window. When
+     * true, the window has a non-empty {@link EdgeToEdgeStateProvider} attached.
+     */
+    public static boolean isEdgeToEdgeEnabledForWindow(@Nullable WindowAndroid windowAndroid) {
+        if (windowAndroid == null) return false;
+
+        ObservableSupplier<Boolean> stateProvider = from(windowAndroid);
+        return stateProvider != null && Boolean.TRUE.equals(stateProvider.get());
+    }
+
     /** Detach this instance from all windows. */
     public void detach() {
         KEY.detachFromAllHosts(this);

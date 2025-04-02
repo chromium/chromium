@@ -177,6 +177,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "cronet-arm64-gn2bp-debug",
+)
+
+chrome_internal_verifier(
     builder = "chromeos-reven-chrome",
 )
 
@@ -189,7 +193,15 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "fuchsia-ava-nelson-npi",
+)
+
+chrome_internal_verifier(
     builder = "fuchsia-ava-sherlock",
+)
+
+chrome_internal_verifier(
+    builder = "fuchsia-ava-sherlock-npi",
 )
 
 chrome_internal_verifier(

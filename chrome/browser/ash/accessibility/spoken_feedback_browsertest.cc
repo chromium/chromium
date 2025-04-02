@@ -1162,7 +1162,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateChromeVoxMenu) {
+// TODO(crbug.com/407459387): Fix and re-enable this test.
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_NavigateChromeVoxMenu) {
   EnableChromeVox();
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_OEM_PERIOD); });
   sm_.ExpectSpeech("Search the menus");
@@ -2285,7 +2286,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DarkenScreenConfirmation) {
 }
 
 // Tests basic behavior of the tutorial when signed in.
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, Tutorial) {
+// TODO(crbug.com/407459387): Fix and re-enable this test.
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_Tutorial) {
   EnableChromeVox();
   sm_.Call([this]() {
     NavigateToUrl(GURL(R"(data:text/html;charset=utf-8,

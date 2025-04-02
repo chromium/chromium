@@ -1,5 +1,6 @@
 include_rules = [
   "+ash/ash_element_identifiers.h",
+  "+ash/shell.h",
 
   # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
   # details.

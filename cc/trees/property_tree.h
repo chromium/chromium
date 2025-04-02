@@ -76,6 +76,7 @@ class CC_EXPORT PropertyTree {
 
 #if DCHECK_IS_ON()
   bool operator==(const PropertyTree<T>& other) const;
+  std::string ToString() const;
 #endif
 
   int Insert(const T& tree_node, int parent_id);

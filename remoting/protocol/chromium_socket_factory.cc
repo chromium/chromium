@@ -39,6 +39,7 @@
 #include "third_party/webrtc/rtc_base/net_helpers.h"
 #include "third_party/webrtc/rtc_base/network/received_packet.h"
 #include "third_party/webrtc/rtc_base/socket.h"
+#include "third_party/webrtc/rtc_base/time_utils.h"
 
 namespace remoting::protocol {
 

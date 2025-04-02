@@ -34,9 +34,9 @@ class InlineItemsBuilderTest : public RenderingTest {
     RenderingTest::SetUp();
     style_ = &GetDocument().GetStyleResolver().InitialStyle();
     block_flow_ = LayoutBlockFlow::CreateAnonymous(&GetDocument(), style_);
-    items_ = MakeGarbageCollected<InlineItems>();
+    items_ = MakeGarbageCollected<InlineItemsHolder>();
     anonymous_objects_ =
-        MakeGarbageCollected<HeapVector<Member<LayoutObject>>>();
+        MakeGarbageCollected<GCedHeapVector<Member<LayoutObject>>>();
     anonymous_objects_->push_back(block_flow_);
   }
 
@@ -96,9 +96,9 @@ class InlineItemsBuilderTest : public RenderingTest {
   };
 
   const String& TestAppend(Vector<Input> inputs) {
-    items_->clear();
+    items()->clear();
     HeapVector<Member<LayoutText>> anonymous_objects;
-    InlineItemsBuilder builder(GetLayoutBlockFlow(), items_);
+    InlineItemsBuilder builder(GetLayoutBlockFlow(), items());
     for (Input& input : inputs) {
       if (!input.layout_text) {
         input.layout_text = LayoutText::CreateEmptyAnonymous(
@@ -133,8 +133,8 @@ class InlineItemsBuilderTest : public RenderingTest {
 
   void ValidateItems() {
     unsigned current_offset = 0;
-    for (unsigned i = 0; i < items_->size(); i++) {
-      const InlineItem& item = *items_->at(i);
+    for (unsigned i = 0; i < items()->size(); i++) {
+      const InlineItem& item = *items()->at(i);
       EXPECT_EQ(current_offset, item.StartOffset());
       EXPECT_LE(item.StartOffset(), item.EndOffset());
       current_offset = item.EndOffset();
@@ -151,7 +151,7 @@ class InlineItemsBuilderTest : public RenderingTest {
     InlineItems reuse_items;
     InlineItemsBuilder reuse_builder(GetLayoutBlockFlow(), &reuse_items);
     InlineItemsData* data = MakeGarbageCollected<InlineItemsData>();
-    data->items = *items_;
+    data->items = *items();
     for (Input& input : inputs) {
       // Collect items for this LayoutObject.
       DCHECK(input.layout_text);
@@ -183,11 +183,14 @@ class InlineItemsBuilderTest : public RenderingTest {
     EXPECT_EQ(text_, reuse_text);
   }
 
+  InlineItems* items() const { return &items_->Value(); }
+
   Persistent<LayoutBlockFlow> block_flow_;
-  Persistent<InlineItems> items_;
+  using InlineItemsHolder = DisallowNewWrapper<InlineItems>;
+  Persistent<InlineItemsHolder> items_;
   String text_;
   Persistent<const ComputedStyle> style_;
-  Persistent<HeapVector<Member<LayoutObject>>> anonymous_objects_;
+  Persistent<GCedHeapVector<Member<LayoutObject>>> anonymous_objects_;
 };
 
 #define TestWhitespaceValue(expected_text, input, whitespace) \
@@ -324,7 +327,7 @@ TEST_F(InlineItemsBuilderTest, CollapseZeroWidthSpaces) {
 
 TEST_F(InlineItemsBuilderTest, CollapseZeroWidthSpaceAndNewLineAtEnd) {
   EXPECT_EQ(String(u"\u200B"), TestAppend(u"\u200B\n"));
-  EXPECT_EQ(InlineItem::kNotCollapsible, items_->at(0)->EndCollapseType());
+  EXPECT_EQ(InlineItem::kNotCollapsible, items()->at(0)->EndCollapseType());
 }
 
 #if SEGMENT_BREAK_TRANSFORMATION_FOR_EAST_ASIAN_WIDTH
@@ -346,7 +349,7 @@ TEST_F(InlineItemsBuilderTest, CollapseEastAsianWidth) {
 #endif
 
 TEST_F(InlineItemsBuilderTest, OpaqueToSpaceCollapsing) {
-  InlineItemsBuilder builder(GetLayoutBlockFlow(), items_);
+  InlineItemsBuilder builder(GetLayoutBlockFlow(), items());
   AppendText("Hello ", &builder);
   builder.AppendOpaque(InlineItem::kBidiControl, kFirstStrongIsolateCharacter);
   AppendText(" ", &builder);
@@ -356,7 +359,7 @@ TEST_F(InlineItemsBuilderTest, OpaqueToSpaceCollapsing) {
 }
 
 TEST_F(InlineItemsBuilderTest, CollapseAroundReplacedElement) {
-  InlineItemsBuilder builder(GetLayoutBlockFlow(), items_);
+  InlineItemsBuilder builder(GetLayoutBlockFlow(), items());
   AppendText("Hello ", &builder);
   AppendAtomicInline(&builder);
   AppendText(" World", &builder);
@@ -364,33 +367,33 @@ TEST_F(InlineItemsBuilderTest, CollapseAroundReplacedElement) {
 }
 
 TEST_F(InlineItemsBuilderTest, CollapseNewlineAfterObject) {
-  InlineItemsBuilder builder(GetLayoutBlockFlow(), items_);
+  InlineItemsBuilder builder(GetLayoutBlockFlow(), items());
   AppendAtomicInline(&builder);
   AppendText("\n", &builder);
   AppendAtomicInline(&builder);
   EXPECT_EQ(String(u"\uFFFC \uFFFC"), builder.ToString());
-  EXPECT_EQ(3u, items_->size());
-  EXPECT_ITEM_OFFSET(items_->at(0), InlineItem::kAtomicInline, 0u, 1u);
-  EXPECT_ITEM_OFFSET(items_->at(1), InlineItem::kText, 1u, 2u);
-  EXPECT_ITEM_OFFSET(items_->at(2), InlineItem::kAtomicInline, 2u, 3u);
+  EXPECT_EQ(3u, items()->size());
+  EXPECT_ITEM_OFFSET(items()->at(0), InlineItem::kAtomicInline, 0u, 1u);
+  EXPECT_ITEM_OFFSET(items()->at(1), InlineItem::kText, 1u, 2u);
+  EXPECT_ITEM_OFFSET(items()->at(2), InlineItem::kAtomicInline, 2u, 3u);
 }
 
 TEST_F(InlineItemsBuilderTest, AppendEmptyString) {
   EXPECT_EQ("", TestAppend(""));
-  EXPECT_EQ(1u, items_->size());
-  EXPECT_ITEM_OFFSET(items_->at(0), InlineItem::kText, 0u, 0u);
+  EXPECT_EQ(1u, items()->size());
+  EXPECT_ITEM_OFFSET(items()->at(0), InlineItem::kText, 0u, 0u);
 }
 
 TEST_F(InlineItemsBuilderTest, NewLines) {
   SetWhiteSpace(EWhiteSpace::kPre);
   EXPECT_EQ("apple\norange\ngrape\n", TestAppend("apple\norange\ngrape\n"));
-  EXPECT_EQ(6u, items_->size());
-  EXPECT_EQ(InlineItem::kText, items_->at(0)->Type());
-  EXPECT_EQ(InlineItem::kControl, items_->at(1)->Type());
-  EXPECT_EQ(InlineItem::kText, items_->at(2)->Type());
-  EXPECT_EQ(InlineItem::kControl, items_->at(3)->Type());
-  EXPECT_EQ(InlineItem::kText, items_->at(4)->Type());
-  EXPECT_EQ(InlineItem::kControl, items_->at(5)->Type());
+  EXPECT_EQ(6u, items()->size());
+  EXPECT_EQ(InlineItem::kText, items()->at(0)->Type());
+  EXPECT_EQ(InlineItem::kControl, items()->at(1)->Type());
+  EXPECT_EQ(InlineItem::kText, items()->at(2)->Type());
+  EXPECT_EQ(InlineItem::kControl, items()->at(3)->Type());
+  EXPECT_EQ(InlineItem::kText, items()->at(4)->Type());
+  EXPECT_EQ(InlineItem::kControl, items()->at(5)->Type());
 }
 
 TEST_F(InlineItemsBuilderTest, IgnorablePre) {
@@ -406,12 +409,12 @@ TEST_F(InlineItemsBuilderTest, IgnorablePre) {
                  "orange"
                  "\n"
                  "grape"));
-  EXPECT_EQ(5u, items_->size());
-  EXPECT_ITEM_OFFSET(items_->at(0), InlineItem::kText, 0u, 5u);
-  EXPECT_ITEM_OFFSET(items_->at(1), InlineItem::kControl, 5u, 6u);
-  EXPECT_ITEM_OFFSET(items_->at(2), InlineItem::kText, 6u, 12u);
-  EXPECT_ITEM_OFFSET(items_->at(3), InlineItem::kControl, 12u, 13u);
-  EXPECT_ITEM_OFFSET(items_->at(4), InlineItem::kText, 13u, 18u);
+  EXPECT_EQ(5u, items()->size());
+  EXPECT_ITEM_OFFSET(items()->at(0), InlineItem::kText, 0u, 5u);
+  EXPECT_ITEM_OFFSET(items()->at(1), InlineItem::kControl, 5u, 6u);
+  EXPECT_ITEM_OFFSET(items()->at(2), InlineItem::kText, 6u, 12u);
+  EXPECT_ITEM_OFFSET(items()->at(3), InlineItem::kControl, 12u, 13u);
+  EXPECT_ITEM_OFFSET(items()->at(4), InlineItem::kText, 13u, 18u);
 }
 
 TEST_F(InlineItemsBuilderTest, Empty) {

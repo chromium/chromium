@@ -117,21 +117,6 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
     ASH_EXPORT,
     kNetworkFeatureTileDrillInArrowElementId);
 
-// Uniquely identifies the `LoginUserView`.
-DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kLoginUserViewElementId);
-
-DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
-                                          kOverviewDeskBarElementId);
-
-DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
-    ASH_EXPORT,
-    kOverviewDeskBarNewDeskButtonElementId);
-
-//
-DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
-    ASH_EXPORT,
-    kNetworkFeatureTileDrillInArrowElementId);
-
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
                                           kOverviewDeskBarElementId);
 

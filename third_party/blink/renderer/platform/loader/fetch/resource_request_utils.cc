@@ -220,33 +220,38 @@ PrepareResourceRequestForCacheAccess(
   const ReportingDisposition reporting_disposition =
       CalculateReportingDisposition(params);
 
-  // Note that resource_request.GetRedirectInfo() may be non-null here since
-  // e.g. ThreadableLoader may create a new Resource from a ResourceRequest that
-  // originates from the ResourceRequest passed to the redirect handling
-  // callback.
+  if (!RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled() &&
+      !params.IsPreloadedResponseCandidatePresent() &&
+      !RuntimeEnabledFeatures::BypassCSPForPreloadsEnabled()) {
+    // Note that resource_request.GetRedirectInfo() may be non-null here since
+    // e.g. ThreadableLoader may create a new Resource from a ResourceRequest
+    // that originates from the ResourceRequest passed to the redirect handling
+    // callback.
 
-  // Before modifying the request for CSP, evaluate report-only headers. This
-  // allows site owners to learn about requests that are being modified
-  // (e.g. mixed content that is being upgraded by upgrade-insecure-requests).
-  const std::optional<ResourceRequest::RedirectInfo>& redirect_info =
-      resource_request.GetRedirectInfo();
-  const KURL& url_before_redirects =
-      redirect_info ? redirect_info->original_url : params.Url();
-  const ResourceRequestHead::RedirectStatus redirect_status =
-      redirect_info ? ResourceRequestHead::RedirectStatus::kFollowedRedirect
-                    : ResourceRequestHead::RedirectStatus::kNoRedirect;
-  context.CheckCSPForRequest(
-      resource_request.GetRequestContext(),
-      resource_request.GetRequestDestination(), resource_request.GetMode(),
-      MemoryCache::RemoveFragmentIdentifierIfNeeded(
-          bundle_url_for_uuid_resources.IsValid()
-              ? bundle_url_for_uuid_resources
-              : params.Url()),
-      options, reporting_disposition,
-      MemoryCache::RemoveFragmentIdentifierIfNeeded(url_before_redirects),
-      redirect_status);
+    // Before modifying the request for CSP, evaluate report-only headers. This
+    // allows site owners to learn about requests that are being modified
+    // (e.g. mixed content that is being upgraded by upgrade-insecure-requests).
+    const std::optional<ResourceRequest::RedirectInfo>& redirect_info =
+        resource_request.GetRedirectInfo();
+    const KURL& url_before_redirects =
+        redirect_info ? redirect_info->original_url : params.Url();
+    const ResourceRequestHead::RedirectStatus redirect_status =
+        redirect_info ? ResourceRequestHead::RedirectStatus::kFollowedRedirect
+                      : ResourceRequestHead::RedirectStatus::kNoRedirect;
+    context.CheckCSPForRequest(
+        resource_request.GetRequestContext(),
+        resource_request.GetRequestDestination(), resource_request.GetMode(),
+        MemoryCache::RemoveFragmentIdentifierIfNeeded(
+            bundle_url_for_uuid_resources.IsValid()
+                ? bundle_url_for_uuid_resources
+                : params.Url()),
+        options, reporting_disposition,
+        MemoryCache::RemoveFragmentIdentifierIfNeeded(url_before_redirects),
+        redirect_status);
+  }
 
-  context.PopulateResourceRequestBeforeCacheAccess(options, resource_request);
+  context.PopulateResourceRequestBeforeCacheAccess(
+      options, resource_request, params.IsPreloadedResponseCandidatePresent());
   if (!resource_request.Url().IsValid()) {
     return ResourceRequestBlockedReason::kOther;
   }
@@ -292,7 +297,8 @@ PrepareResourceRequestForCacheAccess(
                                  ? bundle_url_for_uuid_resources
                                  : params.Url()),
                          options, reporting_disposition,
-                         resource_request.GetRedirectInfo());
+                         resource_request.GetRedirectInfo(),
+                         params.IsPreloadedResponseCandidatePresent());
   if (context.CalculateIfAdSubresource(resource_request,
                                        std::nullopt /* alias_url */,
                                        resource_type, options.initiator_info)) {

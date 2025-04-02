@@ -41,8 +41,6 @@ class OsSignalsCollector : public BaseSignalsCollector {
       base::OnceClosure done_closure,
       base::SysInfo::HardwareInfo hardware_info);
 
-  std::optional<std::string> TryGetEnrollmentDomain();
-
   const raw_ptr<policy::CloudPolicyManager> device_cloud_policy_manager_;
   base::WeakPtrFactory<OsSignalsCollector> weak_factory_{this};
 };

@@ -6,6 +6,7 @@
 
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
+#include "chromeos/ash/components/boca/session_api/add_students_request.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/session_api/create_session_request.h"
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
@@ -76,6 +77,11 @@ void SessionClientImpl::UpdateStudentActivity(
 
 void SessionClientImpl::RemoveStudent(
     std::unique_ptr<RemoveStudentRequest> request) {
+  sender_->StartRequestWithAuthRetry(std::move(request));
+}
+
+void SessionClientImpl::AddStudents(
+    std::unique_ptr<AddStudentsRequest> request) {
   sender_->StartRequestWithAuthRetry(std::move(request));
 }
 

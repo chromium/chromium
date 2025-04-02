@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/privacy_sandbox/privacy_sandbox_notice.mojom.h"
 
 class PrefService;
 
@@ -70,26 +71,6 @@ enum class NoticeActionTaken {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxNoticeAction)
 
-// LINT.IfChange(NoticeEvent)
-enum class NoticeEvent {
-  // ACK'ed the notice using 'GotIt' or some other form of acknowledgement.
-  kAck = 0,
-  // Action taken clicking the 'x' button.
-  kClosed = 1,
-  // Opted in/Consented to the notice using 'Turn it on' or some other form of
-  // explicit consent.
-  kOptIn = 2,
-  // Action taken to dismiss or opt out of the notice using 'No Thanks' or some
-  // other form of dismissal.
-  kOptOut = 3,
-  // Action taken clicking the settings button.
-  kSettings = 4,
-  // Notice shown.
-  kShown = 5,
-  kMaxValue = kShown,
-};
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxNoticeEvent)
-
 // Different notice action outcomes. These values are persisted to logs. Entries
 // should not be renumbered and numeric values should never be reused.
 // LINT.IfChange(NoticeActionBehavior)
@@ -113,12 +94,14 @@ class PrivacySandboxNoticeData {
 
   int GetSchemaVersion() const;
   std::string GetChromeVersion() const;
-  std::vector<std::pair<NoticeEvent, base::Time>> GetNoticeEvents() const;
+  std::vector<std::pair<notice::mojom::PrivacySandboxNoticeEvent, base::Time>>
+  GetNoticeEvents() const;
 
   void SetSchemaVersion(int schema_version);
   void SetChromeVersion(std::string_view chrome_version);
   void SetNoticeEvents(
-      const std::vector<std::pair<NoticeEvent, base::Time>>& events);
+      const std::vector<std::pair<notice::mojom::PrivacySandboxNoticeEvent,
+                                  base::Time>>& events);
 
   // Gets the timestamp when the notice was first shown. If the notice was never
   // shown, the default timestamp will be returned.
@@ -132,7 +115,7 @@ class PrivacySandboxNoticeData {
   // notice was shown. If the notice hasn't been shown for the first time, or
   // there was no action associated, no value is returned. If there are multiple
   // actions associated, only the last action is returned.
-  std::optional<std::pair<NoticeEvent, base::Time>>
+  std::optional<std::pair<notice::mojom::PrivacySandboxNoticeEvent, base::Time>>
   GetNoticeActionTakenForFirstShownFromEvents() const;
 
   // TODO(crbug.com/392088228): Remove other actions once the new event fields
@@ -146,7 +129,8 @@ class PrivacySandboxNoticeData {
  private:
   int schema_version_ = 0;
   std::string chrome_version_;
-  std::vector<std::pair<NoticeEvent, base::Time>> notice_events_;
+  std::vector<std::pair<notice::mojom::PrivacySandboxNoticeEvent, base::Time>>
+      notice_events_;
 };
 
 // Stores pre-migration interactions on a notice in the v1 schema.
@@ -168,7 +152,7 @@ class PrivacySandboxNoticeStorage {
   // Reads PrivacySandbox notice & consent prefs. Returns std::nullopt if all
   // prefs aren't set. If an event is tracked but the event timestamp is
   // missing, return base::Time(). If an event timestamp is tracked but the
-  // event itself is missing, return NoticeEvent::kUnknownAction.
+  // event itself is missing, return PrivacySandboxNoticeEvent::kUnknownAction.
   std::optional<PrivacySandboxNoticeData> ReadNoticeData(
       PrefService* pref_service,
       std::string_view notice) const;
@@ -178,10 +162,11 @@ class PrivacySandboxNoticeStorage {
                                  std::string_view notice) const;
 
   // Sets the pref and histogram controlling the action taken on the notice.
-  void SetNoticeActionTaken(PrefService* pref_service,
-                            std::string_view notice,
-                            NoticeEvent notice_action_taken,
-                            base::Time notice_action_taken_time);
+  void SetNoticeActionTaken(
+      PrefService* pref_service,
+      std::string_view notice,
+      notice::mojom::PrivacySandboxNoticeEvent notice_action_taken,
+      base::Time notice_action_taken_time);
 
   // Updates the pref and histogram controlling whether the notice has been
   // shown.
@@ -200,12 +185,14 @@ class PrivacySandboxNoticeStorage {
   static PrivacySandboxNoticeData ConvertV1SchemaToV2Schema(
       const V1MigrationData& data_v1);
 
-  // Converts the schema v1 NoticeActionTaken to the schema v2 NoticeEvent.
-  static std::optional<NoticeEvent> NoticeActionToNoticeEvent(
-      NoticeActionTaken action);
+  // Converts the schema v1 NoticeActionTaken to the schema v2
+  // PrivacySandboxNoticeEvent.
+  static std::optional<notice::mojom::PrivacySandboxNoticeEvent>
+  NoticeActionToNoticeEvent(NoticeActionTaken action);
 
-  // Gets the string used for histogram naming from NoticeEvent.
-  static std::string GetNoticeActionStringFromEvent(NoticeEvent event);
+  // Gets the string used for histogram naming from PrivacySandboxNoticeEvent.
+  static std::string GetNoticeActionStringFromEvent(
+      notice::mojom::PrivacySandboxNoticeEvent event);
 
   PrivacySandboxNoticeStorage(const PrivacySandboxNoticeStorage&) = delete;
   PrivacySandboxNoticeStorage& operator=(const PrivacySandboxNoticeStorage&) =

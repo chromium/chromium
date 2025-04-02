@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Upplýsingaskráin er ógild</translation>
 <translation id="7217838517480956708">Stjórnandi þessarar vélar krefst þess að <ph name="EXTENSION_NAME" /> sé sett upp. Ekki er hægt að fjarlægja hana eða breyta.</translation>
 <translation id="7612608473764576263">Inntaksgildi einkalykils verður að vera gilt snið (RSA-lykill á PKCS#8-sniði með PEM-kóðun).</translation>
+<translation id="7876803335449432072">Ekki tókst að hlaða skránni „<ph name="RELATIVE_PATH" />“ til að sækja efnisskriftu. Aðeins er hægt að hlaða stílsniði efnisskrifta úr studdum stílsniðsskrám á borð við .css-skrár.</translation>
 <translation id="7939686037314084444">Ekki tókst að hlaða viðbót rétt. Hún getur því hugsanlega ekki unnið úr netbeiðnum.</translation>
 <translation id="7972881773422714442">Valkostir: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Snýr að notanda</translation>
 <translation id="8047248493720652249">Þessari viðbót mistókst að nefna niðurhalið „<ph name="ATTEMPTED_FILENAME" />“ vegna þess að önnur viðbót (<ph name="EXTENSION_NAME" />) ákvarðaði annað skráarheiti, „<ph name="ACTUAL_FILENAME" />“.</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> frá <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Upplýsingaskrá vantar eða hún er ólæsileg</translation>
+<translation id="8621383749470166852">Ekki tókst að hlaða skránni „<ph name="RELATIVE_PATH" />“ til að sækja efnisskriftu. Aðeins er hægt að hlaða efnisskriftum úr studdum JavaScript-skrám á borð við .js-skrár.</translation>
 <translation id="8636666366616799973">Pakkinn er ógildur. Upplýsingar: „<ph name="ERROR_MESSAGE" />“.</translation>
 <translation id="8761756413268424715">„<ph name="APP_NAME" />“ biður um aðgang að einu af tækjunum þínum:</translation>
 <translation id="8885905466771744233">Einkalykill fyrir tilgreinda viðbót er þegar fyrir hendi. Endurnýttu þann lykil eða eyddu honum fyrst.</translation>

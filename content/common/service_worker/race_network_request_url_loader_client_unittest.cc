@@ -61,8 +61,6 @@ using OnCompletedCallback =
 class MockServiceWorkerResourceLoader : public ServiceWorkerResourceLoader {
  public:
   bool IsMainResourceLoader() override { return true; }
-  void CommitResponseHeaders(
-      const network::mojom::URLResponseHeadPtr& response_head) override {}
   void CommitResponseBody(
       const network::mojom::URLResponseHeadPtr& response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,

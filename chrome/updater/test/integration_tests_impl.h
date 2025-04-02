@@ -300,7 +300,9 @@ std::vector<TestUpdaterVersion> GetRealUpdaterVersions();
 
 // Sets up a real updater on the system given any (higher or lower) version of
 // `UpdaterSetup.exe` in `updater_path`.
-void SetupRealUpdater(UpdaterScope scope, const base::FilePath& updater_path);
+void SetupRealUpdater(UpdaterScope scope,
+                      const base::FilePath& updater_path,
+                      const base::Value::List& switches);
 
 // Sets up a fake updater on the system at a version higher than the test.
 void SetupFakeUpdaterHigherVersion(UpdaterScope scope);
@@ -372,7 +374,8 @@ void ExpectPolicyStatusValues(
     const std::wstring& expected_source,
     const std::wstring& expected_value,
     VARIANT_BOOL expected_has_conflict);
-void ExpectLegacyPolicyStatusSucceeds(UpdaterScope scope);
+void ExpectLegacyPolicyStatusSucceeds(UpdaterScope scope,
+                                      const base::Version& updater_version);
 
 void LegacyInstallApp(UpdaterScope scope,
                       const std::string& app_id,

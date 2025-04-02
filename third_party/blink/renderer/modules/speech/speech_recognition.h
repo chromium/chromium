@@ -40,7 +40,7 @@
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/speech/speech_grammar_list.h"
-#include "third_party/blink/renderer/modules/speech/speech_recognition_context.h"
+#include "third_party/blink/renderer/modules/speech/speech_recognition_phrase_list.h"
 #include "third_party/blink/renderer/modules/speech/speech_recognition_result.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
@@ -73,12 +73,11 @@ class MODULES_EXPORT SpeechRecognition final
   SpeechRecognition(LocalDOMWindow*);
   ~SpeechRecognition() override;
 
-  // SpeechRecognition.idl implemementation.
-  // Attributes.
+  // SpeechRecognition.idl attributes implementation.
   SpeechGrammarList* grammars() const { return grammars_.Get(); }
   void setGrammars(SpeechGrammarList* grammars) { grammars_ = grammars; }
-  SpeechRecognitionContext* context() const { return context_.Get(); }
-  void setContext(SpeechRecognitionContext* context) { context_ = context; }
+  SpeechRecognitionPhraseList* phrases() const { return phrases_.Get(); }
+  void setPhrases(SpeechRecognitionPhraseList* phrases);
   String lang() const { return lang_; }
   void setLang(const String& lang) { lang_ = lang; }
   bool continuous() const { return continuous_; }
@@ -92,7 +91,7 @@ class MODULES_EXPORT SpeechRecognition final
     max_alternatives_ = max_alternatives;
   }
   V8SpeechRecognitionMode mode() const { return mode_; }
-  void setMode(const V8SpeechRecognitionMode& mode) { mode_ = mode; }
+  void setMode(const V8SpeechRecognitionMode& mode);
 
   // Callable by the user. Methods may be called after the execution context is
   // destroyed.
@@ -100,7 +99,6 @@ class MODULES_EXPORT SpeechRecognition final
   void start(MediaStreamTrack*, ExceptionState&);
   void stopFunction();
   void abort();
-  void updateContext(SpeechRecognitionContext*, ExceptionState&);
   static ScriptPromise<V8AvailabilityStatus>
   availableOnDevice(ScriptState*, const String& lang, ExceptionState&);
   static ScriptPromise<IDLBoolean> installOnDevice(ScriptState*,
@@ -160,7 +158,7 @@ class MODULES_EXPORT SpeechRecognition final
 
   Member<MediaStreamTrack> stream_track_;
   Member<SpeechGrammarList> grammars_;
-  Member<SpeechRecognitionContext> context_;
+  Member<SpeechRecognitionPhraseList> phrases_;
   String lang_;
   bool continuous_ = false;
   bool interim_results_ = false;

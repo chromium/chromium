@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/google/browser/google_url_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -39,6 +40,8 @@ FromGWSAbandonedPageLoadMetricsObserver::OnStart(
   if (!page_load_metrics::IsGoogleSearchResultUrl(currently_committed_url)) {
     return ObservePolicy::STOP_OBSERVING;
   }
+  category_parameter_id_ =
+      page_load_metrics::GetCategoryIdFromUrl(navigation_handle->GetURL());
   impression_ = navigation_handle->GetImpression();
   return AbandonedPageLoadMetricsObserver::OnStart(
       navigation_handle, currently_committed_url, started_in_foreground);
@@ -163,6 +166,10 @@ void FromGWSAbandonedPageLoadMetricsObserver::LogTimingInformationMetrics() {
 
   if (impression_.has_value()) {
     builder.SetIsEmptyAttributionSrc(impression_->is_empty_attribution_src_tag);
+  }
+
+  if (category_parameter_id_.has_value()) {
+    builder.SetCategory(category_parameter_id_.value());
   }
 
   builder.Record(ukm::UkmRecorder::Get());

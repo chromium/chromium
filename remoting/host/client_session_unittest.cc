@@ -777,6 +777,67 @@ TEST_F(ClientSessionTest, DisableInputs) {
               EqualsClipboardEvent(kMimeTypeTextUtf8, "c"));
 }
 
+TEST_F(ClientSessionTest, InputAllowedFromRemotePolicy) {
+  SessionPolicies remote_policies;
+  remote_policies.allow_remote_input = true;
+  CreateClientSession();
+  ConnectClientSession(&remote_policies);
+  SetupSingleDisplay();
+
+  FakeInputInjector* input_injector =
+      desktop_environment_factory_->last_desktop_environment()
+          ->last_input_injector()
+          .get();
+  input_injector->set_key_events(&key_events_);
+  input_injector->set_mouse_events(&mouse_events_);
+  input_injector->set_clipboard_events(&clipboard_events_);
+
+  connection_->clipboard_stub()->InjectClipboardEvent(MakeClipboardEvent("a"));
+  connection_->input_stub()->InjectKeyEvent(MakeKeyEvent(true, 1));
+  connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(100, 101));
+
+  client_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
+  client_session_.reset();
+
+  EXPECT_EQ(1U, mouse_events_.size());
+  EXPECT_THAT(mouse_events_[0], EqualsMouseMoveEvent(100, 101));
+
+  EXPECT_EQ(2U, key_events_.size());
+  EXPECT_THAT(key_events_[0], EqualsKeyEvent(1, true));
+  EXPECT_THAT(key_events_[1], EqualsKeyEvent(1, false));
+
+  EXPECT_EQ(1U, clipboard_events_.size());
+  EXPECT_THAT(clipboard_events_[0],
+              EqualsClipboardEvent(kMimeTypeTextUtf8, "a"));
+}
+
+TEST_F(ClientSessionTest, InputDisabledFromRemotePolicy) {
+  SessionPolicies remote_policies;
+  remote_policies.allow_remote_input = false;
+  CreateClientSession();
+  ConnectClientSession(&remote_policies);
+  SetupSingleDisplay();
+
+  FakeInputInjector* input_injector =
+      desktop_environment_factory_->last_desktop_environment()
+          ->last_input_injector()
+          .get();
+  input_injector->set_key_events(&key_events_);
+  input_injector->set_mouse_events(&mouse_events_);
+  input_injector->set_clipboard_events(&clipboard_events_);
+
+  connection_->clipboard_stub()->InjectClipboardEvent(MakeClipboardEvent("a"));
+  connection_->input_stub()->InjectKeyEvent(MakeKeyEvent(true, 1));
+  connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(100, 101));
+
+  client_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
+  client_session_.reset();
+
+  EXPECT_EQ(0U, mouse_events_.size());
+  EXPECT_EQ(0U, key_events_.size());
+  EXPECT_EQ(0U, clipboard_events_.size());
+}
+
 TEST_F(ClientSessionTest, LocalInputTest) {
   CreateClientSession();
   ConnectClientSession();

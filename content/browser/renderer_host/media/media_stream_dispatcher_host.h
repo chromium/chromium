@@ -145,8 +145,7 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
                              uint32_t sub_capture_target_version,
                              ApplySubCaptureTargetCallback callback) override;
   void SendWheel(const base::UnguessableToken& session_id,
-                 blink::mojom::CapturedWheelActionPtr action,
-                 SendWheelCallback callback) override;
+                 blink::mojom::CapturedWheelActionPtr action) override;
   void UpdateZoomLevel(const base::UnguessableToken& session_id,
                        blink::mojom::ZoomLevelAction action,
                        UpdateZoomLevelCallback callback) override;

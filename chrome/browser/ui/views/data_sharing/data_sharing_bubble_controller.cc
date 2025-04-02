@@ -160,8 +160,7 @@ void DataSharingBubbleController::Close() {
   bubble_view_ = nullptr;
 }
 
-void DataSharingBubbleController::SetOnCloseCallback(
-    base::OnceCallback<void()> callback) {
+void DataSharingBubbleController::SetOnCloseCallback(OnCloseCallback callback) {
   on_close_callback_ = std::move(callback);
 }
 
@@ -191,7 +190,7 @@ void DataSharingBubbleController::OnWidgetClosing(views::Widget* widget) {
   }
 
   if (on_close_callback_) {
-    std::move(on_close_callback_).Run();
+    std::move(on_close_callback_).Run(group_action_, group_action_progress_);
   }
 }
 
@@ -222,6 +221,13 @@ void DataSharingBubbleController::OnShareLinkRequested(
              data_sharing::GroupToken(data_sharing::GroupId(group_id),
                                       access_token));
   }
+}
+
+void DataSharingBubbleController::OnGroupAction(
+    data_sharing::mojom::GroupAction action,
+    data_sharing::mojom::GroupActionProgress progress) {
+  group_action_ = action;
+  group_action_progress_ = progress;
 }
 
 DataSharingBubbleController::DataSharingBubbleController(Browser* browser)

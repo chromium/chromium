@@ -151,8 +151,9 @@ bool CanHaveMultipleIsolates(IsolateHolder::IsolateType isolate_type) {
     case IsolateHolder::IsolateType::kTest:
       NOTREACHED();
     case IsolateHolder::IsolateType::kUtility:
-      // PDFium and ProxyResolver create one isolate per process.
-      return false;
+      // While PDFium and ProxyResolver create one isolate per process,
+      // auction_worklet_service can have multiple.
+      return true;
   }
   NOTREACHED();
 }

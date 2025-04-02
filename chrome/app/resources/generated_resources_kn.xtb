@@ -2988,6 +2988,7 @@
 <translation id="3045447014237878114">ಈ ಸೈಟ್‌ ಬಹು ಫೈಲ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಿದೆ</translation>
 <translation id="3046178388369461825">Linux ಡಿಸ್ಕ್ ಸ್ಥಳಾವಕಾಶ ತೀರಾ ಕಡಿಮೆಯಿದೆ</translation>
 <translation id="304644035656848980">ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್‌ನ ಪೂರ್ವವೀಕ್ಷಣೆ</translation>
+<translation id="3046892784550338476">ಆವೃತ್ತಿ <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">ವೆಬ್‌ಪುಟ, ಪೂರ್ಣಗೊಳಿಸಿ</translation>
 <translation id="304747341537320566">ಧ್ವನಿ ಎಂಜಿನ್‌ಗಳು</translation>
 <translation id="3047678109605649715">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಯಾವುದೇ <ph name="LANGUAGE" /> ಭಾಷೆಯ ಧ್ವನಿಗಳಿಲ್ಲ. ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸ್ಪೇಸ್ ಅನ್ನು ತೆರವುಗೊಳಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -3080,6 +3081,7 @@
 <translation id="3122883569442693641">ಇನ್ನಷ್ಟು ವಿವರಗಳು</translation>
 <translation id="3124111068741548686">ಬಳಕೆದಾರರ ನಿರ್ವಹಣೆಗಳು</translation>
 <translation id="3124332159330678621">ನಿಮ್ಮ ಬ್ರೌಸರ್‌ಗೆ ಹೊಸ ನೋಟವನ್ನು ನೀಡಲು Chrome ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
+<translation id="3125816458150005808">ನೀವು ಅದನ್ನು ಅನ್‌ಪಿನ್ ಮಾಡಬಹುದು ಮತ್ತು ಮೆನುವಿನಿಂದ ತೆರೆಯಬಹುದು</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">ಚಾರ್ಜಿಂಗ್ ಮತ್ತು ಕಾರ್ಯಕ್ಷಮತೆ ಸಮಸ್ಯೆಗಳನ್ನು ತಡೆಯಲು, ಹೊಂದಿಕೆಯಾಗುವ Dell ಅಥವಾ USB ಟೈಪ್-C ಪವರ್ ಅಡಾಪ್ಟರ್ ಬಳಸಿ.</translation>
 <translation id="3127862849166875294">Linux ಡಿಸ್ಕ್ ಮರುಗಾತ್ರಗೊಳಿಸುವಿಕೆ</translation>
@@ -5329,6 +5331,7 @@
 <translation id="4723140812774948886">ಮುಂದಿನದರ ಮೂಲಕ ಸ್ವ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="4724450788351008910">ಅನುದಾನವನ್ನು ಬದಲಾಯಿಸಲಾಗಿದೆ</translation>
 <translation id="4725511304875193254">ಕಾರ್ಗಿ</translation>
+<translation id="4725762702191453794">ಟ್ಯಾಬ್ ಹುಡುಕಾಟವನ್ನು ಈಗ ನಿಮ್ಮ ಟೂಲ್‌ಬಾರ್‌ಗೆ ಪಿನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4726710355753484204">ಝೂಮ್ ಇನ್ ಮಾಡಲು, Ctrl + Alt + ಪ್ರಖರತೆ ಹೆಚ್ಚಿಸುವ ಕೀ ಅನ್ನು ಬಳಸಿ.
 ಝೂಮ್ ಔಟ್ ಮಾಡಲು, Ctrl + Alt + ಪ್ರಖರತೆ ಕಡಿಮೆ ಮಾಡುವ ಕೀ ಅನ್ನು ಬಳಸಿ.</translation>
 <translation id="4726710629007580002">ಈ ವಿಸ್ತರಣೆಯನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿದಾಗ ಎಚ್ಚರಿಕೆಗಳು ಕಂಡುಬಂದಿವೆ:</translation>

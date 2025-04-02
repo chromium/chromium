@@ -167,11 +167,22 @@ void RecordPageContentExtractionMetrics(
       elapsed.Elapsed(), base::Microseconds(1), base::Milliseconds(5), 50);
 }
 
+// Converts gfx::Size to optimization_guide::proto::ViewportGeometry.
+void ConvertViewportGeometry(
+    const gfx::Size& viewport,
+    optimization_guide::proto::BoundingRect* viewport_geometry) {
+  viewport_geometry->set_x(0);
+  viewport_geometry->set_y(0);
+  viewport_geometry->set_width(viewport.width());
+  viewport_geometry->set_height(viewport.height());
+}
+
 void OnGotAIPageContentForAllFrames(
     blink::mojom::AIPageContentOptionsPtr main_frame_options,
     base::ElapsedTimer elapsed_timer,
     content::GlobalRenderFrameHostToken main_frame_token,
     ukm::SourceId source_id,
+    const gfx::Size& main_frame_viewport,
     std::unique_ptr<optimization_guide::AIPageContentMap> page_content_map,
     OnAIPageContentDone done_callback) {
   optimization_guide::AIPageContentResult page_content;
@@ -184,6 +195,9 @@ void OnGotAIPageContentForAllFrames(
     std::move(done_callback).Run(std::nullopt);
     return;
   }
+
+  ConvertViewportGeometry(main_frame_viewport,
+                          page_content.proto.mutable_viewport_geometry());
 
   // Get all the document identifiers for the frames that were seen.
   for (const auto& frame_token : frame_token_set) {
@@ -295,7 +309,8 @@ void GetAIPageContent(content::WebContents* web_contents,
           base::ElapsedTimer(),
           web_contents->GetPrimaryMainFrame()->GetGlobalFrameToken(),
           web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId(),
-          std::move(page_content_map), std::move(done_callback)));
+          web_contents->GetSize(), std::move(page_content_map),
+          std::move(done_callback)));
 }
 
 // Allows for a DocumentIdentifier to be reused across calls to convert

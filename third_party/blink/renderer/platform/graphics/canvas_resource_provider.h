@@ -220,8 +220,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual void OnResourceReturnedFromCompositor(
       scoped_refptr<CanvasResource>&&) {}
   virtual void SetResourceRecyclingEnabled(bool) {}
-
-  void ClearRecycledResources();
+  virtual void ClearUnusedResources() {}
 
   SkSurface* GetSkSurface() const;
   bool IsGpuContextLost() const;
@@ -229,6 +228,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // Returns true iff the resource provider is (a) using a GPU channel for
   // software SharedImages and (b) that channel has been lost.
   virtual bool IsSoftwareSharedImageGpuChannelLost() const;
+  static void NotifyGpuContextLostTask(base::WeakPtr<CanvasResourceProvider>);
+
   virtual bool WritePixels(const SkImageInfo& orig_info,
                            const void* pixels,
                            size_t row_bytes,
@@ -291,10 +292,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // are modified externally from the provider's SkSurface.
   virtual void NotifyTexParamsModified(const CanvasResource* resource) {}
 
-  size_t cached_resources_count_for_testing() const {
-    return canvas_resources_.size();
-  }
-
   FlushReason printing_fallback_reason() { return printing_fallback_reason_; }
 
   void RestoreBackBuffer(const cc::PaintImage&);
@@ -339,18 +336,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
                       const gpu::SyncToken& ready_sync_token,
                       gpu::SyncToken& completion_sync_token);
 
-  struct UnusedResource {
-    UnusedResource(base::TimeTicks last_use,
-                   scoped_refptr<CanvasResource> resource)
-        : last_use(last_use), resource(std::move(resource)) {}
-    base::TimeTicks last_use;
-    scoped_refptr<CanvasResource> resource;
-  };
-
-  // Visible for testing; should be protected.
-  const WTF::Vector<UnusedResource>& CanvasResources() const {
-    return canvas_resources_;
-  }
+  virtual bool HasUnusedResourcesForTesting() const { return false; }
   bool unused_resources_reclaim_timer_is_running_for_testing() const {
     return unused_resources_reclaim_timer_.IsRunning();
   }
@@ -407,20 +393,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   CanvasResourceHost* resource_host() { return resource_host_; }
 
-  // Returns whether `resource` is usable. Returns true by default, but
-  // subclasses may override this to do implementation-specific checks.
-  // Unusable resources will be dropped when returned rather than put back into
-  // the cache.
-  virtual bool IsResourceUsable(CanvasResource* resource) { return true; }
-
-  // IsResourceUsable() must be true for `resource`.
-  void RegisterUnusedResource(scoped_refptr<CanvasResource>&& resource);
-
   // TODO(crbug.com/352263194): Move these fields inside of
   // CanvasResourceProviderSharedImage.
-  // When and if |resource_recycling_enabled_| is false, |canvas_resources_|
-  // will only hold one CanvasResource at most.
-  WTF::Vector<UnusedResource> canvas_resources_;
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
   base::OneShotTimer unused_resources_reclaim_timer_;

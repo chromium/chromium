@@ -948,9 +948,6 @@ void ToolsMenuModel::Build(Browser* browser) {
       kReadingModeMenuItem);
 
   AddSeparator(ui::NORMAL_SEPARATOR);
-  if (!features::IsExtensionMenuInRootAppMenu()) {
-    AddItemWithStringId(IDC_MANAGE_EXTENSIONS, IDS_SHOW_EXTENSIONS);
-  }
 
   AddItemWithStringIdAndVectorIcon(this, IDC_PERFORMANCE, IDS_SHOW_PERFORMANCE,
                                    kPerformanceIcon);
@@ -1192,7 +1189,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       break;
     // Extensions menu.
     case IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS:
-      CHECK(features::IsExtensionMenuInRootAppMenu());
       // Logging the original histograms for experiment comparison purposes.
       if (!uma_action_recorded_) {
         base::UmaHistogramMediumTimes(
@@ -1201,7 +1197,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       LogMenuAction(MENU_ACTION_MANAGE_EXTENSIONS);
       break;
     case IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE:
-      CHECK(features::IsExtensionMenuInRootAppMenu());
       if (!uma_action_recorded_) {
         base::UmaHistogramMediumTimes(
             "WrenchMenu.TimeToAction.VisitChromeWebStore", delta);
@@ -1906,15 +1901,14 @@ void AppMenuModel::Build() {
         kTabGroupsMenuItem);
   }
 
-  if (features::IsExtensionMenuInRootAppMenu()) {
-    // Extensions sub menu.
-    sub_menus_.push_back(std::make_unique<ExtensionsMenuModel>(this, browser_));
-    AddSubMenuWithStringIdAndVectorIcon(
-        this, IDC_EXTENSIONS_SUBMENU, IDS_EXTENSIONS_SUBMENU,
-        sub_menus_.back().get(), vector_icons::kExtensionChromeRefreshIcon);
-    SetElementIdentifierAt(GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU).value(),
-                           kExtensionsMenuItem);
-  }
+  // Extensions sub menu.
+  sub_menus_.push_back(std::make_unique<ExtensionsMenuModel>(this, browser_));
+  AddSubMenuWithStringIdAndVectorIcon(
+      this, IDC_EXTENSIONS_SUBMENU, IDS_EXTENSIONS_SUBMENU,
+      sub_menus_.back().get(), vector_icons::kExtensionChromeRefreshIcon);
+  SetElementIdentifierAt(GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU).value(),
+                         kExtensionsMenuItem);
+
   AddItemWithStringIdAndVectorIcon(this, IDC_CLEAR_BROWSING_DATA,
                                    IDS_CLEAR_BROWSING_DATA,
                                    kTrashCanRefreshIcon);

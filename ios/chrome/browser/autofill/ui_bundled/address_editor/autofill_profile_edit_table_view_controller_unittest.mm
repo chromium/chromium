@@ -66,7 +66,8 @@ class AutofillProfileEditTableViewControllerTest
             initWithDelegate:autofill_profile_edit_mediator_
                    userEmail:base::SysUTF16ToNSString(kTestSyncingEmail)
                   controller:controller()
-                settingsView:GetParam().is_settings];
+                settingsView:GetParam().is_settings
+            addManualAddress:NO];
     autofill_profile_edit_mediator_.consumer =
         autofill_profile_edit_table_view_controller_;
 

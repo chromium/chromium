@@ -54,8 +54,10 @@ bool EditSearchEngineController::IsURLValid(
     return false;
   }
 
-  // By definition, all valid search engines must support replacement.
-  if (!template_ref.SupportsReplacement(service->search_terms_data())) {
+  // If this is going to be the default search engine, it must support
+  // replacement.
+  if (!template_ref.SupportsReplacement(service->search_terms_data()) &&
+      template_url_ && template_url_ == service->GetDefaultSearchProvider()) {
     return false;
   }
 

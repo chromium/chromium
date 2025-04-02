@@ -370,8 +370,7 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
       builder.Append("video::cue { ");
       if (CSSParser::ParseColor(
               color,
-              MaybeRemoveCSSImportant(settings->GetTextTrackWindowColor()),
-              /*strict=*/true) &&
+              MaybeRemoveCSSImportant(settings->GetTextTrackWindowColor())) &&
           color.Alpha() > 0) {
         AddTextTrackCSSProperties(&builder, CSSPropertyID::kBackgroundColor,
                                   settings->GetTextTrackWindowColor());

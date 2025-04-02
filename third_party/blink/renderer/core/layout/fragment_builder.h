@@ -531,8 +531,8 @@ class CORE_EXPORT FragmentBuilder {
     layout_object_ = node.GetLayoutBox();
   }
 
-  HeapVector<Member<LayoutBoxModelObject>>& EnsureStickyDescendants();
-  HeapVector<Member<Element>>& EnsureSnapAreas();
+  GCedHeapVector<Member<LayoutBoxModelObject>>& EnsureStickyDescendants();
+  GCedHeapVector<Member<Element>>& EnsureSnapAreas();
   PhysicalAnchorQuery& EnsureAnchorQuery();
 
   void PropagateFromLayoutResultAndFragment(
@@ -582,8 +582,8 @@ class CORE_EXPORT FragmentBuilder {
   // The break token to store in the resulting fragment.
   const BreakToken* break_token_ = nullptr;
 
-  HeapVector<Member<LayoutBoxModelObject>>* sticky_descendants_ = nullptr;
-  HeapVector<Member<Element>>* snap_areas_ = nullptr;
+  GCedHeapVector<Member<LayoutBoxModelObject>>* sticky_descendants_ = nullptr;
+  GCedHeapVector<Member<Element>>* snap_areas_ = nullptr;
   // [1] https://drafts.csswg.org/css-scroll-snap-2/#scroll-initial-target
   const LayoutObject* scroll_start_target_ = nullptr;
   PhysicalAnchorQuery* anchor_query_ = nullptr;

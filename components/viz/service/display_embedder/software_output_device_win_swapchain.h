@@ -34,9 +34,10 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDeviceWinSwapChain
   ~SoftwareOutputDeviceWinSwapChain() override;
 
   // SoftwareOutputDeviceWinBase implementation.
-  void ResizeDelegated() override;
+  bool ResizeDelegated(const gfx::Size& viewport_pixel_size) override;
   SkCanvas* BeginPaintDelegated() override;
   void EndPaintDelegated(const gfx::Rect& rect) override;
+  void NotifyClientResized() override;
 
   // OutputDeviceBacking::Client implementation.
   const gfx::Size& GetViewportPixelSize() const override;

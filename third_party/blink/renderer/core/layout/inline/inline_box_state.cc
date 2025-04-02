@@ -522,7 +522,7 @@ void InlineLayoutStateStack::AddBoxData(const ConstraintSpace& space,
         logical_column->EndIndex() <= fragment_end) {
       if (!box_data.ruby_column_list) {
         box_data.ruby_column_list =
-            MakeGarbageCollected<HeapVector<Member<LogicalRubyColumn>>>();
+            MakeGarbageCollected<GCedHeapVector<Member<LogicalRubyColumn>>>();
       }
       box_data.ruby_column_list->push_back(logical_column);
     }

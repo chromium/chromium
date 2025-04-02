@@ -19,6 +19,8 @@ blink_core_sources_frame = [
   "browser_controls.h",
   "cached_permission_status.cc",
   "cached_permission_status.h",
+  "context_menu_insets_changed_observer.cc",
+  "context_menu_insets_changed_observer.h",
   "coop_access_violation_report_body.cc",
   "coop_access_violation_report_body.h",
   "csp/content_security_policy.cc",

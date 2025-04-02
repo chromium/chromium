@@ -24,7 +24,7 @@ import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
       TestRunner.addResult('Retrieved ranges: ' + JSON.stringify(row.retrievedChildrenRanges));
       for (var i = 0; i < row.children.length; ++i)
         TestRunner.addResult('[' + i + '] ' + row.children[i].element().textContent
-          .replace(/[@%B]|\s+/mg, ' '));
+          .replace(/[@%B]|\s+/mg, ' ').trim())
       return row.populateChildren(from, to);
     }
 

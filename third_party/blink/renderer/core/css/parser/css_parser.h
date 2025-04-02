@@ -145,7 +145,7 @@ class CORE_EXPORT CSSParser {
 
   // The color will only be changed when string contains a valid CSS color, so
   // callers can set it to a default color and ignore the boolean result.
-  static bool ParseColor(Color&, const String&, bool strict = false);
+  static bool ParseColor(Color&, const String&, bool strict = true);
   static bool ParseSystemColor(Color&,
                                const String&,
                                mojom::blink::ColorScheme color_scheme,

@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/forced_signin/forced_signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/fullscreen_signin/fullscreen_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/history_sync/history_sync_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/instant_signin/instant_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/logging/first_run_signin_logger.h"
@@ -68,12 +68,13 @@ using signin_metrics::PromoAction;
 }
 
 + (instancetype)
-    forcedSigninCoordinatorWithBaseViewController:
+    fullscreenSigninCoordinatorWithBaseViewController:
         (UIViewController*)viewController
-                                          browser:(Browser*)browser
-                                      accessPoint:(signin_metrics::AccessPoint)
-                                                      accessPoint {
-  return [[ForcedSigninCoordinator alloc]
+                                              browser:(Browser*)browser
+                                          accessPoint:
+                                              (signin_metrics::AccessPoint)
+                                                  accessPoint {
+  return [[FullscreenSigninCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
                   screenProvider:[[SigninScreenProvider alloc] init]
@@ -182,22 +183,25 @@ using signin_metrics::PromoAction;
 }
 
 + (instancetype)
-    sheetSigninAndHistorySyncCoordinatorWithBaseViewController:
+    signinAndHistorySyncCoordinatorWithBaseViewController:
         (UIViewController*)viewController
-                                                       browser:(Browser*)browser
-                                                   accessPoint:(signin_metrics::
-                                                                    AccessPoint)
-                                                                   accessPoint
-                                                   promoAction:
-                                                       (PromoAction)promoAction
-                                           optionalHistorySync:
-                                               (BOOL)optionalHistorySync {
+                                                  browser:(Browser*)browser
+                                              accessPoint:
+                                                  (signin_metrics::AccessPoint)
+                                                      accessPoint
+                                              promoAction:
+                                                  (PromoAction)promoAction
+                                      optionalHistorySync:
+                                          (BOOL)optionalHistorySync
+                                          fullscreenPromo:
+                                              (BOOL)fullscreenPromo {
   return [[SignInAndHistorySyncCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
                      accessPoint:accessPoint
                      promoAction:promoAction
-             optionalHistorySync:optionalHistorySync];
+             optionalHistorySync:optionalHistorySync
+                 fullscreenPromo:fullscreenPromo];
 }
 
 + (instancetype)accountMenuCoordinatorWithBaseViewController:

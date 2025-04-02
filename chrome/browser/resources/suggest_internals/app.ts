@@ -8,9 +8,6 @@ import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_drawer/cr_drawer.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_link_row/cr_link_row.js';
-import '//resources/cr_elements/cr_page_host_style.css.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_textarea/cr_textarea.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
@@ -22,9 +19,10 @@ import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js'
 import type {CrToolbarSearchFieldElement} from '//resources/cr_elements/cr_toolbar/cr_toolbar_search_field.ts';
 import type {TimeDelta} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './app.html.js';
+import {getCss} from './app.css.js';
+import {getHtml} from './app.html.js';
 import type {PageHandlerInterface, Request} from './suggest_internals.mojom-webui.js';
 import {PageCallbackRouter, PageHandler} from './suggest_internals.mojom-webui.js';
 
@@ -38,55 +36,38 @@ interface SuggestInternalsAppElement {
 }
 
 // Displays the suggest requests from the most recent to the least recent.
-class SuggestInternalsAppElement extends PolymerElement {
+class SuggestInternalsAppElement extends CrLitElement {
   static get is() {
     return 'suggest-internals-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      filter_: {
-        type: String,
-        value: '',
-      },
-      hardcodedRequest_: {
-        type: Object,
-        value: null,
-      },
-      requests_: {
-        type: Array,
-        value: () => [],
-      },
-      responseDelay_: {
-        type: String,
-        value: '',
-      },
-      responseText_: {
-        type: String,
-        value: '',
-      },
-      toastDuration_: {
-        type: Number,
-        value: 3000,
-      },
-      toastMessage_: {
-        type: String,
-        value: '',
-      },
+      filter_: {type: String},
+      hardcodedRequest_: {type: Object},
+      requests_: {type: Array},
+      responseDelay_: {type: String},
+      responseText_: {type: String},
+      toastDuration_: {type: Number},
+      toastMessage_: {type: String},
     };
   }
 
-  declare private filter_: string;
-  declare private hardcodedRequest_: Request|null;
-  declare private requests_: Request[];
-  declare private responseDelay_: string;
-  declare private responseText_: string;
-  declare private toastDuration_: number;
-  declare private toastMessage_: string;
+  private accessor filter_: string = '';
+  protected accessor hardcodedRequest_: Request|null = null;
+  protected accessor requests_: Request[] = [];
+  protected accessor responseDelay_: string = '';
+  protected accessor responseText_: string = '';
+  protected accessor toastDuration_: number = 3000;
+  protected accessor toastMessage_: string = '';
 
   private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerInterface;
@@ -133,16 +114,16 @@ class SuggestInternalsAppElement extends PolymerElement {
     return {microseconds: BigInt(Math.floor(milliseconds * 1000))};
   }
 
-  private onClearClick_() {
+  protected onClearClick_() {
     this.requests_ = [];
     this.hardcodedRequest_ = null;
   }
 
-  private onCloseDialogs_() {
+  protected onCloseDialogs_() {
     this.$.hardcodeResponseDialog.close();
   }
 
-  private async onConfirmHardcodeResponseDialog_() {
+  protected async onConfirmHardcodeResponseDialog_() {
     const responseDelayMs = Math.max(0, parseInt(this.responseDelay_) || 0);
     await this.pageHandler_
         .hardcodeResponse(
@@ -154,7 +135,7 @@ class SuggestInternalsAppElement extends PolymerElement {
     this.$.hardcodeResponseDialog.close();
   }
 
-  private onExportClick_() {
+  protected onExportClick_() {
     const a = document.createElement('a');
     const file =
         new Blob([this.stringifyRequests_()], {type: 'application/json'});
@@ -165,15 +146,15 @@ class SuggestInternalsAppElement extends PolymerElement {
     a.click();
   }
 
-  private onFilterChanged_(e: CustomEvent<string>) {
+  protected onFilterChanged_(e: CustomEvent<string>) {
     this.filter_ = e.detail ?? '';
   }
 
-  private onImportClick_() {
+  protected onImportClick_() {
     this.$.fileInput.click();
   }
 
-  private onImportFile_(event: Event) {
+  protected onImportFile_(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) {
       return;
@@ -188,20 +169,21 @@ class SuggestInternalsAppElement extends PolymerElement {
     });
   }
 
-  private onOpenHardcodeResponseDialog_(e: CustomEvent<string>) {
+  protected onOpenHardcodeResponseDialog_(e: CustomEvent<string>) {
     this.responseDelay_ = '';
     this.responseText_ = e.detail;
     this.$.hardcodeResponseDialog.showModal();
   }
 
-  private onShowToast_(e: CustomEvent<string>) {
+  protected onShowToast_(e: CustomEvent<string>) {
     this.toastMessage_ = e.detail;
     this.$.toast.show();
   }
 
   private onRequestCreated_(request: Request) {
     // Add the request to the start of the list of known requests.
-    this.unshift('requests_', request);
+    this.requests_.unshift(request);
+    this.requestUpdate();
   }
 
   private onRequestStarted_(request: Request) {
@@ -211,11 +193,11 @@ class SuggestInternalsAppElement extends PolymerElement {
     });
     // If the request is known, update it with the additional information.
     if (index !== -1) {
-      this.set(`requests_.${index}.status`, request.status);
-      this.set(
-          `requests_.${index}.data`,
-          Object.assign({}, this.requests_[index].data, request.data));
-      this.set(`requests_.${index}.startTime`, request.startTime);
+      this.requests_[index]!.status = request.status;
+      this.requests_[index]!.data =
+          Object.assign({}, this.requests_[index]!.data, request.data);
+      this.requests_[index]!.startTime = request.startTime;
+      this.requestUpdate();
     }
   }
 
@@ -226,12 +208,12 @@ class SuggestInternalsAppElement extends PolymerElement {
     });
     // If the request is known, update it with the additional information.
     if (index !== -1) {
-      this.set(`requests_.${index}.status`, request.status);
-      this.set(
-          `requests_.${index}.data`,
-          Object.assign({}, this.requests_[index].data, request.data));
-      this.set(`requests_.${index}.endTime`, request.endTime);
-      this.set(`requests_.${index}.response`, request.response);
+      this.requests_[index]!.status = request.status;
+      this.requests_[index]!.data =
+          Object.assign({}, this.requests_[index]!.data, request.data);
+      this.requests_[index]!.endTime = request.endTime;
+      this.requests_[index]!.response = request.response;
+      this.requestUpdate();
     }
   }
 
@@ -249,12 +231,12 @@ class SuggestInternalsAppElement extends PolymerElement {
     });
   }
 
-  private requestFilter_(): (request: Request) => boolean {
+  protected requestFilter_(request: Request): boolean {
     const filter = this.filter_.trim().toLowerCase();
-    return request => request.url.url.toLowerCase().includes(filter);
+    return request.url.url.toLowerCase().includes(filter);
   }
 
-  private showOutputControls_() {
+  protected showOutputControls_() {
     this.$.drawer.openDrawer();
   }
 
@@ -264,21 +246,32 @@ class SuggestInternalsAppElement extends PolymerElement {
         (_key, value) => typeof value === 'bigint' ? value.toString() : value);
   }
 
-  private populateSearchInput_(e: CustomEvent<string>) {
+  protected populateSearchInput_(e: CustomEvent<string>) {
     // Populate the searchbar with the pgcl of the selected chip.
-    const toolbar = this.shadowRoot!.querySelector<HTMLElement>('cr-toolbar')!;
+    const toolbar = this.shadowRoot.querySelector<HTMLElement>('cr-toolbar')!;
     const searchbar =
         toolbar.shadowRoot!.querySelector<CrToolbarSearchFieldElement>(
             'cr-toolbar-search-field')!;
     searchbar.setValue('pgcl=' + e.detail);
   }
+
+  protected onResponseDelayChanged_(e: CustomEvent<{value: string}>) {
+    this.responseDelay_ = e.detail.value;
+  }
+
+  protected onResponseTextChanged_(e: CustomEvent<{value: string}>) {
+    this.responseText_ = e.detail.value;
+  }
 }
+
+export type AppElement = SuggestInternalsAppElement;
 
 declare global {
   interface HTMLElementTagNameMap {
     'suggest-internals-app': SuggestInternalsAppElement;
   }
 }
+
 
 customElements.define(
     SuggestInternalsAppElement.is, SuggestInternalsAppElement);

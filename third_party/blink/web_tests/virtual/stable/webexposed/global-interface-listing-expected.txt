@@ -5075,6 +5075,7 @@ interface IIRFilterNode : AudioNode
 interface IdentityCredential : Credential
     static method disconnect
     attribute @@toStringTag
+    getter configURL
     getter isAutoSelected
     getter token
     method constructor

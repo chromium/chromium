@@ -440,6 +440,7 @@
 <translation id="2783161812871838616">ಡೆಸ್ಕ್‌ಟಾಪ್‌ ಸೈಟ್‌ ಅನ್ನು ವಿನಂತಿಸಿ</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ, {EMAIL}}one{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ, {EMAIL}}other{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ, {EMAIL}}}</translation>
 <translation id="2791174088547598693">ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಸೇರಿಸಿ…</translation>
+<translation id="2793703503584038325">ಪಾಸ್‌ವರ್ಡ್ ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು "ಹಂಚಿಕೆ" ಐಕಾನ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="2797302972324086597">ರಾಷ್ಟ್ರ ಕೋಡ್</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} ಫೈಲ್}one{{COUNT} ಫೈಲ್‌ಗಳು}other{{COUNT} ಫೈಲ್‌ಗಳು}}</translation>
 <translation id="2816489851009559785">ಮೆನು → ಸೆಟ್ಟಿಂಗ್‌ಗಳು → ಡೀಫಾಲ್ಟ್‌ ಬ್ರೌಸರ್‌</translation>
@@ -579,6 +580,7 @@
 <translation id="35083190962747987">${url} ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="3511519535430890904">ಬ್ರೌಸಿಂಗ್‌ ರಕ್ಷಣೆಯನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="3517216995152707259">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸುವುದರಿಂದ ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ ಸೈನ್ ಔಟ್ ಆಗುವುದಿಲ್ಲ. ಹಾಗೆ ಮಾಡಲು, <ph name="BEGIN_LINK" />Chrome ನಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಿ<ph name="END_LINK" />.</translation>
+<translation id="3519792890877853853">ಈ ಕಾರ್ಡ್ ನಿಮ್ಮ ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿ ಉತ್ಪನ್ನಗಳ ವಿಮರ್ಶೆಗಳನ್ನು ತೋರಿಸುತ್ತದೆ</translation>
 <translation id="3519905498307021260">{count,plural, =1{ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ}one{{count} ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ}other{{count} ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ}}</translation>
 <translation id="3523513363815970085">"ನಿಮ್ಮ ಟಾಪ್ ಸೈಟ್‌ಗಳನ್ನು" ಮರೆಮಾಡಿ</translation>
 <translation id="3523789730715594198">ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ಸಿಂಕ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಬಹುದು. Google, ನಿಮ್ಮ ಇತಿಹಾಸವನ್ನು ಆಧರಿಸಿ Search ಮತ್ತು ಇತರ ಸೇವೆಗಳನ್ನು ವೈಯಕ್ತಿಕಗೊಳಿಸಬಹುದು.</translation>
@@ -819,6 +821,7 @@
 <translation id="4565377596337484307">ಪಾಸ್‌ವರ್ಡ್ ಮರೆಮಾಡಿ</translation>
 <translation id="4568230126482344545">ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="4578835633387306383">ಆನ್ ಮಾಡಿ…</translation>
+<translation id="4580716718466706433">"Password Manager" ಗೆ ಹೋಗಿ</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4592672037257622855">{count,plural, =1{ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಗೆ ಪುಟವನ್ನು ಸೇರಿಸಲಾಗಿದೆ}one{ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಗೆ {count} ಪುಟಗಳನ್ನು ಸೇರಿಸಲಾಗಿದೆ}other{ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಗೆ {count} ಪುಟಗಳನ್ನು ಸೇರಿಸಲಾಗಿದೆ}}</translation>
 <translation id="459644946100970322">ದರಗಳ ಕುರಿತಾದ ಅಲರ್ಟ್‌ಗಳನ್ನು ಆನ್ ಮಾಡಬೇಕೇ?</translation>
@@ -858,6 +861,7 @@
 <translation id="4717844083556844785">ಪ್ರಸ್ತುತ ವೆಬ್ ಪುಟವು ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿದೆ</translation>
 <translation id="4719927025381752090">ಅನುವಾದಿಸಲು ಅವಕಾಶಿಸಿ</translation>
 <translation id="4720530280568305198">ನಿಮ್ಮ ಆಯ್ಕೆಯನ್ನು ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
+<translation id="472259426228234149">ದರ $100 - $180</translation>
 <translation id="473775607612524610">ಅಪ್‌ಡೇಟ್‌‌</translation>
 <translation id="474209246745757965">ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಬಳಸಿಕೊಂಡು ಶಾಪಿಂಗ್ ಮಾಡಿ ಮತ್ತು ಅನುವಾದಿಸಿ</translation>
 <translation id="4742407542027196863">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ…</translation>

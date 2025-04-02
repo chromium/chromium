@@ -19,6 +19,7 @@ class ShoppingService;
 }
 
 class PrefService;
+class FaviconLoader;
 @protocol ShopCardActionDelegate;
 @class ShopCardItem;
 @class ShopCardData;
@@ -43,6 +44,7 @@ class PrefService;
               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                imageFetcher:
                    (std::unique_ptr<image_fetcher::ImageDataFetcher>)fetcher
+              faviconLoader:(FaviconLoader*)faviconLoader
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -390,11 +390,11 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnusedResources) {
       provider->unused_resources_reclaim_timer_is_running_for_testing());
 
   // There is a ready-to-reuse resource
-  EXPECT_EQ(1u, provider->CanvasResources().size());
+  EXPECT_TRUE(provider->HasUnusedResourcesForTesting());
   task_environment_.FastForwardBy(
       CanvasResourceProvider::kUnusedResourceExpirationTime);
   // The resource is freed, don't repost the task.
-  EXPECT_EQ(0u, provider->CanvasResources().size());
+  EXPECT_FALSE(provider->HasUnusedResourcesForTesting());
   EXPECT_FALSE(
       provider->unused_resources_reclaim_timer_is_running_for_testing());
 }
@@ -415,7 +415,7 @@ TEST_F(CanvasResourceProviderTest,
       provider->unused_resources_reclaim_timer_is_running_for_testing());
   EnsureResourceRecycled(provider.get(), std::move(resource));
   // There is a ready-to-reuse resource
-  EXPECT_EQ(1u, provider->CanvasResources().size());
+  EXPECT_TRUE(provider->HasUnusedResourcesForTesting());
   // No task posted.
   EXPECT_FALSE(
       provider->unused_resources_reclaim_timer_is_running_for_testing());
@@ -439,7 +439,7 @@ TEST_F(CanvasResourceProviderTest,
       provider->unused_resources_reclaim_timer_is_running_for_testing());
 
   // There is a ready-to-reuse resource
-  EXPECT_EQ(1u, provider->CanvasResources().size());
+  EXPECT_TRUE(provider->HasUnusedResourcesForTesting());
   task_environment_.FastForwardBy(
       CanvasResourceProvider::kUnusedResourceExpirationTime - base::Seconds(1));
   // The reclaim task hasn't run yet.
@@ -447,17 +447,17 @@ TEST_F(CanvasResourceProviderTest,
       provider->unused_resources_reclaim_timer_is_running_for_testing());
 
   resource = UpdateResource(provider.get());
-  EXPECT_EQ(0u, provider->CanvasResources().size());
+  EXPECT_FALSE(provider->HasUnusedResourcesForTesting());
   new_resource = UpdateResource(provider.get());
   ASSERT_NE(resource, new_resource);
   ASSERT_NE(resource->GetSyncToken(), new_resource->GetSyncToken());
 
   EnsureResourceRecycled(provider.get(), std::move(resource));
-  EXPECT_EQ(1u, provider->CanvasResources().size());
+  EXPECT_TRUE(provider->HasUnusedResourcesForTesting());
   task_environment_.FastForwardBy(base::Seconds(1));
 
   // Too young, no release yet.
-  EXPECT_EQ(1u, provider->CanvasResources().size());
+  EXPECT_TRUE(provider->HasUnusedResourcesForTesting());
   // But re-post the task to free it.
   EXPECT_TRUE(
       provider->unused_resources_reclaim_timer_is_running_for_testing());
@@ -465,7 +465,7 @@ TEST_F(CanvasResourceProviderTest,
   task_environment_.FastForwardBy(
       CanvasResourceProvider::kUnusedResourceExpirationTime);
   // Now it's collected.
-  EXPECT_EQ(0u, provider->CanvasResources().size());
+  EXPECT_FALSE(provider->HasUnusedResourcesForTesting());
   // And no new task is posted.
   EXPECT_FALSE(
       provider->unused_resources_reclaim_timer_is_running_for_testing());

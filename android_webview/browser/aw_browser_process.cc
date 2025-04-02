@@ -5,6 +5,7 @@
 #include "android_webview/browser/aw_browser_process.h"
 
 #include "android_webview/browser/aw_browser_context.h"
+#include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_enterprise_authentication_app_link_manager.h"
 #include "android_webview/browser/component_updater/registration.h"
 #include "android_webview/browser/lifecycle/aw_contents_lifecycle_notifier.h"
@@ -13,6 +14,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/base_paths_posix.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -59,10 +61,11 @@ AwBrowserProcess* AwBrowserProcess::GetInstance() {
   return g_aw_browser_process;
 }
 
-AwBrowserProcess::AwBrowserProcess(
-    AwFeatureListCreator* aw_feature_list_creator) {
+AwBrowserProcess::AwBrowserProcess(AwContentBrowserClient* browser_client)
+    : browser_client_(
+          raw_ref<AwContentBrowserClient>::from_ptr(browser_client)) {
   g_aw_browser_process = this;
-  aw_feature_list_creator_ = aw_feature_list_creator;
+  aw_feature_list_creator_ = browser_client->aw_feature_list_creator();
   aw_contents_lifecycle_notifier_ =
       std::make_unique<AwContentsLifecycleNotifier>(base::BindRepeating(
           &AwBrowserProcess::OnLoseForeground, base::Unretained(this)));
@@ -253,6 +256,10 @@ AwBrowserProcess::GetOriginTrialsSettingsStorage() {
   return origin_trials_settings_storage_.get();
 }
 
+AwContentBrowserClient* AwBrowserProcess::GetBrowserClient() {
+  return &*browser_client_;
+}
+
 // static
 void AwBrowserProcess::TriggerMinidumpUploading() {
   Java_AwBrowserProcess_triggerMinidumpUploading(
@@ -263,6 +270,10 @@ void AwBrowserProcess::TriggerMinidumpUploading() {
 ApkType AwBrowserProcess::GetApkType() {
   return static_cast<ApkType>(
       Java_AwBrowserProcess_getApkType(base::android::AttachCurrentThread()));
+}
+
+static void JNI_AwBrowserProcess_OnStartupComplete(JNIEnv* env) {
+  AwBrowserProcess::GetInstance()->GetBrowserClient()->OnStartupComplete();
 }
 
 static void JNI_AwBrowserProcess_SetProcessNameCrashKey(

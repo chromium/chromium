@@ -55,6 +55,12 @@ class CollaborationServiceImplTest : public testing::Test {
   ~CollaborationServiceImplTest() override = default;
 
   void SetUp() override {
+#if BUILDFLAG(IS_ANDROID)
+    if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+      // TODO(crbug.com/399444939): Re-enable once automotive is supported.
+      GTEST_SKIP() << "Test shouldn't run on automotive builders.";
+    }
+#endif
     test_sync_service_ = std::make_unique<syncer::TestSyncService>();
     pref_service_.registry()->RegisterBooleanPref(prefs::kSigninAllowed, true);
     InitService();
@@ -118,12 +124,6 @@ TEST_F(CollaborationServiceImplTest, GetServiceStatus_Disabled) {
 }
 
 TEST_F(CollaborationServiceImplTest, GetServiceStatus_JoinOnly) {
-#if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    // See crbug.com(406987845).
-    GTEST_SKIP() << "Test broken on automotive builders.";
-  }
-#endif
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       data_sharing::features::kDataSharingJoinOnly);
@@ -134,12 +134,6 @@ TEST_F(CollaborationServiceImplTest, GetServiceStatus_JoinOnly) {
 }
 
 TEST_F(CollaborationServiceImplTest, GetServiceStatus_Create) {
-#if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    // See crbug.com(406987845).
-    GTEST_SKIP() << "Test broken on automotive builders.";
-  }
-#endif
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       data_sharing::features::kDataSharingFeature);
@@ -150,12 +144,6 @@ TEST_F(CollaborationServiceImplTest, GetServiceStatus_Create) {
 }
 
 TEST_F(CollaborationServiceImplTest, GetServiceStatus_CreateOverridesJoinOnly) {
-#if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    // See crbug.com(406987845).
-    GTEST_SKIP() << "Test broken on automotive builders.";
-  }
-#endif
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({data_sharing::features::kDataSharingJoinOnly,
                                  data_sharing::features::kDataSharingFeature},
@@ -188,12 +176,6 @@ TEST_F(CollaborationServiceImplTest, GetServiceStatus_ManagedDevice) {
 }
 
 TEST_F(CollaborationServiceImplTest, GetServiceStatus_ManagedAccount) {
-#if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    // See crbug.com(406987845).
-    GTEST_SKIP() << "Test broken on automotive builders.";
-  }
-#endif
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       data_sharing::features::kDataSharingFeature);

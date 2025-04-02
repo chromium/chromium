@@ -151,7 +151,8 @@
   // Enable flags for rich inline autocomplete tests.
   if ([self isRunningTest:@selector(DISABLED_testRichInlineRemovedByTap)] ||
       [self isRunningTest:@selector(DISABLED_testRichInlineRemovedByDelete)] ||
-      [self isRunningTest:@selector(testRichInlineRemovedWithArrowKey)]) {
+      [self isRunningTest:@selector
+            (DISABLED_testRichInlineRemovedWithArrowKey)]) {
     config.features_enabled.push_back(omnibox::kRichAutocompletion);
   }
 
@@ -231,7 +232,8 @@
 }
 
 // Tests removing rich inline autocomplete by pressing an arrow key.
-- (void)testRichInlineRemovedWithArrowKey {
+// TODO(crbug.com/407575845): Re-enable this test.
+- (void)DISABLED_testRichInlineRemovedWithArrowKey {
   // Add 2 shortcuts Page(1) and Page(2).
   [OmniboxEarlGrey addShorcuts:2 toTestServer:self.testServer];
 

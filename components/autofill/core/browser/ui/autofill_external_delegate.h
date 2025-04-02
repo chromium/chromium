@@ -264,8 +264,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   // The method how suggestions were triggered on the current form.
   AutofillSuggestionTriggerSource trigger_source_;
 
-  bool show_cards_from_account_suggestion_was_shown_ = false;
-
   std::vector<SuggestionType> shown_suggestion_types_;
 
   // Contains information on the ranking of suggestions using the new and old

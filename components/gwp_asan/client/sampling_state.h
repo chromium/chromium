@@ -46,13 +46,22 @@ class SamplingState : ThreadLocalState<SamplingState<PA>> {
   }
 
   // Return true if this allocation should be sampled.
-  ALWAYS_INLINE bool Sample() {
+  ALWAYS_INLINE bool Sample(size_t alloc_size = 0) {
     // For a new thread the initial TLS value will be zero, we do not want to
     // sample on zero as it will always sample the first allocation on thread
     // creation and heavily bias allocations towards that particular call site.
     //
     // Instead, use zero to mean 'get a new counter value' and one to mean
     // that this allocation should be sampled.
+#if BUILDFLAG(IS_IOS)
+    if (alloc_size != 0 && (alloc_size <= 1784 || 2040 < alloc_size)) {
+      // Not a bucket for `password_manager::PasswordForm`.
+      // Skip sampling to increase chance of catching an OOB issue
+      // https://crbug.com/346464587.
+      return false;
+    }
+#endif  // BUILDFLAG(IS_IOS)
+
     size_t samples_left = TLS::GetState();
     if (samples_left == 0) [[unlikely]] {
       samples_left = NextSample();

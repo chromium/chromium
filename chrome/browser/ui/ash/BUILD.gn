@@ -136,7 +136,6 @@ if (is_chromeos_device) {
     deps = [
       "//chrome/browser/ui/ash/app_list:interactive_ui_tests",
       "//chrome/browser/ui/ash/clipboard:interactive_ui_tests",
-      "//chrome/browser/ui/ash/desks:interactive_ui_tests",
       "//chrome/browser/ui/ash/quick_insert:interactive_ui_tests",
       "//chrome/browser/ui/ash/user_education/welcome_tour:interactive_ui_tests",
     ]

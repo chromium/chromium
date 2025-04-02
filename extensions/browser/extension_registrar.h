@@ -242,8 +242,6 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   // Finishes installing |extension| and notifying the observers.
   void FinishInstallation(const Extension* extension);
 
-  // TODO(michaelpg): Add methods for blocklisting and blocking extensions.
-
   // Helper method to determine if an extension can be blocked.
   bool CanBlockExtension(const Extension* extension) const;
 

@@ -260,8 +260,16 @@ src:*third_party/crashpad/crashpad/snapshot/crashpad_info_client_options_test.cc
 src:*third_party/skia/src/ports/SkFontHost_FreeType.cpp
 
 # WebRTC / PipeWire
-fun:*pw_registry_bind*
+fun:*pw_core_add_listener*
 fun:*pw_core_get_registry*
+fun:*pw_core_sync*
+fun:*pw_node_add_listener*
+fun:*pw_node_enum_params*
+fun:*pw_loop_add_event*
+fun:*pw_loop_signal_event*
+fun:*pw_registry_add_listener*
+fun:*pw_registry_bind*
+fun:*spa_loop_utils*
 
 ######### Function pointers cast to incorrect type signatures
 

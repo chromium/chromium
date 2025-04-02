@@ -136,25 +136,11 @@ public class RestoreTabsDetailScreenViewBinder {
             getChangeAllTabsSelectionStateButton(view)
                     .setOnClickListener(
                             (v) -> {
-                                getChangeAllTabsSelectionStateButton(view)
-                                        .announceForAccessibility(
-                                                view.mContentView
-                                                        .getContext()
-                                                        .getString(
-                                                                R.string
-                                                                        .restore_tabs_review_tabs_screen_change_all_tabs_selection_button_clicked_description));
                                 delegate.onChangeSelectionStateForAllTabs();
                             });
             getOpenSelectedTabsButton(view)
                     .setOnClickListener(
                             (v) -> {
-                                getOpenSelectedTabsButton(view)
-                                        .announceForAccessibility(
-                                                view.mContentView
-                                                        .getContext()
-                                                        .getString(
-                                                                R.string
-                                                                        .restore_tabs_open_tabs_button_clicked_description));
                                 delegate.onSelectedTabsChosen();
                             });
 

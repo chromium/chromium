@@ -9574,11 +9574,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 // layer stacked below the wallpaper.
 class OverviewWallpaperTest : public OverviewTestBase {
  public:
-  OverviewWallpaperTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kForestFeature},
-        /*disabled_features=*/{});
-  }
+  OverviewWallpaperTest() = default;
   OverviewWallpaperTest(const OverviewWallpaperTest&) = delete;
   OverviewWallpaperTest& operator=(const OverviewWallpaperTest&) = delete;
   ~OverviewWallpaperTest() override = default;
@@ -9616,9 +9612,6 @@ class OverviewWallpaperTest : public OverviewTestBase {
       EXPECT_EQ(in_overview, !wallpaper_view_layer->clip_rect().IsEmpty());
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that the wallpaper layer's clipping (with rounded corners) is applied

@@ -52,20 +52,6 @@ struct SuggestionRankingContext {
       suggestion_rankings_difference_map;
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// Used by LogAutofillShowCardsFromGoogleAccountButtonEventMetric().
-enum class ShowCardsFromGoogleAccountButtonEvent {
-  // 'Show Cards from Google Account' button appeared.
-  kButtonAppeared = 0,
-  // 'Show Cards from Google Account' button appeared. Logged once per page
-  // load.
-  kButtonAppearedOnce = 1,
-  // 'Show Cards from Google Account' button clicked.
-  kButtonClicked = 2,
-  kMaxValue = kButtonClicked,
-};
-
 // Log the number of Autofill suggestions for the given
 // `filling_product`presented to the user when displaying the autofill popup.
 void LogSuggestionsCount(size_t num_suggestions,
@@ -75,10 +61,6 @@ void LogSuggestionsCount(size_t num_suggestions,
 void LogSuggestionAcceptedIndex(int index,
                                 FillingProduct filling_product,
                                 bool off_the_record);
-
-// Logs the 'Show cards from your Google Account" button events.
-void LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
-    ShowCardsFromGoogleAccountButtonEvent event);
 
 // Logs a `ranking_difference` for a recently-selected Autofill suggestion
 // selection, recording if the suggestion was ranked higher or lower in the new

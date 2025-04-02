@@ -138,6 +138,19 @@ User* TestHelper::AddKioskAppUser(std::string_view user_id) {
   return AddDeviceLocalAccountUserInternal(user_id, UserType::kKioskApp);
 }
 
+User* TestHelper::AddWebKioskAppUser(std::string_view user_id) {
+  // Quick check that the `user_id` satisfies web-kiosk-app type.
+  auto type = policy::GetDeviceLocalAccountType(user_id);
+  if (type != policy::DeviceLocalAccountType::kWebKioskApp) {
+    LOG(ERROR) << "user_id (" << user_id << ") did not satisfy to be used for "
+               << "a web kiosk user. See policy::GetDeviceLocalAccountType for "
+                  "details.";
+    return nullptr;
+  }
+
+  return AddDeviceLocalAccountUserInternal(user_id, UserType::kWebKioskApp);
+}
+
 User* TestHelper::AddPublicAccountUser(std::string_view user_id) {
   // Quick check that the `user_id` satisfies kiosk-app type.
   auto type = policy::GetDeviceLocalAccountType(user_id);

@@ -470,25 +470,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Cras.StreamRuntime.Output.LaCrOS"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="DownloadSource" separator=".">
-  <suffix name="ContextMenu" label="ContextMenu."/>
-  <suffix name="DragAndDrop" label="DragAndDrop."/>
-  <suffix name="ExtensionAPI" label="ExtensionAPI."/>
-  <suffix name="ExtensionInstaller" label="ExtensionInstaller."/>
-  <suffix name="FromRenderer" label="FromRenderer."/>
-  <suffix name="InternalAPI" label="InternalAPI."/>
-  <suffix name="Navigation" label="Navigation."/>
-  <suffix name="OfflinePage" label="OfflinePage."/>
-  <suffix name="Retry" label="Retry."/>
-  <suffix name="RetryFromBubble" label="RetryFromBubble."/>
-  <suffix name="ToolbarMenu" label="ToolbarMenu."/>
-  <suffix name="UnknownSource" label="UnknownSource."/>
-  <suffix name="WebContentsAPI" label="WebContentsAPI."/>
-  <affected-histogram name="Download.Counts"/>
-  <affected-histogram name="Download.InterruptedReason"/>
-  <affected-histogram name="Download.NetworkConnectionType.StartNew"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="FieldPredictionSubmissionEvents" separator=".">
   <suffix name="BasedOnAutocomplete"
       label="Quality metrics based on autocomplete attributes."/>
@@ -674,12 +655,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Omnibox.ClipboardSuggestionShownAge"/>
   <affected-histogram name="Omnibox.ClipboardSuggestionShownNumTimes"/>
   <affected-histogram name="Omnibox.ClipboardSuggestionShownWithCurrentURL"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="OutOfRaster" separator=".">
-  <suffix name="OutOfRaster"
-      label="Task was not performed as part of a raster task."/>
-  <affected-histogram name="Renderer4.GpuImageDecodeState.FirstLockWasted"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadBackgrounded2" separator=".">
@@ -1005,19 +980,6 @@ chromium-metrics-reviews@google.com.
              initiated"/>
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ParallelDownload" separator=".">
-  <suffix name="ParallelDownload"
-      label="Download that uses parallel requests."/>
-  <affected-histogram name="Download.Counts"/>
-  <affected-histogram name="Download.InterruptedReason"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ParallelizableDownload" separator=".">
-  <suffix name="ParallelizableDownload"
-      label="Download that supports but doesn't use parallel requests."/>
-  <affected-histogram name="Download.Counts"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PasswordAccountStorageUsageLevel" separator=".">
@@ -1437,56 +1399,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Net.QuicSession.ConnectRandomPort"/>
   <affected-histogram
       name="Net.QuicSession.ConnectRandomPortRequiringConfirmation"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="RasterTaskSchedulingDelayNoAtRasterDecodesType"
-    separator=".">
-  <suffix name="All"
-      label="This metric applies to all raster work that doesn't depend on
-             at-raster image decodes."/>
-  <suffix name="TilesWithJpegHwDecodeCandidates"
-      label="This metric applies only to raster work that depends on JPEGs
-             that are candidates for hardware decode acceleration (and that
-             doesn't depend on at-raster image decodes)."/>
-  <suffix name="TilesWithWebPHwDecodeCandidates"
-      label="This metric applies only to raster work that depends on WebPs
-             that are candidates for hardware decode acceleration (and that
-             doesn't depend on at-raster image decodes)."/>
-  <affected-histogram
-      name="Renderer4.Browser.RasterTaskSchedulingDelayNoAtRasterDecodes"/>
-  <affected-histogram
-      name="Renderer4.Renderer.RasterTaskSchedulingDelayNoAtRasterDecodes"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="RasterTaskTypeGpu" separator=".">
-  <suffix name="Gpu" label="This metric is for only gpu raster."/>
-  <suffix name="Oop" label="This metric is for only oop raster."/>
-  <affected-histogram name="Renderer4.Browser.RasterTaskTotalDuration"/>
-  <affected-histogram name="Renderer4.Renderer.RasterTaskTotalDuration"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="SafetyTip" separator=".">
-  <suffix name="SafetyTip_BadReputation" label="Bad reputation Safety Tip"/>
-  <suffix name="SafetyTip_BadReputationIgnored"
-      label="Bad reputation ignored by user"/>
-  <suffix name="SafetyTip_Lookalike" label="Lookalike Safety Tip"/>
-  <suffix name="SafetyTip_LookalikeIgnored"
-      label="Lookalike Safety Tip ignored by user"/>
-  <suffix name="SafetyTip_None" label="No Safety Tip"/>
-  <suffix name="SafetyTip_Unknown" label="Unknown Safety Tip status"/>
-  <affected-histogram name="Security.PageEndReason"/>
-  <affected-histogram name="Security.PageInfo.TimeOpen"/>
-  <affected-histogram name="Security.PageInfo.TimeOpen.Action"/>
-  <affected-histogram name="Security.PageInfo.TimeOpen.NoAction"/>
-  <affected-histogram name="Security.SafetyTips.Interaction"/>
-  <affected-histogram name="Security.SiteEngagement"/>
-  <affected-histogram name="Security.TimeOnPage2"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ScrollSourceDevice" separator=".">
-  <suffix name="Touch" label="Touch"/>
-  <suffix name="Wheel" label="Wheel"/>
-  <affected-histogram name="Renderer4.ScrollingThread"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="SearchEnginePromoOrdering" separator="."

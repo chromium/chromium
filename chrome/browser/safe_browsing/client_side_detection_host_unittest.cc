@@ -353,7 +353,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     InitTestApi(web_contents()->GetPrimaryMainFrame());
 
     // Inject service classes.
-    csd_service_ = std::make_unique<MockClientSideDetectionService>();
+    csd_service_ = std::make_unique<NiceMock<MockClientSideDetectionService>>();
     database_manager_ = new NiceMock<MockSafeBrowsingDatabaseManager>();
     ui_manager_ = new NiceMock<MockSafeBrowsingUIManager>();
 
@@ -487,7 +487,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
 
  protected:
   std::unique_ptr<ClientSideDetectionHost> csd_host_;
-  std::unique_ptr<MockClientSideDetectionService> csd_service_;
+  std::unique_ptr<NiceMock<MockClientSideDetectionService>> csd_service_;
   scoped_refptr<NiceMock<MockSafeBrowsingUIManager>> ui_manager_;
   scoped_refptr<NiceMock<MockSafeBrowsingDatabaseManager>> database_manager_;
   FakePhishingDetector fake_phishing_detector_;
@@ -924,6 +924,8 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckPass) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
     GTEST_SKIP();
 
+  base::HistogramTester histogram_tester;
+
   // Navigate the tab to a page.  We should see a StartPhishingDetection IPC.
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
@@ -933,6 +935,13 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckPass) {
   WaitAndCheckPreClassificationChecks();
 
   fake_phishing_detector_.CheckMessage(&url);
+
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult",
+      PreClassificationCheckResult::CLASSIFY, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult.TriggerModel",
+      PreClassificationCheckResult::CLASSIFY, 1);
 }
 
 TEST_F(ClientSideDetectionHostTest,
@@ -1158,21 +1167,6 @@ TEST_F(ClientSideDetectionHostTest,
   // If the url isn't in the cache and we are over the reporting limit, we
   // don't do classification.
   GURL url("http://host7.com/");
-  database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kTrue,
-                                &kFalse);
-  NavigateAndKeepLoading(web_contents(), url);
-  WaitAndCheckPreClassificationChecks();
-
-  fake_phishing_detector_.CheckMessage(nullptr);
-}
-
-TEST_F(ClientSideDetectionHostTest,
-       TestPreClassificationCheckOverBothReportingLimits) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
-    GTEST_SKIP();
-
-  GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kTrue,
                                 &kFalse);

@@ -226,6 +226,12 @@ void BookmarksPageHandler::ExecuteEditCommand(
   ExecuteContextMenuCommand(node_ids, source, IDC_BOOKMARK_BAR_EDIT);
 }
 
+void BookmarksPageHandler::ExecuteMoveCommand(
+    const std::vector<int64_t>& node_ids,
+    side_panel::mojom::ActionSource source) {
+  ExecuteContextMenuCommand(node_ids, source, IDC_BOOKMARK_BAR_MOVE);
+}
+
 void BookmarksPageHandler::ExecuteAddToBookmarksBarCommand(
     const int64_t node_id,
     side_panel::mojom::ActionSource source) {

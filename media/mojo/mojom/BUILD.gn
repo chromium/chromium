@@ -197,6 +197,14 @@ mojom("mojom") {
     },
   ]
 
+  # The dependencies for |media.mojom.VideoFrame| traits are different on
+  # different platforms. This sets a variable for the dependencies since
+  # |cpp_typemaps| is statically declared.
+  video_frame_mojom_traits_public_deps = [ "//ui/gfx/geometry/mojom" ]
+  if (is_linux || is_chromeos) {
+    video_frame_mojom_traits_public_deps += [ "//media/gpu:buffer_validation" ]
+  }
+
   cpp_typemaps = [
     {
       types = [
@@ -653,7 +661,7 @@ mojom("mojom") {
       ]
       traits_headers = [ "video_frame_mojom_traits.h" ]
       traits_sources = [ "video_frame_mojom_traits.cc" ]
-      traits_public_deps = [ "//ui/gfx/geometry/mojom" ]
+      traits_public_deps = video_frame_mojom_traits_public_deps
     },
     {
       types = [
@@ -944,6 +952,20 @@ mojom("test_interfaces") {
   testonly = true
   sources = [ "traits_test_service.test-mojom" ]
   public_deps = [ ":mojom" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (is_linux || is_chromeos) {
+    sources += [
+      "buffer_handle_test_util.cc",
+      "buffer_handle_test_util.h",
+    ]
+    deps += [ "//base/test:test_support" ]
+  }
 }
 
 source_set("unit_tests") {

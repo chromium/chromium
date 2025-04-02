@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 
-#include "chrome/browser/send_tab_to_self/receiving_ui_handler_registry.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -41,8 +42,9 @@ class SendTabToSelfToolbarIconControllerTest : public InProcessBrowserTest {
   }
 
   SendTabToSelfToolbarIconController* controller() {
-    return send_tab_to_self::ReceivingUiHandlerRegistry::GetInstance()
-        ->GetToolbarButtonControllerForProfile(browser()->profile());
+    return static_cast<SendTabToSelfToolbarIconController*>(
+        SendTabToSelfClientServiceFactory::GetForProfile(browser()->profile())
+            ->GetReceivingUiHandler());
   }
 
   SendTabToSelfToolbarBubbleController* bubble_controller() {
@@ -68,19 +70,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
                        ControllerExists) {
-  const std::vector<std::unique_ptr<ReceivingUiHandler>>& handlers =
-      send_tab_to_self::ReceivingUiHandlerRegistry::GetInstance()
-          ->GetHandlers();
-  bool toolbar_button_controller_exists = false;
-  for (const std::unique_ptr<ReceivingUiHandler>& handler : handlers) {
-    auto* button_controller =
-        static_cast<SendTabToSelfToolbarIconController*>(handler.get());
-    if (button_controller &&
-        button_controller->profile() == browser()->profile()) {
-      toolbar_button_controller_exists = true;
-    }
-  }
-  EXPECT_TRUE(toolbar_button_controller_exists);
+  EXPECT_TRUE(controller());
 }
 
 // This test cannot work on Wayland because the platform does not allow clients

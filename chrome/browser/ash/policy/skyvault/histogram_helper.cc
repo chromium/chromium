@@ -45,6 +45,10 @@ constexpr char kMigrationReconnectionDurationSuffix[] = "ReconnectionDuration";
 constexpr char kMigrationCleanupErrorSuffix[] = "CleanupError";
 constexpr char kMigrationDialogActionSuffix[] = "DialogAction";
 constexpr char kMigrationDialogShownSuffix[] = "DialogShown";
+constexpr char kScheduledTimeInPastInformUser[] =
+    "ScheduledTimeInPast.InformUser";
+constexpr char kScheduledTimeInPastScheduleMigration[] =
+    "ScheduledTimeInPast.ScheduleMigration";
 
 // Constants for cloud providers used in histogram names.
 constexpr char kGoogleDriveProvider[] = "GoogleDrive";
@@ -243,6 +247,24 @@ void SkyVaultMigrationCleanupErrorHistogram(MigrationDestination destination,
   base::UmaHistogramBoolean(
       GetHistogramName(kMigrationCleanupErrorSuffix, UploadTrigger::kMigration,
                        destination),
+      value);
+}
+
+void SkyVaultMigrationScheduledTimeInPastInformUser(
+    MigrationDestination destination,
+    bool value) {
+  base::UmaHistogramBoolean(
+      GetHistogramName(kScheduledTimeInPastInformUser,
+                       UploadTrigger::kMigration, destination),
+      value);
+}
+
+void SkyVaultMigrationScheduledTimeInPastScheduleMigration(
+    MigrationDestination destination,
+    bool value) {
+  base::UmaHistogramBoolean(
+      GetHistogramName(kScheduledTimeInPastScheduleMigration,
+                       UploadTrigger::kMigration, destination),
       value);
 }
 

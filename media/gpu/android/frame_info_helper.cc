@@ -246,11 +246,7 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
     waiting_for_real_frame_info_ = false;
 
     if (coded_size && visible_rect) {
-      const bool guessed_coded_size_correctly =
-          guessed_coded_size == *coded_size;
-      base::UmaHistogramBoolean("Media.FrameInfo.GuessedCodedSizeChangeSuccess",
-                                guessed_coded_size_correctly);
-      if (!guessed_coded_size_correctly) {
+      if (guessed_coded_size != *coded_size) {
         DisableCodedSizeGuessing(guessed_coded_size, frame_info_->coded_size);
       }
 

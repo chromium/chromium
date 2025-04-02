@@ -150,8 +150,7 @@ struct ProbabilisticRevealToken {
   ProbabilisticRevealToken();
   ProbabilisticRevealToken(std::int32_t version,
                            std::string u,
-                           std::string e,
-                           std::string epoch_id);
+                           std::string e);
   ProbabilisticRevealToken(const ProbabilisticRevealToken&);
   ProbabilisticRevealToken(ProbabilisticRevealToken&&);
   ProbabilisticRevealToken& operator=(const ProbabilisticRevealToken&);
@@ -159,12 +158,11 @@ struct ProbabilisticRevealToken {
   ~ProbabilisticRevealToken();
 
   bool operator==(const ProbabilisticRevealToken& token) const = default;
-  std::optional<std::string> SerializeAndEncode() const;
+  std::optional<std::string> SerializeAndEncode(std::string epoch_id) const;
 
   std::int32_t version = 0;
   std::string u = "";
   std::string e = "";
-  std::string epoch_id = "";
 };
 
 // Declares possible return status for TryGetProbabilisticRevealTokens().
@@ -228,6 +226,7 @@ struct TryGetProbabilisticRevealTokensOutcome {
   std::uint64_t expiration_time_seconds;
   std::uint64_t next_epoch_start_time_seconds;
   std::int32_t num_tokens_with_signal;
+  std::string epoch_id;
 };
 
 }  // namespace ip_protection

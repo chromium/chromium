@@ -102,7 +102,7 @@ public abstract class PrivacySandboxDebouncedOnClick implements View.OnClickList
 
         @ClickEvent int bucketNum = ClickEvent.MAX_VALUE + 1;
 
-        if (id == R.id.ack_button || id == R.id.ack_button_equalized) {
+        if (id == R.id.ack_button) {
             bucketNum = ClickEvent.ACK;
         } else if (id == R.id.settings_button) {
             bucketNum = ClickEvent.SETTINGS;

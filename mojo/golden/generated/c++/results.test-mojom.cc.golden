@@ -160,14 +160,13 @@ const char* ResultInterface::MessageToMethodName_(mojo::Message& message) {
 
 #if !BUILDFLAG(IS_FUCHSIA)
 uint32_t ResultInterface::Method_Sym::IPCStableHash() {
-  // This method's address is used for indetifiying the mojo method name after
+  // This method's address is used for identifiying the mojo method name after
   // symbolization. So each IPCStableHash should have a unique address.
   // We cannot use NO_CODE_FOLDING() here - it relies on the uniqueness of
   // __LINE__ value, which is not unique accross different mojo modules.
   // The code below is very similar to NO_CODE_FOLDING, but it uses a unique
   // hash instead of __LINE__.
-  constexpr uint32_t kHash = base::MD5Hash32Constexpr(
-          "(Impl)golden::ResultInterface::Method");
+  static constexpr uint32_t kHash = 0x826d7762;  // IPCStableHash for golden::ResultInterface::Method
   const uint32_t hash = kHash;
   base::debug::Alias(&hash);
   return hash;
@@ -245,9 +244,19 @@ class ResultInterface_Method_ProxyToResponder : public ::mojo::internal::ProxyTo
     std::unique_ptr<ResultInterface_Method_ProxyToResponder> proxy(
         new ResultInterface_Method_ProxyToResponder(
             message, std::move(responder)));
-    return base::BindOnce(&ResultInterface_Method_ProxyToResponder::Run,
-                          std::move(proxy));
+    return base::BindOnce(&Transform)
+      .Then(base::BindOnce(&ResultInterface_Method_ProxyToResponder::Run,
+                          std::move(proxy)));
   }
+
+  static ResultInterface_Method_ResponseParam_ResultPtr Transform(base::expected<
+  bool,
+  ResultTestErrorPtr> in) {
+    return in.has_value() ? ::golden::ResultInterface_Method_ResponseParam_Result::NewSuccess(std::move(in.value())) :
+                            ::golden::ResultInterface_Method_ResponseParam_Result::NewFailure(std::move(in.error()));
+  }
+
+
 
   ~ResultInterface_Method_ProxyToResponder() {
 #if DCHECK_IS_ON()
@@ -309,9 +318,13 @@ bool ResultInterface_Method_ForwardToCallback::Accept(
         ResultInterface::Name_, 0, true);
     return false;
   }
-  if (!callback_.is_null())
-    std::move(callback_).Run(
-std::move(p_result));
+  if (!callback_.is_null()) {
+    if (p_result->is_success()) {
+      std::move(callback_).Run(base::ok(std::move(p_result->get_success())));
+    } else {
+      std::move(callback_).Run(base::unexpected(std::move(p_result->get_failure())));
+    }
+  }
   return true;
 }
 
@@ -410,7 +423,7 @@ bool ResultInterfaceStubDispatch::AcceptWithResponder(
             ResultInterface::Name_, 0, false);
         return false;
       }
-      ResultInterface::MethodCallback callback =
+      auto callback =
           ResultInterface_Method_ProxyToResponder::CreateCallback(
               *message, std::move(responder));
       // A null |impl| means no implementation was bound.
@@ -505,29 +518,6 @@ ResultInterfaceAsyncWaiter::ResultInterfaceAsyncWaiter(
 
 ResultInterfaceAsyncWaiter::~ResultInterfaceAsyncWaiter() = default;
 
-void ResultInterfaceAsyncWaiter::Method(
-    bool a, ResultInterface_Method_ResponseParam_ResultPtr* out_result) {
-  base::RunLoop loop;
-  proxy_->Method(
-      std::move(a),
-      base::BindOnce(
-          [](base::RunLoop* loop,
-             ResultInterface_Method_ResponseParam_ResultPtr* out_result
-,
-             ResultInterface_Method_ResponseParam_ResultPtr result) {*out_result = std::move(result);
-            loop->Quit();
-          },
-          &loop,
-          out_result));
-  loop.Run();
-}
-
-ResultInterface_Method_ResponseParam_ResultPtr ResultInterfaceAsyncWaiter::Method(
-    bool a) {
-  ResultInterface_Method_ResponseParam_ResultPtr async_wait_result;
-  Method(std::move(a),&async_wait_result);
-  return async_wait_result;
-}
 
 
 

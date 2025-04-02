@@ -37,10 +37,15 @@ void ResolveDecision(DecisionCallback callback, bool decision) {
       FROM_HERE, base::BindOnce(std::move(callback), decision));
 }
 
-// Returns true if `url`'s host is in the `allowlist`. Subdomains also match if
-// the parent domain is in the list.
+// Returns true if `url`'s host is in the `allowlist`. If `include_subdomains`
+// is true, subdomains also match if the parent domain is in the list.
 bool IsHostInAllowList(const std::vector<std::string_view>& allowlist,
-                       const GURL& url) {
+                       const GURL& url,
+                       bool include_subdomains) {
+  if (!include_subdomains) {
+    return base::Contains(allowlist, url.host_piece());
+  }
+
   std::string host = url.host();
   while (!host.empty()) {
     if (base::Contains(allowlist, host)) {
@@ -67,7 +72,17 @@ void MayActOnUrl(const GURL& url, DecisionCallback callback) {
     const std::vector<std::string_view> allowlist =
         base::SplitStringPiece(allowlist_joined, ",", base::TRIM_WHITESPACE,
                                base::SPLIT_WANT_NONEMPTY);
-    if (IsHostInAllowList(allowlist, url)) {
+    if (IsHostInAllowList(allowlist, url, /*include_subdomains=*/true)) {
+      ResolveDecision(std::move(callback), true);
+      return;
+    }
+
+    const std::string allowlist_exact_joined = kAllowlistExact.Get();
+    const std::vector<std::string_view> allowlist_exact =
+        base::SplitStringPiece(allowlist_exact_joined, ",",
+                               base::TRIM_WHITESPACE,
+                               base::SPLIT_WANT_NONEMPTY);
+    if (IsHostInAllowList(allowlist_exact, url, /*include_subdomains=*/false)) {
       ResolveDecision(std::move(callback), true);
       return;
     }

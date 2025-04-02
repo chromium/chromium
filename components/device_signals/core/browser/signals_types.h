@@ -38,7 +38,8 @@ enum class SignalName {
   kSystemSettings,
   kAgent,
   kOsSignals,
-  kMaxValue = kOsSignals
+  kBrowserContextSignals,
+  kMaxValue = kBrowserContextSignals
 };
 
 // Superset of all signal collection errors that can occur, including top-level
@@ -68,6 +69,8 @@ const std::string ErrorToString(SignalCollectionError error);
 struct BaseSignalResponse {
   virtual ~BaseSignalResponse();
 
+  bool operator==(const BaseSignalResponse&) const;
+
   // If set, represents a collection error that occurred while getting the
   // signal.
   std::optional<SignalCollectionError> collection_error = std::nullopt;
@@ -87,6 +90,8 @@ struct AntiVirusSignalResponse : BaseSignalResponse {
   AntiVirusSignalResponse(const AntiVirusSignalResponse&);
   AntiVirusSignalResponse& operator=(const AntiVirusSignalResponse&);
 
+  bool operator==(const AntiVirusSignalResponse&) const;
+
   ~AntiVirusSignalResponse() override;
 
   std::vector<AvProduct> av_products{};
@@ -99,6 +104,8 @@ struct HotfixSignalResponse : BaseSignalResponse {
 
   HotfixSignalResponse(const HotfixSignalResponse&);
   HotfixSignalResponse& operator=(const HotfixSignalResponse&);
+
+  bool operator==(const HotfixSignalResponse&) const;
 
   ~HotfixSignalResponse() override;
 
@@ -118,6 +125,8 @@ struct GetSettingsOptions {
 
   GetSettingsOptions(const GetSettingsOptions&);
   GetSettingsOptions& operator=(const GetSettingsOptions&);
+
+  bool operator==(const GetSettingsOptions&) const;
 
   ~GetSettingsOptions();
 
@@ -146,8 +155,6 @@ struct GetSettingsOptions {
   // Windows registry hive containing the desired value. This values is required
   // on Windows, but will be ignored on Mac.
   std::optional<RegistryHive> hive = std::nullopt;
-
-  bool operator==(const GetSettingsOptions& other) const;
 };
 
 struct SettingsItem {
@@ -155,6 +162,8 @@ struct SettingsItem {
 
   SettingsItem(const SettingsItem&);
   SettingsItem& operator=(const SettingsItem&);
+
+  bool operator==(const SettingsItem&) const;
 
   ~SettingsItem();
 
@@ -171,8 +180,6 @@ struct SettingsItem {
   // setting was found and `get_value` was true on the corresponding request
   // options.
   std::optional<std::string> setting_json_value = std::nullopt;
-
-  bool operator==(const SettingsItem& other) const;
 };
 
 struct SettingsResponse : BaseSignalResponse {
@@ -180,6 +187,8 @@ struct SettingsResponse : BaseSignalResponse {
 
   SettingsResponse(const SettingsResponse&);
   SettingsResponse& operator=(const SettingsResponse&);
+
+  bool operator==(const SettingsResponse&) const;
 
   ~SettingsResponse() override;
 
@@ -191,6 +200,8 @@ struct OsSignalsResponse : BaseSignalResponse {
 
   OsSignalsResponse(const OsSignalsResponse&);
   OsSignalsResponse& operator=(const OsSignalsResponse&);
+
+  bool operator==(const OsSignalsResponse&) const;
 
   ~OsSignalsResponse() override;
 
@@ -226,6 +237,8 @@ struct FileSystemInfoResponse : BaseSignalResponse {
   FileSystemInfoResponse(const FileSystemInfoResponse&);
   FileSystemInfoResponse& operator=(const FileSystemInfoResponse&);
 
+  bool operator==(const FileSystemInfoResponse&) const;
+
   ~FileSystemInfoResponse() override;
 
   std::vector<FileSystemItem> file_system_items{};
@@ -236,6 +249,8 @@ struct AgentSignalsResponse : BaseSignalResponse {
 
   AgentSignalsResponse(const AgentSignalsResponse&);
   AgentSignalsResponse& operator=(const AgentSignalsResponse&);
+
+  bool operator==(const AgentSignalsResponse&) const;
 
   ~AgentSignalsResponse() override;
 
@@ -254,6 +269,8 @@ struct SignalsAggregationRequest {
   SignalsAggregationRequest& operator=(const SignalsAggregationRequest&);
   SignalsAggregationRequest& operator=(SignalsAggregationRequest&&);
 
+  bool operator==(const SignalsAggregationRequest&) const;
+
   ~SignalsAggregationRequest();
 
   // Names of the signals that need to be collected.
@@ -264,8 +281,6 @@ struct SignalsAggregationRequest {
   std::vector<GetFileSystemInfoOptions> file_system_signal_parameters{};
 
   std::vector<GetSettingsOptions> settings_signal_parameters{};
-
-  bool operator==(const SignalsAggregationRequest& other) const;
 };
 
 // Response from a signal collection request sent through the SignalsAggregator.
@@ -278,6 +293,8 @@ struct SignalsAggregationResponse {
   SignalsAggregationResponse(SignalsAggregationResponse&&);
   SignalsAggregationResponse& operator=(const SignalsAggregationResponse&);
   SignalsAggregationResponse& operator=(SignalsAggregationResponse&&);
+
+  bool operator==(const SignalsAggregationResponse&) const;
 
   ~SignalsAggregationResponse();
 

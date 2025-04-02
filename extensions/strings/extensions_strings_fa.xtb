@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">فایل مانیفست نامعتبر است</translation>
 <translation id="7217838517480956708">سرپرست این دستگاه نصب <ph name="EXTENSION_NAME" /> را لازم کرده است. آن را نمی‌توان تغییر داد یا حذف کرد.</translation>
 <translation id="7612608473764576263">‏مقدار ورودی برای کلید خصوصی باید قالب معتبری داشته باشد (فرمت PKCS#8، کدبندی‌شده به‌صورت PEM، کلید RSA)</translation>
+<translation id="7876803335449432072">‏فایل «<ph name="RELATIVE_PATH" />» برای دستورگان محتوا بار نمی‌شود، دستورگان‌های محتوا را فقط می‌توان از فایل‌های شیوه‌نامه پشتیبانی‌شده مانند فایل‌های css. بار کرد.</translation>
 <translation id="7939686037314084444">افزونه درست بارگیری نشد. شاید نتواند درخواست‌های شبکه را رهگیری کند.</translation>
 <translation id="7972881773422714442">گزینه‌ها: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">سَمت کاربر</translation>
 <translation id="8047248493720652249">این برنامه افزودنی نتوانست نام‌گذاری بارگیری «<ph name="ATTEMPTED_FILENAME" />» را انجام دهد زیرا یک برنامه افزودنی دیگر (<ph name="EXTENSION_NAME" />) نام فایل دیگری «<ph name="ACTUAL_FILENAME" />» را تعیین کرد.</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> از <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">فایل مانیفست وجود ندارد یا قابل‌خواندن نیست</translation>
+<translation id="8621383749470166852">‏فایل «<ph name="RELATIVE_PATH" />» برای دستورگان محتوا بار نمی‌شود، دستورگان‌های محتوا را فقط می‌توان از فایل‌های «جاوا اسکریپت» پشتیبانی‌شده مانند فایل‌های js. بار کرد.</translation>
 <translation id="8636666366616799973">بسته نامعتبر است. جزئیات: "<ph name="ERROR_MESSAGE" />"</translation>
 <translation id="8761756413268424715">«<ph name="APP_NAME" />» درخواست دسترسی به یکی از دستگاه‌های شما را دارد:</translation>
 <translation id="8885905466771744233">کلید خصوصی برای برنامهٔ افزودنی مشخص شده از قبل وجود دارد. از آن کلید مجدداً استفاده کنید یا ابتدا آن را حذف کنید.</translation>

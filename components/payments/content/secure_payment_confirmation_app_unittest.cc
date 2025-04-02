@@ -156,8 +156,8 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
       /*passkey_browser_binder=*/nullptr,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), std::move(authenticator),
-      /*network_label=*/u"", /*network_icon=*/SkBitmap(),
-      /*issuer_label=*/u"", /*issuer_icon=*/SkBitmap());
+      /*network_label=*/u"", /*network_icon=*/std::make_unique<SkBitmap>(),
+      /*issuer_label=*/u"", /*issuer_icon=*/std::make_unique<SkBitmap>());
 
   std::vector<uint8_t> expected_bytes =
       std::vector<uint8_t>(challenge_bytes_.begin(), challenge_bytes_.end());
@@ -260,8 +260,8 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
                                              mock_service),
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(GetParam().credential_parameters), std::move(authenticator),
-      /*network_label=*/u"", /*network_icon=*/SkBitmap(),
-      /*issuer_label=*/u"", /*issuer_icon=*/SkBitmap());
+      /*network_label=*/u"", /*network_icon=*/std::make_unique<SkBitmap>(),
+      /*issuer_label=*/u"", /*issuer_icon=*/std::make_unique<SkBitmap>());
   browser_bound_key_store_->PutFakeKey(
       browser_bound_key_id,
       FakeBrowserBoundKey(public_key_as_cose_key, signature,
@@ -339,8 +339,8 @@ TEST_F(SecurePaymentConfirmationAppTest, OnInstrumentDetailsError) {
       /*passkey_browser_binder=*/nullptr,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), std::move(authenticator),
-      /*network_label=*/u"", /*network_icon=*/SkBitmap(),
-      /*issuer_label=*/u"", /*issuer_icon=*/SkBitmap());
+      /*network_label=*/u"", /*network_icon=*/std::make_unique<SkBitmap>(),
+      /*issuer_label=*/u"", /*issuer_icon=*/std::make_unique<SkBitmap>());
 
   EXPECT_CALL(*mock_authenticator, GetAssertion(_, _))
       .WillOnce(RunOnceCallback<1>(

@@ -44,7 +44,6 @@ void RelaunchConfigurationWithIPHFeature(AppLaunchConfiguration config,
   // Enable the flag to ensure the IPH triggers.
   config.iph_feature_enabled = base::SysNSStringToUTF8(feature);
   if (safari_switcher) {
-    config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
     // Force the conditions that allow the iph to show.
     config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
     config.additional_args.push_back("SyncedAndFirstDevice");

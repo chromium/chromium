@@ -41,7 +41,7 @@ class CORE_EXPORT LayoutTableColumn : public LayoutBox {
 
   PhysicalSize Size() const override;
 
-  LayoutPoint LocationInternal() const override;
+  DeprecatedLayoutPoint LocationInternal() const override;
 
   // LayoutObject methods start.
 

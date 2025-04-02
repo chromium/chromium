@@ -263,8 +263,7 @@ Vector<std::optional<ParsedOffset>> ExtractPropertyIndexedKeyframeOffsets(
   return offsets;
 }
 
-void SetKeyframeValue(Element* element,
-                      Document& document,
+void SetKeyframeValue(Document& document,
                       StringKeyframe& keyframe,
                       const String& property,
                       const String& value,
@@ -296,47 +295,24 @@ void SetKeyframeValue(Element* element,
                     value));
       }
     }
-    return;
   }
-  css_property =
-      AnimationInputHelpers::KeyframeAttributeToPresentationAttribute(property,
-                                                                      element);
-  if (css_property != CSSPropertyID::kInvalid) {
-    keyframe.SetPresentationAttributeValue(CSSProperty::Get(css_property),
-                                           value, secure_context_mode,
-                                           style_sheet_contents);
-    return;
-  }
-  const QualifiedName* svg_attribute =
-      AnimationInputHelpers::KeyframeAttributeToSVGAttribute(property, element);
-  if (svg_attribute)
-    keyframe.SetSVGAttributeValue(*svg_attribute, value);
 }
 
 bool IsAnimatableKeyframeAttribute(const String& property,
-                                   Element* element,
                                    const Document& document) {
   CSSPropertyID css_property =
       AnimationInputHelpers::KeyframeAttributeToCSSProperty(property, document);
-  if (css_property != CSSPropertyID::kInvalid) {
-    return !CSSAnimations::IsAnimationAffectingProperty(
-        CSSProperty::Get(css_property));
+  if (css_property == CSSPropertyID::kInvalid) {
+    return false;
   }
 
-  css_property =
-      AnimationInputHelpers::KeyframeAttributeToPresentationAttribute(property,
-                                                                      element);
-  if (css_property != CSSPropertyID::kInvalid)
-    return true;
-
-  return !!AnimationInputHelpers::KeyframeAttributeToSVGAttribute(property,
-                                                                  element);
+  return !CSSAnimations::IsAnimationAffectingProperty(
+      CSSProperty::Get(css_property));
 }
 
 void AddPropertyValuePairsForKeyframe(
     v8::Isolate* isolate,
     v8::Local<v8::Object> keyframe_obj,
-    Element* element,
     const Document& document,
     Vector<std::pair<String, String>>& property_value_pairs,
     ExceptionState& exception_state) {
@@ -358,8 +334,9 @@ void AddPropertyValuePairsForKeyframe(
     }
 
     // By spec, we are not allowed to access any non-animatable property.
-    if (!IsAnimatableKeyframeAttribute(property, element, document))
+    if (!IsAnimatableKeyframeAttribute(property, document)) {
       continue;
+    }
 
     // By spec, we are only allowed to access a given (property, value) pair
     // once. This is observable by the web client, so we take care to adhere
@@ -384,8 +361,7 @@ void AddPropertyValuePairsForKeyframe(
   }
 }
 
-StringKeyframeVector ConvertArrayForm(Element* element,
-                                      Document& document,
+StringKeyframeVector ConvertArrayForm(Document& document,
                                       ScriptIterator iterator,
                                       ScriptState* script_state,
                                       ExceptionState& exception_state) {
@@ -422,7 +398,7 @@ StringKeyframeVector ConvertArrayForm(Element* element,
 
     if (!keyframe->IsNullOrUndefined()) {
       AddPropertyValuePairsForKeyframe(
-          isolate, v8::Local<v8::Object>::Cast(keyframe), element, document,
+          isolate, v8::Local<v8::Object>::Cast(keyframe), document,
           property_value_pairs, exception_state);
       if (exception_state.HadException())
         return {};
@@ -495,7 +471,7 @@ StringKeyframeVector ConvertArrayForm(Element* element,
     const BaseKeyframe* base_keyframe = processed_base_keyframes[i];
     for (const auto& pair : processed_properties[i]) {
       // TODO(crbug.com/777971): Make parsing of property values spec-compliant.
-      SetKeyframeValue(element, document, *keyframe, pair.first, pair.second,
+      SetKeyframeValue(document, *keyframe, pair.first, pair.second,
                        execution_context);
     }
 
@@ -634,8 +610,9 @@ StringKeyframeVector ConvertObjectForm(Element* element,
     }
 
     // By spec, we are not allowed to access any non-animatable property.
-    if (!IsAnimatableKeyframeAttribute(property, element, document))
+    if (!IsAnimatableKeyframeAttribute(property, document)) {
       continue;
+    }
 
     Vector<String> values;
     if (!GetPropertyIndexedKeyframeValues(v8_keyframe, property, script_state,
@@ -661,7 +638,7 @@ StringKeyframeVector ConvertObjectForm(Element* element,
       if (result.is_new_entry)
         result.stored_value->value = MakeGarbageCollected<StringKeyframe>();
 
-      SetKeyframeValue(element, document, *result.stored_value->value, property,
+      SetKeyframeValue(document, *result.stored_value->value, property,
                        values[i], execution_context);
     }
   }
@@ -832,9 +809,8 @@ StringKeyframeVector EffectInput::ParseKeyframesArgument(
     parsed_keyframes = ConvertObjectForm(element, document, keyframes_obj,
                                          script_state, exception_state);
   } else {
-    parsed_keyframes =
-        ConvertArrayForm(element, document, std::move(script_iterator),
-                         script_state, exception_state);
+    parsed_keyframes = ConvertArrayForm(document, std::move(script_iterator),
+                                        script_state, exception_state);
   }
 
   for (wtf_size_t i = 0; i < parsed_keyframes.size(); i++) {

@@ -58,7 +58,7 @@ constexpr int kBadCommand = 102;
 
 base::Value ValueFromString(const std::string& values) {
   std::optional<base::Value> results_value = base::JSONReader::Read(values);
-  EXPECT_TRUE(results_value);
+  EXPECT_TRUE(results_value) << values;
   return results_value->Clone();
 }
 
@@ -357,7 +357,9 @@ void AppTestHelper::FirstTaskRun() {
                                   WithSystemScope(Wrap(
                                       &ExpectLegacyAppCommandWebSucceeds))))))},
           {"expect_legacy_policy_status_succeeds",
-           WithSystemScope(Wrap(&ExpectLegacyPolicyStatusSucceeds))},
+           WithSwitch(
+               "updater_version",
+               WithSystemScope(Wrap(&ExpectLegacyPolicyStatusSucceeds)))},
           {"legacy_install_app",
            WithSwitch(
                "app_version",
@@ -449,8 +451,9 @@ void AppTestHelper::FirstTaskRun() {
           {"setup_fake_updater_lower_version",
            WithSystemScope(Wrap(&SetupFakeUpdaterLowerVersion))},
           {"setup_real_updater",
-           WithSwitch("updater_path",
-                      WithSystemScope(Wrap(&SetupRealUpdater)))},
+           WithSwitch("switches",
+                      WithSwitch("updater_path",
+                                 WithSystemScope(Wrap(&SetupRealUpdater))))},
           {"set_first_registration_counter",
            WithSwitch("value", WithSystemScope(Wrap(&SetServerStarts)))},
           {"stress_update_service",

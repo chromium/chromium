@@ -10,9 +10,11 @@
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/fullscreen_signin/fullscreen_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/instant_signin/instant_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_screen_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -34,6 +36,9 @@ enum class SignInHistorySyncStep {
   // Present ConsistencyPromoSigninCoordinator. Should be used only if there is
   // at least one identity.
   kBottomSheetSignin,
+  // Present FullscreenSigninCoordinator. Should be used only if there is
+  // at least one identity.
+  kFullscreenSignin,
   // Present HistorySyncPopupCoordinator.
   kHistorySync,
   // Last step.
@@ -57,6 +62,8 @@ enum class SignInHistorySyncStep {
   raw_ptr<syncer::SyncService> _syncService;
   // Whether the history opt in should be optional.
   BOOL _optionalHistorySync;
+  // Whether the promo should be displayed in a fullscreen modal.
+  BOOL _fullscreenPromo;
 }
 
 - (instancetype)
@@ -64,12 +71,14 @@ enum class SignInHistorySyncStep {
                        browser:(Browser*)browser
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                    promoAction:(signin_metrics::PromoAction)promoAction
-           optionalHistorySync:(BOOL)optionalHistorySync {
+           optionalHistorySync:(BOOL)optionalHistorySync
+               fullscreenPromo:(BOOL)fullscreenPromo {
   self = [super initWithBaseViewController:viewController
                                    browser:browser
                                accessPoint:accessPoint];
   if (self) {
     _optionalHistorySync = optionalHistorySync;
+    _fullscreenPromo = fullscreenPromo;
     _promoAction = promoAction;
     _currentStep = SignInHistorySyncStep::kStart;
   }
@@ -175,6 +184,19 @@ enum class SignInHistorySyncStep {
 - (ChromeCoordinator<InterruptibleChromeCoordinator>*)
     createPresentStepChildCoordinator {
   switch (_currentStep) {
+    case SignInHistorySyncStep::kFullscreenSignin: {
+      SigninCoordinator* coordinator = [[FullscreenSigninCoordinator alloc]
+          initWithBaseViewController:self.baseViewController
+                             browser:self.browser
+                      screenProvider:[[SigninScreenProvider alloc] init]
+                         accessPoint:self.accessPoint];
+      __weak __typeof(self) weakSelf = self;
+      coordinator.signinCompletion =
+          ^(SigninCoordinatorResult result, id<SystemIdentity>) {
+            [weakSelf currentStepDidFinishWithResult:result];
+          };
+      return coordinator;
+    }
     case SignInHistorySyncStep::kBottomSheetSignin: {
       SigninCoordinator* coordinator =
           [[ConsistencyPromoSigninCoordinator alloc]
@@ -243,23 +265,20 @@ enum class SignInHistorySyncStep {
 - (SignInHistorySyncStep)nextStep {
   switch (_currentStep) {
     case SignInHistorySyncStep::kStart: {
-      bool hasIdentitiesOnDevice = false;
-      if (IsUseAccountListFromIdentityManagerEnabled()) {
-        signin::IdentityManager* identityManager =
-            IdentityManagerFactory::GetForProfile(self.profile);
-        hasIdentitiesOnDevice = !identityManager->GetAccountsOnDevice().empty();
-      } else {
-        ChromeAccountManagerService* accountManagerService =
-            ChromeAccountManagerServiceFactory::GetForProfile(self.profile);
-        hasIdentitiesOnDevice = accountManagerService->HasIdentities();
-      }
-      if (hasIdentitiesOnDevice) {
+      signin::IdentityManager* identityManager =
+          IdentityManagerFactory::GetForProfile(self.profile);
+      bool hasIdentitiesOnDevice =
+          !identityManager->GetAccountsOnDevice().empty();
+      if (_fullscreenPromo) {
+        return SignInHistorySyncStep::kFullscreenSignin;
+      } else if (hasIdentitiesOnDevice) {
         return SignInHistorySyncStep::kBottomSheetSignin;
       }
       return SignInHistorySyncStep::kInstantSignin;
     }
     case SignInHistorySyncStep::kInstantSignin:
     case SignInHistorySyncStep::kBottomSheetSignin:
+    case SignInHistorySyncStep::kFullscreenSignin:
       return SignInHistorySyncStep::kHistorySync;
     case SignInHistorySyncStep::kHistorySync:
       return SignInHistorySyncStep::kCompleted;

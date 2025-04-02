@@ -103,6 +103,11 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingReadAloud);
   }
 
+  void DisableReadAloud() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kReadAnythingReadAloud);
+  }
+
   std::set<ui::AXNodeID> GetNotIgnoredIds(base::span<const ui::AXNodeID> ids) {
     std::set<ui::AXNodeID> set;
     for (auto id : ids) {
@@ -1822,6 +1827,7 @@ TEST_F(ReadAnythingAppModelTest, OnSelection_HandlesClickAndDragEvents) {
 }
 
 TEST_F(ReadAnythingAppModelTest, LastExpandedNodeNamedChanged_TriggersRedraw) {
+  DisableReadAloud();
   ui::AXTreeUpdate initial_update;
   test::SetUpdateTreeID(&initial_update, tree_id_);
   static constexpr int kInitialId = 2;
@@ -1846,6 +1852,78 @@ TEST_F(ReadAnythingAppModelTest, LastExpandedNodeNamedChanged_TriggersRedraw) {
   EXPECT_EQ(model().end_offset(), -1);
   EXPECT_EQ(model().start_node_id(), ui::kInvalidAXNodeID);
   EXPECT_EQ(model().end_node_id(), ui::kInvalidAXNodeID);
+  EXPECT_TRUE(model().selection_node_ids().empty());
+}
+
+TEST_F(ReadAnythingAppModelTest, Expand_NodeDoesNotExist_Redistills) {
+  EnableReadAloud();
+  ui::AXTreeUpdate initial_update;
+  test::SetUpdateTreeID(&initial_update, tree_id_);
+  static constexpr int kInitialId = 2;
+  ui::AXNodeData initial_node = test::GenericContainerNode(kInitialId);
+  initial_update.nodes = {std::move(initial_node)};
+  AccessibilityEventReceived({std::move(initial_update)});
+  model().Reset({kInitialId});
+
+  EXPECT_FALSE(model().requires_distillation());
+  EXPECT_FALSE(model().redraw_required());
+
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  static constexpr int kExpandedId = 4;
+  ui::AXNodeData updated_node = test::GenericContainerNode(kExpandedId);
+  updated_node.AddState(ax::mojom::State::kExpanded);
+  update.nodes = {std::move(updated_node)};
+  AccessibilityEventReceived({std::move(update)});
+
+  EXPECT_TRUE(model().requires_distillation());
+  EXPECT_FALSE(model().redraw_required());
+}
+
+TEST_F(ReadAnythingAppModelTest, Expand_NodeDoesExist_Redraws) {
+  EnableReadAloud();
+  ui::AXTreeUpdate initial_update;
+  test::SetUpdateTreeID(&initial_update, tree_id_);
+  static constexpr int kInitialId = 2;
+  ui::AXNodeData initial_node = test::GenericContainerNode(kInitialId);
+  initial_update.nodes = {initial_node};
+  AccessibilityEventReceived({std::move(initial_update)});
+  model().Reset({kInitialId});
+
+  EXPECT_FALSE(model().requires_distillation());
+  EXPECT_FALSE(model().redraw_required());
+
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  initial_node.AddState(ax::mojom::State::kExpanded);
+  update.nodes = {std::move(initial_node)};
+  AccessibilityEventReceived({std::move(update)});
+
+  EXPECT_FALSE(model().requires_distillation());
+  EXPECT_TRUE(model().redraw_required());
+}
+
+TEST_F(ReadAnythingAppModelTest, Collapse_Redraws) {
+  EnableReadAloud();
+  ui::AXTreeUpdate initial_update;
+  test::SetUpdateTreeID(&initial_update, tree_id_);
+  static constexpr int kInitialId = 2;
+  ui::AXNodeData initial_node = test::GenericContainerNode(kInitialId);
+  initial_node.AddState(ax::mojom::State::kExpanded);
+  initial_update.nodes = {initial_node};
+  AccessibilityEventReceived({std::move(initial_update)});
+  model().Reset({kInitialId});
+
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  initial_node.AddState(ax::mojom::State::kCollapsed);
+  initial_node.RemoveState(ax::mojom::State::kExpanded);
+  update.nodes = {std::move(initial_node)};
+  AccessibilityEventReceived({std::move(update)});
+
+  EXPECT_TRUE(model().redraw_required());
+  EXPECT_FALSE(model().requires_post_process_selection());
+  EXPECT_FALSE(model().has_selection());
   EXPECT_TRUE(model().selection_node_ids().empty());
 }
 
@@ -1903,4 +1981,9 @@ TEST_F(ReadAnythingAppModelTest,
   AccessibilityEventReceived({std::move(update)});
 
   EXPECT_TRUE(model().reset_draw_timer());
+}
+
+TEST_F(ReadAnythingAppModelTest, GetAXNode_InvalidNodeId_ReturnsNullptr) {
+  ui::AXNode* node = model().GetAXNode(12);
+  EXPECT_EQ(node, nullptr);
 }

@@ -2991,6 +2991,7 @@
 <translation id="3045447014237878114">ይህ ጣቢያ በርካታ ፋይሎችን በራስ-ሰር አውርዷል</translation>
 <translation id="3046178388369461825">የLinux ዲስክ ቦታ በጣም ዝቅተኛ ነው</translation>
 <translation id="304644035656848980">የማይክሮፎንዎ ቅድመ እይታ</translation>
+<translation id="3046892784550338476">ሥሪት <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">ድረ-ገፅ፣ ሙሉ</translation>
 <translation id="304747341537320566">የንግግር ፕሮግራሞች</translation>
 <translation id="3047678109605649715">በመሣሪያዎ ላይ ምንም የ<ph name="LANGUAGE" /> ድምፆች የሉም። በመሣሪያዎ ላይ ቦታ ያጽዱ እና እንደገና ይሞክሩ።</translation>
@@ -3083,6 +3084,7 @@
 <translation id="3122883569442693641">ተጨማሪ ዝርዝሮች</translation>
 <translation id="3124111068741548686">የተጠቃሚ መያዣዎች</translation>
 <translation id="3124332159330678621">አሳሸዎን አዲስ መልክ ለመስጠት Chromeን ያብጁ</translation>
+<translation id="3125816458150005808">እሱን መንቀል እና ከምናሌው መክፈት ይችላሉ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">ኃይል መሙላትን እና የአፈጻጸም ችግሮችን ለማስቀረት ተኳዃኝ የሆነ Dell ወይም USB Type-C ኃይል አስማሚ ይጠቀሙ።</translation>
 <translation id="3127862849166875294">የLinux ዲስክ መጠን መለወጥ</translation>
@@ -3458,7 +3460,7 @@
 <translation id="3414966631182382431">የእርስዎ <ph name="BEGIN_LINK" />አሳሽ የሚተዳደረው<ph name="END_LINK" /> በ<ph name="MANAGER" /> ነው</translation>
 <translation id="3414974735818878791">ወደ መሃል ጠቅታ</translation>
 <translation id="3415580428903497523">ከስርዓተ ክወናዎ የመጡ የሀገር ውስጥ የዕውቅና ማረጋገጫዎች ይጠቀሙ</translation>
-<translation id="341589277604221596">የቀጥታ ስርጭት መግለጫ ጽሁፍ - <ph name="LANGUAGE" /></translation>
+<translation id="341589277604221596">የቀጥታ ሥርጭት መግለጫ ጽሑፍ - <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">ሁልጊዜ ሙሉ ዩአርኤሎችን አሳይ</translation>
 <translation id="3417835166382867856">ትሮችን ይፈልጉ</translation>
 <translation id="3417836307470882032">ወታደራዊ ሰዓት</translation>
@@ -5331,6 +5333,7 @@
 <translation id="4723140812774948886">ከቀጣዩ ጋር ይለዋወጡ</translation>
 <translation id="4724450788351008910">ዝምድናው ተለውጧል</translation>
 <translation id="4725511304875193254">ኮርጂ</translation>
+<translation id="4725762702191453794">የትር ፍለጋ አሁን በመሣሪያ አሞሌዎ ላይ ተሰክቷል</translation>
 <translation id="4726710355753484204">ለማጉላት Ctrl + Alt + ብሩህነት ጨምርን ይጠቀሙ።
 ለማሳነስ Ctrl + Alt + ብሩህነት ቀንስን ይጠቀሙ።</translation>
 <translation id="4726710629007580002">ይህንን ቅጥያ ለመጫን ሲሞከር ማስጠንቀቂያዎች ነበሩ፦</translation>
