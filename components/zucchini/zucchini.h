@@ -23,6 +23,7 @@ namespace status {
 
 // Zucchini status code, which can also be used as process exit code. Therefore
 // success is explicitly 0.
+// LINT.IfChange
 enum Code {
   kStatusSuccess = 0,
   kStatusInvalidParam = 1,
@@ -36,6 +37,7 @@ enum Code {
   kStatusIoError = 9,
   kStatusFatal = 10,
 };
+// LINT.ThenChange(/components/services/patch/public/mojom/file_patcher.mojom)
 
 }  // namespace status
 
