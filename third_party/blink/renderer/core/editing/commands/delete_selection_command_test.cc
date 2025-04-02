@@ -34,9 +34,9 @@ TEST_F(DeleteSelectionCommandTest, deleteListFromTable) {
       "</ol></td></tr></table>"
       "</div>");
 
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
-  Element* table = GetDocument().QuerySelector(AtomicString("table"));
-  Element* br = GetDocument().QuerySelector(AtomicString("br"));
+  Element* div = QuerySelector("div");
+  Element* table = QuerySelector("table");
+  Element* br = QuerySelector("br");
 
   LocalFrame* frame = GetDocument().GetFrame();
   frame->Selection().SetSelection(

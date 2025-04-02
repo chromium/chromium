@@ -252,7 +252,7 @@ TEST_F(LayoutSelectionTest,
        InvalidationShouldNotChangeRefferedLayoutObjectState) {
   SetBodyContent(
       "<div id='d1'>div1</div><div id='d2'>foo<span>bar</span>baz</div>");
-  Node* span = GetDocument().QuerySelector(AtomicString("span"));
+  Node* span = QuerySelector("span");
   Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(span->firstChild(), 0),
@@ -271,8 +271,8 @@ TEST_F(LayoutSelectionTest,
       "    'baz', None, NotInvalidate ",
       DumpSelectionInfo());
 
-  Node* d1 = GetDocument().QuerySelector(AtomicString("#d1"));
-  Node* d2 = GetDocument().QuerySelector(AtomicString("#d2"));
+  Node* d1 = QuerySelector("#d1");
+  Node* d2 = QuerySelector("#d2");
   Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(d1, 0), Position(d2, 0))
@@ -874,8 +874,8 @@ TEST_F(LayoutSelectionTest, MoveNode) {
       "    B, Contain, NotInvalidate \n"
       "      'bar', End(0,2), ShouldInvalidate ",
       DumpSelectionInfo());
-  Node* div1 = GetDocument().QuerySelector(AtomicString("#div1"));
-  Node* div2 = GetDocument().QuerySelector(AtomicString("#div2"));
+  Node* div1 = QuerySelector("#div1");
+  Node* div2 = QuerySelector("#div2");
   div1->appendChild(div2);
   EXPECT_EQ(
       "BODY, Contain, NotInvalidate \n"
@@ -1239,8 +1239,7 @@ TEST_F(NGLayoutSelectionTest, BRStatus) {
       SetSelectionTextToBody("<div>foo<!--^--><br><!--|-->bar</div>");
   Selection().SetSelection(selection, SetSelectionOptions());
   Selection().CommitAppearanceIfNeeded();
-  LayoutObject* const layout_br =
-      GetDocument().QuerySelector(AtomicString("br"))->GetLayoutObject();
+  LayoutObject* const layout_br = QuerySelector("br")->GetLayoutObject();
   CHECK(layout_br->IsBR());
   EXPECT_EQ(LayoutSelectionStatus(3u, 4u, SelectSoftLineBreak::kNotSelected),
             ComputeLayoutSelectionStatus(*layout_br));
@@ -1252,8 +1251,7 @@ TEST_F(NGLayoutSelectionTest, BRStatus) {
 TEST_F(NGLayoutSelectionTest, WBRStatus) {
   SetSelectionAndUpdateLayoutSelection(
       "<div style=\"width:0\">^foo<wbr>bar|</div>");
-  const LayoutObject* layout_wbr =
-      GetDocument().QuerySelector(AtomicString("wbr"))->GetLayoutObject();
+  const LayoutObject* layout_wbr = QuerySelector("wbr")->GetLayoutObject();
   EXPECT_EQ(LayoutSelectionStatus(3u, 4u, SelectSoftLineBreak::kSelected),
             ComputeLayoutSelectionStatus(*layout_wbr));
   EXPECT_EQ(SelectionState::kInside,
