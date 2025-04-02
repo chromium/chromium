@@ -405,4 +405,42 @@ TEST_F(GroupingHeuristicsTest, DisableSimilarSource) {
   ASSERT_FALSE(suggestions.has_value());
 }
 
+TEST_F(GroupingHeuristicsTest, SimilarSourceHeuristic_SameParentTabCluster) {
+  std::vector<URLVisitAggregate> candidates = {};
+
+  // The parent tab relationship for the below 6 tabs are
+  // 111->112
+  // (112, 113) -> 114
+  // 115 -> 116
+  // (111, 112, 113, 114) will be clustered.
+  candidates.push_back(CreateVisitForTab(base::Seconds(60), 111));
+  GetTabMetadata(candidates[0]).parent_tab_id = 112;
+
+  candidates.push_back(CreateVisitForTab(base::Seconds(250), 112));
+  GetTabMetadata(candidates[1]).parent_tab_id = 114;
+
+  candidates.push_back(CreateVisitForTab(base::Seconds(350), 113));
+  GetTabMetadata(candidates[2]).parent_tab_id = 114;
+
+  candidates.push_back(CreateVisitForTab(base::Seconds(800), 114));
+  GetTabMetadata(candidates[3]).parent_tab_id = 114;
+
+  // Not clustered since parent ID is different.
+  candidates.push_back(CreateVisitForTab(base::Seconds(350), 115));
+  GetTabMetadata(candidates[4]).parent_tab_id = 116;
+
+  candidates.push_back(CreateVisitForTab(base::Seconds(800), 116));
+  GetTabMetadata(candidates[4]).parent_tab_id = 116;
+
+  std::optional<GroupSuggestions> suggestions = GetSuggestionsFor(
+      std::move(candidates), GroupSuggestion::SuggestionReason::kSimilarSource);
+
+  ASSERT_TRUE(suggestions.has_value());
+  ASSERT_EQ(1u, suggestions->suggestions.size());
+  const auto& suggestion = suggestions->suggestions[0];
+  EXPECT_EQ(GroupSuggestion::SuggestionReason::kSimilarSource,
+            suggestion.suggestion_reason);
+  EXPECT_THAT(suggestion.tab_ids, ElementsAre(111, 112, 113, 114));
+}
+
 }  // namespace visited_url_ranking

@@ -47,8 +47,7 @@ public class SuggestionEventObserver {
                         @TabLaunchType int type,
                         @TabCreationState int creationState,
                         boolean markedForSelection) {
-                    if (markedForSelection
-                            && creationState == TabCreationState.LIVE_IN_FOREGROUND) {
+                    if (creationState != TabCreationState.FROZEN_ON_RESTORE) {
                         mGroupSuggestionsService.didAddTab(tab.getId(), type);
                     }
                 }

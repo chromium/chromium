@@ -98,11 +98,24 @@ public class SuggestionEventObserverUnitTest {
                 .getValue()
                 .didAddTab(
                         mTab,
-                        TabLaunchType.FROM_RESTORE,
+                        TabLaunchType.FROM_CHROME_UI,
                         TabCreationState.LIVE_IN_FOREGROUND,
                         /* markedForSelection= */ true);
 
-        verify(mGroupSuggestionsService).didAddTab(eq(TAB_ID), eq(TabLaunchType.FROM_RESTORE));
+        verify(mGroupSuggestionsService).didAddTab(eq(TAB_ID), eq(TabLaunchType.FROM_CHROME_UI));
+    }
+
+    @Test
+    public void testDidAddTab_IgnoreRestore() {
+        mTabModelObserverCaptor
+                .getValue()
+                .didAddTab(
+                        mTab,
+                        TabLaunchType.FROM_RESTORE,
+                        TabCreationState.FROZEN_ON_RESTORE,
+                        /* markedForSelection= */ true);
+
+        verify(mGroupSuggestionsService, never()).didAddTab(anyInt(), anyInt());
     }
 
     @Test

@@ -129,7 +129,13 @@ class SimilarSourceHeuristic : public GroupingHeuristics::Heuristic {
         URLVisitAggregateRankingModelInputSignals::kTabParentId);
     const char* tab_group_sync_id_input = GetNameForInput(
         URLVisitAggregateRankingModelInputSignals::kTabGroupSyncId);
+    const char* tab_id_input =
+        GetNameForInput(URLVisitAggregateRankingModelInputSignals::kTabId);
 
+    std::unordered_map<float, float> tab_id_to_parent_id_map;
+    tab_id_to_parent_id_map.reserve(inputs.size());
+    std::unordered_map<float, unsigned> tab_id_to_tab_index_map;
+    tab_id_to_tab_index_map.reserve(inputs.size());
     for (unsigned i = 0; i < inputs.size(); ++i) {
       std::optional<ProcessedValue> tab_opened_by_user =
           inputs[i]->GetMetadataArgument(tab_opened_by_user_input);
@@ -141,6 +147,8 @@ class SimilarSourceHeuristic : public GroupingHeuristics::Heuristic {
           inputs[i]->GetMetadataArgument(tab_parent_id_input);
       std::optional<ProcessedValue> tab_group_sync_id =
           inputs[i]->GetMetadataArgument(tab_group_sync_id_input);
+      std::optional<ProcessedValue> tab_id =
+          inputs[i]->GetMetadataArgument(tab_id_input);
 
       if (!tab_opened_by_user || tab_opened_by_user->float_val == 0) {
         // Do not group tabs not opened by user.
@@ -156,11 +164,37 @@ class SimilarSourceHeuristic : public GroupingHeuristics::Heuristic {
         result[i] = base::FastHash(tab_launch_package_name->str_val);
         continue;
       }
-      if (tab_parent_id) {
-        result[i] = tab_parent_id->float_val;
+      if (tab_parent_id && tab_id) {
+        tab_id_to_parent_id_map[tab_id->float_val] = tab_parent_id->float_val;
+        tab_id_to_tab_index_map[tab_id->float_val] = i;
         continue;
       }
-      // TODO(ssid): Reconsider grouping based on launch types.
+    }
+    // Cluster tabs based on parent tab relationship by finding disjoint sets in
+    // the tab-parent DAG.
+    // A bool to track whether there are any cluster merge happen in each round.
+    bool merged = true;
+    while (merged) {
+      merged = false;
+      std::unordered_map<float, float> new_tab_id_to_parent_id_map;
+      new_tab_id_to_parent_id_map.reserve(tab_id_to_parent_id_map.size());
+      for (const auto& pair : tab_id_to_parent_id_map) {
+        float tab_id = pair.first;
+        float parent_id = pair.second;
+        if (base::Contains(tab_id_to_parent_id_map, parent_id) &&
+            tab_id_to_parent_id_map[parent_id] != parent_id) {
+          new_tab_id_to_parent_id_map[tab_id] =
+              tab_id_to_parent_id_map[parent_id];
+          // Keep track of merge.
+          merged = true;
+        } else {
+          new_tab_id_to_parent_id_map[tab_id] = parent_id;
+        }
+      }
+      tab_id_to_parent_id_map.swap(new_tab_id_to_parent_id_map);
+    }
+    for (const auto& pair : tab_id_to_tab_index_map) {
+      result[pair.second] = tab_id_to_parent_id_map[pair.first];
     }
     return result;
   }

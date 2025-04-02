@@ -43,6 +43,7 @@ const char kSignalAndroidTabLaunchPackageName[] =
 const char kSignalTabParentId[] = "tab_parent_id";
 const char kSignalTimeSinceTabCreationSec[] = "time_since_tab_creation_sec";
 const char kSignalTabGroupSyncId[] = "tab_group_sync_id";
+const char kSignalTabId[] = "tab_id";
 
 constexpr std::array<FieldSchema, kTabResumptionNumInputs>
     kURLVisitAggregateSchema = {{
@@ -138,6 +139,8 @@ constexpr std::array<FieldSchema, kSuggestionsNumInputs>
          .name = kSignalTimeSinceTabCreationSec},
         {.signal = URLVisitAggregateRankingModelInputSignals::kTabGroupSyncId,
          .name = kSignalTabGroupSyncId},
+        {.signal = URLVisitAggregateRankingModelInputSignals::kTabId,
+         .name = kSignalTabId},
     }};
 
 }  // namespace visited_url_ranking
