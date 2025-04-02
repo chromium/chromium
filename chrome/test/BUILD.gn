@@ -11959,6 +11959,9 @@ source_set("sync_integration_test_support") {
       "//chrome/browser/android/webapk:webapk_sources",
       "//components/saved_tab_groups/public:conversion_utils",
     ]
+    if (enable_extensions_core) {
+      deps += [ "//chrome/browser/extensions" ]
+    }
   } else {
     deps += [
       "//chrome/browser/apps/app_service",
