@@ -613,6 +613,7 @@ void LocalFrameClientImpl::BeginNavigation(
         should_check_main_world_content_security_policy,
     mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token,
     base::TimeTicks input_start_time,
+    base::TimeTicks actual_navigation_start,
     const String& href_translate,
     const std::optional<Impression>& impression,
     const LocalFrameToken* initiator_frame_token,
@@ -645,6 +646,7 @@ void LocalFrameClientImpl::BeginNavigation(
       should_check_main_world_content_security_policy;
   navigation_info->blob_url_token = std::move(blob_url_token);
   navigation_info->input_start = input_start_time;
+  navigation_info->actual_navigation_start = actual_navigation_start;
   navigation_info->initiator_frame_token =
       base::OptionalFromPtr(initiator_frame_token);
   navigation_info->initiator_navigation_state_keep_alive_handle =
