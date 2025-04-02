@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -22,6 +23,7 @@
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
+using chrome_test_util::SettingsProfileMatcher;
 using chrome_test_util::SettingsToolbarAddButton;
 
 namespace {
@@ -54,6 +56,11 @@ id<GREYMatcher> TextFieldWithLabel(NSString* text_field_label) {
   return grey_allOf(grey_accessibilityID([text_field_label
                         stringByAppendingString:@"_textField"]),
                     grey_kindOfClass([UITextField class]), nil);
+}
+
+// Matcher for the "add address" bottom sheet.
+id<GREYMatcher> EditProfileBottomSheet() {
+  return grey_accessibilityID(kEditProfileBottomSheetViewIdentfier);
 }
 
 // Helper to open the address settings page.
@@ -117,7 +124,7 @@ void OpenAddressSettings() {
       performAction:grey_replaceText(@"H3H 1H1")];
 }
 
-// Helper to open the add address view.
+// Helper to open the "add address" bottom sheet.
 - (void)openAddAddressView:(BOOL)signIn {
   if (signIn) {
     [SigninEarlGreyUI
@@ -131,6 +138,10 @@ void OpenAddressSettings() {
   // Tap the "Add" button.
   [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
       performAction:grey_tap()];
+
+  // Verify the "add address" bottom sheet is visible.
+  [[EarlGrey selectElementWithMatcher:EditProfileBottomSheet()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 #pragma mark - Tests
@@ -182,11 +193,23 @@ void OpenAddressSettings() {
   [SigninEarlGreyUI signOut];
 }
 
-// Tests that tapping the `Cancel` button triggers the dismissal of the add
-// address bottom sheet.
+// Tests that tapping the `Cancel` button triggers the dismissal of the "add
+// address" bottom sheet.
 - (void)testCancelButton {
-  // TODO(crbug.com/406799169): EGTest for checking if the `Cancel` button works
-  // as expected.
+  [self openAddAddressView:NO];
+
+  // Tap "Cancel".
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kEditProfileBottomSheetCancelButton),
+                                   grey_accessibilityTrait(
+                                       UIAccessibilityTraitButton),
+                                   nil)] performAction:grey_tap()];
+
+  // Verify the address settings opened.
+  [[EarlGrey selectElementWithMatcher:SettingsProfileMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests the 'Save' button enabled state when manually adding an address to the
