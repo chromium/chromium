@@ -1176,11 +1176,9 @@ void RootWindowController::CreateContainers() {
                   non_lock_screen_containers);
 
   aura::Window* shutdown_screenshot_container = non_lock_screen_containers;
-  if (features::IsForestFeatureEnabled()) {
-    shutdown_screenshot_container = CreateContainer(
-        kShellWindowId_ShutdownScreenshotContainer,
-        "ShutdownScreenshotContainer", non_lock_screen_containers);
-  }
+  shutdown_screenshot_container = CreateContainer(
+      kShellWindowId_ShutdownScreenshotContainer, "ShutdownScreenshotContainer",
+      non_lock_screen_containers);
 
   for (const auto& id : desks_util::GetDesksContainersIds()) {
     aura::Window* container =
