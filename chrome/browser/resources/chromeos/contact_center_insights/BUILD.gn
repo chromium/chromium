@@ -12,12 +12,12 @@ reporting_proto_js_dir =
 # purposes
 js_library("reporting_protos") {
   extra_deps = [
-    "//components/reporting/proto:health_proto",
-    "//components/reporting/proto:metric_data_proto",
-    "//components/reporting/proto:record_constants",
-    "//components/reporting/proto:record_proto",
-    "//components/reporting/proto:session_affiliated_user_proto",
-    "//components/reporting/proto:status_proto",
+    "//components/reporting/proto:health_proto_gen",
+    "//components/reporting/proto:metric_data_proto_gen",
+    "//components/reporting/proto:record_constants_gen",
+    "//components/reporting/proto:record_proto_gen",
+    "//components/reporting/proto:session_affiliated_user_proto_gen",
+    "//components/reporting/proto:status_proto_gen",
   ]
 
   deps = [ "//third_party/protobuf:js_proto" ]
