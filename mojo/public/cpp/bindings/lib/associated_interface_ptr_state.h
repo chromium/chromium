@@ -15,6 +15,7 @@
 #include "base/component_export.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -76,8 +77,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) AssociatedInterfacePtrStateBase {
   }
 
   scoped_refptr<ThreadSafeProxy> CreateThreadSafeProxy(
-      scoped_refptr<ThreadSafeProxy::Target> target) {
-    return endpoint_client_->CreateThreadSafeProxy(std::move(target));
+      scoped_refptr<ThreadSafeProxy::Target> target,
+      const base::Location& location) {
+    return endpoint_client_->CreateThreadSafeProxy(std::move(target), location);
   }
 
  protected:
