@@ -26,7 +26,6 @@ public class AutofillSuggestion extends DropdownItemBase {
     private final @Nullable String mSecondarySublabel;
     private final @Nullable String mLabelContentDescription;
     private final int mIconId;
-    private final boolean mIsIconAtStart;
     private final int mSuggestionType;
     private final boolean mIsDeletable;
     private final boolean mApplyDeactivatedStyle;
@@ -44,7 +43,6 @@ public class AutofillSuggestion extends DropdownItemBase {
      * @param sublabel The describing sublabel of the Autofill suggestion.
      * @param iconId The resource ID for the icon associated with the suggestion, or {@code
      *     DropdownItem.NO_ICON} for no icon.
-     * @param isIconAtStart {@code true} if {@code iconId} is displayed before {@code label}.
      * @param popupItemId The type of suggestion.
      * @param isDeletable Whether the item can be deleted by the user.
      * @param applyDeactivatedStyle Whether to apply deactivated style to the suggestion.
@@ -62,7 +60,6 @@ public class AutofillSuggestion extends DropdownItemBase {
             @Nullable String secondarySublabel,
             @Nullable String labelContentDescription,
             int iconId,
-            boolean isIconAtStart,
             @SuggestionType int popupItemId,
             boolean isDeletable,
             boolean applyDeactivatedStyle,
@@ -77,7 +74,6 @@ public class AutofillSuggestion extends DropdownItemBase {
         mSecondarySublabel = secondarySublabel;
         mLabelContentDescription = labelContentDescription;
         mIconId = iconId;
-        mIsIconAtStart = isIconAtStart;
         mSuggestionType = popupItemId;
         mIsDeletable = isDeletable;
         mApplyDeactivatedStyle = applyDeactivatedStyle;
@@ -119,14 +115,6 @@ public class AutofillSuggestion extends DropdownItemBase {
             return R.color.insecure_context_payment_disabled_message_text;
         }
         return super.getLabelFontColorResId();
-    }
-
-    @Override
-    public boolean isIconAtStart() {
-        if (mIsIconAtStart) {
-            return true;
-        }
-        return super.isIconAtStart();
     }
 
     @Override
@@ -187,7 +175,6 @@ public class AutofillSuggestion extends DropdownItemBase {
                 && Objects.equals(this.mSecondarySublabel, other.mSecondarySublabel)
                 && Objects.equals(this.mLabelContentDescription, other.mLabelContentDescription)
                 && this.mIconId == other.mIconId
-                && this.mIsIconAtStart == other.mIsIconAtStart
                 && this.mSuggestionType == other.mSuggestionType
                 && this.mIsDeletable == other.mIsDeletable
                 && this.mApplyDeactivatedStyle == other.mApplyDeactivatedStyle
@@ -203,7 +190,6 @@ public class AutofillSuggestion extends DropdownItemBase {
         private int mIconId;
         private @Nullable GURL mCustomIconUrl;
         private @Nullable Drawable mIconDrawable;
-        private boolean mIsIconAtStart;
         private boolean mIsDeletable;
         private boolean mApplyDeactivatedStyle;
         private boolean mShouldDisplayTermsAvailable;
@@ -228,11 +214,6 @@ public class AutofillSuggestion extends DropdownItemBase {
 
         public Builder setIconDrawable(Drawable iconDrawable) {
             this.mIconDrawable = iconDrawable;
-            return this;
-        }
-
-        public Builder setIsIconAtStart(boolean isIconAtStart) {
-            this.mIsIconAtStart = isIconAtStart;
             return this;
         }
 
@@ -303,7 +284,6 @@ public class AutofillSuggestion extends DropdownItemBase {
                     mSecondarySubLabel,
                     mLabelContentDescription,
                     mIconId,
-                    mIsIconAtStart,
                     mSuggestionType,
                     mIsDeletable,
                     mApplyDeactivatedStyle,

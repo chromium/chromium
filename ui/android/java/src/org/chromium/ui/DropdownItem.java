@@ -69,12 +69,6 @@ public interface DropdownItem {
     /** Returns resource ID of sublabel's font size. */
     int getSublabelFontSizeResId();
 
-    /**
-     * Returns whether the icon should be displayed at the start, before label
-     * and sublabel.
-     */
-    boolean isIconAtStart();
-
     /** Returns the resource ID of the icon's size, or 0 to use WRAP_CONTENT. */
     int getIconSizeResId();
 

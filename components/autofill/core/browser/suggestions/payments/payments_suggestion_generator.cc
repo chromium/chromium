@@ -820,10 +820,6 @@ Suggestion CreateCreditCardSuggestion(
                                  ? Suggestion::Acceptability::kAcceptable
                                  : Suggestion::Acceptability::kUnacceptable;
   suggestion.payload = Suggestion::Guid(credit_card.guid());
-#if BUILDFLAG(IS_ANDROID)
-  // The card art icon should always be shown at the start of the suggestion.
-  suggestion.is_icon_at_start = true;
-#endif  // BUILDFLAG(IS_ANDROID)
 
   // Manual fallback suggestions labels are computed as if the triggering field
   // type was the credit card number.

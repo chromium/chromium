@@ -72,11 +72,6 @@ public class DropdownItemBase implements DropdownItem {
     }
 
     @Override
-    public boolean isIconAtStart() {
-        return false;
-    }
-
-    @Override
     public int getIconSizeResId() {
         return 0;
     }

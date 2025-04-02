@@ -165,18 +165,10 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
             secondarySublabelView.setTextColor(mContext.getColor(item.getSublabelFontColorResId()));
         }
 
-        ImageView iconViewStart = (ImageView) layout.findViewById(R.id.start_dropdown_icon);
         ImageView iconViewEnd = (ImageView) layout.findViewById(R.id.end_dropdown_icon);
-        if (item.isIconAtStart()) {
-            iconViewEnd.setVisibility(View.GONE);
-            iconViewStart.setVisibility(View.VISIBLE);
-        } else {
-            iconViewStart.setVisibility(View.GONE);
-            iconViewEnd.setVisibility(View.VISIBLE);
-        }
+        iconViewEnd.setVisibility(View.VISIBLE);
 
-        ImageView iconView =
-                populateIconView(item.isIconAtStart() ? iconViewStart : iconViewEnd, item);
+        ImageView iconView = populateIconView(iconViewEnd, item);
         if (iconView != null) {
             iconView.setLayoutParams(getSizeAndMarginParamsForIconView(iconView, item));
         }
