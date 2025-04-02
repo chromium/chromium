@@ -38,6 +38,7 @@ build_webui("build") {
   ]
 
   ts_composite = true
+  ts_tsconfig_base = "//tools/typescript/tsconfig_base_polymer_legacy.json"
   ts_definitions = [
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",

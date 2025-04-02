@@ -95,7 +95,6 @@
     _autocompleteController = autocompleteController;
     _popupView = std::move(popupView);
     _popupViewController = [[OmniboxPopupViewController alloc] init];
-    _popupReturnDelegate = _popupViewController;
     _KeyboardDelegate = _popupViewController;
     _omniboxAutocompleteController = omniboxAutocompleteController;
   }
@@ -150,7 +149,6 @@
   self.mediator.consumer = self.popupViewController;
   self.popupViewController.matchPreviewDelegate =
       self.popupMatchPreviewDelegate;
-  self.popupViewController.acceptReturnDelegate = self.acceptReturnDelegate;
   self.mediator.carouselItemConsumer = self.popupViewController;
   self.mediator.allowIncognitoActions =
       !IsIncognitoModeDisabled(self.profile->GetPrefs());

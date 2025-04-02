@@ -666,8 +666,10 @@ void NativeWidgetNSWindowBridge::DestroyContentView() {
   [window_ setContentView:nil];
 }
 
-void NativeWidgetNSWindowBridge::CreateContentView(uint64_t ns_view_id,
-                                                   const gfx::Rect& bounds) {
+void NativeWidgetNSWindowBridge::CreateContentView(
+    uint64_t ns_view_id,
+    const gfx::Rect& bounds,
+    std::optional<int> corner_radius) {
   DCHECK(!bridged_view_);
 
   bridged_view_ = [[BridgedContentView alloc] initWithBridge:this
@@ -700,6 +702,11 @@ void NativeWidgetNSWindowBridge::CreateContentView(uint64_t ns_view_id,
   [bridged_view_ addSubview:compositor_view];
 
   [bridged_view_ setWantsLayer:YES];
+  if (corner_radius) {
+    bridged_view_.layer.cornerRadius = *corner_radius;
+    bridged_view_.layer.masksToBounds = YES;
+  }
+
   [window_ setContentView:bridged_view_];
 }
 

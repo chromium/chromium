@@ -1925,8 +1925,9 @@ TEST_F(CreditCardAccessManagerTest, CardInfoRetrievalEnrolledCardUnmasking) {
                 kCardInfoRetrievalEnrolledUnmaskProgressDialog);
 }
 
-// Ensures the `kCardInfoRetrievalEnrolledUnmaskProgressDialog` is not set if a
-// card is not enrolled for retrieval.
+// Ensures the `kCardInfoRetrievalEnrolledUnmaskProgressDialog` is not set, even
+// if `kAutofillEnableCardInfoRuntimeRetrieval` is enabled, but
+// `card_info_retrieval_enrollment_state` is not enrolled.
 TEST_F(CreditCardAccessManagerTest,
        CardInfoRetrievalEnrolledCardUnmaskingDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;

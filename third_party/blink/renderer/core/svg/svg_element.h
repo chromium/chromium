@@ -94,17 +94,7 @@ class CORE_EXPORT SVGElement : public Element {
   };
   virtual AffineTransform LocalCoordinateSpaceTransform(CTMScope) const;
 
-  // Records the SVG element as having a Web Animation on an SVG attribute that
-  // needs applying.
-  void SetWebAnimationsPending();
-  void ApplyActiveWebAnimations();
-
   void BaseValueChanged(const SVGAnimatedPropertyBase&);
-  void EnsureAttributeAnimValUpdated();
-
-  void SetWebAnimatedAttribute(const QualifiedName& attribute,
-                               SVGPropertyBase*);
-  void ClearWebAnimatedAttributes();
 
   ElementSMILAnimations* GetSMILAnimations() const;
   ElementSMILAnimations& EnsureSMILAnimations();
@@ -115,7 +105,7 @@ class CORE_EXPORT SVGElement : public Element {
   void SetAnimatedMotionTransform(const AffineTransform&);
   void ClearAnimatedMotionTransform();
 
-  bool HasNonCSSPropertyAnimations() const;
+  bool HasSMILAnimations() const;
 
   SVGSVGElement* ownerSVGElement() const;
   SVGElement* viewportElement() const;
@@ -291,8 +281,6 @@ class CORE_EXPORT SVGElement : public Element {
 
   void WillRecalcStyle(const StyleRecalcChange) override;
   static SVGElementSet& GetDependencyTraversalVisitedSet();
-  void UpdateWebAnimatedAttributeOnBaseValChange(
-      const SVGAnimatedPropertyBase&);
 
   SMILTimeContainer* GetTimeContainer() const;
 

@@ -355,6 +355,11 @@ namespace autofillPrivate {
     // dynamically, because the "<entity type>" string might need declension in
     // some languages.
     DOMString editEntityTypeString;
+    // The i18n string representation of "Delete <entity type>". Used in the
+    // entity instance deletion settings UI. The string cannot be constructed
+    // dynamically, because the "<entity type>" string might need declension in
+    // some languages.
+    DOMString deleteEntityTypeString;
   };
 
   // Contains date information: month, day and year.

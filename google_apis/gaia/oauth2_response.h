@@ -26,7 +26,9 @@ enum class OAuth2Response {
   kInternalFailure = 12,
   kAdminPolicyEnforced = 13,
   kAccessDenied = 14,
-  kMaxValue = kAccessDenied,
+  kConsentRequired = 15,
+  kTokenBindingChallenge = 16,
+  kMaxValue = kTokenBindingChallenge,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:OAuth2Response)
 

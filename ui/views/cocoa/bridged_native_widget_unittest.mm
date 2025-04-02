@@ -5,6 +5,7 @@
 #import <Cocoa/Cocoa.h>
 #include <objc/runtime.h>
 
+#include <cstddef>
 #include <memory>
 #include <string>
 
@@ -763,7 +764,7 @@ void BridgedNativeWidgetTest::SetUp() {
   EXPECT_TRUE([window delegate]);
   GetNSWindowHost()->SetRootView(view_.get());
   bridge()->CreateContentView(GetNSWindowHost()->GetRootViewNSViewId(),
-                              view_->bounds());
+                              view_->bounds(), std::nullopt);
   ns_view_ = bridge()->ns_view();
 
   // Pretend it has been shown via NativeWidgetMac::Show().

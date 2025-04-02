@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">Aktivizo me detyrim zmadhimin</translation>
 <translation id="3905475044299942653">Ndalo shumë njoftime</translation>
 <translation id="3908288065506437185">Blloko kukit e palëve të treta në "Modalitetin 'e fshehtë'"</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Disa veçori mund të mos funksionojnë. Sajtet e lidhura mund të përdorin përsëri kukit e palëve të treta.</translation>
 <translation id="3922092564198021702">Në telefon, hap "Cilësimet"</translation>
 <translation id="3933121352599513978">Palos kërkesat e padëshiruara (rekomandohet)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">Detajet</translation>
 <translation id="4598549027014564149">Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit e tua për të parë aktivitetin e shfletimit nëpër sajte të ndryshme, as edhe në sajtet e ngjashme. Aktiviteti yt i shfletimit nuk përdoret për gjëra të tilla si p.sh. personalizimi i reklamave. Veçoritë në disa sajte mund të mos funksionojnë.</translation>
 <translation id="461356340001513807">Të lejon që të identifikohesh në uebsajte duke përdorur llogarinë që ke me një shërbim identiteti</translation>
-<translation id="4619615317237390068">Skedat nga pajisjet e tjera</translation>
 <translation id="4635969503923889910">Mos lejo që sajtet të përdorin pajisjet me NFC</translation>
 <translation id="4644713492825682049">Fshi dhe rivendos</translation>
 <translation id="4645575059429386691">Menaxhohet nga prindi yt</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">Ndaje nëpërmjet</translation>
 <translation id="5001526427543320409">Kukit e palëve të treta</translation>
 <translation id="5007392906805964215">Rishiko</translation>
-<translation id="5014182796621173645">E ke vizituar <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Lejo</translation>
 <translation id="5048398596102334565">Lejoju faqeve të të hapin sensorët e lëvizjes (rekomandohet)</translation>
 <translation id="5048841907079026162">Menaxho të dhënat e tua të shfletimit</translation>
@@ -443,7 +440,6 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Përmbajtje e mbrojtur</translation>
 <translation id="662080504995468778">Qëndro</translation>
-<translation id="6653342741369270081">Shtyp butonin e kthimit prapa për të dalë nga ekrani i plotë.</translation>
 <translation id="6683865262523156564">Ky sajt është në një grup që mund ta shikojë aktivitetin tënd. Grupi përcaktohet nga <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Fotografitë e profilit</translation>
 <translation id="6697925417670533197">Shkarkimet aktive</translation>

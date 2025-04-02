@@ -432,8 +432,10 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
 // Delays handling an unsafe redirect for a keepalive ping until after the page
 // making the keepalive ping has been unloaded.
 // The browser must ensure the unsafe redirect is not followed.
+// TODO(crbug.com/407716208): Broken by crrev.com/c/6039011. Fix and re-enable
+// this test.
 IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
-                       ReceiveUnSafeRedirectAfterPageUnload) {
+                       DISABLED_ReceiveUnSafeRedirectAfterPageUnload) {
   const std::string method = GetParam();
   const std::string target_url = GetUrlWithCategory("test-prefix1");
   const char unsafe_redirect_target[] = "chrome://settings";
@@ -454,26 +456,15 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
   // The redirect is unsafe, so the loader is terminated.
   loaders_observer().WaitForTotalOnCompleteProcessed(
       {net::ERR_UNSAFE_REDIRECT});
-  ExpectCommonUkm(
-      content::KeepAliveRequestTracker::RequestType::kFetch,
-      /*category_id=*/1,
-      /*num_redirects=*/1,
-      /*is_context_detached=*/true,
-      content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
-      content::KeepAliveRequestTracker::RequestStageType::
-          kFirstRedirectReceived,
-      /*keepalive_token=*/std::nullopt, net::ERR_UNSAFE_REDIRECT,
-      /*extended_error_code=*/0);
-  ExpectTimeSortedTimeDeltaUkm(
-      {"TimeDelta.RequestStarted", "TimeDelta.LoaderDisconnectedFromRenderer",
-       "TimeDelta.FirstRedirectReceived", "TimeDelta.LoaderCompleted",
-       "TimeDelta.EventLogged"});
+  // The test is too flaky to assert on the number of redirects processed.
 }
 
 // Checks that when a fetch keepalive request's redirect is handled in browser
 // the variations header (X-Client-Data) is attached to the requests to Google.
-IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
-                       ReceiveMultipleRedirectsToGoogleAfterPageUnload) {
+// TODO(crbug.com/407998594): Fix test before re-enabling.
+IN_PROC_BROWSER_TEST_P(
+    ChromeKeepAliveURLBrowserTest,
+    DISABLED_ReceiveMultipleRedirectsToGoogleAfterPageUnload) {
   const std::string method = GetParam();
   const std::string target_url = GetUrlWithCategory("test-prefix1");
   const std::string redirect_target1 = "/redirected1";

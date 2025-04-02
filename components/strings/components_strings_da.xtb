@@ -298,7 +298,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1492194039220927094">Underretning om politikker:</translation>
 <translation id="1495677929897281669">Tilbage til fanen</translation>
 <translation id="1500286806237135498">Kameraer (<ph name="CAMERAS_COUNT" />)</translation>
-<translation id="1501859676467574491">Vis kort fra din Google-konto</translation>
 <translation id="1504042622576912555">Bølget</translation>
 <translation id="1507202001669085618">&lt;p&gt;Denne fejl vises, hvis du bruger en Wi-Fi-portal, hvor du skal logge ind, før du kan komme på nettet.&lt;/p&gt;
     &lt;p&gt;Du kan rette fejlen ved at klikke på &lt;strong&gt;Opret forbindelse&lt;/strong&gt; på den side, du forsøger at åbne.&lt;/p&gt;</translation>
@@ -4101,6 +4100,7 @@ Yderligere oplysninger:
 <translation id="812020627659652807">Slet filer nu</translation>
 <translation id="8120720167840853945">Denne politik styrer ikke standardadfærden for andre politikker.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" blev ikke korrekt installeret på computeren eller netværket. Bed din IT-administrator om at løse problemet.</translation>
+<translation id="8130113808541743942">Flyt til…</translation>
 <translation id="8131740175452115882">Bekræft</translation>
 <translation id="8133495915926741232">Vælg, hvilke generelle emnekategorier der kan bruges til at foretage personlig tilpasning af annoncer. Hvis du deaktiverer en mere generel kategori, blokeres de relaterede emner også. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Rekruttering og personale</translation>

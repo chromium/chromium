@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.url.GURL;
 
@@ -133,9 +134,14 @@ class BaseCtaTransitTestRule {
         mActivityTestRule.resumeMainActivityFromLauncher();
     }
 
-    // TODO(crbug.com/406324209): Most of these checks are done in Public Transit as part of
-    // PageStation, TabSwitcherStation and subclasses. Audit each case, add any checks missed in the
-    // Stations, and remove these calls.
+    // TODO(crbug.com/406324209): ChromeTabbedActivityTestRule#startActivityCompletely() already
+    // calls this. Double check that callers are using those entry points and remove this.
+    public void waitForActivityNativeInitializationComplete() {
+        mActivityTestRule.waitForActivityNativeInitializationComplete();
+    }
+
+    // TODO(crbug.com/406324209): ChromeTabbedActivityTestRule#startActivityCompletely() already
+    // calls this. Double check that callers are using those entry points and remove this.
     public void waitForActivityCompletelyLoaded() {
         mActivityTestRule.waitForActivityCompletelyLoaded();
     }
@@ -143,5 +149,9 @@ class BaseCtaTransitTestRule {
     // TODO(crbug.com/406324209): Support recreate() in Public Transit.
     public void recreateActivity() {
         mActivityTestRule.recreateActivity();
+    }
+
+    public EmbeddedTestServerRule getEmbeddedTestServerRule() {
+        return mActivityTestRule.getEmbeddedTestServerRule();
     }
 }

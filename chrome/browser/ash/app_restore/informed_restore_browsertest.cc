@@ -86,9 +86,6 @@ class InformedRestoreTest : public InProcessBrowserTest {
  public:
   InformedRestoreTest() {
     set_launch_browser_for_testing(nullptr);
-
-    feature_list_.InitWithFeatures(
-        {features::kForestFeature, features::kSanitize}, {});
   }
   InformedRestoreTest(const InformedRestoreTest&) = delete;
   InformedRestoreTest& operator=(const InformedRestoreTest&) = delete;
@@ -109,7 +106,7 @@ class InformedRestoreTest : public InProcessBrowserTest {
   base::HistogramTester histogram_tester_;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{features::kSanitize};
 };
 
 // Creates 2 browser windows that will be restored in the main test.

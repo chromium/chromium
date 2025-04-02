@@ -3,7 +3,7 @@ URL: https://crates.io/crates/regex-automata
 Version: 0.4.9
 Revision: 1a069b9232c607b34c4937122361aa075ef573fa
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/regex-automata-0.4.9/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes
 

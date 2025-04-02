@@ -40,7 +40,6 @@
 #include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/dump_util.h"
-#include "ui/ozone/platform/wayland/host/shell_toplevel_wrapper.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
@@ -54,7 +53,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
-#include "ui/ozone/platform/wayland/host/xdg_toplevel_wrapper_impl.h"
+#include "ui/ozone/platform/wayland/host/xdg_toplevel.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
 namespace ui {
@@ -122,12 +121,9 @@ class WaylandWindowDragController::XdgToplevelDrag {
       // OnDataSourceDropPerformed()) or when the toplevel gets unmapped.
       return;
     }
-    DCHECK(window->shell_toplevel() &&
-           window->shell_toplevel()->AsXDGToplevelWrapper());
-
-    auto* toplevel =
-        window->shell_toplevel()->AsXDGToplevelWrapper()->xdg_toplevel_.get();
-    DCHECK(toplevel);
+    DCHECK(window->xdg_toplevel());
+    DCHECK(window->xdg_toplevel()->wl_object());
+    auto* toplevel = window->xdg_toplevel()->wl_object();
 
     // xdg-toplevel-drag protocol expects the passed in offset to be relative to
     // the surface's geometry, i.e: no client-side decoration insets included.

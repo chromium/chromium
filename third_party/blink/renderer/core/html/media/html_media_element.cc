@@ -698,10 +698,10 @@ bool HTMLMediaElement::CanPlayWhileHidden() const {
 }
 
 bool HTMLMediaElement::IsFrameHidden() const {
-  Frame* frame = GetDocument().GetFrame();
-  return frame && (frame->View()->GetFrameVisibility().value_or(
-                       mojom::blink::FrameVisibility::kRenderedInViewport) ==
-                   mojom::blink::FrameVisibility::kNotRendered);
+  auto* view = GetDocument().View();
+  return view && (view->GetFrameVisibility().value_or(
+                      mojom::blink::FrameVisibility::kRenderedInViewport) ==
+                  mojom::blink::FrameVisibility::kNotRendered);
 }
 
 void HTMLMediaElement::AttachToNewFrame() {
@@ -2935,7 +2935,7 @@ std::optional<DOMExceptionCode> HTMLMediaElement::Play() {
       autoplay_policy_->RequestPlay();
 
   if (exception_code == DOMExceptionCode::kNotAllowedError) {
-    if (IsFrameHidden() &&
+    if (IsFrameHidden() && web_media_player_ &&
         web_media_player_->GetShouldPauseWhenFrameIsHidden()) {
       // The HTMLMediaElement is not allowed to start because the frame has the
       // MediaPlaybackWhileNotVisible policy applied and is hidden. Record this
@@ -4998,6 +4998,14 @@ void HTMLMediaElement::SetAudioSinkId(const String& sink_id) {
 void HTMLMediaElement::SuspendForFrameClosed() {
   if (web_media_player_)
     web_media_player_->SuspendForFrameClosed();
+}
+
+void HTMLMediaElement::RecordAutoPictureInPictureInfo(
+    const String& auto_picture_in_picture_info) {
+  if (web_media_player_) {
+    web_media_player_->RecordAutoPictureInPictureInfo(
+        auto_picture_in_picture_info);
+  }
 }
 
 bool HTMLMediaElement::MediaShouldBeOpaque() const {

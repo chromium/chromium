@@ -6,6 +6,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/debug/stack_trace.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_policy.h"
@@ -80,7 +81,10 @@ void BrowserAccessibilityMac::ReplaceNativeObject() {
   BrowserAccessibilityCocoa* new_native_obj = CreateNativeWrapper();
 
   // Rebuild children to pick up a newly created cocoa object.
-  [parent->GetNativeViewAccessible() childrenChanged];
+  BrowserAccessibilityCocoa* parent_native =
+      base::apple::ObjCCast<BrowserAccessibilityCocoa>(
+          parent->GetNativeViewAccessible().Get());
+  [parent_native childrenChanged];
 
   // If focused, fire a focus notification on the new native object.
   if (manager_->GetFocus() == this) {
@@ -191,7 +195,7 @@ BrowserAccessibility* BrowserAccessibilityMac::PlatformGetPreviousSibling()
 }
 
 gfx::NativeViewAccessible BrowserAccessibilityMac::GetNativeViewAccessible() {
-  return GetNativeWrapper();
+  return gfx::NativeViewAccessible(GetNativeWrapper());
 }
 
 AXPlatformNode* BrowserAccessibilityMac::GetAXPlatformNode() const {

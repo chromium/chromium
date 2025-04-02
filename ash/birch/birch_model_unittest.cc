@@ -144,8 +144,7 @@ class BirchModelTest : public AshTestBase {
   BirchModelTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     feature_list_.InitWithFeatures(
-        {features::kForestFeature, features::kBirchVideoConferenceSuggestions,
-         features::kCoralFeature},
+        {features::kBirchVideoConferenceSuggestions, features::kCoralFeature},
         {});
   }
 

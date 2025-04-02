@@ -585,7 +585,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true"
+<histogram
     name="GPU.DirectComposition.DCLayerResult.Video.{GPUProtectedVideoType}"
     enum="DCLayerResult" expires_after="2025-09-28">
   <owner>magchen@chromium.org</owner>
@@ -595,7 +595,6 @@ chromium-metrics-reviews@google.com.
     Recorded for each quad (on overlay processing) with protected video type the
     reason it was or wasn't put in an overlay.
   </summary>
-  <token key="GPUProtectedVideoType" variants="GPUProtectedVideoType"/>
 </histogram>
 
 <histogram name="GPU.DirectComposition.HardwareOverlaysSupported"
@@ -644,7 +643,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true"
+<histogram
     name="GPU.DirectComposition.SwapChainCreationResult3.SoftwareProtected.{SoftwareProtectedType}"
     enum="Hresult" expires_after="2025-06-08">
   <owner>magchen@chromium.org</owner>
@@ -660,7 +659,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram base="true"
+<histogram
     name="GPU.DirectComposition.SwapChainCreationResult3.{GPUProtectedVideoType}"
     enum="Hresult" expires_after="2025-06-08">
   <owner>magchen@chromium.org</owner>
@@ -670,7 +669,6 @@ chromium-metrics-reviews@google.com.
     Whether creating swap chain for protected video succeeded. Recorded once per
     swap chain creation.
   </summary>
-  <token key="GPUProtectedVideoType" variants="GPUProtectedVideoType"/>
 </histogram>
 
 <histogram name="GPU.DirectComposition.SwapChainFormat3" enum="DXGI_FORMAT"
@@ -767,21 +765,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the result of retrying EstableGpuChannelSync in Chrome OS. Logged
     every time when a EstableGpuChannel fails on Chrome OS.
-  </summary>
-</histogram>
-
-<histogram name="GPU.EstablishGpuChannelSyncRetry.Software" units="retries"
-    expires_after="2025-07-08">
-  <owner>magchen@chromium.org</owner>
-  <owner>vasilyt@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Records how many retries it takes before successfullly EstableGpuChannelSync
-    in a loop for software compositing when creating a LayerTreeFrameSink on
-    Chrome OS. The max number 21 is reserved for the case of no success at all
-    after 20 retries. Logged when a EstableGpuChannel for software compositing
-    fails on Chrome OS and it starts retries for a maximum of 3 seconds with 150
-    ms each time.
   </summary>
 </histogram>
 
@@ -1653,8 +1636,8 @@ chromium-metrics-reviews@google.com.
   <owner>michaelludwig@google.com</owner>
   <owner>skia-gpu-team@google.com</owner>
   <summary>
-    Measures the time taken to create a Pipeline in Skia's Dawn backend for each
-    of the three conditions.
+    Measures the time taken to create a Pipeline in Skia's Dawn backend for
+    {CompilationType} compilations.
 
     This is only recorded on clients with high-resolution clocks.
   </summary>
@@ -1662,6 +1645,41 @@ chromium-metrics-reviews@google.com.
     <variant name="Asynchronous" summary="Asynchronous Normal compilations"/>
     <variant name="Precompile" summary="Synchronous Pre-compilations"/>
     <variant name="Synchronous" summary="Synchronous Normal compilations"/>
+  </token>
+</histogram>
+
+<histogram name="Skia.Graphite.Precompile.{PipelineStatistic}" units="count"
+    expires_after="2026-01-01">
+  <owner>robertphillips@google.com</owner>
+  <owner>michaelludwig@google.com</owner>
+  <owner>skia-gpu-team@google.com</owner>
+  <summary>
+    Reports the number of Pipelines that were categorized as
+    {PipelineStatistic}.
+
+    This is only recorded on clients using both Graphite and Precompilation. It
+    is recorded after a 30 minute delay.
+  </summary>
+  <token key="PipelineStatistic">
+    <variant name="NormalPreemptedByPrecompile"
+        summary="Reports the number of times a Precompiled Pipeline is chosen
+                 over a Normally compiled Pipeline. This is roughly the
+                 benefit Chromium is seeing from Precompilation. Higher is
+                 better."/>
+    <variant name="UnpreemptedPrecompilePipelines"
+        summary="Reports the number of times a Precompiled Pipeline reaches
+                 the Pipeline cache. A Precompiled Pipeline may be pruned
+                 before reaching the cache either because it was preempted by
+                 a Normal Pipeline or by a different Precompilation Pipeline.
+                 This is roughly the overall cost Chromium is incurring for
+                 Precompilation. Lower is better as long as
+                 NormalPreemptedByPrecompile doesn't decrease."/>
+    <variant name="UnusedPrecompiledPipelines"
+        summary="Reports the number of times a Precompiled Pipeline is either
+                 purged from the Pipeline cache before being ever used or is
+                 residing (unused) in the Pipeline cache after 30 minutes.
+                 This is roughly the wasted cost of over-generation in the
+                 Precompilation system. Ideally this would be zero."/>
   </token>
 </histogram>
 

@@ -148,11 +148,18 @@ void UpdateModalDialogPosition(views::Widget* widget,
     return;
   }
 
+  auto* host_view_widget = host_browser_window->TopContainer()->GetWidget();
+
+  // If the host view's widget is minimized, don't update any positions.
+  if (host_view_widget && host_view_widget->IsMinimized()) {
+    return;
+  }
+
   // If the host view is not backed by a Views::Widget, just update the widget
   // size. This can happen on MacViews under the Cocoa browser where the window
   // modal dialogs are displayed as sheets, and their position is managed by a
   // ConstrainedWindowSheetController instance.
-  if (!host_browser_window->TopContainer()->GetWidget()) {
+  if (!host_view_widget) {
     widget->SetSize(size);
     return;
   }

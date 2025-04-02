@@ -132,8 +132,24 @@ INSTANTIATE_TEST_SUITE_P(, TabSharingInfoBarTest, testing::Bool());
 
 // Test that the infobar on the capturing tab has the correct text:
 // "|icon| Sharing this tab to |app|"
-TEST_P(TabSharingInfoBarTest, InfobarOnCapturingTab) {
+TEST_P(TabSharingInfoBarTest, InfobarOnCapturingTabWhenCapturingTitledTab) {
   SCOPED_TRACE("InfobarOnCapturingTab");
+  const TabSharingInfoBar& infobar =
+      CreateInfobar({.shared_tab_name = kSharedTabName,
+                     .capturer_name = kAppName,
+                     .role = TabRole::kCapturingTab});
+
+  if (base::FeatureList::IsEnabled(features::kTabCaptureInfobarLinks)) {
+    CheckStatusMessage(infobar, {u"Sharing ", kSharedTabName, u" to this tab"});
+  } else {
+    CheckStatusMessage(infobar,
+                       {u"Sharing ", kSharedTabName, u" to ", kAppName});
+  }
+}
+
+// Test that the infobar on the capturing tab has the correct text:
+// "|icon| Sharing this tab to |app|"
+TEST_P(TabSharingInfoBarTest, InfobarOnCapturingTabWhenCapturingUntitledTab) {
   const TabSharingInfoBar& infobar =
       CreateInfobar({.shared_tab_name = std::u16string(),
                      .capturer_name = kAppName,

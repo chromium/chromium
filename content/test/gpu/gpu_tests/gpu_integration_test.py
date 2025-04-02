@@ -1194,7 +1194,7 @@ class GpuIntegrationTest(
       gpu_tags.append(gpu_helper.GetTargetCpuStatus(gpu_info))
       gpu_tags.append(gpu_helper.GetSkiaGraphiteStatus(gpu_info))
       if gpu_info and gpu_info.devices:
-        for ii in range(0, len(gpu_info.devices)):
+        for ii in range(len(gpu_info.devices)):
           gpu_vendor = gpu_helper.GetGpuVendorString(gpu_info, ii)
           gpu_device_id = gpu_helper.GetGpuDeviceId(gpu_info, ii)
           # The gpu device id tag will contain both the vendor and device id
@@ -1207,11 +1207,14 @@ class GpuIntegrationTest(
             # if the device id is not an integer it will be added as
             # a string to the tag.
             gpu_device_tag = f'{gpu_vendor}-{gpu_device_id}'
-          if ii == 0 or gpu_vendor != 'intel':
+
+          is_intel = gpu_vendor == 'intel'
+          if ii == 0 or not is_intel:
             gpu_tags.extend([gpu_vendor, gpu_device_tag])
           # This acts as a way to add expectations for Intel GPUs without
-          # resorting to the more generic "intel" tag.
-          if ii == 0 and gpu_vendor == 'intel':
+          # resorting to the more generic "intel" tag. Int check is due to
+          # IsIntelGenX() only working with ints.
+          if ii == 0 and is_intel and isinstance(gpu_device_id, int):
             if gpu_helper.IsIntelGen9(gpu_device_id):
               gpu_tags.extend(['intel-gen-9'])
             elif gpu_helper.IsIntelGen12(gpu_device_id):

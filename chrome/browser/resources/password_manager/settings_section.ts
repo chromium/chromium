@@ -116,6 +116,11 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         value: TrustedVaultBannerState.NOT_SHOWN,
       },
 
+      movePasswordsLabel_: {
+        type: String,
+        value: '',
+      },
+
       canAddShortcut_: {
         type: Boolean,
         value() {
@@ -127,6 +132,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
 
       passwordsOnDevice_: {
         type: Array,
+        value: () => [],
       },
 
       isPasswordManagerPinAvailable_: {
@@ -142,6 +148,11 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
       isDisconnectCloudAuthenticatorInProgress_: {
         type: Boolean,
         value: false,
+      },
+
+      toastMessage_: {
+        type: String,
+        value: '',
       },
 
       showDisconnectCloudAuthenticatorDialog_: {
@@ -163,28 +174,27 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     ];
   }
 
-  private blockedSites_: BlockedSite[];
+  declare private blockedSites_: BlockedSite[];
   // <if expr="is_win or is_macosx or is_chromeos">
-  private isBiometricAuthenticationForFillingToggleVisible_: boolean;
+  declare private isBiometricAuthenticationForFillingToggleVisible_: boolean;
   // </if>
-  private hasPasskeys_: boolean;
-  private passwordManagerDisabled_: boolean;
-  private hasPasswordsToExport_: boolean;
-  private isPasskeyUpgradeSettingsToggleVisible_: boolean;
-  private showPasswordsImporter_: boolean;
-  private showMovePasswordsDialog_: boolean;
-  private canAddShortcut_: boolean;
-  private trustedVaultBannerState_: TrustedVaultBannerState;
-  private movePasswordsLabel_: string;
-  private passwordsOnDevice_: chrome.passwordsPrivate.PasswordUiEntry[] = [];
-  private isPasswordManagerPinAvailable_: boolean = false;
-  private isConnectedToCloudAuthenticator_: boolean = false;
-  private isDisconnectCloudAuthenticatorInProgress_: boolean = false;
-  private toastMessage_: string = '';
-  private showDisconnectCloudAuthenticatorDialog_: boolean = false;
+  declare private hasPasskeys_: boolean;
+  declare private passwordManagerDisabled_: boolean;
+  declare private hasPasswordsToExport_: boolean;
+  declare private isPasskeyUpgradeSettingsToggleVisible_: boolean;
+  declare private showMovePasswordsDialog_: boolean;
+  declare private canAddShortcut_: boolean;
+  declare private trustedVaultBannerState_: TrustedVaultBannerState;
+  declare private movePasswordsLabel_: string;
+  declare private passwordsOnDevice_: chrome.passwordsPrivate.PasswordUiEntry[];
+  declare private isPasswordManagerPinAvailable_: boolean;
+  declare private isConnectedToCloudAuthenticator_: boolean;
+  declare private isDisconnectCloudAuthenticatorInProgress_: boolean;
+  declare private toastMessage_: string;
+  declare private showDisconnectCloudAuthenticatorDialog_: boolean;
   // This variable depend on the sync service API, which the Batch Upload Dialog
   // uses.
-  private localPasswordCount_: number = 0;
+  declare private localPasswordCount_: number;
 
   private setBlockedSitesListListener_: BlockedSitesListChangedListener|null =
       null;

@@ -105,6 +105,7 @@
 <translation id="1411386976162024013">Lensin visuaalinen haku</translation>
 <translation id="1417474386970818917">Kirjaudu ulos ja poista</translation>
 <translation id="1426410128494586442">Kyllä</translation>
+<translation id="1429187656584513419">Avaa Salasanat</translation>
 <translation id="1430915738399379752">Tulosta</translation>
 <translation id="1436671784520050284">Jatka määritystä</translation>
 <translation id="143681031165817424">Osoite on tallennettu vain tälle laitteelle</translation>
@@ -288,6 +289,7 @@
 <translation id="2164946989711475905">Kirjaudu sisään…</translation>
 <translation id="2175927920773552910">QR-koodi</translation>
 <translation id="218350106843433823">Salasanojen ja avainkoodien automaattinen täyttö</translation>
+<translation id="2184272387334793084">Kirjaudu sisään, niin voit käyttää esimerkiksi salasanoja kaikilla laitteilla</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="219283042927675668">Ryhmän välilehdet</translation>
 <translation id="2194856509914051091">Huomioitavaa</translation>
@@ -590,6 +592,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3530206579861815432">Löydä kaikilla synkronoiduilla laitteilla auki olevia tai äskettäin suljettuja välilehtiä nopeasti.</translation>
 <translation id="3530767473765895035">Hallinnoi tämän laitteen tilejä…</translation>
 <translation id="3533436815740441613">Uusi välilehti</translation>
+<translation id="3533860663366814939">Avaa automaattisen täytön ja salasanojen asetukset</translation>
 <translation id="3547356470684043247">Lue asiakasarvosteluja tuotteista, palveluista tai kokemuksista, niin voit tehdä päätöksiä arvostelujen perusteella</translation>
 <translation id="3557336313807607643">Lisää yhteystietoihin</translation>
 <translation id="355765753469272474">Kumoa</translation>
@@ -1512,6 +1515,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7431851541687113774">Laita osoitteen tunnistus pois päältä</translation>
 <translation id="7431991332293347422">Määritä, miten selaushistoria personoi Hakua ja muita</translation>
 <translation id="7435356471928173109">Järjestelmänvalvojasi on ottanut tämän pois päältä</translation>
+<translation id="7437712592381799950">Pyyhkäisemällä ylös näet lisää sinulle räätälöityä sisältöä.</translation>
 <translation id="7438481509621345350">Näet nyt tarinoita täältä avatessasi uuden välilehden: <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Kirjanmerkin tallennuspaikka on "{title}"}other{Kirjanmerkkien tallennuspaikka on "{title}"}}</translation>
 <translation id="7451404862887877229">Valitse "Yksityisyys ja turvallisuus" ja sitten "Selaussuoja"</translation>
@@ -1610,10 +1614,12 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7841180087127694526">Hae kopioitua tekstiä</translation>
 <translation id="7841418003178675048">Valitse, mitä kortteja näet Uusi välilehti ‑sivulla.</translation>
 <translation id="7846161022626028328">Tapahtui virhe. Yritä uudelleen.</translation>
+<translation id="784623644169604270">Ei uutta toimintaa</translation>
 <translation id="7846296061357476882">Googlen palvelut</translation>
 <translation id="784934925303690534">Aikaväli</translation>
 <translation id="7851858861565204677">Muut laitteet</translation>
 <translation id="7853202427316060426">Tapahtumat</translation>
+<translation id="7854006015462979438">Avaa Yleiset</translation>
 <translation id="7859988229622350291">Älä koskaan käännä näitä</translation>
 <translation id="7863211248337747225">Lataa sovellus</translation>
 <translation id="7865127013871431856">Käännösasetukset</translation>

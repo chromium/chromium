@@ -498,13 +498,6 @@ public abstract class ToolbarLayout extends FrameLayout
     void updateButtonVisibility() {}
 
     /**
-     * Gives inheriting classes the chance to update the visibility of the
-     * back button.
-     * @param canGoBack Whether or not the current tab has any history to go back to.
-     */
-    void updateBackButtonVisibility(boolean canGoBack) {}
-
-    /**
      * Gives inheriting classes the chance to update the visibility of the forward button.
      *
      * @param canGoForward Whether or not the current tab has any history to go forward to.

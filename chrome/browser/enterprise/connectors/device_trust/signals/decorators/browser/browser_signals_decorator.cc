@@ -16,6 +16,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_utils.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
+#include "components/device_signals/core/browser/browser_utils.h"
 #include "components/device_signals/core/browser/signals_aggregator.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/common/common_types.h"
@@ -34,21 +35,6 @@ namespace enterprise_connectors {
 namespace {
 
 constexpr char kLatencyHistogramVariant[] = "Browser";
-
-std::optional<std::string> TryGetEnrollmentDomain(
-    policy::CloudPolicyManager* manager) {
-  policy::CloudPolicyStore* store = nullptr;
-  if (manager && manager->core() && manager->core()->store()) {
-    store = manager->core()->store();
-  }
-
-  if (store && store->has_policy()) {
-    const auto* policy = store->policy();
-    return policy->has_managed_by() ? policy->managed_by()
-                                    : policy->display_domain();
-  }
-  return std::nullopt;
-}
 
 std::vector<std::string> RemoveDuplicates(std::vector<std::string> addresses) {
   std::sort(addresses.begin(), addresses.end());
@@ -77,14 +63,14 @@ void BrowserSignalsDecorator::Decorate(base::Value::Dict& signals,
   auto start_time = base::TimeTicks::Now();
 
   const auto device_enrollment_domain =
-      TryGetEnrollmentDomain(browser_cloud_policy_manager_);
+      device_signals::TryGetEnrollmentDomain(browser_cloud_policy_manager_);
   if (device_enrollment_domain) {
     signals.Set(device_signals::names::kDeviceEnrollmentDomain,
                 device_enrollment_domain.value());
   }
 
-  const auto user_enrollment_domain =
-      TryGetEnrollmentDomain(dependency_factory_->GetUserCloudPolicyManager());
+  const auto user_enrollment_domain = device_signals::TryGetEnrollmentDomain(
+      dependency_factory_->GetUserCloudPolicyManager());
   if (user_enrollment_domain) {
     signals.Set(device_signals::names::kUserEnrollmentDomain,
                 user_enrollment_domain.value());

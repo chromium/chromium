@@ -98,16 +98,9 @@
     return;
   }
 
-  bool hasAccountOnDevice = false;
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
-    signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForProfile(self.profile);
-    hasAccountOnDevice = !identityManager->GetAccountsOnDevice().empty();
-  } else {
-    ChromeAccountManagerService* accountManagerService =
-        ChromeAccountManagerServiceFactory::GetForProfile(self.profile);
-    hasAccountOnDevice = accountManagerService->HasIdentities();
-  }
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(self.profile);
+  bool hasAccountOnDevice = !identityManager->GetAccountsOnDevice().empty();
   if (!hasAccountOnDevice) {
     signin_metrics::RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::

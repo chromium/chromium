@@ -105,6 +105,7 @@
 <translation id="1411386976162024013">Ricerca visiva di Lens</translation>
 <translation id="1417474386970818917">Esci ed elimina</translation>
 <translation id="1426410128494586442">Sì</translation>
+<translation id="1429187656584513419">Apri Password</translation>
 <translation id="1430915738399379752">Stampa</translation>
 <translation id="1436671784520050284">Continua configurazione</translation>
 <translation id="143681031165817424">Indirizzo salvato solo su questo dispositivo</translation>
@@ -288,6 +289,7 @@
 <translation id="2164946989711475905">Accedi…</translation>
 <translation id="2175927920773552910">Codice QR</translation>
 <translation id="218350106843433823">Inserisci automaticamente password e passkey</translation>
+<translation id="2184272387334793084">Accedi per avere a disposizione le password e altri dati su tutti i tuoi dispositivi</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="219283042927675668">Schede nel gruppo</translation>
 <translation id="2194856509914051091">Aspetti da considerare</translation>
@@ -590,6 +592,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3530206579861815432">Trova rapidamente le schede aperte e chiuse di recente su tutti i tuoi dispositivi sincronizzati.</translation>
 <translation id="3530767473765895035">Gestisci gli account su questo dispositivo…</translation>
 <translation id="3533436815740441613">Nuova scheda</translation>
+<translation id="3533860663366814939">Apri Impostazioni, seleziona Inserimento automatico e poi Password</translation>
 <translation id="3547356470684043247">Leggi le valutazioni dei clienti su prodotti, servizi o esperienze per prendere decisioni più consapevoli con le recensioni</translation>
 <translation id="3557336313807607643">Aggiungi ai contatti</translation>
 <translation id="355765753469272474">Annulla</translation>
@@ -1360,6 +1363,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="6680416467695217368">Personalizza menu</translation>
 <translation id="6681586159478273915">Ricerca vocale</translation>
 <translation id="6681791404926413601">{count,plural, =1{{count} opzione per il metodo di pagamento disponibile sopra la tastiera.}other{{count} opzioni per il metodo di pagamento disponibili sopra la tastiera.}}</translation>
+<translation id="6682680306647339111">Promemoria rimosso</translation>
 <translation id="6684262542644248484">Accedi a un sito web</translation>
 <translation id="6685259053455152195">Scorciatoie per modificare rapidamente le impostazioni e utilizzare le funzionalità dalla barra degli indirizzi.</translation>
 <translation id="6689685206615181381">Disponibile solo la modalità di navigazione in incognito</translation>
@@ -1376,6 +1380,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="6746338529702829275">Rivedi i dati dell'account</translation>
 <translation id="6755200887046212842">Gestisci account</translation>
 <translation id="6755733078693946548">Accedi a password e passkey da qualsiasi app</translation>
+<translation id="6759709389246683070">Puoi toccare e tenere premuta questa scheda per impostare un promemoria per tornare più tardi</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6779455296366983087">I tuoi dati di navigazione verranno eliminati</translation>
 <translation id="6790502149545262384">A breve vedrai storie di <ph name="CHANNEL_NAME" /> quando aprirai una nuova scheda.</translation>
@@ -1512,6 +1517,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7431851541687113774">Disattiva il rilevamento dell'indirizzo</translation>
 <translation id="7431991332293347422">Controlla come la cronologia di navigazione viene utilizzata per personalizzare la Ricerca e altro</translation>
 <translation id="7435356471928173109">Disattivata dall'amministratore</translation>
+<translation id="7437712592381799950">Puoi scorrere verso l'alto per vedere più contenuti personalizzati su misura per te.</translation>
 <translation id="7438481509621345350">Quando aprirai una nuova scheda vedrai le notizie di <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Preferito salvato in "{title}"}other{Preferiti salvati in "{title}"}}</translation>
 <translation id="7451404862887877229">Tocca "Privacy e sicurezza", poi "Navigazione sicura"</translation>
@@ -1610,10 +1616,12 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7841180087127694526">Cerca il testo copiato</translation>
 <translation id="7841418003178675048">Scegli le schede da visualizzare nella pagina Nuova scheda.</translation>
 <translation id="7846161022626028328">Si è verificato un errore. Riprova.</translation>
+<translation id="784623644169604270">Nessuna attività recente</translation>
 <translation id="7846296061357476882">Servizi Google</translation>
 <translation id="784934925303690534">Intervallo di tempo</translation>
 <translation id="7851858861565204677">Altri dispositivi</translation>
 <translation id="7853202427316060426">Attività</translation>
+<translation id="7854006015462979438">Apri Generali</translation>
 <translation id="7859988229622350291">Non tradurre mai</translation>
 <translation id="7863211248337747225">Scarica l'app</translation>
 <translation id="7865127013871431856">Opzioni di Traduttore</translation>
@@ -1681,6 +1689,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8084285576995584326">Controlla i dati del tuo Account Google</translation>
 <translation id="809543534949702122">Cerca nella cronologia</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{Le schede che non usi vengono spostate qui dopo {COUNT} giorno}other{Le schede che non usi vengono spostate qui dopo {COUNT} giorni}}</translation>
+<translation id="8096559642098770318">Puoi impostare un promemoria della scheda per tornare a visitare questo sito in futuro</translation>
 <translation id="8101409298456377967">Crea, salva e gestisci le tue password in modo da poter accedere facilmente ai siti e alle app. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8114753159095730575">È possibile il download dei file. Le opzioni sono disponibili nella parte inferiore della schermata.</translation>
@@ -1735,6 +1744,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8299417921174340354">Per utilizzare le password, devi prima impostare un passcode sul dispositivo.</translation>
 <translation id="8307481894409578819">Impossibile caricare il file</translation>
 <translation id="8319076807703933069">Nuova ricerca</translation>
+<translation id="8319282042900445670">Promemoria impostato per le ore <ph name="TIME" /> del giorno <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Attività recente</translation>
 <translation id="8325455175867928593">Nascondi "Recensioni basate sui tuoi interessi"</translation>
 <translation id="833647236762414178">Crea, salva e gestisci le tue password e passkey in modo da poter accedere facilmente ai siti e alle app. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
@@ -1841,6 +1851,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8723088494871522141">Nascondi "Recensioni prodotto per te"</translation>
 <translation id="872371143724482722">{COUNT,plural, =1{{COUNT} scheda}other{{COUNT} schede}}</translation>
 <translation id="8725066075913043281">Riprova</translation>
+<translation id="8726523474917941818">Ricordamelo</translation>
 <translation id="8728922029615312208">Chiudi tutte</translation>
 <translation id="8730621377337864115">Fine</translation>
 <translation id="87371078663613140">Esplora le opzioni nella barra dei menu</translation>
@@ -1885,6 +1896,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8879604564928138696">Tocca due volte per provare</translation>
 <translation id="8879952635974818770">Contenuto personalizzato</translation>
 <translation id="8887595428614802520">Chiudi tutte le schede e tutti i gruppi</translation>
+<translation id="8888595487174963247">Rimuovi promemoria</translation>
 <translation id="8891031436559779793">Riceverai una notifica se il prezzo calerà su qualsiasi sito.</translation>
 <translation id="8893208530912252670">Video</translation>
 <translation id="8898822736010347272">Invia a Google gli URL di alcune pagine visitate, informazioni limitate sul sistema e alcuni contenuti delle pagine per contribuire a scoprire le nuove minacce e proteggere tutti gli utenti del web.</translation>
@@ -1950,6 +1962,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="9130317582644834675">Nascondi Zoom del testo</translation>
 <translation id="913036870884277353">Apri facilmente i link in altre app.</translation>
 <translation id="9137013805542155359">Mostra originale</translation>
+<translation id="9144230693397287797">Ricevi aggiornamenti sui promemoria che imposti e sulle schede di altri dispositivi</translation>
 <translation id="914781932147356857">Segna tutti come…</translation>
 <translation id="9148126808321036104">Esegui di nuovo l'accesso</translation>
 <translation id="9159628751968616911">Invia pagina web</translation>

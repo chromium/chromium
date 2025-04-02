@@ -122,18 +122,19 @@ Transaction::AbortOperation Transaction::TaskStack::pop() {
   return task;
 }
 
-Transaction::Transaction(int64_t id,
-                         Connection* connection,
-                         const std::set<int64_t>& object_store_ids,
-                         blink::mojom::IDBTransactionMode mode,
-                         BucketContextHandle bucket_context,
-                         BackingStore::Transaction* backing_store_transaction)
+Transaction::Transaction(
+    int64_t id,
+    Connection* connection,
+    const std::set<int64_t>& object_store_ids,
+    blink::mojom::IDBTransactionMode mode,
+    BucketContextHandle bucket_context,
+    std::unique_ptr<BackingStore::Transaction> backing_store_transaction)
     : id_(id),
       object_store_ids_(object_store_ids),
       mode_(mode),
       connection_(connection->GetWeakPtr()),
       bucket_context_(std::move(bucket_context)),
-      backing_store_transaction_(backing_store_transaction),
+      backing_store_transaction_(std::move(backing_store_transaction)),
       receiver_(this) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("IndexedDB", "Transaction::lifetime", this);
 

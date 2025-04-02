@@ -560,12 +560,9 @@ void SelectorQuery::Execute(
         DCHECK_EQ(first_selector.TagQName().NamespaceURI(), g_null_atom);
         break;
       case CSSSelector::kAttributeExact:
-        if (RuntimeEnabledFeatures::FastPathSingleSelectorExactMatchEnabled()) {
-          CollectElementsByAttributeExact<SelectorQueryTrait>(
-              root_node, first_selector, output);
-          return;
-        }
-        break;
+        CollectElementsByAttributeExact<SelectorQueryTrait>(
+            root_node, first_selector, output);
+        return;
       default:
         break;  // If we need another fast path, add here.
     }

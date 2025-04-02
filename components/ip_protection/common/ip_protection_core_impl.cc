@@ -179,8 +179,7 @@ std::optional<BlindSignedAuthToken> IpProtectionCoreImpl::GetAuthToken(
   return result;
 }
 
-std::optional<ProbabilisticRevealToken>
-IpProtectionCoreImpl::GetProbabilisticRevealToken(
+std::optional<std::string> IpProtectionCoreImpl::GetProbabilisticRevealToken(
     const std::string& top_level,
     const std::string& third_party) {
   if (!ipp_prt_manager_) {
@@ -207,6 +206,9 @@ bool IpProtectionCoreImpl::IsProxyListAvailable() {
 }
 
 void IpProtectionCoreImpl::QuicProxiesFailed() {
+  if (ipp_over_quic_) {
+    Telemetry().QuicProxiesFailed(quic_requests_);
+  }
   ipp_over_quic_ = false;
 }
 
@@ -219,6 +221,7 @@ std::vector<net::ProxyChain> IpProtectionCoreImpl::GetProxyChainList() {
 
   bool ipp_over_quic_only = net::features::kIpPrivacyUseQuicProxiesOnly.Get();
   if (ipp_over_quic_ || ipp_over_quic_only) {
+    quic_requests_++;
     proxy_list = MakeQuicProxyList(
         proxy_list, /*include_https_fallback=*/!ipp_over_quic_only);
   }
@@ -256,6 +259,7 @@ void IpProtectionCoreImpl::OnNetworkChanged(
   // tracking of whether QUIC proxies work, and try to fetch a new proxy list.
   if (type != net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
     ipp_over_quic_ = net::features::kIpPrivacyUseQuicProxies.Get();
+    quic_requests_ = 0;
     RequestRefreshProxyList();
   }
 }

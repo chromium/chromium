@@ -57,14 +57,6 @@ class ExternalProviderImpl : public ExternalProviderInterface {
       Profile* profile,
       ProviderCollection* provider_list);
 
-  // Sets underlying prefs and notifies provider. Only to be called by the
-  // owned ExternalLoader instance.
-  virtual void SetPrefs(base::Value::Dict prefs);
-
-  // Updates the underlying prefs and notifies provider.
-  // Only to be called by the owned ExternalLoader instance.
-  void UpdatePrefs(base::Value::Dict prefs);
-
   // ExternalProvider implementation:
   void ServiceShutdown() override;
   void VisitRegisteredExtension() override;
@@ -79,6 +71,8 @@ class ExternalProviderImpl : public ExternalProviderInterface {
 
   bool IsReady() const override;
   void TriggerOnExternalExtensionFound() override;
+  void SetPrefs(base::Value::Dict prefs) override;
+  void UpdatePrefs(base::Value::Dict prefs) override;
 
   static const char kExternalCrx[];
   static const char kExternalVersion[];

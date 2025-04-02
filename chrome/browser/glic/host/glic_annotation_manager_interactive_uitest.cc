@@ -83,7 +83,7 @@ class FakeAnnotationAgentContainer
 
   // blink::mojom::AnnotationAgent overrides
 
-  void ScrollIntoView() override {
+  void ScrollIntoView(bool applies_focus) override {
     auto* const el =
         ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
             kBrowserViewElementId);

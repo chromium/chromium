@@ -10,6 +10,7 @@
 #include "base/path_service.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -236,6 +237,9 @@ class SettingsOverriddenDialogViewBrowserTest : public DialogBrowserTest {
 
   std::string test_name_;
   std::optional<DialogResult> dialog_result_;
+
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -134,9 +134,6 @@ extern const char kAriaElementReflectionDescription[];
 extern const char kAutomaticUsbDetachName[];
 extern const char kAutomaticUsbDetachDescription[];
 
-extern const char kAutomotiveFullscreenToolbarImprovementsName[];
-extern const char kAutomotiveFullscreenToolbarImprovementsDescription[];
-
 extern const char kAuxiliarySearchDonationName[];
 extern const char kAuxiliarySearchDonationDescription[];
 
@@ -303,11 +300,6 @@ extern const char kFontationsFontBackendDescription[];
 
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
-
-#if BUILDFLAG(IS_CHROMEOS)
-extern const char kForestFeatureName[];
-extern const char kForestFeatureDescription[];
-#endif
 
 extern const char kAvifGainmapHdrImagesName[];
 extern const char kAvifGainmapHdrImagesDescription[];
@@ -1086,6 +1078,8 @@ extern const char kExperimentalOmniboxLabsName[];
 extern const char kExperimentalOmniboxLabsDescription[];
 extern const char kExtensionAiDataCollectionName[];
 extern const char kExtensionAiDataCollectionDescription[];
+extern const char kExtensionsCollapseMainMenuName[];
+extern const char kExtensionsCollapseMainMenuDescription[];
 extern const char kExtensionsMenuAccessControlName[];
 extern const char kExtensionsMenuAccessControlDescription[];
 extern const char kIPHExtensionsMenuFeatureName[];
@@ -2243,6 +2237,9 @@ extern const char kTranslateForceTriggerOnEnglishName[];
 extern const char kTranslateForceTriggerOnEnglishDescription[];
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+extern const char kEnableHistorySyncOptinExpansionPillName[];
+extern const char kEnableHistorySyncOptinExpansionPillDescription[];
+
 extern const char kEnableHistorySyncOptinName[];
 extern const char kEnableHistorySyncOptinDescription[];
 
@@ -2565,6 +2562,9 @@ extern const char kAndroidOpenPdfInlineBackportDescription[];
 extern const char kAndroidPdfAssistContentName[];
 extern const char kAndroidPdfAssistContentDescription[];
 
+extern const char kAndroidSurfaceColorUpdateName[];
+extern const char kAndroidSurfaceColorUpdateDescription[];
+
 extern const char kAndroidTabDeclutterName[];
 extern const char kAndroidTabDeclutterDescription[];
 
@@ -2712,6 +2712,9 @@ extern const char kEnableCommandLineOnNoRootedDescription[];
 extern const char kTabClosureMethodRefactorName[];
 extern const char kTabClosureMethodRefactorDescription[];
 
+extern const char kGridTabSwitcherUpdateName[];
+extern const char kGridTabSwitcherUpdateDescription[];
+
 extern const char kEnableClipboardDataControlsAndroidName[];
 extern const char kEnableClipboardDataControlsAndroidDescription[];
 
@@ -2833,6 +2836,10 @@ extern const char kReadAloudInCCTDescription[];
 extern const char kReadAloudTapToSeekName[];
 extern const char kReadAloudTapToSeekDescription[];
 
+extern const char kReadAloudTapToSeekName[];
+extern const char kReadAloudTapToSeekDescription[];
+extern const char kReaderModeDevEntryPointName[];
+extern const char kReaderModeDevEntryPointDescription[];
 extern const char kReaderModeHeuristicsName[];
 extern const char kReaderModeHeuristicsDescription[];
 extern const char kReaderModeHeuristicsMarkup[];
@@ -2909,9 +2916,6 @@ extern const char kTabGroupSyncDisableNetworkLayerDescription[];
 
 extern const char kTabStripContextMenuAndroidName[];
 extern const char kTabStripContextMenuAndroidDescription[];
-
-extern const char kTabStripGroupCollapseAndroidName[];
-extern const char kTabStripGroupCollapseAndroidDescription[];
 
 extern const char kTabStripGroupDragDropAndroidName[];
 extern const char kTabStripGroupDragDropAndroidDescription[];
@@ -4375,9 +4379,6 @@ extern const char kMacAddressRandomizationDescription[];
 extern const char kSysUiShouldHoldbackDriveIntegrationName[];
 extern const char kSysUiShouldHoldbackDriveIntegrationDescription[];
 
-extern const char kSysUiShouldHoldbackForestName[];
-extern const char kSysUiShouldHoldbackForestDescription[];
-
 extern const char kSysUiShouldHoldbackTaskManagementName[];
 extern const char kSysUiShouldHoldbackTaskManagementDescription[];
 
@@ -4746,6 +4747,9 @@ extern const char kOidcAuthProfileManagementDescription[];
 
 extern const char kGlicName[];
 extern const char kGlicDescription[];
+
+extern const char kGlicZOrderChangesName[];
+extern const char kGlicZOrderChangesDescription[];
 
 extern const char kGlicUserResizeName[];
 extern const char kGlicUserResizeDescription[];

@@ -393,7 +393,7 @@ class CheckAddedDepsHaveTestApprovalsTest(unittest.TestCase):
             '!sandbox',
         ]
         old_specific_include_rules = {
-            'compositor\.*': {
+            r'compositor\.*': {
                 '+cc',
             },
         }
@@ -412,10 +412,10 @@ class CheckAddedDepsHaveTestApprovalsTest(unittest.TestCase):
             '+' + os.path.join('third_party', 'WebKit'),
         ]
         new_specific_include_rules = {
-            'compositor\.*': {
+            r'compositor\.*': {
                 '+cc',
             },
-            'widget\.*': {
+            r'widget\.*': {
                 '+gpu',
             },
         }
@@ -3148,7 +3148,7 @@ class BannedTypeCheckTest(unittest.TestCase):
         self.assertTrue(
             'content/renderer/ok/file3.cc' not in results[0].message)
 
-    def testBannedMojomPatterns(self):
+    def testBannedMojomPatterns_SharedBuffer(self):
         input_api = MockInputApi()
         input_api.files = [
             MockFile(
@@ -3168,6 +3168,42 @@ class BannedTypeCheckTest(unittest.TestCase):
         self.assertEqual(1, len(results))
         self.assertTrue('bad.mojom' in results[0].message)
         self.assertTrue('good.mojom' not in results[0].message)
+
+    def testBannedMojomPatterns_ExtensionId(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            # Pattern tests.
+            MockFile('extensions/bad.mojom', ['string extension_id']),
+            MockFile('extensions/bad_struct.mojom',
+                     ['struct Bad {', '  string extension_id;', '};']),
+            MockFile('extensions/good.mojom', ['ExtensionId extension_id']),
+            MockFile('extensions/good_struct.mojom',
+                     ['struct Bad {', '  ExtensionId extension_id;', '};']),
+
+            # Path exclusion tests.
+            MockFile('some/included/extensions/path/bad_extension_id.mojom',
+                     ['string extension_id']),
+            MockFile('some/excluded/path/bad_extension_id.mojom',
+                     ['string extension_id']),
+        ]
+
+        # warnings are results[0], errors are results[1]
+        results = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
+
+        # Only warnings and no errors.
+        self.assertEqual(1, len(results))
+
+        # Pattern test assertions.
+        self.assertTrue('bad.mojom' in results[0].message)
+        self.assertTrue('bad_struct.mojom' in results[0].message)
+        self.assertTrue('good.mojom' not in results[0].message)
+        self.assertTrue('good_struct.mojom' not in results[0].message)
+
+        # Path exclusion assertions.
+        self.assertTrue('some/included/extensions/path/bad_extension_id.mojom'
+                        in results[0].message)
+        self.assertTrue('some/excluded/path/bad_extension_id.mojom' not in
+                        results[0].message)
 
 class NoProductionCodeUsingTestOnlyFunctionsTest(unittest.TestCase):
 

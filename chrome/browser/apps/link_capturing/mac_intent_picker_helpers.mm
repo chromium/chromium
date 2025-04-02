@@ -14,6 +14,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "net/base/apple/url_conversions.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/image/image_skia_util_mac.h"
 
 namespace apps {
 
@@ -39,7 +40,8 @@ NSImage* CreateRedIconForTesting() {
                  }];
 }
 
-IntentPickerAppInfo AppInfoForAppUrl(NSURL* app_url, int icon_size) {
+MacAppInfo AppInfoForAppUrl(NSURL* app_url, base::span<int> icon_sizes) {
+  CHECK(!icon_sizes.empty());
   NSString* app_name = nil;
   if (![app_url getResourceValue:&app_name
                           forKey:NSURLLocalizedNameKey
@@ -63,17 +65,27 @@ IntentPickerAppInfo AppInfoForAppUrl(NSURL* app_url, int icon_size) {
     app_icon = CreateRedIconForTesting();  // IN-TEST
   }
 
-  app_icon.size = NSMakeSize(icon_size, icon_size);
+  gfx::ImageFamily image_family;
+  if (app_icon) {
+    for (int icon_size : icon_sizes) {
+      CHECK_GT(icon_size, 0);
+      auto image = gfx::ImageSkiaFromResizedNSImage(
+          app_icon, NSMakeSize(icon_size, icon_size));
+      image.SetReadOnly();
+      image_family.Add(std::move(image));
+    }
+  }
 
-  return IntentPickerAppInfo{
-      PickerEntryType::kMacOs, ui::ImageModel::FromImage(gfx::Image(app_icon)),
-      base::SysNSStringToUTF8(app_url.path), base::SysNSStringToUTF8(app_name)};
+  return MacAppInfo{{PickerEntryType::kMacOs, ui::ImageModel(),
+                     base::SysNSStringToUTF8(app_url.path),
+                     base::SysNSStringToUTF8(app_name)},
+                    std::move(image_family)};
 }
 
 }  // namespace
 
-std::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url,
-                                                    int icon_size) {
+std::optional<MacAppInfo> FindMacAppForUrl(const GURL& url,
+                                           base::span<int> icon_sizes) {
   if (UseFakeAppForTesting()) {
     std::string fake_app = FakeAppForTesting();  // IN-TEST
     if (fake_app.empty()) {
@@ -81,7 +93,7 @@ std::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url,
     }
 
     return AppInfoForAppUrl(
-        [NSURL fileURLWithPath:base::SysUTF8ToNSString(fake_app)], icon_size);
+        [NSURL fileURLWithPath:base::SysUTF8ToNSString(fake_app)], icon_sizes);
   }
 
   NSURL* nsurl = net::NSURLWithGURL(url);
@@ -92,7 +104,7 @@ std::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url,
   SFUniversalLink* link = [[SFUniversalLink alloc] initWithWebpageURL:nsurl];
 
   if (link) {
-    return AppInfoForAppUrl(link.applicationURL, icon_size);
+    return AppInfoForAppUrl(link.applicationURL, icon_sizes);
   }
 
   return std::nullopt;

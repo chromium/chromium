@@ -44,6 +44,7 @@ export class ExtensionsSidebarElement extends ExtensionsSidebarElementBase {
   static override get properties() {
     return {
       enableEnhancedSiteControls: {type: Boolean},
+      inDevMode: {type: Boolean},
 
       /**
        * The data path/page that identifies the entry to be selected in the
@@ -56,6 +57,7 @@ export class ExtensionsSidebarElement extends ExtensionsSidebarElementBase {
 
   accessor enableEnhancedSiteControls: boolean = false;
   protected accessor selectedPath_: Page = Page.LIST;
+  accessor inDevMode: boolean = false;
 
   /**
    * The ID of the listener on |navigation|. Stored so that the
@@ -116,6 +118,14 @@ export class ExtensionsSidebarElement extends ExtensionsSidebarElementBase {
       tags: ['a'],
       attrs: ['target'],
       substitutions: [loadTimeData.getString('getMoreExtensionsUrl')],
+    });
+  }
+
+  protected computeDocsPromoText_(): TrustedHTML {
+    return this.i18nAdvanced('sidebarDocsPromo', {
+      tags: ['a'],
+      attrs: ['target'],
+      substitutions: [loadTimeData.getString('extensionsWhatsNewURL')],
     });
   }
 }

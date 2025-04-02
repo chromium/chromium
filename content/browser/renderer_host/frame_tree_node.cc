@@ -1248,14 +1248,15 @@ FrameTreeNode::CreateNavigationRequestForSynchronousRendererCommit(
     const GURL& original_url,
     std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
     std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter,
-    int http_response_code) {
+    int http_response_code,
+    base::TimeTicks actual_navigation_start) {
   return NavigationRequest::CreateForSynchronousRendererCommit(
       this, render_frame_host, is_same_document, url, origin,
       initiator_base_url, isolation_info_for_subresources, std::move(referrer),
       transition, should_replace_current_entry, method,
       has_transient_activation, is_overriding_user_agent, redirects,
       original_url, std::move(coep_reporter), std::move(dip_reporter),
-      http_response_code);
+      http_response_code, actual_navigation_start);
 }
 
 void FrameTreeNode::CancelNavigation(NavigationDiscardReason reason) {

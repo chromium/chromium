@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">સ્ક્રીન સેવર બંધ કરો</translation>
 <translation id="3091839911843451378">નિષ્ફળ થયું - પ્રિન્ટર બંધ થઈ ગયું છે</translation>
 <translation id="3102119246920354026">કેશ</translation>
-<translation id="3112413615003385433">તમારા શિક્ષકે School Toolsમાંથી કન્ટેન્ટ કાઢી નાખ્યું</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">પૂલ</translation>
 <translation id="3122883569442693641">વધુ વિગતો</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">આંશિક રીતે સક્રિય કરેલું</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> ટોનવાળી કોઈ <ph name="OFFICE_STYLE" /> ઑફિસ</translation>
 <translation id="3493187369049186498">Chromebook દ્વારા ડેટાની માપણી કરવામાં આવે છે. આ કદાચ પ્રદાતાના ડેટાથી અલગ હોઈ શકે છે.</translation>
-<translation id="349570724365779960">School Tools વિદ્યાર્થીઓ સાથે કનેક્ટેડ છે</translation>
 <translation id="3502426834823382181">બધી ઍપ જુઓ</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />પર્ફોર્મન્સ ટ્રેસ ડેટા<ph name="END_LINK1" /> મોકલો</translation>
 <translation id="3517001332549868749">ChromeOSની અપડેટ</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">ફેરફાર કરવાનું પૂર્ણ થયું</translation>
 <translation id="3532980081107202182">લગભગ <ph name="MIN_REMAINING" /> મિનિટ બાકી છે</translation>
 <translation id="3533790840489634638">પૂલ</translation>
-<translation id="3535802910192338629">તમારા શિક્ષકે School Toolsમાં નવું કન્ટેન્ટ ઉમેર્યું</translation>
 <translation id="3547264467365135390">ફોર્મ્યુલા</translation>
 <translation id="3557205324756024651">સ્થાનિક ઓળખ (વૈકલ્પિક)</translation>
 <translation id="3565064564551103223">મંજૂર કરેલા IPs</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">સિસ્ટમ સર્વિસને તમારા લોકેશનનો ઉપયોગ કરવાની મંજૂરી આપીએ?</translation>
 <translation id="6657585470893396449">પાસવર્ડ</translation>
 <translation id="66621959568103627">કોરલ ગુલાબી</translation>
+<translation id="6669485505082792176">હાલમાં આની છબીઓ બનાવી શકાતી નથી. તમારા વર્ણનના શબ્દોમાં ફેરબદલ કરવાનો પ્રયાસ કરો. ધ્યાનમાં રાખો કે તમે લોકોની, હાનિકારક કે અયોગ્ય કન્ટેન્ટ ધરાવતી કોઈ છબી બનાવી શકશો નહીં. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">કીબોર્ડનું બ્રાઇટનેસ વધારવાની કી</translation>
 <translation id="6692996468359469499">તમારી પસંદગી સંબંધિત માહિતી મેળવો</translation>
 <translation id="6694534975463174713">લૉક</translation>
@@ -1440,7 +1438,6 @@
 <translation id="7544853251252956727">શફલ કરો</translation>
 <translation id="7550715992156305117">નિદાન માટેના રૂટિન</translation>
 <translation id="7551123448725492271">ડિવાઇસ એક ઑડિયો ડિવાઇસ છે.</translation>
-<translation id="7553913964854052228">School Tools દ્વારા તમારા માઇક્રોફોનનો ઉપયોગ થઈ રહ્યો છે</translation>
 <translation id="7559239713112547082">સ્ક્રીનશૉટનો પ્રીવ્યૂ જુઓ</translation>
 <translation id="7561454561030345039">આ ક્રિયાને તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="7561759921596375678">વૉલ્યૂમ ચાલુ કરો</translation>
@@ -1663,7 +1660,6 @@
 <translation id="8576249514688522074">શરૂ કરી નથી</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> માટે ફર્મવેયરનું ઇન્સ્ટૉલેશન વર્ઝન <ph name="VERSION" /> પર પૂર્ણ કરવા ફરી શરૂ કરવાની જરૂર છે. તમારું કમ્પ્યૂટર ઘણી વખત રીબૂટ કર્યું હોય એવું લાગે છે. આ વર્તન અપેક્ષિત છે.</translation>
 <translation id="8593058461203131755">મીડિયા થોભાવો</translation>
-<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">રોમિંગ સ્થિતિ</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> માટે વધુ ક્રિયાઓ</translation>
 <translation id="86356131183441916">આછો જાંબલી</translation>

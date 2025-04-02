@@ -24,4 +24,6 @@ include_rules = [
   "+ios/chrome/browser/omnibox/ui_bundled",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web/model/web_navigation_util.h",
+  "+ios/chrome/browser/intelligence/features/features.h",
+  "+ios/chrome/browser/intelligence/page_action_menu/page_action_menu_entrypoint_view.h",
 ]

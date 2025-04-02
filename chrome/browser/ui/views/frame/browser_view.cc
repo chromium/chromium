@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -91,6 +92,7 @@
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
 #include "chrome/browser/ui/sync/one_click_signin_links_delegate_impl.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/shared_tab_group_feedback_controller.h"
+#include "chrome/browser/ui/tabs/split_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -217,6 +219,7 @@
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/sync/service/sync_service.h"
+#include "components/tab_collections/public/tab_interface.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
@@ -1476,39 +1479,28 @@ views::Widget* BrowserView::GetWidgetForAnchoring() {
   return GetWidget();
 }
 
-int BrowserView::GetInactiveSplitTabIndex() {
-  // TODO(crbug.com/392951786): Use the Collections API for accessing the tabs
-  // in a split view, rather than searching by index.
-  int active_index = browser_->tab_strip_model()->active_index();
-  std::optional<split_tabs::SplitTabId> active_split_id =
-      browser_->tab_strip_model()->GetTabAtIndex(active_index)->GetSplit();
-  const std::vector<int> potential_split_indices = {active_index - 1,
-                                                    active_index + 1};
-  for (int index : potential_split_indices) {
-    if (index < 0 || index >= browser_->tab_strip_model()->GetTabCount()) {
-      continue;
-    }
-    auto* potential_split_tab =
-        browser_->tab_strip_model()->GetTabAtIndex(index);
-    if (potential_split_tab->IsSplit() &&
-        potential_split_tab->GetSplit() == active_split_id) {
-      return index;
-    }
-  }
-  return -1;
-}
-
 void BrowserView::ShowSplitView() {
   CHECK(multi_contents_view_);
-  const int inactive_index = GetInactiveSplitTabIndex();
-  CHECK(inactive_index > -1);
-  int active_index = browser_->tab_strip_model()->active_index();
-  const int active_position = active_index < inactive_index ? 0 : 1;
-  multi_contents_view_->SetActivePosition(active_position);
-  multi_contents_view_->SetWebContents(
-      browser_->tab_strip_model()->GetWebContentsAt(inactive_index), false);
-  multi_contents_view_->SetWebContents(
-      browser_->tab_strip_model()->GetWebContentsAt(active_index), true);
+  const int active_index = browser_->tab_strip_model()->active_index();
+
+  std::optional<split_tabs::SplitTabId> split_tab_id =
+      browser_->tab_strip_model()->GetTabAtIndex(active_index)->GetSplit();
+
+  CHECK(split_tab_id.has_value());
+  split_tabs::SplitTabData* split_tab_data =
+      browser_->tab_strip_model()->GetSplitData(split_tab_id.value());
+
+  std::vector<tabs::TabInterface*> split_tabs = split_tab_data->ListTabs();
+
+  const int first_split_tab_index =
+      browser_->tab_strip_model()->GetIndexOfTab(split_tabs[0]);
+  const int relative_active_position = active_index - first_split_tab_index;
+  multi_contents_view_->SetActivePosition(relative_active_position);
+
+  for (int i = 0; i < static_cast<int>(split_tabs.size()); i++) {
+    multi_contents_view_->SetWebContents(split_tabs[i]->GetContents(),
+                                         i == relative_active_position);
+  }
 }
 
 void BrowserView::HideSplitView() {

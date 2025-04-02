@@ -19,6 +19,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/test/file_path_reparse_point_win.h"
+#endif
+
 namespace extensions {
 
 TEST(ExtensionResourceTest, CreateEmptyResource) {
@@ -71,6 +75,14 @@ TEST(ExtensionResourceTest, ResourcesOutsideOfPath) {
       symlink_file);
 #endif
 
+#if BUILDFLAG(IS_WIN)
+  base::FilePath reparse_dir = inner_dir.AppendASCII("reparse");
+  ASSERT_TRUE(base::CreateDirectory(reparse_dir));
+  auto reparse_point =
+      base::test::FilePathReparsePoint::Create(reparse_dir, temp.GetPath());
+  ASSERT_TRUE(reparse_point.has_value());
+#endif
+
   // A non-packing extension should be able to access the file within the
   // directory.
   ExtensionResource r1(extension_id, inner_dir,
@@ -117,6 +129,21 @@ TEST(ExtensionResourceTest, ResourcesOutsideOfPath) {
                        base::FilePath().AppendASCII("symlink"));
   r6.set_follow_symlinks_anywhere();
   EXPECT_FALSE(r6.GetFilePath().empty());
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  base::FilePath outer_via_reparse =
+      base::FilePath().AppendASCII("reparse").AppendASCII("outer");
+
+  // The non-packing extension should also not be able to access a resource that
+  // points out of the directory via a reparse point.
+  ExtensionResource r7(extension_id, inner_dir, outer_via_reparse);
+  EXPECT_TRUE(r7.GetFilePath().empty());
+
+  // ... but a packing extension can.
+  ExtensionResource r8(extension_id, inner_dir, outer_via_reparse);
+  r8.set_follow_symlinks_anywhere();
+  EXPECT_FALSE(r8.GetFilePath().empty());
 #endif
 }
 

@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">Osoba ďakujúca posunkovou rečou</translation>
 <translation id="2088690981887365033">Sieť VPN</translation>
 <translation id="209653272837065803">Nie je k dispozícii dostatok priestoru na ďalšiu synchronizáciu súborov</translation>
-<translation id="2111134541987263231">Zapnite <ph name="BEGIN_BOLD" />Povoliť v režime inkognito<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Položky (<ph name="NUMBER_OF_ITEMS" />) budú odstránené a nebudete ich môcť obnoviť.</translation>
 <translation id="2122305276694332719">Automatické pripájanie k skrytej sieti umožňuje ostatným zobraziť si vaše zariadenie a niektoré nastavenia sietí, a preto sa neodporúča.</translation>
 <translation id="2125607626296734455">Khmérska klávesnica</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">Planéta</translation>
 <translation id="2305020378527873881">Zväzok <ph name="VOLUME_NAME" /> bol odpojený.</translation>
 <translation id="2307462900900812319">Konfigurovať sieť</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Rozšírenie s identifikátorom <ph name="BEGIN_LIST" /><ph name="END_LIST" /> sa nedá nájsť. Kontaktujte svojho správcu.}few{Rozšírenia s identifikátormi <ph name="BEGIN_LIST" /><ph name="END_LIST" /> sa nedajú nájsť. Kontaktujte svojho správcu.}many{Extensions with the IDs <ph name="BEGIN_LIST" /><ph name="END_LIST" /> can’t be located. Contact your administrator.}other{Rozšírenia s identifikátormi <ph name="BEGIN_LIST" /><ph name="END_LIST" /> sa nedajú nájsť. Kontaktujte svojho správcu.}}</translation>
 <translation id="2325650632570794183">Tento typ súboru nie je podporovaný. Navštívte Internetový obchod Chrome, kde nájdete aplikáciu, pomocou ktorej môžete tento typ súboru otvoriť.</translation>
 <translation id="2326539130272988168">Bulharská klávesnica</translation>
 <translation id="233822363739146957">Na synchronizáciu všetkých súborov nie je dostatok priestoru</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">Maráthska klávesnica</translation>
 <translation id="2923240520113693977">Estónčina</translation>
 <translation id="2938685643439809023">Mongolčina</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Rozšírenie sa nedá nájsť}few{Rozšírenia sa nedajú nájsť}many{Rozšírenia sa nedajú nájsť}other{Rozšírenia sa nedajú nájsť}}</translation>
 <translation id="2943503720238418293">Použite kratší názov</translation>
 <translation id="2949781154072577687">Disk <ph name="DRIVE_NAME" /> sa formátuje...</translation>
 <translation id="2951236788251446349">Medúza</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">Dokončené</translation>
 <translation id="3358452157379365236">Gitara</translation>
 <translation id="3368922792935385530">Pripojené</translation>
-<translation id="3372635229069101468">Kliknite na <ph name="BEGIN_BOLD" />Podrobnosti<ph name="END_BOLD" />.</translation>
 <translation id="3382143449143186018">Nepálska klávesnica s rozložením InScript</translation>
 <translation id="338691029516748599"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, ovládané správcom, pripojenie</translation>
 <translation id="3408072735282270043">Aktivovať <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">Jednorožec</translation>
 <translation id="4131235941541910880">Položky, ktoré nepotrebujete, presuňte do koša</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivovať po nastavení zariadenia</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{V režime inkognito zapnite nasledujúce rozšírenie:}few{V režime inkognito zapnite nasledujúce rozšírenia:}many{V režime inkognito zapnite nasledujúce rozšírenia:}other{V režime inkognito zapnite nasledujúce rozšírenia:}}</translation>
 <translation id="4153015322587141338">Ak chcete mať rýchly prístup k súboru na poličke, kliknite naň pravým tlačidlom a vyberte <ph name="PIN_COMMAND" />.</translation>
 <translation id="4157569377477607576">Pravidlá správcu neodporúčajú:</translation>
 <translation id="4159731583141908892">Súbor <ph name="FILE_NAME" /> bol presunutý.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">Ponechať obidve</translation>
 <translation id="4804827417948292437">Avokádo</translation>
 <translation id="4805966553127040832">Obnovujú sa položky (<ph name="COUNT" />)</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Ak chcete používať režim inkognito, vaša organizácia vyžaduje rozšírenie}few{Ak chcete používať režim inkognito, vaša organizácia vyžaduje niektoré rozšírenia}many{Ak chcete používať režim inkognito, vaša organizácia vyžaduje niektoré rozšírenia}other{Ak chcete používať režim inkognito, vaša organizácia vyžaduje niektoré rozšírenia}}</translation>
 <translation id="4826849268470072925">Tamilská klávesnica s rozložením ITRANS</translation>
-<translation id="482932175346970750">Zadajte v prehliadači <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />.</translation>
 <translation id="4843566743023903107">Zariadenia Chromebase</translation>
 <translation id="4850886885716139402">Zobraziť</translation>
 <translation id="485316830061041779">Nemčina</translation>
@@ -561,7 +554,6 @@ Vaše súbory sú bezpečne uložené na Disku Google bez ohľadu na to, čo sa 
 s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Obnovené súbory z Disku Google</translation>
 <translation id="5278111733643988471">Ak chcete túto položku obnoviť, presuňte ju do nového priečinka mimo koša. Pôvodný priečinok <ph name="PARENT_FOLDER_NAME" /> pre túto položku bol odstránený.</translation>
-<translation id="5283101102242354279">Ak chcete zapnúť rozšírenie v režime inkognito:</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5293615890992542006">Presun tohto súboru je blokovaný pravidlami správcu</translation>
 <translation id="5305688511332277257">Žiadne nainštalované</translation>
@@ -815,7 +807,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, podrobnosti</translation>
 <translation id="7246947237293279874">Proxy server FTP</translation>
 <translation id="7248671827512403053">Aplikácia</translation>
-<translation id="7252604552361840748">Vyhľadajte rozšírenie vyššie.</translation>
 <translation id="7256405249507348194">Nerozpoznaná chyba: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Dostupné služby</translation>
 <translation id="7291818353625820805">Chcete, aby sa klávesy opakovali? Vypnite v nastaveniach klávesnice diakritické znamienka.</translation>

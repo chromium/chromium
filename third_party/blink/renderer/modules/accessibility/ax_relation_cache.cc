@@ -812,7 +812,7 @@ void AXRelationCache::MapOwnedChildrenWithCleanLayout(
 
 void AXRelationCache::UpdateAriaOwnsFromAttrAssociatedElementsWithCleanLayout(
     AXObject* owner,
-    const HeapVector<Member<Element>>& attr_associated_elements,
+    const GCedHeapVector<Member<Element>>& attr_associated_elements,
     HeapVector<Member<AXObject>>& validated_owned_children_result,
     bool force) {
   CHECK(!object_cache_->IsFrozen());

@@ -47,7 +47,7 @@ WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
 namespace blink {
 
 using CustomElementConstructionStack =
-    HeapVector<CustomElementConstructionStackEntry, 1>;
+    GCedHeapVector<CustomElementConstructionStackEntry, 1>;
 
 // Returns the construction stack associated with the construction in the
 // window. Nullptr return value means the stack is empty (when the memory

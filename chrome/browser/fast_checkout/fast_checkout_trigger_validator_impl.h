@@ -8,7 +8,7 @@
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper.h"
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator.h"
-#include "components/autofill/core/browser/integrators/fast_checkout_enums.h"
+#include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_enums.h"
 
 class FastCheckoutTriggerValidatorImpl : public FastCheckoutTriggerValidator {
  public:

@@ -113,15 +113,10 @@ class TestBirchItem : public BirchItem {
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
-// BirchBarTest:
-// The test class of birch bar with Forest feature enabled by default.
+// BirchBarTestBase:
 class BirchBarTestBase : public AshTestBase {
  public:
-  BirchBarTestBase() {
-    feature_list_.InitWithFeatures(
-        {features::kForestFeature, features::kCoralFeature}, {});
-  }
-
+  BirchBarTestBase() = default;
   BirchBarTestBase(const BirchBarTestBase&) = delete;
   BirchBarTestBase& operator=(const BirchBarTestBase&) = delete;
   ~BirchBarTestBase() override = default;
@@ -353,7 +348,7 @@ class BirchBarTestBase : public AshTestBase {
   raw_ptr<TestBirchDataProvider<BirchWeatherItem>> weather_provider_;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{features::kCoralFeature};
 };
 
 // Adds a mock clock override to the test since the time may impact the ranking

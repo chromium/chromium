@@ -70,6 +70,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
@@ -78,6 +79,7 @@ import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMeth
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TouchToFillIbanOutcome;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -85,6 +87,7 @@ import org.chromium.components.payments.ui.InputProtector;
 import org.chromium.components.payments.ui.test_support.FakeClock;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.util.List;
 import java.util.Optional;
@@ -164,6 +167,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     VISA.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
                     /* secondarySubLabel= */ "",
                     /* labelContentDescription= */ "",
+                    /* suggestionType= */ SuggestionType.CREDIT_CARD_ENTRY,
+                    /* customIconUrl= */ new GURL(""),
+                    VISA.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
                     /* shouldDisplayTermsAvailable= */ false);
     private static final AutofillSuggestion VISA_SUGGESTION_WITH_CARD_BENEFITS =
@@ -173,6 +179,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* subLabel= */ "2% cashback on travel",
                     VISA.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
                     /* labelContentDescription= */ "",
+                    /* suggestionType= */ SuggestionType.CREDIT_CARD_ENTRY,
+                    /* customIconUrl= */ new GURL("http://www.example.com"),
+                    VISA.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
                     /* shouldDisplayTermsAvailable= */ true);
     private static final AutofillSuggestion NICKNAMED_VISA_SUGGESTION =
@@ -185,6 +194,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                             "%s %s",
                             NICKNAMED_VISA.getCardNameForAutofillDisplay(),
                             NICKNAMED_VISA.getBasicCardIssuerNetwork()),
+                    /* suggestionType= */ SuggestionType.CREDIT_CARD_ENTRY,
+                    /* customIconUrl= */ new GURL("http://www.example.com"),
+                    NICKNAMED_VISA.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
                     /* shouldDisplayTermsAvailable= */ false);
     private static final AutofillSuggestion MASTERCARD_SUGGESTION =
@@ -194,6 +206,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     MASTERCARD.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
                     /* secondarySubLabel= */ "",
                     /* labelContentDescription= */ "",
+                    /* suggestionType= */ SuggestionType.CREDIT_CARD_ENTRY,
+                    /* customIconUrl= */ new GURL("http://www.example.com"),
+                    MASTERCARD.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
                     /* shouldDisplayTermsAvailable= */ false);
     private static final AutofillSuggestion NON_ACCEPTABLE_VIRTUAL_CARD_SUGGESTION =
@@ -203,6 +218,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* subLabel= */ "Merchant doesn't accept this virtual card",
                     /* secondarySubLabel= */ "",
                     /* labelContentDescription= */ "",
+                    /* suggestionType= */ SuggestionType.VIRTUAL_CREDIT_CARD_ENTRY,
+                    /* customIconUrl= */ new GURL("http://www.example.com"),
+                    VIRTUAL_CARD.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ true,
                     /* shouldDisplayTermsAvailable= */ false);
     private static final AutofillSuggestion ACCEPTABLE_VIRTUAL_CARD_SUGGESTION =
@@ -212,6 +230,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* subLabel= */ "Virtual Card",
                     /* secondarySubLabel= */ "",
                     /* labelContentDescription= */ "",
+                    /* suggestionType= */ SuggestionType.VIRTUAL_CREDIT_CARD_ENTRY,
+                    /* customIconUrl= */ new GURL(AutofillUiUtils.CAPITAL_ONE_ICON_URL),
+                    VIRTUAL_CARD.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
                     /* shouldDisplayTermsAvailable= */ false);
     private static final AutofillSuggestion VIRTUAL_CARD_SUGGESTION_WITH_CARD_BENEFITS =
@@ -221,6 +242,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* subLabel= */ "2% cashback on travel",
                     /* secondarySubLabel= */ "Virtual card",
                     /* labelContentDescription= */ "",
+                    /* suggestionType= */ SuggestionType.VIRTUAL_CREDIT_CARD_ENTRY,
+                    /* customIconUrl= */ new GURL("http://www.example.com"),
+                    VIRTUAL_CARD.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
                     /* shouldDisplayTermsAvailable= */ true);
 

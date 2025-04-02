@@ -185,7 +185,6 @@ crbug.com/524808 [ win8 nvidia ] ContextLost_WebGLContextLostFromSelectElement [
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-crbug.com/1419558 [ angle-swiftshader clang-coverage fuchsia fuchsia-board-qemu-x64 google-0xc0de ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
 
 # Fails with Graphite on Windows and Mac
 crbug.com/329145823 [ win release amd ] GpuCrash_InfoForHardwareGpu [ Failure ]
@@ -203,8 +202,9 @@ crbug.com/329145823 [ angle-opengl bigsur graphite-disabled mac-x86_64 no-asan n
 crbug.com/329145823 [ asan graphite-disabled intel-0x3e9b mac-x86_64 no-clang-coverage release sonoma ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ angle-metal graphite-enabled intel-gen-9 mac no-asan release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
 
-# Flaky failure on Mac AMD ASAN - 3 GPU process crashes instead of 4
+# Flaky failure on Mac AMD - 3 GPU process crashes instead of 4
 crbug.com/354748640 [ mac amd asan release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
+crbug.com/354748640 [ mac amd no-asan graphite-disabled release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
 
 # Flaky failure on Mac release NVIDIA - 3 GPU process crashes instead of 4
 crbug.com/355923591 [ mac release nvidia ] GpuCrash_InfoForDualHardwareGpus [ RetryOnFailure ]
@@ -223,11 +223,13 @@ crbug.com/365565140 [ win qualcomm ] ContextLost_WebGPUUnblockedAfterUserInitiat
 # Flaky Timed out while waiting 10s for IsJavaScriptExpressionTrue
 crbug.com/384605105 [ amd-0x7340 angle-opengl debug graphite-disabled no-asan no-clang-coverage sonoma ] ContextLost_WebGLContextRestoredInHiddenTab [ RetryOnFailure ]
 crbug.com/384605105 [ mac intel no-asan ] ContextLost_WebGLContextRestoredInHiddenTab [ RetryOnFailure ]
-crbug.com/384605105 [ intel-0x9bc5 win ] ContextLost_WebGLContextRestoredInHiddenTab [ RetryOnFailure ]
 crbug.com/384605105 [ win nvidia ] ContextLost_WebGLContextRestoredInHiddenTab [ RetryOnFailure ]
 
 # Flaky Timed out while waiting 60s for IsJavaScriptExpressionTrue
-crbug.com/365565140 [ mac ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
+crbug.com/365565140 [ amd-0x7340 debug mac-x86_64 no-asan no-clang-coverage sonoma ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
+crbug.com/365565140 [ angle-metal asan intel-0x3e9b mac-x86_64 no-clang-coverage release sonoma ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
+crbug.com/365565140 [ angle-opengl bigsur graphite-disabled mac-x86_64 no-asan no-clang-coverage nvidia-0xfe9 release ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
+crbug.com/365565140 [ angle-opengl debug graphite-disabled intel-0x3e9b mac-x86_64 no-asan no-clang-coverage sonoma ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
 
 
 #######################################################################

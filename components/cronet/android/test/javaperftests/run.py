@@ -93,21 +93,21 @@ class CronetPerfTestAndroidStory(android.AndroidStory):
             package=perf_test_utils.APP_PACKAGE,
             activity=perf_test_utils.APP_ACTIVITY,
             action=perf_test_utils.APP_ACTION,
-            # |config| maps from configuration value names to the configured values.
-            # |config| is encoded as URL parameter names and values and passed to
-            # the Cronet perf test app via the Intent data field.
+            # |config| maps from configuration value names to the configured
+            # values. |config| is encoded as URL parameter names and values and
+            # passed to the Cronet perf test app via the Intent data field.
             data=self.url,
             extras=None,
             category=None)
         super(CronetPerfTestAndroidStory, self).__init__(
             start_intent,
             name='CronetPerfTest',
-            # No reason to wait for app; Run() will wait for results.  By default
-            # StartActivity will timeout waiting for CronetPerfTest, so override
-            # |is_app_ready_predicate| to not wait.
+            # No reason to wait for app; Run() will wait for results. By
+            # default StartActivity will timeout waiting for CronetPerfTest, so
+            # override |is_app_ready_predicate| to not wait.
             is_app_ready_predicate=lambda app: True)
 
-    def Run(self, shared_state):
+    def Run(self, _):
         while not self._device.FileExists(
                 perf_test_utils.GetConfig(self._device)['DONE_FILE']):
             time.sleep(1.0)
@@ -124,19 +124,19 @@ class CronetPerfTestStorySet(story_module.StorySet):
 class CronetPerfTestMeasurement(
         timeline_based_measurement.TimelineBasedMeasurement):
     # For now AndroidStory's SharedAppState works only with
-    # TimelineBasedMeasurements, so implement one that just forwards results from
-    # Cronet perf test app.
+    # TimelineBasedMeasurements, so implement one that just forwards results
+    # from Cronet perf test app.
 
     def __init__(self, device, options):
         super(CronetPerfTestMeasurement, self).__init__(options)
         self._device = device
 
     def WillRunStory(self, platform, story=None):
-        # Skip parent implementation which doesn't apply to Cronet perf test app as
-        # it is not a browser with a timeline interface.
+        # Skip parent implementation which doesn't apply to Cronet perf test
+        # app as it is not a browser with a timeline interface.
         pass
 
-    def Measure(self, platform, results):
+    def Measure(self, _, results):
         # Reads results from |RESULTS_FILE| on target and adds to |results|.
         jsonResults = json.loads(
             self._device.ReadFile(
@@ -145,8 +145,8 @@ class CronetPerfTestMeasurement(
             results.AddMeasurement(test, 'ms', jsonResults[test])
 
     def DidRunStory(self, platform, results):
-        # Skip parent implementation which calls into tracing_controller which this
-        # doesn't have.
+        # Skip parent implementation which calls into tracing_controller which
+        # this doesn't have.
         pass
 
 
@@ -162,7 +162,7 @@ class CronetPerfTestBenchmark(benchmark.Benchmark):
     def CreatePageTest(self, options):
         return CronetPerfTestMeasurement(self._device, options)
 
-    def CreateStorySet(self, options):
+    def CreateStorySet(self, _):
         return CronetPerfTestStorySet(self._device)
 
 

@@ -71,7 +71,7 @@ source_set("app") {
 }
 
 source_set("app_trampoline") {
-  sources = [ "chrome_exe_trampoline.mm" ]
+  sources = [ "chrome_exe_main.mm" ]
 }
 
 source_set("unit_tests") {
@@ -611,7 +611,7 @@ source_set("mode") {
 }
 
 source_set("main") {
-  sources = [ "chrome_exe_main.mm" ]
+  sources = [ "chrome_main.mm" ]
 
   deps = [
     ":app_internal",

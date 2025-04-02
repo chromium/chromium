@@ -26,7 +26,7 @@ found in the LICENSE file.
     <color name="incognito_tab_tile_number_color">@color/baseline_neutral_90</color>
     <color name="incognito_tab_tile_number_selected_color">@color/baseline_primary_20</color>
 
-    <color name="incognito_tab_grid_dialog_background_color">@color/default_bg_color_dark</color>
+    <color name="incognito_tab_grid_dialog_background_color">@color/gm3_baseline_surface_container_low_dark</color>
 
     <color name="incognito_tab_grid_dialog_ungroup_bar_bg_hovered_color">@color/baseline_primary_80</color>
 

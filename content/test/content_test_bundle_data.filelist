@@ -2285,15 +2285,18 @@ data/accessibility/event/aria-checked-changed-expected-auralinux.txt
 data/accessibility/event/aria-checked-changed-expected-uia-win.txt
 data/accessibility/event/aria-checked-changed-expected-win.txt
 data/accessibility/event/aria-checked-changed.html
+data/accessibility/event/aria-combo-box-collapse-expected-android.txt
 data/accessibility/event/aria-combo-box-collapse-expected-auralinux.txt
 data/accessibility/event/aria-combo-box-collapse-expected-mac.txt
 data/accessibility/event/aria-combo-box-collapse-expected-uia-win.txt
 data/accessibility/event/aria-combo-box-collapse-expected-win.txt
 data/accessibility/event/aria-combo-box-collapse.html
+data/accessibility/event/aria-combo-box-delay-add-list-expected-android.txt
 data/accessibility/event/aria-combo-box-delay-add-list-expected-mac.txt
 data/accessibility/event/aria-combo-box-delay-add-list-expected-uia-win.txt
 data/accessibility/event/aria-combo-box-delay-add-list-expected-win.txt
 data/accessibility/event/aria-combo-box-delay-add-list.html
+data/accessibility/event/aria-combo-box-delay-show-list-expected-android.txt
 data/accessibility/event/aria-combo-box-delay-show-list-expected-auralinux.txt
 data/accessibility/event/aria-combo-box-delay-show-list-expected-mac.txt
 data/accessibility/event/aria-combo-box-delay-show-list-expected-win.txt
@@ -2310,6 +2313,7 @@ data/accessibility/event/aria-combo-box-focus-expected-mac.txt
 data/accessibility/event/aria-combo-box-focus-expected-uia-win.txt
 data/accessibility/event/aria-combo-box-focus-expected-win.txt
 data/accessibility/event/aria-combo-box-focus.html
+data/accessibility/event/aria-combo-box-next-expected-android.txt
 data/accessibility/event/aria-combo-box-next-expected-auralinux.txt
 data/accessibility/event/aria-combo-box-next-expected-mac.txt
 data/accessibility/event/aria-combo-box-next-expected-uia-win.txt
@@ -2756,6 +2760,7 @@ data/accessibility/event/remove-hidden-attribute-subtree.html
 data/accessibility/event/remove-hidden-attribute.html
 data/accessibility/event/remove-subtree-expected-win.txt
 data/accessibility/event/remove-subtree.html
+data/accessibility/event/reparent-element-with-active-descendant-expected-android.txt
 data/accessibility/event/reparent-element-with-active-descendant-expected-auralinux.txt
 data/accessibility/event/reparent-element-with-active-descendant-expected-mac.txt
 data/accessibility/event/reparent-element-with-active-descendant-expected-win.txt
@@ -7041,6 +7046,8 @@ data/gpu/pixel_canvas_low_latency_webgl_draw_image.html
 data/gpu/pixel_canvas_low_latency_webgl_occluded.html
 data/gpu/pixel_canvas_low_latency_webgl_rounded_corners.html
 data/gpu/pixel_css3d.html
+data/gpu/pixel_destroyed_webgpu_canvas.html
+data/gpu/pixel_destroyed_webgpu_canvas.js
 data/gpu/pixel_media_foundation_clear_dcomp.html
 data/gpu/pixel_media_recorder_from_canvas_2d.html
 data/gpu/pixel_media_recorder_from_video_element.html
@@ -8364,6 +8371,7 @@ data/unload.html
 data/view_transitions/basic-vt-opt-in.html
 data/view_transitions/capture-style.css
 data/view_transitions/green.html
+data/view_transitions/parent-child-opacity-iframe.html
 data/view_transitions/parent-child-opacity.html
 data/view_transitions/parent-child.html
 data/view_transitions/red_jank_second_pageshow.html

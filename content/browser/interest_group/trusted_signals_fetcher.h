@@ -22,6 +22,7 @@
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
+#include "content/browser/interest_group/data_decoder_manager.h"
 #include "content/browser/interest_group/devtools_enums.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
@@ -158,6 +159,8 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   TrustedSignalsFetcher(const TrustedSignalsFetcher&) = delete;
   TrustedSignalsFetcher& operator=(const TrustedSignalsFetcher&) = delete;
 
+  // `data_decoder_manager` must outlive the fetcher.
+  //
   // `frame_tree_node_id` and `devtools_auction_ids` are used to log events for
   // devtools, if needed.
   //
@@ -179,6 +182,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // `compression_groups` is a map of all partitions in the request, indexed by
   // compression group id. Virtual for tests.
   virtual void FetchBiddingSignals(
+      DataDecoderManager& data_decoder_manager,
       network::mojom::URLLoaderFactory* url_loader_factory,
       FrameTreeNodeId frame_tree_node_id,
       base::flat_set<std::string> devtools_auction_ids,
@@ -191,6 +195,8 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
       const std::map<int, std::vector<BiddingPartition>>& compression_groups,
       Callback callback);
 
+  // `data_decoder_manager` must outlive the fetcher.
+  //
   // `frame_tree_node_id` and `devtools_auction_ids` are used to log events for
   // devtools, if needed.
   //
@@ -212,6 +218,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // `compression_groups` is a map of all partitions in the request, indexed by
   // compression group id. Virtual for tests.
   virtual void FetchScoringSignals(
+      DataDecoderManager& data_decoder_manager,
       network::mojom::URLLoaderFactory* url_loader_factory,
       FrameTreeNodeId frame_tree_node_id,
       base::flat_set<std::string> devtools_auction_ids,
@@ -232,6 +239,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // different for bidding and scoring signals, and that layer is not parsed by
   // this class.
   void EncryptRequestBodyAndStart(
+      DataDecoderManager& data_decoder_manager,
       network::mojom::URLLoaderFactory* url_loader_factory,
       InterestGroupAuctionFetchType fetch_type,
       FrameTreeNodeId frame_tree_node_id,
@@ -278,6 +286,10 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // Context needed to decrypt the response. Initialized while encrypting the
   // request body.
   std::unique_ptr<quiche::ObliviousHttpRequest::Context> ohttp_context_;
+
+  // Used to parse the CBOR response. Created when fetch starts, to pre-warm the
+  // decoder process.
+  std::unique_ptr<DataDecoderManager::Handle> decoder_handle_;
 
   // Compression scheme used by all compression groups. Populated when reading
   // the response.

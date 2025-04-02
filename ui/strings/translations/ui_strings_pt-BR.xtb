@@ -38,6 +38,7 @@
 <translation id="19085484004813472">Este é um recurso novo</translation>
 <translation id="2006524834898217237">Verifique se o dispositivo está conectado à Internet.</translation>
 <translation id="208586643495776849">Tente novamente</translation>
+<translation id="2111134541987263231">Ative a opção <ph name="BEGIN_BOLD" />Permitir na navegação anônima<ph name="END_BOLD" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d}one{# d}other{# d}}</translation>
 <translation id="2148716181193084225">Hoje</translation>
 <translation id="2168039046890040389">Página para cima</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">Toque nas áreas de toque da tela.</translation>
 <translation id="2295140143284145483">Pesquisa</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Não foi possível localizar uma extensão com o ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Entre em contato com o administrador.}one{Não foi possível localizar uma extensão com o ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Entre em contato com o administrador.}other{Não foi possível localizar extensões com os IDs <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Entre em contato com o administrador.}}</translation>
 <translation id="2353636109065292463">Verificando sua conexão de Internet</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2388990488038464401">Ligar para este número do seu smartphone?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">Excluir tudo</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{em 1 d}one{em # d}other{em # d}}</translation>
 <translation id="2922712708897119705">Coluna <ph name="COLUMN_NAME" /> em ordem decrescente.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Não foi possível encontrar a extensão}one{Não foi possível encontrar a extensão}other{Não foi possível encontrar as extensões}}</translation>
 <translation id="3036649622769666520">Abrir arquivos</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">Parte inferior</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">Ligar usando</translation>
 <translation id="3306688585798492231">Tela integrada</translation>
 <translation id="335581015389089642">Voz</translation>
+<translation id="3372635229069101468">Clique em <ph name="BEGIN_BOLD" />Detalhes<ph name="END_BOLD" />.</translation>
 <translation id="3389286852084373014">O texto está grande demais</translation>
 <translation id="3406306243914553062">Conteúdo HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{Um dia restante}one{# dias restantes}other{# dias restantes}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">Coluna <ph name="COLUMN_NAME" /> em ordem crescente.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 notificação não lida}one{# notificação não lida}other{# notificações não lidas}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Ative esta extensão na navegação anônima:}one{Ative esta extensão na navegação anônima:}other{Ative estas extensões na navegação anônima:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 mês atrás}one{# mês atrás}other{# meses atrás}}</translation>
 <translation id="4289300219472526559">Comece a falar</translation>
 <translation id="4289540628985791613">Visão geral</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">o número</translation>
 <translation id="4746179598275229723">A extensão foi liberada</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 mês restante}one{# mês restante}other{# meses restantes}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Para usar a navegação anônima, sua organização exige uma extensão}one{Para usar a navegação anônima, sua organização exige uma extensão}other{Para usar a navegação anônima, sua organização exige algumas extensões}}</translation>
+<translation id="482932175346970750">Digite <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> no navegador.</translation>
 <translation id="4888938634149558681">Ligar</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{Um segundo}one{# segundos}other{# segundos}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;Colar</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Falha ao enviar</translation>
+<translation id="5283101102242354279">Ative uma extensão na navegação anônima:</translation>
 <translation id="528468243742722775">Fim</translation>
 <translation id="5329858601952122676">&amp;Excluir</translation>
 <translation id="5361107212971249203">o texto</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">As configurações de exibição do aplicativo entrarão em vigor quando ele for reiniciado.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Um minuto restante}one{# minutos restantes}other{# minutos restantes}}</translation>
+<translation id="7252604552361840748">Encontre a extensão acima.</translation>
 <translation id="7363164521834647158">Enviar resposta</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Um minuto atrás}one{# minutos atrás}other{# minutos atrás}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>

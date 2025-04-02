@@ -234,10 +234,6 @@ void LocalFilesMigrationManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-base::Time LocalFilesMigrationManager::GetMigrationStartTime() const {
-  return migration_start_time_;
-}
-
 void LocalFilesMigrationManager::SetNotificationManagerForTesting(
     MigrationNotificationManager* notification_manager) {
   CHECK_IS_TEST();
@@ -286,6 +282,16 @@ void LocalFilesMigrationManager::InitializeFromPrefs() {
   local_user_files_allowed_ = LocalUserFilesAllowed();
   migration_destination_ = GetMigrationDestination();
 
+  // For kDelete, retry cleanup even after kMaxRetryCount failures to ensure
+  // policy-enforced deletion. Other destinations treat kFailure as final.
+  if (state_ == State::kFailure &&
+      migration_destination_ == MigrationDestination::kDelete) {
+    current_retry_count_ = 0;
+    pref_service->SetInteger(prefs::kSkyVaultMigrationRetryCount,
+                             current_retry_count_);
+    SetState(State::kCleanup);
+  }
+
   LocalStorageHistograms(profile, local_user_files_allowed_);
 
   if (local_user_files_allowed_ ||
@@ -312,7 +318,7 @@ void LocalFilesMigrationManager::InitializeFromPrefs() {
   SkyVaultMigrationEnabledHistogram(migration_destination_, true);
 
   if (IsMigrationMisconfigured(profile, migration_destination_)) {
-    DCHECK(IsCloudDestination(migration_destination_));
+    CHECK(IsCloudDestination(migration_destination_));
     LOG(WARNING) << "Local files migration policy is set to use "
                  << (migration_destination_ ==
                              MigrationDestination::kGoogleDrive
@@ -473,22 +479,46 @@ void LocalFilesMigrationManager::InformUser() {
   CHECK(!local_user_files_allowed_);
   CHECK(IsMigrationEnabled(migration_destination_));
 
-  // TODO(401176561): Keep migration start time over sessions.
-  migration_start_time_ = base::Time::Now() + kTotalMigrationTimeout;
+  const base::Time now = base::Time::Now();
+  base::Time scheduled_start_time = now + kTotalMigrationTimeout;
+  if (base::FeatureList::IsEnabled(features::kSkyVaultV3)) {
+    PrefService* pref_service =
+        Profile::FromBrowserContext(context_)->GetPrefs();
+    scheduled_start_time =
+        pref_service->GetTime(prefs::kSkyVaultMigrationScheduledStartTime);
+    if (scheduled_start_time.is_null()) {
+      scheduled_start_time = now + kTotalMigrationTimeout;
+      pref_service->SetTime(prefs::kSkyVaultMigrationScheduledStartTime,
+                            scheduled_start_time);
+    }
+  }
+
+  const base::TimeDelta remaining_time = scheduled_start_time - now;
+  if (remaining_time.is_negative()) {
+    SkyVaultMigrationScheduledTimeInPastInformUser(migration_destination_,
+                                                   true);
+    OnTimeoutExpired();
+    return;
+  }
+  if (remaining_time <= kFinalMigrationTimeout) {
+    ScheduleMigrationAndInformUser(scheduled_start_time);
+    return;
+  }
 
   notification_manager_->ShowMigrationInfoDialog(
-      migration_destination_, migration_start_time_,
+      migration_destination_, scheduled_start_time,
       base::BindOnce(&LocalFilesMigrationManager::SkipMigrationDelay,
                      weak_factory_.GetWeakPtr()));
   // Schedule another dialog closer to the migration.
   scheduling_timer_->Start(
-      FROM_HERE, migration_start_time_ - kFinalMigrationTimeout,
+      FROM_HERE, scheduled_start_time - kFinalMigrationTimeout,
       base::BindOnce(
           &LocalFilesMigrationManager::ScheduleMigrationAndInformUser,
-          weak_factory_.GetWeakPtr()));
+          weak_factory_.GetWeakPtr(), scheduled_start_time));
 }
 
-void LocalFilesMigrationManager::ScheduleMigrationAndInformUser() {
+void LocalFilesMigrationManager::ScheduleMigrationAndInformUser(
+    const base::Time scheduled_start_time) {
   if (local_user_files_allowed_ ||
       !IsMigrationEnabled(migration_destination_)) {
     return;
@@ -501,13 +531,24 @@ void LocalFilesMigrationManager::ScheduleMigrationAndInformUser() {
     return;
   }
 
+  const base::TimeDelta remaining_time =
+      scheduled_start_time - base::Time::Now();
+  if (remaining_time.is_negative()) {
+    LOG(ERROR) << "Scheduled migration time already passed in "
+                  "ScheduleMigrationAndInformUser(), starting immediately.";
+    SkyVaultMigrationScheduledTimeInPastScheduleMigration(
+        migration_destination_, true);
+    OnTimeoutExpired();
+    return;
+  }
+
   notification_manager_->ShowMigrationInfoDialog(
-      migration_destination_, migration_start_time_,
+      migration_destination_, scheduled_start_time,
       base::BindOnce(&LocalFilesMigrationManager::SkipMigrationDelay,
                      weak_factory_.GetWeakPtr()));
   // Also schedule migration to automatically start after the timeout.
   scheduling_timer_->Start(
-      FROM_HERE, migration_start_time_,
+      FROM_HERE, scheduled_start_time,
       base::BindOnce(&LocalFilesMigrationManager::OnTimeoutExpired,
                      weak_factory_.GetWeakPtr()));
 }
@@ -647,7 +688,8 @@ void LocalFilesMigrationManager::OnMigrationDone(
     notification_manager_->ShowMigrationCompletedNotification(
         migration_destination_, upload_root_path);
     VLOG(1) << "Local files migration done";
-    SkyVaultMigrationDoneHistograms(migration_destination_, true, duration);
+    SkyVaultMigrationDoneHistograms(migration_destination_, /*success=*/true,
+                                    duration);
     SetState(State::kCleanup);
     CleanupLocalFiles();
     return;
@@ -658,7 +700,8 @@ void LocalFilesMigrationManager::OnMigrationDone(
       prefs::kSkyVaultMigrationRetryCount, current_retry_count_);
 
   if (failed) {
-    SkyVaultMigrationDoneHistograms(migration_destination_, false, duration);
+    SkyVaultMigrationDoneHistograms(migration_destination_, /*success=*/false,
+                                    duration);
     SetState(State::kFailure);
     LOG(ERROR) << "Local files migration failed.";
     ProcessErrors(std::move(errors), error_log_path);
@@ -719,24 +762,46 @@ void LocalFilesMigrationManager::OnCleanupDone(
   }
 
   cleanup_in_progress_ = false;
+  const bool cleanup_failed = error_message.has_value();
+
+  // Cleanup is called even if migration destination isn't specified if there
+  // are no local files, but skip recording in that case.
   if (migration_destination_ != MigrationDestination::kNotSpecified) {
-    // Cleanup is called even if migration destination isn't specified if there
-    // are no local files, but skip recording in that case.
     SkyVaultMigrationCleanupErrorHistogram(migration_destination_,
-                                           error_message.has_value());
+                                           cleanup_failed);
   }
-  if (error_message.has_value()) {
-    // TODO(402074191): UMA when failed.
+
+  if (cleanup_failed) {
     LOG(ERROR) << "Local files cleanup failed: " << error_message.value();
+
+    bool failed_too_many_times = ++current_retry_count_ > kMaxRetryCount;
+    Profile::FromBrowserContext(context_)->GetPrefs()->SetInteger(
+        prefs::kSkyVaultMigrationRetryCount, current_retry_count_);
+    if (failed_too_many_times) {
+      SkyVaultDeletionDoneHistogram(/*success=*/false);
+      SetState(State::kFailure);
+      LOG(ERROR) << "Local files cleanup failed too many times.";
+      return;
+    }
+    // Retry cleanup if deletion is enforced by policy.
+    if (migration_destination_ == MigrationDestination::kDelete) {
+      SkyVaultDeletionRetryHistogram(current_retry_count_);
+      SetState(State::kCleanup);
+      CleanupLocalFiles();
+      return;
+    }
   } else {
     VLOG(1) << "Local files cleanup done";
+    // Notify success and show notification after successful deletion if it's
+    // enforced by policy.
+    if (migration_destination_ == MigrationDestination::kDelete) {
+      SkyVaultDeletionDoneHistogram(/*success=*/true);
+      NotifySuccess();
+      notification_manager_->ShowDeletionCompletedNotification();
+    }
   }
+
   SetLocalUserFilesWriteEnabled(/*enabled=*/false);
-  if (migration_destination_ == MigrationDestination::kDelete) {
-    // Notify to remove folders after deletion.
-    NotifySuccess();
-    notification_manager_->ShowDeletionCompletedNotification();
-  }
   SetState(State::kCompleted);
 }
 
@@ -799,6 +864,8 @@ void LocalFilesMigrationManager::ResetMigrationPrefs() {
   pref_service->SetInteger(prefs::kSkyVaultMigrationRetryCount,
                            current_retry_count_);
   pref_service->SetTime(prefs::kSkyVaultMigrationStartTime, base::Time());
+  pref_service->SetTime(prefs::kSkyVaultMigrationScheduledStartTime,
+                        base::Time());
 }
 
 void LocalFilesMigrationManager::NotifySuccess() {

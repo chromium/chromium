@@ -13,13 +13,13 @@ cargo_crate("lib") {
   epoch = "0.1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/foldhash-0.1.5/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/foldhash-v0_1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/foldhash-0.1.5/src/convenience.rs",
-    "//third_party/rust/chromium_crates_io/vendor/foldhash-0.1.5/src/fast.rs",
-    "//third_party/rust/chromium_crates_io/vendor/foldhash-0.1.5/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/foldhash-0.1.5/src/quality.rs",
-    "//third_party/rust/chromium_crates_io/vendor/foldhash-0.1.5/src/seed.rs",
+    "//third_party/rust/chromium_crates_io/vendor/foldhash-v0_1/src/convenience.rs",
+    "//third_party/rust/chromium_crates_io/vendor/foldhash-v0_1/src/fast.rs",
+    "//third_party/rust/chromium_crates_io/vendor/foldhash-v0_1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/foldhash-v0_1/src/quality.rs",
+    "//third_party/rust/chromium_crates_io/vendor/foldhash-v0_1/src/seed.rs",
   ]
   inputs = []
 

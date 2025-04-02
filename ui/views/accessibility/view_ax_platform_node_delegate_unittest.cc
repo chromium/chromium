@@ -27,6 +27,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -649,14 +650,14 @@ TEST_F(ViewAXPlatformNodeDelegateTest, SetFocus) {
   // ViewAXPlatformNodeDelegate.
   button_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   EXPECT_EQ(nullptr, button_->GetFocusManager()->GetFocusedView());
-  EXPECT_EQ(nullptr, button_accessibility()->GetFocus());
+  EXPECT_EQ(gfx::NativeViewAccessible(), button_accessibility()->GetFocus());
   EXPECT_TRUE(SetFocused(button_accessibility(), true));
   EXPECT_EQ(button_, button_->GetFocusManager()->GetFocusedView());
   EXPECT_EQ(button_->GetNativeViewAccessible(),
             button_accessibility()->GetFocus());
   EXPECT_TRUE(SetFocused(button_accessibility(), false));
   EXPECT_EQ(nullptr, button_->GetFocusManager()->GetFocusedView());
-  EXPECT_EQ(nullptr, button_accessibility()->GetFocus());
+  EXPECT_EQ(gfx::NativeViewAccessible(), button_accessibility()->GetFocus());
 
   // If the button is not focusable at all, or if it is disabled for
   // accessibility, SetFocused() should return false.
@@ -893,7 +894,7 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigation) {
   EXPECT_EQ(child_view_3->GetNativeObject(), parent_view->ChildAtIndex(2));
   EXPECT_EQ(child_view_4->GetNativeObject(), parent_view->ChildAtIndex(3));
 
-  EXPECT_EQ(nullptr, parent_view->GetNextSibling());
+  EXPECT_EQ(gfx::NativeViewAccessible(), parent_view->GetNextSibling());
   EXPECT_EQ(textfield_accessibility()->GetNativeObject(),
             parent_view->GetPreviousSibling());
 
@@ -901,7 +902,7 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigation) {
   EXPECT_EQ(0u, child_view_1->GetChildCount());
   EXPECT_EQ(0u, child_view_1->GetIndexInParent());
   EXPECT_EQ(child_view_2->GetNativeObject(), child_view_1->GetNextSibling());
-  EXPECT_EQ(nullptr, child_view_1->GetPreviousSibling());
+  EXPECT_EQ(gfx::NativeViewAccessible(), child_view_1->GetPreviousSibling());
 
   EXPECT_EQ(parent_view->GetNativeObject(), child_view_2->GetParent());
   EXPECT_EQ(0u, child_view_2->GetChildCount());
@@ -920,7 +921,7 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigation) {
   EXPECT_EQ(parent_view->GetNativeObject(), child_view_4->GetParent());
   EXPECT_EQ(0u, child_view_4->GetChildCount());
   EXPECT_EQ(3u, child_view_4->GetIndexInParent());
-  EXPECT_EQ(nullptr, child_view_4->GetNextSibling());
+  EXPECT_EQ(gfx::NativeViewAccessible(), child_view_4->GetNextSibling());
   EXPECT_EQ(child_view_3->GetNativeObject(),
             child_view_4->GetPreviousSibling());
 }
@@ -1089,8 +1090,8 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithIgnoredViews) {
   EXPECT_EQ(child_view_3->GetNativeObject(), contents_view->ChildAtIndex(3));
   EXPECT_EQ(child_view_4->GetNativeObject(), contents_view->ChildAtIndex(4));
 
-  EXPECT_EQ(nullptr, parent_view->GetNextSibling());
-  EXPECT_EQ(nullptr, parent_view->GetPreviousSibling());
+  EXPECT_EQ(gfx::NativeViewAccessible(), parent_view->GetNextSibling());
+  EXPECT_EQ(gfx::NativeViewAccessible(), parent_view->GetPreviousSibling());
 
   EXPECT_EQ(contents_view->GetNativeObject(), child_view_1->GetParent());
   EXPECT_EQ(0u, child_view_1->GetChildCount());
@@ -1102,8 +1103,8 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithIgnoredViews) {
   EXPECT_EQ(contents_view->GetNativeObject(), child_view_2->GetParent());
   EXPECT_EQ(0u, child_view_2->GetChildCount());
   EXPECT_FALSE(child_view_2->GetIndexInParent().has_value());
-  EXPECT_EQ(nullptr, child_view_2->GetNextSibling());
-  EXPECT_EQ(nullptr, child_view_2->GetPreviousSibling());
+  EXPECT_EQ(gfx::NativeViewAccessible(), child_view_2->GetNextSibling());
+  EXPECT_EQ(gfx::NativeViewAccessible(), child_view_2->GetPreviousSibling());
 
   EXPECT_EQ(contents_view->GetNativeObject(), child_view_3->GetParent());
   EXPECT_EQ(0u, child_view_3->GetChildCount());
@@ -1115,7 +1116,7 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithIgnoredViews) {
   EXPECT_EQ(contents_view->GetNativeObject(), child_view_4->GetParent());
   EXPECT_EQ(0u, child_view_4->GetChildCount());
   EXPECT_EQ(4u, child_view_4->GetIndexInParent());
-  EXPECT_EQ(nullptr, child_view_4->GetNextSibling());
+  EXPECT_EQ(gfx::NativeViewAccessible(), child_view_4->GetNextSibling());
   EXPECT_EQ(child_view_3->GetNativeObject(),
             child_view_4->GetPreviousSibling());
 }
@@ -1187,7 +1188,7 @@ TEST_F(ViewAXPlatformNodeDelegateTest, FocusOnMenuClose) {
   // Set Focus on the button
   button_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   EXPECT_EQ(nullptr, button_->GetFocusManager()->GetFocusedView());
-  EXPECT_EQ(nullptr, button_accessibility()->GetFocus());
+  EXPECT_EQ(gfx::NativeViewAccessible(), button_accessibility()->GetFocus());
 
   EXPECT_TRUE(SetFocused(button_accessibility(), true));
   EXPECT_EQ(button_->GetNativeViewAccessible(),

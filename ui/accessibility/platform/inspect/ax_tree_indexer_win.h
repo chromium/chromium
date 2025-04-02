@@ -17,7 +17,6 @@ namespace ui {
 using AXTreeIndexerWin =
     AXTreeIndexer<Microsoft::WRL::ComPtr<IAccessible>,
                   GetDOMId,
-                  std::vector<Microsoft::WRL::ComPtr<IAccessible>>,
                   IAccessibleChildrenOf>;
 
 }  // namespace ui

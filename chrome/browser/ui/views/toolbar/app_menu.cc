@@ -1201,8 +1201,7 @@ bool AppMenu::IsCommandEnabled(int command_id) const {
     return true;
   }
 
-  if (features::IsExtensionMenuInRootAppMenu() &&
-      command_id == IDC_EXTENSIONS_SUBMENU) {
+  if (command_id == IDC_EXTENSIONS_SUBMENU) {
     return true;
   }
 

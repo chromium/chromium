@@ -110,6 +110,7 @@ class GPUCanvasContext : public ScriptWrappable,
   void OnTextureTransferred() override;
   void InitializeLayer(cc::Layer* layer) override;
   void SetNeedsCompositingUpdate() override;
+  bool IsGPUDeviceDestroyed() override;
 
  private:
   scoped_refptr<WebGPUMailboxTexture> GetFrontBufferMailboxTexture();
@@ -132,6 +133,9 @@ class GPUCanvasContext : public ScriptWrappable,
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> GetContextProviderWeakPtr()
       const;
+
+  scoped_refptr<StaticBitmapImage> MakeFallbackStaticBitmapImage(
+      V8GPUCanvasAlphaMode::Enum alpha_mode);
 
   Member<GPUDevice> device_;
 

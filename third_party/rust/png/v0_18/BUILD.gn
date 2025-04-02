@@ -13,27 +13,27 @@ cargo_crate("lib") {
   epoch = "0.18"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/png-0.18.0-rc/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/png-0.18.0-rc/src/adam7.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.18.0-rc/src/benchable_apis.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.18.0-rc/src/chunk.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.18.0-rc/src/common.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.18.0-rc/src/decoder/interlace_info.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.18.0-rc/src/decoder/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.18.0-rc/src/decoder/read_decoder.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.18.0-rc/src/decoder/stream.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.18.0-rc/src/decoder/transform.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.18.0-rc/src/decoder/transform/palette.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.18.0-rc/src/decoder/unfiltering_buffer.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.18.0-rc/src/decoder/zlib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.18.0-rc/src/encoder.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.18.0-rc/src/filter.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.18.0-rc/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.18.0-rc/src/srgb.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.18.0-rc/src/test_utils.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.18.0-rc/src/text_metadata.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.18.0-rc/src/traits.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/adam7.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/benchable_apis.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/chunk.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/common.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/decoder/interlace_info.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/decoder/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/decoder/read_decoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/decoder/stream.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/decoder/transform.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/decoder/transform/palette.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/decoder/unfiltering_buffer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/decoder/zlib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/encoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/filter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/srgb.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/test_utils.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/text_metadata.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/traits.rs",
   ]
   inputs = []
 

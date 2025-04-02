@@ -38,6 +38,7 @@
 <translation id="19085484004813472">Bu, yeni funksiyadır</translation>
 <translation id="2006524834898217237">Bu cihazın internetə qoşulduğuna əmin olun.</translation>
 <translation id="208586643495776849">Yenidən cəhd edin</translation>
+<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />Anonim rejimdə icazə verin<ph name="END_BOLD" /> seçimini aktiv edin</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1gün}other{#gün}}</translation>
 <translation id="2148716181193084225">Bu gün</translation>
 <translation id="2168039046890040389">Yuxarı Səhifə</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">Ekrandakı toxunma hədəflərinə klikləyin.</translation>
 <translation id="2295140143284145483">Sorğu</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Bu məlumat ilə artırmanın yerini tapmaq olmur: <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Admin ilə əlaqə saxlayın.}other{Bu məlumat ilə artırmaların yerini tapmaq olmur: <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Admin ilə əlaqə saxlayın.}}</translation>
 <translation id="2353636109065292463">İnternet bağlantısının yoxlanması</translation>
 <translation id="2359808026110333948">Davam edin</translation>
 <translation id="2388990488038464401">Telefonunuzdan bu nömrəyə zəng edilsin?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">Hamısını Silin</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 gündə}other{# gündə}}</translation>
 <translation id="2922712708897119705"><ph name="COLUMN_NAME" /> sütunu azalan sıra ilə çeşidlənib.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Artırmanı tapmaq olmur}other{Artırmaları tapmaq olmur}}</translation>
 <translation id="3036649622769666520">Faylları Açın</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">Alt</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">Bununla zəng edin:</translation>
 <translation id="3306688585798492231">Daxili displey</translation>
 <translation id="335581015389089642">Nitq</translation>
+<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />Detallara<ph name="END_BOLD" /> klikləyin</translation>
 <translation id="3389286852084373014">Mətn çox böyükdür</translation>
 <translation id="3406306243914553062">HTML məzmunu</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 gün qaldı}other{# gün qaldı}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> sütunu artan sıra ilə çeşidlənib.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 Oxunmamış Bildiriş}other{# Oxunmamış Bildiriş}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Anonim rejimdə aşağıdakı artırmanı aktiv edin:}other{Anonim rejimdə aşağıdakı artırmaları aktiv edin:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ay əvvəl}other{# ay əvvəl}}</translation>
 <translation id="4289300219472526559">Danışmağa başlayın</translation>
 <translation id="4289540628985791613">Baxış</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">nömrə</translation>
 <translation id="4746179598275229723">Artırma çıxarılıb</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 ay qalıb}other{# ay qalıb}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Anonim rejim istifadə etmək üçün təşkilat artırma tələb edir}other{Anonim rejim istifadə etmək üçün təşkilat bəzi artırmalar tələb edir}}</translation>
+<translation id="482932175346970750">Brauzerə <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> yazın</translation>
 <translation id="4888938634149558681">Zəng edin</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 saniyə}other{# saniyə}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;Yerləşdirin</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Göndərilmədi</translation>
+<translation id="5283101102242354279">Anonim rejimdə artırmanı aktiv edin:</translation>
 <translation id="528468243742722775">Son</translation>
 <translation id="5329858601952122676">&amp;Silin</translation>
 <translation id="5361107212971249203">mətn</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">Tətbiqinizin displey ayarları növbəti dəfə yenidən başladıldıqda keçərli olacaq.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 dəq qalıb}other{# dəq qalıb}}</translation>
+<translation id="7252604552361840748">Yuxarıda artırmanı tapın</translation>
 <translation id="7363164521834647158">Cavab göndərin</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 dəq öncə}other{# dəqiqə öncə}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>

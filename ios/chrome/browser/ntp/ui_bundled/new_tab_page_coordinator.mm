@@ -600,6 +600,10 @@
   [self presentLensIconBubbleNow];
 }
 
+- (BOOL)isFeedVisible {
+  return [self shouldFeedBeVisible] && self.feedViewController;
+}
+
 #pragma mark - Setters
 
 - (void)setSelectedFeed:(FeedType)selectedFeed {
@@ -1601,14 +1605,9 @@
 #pragma mark - Private
 
 - (bool)hasIdentitiesOnDevice {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
-    return !IdentityManagerFactory::GetForProfile(self.profile)
-                ->GetAccountsOnDevice()
-                .empty();
-  } else {
-    return ChromeAccountManagerServiceFactory::GetForProfile(self.profile)
-        ->HasIdentities();
-  }
+  return !IdentityManagerFactory::GetForProfile(self.profile)
+              ->GetAccountsOnDevice()
+              .empty();
 }
 
 // Update the state, to take into account that the account menu coordinator is
@@ -1699,11 +1698,6 @@
   [self.NTPViewController layoutContentInParentCollectionView];
 
   [self updateFeedLayout];
-}
-
-// Returns `YES` if the feed is currently visible on the NTP.
-- (BOOL)isFeedVisible {
-  return [self shouldFeedBeVisible] && self.feedViewController;
 }
 
 // Creates, configures and returns a feed view controller configuration.

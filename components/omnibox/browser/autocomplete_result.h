@@ -9,12 +9,14 @@
 
 #include <map>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/match_compare.h"
+#include "components/omnibox/browser/omnibox_metrics_provider.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
 #include "third_party/omnibox_proto/groups.pb.h"
@@ -274,6 +276,37 @@ class AutocompleteResult {
     session_.gws_event_id_hashes_.clear();
   }
 
+  std::pair<bool, bool> suggestions_shown_in_session(bool is_zero_suggest) {
+    if (is_zero_suggest) {
+      return {session_.zero_prefix_search_suggestions_shown_in_session_,
+              session_.zero_prefix_url_suggestions_shown_in_session_};
+    } else {
+      return {session_.typed_search_suggestions_shown_in_session_,
+              session_.typed_url_suggestions_shown_in_session_};
+    }
+  }
+
+  void set_suggestions_shown_in_session(bool is_zero_suggest,
+                                        const AutocompleteMatch& match) {
+    bool is_search = OmniboxMetricsProvider::GetClientSummarizedResultType(
+                         match.GetOmniboxEventResultType()) ==
+                     ClientSummarizedResultType::kSearch;
+
+    if (is_zero_suggest) {
+      if (is_search) {
+        session_.zero_prefix_search_suggestions_shown_in_session_ = true;
+      } else {
+        session_.zero_prefix_url_suggestions_shown_in_session_ = true;
+      }
+    } else {
+      if (is_search) {
+        session_.typed_search_suggestions_shown_in_session_ = true;
+      } else {
+        session_.typed_url_suggestions_shown_in_session_ = true;
+      }
+    }
+  }
+
   // Clears this result set - i.e., `matches_` and `suggestion_groups_map_`.
   void ClearMatches();
 
@@ -406,6 +439,18 @@ class AutocompleteResult {
 
     // List of GWS event ID hashes accumulated during the course of the session.
     std::vector<int64_t> gws_event_id_hashes_;
+
+    // Whether at least one zero-prefix Search/URL suggestion was shown in the
+    // session. This is used in order to ensure that the relevant client-side
+    // metrics logging code emits the proper values.
+    bool zero_prefix_search_suggestions_shown_in_session_ = false;
+    bool zero_prefix_url_suggestions_shown_in_session_ = false;
+
+    // Whether at least one typed Search/URL suggestion was shown in the
+    // session. This is used in order to ensure that the relevant client-side
+    // metrics logging code emits the proper values.
+    bool typed_search_suggestions_shown_in_session_ = false;
+    bool typed_url_suggestions_shown_in_session_ = false;
   };
 
   // Swaps this result set - i.e., `matches_` and `suggestion_groups_map_` -

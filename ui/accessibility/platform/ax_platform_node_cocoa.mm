@@ -579,7 +579,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   if (ui::IsRadio(role) || ui::IsCheckBox(role))
     return nil;
 
-  return label->GetNativeViewAccessible();
+  return label->GetNativeViewAccessible().Get();
 }
 
 - (BOOL)isNameFromLabel {
@@ -673,7 +673,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   for (auto& attributeValue : attributeValues) {
     ui::AXPlatformNode* node = delegate->GetFromNodeID(attributeValue);
     if (node) {
-      [elements addObject:node->GetNativeViewAccessible()];
+      [elements addObject:node->GetNativeViewAccessible().Get()];
     }
   }
   return elements;
@@ -688,7 +688,9 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
       treeItemIds->push_back(childDelegate->GetId());
     }
     gfx::NativeViewAccessible child = childDelegate->GetNativeViewAccessible();
-    [child getTreeItemDescendantNodeIds:treeItemIds];
+    AXPlatformNodeCocoa* childCocoa =
+        base::apple::ObjCCastStrict<AXPlatformNodeCocoa>(child.Get());
+    [childCocoa getTreeItemDescendantNodeIds:treeItemIds];
   }
 }
 
@@ -1081,8 +1083,10 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
 - (AXPlatformNodeCocoa*)fromNodeID:(ui::AXNodeID)id {
   ui::AXPlatformNode* cell = _node->GetDelegate()->GetFromNodeID(id);
-  if (cell)
-    return cell->GetNativeViewAccessible();
+  if (cell) {
+    return base::apple::ObjCCast<AXPlatformNodeCocoa>(
+        cell->GetNativeViewAccessible().Get());
+  }
   return nil;
 }
 
@@ -1371,7 +1375,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (id)accessibilityFocusedUIElement {
-  return _node ? _node->GetDelegate()->GetFocus() : nil;
+  return _node ? _node->GetDelegate()->GetFocus().Get() : nil;
 }
 
 // This function and accessibilityPerformAction:, while deprecated, are a) still
@@ -2066,7 +2070,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   ui::AXPlatformNodeBase* text_field_ancestor =
       _node->GetPlatformTextFieldAncestor();
   if (text_field_ancestor)
-    return text_field_ancestor->GetNativeViewAccessible();
+    return text_field_ancestor->GetNativeViewAccessible().Get();
   return nil;
 }
 
@@ -2170,7 +2174,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   if (!container)
     return nil;
 
-  return @[ container->GetNativeViewAccessible() ];
+  return @[ container->GetNativeViewAccessible().Get() ];
 }
 
 - (NSString*)AXPopupValue {
@@ -2316,13 +2320,13 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   // The assignment to ancestor may be null.
   if (!ancestor)
     return nil;
-  return ancestor->GetNativeViewAccessible();
+  return ancestor->GetNativeViewAccessible().Get();
 }
 
 - (id)AXParent {
   if (!_node)
     return nil;
-  return NSAccessibilityUnignoredAncestor(_node->GetParent());
+  return NSAccessibilityUnignoredAncestor(_node->GetParent().Get());
 }
 
 - (NSArray*)accessibilityChildren {
@@ -2338,9 +2342,9 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     if (child && child->IsInvisibleOrIgnored()) {
       [children
           addObjectsFromArray:[child_iterator_ptr->GetNativeViewAccessible()
-                                  accessibilityChildren]];
+                                      .Get() accessibilityChildren]];
     } else {
-      [children addObject:child_iterator_ptr->GetNativeViewAccessible()];
+      [children addObject:child_iterator_ptr->GetNativeViewAccessible().Get()];
     }
   }
   return NSAccessibilityUnignoredChildren(children);
@@ -2352,7 +2356,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (id)AXWindow {
-  return _node->GetDelegate()->GetNSWindow();
+  return _node->GetDelegate()->GetNSWindow().Get();
 }
 
 - (id)AXTopLevelUIElement {
@@ -2699,7 +2703,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
                                 &targetId)) {
     ui::AXPlatformNode* target = delegate->GetFromNodeID(targetId);
     if (target) {
-      [elements addObject:target->GetNativeViewAccessible()];
+      [elements addObject:target->GetNativeViewAccessible().Get()];
     }
   }
 
@@ -3134,7 +3138,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     for (int32_t headerId : headerIds) {
       ui::AXPlatformNode* cellNode = tableDelegate->GetFromNodeID(headerId);
       if (cellNode) {
-        [rowHeaders addObject:cellNode->GetNativeViewAccessible()];
+        [rowHeaders addObject:cellNode->GetNativeViewAccessible().Get()];
       }
     }
   } else {
@@ -3142,7 +3146,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     for (int32_t nodeId : delegate->GetRowHeaderNodeIds()) {
       ui::AXPlatformNode* cellNode = delegate->GetFromNodeID(nodeId);
       if (cellNode) {
-        [rowHeaders addObject:cellNode->GetNativeViewAccessible()];
+        [rowHeaders addObject:cellNode->GetNativeViewAccessible().Get()];
       }
     }
   }
@@ -3196,7 +3200,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   for (int32_t nodeId : nodeIds) {
     ui::AXPlatformNode* rowNode = delegate->GetFromNodeID(nodeId);
     if (rowNode) {
-      [rows addObject:rowNode->GetNativeViewAccessible()];
+      [rows addObject:rowNode->GetNativeViewAccessible().Get()];
     }
   }
 
@@ -3569,7 +3573,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     if (auto* delegate = target->GetDelegate()) {
       if (delegate->GetRole() == ax::mojom::Role::kScrollBar &&
           delegate->HasState(state)) {
-        return target->GetNativeViewAccessible();
+        return target->GetNativeViewAccessible().Get();
       }
     }
   }
@@ -3613,7 +3617,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     return nil;
   }
 
-  return cell->GetNativeViewAccessible();
+  return cell->GetNativeViewAccessible().Get();
 }
 // LINT.ThenChange(ui/accessibility/platform/browser_accessibility_cocoa.mm:accessibilityCellForColumn)
 
@@ -3674,7 +3678,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   for (int32_t id : table->GetTableUniqueCellIds()) {
     ui::AXPlatformNode* cell = table->GetFromNodeID(id);
     if (cell) {
-      [cells addObject:cell->GetNativeViewAccessible()];
+      [cells addObject:cell->GetNativeViewAccessible().Get()];
     }
   }
   return cells;

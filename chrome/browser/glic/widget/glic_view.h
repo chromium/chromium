@@ -30,20 +30,6 @@ class Profile;
 
 namespace glic {
 
-inline constexpr static float kGlicDesiredCornerRadius = 12;
-// Actual corner radius used by views.
-// This is set to 0 on Windows because:
-// 1. Views-drawn rounded corners require window transparency
-//    (Widget::InitParams::opacity set to kTranslucent).
-// 2. Translucent windows are not supported for resizable window on Windows.
-//    (see WidgetDelegate::CanResize).
-// Windows 10 will not have rounded corners. Windows 11 will draw system default
-// rounded corners of 8px radius (via Widget::InitParams::corner_radius).
-// These corners could be suppressed by incompatible graphics drivers or local
-// settings.
-inline constexpr static float kGlicViewCornerRadius =
-    BUILDFLAG(IS_WIN) ? 0 : kGlicDesiredCornerRadius;
-
 class GlicView : public views::View {
   METADATA_HEADER(GlicView, views::View)
 

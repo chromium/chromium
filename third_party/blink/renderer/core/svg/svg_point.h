@@ -51,7 +51,6 @@ class SVGPoint final : public SVGListablePropertyBase {
   explicit SVGPoint(const gfx::PointF&);
 
   SVGPoint* Clone() const;
-  SVGPropertyBase* CloneForAnimation(const WTF::String&) const override;
 
   const gfx::PointF& Value() const { return value_; }
   void SetValue(const gfx::PointF& value) { value_ = value; }

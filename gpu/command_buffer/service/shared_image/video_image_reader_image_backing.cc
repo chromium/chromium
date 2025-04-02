@@ -50,9 +50,6 @@ namespace {
 void CreateAndBindEglImageFromAHB(AHardwareBuffer* buffer, GLuint service_id) {
   DCHECK(buffer);
 
-  AHardwareBuffer_Desc desc;
-
-  base::AndroidHardwareBufferCompat::GetInstance().Describe(buffer, &desc);
   auto egl_image = CreateEGLImageFromAHardwareBuffer(buffer);
   if (egl_image.is_valid()) {
     // We should never alter gl binding without updating state tracking, which

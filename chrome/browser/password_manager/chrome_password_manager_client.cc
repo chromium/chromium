@@ -1869,6 +1869,20 @@ void ChromePasswordManagerClient::WebContentsDestroyed() {
 #endif
 }
 
+void ChromePasswordManagerClient::ResourceLoadComplete(
+    content::RenderFrameHost* render_frame_host,
+    const content::GlobalRequestID& request_id,
+    const blink::mojom::ResourceLoadInfo& resource_load_info) {
+  if (resource_load_info.method == "POST" &&
+      resource_load_info.http_status_code >= 400 &&
+      resource_load_info.http_status_code <= 403) {
+    password_manager_.OnResourceLoadingFailed(
+        password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
+            render_frame_host),
+        resource_load_info.original_url);
+  }
+}
+
 void ChromePasswordManagerClient::OnFieldTypesDetermined(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form_id,

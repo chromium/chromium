@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "net/base/net_errors.h"

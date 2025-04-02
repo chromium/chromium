@@ -502,11 +502,6 @@
       name: "AudioVideoTracks",
       status: "experimental",
     },
-    // Killswitch.
-    {
-      name: "AuraScrollbarUsesNinePatchTrack",
-      status: "stable",
-    },
     {
       name: "AutoDarkMode",
       base_feature: "none",
@@ -1898,11 +1893,6 @@
       name: "FastClearNeedsRepaint",
       status: "stable",
     },
-    // Kill switch.
-    {
-      name: "FastPathSingleSelectorExactMatch",
-      status: "stable",
-    },
     {
       name: "FastPositionIterator",
       // Not enabled due to a RTL issue. crbug.com/1421016.
@@ -2426,6 +2416,10 @@
       status: "stable",
     },
     {
+      name: "IgnoreLetterSpacingInCursiveScripts",
+      status: "experimental",
+    },
+    {
       name: "ImageDataPixelFormat",
       status: "experimental",
     },
@@ -2803,12 +2797,6 @@
     },
     {
       name: "MediaQueryNavigationControls",
-    },
-    {
-      // This uses media::VideoEncoder implementation in MediaRecorder API
-      // instead of using MediaRecorder own video encoder implementation.
-      name: "MediaRecorderUseMediaVideoEncoder",
-      status: "stable",
     },
     {
       name: "MediaSession",
@@ -3553,10 +3541,6 @@
      status: "stable",
     },
     {
-      name: "RangeBasedTextFind",
-      status: "stable",
-    },
-    {
       name: "RasterInducingScroll",
       status: {
         "Linux": "stable",
@@ -3877,11 +3861,12 @@
       name: "ScriptRunIteratorCombiningMarks",
       status: "stable",
     },
-    // Killswitch to be removed after M134 reaches stable.
-    // With it enabled, LocalFrameView uses an optimized iteration over just
-    // scrollable areas with scroll nodes.
+    // Killswitch added in M134, as two flags
+    // ScrollableAreasWithScrollNodeOptimization and UnifiedScrollableArea
+    // before M137. We are keeping this flag for new optimizations and as a
+    // finch holdback experiment feature.
     {
-      name: "ScrollableAreasWithScrollNodeOptimization",
+      name: "ScrollableAreaOptimization",
       status: "stable",
     },
     {
@@ -4433,11 +4418,6 @@
       status: "stable",
     },
     {
-      // crbug.com/389726691
-      name: "TextCombineEmphasisNG",
-      status: "stable",
-    },
-    {
       name: "TextDetector",
       status: "experimental",
     },
@@ -4622,14 +4602,6 @@
     {
       name: "UnexposedTaskIds",
     },
-    // Killswitch to be removed after M133 or M134 reaches stable.
-    // With it enabled, LocalFrameView::ScrollableAreas() includes all
-    // scrollable areas in the frame's document, otherwise only user scrollable
-    // ones.
-    {
-      name: "UnifiedScrollableAreas",
-      status: "stable",
-    },
     {
       name: "UnrestrictedMeasureUserAgentSpecificMemory",
     },
@@ -4716,6 +4688,12 @@
       public: true,
     },
     {
+      // This is a performance improvement which has slight visual differences.
+      // Enabled in M137. http://crbug.com/334963179
+      name: "ValidationBubbleNoForcedLayout",
+      status: "stable",
+    },
+    {
       // Whether a video element should automatically play fullscreen unless
       // 'playsinline' is set.
       name: "VideoAutoFullscreen",
@@ -4795,9 +4773,6 @@
       // rendering is forced withing content-visibility subtrees (both
       // content-visibility: auto and content-visibility: hidden).
       name: "WarnOnContentVisibilityRenderAccess",
-    },
-    {
-      name: "WebAnimationsSVG"
     },
     {
       name: "WebAppInstallation",
@@ -5068,12 +5043,6 @@
       status: "experimental",
       // Also enabled as part of all experimental WebGPU features.
       implied_by: ["WebGPUExperimentalFeatures"],
-    },
-    {
-      // Using subgroup related features in WebGPU.
-      // https://chromestatus.com/feature/5126409856221184
-      name: "WebGPUSubgroupsFeatures",
-      status: "stable",
     },
     {
       name: "WebHID",

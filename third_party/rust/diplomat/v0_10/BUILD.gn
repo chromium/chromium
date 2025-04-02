@@ -13,11 +13,11 @@ cargo_crate("lib") {
   epoch = "0.10"
   crate_type = "proc-macro"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/diplomat-0.10.0/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/diplomat-v0_10/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/diplomat-0.10.0/src/enum_convert.rs",
-    "//third_party/rust/chromium_crates_io/vendor/diplomat-0.10.0/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/diplomat-0.10.0/src/transparent_convert.rs",
+    "//third_party/rust/chromium_crates_io/vendor/diplomat-v0_10/src/enum_convert.rs",
+    "//third_party/rust/chromium_crates_io/vendor/diplomat-v0_10/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/diplomat-v0_10/src/transparent_convert.rs",
   ]
   inputs = []
 

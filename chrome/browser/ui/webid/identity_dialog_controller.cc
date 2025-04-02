@@ -346,9 +346,7 @@ void IdentityDialogController::OnRequestUiVolumeRecommendationResultReceived(
 
   // TODO(crbug.com/380416872): Integrate with quiet UI. Until then, dismiss the
   // UI.
-  // TODO(crbug.com/406629773): Pass more descriptive dismiss reason and log the
-  // dialog suppression to console.
-  OnDismiss(DismissReason::kOther);
+  OnDismiss(DismissReason::kSuppressed);
 }
 
 void IdentityDialogController::CollectTrainingData(UserAction user_action) {

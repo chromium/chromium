@@ -288,6 +288,7 @@
 <translation id="2164946989711475905">Увійти…</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="218350106843433823">Автозаповнення паролів і ключів доступу</translation>
+<translation id="2184272387334793084">Увійдіть в обліковий запис, щоб отримати доступ до паролів і інших даних на всіх пристроях</translation>
 <translation id="2186206192313702726">Google Об’єктив</translation>
 <translation id="219283042927675668">Вкладки в групі</translation>
 <translation id="2194856509914051091">Що варто врахувати</translation>
@@ -440,6 +441,7 @@
 <translation id="2783161812871838616">Версія сайту для комп’ютера</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Пароль збережено у вашому обліковому записі Google ({EMAIL})}one{Паролі збережено у вашому обліковому записі Google ({EMAIL})}few{Паролі збережено у вашому обліковому записі Google ({EMAIL})}many{Паролі збережено у вашому обліковому записі Google ({EMAIL})}other{Паролі збережено у вашому обліковому записі Google ({EMAIL})}}</translation>
 <translation id="2791174088547598693">Додати пароль…</translation>
+<translation id="2793703503584038325">Виберіть пароль і натисніть значок "Поділитися".</translation>
 <translation id="2797302972324086597">Код країни</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} файл}one{{COUNT} файл}few{{COUNT} файли}many{{COUNT} файлів}other{{COUNT} файлу}}</translation>
 <translation id="2816489851009559785">Меню → Налаштування → Вебпереглядач за умовчанням</translation>
@@ -579,6 +581,7 @@
 <translation id="35083190962747987">Відкрити ${url}</translation>
 <translation id="3511519535430890904">Увімкніть Безпечний перегляд</translation>
 <translation id="3517216995152707259">Якщо видалити дані вебперегляду, ви не вийдете з облікового запису Google. Для цього потрібно <ph name="BEGIN_LINK" />вийти з Chrome<ph name="END_LINK" />.</translation>
+<translation id="3519792890877853853">На цій картці відображаються відгуки про товари у ваших відкритих вкладках</translation>
 <translation id="3519905498307021260">{count,plural, =1{Відкрити вкладку}one{Відкрити {count} вкладку}few{Відкрити {count} вкладки}many{Відкрити {count} вкладок}other{Відкрити {count} вкладки}}</translation>
 <translation id="3523513363815970085">Сховати картку "Улюблені сайти"</translation>
 <translation id="3523789730715594198">Синхронізацію можна будь-коли вимкнути в налаштуваннях. Google може персоналізувати Пошук і інші сервіси на основі вашої історії.</translation>
@@ -819,6 +822,7 @@
 <translation id="4565377596337484307">Сховати пароль</translation>
 <translation id="4568230126482344545">Сховати опцію "Останні вкладки"</translation>
 <translation id="4578835633387306383">Увімкнути…</translation>
+<translation id="4580716718466706433">Перейдіть у Менеджер паролів.</translation>
 <translation id="4587589328781138893">Сайти</translation>
 <translation id="4592672037257622855">{count,plural, =1{Сторінку додано у ваш список читання}one{У ваш список читання додано {count} сторінку}few{У ваш список читання додано {count} сторінки}many{У ваш список читання додано {count} сторінок}other{У ваш список читання додано {count} сторінки}}</translation>
 <translation id="459644946100970322">Увімкнути сповіщення про змінення цін?</translation>
@@ -858,6 +862,7 @@
 <translation id="4717844083556844785">Поточна сторінка в анонімному режимі</translation>
 <translation id="4719927025381752090">Пропонувати переклад</translation>
 <translation id="4720530280568305198">Вибраний об’єкт відкрито в новій вкладці</translation>
+<translation id="472259426228234149">Ціна: 100–180 дол. США</translation>
 <translation id="473775607612524610">Оновити</translation>
 <translation id="474209246745757965">Робіть покупки й перекладайте тексти за допомогою камери</translation>
 <translation id="4742407542027196863">Керувати паролями…</translation>
@@ -1606,6 +1611,7 @@
 <translation id="7841180087127694526">Шукати скопійований текст</translation>
 <translation id="7841418003178675048">Виберіть картки, які відображатимуться на сторінці нової вкладки.</translation>
 <translation id="7846161022626028328">Сталася помилка. Повторіть спробу.</translation>
+<translation id="784623644169604270">Немає останніх дій</translation>
 <translation id="7846296061357476882">Сервіси Google</translation>
 <translation id="784934925303690534">Період часу</translation>
 <translation id="7851858861565204677">Інші пристрої</translation>

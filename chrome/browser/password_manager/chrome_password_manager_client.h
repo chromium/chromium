@@ -42,6 +42,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/buildflags/buildflags.h"
+#include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -404,6 +405,10 @@ class ChromePasswordManagerClient
   // content::WebContentsObserver overrides.
   void PrimaryPageChanged(content::Page& page) override;
   void WebContentsDestroyed() override;
+  void ResourceLoadComplete(
+      content::RenderFrameHost* render_frame_host,
+      const content::GlobalRequestID& request_id,
+      const blink::mojom::ResourceLoadInfo& resource_load_info) override;
 
   // autofill::AutofillManager::Observer:
   void OnFieldTypesDetermined(autofill::AutofillManager& manager,

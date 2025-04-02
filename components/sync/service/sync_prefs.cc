@@ -281,8 +281,7 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
         type_enabled = pref_value->GetBool();
       } else if (type == UserSelectableType::kHistory ||
                  type == UserSelectableType::kTabs ||
-                 type == UserSelectableType::kSavedTabGroups ||
-                 type == UserSelectableType::kSharedTabGroupData) {
+                 type == UserSelectableType::kSavedTabGroups) {
         // History, Tabs, Saved Tab Groups and and Shared Tab Group Data are
         // disabled by default.
         type_enabled = false;
@@ -718,8 +717,6 @@ const char* SyncPrefs::GetPrefNameForType(UserSelectableType type) {
       return prefs::internal::kSyncTabs;
     case UserSelectableType::kSavedTabGroups:
       return prefs::internal::kSyncSavedTabGroups;
-    case UserSelectableType::kSharedTabGroupData:
-      return prefs::internal::kSyncSharedTabGroupData;
     case UserSelectableType::kPayments:
       return prefs::internal::kSyncPayments;
     case UserSelectableType::kProductComparison:
@@ -783,9 +780,6 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
       return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
     case UserSelectableType::kProductComparison:
       return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
-    case syncer::UserSelectableType::kSharedTabGroupData:
-      return base::FeatureList::IsEnabled(
-          kSyncSharedTabGroupDataInTransportMode);
     case UserSelectableType::kSavedTabGroups:
       return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
     case UserSelectableType::kExtensions:

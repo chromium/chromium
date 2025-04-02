@@ -114,7 +114,7 @@ class CONTENT_EXPORT BackingStore : public LevelDBCleanupScheduler::Delegate {
 
     virtual ~Transaction();
 
-    virtual void Begin(std::vector<PartitionedLock> locks);
+    void Begin(std::vector<PartitionedLock> locks);
 
     // CommitPhaseOne determines what blobs (if any) need to be written to disk
     // and updates the primary blob journal, and kicks off the async writing
@@ -160,8 +160,6 @@ class CONTENT_EXPORT BackingStore : public LevelDBCleanupScheduler::Delegate {
       return durability_;
     }
     blink::mojom::IDBTransactionMode mode() const { return mode_; }
-
-    BackingStore* backing_store() { return backing_store_.get(); }
 
    private:
     // Called by CommitPhaseOne: Identifies the blob entries to write and adds

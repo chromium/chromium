@@ -240,6 +240,18 @@ struct CommonNavigationParams {
   // Is only used with data: URLs.
   url.mojom.Url base_url_for_data_url;
 
+  // An earlier and more accurate representation of the starting time of the
+  // navigation (based on the creation of the FrameLoadRequest), compared to the
+  // `navigation_start` that is passed through many of the navigation APIs
+  // (which is delayed until after the renderer process runs beforeunload
+  // handlers). The goal is to later use this in many navigation metrics to
+  // better identify performance improvements and regressions, while excluding
+  // just the time spent in beforeunload handlers. This value is currently only
+  // used in trace events and limited metrics to gauge the impact the change.
+  // TODO(crbug.com/385170155): Use this for most navigation metrics, with
+  // better ways to exclude beforeunload time.
+  mojo_base.mojom.TimeTicks actual_navigation_start;
+
   // The navigationStart time exposed through the Navigation Timing API to JS.
   mojo_base.mojom.TimeTicks navigation_start;
 

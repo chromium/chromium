@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">Пісня подяки</translation>
 <translation id="2088690981887365033">Мережа VPN</translation>
 <translation id="209653272837065803">Недостатньо пам’яті, щоб продовжити синхронізацію файлів</translation>
-<translation id="2111134541987263231">Увімкніть параметр <ph name="BEGIN_BOLD" />Дозволити в анонімному режимі<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Файли (<ph name="NUMBER_OF_ITEMS" />) буде видалено, і ви не зможете відновити їх.</translation>
 <translation id="2122305276694332719">Автоматичне підключення до прихованої мережі дозволяє іншим користувачам бачити ваш пристрій і певні мережеві налаштування. Не рекомендується.</translation>
 <translation id="2125607626296734455">Кхмерська</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> відключено.</translation>
 <translation id="2307462900900812319">Установити параметри мережі</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Не вдалося знайти розширення з ідентифікатором <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Зв’яжіться з адміністратором.}one{Не вдалося знайти розширення з ідентифікаторами <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Зв’яжіться з адміністратором.}few{Не вдалося знайти розширення з ідентифікаторами <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Зв’яжіться з адміністратором.}many{Не вдалося знайти розширення з ідентифікаторами <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Зв’яжіться з адміністратором.}other{Не вдалося знайти розширення з ідентифікаторами <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Зв’яжіться з адміністратором.}}</translation>
 <translation id="2325650632570794183">Цей тип файлу не підтримується. Відвідайте Веб-магазин Chrome, щоб знайти програму, яка може відкрити файл цього типу.</translation>
 <translation id="2326539130272988168">Болгарська</translation>
 <translation id="233822363739146957">Недостатньо пам’яті, щоб синхронізувати всі файли</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">Маратхі</translation>
 <translation id="2923240520113693977">Естонська</translation>
 <translation id="2938685643439809023">Монгольська</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Не вдалося знайти розширення}one{Не вдалося знайти розширення}few{Не вдалося знайти розширення}many{Не вдалося знайти розширення}other{Не вдалося знайти розширення}}</translation>
 <translation id="2943503720238418293">Введіть коротшу назву</translation>
 <translation id="2949781154072577687">Форматування диска "<ph name="DRIVE_NAME" />"…</translation>
 <translation id="2951236788251446349">Медуза</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">Готово</translation>
 <translation id="3358452157379365236">Гітара</translation>
 <translation id="3368922792935385530">Підключено</translation>
-<translation id="3372635229069101468">Натисніть <ph name="BEGIN_BOLD" />Деталі<ph name="END_BOLD" />.</translation>
 <translation id="3382143449143186018">Непальська, розкладка InScript</translation>
 <translation id="338691029516748599">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Мережею керує адміністратор. Підключитися</translation>
 <translation id="3408072735282270043">Активувати мережу "<ph name="NETWORK_NAME" />"</translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">Єдиноріг</translation>
 <translation id="4131235941541910880">Перемістіть непотрібні файли в кошик</translation>
 <translation id="4134804435730168042">Мережа № <ph name="NETWORK_INDEX" /> (усього: <ph name="NETWORK_COUNT" />); назва мережі: <ph name="NETWORK_NAME" />; оператор мережі: <ph name="NETWORK_PROVIDER_NAME" />. Активація доступна після налаштування пристрою.</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Увімкніть наведене нижче розширення в анонімному режимі.}one{Увімкніть наведені нижче розширення в анонімному режимі.}few{Увімкніть наведені нижче розширення в анонімному режимі.}many{Увімкніть наведені нижче розширення в анонімному режимі.}other{Увімкніть наведені нижче розширення в анонімному режимі.}}</translation>
 <translation id="4153015322587141338">Натисніть файл правою кнопкою миші й виберіть команду "<ph name="PIN_COMMAND" />", щоб швидко відкривати його на панелі запуску.</translation>
 <translation id="4157569377477607576">Згідно з правилом адміністратора не рекомендовано:</translation>
 <translation id="4159731583141908892">Файл "<ph name="FILE_NAME" />" переміщено.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">Залишити обидві версії</translation>
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4805966553127040832">Відновлення об’єктів (<ph name="COUNT" />)</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{За вимогами вашої організації, ви повинні встановити розширення, щоб використовувати анонімний режим}one{За вимогами вашої організації, ви повинні встановити кілька розширень, щоб використовувати анонімний режим}few{За вимогами вашої організації, ви повинні встановити кілька розширень, щоб використовувати анонімний режим}many{За вимогами вашої організації, ви повинні встановити кілька розширень, щоб використовувати анонімний режим}other{За вимогами вашої організації, ви повинні встановити кілька розширень, щоб використовувати анонімний режим}}</translation>
 <translation id="4826849268470072925">Тамільська, ITRANS</translation>
-<translation id="482932175346970750">У веб-переглядачі введіть <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />.</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">Перегляд</translation>
 <translation id="485316830061041779">Німецька</translation>
@@ -561,7 +554,6 @@
     над ними разом з іншими – усе в одному місці.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Відновлені файли з Google Диска</translation>
 <translation id="5278111733643988471">Щоб відновити цей файл, перетягніть його з кошика в нову папку. Оригінальну папку "<ph name="PARENT_FOLDER_NAME" />", у якій він містився, видалено.</translation>
-<translation id="5283101102242354279">Щоб увімкнути розширення в анонімному режимі:</translation>
 <translation id="5288441970121584418">Бургер</translation>
 <translation id="5293615890992542006">Адміністратор заборонив переміщувати цей файл</translation>
 <translation id="5305688511332277257">Не встановлено жодного</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, дeталі</translation>
 <translation id="7246947237293279874">Проксі-сервер FTP</translation>
 <translation id="7248671827512403053">Додаток</translation>
-<translation id="7252604552361840748">Знайдіть указане вище розширення.</translation>
 <translation id="7256405249507348194">Нерозпізнана помилка: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Доступні сервіси</translation>
 <translation id="7291818353625820805">Щоб символи клавіш вводилися повторно, вимкніть діакритичні знаки в налаштуваннях клавіатури.</translation>

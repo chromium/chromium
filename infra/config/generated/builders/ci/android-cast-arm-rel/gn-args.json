@@ -1,6 +1,7 @@
 {
   "args_file": "//chromecast/build/args/config/android.gni",
   "gn_args": {
+    "android_static_analysis": "on",
     "cast_is_debug": false,
     "dcheck_always_on": false,
     "debuggable_apks": false,

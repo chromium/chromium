@@ -37,16 +37,6 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
                     'isPrivacySandboxAdsApiUxEnhancementsEnabled');
               },
             },
-
-            /*
-             * If true the dismissal buttons should have the same styling.
-             */
-            equalizedButtons_: {
-              type: Boolean,
-              value: () => {
-                return loadTimeData.getBoolean('isEqualizedPromptButtons');
-              },
-            },
           };
         }
 
@@ -65,10 +55,6 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
 
         shouldShowV2(): boolean {
           return this.shouldShowV2_;
-        }
-
-        equalizedButtons(): boolean {
-          return this.equalizedButtons_;
         }
 
         onConsentLearnMoreExpandedChanged(
@@ -308,9 +294,6 @@ export interface PrivacySandboxDialogMixinInterface {
 
   // Returns true if the Ads API UX Enhancement should be shown.
   shouldShowV2(): boolean;
-
-  // Returns true if the notice buttons should be equalized.
-  equalizedButtons(): boolean;
 
   onConsentLearnMoreExpandedChanged(newValue: boolean, oldValue: boolean): void;
   onNoticeLearnMoreExpandedChanged(newValue: boolean, oldValue: boolean): void;

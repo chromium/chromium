@@ -17,48 +17,30 @@ using l10n_util::GetStringFUTF16;
 using l10n_util::GetStringUTF16;
 using std::u16string;
 
-BnplIssuerContext::BnplIssuerContext() = default;
-
-BnplIssuerContext::BnplIssuerContext(BnplIssuer issuer,
-                                     BnplIssuerEligibilityForPage eligibility)
-    : issuer(std::move(issuer)), eligibility(std::move(eligibility)) {}
-
-BnplIssuerContext::BnplIssuerContext(const BnplIssuerContext& other) = default;
-
-BnplIssuerContext::BnplIssuerContext(BnplIssuerContext&&) = default;
-
-BnplIssuerContext& BnplIssuerContext::operator=(
-    const BnplIssuerContext& other) = default;
-
-BnplIssuerContext& BnplIssuerContext::operator=(BnplIssuerContext&&) = default;
-
-BnplIssuerContext::~BnplIssuerContext() = default;
-
-bool BnplIssuerContext::operator==(const BnplIssuerContext&) const = default;
-
-SelectBnplIssuerDialogControllerImpl::SelectBnplIssuerDialogControllerImpl(
-    std::vector<BnplIssuerContext> issuer_contexts,
-    std::string app_locale,
-    base::OnceCallback<void(const std::string&)> selected_issuer_callback,
-    base::OnceClosure cancel_callback)
-    : issuer_contexts_(std::move(issuer_contexts)),
-      app_locale_(std::move(app_locale)),
-      selected_issuer_callback_(std::move(selected_issuer_callback)),
-      cancel_callback_(std::move(cancel_callback)) {}
+SelectBnplIssuerDialogControllerImpl::SelectBnplIssuerDialogControllerImpl() =
+    default;
 
 SelectBnplIssuerDialogControllerImpl::~SelectBnplIssuerDialogControllerImpl() =
     default;
 
 void SelectBnplIssuerDialogControllerImpl::ShowDialog(
     base::OnceCallback<std::unique_ptr<SelectBnplIssuerView>()>
-        create_and_show_dialog_callback) {
+        create_and_show_dialog_callback,
+    std::vector<BnplIssuerContext> issuer_contexts,
+    std::string app_locale,
+    base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+    base::OnceClosure cancel_callback) {
+  issuer_contexts_ = std::move(issuer_contexts);
+  app_locale_ = std::move(app_locale);
+  selected_issuer_callback_ = std::move(selected_issuer_callback);
+  cancel_callback_ = std::move(cancel_callback);
+
   dialog_view_ = std::move(create_and_show_dialog_callback).Run();
 }
 
-void SelectBnplIssuerDialogControllerImpl::OnIssuerSelected(
-    const std::string& issuer_id) {
+void SelectBnplIssuerDialogControllerImpl::OnIssuerSelected(BnplIssuer issuer) {
   if (selected_issuer_callback_) {
-    std::move(selected_issuer_callback_).Run(issuer_id);
+    std::move(selected_issuer_callback_).Run(std::move(issuer));
   }
 }
 

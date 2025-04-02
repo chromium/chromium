@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Zima taswira ya skrini</translation>
 <translation id="3091839911843451378">Haijakamilika - Imesimamisha</translation>
 <translation id="3102119246920354026">Akiba</translation>
-<translation id="3112413615003385433">Mwalimu wako ameondoa maudhui kwenye School Tools</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">madimbwi</translation>
 <translation id="3122883569442693641">Maelezo zaidi</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Imaeamilisha kidogo</translation>
 <translation id="3492882532495507361">Ofisi yenye muundo wa <ph name="OFFICE_STYLE" /> na rangi za <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Data hupimwa na Chromebook yako. Kipimo hiki huenda kikawa tofauti na data ya mtoa huduma.</translation>
-<translation id="349570724365779960">Programu ya School Tools imeunganishwa kwenye akaunti za wanafunzi</translation>
 <translation id="3502426834823382181">angalia programu zote</translation>
 <translation id="3510890413042482857">Tuma <ph name="BEGIN_LINK1" />data ya ufuatiliaji wa utendaji<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Sasisho la ChromeOS</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Umemaliza kubadilisha</translation>
 <translation id="3532980081107202182">Zimesalia takriban dakika <ph name="MIN_REMAINING" /></translation>
 <translation id="3533790840489634638">dimbwi</translation>
-<translation id="3535802910192338629">Mwalimu wako ameweka maudhui mapya kwenye School Tools</translation>
 <translation id="3547264467365135390">Fomula</translation>
 <translation id="3557205324756024651">Utambulisho kutoka eneo ulipo (si lazima)</translation>
 <translation id="3565064564551103223">IP zilizoruhusiwa</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">Ungependa kuruhusu huduma za mfumo zitumie data ya mahali ulipo?</translation>
 <translation id="6657585470893396449">Nenosiri</translation>
 <translation id="66621959568103627">marijani ya waridi</translation>
+<translation id="6669485505082792176">Imeshindwa kutayarisha picha za kidokezo hiki kwa sasa. Jaribu kuandika upya maelezo yako. Kumbuka kuwa huwezi kutayarisha picha za watu, maudhui machafu au hatari. <ph name="BEGIN_LINK_LEARN_MORE" />Pata maelezo zaidi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">kuongeza mwangaza wa kibodi</translation>
 <translation id="6692996468359469499">Pata maelezo yanayohusiana na chaguo lako</translation>
 <translation id="6694534975463174713">funga</translation>
@@ -1440,7 +1438,6 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="7544853251252956727">Changanya</translation>
 <translation id="7550715992156305117">Ratiba za Uchunguzi</translation>
 <translation id="7551123448725492271">Kifaa hiki ni cha sauti.</translation>
-<translation id="7553913964854052228">Programu ya School Tools inatumia maikrofoni yako</translation>
 <translation id="7559239713112547082">Kagua kwanza picha ya skrini</translation>
 <translation id="7561454561030345039">Kitendo hiki kinadhibitiwa na msimamizi wako</translation>
 <translation id="7561759921596375678">Washa sauti</translation>
@@ -1663,7 +1660,6 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="8576249514688522074">Haijaanzishwa</translation>
 <translation id="8584654835905316966">Unahitaji kuzima kisha uwashe kifaa chako ili kukamilisha mchakato wa kuweka toleo la <ph name="VERSION" /> la programu dhibiti kwenye <ph name="DEVICE_NAME" />. Huenda kompyuta yako ikazima na kuwaka tena mara kadhaa. Hali hiyo inatarajiwa.</translation>
 <translation id="8593058461203131755">sitisha maudhui</translation>
-<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Hali ya kutumia mtandao usio wako wa kawaida</translation>
 <translation id="8626489604350149811">Vitendo zaidi vya <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Rangi ya zambarau isiyokolea</translation>

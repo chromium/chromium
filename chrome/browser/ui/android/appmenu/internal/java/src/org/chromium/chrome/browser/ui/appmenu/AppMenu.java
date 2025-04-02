@@ -258,9 +258,6 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
             }
         }
 
-        // Setting android:clipToOutline in xml causes an "attribute not found" error.
-        contentView.setClipToOutline(true);
-
         Rect bgPadding = new Rect();
         contentView.getBackground().getPadding(bgPadding);
 

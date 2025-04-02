@@ -16,7 +16,7 @@ test_computed_value("corner-top-left-shape", "scoop");
 test_computed_value("corner-top-left-shape", "superellipse(5)");
 test_computed_value("corner-top-left-shape", "superellipse(0.2)");
 test_computed_value("corner-top-left-shape", "superellipse(0)", "notch");
-test_computed_value("corner-top-left-shape", "superellipse(infinity)", "straight");
+test_computed_value("corner-top-left-shape", "superellipse(infinity)", "square");
 test_computed_value("corner-top-left-shape", "superellipse(2)", "round");
 test_computed_value("corner-top-left-shape", "superellipse(1)", "bevel");
 test_computed_value("corner-top-left-shape", "superellipse(4)", "squircle");
@@ -33,9 +33,9 @@ test_computed_value("corner-shape", "round round round round", "round");
 test_computed_value("corner-shape", "round scoop");
 test_computed_value("corner-shape", "round scoop round scoop", "round scoop");
 test_computed_value("corner-shape", "bevel superellipse(2)", "bevel round");
-test_computed_value("corner-shape", "superellipse(0.5) superellipse(3) straight", "scoop superellipse(3) straight");
+test_computed_value("corner-shape", "superellipse(0.5) superellipse(3) square", "scoop superellipse(3) square");
 test_computed_value("corner-shape", "superellipse(0.5) superellipse(3) superellipse(1)", "scoop superellipse(3) bevel");
 test_computed_value("corner-shape", "bevel superellipse(2) squircle     round", "bevel round squircle");
-test_computed_value("corner-shape", "superellipse(0.5) superellipse(3) superellipse(1) superellipse(infinity)", "scoop superellipse(3) bevel straight");
+test_computed_value("corner-shape", "superellipse(0.5) superellipse(3) superellipse(1) superellipse(infinity)", "scoop superellipse(3) bevel square");
 
 </script>

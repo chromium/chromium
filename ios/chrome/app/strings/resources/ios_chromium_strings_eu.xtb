@@ -91,6 +91,7 @@ Chromium-en erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikust
 <translation id="3054480780637153380">Ireki Chromium-en ezarpenak iOS-en, sakatu "Arakatzaile lehenetsia" eta hautatu Chromium.</translation>
 <translation id="3102849287235003384">Google-ko kontuko saioa webgune guztietan amaitzeko, <ph name="BEGIN_LINK" />amaitu Chromium-eko saioa<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromium arakatzaile lehenetsi bihurtu nahi duzu?</translation>
+<translation id="3180939591219927904">Aktibatu "Blokeatu ezkutuko moduko fitxak Chromium ixten duzunean"</translation>
 <translation id="3242612358525156339">Gailuaren ezarpenetan, ireki "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" eta hautatu "Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{Chromium-eko leiho bat dago ikusgai}other{Chromium-eko {count} leiho daude ikusgai}}</translation>
 <translation id="3344973607274501920">Chromium-ek ezin izan ditu egiaztatu pasahitzak. Egiaztatu Internetera konektatuta zaudela.</translation>
@@ -260,6 +261,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Kendu dira hautatutako datuak Chromium-etik eta sinkronizatutako gailuetatik. Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, bilaketak eta Google-ren beste zerbitzu batzuetako jarduerak) edukitzea history.google.com webgunean.</translation>
 <translation id="7395825497086981028"><ph name="EMAIL" /> kontuko pasahitza Pasahitz-kudeatzailea zerbitzuan gordeko da.</translation>
+<translation id="7504829997542308412">Ireki Chromium.</translation>
 <translation id="7531461704633548377">Chromium-etik</translation>
 <translation id="7554983317097061001">Chromium-i buruzko aholkua: eraman Chromium zintara</translation>
 <translation id="7576863740961052505">Kudeatu Chromium-en ezarpenak</translation>

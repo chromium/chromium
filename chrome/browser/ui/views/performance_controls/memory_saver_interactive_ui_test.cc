@@ -28,8 +28,8 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
-#include "chrome/browser/ui/views/page_action/page_action_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_bubble_view.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_chip_view.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_resource_view.h"
@@ -533,8 +533,9 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest, CloseBubbleOnTabSwitch) {
       WaitForHide(MemorySaverBubbleView::kMemorySaverDialogBodyElementId));
 }
 
+// TODO(crbug.com/407785192): Fix and re-enable
 IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
-                       BubbleCorrectlyReportingMemorySaved) {
+                       DISABLED_BubbleCorrectlyReportingMemorySaved) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),

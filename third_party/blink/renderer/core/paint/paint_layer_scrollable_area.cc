@@ -169,7 +169,7 @@ PaintLayerScrollableArea::PaintLayerScrollableArea(PaintLayer& layer)
     element->SetSavedLayerScrollOffset(ScrollOffset());
   }
 
-  if (RuntimeEnabledFeatures::UnifiedScrollableAreasEnabled()) {
+  if (RuntimeEnabledFeatures::ScrollableAreaOptimizationEnabled()) {
     if (LocalFrameView* frame_view = GetLayoutBox()->GetFrameView()) {
       frame_view->AddScrollableArea(*this);
     }
@@ -2566,7 +2566,7 @@ void PaintLayerScrollableArea::UpdateScrollableAreaSet() {
   // (see: BoxPainter::PaintBoxDecorationBackground).
   GetLayoutBox()->SetBackgroundNeedsFullPaintInvalidation();
 
-  if (!RuntimeEnabledFeatures::UnifiedScrollableAreasEnabled()) {
+  if (!RuntimeEnabledFeatures::ScrollableAreaOptimizationEnabled()) {
     if (scrolls_overflow_) {
       DCHECK(CanHaveOverflowScrollbars(*GetLayoutBox()));
       frame_view->AddUserScrollableArea(*this);

@@ -588,4 +588,8 @@ BASE_FEATURE(kProtectedAudienceCorsSafelistKVv2Signals,
              "ProtectedAudienceCorsSafelistKVv2Signals",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kStorageAccessHeadersRespectPermissionsPolicy,
+             "StorageAccessHeadersRespectPermissionsPolicy",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace network::features

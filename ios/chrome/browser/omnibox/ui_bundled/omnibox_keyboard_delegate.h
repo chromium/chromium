@@ -12,7 +12,8 @@ enum class OmniboxKeyboardAction {
   kUpArrow,
   kDownArrow,
   kLeftArrow,
-  kRightArrow
+  kRightArrow,
+  kReturnKey,
 };
 
 // Keyboard inputs in the omnibox are received by OmniboxTextFieldIOS. Some keys
@@ -25,7 +26,10 @@ enum class OmniboxKeyboardAction {
 // by UIFocusSystem available in iOS 15.
 @protocol OmniboxKeyboardDelegate <NSObject>
 
+/// Whether the `keyboardAction` can be performed.
 - (BOOL)canPerformKeyboardAction:(OmniboxKeyboardAction)keyboardAction;
+
+/// Performs the `keyboardAction`.
 - (void)performKeyboardAction:(OmniboxKeyboardAction)keyboardAction;
 
 @end

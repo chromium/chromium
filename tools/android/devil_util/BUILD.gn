@@ -31,11 +31,16 @@ if (is_android) {
 
 executable("devil_util_bin") {
   sources = [
+    "archive_helper.h",
+    "archive_reader.cc",
+    "archive_reader.h",
+    "archive_writer.cc",
+    "archive_writer.h",
     "crc32_hasher.cc",
     "crc32_hasher.h",
     "main.cc",
-    "tar_reader.cc",
-    "tar_reader.h",
+    "zst_compressor.cc",
+    "zst_compressor.h",
     "zst_decompressor.cc",
     "zst_decompressor.h",
   ]
@@ -43,6 +48,7 @@ executable("devil_util_bin") {
     "//base",
     "//third_party/zlib:zlib",
     "//third_party/zlib/google:compression_utils_portable",
+    "//third_party/zstd:compress",
     "//third_party/zstd:decompress",
   ]
 }

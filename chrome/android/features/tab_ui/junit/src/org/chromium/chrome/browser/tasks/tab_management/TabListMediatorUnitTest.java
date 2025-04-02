@@ -77,6 +77,7 @@ import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -293,8 +294,8 @@ public class TabListMediatorUnitTest {
     }
 
     @Mock TabContentManager mTabContentManager;
-    @Mock TabModel mTabModel;
-    @Mock TabModel mIncognitoTabModel;
+    @Spy TabModel mTabModel;
+    @Spy TabModel mIncognitoTabModel;
     @Mock TabListFaviconProvider mTabListFaviconProvider;
     @Mock TabListFaviconProvider.TabFaviconFetcher mTabFaviconFetcher;
     @Mock RecyclerView mRecyclerView;
@@ -4433,7 +4434,8 @@ public class TabListMediatorUnitTest {
         assertNotNull(mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
         when(mTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
         mMediator.onMenuItemClicked(R.id.share_group, TAB_GROUP_ID, /* collaborationId= */ null);
-        verify(mDataSharingTabManager).createOrManageFlow(eq(mActivity), eq(null), any(), any());
+        verify(mDataSharingTabManager)
+                .createOrManageFlow(eq(mActivity), eq(null), any(), anyInt(), any());
     }
 
     @Test

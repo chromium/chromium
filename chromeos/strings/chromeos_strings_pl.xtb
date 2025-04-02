@@ -457,7 +457,6 @@
 <translation id="3084958266922136097">Wyłącz wygaszacz ekranu</translation>
 <translation id="3091839911843451378">Niepowodzenie – drukarka została zatrzymana</translation>
 <translation id="3102119246920354026">Pamięć podręczna</translation>
-<translation id="3112413615003385433">Nauczyciel usunął treści z Narzędzi szkolnych</translation>
 <translation id="3122464029669770682">Procesor</translation>
 <translation id="3122614491980756867">sadzawkami</translation>
 <translation id="3122883569442693641">Więcej szczegółów</translation>
@@ -538,7 +537,6 @@
 <translation id="3488065109653206955">Częściowo aktywowane</translation>
 <translation id="3492882532495507361">Biuro w stylu <ph name="OFFICE_STYLE" /> w odcieniach <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Pomiary danych wykonuje Chromebook. Mogą się one różnić od danych dostawcy.</translation>
-<translation id="349570724365779960">Narzędzia szkolne mają połączenie z uczniami</translation>
 <translation id="3502426834823382181">zobacz wszystkie aplikacje</translation>
 <translation id="3510890413042482857">Wyślij <ph name="BEGIN_LINK1" />dane śledzenia wydajności<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Aktualizacja Chrome OS</translation>
@@ -546,7 +544,6 @@
 <translation id="353214771040290298">Zakończ edycję</translation>
 <translation id="3532980081107202182">Pozostało około <ph name="MIN_REMAINING" /> min</translation>
 <translation id="3533790840489634638">sadzawka</translation>
-<translation id="3535802910192338629">Nauczyciel dodał nowe treści do Narzędzi szkolnych</translation>
 <translation id="3547264467365135390">Wzór</translation>
 <translation id="3557205324756024651">Tożsamość lokalna (opcjonalnie)</translation>
 <translation id="3565064564551103223">Dozwolone adresy IP</translation>
@@ -1436,7 +1433,6 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="7544853251252956727">Odtwarzaj losowo</translation>
 <translation id="7550715992156305117">Procedury diagnostyczne</translation>
 <translation id="7551123448725492271">To urządzenie typu audio.</translation>
-<translation id="7553913964854052228">Narzędzia szkolne używają mikrofonu</translation>
 <translation id="7559239713112547082">Wyświetl podgląd zrzutu ekranu</translation>
 <translation id="7561454561030345039">Tym ustawieniem zarządza Twój administrator</translation>
 <translation id="7561759921596375678">Włącz dźwięk</translation>
@@ -1659,7 +1655,6 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8576249514688522074">Nie zainicjowano</translation>
 <translation id="8584654835905316966">Aby dokończyć instalację aktualizacji oprogramowania układowego <ph name="DEVICE_NAME" /> do wersji <ph name="VERSION" />, musisz ponownie uruchomić urządzenie. Komputer może kilka razy uruchomić się ponownie. Jest to działanie prawidłowe.</translation>
 <translation id="8593058461203131755">wstrzymaj multimedia</translation>
-<translation id="8619169570378509764">Narzędzia szkolne</translation>
 <translation id="8620617069779373398">Stan roamingu</translation>
 <translation id="8626489604350149811">Więcej działań dotyczących: <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Jasnofioletowy</translation>

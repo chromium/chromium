@@ -28,13 +28,13 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/activity_log/activity_log_task_runner.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension_builder.h"
 #include "sql/statement.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,9 +58,9 @@ class CountingPolicyTest : public testing::Test {
     base::CommandLine::ForCurrentProcess()->
         AppendSwitch(switches::kEnableExtensionActivityLogging);
     base::CommandLine no_program_command_line(base::CommandLine::NO_PROGRAM);
-    extension_service_ = static_cast<TestExtensionSystem*>(
-        ExtensionSystem::Get(profile_.get()))->CreateExtensionService
-            (&no_program_command_line, base::FilePath(), false);
+    static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile_.get()))
+        ->CreateExtensionService(&no_program_command_line, base::FilePath(),
+                                 false);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -407,7 +407,7 @@ TEST_F(CountingPolicyTest, Construct) {
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2))
           .Build();
-  extension_service_->AddExtension(extension.get());
+  ExtensionRegistrar::Get(profile_.get())->AddExtension(extension);
   scoped_refptr<Action> action = new Action(extension->id(),
                                             base::Time::Now(),
                                             Action::ACTION_API_CALL,
@@ -427,7 +427,7 @@ TEST_F(CountingPolicyTest, LogWithStrippedArguments) {
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2))
           .Build();
-  extension_service_->AddExtension(extension.get());
+  ExtensionRegistrar::Get(profile_.get())->AddExtension(extension);
 
   auto args = base::Value::List().Append("hello");
   args.Append("world");
@@ -546,7 +546,7 @@ TEST_F(CountingPolicyTest, LogAndFetchFilteredActions) {
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2))
           .Build();
-  extension_service_->AddExtension(extension.get());
+  ExtensionRegistrar::Get(profile_.get())->AddExtension(extension);
   GURL gurl("http://www.google.com");
 
   // Write some API calls

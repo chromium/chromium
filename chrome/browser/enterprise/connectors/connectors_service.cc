@@ -605,7 +605,8 @@ content::BrowserContext* ConnectorsServiceFactory::GetBrowserContextToUse(
   // However, the primary/main profile might not exist in tests - then the
   // provided |context| is still used.
   if (context && !context->IsOffTheRecord() &&
-      !Profile::FromBrowserContext(context)->AsTestingProfile()) {
+      !Profile::FromBrowserContext(context)->AsTestingProfile() &&
+      !context->ShutdownStarted()) {
 #if BUILDFLAG(IS_CHROMEOS)
     auto* user_manager = user_manager::UserManager::Get();
     if (auto* primary_user = user_manager->GetPrimaryUser()) {

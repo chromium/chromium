@@ -524,6 +524,16 @@ _CROSSBENCH_ANDROID = frozenset([
     ]),
 ])
 
+_CROSSBENCH_PIXEL9 = frozenset([
+    _crossbench_jetstream2(),
+    _crossbench_speedometer3_1(arguments=['--fileserver']),
+    _crossbench_motionmark1_3(),
+    _crossbench_loadline_phone(arguments=[
+        '--cool-down-threshold=moderate',
+        '--no-splash',
+    ]),
+])
+
 _CROSSBENCH_TANGOR = frozenset([
     _crossbench_loadline_tablet(arguments=[
         '--cool-down-threshold=moderate',
@@ -703,11 +713,11 @@ _ANDROID_GO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('speedometer3'),
 ])
-_ANDROID_GO_WEBVIEW_BENCHMARK_CONFIGS = _ANDROID_GO_BENCHMARK_CONFIGS
-_ANDROID_PIXEL4_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS)
-_ANDROID_PIXEL4_EXECUTABLE_CONFIGS = frozenset([
+_ANDROID_DEFAULT_EXECUTABLE_CONFIGS = frozenset([
     _components_perftests(60),
 ])
+_ANDROID_GO_WEBVIEW_BENCHMARK_CONFIGS = _ANDROID_GO_BENCHMARK_CONFIGS
+_ANDROID_PIXEL4_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS)
 _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS = PerfSuite(
     OFFICIAL_BENCHMARK_CONFIGS).Remove([
         'jetstream2',
@@ -732,15 +742,6 @@ _ANDROID_PIXEL6_PRO_BENCHMARK_CONFIGS = PerfSuite(
         _GetBenchmarkConfig('speedometer2-minorms'),
         _GetBenchmarkConfig('speedometer3-minorms'),
     ])
-_ANDROID_PIXEL6_EXECUTABLE_CONFIGS = frozenset([
-    _components_perftests(60),
-])
-_ANDROID_PIXEL6_PGO_EXECUTABLE_CONFIGS = frozenset([
-    _components_perftests(60),
-])
-_ANDROID_PIXEL6_PRO_EXECUTABLE_CONFIGS = frozenset([
-    _components_perftests(60),
-])
 # Pixel fold
 _ANDROID_PIXEL_FOLD_BENCHMARK_CONFIGS = PerfSuite(
     OFFICIAL_BENCHMARK_CONFIGS).Add([
@@ -748,9 +749,6 @@ _ANDROID_PIXEL_FOLD_BENCHMARK_CONFIGS = PerfSuite(
         _GetBenchmarkConfig('speedometer2-minorms'),
         _GetBenchmarkConfig('speedometer3-minorms'),
     ])
-_ANDROID_PIXEL_FOLD_EXECUTABLE_CONFIGS = frozenset([
-    _components_perftests(60),
-])
 # Pixel Tangor
 _ANDROID_PIXEL_TANGOR_BENCHMARK_CONFIGS = PerfSuite(
     OFFICIAL_BENCHMARK_CONFIGS).Add([
@@ -758,8 +756,6 @@ _ANDROID_PIXEL_TANGOR_BENCHMARK_CONFIGS = PerfSuite(
         _GetBenchmarkConfig('speedometer2-minorms'),
         _GetBenchmarkConfig('speedometer3-minorms')
     ])
-_ANDROID_PIXEL_TANGOR_EXECUTABLE_CONFIGS = frozenset(
-    [_components_perftests(60)])
 _CHROMEOS_KEVIN_FYI_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig('rendering.desktop')])
 _FUCHSIA_PERF_SMARTDISPLAY_BENCHMARK_CONFIGS = PerfSuite([
@@ -940,14 +936,14 @@ ANDROID_PIXEL4 = PerfPlatform('android-pixel4-perf',
                               _ANDROID_PIXEL4_BENCHMARK_CONFIGS,
                               44,
                               'android',
-                              executables=_ANDROID_PIXEL4_EXECUTABLE_CONFIGS)
+                              executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS)
 ANDROID_PIXEL4_PGO = PerfPlatform(
     'android-pixel4-perf-pgo',
     'Android R',
     _ANDROID_PIXEL4_BENCHMARK_CONFIGS,
     28,
     'android',
-    executables=_ANDROID_PIXEL4_EXECUTABLE_CONFIGS,
+    executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
     pinpoint_only=True)
 ANDROID_PIXEL4_WEBVIEW = PerfPlatform(
     'android-pixel4_webview-perf', 'Android R',
@@ -960,7 +956,7 @@ ANDROID_PIXEL6 = PerfPlatform('android-pixel6-perf',
                               _ANDROID_PIXEL6_BENCHMARK_CONFIGS,
                               14,
                               'android',
-                              executables=_ANDROID_PIXEL6_EXECUTABLE_CONFIGS,
+                              executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
                               crossbench=_CROSSBENCH_ANDROID)
 ANDROID_PIXEL6_PGO = PerfPlatform(
     'android-pixel6-perf-pgo',
@@ -968,7 +964,7 @@ ANDROID_PIXEL6_PGO = PerfPlatform(
     _ANDROID_PIXEL6_PGO_BENCHMARK_CONFIGS,
     8,
     'android',
-    executables=_ANDROID_PIXEL6_PGO_EXECUTABLE_CONFIGS,
+    executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
     crossbench=_CROSSBENCH_ANDROID)
 ANDROID_PIXEL6_PRO = PerfPlatform(
     'android-pixel6-pro-perf',
@@ -976,60 +972,58 @@ ANDROID_PIXEL6_PRO = PerfPlatform(
     _ANDROID_PIXEL6_PRO_BENCHMARK_CONFIGS,
     10,
     'android',
-    executables=_ANDROID_PIXEL6_PRO_EXECUTABLE_CONFIGS)
+    executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS)
 ANDROID_PIXEL6_PRO_PGO = PerfPlatform(
     'android-pixel6-pro-perf-pgo',
     'Android T',
     _ANDROID_PIXEL6_PRO_BENCHMARK_CONFIGS,
     16,
     'android',
-    executables=_ANDROID_PIXEL6_PRO_EXECUTABLE_CONFIGS,
+    executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
     pinpoint_only=True)
 ANDROID_PIXEL_FOLD = PerfPlatform(
     'android-pixel-fold-perf',
     'Android U',
     _ANDROID_PIXEL_FOLD_BENCHMARK_CONFIGS,
-    18,  # testing on the first 18 connected devices
+    15,
     'android',
-    executables=_ANDROID_PIXEL_FOLD_EXECUTABLE_CONFIGS)
+    executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS)
 ANDROID_PIXEL_TANGOR = PerfPlatform(
     'android-pixel-tangor-perf',
     'Android U',
     _ANDROID_PIXEL_TANGOR_BENCHMARK_CONFIGS,
     8,
     'android',
-    executables=_ANDROID_PIXEL_TANGOR_EXECUTABLE_CONFIGS,
+    executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
     crossbench=_CROSSBENCH_TANGOR)
 ANDROID_GO_WEMBLEY = PerfPlatform('android-go-wembley-perf', 'Android U',
                                   _ANDROID_GO_BENCHMARK_CONFIGS, 15, 'android')
 ANDROID_GO_WEMBLEY_WEBVIEW = PerfPlatform(
     'android-go-wembley_webview-perf', 'Android U',
     _ANDROID_GO_WEBVIEW_BENCHMARK_CONFIGS, 20, 'android')
-ANDROID_NEW_PIXEL = PerfPlatform('android-new-pixel-perf',
-                                 'Android T',
-                                 PerfSuite([]),
-                                 1,
-                                 'android',
-                                 pinpoint_only=True)
-ANDROID_NEW_PIXEL_PGO = PerfPlatform('android-new-pixel-perf-pgo',
-                                     'Android T',
-                                     PerfSuite([]),
-                                     1,
-                                     'android',
-                                     pinpoint_only=True)
-ANDROID_NEW_PIXEL_PRO = PerfPlatform('android-new-pixel-pro-perf',
-                                     'Android T',
-                                     PerfSuite([]),
-                                     1,
-                                     'android',
-                                     pinpoint_only=True)
-ANDROID_NEW_PIXEL_PRO_PGO = PerfPlatform('android-new-pixel-pro-perf-pgo',
-                                         'Android T',
-                                         PerfSuite([]),
-                                         1,
-                                         'android',
-                                         pinpoint_only=True)
-
+ANDROID_PIXEL9 = PerfPlatform('android-pixel9-perf',
+                              'Android B',
+                              PerfSuite([]),
+                              4,
+                              'android',
+                              executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
+                              crossbench=_CROSSBENCH_PIXEL9)
+ANDROID_PIXEL9_PRO = PerfPlatform(
+    'android-pixel9-pro-perf',
+    'Android B',
+    PerfSuite([]),
+    4,
+    'android',
+    executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
+    crossbench=_CROSSBENCH_PIXEL9)
+ANDROID_PIXEL9_PRO_XL = PerfPlatform(
+    'android-pixel9-pro-xl-perf',
+    'Android B',
+    PerfSuite([]),
+    4,
+    'android',
+    executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
+    crossbench=_CROSSBENCH_PIXEL9)
 # Cros
 FUCHSIA_PERF_NELSON = PerfPlatform('fuchsia-perf-nsn',
                                    '',

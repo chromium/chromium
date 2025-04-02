@@ -33,6 +33,7 @@
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/translate/core/browser/translate_prefs.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
+#import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/find_in_page/model/abstract_find_tab_helper.h"
@@ -41,7 +42,6 @@
 #import "ios/chrome/browser/follow/model/follow_tab_helper.h"
 #import "ios/chrome/browser/follow/model/follow_util.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
-#import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
@@ -821,9 +821,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Creates the "Set a Reminder" action for the overflow menu.
 // This action allows users to set a reminder for a tab.
 - (OverflowMenuAction*)newSetTabReminderAction {
-  CHECK(
-      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
-
   NSString* hideItemText = l10n_util::GetNSString(
       IDS_IOS_REMINDER_NOTIFICATIONS_HIDE_SET_A_REMINDER);
 
@@ -2055,7 +2052,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     case overflow_menu::ActionType::AIPrototype:
       return self.AIPrototypeAction;
     case overflow_menu::ActionType::SetTabReminder:
-      return self.setTabReminderAction;
+      return send_tab_to_self::
+                     IsSendTabIOSPushNotificationsEnabledWithTabReminders()
+                 ? self.setTabReminderAction
+                 : nil;
   }
 }
 

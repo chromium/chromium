@@ -229,8 +229,7 @@ bool StructTraits<ip_protection::mojom::ProbabilisticRevealTokenDataView,
     Read(ip_protection::mojom::ProbabilisticRevealTokenDataView data,
          ip_protection::ProbabilisticRevealToken* out) {
   out->version = data.version();
-  return data.ReadU(&out->u) && data.ReadE(&out->e) &&
-         data.ReadEpochId(&out->epoch_id);
+  return data.ReadU(&out->u) && data.ReadE(&out->e);
 }
 
 bool StructTraits<
@@ -242,7 +241,9 @@ bool StructTraits<
   out->expiration_time_seconds = data.expiration_time_seconds();
   out->next_epoch_start_time_seconds = data.next_epoch_start_time_seconds();
   out->num_tokens_with_signal = data.num_tokens_with_signal();
-  return data.ReadTokens(&out->tokens) && data.ReadPublicKey(&out->public_key);
+  return data.ReadTokens(&out->tokens) &&
+         data.ReadPublicKey(&out->public_key) &&
+         data.ReadEpochId(&out->epoch_id);
 }
 
 }  // namespace mojo

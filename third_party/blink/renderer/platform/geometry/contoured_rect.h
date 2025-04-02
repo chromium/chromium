@@ -196,13 +196,7 @@ class PLATFORM_EXPORT ContouredRect {
   }
 
   void Outset(const gfx::OutsetsF& outsets) { rect_.Outset(outsets); }
-  void OutsetForMarginOrShadow(const gfx::OutsetsF& outsets) {
-    if (HasRoundCurvature()) {
-      rect_.OutsetForMarginOrShadow(outsets);
-    } else {
-      Outset(outsets);
-    }
-  }
+  void OutsetForMarginOrShadow(const gfx::OutsetsF&);
 
   void ConstrainRadii() { rect_.ConstrainRadii(); }
 

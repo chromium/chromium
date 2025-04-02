@@ -163,8 +163,13 @@ void GPUCanvasContext::Reshape(int width, int height) {
 }
 
 scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage(FlushReason) {
-  if (!swap_buffers_)
+  if (!swap_buffers_) {
     return nullptr;
+  }
+
+  if (device_->destroyed()) {
+    return MakeFallbackStaticBitmapImage(alpha_mode_);
+  }
 
   // If there is a current texture, create a snapshot from it.
   if (texture_ && !texture_->Destroyed()) {
@@ -200,6 +205,15 @@ bool GPUCanvasContext::PaintRenderingResultsToCanvas(
   CanvasResourceProvider* resource_provider =
       Host()->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
   if (!resource_provider) {
+    return false;
+  }
+
+  if (device_->destroyed()) {
+    SkColor4f color = alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque
+                          ? SkColors::kBlack
+                          : SkColors::kTransparent;
+    resource_provider->Canvas().clear(color);
+    resource_provider->FlushCanvas(FlushReason::kClear);
     return false;
   }
 
@@ -252,8 +266,9 @@ bool GPUCanvasContext::PushFrame() {
   DCHECK(Host());
   DCHECK(Host()->IsOffscreenCanvas());
 
-  if (!swap_buffers_)
+  if (!swap_buffers_) {
     return false;
+  }
 
   gpu::SyncToken sync_token;
   viz::ReleaseCallback release_callback;
@@ -281,42 +296,14 @@ bool GPUCanvasContext::PushFrame() {
 ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  auto MakeFallbackImageBitmap =
-      [this](V8GPUCanvasAlphaMode::Enum alpha_mode) -> ImageBitmap* {
-    // It is not possible to create an empty image bitmap, return null in that
-    // case which will fail ImageBitmap creation with an exception instead.
-    gfx::Size size = Host()->Size();
-    if (size.IsEmpty()) {
-      return nullptr;
-    }
-
-    // We intentionally leave the image in legacy color space.
-    SkBitmap black_bitmap;
-    if (!black_bitmap.tryAllocN32Pixels(size.width(), size.height())) {
-      // It is not possible to create such a big image bitmap, return null in
-      // that case which will fail ImageBitmap creation with an exception
-      // instead.
-      return nullptr;
-    }
-
-    if (alpha_mode == V8GPUCanvasAlphaMode::Enum::kOpaque) {
-      black_bitmap.eraseARGB(255, 0, 0, 0);
-    } else {
-      black_bitmap.eraseARGB(0, 0, 0, 0);
-    }
-
-    // Mark the bitmap as immutable to avoid an unnecessary copy in the
-    // following RasterFromBitmap() call.
-    black_bitmap.setImmutable();
-    return MakeGarbageCollected<ImageBitmap>(
-        UnacceleratedStaticBitmapImage::Create(
-            SkImages::RasterFromBitmap(black_bitmap)));
-  };
-
   // If the canvas configuration is invalid, WebGPU requires that we give a
   // fallback black ImageBitmap if possible.
   if (!swap_buffers_) {
-    return MakeFallbackImageBitmap(V8GPUCanvasAlphaMode::Enum::kOpaque);
+    auto staticBitmapImage =
+        MakeFallbackStaticBitmapImage(V8GPUCanvasAlphaMode::Enum::kOpaque);
+    return staticBitmapImage
+               ? MakeGarbageCollected<ImageBitmap>(staticBitmapImage)
+               : nullptr;
   }
 
   gpu::SyncToken sk_image_sync_token;
@@ -328,7 +315,10 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
     // The only situation in which this could happen is when two or more calls
     // to transferToImageBitmap are made back-to-back, or when the context gets
     // lost.
-    return MakeFallbackImageBitmap(alpha_mode_);
+    auto staticBitmapImage = MakeFallbackStaticBitmapImage(alpha_mode_);
+    return staticBitmapImage
+               ? MakeGarbageCollected<ImageBitmap>(staticBitmapImage)
+               : nullptr;
   }
   DCHECK(release_callback);
 
@@ -789,6 +779,10 @@ void GPUCanvasContext::SetNeedsCompositingUpdate() {
   }
 }
 
+bool GPUCanvasContext::IsGPUDeviceDestroyed() {
+  return device_->destroyed();
+}
+
 void GPUCanvasContext::CopyToSwapTexture() {
   DCHECK(copy_to_swap_texture_required_);
   DCHECK(texture_);
@@ -981,6 +975,38 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::SnapshotInternal(
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>
 GPUCanvasContext::GetContextProviderWeakPtr() const {
   return device_->GetDawnControlClient()->GetContextProviderWeakPtr();
+}
+
+scoped_refptr<StaticBitmapImage>
+GPUCanvasContext::MakeFallbackStaticBitmapImage(
+    V8GPUCanvasAlphaMode::Enum alpha_mode) {
+  // It is not possible to create an empty image bitmap, return null in that
+  // case which will fail ImageBitmap creation with an exception instead.
+  gfx::Size size = Host()->Size();
+  if (size.IsEmpty()) {
+    return nullptr;
+  }
+
+  // We intentionally leave the image in legacy color space.
+  SkBitmap black_bitmap;
+  if (!black_bitmap.tryAllocN32Pixels(size.width(), size.height())) {
+    // It is not possible to create such a big image bitmap, return null in
+    // that case which will fail ImageBitmap creation with an exception
+    // instead.
+    return nullptr;
+  }
+
+  if (alpha_mode == V8GPUCanvasAlphaMode::Enum::kOpaque) {
+    black_bitmap.eraseARGB(255, 0, 0, 0);
+  } else {
+    black_bitmap.eraseARGB(0, 0, 0, 0);
+  }
+
+  // Mark the bitmap as immutable to avoid an unnecessary copy in the
+  // following RasterFromBitmap() call.
+  black_bitmap.setImmutable();
+  return UnacceleratedStaticBitmapImage::Create(
+      SkImages::RasterFromBitmap(black_bitmap));
 }
 
 }  // namespace blink

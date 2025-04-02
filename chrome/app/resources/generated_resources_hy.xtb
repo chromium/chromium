@@ -2982,6 +2982,7 @@
 <translation id="3045447014237878114">Այս կայքն ավտոմատ ներբեռնել է մի քանի ֆայլ</translation>
 <translation id="3046178388369461825">Լինուքսի սկավառակում տարածքը շատ քիչ է։</translation>
 <translation id="304644035656848980">Բարձրախոսի փորձարկում</translation>
+<translation id="3046892784550338476">Տարբերակ՝ <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Ամբողջ վեբէջը</translation>
 <translation id="304747341537320566">Խոսքի սինթեզատորներ</translation>
 <translation id="3047678109605649715">Ձեր սարքում <ph name="LANGUAGE" /> լեզվով ձայներ չկան։ Ձեր սարքում տարածք ազատեք և նորից փորձեք։</translation>
@@ -3074,6 +3075,7 @@
 <translation id="3122883569442693641">Այլ մանրամասներ</translation>
 <translation id="3124111068741548686">USER նկարագրիչներ</translation>
 <translation id="3124332159330678621">Անհատականացրեք Chrome-ը՝ ձեր դիտարկիչին նոր տեսք հաղորդելու համար</translation>
+<translation id="3125816458150005808">Կարող եք ապաամրացնել այն և բացել այն ընտրացանկից</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Լիցքավորման և աշխատանքի հետ կապված խնդիրներից խուսափելու համար օգտագործեք համատեղելի Dell կամ USB Type-C հոսանքի ադապտեր:</translation>
 <translation id="3127862849166875294">Սկավառակի չափի փոխում Լինուքսում</translation>
@@ -5322,6 +5324,7 @@
 <translation id="4723140812774948886">Փոխել տեղերով հաջորդի հետ</translation>
 <translation id="4724450788351008910">Պատկանելիությունը փոխվել է</translation>
 <translation id="4725511304875193254">Կորգի</translation>
+<translation id="4725762702191453794">Ներդիրների որոնումն այժմ ամրացված է ձեր գործիքագոտում</translation>
 <translation id="4726710355753484204">Օգտագործեք Ctrl + Alt + Ավելացնել պայծառությունը դյուրանցումը՝ մասշտաբը մեծացնելու համար։
 Օգտագործեք Ctrl + Alt + Նվազեցնել պայծառությունը դյուրանցումը՝ մասշտաբը փոքրացնելու համար։</translation>
 <translation id="4726710629007580002">Այս ընդլայնումը տեղադրելիս զգուշացումներ են եղել.</translation>

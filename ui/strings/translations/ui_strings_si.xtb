@@ -38,6 +38,7 @@
 <translation id="19085484004813472">මෙය නව විශේෂාංගයකි</translation>
 <translation id="2006524834898217237">මෙම උපාංගය අන්තර්ජාලයට සම්බන්ධ වී තිබෙන බව තහවුරු කර ගන්න.</translation>
 <translation id="208586643495776849">නැවත උත්සාහ කරන්න</translation>
+<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />අප්‍රකට තුළ ඉඩ දීම<ph name="END_BOLD" /> ක්‍රියාත්මක කරන්න</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1d}one{#d}other{#d}}</translation>
 <translation id="2148716181193084225">අද</translation>
 <translation id="2168039046890040389">පිටුව ඉහළට</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">ඔබේ තිරය මත ස්පර්ශ ඉලක්ක තට්ටු කරන්න.</translation>
 <translation id="2295140143284145483">සමීක්ෂණය</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/තත්</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> සහිත දිගුවක් ස්ථානගත කළ නොහැක. ඔබේ පරිපාලක සම්බන්ධ කර ගන්න.}one{IDs <ph name="BEGIN_LIST" /><ph name="END_LIST" /> සහිත දිගු ස්ථානගත කළ නොහැක. ඔබේ පරිපාලක සම්බන්ධ කර ගන්න.}other{IDs <ph name="BEGIN_LIST" /><ph name="END_LIST" /> සහිත දිගු ස්ථානගත කළ නොහැක. ඔබේ පරිපාලක සම්බන්ධ කර ගන්න.}}</translation>
 <translation id="2353636109065292463">ඔබේ අන්තර්ජාල සම්බන්ධතාව පරීක්‍ෂා කිරීම</translation>
 <translation id="2359808026110333948">කරගෙන යන්න</translation>
 <translation id="2388990488038464401">ඔබේ දුරකථනයෙන් මෙම අංකය අමතන්නේද?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">සියල්ල මකන්න</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 දිනකින්}one{දින #කින්}other{දින #කින්}}</translation>
 <translation id="2922712708897119705"><ph name="COLUMN_NAME" /> තීරුව අඩු වන අනුපිළිවෙළට සකසන ලදි.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{දිගුව සොයා ගත නොහැක}one{දිගු සොයා ගත නොහැක}other{දිගු සොයා ගත නොහැක}}</translation>
 <translation id="3036649622769666520">ගොනුව විවෘත කරන්න</translation>
 <translation id="3049748772180311791">මෙබ <ph name="QUANTITY" /></translation>
 <translation id="3087734570205094154">පතුල</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">මෙයින් ඇමතුමක් ගන්න</translation>
 <translation id="3306688585798492231">තිළැලි සංදර්ශනය</translation>
 <translation id="335581015389089642">කථනය</translation>
+<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />විස්තර<ph name="END_BOLD" /> බලන්න</translation>
 <translation id="3389286852084373014">පාඨය විශාල වැඩියි</translation>
 <translation id="3406306243914553062">HTML අන්තර්ගතය</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{දින 1 ක් ඉතිරියි}one{දින # ක් ඉතිරියි}other{දින # ක් ඉතිරියි}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> තීරුව වැඩි වන අනුපිළිවෙළට සකසන ලදි.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 නොකියවූ දැනුම්දීමක්}one{නොකියවූ දැනුම්දීම් # ක්}other{නොකියවූ දැනුම්දීම් # ක්}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{අප්‍රසිද්ධ තුළ පහත දිගුව ක්‍රියාත්මක කරන්න:}one{අප්‍රසිද්ධ තුළ පහත දිගු ක්‍රියාත්මක කරන්න:}other{අප්‍රසිද්ධ තුළ පහත දිගු ක්‍රියාත්මක කරන්න:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{මාස 1කට පෙර}one{මාස #කට පෙර}other{මාස #කට පෙර}}</translation>
 <translation id="4289300219472526559">කතා කිරීම අරඹන්න</translation>
 <translation id="4289540628985791613">දළ විශ්ලේෂණය</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">අංකය</translation>
 <translation id="4746179598275229723">දිගුව ඇමිණීම ඉවත් කරන ලදි</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{මාස 1ක් ඉතිරියි}one{මාස #ක් ඉතිරියි}other{මාස #ක් ඉතිරියි}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{අප්‍රසිද්ධ භාවිතය සඳහා, ඔබේ සංවිධානයට දිගුවක් අවශ්‍ය වේ}one{අප්‍රසිද්ධ භාවිතය සඳහා, ඔබේ සංවිධානයට යම් දිගු අවශ්‍ය වේ}other{අප්‍රසිද්ධ භාවිතය සඳහා, ඔබේ සංවිධානයට යම් දිගු අවශ්‍ය වේ}}</translation>
+<translation id="482932175346970750">ඔබේ බ්‍රව්සරයට <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ටයිප් කරන්න</translation>
 <translation id="4888938634149558681">ඇමතුම් කරන්න</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{තත්පර 1}one{තත්පර #}other{තත්පර #}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;අලවන්න</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">යැවීම අසාර්ථකයි</translation>
+<translation id="5283101102242354279">අප්‍රසිද්ධ තුළ දිගුවක් ක්‍රියාත්මක කරන්න:</translation>
 <translation id="528468243742722775">අවසන් කරන්න</translation>
 <translation id="5329858601952122676">&amp;මකන්න</translation>
 <translation id="5361107212971249203">පෙළ</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">එය මීළඟ වරට යළි ඇරඹූ විට ඔබේ යෙදුමේ සංදර්ශක සැකසීම් ක්‍රියාත්මක වෙයි.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{මිනිත්තු 1 ක් ඉතිරියි}one{මිනිත්තු # ක් ඉතිරියි}other{මිනිත්තු # ක් ඉතිරියි}}</translation>
+<translation id="7252604552361840748">ඉහත දිගුව සොයා ගන්න</translation>
 <translation id="7363164521834647158">පිළිතුර යවන්න</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{මිනි 1 කට පෙර}one{මිනි # කට පෙර}other{මිනි # කට පෙර}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>

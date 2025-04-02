@@ -105,23 +105,42 @@ size_t MaxNumSkSurface() {
 #endif
 }
 
+void ReportPrecompilationStats(
+    std::unique_ptr<skgpu::graphite::PrecompileContext> precompileContext) {
+  precompileContext->reportPipelineStats();
+}
+
 void InitiatePrecompilation(skgpu::graphite::Context* context) {
   constexpr base::TaskTraits precompile_traits = {
       base::TaskPriority::BEST_EFFORT,
       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
 
-  std::unique_ptr<skgpu::graphite::PrecompileContext> precompileContext =
-      context->makePrecompileContext();
+  {
+    std::unique_ptr<skgpu::graphite::PrecompileContext> precompileContext =
+        context->makePrecompileContext();
 
-  // TODO: crbug.com/358074434 - need to determine the actual delay or initiate
-  // precompilation at first idle
-  constexpr base::TimeDelta precompile_wait = base::Seconds(1);
+    // TODO: crbug.com/358074434 - need to determine the actual delay or
+    // initiate precompilation at first idle
+    constexpr base::TimeDelta precompile_wait = base::Seconds(1);
 
-  base::ThreadPool::PostDelayedTask(
-      FROM_HERE, precompile_traits,
-      base::BindOnce(&GraphitePerformPrecompilation,
-                     std::move(precompileContext)),
-      precompile_wait);
+    base::ThreadPool::PostDelayedTask(
+        FROM_HERE, precompile_traits,
+        base::BindOnce(&GraphitePerformPrecompilation,
+                       std::move(precompileContext)),
+        precompile_wait);
+  }
+
+  {
+    std::unique_ptr<skgpu::graphite::PrecompileContext> precompileContext =
+        context->makePrecompileContext();
+
+    // After thirty minutes, report UMA statistics re Precompile Pipeline usage
+    base::ThreadPool::PostDelayedTask(
+        FROM_HERE, precompile_traits,
+        base::BindOnce(&ReportPrecompilationStats,
+                       std::move(precompileContext)),
+        base::Minutes(30));
+  }
 }
 
 // Creates a Graphite recorder, supplying it with a GraphiteImageProvider.

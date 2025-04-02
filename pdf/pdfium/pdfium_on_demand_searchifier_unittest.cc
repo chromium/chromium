@@ -299,6 +299,41 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithImages) {
   EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 3)), "OCR Text 3");
 }
 
+TEST_P(PDFiumOnDemandSearchifierTest, AddedTextPreservedAfterUnload) {
+  constexpr int kPageCount = 4;
+  CreateEngine(FILE_PATH_LITERAL("multi_page_no_text.pdf"));
+
+  // Trigger page load.
+  for (int page = 0; page < kPageCount; page++) {
+    GetPDFiumPageForTest(*engine(), page).GetPage();
+  }
+
+  PDFiumOnDemandSearchifier* searchifier = engine()->GetSearchifierForTesting();
+  ASSERT_TRUE(searchifier);
+
+  StartSearchify(/*empty_results=*/false);
+
+  base::test::TestFuture<void> future;
+  WaitUntilIdle(searchifier, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  ASSERT_EQ(performed_ocrs(), 4);
+
+  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 0)), "OCR Text 0");
+  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 1)), "OCR Text 1");
+  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 2)), "OCR Text 2");
+  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 3)), "OCR Text 3");
+
+  for (int page = 0; page < kPageCount; page++) {
+    GetPDFiumPageForTest(*engine(), page).Unload();
+  }
+  // TODO(crbug.com/407730667): It's expected to preserve added text after page
+  // unload.
+  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 0)), "OCR T");
+  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 1)), "OCR Text 1");
+  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 2)), "OCR T");
+  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 3)), "OCR Text 3");
+}
+
 TEST_P(PDFiumOnDemandSearchifierTest, MultipleImagesWithUnload) {
   CreateEngine(FILE_PATH_LITERAL("image_alt_text.pdf"));
 

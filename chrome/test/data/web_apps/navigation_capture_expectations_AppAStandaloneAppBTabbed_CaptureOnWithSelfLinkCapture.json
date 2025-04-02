@@ -77,7 +77,7 @@
       },
       "AppANavigateExistingAppBFocusExisting_Tab_ScopeA2B2_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "AppANavigateExistingAppBFocusExisting_AppAStandaloneAppBTabbed_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B2_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",

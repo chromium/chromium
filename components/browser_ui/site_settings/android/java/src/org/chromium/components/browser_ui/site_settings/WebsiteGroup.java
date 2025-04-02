@@ -160,6 +160,7 @@ public class WebsiteGroup implements WebsiteEntry {
         return mRwsInfo;
     }
 
+    @Override
     public String getDomainAndRegistry() {
         return mDomainAndRegistry;
     }

@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">Þvinga fram aðdrátt</translation>
 <translation id="3905475044299942653">Stöðva mikið magn tilkynninga</translation>
 <translation id="3908288065506437185">Loka á fótspor þriðju aðila í huliðsstillingu</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Sumir eiginleikar virka ef til vill ekki. Tengd vefsvæði geta áfram notað fótspor þriðju aðila.</translation>
 <translation id="3922092564198021702">Opnaðu Stillingar í símanum</translation>
 <translation id="3933121352599513978">Minnka óumbeðnar beiðnir (ráðlagt)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">Nánar</translation>
 <translation id="4598549027014564149">Þegar þú ert í huliðsstillingu geta vefsvæði ekki notað fótspor til að sjá vafranotkun þína á vefsvæðum, jafnvel tengdum vefsvæðum. Vafranotkun þín er ekki notuð fyrir hluti á borð við sérsniðnar auglýsingar. Óvíst er að eiginleikar á sumum vefsvæðum virki.</translation>
 <translation id="461356340001513807">Gerir þér kleift að skrá þig inn á vefsvæði með reikningi hjá auðkenningarþjónustu</translation>
-<translation id="4619615317237390068">Flipar frá öðrum tækjum</translation>
 <translation id="4635969503923889910">Ekki leyfa vefsvæðum að nota NFC-tæki</translation>
 <translation id="4644713492825682049">Eyða og endurstilla</translation>
 <translation id="4645575059429386691">Stjórnað af foreldri þínu</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">Deila með</translation>
 <translation id="5001526427543320409">Fótspor þriðju aðila</translation>
 <translation id="5007392906805964215">Yfirfara</translation>
-<translation id="5014182796621173645">Þú heimsóttir <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Leyfa</translation>
 <translation id="5048398596102334565">Leyfa vefsvæðum að fá aðgang að hreyfiskynjurunum (ráðlagt)</translation>
 <translation id="5048841907079026162">Stjórnaðu vefskoðunargögnunum þínum</translation>
@@ -443,7 +440,6 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Varið efni</translation>
 <translation id="662080504995468778">Vera áfram</translation>
-<translation id="6653342741369270081">Ýttu á bakkhnappinn til að hætta að nota allan skjáinn.</translation>
 <translation id="6683865262523156564">Þetta vefsvæði er í hóp sem getur séð virknina þína. Hópurinn er skilgreindur af <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Prófílmyndir</translation>
 <translation id="6697925417670533197">Niðurhal í gangi</translation>

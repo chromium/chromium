@@ -318,7 +318,7 @@ class FormFieldData {
   // mismatch all `options()`, e.g., when JavaScript set the value to a
   // different value or when the number or string length of the options exceeded
   // limits during extraction.
-  base::optional_ref<const SelectOption> selected_option() const;
+  base::optional_ref<const SelectOption> selected_option() const LIFETIME_BOUND;
 
   // The selected text, or the empty string if no text is selected.
   // Truncated at `50 * kMaxStringLength`.

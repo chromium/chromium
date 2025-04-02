@@ -258,6 +258,7 @@ enum FederatedAuthRequestResult {
   kError,
   kUiDismissedNoEmbargo,
   kCorsError,
+  kSuppressedBySegmentationPlatform,
 };
 
 struct FederatedAuthRequestIssueDetails {

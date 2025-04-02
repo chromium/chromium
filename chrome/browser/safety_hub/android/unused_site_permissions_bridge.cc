@@ -13,8 +13,8 @@
 #include "base/check.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -64,9 +64,8 @@ base::android::ScopedJavaLocalRef<jobject> ToJavaPermissionsData(
   // but here it is ok since the primary pattern belongs to a single
   // origin. Therefore, it has a fully defined URL+scheme+port which makes
   // converting primary pattern to origin successful.
-  url::Origin origin =
-      UnusedSitePermissionsService::ConvertPrimaryPatternToOrigin(
-          obj.primary_pattern);
+  url::Origin origin = RevokedPermissionsService::ConvertPrimaryPatternToOrigin(
+      obj.primary_pattern);
   return Java_PermissionsData_create(
       env, origin.Serialize(), permissions,
       obj.constraints.expiration().ToDeltaSinceWindowsEpoch().InMicroseconds(),
@@ -74,8 +73,8 @@ base::android::ScopedJavaLocalRef<jobject> ToJavaPermissionsData(
 }
 
 std::vector<PermissionsData> GetRevokedPermissions(Profile* profile) {
-  UnusedSitePermissionsService* service =
-      UnusedSitePermissionsServiceFactory::GetForProfile(profile);
+  RevokedPermissionsService* service =
+      RevokedPermissionsServiceFactory::GetForProfile(profile);
   CHECK(service);
   const auto service_result =
       service->GetRevokedPermissions()->GetRevokedPermissions();
@@ -84,8 +83,8 @@ std::vector<PermissionsData> GetRevokedPermissions(Profile* profile) {
 }
 
 void RegrantPermissions(Profile* profile, std::string& origin_str) {
-  UnusedSitePermissionsService* service =
-      UnusedSitePermissionsServiceFactory::GetForProfile(profile);
+  RevokedPermissionsService* service =
+      RevokedPermissionsServiceFactory::GetForProfile(profile);
   CHECK(service);
 
   url::Origin origin = url::Origin::Create(GURL(origin_str));
@@ -94,16 +93,16 @@ void RegrantPermissions(Profile* profile, std::string& origin_str) {
 
 void UndoRegrantPermissions(Profile* profile,
                             PermissionsData& permissions_data) {
-  UnusedSitePermissionsService* service =
-      UnusedSitePermissionsServiceFactory::GetForProfile(profile);
+  RevokedPermissionsService* service =
+      RevokedPermissionsServiceFactory::GetForProfile(profile);
   CHECK(service);
 
   service->UndoRegrantPermissionsForOrigin(permissions_data);
 }
 
 void ClearRevokedPermissionsReviewList(Profile* profile) {
-  UnusedSitePermissionsService* service =
-      UnusedSitePermissionsServiceFactory::GetForProfile(profile);
+  RevokedPermissionsService* service =
+      RevokedPermissionsServiceFactory::GetForProfile(profile);
   CHECK(service);
 
   service->ClearRevokedPermissionsList();
@@ -112,8 +111,8 @@ void ClearRevokedPermissionsReviewList(Profile* profile) {
 void RestoreRevokedPermissionsReviewList(
     Profile* profile,
     std::vector<PermissionsData>& permissions_data_list) {
-  UnusedSitePermissionsService* service =
-      UnusedSitePermissionsServiceFactory::GetForProfile(profile);
+  RevokedPermissionsService* service =
+      RevokedPermissionsServiceFactory::GetForProfile(profile);
   CHECK(service);
 
   for (const auto& permissions_data : permissions_data_list) {

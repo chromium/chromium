@@ -54,6 +54,8 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/geolocation/model",
     "//ios/chrome/browser/infobars/model:badge",
     "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/intelligence/page_action_menu",
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
     "//ios/chrome/browser/lens_overlay/ui:entry_point",

@@ -114,21 +114,6 @@ void DirectRenderer::Initialize() {
   initialized_ = true;
 }
 
-// static
-gfx::RectF DirectRenderer::QuadVertexRect() {
-  return gfx::RectF(-0.5f, -0.5f, 1.f, 1.f);
-}
-
-// static
-void DirectRenderer::QuadRectTransform(gfx::Transform* quad_rect_transform,
-                                       const gfx::Transform& quad_transform,
-                                       const gfx::RectF& quad_rect) {
-  *quad_rect_transform = quad_transform;
-  quad_rect_transform->Translate(0.5 * quad_rect.width() + quad_rect.x(),
-                                 0.5 * quad_rect.height() + quad_rect.y());
-  quad_rect_transform->Scale(quad_rect.width(), quad_rect.height());
-}
-
 gfx::AxisTransform2d DirectRenderer::CalculateTargetToDeviceTransform(
     const gfx::Rect& draw_rect,
     const gfx::Size& viewport_size) {

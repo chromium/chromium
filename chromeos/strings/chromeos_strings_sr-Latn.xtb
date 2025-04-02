@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Onemogućite čuvar ekrana</translation>
 <translation id="3091839911843451378">Nije uspelo – zaustavljeno je</translation>
 <translation id="3102119246920354026">Keš</translation>
-<translation id="3112413615003385433">Nastavnik je uklonio sadržaj u Školskim alatkama</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">bazenima</translation>
 <translation id="3122883569442693641">Još detalja</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Delimično aktivirano</translation>
 <translation id="3492882532495507361">Kancelarija <ph name="OFFICE_STYLE" /> sa <ph name="OFFICE_COLOR" /> nijansama</translation>
 <translation id="3493187369049186498">Podatke meri Chromebook. To može da se razlikuje od podataka dobavljača.</translation>
-<translation id="349570724365779960">Školske alatke su povezane sa učenicima</translation>
 <translation id="3502426834823382181">prikaži sve aplikacije</translation>
 <translation id="3510890413042482857">Šalji <ph name="BEGIN_LINK1" />podatke o praćenju učinka<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Ažuriranje Chrome OS-a</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Izmene su gotove</translation>
 <translation id="3532980081107202182">Preostalo je još oko <ph name="MIN_REMAINING" /> minuta</translation>
 <translation id="3533790840489634638">bazenom</translation>
-<translation id="3535802910192338629">Nastavnik je dodao novi sadržaj u Školskim alatkama</translation>
 <translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Lokalni identitet (opcionalno)</translation>
 <translation id="3565064564551103223">Dozvoljene IPa adrese</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">Želite da dozvolite sistemskim uslugama da koriste lokaciju?</translation>
 <translation id="6657585470893396449">Lozinka</translation>
 <translation id="66621959568103627">koralnoroze</translation>
+<translation id="6669485505082792176">Trenutno ne možemo da napravimo slike na kojima je ovo. Probajte da preformulišete opis. Imajte na umu da ne možete da pravite slike ljudi, štetan ili eksplicitan sadržaj. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">povećajte osvetljenost tastature</translation>
 <translation id="6692996468359469499">Pronađite informacije u vezi sa vašim izborom</translation>
 <translation id="6694534975463174713">brava</translation>
@@ -1440,7 +1438,6 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="7544853251252956727">Pusti nasumično</translation>
 <translation id="7550715992156305117">Dijagnostičke rutine</translation>
 <translation id="7551123448725492271">Uređaj je audio uređaj.</translation>
-<translation id="7553913964854052228">Školske alatke koriste mikrofon</translation>
 <translation id="7559239713112547082">Pregled snimka ekrana</translation>
 <translation id="7561454561030345039">Ovim podešavanjem upravlja administrator</translation>
 <translation id="7561759921596375678">Uključite zvuk</translation>
@@ -1663,7 +1660,6 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="8576249514688522074">Nije pokrenuto</translation>
 <translation id="8584654835905316966">Restartovanje je obavezno da bi se dovršila instalacija firmvera za <ph name="DEVICE_NAME" /> na verziju <ph name="VERSION" />. Može da izgleda kao da se računar restartuje nekoliko puta. Ovo je očekivano ponašanje.</translation>
 <translation id="8593058461203131755">pauzirajte medije</translation>
-<translation id="8619169570378509764">Školske alatke</translation>
 <translation id="8620617069779373398">Status rominga</translation>
 <translation id="8626489604350149811">Još radnji za <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Svetloljubičasto</translation>

@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Le fichier manifeste est incorrect</translation>
 <translation id="7217838517480956708">L'administrateur de cet ordinateur exige que l'extension <ph name="EXTENSION_NAME" /> soit installée. Celle-ci ne peut pas être supprimée ni modifiée.</translation>
 <translation id="7612608473764576263">Vous devez indiquer un format valide comme valeur de clé privée (clé RSA encodée PEM format PKCS#8).</translation>
+<translation id="7876803335449432072">Impossible de charger le fichier "<ph name="RELATIVE_PATH" />" pour le script de contenu. Les feuilles de style de scripts de contenu ne peuvent être chargées qu'à partir des fichiers de feuilles de style compatibles, tels que les fichiers .css.</translation>
 <translation id="7939686037314084444">Échec du chargement de l'extension, laquelle risque de ne pas pouvoir intercepter les demandes réseau.</translation>
 <translation id="7972881773422714442">Options : <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Caméra frontale</translation>
 <translation id="8047248493720652249">Échec de l'attribution du nom "<ph name="ATTEMPTED_FILENAME" />" au fichier téléchargé via l'extension, car un nom de fichier différent, "<ph name="ACTUAL_FILENAME" />", a été attribué via une autre extension (<ph name="EXTENSION_NAME" />).</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> de <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Fichier manifeste absent ou illisible</translation>
+<translation id="8621383749470166852">Impossible de charger le fichier "<ph name="RELATIVE_PATH" />" pour le script de contenu. Les scripts de contenu ne peuvent être chargés qu'à partir de fichiers JavaScript compatibles, tels que les fichiers .js.</translation>
 <translation id="8636666366616799973">Package incorrect. Détails : "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> demande l'accès à l'un de vos appareils :</translation>
 <translation id="8885905466771744233">L'extension indiquée est déjà associée à une clé privée. Utilisez cette clé ou supprimez-la.</translation>

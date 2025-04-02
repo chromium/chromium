@@ -109,6 +109,8 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
   if (prompt_view) {
     prompt_view_tracker_.SetView(prompt_view);
     if (!content_scrim_widget_) {
+      scoped_ignore_input_events_ =
+          web_contents()->IgnoreInputEvents(std::nullopt);
       content_scrim_widget_ =
           EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
               weak_factory_.GetWeakPtr(),
@@ -368,6 +370,7 @@ void EmbeddedPermissionPrompt::CloseViewAndScrim() {
   if (content_scrim_widget_) {
     content_scrim_widget_->Close();
     content_scrim_widget_ = nullptr;
+    scoped_ignore_input_events_.reset();
   }
 }
 

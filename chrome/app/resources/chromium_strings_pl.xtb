@@ -148,6 +148,7 @@
 <translation id="2977470724722393594">Masz aktualną wersję Chromium</translation>
 <translation id="2977506796191543575">Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chromium może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>
 <translation id="2981563588585023386">Aby zapewnić sobie większe bezpieczeństwo online dzięki ustawieniom wybranym przez Twojego rodzica, zaloguj się w Chromium</translation>
+<translation id="3003694935412297923">Wszystkie zadania</translation>
 <translation id="3013473503895162900">Otwórz <ph name="URL" /> w nowej karcie w Chromium.</translation>
 <translation id="3032706164202344641">Chromium nie może sprawdzić Twoich haseł. Spróbuj później.</translation>
 <translation id="3032787606318309379">Dodawanie do Chromium...</translation>
@@ -167,6 +168,7 @@
 <translation id="3179665906251668410">Otwórz link w oknie inco&amp;gnito Chromium</translation>
 <translation id="3185330573522821672">Dostosuj swój nowy profil Chromium</translation>
 <translation id="3224847870593914902">Aby usunąć konto Google z Chromium, wyloguj się z Chromium na stronie Ustawienia</translation>
+<translation id="3234316605225071811">Później Chromium może zapytać, czy chcesz używać zapisanych informacji do automatycznego wypełniania formularzy</translation>
 <translation id="3258596308407688501">Chromium nie może odczytać ani zapisać danych w katalogu <ph name="USER_DATA_DIRECTORY" />.</translation>
 <translation id="3268051428841342958">V8 to mechanizm JavaScript i WebAssembly Chromium używany do zwiększania wydajności witryny</translation>
 <translation id="3286538390144397061">Uruchom ponownie teraz</translation>
@@ -261,6 +263,7 @@
 <translation id="4570813286784708942">Pobieranie zostało zablokowane przez Chromium, ponieważ masz wyłączone Bezpieczne przeglądanie i nie można zweryfikować pliku</translation>
 <translation id="4594305310729380060">W Menedżerze haseł na tym urządzeniu</translation>
 <translation id="459535195905078186">Aplikacje Chromium</translation>
+<translation id="4598116752460667024">Wyszukaj dowolny proces na liście.</translation>
 <translation id="4613863813562375431">Wersja systemu operacyjnego Chromium</translation>
 <translation id="4621240073146040695">Już prawie gotowe. Uruchom ponownie Chromium, by zakończyć aktualizację.</translation>
 <translation id="4665829708273112819">Ostrzeżenie: Chromium nie może uniemożliwić rozszerzeniom zapisywania historii przeglądania. Aby wyłączyć to rozszerzenie w trybie incognito, odznacz tę opcję.</translation>
@@ -427,6 +430,7 @@ Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub uż
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Przeglądarka Chromium wykryła, że rozszerzenie „<ph name="EXTENSION_NAME" />” zawiera złośliwe oprogramowanie</translation>
 <translation id="6896758677409633944">Kopiuj</translation>
+<translation id="6901631050894301805">Ustaw Chromium jako przeglądarkę domyślną i przypnij ją do paska zadań</translation>
 <translation id="6929417474050522668">Gdy testy są włączone, w ramach pomiaru skuteczności reklam odwiedzane przez Ciebie witryny mogą prosić Chromium o dostęp do potrzebnych w tym celu informacji. Pomiar skuteczności reklam ogranicza śledzenie w witrynach, ponieważ pomiędzy poszczególnymi stronami przenoszona jest możliwie najmniejsza ilość informacji.</translation>
 <translation id="6940431691900807093">Witryna, którą później odwiedzisz, może zapytać o Twoje zainteresowania i na tej podstawie spersonalizować wyświetlane reklamy. Chromium może udostępnić do 3 zainteresowań.</translation>
 <translation id="6964305034639999644">Otwórz link w oknie inco&amp;gnito Chromium</translation>
@@ -451,6 +455,7 @@ Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub uż
 <translation id="7223968959479464213">Menedżer zadań – Chromium</translation>
 <translation id="7246575524853130370">Twoje zainteresowania oszacowane przez Chromium</translation>
 <translation id="7274695763216404502">Przypięto. Używaj wyszukiwania obrazów z poziomu paska narzędzi</translation>
+<translation id="7288567540154601580">Karty i rozszerzenia</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium zaleca jego usunięcie}few{Chromium zaleca ich usunięcie}many{Chromium zaleca ich usunięcie}other{Chromium zaleca ich usunięcie}}</translation>
 <translation id="7309928523159922338">W ramach pomiaru skuteczności reklam odwiedzane przez Ciebie witryny mogą prosić Chromium o dostęp do potrzebnych w tym celu informacji. Pomiar skuteczności reklam ogranicza śledzenie w witrynach, ponieważ pomiędzy poszczególnymi stronami przenoszona jest możliwie najmniejsza ilość informacji.</translation>
 <translation id="731795002583552498">Aktualizuję Chromium</translation>

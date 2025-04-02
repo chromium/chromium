@@ -668,8 +668,7 @@ ScriptPromise<MediaStream> MediaDevices::getDisplayMedia(
       std::make_unique<ScopedMediaStreamTracer>("MediaDevices.GetDisplayMedia");
 
   // Using timeout of base::Seconds(12) based on the
-  // Media.MediaDevices.GetDisplayMedia.Latency values. With the earlier value
-  // of base::Seconds(6), we got about 25% of results counted as kTimeout.
+  // Media.MediaDevices.GetDisplayMedia.Latency values.
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolverWithTracker<UserMediaRequestResult, MediaStream>>(
       script_state, "Media.MediaDevices.GetDisplayMedia", base::Seconds(12));

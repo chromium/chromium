@@ -825,16 +825,19 @@ void TrustedSignalsRequestManager::QueueRequest(RequestImpl* request) {
 
   queued_requests_.insert(request);
 
-  if (type_ == Type::kScoringSignals &&
-      base::FeatureList::IsEnabled(
-          features::kFledgeSellerSignalsRequestsOneAtATime)) {
-    StartBatchedTrustedSignalsRequest();
-    return;
-  }
-
   if (automatically_send_requests_ && !timer_.IsRunning()) {
+    // Set a 0 delay if features::kFledgeSellerSignalsRequestsOneAtATime is
+    // enabled instead of running StartBatchedTrustedSignalsRequest
+    // synchronously in case there are multiple bids coming in at the same time
+    // (e.g. a multi-bid).
+    base::TimeDelta delay =
+        (type_ == Type::kScoringSignals &&
+         base::FeatureList::IsEnabled(
+             features::kFledgeSellerSignalsRequestsOneAtATime))
+            ? base::Microseconds(0)
+            : kAutoSendDelay;
     timer_.Start(
-        FROM_HERE, kAutoSendDelay,
+        FROM_HERE, delay,
         base::BindOnce(
             &TrustedSignalsRequestManager::StartBatchedTrustedSignalsRequest,
             base::Unretained(this)));

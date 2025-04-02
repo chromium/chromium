@@ -16,6 +16,31 @@
      =1 {1 item (and more on synced devices)}
      other {# items (and more on synced devices)}}
   </message>
+  <message name="IDS_DEL_NO_BROWSING_HISTORY_TEXT" desc="This string will be shown in Delete Browsing Data indicating that there are no history entries within deletion range.">
+    None
+  </message>
+  <message name="IDS_DEL_NO_BROWSING_HISTORY_SYNC_TEXT" desc="This string will be shown in Delete Browsing Data indicating that there are no history entries within deletion range on the device but more items might be synced and affected by the deletion.">
+    From at least 1 site on synced devices
+  </message>
+  <message name="IDS_DEL_BROWSING_HISTORY_DOMAIN_COUNT_TEXT" desc="This string will be shown in Delete Browsing Data. It will start by mentioning the last visited domain, followed by this string showing the count of other unique domains that the user has visited that might be affected by the deletion. For example: if a user visits/revisits facebook.com, followed by figma.com, within the specified time range, then this text would say 'figma.com and 1 other site'.">
+    {DOMAIN_COUNT, plural,
+      =1 {+ 1 site}
+      other {+ # sites}}
+  </message>
+  <message name="IDS_DEL_BROWSING_HISTORY_DOMAIN_COUNT_SYNC_TEXT" desc="This string will be shown in Delete Browsing Data. It will start by mentioning the last visited domain, followed by this string showing the count of other unique domains that the user has visited that might be affected by the deletion. More items might be synced and affected by the deletion. For example: if a user visits/revisits facebook.com, followed by figma.com, within the specified time range, then this text would say 'figma.com and 1 other site (more on sync devices)'.">
+    {DOMAIN_COUNT, plural,
+      =1 {+ 1 site (more on synced devices)}
+      other {+ # sites (more on synced devices)}}
+  </message>
+  <message name="IDS_DEL_BROWSING_HISTORY_COUNTER_MULTIPLE_DOMAINS_TEXT" desc="This string will be shown in Delete Browsing Data the Browsing History title. It will start by mentioning the last visited domain, followed by this string showing the count of other unique domains that the user has visited that might be affected by the deletion. More items might be synced and affected by the deletion which can be reflected on the second string. For example: if a user visits/revisits facebook.com, followed by figma.com, within the specified time range, then this text would say 'figma.com and 1 other site (more on sync devices)'.">
+    From <ph name="TYPE_1">$1<ex>google.com</ex></ph> <ph name="TYPE_2">$2<ex>+ 1 site</ex></ph>
+  </message>
+  <message name="IDS_DEL_BROWSING_HISTORY_COUNTER_SINGLE_DOMAIN_TEXT" desc="This string will be shown in Delete Browsing Data below the Browsing History title. It concatenates one string with the from prefix. For example: 'From figma.com + 1 site'.">
+    From <ph name="TYPE_1">$1<ex>google.com</ex></ph>
+  </message>
+  <message name="IDS_DEL_BROWSING_HISTORY_COUNTER_SINGLE_DOMAIN_SYNC_TEXT" desc="This string will be shown in Delete Browsing Data. It concatenates one string stating what is deleted with the fact that more items might be synced and affected by the deletion. E.g. 'From figma.com + 1 site (more on synced devices)'.">
+    From <ph name="TYPE_1">$1<ex>From google.com</ex></ph> (more on synced devices)
+  </message>
   <message name="IDS_DEL_CACHE_COUNTER_UPPER_ESTIMATE" desc="A counter showing that the user has less than X megabytes of cache. The value X will be substituted.">
     Less than <ph name="UPPER_ESTIMATE">$1<ex>328 MB</ex></ph>
   </message>

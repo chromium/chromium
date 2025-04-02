@@ -258,6 +258,15 @@ std::string_view WebSocketHttp2HandshakeStream::GetAcceptChViaAlps() const {
   return {};
 }
 
+void WebSocketHttp2HandshakeStream::SetHTTP11Required() {
+  if (session_) {
+    session_->CloseSessionOnError(
+        ERR_HTTP_1_1_REQUIRED,
+        std::string(SpdySession::kHTTP11RequiredErrorMessage),
+        /*force_send_go_away=*/true);
+  }
+}
+
 std::unique_ptr<WebSocketStream> WebSocketHttp2HandshakeStream::Upgrade() {
   DCHECK(extension_params_.get());
 

@@ -21,12 +21,13 @@ class SpeechRecognitionControllerTest : public PageTestBase {
 
   void SetUp() override {
     PageTestBase::SetUp();
-    context_ = MakeGarbageCollected<SpeechRecognitionContext>(nullptr);
+    HeapVector<Member<SpeechRecognitionPhrase>> phrases;
+    phrases_ = MakeGarbageCollected<SpeechRecognitionPhraseList>(phrases);
     controller_ = SpeechRecognitionController::From(*GetFrame().DomWindow());
   }
 
   void TearDown() override {
-    context_ = nullptr;
+    phrases_ = nullptr;
     controller_ = nullptr;
     PageTestBase::TearDown();
   }
@@ -35,20 +36,20 @@ class SpeechRecognitionControllerTest : public PageTestBase {
     SpeechGrammarList* grammars = MakeGarbageCollected<SpeechGrammarList>();
     return controller_->BuildStartSpeechRecognitionRequestParams(
         remote_.InitWithNewPipeAndPassReceiver(),
-        receiver_.InitWithNewPipeAndPassRemote(), *grammars, context_, "en-US",
+        receiver_.InitWithNewPipeAndPassRemote(), *grammars, phrases_, "en-US",
         /*continuous=*/true, /*interim_results=*/true, /*max_alternatives=*/5,
         /*on_device=*/true, /*allow_cloud_fallback=*/true);
   }
 
-  void SetSpeechRecognitionContext() {
-    SpeechRecognitionPhraseList* list =
-        MakeGarbageCollected<SpeechRecognitionPhraseList>();
-    list->addItem(MakeGarbageCollected<SpeechRecognitionPhrase>("text", 2.0));
-    context_->setPhrases(list);
+  void SetSpeechRecognitionPhrases() {
+    HeapVector<Member<SpeechRecognitionPhrase>> phrases;
+    phrases.push_back(
+        MakeGarbageCollected<SpeechRecognitionPhrase>("text", 2.0));
+    phrases_ = MakeGarbageCollected<SpeechRecognitionPhraseList>(phrases);
   }
 
  private:
-  Persistent<SpeechRecognitionContext> context_;
+  Persistent<SpeechRecognitionPhraseList> phrases_;
   Persistent<SpeechRecognitionController> controller_;
   mojo::PendingRemote<media::mojom::blink::SpeechRecognitionSession> remote_;
   mojo::PendingReceiver<media::mojom::blink::SpeechRecognitionSessionClient>
@@ -70,8 +71,8 @@ TEST_F(SpeechRecognitionControllerTest, BuildParams) {
 }
 
 TEST_F(SpeechRecognitionControllerTest,
-       BuildParamsWithSpeechRecognitionContext) {
-  SetSpeechRecognitionContext();
+       BuildParamsWithSpeechRecognitionPhrases) {
+  SetSpeechRecognitionPhrases();
   auto params = BuildParams();
   EXPECT_FALSE(params->recognition_context.is_null());
   EXPECT_EQ(params->recognition_context->phrases.size(), (unsigned int)1);

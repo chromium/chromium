@@ -20,6 +20,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "ui/display/display_switches.h"
 
 namespace optimization_guide {
@@ -264,6 +265,30 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
   AssertHasText(page_content().root_node(), "Non empty simple page\n\n");
   EXPECT_FALSE(page_content().root_node().content_attributes().has_geometry());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, HitTestNodes) {
+  LoadPage(https_server()->GetURL("/paragraph.html"));
+
+  const auto& hit_test_nodes =
+      page_content().main_frame_data().hit_test_nodes();
+  EXPECT_EQ(hit_test_nodes.size(), 5);
+
+  // The paragraph node is sized to occlude the root, document and body nodes.
+  const auto& p = page_content().root_node().children_nodes()[0];
+  for (int i = 0; i < 4; i++) {
+    SCOPED_TRACE(i);
+    AssertRectsEqual(hit_test_nodes[i].visible_bounding_box(),
+                     p.content_attributes().geometry().visible_bounding_box());
+  }
+  EXPECT_EQ(hit_test_nodes[3].dom_node_id(),
+            p.content_attributes().common_ancestor_dom_node_id());
+
+  const auto& text = p.children_nodes()[0];
+  EXPECT_EQ(hit_test_nodes[4].dom_node_id(),
+            text.content_attributes().common_ancestor_dom_node_id());
+  AssertRectsEqual(hit_test_nodes[4].visible_bounding_box(),
+                   text.content_attributes().geometry().visible_bounding_box());
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
@@ -809,6 +834,59 @@ IN_PROC_BROWSER_TEST_F(ScaledPageContentProtoProviderBrowserTest, ScaleSizes) {
   EXPECT_EQ(page_content().viewport_geometry().width(), window_bounds.width());
   EXPECT_EQ(page_content().viewport_geometry().height(),
             window_bounds.height());
+}
+
+bool ContainsRole(const optimization_guide::proto::ContentNode& node,
+                  optimization_guide::proto::AnnotatedRole role) {
+  for (const auto& r : node.content_attributes().annotated_roles()) {
+    if (r == role) {
+      return true;
+    }
+  }
+  return false;
+}
+
+class PageContentProtoProviderBrowserTestPaidContentDisabled
+    : public PageContentProtoProviderBrowserTest {
+ public:
+ PageContentProtoProviderBrowserTestPaidContentDisabled() {
+    features_.InitAndDisableFeature(
+        blink::features::kAIPageContentPaidContentAnnotation);
+  }
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, PaidContent) {
+  LoadPage(https_server()->GetURL("/paid_content.html"));
+
+  // The page contains paid content.
+  EXPECT_TRUE(page_content()
+                  .main_frame_data()
+                  .paid_content_metadata()
+                  .contains_paid_content());
+
+  auto& nodes = page_content().root_node().children_nodes();
+  EXPECT_EQ(nodes.size(), 2);
+  EXPECT_FALSE(ContainsRole(
+      nodes[0], optimization_guide::proto::ANNOTATED_ROLE_PAID_CONTENT));
+  EXPECT_TRUE(ContainsRole(
+      nodes[1], optimization_guide::proto::ANNOTATED_ROLE_PAID_CONTENT));
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestPaidContentDisabled,
+                       PaidContentDisabled) {
+  LoadPage(https_server()->GetURL("/paid_content.html"));
+
+  // If the feature has been disabled, there should be no paid content metadata.
+  EXPECT_FALSE(page_content().main_frame_data().has_paid_content_metadata());
+
+  auto& nodes = page_content().root_node().children_nodes();
+  EXPECT_EQ(nodes.size(), 2);
+  EXPECT_FALSE(ContainsRole(
+      nodes[0], optimization_guide::proto::ANNOTATED_ROLE_PAID_CONTENT));
+  EXPECT_FALSE(ContainsRole(
+      nodes[1], optimization_guide::proto::ANNOTATED_ROLE_PAID_CONTENT));
 }
 
 }  // namespace

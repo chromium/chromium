@@ -292,10 +292,12 @@ InterestGroupManagerImpl::InterestGroupManagerImpl(
               blink::features::kFledgeTrustedSignalsKVv2Support) &&
                   base::FeatureList::IsEnabled(
                       features::kFledgeUseKVv2SignalsCache)
-              ? std::make_unique<TrustedSignalsCacheImpl>(base::BindRepeating(
-                    &InterestGroupManagerImpl::GetTrustedServerKey,
-                    base::Unretained(this),
-                    TrustedServerAPIType::kTrustedKeyValue))
+              ? std::make_unique<TrustedSignalsCacheImpl>(
+                    &data_decoder_manager_,
+                    base::BindRepeating(
+                        &InterestGroupManagerImpl::GetTrustedServerKey,
+                        base::Unretained(this),
+                        TrustedServerAPIType::kTrustedKeyValue))
               : nullptr),
       auction_process_manager_(
           base::WrapUnique(process_mode == ProcessMode::kDedicated
@@ -896,8 +898,8 @@ void InterestGroupManagerImpl::OnLoadedNextInterestGroupAdAuctionData(
 
 void InterestGroupManagerImpl::OnInterestGroupAdAuctionDataLoadComplete(
     AdAuctionDataLoaderState state) {
-  if (blink::features::kFledgeEnableFilteringDebugReportStartingFrom.Get() !=
-      base::Milliseconds(0)) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFledgeSampleDebugReports)) {
     caching_storage_.GetDebugReportLockoutAndAllCooldowns(
         base::BindOnce(&InterestGroupManagerImpl::OnAdAuctionDataLoadComplete,
                        weak_factory_.GetWeakPtr(), std::move(state)));

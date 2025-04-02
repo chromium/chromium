@@ -4408,7 +4408,7 @@ enum WebFeature {
   kButtonTypeAttrInvalid = 5032,
   kButtonTypeAttrEmptyString = 5033,
   kProtectedAudienceDirectFromSellerSignals = 5034,
-  kWebGPUSubgroupsFeatures = 5035,
+  kOBSOLETE_WebGPUSubgroupsFeatures = 5035,
   kAudioContextOnError = 5036,
   kNoVarySearchPrerender = 5037,
   // The items above roughly this point are available in the M128 branch.
@@ -4848,6 +4848,20 @@ enum WebFeature {
   kServiceWorkerPushEventListener = 5462,
   kServiceWorkerPushSubscriptionChangeEventListener = 5463,
   kMediaPlaybackWhileNotVisiblePermissionPolicy = 5464,
+  kFirstLinePseudoElement = 5465,
+  kFirstLetterPseudoElement = 5466,
+  kCheckMarkPseudoElement = 5467,
+  kBeforePseudoElement = 5468,
+  kAfterPseudoElement = 5469,
+  kPickerIconPseudoElement = 5470,
+  kMarkerPseudoElement = 5471,
+  kBackdropPseudoElement = 5472,
+  kSelectionPseudoElement = 5473,
+  kSearchTextPseudoElement = 5474,
+  kTargetTextPseudoElement = 5475,
+  kCustomHighlightPseudoElement = 5476,
+  kSpellingErrorPseudoElement = 5477,
+  kGrammarErrorPseudoElement = 5478,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

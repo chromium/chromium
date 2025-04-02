@@ -38,6 +38,7 @@
 <translation id="19085484004813472">Это новая функция</translation>
 <translation id="2006524834898217237">Убедитесь, что устройство подключено к Интернету.</translation>
 <translation id="208586643495776849">Повторите попытку.</translation>
+<translation id="2111134541987263231">Включите параметр <ph name="BEGIN_BOLD" />Разрешить использование в режиме инкогнито<ph name="END_BOLD" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 д.}one{# д.}few{# д.}many{# д.}other{# д.}}</translation>
 <translation id="2148716181193084225">Сегодня</translation>
 <translation id="2168039046890040389">Вверх</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">Коснитесь интерактивных элементов на экране.</translation>
 <translation id="2295140143284145483">Опрос</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> ТБ/с</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Расширение со следующим идентификатором не найдено: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Обратитесь к администратору.}one{Расширения со следующими идентификаторами не найдены: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Обратитесь к администратору.}few{Расширения со следующими идентификаторами не найдены: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Обратитесь к администратору.}many{Расширения со следующими идентификаторами не найдены: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Обратитесь к администратору.}other{Расширения со следующими идентификаторами не найдены: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Обратитесь к администратору.}}</translation>
 <translation id="2353636109065292463">Проверка подключения к Интернету</translation>
 <translation id="2359808026110333948">Продолжить</translation>
 <translation id="2388990488038464401">Позвонить на этот номер со своего телефона?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">Удалить все</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{через 1 д.}one{через # д.}few{через # д.}many{через # д.}other{через # д.}}</translation>
 <translation id="2922712708897119705">Значения в столбце "<ph name="COLUMN_NAME" />" упорядочены по убыванию.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Не удается найти расширение}one{Не удается найти расширения}few{Не удается найти расширения}many{Не удается найти расширения}other{Не удается найти расширения}}</translation>
 <translation id="3036649622769666520">Открытие файлов</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> МБ</translation>
 <translation id="3087734570205094154">Снизу</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">Позвонить:</translation>
 <translation id="3306688585798492231">Встроенный дисплей</translation>
 <translation id="335581015389089642">Озвучивание</translation>
+<translation id="3372635229069101468">Нажмите <ph name="BEGIN_BOLD" />Сведения<ph name="END_BOLD" />.</translation>
 <translation id="3389286852084373014">Сообщение слишком длинное</translation>
 <translation id="3406306243914553062">HTML-контент</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{Остался 1 день}one{Остался # день}few{Осталось # дня}many{Осталось # дней}other{Осталось # дня}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">Значения в столбце "<ph name="COLUMN_NAME" />" упорядочены по возрастанию.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 непрочитанное уведомление}one{# непрочитанное уведомление}few{# непрочитанных уведомления}many{# непрочитанных уведомлений}other{# непрочитанного уведомления}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Разрешите использование в режиме инкогнито следующего расширения:}one{Разрешите использование в режиме инкогнито следующих расширений:}few{Разрешите использование в режиме инкогнито следующих расширений:}many{Разрешите использование в режиме инкогнито следующих расширений:}other{Разрешите использование в режиме инкогнито следующих расширений:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{месяц назад}one{# месяц назад}few{# месяца назад}many{# месяцев назад}other{# месяца назад}}</translation>
 <translation id="4289300219472526559">Начать голосовой ввод</translation>
 <translation id="4289540628985791613">Обзор</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">номер</translation>
 <translation id="4746179598275229723">Расширение откреплено</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{остался 1 месяц}one{остался # месяц}few{осталось # месяца}many{осталось # месяцев}other{осталось # месяца}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{В вашей организации для работы в режиме инкогнито требуется расширение}one{В вашей организации для работы в режиме инкогнито требуются некоторые расширения}few{В вашей организации для работы в режиме инкогнито требуются некоторые расширения}many{В вашей организации для работы в режиме инкогнито требуются некоторые расширения}other{В вашей организации для работы в режиме инкогнито требуются некоторые расширения}}</translation>
+<translation id="482932175346970750">Введите <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> в адресной строке браузера.</translation>
 <translation id="4888938634149558681">Позвонить</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> и <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 секунда}one{# секунда}few{# секунды}many{# секунд}other{# секунды}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;Вставить</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
 <translation id="5278860589123563674">Не удалось поделиться вкладкой</translation>
+<translation id="5283101102242354279">Вот как разрешить использовать расширение в режиме инкогнито:</translation>
 <translation id="528468243742722775">Завершить</translation>
 <translation id="5329858601952122676">&amp;Удалить</translation>
 <translation id="5361107212971249203">текст</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">Настройки экрана, заданные в приложении, изменятся после его перезапуска.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Осталась 1 мин.}one{Осталась # мин.}few{Осталось # мин.}many{Осталось # мин.}other{Осталось # мин.}}</translation>
+<translation id="7252604552361840748">Найдите указанное выше расширение.</translation>
 <translation id="7363164521834647158">Отправить ответ</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 мин. назад}one{# мин. назад}few{# мин. назад}many{# мин. назад}other{# мин. назад}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>

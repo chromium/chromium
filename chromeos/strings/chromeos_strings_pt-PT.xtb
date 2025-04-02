@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Desativar proteção de ecrã</translation>
 <translation id="3091839911843451378">Falha – Parou</translation>
 <translation id="3102119246920354026">Cache</translation>
-<translation id="3112413615003385433">O professor removeu conteúdo nas School Tools</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">piscinas</translation>
 <translation id="3122883569442693641">Mais detalhes</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Parcialmente activado</translation>
 <translation id="3492882532495507361">Um escritório <ph name="OFFICE_STYLE" /> com tons <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Os dados são medidos pelo seu Chromebook. Estes dados podem ser diferentes dos dados do fornecedor.</translation>
-<translation id="349570724365779960">A app School Tools está ligada aos alunos</translation>
 <translation id="3502426834823382181">ver todas as apps</translation>
 <translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />dados de rastreio do desempenho<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Atualiz. Chrome OS</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Edição concluída</translation>
 <translation id="3532980081107202182">Faltam cerca de <ph name="MIN_REMAINING" /> minutos.</translation>
 <translation id="3533790840489634638">piscina</translation>
-<translation id="3535802910192338629">O professor adicionou novo conteúdo nas School Tools</translation>
 <translation id="3547264467365135390">Fórmula</translation>
 <translation id="3557205324756024651">Identidade local (opcional)</translation>
 <translation id="3565064564551103223">IPs permitidos</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">Permitir que os serviços do sistema usem a sua localização?</translation>
 <translation id="6657585470893396449">Palavra-passe</translation>
 <translation id="66621959568103627">rosa coral</translation>
+<translation id="6669485505082792176">Não é possível criar imagens disto neste momento. Experimente reformular a descrição. Tenha em atenção que não pode criar imagens de pessoas nem de conteúdo explícito ou prejudicial. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">aumentar o brilho do teclado</translation>
 <translation id="6692996468359469499">Obtenha informações relacionadas com a sua seleção</translation>
 <translation id="6694534975463174713">fechadura</translation>
@@ -1440,7 +1438,6 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="7544853251252956727">Aleatório</translation>
 <translation id="7550715992156305117">Rotinas de diagnóstico</translation>
 <translation id="7551123448725492271">O dispositivo é um dispositivo de áudio.</translation>
-<translation id="7553913964854052228">A app School Tools está a usar o seu microfone</translation>
 <translation id="7559239713112547082">Pré-visualizar captura de ecrã</translation>
 <translation id="7561454561030345039">Esta ação é gerida pelo seu administrador.</translation>
 <translation id="7561759921596375678">Ative o volume</translation>
@@ -1663,7 +1660,6 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="8576249514688522074">Não iniciada</translation>
 <translation id="8584654835905316966">É necessário reiniciar para concluir a instalação do firmware do <ph name="DEVICE_NAME" /> para a versão <ph name="VERSION" />. O computador pode reiniciar várias vezes. Este comportamento é o esperado.</translation>
 <translation id="8593058461203131755">pausar o conteúdo multimédia</translation>
-<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Estado do roaming</translation>
 <translation id="8626489604350149811">Mais ações para <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Roxo-claro</translation>

@@ -12,7 +12,6 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/components/permissions/AndroidPermissionRequester.java",
     "java/src/org/chromium/components/permissions/BluetoothChooserDialog.java",
     "java/src/org/chromium/components/permissions/BluetoothScanningPermissionDialog.java",
-    "java/src/org/chromium/components/permissions/OsAdditionalSecurityPermissionUtil.java",
     "java/src/org/chromium/components/permissions/PermissionDialogController.java",
     "java/src/org/chromium/components/permissions/PermissionDialogDelegate.java",
     "java/src/org/chromium/components/permissions/nfc/NfcSystemLevelSetting.java",

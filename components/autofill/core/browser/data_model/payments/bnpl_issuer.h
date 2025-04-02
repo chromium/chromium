@@ -82,7 +82,8 @@ class BnplIssuer {
     payment_instrument_ = payment_instrument;
   }
 
-  base::span<const EligiblePriceRange> eligible_price_ranges() const {
+  base::span<const EligiblePriceRange> eligible_price_ranges() const
+      LIFETIME_BOUND {
     return eligible_price_ranges_;
   }
   void set_eligible_price_ranges(
@@ -92,7 +93,7 @@ class BnplIssuer {
 
   // Returns the eligible price range in `currency`.
   base::optional_ref<const EligiblePriceRange> GetEligiblePriceRangeForCurrency(
-      const std::string& currency) const;
+      const std::string& currency) const LIFETIME_BOUND;
 
   // Returns true if the given `amount_in_micros` is supported by this issuer in
   // the given `currency`.

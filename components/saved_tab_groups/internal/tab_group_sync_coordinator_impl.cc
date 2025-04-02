@@ -19,9 +19,15 @@ TabGroupSyncCoordinatorImpl::TabGroupSyncCoordinatorImpl(
     PrefService* pref_service)
     : service_(service),
       platform_delegate_(std::move(delegate)),
-      startup_helper_(std::make_unique<StartupHelper>(platform_delegate_.get(),
-                                                      service_,
-                                                      pref_service)) {
+      startup_helper_(
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+          std::make_unique<StartupHelper>(platform_delegate_.get(),
+                                          service_,
+                                          pref_service)
+#else
+          nullptr
+#endif
+      ) {
   CHECK(platform_delegate_);
   CHECK(service_);
 }
@@ -33,8 +39,10 @@ void TabGroupSyncCoordinatorImpl::OnInitialized() {
 }
 
 void TabGroupSyncCoordinatorImpl::InitializeTabGroupSync() {
-  startup_helper_->CloseDeletedTabGroupsFromTabModel();
-  startup_helper_->HandleUnsavedLocalTabGroups();
+  if (startup_helper_) {
+    startup_helper_->CloseDeletedTabGroupsFromTabModel();
+    startup_helper_->HandleUnsavedLocalTabGroups();
+  }
 
   // At this point, there should be no unsaved local groups. Update them to
   // match sync state.
@@ -72,8 +80,19 @@ void TabGroupSyncCoordinatorImpl::ConnectLocalTabGroup(
     return;
   }
 
-  // First, create ID mappings for the tabs.
-  startup_helper_->MapTabIdsForGroup(local_id, *group);
+  std::vector<LocalTabID> local_tab_ids =
+      platform_delegate_->GetLocalTabIdsForTabGroup(local_id);
+  // Since we haven't run UpdateTabGroup yet, the number of tabs might be
+  // different between local and sync versions of the tab group.
+  // Regardless, update the in-memory tab ID mappings left to right.
+  // The mismatch in number of tabs will be handled in the subsequent call to
+  // UpdateLocalTabGroup.
+  for (size_t i = 0; i < group->saved_tabs().size() && i < local_tab_ids.size();
+       ++i) {
+    const auto& saved_tab = group->saved_tabs()[i];
+    service_->UpdateLocalTabId(local_id, saved_tab.saved_tab_guid(),
+                               local_tab_ids[i]);
+  }
 
   // Retrieve the group again which should have IDs mapped already. Now, update
   // the local tab URLs and group visuals to exactly match sync.

@@ -59,6 +59,19 @@ namespace blink {
 
 using animation_test_helpers::EnsureInterpolatedValueCached;
 
+namespace {
+
+template <class T>
+size_t count(const T& container) {
+  size_t amount = 0;
+  for (const auto& _ : container) {
+    amount++;
+  }
+  return amount;
+}
+
+}  // namespace
+
 class AnimationKeyframeEffectModel : public PageTestBase {
  protected:
   void SetUp() override {
@@ -998,13 +1011,13 @@ TEST_F(KeyframeEffectModelTest, StaticProperty) {
   StringKeyframeVector keyframes =
       KeyframesAtZeroAndOne(CSSPropertyID::kLeft, "3px", "3px");
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
-  EXPECT_EQ(1U, effect->Properties().size());
-  EXPECT_EQ(0U, effect->EnsureDynamicProperties().size());
+  EXPECT_EQ(1U, effect->Properties().UniqueProperties().size());
+  EXPECT_EQ(0U, count(effect->DynamicProperties()));
 
   keyframes = KeyframesAtZeroAndOne(CSSPropertyID::kLeft, "3px", "5px");
   effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
-  EXPECT_EQ(1U, effect->Properties().size());
-  EXPECT_EQ(1U, effect->EnsureDynamicProperties().size());
+  EXPECT_EQ(1U, effect->Properties().UniqueProperties().size());
+  EXPECT_EQ(1U, count(effect->DynamicProperties()));
 }
 
 TEST_F(AnimationKeyframeEffectModel, BackgroundShorthandStaticProperties) {
@@ -1033,9 +1046,10 @@ TEST_F(AnimationKeyframeEffectModel, BackgroundShorthandStaticProperties) {
   EXPECT_EQ(1U, animations.size());
   auto* effect = animations[0]->effect();
   auto* model = To<KeyframeEffect>(effect)->Model();
-  EXPECT_EQ(kBackgroundProperties, model->Properties().size());
+  EXPECT_EQ(kBackgroundProperties,
+            model->Properties().UniqueProperties().size());
   // Background-color is the only property that is changing between keyframes.
-  EXPECT_EQ(1U, model->EnsureDynamicProperties().size());
+  EXPECT_EQ(1U, count(model->DynamicProperties()));
 }
 
 }  // namespace blink

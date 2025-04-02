@@ -3,6 +3,12 @@
     white-space: nowrap;
   }
 
+  .cr-form-field-label {
+    color: var(--cr-input-label-color);
+    font-size: 11px;
+    line-height: 16px;
+  }
+
   #country-select {
     --md-select-width: var(--cr-input-width, 100%);
     margin-bottom: var(--cr-form-field-bottom-spacing);
@@ -35,13 +41,17 @@
     }
   }
 
+  #date-validation-error {
+    margin-top: 8px;
+  }
+
   #validation-error,
   #date-validation-error,
   #invalid-date-select-label {
     color: var(--cr-fallback-color-error);
   }
 </style>
-<cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
+<cr-dialog id="dialog" close-text="$i18n{close}">
   <div slot="title">[[dialogTitle]]</div>
   <div slot="body">
     <template is="dom-repeat" items="[[completeAttributeInstanceList_]]"
@@ -149,7 +159,7 @@
             </template>
           </select>
 
-          <div id="date-validation-error"
+          <div id="date-validation-error" class="cr-form-field-label"
               hidden="[[!isDateInvalid_(attributeInstanceItem,
                   userClickedSaveButton_, attributeInstanceItem.*)]]">
             $i18n{autofillAiAddOrEditDialogDateValidationError}
@@ -169,7 +179,8 @@
 
     </template>
 
-    <div id="validation-error" hidden="[[!allFieldsAreEmpty_]]">
+    <div id="validation-error" class="cr-form-field-label"
+        hidden="[[!allFieldsAreEmpty_]]">
       $i18n{autofillAiAddOrEditDialogValidationError}
     </div>
   </div>

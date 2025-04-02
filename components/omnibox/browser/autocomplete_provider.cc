@@ -242,7 +242,7 @@ AutocompleteProvider::~AutocompleteProvider() {
 AutocompleteProvider::AdjustedInputAndStarterPackKeyword
 AutocompleteProvider::AdjustInputForStarterPackKeyword(
     const AutocompleteInput& input,
-    TemplateURLService* turl_service) {
+    const TemplateURLService* turl_service) {
   if (input.prefer_keyword()) {
     AutocompleteInput keyword_input = input;
     const TemplateURL* template_url =

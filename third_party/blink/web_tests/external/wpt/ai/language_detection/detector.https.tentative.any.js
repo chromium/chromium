@@ -23,6 +23,30 @@ promise_test(async t => {
 }, 'Simple LanguageDetector.detect() call');
 
 promise_test(async t => {
+  let createResult = undefined;
+  const progressEvents = [];
+  let options = {};
+  const downloadComplete = new Promise(resolve => {
+    options.monitor = (m) => {
+      m.addEventListener('downloadprogress', e => {
+        assert_equals(createResult, undefined);
+        assert_equals(e.total, 1);
+        progressEvents.push(e);
+        if (e.loaded == 1) {
+          resolve();
+        }
+      });
+    };
+  });
+
+  createResult = await LanguageDetector.create(options);
+  await downloadComplete;
+  assert_greater_than_equal(progressEvents.length, 2);
+  assert_equals(progressEvents.at(0).loaded, 0);
+  assert_equals(progressEvents.at(-1).loaded, 1);
+}, 'LanguageDetector.create() notifies its monitor on downloadprogress');
+
+promise_test(async t => {
   const controller = new AbortController();
   controller.abort();
 
@@ -82,19 +106,18 @@ promise_test(async t => {
       detector.measureInputUsage('hello', {signal: controller.signal});
 
   await promise_rejects_dom(t, 'AbortError', measureInputUsagePromise);
-}, 'Translator.measureInputUsage() call with an aborted signal.');
+}, 'LanguageDetector.measureInputUsage() call with an aborted signal.');
 
 promise_test(async t => {
   const detector = await LanguageDetector.create();
   await testAbortPromise(t, signal => {
     return detector.measureInputUsage('hello', {signal});
   });
-}, 'Aborting Translator.measureInputUsage().');
+}, 'Aborting LanguageDetector.measureInputUsage().');
 
 promise_test(async () => {
-  const expected_languages = ['en', 'es'];
-  const detector = await languageDetector.create({
-    expectedInputLanguages: expected_languages
-  });
-  assert_array_equals(detector.expectedInputLanguages(), expected_languages);
+  const expectedLanguages = ['en', 'es'];
+  const detector = await LanguageDetector.create(
+      {expectedInputLanguages: expectedLanguages});
+  assert_array_equals(detector.expectedInputLanguages, expectedLanguages);
 }, 'Creating LanguageDetector with expectedInputLanguages');

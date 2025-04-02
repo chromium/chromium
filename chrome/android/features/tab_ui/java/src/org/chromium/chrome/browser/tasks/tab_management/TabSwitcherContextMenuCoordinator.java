@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin.TAB_STRIP_CONTEXT_MENU;
 
 import android.app.Activity;
@@ -92,7 +93,7 @@ public class TabSwitcherContextMenuCoordinator extends TabOverflowMenuCoordinato
             TabGroupCreationDialogManager tabGroupCreationDialogManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
             TabListEditorManager tabListEditorManager) {
-        Profile profile = tabGroupModelFilter.getTabModel().getProfile();
+        Profile profile = assumeNonNull(tabGroupModelFilter.getTabModel().getProfile());
         @Nullable TabGroupSyncService tabGroupSyncService =
                 profile.isOffTheRecord() ? null : TabGroupSyncServiceFactory.getForProfile(profile);
         CollaborationService collaborationService =

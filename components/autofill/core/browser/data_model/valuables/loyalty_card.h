@@ -19,7 +19,7 @@ class LoyaltyCard final {
               std::string merchant_name,
               std::string program_name,
               GURL program_logo,
-              std::string loyalty_card_suffix);
+              std::string loyalty_card_number);
 
   LoyaltyCard(const LoyaltyCard&);
   LoyaltyCard(LoyaltyCard&&);
@@ -46,11 +46,11 @@ class LoyaltyCard final {
     program_logo_ = program_logo;
   }
 
-  const std::string& loyalty_card_suffix() const {
-    return loyalty_card_suffix_;
+  const std::string& loyalty_card_number() const {
+    return loyalty_card_number_;
   }
-  void set_loyalty_card_suffix(const std::string& loyalty_card_suffix) {
-    loyalty_card_suffix_ = loyalty_card_suffix;
+  void set_loyalty_card_number(const std::string& loyalty_card_number) {
+    loyalty_card_number_ = loyalty_card_number;
   }
 
   // Checks if this loyalty card is valid. A valid loyalty card contains a
@@ -64,6 +64,7 @@ class LoyaltyCard final {
   // A unique identifier coming from the server, which is used as a primary key
   // for storing loyalty cards in the database.
   ValuableId id_;
+
   // The merchant name e.g. "Deutsche Bahn".
   std::string merchant_name_;
 
@@ -73,9 +74,8 @@ class LoyaltyCard final {
   // The logo icon URL.
   GURL program_logo_;
 
-  // The unmasked part of the  loyalty card issuer text code. The full number
-  // is not available on the client.
-  std::string loyalty_card_suffix_;
+  // The loyalty card text code.
+  std::string loyalty_card_number_;
 };
 
 }  // namespace autofill

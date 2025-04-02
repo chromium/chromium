@@ -189,6 +189,13 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
     this.completeAttributeTypesList_ =
         await this.entityDataManager_.getAllAttributeTypesForEntityTypeName(
             this.entityInstance.type.typeName);
+
+    // TODO(crbug.com/407794687): Decide whether the code should show a spinner
+    // instead of delaying the display of the dialog. Keep this decision
+    // consistent with all Autofill dialogs (Autofill Ai, Autofill, Payments,
+    // etc.).
+    // Open the modal only after all the properties are computed.
+    this.$.dialog.showModal();
   }
 
   private computeCompleteAttributeInstanceList_(): AttributeInstance[] {

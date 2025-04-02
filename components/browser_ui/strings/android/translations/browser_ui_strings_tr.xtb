@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">Yakınlaştırmayı etkinleştirmeye zorla</translation>
 <translation id="3905475044299942653">Çok fazla bildirim gelmesini engelleyin</translation>
 <translation id="3908288065506437185">Gizli modda üçüncü taraf çerezlerini engelle</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Bazı özellikler çalışmayabilir. İlgili siteler, üçüncü taraf çerezlerini kullanmaya devam edebilir.</translation>
 <translation id="3922092564198021702">Telefonunuzda Ayarlar'ı açın.</translation>
 <translation id="3933121352599513978">İstenmeyen istekleri daralt (önerilir)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">Ayrıntılar</translation>
 <translation id="4598549027014564149">Gizli moddayken siteler, alakalı siteler de dahil olmak üzere farklı sitelerde tarama etkinliğinizi görmek için çerezlerinizi kullanamaz. Tarama etkinliğiniz reklam kişiselleştirme gibi işlemler için kullanılmaz. Bazı sitelerdeki özellikler çalışmayabilir.</translation>
 <translation id="461356340001513807">Bir kimlik hizmetindeki hesabınızı kullanarak web sitelerinde oturum açmanızı sağlar</translation>
-<translation id="4619615317237390068">Diğer cihazlardan sekmeler</translation>
 <translation id="4635969503923889910">Sitelerin, NFC cihazlarını kullanmasına izin verme</translation>
 <translation id="4644713492825682049">Sil ve sıfırla</translation>
 <translation id="4645575059429386691">Ebeveyniniz tarafından yönetiliyor</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">Paylaşım yöntemi:</translation>
 <translation id="5001526427543320409">Üçüncü taraf çerezleri</translation>
 <translation id="5007392906805964215">İncele</translation>
-<translation id="5014182796621173645"><ph name="RECENCY" /> ziyaret ettiniz</translation>
 <translation id="5039804452771397117">İzin ver</translation>
 <translation id="5048398596102334565">Sitelerin hareket sensörlerine erişmesine izin ver (önerilen)</translation>
 <translation id="5048841907079026162">Tarama verilerinizi yönetin</translation>
@@ -443,7 +440,6 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Korunan içerik</translation>
 <translation id="662080504995468778">Kal</translation>
-<translation id="6653342741369270081">Tam ekrandan çıkmak için geri düğmesine dokunun.</translation>
 <translation id="6683865262523156564">Bu site, etkinliğinizi görebilen bir grupta bulunuyor. Grup, <ph name="RWS_OWNER" /> tarafından tanımlanmıştır.</translation>
 <translation id="6689172468748959065">Profil fotoğrafları</translation>
 <translation id="6697925417670533197">Etkin indirme işlemleri</translation>

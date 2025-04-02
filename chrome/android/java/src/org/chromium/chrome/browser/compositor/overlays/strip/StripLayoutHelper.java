@@ -291,7 +291,8 @@ public class StripLayoutHelper
                 }
 
                 @Override
-                public void didChangeTabGroupCollapsed(int rootId, boolean isCollapsed) {
+                public void didChangeTabGroupCollapsed(
+                        int rootId, boolean isCollapsed, boolean animate) {
                     final StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
                     if (groupTitle == null) return;
 
@@ -299,7 +300,7 @@ public class StripLayoutHelper
                         groupTitle.setNotificationBubbleShown(false);
                         updateGroupTextAndSharedState(rootId);
                     }
-                    updateTabGroupCollapsed(groupTitle, isCollapsed, true);
+                    updateTabGroupCollapsed(groupTitle, isCollapsed, animate);
                 }
 
                 @Override
@@ -2718,14 +2719,13 @@ public class StripLayoutHelper
     }
 
     private void handleGroupTitleClick(StripLayoutGroupTitle groupTitle) {
-        if (!ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) return;
         if (groupTitle == null) return;
 
         int rootId = groupTitle.getRootId();
         boolean isCollapsed = mTabGroupModelFilter.getTabGroupCollapsed(rootId);
         assert isCollapsed == groupTitle.isCollapsed();
 
-        mTabGroupModelFilter.setTabGroupCollapsed(rootId, !isCollapsed);
+        mTabGroupModelFilter.setTabGroupCollapsed(rootId, !isCollapsed, /* animate= */ true);
         RecordHistogram.recordBooleanHistogram("Android.TabStrip.TabGroupCollapsed", !isCollapsed);
     }
 
@@ -3051,7 +3051,6 @@ public class StripLayoutHelper
 
     private void updateTabGroupCollapsed(
             StripLayoutGroupTitle groupTitle, boolean isCollapsed, boolean animate) {
-        if (!ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) return;
         if (groupTitle.isCollapsed() == isCollapsed) return;
 
         List<Animator> collapseAnimationList = animate ? new ArrayList<>() : null;

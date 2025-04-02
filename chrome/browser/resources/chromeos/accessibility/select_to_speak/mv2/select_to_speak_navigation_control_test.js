@@ -8,7 +8,7 @@ GEN_INCLUDE(['../../common/testing/mock_tts.js']);
 /**
  * Browser tests for select-to-speak's navigation control features.
  */
-SelectToSpeakNavigationControlTest = class extends SelectToSpeakE2ETest {
+SelectToSpeakMV2NavigationControlTest = class extends SelectToSpeakE2ETest {
   constructor() {
     super();
     this.mockTts = new MockTts();
@@ -82,7 +82,7 @@ SelectToSpeakNavigationControlTest = class extends SelectToSpeakE2ETest {
 };
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'NavigatesToNextParagraph',
+    'SelectToSpeakMV2NavigationControlTest', 'NavigatesToNextParagraph',
     async function() {
       const bodyHtml = `
     <p id="p1">Paragraph 1</p>
@@ -113,7 +113,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'NavigatesToPreviousParagraph',
+    'SelectToSpeakMV2NavigationControlTest', 'NavigatesToPreviousParagraph',
     async function() {
       const bodyHtml = `
     <p id="p1">Paragraph 1</p>
@@ -144,7 +144,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'ReadsParagraphOnClick',
+    'SelectToSpeakMV2NavigationControlTest', 'ReadsParagraphOnClick',
     async function() {
       const bodyHtml = `
       <p id="p1">Sentence <span>one</span>. Sentence two.</p>
@@ -188,7 +188,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'PauseResumeWithinTheSentence',
+    'SelectToSpeakMV2NavigationControlTest', 'PauseResumeWithinTheSentence',
     async function() {
       const bodyHtml = `
       <p id="p1">First sentence. Second sentence. Third sentence.</p>'
@@ -220,8 +220,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'PauseResumeAtTheBeginningOfSentence',
-    async function() {
+    'SelectToSpeakMV2NavigationControlTest',
+    'PauseResumeAtTheBeginningOfSentence', async function() {
       const bodyHtml = `
       <p id="p1">First sentence. Second sentence. Third sentence.</p>'
     `;
@@ -252,7 +252,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest',
+    'SelectToSpeakMV2NavigationControlTest',
     'PauseResumeAtTheBeginningOfParagraph', async function() {
       const bodyHtml = `
       <p id="p1">first sentence.</p>'
@@ -283,7 +283,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest',
+    'SelectToSpeakMV2NavigationControlTest',
     'PauseResumeInTheMiddleOfMultiParagraphs', async function() {
       const bodyHtml = `
       <span id='s1'>
@@ -330,8 +330,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'PauseResumeAfterParagraphNavigation',
-    async function() {
+    'SelectToSpeakMV2NavigationControlTest',
+    'PauseResumeAfterParagraphNavigation', async function() {
       const bodyHtml = `
       <span id='s1'>
         <p>Paragraph one.</p>
@@ -369,8 +369,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'PauseResumeAfterSentenceNavigation',
-    async function() {
+    'SelectToSpeakMV2NavigationControlTest',
+    'PauseResumeAfterSentenceNavigation', async function() {
       const bodyHtml = `
       <span id='s1'>
         <p>Sentence one. Sentence two.</p>
@@ -407,8 +407,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'PauseResumeAtTheEndOfNodeGroupItem',
-    async function() {
+    'SelectToSpeakMV2NavigationControlTest',
+    'PauseResumeAtTheEndOfNodeGroupItem', async function() {
       const bodyHtml = `
         <p id="p1">Sentence <span>one</span>. Sentence two.</p>
       `;
@@ -438,8 +438,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'PauseResumeFromKeystrokeSelection',
-    async function() {
+    'SelectToSpeakMV2NavigationControlTest',
+    'PauseResumeFromKeystrokeSelection', async function() {
       const bodyHtml =
           '<p>This is some <b>bold</b> text</p><p>Second paragraph</p>';
       const setFocusCallback = this.newCallback(root => {
@@ -491,7 +491,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'NextSentence', async function() {
+    'SelectToSpeakMV2NavigationControlTest', 'NextSentence', async function() {
       const bodyHtml = `
       <p id="p1">This is the first. This is the second.</p>'
     `;
@@ -516,7 +516,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'NextSentenceWithinParagraph',
+    'SelectToSpeakMV2NavigationControlTest', 'NextSentenceWithinParagraph',
     async function() {
       const bodyHtml = `
         <p id="p1">Sent 1. <span id="s1">Sent 2.</span> Sent 3. Sent 4.</p>
@@ -543,7 +543,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'NextSentenceAcrossParagraph',
+    'SelectToSpeakMV2NavigationControlTest', 'NextSentenceAcrossParagraph',
     async function() {
       const bodyHtml = `
         <p id="p1">Sent 1.</p>
@@ -572,7 +572,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'PrevSentence', async function() {
+    'SelectToSpeakMV2NavigationControlTest', 'PrevSentence', async function() {
       const bodyHtml = `
       <p id="p1">First sentence. Second sentence. Third sentence.</p>'
     `;
@@ -598,7 +598,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'PrevSentenceFromMiddleOfSentence',
+    'SelectToSpeakMV2NavigationControlTest', 'PrevSentenceFromMiddleOfSentence',
     async function() {
       const bodyHtml = `
       <p id="p1">First sentence. Second sentence. Third sentence.</p>'
@@ -625,7 +625,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'PrevSentenceWithinParagraph',
+    'SelectToSpeakMV2NavigationControlTest', 'PrevSentenceWithinParagraph',
     async function() {
       const bodyHtml = `
       <p id="p1">Sent 0. Sent 1. <span id="s1">Sent 2.</span> Sent 3.</p>
@@ -651,7 +651,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'PrevSentenceAcrossParagraph',
+    'SelectToSpeakMV2NavigationControlTest', 'PrevSentenceAcrossParagraph',
     async function() {
       const bodyHtml = `
       <p id="p1">Sent 1. Sent 2.</p>
@@ -680,7 +680,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'ChangeSpeedWhilePlaying',
+    'SelectToSpeakMV2NavigationControlTest', 'ChangeSpeedWhilePlaying',
     async function() {
       chrome.settingsPrivate.setPref('settings.tts.speech_rate', 1.2);
       const bodyHtml = `
@@ -720,7 +720,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'RetainsSpeedChange',
+    'SelectToSpeakMV2NavigationControlTest', 'RetainsSpeedChange',
     async function() {
       chrome.settingsPrivate.setPref('settings.tts.speech_rate', 1.0);
       const bodyHtml = `
@@ -743,7 +743,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'ChangeSpeedWhilePaused',
+    'SelectToSpeakMV2NavigationControlTest', 'ChangeSpeedWhilePaused',
     async function() {
       chrome.settingsPrivate.setPref('settings.tts.speech_rate', 1.2);
       const bodyHtml = `
@@ -778,7 +778,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'ResumeAtTheEndOfParagraph',
+    'SelectToSpeakMV2NavigationControlTest', 'ResumeAtTheEndOfParagraph',
     async function() {
       const bodyHtml = `
         <p id="p1">Paragraph 1</p>
@@ -800,7 +800,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'ResumeAtTheEndOfUserSelection',
+    'SelectToSpeakMV2NavigationControlTest', 'ResumeAtTheEndOfUserSelection',
     async function() {
       const bodyHtml = `
         <p id="p1">Sentence <span id="s1">one</span>. Sentence two.</p>
@@ -822,7 +822,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'ResumeFromSelectionEndingInSpace',
+    'SelectToSpeakMV2NavigationControlTest', 'ResumeFromSelectionEndingInSpace',
     async function() {
       const bodyHtml = '<p>This is some text with space.</p>';
       const setFocusCallback = this.newCallback(root => {
@@ -862,7 +862,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'ResizeWhilePlaying',
+    'SelectToSpeakMV2NavigationControlTest', 'ResizeWhilePlaying',
     async function() {
       const longLine =
           'Second paragraph is longer than 300 pixels and will wrap when' +
@@ -913,7 +913,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest',
+    'SelectToSpeakMV2NavigationControlTest',
     'RemainsActiveAfterCompletingUtterance', async function() {
       const bodyHtml = '<p id="p1">Paragraph 1</p>';
       await this.runWithLoadedTree(
@@ -927,7 +927,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest',
+    'SelectToSpeakMV2NavigationControlTest',
     'AutoDismissesIfNavigationControlsDisabled', async function() {
       const bodyHtml = '<p id="p1">Paragraph 1</p>';
       await this.runWithLoadedTree(
@@ -945,7 +945,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'NavigatesToNextParagraphQuickly',
+    'SelectToSpeakMV2NavigationControlTest', 'NavigatesToNextParagraphQuickly',
     async function() {
       const bodyHtml = `
         <p id="p1">Paragraph 1</p>
@@ -972,7 +972,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'SetsInitialFocusToPanel',
+    'SelectToSpeakMV2NavigationControlTest', 'SetsInitialFocusToPanel',
     async function() {
       const bodyHtml = '<p id="p1">Sample text</p>';
       const root = await this.runWithLoadedTree(
@@ -988,8 +988,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'KeyboardShortcutKeepsFocusInPanel',
-    async function() {
+    'SelectToSpeakMV2NavigationControlTest',
+    'KeyboardShortcutKeepsFocusInPanel', async function() {
       const bodyHtml = '<p id="p1">Sample text</p>';
       const root = await this.runWithLoadedTree(
           this.generateHtmlWithSelectedElement('p1', bodyHtml));
@@ -1030,7 +1030,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNavigationControlTest', 'SelectingWindowDoesNotShowPanel',
+    'SelectToSpeakMV2NavigationControlTest', 'SelectingWindowDoesNotShowPanel',
     async function() {
       const bodyHtml = `
         <title>Test</title>

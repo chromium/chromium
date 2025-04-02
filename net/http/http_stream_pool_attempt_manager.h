@@ -174,10 +174,6 @@ class HttpStreamPool::AttemptManager
   // still ongoing.
   bool IsSvcbOptional();
 
-  // Called when the server required HTTP/1.1. Clears the current SPDY session
-  // if exists. Subsequent jobs will fail while `this` is alive.
-  void OnRequiredHttp11();
-
   // Called when the QuicTask owned by `this` is completed.
   void OnQuicTaskComplete(int rv, NetErrorDetails details);
 

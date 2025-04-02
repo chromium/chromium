@@ -864,10 +864,10 @@ void FencedFrameReporter::RemoveObserverForTesting(
 }
 
 void FencedFrameReporter::OnForEventPrivateAggregationRequestsReceived(
-    std::map<std::string, PrivateAggregationRequests>
+    std::map<std::string, FinalizedPrivateAggregationRequests>
         private_aggregation_event_map) {
   for (auto& [event_type, requests] : private_aggregation_event_map) {
-    PrivateAggregationRequests& destination_vector =
+    FinalizedPrivateAggregationRequests& destination_vector =
         private_aggregation_event_map_[event_type];
     destination_vector.insert(destination_vector.end(),
                               std::move_iterator(requests.begin()),
@@ -980,12 +980,12 @@ std::set<std::string> FencedFrameReporter::GetReceivedPaEventsForTesting()
   return received_pa_events_;
 }
 
-std::map<std::string, FencedFrameReporter::PrivateAggregationRequests>
+std::map<std::string, FencedFrameReporter::FinalizedPrivateAggregationRequests>
 FencedFrameReporter::GetPrivateAggregationEventMapForTesting() {
-  std::map<std::string, FencedFrameReporter::PrivateAggregationRequests> out;
+  std::map<std::string, FinalizedPrivateAggregationRequests> out;
   for (auto& [event_type, requests] : private_aggregation_event_map_) {
-    for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
-         requests) {
+    for (auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr&
+             request : requests) {
       out[event_type].emplace_back(request.Clone());
     }
   }

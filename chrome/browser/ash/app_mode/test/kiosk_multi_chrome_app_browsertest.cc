@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/app_mode/test_kiosk_extension_builder.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
@@ -348,6 +349,10 @@ class KioskMultiChromeAppTest : public MixinBasedInProcessBrowserTest,
       /*cached_configuration=*/KioskMixin::Config{/*name=*/{},
                                                   {},
                                                   {CurrentPrimaryApp()}}};
+
+ private:
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler_;
 };
 
 IN_PROC_BROWSER_TEST_P(KioskMultiChromeAppTest, InstallsAndLaunchesMultiApp) {

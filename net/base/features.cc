@@ -73,10 +73,6 @@ const base::FeatureParam<base::TimeDelta> kUseDnsHttpsSvcbSecureExtraTimeMin{
     &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbSecureExtraTimeMin",
     base::Milliseconds(5)};
 
-BASE_FEATURE(kUseDnsHttpsSvcbAlpn,
-             "UseDnsHttpsSvcbAlpn",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUseHostResolverCache,
              "UseHostResolverCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -665,7 +661,7 @@ const base::FeatureParam<base::TimeDelta>
         /*default_value=*/base::Days(1)};
 
 #if BUILDFLAG(USE_NSS_CERTS)
-// TODO(crbug.com/40928765): Remove this flag after a few milestones.
+// TODO(crbug.com/390333881): Remove this flag after a few milestones.
 BASE_FEATURE(kNewClientCertPathBuilding,
              "NewClientCertPathBuilding",
              base::FEATURE_ENABLED_BY_DEFAULT);

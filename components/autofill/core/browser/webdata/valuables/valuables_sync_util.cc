@@ -21,7 +21,7 @@ AutofillValuableSpecifics CreateSpecificsFromLoyaltyCard(
   loyalty_card->set_merchant_name(card.merchant_name());
   loyalty_card->set_program_name(card.program_name());
   loyalty_card->set_program_logo(card.program_logo().possibly_invalid_spec());
-  loyalty_card->set_loyalty_card_suffix(card.loyalty_card_suffix());
+  loyalty_card->set_loyalty_card_number(card.loyalty_card_number());
   return specifics;
 }
 
@@ -34,7 +34,7 @@ std::optional<LoyaltyCard> CreateAutofillLoyaltyCardFromSpecifics(
                      specifics.loyalty_card().merchant_name(),
                      specifics.loyalty_card().program_name(),
                      GURL(specifics.loyalty_card().program_logo()),
-                     specifics.loyalty_card().loyalty_card_suffix());
+                     specifics.loyalty_card().loyalty_card_number());
 }
 
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromLoyaltyCard(
@@ -66,7 +66,7 @@ AutofillValuableSpecifics TrimAutofillValuableSpecificsDataForCaching(
   trimmed_specifics.mutable_loyalty_card()->clear_merchant_name();
   trimmed_specifics.mutable_loyalty_card()->clear_program_name();
   trimmed_specifics.mutable_loyalty_card()->clear_program_logo();
-  trimmed_specifics.mutable_loyalty_card()->clear_loyalty_card_suffix();
+  trimmed_specifics.mutable_loyalty_card()->clear_loyalty_card_number();
   trimmed_specifics.clear_valuable_data();
   return trimmed_specifics;
 }

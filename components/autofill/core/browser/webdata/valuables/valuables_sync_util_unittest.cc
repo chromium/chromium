@@ -21,7 +21,7 @@ constexpr char kInvalidProgramLogo[] = "logo.png";
 LoyaltyCard TestLoyaltyCard(std::string_view id = kId1) {
   return LoyaltyCard(ValuableId(std::string(id)), "merchant_name",
                      "program_name", GURL("http://foobar.com/logo.png"),
-                     "suffix");
+                     "number");
 }
 
 sync_pb::AutofillValuableSpecifics TestLoyaltyCardSpecifics(
@@ -36,7 +36,7 @@ sync_pb::AutofillValuableSpecifics TestLoyaltyCardSpecifics(
   loyalty_card->set_merchant_name("merchant_name");
   loyalty_card->set_program_name("program_name");
   loyalty_card->set_program_logo(std::string(program_logo));
-  loyalty_card->set_loyalty_card_suffix("suffix");
+  loyalty_card->set_loyalty_card_number("number");
   return specifics;
 }
 
@@ -53,8 +53,8 @@ TEST_F(LoyaltyCardSyncUtilTest, CreateValuableSpecificsFromLoyaltyCard) {
   EXPECT_EQ(card.merchant_name(), specifics.loyalty_card().merchant_name());
   EXPECT_EQ(card.program_name(), specifics.loyalty_card().program_name());
   EXPECT_EQ(card.program_logo(), specifics.loyalty_card().program_logo());
-  EXPECT_EQ(card.loyalty_card_suffix(),
-            specifics.loyalty_card().loyalty_card_suffix());
+  EXPECT_EQ(card.loyalty_card_number(),
+            specifics.loyalty_card().loyalty_card_number());
 }
 
 TEST_F(LoyaltyCardSyncUtilTest, CreateEntityDataFromLoyaltyCard) {
@@ -70,8 +70,8 @@ TEST_F(LoyaltyCardSyncUtilTest, CreateEntityDataFromLoyaltyCard) {
   EXPECT_EQ(card.merchant_name(), specifics.loyalty_card().merchant_name());
   EXPECT_EQ(card.program_name(), specifics.loyalty_card().program_name());
   EXPECT_EQ(card.program_logo(), specifics.loyalty_card().program_logo());
-  EXPECT_EQ(card.loyalty_card_suffix(),
-            specifics.loyalty_card().loyalty_card_suffix());
+  EXPECT_EQ(card.loyalty_card_number(),
+            specifics.loyalty_card().loyalty_card_number());
 }
 
 TEST_F(LoyaltyCardSyncUtilTest, CreateAutofillLoyaltyCardFromSpecifics) {

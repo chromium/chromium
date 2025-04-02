@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -53,7 +54,9 @@ public class TabSwitcherActionMenuCoordinator {
         MenuItemType.NEW_INCOGNITO_TAB,
         MenuItemType.SWITCH_TO_INCOGNITO,
         MenuItemType.SWITCH_OUT_OF_INCOGNITO,
-        MenuItemType.CLOSE_ALL_INCOGNITO_TABS
+        MenuItemType.CLOSE_ALL_INCOGNITO_TABS,
+        MenuItemType.ADD_TAB_TO_GROUP,
+        MenuItemType.ADD_TAB_TO_NEW_GROUP,
     })
     public @interface MenuItemType {
         int DIVIDER = 0;
@@ -63,6 +66,8 @@ public class TabSwitcherActionMenuCoordinator {
         int SWITCH_TO_INCOGNITO = 4;
         int SWITCH_OUT_OF_INCOGNITO = 5;
         int CLOSE_ALL_INCOGNITO_TABS = 6;
+        int ADD_TAB_TO_GROUP = 7;
+        int ADD_TAB_TO_NEW_GROUP = 8;
     }
 
     /**
@@ -114,6 +119,10 @@ public class TabSwitcherActionMenuCoordinator {
             RecordUserAction.record("MobileMenuSwitchToIncognito.LongTapMenu");
         } else if (id == R.id.switch_out_of_incognito_menu_id) {
             RecordUserAction.record("MobileMenuSwitchOutOfIncognito.LongTapMenu");
+        } else if (id == R.id.add_tab_to_group_menu_id) {
+            RecordUserAction.record("MobileMenuAddToGroup.LongTapMenu");
+        } else if (id == R.id.add_tab_to_new_group_menu_id) {
+            RecordUserAction.record("MobileMenuAddToNewGroup.LongTapMenu");
         }
     }
 
@@ -202,6 +211,13 @@ public class TabSwitcherActionMenuCoordinator {
         itemList.add(buildListItemByMenuItemType(MenuItemType.DIVIDER));
         itemList.add(buildListItemByMenuItemType(MenuItemType.NEW_TAB));
         itemList.add(buildListItemByMenuItemType(MenuItemType.NEW_INCOGNITO_TAB));
+        if (ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled()) {
+            if (doTabGroupsExist()) {
+                itemList.add(buildListItemByMenuItemType(MenuItemType.ADD_TAB_TO_GROUP));
+            } else {
+                itemList.add(buildListItemByMenuItemType(MenuItemType.ADD_TAB_TO_NEW_GROUP));
+            }
+        }
         if (incognitoMigrationFFEnabled) {
             if (isCurrentModelIncognito) {
                 itemList.add(buildListItemByMenuItemType(MenuItemType.SWITCH_OUT_OF_INCOGNITO));
@@ -241,9 +257,31 @@ public class TabSwitcherActionMenuCoordinator {
                         R.string.menu_switch_out_of_incognito,
                         R.id.switch_out_of_incognito_menu_id,
                         R.drawable.ic_switch_out_of_incognito);
+            case MenuItemType.ADD_TAB_TO_GROUP:
+                return buildMenuListItem(
+                        R.string.menu_add_tab_to_group,
+                        R.id.add_tab_to_group_menu_id,
+                        R.drawable.ic_widgets);
+            case MenuItemType.ADD_TAB_TO_NEW_GROUP:
+                return buildMenuListItem(
+                        R.string.menu_add_tab_to_new_group,
+                        R.id.add_tab_to_new_group_menu_id,
+                        R.drawable.ic_widgets);
             case MenuItemType.DIVIDER:
             default:
                 return buildMenuDivider();
         }
+    }
+
+    private boolean doTabGroupsExist() {
+        @Nullable TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
+        if (tabModelSelector != null) {
+            return tabModelSelector
+                            .getTabGroupModelFilterProvider()
+                            .getCurrentTabGroupModelFilter()
+                            .getTabGroupCount()
+                    != 0;
+        }
+        return false;
     }
 }

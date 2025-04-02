@@ -87,48 +87,7 @@ ValuableSyncBridge::CreateMetadataChangeList() {
 std::optional<syncer::ModelError> ValuableSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
-  auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
-
-  // Remove all stored loyalty cards and replace them with new cards.
-  if (!GetValuablesTable()->ClearLoyaltyCards()) {
-    return syncer::ModelError(FROM_HERE,
-                              "Failed to delete loyalty cards from table.");
-  }
-  for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
-    switch (change->type()) {
-      case syncer::EntityChange::ACTION_ADD: {
-        DCHECK(change->data().specifics.has_autofill_valuable());
-        // Deserialize the LoyaltyCardSpecifics and add them in the DB.
-        std::optional<LoyaltyCard> remote =
-            CreateAutofillLoyaltyCardFromSpecifics(
-                change->data().specifics.autofill_valuable());
-        // Since the specifics are guaranteed to be valid by
-        // `IsEntityDataValid()`, the conversion will succeed.
-        DCHECK(remote);
-        if (!GetValuablesTable()->AddOrUpdateLoyaltyCard(std::move(*remote))) {
-          return syncer::ModelError(FROM_HERE,
-                                    "Failed to add loyalty card to the table.");
-        }
-        break;
-      }
-      case syncer::EntityChange::ACTION_DELETE:
-      case syncer::EntityChange::ACTION_UPDATE: {
-        // LoyaltyCards sync does not support incremental updates server side.
-        return syncer::ModelError(FROM_HERE,
-                                  "Received unsupported action type.");
-      }
-    }
-  }
-
-  // Commits changes through CommitChanges(...) or through the scoped
-  // sql::Transaction `transaction` depending on the
-  // 'SqlScopedTransactionWebDatabase' Finch experiment.
-  web_data_backend_->CommitChanges();
-  if (transaction) {
-    transaction->Commit();
-  }
-  web_data_backend_->NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE);
-  return std::nullopt;
+  return SetSyncData(entity_data);
 }
 
 std::optional<syncer::ModelError>
@@ -166,8 +125,21 @@ ValuableSyncBridge::GetAllDataForDebugging() {
 bool ValuableSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_autofill_valuable());
-  return AreAutofillLoyaltyCardSpecificsValid(
-      entity_data.specifics.autofill_valuable());
+  const sync_pb::AutofillValuableSpecifics& autofill_valuable =
+      entity_data.specifics.autofill_valuable();
+
+  // Valuables must contain a non-empty id.
+  if (autofill_valuable.id().empty()) {
+    return false;
+  }
+
+  switch (autofill_valuable.valuable_data_case()) {
+    case sync_pb::AutofillValuableSpecifics::kLoyaltyCard:
+      return AreAutofillLoyaltyCardSpecificsValid(autofill_valuable);
+    case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
+      // Ignore new entry types that the client doesn't know about.
+      return false;
+  }
 }
 
 std::string ValuableSyncBridge::GetClientTag(
@@ -183,25 +155,7 @@ std::string ValuableSyncBridge::GetStorageKey(
 
 void ValuableSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
-  auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
-
-  if (!GetValuablesTable()->ClearLoyaltyCards()) {
-    change_processor()->ReportError(
-        {FROM_HERE, "Failed to delete loyalty cards from table."});
-    return;
-  }
-
-  // Commits changes through CommitChanges(...) or through the scoped
-  // sql::Transaction `transaction` depending on the
-  // 'SqlScopedTransactionWebDatabase' Finch experiment.
-  web_data_backend_->CommitChanges();
-  if (transaction) {
-    transaction->Commit();
-  }
-
-  // False positives can occur here if there were no loyalty cards to begin
-  // with.
-  web_data_backend_->NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE);
+  SetSyncData(syncer::EntityChangeList());
 }
 
 sync_pb::EntitySpecifics
@@ -270,6 +224,63 @@ void ValuableSyncBridge::LoadMetadata() {
     batch = std::make_unique<syncer::MetadataBatch>();
   }
   change_processor()->ModelReadyToSync(std::move(batch));
+}
+
+std::optional<syncer::ModelError> ValuableSyncBridge::SetSyncData(
+    const syncer::EntityChangeList& entity_data) {
+  auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
+
+  // Remove all stored loyalty cards and replace them with new cards.
+  if (!GetValuablesTable()->ClearLoyaltyCards()) {
+    return syncer::ModelError(FROM_HERE,
+                              "Failed to delete loyalty cards from table.");
+  }
+  for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
+    switch (change->type()) {
+      case syncer::EntityChange::ACTION_ADD: {
+        DCHECK(change->data().specifics.has_autofill_valuable());
+        // Deserialize the AutofillValuableSpecifics and add them in the DB.
+        const sync_pb::AutofillValuableSpecifics& autofill_valuable =
+            change->data().specifics.autofill_valuable();
+        switch (autofill_valuable.valuable_data_case()) {
+          case sync_pb::AutofillValuableSpecifics::kLoyaltyCard: {
+            std::optional<LoyaltyCard> loyalty_card =
+                CreateAutofillLoyaltyCardFromSpecifics(autofill_valuable);
+            // Since the specifics are guaranteed to be valid by
+            // `IsEntityDataValid()`, the conversion will succeed.
+            DCHECK(loyalty_card);
+            if (!GetValuablesTable()->AddOrUpdateLoyaltyCard(
+                    std::move(*loyalty_card))) {
+              return syncer::ModelError(
+                  FROM_HERE, "Failed to add loyalty card to the table.");
+            }
+            break;
+          }
+          case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
+            // Ignore new entry types that the client doesn't know about.
+            break;
+        }
+
+        break;
+      }
+      case syncer::EntityChange::ACTION_DELETE:
+      case syncer::EntityChange::ACTION_UPDATE: {
+        // Valuables sync does not support incremental updates server side.
+        return syncer::ModelError(FROM_HERE,
+                                  "Received unsupported action type.");
+      }
+    }
+  }
+
+  // Commits changes through CommitChanges(...) or through the scoped
+  // sql::Transaction `transaction` depending on the
+  // 'SqlScopedTransactionWebDatabase' Finch experiment.
+  web_data_backend_->CommitChanges();
+  if (transaction) {
+    transaction->Commit();
+  }
+  web_data_backend_->NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE);
+  return std::nullopt;
 }
 
 ValuablesTable* ValuableSyncBridge::GetValuablesTable() {

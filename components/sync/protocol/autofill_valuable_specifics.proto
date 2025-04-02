@@ -29,10 +29,8 @@ message AutofillValuableSpecifics {
     // The logo URL.
     optional string program_logo = 3;
 
-    // The unmasked suffix of the loyalty card text code.
-    // Full text code of the loyalty card is not shared via sync and requested
-    // separately on demand.
-    optional string loyalty_card_suffix = 4;
+    // The loyalty card text code.
+    optional string loyalty_card_number = 4;
   }
 
   oneof valuable_data {

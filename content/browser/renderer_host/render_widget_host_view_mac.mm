@@ -13,6 +13,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/owned_objc.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/auto_reset.h"
@@ -175,8 +176,9 @@ id RenderWidgetHostViewMac::GetAccessibilityFocusedUIElement() {
   // the UX acts as if focus is in the popup.
   gfx::NativeViewAccessible popup_focus_override =
       ui::AXPlatformNode::GetPopupFocusOverride();
-  if (popup_focus_override)
-    return popup_focus_override;
+  if (popup_focus_override) {
+    return popup_focus_override.Get();
+  }
 
   ui::BrowserAccessibilityManager* manager =
       host()->GetRootBrowserAccessibilityManager();
@@ -184,11 +186,8 @@ id RenderWidgetHostViewMac::GetAccessibilityFocusedUIElement() {
     ui::BrowserAccessibility* focused_item = manager->GetFocus();
     DCHECK(focused_item);
     if (focused_item) {
-      BrowserAccessibilityCocoa* focused_item_cocoa =
-          focused_item->GetNativeViewAccessible();
-      DCHECK(focused_item_cocoa);
-      if (focused_item_cocoa)
-        return focused_item_cocoa;
+      return base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          focused_item->GetNativeViewAccessible().Get());
     }
   }
   return nil;
@@ -576,7 +575,7 @@ gfx::NativeView RenderWidgetHostViewMac::GetNativeView() {
 }
 
 gfx::NativeViewAccessible RenderWidgetHostViewMac::GetNativeViewAccessible() {
-  return GetInProcessNSView();
+  return gfx::NativeViewAccessible(GetInProcessNSView());
 }
 
 void RenderWidgetHostViewMac::Focus() {
@@ -1628,14 +1627,16 @@ void RenderWidgetHostViewMac::OverrideDisplayFeatureForEmulation(
 
 gfx::NativeViewAccessible
 RenderWidgetHostViewMac::AccessibilityGetNativeViewAccessible() {
-  return GetInProcessNSView();
+  return gfx::NativeViewAccessible(GetInProcessNSView());
 }
 
 gfx::NativeViewAccessible
 RenderWidgetHostViewMac::AccessibilityGetNativeViewAccessibleForWindow() {
-  if (remote_window_accessible_)
-    return remote_window_accessible_;
-  return [GetInProcessNSView() window];
+  if (remote_window_accessible_) {
+    return gfx::NativeViewAccessible(
+        (id<NSAccessibility>)remote_window_accessible_);
+  }
+  return gfx::NativeViewAccessible([GetInProcessNSView() window]);
 }
 
 void RenderWidgetHostViewMac::SetTextInputActive(bool active) {
@@ -1669,12 +1670,15 @@ void RenderWidgetHostViewMac::ShowSharePicker(
 // implementation:
 
 id RenderWidgetHostViewMac::GetAccessibilityElement() {
-  return GetNativeViewAccessible();
+  return nil;
 }
 
 id RenderWidgetHostViewMac::GetRootBrowserAccessibilityElement() {
-  if (auto* manager = host()->GetRootBrowserAccessibilityManager())
-    return manager->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  if (auto* manager = host()->GetRootBrowserAccessibilityManager()) {
+    return manager->GetBrowserAccessibilityRoot()
+        ->GetNativeViewAccessible()
+        .Get();
+  }
   return nil;
 }
 
@@ -2212,7 +2216,7 @@ void RenderWidgetHostViewMac::StopSpeaking() {
 void RenderWidgetHostViewMac::GetRenderWidgetAccessibilityToken(
     GetRenderWidgetAccessibilityTokenCallback callback) {
   base::ProcessId pid = getpid();
-  id element_id = GetNativeViewAccessible();
+  id element_id = GetNativeViewAccessible().Get();
   std::vector<uint8_t> token =
       ui::RemoteAccessibility::GetTokenForLocalElement(element_id);
   std::move(callback).Run(pid, token);

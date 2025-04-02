@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/environment.h"
@@ -27,11 +28,13 @@ const char kTestHKCUOverrideEnvironmentVariable[] =
 // Returns true if the variable was successfully read.
 bool GetTestKeyFromEnvironment(std::wstring* key) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  std::string value;
-  bool result = env->GetVar(kTestHKCUOverrideEnvironmentVariable, &value);
-  if (result)
-    *key = base::UTF8ToWide(value);
-  return result;
+  std::optional<std::string> value =
+      env->GetVar(kTestHKCUOverrideEnvironmentVariable);
+  if (value.has_value()) {
+    *key = base::UTF8ToWide(value.value());
+    return true;
+  }
+  return false;
 }
 
 }  // namespace

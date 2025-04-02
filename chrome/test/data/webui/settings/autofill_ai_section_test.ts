@@ -133,6 +133,7 @@ suite('AutofillAiSectionUiTest', function() {
         typeNameAsString: 'Car',
         addEntityTypeString: 'Add car',
         editEntityTypeString: 'Edit car',
+        deleteEntityTypeString: 'Delete car',
       },
       attributeInstances: [
         {
@@ -155,20 +156,26 @@ suite('AutofillAiSectionUiTest', function() {
       guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
       nickname: 'My car',
     };
+    // Initially not sorted alphabetically. The production code should sort them
+    // alphabetically.
     testEntityTypes = [
-      {
-        typeName: 2,
-        typeNameAsString: 'Car',
-        addEntityTypeString: 'Add car',
-        editEntityTypeString: 'Edit car',
-      },
       {
         typeName: 0,
         typeNameAsString: 'Passport',
         addEntityTypeString: 'Add passport',
         editEntityTypeString: 'Edit passport',
+        deleteEntityTypeString: 'Delete passport',
+      },
+      {
+        typeName: 2,
+        typeNameAsString: 'Car',
+        addEntityTypeString: 'Add car',
+        editEntityTypeString: 'Edit car',
+        deleteEntityTypeString: 'Delete car',
       },
     ];
+    // Initially not sorted alphabetically. The production code should sort them
+    // alphabetically.
     const testEntityInstancesWithLabels:
         chrome.autofillPrivate.EntityInstanceWithLabels[] = [
       {
@@ -181,11 +188,22 @@ suite('AutofillAiSectionUiTest', function() {
         entityInstanceLabel: 'John Doe',
         entityInstanceSubLabel: 'Passport',
       },
+      {
+        guid: 'd70b5bb7-49a6-4276-b4b7-b014dacdc9e6',
+        entityInstanceLabel: 'John Doe',
+        entityInstanceSubLabel: 'Driver\'s license',
+      },
     ];
     entityDataManager.setGetOptInStatusResponse(true);
-    entityDataManager.setGetAllEntityTypesResponse(testEntityTypes);
+    entityDataManager.setGetAllEntityTypesResponse(
+        structuredClone(testEntityTypes));
     entityDataManager.setLoadEntityInstancesResponse(
         testEntityInstancesWithLabels);
+
+    // `testEntityTypes` now contains expected values, so they should be sorted
+    // alphabetically.
+    testEntityTypes.sort(
+        (a, b) => a.typeNameAsString.localeCompare(b.typeNameAsString));
 
     section = document.createElement('settings-autofill-ai-section');
     document.body.appendChild(section);
@@ -199,19 +217,23 @@ suite('AutofillAiSectionUiTest', function() {
     assertTrue(!!section.shadowRoot!.querySelector('#entriesHeader'));
   });
 
-  test('testEntityInstancesLoaded', async function() {
+  test('testEntityInstancesLoadedAndSortedAlphabetically', async function() {
     await entityDataManager.whenCalled('loadEntityInstances');
     const listItems =
         entityInstancesListElement.querySelectorAll<HTMLElement>('.list-item');
 
     assertEquals(
-        3, listItems.length,
-        '2 entity instances and a hidden element were loaded.');
-    assertTrue(listItems[0]!.textContent!.includes('Toyota'));
+        4, listItems.length,
+        '3 entity instances and a hidden element were loaded.');
+    // The items should now also be sorted alphabetically.
+    assertTrue(listItems[0]!.textContent!.includes('John Doe'));
+    assertTrue(listItems[0]!.textContent!.includes('Driver\'s license'));
     assertTrue(listItems[1]!.textContent!.includes('John Doe'));
-    assertFalse(isVisible(listItems[2]!));
+    assertTrue(listItems[1]!.textContent!.includes('Passport'));
+    assertTrue(listItems[2]!.textContent!.includes('Toyota'));
+    assertTrue(listItems[2]!.textContent!.includes('Car'));
+    assertFalse(isVisible(listItems[3]!));
   });
-
 
   interface RemoveEntityInstanceParamsInterface {
     // Whether the user confirms the delete dialog.
@@ -255,7 +277,7 @@ suite('AutofillAiSectionUiTest', function() {
 
           assertEquals(
               1, entityDataManager.getCallCount('removeEntityInstance'));
-          assertEquals('e4bbe384-ee63-45a4-8df3-713a58fdc181', guid);
+          assertEquals('d70b5bb7-49a6-4276-b4b7-b014dacdc9e6', guid);
         } else {
           removeEntityInstanceDialog.$.cancel.click();
           await flushTasks();
@@ -367,40 +389,47 @@ suite('AutofillAiSectionUiTest', function() {
     }
   });
 
-  test('testEntityInstancesChangedListener', async function() {
-    const newTestEntityInstancesWithLabels:
-        chrome.autofillPrivate.EntityInstanceWithLabels[] = [
-      {
-        guid: 'a521fc41-d672-4947-ab39-8bc9d49b08d2',
-        entityInstanceLabel: 'Mark Jane',
-        entityInstanceSubLabel: 'Passport',
-      },
-      {
-        guid: 'db56681d-9598-4e37-825c-7977f52fbcee',
-        entityInstanceLabel: 'Honda',
-        entityInstanceSubLabel: 'Car',
-      },
-      {
-        guid: '1a89869f-dff2-461a-8ef8-769e0e1c66f7',
-        entityInstanceLabel: 'Tom Clark',
-        entityInstanceSubLabel: 'Driver\'s license',
-      },
-    ];
+  test(
+      'testEntityInstancesChangedListenerUpdatesAndAlphabeticallySortsEntries',
+      async function() {
+        const newTestEntityInstancesWithLabels:
+            chrome.autofillPrivate.EntityInstanceWithLabels[] = [
+          {
+            guid: 'a521fc41-d672-4947-ab39-8bc9d49b08d2',
+            entityInstanceLabel: 'Tom Clark',
+            entityInstanceSubLabel: 'Passport',
+          },
+          {
+            guid: 'db56681d-9598-4e37-825c-7977f52fbcee',
+            entityInstanceLabel: 'Honda',
+            entityInstanceSubLabel: 'Car',
+          },
+          {
+            guid: '1a89869f-dff2-461a-8ef8-769e0e1c66f7',
+            entityInstanceLabel: 'Tom Clark',
+            entityInstanceSubLabel: 'Driver\'s license',
+          },
+        ];
 
-    entityDataManager.callEntityInstancesChangedListener(
-        newTestEntityInstancesWithLabels);
-    await flushTasks();
+        entityDataManager.callEntityInstancesChangedListener(
+            newTestEntityInstancesWithLabels);
+        await flushTasks();
 
-    const listItems =
-        entityInstancesListElement.querySelectorAll<HTMLElement>('.list-item');
-    assertEquals(
-        4, listItems.length,
-        'Three entity instances and a hidden element should be present.');
-    assertTrue(listItems[0]!.textContent!.includes('Mark Jane'));
-    assertTrue(listItems[1]!.textContent!.includes('Honda'));
-    assertTrue(listItems[2]!.textContent!.includes('Tom Clark'));
-    assertFalse(isVisible(listItems[3]!));
-  });
+        const listItems =
+            entityInstancesListElement.querySelectorAll<HTMLElement>(
+                '.list-item');
+        assertEquals(
+            4, listItems.length,
+            'Three entity instances and a hidden element should be present.');
+        // The items should now also be sorted alphabetically.
+        assertTrue(listItems[0]!.textContent!.includes('Honda'));
+        assertTrue(listItems[0]!.textContent!.includes('Car'));
+        assertTrue(listItems[1]!.textContent!.includes('Tom Clark'));
+        assertTrue(listItems[1]!.textContent!.includes('Driver\'s license'));
+        assertTrue(listItems[2]!.textContent!.includes('Tom Clark'));
+        assertTrue(listItems[2]!.textContent!.includes('Passport'));
+        assertFalse(isVisible(listItems[3]!));
+      });
 
   test('testEntriesDoNotDisappearAfterToggleDisabling', async function() {
     // The toggle is initially enabled (see the setup() method). Clicking it
@@ -433,7 +462,7 @@ suite('AutofillAiSectionLongLabelsUiTest', function() {
         chrome.autofillPrivate.EntityInstanceWithLabels[] = [
       {
         guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
-        entityInstanceLabel: 'Label'.repeat(100),
+        entityInstanceLabel: 'A label'.repeat(100),
         entityInstanceSubLabel: 'Car',
       },
       {
@@ -462,7 +491,7 @@ suite('AutofillAiSectionLongLabelsUiTest', function() {
 
     assertEquals(6, labels.length, '3 labels + 3 sublabels should be loaded');
 
-    assertTrue(labels[0]!.textContent!.includes('Label'));
+    assertTrue(labels[0]!.textContent!.includes('A label'));
     assertGE(labels[0]!.scrollWidth, labels[0]!.offsetWidth);
     assertTrue(labels[1]!.textContent!.includes('Car'));
     assertEquals(labels[1]!.scrollWidth, labels[1]!.offsetWidth);

@@ -56,8 +56,8 @@ class ChromeTracingDelegate : public content::TracingDelegate,
  private:
 #if BUILDFLAG(IS_ANDROID)
   // TabModelListObserver implementation.
-  void OnTabModelAdded() override;
-  void OnTabModelRemoved() override;
+  void OnTabModelAdded(TabModel* tab_model) override;
+  void OnTabModelRemoved(TabModel* tab_model) override;
 #else
   // BrowserListObserver implementation.
   void OnBrowserAdded(Browser* browser) override;

@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">ধন্যবাদ জানাচ্ছেন এমন ব্যক্তির ছবি</translation>
 <translation id="2088690981887365033">ভিপিএন নেটওয়ার্ক</translation>
 <translation id="209653272837065803">ফাইল সিঙ্ক করার প্রসেস চালিয়ে যাওয়ার জন্য পর্যাপ্ত স্টোরেজের জায়গা নেই</translation>
-<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />ছদ্মবেশী মোডে অনুমতি দিন<ph name="END_BOLD" /> বিকল্প চালু করুন</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" />টি আইটেম মুছে ফেলা হবে এবং আপনি সেগুলি আর ফিরিয়ে আনতে পারবেন না।</translation>
 <translation id="2122305276694332719">কোনও লুকানো নেটওয়ার্কে অটোমেটিক কানেক্ট করলে, অন্যরা আপনার ডিভাইস ও নেটওয়ার্কের কিছু সেটিংস দেখার সুযোগ পান। তাই, এটি সাজেস্ট করা হয় না।</translation>
 <translation id="2125607626296734455">খেমের</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">গ্রহ</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> সরিয়ে দেওয়া হয়েছে।</translation>
 <translation id="2307462900900812319">নেটওয়ার্ক কনফিগার করুন</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{আইডি সহ <ph name="BEGIN_LIST" /><ph name="END_LIST" /> একটি এক্সটেনশন শনাক্ত করা যাবে না। আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।}one{আইডি সহ <ph name="BEGIN_LIST" /><ph name="END_LIST" /> একটি এক্সটেনশন শনাক্ত করা যাবে না। আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।}other{আইডি সহ <ph name="BEGIN_LIST" /><ph name="END_LIST" /> একটি এক্সটেনশন শনাক্ত করা যাবে না। আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।}}</translation>
 <translation id="2325650632570794183">এই ফাইল প্রকারটি সমর্থিত নয়৷ এই ধরণের ফাইল খুলতে পারে এমন অ্যাপ খুঁজতে অনুগ্রহ করে Chrome ওয়েব স্টোর দেখুন৷</translation>
 <translation id="2326539130272988168">বুলগেরিয়ান</translation>
 <translation id="233822363739146957">আপনার সব ফাইল সিঙ্ক করার জন্য পর্যাপ্ত স্টোরেজের জায়গা নেই</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">মারাঠি</translation>
 <translation id="2923240520113693977">এস্তোনীয়</translation>
 <translation id="2938685643439809023">মঙ্গোলীয়</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{এক্সটেনশন খুঁজে পাওয়া যাচ্ছে না}one{এক্সটেনশন খুঁজে পাওয়া যাচ্ছে না}other{এক্সটেনশন খুঁজে পাওয়া যাচ্ছে না}}</translation>
 <translation id="2943503720238418293">অন্য একটি ছোট নাম ব্যবহার করুন</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> ফরম্যাট করা হচ্ছে...</translation>
 <translation id="2951236788251446349">জেলিফিশ</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">সম্পূর্ণ</translation>
 <translation id="3358452157379365236">গিটার</translation>
 <translation id="3368922792935385530">সংযুক্ত</translation>
-<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />বিবরণ<ph name="END_BOLD" /> বিকল্পে ক্লিক করুন</translation>
 <translation id="3382143449143186018">নেপালি ভাষায় ইনস্ক্রিপ্ট কীবোর্ড</translation>
 <translation id="338691029516748599"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে, কানেক্ট করুন</translation>
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> চালু করুন</translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">ইউনিকর্ন</translation>
 <translation id="4131235941541910880">অপ্রয়োজনীয় আইটেম ট্র্যাশে সরান</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ডিভাইস সেট-আপ করার পর চালু করুন</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{ছদ্মবেশী মোডে নিম্নলিখিত এক্সটেনশনটি চালু করুন:}one{ছদ্মবেশী মোডে নিম্নলিখিত এক্সটেনশনটি চালু করুন:}other{ছদ্মবেশী মোডে নিম্নলিখিত এক্সটেনশনটি চালু করুন:}}</translation>
 <translation id="4153015322587141338">কোনও ফাইলে রাইট-ক্লিক করুন এবং শেল্ফে আপনার ফাইল দ্রুত অ্যাক্সেস করার জন্য "<ph name="PIN_COMMAND" />" বিকল্পটি বেছে নিন।</translation>
 <translation id="4157569377477607576">অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী এটি করা যাবে না:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> সরানো হয়েছে।</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">উভয়ই রাখুন</translation>
 <translation id="4804827417948292437">অ্যাভোকাডো</translation>
 <translation id="4805966553127040832"><ph name="COUNT" />টি আইটেম ফিরিয়ে আনা হচ্ছে</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{ছদ্মবেশী মোড ব্যবহার করতে, আপনার প্রতিষ্ঠানের একটি এক্সটেনশন প্রয়োজন}one{ছদ্মবেশী মোড ব্যবহার করতে, আপনার প্রতিষ্ঠানের একটি এক্সটেনশন প্রয়োজন}other{ছদ্মবেশী মোড ব্যবহার করতে, আপনার প্রতিষ্ঠানের একটি এক্সটেনশন প্রয়োজন}}</translation>
 <translation id="4826849268470072925">তামিল আইট্রান্স</translation>
-<translation id="482932175346970750">আপনার ব্রাউজারে <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> টাইপ করুন</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">দেখুন</translation>
 <translation id="485316830061041779">জার্মান</translation>
@@ -560,7 +553,6 @@
     <ph name="MARKUP_6" />ফাইলগুলি অন্যদের সাথে <ph name="MARKUP_7" />শেয়ার করুন, তৈরি এবং সহযোগিতা<ph name="MARKUP_8" />করুন, সবকিছু এক জায়গাতেই।<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google ড্রাইভ থেকে উদ্ধার করা ফাইলগুলি</translation>
 <translation id="5278111733643988471">এই আইটেম ফিরিয়ে আনতে, ট্র্যাশের বাইরে নতুন কোনও ফোল্ডারে এটি টেনে আনুন। এই আইটেমের জন্য থাকা আসল ফোল্ডার "<ph name="PARENT_FOLDER_NAME" />", মুছে ফেলা হয়েছে।</translation>
-<translation id="5283101102242354279">ছদ্মবেশী মোডে এক্সটেনশনটি চালু করুন:</translation>
 <translation id="5288441970121584418">বার্গার</translation>
 <translation id="5293615890992542006">অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী এই ফাইল সরিয়ে দেওয়ার সুবিধা ব্লক করা হয়েছে</translation>
 <translation id="5305688511332277257">কিছুই ইনস্টল নেই</translation>
@@ -814,7 +806,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, বিবরণ</translation>
 <translation id="7246947237293279874">এফটিপি প্রক্সি</translation>
 <translation id="7248671827512403053">অ্যাপ্লিকেশান</translation>
-<translation id="7252604552361840748">উপরের এক্সটেনশনটি খুঁজুন</translation>
 <translation id="7256405249507348194">অস্বীকৃত ত্রুটি: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">উপলব্ধ পরিষেবাসমূহ</translation>
 <translation id="7291818353625820805">'কী' রিপিট করতে চান? কীবোর্ড সেটিংস থেকে অ্যাকসেন্ট চিহ্ন বন্ধ করুন</translation>

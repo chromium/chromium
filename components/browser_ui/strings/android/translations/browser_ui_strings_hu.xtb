@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">A nagyítás mindig engedélyezett</translation>
 <translation id="3905475044299942653">Sok értesítés leállítása</translation>
 <translation id="3908288065506437185">Harmadik felektől származó cookie-k letiltása inkognitó módban</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Lehetséges, hogy néhány funkció nem működik. A kapcsolódó webhelyek továbbra is használhatnak harmadik féltől származó cookie-kt.</translation>
 <translation id="3922092564198021702">A telefonján nyissa meg a Beállítások alkalmazást</translation>
 <translation id="3933121352599513978">Nem kívánt kérelmek összecsukása (ajánlott)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">Részletek</translation>
 <translation id="4598549027014564149">Inkognitó módban a webhelyek nem használhatják fel az Ön cookie-jait arra, hogy megfigyeljék az Ön böngészési tevékenységeit a különböző webhelyek között, még kapcsolódó webhelyek esetén sem. Böngészési tevékenységeit nem használjuk fel például a hirdetések személyre szabásához. Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek majd megfelelően.</translation>
 <translation id="461356340001513807">Lehetővé teszi, hogy identitásszolgáltató által biztosított fiókkal jelentkezzen be a webhelyekre.</translation>
-<translation id="4619615317237390068">Más eszközök lapjai</translation>
 <translation id="4635969503923889910">A webhelyek nem használhatnak NFC-eszközöket</translation>
 <translation id="4644713492825682049">Törlés és alaphelyzetbe állítás</translation>
 <translation id="4645575059429386691">A szülő kezeli</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">Megosztás itt:</translation>
 <translation id="5001526427543320409">Harmadik felektől származó cookie-k</translation>
 <translation id="5007392906805964215">Áttekintés</translation>
-<translation id="5014182796621173645">Ekkor járt itt: <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Engedélyezés</translation>
 <translation id="5048398596102334565">A mozgásérzékelőkhöz való hozzáférés engedélyezése a webhelyek számára (ajánlott)</translation>
 <translation id="5048841907079026162">Böngészési adatok kezelése</translation>
@@ -443,7 +440,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Védett tartalom</translation>
 <translation id="662080504995468778">Mégse</translation>
-<translation id="6653342741369270081">A teljes képernyős megjelenítésből való kilépéshez nyomja le a vissza gombot.</translation>
+<translation id="6635327442719709864">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek a soros portok használatára. Ha ki van kapcsolva, a webhelyek nem használhatják a soros portokat.</translation>
 <translation id="6683865262523156564">Ez a webhely egy olyan csoportban található, amely láthatja az Ön tevékenységeit. A csoportot a következő határozza meg: <ph name="RWS_OWNER" />.</translation>
 <translation id="6689172468748959065">Profilfotók</translation>
 <translation id="6697925417670533197">Aktív letöltések</translation>

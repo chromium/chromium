@@ -4076,15 +4076,6 @@ Questa policy è stata pensata per essere temporanea e verrà rimossa in futuro.
 <translation id="3956573780915784996">Gli utenti possono raccogliere dati di rilevamento del rendimento a livello di sistema.</translation>
 <translation id="3956686688560604829">Utilizza la norma SiteList di Internet Explorer per il Supporto dei browser precedenti.</translation>
 <translation id="3958586912393694012">Consenti l'utilizzo di Smart Lock</translation>
-<translation id="3959350391319409669">Questa policy consente di controllare le impostazioni del codice dinamico per <ph name="PRODUCT_NAME" />.
-
-La disattivazione del codice dinamico migliora la sicurezza di <ph name="PRODUCT_NAME" /> impedendo a codice dinamico potenzialmente dannoso e codice di terze parti di apportare modifiche al comportamento di <ph name="PRODUCT_NAME" />, ma potrebbe causare problemi di compatibilità con software di terze parti che devono essere eseguiti all'interno del processo del browser.
-
-Se la policy viene impostata su 0 - Default o se non viene impostata, <ph name="PRODUCT_NAME" /> utilizzerà le impostazioni predefinite.
-
-Se la policy viene impostata su 1 - DisabledForBrowser, il processo del browser <ph name="PRODUCT_NAME" /> non potrà creare codice dinamico.
-
-Nota: scopri di più sulle policy relative alla mitigazione dei processi (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="3960728283243442805">L'utente non avrà la possibilità di selezionare dispositivi di trasmissione nel menu di <ph name="PRODUCT_NAME" /> usando un codice di accesso o scansionando un codice QR.</translation>
 <translation id="3962445567482559878">Usa la modalità EDU dell'esperienza di onboarding dell'assistente</translation>
 <translation id="396261881101930204">Nascondi all'utente consigli di contenuti multimediali</translation>
@@ -4398,6 +4389,9 @@ Nota: il blocco degli URL interni chrome://* e chrome-untrusted://* può causare
       Nelle sessioni kiosk non sono previsti periodi di tolleranza e non vengono inviate notifiche relative al riavvio.
 </translation>
 <translation id="4187576366596772431">Blocca l'API WebHID su questi siti</translation>
+<translation id="4188427466177877986">Se la policy non viene configurata o se viene attivata, gli utenti potranno monitorare i propri pacchetti su <ph name="PRODUCT_NAME" /> tramite la pagina Nuova scheda.
+Se viene disattivata, gli utenti non possono monitorare i loro pacchetti su <ph name="PRODUCT_NAME" /> tramite la pagina Nuova scheda.
+Deprecato: la funzionalità di tracciamento delle spedizioni è disattivata dalla versione M132 e questa policy non ha più effetto.</translation>
 <translation id="4189100643304138928">Elenco di impostazioni per i servizi di Chrome Enterprise Connectors da applicare al connettore di Enterprise <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" />, che si attiva quando un file viene allegato a Chrome.
 
       I campi <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> vengono utilizzati per stabilire se il connettore deve inviare un file per l'analisi quando viene allegato a una pagina specifica e quali tag includere nella richiesta di analisi di questo file. Un tag che corrisponde a un pattern "attivato" verrà incluso nella richiesta di analisi se l'URL della pagina corrisponde a un pattern associato a questo tag, purché nessun pattern "disattivato" con lo stesso tag corrisponda all'URL della pagina. L'analisi viene eseguita se almeno un tag deve essere incluso nella richiesta.
@@ -8247,6 +8241,11 @@ Il browser rimuoverà automaticamente i dati dei tipi selezionati che sono antec
 I dati scaduti vengono eliminati 15 secondi dopo l'avvio del browser, dopodiché ogni 30 minuti mentre il browser è in esecuzione.
 
 Fino a Chrome 114, questa policy richiedeva l'impostazione della policy <ph name="SYNC_DISABLED_POLICY_NAME" /> su true. A partire da Chrome 115, la configurazione di questa policy disattiva la sincronizzazione per i rispettivi tipi di dati se "<ph name="CHROME_SYNC_NAME" />" non viene disattivato impostando la policy <ph name="SYNC_DISABLED_POLICY_NAME" /> e non viene disattivata <ph name="BROWSER_SIGNIN_POLICY_NAME" />.</translation>
+<translation id="6762635531429930846">Specifica l'età minima della release oltre la quale le notifiche di riavvio sono più aggressive. La durata viene calcolata a partire dall'ultima volta che la versione attualmente in esecuzione è stata pubblicata ai client.
+
+Se è in attesa una nuova versione, è necessario riavviare il browser o il dispositivo e la versione corrente è stata sostituita per più del numero di giorni specificato da questa impostazione, la policy <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> viene forzata su 2 ore. Se la policy <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> viene impostata su 1 (obbligatorio), gli utenti saranno costretti a riavviare o ricominciare alla fine del periodo.
+
+Se non viene configurata o se l'età della release non può essere determinata, la policy <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> verrà utilizzata per tutti gli aggiornamenti.</translation>
 <translation id="6763023079133439068">Consenti i certificati privi di un'estensione subjectAlternativeName se sono stati emessi da trust anchor locali</translation>
 <translation id="6766216162565713893">Consenti ai siti di chiedere all'utente di concedere l'accesso a un dispositivo Bluetooth nelle vicinanze.</translation>
 <translation id="6770454900105963262">Segnala informazioni sulle sessioni kiosk attive</translation>

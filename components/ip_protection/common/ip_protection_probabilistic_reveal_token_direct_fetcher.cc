@@ -288,14 +288,14 @@ void IpProtectionProbabilisticRevealTokenDirectFetcher::
   // TODO(crbug.com/391358904): add success metrics before returning.
   TryGetProbabilisticRevealTokensOutcome outcome;
   for (const auto& t : response_proto.tokens()) {
-    outcome.tokens.emplace_back(t.version(), t.u(), t.e(),
-                                response_proto.epoch_id());
+    outcome.tokens.emplace_back(t.version(), t.u(), t.e());
   }
   outcome.public_key = std::move(response_proto.public_key().y());
   outcome.expiration_time_seconds = response_proto.expiration_time().seconds();
   outcome.next_epoch_start_time_seconds =
       response_proto.next_epoch_start_time().seconds();
   outcome.num_tokens_with_signal = response_proto.num_tokens_with_signal();
+  outcome.epoch_id = std::move(response_proto.epoch_id());
   std::move(callback).Run(
       std::optional<TryGetProbabilisticRevealTokensOutcome>{std::move(outcome)},
       TryGetProbabilisticRevealTokensResult{

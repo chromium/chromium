@@ -489,7 +489,7 @@ StackSamplingProfiler::SamplingThread::GetOrCreateTaskRunnerForAdd() {
 
   if (thread_execution_state_ == EXITING) {
     // StopSoon() was previously called to shut down the thread
-    // asynchonously. Stop() must now be called before calling Start() again to
+    // asynchronously. Stop() must now be called before calling Start() again to
     // reset the thread state.
     //
     // We must allow blocking here to satisfy the Thread implementation, but in

@@ -52,7 +52,7 @@ namespace autofill {
 class AutofillOptimizationGuide;
 class BankAccount;
 class BnplIssuer;
-struct CreditCardArtImage;
+struct AutofillImage;
 class Ewallet;
 class PaymentsDatabaseHelper;
 
@@ -202,16 +202,20 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Returns true if the user has at least 1 masked bank account.
   bool HasMaskedBankAccounts() const;
   // Returns the masked bank accounts that can be suggested to the user.
+  // The returned span may be invalidated asynchronously.
   base::span<const BankAccount> GetMaskedBankAccounts() const;
 
   // Returns the linked BNPL issuers that can be shown to the user. If the "Save
   // and fill payment methods" toggle is off, this will return no BNPL issuers
   // automatically.
+  // The returned span may be invalidated asynchronously.
   base::span<const BnplIssuer> GetLinkedBnplIssuers() const;
 
   // Returns true if the user has at least 1 eWallet account.
   bool HasEwalletAccounts() const;
+
   // Returns the eWallet accounts that can be suggested to the user.
+  // The returned span may be invalidated asynchronously.
   base::span<const Ewallet> GetEwalletAccounts() const;
 
   // Returns the Payments customer data. Returns nullptr if no data is present.
@@ -240,11 +244,13 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   const gfx::Image* GetCreditCardArtImageForUrl(const GURL& card_art_url) const;
 
   // Returns all virtual card usage data linked to the credit card.
+  // The returned span may be invalidated asynchronously.
   base::span<const VirtualCardUsageData> GetVirtualCardUsageData() const;
 
   // Returns the unlinked buy-now-pay-later issuers. This is a list of BNPL
   // issuers that are available to be used but have NOT been linked to the
   // payments account by the user.
+  // The returned span may be invalidated asynchronously.
   base::span<const BnplIssuer> GetUnlinkedBnplIssuers() const;
 
   // Returns all BNPL issuers, both linked and unlinked.
@@ -631,7 +637,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Triggered when all the card art image fetches have been completed,
   // regardless of whether all of them succeeded.
   void OnCardArtImagesFetched(
-      const std::vector<std::unique_ptr<CreditCardArtImage>>& art_images);
+      const std::vector<std::unique_ptr<AutofillImage>>& art_images);
 
   // Checks whether any new card art url is synced. If so, attempt to fetch the
   // image based on the url.

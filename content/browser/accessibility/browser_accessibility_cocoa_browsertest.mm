@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/platform/browser_accessibility_cocoa.h"
 
+#include "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -360,7 +361,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
                    ui::DomCode::US_B, ui::VKEY_B, false, false, false, false);
 
   BrowserAccessibilityCocoa* cocoa_text_field =
-      text_field->GetNativeViewAccessible();
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          text_field->GetNativeViewAccessible().Get());
   AccessibilityNotificationWaiter value_waiter(shell()->web_contents(),
                                                ui::kAXModeComplete,
                                                ax::mojom::Event::kValueChanged);
@@ -486,7 +488,9 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
 
   ui::BrowserAccessibility* table = FindNode(ax::mojom::Role::kTable);
   ASSERT_NE(nullptr, table);
-  BrowserAccessibilityCocoa* cocoa_table = table->GetNativeViewAccessible();
+  BrowserAccessibilityCocoa* cocoa_table =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          table->GetNativeViewAccessible().Get());
 
   // Test AXCellForColumnAndRow for four coordinates
   for (unsigned col = 0; col < 2; col++) {
@@ -521,7 +525,9 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   ui::BrowserAccessibility* text = FindNode(ax::mojom::Role::kStaticText);
   ASSERT_NE(nullptr, text);
 
-  BrowserAccessibilityCocoa* cocoa_text = text->GetNativeViewAccessible();
+  BrowserAccessibilityCocoa* cocoa_text =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          text->GetNativeViewAccessible().Get());
   ASSERT_NE(nil, cocoa_text);
 
   NSPoint position = cocoa_text.position.pointValue;
@@ -721,7 +727,9 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   for (int child_index = 0; child_index < child_count; child_index++) {
     ui::BrowserAccessibility* child =
         manager->GetBrowserAccessibilityRoot()->PlatformGetChild(child_index);
-    BrowserAccessibilityCocoa* child_obj = child->GetNativeViewAccessible();
+    BrowserAccessibilityCocoa* child_obj =
+        base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+            child->GetNativeViewAccessible().Get());
 
     EXPECT_NSEQ(base::SysUTF8ToNSString(expected_descriptions[child_index]),
                 child_obj.accessibilityLabel);
@@ -808,7 +816,9 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
 
   ui::BrowserAccessibility* table =
       manager->GetBrowserAccessibilityRoot()->PlatformGetChild(0);
-  BrowserAccessibilityCocoa* table_obj = table->GetNativeViewAccessible();
+  BrowserAccessibilityCocoa* table_obj =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          table->GetNativeViewAccessible().Get());
   NSArray* row_nodes = table_obj.accessibilityRows;
 
   EXPECT_EQ(3U, row_nodes.count);
@@ -858,7 +868,9 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
 
   ui::BrowserAccessibility* column =
       manager->GetBrowserAccessibilityRoot()->PlatformGetChild(0);
-  BrowserAccessibilityCocoa* col_obj = column->GetNativeViewAccessible();
+  BrowserAccessibilityCocoa* col_obj =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          column->GetNativeViewAccessible().Get());
   EXPECT_NSEQ(@"AXColumn", col_obj.role);
   EXPECT_NSEQ(@"column1", col_obj.accessibilityLabel);
 
@@ -902,7 +914,9 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   ASSERT_TRUE(waiter.WaitForNotification());
 
   ui::BrowserAccessibility* table = FindNode(ax::mojom::Role::kTable);
-  BrowserAccessibilityCocoa* table_obj = table->GetNativeViewAccessible();
+  BrowserAccessibilityCocoa* table_obj =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          table->GetNativeViewAccessible().Get());
 
   EXPECT_NSEQ(@"AXTable", table_obj.role);
   EXPECT_NSEQ(@"Population per country", table_obj.accessibilityLabel);
@@ -934,7 +948,9 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   ASSERT_TRUE(waiter.WaitForNotification());
 
   ui::BrowserAccessibility* tree = FindNode(ax::mojom::Role::kTree);
-  BrowserAccessibilityCocoa* cocoa_tree = tree->GetNativeViewAccessible();
+  BrowserAccessibilityCocoa* cocoa_tree =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          tree->GetNativeViewAccessible().Get());
 
   NSArray* tree_children = cocoa_tree.accessibilityChildren;
   ASSERT_NSEQ(@"AXRow", [tree_children[0] role]);
@@ -1006,7 +1022,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
 
   for (auto& test : tests) {
     BrowserAccessibilityCocoa* parent =
-        FindNode(test.first)->GetNativeViewAccessible();
+        base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+            FindNode(test.first)->GetNativeViewAccessible().Get());
     BrowserAccessibilityCocoa* child = parent.accessibilityChildren[1];
 
     EXPECT_NE(nullptr, parent);
@@ -1059,7 +1076,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
 
   for (auto& test : tests) {
     BrowserAccessibilityCocoa* parent =
-        FindNode(test.first)->GetNativeViewAccessible();
+        base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+            FindNode(test.first)->GetNativeViewAccessible().Get());
     BrowserAccessibilityCocoa* first_child = parent.accessibilityChildren[0];
     BrowserAccessibilityCocoa* second_child = parent.accessibilityChildren[1];
 
@@ -1093,10 +1111,12 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   ASSERT_TRUE(waiter.WaitForNotification());
 
   BrowserAccessibilityCocoa* content_editable =
-      GetManager()
-          ->GetBrowserAccessibilityRoot()
-          ->PlatformGetChild(0)
-          ->GetNativeViewAccessible();
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          GetManager()
+              ->GetBrowserAccessibilityRoot()
+              ->PlatformGetChild(0)
+              ->GetNativeViewAccessible()
+              .Get());
   EXPECT_EQ(content_editable.accessibilityChildren.count, 5ul);
 
   WebContents* web_contents = shell()->web_contents();

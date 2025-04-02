@@ -1089,8 +1089,6 @@ class TabStripModel : public TabGroupController {
   std::vector<std::pair<tabs::TabInterface*, int>> GetTabsAndIndicesInSplit(
       split_tabs::SplitTabId split_id);
 
-  bool IsIndexValid(int index);
-
   bool InsertionIndexBreakSplitContiguity(int index);
 
   // The WebContents data currently hosted within this TabStripModel. This must

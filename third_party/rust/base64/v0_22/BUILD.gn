@@ -13,29 +13,29 @@ cargo_crate("lib") {
   epoch = "0.22"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/base64-0.22.1/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/base64-v0_22/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/base64-0.22.1/src/alphabet.rs",
-    "//third_party/rust/chromium_crates_io/vendor/base64-0.22.1/src/chunked_encoder.rs",
-    "//third_party/rust/chromium_crates_io/vendor/base64-0.22.1/src/decode.rs",
-    "//third_party/rust/chromium_crates_io/vendor/base64-0.22.1/src/display.rs",
-    "//third_party/rust/chromium_crates_io/vendor/base64-0.22.1/src/encode.rs",
-    "//third_party/rust/chromium_crates_io/vendor/base64-0.22.1/src/engine/general_purpose/decode.rs",
-    "//third_party/rust/chromium_crates_io/vendor/base64-0.22.1/src/engine/general_purpose/decode_suffix.rs",
-    "//third_party/rust/chromium_crates_io/vendor/base64-0.22.1/src/engine/general_purpose/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/base64-0.22.1/src/engine/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/base64-0.22.1/src/engine/naive.rs",
-    "//third_party/rust/chromium_crates_io/vendor/base64-0.22.1/src/engine/tests.rs",
-    "//third_party/rust/chromium_crates_io/vendor/base64-0.22.1/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/base64-0.22.1/src/prelude.rs",
-    "//third_party/rust/chromium_crates_io/vendor/base64-0.22.1/src/read/decoder.rs",
-    "//third_party/rust/chromium_crates_io/vendor/base64-0.22.1/src/read/decoder_tests.rs",
-    "//third_party/rust/chromium_crates_io/vendor/base64-0.22.1/src/read/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/base64-0.22.1/src/tests.rs",
-    "//third_party/rust/chromium_crates_io/vendor/base64-0.22.1/src/write/encoder.rs",
-    "//third_party/rust/chromium_crates_io/vendor/base64-0.22.1/src/write/encoder_string_writer.rs",
-    "//third_party/rust/chromium_crates_io/vendor/base64-0.22.1/src/write/encoder_tests.rs",
-    "//third_party/rust/chromium_crates_io/vendor/base64-0.22.1/src/write/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/base64-v0_22/src/alphabet.rs",
+    "//third_party/rust/chromium_crates_io/vendor/base64-v0_22/src/chunked_encoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/base64-v0_22/src/decode.rs",
+    "//third_party/rust/chromium_crates_io/vendor/base64-v0_22/src/display.rs",
+    "//third_party/rust/chromium_crates_io/vendor/base64-v0_22/src/encode.rs",
+    "//third_party/rust/chromium_crates_io/vendor/base64-v0_22/src/engine/general_purpose/decode.rs",
+    "//third_party/rust/chromium_crates_io/vendor/base64-v0_22/src/engine/general_purpose/decode_suffix.rs",
+    "//third_party/rust/chromium_crates_io/vendor/base64-v0_22/src/engine/general_purpose/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/base64-v0_22/src/engine/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/base64-v0_22/src/engine/naive.rs",
+    "//third_party/rust/chromium_crates_io/vendor/base64-v0_22/src/engine/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/base64-v0_22/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/base64-v0_22/src/prelude.rs",
+    "//third_party/rust/chromium_crates_io/vendor/base64-v0_22/src/read/decoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/base64-v0_22/src/read/decoder_tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/base64-v0_22/src/read/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/base64-v0_22/src/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/base64-v0_22/src/write/encoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/base64-v0_22/src/write/encoder_string_writer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/base64-v0_22/src/write/encoder_tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/base64-v0_22/src/write/mod.rs",
   ]
   inputs = []
 

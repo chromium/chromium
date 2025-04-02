@@ -17,6 +17,7 @@
 <translation id="1052842760770519282">Sommige van je wachtwoorden zijn niet toegankelijk</translation>
 <translation id="1058669287135776095">Je bent offline. Check de internetverbinding en probeer het opnieuw.</translation>
 <translation id="10614374240317010">Nooit opgeslagen</translation>
+<translation id="1070689840697074178">Je kunt hier pdf's downloaden</translation>
 <translation id="107147699690128016">Als je de bestandsextensie wijzigt, wordt het bestand mogelijk in een andere app geopend. Daardoor kan het een gevaar vormen voor je apparaat.</translation>
 <translation id="1080365971383768617">Wachtwoorden op al je apparaten</translation>
 <translation id="1087176310396019910">Mogelijk spam</translation>
@@ -63,7 +64,6 @@
 <translation id="1240288207750131269"><ph name="LANG" /> laden</translation>
 <translation id="124116460088058876">Meer talen</translation>
 <translation id="1241792820757384812">Je wachtwoorden worden verwijderd uit Google Wachtwoordmanager voor <ph name="CHROME_CHANNEL" />. Je houdt het wachtwoordbestand dat je net hebt gedownload.</translation>
-<translation id="1242883863226959074">apparaat</translation>
 <translation id="124678866338384709">Huidig tabblad sluiten</translation>
 <translation id="1246905108078336582">Suggestie verwijderen van klembord?</translation>
 <translation id="1258753120186372309">Google-doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
@@ -289,6 +289,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2362083820973145409">Ingelogd als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Hiermee worden de instellingen geopend.</translation>
 <translation id="2363734411417672757">Er worden meer pagina's vooraf geladen. Pagina's kunnen op verzoek van andere sites of apps vooraf worden geladen via de servers van Google.</translation>
 <translation id="2366554533468315977">Prijsgeschiedenis op internet voor deze optie</translation>
+<translation id="2367818124433749493">Snelkoppelingen voor ontwikkelaars</translation>
 <translation id="2385605401818128172">Je kunt sites checken die veel meldingen sturen en voorkomen dat ze in de toekomst meer sturen</translation>
 <translation id="2386938421315164605">Onderwerpen verbergen en zichtbaar maken</translation>
 <translation id="2390510615457643724">Wil je <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> opnieuw downloaden?</translation>
@@ -510,7 +511,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3398320232533725830">Bookmarkbeheer openen</translation>
 <translation id="3414952576877147120">Grootte:</translation>
 <translation id="3421726884497337397">Kies wanneer je cookies van derden wilt blokkeren</translation>
-<translation id="342220687432920852">{HOURS,plural, =1{# u geleden}other{# u geleden}}</translation>
 <translation id="3430670036890315772">Als je de profielvergrendeling uitzet, worden je opgeslagen gegevens verwijderd</translation>
 <translation id="3435465986463792564">Heb je veel vensters open? Beheer ze hier.</translation>
 <translation id="3435575784518354875">Als je toegang wilt houden tot je wachtwoorden, exporteer je ze nu, update je Google Play-services en importeer je ze terug naar Google Wachtwoordmanager. <ph name="BEGIN_LINK" />Bekijk de volledige instructies<ph name="END_LINK" />.</translation>
@@ -693,6 +693,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4269820728363426813">Linkadres kopiëren</translation>
 <translation id="4270730597186910506">Een product volgen of niet meer volgen.</translation>
 <translation id="4277529130885813215">Ander apparaat gebruiken</translation>
+<translation id="427987768447457592">Nieuwe tabbladgroep</translation>
 <translation id="4282440837784183472">Je organisatie, <ph name="MANAGED_DOMAIN" />, beheert het account waarop je inlogt en hoe Chrome kan worden gebruikt. Je beheerder kan bepaalde functies instellen of beperken.</translation>
 <translation id="4285498937028063278">Losmaken</translation>
 <translation id="4285846616383034558">Cookies, cachegeheugen en andere sitegegevens</translation>
@@ -955,6 +956,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5456381639095306749">Pagina downloaden</translation>
 <translation id="5458366071038729214">Hier vind je de sites die je volgt</translation>
 <translation id="5468068603361015296">Wil je <ph name="FILE_NAME" /> toch downloaden?</translation>
+<translation id="5471273988133666918">Tabblad <ph name="TAB_TITLE" /> kan niet worden verplaatst</translation>
 <translation id="548278423535722844">Openen in app voor passen</translation>
 <translation id="5492637351392383067">Versleuteling op het apparaat</translation>
 <translation id="549660026907543296">Deelnemen als <ph name="MEMBER_FULL_NAME" /></translation>
@@ -963,7 +965,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5517095782334947753">Je hebt bookmarks, geschiedenis, wachtwoorden en andere instellingen van <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5517326820028369152">Blad onderaan met recente activiteit</translation>
 <translation id="5526281268548144413">Kunnen niet worden gesloten voor meerdere vensters</translation>
-<translation id="5528925345478618296">{MINUTES,plural, =1{# min geleden}other{# min geleden}}</translation>
 <translation id="5548606607480005320">Veiligheidscheck</translation>
 <translation id="5554520618550346933">Als je een wachtwoord gebruikt, waarschuwt Chrome je als het online is gepubliceerd. Als dit wordt gedaan, zijn je wachtwoorden en gebruikersnamen versleuteld, zodat ze door niemand (ook niet Google) kunnen worden gelezen.</translation>
 <translation id="5555525474779371165">Je Safe Browsing-bescherming kiezen</translation>
@@ -1132,6 +1133,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6295158916970320988">Alle sites</translation>
 <translation id="6296366034485697675">Exporteren en verwijderen</translation>
 <translation id="629730747756840877">Account</translation>
+<translation id="6301526076346731664">Ontwikkelaarstools openen</translation>
 <translation id="6303969859164067831">Uitloggen en synchronisatie uitzetten</translation>
 <translation id="6307241780749477694">Laat verifiëren dat jij het bent om al je wachtwoorden op dit apparaat te krijgen</translation>
 <translation id="6312687380483398334">Web-apps (stil)</translation>
@@ -1274,7 +1276,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6865313869410766144">Formuliergegevens voor automatisch invullen</translation>
 <translation id="6867400383614725881">Nieuw incognitotabblad</translation>
 <translation id="686899695320434745">Adressen worden niet versleuteld met je wachtwoordzin. Zo kun je ze gebruiken in andere Google-services.</translation>
-<translation id="6869056123412990582">computer</translation>
 <translation id="687838958001010630">Iedereen met de link kan alle tabbladen bewerken</translation>
 <translation id="6880903702195291049">Rechten zien er goed uit</translation>
 <translation id="6883204995689174413">Delen</translation>
@@ -1637,7 +1638,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8419244640277402268">Opnemen</translation>
 <translation id="8422250855136581222">Geen tabbladen op dit apparaat</translation>
 <translation id="842386925677997438">Veiligheidstools van Chrome</translation>
-<translation id="8424781820952413435">Pagina gestuurd. Als je deze wilt bekijken, open je Chrome op je <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8427875596167638501">Voorbeeldtabblad is half geopend</translation>
 <translation id="8428213095426709021">Instellingen</translation>
 <translation id="8430824733382774043">Alleen screenshot delen</translation>
@@ -1692,7 +1692,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8611922158252451755">Iedereen met de link kan alle tabbladen bewerken. Wees dus voorzichtig met delen. De link verloopt over 48 uur.</translation>
 <translation id="8616006591992756292">Er kunnen andere vormen van browsegeschiedenis zijn opgeslagen voor je Google-account op <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">De voorgestelde URL in de gedownloade content openen?</translation>
-<translation id="8621068256433641644">telefoon</translation>
 <translation id="8635399646025169806">Tabbladgroep behouden?</translation>
 <translation id="8636825310635137004">Zet synchronisatie aan om de tabbladen op je andere apparaten te bekijken</translation>
 <translation id="864544049772947936">Vensters beheren (<ph name="INSTANCE_COUNTS" />)</translation>

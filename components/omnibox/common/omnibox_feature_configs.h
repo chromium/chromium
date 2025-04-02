@@ -193,6 +193,9 @@ struct SearchAggregatorProvider : Config<SearchAggregatorProvider> {
   // provider will run unscoped. Either way, doc provider won't run when in the
   // enterprise scope.
   bool disable_drive;
+  // If true, the `EnterpriseSearchAggregatorSuggestionsService` will make
+  // parallel requests for each type of suggestion.
+  bool multiple_requests;
 
   // See comments in enterprise_search_aggregator_provider.cc
   size_t scoring_max_matches_created_per_type;

@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Ekran qoruyucusunu deaktiv edin</translation>
 <translation id="3091839911843451378">Alınmadı - Dayandırılıb</translation>
 <translation id="3102119246920354026">Keş</translation>
-<translation id="3112413615003385433">Müəllim Məktəb Alətlərindəki kontenti sildi</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">hovuzlar</translation>
 <translation id="3122883569442693641">Ətraflı məlumat</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Qismən aktivləşdirilib</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> tonlarda <ph name="OFFICE_STYLE" /> ofis</translation>
 <translation id="3493187369049186498">Data Chromebook tərəfindən hesablanır. Bu, provayder datasından fərqli ola bilər.</translation>
-<translation id="349570724365779960">Məktəb Alətləri tələbələrlə əlaqələndirilib</translation>
 <translation id="3502426834823382181">bütün tətbiqlərə baxın</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Performans izləmə datasını<ph name="END_LINK1" /> göndərin</translation>
 <translation id="3517001332549868749">ChromeOS güncəlləməsi</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Redaktəni bitirin</translation>
 <translation id="3532980081107202182">Təxminən <ph name="MIN_REMAINING" /> dəqiqə qalıb</translation>
 <translation id="3533790840489634638">hovuz</translation>
-<translation id="3535802910192338629">Müəllim Məktəb Alətlərinə yeni kontent əlavə etdi</translation>
 <translation id="3547264467365135390">Düstur</translation>
 <translation id="3557205324756024651">Lokal kimlik (istəyə görə)</translation>
 <translation id="3565064564551103223">İcazə verilən IP'lər</translation>
@@ -1440,7 +1437,6 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="7544853251252956727">Qarışdırın</translation>
 <translation id="7550715992156305117">Diaqnostika Rejimləri</translation>
 <translation id="7551123448725492271">Cihaz audio cihazdır.</translation>
-<translation id="7553913964854052228">Məktəb alətləri mikrofonunuzdan istifadə edir</translation>
 <translation id="7559239713112547082">Skrinşotu Önizləyin</translation>
 <translation id="7561454561030345039">Bu əməliyyat admininiz tərəfindən idarə olunur</translation>
 <translation id="7561759921596375678">Səs səviyyəsini aktiv edin</translation>
@@ -1663,7 +1659,6 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="8576249514688522074">Başladılmayıb</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> cihazının mikroproqramının <ph name="VERSION" /> versiyasına quraşdırılmasını tamamlamaq məqsədilə yenidən başlatma tələb olunur. Kompüter bir neçə dəfə yenidən yüklənmiş kimi görünə bilər. Bu, gözləniləndir.</translation>
 <translation id="8593058461203131755">medianı durdurun</translation>
-<translation id="8619169570378509764">Məktəb Alətləri</translation>
 <translation id="8620617069779373398">Rominq statusu</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> üçün digər əməliyyatlar</translation>
 <translation id="86356131183441916">Açıq-bənövşəyi</translation>

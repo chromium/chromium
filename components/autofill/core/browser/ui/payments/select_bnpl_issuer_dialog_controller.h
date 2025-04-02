@@ -58,9 +58,9 @@ struct BnplIssuerContext {
 // SelectBnplIssuerDialogView.
 class SelectBnplIssuerDialogController {
  public:
-  // Callbacks for the View. When an issuer is selected, it passes the ID of the
+  // Callbacks for the View. When an issuer is selected, it passes the
   // issuer that was selected by the user.
-  virtual void OnIssuerSelected(const std::string& issuer_id) = 0;
+  virtual void OnIssuerSelected(BnplIssuer issuer) = 0;
   virtual void OnUserCancelled() = 0;
   virtual void Dismiss() = 0;
   virtual TextWithLink GetLinkText() const = 0;

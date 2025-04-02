@@ -63,7 +63,6 @@
 <translation id="1240288207750131269">Laster inn <ph name="LANG" /></translation>
 <translation id="124116460088058876">Flere språk</translation>
 <translation id="1241792820757384812">Passordene dine blir slettet fra Google Passordlagring for <ph name="CHROME_CHANNEL" />. Du beholder passordfilen du nettopp lastet ned.</translation>
-<translation id="1242883863226959074">enhet</translation>
 <translation id="124678866338384709">Lukk den aktive fanen</translation>
 <translation id="1246905108078336582">Vil du fjerne forslaget fra utklippstavlen?</translation>
 <translation id="1258753120186372309">Google-doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
@@ -289,6 +288,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2362083820973145409">Logget på som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Åpner innstillinger.</translation>
 <translation id="2363734411417672757">Flere sider forhåndslastes. Sider kan bli forhåndslastet via Googles tjenere når andre nettsteder eller apper ber om det.</translation>
 <translation id="2366554533468315977">Prishistorikk for dette alternativet fra hele nettet</translation>
+<translation id="2367818124433749493">Utviklersnarveier</translation>
 <translation id="2385605401818128172">Du kan gjennomgå nettsteder som sender mange varsler, og forhindre dem fra å sende flere fremover</translation>
 <translation id="2386938421315164605">Skjul emner og gjør dem synlige</translation>
 <translation id="2390510615457643724">Vil du laste ned <ph name="FILE_NAME" /> <ph name="FILE_SIZE" /> på nytt?</translation>
@@ -510,7 +510,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3398320232533725830">Åpne bokmerkebehandlingen</translation>
 <translation id="3414952576877147120">Størrelse:</translation>
 <translation id="3421726884497337397">Velg når informasjonskapsler fra tredjeparter skal blokkeres</translation>
-<translation id="342220687432920852">{HOURS,plural, =1{for # t siden}other{for # t siden}}</translation>
 <translation id="3430670036890315772">Hvis du slår av profillåsen, fjernes den lagrede informasjonen din</translation>
 <translation id="3435465986463792564">Har du mange vinduer? Du kan administrere dem her</translation>
 <translation id="3435575784518354875">For å beholde tilgangen til passordene dine, eksporter dem nå, oppdater Google Play-tjenester, og importer dem til Google Passordlagring igjen. <ph name="BEGIN_LINK" />Se fullstendige instruksjoner.<ph name="END_LINK" /></translation>
@@ -693,6 +692,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4269820728363426813">Kopiér linkadressen</translation>
 <translation id="4270730597186910506">Spor eller slutt å spore et produkt.</translation>
 <translation id="4277529130885813215">Bruk en annen enhet</translation>
+<translation id="427987768447457592">Ny fanegruppe</translation>
 <translation id="4282440837784183472">Organisasjonen din, <ph name="MANAGED_DOMAIN" />, administrerer kontoen du logger på, og hvordan Chrome kan brukes. Administratoren kan konfigurere eller begrense visse funksjoner.</translation>
 <translation id="4285498937028063278">Løsne</translation>
 <translation id="4285846616383034558">Informasjonskapsler, buffer og andre nettstedsdata</translation>
@@ -963,7 +963,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5517095782334947753">Du har bokmerker, loggen, passord og andre innstillinger fra <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5517326820028369152">Felt nederst for nylig aktivitet</translation>
 <translation id="5526281268548144413">Kan ikke lukkes i flere vinduer</translation>
-<translation id="5528925345478618296">{MINUTES,plural, =1{for # min siden}other{for # min siden}}</translation>
 <translation id="5548606607480005320">Sikkerhetssjekk</translation>
 <translation id="5554520618550346933">Når du bruker et passord, advarer Chrome deg hvis passordet er publisert på nettet. Denne funksjonen holder passordene og brukernavnene dine kryptert. Det betyr at ingen kan lese dem, ikke engang Google.</translation>
 <translation id="5555525474779371165">Velg Safe Browsing-beskyttelse</translation>
@@ -1132,6 +1131,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6295158916970320988">Alle nettsteder</translation>
 <translation id="6296366034485697675">Eksporter og slett</translation>
 <translation id="629730747756840877">Konto</translation>
+<translation id="6301526076346731664">Åpne utviklerverktøyene</translation>
 <translation id="6303969859164067831">Logg av og slå av synkronisering</translation>
 <translation id="6307241780749477694">Bekreft at det er deg, for å få alle passordene dine på denne enheten</translation>
 <translation id="6312687380483398334">Nettprogrammer (stille)</translation>
@@ -1274,7 +1274,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6865313869410766144">Skjemadata lagret med autofyll</translation>
 <translation id="6867400383614725881">Ny inkognitofane</translation>
 <translation id="686899695320434745">Adresser krypteres ikke med passordfrasen. Dermed kan du bruke dem i andre Google-tjenester.</translation>
-<translation id="6869056123412990582">datamaskin</translation>
 <translation id="687838958001010630">Alle som har linken, kan redigere alle faner</translation>
 <translation id="6880903702195291049">Tillatelsene ser bra ut</translation>
 <translation id="6883204995689174413">Del</translation>
@@ -1637,7 +1636,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8419244640277402268">Inkluder</translation>
 <translation id="8422250855136581222">Ingen faner på denne enheten</translation>
 <translation id="842386925677997438">Sikkerhetsverktøyene i Chrome</translation>
-<translation id="8424781820952413435">Siden er sendt. For å se den, åpne Chrome på <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Fanen for forhåndsvisning er halvveis åpnet</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
 <translation id="8430824733382774043">Del kun skjermbilde</translation>
@@ -1692,7 +1690,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8611922158252451755">Alle som har linken, kan endre alle fanene, så tenk deg om før du deler. Linken utløper om 48 timer.</translation>
 <translation id="8616006591992756292">Det kan hende Google-kontoen din har andre typer nettleserlogger på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Vil du åpne den foreslåtte nettadressen som er spesifisert i det nedlastede innholdet?</translation>
-<translation id="8621068256433641644">telefon</translation>
 <translation id="8635399646025169806">Vil du beholde fanegruppen?</translation>
 <translation id="8636825310635137004">For å få fanene dine fra de andre enhetene du bruker, slå på synkronisering.</translation>
 <translation id="864544049772947936">Administrer vinduer (<ph name="INSTANCE_COUNTS" />)</translation>

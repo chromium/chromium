@@ -29,7 +29,7 @@ chromium-metrics-reviews@google.com.
   <summary>Specified DevTools action has been taken.</summary>
 </histogram>
 
-<histogram base="true" name="DevTools.AidaResponseTime" units="ms"
+<histogram name="DevTools.AidaResponseTime" units="ms"
     expires_after="2024-07-21">
   <owner>yangguo@google.com</owner>
   <owner>danilsomsikov@google.com</owner>
@@ -366,15 +366,6 @@ chromium-metrics-reviews@google.com.
   <owner>yangguo@google.com</owner>
   <owner>bmeurer@google.com</owner>
   <summary>Specified DevTools panel was shown.</summary>
-</histogram>
-
-<histogram name="DevTools.PanelShownInLocation"
-    enum="DevToolsPanelWithLocation" expires_after="2025-05-11">
-  <owner>bmeurer@google.com</owner>
-  <owner>ergunsh@google.com</owner>
-  <summary>
-    Specified DevTools panel was shown in the specified location: Main or Drawer
-  </summary>
 </histogram>
 
 <histogram name="DevTools.RecordingAssertion" enum="DevToolsRecordingAssertion"

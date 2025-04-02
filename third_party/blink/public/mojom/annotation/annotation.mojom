@@ -57,8 +57,11 @@ enum AnnotationType {
 // annotation (and host in the browser) from the document.
 interface AnnotationAgent {
   // Ensures the content that the agent is attached to is visible and centered
-  // in the viewport.
-  ScrollIntoView();
+  // in the viewport. If `applies_focus` is true, then the first node of the
+  // match is focused. If that node is unfocusable, then the focus on the
+  // document is cleared to allow the next "tab" focus navigation to be the
+  // element after the first node in the content.
+  ScrollIntoView(bool applies_focus);
 };
 
 // Allows the browser process to receive events for a single annotation in the

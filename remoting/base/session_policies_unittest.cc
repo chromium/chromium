@@ -18,6 +18,7 @@ TEST(SessionPolicies, Equality) {
   test_policies_1.maximum_session_duration = base::Hours(20);
   test_policies_1.curtain_required = false;
   test_policies_1.host_username_match_required = true;
+  test_policies_1.allow_remote_input = false;
 
   SessionPolicies test_policies_2 = test_policies_1;
   EXPECT_EQ(test_policies_1, test_policies_2);

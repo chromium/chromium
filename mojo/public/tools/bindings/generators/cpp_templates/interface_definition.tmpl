@@ -211,11 +211,7 @@ class {{class_name}}_{{method.name}}_ForwardToCallback
     : public mojo::MessageReceiver {
  public:
   {{class_name}}_{{method.name}}_ForwardToCallback(
-{%-     if method.result_response != None %}
-      {{class_name}}::{{method.name}}ResultCallback callback
-{%-     else %}
       {{class_name}}::{{method.name}}Callback callback
-{%-     endif %}
       ) : callback_(std::move(callback)) {
   }
 
@@ -224,11 +220,7 @@ class {{class_name}}_{{method.name}}_ForwardToCallback
 
   bool Accept(mojo::Message* message) override;
  private:
-{%-     if method.result_response != None %}
-  {{class_name}}::{{method.name}}ResultCallback callback_;
-{%-     else %}
   {{class_name}}::{{method.name}}Callback callback_;
-{%-     endif %}
 };
 {%-   endif %}
 {%- endfor %}
@@ -382,7 +374,7 @@ class {{class_name}}_{{method.name}}_ProxyToResponder : public ::mojo::internal:
  public:
 {%-      if method.result_response != None -%}
 {%        set response_type = method.response_parameters[0].kind %}
-  static {{class_name}}::{{method.name}}ResultCallback CreateCallback(
+  static {{class_name}}::{{method.name}}Callback CreateCallback(
       ::mojo::Message& message,
       std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
     std::unique_ptr<{{class_name}}_{{method.name}}_ProxyToResponder> proxy(

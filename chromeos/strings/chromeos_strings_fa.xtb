@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">غیرفعال کردن محافظ صفحه</translation>
 <translation id="3091839911843451378">انجام نشد - متوقف شده است</translation>
 <translation id="3102119246920354026">حافظه پنهان</translation>
-<translation id="3112413615003385433">معلم شما محتوایی را از «ابزار مدرسه» برداشته است</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">استخر</translation>
 <translation id="3122883569442693641">جزئیات بیشتر</translation>
@@ -519,7 +518,7 @@
 <translation id="3383623117265110236">انحصاری</translation>
 <translation id="3404249063913988450">فعال کردن محافظ صفحه</translation>
 <translation id="3413935475507503304">برای به‌روزرسانی، روی «بعدی» کلیک کنید.</translation>
-<translation id="3416709353545797224">ضبط کردن تمام صدای <ph name="DEVICE_TYPE" /></translation>
+<translation id="3416709353545797224">ضبط کردن همه صداهای <ph name="DEVICE_TYPE" /></translation>
 <translation id="3428551088151258685">فضای باز</translation>
 <translation id="3428971106895559033">پاستل</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />٪</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">به‌طور نسبی فعال شده است</translation>
 <translation id="3492882532495507361">دفتر کار <ph name="OFFICE_STYLE" /> با رنگ‌های <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">‏دستگاه Chromebook شما میزان مصرف داده را اندازه‌گیری می‌کند. مقدار آن ممکن است با اندازه‌گیری رساننده خدمات متفاوت باشد.</translation>
-<translation id="349570724365779960">«ابزارهای مدرسه» با دانش‌آموزان مرتبط شده است</translation>
 <translation id="3502426834823382181">مشاهده همه برنامه‌ها</translation>
 <translation id="3510890413042482857">ارسال <ph name="BEGIN_LINK1" />داده‌های ردیابی عملکرد<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">‏به‌روزرسانی ChromeOS</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">اتمام ویرایش</translation>
 <translation id="3532980081107202182">تقریباً <ph name="MIN_REMAINING" /> دقیقه باقی مانده است</translation>
 <translation id="3533790840489634638">استخر</translation>
-<translation id="3535802910192338629">معلم شما محتوای جدیدی به «ابزارهای مدرسه» اضافه کرده است</translation>
 <translation id="3547264467365135390">فرمول</translation>
 <translation id="3557205324756024651">شناسه محلی (اختیاری)</translation>
 <translation id="3565064564551103223">‏IPهای مجاز</translation>
@@ -704,7 +701,7 @@
 <translation id="4249717042534905822">در روز یکشنبه</translation>
 <translation id="4250229828105606438">نماگرفت</translation>
 <translation id="4251839292699800785">دفتر کار شیک</translation>
-<translation id="4252261480746798874">‏وقتی «کاغذدیواری خودتان را بسازید» را انتخاب کنید، می‌توانید پیام‌واره سفارشی بنویسید. برای شخصی‌سازی کاغذدیواری هوش مصنوعی همچنین می‌توانید گزینه «زمینه‌ای انتخاب کنید» و سپس کلماتی را که زیرشان خط کشیده شده است انتخاب کنید.
+<translation id="4252261480746798874">‏وقتی «ایجاد مورد شخصی خود» را انتخاب کنید، می‌توانید پیام‌واره سفارشی بنویسید. برای شخصی‌سازی کردن کاغذدیواری هوش مصنوعی همچنین می‌توانید گزینه «زمینه‌ای انتخاب کنید» و سپس کلماتی را که زیرشان خط کشیده شده است انتخاب کنید.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           «ایده جدید بده» را انتخاب کنید تا گزینه‌های منحصربه‌فرد و متنوع‌تری برای تصاویر هوش مصنوعی دریافت کنید.
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">اجازه می‌دهید خدمات سیستم از مکانتان استفاده کند؟</translation>
 <translation id="6657585470893396449">گذرواژه</translation>
 <translation id="66621959568103627">صورتی مرجانی</translation>
+<translation id="6669485505082792176">درحال‌حاضر نمی‌توان تصویری از این مورد ایجاد کرد. شرحتان را بازنویسی کنید. به‌یاد داشته باشید که نمی‌توانید از افراد یا محتوای صریح یا مخرب تصویر بسازید. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">افزایش روشنایی صفحه‌کلید</translation>
 <translation id="6692996468359469499">دریافت اطلاعاتی که با انتخابتان مرتبط است</translation>
 <translation id="6694534975463174713">قفل کردن</translation>
@@ -1440,7 +1438,6 @@
 <translation id="7544853251252956727">درهم</translation>
 <translation id="7550715992156305117">روال‌های عیب‌یابی</translation>
 <translation id="7551123448725492271">دستگاه صوتی است.</translation>
-<translation id="7553913964854052228">«ابزارهای مدرسه» درحال استفاده از میکروفون شما است</translation>
 <translation id="7559239713112547082">پیش‌دید کردن نماگرفت</translation>
 <translation id="7561454561030345039">سرپرست شما این اقدام را مدیریت می‌کند</translation>
 <translation id="7561759921596375678">روشن کردن صدا</translation>
@@ -1663,7 +1660,6 @@
 <translation id="8576249514688522074">راه‌اندازی‌نشده</translation>
 <translation id="8584654835905316966">برای تکمیل نصب سفت‌افزار <ph name="DEVICE_NAME" /> به نسخه <ph name="VERSION" />، بازراه‌اندازی لازم است. ممکن است رایانه شما در ظاهر چندین بار بازراه‌اندازی شود. این رفتار طبیعی است.</translation>
 <translation id="8593058461203131755">مکث رسانه</translation>
-<translation id="8619169570378509764">ابزارهای مدرسه</translation>
 <translation id="8620617069779373398">وضعیت فراگردی</translation>
 <translation id="8626489604350149811">کنش‌های بیشتر برای <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">بنفش روشن</translation>

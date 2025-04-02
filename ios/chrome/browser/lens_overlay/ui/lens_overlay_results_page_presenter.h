@@ -27,6 +27,9 @@
 // Delegate for the presenter events.
 @property(nonatomic, weak) id<LensOverlayResultsPagePresenterDelegate> delegate;
 
+// The current height of the results page.
+@property(nonatomic, readonly) CGFloat presentedResultsPageHeight;
+
 // Creates a new instance of the presenter.
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                   resultPageViewController:

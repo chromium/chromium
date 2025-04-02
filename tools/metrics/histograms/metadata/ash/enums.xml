@@ -243,6 +243,19 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="17" label="Nothing to Challenge-response"/>
 </enum>
 
+<!-- LINT.IfChange(BabelOrcaReceivingStoppedReason) -->
+
+<enum name="BabelOrcaReceivingStoppedReason">
+  <int value="0" label="Class Tools session ended"/>
+  <int value="1" label="Session captions turned off"/>
+  <int value="2" label="Local captions turned off"/>
+  <int value="3" label="Tachyon signin request error"/>
+  <int value="4" label="Join group request error"/>
+  <int value="5" label="Receive messages request error"/>
+</enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/boca/babelorca/babel_orca_consumer.h:ReceivingStoppedReason) -->
+
 <!-- LINT.IfChange(BabelOrcaStreamEndReason) -->
 
 <enum name="BabelOrcaStreamEndReason">
@@ -1284,8 +1297,8 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
 <enum name="GeminiAppPage">
   <int value="0" label="Congratulations"/>
   <int value="1" label="Offer"/>
-  <int value="2" label="Terms &amp; Conditions"/>
-  <int value="3" label="Debug"/>
+  <int value="2" label="Terms &amp; Conditions (CBX)"/>
+  <int value="3" label="Terms &amp; Conditions (Standard)"/>
 </enum>
 
 <enum name="GlanceableStudentAssignmentList">

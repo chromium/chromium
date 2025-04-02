@@ -6525,6 +6525,108 @@ TEST_P(PasswordManagerTest, MarksHasPasswordFormForFirstCctPageLoad) {
 }
 #endif
 
+TEST_P(PasswordManagerTest, OnResourceLoadingFailedResetsSubmittedManager) {
+  base::test::ScopedFeatureList feature_list(
+      features::kFailedLoginDetectionBasedOnResourceLoadingErrors);
+  std::vector<FormData> observed;
+  FormData form_data(MakeSimpleFormData());
+  observed.push_back(form_data);
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(form_data);
+
+  manager()->OnResourceLoadingFailed(&driver_, form_data.url());
+
+  EXPECT_FALSE(manager()->GetSubmittedManagerForTest());
+}
+
+TEST_P(PasswordManagerTest,
+       OnResourceLoadingFailedForSameTLDResetsSubmittedManager) {
+  base::test::ScopedFeatureList feature_list(
+      features::kFailedLoginDetectionBasedOnResourceLoadingErrors);
+  std::vector<FormData> observed;
+  FormData form_data(MakeSimpleFormData());
+  form_data.set_url(GURL("https://example.com/"));
+  observed.push_back(form_data);
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(form_data);
+
+  manager()->OnResourceLoadingFailed(&driver_,
+                                     GURL("https://login.example.com/"));
+
+  EXPECT_FALSE(manager()->GetSubmittedManagerForTest());
+}
+
+TEST_P(PasswordManagerTest, OnResourceLoadingFailedWithDifferentDriver) {
+  // Submitted manager shouldn't be reset based on failed resource load when
+  // drivers don't match.
+  base::test::ScopedFeatureList feature_list(
+      features::kFailedLoginDetectionBasedOnResourceLoadingErrors);
+  std::vector<FormData> observed;
+  FormData form_data(MakeSimpleFormData());
+  observed.push_back(form_data);
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(form_data);
+
+  MockPasswordManagerDriver fake_driver;
+  manager()->OnResourceLoadingFailed(&fake_driver, form_data.url());
+
+  EXPECT_TRUE(manager()->GetSubmittedManagerForTest());
+}
+
+TEST_P(PasswordManagerTest, OnResourceLoadingFailedWithDifferentOrigin) {
+  // Submitted manager shouldn't be reset based on failed resource load for a
+  // different origin.
+  base::test::ScopedFeatureList feature_list(
+      features::kFailedLoginDetectionBasedOnResourceLoadingErrors);
+  std::vector<FormData> observed;
+  FormData form_data(MakeSimpleFormData());
+  observed.push_back(form_data);
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(form_data);
+
+  manager()->OnResourceLoadingFailed(&driver_, GURL("https://example.com/"));
+
+  EXPECT_TRUE(manager()->GetSubmittedManagerForTest());
+}
+
+TEST_P(PasswordManagerTest, OnResourceLoadingFailedFeatureDisabled) {
+  // When the kFailedLoginDetectionBasedOnResourceLoadingErrors submitted
+  // manager shouldn't be reset based on failed resource load.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kFailedLoginDetectionBasedOnResourceLoadingErrors);
+
+  std::vector<FormData> observed;
+  FormData form_data(MakeSimpleFormData());
+  observed.push_back(form_data);
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(form_data);
+
+  manager()->OnResourceLoadingFailed(&driver_, form_data.url());
+
+  EXPECT_TRUE(manager()->GetSubmittedManagerForTest());
+}
+
 INSTANTIATE_TEST_SUITE_P(, PasswordManagerTest, ::testing::Bool());
 
 enum class PredictionSource {

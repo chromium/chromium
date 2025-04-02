@@ -26,6 +26,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/defaults.h"
+#include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -125,6 +126,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/profiling.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/common/extension_features.h"
 #include "media/base/media_switches.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -948,9 +950,6 @@ void ToolsMenuModel::Build(Browser* browser) {
       kReadingModeMenuItem);
 
   AddSeparator(ui::NORMAL_SEPARATOR);
-  if (!features::IsExtensionMenuInRootAppMenu()) {
-    AddItemWithStringId(IDC_MANAGE_EXTENSIONS, IDS_SHOW_EXTENSIONS);
-  }
 
   AddItemWithStringIdAndVectorIcon(this, IDC_PERFORMANCE, IDS_SHOW_PERFORMANCE,
                                    kPerformanceIcon);
@@ -1192,7 +1191,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       break;
     // Extensions menu.
     case IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS:
-      CHECK(features::IsExtensionMenuInRootAppMenu());
       // Logging the original histograms for experiment comparison purposes.
       if (!uma_action_recorded_) {
         base::UmaHistogramMediumTimes(
@@ -1201,12 +1199,18 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       LogMenuAction(MENU_ACTION_MANAGE_EXTENSIONS);
       break;
     case IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE:
-      CHECK(features::IsExtensionMenuInRootAppMenu());
       if (!uma_action_recorded_) {
         base::UmaHistogramMediumTimes(
             "WrenchMenu.TimeToAction.VisitChromeWebStore", delta);
       }
       LogMenuAction(MENU_ACTION_VISIT_CHROME_WEB_STORE);
+      break;
+    case IDC_EXPLORE_EXTENSIONS:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.ExploreExtensions", delta);
+      }
+      LogMenuAction(MENU_ACTION_EXPLORE_EXTENSIONS);
       break;
     // Recent tabs menu.
     case IDC_RESTORE_TAB:
@@ -1906,8 +1910,15 @@ void AppMenuModel::Build() {
         kTabGroupsMenuItem);
   }
 
-  if (features::IsExtensionMenuInRootAppMenu()) {
-    // Extensions sub menu.
+  // Extensions sub menu.
+  if (base::FeatureList::IsEnabled(features::kExtensionsCollapseMainMenu) &&
+      !extensions::ui_util::HasManageableExtensions(browser_->profile())) {
+    AddItemWithStringIdAndVectorIcon(this, IDC_EXPLORE_EXTENSIONS,
+                                     IDS_EXPLORE_EXTENSIONS,
+                                     vector_icons::kExtensionChromeRefreshIcon);
+    SetElementIdentifierAt(GetIndexOfCommandId(IDC_EXPLORE_EXTENSIONS).value(),
+                           ExtensionsMenuModel::kVisitChromeWebStoreMenuItem);
+  } else {
     sub_menus_.push_back(std::make_unique<ExtensionsMenuModel>(this, browser_));
     AddSubMenuWithStringIdAndVectorIcon(
         this, IDC_EXTENSIONS_SUBMENU, IDS_EXTENSIONS_SUBMENU,
@@ -1915,6 +1926,7 @@ void AppMenuModel::Build() {
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU).value(),
                            kExtensionsMenuItem);
   }
+
   AddItemWithStringIdAndVectorIcon(this, IDC_CLEAR_BROWSING_DATA,
                                    IDS_CLEAR_BROWSING_DATA,
                                    kTrashCanRefreshIcon);

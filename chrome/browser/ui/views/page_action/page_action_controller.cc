@@ -16,9 +16,11 @@ namespace page_actions {
 using PassKey = base::PassKey<PageActionController>;
 
 PageActionController::PageActionController(
+    const PageActionControllerPropertiesMap& controller_properties,
     PinnedToolbarActionsModel* pinned_actions_model,
     PageActionModelFactory* page_action_model_factory)
-    : page_action_model_factory_(page_action_model_factory) {
+    : controller_properties_(controller_properties),
+      page_action_model_factory_(page_action_model_factory) {
   if (pinned_actions_model) {
     pinned_actions_observation_.Observe(pinned_actions_model);
   }

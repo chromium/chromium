@@ -552,10 +552,10 @@ index 6ad51c8fec1d6..4c69c906c6467 100644
  #elif defined(_UNIX)
    ThSep=*localeconv()->thousands_sep;
 diff --git a/third_party/unrar/src/unicode.cpp b/third_party/unrar/src/unicode.cpp
-index f33bfa43d9cba..7fa8d45d6601a 100644
+index 62f546108f3b5..edf7a16e7e0c4 100644
 --- a/third_party/unrar/src/unicode.cpp
 +++ b/third_party/unrar/src/unicode.cpp
-@@ -760,9 +760,18 @@ std::wstring::size_type wcscasestr(const std::wstring &str, const std::wstring &
+@@ -771,9 +771,18 @@ std::wstring::size_type wcscasestr(const std::wstring &str, const std::wstring &
  wchar* wcslower(wchar *s)
  {
  #ifdef _WIN_ALL
@@ -574,7 +574,7 @@ index f33bfa43d9cba..7fa8d45d6601a 100644
  #else
    for (wchar *c=s;*c!=0;c++)
      *c=towlower(*c);
-@@ -780,9 +789,18 @@ void wcslower(std::wstring &s)
+@@ -791,9 +800,18 @@ void wcslower(std::wstring &s)
  wchar* wcsupper(wchar *s)
  {
  #ifdef _WIN_ALL
@@ -593,7 +593,7 @@ index f33bfa43d9cba..7fa8d45d6601a 100644
  #else
    for (wchar *c=s;*c!=0;c++)
      *c=towupper(*c);
-@@ -803,11 +821,20 @@ void wcsupper(std::wstring &s)
+@@ -814,11 +832,20 @@ void wcsupper(std::wstring &s)
  int toupperw(int ch)
  {
  #if defined(_WIN_ALL)
@@ -614,7 +614,7 @@ index f33bfa43d9cba..7fa8d45d6601a 100644
  #else
    return towupper(ch);
  #endif
-@@ -817,10 +844,19 @@ int toupperw(int ch)
+@@ -828,10 +855,19 @@ int toupperw(int ch)
  int tolowerw(int ch)
  {
  #if defined(_WIN_ALL)
@@ -634,7 +634,7 @@ index f33bfa43d9cba..7fa8d45d6601a 100644
  #else
    return towlower(ch);
  #endif
-@@ -857,7 +893,6 @@ int64 atoilw(const std::wstring &s)
+@@ -868,7 +904,6 @@ int64 atoilw(const std::wstring &s)
  
  
  #ifdef DBCS_SUPPORTED
@@ -642,7 +642,7 @@ index f33bfa43d9cba..7fa8d45d6601a 100644
  
  SupportDBCS::SupportDBCS()
  {
-@@ -874,6 +909,11 @@ void SupportDBCS::Init()
+@@ -885,6 +920,11 @@ void SupportDBCS::Init()
      IsLeadByte[I]=IsDBCSLeadByte(I)!=0;
  }
  

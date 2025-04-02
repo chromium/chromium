@@ -217,6 +217,9 @@ WTF::String ConvertModelAvailabilityCheckResultToDebugString(
         kUnavailableFeatureExecutionNotEnabled:
       return "Model execution for this feature was not enabled.";
     case mojom::blink::ModelAvailabilityCheckResult::
+        kUnavailableModelAdaptationNotAvailable:
+      return "Model capability is not available.";
+    case mojom::blink::ModelAvailabilityCheckResult::
         kUnavailableValidationPending:
       return "Model validation is still pending.";
     case mojom::blink::ModelAvailabilityCheckResult::
@@ -235,8 +238,6 @@ WTF::String ConvertModelAvailabilityCheckResultToDebugString(
     case mojom::blink::ModelAvailabilityCheckResult::kAvailable:
     case mojom::blink::ModelAvailabilityCheckResult::kDownloadable:
     case mojom::blink::ModelAvailabilityCheckResult::kDownloading:
-    case mojom::blink::ModelAvailabilityCheckResult::
-        kUnavailableModelAdaptationNotAvailable:
       NOTREACHED();
   }
   NOTREACHED();

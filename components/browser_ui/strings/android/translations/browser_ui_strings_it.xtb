@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">Attivazione forzata dello zoom</translation>
 <translation id="3905475044299942653">Interrompi notifiche eccessive</translation>
 <translation id="3908288065506437185">Blocca i cookie di terze parti in modalità di navigazione in incognito</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Alcune funzionalità potrebbero non essere disponibili. I siti correlati possono comunque utilizzare i cookie di terze parti.</translation>
 <translation id="3922092564198021702">Apri le Impostazioni sullo smartphone</translation>
 <translation id="3933121352599513978">Comprimi le richieste indesiderate (opzione consigliata)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">Dettagli</translation>
 <translation id="4598549027014564149">In modalità di navigazione in incognito, i siti non possono utilizzare i cookie per conoscere la tua attività di navigazione sui siti, inclusi quelli correlati. La tua attività di navigazione non viene usata, ad esempio, per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
 <translation id="461356340001513807">Ti consente di accedere ai siti web utilizzando l'account che hai creato con un servizio di identità</translation>
-<translation id="4619615317237390068">Schede di altri dispositivi</translation>
 <translation id="4635969503923889910">Non consentire ai siti di utilizzare i dispositivi NFC</translation>
 <translation id="4644713492825682049">Elimina e reimposta</translation>
 <translation id="4645575059429386691">Gestito da un genitore</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">Condividi tramite</translation>
 <translation id="5001526427543320409">Cookie di terze parti</translation>
 <translation id="5007392906805964215">Visualizza</translation>
-<translation id="5014182796621173645">Visitato il giorno <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Consenti</translation>
 <translation id="5048398596102334565">Consenti ai siti di accedere ai sensori di movimento (opzione consigliata)</translation>
 <translation id="5048841907079026162">Gestisci dati di navigazione</translation>
@@ -443,7 +440,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Contenuti protetti</translation>
 <translation id="662080504995468778">Rimani</translation>
-<translation id="6653342741369270081">Premi il pulsante Indietro per uscire dalla modalità a schermo intero.</translation>
+<translation id="6635327442719709864">Se questa opzione è attiva, i siti possono chiedere di usare le porte seriali. Se l'opzione non è attiva, i siti non possono utilizzare le porte seriali.</translation>
 <translation id="6683865262523156564">Questo sito fa parte di un gruppo che può vedere le tue attività. Il gruppo è definito da <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Foto del profilo</translation>
 <translation id="6697925417670533197">Download attivi</translation>

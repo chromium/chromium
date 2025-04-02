@@ -47,3 +47,6 @@ crbug.com/1405548 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_color
 crbug.com/1405548 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_bgra8unorm.https.html [ Failure ]
 crbug.com/1405548 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_rgba16float.https.html [ Failure ]
 crbug.com/1405548 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_rgba8unorm.https.html [ Failure ]
+
+# Test failus due to drop last frame after gpu device is destroyed/lost.
+crbug.com/370694819 wpt_internal/webgpu/web_platform/reftests/canvas_display_after_device_lost.https.html [ Failure ]

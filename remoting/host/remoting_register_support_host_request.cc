@@ -221,6 +221,10 @@ void RemotingRegisterSupportHostRequest::RegisterHost() {
         enterprise_params_->allow_file_transfer);
     enterprise_options->set_connection_dialog_required(
         enterprise_params_->connection_dialog_required);
+    enterprise_options->set_allow_remote_input(
+        enterprise_params_->allow_remote_input);
+    enterprise_options->set_allow_clipboard_sync(
+        enterprise_params_->allow_clipboard_sync);
     if (!enterprise_params_->connection_auto_accept_timeout.is_zero()) {
       enterprise_options->mutable_connection_auto_accept_timeout()->set_seconds(
           enterprise_params_->connection_auto_accept_timeout.InSeconds());

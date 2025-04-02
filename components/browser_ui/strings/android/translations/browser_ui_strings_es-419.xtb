@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">Forzar habilitación de zoom</translation>
 <translation id="3905475044299942653">Detener muchas notificaciones</translation>
 <translation id="3908288065506437185">Bloquear cookies de terceros en el modo Incógnito</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Es posible que no puedas usar algunas funciones. Los sitios relacionados también pueden usar cookies de terceros.</translation>
 <translation id="3922092564198021702">En tu teléfono, abre Configuración</translation>
 <translation id="3933121352599513978">Contraer solicitudes no deseadas (recomendado)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">Detalles</translation>
 <translation id="4598549027014564149">Cuando está activado el modo Incógnito, los sitios no pueden usar tus cookies para ver tu actividad de navegación en sitios, ni siquiera en sitios relacionados. Tu actividad de navegación no se usa, por ejemplo, para personalizar anuncios. Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
 <translation id="461356340001513807">Te permite acceder a sitios web a través de una cuenta con un servicio de identidad</translation>
-<translation id="4619615317237390068">Pestañas de otros dispositivos</translation>
 <translation id="4635969503923889910">No permitir que los sitios usen dispositivos NFC</translation>
 <translation id="4644713492825682049">Borrar y restablecer</translation>
 <translation id="4645575059429386691">Administrado por tus padres</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">Compartir mediante</translation>
 <translation id="5001526427543320409">Cookies de terceros</translation>
 <translation id="5007392906805964215">Revisar</translation>
-<translation id="5014182796621173645">Lo visitaste <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5048398596102334565">Permitir que los sitios accedan a los sensores de movimiento (recomendado)</translation>
 <translation id="5048841907079026162">Administra tus datos de navegación</translation>
@@ -443,7 +440,6 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Contenido protegido</translation>
 <translation id="662080504995468778">Permanecer aquí</translation>
-<translation id="6653342741369270081">Toca el botón Atrás para salir de la pantalla completa.</translation>
 <translation id="6683865262523156564">Este sitio está en un grupo que puede ver tu actividad. El grupo está definido por <ph name="RWS_OWNER" />.</translation>
 <translation id="6689172468748959065">Fotos de perfil</translation>
 <translation id="6697925417670533197">Descargas activas</translation>

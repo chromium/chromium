@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">Phoqa ukunika amandla ukusondeza</translation>
 <translation id="3905475044299942653">Misa izaziso eziningi</translation>
 <translation id="3908288065506437185">Vimba amakhukhi wongahlangene ngqo kumodi ye-Incognito</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Ezinye izakhi zingase zingasebenzi. Amasayithi ahlobene asengasebenzisa amakhukhi ezinkampani ezingahlangene ngqo.</translation>
 <translation id="3922092564198021702">Efonini yakho, vula Amasethingi</translation>
 <translation id="3933121352599513978">Goqa izicelo ezingafunwa (okunconywayo)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">Imininingwane</translation>
 <translation id="4598549027014564149">Ngenkathi uku-Incognito, amasayithi awakwazi ukusebenzisa amakhukhi akho ukuze abone umsebenzi wakho wokubhrawuza kuwo wonke amasayithi, ngisho namasayithi ahlobene. Umsebenzi wakho wokubhrawuza awusetshenziselwa izinto ezifana nokwenza izikhangiso ziqondane nomuntu siqu. Izakhi ezikwamanye amasayithi zingase zingasebenzi.</translation>
 <translation id="461356340001513807">Ikuvumela ukuba ungene ngemvume kumawebhusayithi usebenzisa i-akhawunti onayo enesevisi ehlonzayo</translation>
-<translation id="4619615317237390068">Amathebhu kusuka kwamanye amadivayisi</translation>
 <translation id="4635969503923889910">Ungavumeli amasayithi ukuthi asebenzise amadivayisi e-NFC</translation>
 <translation id="4644713492825682049">Sula futhi setha kabusha</translation>
 <translation id="4645575059429386691">Kuphethwe umzali wakho</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">Yabelana nge-</translation>
 <translation id="5001526427543320409">Amakhukhi wongahlangene ngqo</translation>
 <translation id="5007392906805964215">Buyekeza</translation>
-<translation id="5014182796621173645">Uvakashele i-<ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Vumela</translation>
 <translation id="5048398596102334565">Vumela amasayithi ukuthi afinyelele kuzinzwa zokunyakaza (kunconyiwe)</translation>
 <translation id="5048841907079026162">Phatha idatha yakho yopheqululo</translation>
@@ -443,7 +440,6 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Okuqukethwe okuvikelekile</translation>
 <translation id="662080504995468778">Hlala</translation>
-<translation id="6653342741369270081">Cindezela inkinobho yokubuyela emuva ukuze uphume kusikrini esigcwele.</translation>
 <translation id="6683865262523156564">Le sayithi iseqenjini elikwazi ukubona izinto ozenzayo. Iqembu lichazwa ngu-<ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Izithombe zephrofayela</translation>
 <translation id="6697925417670533197">Ukulanda okusebenzayo</translation>

@@ -20,6 +20,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/types/optional_ref.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -45,6 +46,7 @@
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
 #include "services/network/public/cpp/orb/orb_api.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/private_network_access_check_result.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
@@ -323,6 +325,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       const ResourceRequest& request,
       bool emit_metrics);
 
+  // Returns an optional reference to a constant permissions policy that belongs
+  // to the request. `this` must outlive the caller of this method.
+  base::optional_ref<const network::PermissionsPolicy> GetPermissionsPolicy()
+      const {
+    return permissions_policy_;
+  }
+
  private:
   // This class is used to set the URLLoader as user data on a URLRequest. This
   // is used instead of URLLoader directly because SetUserData requires a
@@ -487,43 +496,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Inbound control flow:
   //
   // Start in `ProcessInboundAttributionInterceptorOnResponseStarted`
-  //  - If `attribution_request_helper_` is not defined,
-  //    immediately calls
-  //    `ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted`.
+  //  - If `attribution_request_helper_` is not defined, immediately
+  //    calls`ProcessInboundSharedStorageInterceptorOnResponseStarted`.
   // - Otherwise:
   //   - Execute `AttributionRequestHelper::Finalize`
   //   - On Finalize's callback, calls
-  //    `ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted`.
+  //   `ProcessInboundSharedStorageInterceptorOnResponseStarted`
   void ProcessOutboundAttributionInterceptor();
   void ProcessInboundAttributionInterceptorOnReceivedRedirect(
       const ::net::RedirectInfo& redirect_info,
       mojom::URLResponseHeadPtr response);
   void ProcessInboundAttributionInterceptorOnResponseStarted();
-
-  // All inbound responses will invoke
-  // `ad_auction_event_record_request_helper_.HandleResponse()`, which
-  // always returns immediately without blocking, and also exits early for
-  // ineligible responses.
-  //
-  // Outbound control flow:
-  //
-  // There are no outbound flow methods as the request headers are set by
-  // ComputeAttributionReportingHeaders() in the URLLoader() constructor.
-  //
-  // Redirection control flow:
-  //
-  // Redirection isn't handled yet. TODO(crbug.com/394108643): Support
-  // capturing headers on redirection responses.
-  //
-  // Inbound control flow:
-  //
-  // Start in
-  // `ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted()`
-  //  - Execute
-  //   `ad_auction_event_record_request_helper_::HandleResponse()`.
-  //  - Afterwards, execute
-  //   `ProcessInboundSharedStorageInterceptorOnResponseStarted()`.
-  void ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted();
 
   // Continuation of `OnReceivedRedirect` after possibly asynchronously
   // concluding the request's Attribution and/or Shared Storage operations.
@@ -972,6 +955,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   std::optional<std::pair<mojo::ScopedDataPipeProducerHandle,
                           mojo::ScopedDataPipeConsumerHandle>>
       pending_pipe_handles_;
+
+  // Permissions policy of the request.
+  const std::optional<network::PermissionsPolicy> permissions_policy_;
 
   base::WeakPtrFactory<URLLoader> weak_ptr_factory_{this};
 };

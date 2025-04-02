@@ -558,6 +558,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "cronet_android",
             "debug_static_builder",
             "remoteexec",
@@ -591,6 +592,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "cronet_android",
             "release_try_builder",
             "remoteexec",
@@ -805,6 +807,18 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-cronet-x64-dbg-16-tests",
+    description_html = "Tests Cronet against Android 16",
+    mirrors = [
+        "ci/android-cronet-x64-dbg",
+        "ci/android-cronet-x64-dbg-16-tests",
+    ],
+    gn_args = "ci/android-cronet-x64-dbg",
+    contact_team_email = "cronet-team@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-cronet-x86-dbg",
     mirrors = ["ci/android-cronet-x86-dbg"],
     gn_args = "ci/android-cronet-x86-dbg",
@@ -916,6 +930,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_with_static_analysis",
             "debug_builder",
             "remoteexec",
             "arm",
@@ -934,6 +949,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "release_try_builder",
             "remoteexec",
             "strip_debug_info",
@@ -969,6 +985,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_with_static_analysis",
             "debug_try_builder",
             "enable_android_secondary_abi",
             "remoteexec",
@@ -1361,6 +1378,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_with_static_analysis",
             "release_try_builder",
             "remoteexec",
             "strip_debug_info",
@@ -1488,6 +1506,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_with_static_analysis",
             "debug_try_builder",
             "enable_android_secondary_abi",
             "remoteexec",
@@ -1523,6 +1542,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_with_static_analysis",
             "debug_try_builder",
             "remoteexec",
             "compile_only",
@@ -1572,6 +1592,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_with_static_analysis",
             "debug_try_builder",
             "remoteexec",
             "compile_only",
@@ -1625,6 +1646,7 @@ try_.gpu.optional_tests_builder(
         configs = [
             "gpu_tests",
             "android_builder",
+            "android_with_static_analysis",
             "release_builder",
             "remoteexec",
             "minimal_symbols",

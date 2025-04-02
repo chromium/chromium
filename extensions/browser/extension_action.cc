@@ -61,7 +61,7 @@ struct IconRepresentationInfo {
   // Size as a string that will be used to retrieve a representation value from
   // SetIcon function arguments.
   const char* size_string;
-  // Scale factor for which the represantion should be used.
+  // Scale factor for which the representation should be used.
   ui::ResourceScaleFactor scale;
 };
 

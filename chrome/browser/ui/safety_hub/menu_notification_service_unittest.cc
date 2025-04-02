@@ -19,10 +19,10 @@
 #include "chrome/browser/ui/safety_hub/menu_notification.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -101,14 +101,14 @@ class SafetyHubMenuNotificationServiceTest
     auto dict = base::Value::Dict().Set(
         permissions::kRevokedKey,
         base::Value::List().Append(
-            UnusedSitePermissionsService::ConvertContentSettingsTypeToKey(
+            RevokedPermissionsService::ConvertContentSettingsTypeToKey(
                 ContentSettingsType::GEOLOCATION)));
     hcsm()->SetWebsiteSettingDefaultScope(
         GURL(url), GURL(url),
         ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
         base::Value(dict.Clone()));
     safety_hub_test_util::UpdateSafetyHubServiceAsync(
-        unused_site_permissions_service());
+        revoked_permissions_service());
   }
 
   void ShowNotificationEnoughTimes(
@@ -125,8 +125,8 @@ class SafetyHubMenuNotificationServiceTest
     EXPECT_FALSE(notification.has_value());
   }
 
-  UnusedSitePermissionsService* unused_site_permissions_service() {
-    return UnusedSitePermissionsServiceFactory::GetForProfile(profile());
+  RevokedPermissionsService* revoked_permissions_service() {
+    return RevokedPermissionsServiceFactory::GetForProfile(profile());
   }
   NotificationPermissionsReviewService* notification_permissions_service() {
     return NotificationPermissionsReviewServiceFactory::GetForProfile(
@@ -565,7 +565,7 @@ TEST_F(SafetyHubMenuNotificationServiceDesktopOnlyTest,
   // Create a menu notification service with the mocked CWS info service.
   std::unique_ptr<SafetyHubMenuNotificationService> mocked_service =
       std::make_unique<SafetyHubMenuNotificationService>(
-          prefs(), unused_site_permissions_service(),
+          prefs(), revoked_permissions_service(),
           notification_permissions_service(), password_status_check_service(),
           safety_hub_hats_service(), profile());
   std::optional<MenuNotificationEntry> notification =

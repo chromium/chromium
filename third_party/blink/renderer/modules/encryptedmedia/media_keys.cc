@@ -396,6 +396,11 @@ ScriptPromise<V8MediaKeyStatus> MediaKeys::getStatusForPolicy(
     return EmptyPromise();
   }
 
+  if (!media_keys_policy->hasMinHdcpVersion()) {
+    exception_state.ThrowTypeError("MediaKeysPolicy is not present.");
+    return EmptyPromise();
+  }
+
   // TODO(xhwang): Pass MediaKeysPolicy classes all the way to Chromium when
   // we have more than one policy to check.
   String min_hdcp_version = media_keys_policy->minHdcpVersion();

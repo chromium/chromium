@@ -26,6 +26,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"
+#include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "url/gurl.h"
 
 namespace testing {
@@ -391,21 +392,18 @@ class TpcBlockingBrowserClient : public ContentBrowserClient,
 // them.
 class PausedCookieAccessObservers : public CookieAccessObservers {
  public:
-  explicit PausedCookieAccessObservers(NotifyCookiesAccessedCallback callback);
+  explicit PausedCookieAccessObservers(NotifyCookiesAccessedCallback callback,
+                                       PendingObserversWithContext observers);
   ~PausedCookieAccessObservers() override;
 
   // CookieAccessObservers
   void Add(mojo::PendingReceiver<network::mojom::CookieAccessObserver> receiver,
            CookieAccessDetails::Source source) override;
-  std::vector<mojo::PendingReceiver<network::mojom::CookieAccessObserver>>
-  TakeReceivers() override;
+  PendingObserversWithContext TakeReceiversWithContext() override;
 
  private:
   // Holds existing and new receivers.
-  std::vector<
-      std::pair<mojo::PendingReceiver<network::mojom::CookieAccessObserver>,
-                CookieAccessDetails::Source>>
-      pending_receivers_;
+  PendingObserversWithContext pending_receivers_;
 };
 
 // Class used to pause all cookie access notifications in a WebContents.

@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/animation/css/css_keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/animation/css/css_transition.h"
 #include "third_party/blink/renderer/core/animation/css_default_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_types_map.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
@@ -55,7 +56,6 @@
 #include "third_party/blink/renderer/core/animation/inert_effect.h"
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
 #include "third_party/blink/renderer/core/animation/interpolation.h"
-#include "third_party/blink/renderer/core/animation/interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
@@ -3175,15 +3175,9 @@ bool IsFontAffectingPropertyHandle(const PropertyHandle& property) {
   return property.GetCSSProperty().AffectsFont();
 }
 
-// TODO(alancutter): CSS properties and presentation attributes may have
-// identical effects. By grouping them in the same set we introduce a bug where
-// arbitrary hash iteration will determine the order the apply in and thus which
-// one "wins". We should be more deliberate about the order of application in
-// the case of effect collisions.
-// Example: Both 'color' and 'svg-color' set the color on ComputedStyle but are
-// considered distinct properties in the ActiveInterpolationsMap.
+// TODO(https://crbug.com/40446823): Remove and just use property.IsCSSProperty.
 bool IsCSSPropertyHandle(const PropertyHandle& property) {
-  return property.IsCSSProperty() || property.IsPresentationAttribute();
+  return property.IsCSSProperty();
 }
 
 bool IsLineHeightPropertyHandle(const PropertyHandle& property) {

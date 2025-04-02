@@ -187,6 +187,7 @@ public class StripLayoutHelperManager
 
     // External influences
     private TabModelSelector mTabModelSelector;
+    private final LayoutManagerHost mManagerHost;
     private final LayoutUpdateHost mUpdateHost;
 
     // Event Filters
@@ -444,6 +445,7 @@ public class StripLayoutHelperManager
             @NonNull Supplier<ShareDelegate> shareDelegateSupplier) {
         mContext = context;
         Resources res = context.getResources();
+        mManagerHost = managerHost;
         mUpdateHost = updateHost;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mDensity = res.getDisplayMetrics().density;
@@ -1523,6 +1525,7 @@ public class StripLayoutHelperManager
             mDesktopWindowStateManager.updateForegroundColor(getBackgroundColor());
         }
 
+        mManagerHost.resetKeyboardFocus(); // Reset virtual views index & keyboard focus state.
         mUpdateHost.requestUpdate();
     }
 
@@ -1620,5 +1623,17 @@ public class StripLayoutHelperManager
 
     public boolean isStripScrimVisibleForTesting() {
         return mStripTransitionScrimOpacity == 1f;
+    }
+
+    /** Request keyboard focus on the tab strip. */
+    public void requestKeyboardFocus() {
+        mManagerHost.requestKeyboardFocus(this);
+    }
+
+    /**
+     * @return Whether the tab strip contains keyboard focus.
+     */
+    public boolean containsKeyboardFocus() {
+        return mManagerHost.containsKeyboardFocus(this);
     }
 }

@@ -503,7 +503,8 @@ LayerTreeHostImpl::LayerTreeHostImpl(
           ? task_runner_provider_->ImplThreadTaskRunner()
           : task_runner_provider_->MainThreadTaskRunner(),
       base::BindRepeating(&LayerTreeHostImpl::MaybeFlushPendingWork,
-                          weak_factory_.GetWeakPtr()));
+                          weak_factory_.GetWeakPtr()),
+      /*use_imported_resource_id=*/settings.is_display_tree);
   DCHECK(mutator_host_);
   mutator_host_->SetMutatorHostClient(this);
   mutator_events_ = mutator_host_->CreateEvents();
@@ -4191,7 +4192,8 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
 
   if (!compositor_context_provider) {
     return std::make_unique<ZeroCopyRasterBufferProvider>(
-        layer_tree_frame_sink_->shared_image_interface(), raster_caps_);
+        layer_tree_frame_sink_->shared_image_interface(), raster_caps_,
+        /*is_software=*/true);
   }
 
   const gpu::Capabilities& caps =
@@ -4220,7 +4222,8 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
 
   if (use_zero_copy) {
     return std::make_unique<ZeroCopyRasterBufferProvider>(
-        compositor_context_provider, raster_caps_);
+        compositor_context_provider->SharedImageInterface(), raster_caps_,
+        /*is_software=*/false);
   }
 
   const int max_copy_texture_chromium_size =

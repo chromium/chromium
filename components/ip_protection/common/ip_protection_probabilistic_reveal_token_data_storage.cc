@@ -22,7 +22,7 @@
 namespace {
 
 // Version number of the database.
-const int kCurrentVersionNumber = 3;
+const int kCurrentVersionNumber = 4;
 
 // clang-format off
 static constexpr char kCreateProbabilisticRevealTokensTableSql[] =
@@ -33,12 +33,13 @@ static constexpr char kCreateProbabilisticRevealTokensTableSql[] =
       "epoch_id INTEGER NOT NULL,"
       "expiration INTEGER NOT NULL,"
       "num_tokens_with_signal INTEGER NOT NULL,"
-      "public_key TEXT NOT NULL)";
+      "public_key TEXT NOT NULL,"
+      "batch_size INTEGER NOT NULL)";
 
 static constexpr char kInsertProbabilisticRevealTokenSql[] =
   "INSERT INTO tokens("
-      "version,u,e,epoch_id,expiration,num_tokens_with_signal,public_key) "
-      "VALUES(?,?,?,?,?,?,?)";
+      "version,u,e,epoch_id,expiration,num_tokens_with_signal,public_key,batch_size) "
+      "VALUES(?,?,?,?,?,?,?,?)";
 // clang-format on
 
 }  // namespace
@@ -184,16 +185,18 @@ void IpProtectionProbabilisticRevealTokenDataStorage::StoreTokenOutcome(
           << "InsertProbabilisticRevealToken SQL statement did not compile.";
       return;
     }
-    CHECK_EQ(token.epoch_id.size(), 8u);
+    CHECK_EQ(outcome.epoch_id.size(), 8u);
 
     statement.BindInt64(0, token.version);
     statement.BindBlob(1, token.u);
     statement.BindBlob(2, token.e);
-    statement.BindInt64(3, base::U64FromBigEndian(
-                               base::as_byte_span(token.epoch_id).first<8u>()));
+    statement.BindInt64(3,
+                        base::U64FromBigEndian(
+                            base::as_byte_span(outcome.epoch_id).first<8u>()));
     statement.BindInt64(4, outcome.expiration_time_seconds);
     statement.BindInt64(5, outcome.num_tokens_with_signal);
     statement.BindString(6, base::Base64Encode(outcome.public_key));
+    statement.BindInt64(7, outcome.tokens.size());
 
     if (!statement.Run()) {
       DLOG(ERROR) << "Could not insert Probabilistic Reveal Token: "

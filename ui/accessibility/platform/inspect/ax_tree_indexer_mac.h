@@ -12,21 +12,23 @@ namespace ui {
 
 // NSAccessibilityElement or AXUIElement accessible node comparator.
 struct AXNodeComparator {
-  constexpr bool operator()(const gfx::NativeViewAccessible& lhs,
-                            const gfx::NativeViewAccessible& rhs) const {
-    if (AXElementWrapper::IsAXUIElement(lhs)) {
-      DCHECK(AXElementWrapper::IsAXUIElement(rhs));
-      return CFHash((__bridge CFTypeRef)lhs) < CFHash((__bridge CFTypeRef)rhs);
+  bool operator()(const gfx::NativeViewAccessible& lhs,
+                  const gfx::NativeViewAccessible& rhs) const {
+    id<NSAccessibility> id_lhs = lhs.Get();
+    id<NSAccessibility> id_rhs = rhs.Get();
+    if (AXElementWrapper::IsAXUIElement(id_lhs)) {
+      CHECK(AXElementWrapper::IsAXUIElement(id_rhs));
+      return CFHash((__bridge CFTypeRef)id_lhs) <
+             CFHash((__bridge CFTypeRef)id_rhs);
     }
-    DCHECK(AXElementWrapper::IsNSAccessibilityElement(lhs));
-    DCHECK(AXElementWrapper::IsNSAccessibilityElement(rhs));
-    return lhs < rhs;
+    CHECK(AXElementWrapper::IsNSAccessibilityElement(id_lhs));
+    CHECK(AXElementWrapper::IsNSAccessibilityElement(id_rhs));
+    return id_lhs < id_rhs;
   }
 };
 
-using AXTreeIndexerMacBase = AXTreeIndexer<const gfx::NativeViewAccessible,
+using AXTreeIndexerMacBase = AXTreeIndexer<gfx::NativeViewAccessible,
                                            AXElementWrapper::DOMIdOf,
-                                           NSArray*,
                                            AXElementWrapper::ChildrenOf,
                                            AXNodeComparator>;
 
@@ -35,7 +37,7 @@ using AXTreeIndexerMacBase = AXTreeIndexer<const gfx::NativeViewAccessible,
 class AXTreeIndexerMac : public AXTreeIndexerMacBase {
  public:
   explicit AXTreeIndexerMac(const gfx::NativeViewAccessible node)
-      : AXTreeIndexer(node), type_(AXElementWrapper::TypeOf(node)) {}
+      : AXTreeIndexer(node), type_(AXElementWrapper::TypeOf(node.Get())) {}
 
   std::string IndexBy(const gfx::NativeViewAccessible node) const override;
 

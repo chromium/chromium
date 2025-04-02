@@ -73,6 +73,10 @@ class UrlBarViewBinder {
                 } else if (state.selectionState == UrlBarCoordinator.SelectionState.SELECT_END) {
                     view.setSelection(view.getText().length());
                 }
+                // Move the accessibility focus to the Omnibox.
+                // This ensures the updated field is announced to the user, especially when the user
+                // recently interacted with Refine button.
+                view.requestAccessibilityFocus();
             }
         } else if (UrlBarProperties.TEXT_COLOR.equals(propertyKey)) {
             view.setTextColor(model.get(UrlBarProperties.TEXT_COLOR));

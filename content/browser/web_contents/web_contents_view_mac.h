@@ -225,7 +225,7 @@ class WebContentsViewMac : public WebContentsView,
   raw_ptr<ViewsHostableView::Host> views_host_ = nullptr;
 
   // The accessibility element specified via ViewsHostableSetParentAccessible.
-  gfx::NativeViewAccessible views_host_accessibility_element_ = nil;
+  gfx::NativeViewAccessible views_host_accessibility_element_;
 
   std::unique_ptr<PopupMenuHelper> popup_menu_helper_;
 

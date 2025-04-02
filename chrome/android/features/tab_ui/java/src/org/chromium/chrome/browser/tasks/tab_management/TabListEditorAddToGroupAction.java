@@ -47,7 +47,7 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
                         List<Integer> tabOriginalIndex,
                         List<Integer> tabOriginalRootId,
                         List<Token> tabOriginalTabGroupId,
-                        String destinationGroupTitle,
+                        @Nullable String destinationGroupTitle,
                         int destinationGroupColorId,
                         boolean destinationGroupTitleCollapsed) {
                     updateText();

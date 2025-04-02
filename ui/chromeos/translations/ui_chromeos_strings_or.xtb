@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">ଠାରରେ ଧନ୍ୟବାଦ ଜଣାଇବା</translation>
 <translation id="2088690981887365033">VPN ନେଟ୍‌ୱାର୍କ</translation>
 <translation id="209653272837065803">ଫାଇଲଗୁଡ଼ିକୁ ସିଙ୍କ କରିବା ଜାରି ରଖିବା ପାଇଁ ଯଥେଷ୍ଟ ଷ୍ଟୋରେଜ ସ୍ପେସ ନାହିଁ</translation>
-<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />ଇନକଗ୍ନିଟୋରେ ଅନୁମତି ଦିଅନ୍ତୁ<ph name="END_BOLD" />କୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ ଡିଲିଟ ହୋଇଯିବ ଏବଂ ଆପଣ ସେଗୁଡ଼ିକୁ ରିଷ୍ଟୋର କରିବା ପାଇଁ ସକ୍ଷମ ହେବେ ନାହିଁ।</translation>
 <translation id="2122305276694332719">ଏକ ଗୋପନୀୟ ଥିବା ନେଟ୍‌ୱାର୍କ ସହିତ ସ୍ୱଚାଳିତ ଭାବରେ ସଂଯୋଗ କଲେ ଅନ୍ୟ ଲୋକମାନେ ଆପଣଙ୍କ ଡିଭାଇସ୍ ଆଉ କିଛି ନେଟ୍‌ୱାର୍କ ସେଟିଂସ୍‌କୁ ଦେଖିପାରିବେ ଏବଂ ଏହା ସୁପାରିଶ କରାଯାଏ ନାହିଁ।</translation>
 <translation id="2125607626296734455">ଖମେର୍</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">ଗ୍ରହ</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ବାହାର କରାଯାଇଛି</translation>
 <translation id="2307462900900812319">ନେଟ୍‍ୱର୍କ କନ୍‌ଫିଗର୍ କରନ୍ତୁ</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{ଏହି ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ସହ କୌଣସି ଏକ୍ସଟେନସନ ମିଳିଲା ନାହିଁ। ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।}other{ଏହି IDଗୁଡ଼ିକ <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ସହ ଏକ୍ସଟେନସନଗୁଡ଼ିକ ମିଳିଲା ନାହିଁ। ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।}}</translation>
 <translation id="2325650632570794183">ଏହି ଫାଇଲ୍ ପ୍ରକାର ସମର୍ଥିତ ନୁହେଁ। ଏହି ପ୍ରକାରର ଫାଇଲ୍ ଖୋଲିବା ପାଇଁ ଗୋଟିଏ ଆପ୍ ଖୋଜିବାକୁ ଦୟାକରି Chrome ୱେବ୍ ଷ୍ଟୋର୍‌କୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="2326539130272988168">ବୁଲଗେରିଆନ୍</translation>
 <translation id="233822363739146957">ଆପଣଙ୍କର ସମସ୍ତ ଫାଇଲକୁ ସିଙ୍କ କରିବା ପାଇଁ ଯଥେଷ୍ଟ ଷ୍ଟୋରେଜ ସ୍ପେସ ନାହିଁ</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">ମରାଠୀ</translation>
 <translation id="2923240520113693977">ଏଷ୍ଟୋନିଆନ୍</translation>
 <translation id="2938685643439809023">ମଙ୍ଗୋଲିଆ</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{ଏକ୍ସଟେନସନକୁ ଖୋଜାଯାଇପାରିବ ନାହିଁ}other{ଏକ୍ସଟେନସନଗୁଡ଼ିକୁ ଖୋଜାଯାଇପାରିବ ନାହିଁ}}</translation>
 <translation id="2943503720238418293">ଟିକେ ଛୋଟ ନାମର ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> ଫର୍ମାଟ୍ କରାଯାଉଛି...</translation>
 <translation id="2951236788251446349">ଜେଲିଫିସ୍</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
 <translation id="3358452157379365236">ଗିଟାର</translation>
 <translation id="3368922792935385530">ସଂଯୁକ୍ତ ହୋଇଛି</translation>
-<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />ବିବରଣୀ<ph name="END_BOLD" />ରେ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="3382143449143186018">InScript କୀବୋର୍ଡ ସହ ନେପାଳୀ</translation>
 <translation id="338691029516748599"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ, ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" />କୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">ୟୁନିକର୍ନ</translation>
 <translation id="4131235941541910880">ଆପଣ ଆବଶ୍ୟକ କରୁନଥିବା ଆଇଟମଗୁଡ଼ିକୁ ଟ୍ରାସକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ଡିଭାଇସ ସେଟଅପ ପରେ ସକ୍ରିୟ କରନ୍ତୁ</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{ଇନକଗ୍ନିଟୋରେ ନିମ୍ନୋକ୍ତ ଏକ୍ସଟେନସନକୁ ଚାଲୁ କରନ୍ତୁ:}other{ଇନକଗ୍ନିଟୋରେ ନିମ୍ନୋକ୍ତ ଏକ୍ସଟେନସନଗୁଡ଼ିକୁ ଚାଲୁ କରନ୍ତୁ:}}</translation>
 <translation id="4153015322587141338">ସେଲ୍ଫରେ ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ କ୍ୱିକ ଆକ୍ସେସ ପାଇଁ ଏକ ଫାଇଲରେ ଡାହାଣ-କ୍ଲିକ କରନ୍ତୁ ଏବଂ "<ph name="PIN_COMMAND" />"କୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="4157569377477607576">ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଏହା ସୁପାରିଶ କରେ ନାହିଁ:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ମୁଭ୍ କରାଯାଇଛି।</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">ଉଭୟ ରଖନ୍ତୁ</translation>
 <translation id="4804827417948292437">ଆଭୋକାଡୋ</translation>
 <translation id="4805966553127040832"><ph name="COUNT" />ଟି ଆଇଟମକୁ ରିଷ୍ଟୋର କରାଯାଉଛି</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{ଇନକଗ୍ନିଟୋ ବ୍ୟବହାର କରିବାକୁ ଆପଣଙ୍କ ସଂସ୍ଥା ଏକ ଏକ୍ସଟେନସନ ଆବଶ୍ୟକ କରେ}other{ଇନକଗ୍ନିଟୋ ବ୍ୟବହାର କରିବାକୁ ଆପଣଙ୍କ ସଂସ୍ଥା କିଛି ଏକ୍ସଟେନସନ ଆବଶ୍ୟକ କରେ}}</translation>
 <translation id="4826849268470072925">ତାମିଲ ITRANS</translation>
-<translation id="482932175346970750">ଆପଣଙ୍କ ବ୍ରାଉଜରରେ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ଟାଇପ କରନ୍ତୁ</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">ଦେଖନ୍ତୁ</translation>
 <translation id="485316830061041779">ଜର୍ମାନ୍</translation>
@@ -556,7 +549,6 @@
 <translation id="5262311848634918433"><ph name="MARKUP_1" />ସବୁ ଜାଗାରୁ, ଏପରିକି ଅଫ୍‍ଲାଇନ୍‌ରେ ଫାଇଲ୍ ଆକ୍ସେସ୍ କରେ।<ph name="MARKUP_2" />Google ଡ୍ରାଇଭ୍‍‌ରେ ଫାଇଲ୍‍ଗୁଡ଼ିକ ଅପ୍ ଟୁ ଡେଟ୍ ଅଛି ଏବଂ ଯେକୌଣସି ଡିଭାଇସ୍‍ରୁ ଉପଲବ୍ଧ ଅଟେ।<ph name="MARKUP_3" /> <ph name="MARKUP_4" />ଆପଣଙ୍କର ଫାଇଲ୍‍ଗୁଡ଼ିକ ସୁରକ୍ଷିତ ରଖନ୍ତୁ।<ph name="MARKUP_5" /> ଆପଣଙ୍କ ଡିଭାଇସ୍‍ର ଯାହା ହେଉନା କାହିଁକି, ଆପଣଙ୍କର ଫାଇଲ୍‍ଗୁଡ଼ିକ Google ଡ୍ରାଇଭ୍‌ରେ ସୁରକ୍ଷିତ ଭାବେ ଷ୍ଟୋର୍ ହୋଇରହିବ।<ph name="MARKUP_6" /> <ph name="MARKUP_7" />ଗୋଟିଏ ସ୍ଥାନରେ ଫାଇଲ୍‍ଗୁଡ଼ିକ ସେୟାର୍ କରନ୍ତୁ, ତିଆରି କରନ୍ତୁ<ph name="MARKUP_8" /> ଏବଂ ଅନ୍ୟମାନଙ୍କ ସହ ସହଯୋଗିତା କରନ୍ତୁ।<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Driveରୁ ଫାଇଲ୍ ପୁନରୁଦ୍ଧାର ହୋଇଛି</translation>
 <translation id="5278111733643988471">ଏହି ଆଇଟମକୁ ରିଷ୍ଟୋର କରିବା ପାଇଁ, ଏହାକୁ ଟ୍ରାସର ବାହାରେ ଏକ ନୂଆ ଫୋଲ୍ଡରକୁ ଡ୍ରାଗ କରନ୍ତୁ। ଏହି ଆଇଟମର ମୂଳ ଫୋଲ୍ଡର "<ph name="PARENT_FOLDER_NAME" />"କୁ ଡିଲିଟ କରିଦିଆଯାଇଛି।</translation>
-<translation id="5283101102242354279">ଇନକଗ୍ନିଟୋରେ ଏକ ଏକ୍ସଟେନସନକୁ ଚାଲୁ କରନ୍ତୁ:</translation>
 <translation id="5288441970121584418">ବର୍ଗର୍</translation>
 <translation id="5293615890992542006">ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଅନୁଯାୟୀ ଏହି ଫାଇଲ ମୁଭ କରିବାକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="5305688511332277257">କିଛି ଇନ୍‍ଷ୍ଟଲ୍ କରାଯାଇନାହିଁ</translation>
@@ -810,7 +802,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, ବିବରଣୀ</translation>
 <translation id="7246947237293279874">FTP ପ୍ରୋକ୍ସି</translation>
 <translation id="7248671827512403053">ଆପ୍ଲିକେସନ୍</translation>
-<translation id="7252604552361840748">ଉପରେ ଏକ୍ସଟେନସନ ଖୋଜନ୍ତୁ</translation>
 <translation id="7256405249507348194">ଅଜଣା ତ୍ରୁଟି: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ଉପଲବ୍ଧ ଥିବା ସେବାଗୁଡ଼ିକ</translation>
 <translation id="7291818353625820805">କୀଗୁଡ଼ିକୁ ରିପିଟ କରିବା ପାଇଁ ଚାହୁଁଛନ୍ତି? କୀବୋର୍ଡ ସେଟିଂସରେ ଆସେଣ୍ଟ ମାର୍କକୁ ବନ୍ଦ କରନ୍ତୁ</translation>

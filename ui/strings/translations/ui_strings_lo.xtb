@@ -38,6 +38,7 @@
 <translation id="19085484004813472">ນີ້ແມ່ນຄຸນສົມບັດໃໝ່</translation>
 <translation id="2006524834898217237">ກວດໃຫ້ແນ່ໃຈວ່າອຸປະກອນນີ້ເຊື່ອມຕໍ່ກັບອິນເຕີເນັດ.</translation>
 <translation id="208586643495776849">ກະລຸນາລອງໃໝ່</translation>
+<translation id="2111134541987263231">ເປີດ <ph name="BEGIN_BOLD" />ອະນຸຍາດໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ<ph name="END_BOLD" /></translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 ມື້}other{# ມື້}}</translation>
 <translation id="2148716181193084225">ມື້​ນີ້</translation>
 <translation id="2168039046890040389">ໜ້າຂຶ້ນ</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">ແຕະເປົ້າໝາຍການສຳຜັດໃນໜ້າຈໍຂອງທ່ານ.</translation>
 <translation id="2295140143284145483">ແບບສຳຫຼວດ</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/ວິນາທີ</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{ບໍ່ພົບສ່ວນຂະຫຍາຍທີ່ມີ ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.}other{ບໍ່ພົບສ່ວນຂະຫຍາຍທີ່ມີ ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.}}</translation>
 <translation id="2353636109065292463">ກຳລັງກວດການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ</translation>
 <translation id="2359808026110333948">ສືບຕໍ່</translation>
 <translation id="2388990488038464401">ໂທຫາເບີນີ້ຈາກໂທລະສັບຂອງທ່ານບໍ?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">ລຶບທັງໝົດ</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{ໃນ 1 ມື້}other{ໃນ # ມື້}}</translation>
 <translation id="2922712708897119705">ຈັດຮຽງຖັນ <ph name="COLUMN_NAME" /> ຕາມລຳດັບໃຫຍ່ຫານ້ອຍແລ້ວ.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{ບໍ່ພົບສ່ວນຂະຫຍາຍ}other{ບໍ່ພົບສ່ວນຂະຫຍາຍ}}</translation>
 <translation id="3036649622769666520">ເປີດໄຟລ໌</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">ດ້ານລຸ່ມ</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">ໂທອອກຈາກ</translation>
 <translation id="3306688585798492231">ຈໍສະແດງຜົນໃນຕົວ</translation>
 <translation id="335581015389089642">ການເວົ້າ</translation>
+<translation id="3372635229069101468">ຄລິກ <ph name="BEGIN_BOLD" />ລາຍລະອຽດ<ph name="END_BOLD" /></translation>
 <translation id="3389286852084373014">ຂໍ້ຄວາມໃຫຍ່ເກີນໄປ</translation>
 <translation id="3406306243914553062">ເນື້ອຫາ HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{ຍັງ​ເຫຼືອ 1 ວັນ}other{ຍັງ​ເຫຼືອ # ວັນ}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">ຈັດຮຽງຖັນ <ph name="COLUMN_NAME" /> ຕາມລຳດັບນ້ອຍຫາໃຫຍ່ແລ້ວ.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{ການແຈ້ງເຕືອນທີ່ຍັງບໍ່ໄດ້ອ່ານ 1 ລາຍການ}other{ການແຈ້ງເຕືອນທີ່ຍັງບໍ່ໄດ້ອ່ານ # ລາຍການ}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{ເປີດສ່ວນຂະຫຍາຍຕໍ່ໄປນີ້ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ:}other{ເປີດສ່ວນຂະຫຍາຍຕໍ່ໄປນີ້ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ເດືອນກ່ອນນີ້}other{# ເດືອນກ່ອນນີ້}}</translation>
 <translation id="4289300219472526559">ເລີ່ມ​ຕົ້ນ​ເວົ້າ</translation>
 <translation id="4289540628985791613">ພາບ​ລວມ</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">ເບີໂທ</translation>
 <translation id="4746179598275229723">ຖອນໝຸດສ່ວນຂະຫຍາຍແລ້ວ</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{ຍັງເຫຼືອ 1 ເດືອນ}other{ຍັງເຫຼືອ # ເດືອນ}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{ເພື່ອໃຊ້ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ, ອົງກອນຂອງທ່ານຈຳເປັນຕ້ອງມີສ່ວນຂະຫຍາຍ 1 ລາຍການ}other{ເພື່ອໃຊ້ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ, ອົງກອນຂອງທ່ານຈຳເປັນຕ້ອງມີສ່ວນຂະຫຍາຍຈຳນວນໜຶ່ງ}}</translation>
+<translation id="482932175346970750">ພິມ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ໃສ່ໃນໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ</translation>
 <translation id="4888938634149558681">ໂທອອກ</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 ວິ​ນາ​ທີ}other{# ວິ​ນາ​ທີ}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">ແປະໃສ່</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">ສົ່ງບໍ່ສຳເລັດ</translation>
+<translation id="5283101102242354279">ເປີດສ່ວນຂະຫຍາຍໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ:</translation>
 <translation id="528468243742722775">ສິ້ນສຸດ</translation>
 <translation id="5329858601952122676">ລຶບ</translation>
 <translation id="5361107212971249203">ຂໍ້ຄວາມ</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">ການຕັ້ງຄ່າການສະແດງຜົນຂອງແອັບພລິເຄຊັນຂອງທ່ານຈະມີຜົນເມື່ອຣິສະຕາດມັນໃນຄັ້ງຕໍ່ໄປ.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{ຍັ​ງ​ເຫຼືອ 1 ນາ​ທີ}other{ຍັງ​ເຫຼືອ # ນາ​ທີ}}</translation>
+<translation id="7252604552361840748">ຊອກຫາສ່ວນຂະຫຍາຍຂ້າງເທິງ</translation>
 <translation id="7363164521834647158">ສົ່ງການຕອບກັບ</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 ນາ​ທີ​ກ່ອນ​​ນີ້}other{# ນາ​ທີ​ກ່ອນ​ນີ້}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>

@@ -20,6 +20,7 @@
 #include "components/viz/service/input/render_input_router_delegate_impl.h"
 #include "components/viz/service/input/render_input_router_support_base.h"
 #include "gpu/ipc/common/surface_handle.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/input/android/input_receiver_data.h"

@@ -1997,7 +1997,12 @@ inline constexpr char kSkyVaultMigrationState[] = "skyvault.migration_state";
 inline constexpr char kSkyVaultMigrationRetryCount[] =
     "skyvault.migration_retry_count";
 
-// The time at which the SkyVault local files upload started.
+// The time at which the SkyVault local files upload or deletion is scheduled to
+// start.
+inline constexpr char kSkyVaultMigrationScheduledStartTime[] =
+    "skyvault.migration_scheduled_start_time";
+
+// The time at which the SkyVault local files upload actually started.
 inline constexpr char kSkyVaultMigrationStartTime[] =
     "skyvault.migration_start_time";
 #endif  // BUILDFLAG(IS_CHROMEOS)

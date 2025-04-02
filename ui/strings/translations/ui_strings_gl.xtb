@@ -38,6 +38,7 @@
 <translation id="19085484004813472">Esta é unha función nova</translation>
 <translation id="2006524834898217237">Asegúrate de que este dispositivo estea conectado a Internet.</translation>
 <translation id="208586643495776849">Téntao de novo</translation>
+<translation id="2111134541987263231">Activa <ph name="BEGIN_BOLD" />Permitir no modo de incógnito<ph name="END_BOLD" /></translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d}other{# d}}</translation>
 <translation id="2148716181193084225">Hoxe</translation>
 <translation id="2168039046890040389">Retroceder páxina</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">Toca os obxectivos táctiles na pantalla.</translation>
 <translation id="2295140143284145483">Enquisa</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{A extensión co código <ph name="BEGIN_LIST" /><ph name="END_LIST" /> non se pode localizar. Ponte en contacto co teu administrador.}other{As extensións cos códigos <ph name="BEGIN_LIST" /><ph name="END_LIST" /> non se poden localizar. Ponte en contacto co teu administrador.}}</translation>
 <translation id="2353636109065292463">Comprobando a túa conexión a Internet</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2388990488038464401">Queres chamar a este número desde o teu teléfono?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">Eliminar todo</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{en 1 d}other{en # d}}</translation>
 <translation id="2922712708897119705">A columna <ph name="COLUMN_NAME" /> está organizada por orde descendente.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Non se puido atopar a extensión}other{Non se puideron atopar as extensións}}</translation>
 <translation id="3036649622769666520">Abrir ficheiros</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">Parte inferior</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">Que queres utilizar para chamar?</translation>
 <translation id="3306688585798492231">Pantalla integrada</translation>
 <translation id="335581015389089642">Voz</translation>
+<translation id="3372635229069101468">Fai clic en <ph name="BEGIN_BOLD" />Detalles<ph name="END_BOLD" /></translation>
 <translation id="3389286852084373014">O texto é demasiado longo</translation>
 <translation id="3406306243914553062">Contido HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{Queda 1 día}other{Quedan # días}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">A columna <ph name="COLUMN_NAME" /> está organizada por orde ascendente.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 notificación sen ler}other{# notificacións sen ler}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Activa a seguinte extensión no modo de incógnito:}other{Activa as seguintes extensións no modo de incógnito:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Hai un mes}other{Hai # meses}}</translation>
 <translation id="4289300219472526559">Comeza a falar</translation>
 <translation id="4289540628985791613">Visión xeral</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">número</translation>
 <translation id="4746179598275229723">Deixouse de fixar a extensión</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Queda 1 mes}other{Quedan # meses}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Para poder utilizar o modo de incógnito, a túa organización esixe o uso dunha extensión}other{Para poder usar o modo de incógnito, a túa organización esixe o uso de varias extensións}}</translation>
+<translation id="482932175346970750">Escribe <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> no navegador</translation>
 <translation id="4888938634149558681">Chamar</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{Un segundo}other{# segundos}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;Pegar</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Produciuse un erro no envío</translation>
+<translation id="5283101102242354279">Como activar as extensións no modo de incógnito:</translation>
 <translation id="528468243742722775">Final</translation>
 <translation id="5329858601952122676">&amp;Eliminar</translation>
 <translation id="5361107212971249203">mensaxe de texto</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">A configuración da pantalla da túa aplicación terá efecto a próxima vez que se reinicie.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Queda un minuto}other{Quedan # minutos}}</translation>
+<translation id="7252604552361840748">Busca a extensión anterior</translation>
 <translation id="7363164521834647158">Enviar resposta</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Hai un minuto}other{Hai # minutos}}</translation>
 <translation id="7389409599945284130">: <ph name="MESSAGE" /></translation>

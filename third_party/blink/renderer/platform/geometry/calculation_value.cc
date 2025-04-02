@@ -201,4 +201,12 @@ bool CalculationValue::HasFitContent() const {
          data_.expression->HasFitContent();
 }
 
+bool CalculationValue::HasOnlyFixedAndPercent() const {
+  if (!IsExpression()) {
+    return true;
+  }
+  return !data_.expression->HasAutoOrContentOrIntrinsicSize() &&
+         !data_.expression->HasStretch();
+}
+
 }  // namespace blink

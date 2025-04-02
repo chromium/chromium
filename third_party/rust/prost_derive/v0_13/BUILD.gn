@@ -12,15 +12,15 @@ cargo_crate("lib") {
   crate_name = "prost_derive"
   epoch = "0.13"
   crate_type = "proc-macro"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/prost-derive-0.13.5/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/prost-derive-v0_13/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/prost-derive-0.13.5/src/field/group.rs",
-    "//third_party/rust/chromium_crates_io/vendor/prost-derive-0.13.5/src/field/map.rs",
-    "//third_party/rust/chromium_crates_io/vendor/prost-derive-0.13.5/src/field/message.rs",
-    "//third_party/rust/chromium_crates_io/vendor/prost-derive-0.13.5/src/field/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/prost-derive-0.13.5/src/field/oneof.rs",
-    "//third_party/rust/chromium_crates_io/vendor/prost-derive-0.13.5/src/field/scalar.rs",
-    "//third_party/rust/chromium_crates_io/vendor/prost-derive-0.13.5/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-derive-v0_13/src/field/group.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-derive-v0_13/src/field/map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-derive-v0_13/src/field/message.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-derive-v0_13/src/field/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-derive-v0_13/src/field/oneof.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-derive-v0_13/src/field/scalar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-derive-v0_13/src/lib.rs",
   ]
   inputs = []
 

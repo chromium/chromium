@@ -1,5 +1,6 @@
 {
   "gn_args": {
+    "android_static_analysis": "on",
     "clang_use_default_sample_profile": false,
     "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
     "debuggable_apks": false,

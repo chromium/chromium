@@ -135,7 +135,6 @@ import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonState;
-import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController.ActionBarDelegate;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
@@ -290,10 +289,7 @@ public class ToolbarManager
 
     private HomeButtonCoordinator mHomeButtonCoordinator;
     private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
-
-    private @Nullable ReloadButtonCoordinator mReloadButtonCoordinator;
     private @Nullable BackButtonCoordinator mBackButtonCoordinator;
-
     private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     private int mFullscreenFocusToken = TokenHolder.INVALID_TOKEN;
     private int mFullscreenFindInPageToken = TokenHolder.INVALID_TOKEN;
@@ -895,18 +891,6 @@ public class ToolbarManager
                             mTabModelSelectorSupplier);
         }
 
-        ImageButton reloadButton = mControlContainer.findViewById(R.id.refresh_button);
-        if (reloadButton != null) {
-            mReloadButtonCoordinator =
-                    new ReloadButtonCoordinator(
-                            reloadButton,
-                            ignoreCache -> {
-                                setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
-                                mToolbarTabController.stopOrReloadCurrentTab(ignoreCache);
-                            },
-                            browsingModeThemeColorProvider);
-        }
-
         NavigationPopup.HistoryDelegate historyDelegate =
                 (tab) -> {
                     HistoryManagerUtils.showHistoryManager(
@@ -1289,9 +1273,6 @@ public class ToolbarManager
 
                     @Override
                     public void onNavigationEntriesDeleted(Tab tab) {
-                        if (tab == mLocationBarModel.getTab()) {
-                            updateButtonStatus();
-                        }
                         onBackPressStateChanged();
                     }
 
@@ -1434,6 +1415,9 @@ public class ToolbarManager
                             mInTabSwitcherTransition = true;
                             mLocationBarModel.updateForNonStaticLayout();
                             mToolbar.setTabSwitcherMode(false);
+                            if (mBackButtonCoordinator != null) {
+                                mBackButtonCoordinator.setTabSwitcherMode(false);
+                            }
                             mIsTabSwitcherFinishedShowingSupplier.set(false);
                             updateButtonStatus();
                         }
@@ -1573,6 +1557,9 @@ public class ToolbarManager
         if (layoutType == LayoutType.TAB_SWITCHER) {
             mLocationBarModel.updateForNonStaticLayout();
             mToolbar.setTabSwitcherMode(layoutType == LayoutType.TAB_SWITCHER);
+            if (mBackButtonCoordinator != null) {
+                mBackButtonCoordinator.setTabSwitcherMode(true);
+            }
             updateButtonStatus();
         }
         mIsTabSwitcherFinishedShowingSupplier.set(
@@ -1620,7 +1607,7 @@ public class ToolbarManager
                         mTabStripTransitionDelegateSupplier,
                         onLongClickListener,
                         progressBar,
-                        mReloadButtonCoordinator);
+                        mActivityTabProvider);
 
         mHomepageStateListener =
                 () -> {
@@ -1848,6 +1835,9 @@ public class ToolbarManager
                             final var readAloud = mReadAloudControllerSupplier.get();
                             return readAloud != null && readAloud.isRestoringPlayer();
                         });
+        if (mInitializedWithNative) {
+            bottomControlsCoordinator.initializeWithNative();
+        }
         mBottomControlsCoordinatorSupplier.set(bottomControlsCoordinator);
         if (mBackPressManager != null) {
             mBackPressManager.addHandler(
@@ -1990,6 +1980,10 @@ public class ToolbarManager
         handleTabRestoreCompleted();
         mIncognitoStateProvider.setTabModelSelector(mTabModelSelector);
         mAppThemeColorProvider.setIncognitoStateProvider(mIncognitoStateProvider);
+
+        if (mBottomControlsCoordinatorSupplier.get() != null) {
+            mBottomControlsCoordinatorSupplier.get().initializeWithNative();
+        }
 
         if (mOnInitializedRunnable != null) {
             mOnInitializedRunnable.run();
@@ -2165,11 +2159,6 @@ public class ToolbarManager
 
             mMenuButtonCoordinator.destroy();
             mMenuButtonCoordinator = null;
-        }
-
-        if (mReloadButtonCoordinator != null) {
-            mReloadButtonCoordinator.destroy();
-            mReloadButtonCoordinator = null;
         }
 
         if (mBackButtonCoordinator != null) {
@@ -2534,7 +2523,6 @@ public class ToolbarManager
         boolean tabCrashed = currentTab != null && SadTab.isShowing(currentTab);
 
         mToolbar.updateButtonVisibility();
-        mToolbar.updateBackButtonVisibility(currentTab != null && currentTab.canGoBack());
         onBackPressStateChanged();
         mToolbar.updateForwardButtonVisibility(currentTab != null && currentTab.canGoForward());
         updateReloadState(tabCrashed);
@@ -2561,7 +2549,6 @@ public class ToolbarManager
         if (!tabCrashed) {
             isLoading = (currentTab != null && currentTab.isLoading()) || !mInitializedWithNative;
         }
-        mToolbar.updateReloadButtonVisibility(isLoading);
         mMenuButtonCoordinator.updateReloadingState(isLoading);
     }
 

@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_error_controller.h"
 #include "chrome/browser/extensions/external_install_manager.h"
-#include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/extensions/external_provider_manager_factory.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/installed_loader.h"
@@ -43,6 +43,10 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/verifier_formats.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/external_provider_impl.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/extensions/install_limiter.h"
@@ -88,9 +92,14 @@ void ExternalProviderManager::Shutdown() {
 }
 
 void ExternalProviderManager::CreateExternalProviders() {
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/407824044): Port ExternalProviderImpl to desktop Android.
+  NOTIMPLEMENTED() << "External providers not yet supported on Android";
+#else
   ExternalProviderImpl::CreateExternalProviders(
       this, Profile::FromBrowserContext(context_.get()),
       &external_extension_providers_);
+#endif
 }
 
 // Some extensions will autoupdate themselves externally from Chrome.  These
@@ -357,8 +366,7 @@ bool ExternalProviderManager::OnExternalExtensionUpdateUrlFound(
     // priority than |info.download_location|, and we aren't doing a
     // reinstall of a corrupt policy force-installed extension.
     ManifestLocation current = extension->location();
-    if (!CorruptedExtensionReinstaller::Get(context_)
-             ->IsReinstallForCorruptionExpected(info.extension_id) &&
+    if (!IsReinstallForCorruptionExpected(info.extension_id) &&
         current == Manifest::GetHigherPriorityLocation(
                        current, info.download_location)) {
       install_stage_tracker->ReportFailure(
@@ -415,8 +423,7 @@ bool ExternalProviderManager::OnExternalExtensionUpdateUrlFound(
       // set of extensions. If the extension is corrupted, it should be
       // reinstalled, thus it should be added to the pending extensions for
       // installation.
-      if (!CorruptedExtensionReinstaller::Get(context_)
-               ->IsReinstallForCorruptionExpected(info.extension_id)) {
+      if (!IsReinstallForCorruptionExpected(info.extension_id)) {
         return false;
       }
     }
@@ -512,4 +519,11 @@ void ExternalProviderManager::InstallationFromExternalFileFinished(
     pending_extension_manager_->Remove(extension_id);
   }
 }
+
+bool ExternalProviderManager::IsReinstallForCorruptionExpected(
+    const ExtensionId& id) const {
+  auto* reinstaller = CorruptedExtensionReinstaller::Get(context_);
+  return reinstaller->IsReinstallForCorruptionExpected(id);
+}
+
 }  // namespace extensions

@@ -2288,16 +2288,27 @@ _DEPRECATED_SYNC_CONSENT_JAVA_FUNCTIONS : Sequence[BanRule] = (
     ),
 )
 
-_BANNED_MOJOM_PATTERNS : Sequence[BanRule] = (
+_BANNED_MOJOM_PATTERNS: Sequence[BanRule] = (
     BanRule(
         'handle<shared_buffer>',
         (
-         'Please use one of the more specific shared memory types instead:',
-         '  mojo_base.mojom.ReadOnlySharedMemoryRegion',
-         '  mojo_base.mojom.WritableSharedMemoryRegion',
-         '  mojo_base.mojom.UnsafeSharedMemoryRegion',
+            'Please use one of the more specific shared memory types instead:',
+            '  mojo_base.mojom.ReadOnlySharedMemoryRegion',
+            '  mojo_base.mojom.WritableSharedMemoryRegion',
+            '  mojo_base.mojom.UnsafeSharedMemoryRegion',
         ),
         True,
+    ),
+    BanRule(
+        'string extension_id',
+        (
+            'Please use the extensions::mojom::ExtensionId struct when '
+            'passing extensions::ExtensionIds as mojom messages in order to ',
+            'provide message validation.',
+        ),
+        True,
+        # Only apply this to (mojom) files in a subdirectory of extensions.
+        excluded_paths=(r'^((?!extensions/).)*$', ),
     ),
 )
 

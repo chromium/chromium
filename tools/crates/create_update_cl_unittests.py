@@ -160,14 +160,14 @@ class OtherTests(unittest.TestCase):
         actual_dir = ConvertCrateIdToVendorDir("foo-bar@1.2.3")
         expected_suffix = os.path.join("third_party", "rust",
                                        "chromium_crates_io", "vendor",
-                                       "foo-bar-1.2.3")
+                                       "foo-bar-v1")
         self.assertEqual(actual_dir, os.path.join(CHROMIUM_DIR,
                                                   expected_suffix))
 
         actual_dir = ConvertCrateIdToVendorDir("bar_baz@0.12.3")
         expected_suffix = os.path.join("third_party", "rust",
                                        "chromium_crates_io", "vendor",
-                                       "bar_baz-0.12.3")
+                                       "bar_baz-v0_12")
         self.assertEqual(actual_dir, os.path.join(CHROMIUM_DIR,
                                                   expected_suffix))
 

@@ -98,6 +98,8 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   // Returns a relative score of how likely a node is to be clickable.
   int ClickableScore() const;
 
+  int ExpandedState() const;
+
   bool CanOpenPopup() const;
 
   bool HasAriaCurrent() const;

@@ -167,7 +167,7 @@ class ApiStaticCheckUnitTest(unittest.TestCase):
             '}',
         ],
     ]
-    input = """Compiled from Api.java
+    input_str = """Compiled from Api.java
 public class Api {
 public void b();
 public Api();
@@ -181,7 +181,8 @@ public void y();
 public abstract int z();
 }
 """
-    self.assertEqual(update_api._split_by_class(input.splitlines()), expected)
+    self.assertEqual(update_api._split_by_class(input_str.splitlines()),
+                     expected)
 
   def test_update_api_success(self):
     # Test simple new API

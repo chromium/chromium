@@ -14,10 +14,11 @@
 #include "base/barrier_callback.h"
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/integrators/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
@@ -25,6 +26,7 @@
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
+#include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller_impl.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
 namespace autofill::payments {
@@ -77,7 +79,11 @@ void BnplManager::InitBnplFlow(
   payments_autofill_client().LoadRiskData(base::BindOnce(
       &BnplManager::OnPrefetchedRiskDataLoaded, weak_factory_.GetWeakPtr()));
 
-  // TODO(crbug.com/356443046): Add integration for the BNPL dialogs.
+  payments_autofill_client().ShowSelectBnplIssuerDialog(
+      GetSortedBnplIssuerContext(), ongoing_flow_state_->app_locale,
+      base::BindOnce(&BnplManager::OnIssuerSelected,
+                     weak_factory_.GetWeakPtr()),
+      base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
 }
 
 void BnplManager::NotifyOfSuggestionGeneration(
@@ -218,12 +224,12 @@ void BnplManager::OnVcnDetailsFetched(
   Reset();
 }
 
-void BnplManager::OnIssuerSelected(const BnplIssuer& selected_issuer) {
-  ongoing_flow_state_->issuer = selected_issuer;
+void BnplManager::OnIssuerSelected(BnplIssuer selected_issuer) {
+  ongoing_flow_state_->issuer = std::move(selected_issuer);
 
-  if (selected_issuer.payment_instrument().has_value()) {
+  if (ongoing_flow_state_->issuer.payment_instrument().has_value()) {
     ongoing_flow_state_->instrument_id = base::NumberToString(
-        selected_issuer.payment_instrument()->instrument_id());
+        ongoing_flow_state_->issuer.payment_instrument()->instrument_id());
 
     LoadRiskDataForFetchingRedirectUrl();
   } else {
@@ -251,6 +257,10 @@ void BnplManager::OnDidGetDetailsForCreateBnplPaymentInstrument(
     PaymentsAutofillClient::PaymentsRpcResult result,
     std::string context_token,
     std::unique_ptr<base::Value::Dict> legal_message) {
+  // Dismiss the loading throbber in the issuer selection dialog after the
+  // server call completion to show the next dialog.
+  payments_autofill_client().DismissSelectBnplIssuerDialog();
+
   if (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
     ongoing_flow_state_->context_token = std::move(context_token);
 
@@ -323,9 +333,13 @@ void BnplManager::FetchRedirectUrl() {
 void BnplManager::OnRedirectUrlFetched(
     PaymentsAutofillClient::PaymentsRpcResult result,
     const BnplFetchUrlResponseDetails& response) {
-  // If the BNPL issuer selected is not linked, the ToS dialog must be showing,
-  // so close it.
-  if (!ongoing_flow_state_->issuer.payment_instrument().has_value()) {
+  if (ongoing_flow_state_->issuer.payment_instrument().has_value()) {
+    // If the BNPL issuer selected is linked, the issuer selection dialog must
+    // be showing, so close it.
+    payments_autofill_client().DismissSelectBnplIssuerDialog();
+  } else {
+    // If the BNPL issuer selected is not linked, the ToS dialog must be
+    // showing, so close it.
     payments_autofill_client().CloseBnplTos();
   }
 
@@ -502,6 +516,70 @@ void BnplManager::OnBnplPaymentInstrumentCreated(
 
     Reset();
   }
+}
+
+std::vector<BnplIssuerContext> BnplManager::GetSortedBnplIssuerContext() {
+  AutofillOptimizationGuide* autofill_optimization_guide =
+      autofill_client_->GetAutofillOptimizationGuide();
+  const GURL& merchant_url =
+      autofill_client_->GetLastCommittedPrimaryMainFrameOrigin().GetURL();
+
+  // Check BNPL issuer eligibility for the current page and save the
+  // eligibility with the corresponding issuer to the vector of
+  // `BnplIssuerContext`.
+  std::vector<BnplIssuerContext> result = base::ToVector(
+      payments_autofill_client().GetPaymentsDataManager().GetBnplIssuers(),
+      [this, &autofill_optimization_guide,
+       &merchant_url](const BnplIssuer& issuer) -> BnplIssuerContext {
+        // For MVP, BNPL will only target US users and support USD.
+        const base::optional_ref<const BnplIssuer::EligiblePriceRange>
+            price_range =
+                issuer.GetEligiblePriceRangeForCurrency(/*currency=*/"USD");
+        CHECK(price_range.has_value());
+
+        BnplIssuerEligibilityForPage eligibility;
+
+        if (!autofill_optimization_guide
+                 ->IsUrlEligibleForCheckoutAmountSearchForIssuerId(
+                     issuer.issuer_id(), merchant_url)) {
+          eligibility = BnplIssuerEligibilityForPage::
+              kNotEligibleIssuerDoesNotSupportMerchant;
+        } else if (ongoing_flow_state_->final_checkout_amount <
+                   price_range->price_lower_bound) {
+          eligibility =
+              BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow;
+        } else if (ongoing_flow_state_->final_checkout_amount >
+                   price_range->price_upper_bound) {
+          eligibility =
+              BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooHigh;
+        } else {
+          eligibility = BnplIssuerEligibilityForPage::kIsEligible;
+        }
+
+        return {issuer, eligibility};
+      });
+
+  // Sort the `BnplIssuerContext` vector so that it follows below rules:
+  // 1. Eligible issuers should be in front of uneligible ones in a sorted
+  //    vector.
+  // 2. Linked issuers must go before unlinked ones if they have the same
+  //    eligibility.
+  // Note: If one issuer has a payment instrument and the other doesn't,
+  //    then one is linked and the other is unlinked.
+  std::ranges::stable_sort(
+      result, [](const BnplIssuerContext& rhs, const BnplIssuerContext& lhs) {
+        // Lambda comparator which returns true if `rhs` should be in front of
+        // `lhs`.
+        // Note: Boolean value `false` is less than boolean value `true`.
+        return std::forward_as_tuple(
+                   rhs.eligibility == BnplIssuerEligibilityForPage::kIsEligible,
+                   rhs.issuer.payment_instrument().has_value()) >
+               std::forward_as_tuple(
+                   lhs.eligibility == BnplIssuerEligibilityForPage::kIsEligible,
+                   lhs.issuer.payment_instrument().has_value());
+      });
+
+  return result;
 }
 
 }  // namespace autofill::payments

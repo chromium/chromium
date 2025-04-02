@@ -191,12 +191,15 @@ CoralDelegateImpl::CoralDelegateImpl() = default;
 
 CoralDelegateImpl::~CoralDelegateImpl() = default;
 
-void CoralDelegateImpl::OnPostLoginLaunchComplete() {
-  app_launch_handler_.reset();
+void CoralDelegateImpl::OnPostLoginLaunchComplete(const base::Token& group_id) {
+  app_launch_handlers_.erase(group_id);
 }
 
 void CoralDelegateImpl::LaunchPostLoginGroup(coral::mojom::GroupPtr group) {
-  if (app_launch_handler_) {
+  // There is an ongoing restore if the app launch handler with given group id
+  // exists.
+  const base::Token group_id = group->id;
+  if (app_launch_handlers_.contains(group_id)) {
     return;
   }
 
@@ -205,9 +208,10 @@ void CoralDelegateImpl::LaunchPostLoginGroup(coral::mojom::GroupPtr group) {
     return;
   }
 
-  app_launch_handler_ = std::make_unique<DesksTemplatesAppLaunchHandler>(
-      active_profile, DesksTemplatesAppLaunchHandler::Type::kCoral);
-  app_launch_handler_->LaunchCoralGroup(
+  app_launch_handlers_[group_id] =
+      std::make_unique<DesksTemplatesAppLaunchHandler>(
+          active_profile, DesksTemplatesAppLaunchHandler::Type::kCoral);
+  app_launch_handlers_[group_id]->LaunchCoralGroup(
       CoralGroupToRestoreData(std::move(group), active_profile),
       DesksTemplatesAppLaunchHandler::GetNextLaunchId());
 
@@ -215,7 +219,7 @@ void CoralDelegateImpl::LaunchPostLoginGroup(coral::mojom::GroupPtr group) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&CoralDelegateImpl::OnPostLoginLaunchComplete,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), group_id),
       kClearLaunchDataDuration);
 }
 

@@ -91,6 +91,7 @@ Lai skatītu citus iestatījumus, kuros dati tiek izmantoti Chromium lietošanas
 <translation id="3054480780637153380">Atveriet Chromium iestatījumus iOS ierīcē, pēc tam pieskarieties iestatījumam “Noklusējuma pārlūka lietotne” un atlasiet pārlūku Chromium.</translation>
 <translation id="3102849287235003384">Lai izrakstītos no sava Google konta visās vietnēs, <ph name="BEGIN_LINK" />izrakstieties no pārlūka Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Vai iestatīt Chromium kā noklusējuma pārlūku?</translation>
+<translation id="3180939591219927904">Ieslēdziet iestatījumu “Bloķēt inkognito cilnes, aizverot pārlūku Chromium”.</translation>
 <translation id="3242612358525156339">Ierīces iestatījumos atveriet sadaļu “<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” un atlasiet iespēju “Chromium”.</translation>
 <translation id="328933489847748230">{count,plural, =1{Tagad tiek rādīts viens Chromium logs}zero{Tagad tiek rādīti {count} Chromium logi}one{Tagad tiek rādīts {count} Chromium logs}other{Tagad tiek rādīti {count} Chromium logi}}</translation>
 <translation id="3344973607274501920">Pārlūkprogrammā Chromium nevarēja pārbaudīt jūsu paroles. Pārbaudiet interneta savienojumu.</translation>
@@ -260,6 +261,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Atlasītie dati ir noņemti no pārlūka Chromium un sinhronizētajām ierīcēm. Jūsu Google kontam vietnē history.google.com var būt citu veidu pārlūkošanas vēstures dati, piemēram, meklēšanas vaicājumi un darbības citos Google pakalpojumos.</translation>
 <translation id="7395825497086981028">Jūsu parole tiks saglabāta paroļu pārvaldniekā kontā <ph name="EMAIL" />.</translation>
+<translation id="7504829997542308412">Atveriet pārlūku Chromium.</translation>
 <translation id="7531461704633548377">No pārlūka Chromium</translation>
 <translation id="7554983317097061001">Chromium padoms: pārvietojiet pārlūku Chromium uz lietotņu doku</translation>
 <translation id="7576863740961052505">Pārvaldīt Chromium iestatījumus</translation>

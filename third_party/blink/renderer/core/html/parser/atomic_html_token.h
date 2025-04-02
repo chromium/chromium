@@ -244,10 +244,7 @@ class CORE_EXPORT AtomicHTMLToken {
       }
       case HTMLToken::kCharacter:
       case HTMLToken::kComment:
-        if (token.IsAll8BitData())
-          data_ = token.Data().AsString8();
-        else
-          data_ = token.Data().AsString();
+        data_ = token.Data().AsString();
         break;
     }
   }

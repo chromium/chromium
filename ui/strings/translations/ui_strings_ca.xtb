@@ -38,6 +38,7 @@
 <translation id="19085484004813472">Aquesta funció és nova</translation>
 <translation id="2006524834898217237">Comprova que el dispositiu estigui connectat a Internet.</translation>
 <translation id="208586643495776849">Torna-ho a provar</translation>
+<translation id="2111134541987263231">Activa l'opció <ph name="BEGIN_BOLD" />Permet en mode d'incògnit<ph name="END_BOLD" /></translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d}other{# d}}</translation>
 <translation id="2148716181193084225">Avui</translation>
 <translation id="2168039046890040389">Re Pàg</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">Toca els elements tàctils a la pantalla.</translation>
 <translation id="2295140143284145483">Enquesta</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{No es troba cap extensió amb l'identificador: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Contacta amb l'administrador.}other{No es troben extensions amb els identificadors: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Contacta amb l'administrador.}}</translation>
 <translation id="2353636109065292463">S'està comprovant la connexió a Internet</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2388990488038464401">Vols trucar a aquest número des del telèfon?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">Suprimeix-ho tot</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{d'aquí a 1 d}other{d'aquí a # d}}</translation>
 <translation id="2922712708897119705">La columna <ph name="COLUMN_NAME" /> es mostra en ordre descendent.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{No es troba l'extensió}other{No es troben les extensions}}</translation>
 <translation id="3036649622769666520">Obre fitxers</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">Part inferior</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">Fes una trucada amb</translation>
 <translation id="3306688585798492231">Pantalla integrada</translation>
 <translation id="335581015389089642">Veu</translation>
+<translation id="3372635229069101468">Fes clic a <ph name="BEGIN_BOLD" />Detalls<ph name="END_BOLD" /></translation>
 <translation id="3389286852084373014">El text és massa llarg</translation>
 <translation id="3406306243914553062">Contingut HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 dia restant}other{# dies restants}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">La columna <ph name="COLUMN_NAME" /> es mostra en ordre ascendent.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 notificació no llegida}other{# notificacions no llegides}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Activa l'extensió següent en mode d'incògnit:}other{Activa les extensions següents en mode d'incògnit:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Fa 1 mes}other{Fa # mesos}}</translation>
 <translation id="4289300219472526559">Comença a parlar</translation>
 <translation id="4289540628985791613">Visió general</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">el número</translation>
 <translation id="4746179598275229723">L'extensió s'ha deixat de fixar</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{D'aquí a 1 mes}other{D'aquí a # mesos}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Per utilitzar el mode d'incògnit, la teva organització requereix una extensió}other{Per utilitzar el mode d'incògnit, la teva organització requereix algunes extensions}}</translation>
+<translation id="482932175346970750">Escriu <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> al navegador</translation>
 <translation id="4888938634149558681">Fes una trucada</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 segon}other{# segons}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">Engan&amp;xa</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">No s'ha pogut enviar</translation>
+<translation id="5283101102242354279">Activa una extensió en mode d'incògnit:</translation>
 <translation id="528468243742722775">Finalitza</translation>
 <translation id="5329858601952122676">&amp;Suprimeix</translation>
 <translation id="5361107212971249203">el text</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">La configuració de la pantalla de l'aplicació s'aplicarà la propera vegada que es reiniciï.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 min restant}other{# min restants}}</translation>
+<translation id="7252604552361840748">Cerca l'extensió anterior</translation>
 <translation id="7363164521834647158">Envia la resposta</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{fa 1 min}other{fa # min}}</translation>
 <translation id="7389409599945284130">: <ph name="MESSAGE" /></translation>

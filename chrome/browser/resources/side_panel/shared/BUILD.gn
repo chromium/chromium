@@ -32,6 +32,7 @@ build_webui("build") {
   html_to_wrapper_template = "detect"
 
   ts_composite = true
+  ts_tsconfig_base = "//tools/typescript/tsconfig_base_polymer_legacy.json"
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",

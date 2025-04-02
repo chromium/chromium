@@ -200,6 +200,16 @@ struct AIPageContentMeta {
   string content;
 };
 
+// Represents a DOM node which is eligible for hit testing.
+struct AIPageContentHitTestNode {
+  // The ID to uniquely identify this node. If the DOM node generates a
+  // ContentNode, this ID is consisted with the ContentNode's ID.
+  int32 dom_node_id;
+
+  // The bounds in viewport coordinates where this is rendered.
+  gfx.mojom.Rect visible_bounding_box;
+};
+
 // Data common to frames (main and embedded).
 struct AIPageContentFrameData {
   // Interaction information for the frame.
@@ -215,6 +225,11 @@ struct AIPageContentFrameData {
   // Whether the frame contains paid content. The value exists
   // if the document was checked.
   bool? contains_paid_content;
+
+  // The ordered list of DOM nodes which are eligible for hit testing in the
+  // viewport. This list is ordered back-to-front, i.e., in the given list
+  // [0, 1], node 1 draws on top of node 0.
+  array<AIPageContentHitTestNode> hit_test_nodes_in_viewport;
 };
 
 // Provides metadata for frames (local and remote) accessible from the

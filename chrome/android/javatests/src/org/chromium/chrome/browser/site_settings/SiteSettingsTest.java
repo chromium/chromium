@@ -68,6 +68,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -75,7 +76,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -110,6 +110,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.pagecontroller.utils.UiAutomatorUtils;
+import org.chromium.chrome.test.util.AdvancedProtectionTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
@@ -142,7 +143,6 @@ import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.ProviderType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.location.LocationUtils;
-import org.chromium.components.permissions.OsAdditionalSecurityPermissionProvider;
 import org.chromium.components.permissions.nfc.NfcSystemLevelSetting;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
@@ -189,15 +189,21 @@ public class SiteSettingsTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(mPermissionRule, false);
-
-    @Rule
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setRevision(3)
                     .setBugComponent(Component.UI_BROWSER_MOBILE_SETTINGS)
                     .build();
+
+    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+            new BlankCTATabInitialStateRule(mPermissionRule, false);
+
+    public AdvancedProtectionTestRule mAdvancedProtectionRule = new AdvancedProtectionTestRule();
+
+    // {@link AdvancedProtectionTestRule} needs to run prior to profile being created.
+    @Rule
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mAdvancedProtectionRule).around(mBlankCTATabInitialStateRule);
 
     @Mock private SettingsNavigation mSettingsNavigation;
 
@@ -232,26 +238,6 @@ public class SiteSettingsTest {
         "anti_abuse_things_to_consider_header",
         "anti_abuse_things_to_consider_section_one"
     };
-
-    private static class TestPermissionProvider extends OsAdditionalSecurityPermissionProvider {
-        public static String TEST_MESSAGE = "testJavascriptOptimizerMessage";
-
-        private boolean mIsJavascriptOptimizerPermissionGranted;
-
-        public TestPermissionProvider(boolean isJavascriptOptimizerPermissionGranted) {
-            mIsJavascriptOptimizerPermissionGranted = isJavascriptOptimizerPermissionGranted;
-        }
-
-        @Override
-        public boolean hasJavascriptOptimizerPermission() {
-            return mIsJavascriptOptimizerPermissionGranted;
-        }
-
-        @Override
-        public String getJavascriptOptimizerMessage(Context context) {
-            return TestPermissionProvider.TEST_MESSAGE;
-        }
-    }
 
     public SiteSettingsTest() {
         // This test suite relies on the real password store. However, that can only store
@@ -2685,13 +2671,7 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     public void testOsBlocksJavascriptOptimizer() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ServiceLoaderUtil.setInstanceForTesting(
-                            OsAdditionalSecurityPermissionProvider.class,
-                            new TestPermissionProvider(
-                                    /* isJavascriptOptimizerPermissionGranted= */ false));
-                });
+        mAdvancedProtectionRule.setIsAdvancedProtectionRequestedByOs(true);
 
         final SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(
@@ -2721,7 +2701,8 @@ public class SiteSettingsTest {
                             singleCategorySettings.findPreference(
                                     SingleWebsiteSettings.PREF_OS_PERMISSIONS_WARNING_EXTRA);
                     Assert.assertEquals(
-                            TestPermissionProvider.TEST_MESSAGE, osWarningPreference.getTitle());
+                            AdvancedProtectionTestRule.TEST_JAVASCRIPT_OPTIMIZER_MESSAGE,
+                            osWarningPreference.getTitle());
 
                     settingsActivity.finish();
                 });
@@ -2736,13 +2717,7 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     @Policies.Add({@Policies.Item(key = "DefaultJavaScriptOptimizerSetting", string = "1")})
     public void testPolicyHigherPriorityThanOsBlockingJavascriptOptimizer() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ServiceLoaderUtil.setInstanceForTesting(
-                            OsAdditionalSecurityPermissionProvider.class,
-                            new TestPermissionProvider(
-                                    /* isJavascriptOptimizerPermissionGranted= */ false));
-                });
+        mAdvancedProtectionRule.setIsAdvancedProtectionRequestedByOs(true);
 
         final SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(
@@ -2801,11 +2776,9 @@ public class SiteSettingsTest {
                             new GURL(pageOrigin),
                             new GURL(pageOrigin),
                             ContentSettingValues.ALLOW);
-                    ServiceLoaderUtil.setInstanceForTesting(
-                            OsAdditionalSecurityPermissionProvider.class,
-                            new TestPermissionProvider(
-                                    /* isJavascriptOptimizerPermissionGranted= */ false));
                 });
+
+        mAdvancedProtectionRule.setIsAdvancedProtectionRequestedByOs(true);
 
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();

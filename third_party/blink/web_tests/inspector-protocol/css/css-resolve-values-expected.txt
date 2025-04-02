@@ -18,15 +18,20 @@ Test shorthand property
 Running test: testResolveValuesSimple
 Test resolveValues for width property
 {"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
-{"results":["","5px","30px","6px","6px"]}
+{"results":["invalid","5px","30px","6px","6px"]}
 
 Running test: testResolveValuesSimpleNoProperty
 Test resolveValues no property specified
 {"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
-{"results":["","5px","30px","6px","6px"]}
+{"results":["invalid","5px","30px","6px","6px"]}
 
 Running test: testRelativeUnits
 Relative length units to absolute test
+{"input": [1em,1ex,1cap,1ch,1ic,1lh,1rcap,1rch,1rem,1rex,1ric,1rlh,1vw,1vh ,1vi,1vb,1vmin,1vmax]}
+{"results":["5px","4px","4px","5px","5px","5px","24px","30px","30px","24px","30px","30px","8px","6px","8px","6px","6px","8px"]}
+
+Running test: testResolveValuesRelativeUnitsNoProperty
+Test resolveValues on relative units no property specified
 {"input": [1em,1ex,1cap,1ch,1ic,1lh,1rcap,1rch,1rem,1rex,1ric,1rlh,1vw,1vh ,1vi,1vb,1vmin,1vmax]}
 {"results":["5px","4px","4px","5px","5px","5px","24px","30px","30px","24px","30px","30px","8px","6px","8px","6px","6px","8px"]}
 
@@ -68,7 +73,7 @@ Test CSS-wide keywords
 Running test: testCSSWideKeywordsNoProperty
 Test CSS-wide keywords with no property specified
 {"input": [initial,inherit,unset]}
-{"results":["","",""]}
+{"results":["initial","inherit","unset"]}
 
 Running test: testColorValues
 Test <color> values
@@ -80,30 +85,30 @@ Test <color> values with no property specified
 {"input": [aqua,peachpuff,blanchedalmond,rgb(255, 0, 0),#0f5ffe,color-mix(in srgb, plum, #f00)]}
 {"results":["rgb(0, 255, 255)","rgb(255, 218, 185)","rgb(255, 235, 205)","rgb(255, 0, 0)","rgb(15, 95, 254)","color(srgb 0.933333 0.313726 0.433333)"]}
 
-Running test: testOnlyInvalidValues
-Invalid values test
+Running test: testInvalidLengthValues
+Invalid length values test
 {"input": [calc(,em,calc(10 + 20),red,calc(10ms + 5s)]}
-{"results":["","","","",""]}
+{"results":["calc(","em","30","rgb(255, 0, 0)","5.01s"]}
 
 Running test: testCustomProperty
 Test resolveValues on custom property
 {"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
-{"results":["invalid","1em","1rem","calc(3px + 3px)","calc(1em + 1px)"]}
+{"results":["invalid","10px","30px","6px","11px"]}
 
 Running test: testRegisterCustomProperty
 Test resolveValues on register custom property
 {"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
-{"results":["","10px","30px","6px","11px"]}
+{"results":["invalid","10px","30px","6px","11px"]}
 
 Running test: testPseudoElement
 Pseudo element test
 {"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
-{"results":["","3px","30px","6px","4px"]}
+{"results":["invalid","3px","30px","6px","4px"]}
 
 Running test: testPseudoElementNoProperty
 Pseudo element with no property specified test
 {"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
-{"results":["","3px","30px","6px","4px"]}
+{"results":["invalid","3px","30px","6px","4px"]}
 
 Running test: testNonExistentPseudoElement
 Non existent pseudo element test
@@ -118,7 +123,12 @@ Pseudo element with no content
 Running test: testElementDisplayNone
 Test on element without computed style
 {"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
-{"results":[""]}
+{"code":-32000,"message":"Computed style of element is null."}
+
+Running test: testResolveValuesIgnoreProperty
+Test resolveValues should ignore property
+{"input": [100,log(1000, 10),calc(10 + 30)]}
+{"results":["100","3","40"]}
 
 Running test: testResolveValuesValidInnerHeight
 Test resolveValues for height property of inner element
@@ -210,8 +220,13 @@ Test resolveValues for padding-bottom property of outer element
 {"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
 {"results":["100px","500px","200px","0px","10px","20px","10px","110px","110px"]}
 
+Running test: testResolvePercentageValuesNoProperty
+Test resolveValues with invalid percentage expressions
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["10%","50%","20%","0%","calc(10px + 10% - 10%)","20px","calc(10px + 0%)","calc(10px + 10%)","calc(1em + 10%)"]}
+
 Running test: testResolveInvalidPercentageValues
 Test resolveValues with invalid percentage expressions
 {"input": [calc(,%,calc(10 + 20)%,calc(10 + 30%]}
-{"results":["","","",""]}
+{"results":["calc(","%","calc(10 + 20)%","calc(10 + 30%"]}
 

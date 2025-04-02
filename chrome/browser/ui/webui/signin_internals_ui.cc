@@ -51,7 +51,8 @@ std::string GetBoundSessionExpirationString(base::Time expiration_time) {
 
 void AppendBoundSessionInfo(
     base::Value::Dict& signin_status,
-    BoundSessionCookieRefreshService* bound_session_service) {
+    BoundSessionCookieRefreshService* bound_session_service,
+    bool is_feature_enabled) {
   // TODO(b/299884315): update bound session info dynamically by observing the
   // service.
   static constexpr std::string_view kSessionIdKey = "sessionID";
@@ -62,8 +63,10 @@ void AppendBoundSessionInfo(
   } else if (std::vector<BoundSessionDebugInfo> bound_session_info =
                  bound_session_service->GetBoundSessionDebugInfo();
              bound_session_info.empty()) {
-    bound_sessions_list.Append(
-        base::Value::Dict().Set(kSessionIdKey, "No active bound sessions."));
+    bound_sessions_list.Append(base::Value::Dict().Set(
+        kSessionIdKey, is_feature_enabled
+                           ? "No active bound sessions."
+                           : "Bound session feature is disabled."));
   } else {
     for (const auto& info : bound_session_info) {
       bound_sessions_list.Append(
@@ -144,11 +147,10 @@ void SignInInternalsHandler::HandleGetSignInInfo(
       about_signin_internals ? about_signin_internals->GetSigninStatus()
                              : base::Value::Dict();
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  if (switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs())) {
-    AppendBoundSessionInfo(
-        signin_status,
-        BoundSessionCookieRefreshServiceFactory::GetForProfile(profile));
-  }
+  AppendBoundSessionInfo(
+      signin_status,
+      BoundSessionCookieRefreshServiceFactory::GetForProfile(profile),
+      switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs()));
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   ResolveJavascriptCallback(base::Value(callback_id), std::move(signin_status));
 
@@ -171,12 +173,12 @@ void SignInInternalsHandler::OnSigninStateChanged(
     const base::Value::Dict& info) {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   Profile* profile = Profile::FromWebUI(web_ui());
-  if (profile &&
-      switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs())) {
+  if (profile) {
     base::Value::Dict signin_status = info.Clone();
     AppendBoundSessionInfo(
         signin_status,
-        BoundSessionCookieRefreshServiceFactory::GetForProfile(profile));
+        BoundSessionCookieRefreshServiceFactory::GetForProfile(profile),
+        switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs()));
     FireWebUIListener("signin-info-changed", signin_status);
     return;
   }

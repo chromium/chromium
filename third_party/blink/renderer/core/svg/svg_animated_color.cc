@@ -90,11 +90,6 @@ String SVGColorProperty::ValueAsString() const {
                    style_color_.GetColor());
 }
 
-SVGPropertyBase* SVGColorProperty::CloneForAnimation(const String&) const {
-  // SVGAnimatedColor is deprecated. So No SVG DOM animation.
-  NOTREACHED();
-}
-
 void SVGColorProperty::Add(const SVGPropertyBase* other,
                            const SVGElement* context_element) {
   DCHECK(context_element);

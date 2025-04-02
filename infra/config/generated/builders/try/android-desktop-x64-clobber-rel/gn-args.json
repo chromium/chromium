@@ -1,5 +1,6 @@
 {
   "gn_args": {
+    "android_static_analysis": "on",
     "dcheck_always_on": true,
     "debuggable_apks": false,
     "enable_android_secondary_abi": true,

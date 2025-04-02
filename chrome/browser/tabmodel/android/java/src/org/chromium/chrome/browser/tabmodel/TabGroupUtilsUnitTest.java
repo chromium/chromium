@@ -158,7 +158,7 @@ public class TabGroupUtilsUnitTest {
             verify(tab).setRootId(TAB1_ID);
         }
         verify(mTabGroupModelFilter).setTabGroupColor(eq(TAB1_ID), eq(0));
-        verify(mTabGroupModelFilter).setTabGroupCollapsed(eq(TAB1_ID), eq(true));
+        verify(mTabGroupModelFilter).setTabGroupCollapsed(eq(TAB1_ID), eq(true), eq(false));
         verify(mTabGroupModelFilter).setTabGroupTitle(eq(TAB1_ID), eq(TAB_GROUP_TITLE));
     }
 

@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
@@ -2737,6 +2738,360 @@ TEST_F(AIPageContentAgentTest, PaidContentSubframe) {
   EXPECT_TRUE(
       ContainsRole(children[1]->content_attributes->annotated_roles,
                    mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+}
+
+void CheckMatchesNode(
+    const mojom::blink::AIPageContentHitTestNode& hit_test_node,
+    const mojom::blink::AIPageContentNode& node) {
+  EXPECT_EQ(hit_test_node.dom_node_id, node.content_attributes->dom_node_id);
+  EXPECT_EQ(hit_test_node.visible_bounding_box,
+            node.content_attributes->geometry->visible_bounding_box);
+}
+
+TEST_F(AIPageContentAgentTest, HitTestElementsBasic) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <p style='background:red'>Text 1</p>"
+      "  <p>Text 2</p>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& hit_test_nodes_in_viewport =
+      content->frame_data->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_viewport.size(), 7u);
+
+  // The first 3 nodes correspond to the document, HTML and body elements.
+  const auto& document = *helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  EXPECT_EQ(hit_test_nodes_in_viewport[0]->dom_node_id,
+            DOMNodeIds::ExistingIdForNode(&document));
+  EXPECT_EQ(
+      hit_test_nodes_in_viewport[0]->visible_bounding_box,
+      content->root_node->content_attributes->geometry->visible_bounding_box);
+
+  EXPECT_EQ(hit_test_nodes_in_viewport[1]->dom_node_id,
+            DOMNodeIds::ExistingIdForNode(document.documentElement()));
+  EXPECT_EQ(
+      hit_test_nodes_in_viewport[1]->visible_bounding_box,
+      content->root_node->content_attributes->geometry->visible_bounding_box);
+
+  EXPECT_EQ(hit_test_nodes_in_viewport[2]->dom_node_id,
+            DOMNodeIds::ExistingIdForNode(document.body()));
+  EXPECT_EQ(hit_test_nodes_in_viewport[2]->visible_bounding_box,
+            gfx::Rect(8, 8, 984, 984));
+
+  const auto& p1 = content->root_node->children_nodes[0];
+  const auto& text1 = p1->children_nodes[0];
+  CheckTextNode(*text1, "Text 1");
+  const auto& p2 = content->root_node->children_nodes[1];
+  const auto& text2 = p2->children_nodes[0];
+  CheckTextNode(*text2, "Text 2");
+
+  CheckMatchesNode(*hit_test_nodes_in_viewport[3], *p1);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[4], *p2);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[5], *text1);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[6], *text2);
+}
+
+TEST_F(AIPageContentAgentTest, HitTestElementsFixedPos) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <p style='position: fixed; top: 10px;'>Text 1</p>"
+      "  <p>Text 2</p>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& hit_test_nodes_in_viewport =
+      content->frame_data->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_viewport.size(), 7u);
+
+  const auto& p1 = content->root_node->children_nodes[0];
+  const auto& text1 = p1->children_nodes[0];
+  CheckTextNode(*text1, "Text 1");
+  const auto& p2 = content->root_node->children_nodes[1];
+  const auto& text2 = p2->children_nodes[0];
+  CheckTextNode(*text2, "Text 2");
+
+  CheckMatchesNode(*hit_test_nodes_in_viewport[3], *p2);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[4], *text2);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[5], *p1);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[6], *text1);
+}
+
+TEST_F(AIPageContentAgentTest, HitTestElementsPointerNone) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <p style='pointer-events:none'>Text 1</p>"
+      "  <p>Text 2</p>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& hit_test_nodes_in_viewport =
+      content->frame_data->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_viewport.size(), 5u);
+
+  const auto& p1 = content->root_node->children_nodes[0];
+  const auto& text1 = p1->children_nodes[0];
+  CheckTextNode(*text1, "Text 1");
+  const auto& p2 = content->root_node->children_nodes[1];
+  const auto& text2 = p2->children_nodes[0];
+  CheckTextNode(*text2, "Text 2");
+
+  CheckMatchesNode(*hit_test_nodes_in_viewport[3], *p2);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[4], *text2);
+}
+
+TEST_F(AIPageContentAgentTest, HitTestElementsIframe) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <iframe srcdoc='<p>Text 1</p>'></iframe>"
+      "  <p>Text 2</p>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& hit_test_nodes_in_viewport =
+      content->frame_data->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_viewport.size(), 6u);
+
+  const auto& iframe = content->root_node->children_nodes[0];
+  const auto& p = content->root_node->children_nodes[1];
+  const auto& text = p->children_nodes[0];
+  CheckTextNode(*text, "Text 2");
+
+  CheckMatchesNode(*hit_test_nodes_in_viewport[3], *p);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[4], *iframe);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[5], *text);
+
+  const auto& hit_test_nodes_in_iframe =
+      iframe->content_attributes->iframe_data->local_frame_data
+          ->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_iframe.size(), 5u);
+
+  const auto& root_iframe = iframe->children_nodes[0];
+  const auto& p_iframe = root_iframe->children_nodes[0];
+  const auto& text_iframe = p_iframe->children_nodes[0];
+  CheckTextNode(*text_iframe, "Text 1");
+  CheckMatchesNode(*hit_test_nodes_in_iframe[3], *p_iframe);
+  CheckMatchesNode(*hit_test_nodes_in_iframe[4], *text_iframe);
+}
+
+TEST_F(AIPageContentAgentTest, HitTestElementsInOverflowScroll) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div style='width: 100px; height: 100px; overflow-y: scroll;'>"
+      "  <article style='width: 50px; height: 300px;'></article>"
+      "</div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& hit_test_nodes_in_viewport =
+      content->frame_data->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_viewport.size(), 5u);
+
+  const auto& outer = content->root_node->children_nodes[0];
+  const auto& article = outer->children_nodes[0];
+  CheckAnnotatedRole(*article,
+                     mojom::blink::AIPageContentAnnotatedRole::kArticle);
+
+  CheckMatchesNode(*hit_test_nodes_in_viewport[3], *outer);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[4], *article);
+
+  CheckGeometry(*outer, gfx::Rect(8, 8, 100, 100), gfx::Rect(8, 8, 100, 100));
+  CheckGeometry(*article, gfx::Rect(8, 8, 50, 300), gfx::Rect(8, 8, 50, 100));
+}
+
+TEST_F(AIPageContentAgentTest, HitTestElementsInOverflowHidden) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div style='width: 100px; height: 100px; overflow-y: hidden;'>"
+      "  <article style='width: 50px; height: 300px;'></article>"
+      "</div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& hit_test_nodes_in_viewport =
+      content->frame_data->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_viewport.size(), 5u);
+
+  const auto& outer = content->root_node->children_nodes[0];
+  const auto& article = outer->children_nodes[0];
+  CheckAnnotatedRole(*article,
+                     mojom::blink::AIPageContentAnnotatedRole::kArticle);
+
+  CheckMatchesNode(*hit_test_nodes_in_viewport[3], *outer);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[4], *article);
+
+  CheckGeometry(*outer, gfx::Rect(8, 8, 100, 100), gfx::Rect(8, 8, 100, 100));
+  CheckGeometry(*article, gfx::Rect(8, 8, 50, 300), gfx::Rect(8, 8, 50, 100));
+}
+
+TEST_F(AIPageContentAgentTest, HitTestElementsInOverflowVisible) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <section style='width: 100px; height: 100px; overflow-y: visible;'>"
+      "  <article style='width: 50px; height: 300px;'></article>"
+      "</section>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& hit_test_nodes_in_viewport =
+      content->frame_data->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_viewport.size(), 5u);
+
+  const auto& outer = content->root_node->children_nodes[0];
+  const auto& article = outer->children_nodes[0];
+  CheckAnnotatedRole(*article,
+                     mojom::blink::AIPageContentAnnotatedRole::kArticle);
+
+  CheckMatchesNode(*hit_test_nodes_in_viewport[3], *outer);
+  CheckMatchesNode(*hit_test_nodes_in_viewport[4], *article);
+
+  CheckGeometry(*outer, gfx::Rect(8, 8, 100, 100), gfx::Rect(8, 8, 100, 100));
+  CheckGeometry(*article, gfx::Rect(8, 8, 50, 300), gfx::Rect(8, 8, 50, 300));
+}
+
+TEST_F(AIPageContentAgentTest, HitTestElementsBlur) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <section style='width: 100px; height: 100px; filter: "
+      "blur(10px);'></section>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& hit_test_nodes_in_viewport =
+      content->frame_data->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_viewport.size(), 4u);
+
+  const auto& section = content->root_node->children_nodes[0];
+  CheckAnnotatedRole(*section,
+                     mojom::blink::AIPageContentAnnotatedRole::kSection);
+
+  CheckMatchesNode(*hit_test_nodes_in_viewport[3], *section);
+  CheckGeometry(*section, gfx::Rect(8, 8, 100, 100), gfx::Rect(8, 8, 100, 100));
+}
+
+TEST_F(AIPageContentAgentTest, HitTestElementsAbsPos) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <section style='width: 100px; height: 100px; position: absolute; top: "
+      "200px; left: 200px;'>"
+      "</section>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& hit_test_nodes_in_viewport =
+      content->frame_data->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_viewport.size(), 4u);
+
+  const auto& section = content->root_node->children_nodes[0];
+  CheckAnnotatedRole(*section,
+                     mojom::blink::AIPageContentAnnotatedRole::kSection);
+
+  CheckMatchesNode(*hit_test_nodes_in_viewport[3], *section);
+  CheckGeometry(*section, gfx::Rect(200, 200, 100, 100),
+                gfx::Rect(200, 200, 100, 100));
+}
+
+TEST_F(AIPageContentAgentTest, HitTestElementsRelativePos) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <section style='width: 100px; height: 100px; position: relative; "
+      "overflow: clip;'>"
+      "  <article style='width: 50px; height: 50px; position: absolute; left: "
+      "150px; top:0px;'></article>"
+      "</section>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& hit_test_nodes_in_viewport =
+      content->frame_data->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_viewport.size(), 4u);
+
+  const auto& outer = content->root_node->children_nodes[0];
+  const auto& article = outer->children_nodes[0];
+  CheckAnnotatedRole(*article,
+                     mojom::blink::AIPageContentAnnotatedRole::kArticle);
+
+  CheckMatchesNode(*hit_test_nodes_in_viewport[3], *outer);
+
+  CheckGeometry(*outer, gfx::Rect(8, 8, 100, 100), gfx::Rect(8, 8, 100, 100));
+  CheckGeometry(*article, gfx::Rect(158, 8, 50, 50), gfx::Rect());
+}
+
+TEST_F(AIPageContentAgentTest, HitTestElementsTransform) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <section style='width: 100px; height: 100px; transform: "
+      "translate(200px, 200px)'>"
+      "</section>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& hit_test_nodes_in_viewport =
+      content->frame_data->hit_test_nodes_in_viewport;
+  EXPECT_EQ(hit_test_nodes_in_viewport.size(), 4u);
+
+  const auto& section = content->root_node->children_nodes[0];
+  CheckAnnotatedRole(*section,
+                     mojom::blink::AIPageContentAnnotatedRole::kSection);
+
+  CheckMatchesNode(*hit_test_nodes_in_viewport[3], *section);
+  CheckGeometry(*section, gfx::Rect(208, 208, 100, 100),
+                gfx::Rect(208, 208, 100, 100));
 }
 
 }  // namespace

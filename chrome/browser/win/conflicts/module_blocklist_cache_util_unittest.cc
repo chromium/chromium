@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -175,9 +176,10 @@ TEST_F(ModuleBlocklistCacheUtilTest, WriteAndRead) {
   ASSERT_EQ(read_blocklisted_modules.size(), blocklisted_modules.size());
   // Note: Not using PackedListModuleEquals because the time_date_stamp is also
   // verified.
-  EXPECT_EQ(0, memcmp(&read_blocklisted_modules[0], &blocklisted_modules[0],
-                      read_blocklisted_modules.size() *
-                          sizeof(third_party_dlls::PackedListModule)));
+  EXPECT_EQ(0, UNSAFE_TODO(
+                   memcmp(&read_blocklisted_modules[0], &blocklisted_modules[0],
+                          read_blocklisted_modules.size() *
+                              sizeof(third_party_dlls::PackedListModule))));
 
   for (size_t i = 0; i < sizeof(base::MD5Digest::a); ++i) {
     EXPECT_EQ(md5_digest.a[i], read_md5_digest.a[i]);

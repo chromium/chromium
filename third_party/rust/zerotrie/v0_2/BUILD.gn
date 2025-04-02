@@ -13,30 +13,30 @@ cargo_crate("lib") {
   epoch = "0.2"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/zerotrie-0.2.1/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/zerotrie-0.2.1/src/builder/branch_meta.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerotrie-0.2.1/src/builder/bytestr.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerotrie-0.2.1/src/builder/konst/builder.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerotrie-0.2.1/src/builder/konst/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerotrie-0.2.1/src/builder/konst/store.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerotrie-0.2.1/src/builder/litemap.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerotrie-0.2.1/src/builder/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerotrie-0.2.1/src/builder/nonconst/builder.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerotrie-0.2.1/src/builder/nonconst/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerotrie-0.2.1/src/builder/nonconst/store.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerotrie-0.2.1/src/byte_phf/builder.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerotrie-0.2.1/src/byte_phf/cached_owned.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerotrie-0.2.1/src/byte_phf/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerotrie-0.2.1/src/cursor.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerotrie-0.2.1/src/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerotrie-0.2.1/src/helpers.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerotrie-0.2.1/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerotrie-0.2.1/src/options.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerotrie-0.2.1/src/reader.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerotrie-0.2.1/src/serde.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerotrie-0.2.1/src/varint.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerotrie-0.2.1/src/zerotrie.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/builder/branch_meta.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/builder/bytestr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/builder/konst/builder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/builder/konst/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/builder/konst/store.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/builder/litemap.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/builder/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/builder/nonconst/builder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/builder/nonconst/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/builder/nonconst/store.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/byte_phf/builder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/byte_phf/cached_owned.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/byte_phf/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/cursor.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/helpers.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/options.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/reader.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/serde.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/varint.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/zerotrie.rs",
   ]
   inputs = []
 

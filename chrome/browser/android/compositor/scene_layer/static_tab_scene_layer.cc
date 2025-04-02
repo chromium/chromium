@@ -79,16 +79,17 @@ void StaticTabSceneLayer::UpdateTabLayer(
     content_layer_ = android::ContentLayer::Create(tab_content_manager_);
     layer_->AddChild(content_layer_->layer());
   }
+
   if (id != -1 && can_use_live_layer) {
     // StaticLayout may not know that the live layer cannot draw. Ensure it gets
     // a thumbnail if needed.
-    auto live_layer = tab_content_manager_->GetLiveLayer(id);
-    if (live_layer) {
+    bool update_visible_ids = true;
+    if (auto live_layer = tab_content_manager_->GetLiveLayer(id)) {
       live_layer->SetHideLayerAndSubtree(!can_use_live_layer);
-      if (!LayerDraws(live_layer)) {
-        std::vector<int> tab_ids = {id};
-        tab_content_manager_->UpdateVisibleIds(tab_ids, id);
-      }
+      update_visible_ids = !LayerDraws(live_layer);
+    }
+    if (update_visible_ids) {
+      tab_content_manager_->UpdateVisibleIds({id}, id);
     }
   }
 

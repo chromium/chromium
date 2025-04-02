@@ -74,15 +74,15 @@ export class HistoryClustersAppElement extends CrLitElement {
   // Properties
   //============================================================================
 
-  protected enableHistoryEmbeddings_: boolean =
+  protected accessor enableHistoryEmbeddings_: boolean =
       loadTimeData.getBoolean('enableHistoryEmbeddings');
-  protected hasHistoryEmbeddingsResults_: boolean = false;
-  protected historyEmbeddingsDisclaimerLinkClicked_: boolean = false;
-  query: string = '';
-  protected nonEmbeddingsResultClicked_: boolean = false;
-  protected numCharsTypedInSearch_: number = 0;
-  protected scrollTarget_?: HTMLElement;
-  protected searchIcon_?: string;
+  protected accessor hasHistoryEmbeddingsResults_: boolean = false;
+  protected accessor historyEmbeddingsDisclaimerLinkClicked_: boolean = false;
+  accessor query: string = '';
+  protected accessor nonEmbeddingsResultClicked_: boolean = false;
+  protected accessor numCharsTypedInSearch_: number = 0;
+  protected accessor scrollTarget_: HTMLElement|undefined;
+  protected accessor searchIcon_: string|undefined;
 
   //============================================================================
   // Event Handlers

@@ -5140,6 +5140,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContextualPageActionsShareModelDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(
          segmentation_platform::features::kContextualPageActionShareModel)},
+    {"reader-mode-dev-entry-point",
+     flag_descriptions::kReaderModeDevEntryPointName,
+     flag_descriptions::kReaderModeDevEntryPointDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kReaderModeDevEntryPoint)},
     {"reader-mode-heuristics", flag_descriptions::kReaderModeHeuristicsName,
      flag_descriptions::kReaderModeHeuristicsDescription, kOsAndroid,
      MULTI_VALUE_TYPE(kReaderModeHeuristicsChoices)},
@@ -5210,10 +5214,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSysUiShouldHoldbackDriveIntegrationDescription,
      kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSysUiShouldHoldbackDriveIntegration)},
-    {"sys-ui-holdback-forest",
-     flag_descriptions::kSysUiShouldHoldbackForestName,
-     flag_descriptions::kSysUiShouldHoldbackForestDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kSysUiShouldHoldbackForest)},
     {"sys-ui-holdback-task-management",
      flag_descriptions::kSysUiShouldHoldbackTaskManagementName,
      flag_descriptions::kSysUiShouldHoldbackTaskManagementDescription, kOsCrOS,
@@ -5684,6 +5684,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabClosureMethodRefactorName,
      flag_descriptions::kTabClosureMethodRefactorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabClosureMethodRefactor)},
+
+    // Grid tab switcher update.
+    {"grid-tab-switcher-update", flag_descriptions::kGridTabSwitcherUpdateName,
+     flag_descriptions::kGridTabSwitcherUpdateDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kGridTabSwitcherUpdate)},
 
 #endif  // BUILDFLAG(IS_ANDROID)
     {"disallow-doc-written-script-loads",
@@ -8161,11 +8166,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsLinux | kOsMac | kOsWin | kOsCrOS | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kSyncPointGraphValidation)},
 
-    {"use-dns-https-svcb-alpn", flag_descriptions::kUseDnsHttpsSvcbAlpnName,
-     flag_descriptions::kUseDnsHttpsSvcbAlpnDescription,
-     kOsLinux | kOsMac | kOsWin | kOsCrOS | kOsAndroid,
-     FEATURE_VALUE_TYPE(net::features::kUseDnsHttpsSvcbAlpn)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"web-otp-backend", flag_descriptions::kWebOtpBackendName,
      flag_descriptions::kWebOtpBackendDescription, kOsAndroid,
@@ -9129,6 +9129,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExtensionAiDataCollectionDescription, kOsDesktop,
      SINGLE_VALUE_TYPE(switches::kExtensionAiDataCollection)},
 
+    {"extensions-collapse-main-menu",
+     flag_descriptions::kExtensionsCollapseMainMenuName,
+     flag_descriptions::kExtensionsCollapseMainMenuDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kExtensionsCollapseMainMenu)},
+
     {"extensions-menu-access-control",
      flag_descriptions::kExtensionsMenuAccessControlName,
      flag_descriptions::kExtensionsMenuAccessControlDescription, kOsDesktop,
@@ -9684,11 +9689,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabStripContextMenuAndroidName,
      flag_descriptions::kTabStripContextMenuAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabStripContextMenuAndroid)},
-
-    {"tab-strip-group-collapse-android",
-     flag_descriptions::kTabStripGroupCollapseAndroidName,
-     flag_descriptions::kTabStripGroupCollapseAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabStripGroupCollapseAndroid)},
 
     {"tab-strip-group-drag-drop-android",
      flag_descriptions::kTabStripGroupDragDropAndroidName,
@@ -10610,12 +10610,6 @@ const FeatureEntry kFeatureEntries[] = {
          kEnableFingerprintingProtectionFilterInIncognitoVariations,
          "EnableFingerprintingProtectionFilterInIncognito")},
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"ash-forest-feature", flag_descriptions::kForestFeatureName,
-     flag_descriptions::kForestFeatureDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kForestFeature)},
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
     {"enable-standard-device-bound-session-credentials",
      flag_descriptions::kEnableStandardBoundSessionCredentialsName,
      flag_descriptions::kEnableStandardBoundSessionCredentialsDescription,
@@ -10821,6 +10815,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kCanvas2DHibernation)},
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    {"enable-history-sync-optin-expansion-pill",
+     flag_descriptions::kEnableHistorySyncOptinExpansionPillName,
+     flag_descriptions::kEnableHistorySyncOptinExpansionPillDescription,
+     kOsWin | kOsMac | kOsLinux,
+     FEATURE_VALUE_TYPE(switches::kEnableHistorySyncOptinExpansionPill)},
     {"enable-history-sync-optin",
      flag_descriptions::kEnableHistorySyncOptinName,
      flag_descriptions::kEnableHistorySyncOptinDescription,
@@ -11249,15 +11248,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableCardBenefitsIphDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardBenefitsIph)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"enable-automotive-fullscreen-toolbar-improvements",
-     flag_descriptions::kAutomotiveFullscreenToolbarImprovementsName,
-     flag_descriptions::kAutomotiveFullscreenToolbarImprovementsDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kAutomotiveFullscreenToolbarImprovements)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"privacy-sandbox-privacy-policy",
      flag_descriptions::kPrivacySandboxPrivacyPolicyName,
      flag_descriptions::kPrivacySandboxPrivacyPolicyDescription, kOsAll,
@@ -11430,6 +11420,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"glic-user-resize", flag_descriptions::kGlicUserResizeName,
      flag_descriptions::kGlicUserResizeDescription, kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(features::kGlicUserResize)},
+    {"glic-z-order-changes", flag_descriptions::kGlicZOrderChangesName,
+     flag_descriptions::kGlicZOrderChangesDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(features::kGlicZOrderChanges)},
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -11593,13 +11587,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWindowsSystemTracingDescription, kOsWin,
      FEATURE_VALUE_TYPE(kWindowsSystemTracing)},
 #endif  // BUILDFLAG(IS_WIN)
-
-    {"privacy-sandbox-equalized-prompt-buttons",
-     flag_descriptions::kPrivacySandboxEqualizedPromptButtonsName,
-     flag_descriptions::kPrivacySandboxEqualizedPromptButtonsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         privacy_sandbox::kPrivacySandboxEqualizedPromptButtons)},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"move-theme-prefs-to-specifics",
@@ -11883,13 +11870,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
-    {"adjust-can-create-canvas2d-resource-provider",
-     flag_descriptions::kAdjustCanCreateCanvas2DResourceProviderName,
-     flag_descriptions::kAdjustCanCreateCanvas2DResourceProviderDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         blink::features::kAdjustCanCreateCanvas2dResourceProvider)},
-
     {"is-paintable-checks-resource-provider",
      flag_descriptions::kIsPaintableChecksResourceProviderInsteadOfBridgeName,
      flag_descriptions::
@@ -11962,6 +11942,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContextMenuEmptySpaceName,
      flag_descriptions::kContextMenuEmptySpaceDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kContextMenuEmptySpace)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+    {"android-surface-color-update",
+     flag_descriptions::kAndroidSurfaceColorUpdateName,
+     flag_descriptions::kAndroidSurfaceColorUpdateDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidSurfaceColorUpdate)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     // Add new entries above this line.

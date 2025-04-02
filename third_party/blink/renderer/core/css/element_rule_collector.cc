@@ -376,12 +376,16 @@ const MatchResult& ElementRuleCollector::MatchedResult() const {
 
 StyleRuleList* ElementRuleCollector::MatchedStyleRuleList() {
   DCHECK_EQ(mode_, SelectorChecker::kCollectingStyleRules);
-  return style_rule_list_.Release();
+  auto* style_rule_list = style_rule_list_;
+  style_rule_list_ = nullptr;
+  return style_rule_list;
 }
 
 RuleIndexList* ElementRuleCollector::MatchedCSSRuleList() {
   DCHECK_EQ(mode_, SelectorChecker::kCollectingCSSRules);
-  return css_rule_list_.Release();
+  auto* css_rule_list = css_rule_list_;
+  css_rule_list_ = nullptr;
+  return css_rule_list;
 }
 
 void ElementRuleCollector::ClearMatchedRules() {
@@ -392,14 +396,14 @@ inline StyleRuleList* ElementRuleCollector::EnsureStyleRuleList() {
   if (!style_rule_list_) {
     style_rule_list_ = MakeGarbageCollected<StyleRuleList>();
   }
-  return style_rule_list_.Get();
+  return style_rule_list_;
 }
 
 inline RuleIndexList* ElementRuleCollector::EnsureRuleList() {
   if (!css_rule_list_) {
     css_rule_list_ = MakeGarbageCollected<RuleIndexList>();
   }
-  return css_rule_list_.Get();
+  return css_rule_list_;
 }
 
 void ElementRuleCollector::AddElementStyleProperties(
@@ -1182,6 +1186,70 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
   }
 }
 
+void CountPseudoElementUsage(const Element& element, PseudoId id) {
+  switch (id) {
+    case kPseudoIdFirstLine: {
+      element.GetDocument().CountUse(WebFeature::kFirstLinePseudoElement);
+      break;
+    }
+    case kPseudoIdFirstLetter: {
+      element.GetDocument().CountUse(WebFeature::kFirstLetterPseudoElement);
+      break;
+    }
+    case kPseudoIdCheckMark: {
+      element.GetDocument().CountUse(WebFeature::kCheckMarkPseudoElement);
+      break;
+    }
+    case kPseudoIdBefore: {
+      element.GetDocument().CountUse(WebFeature::kBeforePseudoElement);
+      break;
+    }
+    case kPseudoIdAfter: {
+      element.GetDocument().CountUse(WebFeature::kAfterPseudoElement);
+      break;
+    }
+    case kPseudoIdPickerIcon: {
+      element.GetDocument().CountUse(WebFeature::kPickerIconPseudoElement);
+      break;
+    }
+    case kPseudoIdMarker: {
+      element.GetDocument().CountUse(WebFeature::kMarkerPseudoElement);
+      break;
+    }
+    case kPseudoIdBackdrop: {
+      element.GetDocument().CountUse(WebFeature::kBackdropPseudoElement);
+      break;
+    }
+    case kPseudoIdSelection: {
+      element.GetDocument().CountUse(WebFeature::kSelectionPseudoElement);
+      break;
+    }
+    case kPseudoIdSearchText: {
+      element.GetDocument().CountUse(WebFeature::kSearchTextPseudoElement);
+      break;
+    }
+    case kPseudoIdTargetText: {
+      element.GetDocument().CountUse(WebFeature::kTargetTextPseudoElement);
+      break;
+    }
+    case kPseudoIdHighlight: {
+      element.GetDocument().CountUse(WebFeature::kCustomHighlightPseudoElement);
+      break;
+    }
+    case kPseudoIdSpellingError: {
+      element.GetDocument().CountUse(WebFeature::kSpellingErrorPseudoElement);
+      break;
+    }
+    case kPseudoIdGrammarError: {
+      element.GetDocument().CountUse(WebFeature::kGrammarErrorPseudoElement);
+      break;
+    }
+
+    default:
+      return;
+  }
+}
+
 void ElementRuleCollector::DidMatchRule(
     const RuleData* rule_data,
     uint16_t layer_order,
@@ -1213,6 +1281,7 @@ void ElementRuleCollector::DidMatchRule(
     }
 
     result_.SetHasPseudoElementStyle(dynamic_pseudo);
+    CountPseudoElementUsage(context_.GetElement(), dynamic_pseudo);
 
     if (IsHighlightPseudoElement(dynamic_pseudo)) {
       // Determine whether the selector definitely matches the highlight pseudo

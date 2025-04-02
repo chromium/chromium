@@ -63,7 +63,6 @@
 <translation id="1240288207750131269"><ph name="LANG" /> ଲୋଡ୍ ହେଉଛି</translation>
 <translation id="124116460088058876">ଅନେକ ଭାଷା</translation>
 <translation id="1241792820757384812"><ph name="CHROME_CHANNEL" /> ପାଇଁ Google Password Managerରୁ ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକ ଡିଲିଟ ହୋଇଯିବ। ଆପଣ ଏବେ ଡାଉନଲୋଡ କରିଥିବା ପାସୱାର୍ଡ ଫାଇଲ ରଖିବେ।</translation>
-<translation id="1242883863226959074">ଡିଭାଇସ୍</translation>
 <translation id="124678866338384709">ସାମ୍ପ୍ରତିକ ଟାବ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1246905108078336582">କ୍ଲିପ୍‍‍ବୋର୍ଡରୁ ପ୍ରସ୍ତାବ କାଢ଼ି ଦେବେ?</translation>
 <translation id="1258753120186372309">Google ଡୁଡଲ୍: <ph name="DOODLE_DESCRIPTION" /></translation>
@@ -289,6 +288,7 @@
 <translation id="2362083820973145409"><ph name="USER_NAME" /> ଭାବେ ସାଇନ ଇନ କରିଛନ୍ତି। <ph name="USER_EMAIL" />। ସେଟିଂସ ଖୋଲେ।</translation>
 <translation id="2363734411417672757">ଅଧିକ ପୃଷ୍ଠାକୁ ପ୍ରିଲୋଡ କରାଯାଇଛି। ଅନ୍ୟ ସାଇଟ କିମ୍ବା ଆପ୍ସ ଅନୁରୋଧ କଲେ, ପୃଷ୍ଠାଗୁଡ଼ିକୁ Google ସର୍ଭରଗୁଡ଼ିକ ମାଧ୍ୟମରେ ପ୍ରିଲୋଡ କରାଯାଇପାରେ।</translation>
 <translation id="2366554533468315977">ଏହି ବିକଳ୍ପ ପାଇଁ ସମଗ୍ର ୱେବରେ ମୂଲ୍ୟ ଇତିହାସ</translation>
+<translation id="2367818124433749493">ଡେଭେଲପର ସର୍ଟକଟ</translation>
 <translation id="2385605401818128172">ଆପଣ ଅନେକ ବିଜ୍ଞପ୍ତି ପଠାଉଥିବା ସାଇଟଗୁଡ଼ିକର ସମୀକ୍ଷା କରିପାରିବେ ଏବଂ ଭବିଷ୍ୟତରେ ସେଗୁଡ଼ିକୁ ଅଧିକ ବିଜ୍ଞପ୍ତି ପଠାଇବାରୁ ବନ୍ଦ କରିପାରିବେ</translation>
 <translation id="2386938421315164605">ବିଷୟଗୁଡ଼ିକୁ ଲୁଚାନ୍ତୁ ଏବଂ ଦେଖାନ୍ତୁ</translation>
 <translation id="2390510615457643724">ଆପଣ <ph name="FILE_NAME" /> <ph name="FILE_SIZE" />କୁ ପୁଣି ଡାଉନଲୋଡ୍ କରିବା ପାଇଁ ଚାହୁଁଛନ୍ତି କି?</translation>
@@ -307,6 +307,7 @@
 <translation id="2453860139492968684">ସମାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="2461378706168271257">ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="2461822463642141190">ବର୍ତ୍ତମାନର</translation>
+<translation id="2463770278804271243">ପୃଷ୍ଠା</translation>
 <translation id="2468444275314013497">ଆପଣଙ୍କ ବ୍ରାଉଜର ଠିକ ଲାଗୁଛି</translation>
 <translation id="2472163211318554013">Chromeରୁ ସବୁଠାରୁ ଅଧିକ ସୁବିଧା ପାଇବା ପାଇଁ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="247737702124049222">ଛବିର ବର୍ଣ୍ଣନା ଚାଲୁ ଅଛି</translation>
@@ -509,7 +510,6 @@
 <translation id="3398320232533725830">ବୁକ୍‌ମାର୍କ ପରିଚାଳକ ଖୋଲନ୍ତୁ</translation>
 <translation id="3414952576877147120">ଆକାର:</translation>
 <translation id="3421726884497337397">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ କେତେବେଳେ ବ୍ଲକ କରିବେ ତାହା ବାଛନ୍ତୁ</translation>
-<translation id="342220687432920852">{HOURS,plural, =1{# ଘଣ୍ଟା ପୂର୍ବେ}other{# ଘଣ୍ଟା ପୂର୍ବେ}}</translation>
 <translation id="3430670036890315772">ଆପଣଙ୍କ ପ୍ରୋଫାଇଲ ଲକ ବନ୍ଦ କରିବା ଦ୍ୱାରା ସେଭ କରାଯାଇଥିବା ଆପଣଙ୍କ ସୂଚନାକୁ କାଢ଼ି ଦିଆଯିବ</translation>
 <translation id="3435465986463792564">ଅନେକ ୱିଣ୍ଡୋ ଖୋଲା ଅଛି କି? ଆପଣ ସେଗୁଡ଼ିକୁ ଏଠାରୁ ପରିଚାଳନା କରିପାରିବେ</translation>
 <translation id="3435575784518354875">ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଆକ୍ସେସ ଜାରି ରଖିବାକୁ, ସେଗୁଡ଼ିକୁ ଏବେ ଏକ୍ସପୋର୍ଟ କରନ୍ତୁ, Google Play ସେବାଗୁଡ଼ିକୁ ଅପଡେଟ କରନ୍ତୁ ଏବଂ ତା’ପରେ ସେଗୁଡ଼ିକୁ ପୁଣି Google Password Managerକୁ ଇମ୍ପୋର୍ଟ କରନ୍ତୁ। <ph name="BEGIN_LINK" />ସମ୍ପୂର୍ଣ୍ଣ ନିର୍ଦ୍ଦେଶାବଳୀ ଦେଖନ୍ତୁ<ph name="END_LINK" />।</translation>
@@ -692,6 +692,7 @@
 <translation id="4269820728363426813">ଲିଙ୍କ୍ ଠିକଣା କପି କରନ୍ତୁ</translation>
 <translation id="4270730597186910506">ଏକ ପ୍ରଡକ୍ଟକୁ ଟ୍ରାକ କିମ୍ବା ଅନଟ୍ରାକ କରନ୍ତୁ।</translation>
 <translation id="4277529130885813215">ଅନ୍ୟ ଏକ ଡିଭାଇସ ବ୍ୟବହାର କରନ୍ତୁ</translation>
+<translation id="427987768447457592">ନୂଆ ଟାବ ଗ୍ରୁପ</translation>
 <translation id="4282440837784183472">ଆପଣ ସାଇନ ଇନ କରୁଥିବା ଆକାଉଣ୍ଟ ଏବଂ Chromeକୁ କିପରି ବ୍ୟବହାର କରାଯାଇପାରିବ ତାକୁ ଆପଣଙ୍କ ସଂସ୍ଥା, <ph name="MANAGED_DOMAIN" />, ପରିଚାଳନା କରେ। ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ନିର୍ଦ୍ଦିଷ୍ଟ ଫିଚରଗୁଡ଼ିକୁ ସେଟ ଅପ କିମ୍ବା ପ୍ରତିବନ୍ଧିତ କରିପାରିବେ।</translation>
 <translation id="4285498937028063278">ଅନ୍‌ପିନ୍ କରନ୍ତୁ</translation>
 <translation id="4285846616383034558">କୁକୀ, କେଶେ ଏବଂ ଅନ୍ୟ ସାଇଟ ଡାଟା</translation>
@@ -962,7 +963,6 @@
 <translation id="5517095782334947753"><ph name="FROM_ACCOUNT" />ରୁ ଆପଣଙ୍କ ପାଖରେ ବୁକ୍‌ମାର୍କ, ଇତିବୃତ୍ତି, ପାସ୍‌ୱାର୍ଡ ଏବଂ ଅନ୍ୟ ସେଟିଂସ୍‌ ଅଛି।</translation>
 <translation id="5517326820028369152">ବର୍ତ୍ତମାନର କାର୍ଯ୍ୟକଳାପ ବଟମ ସିଟ</translation>
 <translation id="5526281268548144413">ଏକାଧିକ ୱିଣ୍ଡୋରେ ବନ୍ଦ କରାଯାଇପାରିବ ନାହିଁ</translation>
-<translation id="5528925345478618296">{MINUTES,plural, =1{# ମିନିଟ ପୂର୍ବେ}other{# ମିନିଟ ପୂର୍ବେ}}</translation>
 <translation id="5548606607480005320">ସୁରକ୍ଷା ଯାଞ୍ଚ</translation>
 <translation id="5554520618550346933">ଆପଣ ଏକ ପାସୱାର୍ଡ ବ୍ୟବହାର କରିବା ସମୟରେ, ଯଦି ଏହାକୁ ଅନଲାଇନରେ ବ୍ୟବହାର କରାଯାଇଛି ତେବେ Chrome ଆପଣଙ୍କୁ ଚେତାବନୀ ଦିଏ। ଏହା କରିବା ସମୟରେ, ଆପଣଙ୍କ ପାସୱାର୍ଡ ଏବଂ ଉପଯୋଗକର୍ତ୍ତାନାମଗୁଡ଼ିକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଥାଏ, ତେଣୁ Google ସମେତ କୌଣସି ବ୍ୟକ୍ତି ସେଗୁଡ଼ିକୁ ପଢ଼ିପାରିବେ ନାହିଁ।</translation>
 <translation id="5555525474779371165">ଆପଣଙ୍କ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ସୁରକ୍ଷା ବାଛନ୍ତୁ</translation>
@@ -1131,6 +1131,7 @@
 <translation id="6295158916970320988">ସମସ୍ତ ସାଇଟ୍‍ଗୁଡ଼ିକ</translation>
 <translation id="6296366034485697675">ଏକ୍ସପୋର୍ଟ ଏବଂ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="629730747756840877">ଆକାଉଣ୍ଟ</translation>
+<translation id="6301526076346731664">ଡେଭେଲପର ଟୁଲ ଖୋଲନ୍ତୁ</translation>
 <translation id="6303969859164067831">ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ ଏବଂ ସିଙ୍କ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6307241780749477694">ଏହି ଡିଭାଇସରେ ଆପଣଙ୍କର ସମସ୍ତ ପାସୱାର୍ଡ ପାଇବା ପାଇଁ ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="6312687380483398334">ୱେବ୍ ଆପଗୁଡ଼ିକ (ନୀରବ)</translation>
@@ -1273,7 +1274,6 @@
 <translation id="6865313869410766144">ସ୍ୱତଃପୂରଣ ଫର୍ମ ଡାଟା</translation>
 <translation id="6867400383614725881">ନୂଆ ଇନକଗ୍ନିଟୋ ଟାବ୍</translation>
 <translation id="686899695320434745">ଆପଣଙ୍କ ପାସଫ୍ରେଜ ମାଧ୍ୟମରେ ଠିକଣାଗୁଡ଼ିକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଏ ନାହିଁ। ଏହା ଆପଣଙ୍କୁ ଅନ୍ୟ Google ସେବାଗୁଡ଼ିକରେ ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବାକୁ ଦେଇଥାଏ।</translation>
-<translation id="6869056123412990582">କମ୍ପ୍ୟୁଟର</translation>
 <translation id="687838958001010630">ଲିଙ୍କ ଥିବା ଯେ କୌଣସି ବ୍ୟକ୍ତି ସମସ୍ତ ଟାବକୁ ଏଡିଟ କରିପାରିବେ</translation>
 <translation id="6880903702195291049">ଅନୁମତିଗୁଡ଼ିକ ଠିକ ଲାଗୁଛି</translation>
 <translation id="6883204995689174413">ସେୟାର୍ କରନ୍ତୁ</translation>
@@ -1636,7 +1636,6 @@
 <translation id="8419244640277402268">ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ</translation>
 <translation id="8422250855136581222">ଏହି ଡିଭାଇସରେ କୌଣସି ଟାବକୁ ବନ୍ଦ କରାଯିବ ନାହିଁ</translation>
 <translation id="842386925677997438">Chromeର ସୁରକ୍ଷା ଟୁଲ</translation>
-<translation id="8424781820952413435">ପୃଷ୍ଠାଟି ପଠାଯାଇଛି। ଏହାକୁ ଦେଖିବା ପାଇଁ, ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ Chrome ଖୋଲନ୍ତୁ</translation>
 <translation id="8427875596167638501">ପ୍ରିଭ୍ୟୁ ଟାବ୍ ଅଧା ଖୋଲା ଅଛି</translation>
 <translation id="8428213095426709021">ସେଟିଂସ୍</translation>
 <translation id="8430824733382774043">କେବଳ ସ୍କ୍ରିନସଟ୍ ସେୟାର୍ କରନ୍ତୁ</translation>
@@ -1691,7 +1690,6 @@
 <translation id="8611922158252451755">ଲିଙ୍କ ଥିବା ଯେ କୌଣସି ବ୍ୟକ୍ତି ସମସ୍ତ ଟାବକୁ ଏଡିଟ କରିପାରିବେ, ତେଣୁ ବୁଦ୍ଧିମତ୍ତାର ସହ ସେୟାର କରନ୍ତୁ। ଲିଙ୍କର ମିଆଦ 48 ଘଣ୍ଟାରେ ଶେଷ ହୁଏ।</translation>
 <translation id="8616006591992756292">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟର <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> ରେ ଅନ୍ୟ ପ୍ରକାରର ବ୍ରାଉଜିଂ ଇତିବୃତ୍ତି ଥାଇପାରେ।</translation>
 <translation id="8617240290563765734">ଡାଉନ୍‌ଲୋଡ୍‌ କରାଯାଇଥିବା ବିଷୟବସ୍ତୁରେ ନିର୍ଦ୍ଧିଷ୍ଟ କରାଯାଇଥିବା URL ଖୋଲିବେ?</translation>
-<translation id="8621068256433641644">ଫୋନ୍</translation>
 <translation id="8635399646025169806">ଟାବ ଗ୍ରୁପ ରଖିବେ?</translation>
 <translation id="8636825310635137004">ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସ୍‍ରୁ ନିଜର ଟାବ୍‍ଗୁଡ଼ିକୁ ପ୍ରାପ୍ତ କରିବାକୁ, ସିଙ୍କ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="864544049772947936">ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ପରିଚାଳନା କର (<ph name="INSTANCE_COUNTS" />)</translation>

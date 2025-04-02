@@ -449,7 +449,16 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
       std::optional<UpdaterScope> store_flag,
       std::optional<std::string> want_tag) const override {
     updater::test::ExpectKSAdminFetchTag(updater_scope_, elevate, product_id,
-                                         xc_path, store_flag, want_tag);
+                                         xc_path, store_flag,
+                                         std::move(want_tag));
+  }
+
+  void ExpectKSAdminXattrBrand(
+      bool elevate,
+      const base::FilePath& path,
+      std::optional<std::string> want_brand) const override {
+    updater::test::ExpectKSAdminXattrBrand(updater_scope_, elevate, path,
+                                           std::move(want_brand));
   }
 #endif  // BUILDFLAG(IS_MAC)
 

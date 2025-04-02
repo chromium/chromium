@@ -34,6 +34,7 @@
 #include "mojo/public/cpp/bindings/lib/message_size_estimator.h"
 #include "mojo/public/cpp/bindings/raw_ptr_impl_ref_traits.h"
 
+
 #include "base/types/expected.h"
 
 
@@ -83,13 +84,12 @@ class ResultInterface
 #endif // !BUILDFLAG(IS_FUCHSIA)
   virtual ~ResultInterface() = default;
 
-
-  using MethodCallback = base::OnceCallback<void(ResultInterface_Method_ResponseParam_ResultPtr)>;
-  using MethodResultCallback = base::OnceCallback<void(base::expected<
+  using MethodCallback = base::OnceCallback<void(base::expected<
   bool,
   ResultTestErrorPtr>)>;
-  
-  virtual void Method(bool a, MethodResultCallback callback) = 0;
+  using MethodMojoCallback = base::OnceCallback<void(ResultInterface_Method_ResponseParam_ResultPtr)>;
+
+  virtual void Method(bool a, MethodCallback callback) = 0;
 };
 
 
@@ -101,7 +101,7 @@ class  ResultInterfaceProxy
 
   explicit ResultInterfaceProxy(mojo::MessageReceiverWithResponder* receiver);
   
-  void Method(bool a, MethodResultCallback callback) final;
+  void Method(bool a, MethodCallback callback) final;
 
  private:
   mojo::MessageReceiverWithResponder* receiver_;

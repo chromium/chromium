@@ -2,24 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Takes in a list of files and outputs a list of CRC32s in the same order.
-// If a file does not exist, outputs a blank line for it.
-// It historically used md5, but CRC32 is faster and exists in zlib already.
-
-#include <cstddef>
 #ifdef UNSAFE_BUFFERS_BUILD
 #pragma allow_unsafe_buffers
 #endif
 
+#include <sys/stat.h>
+
+#include <cstddef>
 #include <iostream>
 #include <random>
 
+#include "archive_reader.h"
+#include "archive_writer.h"
 #include "crc32_hasher.h"
-#include "tar_reader.h"
+#include "zst_compressor.h"
 #include "zst_decompressor.h"
 
 void PrintUsageInfo(std::string program_name) {
-  std::cerr << "Usage: " << program_name << " [hash | extract]" << std::endl;
+  std::cerr << "Usage: " << program_name << " [hash | archive | extract | pipe]"
+            << std::endl;
 }
 
 void PrintUsageInfoHash(std::string program_name) {
@@ -29,13 +30,188 @@ void PrintUsageInfoHash(std::string program_name) {
             << " hash $(echo -n path1:path2 | gzip | base64)" << std::endl;
 }
 
-void PrintUsageInfoExtract(std::string program_name) {
+void PrintUsageInfoArchive(std::string program_name) {
   std::cerr << "Usage: " << program_name
-            << " extract [archive-path | -] [-e extraction-dir]" << std::endl;
-  std::cerr << "E.g.: tar --create --to-stdout file1 file2 | zstd --stdout - | "
-            << program_name
-            << " extract - -e /absolute/path/to/extraction/directory"
+            << " archive [archive-path | -] archive-members-file-path"
             << std::endl;
+  std::cerr << "E.g.: " << program_name
+            << " archive /path/to/archive /path/to/archive/members/file"
+            << std::endl;
+}
+
+void PrintUsageInfoExtract(std::string program_name) {
+  std::cerr << "Usage: " << program_name << " extract [archive-path | -]"
+            << std::endl;
+  std::cerr << "E.g.: " << program_name
+            << " archive - /path/to/archive/members/file | " << program_name
+            << " extract -" << std::endl;
+}
+
+void PrintUsageInfoPipe(std::string program_name) {
+  std::cerr << "Usage: " << program_name << " pipe named-pipe-path"
+            << std::endl;
+  std::cerr << "E.g.: " << program_name << " pipe /path/to/named/pipe"
+            << std::endl;
+}
+
+// The hash command is given a list of kFilePathDelimiter-separated file paths
+// which are gzipped and base64-encoded, and it outputs a crc32 hash for each
+// file in the list, in the same order as the input list. If a file does not
+// exist, outputs a blank line for it.
+int DoHash(int argc, const char* argv[]) {
+  if (argc != 3) {
+    PrintUsageInfoHash(std::string(argv[0]));
+    return 1;
+  }
+
+  Crc32Hasher hasher;
+  std::vector<std::string> files =
+      hasher.MakeFileListFromCompressedList(std::string_view(argv[2]));
+
+  for (const auto& file : files) {
+    std::optional<uint32_t> hash = hasher.HashFile(file);
+    if (!hash.has_value()) {
+      std::cout << "\n";  // Blank line for missing file.
+    } else {
+      std::cout << std::hex << hash.value() << "\n";
+    }
+  }
+  return 0;
+}
+
+// The archive command creates a zst-compressed archive file. It is given a text
+// file that contains the paths to the files that should be included in archive.
+// It then creates an archive from these files and compresses the archive via
+// zstd. The archive is in a custom file format and can be extracted using the
+// extract command below.
+int DoArchive(int argc, const char* argv[]) {
+  if (argc != 4) {
+    PrintUsageInfoArchive(std::string(argv[0]));
+    return 1;
+  }
+
+  // If the user passes - as the output archive, then we write to standard
+  // output. Otherwise, we write to a file.
+  std::string archive_path = argv[2];
+  std::ofstream output_file_stream;
+  std::ostream& output_stream =
+      archive_path == "-" ? std::cout : output_file_stream;
+  if (archive_path != "-") {
+    output_file_stream.open(archive_path, std::ios::binary | std::ios::trunc);
+    if (output_file_stream.fail()) {
+      std::cerr << "Failed to open the archive at " << archive_path
+                << std::endl;
+      return 1;
+    }
+  }
+
+  // The archive members file contains two lines for each member: the first
+  // line is the file path of the member in the host machine, the second line
+  // is the file path of the member in the archive.
+  std::string archive_members_file_path = argv[3];
+  std::ifstream archive_members_file(archive_members_file_path);
+  std::vector<ArchiveWriter::ArchiveMember> archive_members;
+  while (true) {
+    ArchiveWriter::ArchiveMember member;
+    if (!std::getline(archive_members_file, member.file_path_in_host)) {
+      break;
+    }
+    if (!std::getline(archive_members_file, member.file_path_in_archive)) {
+      std::cerr << "The archive members file contains an odd number of lines!"
+                << std::endl;
+      return 1;
+    }
+    archive_members.push_back(member);
+  }
+
+  // Now we start creating the archive: first ask the archive writer to create
+  // a portion of the uncompressed archive, and then ask the zst compressor to
+  // compress it and write to the output stream, and then ask the archive
+  // writer to create the next portion of the uncompressed archive and repeat.
+  ArchiveWriter writer(std::move(archive_members));
+  ZstCompressor compressor(output_stream, 3);
+  size_t archive_buffer_size = compressor.GetRecommendedInputBufferSize();
+  std::unique_ptr<char[]> archive_buffer =
+      std::make_unique<char[]>(archive_buffer_size);
+  ZstCompressor::UncompressedContent uncompressed_content;
+  while (true) {
+    size_t num_bytes_written = writer.CreateArchiveStreaming(
+        archive_buffer.get(), archive_buffer_size);
+    uncompressed_content.buffer = archive_buffer.get();
+    uncompressed_content.size = num_bytes_written;
+    bool last_chunk = (num_bytes_written < archive_buffer_size);
+    compressor.CompressStreaming(uncompressed_content, last_chunk);
+    if (last_chunk) {
+      break;
+    }
+  }
+  return 0;
+}
+
+// The extract command is given a zst-compressed archive file, and it
+// decompresses the file using zstd and extracts the files from the archive.
+// It does so in a streaming way (i.e. it reads a portion of the input file and
+// extracts it, and then read the next portion of input file and extracts it).
+// The input file can be created by the archive command above.
+int DoExtract(int argc, const char* argv[]) {
+  if (argc != 3) {
+    PrintUsageInfoExtract(std::string(argv[0]));
+    return 1;
+  }
+
+  // If the user passes - as the input archive, then we read from standard
+  // input. Otherwise, we read from a file.
+  std::string archive_path = argv[2];
+  std::ifstream input_file_stream;
+  std::istream& input_stream =
+      archive_path == "-" ? std::cin : input_file_stream;
+  if (archive_path != "-") {
+    input_file_stream.open(archive_path, std::ios::binary);
+    if (input_file_stream.fail()) {
+      std::cerr << "Failed to open the archive at " << archive_path
+                << std::endl;
+      return 1;
+    }
+  }
+
+  // We extract the input archive in a streaming way: first ask the zst
+  // decompressor to read a portion of the input and decompress it, and then
+  // ask the archive reader to extract the decompressed archive, and then ask
+  // the zst decompresssor to read the next portion of the input and repeat.
+  ZstDecompressor decompressor(input_stream);
+  ArchiveReader reader;
+  ZstDecompressor::DecompressedContent decompressed_content;
+  while (true) {
+    if (decompressor.DecompressStreaming(&decompressed_content)) {
+      std::cerr << "Archive reader has not reached the end of the input file "
+                   "but there is already no data left. This likely means the "
+                   "input data is truncated."
+                << std::endl;
+      return 1;
+    }
+    if (reader.ExtractArchiveStreaming(decompressed_content.buffer,
+                                       decompressed_content.size)) {
+      break;
+    }
+  }
+  return 0;
+}
+
+// The pipe command is given a path, and it creates a named pipe at that path
+// via a mkfifo() system call.
+int DoPipe(int argc, const char* argv[]) {
+  if (argc != 3) {
+    PrintUsageInfoPipe(std::string(argv[0]));
+    return 1;
+  }
+
+  const char* named_pipe_path = argv[2];
+  int result = mkfifo(named_pipe_path, 0777);
+  if (result != 0) {
+    std::cerr << "Failed to call mkfifo(): " << strerror(errno) << std::endl;
+    return 1;
+  }
+  return 0;
 }
 
 int main(int argc, const char* argv[]) {
@@ -46,93 +222,13 @@ int main(int argc, const char* argv[]) {
 
   std::string command = argv[1];
   if (command == "hash") {
-    // The hash command is given a list of kFilePathDelimiter-separated file
-    // paths which are gzipped and base64-encoded, and it outputs a crc32 hash
-    // for each file in the list, in the same order as the input list.
-    if (argc != 3) {
-      PrintUsageInfoHash(std::string(argv[0]));
-      return 1;
-    }
-
-    Crc32Hasher hasher;
-    std::vector<std::string> files =
-        hasher.MakeFileListFromCompressedList(std::string_view(argv[2]));
-
-    for (const auto& file : files) {
-      std::optional<uint32_t> hash = hasher.HashFile(file);
-      if (!hash.has_value()) {
-        std::cout << "\n";  // Blank line for missing file.
-      } else {
-        std::cout << std::hex << hash.value() << "\n";
-      }
-    }
-    return 0;
-
+    return DoHash(argc, argv);
+  } else if (command == "archive") {
+    return DoArchive(argc, argv);
   } else if (command == "extract") {
-    // The extract command is given a .tar.zst file, and it decompresses the
-    // file using zstd and extracts the files from the tarball. It does so in
-    // a streaming way (i.e. it reads a portion of the .tar.zst file and
-    // extracts it, and then read the next portion of the .tar.zst file and
-    // extracts it).
-    if (argc < 3) {
-      PrintUsageInfoExtract(std::string(argv[0]));
-      return 1;
-    }
-
-    // If the user passes - as the input archive, then we read from standard
-    // input. Otherwise, we read from a file.
-    std::string archive_path = argv[2];
-    std::ifstream input_file_stream;
-    std::istream& input_stream =
-        archive_path == "-" ? std::cin : input_file_stream;
-    if (archive_path != "-") {
-      input_file_stream.open(archive_path);
-      if (input_file_stream.fail()) {
-        std::cerr << "Failed to open the archive at " << archive_path
-                  << std::endl;
-        return 1;
-      }
-    }
-
-    // The -e flag specifies the root extraction directory, which is where the
-    // extracted files are placed. If this flag is passed, the input archive
-    // must contain relative paths. If this flag is not passed, then the input
-    // archive must contain absolute paths.
-    std::string extraction_dir = "";
-    for (int i = 3; i < argc; ++i) {
-      std::string flag = argv[i];
-      if (flag == "-e") {
-        extraction_dir = argv[i + 1];
-        ++i;
-      } else {
-        std::cerr << "Unrecognized flag: " << flag << std::endl;
-        PrintUsageInfo(std::string(argv[0]));
-        return 1;
-      }
-    }
-
-    // We extract the input archive in a streaming way: first ask the zst
-    // decompressor to read a portion of the input and decompress it, and then
-    // ask the tar reader to extract the decompressed tarball, and then ask
-    // the zst decompresssor to read the next portion of the input and repeat.
-    ZstDecompressor decompressor(input_stream);
-    TarReader reader(extraction_dir);
-    ZstDecompressor::DecompressedContent decompressed_content;
-    while (true) {
-      if (decompressor.DecompressStreaming(&decompressed_content)) {
-        std::cerr << "Tar reader has not reached the end of the input tar file "
-                     "but there is already no data left. This likely means the "
-                     "input data is truncated."
-                  << std::endl;
-        return 1;
-      }
-      if (reader.UntarStreaming(decompressed_content.buffer,
-                                decompressed_content.size)) {
-        break;
-      }
-    }
-    return 0;
-
+    return DoExtract(argc, argv);
+  } else if (command == "pipe") {
+    return DoPipe(argc, argv);
   } else {
     PrintUsageInfo(std::string(argv[0]));
     return 1;

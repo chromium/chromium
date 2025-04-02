@@ -7,7 +7,7 @@ import "duration.proto";
 option optimize_for = LITE_RUNTIME;
 
 // Defines the UX and capabilities for a Chrome OS enterprise session.
-// Next ID: 7
+// Next ID: 9
 message ChromeOsEnterpriseOptions {
   // Indicates whether the admin troubleshooting tools are enabled by policy.
   // This flag is used to indicate whether to show the troubleshooting options
@@ -31,4 +31,11 @@ message ChromeOsEnterpriseOptions {
 
   // Indicates the amount of time before the connection will be auto-accepted.
   optional Duration connection_auto_accept_timeout = 6;
+
+  // Indicates whether the client is allowed to control the host.
+  optional bool allow_remote_input = 7;
+
+  // Indicates whether the client/host can transfer data via clipboard
+  // synchronization.
+  optional bool allow_clipboard_sync = 8;
 }

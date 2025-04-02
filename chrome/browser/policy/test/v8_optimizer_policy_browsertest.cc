@@ -8,9 +8,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -73,10 +71,14 @@ class V8OptimizerPolicyTest
 
   void NavigateAndExpectPolicyResult(const char* hostname,
                                      bool expect_disabled) {
-    auto* render_frame_host = ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL(hostname, "/title1.html"));
+    ASSERT_TRUE(NavigateToUrl(
+        embedded_test_server()->GetURL(hostname, "/title1.html"), this));
     EXPECT_EQ(expect_disabled,
-              render_frame_host->GetProcess()->AreV8OptimizationsDisabled());
+              current_frame_host()->GetProcess()->AreV8OptimizationsDisabled());
+  }
+
+  content::RenderFrameHost* current_frame_host() {
+    return chrome_test_utils::GetActiveWebContents(this)->GetPrimaryMainFrame();
   }
 
  protected:
@@ -113,19 +115,22 @@ IN_PROC_BROWSER_TEST_P(V8OptimizerPolicyTest, V8OptimizerAllowedAndDisallowed) {
 
   GURL disabled_url =
       embedded_test_server()->GetURL("optimizer-disabled.com", "/title1.html");
-  auto* render_frame_host =
-      ui_test_utils::NavigateToURL(browser(), disabled_url);
+  ASSERT_TRUE(NavigateToUrl(disabled_url, this));
+  auto* render_frame_host = current_frame_host();
   EXPECT_FALSE(render_frame_host->GetProcess()->IsJitDisabled());
   EXPECT_TRUE(render_frame_host->GetProcess()->AreV8OptimizationsDisabled());
 
   GURL enabled_url =
       embedded_test_server()->GetURL("optimizer-enabled.com", "/title1.html");
-  render_frame_host = ui_test_utils::NavigateToURL(browser(), enabled_url);
+  ASSERT_TRUE(NavigateToUrl(enabled_url, this));
+  render_frame_host = current_frame_host();
   EXPECT_FALSE(render_frame_host->GetProcess()->IsJitDisabled());
   EXPECT_FALSE(render_frame_host->GetProcess()->AreV8OptimizationsDisabled());
 
   GURL default_url = embedded_test_server()->GetURL("foo.com", "/title1.html");
-  render_frame_host = ui_test_utils::NavigateToURL(browser(), default_url);
+  ASSERT_TRUE(NavigateToUrl(default_url, this));
+
+  render_frame_host = current_frame_host();
 
   EXPECT_FALSE(render_frame_host->GetProcess()->IsJitDisabled());
   EXPECT_EQ(DetermineExpectedResultForDefault(),

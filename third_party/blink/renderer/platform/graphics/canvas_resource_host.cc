@@ -271,25 +271,11 @@ bool CanvasResourceHost::IsResourceValid() {
     }
   }
 
-  if (context_lost_ || shared_bitmap_gpu_channel_lost_) {
+  if (IsContextLost()) {
     return false;
   }
 
-  // For Gpu rendering
-  if (resource_provider_ && resource_provider_->IsAccelerated() &&
-      resource_provider_->IsGpuContextLost()) {
-    context_lost_ = true;
-    ReplaceResourceProvider(nullptr);
-    NotifyGpuContextLost();
-    return false;
-  }
-
-  // For software rendering
-  if (resource_provider_ &&
-      resource_provider_->IsSoftwareSharedImageGpuChannelLost()) {
-    shared_bitmap_gpu_channel_lost_ = true;
-    ReplaceResourceProvider(nullptr);
-    NotifyGpuContextLost();
+  if (resource_provider_ && !resource_provider_->IsValid()) {
     return false;
   }
 

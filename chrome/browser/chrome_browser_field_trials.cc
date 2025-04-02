@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chrome_browser_field_trials.h"
 
+#include <optional>
 #include <string>
 
 #include "base/command_line.h"
@@ -127,12 +128,11 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
 // once ozone-platform-hint flag is dropped.
 void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
     base::FeatureList* feature_list) {
-  auto env = base::Environment::Create();
-  std::string xdg_session_type;
-  const bool has_xdg_session_type =
-      env->GetVar(base::nix::kXdgSessionTypeEnvVar, &xdg_session_type);
+  std::unique_ptr<base::Environment> env = base::Environment::Create();
+  std::string xdg_session_type =
+      env->GetVar(base::nix::kXdgSessionTypeEnvVar).value_or(std::string());
 
-  if (has_xdg_session_type && xdg_session_type == "wayland") {
+  if (xdg_session_type == "wayland") {
     feature_list->RegisterExtraFeatureOverrides(
         {{features::kEyeDropper, base::FeatureList::OVERRIDE_DISABLE_FEATURE}});
   }

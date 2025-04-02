@@ -23,7 +23,7 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
-#include "components/autofill/core/browser/integrators/fast_checkout_client.h"
+#include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_client.h"
 #include "components/autofill/core/browser/integrators/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -593,7 +593,8 @@ class AutofillClient {
   // instead of the `PersonalDataManager`.
   virtual void set_test_addresses(std::vector<AutofillProfile> test_addresses);
 
-  virtual base::span<const AutofillProfile> GetTestAddresses() const;
+  virtual base::span<const AutofillProfile> GetTestAddresses() const
+      LIFETIME_BOUND;
 
   // Returns the heuristics predictions for the renderer form to which
   // `field_id` belongs inside the form with `form_id`. The browser form with

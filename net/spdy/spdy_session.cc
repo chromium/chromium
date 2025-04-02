@@ -1304,9 +1304,10 @@ void SpdySession::SendStreamWindowUpdate(spdy::SpdyStreamId stream_id,
 }
 
 void SpdySession::CloseSessionOnError(Error err,
-                                      const std::string& description) {
+                                      const std::string& description,
+                                      bool force_send_go_away) {
   DCHECK_LT(err, ERR_IO_PENDING);
-  DoDrainSession(err, description);
+  DoDrainSession(err, description, force_send_go_away);
 }
 
 void SpdySession::MakeUnavailable() {
@@ -2568,7 +2569,9 @@ void SpdySession::DcheckDraining() const {
   DCHECK(active_streams_.empty());
 }
 
-void SpdySession::DoDrainSession(Error err, const std::string& description) {
+void SpdySession::DoDrainSession(Error err,
+                                 const std::string& description,
+                                 bool force_send_go_away) {
   if (availability_state_ == STATE_DRAINING) {
     return;
   }
@@ -2587,11 +2590,14 @@ void SpdySession::DoDrainSession(Error err, const std::string& description) {
   // unnecessarily wake the radio. We could technically GOAWAY on network errors
   // (we'll probably fail to actually write it, but that's okay), however many
   // unit-tests would need to be updated.
-  if (err != OK &&
-      err != ERR_ABORTED &&  // Used by SpdySessionPool to close idle sessions.
-      err != ERR_NETWORK_CHANGED &&  // Used to deprecate sessions on IP change.
-      err != ERR_SOCKET_NOT_CONNECTED && err != ERR_HTTP_1_1_REQUIRED &&
-      err != ERR_CONNECTION_CLOSED && err != ERR_CONNECTION_RESET) {
+  if (force_send_go_away ||
+      (err != OK &&
+       err != ERR_ABORTED &&  // Used by SpdySessionPool to close idle sessions.
+       err !=
+           ERR_NETWORK_CHANGED &&  // Used to deprecate sessions on IP change.
+       err != ERR_SOCKET_NOT_CONNECTED &&
+       err != ERR_HTTP_1_1_REQUIRED && err != ERR_CONNECTION_CLOSED &&
+       err != ERR_CONNECTION_RESET)) {
     // Enqueue a GOAWAY to inform the peer of why we're closing the connection.
     spdy::SpdyGoAwayIR goaway_ir(/* last_good_stream_id = */ 0,
                                  MapNetErrorToGoAwayStatus(err), description);

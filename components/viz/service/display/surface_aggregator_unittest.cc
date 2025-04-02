@@ -5848,7 +5848,7 @@ CompositorFrame BuildCompositorFrameWithResources(
     gfx::ProtectedVideoType protected_video_type =
         gfx::ProtectedVideoType::kClear;
     quad->SetAll(sqs, rect, visible_rect, needs_blending, resource_id,
-                 gfx::Size(), premultiplied_alpha, uv_top_left, uv_bottom_right,
+                 premultiplied_alpha, uv_top_left, uv_bottom_right,
                  background_color, nearest_neighbor, secure_output_only,
                  protected_video_type);
   }

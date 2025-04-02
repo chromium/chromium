@@ -104,47 +104,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bookmarks.BatchUploadDuration" units="ms"
-    expires_after="2025-08-31">
-  <owner>mastiz@chromium.org</owner>
-  <owner>ljjlee@google.com</owner>
-  <summary>
-    Records the time taken to run the batch upload algorithm, triggered when the
-    user chooses to upload local bookmarks to the Sync server. Note that this
-    exclusively measures the time to run operations (in particular
-    deduplication) in the local BookmarkModel and doesn't account for other
-    delays (such as disk I/O or actually uploading bookmarks to the server).
-  </summary>
-</histogram>
-
-<histogram name="Bookmarks.BatchUploadOutcomeAccountNodes" units="nodes"
-    expires_after="2025-08-31">
-  <owner>mastiz@chromium.org</owner>
-  <owner>ljjlee@google.com</owner>
-  <summary>
-    Records the number of bookmark nodes (URLs or folders) considered account
-    nodes (that is, stored under one of the three account permanent folders),
-    recorded when the user chooses to upload local bookmarks to the Sync server,
-    immediately after the batch upload algorithm completes.
-  </summary>
-</histogram>
-
-<histogram name="Bookmarks.BatchUploadOutcomeRatio" units="%"
-    expires_after="2025-08-31">
-  <owner>mastiz@chromium.org</owner>
-  <owner>ljjlee@google.com</owner>
-  <summary>
-    Records a ratio that reflects the relationship between the number of
-    bookmark nodes before the batch upload was triggered (denominator) and the
-    number of bookmark nodes after the batch upload algorithm completed
-    (numerator). A value of 100% indicates no duplicates were detected during
-    this procedure, whereas 50% would indicate that all local bookmarks were
-    deduplicated. Values lower than 50% or higher than 100% suggest bugs.
-    Recorded when the user chooses to upload local bookmarks to the Sync server,
-    immediately after the batch upload algorithm completes.
-  </summary>
-</histogram>
-
 <histogram name="Bookmarks.BookmarkAllTabsWithTabsCount.Incognito" units="tabs"
     expires_after="2023-01-01">
   <owner>roagarwal@chromium.org</owner>
@@ -205,7 +164,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.BookmarkBar.PrerenderNavigationToActivation"
-    units="ms" expires_after="2025-05-11">
+    units="ms" expires_after="2025-09-14">
   <owner>robertlin@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -489,17 +448,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logs the number of unread items shown in the reading list on the Android
     Bookmarks page when it is opened.
-  </summary>
-</histogram>
-
-<histogram name="Bookmarks.RemoveAccountPermanentFoldersDuration" units="ms"
-    expires_after="2025-09-07">
-  <owner>mastiz@chromium.org</owner>
-  <owner>rushans@google.com</owner>
-  <summary>
-    Records the time taken to remove all account bookmarks from the bookmark
-    model. This usually happens when a user signs out or disables bookmarks sync
-    specifically in settings.
   </summary>
 </histogram>
 

@@ -10,6 +10,8 @@ source_set("actor") {
   sources = [
     "click_tool.cc",
     "click_tool.h",
+    "mouse_move_tool.cc",
+    "mouse_move_tool.h",
     "tool_base.h",
     "tool_executor.cc",
     "tool_executor.h",

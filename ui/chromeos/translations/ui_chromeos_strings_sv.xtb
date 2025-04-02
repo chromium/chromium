@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">Person som säger tack på teckenspråk</translation>
 <translation id="2088690981887365033">VPN-nätverk</translation>
 <translation id="209653272837065803">Det finns inte tillräckligt med lagringsutrymme för att fortsätta synkronisera filer</translation>
-<translation id="2111134541987263231">Aktivera <ph name="BEGIN_BOLD" />Tillåt i inkognito<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> objekt raderas och du kan inte återställa dem.</translation>
 <translation id="2122305276694332719">Med automatisk anslutning till ett dolt nätverk kan andra se enheten och vissa nätverksinställningar. Detta rekommenderas inte.</translation>
 <translation id="2125607626296734455">khmer</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> har tagits bort.</translation>
 <translation id="2307462900900812319">Konfigurera nätverk</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Inget tillägg med id <ph name="BEGIN_LIST" /><ph name="END_LIST" /> kunde hittas. Kontakta administratören.}other{Inga tillägg med följande id:n: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> kunde hittas. Kontakta administratören.}}</translation>
 <translation id="2325650632570794183">Filtypen stöds inte. Besök Chrome Web Store om du vill hitta en app som kan öppna den här filtypen.</translation>
 <translation id="2326539130272988168">bulgariska</translation>
 <translation id="233822363739146957">Det finns inte tillräckligt med lagringsutrymme för att synkronisera alla dina filer</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">marathi</translation>
 <translation id="2923240520113693977">estniska</translation>
 <translation id="2938685643439809023">mongoliska</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Det går inte att hitta tillägget}other{Det går inte att hitta tilläggen}}</translation>
 <translation id="2943503720238418293">Ange ett kortare namn</translation>
 <translation id="2949781154072577687">Formaterar <ph name="DRIVE_NAME" /> …</translation>
 <translation id="2951236788251446349">Manet</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">Klart</translation>
 <translation id="3358452157379365236">Gitarr</translation>
 <translation id="3368922792935385530">Ansluten</translation>
-<translation id="3372635229069101468">Klicka på <ph name="BEGIN_BOLD" />Information<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">nepali med InScript-tangentbord</translation>
 <translation id="338691029516748599">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, hanteras av administratören, anslut</translation>
 <translation id="3408072735282270043">Aktivera, <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">Enhörning</translation>
 <translation id="4131235941541910880">Lägg objekt som inte behövs i papperskorgen</translation>
 <translation id="4134804435730168042">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Aktivera efter enhetskonfigurering</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Aktivera följande tillägg i inkognitoläge:}other{Aktivera följande tillägg i inkognitoläge:}}</translation>
 <translation id="4153015322587141338">Högerklicka på en fil som du vill ha snabbt tillgänglig i hyllan och välj <ph name="PIN_COMMAND" />.</translation>
 <translation id="4157569377477607576">Enligt administratörspolicyn rekommenderas inte följande:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> har flyttats.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">Behåll båda</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4805966553127040832">Återställer <ph name="COUNT" /> objekt</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Om du vill använda inkognitoläge kräver din organisation ett tillägg}other{Om du vill använda inkognitoläge kräver din organisation vissa tillägg}}</translation>
 <translation id="4826849268470072925">tamil (ITRANS)</translation>
-<translation id="482932175346970750">Skriv <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> i webbläsaren</translation>
 <translation id="4843566743023903107">Chromebase-modeller</translation>
 <translation id="4850886885716139402">Visa</translation>
 <translation id="485316830061041779">tyska</translation>
@@ -561,7 +554,6 @@
     med filer tillsammans med andra på ett och samma ställe.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Återställda filer från Google Drive</translation>
 <translation id="5278111733643988471">Om du vill återställa det här objektet drar du det till en ny mapp utanför papperskorgen. Den ursprungliga mappen <ph name="PARENT_FOLDER_NAME" /> för objektet har raderats.</translation>
-<translation id="5283101102242354279">Aktivera ett tillägg i inkognitoläge:</translation>
 <translation id="5288441970121584418">Hamburgare</translation>
 <translation id="5293615890992542006">Möjligheten att flytta den här filen blockeras av administratörspolicyn</translation>
 <translation id="5305688511332277257">Ingen installerad</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, information</translation>
 <translation id="7246947237293279874">FTP-proxy</translation>
 <translation id="7248671827512403053">Program</translation>
-<translation id="7252604552361840748">Hitta tillägget ovan</translation>
 <translation id="7256405249507348194">Okänt fel: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Tillgängliga tjänster</translation>
 <translation id="7291818353625820805">Vill du att tangenterna ska upprepas? Inaktivera accenttecken i tangentbordsinställningarna</translation>

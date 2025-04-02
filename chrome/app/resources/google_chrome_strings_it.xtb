@@ -57,6 +57,7 @@
 <translation id="1786044937610313874">Le scorciatoie si aprono in Chrome</translation>
 <translation id="178701303897325119">Questa estensione non è più supportata. Chrome consiglia di rimuoverla.</translation>
 <translation id="1812689907177901597">Se disattivi questa funzione, puoi accedere ai siti Google quali Gmail senza accedere a Chrome</translation>
+<translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome consiglia di mettere in pausa la scheda che rallenta il browser}other{Chrome consiglia di mettere in pausa le schede che rallentano il browser}}</translation>
 <translation id="1838374766361614909">Cancella ricerca</translation>
 <translation id="1860536484129686729">Per questo sito Chrome ha bisogno dell'autorizzazione ad accedere alla fotocamera</translation>
 <translation id="1873233029667955273">Google Chrome non è il browser predefinito</translation>
@@ -157,6 +158,7 @@
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Accesso rete - Chrome</translation>
 <translation id="2970681950995291301">Per rimuovere il tuo Account Google da Chrome, esci da Chrome nella pagina Impostazioni</translation>
 <translation id="2994465299455873643">Fornisce servizi di crittografia e un modo sicuro per recuperare <ph name="BROWSER_NAME" /> in caso diventasse obsoleto. Se questo servizio viene disattivato, <ph name="BROWSER_NAME" /> potrebbe perdere l'accesso ai dati criptati e <ph name="BROWSER_NAME" /> potrebbe non essere in grado di ripristinarsi.</translation>
+<translation id="3003694935412297923">Tutte le attività</translation>
 <translation id="3018957014024118866">Elimina i dati anche da Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Riavvia per aggiornare &amp;Chrome OS Flex</translation>
 <translation id="3037838751736561277">Google Chrome è in modalità background.</translation>
@@ -253,6 +255,7 @@
 <translation id="4281844954008187215">Termini di servizio</translation>
 <translation id="4293420128516039005">Accedi per sincronizzare e personalizzare Chrome sui tuoi dispositivi</translation>
 <translation id="430327780270213103">Consenti all'estensione di mostrare le richieste di accesso nella barra degli strumenti di Chrome</translation>
+<translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome consiglia di mettere in pausa la scheda che rallenta il browser}other{Chrome consiglia di mettere in pausa le schede che rallentano il browser}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Per accedere alla personalizzazione e ad altre funzionalità, includi Chrome in Attività web e app e nei servizi Google collegati</translation>
 <translation id="4334294535648607276">Download completato.</translation>
@@ -271,6 +274,7 @@
 <translation id="4567424176335768812">Hai eseguito l'accesso come <ph name="USER_EMAIL_ADDRESS" />. Ora puoi accedere ai tuoi Preferiti, alla tua cronologia e ad altre impostazioni su tutti i tuoi dispositivi su cui esegui l'accesso.</translation>
 <translation id="4571503333518166079">Vai alle impostazioni di notifica di Chrome</translation>
 <translation id="459622048091363950">Dopo che Chrome avrà ottenuto l'accesso, i siti web potranno chiederti l'accesso.</translation>
+<translation id="4598116752460667024">Cerca qualsiasi procedura nell'elenco.</translation>
 <translation id="4600710005438004015">Non è stato possibile aggiornare Chrome alla versione più recente, quindi non potrai utilizzare le nuove funzioni e gli aggiornamenti di sicurezza.</translation>
 <translation id="4624065194742029982">Navigazione in incognito di Chrome</translation>
 <translation id="4627412468266359539">Facoltativo: contribuisci a migliorare le funzionalità e le prestazioni di ChromeOS Flex inviando automaticamente a Google dati diagnostici e sull'utilizzo.</translation>
@@ -462,6 +466,7 @@
 <translation id="7193885263065350793">La tua organizzazione chiude Chrome quando non viene utilizzato per <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Stai per accedere con un account gestito e per dare al relativo amministratore il controllo del tuo profilo Google Chrome. I tuoi dati di Chrome, come app, Preferiti, cronologia, password e altre impostazioni, verranno collegati definitivamente a <ph name="USER_NAME" />. Potrai eliminare questi dati tramite la Dashboard di Google Account, ma non potrai associare questi dati a un altro account. Se preferisci puoi creare un nuovo profilo per mantenere separati i dati di Chrome esistenti. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> gestisce Chrome</translation>
+<translation id="7288567540154601580">Schede ed estensioni</translation>
 <translation id="7296210096911315575">Informazioni importanti sull'utilizzo e sulla sicurezza</translation>
 <translation id="7302361266603927550">Alcuni dati di Chrome non sono ancora stati salvati nel tuo Account Google. Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati verranno eliminati.</translation>
 <translation id="7308322188646931570">Chrome deve avere accesso allo spazio di archiviazione per poter scaricare file</translation>

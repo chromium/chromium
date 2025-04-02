@@ -5,6 +5,7 @@
 #include "chrome/common/chrome_paths.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/base_paths.h"
 #include "base/environment.h"
@@ -79,10 +80,11 @@ bool GetUserMediaDirectory(const std::string& xdg_name,
 bool GetDefaultUserDataDirectory(base::FilePath* result) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   base::FilePath config_dir;
-  std::string chrome_config_home_str;
-  if (env->GetVar("CHROME_CONFIG_HOME", &chrome_config_home_str) &&
-      base::IsStringUTF8(chrome_config_home_str)) {
-    config_dir = base::FilePath::FromUTF8Unsafe(chrome_config_home_str);
+  std::optional<std::string> chrome_config_home_str =
+      env->GetVar("CHROME_CONFIG_HOME");
+  if (chrome_config_home_str.has_value() &&
+      base::IsStringUTF8(chrome_config_home_str.value())) {
+    config_dir = base::FilePath::FromUTF8Unsafe(chrome_config_home_str.value());
   } else {
     config_dir =
         GetXDGDirectory(env.get(), kXdgConfigHomeEnvVar, kDotConfigDir);

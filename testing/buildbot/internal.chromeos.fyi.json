@@ -60,7 +60,6 @@
         ],
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "aura_unittests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -72,7 +71,6 @@
       {
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "base_unittests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -88,7 +86,6 @@
         ],
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "capture_unittests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -100,7 +97,6 @@
       {
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "cc_unittests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -112,7 +108,6 @@
       {
         "autotest_name": "tast.chrome-from-gcs",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "chrome_all_tast_tests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -129,7 +124,6 @@
         "autotest_name": "tast.chrome-from-gcs",
         "ci_only": true,
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "experiment_percentage": 100,
         "name": "chrome_criticalstaging_tast_tests RELEASE_LKGM",
@@ -146,7 +140,6 @@
         "autotest_name": "tast.chrome-from-gcs",
         "ci_only": true,
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "experiment_percentage": 100,
         "name": "chrome_disabled_tast_tests RELEASE_LKGM",
@@ -162,7 +155,6 @@
       {
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "chromeos_integration_tests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -174,7 +166,6 @@
       {
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "crypto_unittests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -186,7 +177,6 @@
       {
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "display_unittests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -206,7 +196,6 @@
         ],
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "experiment_percentage": 100,
         "name": "fake_libva_driver_unittest RELEASE_LKGM",
@@ -218,7 +207,6 @@
       {
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "google_apis_unittests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -230,7 +218,6 @@
       {
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "ipc_tests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -242,7 +229,6 @@
       {
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "latency_unittests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -254,7 +240,6 @@
       {
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "libcups_unittests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -269,7 +254,6 @@
         ],
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "media_unittests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -281,7 +265,6 @@
       {
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "midi_unittests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -293,7 +276,6 @@
       {
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "mojo_unittests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -308,7 +290,6 @@
         ],
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "ozone_gl_unittests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -320,7 +301,6 @@
       {
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "ozone_unittests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -332,7 +312,6 @@
       {
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "pdf_unittests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -344,7 +323,6 @@
       {
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "printing_unittests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -360,7 +338,6 @@
         ],
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "profile_provider_unittest RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -372,7 +349,6 @@
       {
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "rust_gtest_interop_unittests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -384,7 +360,6 @@
       {
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "sql_unittests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -396,7 +371,6 @@
       {
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "url_unittests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -412,7 +386,6 @@
         ],
         "autotest_name": "chromium",
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "vaapi_unittest RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
@@ -435,7 +408,6 @@
         "autotest_name": "chromium",
         "ci_only": true,
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "experiment_percentage": 100,
         "name": "video_decode_accelerator_tests_fake_vaapi_av1 RELEASE_LKGM",
@@ -458,7 +430,6 @@
         "autotest_name": "chromium",
         "ci_only": true,
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "experiment_percentage": 100,
         "name": "video_decode_accelerator_tests_fake_vaapi_vp8 RELEASE_LKGM",
@@ -481,7 +452,6 @@
         "autotest_name": "chromium",
         "ci_only": true,
         "cros_board": "brya",
-        "cros_cbx": true,
         "cros_model": "kano",
         "name": "video_decode_accelerator_tests_fake_vaapi_vp9 RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,

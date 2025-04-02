@@ -41,7 +41,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -1088,7 +1087,6 @@ class LockStateControllerInformedRestoreTest : public LockStateControllerTest {
   base::ScopedAllowBlockingForTesting allow_blocking_;
   base::ScopedTempDir temp_dir_;
   base::FilePath file_path_;
-  base::test::ScopedFeatureList scoped_feature_list_{features::kForestFeature};
 };
 
 // Tests that a informed restore image is taken when there are windows open.

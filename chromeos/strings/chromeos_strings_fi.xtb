@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Poista näytönsäästäjä käytöstä</translation>
 <translation id="3091839911843451378">Epäonnistui – Pysäytetty</translation>
 <translation id="3102119246920354026">Välimuisti</translation>
-<translation id="3112413615003385433">Opettaja on poistanut sisältöä School Toolsista</translation>
 <translation id="3122464029669770682">Keskusyksikkö</translation>
 <translation id="3122614491980756867">uima-altaat</translation>
 <translation id="3122883569442693641">Lisätietoja</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Osittain aktivoitu</translation>
 <translation id="3492882532495507361">Toimisto (<ph name="OFFICE_STYLE" />), jonka sävy on <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Data on Chromebookin mittaama. Se voi poiketa palveluntarjoajan mittaamasta datasta.</translation>
-<translation id="349570724365779960">School Tools on yhdistetty oppilaisiin</translation>
 <translation id="3502426834823382181">näytä kaikki sovellukset</translation>
 <translation id="3510890413042482857">Lähetä <ph name="BEGIN_LINK1" />dataa tehokkuuden jäljistä<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS-päivitys</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Muokkaus valmis</translation>
 <translation id="3532980081107202182">Noin <ph name="MIN_REMAINING" /> minuuttia jäljellä</translation>
 <translation id="3533790840489634638">uima-allas</translation>
-<translation id="3535802910192338629">Opettaja on lisännyt uutta sisältöä School Toolsiin</translation>
 <translation id="3547264467365135390">Kaava</translation>
 <translation id="3557205324756024651">Paikallinen identiteetti (valinnainen)</translation>
 <translation id="3565064564551103223">Sallitut IP-osoitteet</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">Sallitaanko järjestelmäpalveluiden käyttää sijaintiasi?</translation>
 <translation id="6657585470893396449">Salasana</translation>
 <translation id="66621959568103627">korallinpunainen</translation>
+<translation id="6669485505082792176">Kuvien luominen tästä aiheesta ei juuri nyt onnistu. Kokeile muotoilla kuvaus uudelleen. Muista, että et voi luoda kuvia ihmisistä tai haitallisesta tai vain aikuisille tarkoitetusta sisällöstä. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">lisää näppäimistön kirkkautta</translation>
 <translation id="6692996468359469499">Tietoja valinnastasi</translation>
 <translation id="6694534975463174713">lukko</translation>
@@ -1440,7 +1438,6 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="7544853251252956727">Satunnaistoisto</translation>
 <translation id="7550715992156305117">Diagnostiikkaohjelmat</translation>
 <translation id="7551123448725492271">Laite on audiolaite.</translation>
-<translation id="7553913964854052228">School Tools käyttää mikrofoniasi</translation>
 <translation id="7559239713112547082">Kuvakaappauksen esikatselu</translation>
 <translation id="7561454561030345039">Järjestelmänvalvojasi ylläpitää tätä toimintoa</translation>
 <translation id="7561759921596375678">Laita äänet päälle</translation>
@@ -1663,7 +1660,6 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8576249514688522074">Ei ole alustettu</translation>
 <translation id="8584654835905316966">Laiteohjelmiston (<ph name="DEVICE_NAME" />) asennuksen viimeisteleminen versioon <ph name="VERSION" /> edellyttää uudelleenkäynnistystä. Tietokoneesi saattaa käynnistyä uudelleen useita kertoja. Tämä on normaalia.</translation>
 <translation id="8593058461203131755">keskeytä media</translation>
-<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Roaming-tila</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" />: lisää toimintoja</translation>
 <translation id="86356131183441916">Vaaleanvioletti</translation>

@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">إيقاف شاشة التوقف</translation>
 <translation id="3091839911843451378">تعذَّرت الطباعة - توقّفت الطابعة</translation>
 <translation id="3102119246920354026">ذاكرة التخزين المؤقت</translation>
-<translation id="3112413615003385433">أزال المُعلّم محتوًى في "الأدوات التعليمية"</translation>
 <translation id="3122464029669770682">وحدة المعالجة المركزية</translation>
 <translation id="3122614491980756867">بِرك طبيعية</translation>
 <translation id="3122883569442693641">المزيد من التفاصيل</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">نشطة جزئيًا</translation>
 <translation id="3492882532495507361">مكتب <ph name="OFFICE_STYLE" /> بألوان <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">‏يقيس جهاز Chromebook البيانات التي يتم استخدامها. وقد يختلف هذا القياس عن قياسات مزوِّد البيانات.</translation>
-<translation id="349570724365779960">‏هناك جلسة حالية بين School Tools والطلاب</translation>
 <translation id="3502426834823382181">عرض جميع التطبيقات</translation>
 <translation id="3510890413042482857">إرسال <ph name="BEGIN_LINK1" />بيانات تتبُّع مستوى الأداء<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">‏تحديث نظام التشغيل Chrome</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">تم التعديل</translation>
 <translation id="3532980081107202182">يتبقّى حوالي <ph name="MIN_REMAINING" /> دقيقة.</translation>
 <translation id="3533790840489634638">بركة طبيعية</translation>
-<translation id="3535802910192338629">أضاف المُعلّم محتوًى جديدًا في "الأدوات التعليمية"</translation>
 <translation id="3547264467365135390">المعادَلة</translation>
 <translation id="3557205324756024651">هوية الجهاز (اختياري)</translation>
 <translation id="3565064564551103223">‏عناوين IP المسموح بها</translation>
@@ -1440,7 +1437,6 @@
 <translation id="7544853251252956727">ترتيب عشوائي</translation>
 <translation id="7550715992156305117">سلسلة إجراءات بيانات التشخيص</translation>
 <translation id="7551123448725492271">الجهاز هو جهاز سماعي.</translation>
-<translation id="7553913964854052228">‏الميكروفون مُستخدَم حاليًا بواسطة School Tools</translation>
 <translation id="7559239713112547082">معاينة لقطة الشاشة</translation>
 <translation id="7561454561030345039">يتولّى مشرفك إدارة هذا الإجراء.</translation>
 <translation id="7561759921596375678">تفعيل الصوت</translation>
@@ -1663,7 +1659,6 @@
 <translation id="8576249514688522074">غير مهيأة</translation>
 <translation id="8584654835905316966">يجب إعادة تشغيل الجهاز لإكمال عملية تثبيت البرامج الثابتة لـ <ph name="DEVICE_NAME" /> على الإصدار <ph name="VERSION" />. وقد يبدو أنّه يُعاد تشغيل جهاز الكمبيوتر عدة مرات، فهذا سلوك متوقَّع.</translation>
 <translation id="8593058461203131755">إيقاف الوسائط مؤقتًا</translation>
-<translation id="8619169570378509764">الأدوات التعليمية</translation>
 <translation id="8620617069779373398">حالة التجوال</translation>
 <translation id="8626489604350149811">مزيد من الإجراءات لـ "<ph name="APN_NAME" />"</translation>
 <translation id="86356131183441916">أرجواني فاتح</translation>

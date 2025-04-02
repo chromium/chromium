@@ -179,6 +179,7 @@ public abstract class ChromeFeatureList {
             "AndroidNoVisibleHintForDifferentTLD";
     public static final String ANDROID_OPEN_PDF_INLINE_BACKPORT = "AndroidOpenPdfInlineBackport";
     public static final String ANDROID_PDF_ASSIST_CONTENT = "AndroidPdfAssistContent";
+    public static final String ANDROID_SURFACE_COLOR_UPDATE = "AndroidSurfaceColorUpdate";
     public static final String ANDROID_TAB_DECLUTTER = "AndroidTabDeclutter";
     public static final String ANDROID_TAB_DECLUTTER_ARCHIVE_ALL_BUT_ACTIVE =
             "AndroidTabDeclutterArchiveAllButActiveTab";
@@ -232,8 +233,6 @@ public abstract class ChromeFeatureList {
     public static final String AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID =
             "AutofillEnableSecurityTouchEventFilteringAndroid";
     public static final String AUTOFILL_SYNC_EWALLET_ACCOUNTS = "AutofillSyncEwalletAccounts";
-    public static final String AUTOMOTIVE_FULLSCREEN_TOOLBAR_IMPROVEMENTS =
-            "AutomotiveFullscreenToolbarImprovements";
     public static final String AVOID_SELECTED_TAB_FOCUS_ON_LAYOUT_DONE_SHOWING =
             "AvoidSelectedTabFocusOnLayoutDoneShowing";
     public static final String BACKGROUND_THREAD_POOL = "BackgroundThreadPool";
@@ -373,6 +372,7 @@ public abstract class ChromeFeatureList {
     public static final String FULLSCREEN_INSETS_API_MIGRATION = "FullscreenInsetsApiMigration";
     public static final String FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE =
             "FullscreenInsetsApiMigrationOnAutomotive";
+    public static final String GRID_TAB_SWITCHER_UPDATE = "GridTabSwitcherUpdate";
     public static final String GROUP_NEW_TAB_WITH_PARENT = "GroupNewTabWithParent";
     public static final String GROUP_SUGGESTION_SERVICE = "GroupSuggestionService";
     public static final String LOCK_BACK_PRESS_HANDLER_AT_START = "LockBackPressHandlerAtStart";
@@ -453,8 +453,6 @@ public abstract class ChromeFeatureList {
     public static final String PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS =
             "PrivacySandboxAdsApiUxEnhancements";
     public static final String PRIVACY_SANDBOX_ADS_NOTICE_CCT = "PrivacySandboxAdsNoticeCCT";
-    public static final String PRIVACY_SANDBOX_EQUALIZED_PROMPT_BUTTONS =
-            "PrivacySandboxEqualizedPromptButtons";
     public static final String PRIVACY_SANDBOX_RELATED_WEBSITE_SETS_UI =
             "PrivacySandboxRelatedWebsiteSetsUi";
     public static final String PRIVACY_SANDBOX_SETTINGS_4 = "PrivacySandboxSettings4";
@@ -481,6 +479,7 @@ public abstract class ChromeFeatureList {
     public static final String READALOUD_TAP_TO_SEEK = "ReadAloudTapToSeek";
     public static final String READALOUD_IPH_MENU_BUTTON_HIGHLIGHT_CCT =
             "ReadAloudIPHMenuButtonHighlightCCT";
+    public static final String READER_MODE_DEV_ENTRY_POINT = "ReaderModeDevEntryPoint";
     public static final String RECORD_SUPPRESSION_METRICS = "RecordSuppressionMetrics";
     public static final String REENGAGEMENT_NOTIFICATION = "ReengagementNotification";
     public static final String RELATED_SEARCHES_SWITCH = "RelatedSearchesSwitch";
@@ -549,7 +548,6 @@ public abstract class ChromeFeatureList {
             "TabGroupParityBottomSheetAndroid";
     public static final String TAB_RESUMPTION_MODULE_ANDROID = "TabResumptionModuleAndroid";
     public static final String TAB_STRIP_CONTEXT_MENU = "TabStripContextMenuAndroid";
-    public static final String TAB_STRIP_GROUP_COLLAPSE = "TabStripGroupCollapseAndroid";
     public static final String TAB_STRIP_GROUP_DRAG_DROP_ANDROID = "TabStripGroupDragDropAndroid";
     public static final String TAB_STRIP_GROUP_REORDER = "TabStripGroupReorderAndroid";
     public static final String TAB_STRIP_INCOGNITO_MIGRATION = "TabStripIncognitoMigration";
@@ -749,6 +747,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(FULLSCREEN_INSETS_API_MIGRATION, false);
     public static final CachedFlag sFullscreenInsetsApiMigrationOnAutomotive =
             newCachedFlag(FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE, true);
+    public static final CachedFlag sGridTabSwitcherUpdate =
+            newCachedFlag(GRID_TAB_SWITCHER_UPDATE, false);
     public static final CachedFlag sHideTabletToolbarDownloadButton =
             newCachedFlag(
                     HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON,
@@ -833,8 +833,6 @@ public abstract class ChromeFeatureList {
                     TAB_STRIP_LAYOUT_OPTIMIZATION,
                     /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sTabStripGroupCollapse =
-            newCachedFlag(TAB_STRIP_GROUP_COLLAPSE, /* defaultValue= */ true);
     public static final CachedFlag sTabWindowManagerReportIndicesMismatch =
             newCachedFlag(TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH, true);
     public static final CachedFlag sTestDefaultDisabled =
@@ -909,6 +907,7 @@ public abstract class ChromeFeatureList {
                     sForceTranslucentNotificationTrampoline,
                     sFullscreenInsetsApiMigration,
                     sFullscreenInsetsApiMigrationOnAutomotive,
+                    sGridTabSwitcherUpdate,
                     sHideTabletToolbarDownloadButton,
                     sHistoryPaneAndroid,
                     sLockBackPressHandlerAtStart,
@@ -941,7 +940,6 @@ public abstract class ChromeFeatureList {
                     sTabClosureMethodRefactor,
                     sTabGroupPaneAndroid,
                     sTabStateFlatBuffer,
-                    sTabStripGroupCollapse,
                     sTabStripIncognitoMigration,
                     sTabStripLayoutOptimization,
                     sTabWindowManagerReportIndicesMismatch,
@@ -1036,7 +1034,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sTabSwitcherColorBlendAnimate =
             newMutableFlagWithSafeDefault(TAB_SWITCHER_COLOR_BLEND_ANIMATE, true);
     public static final MutableFlagWithSafeDefault sTabSwitcherForeignFaviconSupport =
-            newMutableFlagWithSafeDefault(TAB_SWITCHER_FOREIGN_FAVICON_SUPPORT, false);
+            newMutableFlagWithSafeDefault(TAB_SWITCHER_FOREIGN_FAVICON_SUPPORT, true);
     public static final MutableFlagWithSafeDefault sToolbarScrollAblation =
             newMutableFlagWithSafeDefault(TOOLBAR_SCROLL_ABLATION, false);
 

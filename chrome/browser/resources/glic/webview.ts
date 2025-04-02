@@ -163,7 +163,8 @@ export class WebviewController {
 
     // TODO(https://crbug.com/388328847): Remove when login issues are resolved.
     if (url.startsWith('https://login.corp.google.com/') ||
-        url.startsWith('https://accounts.google.com/')) {
+        url.startsWith('https://accounts.google.com/') ||
+        url.startsWith('https://gaiastaging.corp.google.com/')) {
       this.delegate.webviewPageCommit('login');
     } else {
       this.delegate.webviewPageCommit('regular');

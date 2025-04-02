@@ -22,7 +22,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -33,6 +32,7 @@
 #include "components/cbor/writer.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/interest_group/auction_downloader_delegate.h"
+#include "content/browser/interest_group/data_decoder_manager.h"
 #include "content/browser/interest_group/devtools_enums.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/common/content_export.h"
@@ -308,6 +308,7 @@ TrustedSignalsFetcher::TrustedSignalsFetcher() = default;
 TrustedSignalsFetcher::~TrustedSignalsFetcher() = default;
 
 void TrustedSignalsFetcher::FetchBiddingSignals(
+    DataDecoderManager& data_decoder_manager,
     network::mojom::URLLoaderFactory* url_loader_factory,
     FrameTreeNodeId frame_tree_node_id,
     base::flat_set<std::string> devtools_auction_ids,
@@ -320,15 +321,17 @@ void TrustedSignalsFetcher::FetchBiddingSignals(
     const std::map<int, std::vector<BiddingPartition>>& compression_groups,
     Callback callback) {
   EncryptRequestBodyAndStart(
-      url_loader_factory, InterestGroupAuctionFetchType::kBidderTrustedSignals,
-      frame_tree_node_id, std::move(devtools_auction_ids), main_frame_origin,
-      ip_address_space, network_partition_nonce, script_origin,
-      trusted_bidding_signals_url, bidding_and_auction_key,
+      data_decoder_manager, url_loader_factory,
+      InterestGroupAuctionFetchType::kBidderTrustedSignals, frame_tree_node_id,
+      std::move(devtools_auction_ids), main_frame_origin, ip_address_space,
+      network_partition_nonce, script_origin, trusted_bidding_signals_url,
+      bidding_and_auction_key,
       BuildSignalsRequestBody(main_frame_origin.host(), compression_groups),
       std::move(callback));
 }
 
 void TrustedSignalsFetcher::FetchScoringSignals(
+    DataDecoderManager& data_decoder_manager,
     network::mojom::URLLoaderFactory* url_loader_factory,
     FrameTreeNodeId frame_tree_node_id,
     base::flat_set<std::string> devtools_auction_ids,
@@ -341,15 +344,17 @@ void TrustedSignalsFetcher::FetchScoringSignals(
     const std::map<int, std::vector<ScoringPartition>>& compression_groups,
     Callback callback) {
   EncryptRequestBodyAndStart(
-      url_loader_factory, InterestGroupAuctionFetchType::kSellerTrustedSignals,
-      frame_tree_node_id, std::move(devtools_auction_ids), main_frame_origin,
-      ip_address_space, network_partition_nonce, script_origin,
-      trusted_scoring_signals_url, bidding_and_auction_key,
+      data_decoder_manager, url_loader_factory,
+      InterestGroupAuctionFetchType::kSellerTrustedSignals, frame_tree_node_id,
+      std::move(devtools_auction_ids), main_frame_origin, ip_address_space,
+      network_partition_nonce, script_origin, trusted_scoring_signals_url,
+      bidding_and_auction_key,
       BuildSignalsRequestBody(main_frame_origin.host(), compression_groups),
       std::move(callback));
 }
 
 void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
+    DataDecoderManager& data_decoder_manager,
     network::mojom::URLLoaderFactory* url_loader_factory,
     InterestGroupAuctionFetchType fetch_type,
     FrameTreeNodeId frame_tree_node_id,
@@ -365,6 +370,14 @@ void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
   DCHECK(!auction_downloader_);
   DCHECK(!callback_);
   trusted_signals_url_ = trusted_signals_url;
+
+  // Request a DataDecoder now to pre-warm it for when data is received.
+  decoder_handle_ =
+      data_decoder_manager.GetHandle(main_frame_origin, script_origin);
+  // Need to call GetService() to actually trigger creation of the underlying
+  // service.
+  decoder_handle_->data_decoder().GetService();
+
   callback_ = std::move(callback);
 
   uint32_t key_id = 0;
@@ -500,7 +513,7 @@ void TrustedSignalsFetcher::OnRequestComplete(
   }
 
   base::span<const uint8_t> cbor = remaining_span.first(cbor_length);
-  data_decoder::DataDecoder::ParseCborIsolated(
+  decoder_handle_->data_decoder().ParseCbor(
       cbor, base::BindOnce(&TrustedSignalsFetcher::OnCborParsed,
                            weak_ptr_factory_.GetWeakPtr()));
 }

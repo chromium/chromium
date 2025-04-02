@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">Təşəkkür edən adam</translation>
 <translation id="2088690981887365033">VPN şəbəkəsi</translation>
 <translation id="209653272837065803">Faylları sinxronlaşdırmaq üçün yetərli yaddaş yeri yoxdur</translation>
-<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />Anonim rejimdə icazə verin<ph name="END_BOLD" /> seçimini aktiv edin</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> element silinəcək və onları bərpa edə bilməyəcəksiniz.</translation>
 <translation id="2122305276694332719">Gizlədilmiş şəbəkəyə avtomatik qoşulduqda başqaları cihaz və şəbəkə ayarlarınızı görəcək. Bu, tövsiyə edilmir.</translation>
 <translation id="2125607626296734455">Xmer</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> çıxarılıb.</translation>
 <translation id="2307462900900812319">Şəbəkəni konfiqurasiya edin</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Bu məlumat ilə artırmanın yerini tapmaq olmur: <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Admin ilə əlaqə saxlayın.}other{Bu məlumat ilə artırmaların yerini tapmaq olmur: <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Admin ilə əlaqə saxlayın.}}</translation>
 <translation id="2325650632570794183">Bu fayl növü dəstəklənmir. Bu faylı aça bilən tətbiqi tapmaq üçün Chrome Veb Marketə daxil olun.</translation>
 <translation id="2326539130272988168">Bolqar</translation>
 <translation id="233822363739146957">Bütün faylları sinxronlaşdırmaq üçün yetərli yaddaş yeri yoxdur</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Eston</translation>
 <translation id="2938685643439809023">Monqolca</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Artırmanı tapmaq olmur}other{Artırmaları tapmaq olmur}}</translation>
 <translation id="2943503720238418293">Qısa ad istifadə edin</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> formatlanır...</translation>
 <translation id="2951236788251446349">Meduza</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">Tamamlandı</translation>
 <translation id="3358452157379365236">Gitara</translation>
 <translation id="3368922792935385530">Qoşuludur</translation>
-<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />Detallara<ph name="END_BOLD" /> klikləyin</translation>
 <translation id="3382143449143186018">InScript klaviaturası ilə Nepal dili</translation>
 <translation id="338691029516748599"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Siqnal Gücü<ph name="SIGNAL_STRENGTH" />%, Administratorunuz tərəfindən idarə olunur, Qoşulun</translation>
 <translation id="3408072735282270043">Aktivləşdirin, <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">Tək buynuzlu at</translation>
 <translation id="4131235941541910880">Lazımsız elementləri zibil qutusuna köçürün</translation>
 <translation id="4134804435730168042">Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Cihaz ayarlamasından sonra aktiv edin</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Anonim rejimdə aşağıdakı artırmanı aktiv edin:}other{Anonim rejimdə aşağıdakı artırmaları aktiv edin:}}</translation>
 <translation id="4153015322587141338">Fayla sağ düymə ilə toxunun və rəfdəki fayllarınıza sürətli giriş üçün "<ph name="PIN_COMMAND" />" seçimini edin.</translation>
 <translation id="4157569377477607576">Administrator siyasəti tövsiyə etmir:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> köçürülüb.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">İkisini də saxlayın</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> element bərpa edilir</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Anonim rejim istifadə etmək üçün təşkilat artırma tələb edir}other{Anonim rejim istifadə etmək üçün təşkilat bəzi artırmalar tələb edir}}</translation>
 <translation id="4826849268470072925">Tamil dili (ITRANS)</translation>
-<translation id="482932175346970750">Brauzerə <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> yazın</translation>
 <translation id="4843566743023903107">Chromebase cihazları</translation>
 <translation id="4850886885716139402">Görünüş</translation>
 <translation id="485316830061041779">Alman</translation>
@@ -561,7 +554,6 @@
     paylaşın, yaradın əməkdaşlıq edin.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Diskdən bərpa edilmiş fayllar</translation>
 <translation id="5278111733643988471">Bu elementi bərpa etmək üçün zibil qutusunun xaricində yeni bir qovluğa sürüşdürün. Bu element üçün "<ph name="PARENT_FOLDER_NAME" />" orijinal qovluğu silinib.</translation>
-<translation id="5283101102242354279">Anonim rejimdə artırmanı aktiv edin:</translation>
 <translation id="5288441970121584418">Burger</translation>
 <translation id="5293615890992542006">Bu faylın köçürülməsi administrator siyasəti əsasında bloklanıb</translation>
 <translation id="5305688511332277257">Heç biri quraşdırılmayıb</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Detallar</translation>
 <translation id="7246947237293279874">FTP Proksisi</translation>
 <translation id="7248671827512403053">Tətbiq</translation>
-<translation id="7252604552361840748">Yuxarıda artırmanı tapın</translation>
 <translation id="7256405249507348194">Naməlum xəta: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Əlçatan xidmətlər</translation>
 <translation id="7291818353625820805">Düymələrin təkrarlanmasını istəyirsiniz? Klaviatura Ayarlarında aksent vurğularını deaktiv edin</translation>

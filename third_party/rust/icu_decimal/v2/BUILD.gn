@@ -12,15 +12,16 @@ cargo_crate("lib") {
   crate_name = "icu_decimal"
   epoch = "2"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/icu_decimal-2.0.0-beta2/src/lib.rs"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/icu_decimal-v2/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/icu_decimal-2.0.0-beta2/src/format.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_decimal-2.0.0-beta2/src/grouper.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_decimal-2.0.0-beta2/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_decimal-2.0.0-beta2/src/options.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_decimal-2.0.0-beta2/src/parts.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_decimal-2.0.0-beta2/src/provider.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_decimal-2.0.0-beta2/src/size_test_macro.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_decimal-v2/src/format.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_decimal-v2/src/grouper.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_decimal-v2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_decimal-v2/src/options.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_decimal-v2/src/parts.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_decimal-v2/src/provider.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_decimal-v2/src/size_test_macro.rs",
   ]
   inputs = []
 

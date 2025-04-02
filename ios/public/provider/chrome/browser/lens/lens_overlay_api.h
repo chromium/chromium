@@ -94,6 +94,12 @@ class GURL;
 // Disables flyout menus from displaying.
 - (void)disableFlyoutMenu:(BOOL)disable;
 
+// Sets the rest height of the guidance view.
+//
+// The guidance view represents the short educational message shown in the
+// bottom half of the screen.
+- (void)setGuidanceRestHeight:(CGFloat)height;
+
 // Optional until fully integrated.
 @optional
 // Shows the overflow menu tooltip.

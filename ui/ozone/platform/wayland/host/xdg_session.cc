@@ -16,7 +16,7 @@
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 #include "ui/ozone/platform/wayland/host/xdg_session_manager.h"
-#include "ui/ozone/platform/wayland/host/xdg_toplevel_wrapper_impl.h"
+#include "ui/ozone/platform/wayland/host/xdg_toplevel.h"
 
 namespace ui {
 
@@ -45,9 +45,8 @@ std::unique_ptr<XdgToplevelSession> XdgSession::TrackToplevel(
     return nullptr;
   }
 
-  CHECK(toplevel->shell_toplevel());
-  auto* xdg_toplevel =
-      toplevel->shell_toplevel()->AsXDGToplevelWrapper()->xdg_toplevel_.get();
+  CHECK(toplevel->xdg_toplevel());
+  auto* xdg_toplevel = toplevel->xdg_toplevel()->wl_object();
 
   CHECK_NE(state_, State::kPending);
   auto id = base::NumberToString(toplevel_id);

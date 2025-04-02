@@ -88,7 +88,7 @@ TEST_F(SelectionSampleTest, SetEmpty2) {
 TEST_F(SelectionSampleTest, SetElement) {
   const SelectionInDOMTree& selection = SelectionSample::SetSelectionText(
       GetDocument().body(), "<p>^<a>0</a>|<b>1</b></p>");
-  const Element* const sample = GetDocument().QuerySelector(AtomicString("p"));
+  const Element* const sample = QuerySelector("p");
   EXPECT_EQ(2u, sample->CountChildren())
       << "We should remove Text node for '^' and '|'.";
   EXPECT_EQ(SelectionInDOMTree::Builder()

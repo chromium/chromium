@@ -10,6 +10,7 @@
 #import <string>
 
 #import "base/strings/string_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/uuid.h"
@@ -24,6 +25,7 @@
 #import "chrome/test/base/browser_with_test_window_test.h"
 #import "chrome/test/base/testing_profile.h"
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "components/signin/public/base/signin_switches.h"
@@ -44,8 +46,9 @@ class BookmarkMenuBridgeTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    WaitForBookmarkMergedSurfaceServiceToLoad(
-        BookmarkMergedSurfaceServiceFactory::GetForProfile(profile()));
+    service_ = BookmarkMergedSurfaceServiceFactory::GetForProfile(profile());
+    CHECK(service_);
+    WaitForBookmarkMergedSurfaceServiceToLoad(service_);
     menu_ = [[NSMenu alloc] initWithTitle:@"test"];
 
     bridge_ = std::make_unique<BookmarkMenuBridge>(profile(), menu_);
@@ -53,6 +56,7 @@ class BookmarkMenuBridgeTest : public BrowserWithTestWindowTest {
 
   void TearDown() override {
     bridge_ = nullptr;
+    service_ = nullptr;
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -103,40 +107,121 @@ class BookmarkMenuBridgeTest : public BrowserWithTestWindowTest {
     return item;
   }
 
+  BookmarkMergedSurfaceService* service() { return service_; }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list{
       switches::kSyncEnableBookmarksInTransportMode};
   NSMenu* __strong menu_;
+  raw_ptr<BookmarkMergedSurfaceService> service_;
   std::unique_ptr<BookmarkMenuBridge> bridge_;
 
  private:
   CocoaTestHelper cocoa_test_helper_;
 };
 
+// Tests that the menu has separators for different bookmark sources.
 TEST_F(BookmarkMenuBridgeTest, TestBookmarkMenuAutoSeparator) {
   BookmarkModel* model = bridge_->GetBookmarkModelForTesting();
+  model->CreateAccountPermanentFolders();
   bridge_->BookmarkMergedSurfaceServiceLoaded();
   UpdateRootMenu();
-  // The bare menu after loading used to have a separator and an
-  // "Other Bookmarks" submenu, but we no longer show those items if the
-  // "Other Bookmarks" submenu would be empty.
+  // The bare menu after loading has no submenus and separators.
   EXPECT_EQ(0, [menu_ numberOfItems]);
-  // Add a bookmark and reload and there should be 2 items:
-  // a new separator and the new bookmark.
-  const BookmarkNode* parent = model->bookmark_bar_node();
+
   const char* url = "http://www.zim-bop-a-dee.com/";
-  model->AddURL(parent, 0, u"Bookmark", GURL(url));
+
+  // Add an account bookmark. After reloading, there should be 2 items: a new
+  // separator and the new bookmark.
+  // ---------------------
+  //    + Account bookmark
+  const BookmarkNode* account_root = model->account_bookmark_bar_node();
+  model->AddURL(account_root, 0, u"Account bookmark", GURL(url));
   UpdateRootMenu();
   EXPECT_EQ(2, [menu_ numberOfItems]);
-  // Remove the new bookmark and reload and we should have 0 items again
-  // because the separator should have been removed as well.
-  model->Remove(parent->children().front().get(),
+
+  // Add a local bookmark.
+  // ---------------------
+  //    + Account bookmark
+  //    + Bookmark
+  const BookmarkNode* root = model->bookmark_bar_node();
+  model->AddURL(root, 0, u"Bookmark", GURL(url));
+  UpdateRootMenu();
+  EXPECT_EQ(3, [menu_ numberOfItems]);
+
+  // Add bookmarks to the other and mobile folders.
+  // ---------------------
+  //    + Account bookmark
+  //    + Bookmark
+  // ---------------------
+  //    + Other Bookmarks   (1 child)
+  //    + Mobile Bookmarks  (1 child)
+  const BookmarkNode* account_other_root = model->account_other_node();
+  const BookmarkNode* mobile_root = model->mobile_node();
+  model->AddURL(account_other_root, 0, u"Account other bookmark", GURL(url));
+  model->AddURL(mobile_root, 0, u"Mobile bookmark", GURL(url));
+  UpdateRootMenu();
+  EXPECT_EQ(6, [menu_ numberOfItems]);
+
+  // Add more bookmarks to the other and mobile folders.
+  // ---------------------
+  //    + Account bookmark
+  //    + Bookmark
+  // ---------------------
+  //    + Other Bookmarks   (2 children)
+  //    + Mobile Bookmarks  (2 children)
+  const BookmarkNode* other_root = model->other_node();
+  const BookmarkNode* account_mobile_root = model->account_mobile_node();
+  model->AddURL(account_mobile_root, 0, u"Account other bookmark", GURL(url));
+  model->AddURL(other_root, 0, u"Mobile bookmark", GURL(url));
+  UpdateRootMenu();
+  EXPECT_EQ(6, [menu_ numberOfItems]);
+
+  // Remove some bookmarks and reload. We should still have 6 items.
+  // ---------------------
+  //    + Account bookmark
+  //    + Bookmark
+  // ---------------------
+  //    + Other Bookmarks   (1 child)
+  //    + Mobile Bookmarks  (1 child)
+  model->Remove(account_other_root->children().front().get(),
                 bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+  model->Remove(mobile_root->children().front().get(),
+                bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+  UpdateRootMenu();
+  EXPECT_EQ(6, [menu_ numberOfItems]);
+
+  // Remove some bookmarks and reload. We should have 4 items since there are
+  // still two separators.
+  // ---------------------
+  //    + Bookmark
+  // ---------------------
+  //    + Mobile Bookmarks  (1 child)
+  model->Remove(account_root->children().front().get(),
+                bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+  model->Remove(other_root->children().front().get(),
+                bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+  UpdateRootMenu();
+  EXPECT_EQ(4, [menu_ numberOfItems]);
+
+  // Remove the last bookmark bar node, which removes the separator above the
+  // bookmark bar items.
+  // ---------------------
+  //    + Mobile Bookmarks  (1 child)
+  model->Remove(root->children().front().get(),
+                bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+  UpdateRootMenu();
+  EXPECT_EQ(2, [menu_ numberOfItems]);
+
+  // Remove the last bookmark, which removes the last separator.
+  model->Remove(account_mobile_root->children().front().get(),
+                bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+
   UpdateRootMenu();
   EXPECT_EQ(0, [menu_ numberOfItems]);
 }
 
-// Test that ClearBookmarkMenu() removes all bookmark menus.
+// Tests that ClearBookmarkMenu() removes all bookmark menus.
 TEST_F(BookmarkMenuBridgeTest, TestClearBookmarkMenu) {
   AddTestMenuItem(menu_, @"hi mom", nil);
   AddTestMenuItem(menu_, @"not", @selector(openBookmarkMenuItem:));
@@ -156,14 +241,14 @@ TEST_F(BookmarkMenuBridgeTest, TestClearBookmarkMenu) {
   }
 }
 
-// Test invalidation
+// Tests that the menu is invalidated on bookmark model updates.
 TEST_F(BookmarkMenuBridgeTest, TestInvalidation) {
   BookmarkModel* model = bridge_->GetBookmarkModelForTesting();
   model->CreateAccountPermanentFolders();
-  model->AddURL(model->bookmark_bar_node(), 0, u"Google",
-                GURL("https://google.com"));
   model->AddURL(model->account_bookmark_bar_node(), 0, u"Google Maps",
                 GURL("https://google.com/map"));
+  model->AddURL(model->bookmark_bar_node(), 0, u"Google",
+                GURL("https://google.com"));
   bridge_->BookmarkMergedSurfaceServiceLoaded();
 
   EXPECT_FALSE(menu_is_valid());
@@ -198,8 +283,9 @@ TEST_F(BookmarkMenuBridgeTest, TestAddNodeToMenu) {
   std::u16string empty;
 
   BookmarkModel* model = bridge_->GetBookmarkModelForTesting();
+  model->CreateAccountPermanentFolders();
+  const BookmarkNode* account_root = model->account_bookmark_bar_node();
   const BookmarkNode* root = model->bookmark_bar_node();
-  EXPECT_TRUE(model && root);
 
   const char* short_url = "http://foo/";
   const char* long_url = "http://super-duper-long-url--."
@@ -207,22 +293,18 @@ TEST_F(BookmarkMenuBridgeTest, TestAddNodeToMenu) {
                          "or.be.reasonably-displayed-in-a-menu"
                          "without.looking-ridiculous.com/";  // 140 chars total
 
-  // 3 nodes; middle one has a child, last one has a HUGE URL
-  // Set their titles to be the same as the URLs
-  const BookmarkNode* node = nullptr;
-  model->AddURL(root, 0, ASCIIToUTF16(short_url), GURL(short_url));
+  // Account bookmark.
+  model->AddURL(account_root, 0, ASCIIToUTF16(short_url), GURL(short_url));
+  // Local submenu.
+  const BookmarkNode* local_folder_node = model->AddFolder(root, 0, empty);
+  model->AddURL(local_folder_node, 0, empty, GURL("http://sub"));
+  // Local bookmark with long url as title.
+  model->AddURL(root, 1, ASCIIToUTF16(long_url), GURL(long_url));
+
   UpdateRootMenu();
-  int prev_count = [menu_ numberOfItems] - 1;  // "extras" added at this point
-  node = model->AddFolder(root, 1, empty);
-  model->AddURL(root, 2, ASCIIToUTF16(long_url), GURL(long_url));
+  EXPECT_EQ(4, [menu_ numberOfItems]);  // including a separator.
 
-  // And the submenu for the middle one
-  model->AddURL(node, 0, empty, GURL("http://sub"));
-  UpdateRootMenu();
-
-  EXPECT_EQ((NSInteger)(prev_count + 3), [menu_ numberOfItems]);
-
-  // Verify the 1st one is there with the right action.
+  // Verify the first bookmark is there with the right action.
   NSMenuItem* item = [menu_ itemWithTitle:@(short_url)];
   EXPECT_TRUE(item);
   EXPECT_EQ(@selector(openBookmarkMenuItem:), [item action]);
@@ -230,7 +312,8 @@ TEST_F(BookmarkMenuBridgeTest, TestAddNodeToMenu) {
   NSMenuItem* short_item = item;
   NSMenuItem* long_item = nil;
 
-  // Now confirm we have 1 submenu (the one we added, and not "other")
+  // Check that we have 1 submenu that is not "Other Bookmarks" or "Mobile
+  // Bookmarks".
   int subs = 0;
   for (item in [menu_ itemArray]) {
     if ([item hasSubmenu]) {
@@ -247,7 +330,7 @@ TEST_F(BookmarkMenuBridgeTest, TestAddNodeToMenu) {
   }
   EXPECT_TRUE(long_item);
 
-  // Make sure a short title looks fine
+  // Make sure a short title looks fine.
   NSString* s = [short_item title];
   EXPECT_NSEQ(@(short_url), s);
 
@@ -271,13 +354,11 @@ TEST_F(BookmarkMenuBridgeTest, TestAddNodeToMenu) {
 TEST_F(BookmarkMenuBridgeTest, TestGetMenuItemForNode) {
   std::u16string empty;
   BookmarkModel* model = bridge_->GetBookmarkModelForTesting();
-  EXPECT_TRUE(model);
   const BookmarkNode* bookmark_bar = model->bookmark_bar_node();
   UpdateRootMenu();
   EXPECT_EQ(0u, [menu_ numberOfItems]);
 
   const BookmarkNode* node = model->AddFolder(bookmark_bar, 0, empty);
-  EXPECT_TRUE(node);
   UpdateRootMenu();
   EXPECT_EQ(2u, [menu_ numberOfItems]);
 
@@ -348,21 +429,25 @@ TEST_F(BookmarkMenuBridgeTest, TestGetMenuItemForNode) {
   EXPECT_FALSE(MenuItemForNode(bridge_.get(), nullptr));
 }
 
-// Test that Loaded() adds both the bookmark bar nodes and the "other" nodes, as
-// lazily loadable submenus.
+// Tests that Loaded() adds the "Other Bookmarks" nodes as lazily loadable
+// submenus.
 TEST_F(BookmarkMenuBridgeTest, TestAddNodeToOther) {
   BookmarkModel* model = bridge_->GetBookmarkModelForTesting();
+  model->CreateAccountPermanentFolders();
   const BookmarkNode* other_root = model->other_node();
-  EXPECT_TRUE(model && other_root);
+  const BookmarkNode* account_other_root = model->account_other_node();
 
-  const char* short_url = "http://foo/";
-  model->AddURL(other_root, 0, ASCIIToUTF16(short_url), GURL(short_url));
+  const char* url1 = "http://foo/";
+  model->AddURL(account_other_root, 0, ASCIIToUTF16(url1), GURL(url1));
+  const char* url2 = "http://bar/";
+  model->AddURL(other_root, 0, ASCIIToUTF16(url2), GURL(url2));
 
   UpdateRootMenu();
   ASSERT_GT([menu_ numberOfItems], 0);
   NSMenuItem* other = [menu_ itemAtIndex:([menu_ numberOfItems] - 1)];
   EXPECT_TRUE(other);
   EXPECT_TRUE([other hasSubmenu]);
+  EXPECT_EQ(base::SysNSStringToUTF8([other title]), "Other Bookmarks");
 
   // The "other" submenu is loaded lazily.
   EXPECT_EQ(0u, [[other submenu] numberOfItems]);
@@ -371,13 +456,44 @@ TEST_F(BookmarkMenuBridgeTest, TestAddNodeToOther) {
 
   ASSERT_GT([[other submenu] numberOfItems], 0);
   EXPECT_NSEQ(@"http://foo/", [[[other submenu] itemAtIndex:0] title]);
+  EXPECT_NSEQ(@"http://bar/", [[[other submenu] itemAtIndex:1] title]);
 }
 
+// Tests that Loaded() adds the "Mobile Bookmarks" nodes as lazily loadable
+// submenus.
+TEST_F(BookmarkMenuBridgeTest, TestAddNodeToMobile) {
+  BookmarkModel* model = bridge_->GetBookmarkModelForTesting();
+  model->CreateAccountPermanentFolders();
+  const BookmarkNode* account_mobile_root = model->account_mobile_node();
+  const BookmarkNode* mobile_root = model->mobile_node();
+
+  const char* url1 = "http://foo/";
+  model->AddURL(account_mobile_root, 0, ASCIIToUTF16(url1), GURL(url1));
+  const char* url2 = "http://bar/";
+  model->AddURL(mobile_root, 0, ASCIIToUTF16(url2), GURL(url2));
+
+  UpdateRootMenu();
+  ASSERT_GT([menu_ numberOfItems], 0);
+  NSMenuItem* mobile = [menu_ itemAtIndex:([menu_ numberOfItems] - 1)];
+  EXPECT_TRUE(mobile);
+  EXPECT_TRUE([mobile hasSubmenu]);
+  EXPECT_EQ(base::SysNSStringToUTF8([mobile title]), "Mobile Bookmarks");
+
+  // The "Mobile Bookmarks" submenu is loaded lazily.
+  EXPECT_EQ(0u, [[mobile submenu] numberOfItems]);
+  bridge_->UpdateMenu([mobile submenu], BookmarkParentFolder::MobileFolder(),
+                      /*recurse=*/false);
+
+  ASSERT_GT([[mobile submenu] numberOfItems], 0);
+  EXPECT_NSEQ(@"http://foo/", [[[mobile submenu] itemAtIndex:0] title]);
+  EXPECT_NSEQ(@"http://bar/", [[[mobile submenu] itemAtIndex:1] title]);
+}
+
+// Tests that each bookmark item has a favicon.
 TEST_F(BookmarkMenuBridgeTest, TestFaviconLoading) {
   BookmarkModel* model = bridge_->GetBookmarkModelForTesting();
-  const BookmarkNode* root = model->bookmark_bar_node();
-  EXPECT_TRUE(model && root);
-
+  model->CreateAccountPermanentFolders();
+  const BookmarkNode* root = model->account_bookmark_bar_node();
   const BookmarkNode* node =
       model->AddURL(root, 0, u"Test Item", GURL("http://favicon-test"));
   UpdateRootMenu();
@@ -385,14 +501,14 @@ TEST_F(BookmarkMenuBridgeTest, TestFaviconLoading) {
   EXPECT_TRUE([item image]);
   [item setImage:nil];
   bridge_->BookmarkNodeFaviconChanged(node);
-  EXPECT_TRUE([item image]);
+  EXPECT_TRUE([item image]);  // default favicon
 }
 
+// Tests that the menu is updated when a bookmark has its title changed.
 TEST_F(BookmarkMenuBridgeTest, TestChangeTitle) {
   BookmarkModel* model = bridge_->GetBookmarkModelForTesting();
-  const BookmarkNode* root = model->bookmark_bar_node();
-  EXPECT_TRUE(model && root);
-
+  model->CreateAccountPermanentFolders();
+  const BookmarkNode* root = model->account_bookmark_bar_node();
   const BookmarkNode* node =
       model->AddURL(root, 0, u"Test Item", GURL("http://title-test"));
   UpdateRootMenu();
@@ -408,16 +524,95 @@ TEST_F(BookmarkMenuBridgeTest, TestChangeTitle) {
   EXPECT_TRUE(item);
 }
 
+// Tests that the bookmark menu reflects custom ordering of bookmark nodes
+// (interleaved account and local nodes).
+TEST_F(BookmarkMenuBridgeTest, TestReorderBookmarkNodes) {
+  BookmarkModel* model = bridge_->GetBookmarkModelForTesting();
+  model->CreateAccountPermanentFolders();
+  const BookmarkNode* root = model->bookmark_bar_node();
+  const BookmarkNode* account_root = model->account_bookmark_bar_node();
+
+  // Bookmark bar
+  //    + Account item 1
+  //    + Account folder 1
+  //    + Item 1
+  //    + Folder 1
+  const BookmarkNode* account_item1 = model->AddURL(
+      account_root, 0, u"Account item 1", GURL("http://account-item-1/"));
+  const BookmarkNode* account_folder1 =
+      model->AddFolder(account_root, 1, u"Account folder 1");
+  const BookmarkNode* item1 =
+      model->AddURL(root, 0, u"Item 1", GURL("http://item-1/"));
+  const BookmarkNode* folder1 = model->AddFolder(root, 1, u"Folder 1");
+
+  UpdateRootMenu();
+  ASSERT_EQ(5u, [menu_ numberOfItems]);  // including separator
+
+  NSMenuItem* item = [menu_ itemAtIndex:1];
+  EXPECT_EQ(account_item1->uuid(), bridge_->TagToGUID([item tag]));
+  item = [menu_ itemAtIndex:2];
+  EXPECT_EQ(account_folder1->uuid(), bridge_->TagToGUID([item tag]));
+  item = [menu_ itemAtIndex:3];
+  EXPECT_EQ(item1->uuid(), bridge_->TagToGUID([item tag]));
+  item = [menu_ itemAtIndex:4];
+  EXPECT_EQ(folder1->uuid(), bridge_->TagToGUID([item tag]));
+
+  // Reordered bookmark bar
+  //    + Item 1
+  //    + Account item 1
+  //    + Folder 1
+  //    + Account folder 1
+  service()->Move(item1, BookmarkParentFolder::BookmarkBarFolder(), 0u,
+                  browser());
+  service()->Move(folder1, BookmarkParentFolder::BookmarkBarFolder(), 2u,
+                  browser());
+  EXPECT_TRUE(service()->IsNonDefaultOrderingTracked(
+      BookmarkParentFolder::BookmarkBarFolder()));
+
+  UpdateRootMenu();
+  ASSERT_EQ(5u, [menu_ numberOfItems]);
+
+  item = [menu_ itemAtIndex:1];
+  EXPECT_EQ(item1->uuid(), bridge_->TagToGUID([item tag]));
+  item = [menu_ itemAtIndex:2];
+  EXPECT_EQ(account_item1->uuid(), bridge_->TagToGUID([item tag]));
+  item = [menu_ itemAtIndex:3];
+  EXPECT_EQ(folder1->uuid(), bridge_->TagToGUID([item tag]));
+  item = [menu_ itemAtIndex:4];
+  EXPECT_EQ(account_folder1->uuid(), bridge_->TagToGUID([item tag]));
+}
+
+// Tests that the entire menu is built recursively before the profile is
+// destroyed.
 TEST_F(BookmarkMenuBridgeTest, BuildMenuRecursivelyBeforeProfileDestruction) {
   BookmarkModel* model = bridge_->GetBookmarkModelForTesting();
+  model->CreateAccountPermanentFolders();
   const BookmarkNode* root = model->bookmark_bar_node();
-  EXPECT_TRUE(model && root);
+  const BookmarkNode* account_root = model->account_bookmark_bar_node();
 
-  // root
+  // Bookmark bar
+  //    + Account item 1
+  //    + Account folder 1
+  //        + Account folder 2
+  //            + Account item 2
   //    + Item 1
   //    + Folder 1
   //        + Folder 2
   //            + Item 2
+
+  const BookmarkNode* account_item1 = model->AddURL(
+      account_root, 0, u"Account item 1", GURL("http://account-item-1/"));
+  base::Uuid account_item1_guid = account_item1->uuid();
+  const BookmarkNode* account_folder1 =
+      model->AddFolder(account_root, 1, u"Account folder 1");
+  base::Uuid account_folder1_guid = account_folder1->uuid();
+  const BookmarkNode* account_folder2 =
+      model->AddFolder(account_folder1, 0, u"Account folder 2");
+  base::Uuid account_folder2_guid = account_folder2->uuid();
+  const BookmarkNode* account_item2 = model->AddURL(
+      account_folder2, 0, u"Account item 2", GURL("http://account-item-2/"));
+  base::Uuid account_item2_guid = account_item2->uuid();
+
   const BookmarkNode* item1 =
       model->AddURL(root, 0, u"Item 1", GURL("http://item-1/"));
   base::Uuid item1_guid = item1->uuid();
@@ -431,7 +626,11 @@ TEST_F(BookmarkMenuBridgeTest, BuildMenuRecursivelyBeforeProfileDestruction) {
 
   // We didn't show the menu or any submenus, so it shouldn't contain these
   // items.
-  NSMenuItem* item = [menu_ itemWithTitle:@"Item 1"];
+  NSMenuItem* item = [menu_ itemWithTitle:@"Account item 1"];
+  EXPECT_FALSE(item);
+  item = [menu_ itemWithTitle:@"Account folder 1"];
+  EXPECT_FALSE(item);
+  item = [menu_ itemWithTitle:@"Item 1"];
   EXPECT_FALSE(item);
   item = [menu_ itemWithTitle:@"Folder 1"];
   EXPECT_FALSE(item);
@@ -440,6 +639,21 @@ TEST_F(BookmarkMenuBridgeTest, BuildMenuRecursivelyBeforeProfileDestruction) {
   EXPECT_EQ(nullptr, bridge_->GetProfile());
 
   // OnProfileWillBeDestroyed() should've recursively populated the menu.
+  item = [menu_ itemWithTitle:@"Account item 1"];
+  EXPECT_TRUE(item);
+  EXPECT_EQ(account_item1_guid, bridge_->TagToGUID([item tag]));
+  item = [menu_ itemWithTitle:@"Account folder 1"];
+  EXPECT_TRUE(item);
+  EXPECT_EQ(account_folder1_guid, bridge_->TagToGUID([item tag]));
+  EXPECT_TRUE([item hasSubmenu]);
+  item = [[item submenu] itemWithTitle:@"Account folder 2"];
+  EXPECT_TRUE(item);
+  EXPECT_EQ(account_folder2_guid, bridge_->TagToGUID([item tag]));
+  EXPECT_TRUE([item hasSubmenu]);
+  item = [[item submenu] itemWithTitle:@"Account item 2"];
+  EXPECT_TRUE(item);
+  EXPECT_EQ(account_item2_guid, bridge_->TagToGUID([item tag]));
+
   item = [menu_ itemWithTitle:@"Item 1"];
   EXPECT_TRUE(item);
   EXPECT_EQ(item1_guid, bridge_->TagToGUID([item tag]));

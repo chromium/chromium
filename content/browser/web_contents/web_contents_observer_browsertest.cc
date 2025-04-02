@@ -7,10 +7,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/allow_service_worker_result.h"
+#include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_client.h"
@@ -19,14 +21,20 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "net/base/features.h"
+#include "net/cert/cert_verify_result.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/default_handlers.h"
+#include "net/test/quic_simple_test_server.h"
+#include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -719,33 +727,32 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
   EXPECT_TRUE(NavigateToURL(web_contents(), url1));
   EXPECT_TRUE(ExecJs(web_contents(), "document.cookie='foo=bar'"));
 
-  cookie_tracker.WaitForCookies(1);
-  EXPECT_THAT(
-      cookie_tracker.cookie_accesses(),
-      testing::ElementsAre(CookieAccess{
-          CookieAccessDetails::Type::kChange, ContextType::kFrame,
-          cookie_tracker.frame_id(0), -1, url1, first_party_url, "foo", "bar",
-          net::CookieAccessResult(
-              net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
-              net::CookieInclusionStatus(),
-              net::CookieAccessSemantics::NONLEGACY,
-              net::CookieScopeSemantics::UNKNOWN, false)}));
-  cookie_tracker.cookie_accesses().clear();
-
   EXPECT_EQ("foo=bar", EvalJs(web_contents(), "document.cookie"));
 
-  cookie_tracker.WaitForCookies(1);
+  cookie_tracker.WaitForCookies(2);
+  // TODO(crbug.com/380864710): Move this check before reading cookies once
+  // GetCookiesOnSet is fully shipped. When the feature is enabled, a Set also
+  // does a Set, and the Get is cached, thus not producing an access
+  // notification.
   EXPECT_THAT(
       cookie_tracker.cookie_accesses(),
-      testing::ElementsAre(CookieAccess{
-          CookieAccessDetails::Type::kRead, ContextType::kFrame,
-          cookie_tracker.frame_id(0), -1, url1, first_party_url, "foo", "bar",
-          net::CookieAccessResult(
-              net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
-              net::CookieInclusionStatus(),
-              net::CookieAccessSemantics::NONLEGACY,
-              net::CookieScopeSemantics::NONLEGACY, false)}));
-  cookie_tracker.cookie_accesses().clear();
+      testing::ElementsAre(
+          CookieAccess{CookieAccessDetails::Type::kChange, ContextType::kFrame,
+                       cookie_tracker.frame_id(0), -1, url1, first_party_url,
+                       "foo", "bar",
+                       net::CookieAccessResult(
+                           net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
+                           net::CookieInclusionStatus(),
+                           net::CookieAccessSemantics::NONLEGACY,
+                           net::CookieScopeSemantics::UNKNOWN, false)},
+          CookieAccess{CookieAccessDetails::Type::kRead, ContextType::kFrame,
+                       cookie_tracker.frame_id(0), -1, url1, first_party_url,
+                       "foo", "bar",
+                       net::CookieAccessResult(
+                           net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
+                           net::CookieInclusionStatus(),
+                           net::CookieAccessSemantics::NONLEGACY,
+                           net::CookieScopeSemantics::NONLEGACY, false)}));
 }
 
 class WebContentsObserverBrowserTestWithTPCD
@@ -984,28 +991,65 @@ class CookieObserver : public WebContentsObserver {
   base::test::TestFuture<CookieAccessDetails> future_;
 };
 
-MATCHER_P(HasUrl, matcher, "") {
-  return ExplainMatchResult(matcher, arg.url, result_listener);
-}
-
-MATCHER_P(HasSource, matcher, "") {
-  return ExplainMatchResult(matcher, arg.source, result_listener);
-}
-
 }  // namespace
 
 // Tests for the CookieAccessDetails::source reported by
-// WebContentsObserver::OnCookiesAccessed().
+// WebContentsObserver::OnCookiesAccessed(). Some tests use QuicSimpleTestServer
+// because Early Hints are only plumbed over HTTP/2 or HTTP/3 (QUIC).
 class CookieSourceBrowserTest : public ContentBrowserTest {
  public:
+  CookieSourceBrowserTest() {
+    feature_list_.InitWithFeatures(
+        std::vector<base::test::FeatureRef>{
+            net::features::kSplitCacheByNetworkIsolationKey},
+        std::vector<base::test::FeatureRef>{
+            net::features::kMigrateSessionsOnNetworkChangeV2});
+  }
+
+  WebContents* web_contents() { return shell()->web_contents(); }
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_https_test_server().SetSSLConfig(
         net::EmbeddedTestServer::CERT_TEST_NAMES);
     ASSERT_TRUE(embedded_https_test_server().Start());
+
+    // Configure the certificate for the QUIC server.
+    auto test_cert =
+        net::ImportCertFromFile(net::GetTestCertsDirectory(), "quic-chain.pem");
+    net::CertVerifyResult verify_result;
+    verify_result.verified_cert = test_cert;
+    mock_cert_verifier_.mock_cert_verifier()->AddResultForCert(
+        test_cert, verify_result, net::OK);
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
   }
 
-  WebContents* web_contents() { return shell()->web_contents(); }
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ASSERT_TRUE(net::QuicSimpleTestServer::Start());
+    command_line->AppendSwitchASCII(
+        switches::kOriginToForceQuicOn,
+        net::QuicSimpleTestServer::GetHostPort().ToString());
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void TearDown() override {
+    // Needed by net::QuicSimpleTestServer::Shutdown() below.
+    base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+    net::QuicSimpleTestServer::Shutdown();
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+
+  ContentMockCertVerifier mock_cert_verifier_;
 };
 
 IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, NavigationCookie) {
@@ -1016,10 +1060,9 @@ IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, NavigationCookie) {
                           CookieAccessDetails::Type::kChange);
   ASSERT_TRUE(NavigateToURL(web_contents(), url));
   ASSERT_TRUE(observer.Wait());
-  ASSERT_THAT(
-      observer.details(),
-      testing::AllOf(HasUrl(url),
-                     HasSource(CookieAccessDetails::Source::kNavigation)));
+  EXPECT_EQ(observer.details().url, url);
+  EXPECT_EQ(observer.details().source,
+            CookieAccessDetails::Source::kNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, IframeNavigationCookie) {
@@ -1034,10 +1077,9 @@ IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, IframeNavigationCookie) {
   ASSERT_TRUE(NavigateIframeToURL(web_contents(), "test_iframe", iframe_url));
   ASSERT_TRUE(observer.Wait());
 
-  ASSERT_THAT(
-      observer.details(),
-      testing::AllOf(HasUrl(iframe_url),
-                     HasSource(CookieAccessDetails::Source::kNavigation)));
+  EXPECT_EQ(observer.details().url, iframe_url);
+  EXPECT_EQ(observer.details().source,
+            CookieAccessDetails::Source::kNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, NestedIframeNavigationCookie) {
@@ -1057,10 +1099,9 @@ IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, NestedIframeNavigationCookie) {
       ChildFrameAt(ChildFrameAt(web_contents(), 0), 0), inner_iframe_url));
   ASSERT_TRUE(observer.Wait());
 
-  ASSERT_THAT(
-      observer.details(),
-      testing::AllOf(HasUrl(inner_iframe_url),
-                     HasSource(CookieAccessDetails::Source::kNavigation)));
+  EXPECT_EQ(observer.details().url, inner_iframe_url);
+  EXPECT_EQ(observer.details().source,
+            CookieAccessDetails::Source::kNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, JavaScriptCookie) {
@@ -1072,10 +1113,9 @@ IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, JavaScriptCookie) {
   ASSERT_TRUE(ExecJs(web_contents(), "document.cookie = 'foo=bar';"));
   ASSERT_TRUE(observer.Wait());
 
-  ASSERT_THAT(
-      observer.details(),
-      testing::AllOf(HasUrl(url),
-                     HasSource(CookieAccessDetails::Source::kNonNavigation)));
+  EXPECT_EQ(observer.details().url, url);
+  EXPECT_EQ(observer.details().source,
+            CookieAccessDetails::Source::kNonNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, IframeJavaScriptCookie) {
@@ -1092,10 +1132,9 @@ IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, IframeJavaScriptCookie) {
                      "document.cookie = 'foo=bar;Secure;SameSite=None';"));
   ASSERT_TRUE(observer.Wait());
 
-  ASSERT_THAT(
-      observer.details(),
-      testing::AllOf(HasUrl(iframe_url),
-                     HasSource(CookieAccessDetails::Source::kNonNavigation)));
+  EXPECT_EQ(observer.details().url, iframe_url);
+  EXPECT_EQ(observer.details().source,
+            CookieAccessDetails::Source::kNonNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, SubresourceRequestCookie) {
@@ -1114,10 +1153,9 @@ IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, SubresourceRequestCookie) {
                                                img_url)));
   ASSERT_TRUE(observer.Wait());
 
-  ASSERT_THAT(
-      observer.details(),
-      testing::AllOf(HasUrl(img_url),
-                     HasSource(CookieAccessDetails::Source::kNonNavigation)));
+  EXPECT_EQ(observer.details().url, img_url);
+  EXPECT_EQ(observer.details().source,
+            CookieAccessDetails::Source::kNonNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, PrefetchCookie) {
@@ -1140,10 +1178,9 @@ IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, PrefetchCookie) {
                                                prefetch_url)));
   ASSERT_TRUE(observer.Wait());
 
-  ASSERT_THAT(
-      observer.details(),
-      testing::AllOf(HasUrl(prefetch_url),
-                     HasSource(CookieAccessDetails::Source::kNonNavigation)));
+  EXPECT_EQ(observer.details().url, prefetch_url);
+  EXPECT_EQ(observer.details().source,
+            CookieAccessDetails::Source::kNonNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, CookieStoreApi) {
@@ -1155,10 +1192,9 @@ IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, CookieStoreApi) {
   ASSERT_TRUE(ExecJs(web_contents(), "cookieStore.set('foo', 'bar')"));
   ASSERT_TRUE(observer.Wait());
 
-  ASSERT_THAT(
-      observer.details(),
-      testing::AllOf(HasUrl(url),
-                     HasSource(CookieAccessDetails::Source::kNonNavigation)));
+  EXPECT_EQ(observer.details().url, url);
+  EXPECT_EQ(observer.details().source,
+            CookieAccessDetails::Source::kNonNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, Fetch) {
@@ -1172,10 +1208,9 @@ IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, Fetch) {
   ASSERT_TRUE(ExecJs(web_contents(), JsReplace("fetch($1);", fetch_url)));
   ASSERT_TRUE(observer.Wait());
 
-  ASSERT_THAT(
-      observer.details(),
-      testing::AllOf(HasUrl(fetch_url),
-                     HasSource(CookieAccessDetails::Source::kNonNavigation)));
+  EXPECT_EQ(observer.details().url, fetch_url);
+  EXPECT_EQ(observer.details().source,
+            CookieAccessDetails::Source::kNonNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, XMLHttpRequest) {
@@ -1194,10 +1229,55 @@ IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, XMLHttpRequest) {
                                                xhr_url)));
   ASSERT_TRUE(observer.Wait());
 
-  ASSERT_THAT(
-      observer.details(),
-      testing::AllOf(HasUrl(xhr_url),
-                     HasSource(CookieAccessDetails::Source::kNonNavigation)));
+  EXPECT_EQ(observer.details().url, xhr_url);
+  EXPECT_EQ(observer.details().source,
+            CookieAccessDetails::Source::kNonNavigation);
+}
+
+IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, EarlyHints) {
+  // Register a response for /early.css
+  {
+    quiche::HttpHeaderBlock headers;
+    headers[":path"] = "/early.css";
+    headers[":status"] = base::ToString(net::HTTP_OK);
+    headers["content-type"] = "text/css";
+    headers["cache-control"] = "max-age=3600";
+    headers["set-cookie"] = "foo=bar;";
+    net::QuicSimpleTestServer::AddResponse("/early.css", std::move(headers),
+                                           "/* empty */");
+  }
+
+  // Register a response for /early_hints.html
+  {
+    quiche::HttpHeaderBlock headers;
+    headers[":path"] = "/early_hints.html";
+    headers[":status"] = base::ToString(net::HTTP_OK);
+    headers["content-type"] = "text/html";
+
+    // Early Hint header.
+    quiche::HttpHeaderBlock early_hint_header;
+    early_hint_header["link"] = "</early.css>; rel=preload; as=style";
+    std::vector<quiche::HttpHeaderBlock> early_hints;
+    early_hints.push_back(std::move(early_hint_header));
+
+    net::QuicSimpleTestServer::AddResponseWithEarlyHints(
+        /*path=*/"/early_hints.html",
+        /*response_headers=*/std::move(headers),
+        /*response_body=*/
+        R"(<link rel="stylesheet" href="/early.css" />)",
+        /*early_hints=*/std::move(early_hints));
+  }
+  const GURL page_url =
+      net::QuicSimpleTestServer::GetFileURL("/early_hints.html");
+  const GURL early_url = net::QuicSimpleTestServer::GetFileURL("/early.css");
+
+  CookieObserver observer(web_contents(), early_url,
+                          CookieAccessDetails::Type::kChange);
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+  ASSERT_TRUE(observer.Wait());
+  EXPECT_EQ(observer.details().url, early_url);
+  EXPECT_EQ(observer.details().source,
+            CookieAccessDetails::Source::kNonNavigation);
 }
 
 }  // namespace content

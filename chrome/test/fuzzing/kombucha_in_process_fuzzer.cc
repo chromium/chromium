@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/accelerator_utils.h"
@@ -85,9 +84,6 @@ void KombuchaInProcessFuzzer::TearDown() {
 #endif
 
 void KombuchaInProcessFuzzer::SetUp() {
-  scoped_feature_list_.InitWithFeatures({features::kExtensionsMenuInAppMenu},
-                                        {});
-
   // Mouse movements require enabling ui_controls manually for tests
   // that live outside the ui_interaction_test directory.
   // The following is copied from

@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/browser/web_contents.h"
@@ -1200,6 +1201,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
                        PinningDisabledInIncognito) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
   Browser* const incognito_browser = CreateIncognitoBrowser(profile());
+  ui_test_utils::BrowserActivationWaiter(incognito_browser).WaitForActivation();
 
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("uitest/window_open"),

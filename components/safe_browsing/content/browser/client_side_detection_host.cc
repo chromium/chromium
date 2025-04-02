@@ -166,6 +166,18 @@ void RecordAsyncCheckTriggerForceRequestResult(
       result);
 }
 
+void RecordPreClassificationCheckResultWithAndWithoutSuffix(
+    PreClassificationCheckResult result,
+    ClientSideDetectionType request_type) {
+  base::UmaHistogramEnumeration("SBClientPhishing.PreClassificationCheckResult",
+                                result,
+                                PreClassificationCheckResult::NO_CLASSIFY_MAX);
+  base::UmaHistogramEnumeration(
+      "SBClientPhishing.PreClassificationCheckResult." +
+          GetRequestTypeName(request_type),
+      result, PreClassificationCheckResult::NO_CLASSIFY_MAX);
+}
+
 bool ShouldShowWarning(bool is_phishing,
                        std::optional<IntelligentScanVerdict> verdict) {
   if (is_phishing) {
@@ -341,13 +353,8 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (ShouldClassifyForPhishing()) {
       // Track the first reason why we stopped classifying for phishing.
-      base::UmaHistogramEnumeration(
-          "SBClientPhishing.PreClassificationCheckResult", reason,
-          PreClassificationCheckResult::NO_CLASSIFY_MAX);
-      base::UmaHistogramEnumeration(
-          "SBClientPhishing.PreClassificationCheckResult." +
-              GetRequestTypeName(phishing_detection_request_type_),
-          reason, PreClassificationCheckResult::NO_CLASSIFY_MAX);
+      RecordPreClassificationCheckResultWithAndWithoutSuffix(
+          reason, phishing_detection_request_type_);
       if (base::FeatureList::IsEnabled(
               kClientSideDetectionDebuggingMetadataCache) &&
           host_ && host_->delegate_->GetPrefs() &&
@@ -531,10 +538,9 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
     // |web_contents_| is safe to call as we will be destructed
     // before it is.
     if (ShouldClassifyForPhishing()) {
-      base::UmaHistogramEnumeration(
-          "SBClientPhishing.PreClassificationCheckResult",
+      RecordPreClassificationCheckResultWithAndWithoutSuffix(
           PreClassificationCheckResult::CLASSIFY,
-          PreClassificationCheckResult::NO_CLASSIFY_MAX);
+          phishing_detection_request_type_);
       if (base::FeatureList::IsEnabled(
               kClientSideDetectionDebuggingMetadataCache) &&
           host_ && host_->delegate_->GetPrefs() &&
@@ -998,7 +1004,7 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
   visual_utils::CanExtractVisualFeaturesResult
       can_extract_visual_features_result =
           visual_utils::CanExtractVisualFeatures(
-              IsExtendedReportingEnabled(*delegate_->GetPrefs()),
+              IsEnhancedProtectionEnabled(*delegate_->GetPrefs()),
               web_contents()->GetBrowserContext()->IsOffTheRecord(), size);
 #else
   gfx::Size size;
@@ -1010,7 +1016,7 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
   visual_utils::CanExtractVisualFeaturesResult
       can_extract_visual_features_result =
           visual_utils::CanExtractVisualFeatures(
-              IsExtendedReportingEnabled(*delegate_->GetPrefs()),
+              IsEnhancedProtectionEnabled(*delegate_->GetPrefs()),
               web_contents()->GetBrowserContext()->IsOffTheRecord(), size,
               zoom::ZoomController::GetZoomLevelForWebContents(web_contents()));
 #endif
@@ -1229,7 +1235,7 @@ void ClientSideDetectionHost::OnInnerTextComplete(
   }
 
   csd_service_->InquireOnDeviceModel(
-      verdict.get(), inner_text,
+      inner_text,
       base::BindOnce(&ClientSideDetectionHost::OnInquireOnDeviceModelDone,
                      weak_factory_.GetWeakPtr(), std::move(verdict),
                      did_match_high_confidence_allowlist));

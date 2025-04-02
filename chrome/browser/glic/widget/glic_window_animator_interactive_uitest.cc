@@ -70,17 +70,8 @@ class GlicWindowAnimatorUiTest : public test::InteractiveGlicTest {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(GlicWindowAnimatorUiTest, OpenDetachedAnimationRuns) {
-  RunTestSequence(InAnyContext(Steps(OpenDetached(), WaitForAnimationStarted(),
-                                     WaitUntilAnimationFinished())));
-}
-
-IN_PROC_BROWSER_TEST_F(GlicWindowAnimatorUiTest,
-                       OpenDetachedAnimationBoundsChanges) {
-  // Expect widget animates (flies) down during detached open animation.
-  RunTestSequence(InAnyContext(
-      Steps(OpenDetached(), WaitForAnimationStarted(), GetTargetBounds(),
-            WaitUntilAnimationFinished(), CheckWidgetMoved(true))));
-}
+// TODO(crbug.com/407816006): This file only had tests for the open detached
+// animation which which was removed. It is left in place with no tests to add
+// resize animation tests.
 
 }  // namespace glic

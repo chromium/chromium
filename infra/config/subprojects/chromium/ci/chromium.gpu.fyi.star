@@ -857,6 +857,7 @@ ci.gpu.linux_builder(
         configs = [
             "gpu_tests",
             "android_builder",
+            "android_fastbuild",
             "release_builder",
             "try_builder",
             "remoteexec",
@@ -901,6 +902,7 @@ ci.gpu.linux_builder(
         configs = [
             "gpu_tests",
             "android_builder",
+            "android_fastbuild",
             "release_builder",
             "try_builder",
             "remoteexec",
@@ -1759,8 +1761,7 @@ ci.thin_tester(
         # 'gpu_fyi_only_mac_release_telemetry_tests' instead of
         # 'gpu_fyi_mac_release_telemetry_tests'.
         targets = [
-            "gpu_fyi_mac_release_gtests",
-            "gpu_fyi_only_mac_release_telemetry_tests",
+            "gpu_noop_sleep_telemetry_test",
         ],
         mixins = [
             "limited_capacity_bot",
@@ -1772,10 +1773,10 @@ ci.thin_tester(
         os_type = targets.os_type.MAC,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    console_view_entry = consoles.console_view_entry(
-        category = "Mac|Intel",
-        short_name = "exp",
-    ),
+    #console_view_entry = consoles.console_view_entry(
+    #    category = "Mac|Intel",
+    #    short_name = "exp",
+    #),
     list_view = "chromium.gpu.experimental",
 )
 

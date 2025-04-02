@@ -10177,6 +10177,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesScript) {
 
 class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
  public:
+  PrerenderEagernessBrowserTest() {
+    // Input suppression during paintholding interferes with the input event
+    // dispatch to top frames.  Disabling the input suppression because the
+    // tests here are not about top frame paintholding.
+    feature_list_.InitWithFeatures(
+        {}, {blink::features::kDropInputEventsWhilePaintHolding});
+  }
+
   void SetUp() override {
 #if !BUILDFLAG(IS_ANDROID)
     PrerenderBrowserTest::SetUp();
@@ -10186,6 +10194,9 @@ class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
     GTEST_SKIP();
 #endif  // BUILDFLAG(IS_ANDROID)
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 namespace {
@@ -14250,6 +14261,14 @@ class PrerenderSessionHistoryBrowserTest
     : public PrerenderBrowserTest,
       public testing::WithParamInterface<bool> {
  public:
+  PrerenderSessionHistoryBrowserTest() {
+    // Input suppression during paintholding interferes with the input event
+    // dispatch to top frames.  Disabling the input suppression because the
+    // tests here are not about top frame paintholding.
+    feature_list_.InitWithFeatures(
+        {}, {blink::features::kDropInputEventsWhilePaintHolding});
+  }
+
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
     return info.param ? "FromBrowser" : "FromRenderer";
@@ -14348,6 +14367,9 @@ class PrerenderSessionHistoryBrowserTest
     EXPECT_EQ(attempts[0], expected_entry)
         << test::ActualVsExpectedUkmEntryToString(attempts[0], expected_entry);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

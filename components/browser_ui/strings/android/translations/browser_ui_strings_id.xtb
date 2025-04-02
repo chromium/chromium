@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">Aktifkan zoom secara paksa</translation>
 <translation id="3905475044299942653">Menghentikan banyak notifikasi</translation>
 <translation id="3908288065506437185">Blokir cookie pihak ketiga dalam mode Samaran</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Beberapa fitur mungkin tidak berfungsi. Situs terkait masih dapat menggunakan cookie pihak ketiga.</translation>
 <translation id="3922092564198021702">Di ponsel Anda, buka Setelan</translation>
 <translation id="3933121352599513978">Ciutkan permintaan yang tidak diinginkan (direkomendasikan)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">Detail</translation>
 <translation id="4598549027014564149">Selama dalam mode Samaran, situs tidak dapat menggunakan cookie Anda untuk melihat aktivitas penjelajahan Anda di berbagai situs, bahkan situs yang terkait. Aktivitas penjelajahan Anda tidak digunakan untuk hal-hal seperti mempersonalisasi iklan. Fitur tertentu di beberapa situs mungkin tidak berfungsi.</translation>
 <translation id="461356340001513807">Memungkinkan Anda login ke situs menggunakan akun yang Anda miliki dengan layanan identitas</translation>
-<translation id="4619615317237390068">Tab dari perangkat lain</translation>
 <translation id="4635969503923889910">Jangan izinkan situs menggunakan perangkat NFC</translation>
 <translation id="4644713492825682049">Hapus &amp; reset</translation>
 <translation id="4645575059429386691">Dikelola oleh orang tua Anda</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">Bagikan dengan</translation>
 <translation id="5001526427543320409">Cookie pihak ketiga</translation>
 <translation id="5007392906805964215">Tinjau</translation>
-<translation id="5014182796621173645">Anda berkunjung pada <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Izinkan</translation>
 <translation id="5048398596102334565">Mengizinkan situs mengakses sensor gerakan (disarankan)</translation>
 <translation id="5048841907079026162">Kelola data penjelajahan Anda</translation>
@@ -443,7 +440,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Konten dilindungi</translation>
 <translation id="662080504995468778">Tinggal</translation>
-<translation id="6653342741369270081">Tekan tombol kembali untuk keluar dari mode layar penuh.</translation>
+<translation id="6635327442719709864">Jika diaktifkan, situs dapat meminta untuk menggunakan port serial. Jika dinonaktifkan, situs tidak dapat menggunakan port serial.</translation>
 <translation id="6683865262523156564">Situs ini berada dalam grup yang dapat melihat aktivitas Anda. Grup ditentukan oleh <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Foto profil</translation>
 <translation id="6697925417670533197">Download aktif</translation>

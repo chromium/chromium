@@ -21,6 +21,7 @@
 #include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/auction_nonce_manager.h"
+#include "content/browser/interest_group/interest_group_auction.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_real_time_report_util.h"
@@ -78,6 +79,7 @@ blink::AuctionConfig* LookupAuction(
 
 std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     AuctionMetricsRecorder* auction_metrics_recorder,
+    DwaAuctionMetricsManager* dwa_auction_metrics_manager,
     AuctionWorkletManager* auction_worklet_manager,
     AuctionNonceManager* auction_nonce_manager,
     InterestGroupManagerImpl* interest_group_manager,
@@ -97,8 +99,9 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
     RunAuctionCallback callback) {
   std::unique_ptr<AuctionRunner> instance(new AuctionRunner(
-      auction_metrics_recorder, auction_worklet_manager, auction_nonce_manager,
-      interest_group_manager, browser_context, private_aggregation_manager,
+      auction_metrics_recorder, dwa_auction_metrics_manager,
+      auction_worklet_manager, auction_nonce_manager, interest_group_manager,
+      browser_context, private_aggregation_manager,
       std::move(ad_auction_page_data_callback),
       std::move(log_private_aggregation_requests_callback),
       DetermineKAnonMode(), std::move(auction_config), main_frame_origin,
@@ -529,6 +532,7 @@ void AuctionRunner::FailAuction(
 
 AuctionRunner::AuctionRunner(
     AuctionMetricsRecorder* auction_metrics_recorder,
+    DwaAuctionMetricsManager* dwa_auction_metrics_manager,
     AuctionWorkletManager* auction_worklet_manager,
     AuctionNonceManager* auction_nonce_manager,
     InterestGroupManagerImpl* interest_group_manager,
@@ -573,6 +577,7 @@ AuctionRunner::AuctionRunner(
                owned_auction_config_.get(),
                /*parent=*/nullptr,
                auction_metrics_recorder,
+               dwa_auction_metrics_manager,
                auction_worklet_manager,
                auction_nonce_manager,
                interest_group_manager,

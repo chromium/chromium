@@ -6,9 +6,14 @@
 
 namespace blink {
 
-SpeechRecognitionPhraseList* SpeechRecognitionPhraseList::Create() {
-  return MakeGarbageCollected<SpeechRecognitionPhraseList>();
+SpeechRecognitionPhraseList* SpeechRecognitionPhraseList::Create(
+    const HeapVector<Member<SpeechRecognitionPhrase>>& phrases) {
+  return MakeGarbageCollected<SpeechRecognitionPhraseList>(phrases);
 }
+
+SpeechRecognitionPhraseList::SpeechRecognitionPhraseList(
+    const HeapVector<Member<SpeechRecognitionPhrase>>& phrases)
+    : phrases_(phrases) {}
 
 void SpeechRecognitionPhraseList::Trace(Visitor* visitor) const {
   visitor->Trace(phrases_);
@@ -16,8 +21,10 @@ void SpeechRecognitionPhraseList::Trace(Visitor* visitor) const {
 }
 
 SpeechRecognitionPhrase* SpeechRecognitionPhraseList::item(
-    uint64_t index) const {
+    wtf_size_t index,
+    ExceptionState& exception_state) const {
   if (index < 0 || index >= length()) {
+    exception_state.ThrowRangeError("Index is out of range.");
     return nullptr;
   }
   return phrases_[index].Get();
@@ -25,6 +32,14 @@ SpeechRecognitionPhrase* SpeechRecognitionPhraseList::item(
 
 void SpeechRecognitionPhraseList::addItem(SpeechRecognitionPhrase* item) {
   phrases_.push_back(item);
+}
+
+void SpeechRecognitionPhraseList::removeItem(wtf_size_t index,
+                                             ExceptionState& exception_state) {
+  if (index < 0 || index >= length()) {
+    exception_state.ThrowRangeError("Index is out of range.");
+  }
+  phrases_.EraseAt(index);
 }
 
 }  // namespace blink

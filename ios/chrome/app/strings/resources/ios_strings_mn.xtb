@@ -105,6 +105,7 @@
 <translation id="1411386976162024013">Lens-н визуал хайлт</translation>
 <translation id="1417474386970818917">Гараад, устгах</translation>
 <translation id="1426410128494586442">Тийм</translation>
+<translation id="1429187656584513419">Нууц үгийг нээнэ үү</translation>
 <translation id="1430915738399379752">Хэвлэх</translation>
 <translation id="1436671784520050284">Тохируулгыг үргэлжлүүлэх</translation>
 <translation id="143681031165817424">Хаягийг зөвхөн энэ төхөөрөмжид хадгалдаг</translation>
@@ -288,6 +289,7 @@
 <translation id="2164946989711475905">Нэвтрэх…</translation>
 <translation id="2175927920773552910">QR код</translation>
 <translation id="218350106843433823">Нууц үг, нэвтрэх түлхүүрийг автоматаар бөглөх</translation>
+<translation id="2184272387334793084">Нууц үг болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд нэвтэрнэ үү</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="219283042927675668">Бүлэг дэх табууд</translation>
 <translation id="2194856509914051091">Анхаарч үзэх зүйлс</translation>
@@ -590,6 +592,7 @@
 <translation id="3530206579861815432">Синк хийсэн төхөөрөмжүүд дээрээ нээлттэй бөгөөд саяхан хаасан табуудыг шуурхай олоорой.</translation>
 <translation id="3530767473765895035">Энэ төхөөрөмж дээрх бүртгэлүүдийг удирдах…</translation>
 <translation id="3533436815740441613">Шинэ таб</translation>
+<translation id="3533860663366814939">Автоматаар бөглөх, нууц үгний тохиргоог нээнэ үү</translation>
 <translation id="3547356470684043247">Шүүмжийн тусламжтайгаар мэдээлэлтэй шийдвэр гаргахдаа нэмэр болгох үүднээс харилцагчийн бүтээгдэхүүн, үйлчилгээ, хэрэглээнд өгсөн үнэлгээг уншаарай</translation>
 <translation id="3557336313807607643">Харилцагчид нэмэх</translation>
 <translation id="355765753469272474">Болих</translation>
@@ -1512,6 +1515,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7431851541687113774">Хаяг илрүүлэхийг унтраах</translation>
 <translation id="7431991332293347422">Таны хайлтын түүх Хайлт болон бусад зүйлийг хувийн болгоход хэрхэн ашигладгийг хянах</translation>
 <translation id="7435356471928173109">Танай администратор идэвхгүй болгосон</translation>
+<translation id="7437712592381799950">Танд зориулсан илүү их контентыг харахын тулд та дээш шударч болно.</translation>
 <translation id="7438481509621345350">Та одоо шинэ таб нээх үедээ <ph name="CHANNEL_NAME" />-с стори харна.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Хавчуургыг "{title}"-д хадгалсан}other{Хавчуургуудыг "{title}"-д хадгалсан}}</translation>
 <translation id="7451404862887877229">"Нууцлал болон аюулгүй байдал", дараа нь "Аюулгүй үзэх" дээр товшино уу</translation>
@@ -1610,10 +1614,12 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7841180087127694526">Хуулсан текстийг хайх</translation>
 <translation id="7841418003178675048">Шинэ табын хуудсан дээрээ ямар карт харахаа сонгоно уу.</translation>
 <translation id="7846161022626028328">Алдаа гарлаа. Дахин оролдоно уу.</translation>
+<translation id="784623644169604270">Саяхны үйл ажиллагаа байхгүй байна</translation>
 <translation id="7846296061357476882">Google-н үйлчилгээнүүд</translation>
 <translation id="784934925303690534">Цагийн хүрээ</translation>
 <translation id="7851858861565204677">Бусад төхөөрөмж</translation>
 <translation id="7853202427316060426">Үйл ажиллагаа</translation>
+<translation id="7854006015462979438">Ерөнхий тохиргоог нээнэ үү</translation>
 <translation id="7859988229622350291">Хэзээ ч бүү орчуул</translation>
 <translation id="7863211248337747225">Аппыг авах</translation>
 <translation id="7865127013871431856">Орчуулах сонголт</translation>

@@ -33,10 +33,6 @@ Screen::~Screen() = default;
 
 // static
 Screen* Screen::GetScreen() {
-#if BUILDFLAG(IS_IOS)
-  if (!g_screen)
-    g_screen = CreateNativeScreen();
-#endif
   return g_screen;
 }
 
@@ -249,12 +245,8 @@ ScreenInfos Screen::GetScreenInfosNearestDisplay(int64_t nearest_id) const {
 
 ScopedNativeScreen::ScopedNativeScreen(const base::Location& location) {
   if (!Screen::HasScreen()) {
-#if BUILDFLAG(IS_IOS)
-    Screen::GetScreen();
-#else
     screen_ = base::WrapUnique(CreateNativeScreen());
     Screen::SetScreenInstance(screen_.get(), location);
-#endif
   }
 }
 

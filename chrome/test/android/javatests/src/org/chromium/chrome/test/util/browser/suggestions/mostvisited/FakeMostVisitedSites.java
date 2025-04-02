@@ -31,7 +31,7 @@ public class FakeMostVisitedSites implements MostVisitedSites {
     private final List<GURL> mBlocklistedUrls = new ArrayList<>();
 
     private List<SiteSuggestion> mSites = new ArrayList<>();
-    private Observer mObserver;
+    private @Nullable Observer mObserver;
 
     // CustomLinkOperations -> MostVisitedSites implementation.
     @Override

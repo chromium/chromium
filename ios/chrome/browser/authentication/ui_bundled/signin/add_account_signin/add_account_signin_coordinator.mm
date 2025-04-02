@@ -188,19 +188,14 @@ using signin_metrics::PromoAction;
       // If the signin was successful, but the identity isn't showing up on the
       // device, then it must be an identity that's restricted by policy.
       bool identityOnDeviceFound = false;
-      if (IsUseAccountListFromIdentityManagerEnabled()) {
-        const GaiaId gaia(identity.gaiaID);
-        std::vector<AccountInfo> accountsOnDevice =
-            _identityManager->GetAccountsOnDevice();
-        for (const AccountInfo& accountInfo : accountsOnDevice) {
-          if (accountInfo.gaia == gaia) {
-            identityOnDeviceFound = true;
-            break;
-          }
+      const GaiaId gaia(identity.gaiaID);
+      std::vector<AccountInfo> accountsOnDevice =
+          _identityManager->GetAccountsOnDevice();
+      for (const AccountInfo& accountInfo : accountsOnDevice) {
+        if (accountInfo.gaia == gaia) {
+          identityOnDeviceFound = true;
+          break;
         }
-      } else {
-        identityOnDeviceFound =
-            _accountManagerService->IsValidIdentity(identity);
       }
       if (!identityOnDeviceFound) {
         __weak __typeof(self) weakSelf = self;

@@ -25,19 +25,26 @@
 namespace tree_fixing {
 
 AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
-    AXTreeFixingWebContentsObserver(content::WebContents& web_contents)
-    : content::WebContentsObserver(&web_contents) {}
+    AXTreeFixingWebContentsObserver(content::WebContents& web_contents,
+                                    AXTreeFixingServicesRouter* router)
+    : content::WebContentsObserver(&web_contents), router_(router) {}
 
 AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
     ~AXTreeFixingWebContentsObserver() = default;
 
 void AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
-    DidStopLoading() {
-  if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
-    return;
-  }
+    DocumentOnLoadCompletedInPrimaryMainFrame() {
+  router_->IdentifyMainNode(
+      web_contents()->RequestAXTreeSnapshotWithinBrowserProcess(),
+      base::BindOnce(&AXTreeFixingServicesRouter::
+                         AXTreeFixingWebContentsObserver::OnMainNodeIdentified,
+                     base::Unretained(this)));
+}
 
-  // TODO(crbug.com/401308988): Run fixes here using details.updates.
+void AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
+    OnMainNodeIdentified(ui::AXTreeID tree_id, ui::AXNodeID node_id) {
+  web_contents()->ApplyAXTreeFixingResult(tree_id, node_id,
+                                          ax::mojom::Role::kMain);
 }
 
 AXTreeFixingServicesRouter::AXTreeFixingServicesRouter(Profile* profile)
@@ -122,7 +129,7 @@ void AXTreeFixingServicesRouter::OnMainNodeIdentified(ui::AXTreeID tree_id,
     if (it->first == request_id) {
       MainNodeIdentificationCallback callback = std::move(it->second);
       pending_callbacks_.erase(it);
-      std::move(callback).Run(std::make_pair(tree_id, node_id));
+      std::move(callback).Run(tree_id, node_id);
       return;
     }
   }
@@ -176,7 +183,7 @@ void AXTreeFixingServicesRouter::ToggleEnabledState() {
       continue;
     }
     web_contents_observers_.push_back(
-        std::make_unique<AXTreeFixingWebContentsObserver>(*web_contents));
+        std::make_unique<AXTreeFixingWebContentsObserver>(*web_contents, this));
   }
 }
 

@@ -56,6 +56,8 @@ NSString* const kSetUpListTitleAxId = @"kSetUpListTitleAxId";
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  self.view.maximumContentSizeCategory =
+      UIContentSizeCategoryAccessibilityLarge;
   // Determines background color of the entire view.
   UIView* backgroundView = [[UIView alloc] init];
   backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -84,7 +86,9 @@ NSString* const kSetUpListTitleAxId = @"kSetUpListTitleAxId";
   title.translatesAutoresizingMaskIntoConstraints = NO;
   title.text = content_suggestions::SetUpListTitleString();
   title.accessibilityIdentifier = kSetUpListTitleAxId;
-  title.font = CreateDynamicFont(UIFontTextStyleTitle1, UIFontWeightBold);
+  title.font =
+      PreferredFontForTextStyle(UIFontTextStyleTitle1, UIFontWeightBold);
+  title.adjustsFontForContentSizeCategory = YES;
   title.textColor = [UIColor colorNamed:kTextPrimaryColor];
   title.numberOfLines = 0;
   title.lineBreakMode = NSLineBreakByWordWrapping;
@@ -97,7 +101,8 @@ NSString* const kSetUpListTitleAxId = @"kSetUpListTitleAxId";
   subtitle.text = l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_DESCRIPTION);
   subtitle.accessibilityIdentifier =
       l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_DESCRIPTION);
-  subtitle.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+  subtitle.font = PreferredFontForTextStyle(UIFontTextStyleSubheadline);
+  subtitle.adjustsFontForContentSizeCategory = YES;
   subtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
   subtitle.numberOfLines = 0;
   subtitle.lineBreakMode = NSLineBreakByWordWrapping;

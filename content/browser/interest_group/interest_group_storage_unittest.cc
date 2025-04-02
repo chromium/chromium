@@ -28,6 +28,7 @@
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/browser/interest_group/for_debugging_only_report_util.h"
 #include "content/browser/interest_group/interest_group_features.h"
+#include "content/browser/interest_group/interest_group_storage.pb.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/public/browser/browser_thread.h"
@@ -41,6 +42,7 @@
 #include "services/network/public/cpp/features.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
+#include "sql/statement.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
 #include "third_party/blink/public/common/features.h"
@@ -78,6 +80,36 @@ constexpr char kViewClickProviderOrigin2Str[] =
     "https://view-click.provider2.test";
 
 constexpr int kOldestAllFieldsVersion = 28;
+
+struct ClickinessCompactionEvents {
+  ListOfTimestamps uncompacted_events;
+  ListOfTimestampAndCounts compacted_events;
+};
+
+// A convenience wrapper to
+// InterestGroupStorage::ComputeCompactClickinessForTesting that operates on
+// protos rather than their serializations.
+std::optional<ClickinessCompactionEvents> ComputeCompactClickiness(
+    base::Time now,
+    const ClickinessCompactionEvents& events) {
+  InterestGroupStorage::ClickinessCompactionRawEvents raw;
+  EXPECT_TRUE(
+      events.uncompacted_events.SerializeToString(&raw.uncompacted_events));
+  EXPECT_TRUE(events.compacted_events.SerializeToString(&raw.compacted_events));
+  std::optional<InterestGroupStorage::ClickinessCompactionRawEvents>
+      compact_raw =
+          InterestGroupStorage::ComputeCompactClickinessForTesting(now, raw);
+  if (!compact_raw) {
+    return std::nullopt;
+  }
+  std::optional<ClickinessCompactionEvents> result;
+  result.emplace();
+  EXPECT_TRUE(result->uncompacted_events.ParseFromString(
+      compact_raw->uncompacted_events));
+  EXPECT_TRUE(
+      result->compacted_events.ParseFromString(compact_raw->compacted_events));
+  return result;
+}
 
 class InterestGroupStorageTest : public testing::Test {
  public:
@@ -931,7 +963,7 @@ TEST_F(InterestGroupStorageTest,
   {
     base::test::ScopedFeatureList scoped_feature_to_enforce_limit;
     scoped_feature_to_enforce_limit.InitAndEnableFeatureWithParameters(
-        features::
+        blink::features::
             kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon,
         {{"SelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit", "1"}});
 
@@ -954,7 +986,7 @@ TEST_F(InterestGroupStorageTest,
   {
     base::test::ScopedFeatureList scoped_feature_to_enforce_limit;
     scoped_feature_to_enforce_limit.InitAndEnableFeatureWithParameters(
-        features::
+        blink::features::
             kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon,
         {{"SelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit", "-1"}});
 
@@ -2347,6 +2379,9 @@ TEST_P(InterestGroupStorageDualLifetimeTest,
   //           90d           30d           1w          1d           1h         F
   //   1V,1C    |    2V,1C    |    0V,2C   |   1V,0C   |   2V,2C    |   1V,2C  |
 
+  base::Time original_maintenance_time =
+      storage->GetLastMaintenanceTimeForTesting();
+
   storage->RecordViewClick(record_view);
   storage->RecordViewClick(record_click);
 
@@ -2381,6 +2416,12 @@ TEST_P(InterestGroupStorageDualLifetimeTest,
   storage->RecordViewClick(record_click);
   storage->RecordViewClick(record_click);
 
+  // Check that maintenance (and therefore compaction) has occurred.
+  // (The ViewClickStoreRetrieve_BucketsTimeNoMaintenance test case below checks
+  // that reading non-compacted past events also works).
+  EXPECT_NE(original_maintenance_time,
+            storage->GetLastMaintenanceTimeForTesting());
+
   // Fast forward one more second so that events aren't on the exact boundaries
   // between time buckets. Each event will go to the next older time bucket,
   // and the oldest events fall out of reporting.
@@ -2410,6 +2451,140 @@ TEST_P(InterestGroupStorageDualLifetimeTest,
   EXPECT_EQ(6, view_and_click_counts->click_counts->past_30_days);
   EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 7 : 0,
             view_and_click_counts->click_counts->past_90_days);
+}
+
+// Like ViewClickStoreRetrieve_BucketsTime, but destroys and recreates the
+// storage between fast forwards such that maintenance never runs.
+TEST_P(InterestGroupStorageDualLifetimeTest,
+       ViewClickStoreRetrieve_BucketsTimeNoMaintenance) {
+  AdAuctionEventRecord record_view;
+  record_view.type = AdAuctionEventRecord::Type::kView;
+  record_view.providing_origin = kViewClickProviderOrigin1;
+  record_view.eligible_origins = {kViewClickEligibleOrigin1};
+  ASSERT_TRUE(record_view.IsValid());
+
+  AdAuctionEventRecord record_click;
+  record_click.type = AdAuctionEventRecord::Type::kClick;
+  record_click.providing_origin = kViewClickProviderOrigin1;
+  record_click.eligible_origins = {kViewClickEligibleOrigin1};
+  ASSERT_TRUE(record_click.IsValid());
+
+  // Timeline as follows, in time before final time
+  // (d: day, w: week, h: hour, V: view, C: click, F: final time):
+  //
+  //           90d           30d           1w          1d           1h         F
+  //   1V,1C    |    2V,1C    |    0V,2C   |   1V,0C   |   2V,2C    |   1V,2C  |
+
+  {
+    std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+    storage->RecordViewClick(record_view);
+    storage->RecordViewClick(record_click);
+
+    // No maintenance run.
+    EXPECT_EQ(base::Time::Min(), storage->GetLastMaintenanceTimeForTesting());
+  }
+
+  task_environment().FastForwardBy(base::Days(90) - base::Days(30));
+
+  {
+    std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+    storage->RecordViewClick(record_view);
+    storage->RecordViewClick(record_view);
+
+    storage->RecordViewClick(record_click);
+
+    // No maintenance run.
+    EXPECT_EQ(base::Time::Min(), storage->GetLastMaintenanceTimeForTesting());
+  }
+
+  task_environment().FastForwardBy(base::Days(30) - base::Days(7));
+
+  {
+    std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+    storage->RecordViewClick(record_click);
+    storage->RecordViewClick(record_click);
+
+    // No maintenance run.
+    EXPECT_EQ(base::Time::Min(), storage->GetLastMaintenanceTimeForTesting());
+  }
+
+  task_environment().FastForwardBy(base::Days(7) - base::Days(1));
+
+  {
+    std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+    storage->RecordViewClick(record_view);
+
+    // No maintenance run.
+    EXPECT_EQ(base::Time::Min(), storage->GetLastMaintenanceTimeForTesting());
+  }
+
+  task_environment().FastForwardBy(base::Days(1) - base::Hours(1));
+
+  {
+    std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+    storage->RecordViewClick(record_view);
+    storage->RecordViewClick(record_view);
+
+    storage->RecordViewClick(record_click);
+    storage->RecordViewClick(record_click);
+
+    // No maintenance run.
+    EXPECT_EQ(base::Time::Min(), storage->GetLastMaintenanceTimeForTesting());
+  }
+
+  task_environment().FastForwardBy(base::Hours(1));
+
+  {
+    std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+    storage->RecordViewClick(record_view);
+
+    storage->RecordViewClick(record_click);
+    storage->RecordViewClick(record_click);
+
+    // No maintenance run.
+    EXPECT_EQ(base::Time::Min(), storage->GetLastMaintenanceTimeForTesting());
+  }
+
+  // Fast forward one more second so that events aren't on the exact boundaries
+  // between time buckets. Each event will go to the next older time bucket,
+  // and the oldest events fall out of reporting.
+  task_environment().FastForwardBy(base::Seconds(1));
+
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  InterestGroup g = NewInterestGroup(kViewClickEligibleOrigin1, "cars");
+  g.view_and_click_counts_providers = {{kViewClickProviderOrigin1}};
+  g.expiry = base::Time::Now() + base::Days(90);
+  storage->JoinInterestGroup(g, GURL("https://joining-site.test"));
+
+  std::vector<StorageInterestGroup> groups =
+      storage->GetInterestGroupsForOwner(kViewClickEligibleOrigin1);
+  ASSERT_EQ(1u, groups.size());
+
+  blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+      groups[0].bidding_browser_signals->view_and_click_counts;
+
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_hour);
+  EXPECT_EQ(3, view_and_click_counts->view_counts->past_day);
+  EXPECT_EQ(4, view_and_click_counts->view_counts->past_week);
+  EXPECT_EQ(4, view_and_click_counts->view_counts->past_30_days);
+  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 6 : 0,
+            view_and_click_counts->view_counts->past_90_days);
+  EXPECT_EQ(2, view_and_click_counts->click_counts->past_hour);
+  EXPECT_EQ(4, view_and_click_counts->click_counts->past_day);
+  EXPECT_EQ(4, view_and_click_counts->click_counts->past_week);
+  EXPECT_EQ(6, view_and_click_counts->click_counts->past_30_days);
+  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 7 : 0,
+            view_and_click_counts->click_counts->past_90_days);
+
+  // No maintenance run.
+  EXPECT_EQ(base::Time::Min(), storage->GetLastMaintenanceTimeForTesting());
 }
 
 TEST_P(InterestGroupStorageDualLifetimeTest,
@@ -2821,6 +2996,112 @@ TEST_P(InterestGroupStorageDualLifetimeTest,
   EXPECT_EQ(0, view_and_click_counts_shoes->click_counts->past_week);
   EXPECT_EQ(0, view_and_click_counts_shoes->click_counts->past_30_days);
   EXPECT_EQ(0, view_and_click_counts_shoes->click_counts->past_90_days);
+}
+
+// Make sure that nothing goes wrong when the clock is rolled back, making
+// previously compacted events look fresh again.
+TEST_P(InterestGroupStorageDualLifetimeTest, ClickinessCompactTimeRevert) {
+  base::Time epoch = base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta());
+
+  // Compact a couple of events that were more than an hour ago, but less than
+  // two.
+  base::Time first_run = epoch + base::Hours(3);
+  ClickinessCompactionEvents events;
+  events.uncompacted_events.add_timestamps(
+      sql::Statement::TimeToSqlValue(first_run - base::Minutes(65)));
+  events.uncompacted_events.add_timestamps(
+      sql::Statement::TimeToSqlValue(first_run - base::Minutes(70)));
+  std::optional<ClickinessCompactionEvents> events2 =
+      ComputeCompactClickiness(first_run, events);
+  ASSERT_TRUE(events2);
+  EXPECT_EQ(0, events2->uncompacted_events.timestamps_size());
+  ASSERT_EQ(1, events2->compacted_events.timestamp_and_counts_size());
+  EXPECT_EQ(2, events2->compacted_events.timestamp_and_counts(0).count());
+  // These get rounded all the way back to base + 1h.
+  EXPECT_EQ(base::Hours(1).InMicroseconds(),
+            events2->compacted_events.timestamp_and_counts(0).timestamp());
+
+  // Now roll back the clock by two hours so they're under one hour old, even
+  // in their post-rounding form.
+  base::Time second_run = epoch + base::Hours(1);
+  std::optional<ClickinessCompactionEvents> events3 =
+      ComputeCompactClickiness(second_run, *events2);
+
+  // There should be two uncompacted events, with same timestamp. Also this
+  // shouldn't DCHECK-fail.
+  ASSERT_EQ(2, events3->uncompacted_events.timestamps_size());
+  EXPECT_EQ(base::Hours(1).InMicroseconds(),
+            events3->uncompacted_events.timestamps(0));
+  EXPECT_EQ(base::Hours(1).InMicroseconds(),
+            events3->uncompacted_events.timestamps(1));
+  EXPECT_EQ(0, events3->compacted_events.timestamp_and_counts_size());
+}
+
+// Try to compact a couple of events that have timestamps in the future; they
+// should be unchanged.
+TEST_P(InterestGroupStorageDualLifetimeTest, ClickinessCompactTimeFuture) {
+  base::Time epoch = base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta());
+
+  base::Time first_run = epoch + base::Hours(3);
+  ClickinessCompactionEvents events;
+  events.uncompacted_events.add_timestamps(
+      sql::Statement::TimeToSqlValue(first_run + base::Minutes(65)));
+  events.uncompacted_events.add_timestamps(
+      sql::Statement::TimeToSqlValue(first_run + base::Minutes(70)));
+
+  std::optional<ClickinessCompactionEvents> events2 =
+      ComputeCompactClickiness(first_run, events);
+  ASSERT_TRUE(events2);
+  ASSERT_EQ(2, events2->uncompacted_events.timestamps_size());
+  EXPECT_EQ(0, events2->compacted_events.timestamp_and_counts_size());
+  EXPECT_EQ(events.uncompacted_events.timestamps(0),
+            events2->uncompacted_events.timestamps(0));
+  EXPECT_EQ(events.uncompacted_events.timestamps(1),
+            events2->uncompacted_events.timestamps(1));
+}
+
+// Test some entries being compacted into an existing category.
+TEST_P(InterestGroupStorageDualLifetimeTest, ClickinessCompactMerge) {
+  base::Time epoch = base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta());
+
+  base::Time first_run = epoch + base::Hours(3);
+  ClickinessCompactionEvents events;
+  // These get rounded all the way back to base + 1h, which we already have
+  // entries for.
+  events.uncompacted_events.add_timestamps(
+      sql::Statement::TimeToSqlValue(first_run - base::Minutes(65)));
+  events.uncompacted_events.add_timestamps(
+      sql::Statement::TimeToSqlValue(first_run - base::Minutes(70)));
+  auto* entry = events.compacted_events.add_timestamp_and_counts();
+  entry->set_timestamp(base::Hours(1).InMicroseconds());
+  entry->set_count(3);
+
+  std::optional<ClickinessCompactionEvents> events2 =
+      ComputeCompactClickiness(first_run, events);
+  ASSERT_TRUE(events2);
+  EXPECT_EQ(0, events2->uncompacted_events.timestamps_size());
+  ASSERT_EQ(1, events2->compacted_events.timestamp_and_counts_size());
+  EXPECT_EQ(base::Hours(1).InMicroseconds(),
+            events2->compacted_events.timestamp_and_counts(0).timestamp());
+  EXPECT_EQ(5, events2->compacted_events.timestamp_and_counts(0).count());
+
+  // Add a few more requests afterwards.
+  events2->uncompacted_events.add_timestamps(
+      sql::Statement::TimeToSqlValue(first_run + base::Minutes(5)));
+  events2->uncompacted_events.add_timestamps(
+      sql::Statement::TimeToSqlValue(first_run + base::Minutes(10)));
+
+  // Now make everything more than a day old.
+  base::Time second_run = first_run + base::Hours(25);
+  std::optional<ClickinessCompactionEvents> events3 =
+      ComputeCompactClickiness(second_run, *events2);
+  ASSERT_TRUE(events3);
+  EXPECT_EQ(0, events3->uncompacted_events.timestamps_size());
+  ASSERT_EQ(1, events3->compacted_events.timestamp_and_counts_size());
+  // Here we get rounded to day base.
+  EXPECT_EQ(base::Hours(0).InMicroseconds(),
+            events3->compacted_events.timestamp_and_counts(0).timestamp());
+  EXPECT_EQ(7, events3->compacted_events.timestamp_and_counts(0).count());
 }
 
 INSTANTIATE_TEST_SUITE_P(DualLifetime,

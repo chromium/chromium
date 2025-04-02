@@ -12,23 +12,23 @@ cargo_crate("lib") {
   crate_name = "iana_time_zone"
   epoch = "0.1"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-0.1.62/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-v0_1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-0.1.62/src/Windows.rs",
-    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-0.1.62/src/ffi_utils.rs",
-    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-0.1.62/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-0.1.62/src/platform.rs",
-    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-0.1.62/src/tz_aix.rs",
-    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-0.1.62/src/tz_android.rs",
-    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-0.1.62/src/tz_darwin.rs",
-    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-0.1.62/src/tz_freebsd.rs",
-    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-0.1.62/src/tz_haiku.rs",
-    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-0.1.62/src/tz_illumos.rs",
-    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-0.1.62/src/tz_linux.rs",
-    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-0.1.62/src/tz_netbsd.rs",
-    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-0.1.62/src/tz_ohos.rs",
-    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-0.1.62/src/tz_wasm32_unknown.rs",
-    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-0.1.62/src/tz_windows.rs",
+    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-v0_1/src/Windows.rs",
+    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-v0_1/src/ffi_utils.rs",
+    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-v0_1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-v0_1/src/platform.rs",
+    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-v0_1/src/tz_aix.rs",
+    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-v0_1/src/tz_android.rs",
+    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-v0_1/src/tz_darwin.rs",
+    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-v0_1/src/tz_freebsd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-v0_1/src/tz_haiku.rs",
+    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-v0_1/src/tz_illumos.rs",
+    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-v0_1/src/tz_linux.rs",
+    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-v0_1/src/tz_netbsd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-v0_1/src/tz_ohos.rs",
+    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-v0_1/src/tz_wasm32_unknown.rs",
+    "//third_party/rust/chromium_crates_io/vendor/iana-time-zone-v0_1/src/tz_windows.rs",
   ]
   inputs = []
 

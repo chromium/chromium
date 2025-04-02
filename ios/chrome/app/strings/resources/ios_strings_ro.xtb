@@ -105,6 +105,7 @@
 <translation id="1411386976162024013">Căutare vizuală cu Lens</translation>
 <translation id="1417474386970818917">Deconectează-te și șterge</translation>
 <translation id="1426410128494586442">Da</translation>
+<translation id="1429187656584513419">Deschide Parole</translation>
 <translation id="1430915738399379752">Printează</translation>
 <translation id="1436671784520050284">Continuă configurarea</translation>
 <translation id="143681031165817424">Adresa a fost salvată numai pe acest dispozitiv</translation>
@@ -288,6 +289,7 @@
 <translation id="2164946989711475905">Conectează-te…</translation>
 <translation id="2175927920773552910">Cod QR</translation>
 <translation id="218350106843433823">Completează automat parolele și cheile de acces</translation>
+<translation id="2184272387334793084">Conectează-te pentru a-ți accesa parolele și alte date de pe toate dispozitivele</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="219283042927675668">File în grup</translation>
 <translation id="2194856509914051091">De reținut</translation>
@@ -590,6 +592,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3530206579861815432">Găsește rapid filele deschise și închise recent de pe toate dispozitivele sincronizate.</translation>
 <translation id="3530767473765895035">Gestionează conturile de pe acest dispozitiv…</translation>
 <translation id="3533436815740441613">Filă nouă</translation>
+<translation id="3533860663366814939">Deschide Setările pentru completare automată și parole</translation>
 <translation id="3547356470684043247">Citește evaluările clienților pentru produse, servicii sau experiențe ca să iei decizii informate cu ajutorul recenziilor</translation>
 <translation id="3557336313807607643">Adaugă în Agendă</translation>
 <translation id="355765753469272474">Anulează</translation>
@@ -1512,6 +1515,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="7431851541687113774">Dezactivează detectarea adresei</translation>
 <translation id="7431991332293347422">Controlează modul în care istoricul de navigare este folosit pentru a personaliza Căutarea și alte servicii</translation>
 <translation id="7435356471928173109">Dezactivată de administrator</translation>
+<translation id="7437712592381799950">Glisează în sus pentru a vedea mai mult conținut personalizat.</translation>
 <translation id="7438481509621345350">Acum vei vedea articole de la <ph name="CHANNEL_NAME" /> când deschizi o filă nouă.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Marcajul s-a salvat în {title}}few{Marcajele s-au salvat în {title}}other{Marcajele s-au salvat în {title}}}</translation>
 <translation id="7451404862887877229">Atinge Confidențialitate și securitate, apoi Navigare sigură</translation>
@@ -1610,10 +1614,12 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="7841180087127694526">Caută textul copiat</translation>
 <translation id="7841418003178675048">Alege ce carduri vezi în pagina Filă nouă.</translation>
 <translation id="7846161022626028328">A apărut o eroare. Încearcă din nou.</translation>
+<translation id="784623644169604270">Nicio activitate recentă</translation>
 <translation id="7846296061357476882">Servicii Google</translation>
 <translation id="784934925303690534">Interval de timp</translation>
 <translation id="7851858861565204677">Alte dispozitive</translation>
 <translation id="7853202427316060426">Activitate</translation>
+<translation id="7854006015462979438">Deschide General</translation>
 <translation id="7859988229622350291">Nu traduce niciodată</translation>
 <translation id="7863211248337747225">Descarcă aplicația</translation>
 <translation id="7865127013871431856">Opțiuni de traducere</translation>

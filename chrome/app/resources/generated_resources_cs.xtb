@@ -2984,6 +2984,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3045447014237878114">Tento web automaticky stáhl několik souborů</translation>
 <translation id="3046178388369461825">Na disku s Linuxem je kriticky málo místa.</translation>
 <translation id="304644035656848980">Náhled mikrofonu</translation>
+<translation id="3046892784550338476">Verze <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Webová stránka, úplná</translation>
 <translation id="304747341537320566">Moduly převodu textu na řeč</translation>
 <translation id="3047678109605649715">Na zařízení nejsou žádné hlasy pro jazyk <ph name="LANGUAGE" />. Uvolněte na zařízení místo a zkuste to znovu.</translation>
@@ -3076,6 +3077,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3122883569442693641">Další podrobnosti</translation>
 <translation id="3124111068741548686">Popisovače – UŽIVATEL</translation>
 <translation id="3124332159330678621">Přizpůsobte si Chrome a dodejte svému prohlížeči nový vzhled</translation>
+<translation id="3125816458150005808">Můžete ho odepnout a otevírat ho z nabídky</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Chcete-li předejít problémům s nabíjením a výkonem, používejte kompatibilní napájecí adaptér Dell nebo USB Type-C.</translation>
 <translation id="3127862849166875294">Změnit velikost disku pro Linux</translation>
@@ -5323,6 +5325,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4723140812774948886">Vyměnit s příští</translation>
 <translation id="4724450788351008910">Přidružení změněno</translation>
 <translation id="4725511304875193254">Pes corgi</translation>
+<translation id="4725762702191453794">Vyhledávání v kartách je teď připnuté na liště</translation>
 <translation id="4726710355753484204">Přiblížení provedete stisknutím kláves Ctrl + Alt + Zvýšit jas.
 Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation>
 <translation id="4726710629007580002">Při pokusu o instalaci rozšíření se spustila upozornění:</translation>
@@ -8499,7 +8502,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7014480873681694324">Odstranit zvýraznění</translation>
 <translation id="7014741021609395734">Úroveň přiblížení</translation>
 <translation id="7015135594296285641">Povolit rozšíření</translation>
-<translation id="7016995776279438971">Červeno-zelený, červená slabá (protanomálie)</translation>
+<translation id="7016995776279438971">Červená a zelená, oslabené vidění červené (protanomálie)</translation>
 <translation id="7017004637493394352">Řekněte „Ok Google“ ještě jednou</translation>
 <translation id="7017219178341817193">Přidat novou stránku</translation>
 <translation id="7017354871202642555">Po nastavení okna již nelze nastavit režim.</translation>
@@ -11605,7 +11608,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9201117361710210082">Zobrazeno dříve</translation>
 <translation id="9201220332032049474">Možnosti zámku obrazovky</translation>
 <translation id="9201842707396338580">Došlo k chybě. Kontaktujte vlastníka nebo administrátora zařízení. Kód chyby: <ph name="ERROR_CODE" />.</translation>
-<translation id="9203296457393252944">Červeno-zelený, zelená slabá (deuteranomálie)</translation>
+<translation id="9203296457393252944">Červená a zelená, oslabení vidění zelené (deuteranomálie)</translation>
 <translation id="9203398526606335860">&amp;Profilování povoleno</translation>
 <translation id="9203904171912129171">Vyberte zařízení</translation>
 <translation id="920410963177453528">Kliknutím na rozbalovací nabídku vyberte jiný panel</translation>

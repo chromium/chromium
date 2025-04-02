@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import './icons.html.js';
+import './ink_color_selector.js';
 import './selectable_icon_button.js';
+import './text_styles_selector.js';
 
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -34,17 +35,7 @@ export function getHtml(this: ViewerTextSidePanelElement) {
     </div>
     <div class="side-panel-content">
       <h2>Styles</h2>
-      <div class="style-buttons">
-        ${this.getTextStyles_().map(style => html`
-          <cr-icon-button class="${this.getActiveClass_(style)}"
-              @click="${this.onStyleButtonClick_}"
-              data-style="${style}"
-              iron-icon="pdf:text-format-${style}"
-              aria-pressed="${this.getAriaPressed_(style)}"
-              aria-label="${style}"
-              title="${style}">
-          </cr-icon-button>`)}
-      </div>
+      <text-styles-selector></text-styles-selector>
       <cr-radio-group selectable-elements="selectable-icon-button"
           .selected="${this.currentAlignment_}"
           @selected-changed="${this.onSelectedAlignmentChanged_}">
@@ -61,6 +52,13 @@ export function getHtml(this: ViewerTextSidePanelElement) {
             name="${TextAlignment.RIGHT}" label="Right">
         </selectable-icon-button>
       </cr-radio-group>
+    </div>
+    <div class="side-panel-content">
+      <h2>Text color</h2>
+      <ink-color-selector .colors="${this.colors_}"
+          .currentColor="${this.currentColor_}"
+          @current-color-changed="${this.onCurrentColorChanged_}">
+      </ink-color-selector>
     </div>
   <!--_html_template_end_-->`;
   // clang-format on

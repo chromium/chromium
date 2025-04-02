@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/video_types.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -80,19 +79,6 @@ class FakeGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
   gfx::GpuMemoryBufferHandle handle_;
   bool premapped_ = true;
   raw_ptr<MapCallbackController> map_callback_controller_ = nullptr;
-};
-
-class FakeGpuMemoryBufferSupport : public gpu::GpuMemoryBufferSupport {
- public:
-  std::unique_ptr<gpu::GpuMemoryBufferImpl> CreateGpuMemoryBufferImplFromHandle(
-      gfx::GpuMemoryBufferHandle handle,
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      gpu::GpuMemoryBufferImpl::DestructionCallback callback,
-      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager = nullptr,
-      scoped_refptr<base::UnsafeSharedMemoryPool> pool = nullptr,
-      base::span<uint8_t> premapped_memory = base::span<uint8_t>()) override;
 };
 
 }  // namespace media

@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">Спеўная падзяка</translation>
 <translation id="2088690981887365033">Сетка VPN</translation>
 <translation id="209653272837065803">Недастаткова месца ў сховішчы, каб працягнуць сінхранізацыю файлаў</translation>
-<translation id="2111134541987263231">Уключыце параметр <ph name="BEGIN_BOLD" />Дазволіць у рэжыме інкогніта<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Некалькі (<ph name="NUMBER_OF_ITEMS" />) элементаў будуць выдалены, і вы не зможаце іх аднавіць.</translation>
 <translation id="2122305276694332719">Аўтаматычнае падключэнне да схаванай сеткі дазваляе іншым бачыць вашу прыладу і некаторыя налады сеткі, а таму не рэкамендуецца.</translation>
 <translation id="2125607626296734455">Кхмерская</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881">Носьбіт <ph name="VOLUME_NAME" /> выняты.</translation>
 <translation id="2307462900900812319">Наладзіць сетку</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Пашырэнне з ідэнтыфікатарам <ph name="BEGIN_LIST" /><ph name="END_LIST" /> знайсці не ўдалося. Звярніцеся да адміністратара.}one{Пашырэнні з ідэнтыфікатарам <ph name="BEGIN_LIST" /><ph name="END_LIST" /> знайсці не ўдалося. Звярніцеся да адміністратара.}few{Пашырэнні з ідэнтыфікатарам <ph name="BEGIN_LIST" /><ph name="END_LIST" /> знайсці не ўдалося. Звярніцеся да адміністратара.}many{Пашырэнні з ідэнтыфікатарам <ph name="BEGIN_LIST" /><ph name="END_LIST" /> знайсці не ўдалося. Звярніцеся да адміністратара.}other{Пашырэнні з ідэнтыфікатарам <ph name="BEGIN_LIST" /><ph name="END_LIST" /> знайсці не ўдалося. Звярніцеся да адміністратара.}}</translation>
 <translation id="2325650632570794183">Гэты тып файла не падтрымліваецца. Знайсці праграму для адкрыцця файлаў такога тыпу можна ў Chrome Web Store.</translation>
 <translation id="2326539130272988168">Балгарская</translation>
 <translation id="233822363739146957">Недастаткова месца ў сховішчы для сінхранізацыі ўсіх файлаў</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">Маратхі</translation>
 <translation id="2923240520113693977">Эстонская</translation>
 <translation id="2938685643439809023">Мангольская</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Не ўдалося знайсці пашырэнне}one{Не ўдалося знайсці пашырэнні}few{Не ўдалося знайсці пашырэнні}many{Не ўдалося знайсці пашырэнні}other{Не ўдалося знайсці пашырэнні}}</translation>
 <translation id="2943503720238418293">Выкарыстайце карацейшую назву</translation>
 <translation id="2949781154072577687">Фармаціруецца дыск "<ph name="DRIVE_NAME" />"...</translation>
 <translation id="2951236788251446349">Медуза</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">Гатова</translation>
 <translation id="3358452157379365236">Гітара</translation>
 <translation id="3368922792935385530">Падключана</translation>
-<translation id="3372635229069101468">Націсніце <ph name="BEGIN_BOLD" />Падрабязныя звесткі<ph name="END_BOLD" />.</translation>
 <translation id="3382143449143186018">Непальская (раскладка InScript)</translation>
 <translation id="338691029516748599">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, знаходзіцца пад кіраваннем адміністратара, падключыцца</translation>
 <translation id="3408072735282270043">Актываваць сетку "<ph name="NETWORK_NAME" />"</translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">Аднарог</translation>
 <translation id="4131235941541910880">Перамяшчайце непатрэбныя элементы ў сметніцу</translation>
 <translation id="4134804435730168042">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, актываваць пасля наладжвання прылады</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Уключыце наступнае пашырэнне ў рэжыме інкогніта:}one{Уключыце наступныя пашырэнні ў рэжыме інкогніта:}few{Уключыце наступныя пашырэнні ў рэжыме інкогніта:}many{Уключыце наступныя пашырэнні ў рэжыме інкогніта:}other{Уключыце наступныя пашырэнні ў рэжыме інкогніта:}}</translation>
 <translation id="4153015322587141338">Каб дадаць файл на паліцу для хуткага доступу, націсніце на яго правай кнопкай мышы і выберыце пункт "<ph name="PIN_COMMAND" />".</translation>
 <translation id="4157569377477607576">Палітыка адміністратара не рэкамендуе наступнае:</translation>
 <translation id="4159731583141908892">Элемент "<ph name="FILE_NAME" />" перамешчаны.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">Пакінуць абодва</translation>
 <translation id="4804827417948292437">Авакада</translation>
 <translation id="4805966553127040832">Элементы (<ph name="COUNT" />) аднаўляюцца</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{У вашай арганізацыі для работы ў рэжыме інкогніта патрабуецца пашырэнне}one{У вашай арганізацыі для работы ў рэжыме інкогніта патрабуюцца пашырэнні}few{У вашай арганізацыі для работы ў рэжыме інкогніта патрабуюцца пашырэнні}many{У вашай арганізацыі для работы ў рэжыме інкогніта патрабуюцца пашырэнні}other{У вашай арганізацыі для работы ў рэжыме інкогніта патрабуюцца пашырэнні}}</translation>
 <translation id="4826849268470072925">Тамільская (раскладка ITRANS)</translation>
-<translation id="482932175346970750">Увядзіце <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> у адрасным радку браўзера.</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">Праглядзець</translation>
 <translation id="485316830061041779">Нямецкая</translation>
@@ -561,7 +554,6 @@
     над імі разам з іншымі – усё ў адным сэрвісе.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Адноўленыя файлы з Google Дыска</translation>
 <translation id="5278111733643988471">Каб аднавіць гэты элемент, перацягніце яго са сметніцы ў новую папку. Папка "<ph name="PARENT_FOLDER_NAME" />", у якім гэты элемент знаходзіўся раней, была выдалена.</translation>
-<translation id="5283101102242354279">Уключыце пашырэнне ў рэжыме інкогніта:</translation>
 <translation id="5288441970121584418">Бургер</translation>
 <translation id="5293615890992542006">Зададзеная адміністратарам палітыка блакіруе магчымасць перамяшчаць гэты файл</translation>
 <translation id="5305688511332277257">Нічога не ўсталявана</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, падрабязныя звесткі</translation>
 <translation id="7246947237293279874">Проксі-сервер FTP</translation>
 <translation id="7248671827512403053">Праграма</translation>
-<translation id="7252604552361840748">Знайдзіце ўказанае вышэй пашырэнне.</translation>
 <translation id="7256405249507348194">Невядомая памылка: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Даступныя сэрвісы</translation>
 <translation id="7291818353625820805">Хочаце, каб можна было ўводзіць сімвалы паўторна? Выключыце дыякрытычныя знакі ў наладах клавіятуры.</translation>

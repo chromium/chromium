@@ -13,6 +13,10 @@
 #include "ios/web/public/test/web_test.h"
 #import "ios/web/public/web_state.h"
 
+namespace display {
+class ScopedNativeScreen;
+}  // namespace display
+
 class GURL;
 
 namespace web {
@@ -69,6 +73,7 @@ class WebIntTest : public WebTest {
  private:
   // WebState used to load pages.
   std::unique_ptr<WebState> web_state_;
+  std::unique_ptr<display::ScopedNativeScreen> screen_;
 };
 
 }  // namespace web

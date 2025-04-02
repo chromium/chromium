@@ -605,23 +605,7 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
     if (!CreateLayer())
       return nullptr;
     SetNeedsUnbufferedInputEvents(true);
-    frame_dispatcher_ = std::make_unique<CanvasResourceDispatcher>(
-        nullptr, GetDocument().GetTaskRunner(TaskType::kInternalDefault),
-        GetPage()
-            ->GetPageScheduler()
-            ->GetAgentGroupScheduler()
-            .CompositorTaskRunner(),
-        surface_layer_bridge_->GetFrameSinkId().client_id(),
-        surface_layer_bridge_->GetFrameSinkId().sink_id(),
-        CanvasResourceDispatcher::kInvalidPlaceholderCanvasId, Size());
-    if (!base::FeatureList::IsEnabled(
-            kLowLatencyCanvasNoBeginFrameKillSwitch)) {
-      // We don't actually need the begin frame signal when in low latency mode,
-      // but we need to subscribe to it or else dispatching frames will not
-      // work.
-      frame_dispatcher_->SetNeedsBeginFrame(IsPageVisible());
-    }
-
+    GetOrCreateResourceDispatcher();
     UseCounter::Count(GetDocument(), WebFeature::kHTMLCanvasElementLowLatency);
   }
 
@@ -737,7 +721,7 @@ void HTMLCanvasElement::PreFinalizeFrame() {
 }
 
 void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
-  if (LowLatencyEnabled() && !dirty_rect_.IsEmpty() &&
+  if (LowLatencyEnabled() && frame_dispatcher_ && !dirty_rect_.IsEmpty() &&
       GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)) {
     const base::TimeTicks start_time = base::TimeTicks::Now();
     if (scoped_refptr<CanvasResource> canvas_resource =
@@ -1015,7 +999,7 @@ std::pair<blink::Image*, float> HTMLCanvasElement::BrokenCanvas(
 }
 
 bool HTMLCanvasElement::LowLatencyEnabled() const {
-  return !!frame_dispatcher_;
+  return context_ && context_->CreationAttributes().desynchronized;
 }
 
 // In some instances we don't actually want to paint to the parent layer
@@ -1182,8 +1166,9 @@ void HTMLCanvasElement::SetSurfaceSize(gfx::Size size) {
   CanvasResourceHost::SetSize(size);
   did_fail_to_create_resource_provider_ = false;
   DiscardResourceProvider();
-  if (IsRenderingContext2D() && context_->isContextLost())
-    context_->RestoreProviderAndContextIfPossible();
+  if (IsRenderingContext2D() && context_->isContextLost()) {
+    context_->RestoreFromInvalidSizeIfNeeded();
+  }
   if (frame_dispatcher_)
     frame_dispatcher_->Reshape(Size());
 }
@@ -1467,9 +1452,25 @@ bool HTMLCanvasElement::ShouldAccelerate2dContext() const {
 }
 
 CanvasResourceDispatcher* HTMLCanvasElement::GetOrCreateResourceDispatcher() {
-  // The HTMLCanvasElement override of this method never needs to 'create'
-  // because the frame_dispatcher is only used in low latency mode, in which
-  // case the dispatcher is created upfront.
+  if (!frame_dispatcher_ && context_ &&
+      context_->CreationAttributes().desynchronized) {
+    frame_dispatcher_ = std::make_unique<CanvasResourceDispatcher>(
+        nullptr, GetDocument().GetTaskRunner(TaskType::kInternalDefault),
+        GetPage()
+            ->GetPageScheduler()
+            ->GetAgentGroupScheduler()
+            .CompositorTaskRunner(),
+        surface_layer_bridge_->GetFrameSinkId().client_id(),
+        surface_layer_bridge_->GetFrameSinkId().sink_id(),
+        CanvasResourceDispatcher::kInvalidPlaceholderCanvasId, Size());
+    if (!base::FeatureList::IsEnabled(
+            kLowLatencyCanvasNoBeginFrameKillSwitch)) {
+      // We don't actually need the begin frame signal when in low latency mode,
+      // but we need to subscribe to it or else dispatching frames will not
+      // work.
+      frame_dispatcher_->SetNeedsBeginFrame(IsPageVisible());
+    }
+  }
   return frame_dispatcher_.get();
 }
 
@@ -1543,10 +1544,6 @@ void HTMLCanvasElement::NotifyGpuContextLost() {
   if (IsRenderingContext2D()) {
     context_->LoseContext(CanvasRenderingContext::kRealLostContext);
   }
-
-  // TODO(juonv): Do we need to do anything about frame_dispatcher_ here?
-  // Desynchronized canvases seem to continue to work after recovering from a
-  // GPU context loss, so maybe the status quo is fine.
 }
 
 void HTMLCanvasElement::Trace(Visitor* visitor) const {
@@ -1600,7 +1597,7 @@ Canvas2DLayerBridge* HTMLCanvasElement::GetOrCreateCanvas2DLayerBridge() {
   if (!IsValidImageSize(Size())) {
     did_fail_to_create_resource_provider_ = true;
     if (!Size().IsEmpty() && context_) {
-      context_->LoseContext(CanvasRenderingContext::kSyntheticLostContext);
+      context_->LoseContext(CanvasRenderingContext::kInvalidCanvasSize);
     }
     return nullptr;
   }
@@ -2080,7 +2077,7 @@ void HTMLCanvasElement::ReplaceExistingResourceProviderFor2DContext() {
   ReplaceResourceProvider(nullptr);
 
   // Bail out if the context is lost.
-  if (context_lost()) {
+  if (context_->isContextLost() && !context_->IsContextBeingRestored()) {
     return;
   }
 
@@ -2127,7 +2124,7 @@ CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider(
     }
 
     CanvasResourceProvider* resource_provider = ResourceProvider();
-    if (context_lost()) {
+    if (context_->isContextLost() && !context_->IsContextBeingRestored()) {
       DCHECK(!resource_provider);
       return nullptr;
     }
@@ -2145,7 +2142,7 @@ CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider(
       if (!IsValidImageSize(Size())) {
         did_fail_to_create_resource_provider_ = true;
         if (!Size().IsEmpty() && context_) {
-          context_->LoseContext(CanvasRenderingContext::kSyntheticLostContext);
+          context_->LoseContext(CanvasRenderingContext::kInvalidCanvasSize);
         }
         return nullptr;
       }

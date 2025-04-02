@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">Signing thank you</translation>
 <translation id="2088690981887365033">VPN network</translation>
 <translation id="209653272837065803">There isn’t enough storage space to continue syncing files</translation>
-<translation id="2111134541987263231">Turn on <ph name="BEGIN_BOLD" />Allow in Incognito<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> items will be deleted and you won't be able to restore them.</translation>
 <translation id="2122305276694332719">Automatically connecting to a hidden network allows others to see your device and some network settings, and is not recommended.</translation>
 <translation id="2125607626296734455">Khmer</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> has been ejected.</translation>
 <translation id="2307462900900812319">Configure network</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{An extension with the ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> can't be located. Contact your administrator.}other{Extensions with the IDs <ph name="BEGIN_LIST" /><ph name="END_LIST" /> can't be located. Contact your administrator.}}</translation>
 <translation id="2325650632570794183">This file type is not supported. Please visit the Chrome Web Store to find an app that can open this type of file.</translation>
 <translation id="2326539130272988168">Bulgarian</translation>
 <translation id="233822363739146957">There isn’t enough storage space to sync all of your files</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estonian</translation>
 <translation id="2938685643439809023">Mongolian</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Can’t find extension}other{Can’t find extensions}}</translation>
 <translation id="2943503720238418293">Use a shorter name</translation>
 <translation id="2949781154072577687">Formatting <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Jellyfish</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">Complete</translation>
 <translation id="3358452157379365236">Guitar</translation>
 <translation id="3368922792935385530">Connected</translation>
-<translation id="3372635229069101468">Click <ph name="BEGIN_BOLD" />Details<ph name="END_BOLD" />.</translation>
 <translation id="3382143449143186018">Nepali with InScript keyboard</translation>
 <translation id="338691029516748599">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, managed by your administrator, connect</translation>
 <translation id="3408072735282270043">Activate, <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4131235941541910880">Move items that you don't need to the bin</translation>
 <translation id="4134804435730168042">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, activate after device setup</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Turn on the following extension in Incognito:}other{Turn on the following extensions in Incognito:}}</translation>
 <translation id="4153015322587141338">Right-click a file, and select '<ph name="PIN_COMMAND" />' for quick access to your files in shelf.</translation>
 <translation id="4157569377477607576">Administrator policy doesn't recommend:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> moved.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">Keep both</translation>
 <translation id="4804827417948292437">Avocado</translation>
 <translation id="4805966553127040832">Restoring <ph name="COUNT" /> items</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{To use Incognito, your organisation requires an extension}other{To use Incognito, your organisation requires some extensions}}</translation>
 <translation id="4826849268470072925">Tamil ITRANS</translation>
-<translation id="482932175346970750">Type <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> into your browser</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="485316830061041779">German</translation>
@@ -561,7 +554,6 @@
     on files with others all in one place.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Recovered files from Google Drive</translation>
 <translation id="5278111733643988471">To restore this item, drag it to a new folder outside the bin. The original folder '<ph name="PARENT_FOLDER_NAME" />' for this item has been deleted.</translation>
-<translation id="5283101102242354279">Turn on an extension in Incognito:</translation>
 <translation id="5288441970121584418">Burger</translation>
 <translation id="5293615890992542006">Moving this file is blocked by administrator policy</translation>
 <translation id="5305688511332277257">None installed</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, details</translation>
 <translation id="7246947237293279874">FTP Proxy</translation>
 <translation id="7248671827512403053">Application</translation>
-<translation id="7252604552361840748">Find the extension above</translation>
 <translation id="7256405249507348194">Unrecognised error: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Available services</translation>
 <translation id="7291818353625820805">Want keys to repeat? Turn off accent marks in Keyboard settings</translation>

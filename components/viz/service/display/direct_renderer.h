@@ -227,10 +227,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     bool scanout_dcomp_surface = false;
   };
 
-  static gfx::RectF QuadVertexRect();
-  static void QuadRectTransform(gfx::Transform* quad_rect_transform,
-                                const gfx::Transform& quad_transform,
-                                const gfx::RectF& quad_rect);
   // Returns a transform that maps the the draw rect (i.e. the render pass
   // output rect) to the device space (i.e. buffer space).
   gfx::AxisTransform2d CalculateTargetToDeviceTransform(

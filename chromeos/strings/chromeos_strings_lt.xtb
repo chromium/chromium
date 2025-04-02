@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Išjungti ekrano užsklandą</translation>
 <translation id="3091839911843451378">Nepavyko – sustabdyta</translation>
 <translation id="3102119246920354026">Talpykla</translation>
-<translation id="3112413615003385433">Mokytojas pašalino turinį iš programos „School Tools“</translation>
 <translation id="3122464029669770682">Centrinis procesorius</translation>
 <translation id="3122614491980756867">baseinais</translation>
 <translation id="3122883569442693641">Daugiau išsamios informacijos</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Iš dalies suaktyvinta</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> biuras su <ph name="OFFICE_COLOR" /> tonais</translation>
 <translation id="3493187369049186498">Duomenys matuojami „Chromebook“ įrenginiu. Dėl to gali skirtis nuo teikėjo duomenų.</translation>
-<translation id="349570724365779960">Mokyklos įrankiai susieti su mokiniais</translation>
 <translation id="3502426834823382181">žr. visas programas</translation>
 <translation id="3510890413042482857">Siųsti <ph name="BEGIN_LINK1" />našumo stebėjimo duomenis<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">„Chrome“ OS naujinys</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Suredaguota</translation>
 <translation id="3532980081107202182">Liko apie <ph name="MIN_REMAINING" /> min.</translation>
 <translation id="3533790840489634638">baseinas</translation>
-<translation id="3535802910192338629">Mokytojas pridėjo naujo turinio programoje „School Tools“</translation>
 <translation id="3547264467365135390">Formulė</translation>
 <translation id="3557205324756024651">Vietinio ryšio tapatybė (pasirenkama)</translation>
 <translation id="3565064564551103223">Leidžiami IP</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">Leisti sistemos paslaugoms naudoti jūsų vietovės informaciją?</translation>
 <translation id="6657585470893396449">Slaptažodis</translation>
 <translation id="66621959568103627">koralinės rožinės spalvos</translation>
+<translation id="6669485505082792176">Šiuo metu negalima sukurti šių vaizdų. Pabandykite perfrazuoti aprašymą. Atminkite, kad negalima kurti žmonių vaizdų, žalingo ar nepadoraus turinio. <ph name="BEGIN_LINK_LEARN_MORE" />Sužinokite daugiau<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">padidinti klaviatūros šviesumą</translation>
 <translation id="6692996468359469499">Su pasirinkimu susijusios informacijos gavimas</translation>
 <translation id="6694534975463174713">užrakinti</translation>
@@ -1440,7 +1438,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="7544853251252956727">Maišyti</translation>
 <translation id="7550715992156305117">Diagnostikos veiksmų sekos</translation>
 <translation id="7551123448725492271">Įrenginys yra garso įrenginys.</translation>
-<translation id="7553913964854052228">Mokyklos įrankiams naudojamas mikrofonas</translation>
 <translation id="7559239713112547082">Peržiūrėti ekrano kopiją</translation>
 <translation id="7561454561030345039">Šį veiksmą tvarko jūsų administratorius</translation>
 <translation id="7561759921596375678">Įjungti garsumą</translation>
@@ -1663,7 +1660,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8576249514688522074">Neinicijuota</translation>
 <translation id="8584654835905316966">Norint užbaigti „<ph name="DEVICE_NAME" />“ programinės aparatinės įrangos diegimą į <ph name="VERSION" /> versiją, reikia iš naujo paleisti. Gali atrodyti, kad kompiuteris kelis kartus paleistas iš naujo. Toks elgesys yra numatomas.</translation>
 <translation id="8593058461203131755">pristabdyti mediją</translation>
-<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Tarptinklinio ryšio būsena</translation>
 <translation id="8626489604350149811">Daugiau veiksmų („<ph name="APN_NAME" />“)</translation>
 <translation id="86356131183441916">Šviesiai violetinė</translation>

@@ -126,18 +126,16 @@ TEST_F(SafeBrowsingPrefChangeHandlerAndroidTest, OnTabModelAddedAndRemoved) {
   TestTabModel tab_model(profile());
   pref_change_handler_->AddTabModelListObserver();
   // TabModel is not added yet, this should not do anything.
-  pref_change_handler_->OnTabModelAdded();
+  pref_change_handler_->OnTabModelAdded(nullptr);
   EXPECT_FALSE(pref_change_handler_->IsObservingTabModelForTesting());
 
   // Set tab model for test
   pref_change_handler_->SetTabModelForTesting(&tab_model);
   TabModelList::AddTabModel(&tab_model);
-  pref_change_handler_->OnTabModelAdded();
   EXPECT_TRUE(pref_change_handler_->IsObservingTabModelForTesting());
 
-  pref_change_handler_->OnTabModelRemoved();
-  EXPECT_FALSE(pref_change_handler_->IsObservingTabModelForTesting());
   TabModelList::RemoveTabModel(&tab_model);
+  EXPECT_FALSE(pref_change_handler_->IsObservingTabModelForTesting());
 }
 
 }  // namespace safe_browsing

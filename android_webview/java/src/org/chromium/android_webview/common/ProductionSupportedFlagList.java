@@ -502,10 +502,6 @@ public final class ProductionSupportedFlagList {
                 "Disable the per-domain blocking for 3D APIs after GPU reset. "
                         + "This switch is intended only for tests."),
         Flag.baseFeature(
-                BlinkFeatures.MEDIA_RECORDER_USE_MEDIA_VIDEO_ENCODER,
-                "When enabled, media::VideoEncoder implementation is used in MediaRecorder API"
-                        + " instead of using MediaRecorder own video encoder implementation."),
-        Flag.baseFeature(
                 MetricsFeatures.FLUSH_PERSISTENT_SYSTEM_PROFILE_ON_WRITE,
                 "Controls whether to schedule a flush of persistent histogram memory "
                         + "immediately after writing a system profile to it."),
@@ -1008,7 +1004,6 @@ public final class ProductionSupportedFlagList {
                 "LCPTimingPredictorPrerender2",
                 "When enabled, Prerender2 by Speculation Rules API is delayed until LCP is"
                         + " finished."),
-        Flag.baseFeature("SyntheticResponseReportUnexpectedHeader"),
         Flag.baseFeature(
                 "SelectParserRelaxation",
                 "Enables new HTML parser behavior for the <select> element."),

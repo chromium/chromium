@@ -38,6 +38,7 @@
 <translation id="19085484004813472">Ini adalah fitur baru</translation>
 <translation id="2006524834898217237">Pastikan perangkat ini terhubung ke internet.</translation>
 <translation id="208586643495776849">Coba lagi</translation>
+<translation id="2111134541987263231">Aktifkan <ph name="BEGIN_BOLD" />Izinkan dalam mode Samaran<ph name="END_BOLD" /></translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1h}other{#h}}</translation>
 <translation id="2148716181193084225">Hari ini</translation>
 <translation id="2168039046890040389">Page Up</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">Ketuk target sentuh di layar.</translation>
 <translation id="2295140143284145483">Survei</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/dtk</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Ekstensi dengan ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> tidak dapat ditemukan. Hubungi administrator Anda.}other{Ekstensi dengan ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> tidak dapat ditemukan. Hubungi administrator Anda.}}</translation>
 <translation id="2353636109065292463">Memeriksa koneksi internet Anda</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2388990488038464401">Panggil nomor ini dari ponsel Anda?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">Hapus Semua</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{dalam 1 h}other{dalam # h}}</translation>
 <translation id="2922712708897119705">Kolom <ph name="COLUMN_NAME" /> diurutkan dari bawah ke atas.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Tidak dapat menemukan ekstensi}other{Tidak dapat menemukan ekstensi}}</translation>
 <translation id="3036649622769666520">Buka File</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">Bawah</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">Buat panggilan dari</translation>
 <translation id="3306688585798492231">Tampilan bawaan</translation>
 <translation id="335581015389089642">Ucapan</translation>
+<translation id="3372635229069101468">Klik <ph name="BEGIN_BOLD" />Detail<ph name="END_BOLD" /></translation>
 <translation id="3389286852084373014">Teks terlalu besar</translation>
 <translation id="3406306243914553062">Konten HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 hari lagi}other{# hari lagi}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">Kolom <ph name="COLUMN_NAME" /> diurutkan dari atas ke bawah.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 Notifikasi yang Belum Dibaca}other{# Notifikasi yang Belum Dibaca}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Aktifkan ekstensi berikut dalam mode Samaran:}other{Aktifkan ekstensi berikut dalam mode Samaran:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 bulan yang lalu}other{# bulan yang lalu}}</translation>
 <translation id="4289300219472526559">Mulai Berbicara</translation>
 <translation id="4289540628985791613">Ringkasan</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">nomor</translation>
 <translation id="4746179598275229723">Ekstensi dilepaskan</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 bulan lagi}other{# bulan lagi}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Untuk menggunakan mode Samaran, organisasi Anda memerlukan ekstensi}other{Untuk menggunakan mode Samaran, organisasi Anda memerlukan beberapa ekstensi}}</translation>
+<translation id="482932175346970750">Ketik <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> di browser Anda</translation>
 <translation id="4888938634149558681">Telepon</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 detik}other{# detik}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">Tem&amp;pel</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Gagal mengirim</translation>
+<translation id="5283101102242354279">Aktifkan ekstensi dalam mode Samaran:</translation>
 <translation id="528468243742722775">Berakhir</translation>
 <translation id="5329858601952122676">&amp;Hapus</translation>
 <translation id="5361107212971249203">teks</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">Setelan tampilan aplikasi Anda akan berlaku saat berikutnya aplikasi dimulai ulang.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 mnt lagi}other{# mnt lagi}}</translation>
+<translation id="7252604552361840748">Temukan ekstensi di atas</translation>
 <translation id="7363164521834647158">Kirim balasan</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 mnt yang lalu}other{# mnt yang lalu}}</translation>
 <translation id="7389409599945284130"><ph name="MESSAGE" /> -</translation>

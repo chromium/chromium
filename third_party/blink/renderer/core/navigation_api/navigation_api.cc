@@ -318,7 +318,7 @@ NavigationHistoryEntry* NavigationApi::GetEntryForRestore(
 
 // static
 void FireDisposeEventsAsync(
-    HeapVector<Member<NavigationHistoryEntry>>* disposed_entries) {
+    GCedHeapVector<Member<NavigationHistoryEntry>>* disposed_entries) {
   for (const auto& entry : *disposed_entries) {
     entry->DispatchEvent(*Event::Create(event_type_names::kDispose));
   }
@@ -370,8 +370,8 @@ void NavigationApi::SetEntriesForRestore(
 
   // |new_entries| now contains the previous entries_. Find the ones that are no
   // longer in entries_ so they can be disposed.
-  HeapVector<Member<NavigationHistoryEntry>>* disposed_entries =
-      MakeGarbageCollected<HeapVector<Member<NavigationHistoryEntry>>>();
+  GCedHeapVector<Member<NavigationHistoryEntry>>* disposed_entries =
+      MakeGarbageCollected<GCedHeapVector<Member<NavigationHistoryEntry>>>();
   for (const auto& entry : new_entries) {
     const auto& it = keys_to_indices_.find(entry->key());
     if (it == keys_to_indices_.end() || entries_[it->value] != entry)

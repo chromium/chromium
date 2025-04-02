@@ -45,10 +45,11 @@ ChildIteratorBase ChildIteratorBase::operator--(int) {
 }
 
 gfx::NativeViewAccessible ChildIteratorBase::GetNativeViewAccessible() const {
-  if (index_ < parent_->GetChildCount())
+  if (index_ < parent_->GetChildCount()) {
     return parent_->ChildAtIndex(index_);
+  }
 
-  return nullptr;
+  return gfx::NativeViewAccessible();
 }
 
 std::optional<size_t> ChildIteratorBase::GetIndexInParent() const {

@@ -604,7 +604,7 @@ If you have <enum> or <variant> entries that need to be updated to match code,
 you can use
 [HistogramEnumReader](https://cs.chromium.org/chromium/src/base/test/metrics/histogram_enum_reader.h)
 or
-[HistogramVariantsReader](https://cs.chromium.org/chromium/src/base/test/metrics/histogram_enum_reader.h)
+[HistogramVariantsReader](https://cs.chromium.org/chromium/src/base/test/metrics/histogram_variants_reader.h)
 to read and verify the expected values in a unit test. This prevents a mismatch
 between code and histogram data from slipping through CQ.
 

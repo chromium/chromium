@@ -147,10 +147,15 @@ TEST_F(OriginValueMapTest, SetValueReturnsChanges) {
                    ContentSettingsPattern::FromString("[*.]google.com"),
                    ContentSettingsType::COOKIES, base::Value(1), {}));
 
-  // A change in value returns true.
+  // A change in value returns true and new values is recorded.
   EXPECT_TRUE(map.SetValue(ContentSettingsPattern::FromString("[*.]google.com"),
                            ContentSettingsPattern::FromString("[*.]google.com"),
                            ContentSettingsType::COOKIES, base::Value(2), {}));
+  auto rule =
+      map.GetRule(GURL("http://www.google.com"), GURL("http://www.google.com"),
+                  ContentSettingsType::COOKIES);
+  ASSERT_TRUE(rule);
+  EXPECT_EQ(base::Value(2), rule->value);
 
   // A change in metadata returns true.
   content_settings::RuleMetaData metadata;

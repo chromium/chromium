@@ -52,7 +52,8 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       VerdictReceivedCallback verdict_received_callback,
-      ContentUploadedCallback content_uploaded_callback);
+      ContentUploadedCallback content_uploaded_callback,
+      bool force_sync_upload);
 
   // Creates a ResumableUploadRequest, which will upload the `metadata` of the
   // page to the given `base_url`, and then the content of `page_region` if
@@ -66,7 +67,8 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       VerdictReceivedCallback verdict_received_callback,
-      ContentUploadedCallback content_uploaded_callback);
+      ContentUploadedCallback content_uploaded_callback,
+      bool force_sync_upload);
 
   ResumableUploadRequest(const ResumableUploadRequest&) = delete;
   ResumableUploadRequest& operator=(const ResumableUploadRequest&) = delete;
@@ -86,7 +88,8 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       VerdictReceivedCallback verdict_received_callback,
-      ContentUploadedCallback content_uploaded_callback);
+      ContentUploadedCallback content_uploaded_callback,
+      bool force_sync_upload);
 
   static std::unique_ptr<ConnectorUploadRequest> CreatePageRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -97,7 +100,8 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       VerdictReceivedCallback verdict_received_callback,
-      ContentUploadedCallback content_uploaded_callback);
+      ContentUploadedCallback content_uploaded_callback,
+      bool force_sync_upload);
 
   // Set the headers for the given metadata `request`.
   void SetMetadataRequestHeaders(network::ResourceRequest* request);
@@ -111,6 +115,14 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
  protected:
   // Called after a metadata request finishes successfully. Virtual for testing.
   virtual void SendContentSoon(const std::string& upload_url);
+
+  // Called whenever a net request finishes (on success or failure). Protected
+  // for testing
+  void Finish(int net_error,
+              int response_code,
+              std::optional<std::string> response_body);
+
+  bool force_sync_upload() const { return force_sync_upload_; }
 
   VerdictReceivedCallback verdict_received_callback_;
 
@@ -146,11 +158,6 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
   // This method also has the side effect of setting upload_url_.
   bool CanUploadContent(const scoped_refptr<net::HttpResponseHeaders>& headers);
 
-  // Called whenever a net request finishes (on success or failure).
-  void Finish(int net_error,
-              int response_code,
-              std::optional<std::string> response_body);
-
   // Helper used by metrics logging code.
   std::string GetRequestType();
 
@@ -167,6 +174,8 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
   } scan_type_ = PENDING;
 
   ContentUploadedCallback content_uploaded_callback_;
+
+  bool force_sync_upload_ = false;
 
   base::WeakPtrFactory<ResumableUploadRequest> weak_factory_{this};
 };

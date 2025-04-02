@@ -288,6 +288,7 @@
 <translation id="2164946989711475905">Connexion…</translation>
 <translation id="2175927920773552910">QR code</translation>
 <translation id="218350106843433823">Saisir automatiquement les mots de passe et les clés d'accès</translation>
+<translation id="2184272387334793084">Connectez-vous pour accéder à vos mots de passe et bien plus sur tous vos appareils</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="219283042927675668">Onglets dans le groupe</translation>
 <translation id="2194856509914051091">Éléments à prendre en compte</translation>
@@ -440,6 +441,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="2783161812871838616">Demander la version pour ordinateur</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Mot de passe enregistré dans votre compte Google ({EMAIL})}one{Mot de passe enregistré dans votre compte Google ({EMAIL})}other{Mots de passe enregistrés dans votre compte Google ({EMAIL})}}</translation>
 <translation id="2791174088547598693">Ajouter un mot de passe…</translation>
+<translation id="2793703503584038325">Sélectionnez un mot de passe, puis appuyez sur l'icône de partage</translation>
 <translation id="2797302972324086597">Code pays</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} fichier}one{{COUNT} fichier}other{{COUNT} fichiers}}</translation>
 <translation id="2816489851009559785">Menu → Réglages → Navigateur par défaut</translation>
@@ -579,6 +581,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="35083190962747987">Ouvrir ${url}</translation>
 <translation id="3511519535430890904">Ajouter une protection de navigation</translation>
 <translation id="3517216995152707259">Supprimer vos données de navigation ne vous déconnecte pas de votre compte Google. Pour cela, <ph name="BEGIN_LINK" />déconnectez-vous de Chrome<ph name="END_LINK" />.</translation>
+<translation id="3519792890877853853">Cette fiche affiche les avis sur les produits dans vos onglets ouverts</translation>
 <translation id="3519905498307021260">{count,plural, =1{Ouvrir l'onglet}one{Ouvrir {count} onglet}other{Ouvrir {count} onglets}}</translation>
 <translation id="3523513363815970085">Masquer "Vos sites les plus visités"</translation>
 <translation id="3523789730715594198">Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
@@ -819,6 +822,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4565377596337484307">Masquer le mot de passe</translation>
 <translation id="4568230126482344545">Masquer "Onglets récents"</translation>
 <translation id="4578835633387306383">Activer…</translation>
+<translation id="4580716718466706433">Accédez au Gestionnaire de mots de passe</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4592672037257622855">{count,plural, =1{Page ajoutée à votre liste de lecture}one{{count} page ajoutée à votre liste de lecture}other{{count} pages ajoutées à votre liste de lecture}}</translation>
 <translation id="459644946100970322">Activer les alertes de prix ?</translation>
@@ -858,6 +862,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4717844083556844785">La page Web actuelle est en mode navigation privée</translation>
 <translation id="4719927025381752090">Proposer de traduire</translation>
 <translation id="4720530280568305198">Votre sélection s'est ouverte dans un nouvel onglet</translation>
+<translation id="472259426228234149">Prix : de 100 à 180 $</translation>
 <translation id="473775607612524610">Mettre à jour</translation>
 <translation id="474209246745757965">Achetez et traduisez avec votre appareil photo</translation>
 <translation id="4742407542027196863">Gérer les mots de passe…</translation>
@@ -1606,6 +1611,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7841180087127694526">Rechercher le texte copié</translation>
 <translation id="7841418003178675048">Choisissez les fiches à afficher sur la page "Nouvel onglet".</translation>
 <translation id="7846161022626028328">Une erreur s'est produite. Réessayez.</translation>
+<translation id="784623644169604270">Aucune activité récente</translation>
 <translation id="7846296061357476882">Services Google</translation>
 <translation id="784934925303690534">Période</translation>
 <translation id="7851858861565204677">Autres appareils</translation>

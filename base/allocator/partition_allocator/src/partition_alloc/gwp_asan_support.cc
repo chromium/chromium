@@ -23,6 +23,9 @@ namespace {
 PartitionOptions GwpAsanPartitionOptions() {
   PartitionOptions options;
   options.backup_ref_ptr = PartitionOptions::kEnabled;
+
+  // GWP-ASan does not reserve space for cookies.
+  options.use_cookie_if_supported = PartitionOptions::kDisabled;
   return options;
 }
 

@@ -391,10 +391,45 @@ void OmniboxMetricsProvider::RecordMetrics(const OmniboxLog& log) {
   auto client_summarized_result_type =
       GetClientSummarizedResultType(omnibox_event_result_type);
 
-  // Log UMA histogram.
+  // Log UMA histograms.
   base::UmaHistogramEnumeration(
       "Omnibox.SuggestionUsed.ClientSummarizedResultType",
       client_summarized_result_type);
+
+  if (log.zero_prefix_search_suggestions_shown_in_session ||
+      log.typed_search_suggestions_shown_in_session) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.SuggestionShown.ClientSummarizedResultType",
+        ClientSummarizedResultType::kSearch);
+  }
+  if (log.zero_prefix_url_suggestions_shown_in_session ||
+      log.typed_url_suggestions_shown_in_session) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.SuggestionShown.ClientSummarizedResultType",
+        ClientSummarizedResultType::kUrl);
+  }
+
+  if (log.zero_prefix_search_suggestions_shown_in_session) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.SuggestionShown.ZeroSuggest.ClientSummarizedResultType",
+        ClientSummarizedResultType::kSearch);
+  }
+  if (log.zero_prefix_url_suggestions_shown_in_session) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.SuggestionShown.ZeroSuggest.ClientSummarizedResultType",
+        ClientSummarizedResultType::kUrl);
+  }
+
+  if (log.typed_search_suggestions_shown_in_session) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.SuggestionShown.TypedSuggest.ClientSummarizedResultType",
+        ClientSummarizedResultType::kSearch);
+  }
+  if (log.typed_url_suggestions_shown_in_session) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.SuggestionShown.TypedSuggest.ClientSummarizedResultType",
+        ClientSummarizedResultType::kUrl);
+  }
 
   // Log UKM event.
   if (log.ukm_source_id == ukm::kInvalidSourceId) {

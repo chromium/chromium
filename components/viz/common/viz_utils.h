@@ -15,8 +15,6 @@
 
 namespace gfx {
 class Rect;
-class RRectF;
-class QuadF;
 }  // namespace gfx
 
 namespace viz {
@@ -28,17 +26,6 @@ VIZ_COMMON_EXPORT bool AlwaysUseWideColorGamut();
 
 class CopyOutputRequest;
 class RenderPassDrawQuadInternal;
-
-// This takes a gfx::Rect and a clip region quad in the same space,
-// and returns a quad with the same proportions in the space -0.5->0.5.
-VIZ_COMMON_EXPORT bool GetScaledRegion(const gfx::Rect& rect,
-                                       const gfx::QuadF* clip,
-                                       gfx::QuadF* scaled_region);
-// This takes a rounded rect and a rect that it lives in, and returns an
-// equivalent rounded rect in the space -0.5->0.5.
-VIZ_COMMON_EXPORT bool GetScaledRRectF(const gfx::Rect& space,
-                                       const gfx::RRectF& rect,
-                                       gfx::RRectF* scaled_rect);
 
 // Returns File Descriptor (FD) stats for current process.
 // Rendering resources can consume FDs. This this function can be used to

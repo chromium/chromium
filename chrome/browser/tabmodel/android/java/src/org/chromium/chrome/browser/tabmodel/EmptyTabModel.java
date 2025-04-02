@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -18,6 +20,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 
 /** Singleton class intended to stub out Tab model before it has been created. */
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+@NullMarked
 public class EmptyTabModel implements IncognitoTabModelInternal {
     private boolean mIsIncognito;
 
@@ -48,7 +51,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public Profile getProfile() {
+    public @Nullable Profile getProfile() {
         return null;
     }
 
@@ -68,7 +71,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public @NonNull TabRemover getTabRemover() {
+    public TabRemover getTabRemover() {
         return new EmptyTabRemover();
     }
 
@@ -78,7 +81,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public Tab getNextTabIfClosed(int id, boolean uponExit) {
+    public @Nullable Tab getNextTabIfClosed(int id, boolean uponExit) {
         return null;
     }
 
@@ -89,7 +92,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public Tab getTabAt(int position) {
+    public @Nullable Tab getTabAt(int position) {
         return null;
     }
 
@@ -109,7 +112,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public @NonNull ObservableSupplier<Tab> getCurrentTabSupplier() {
+    public ObservableSupplier<@Nullable Tab> getCurrentTabSupplier() {
         assert false : "This should be unreachable in production, it may be mocked for testing.";
         return new ObservableSupplierImpl<>();
     }
@@ -153,15 +156,15 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public @NonNull ObservableSupplier<Integer> getTabCountSupplier() {
+    public ObservableSupplier<Integer> getTabCountSupplier() {
         assert false : "This should be unreachable in production, it may be mocked for testing.";
         return new ObservableSupplierImpl<>();
     }
 
     @Override
-    public @NonNull TabCreator getTabCreator() {
+    public TabCreator getTabCreator() {
         assert false : "This should be unreachable in production, it may be mocked for testing.";
-        return null;
+        return assumeNonNull(null);
     }
 
     @Override

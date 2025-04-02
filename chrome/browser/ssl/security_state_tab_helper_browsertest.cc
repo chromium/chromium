@@ -430,10 +430,6 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, HttpsPage) {
       false /* expect cert status error */);
 }
 
-// TODO(crbug.com/40928765): Add an end-to-end test for
-// security_state::SECURE_WITH_POLICY_INSTALLED_CERT (currently that depends on
-// a cros-specific policy/service).
-
 IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, DevToolsPage) {
   GURL devtools_url("devtools://devtools/bundled/");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), devtools_url));

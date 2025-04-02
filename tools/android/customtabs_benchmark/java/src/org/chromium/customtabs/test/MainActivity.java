@@ -4,6 +4,9 @@
 
 package org.chromium.customtabs.test;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -32,6 +35,10 @@ import androidx.browser.customtabs.CustomTabsServiceConnection;
 import androidx.browser.customtabs.CustomTabsSession;
 import androidx.core.app.BundleCompat;
 
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -50,6 +57,7 @@ import java.util.Set;
  * <p>The two modes are not merged into one as the metrics we can extract in the two cases are
  * constrained for the first one by what WebView provides.
  */
+@NullMarked
 public class MainActivity extends Activity implements View.OnClickListener {
     static final String TAG = "CUSTOMTABSBENCH";
     static final String TAGCSV = "CUSTOMTABSBENCHCSV";
@@ -93,10 +101,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private CheckBox mParallelUrlCheckBox;
     private EditText mParallelUrlEditText;
     private long mIntentSentMs;
-    private CustomTabsIntent mIntent;
+    private @MonotonicNonNull CustomTabsIntent mIntent;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final Intent intent = getIntent();
 
@@ -172,17 +180,23 @@ public class MainActivity extends Activity implements View.OnClickListener {
      */
     private void startCustomTabsWebViewBenchmark(Intent intent) {
         Bundle extras = intent.getExtras();
+        assumeNonNull(extras);
         String url = extras.getString(URL_KEY);
         String parallelUrl = extras.getString(PARALLEL_URL_KEY);
         boolean useWebView = extras.getBoolean(USE_WEBVIEW_KEY);
         boolean useChrome = !useWebView;
         boolean warmup = extras.getBoolean(WARMUP_KEY);
+        assertNonNull(url);
         customTabsWebViewBenchmark(url, useChrome, useWebView, warmup, parallelUrl);
     }
 
     /** Start the CustomTabs / WebView comparison benchmark. */
     private void customTabsWebViewBenchmark(
-            String url, boolean useChrome, boolean useWebView, boolean warmup, String parallelUrl) {
+            String url,
+            boolean useChrome,
+            boolean useWebView,
+            boolean warmup,
+            @Nullable String parallelUrl) {
         if (useChrome) {
             launchChrome(url, warmup, parallelUrl);
         } else {
@@ -191,7 +205,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    private void launchWebView(String url) {
+    private void launchWebView(@Nullable String url) {
         Intent intent = new Intent();
         intent.setData(Uri.parse(url));
         intent.setClass(this, WebViewActivity.class);
@@ -199,7 +213,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         startActivity(intent);
     }
 
-    private void launchChrome(String url, boolean warmup, String parallelUrl) {
+    private void launchChrome(@Nullable String url, boolean warmup, @Nullable String parallelUrl) {
         CustomTabsServiceConnection connection =
                 new CustomTabsServiceConnection() {
                     @Override
@@ -215,7 +229,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
     private static void maybePrepareParallelUrlRequest(
-            String parallelUrl,
+            @Nullable String parallelUrl,
             CustomTabsClient client,
             CustomTabsIntent intent,
             IBinder sessionBinder) {
@@ -245,13 +259,16 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
     private void launchChromeIntent(
-            String url, boolean warmup, CustomTabsClient client, String parallelUrl) {
+            @Nullable String url,
+            boolean warmup,
+            CustomTabsClient client,
+            @Nullable String parallelUrl) {
         CustomTabsCallback callback =
                 new CustomTabsCallback() {
                     private long mNavigationStartOffsetMs;
 
                     @Override
-                    public void onNavigationEvent(int navigationEvent, Bundle extras) {
+                    public void onNavigationEvent(int navigationEvent, @Nullable Bundle extras) {
                         long offsetMs = now() - mIntentSentMs;
                         switch (navigationEvent) {
                             case CustomTabsCallback.NAVIGATION_STARTED:
@@ -273,7 +290,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         IBinder sessionBinder =
                 BundleCompat.getBinder(
-                        customTabsIntent.intent.getExtras(), CustomTabsIntent.EXTRA_SESSION);
+                        assertNonNull(customTabsIntent.intent.getExtras()),
+                        CustomTabsIntent.EXTRA_SESSION);
         assert sessionBinder != null;
         maybePrepareParallelUrlRequest(parallelUrl, client, customTabsIntent, sessionBinder);
 
@@ -301,13 +319,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
     /** Holds the file and the range for pinning. Used only in the 'Pinning Benchmark' mode. */
     private static class PinInfo {
         public boolean pinningBenchmark;
-        public String fileName;
+        public @Nullable String fileName;
         public int offset;
         public int length;
 
         public PinInfo() {}
 
-        public PinInfo(boolean pinningBenchmark, String fileName, int offset, int length) {
+        public PinInfo(
+                boolean pinningBenchmark, @Nullable String fileName, int offset, int length) {
             this.pinningBenchmark = pinningBenchmark;
             this.fileName = fileName;
             this.offset = offset;
@@ -324,11 +343,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private static class LaunchInfo {
         public final String url;
         public final String speculatedUrl;
-        public final String parallelUrl;
+        @Nullable public final String parallelUrl;
         public final int timeoutSeconds;
 
         public LaunchInfo(
-                String url, String speculatedUrl, String parallelUrl, int timeoutSeconds) {
+                String url,
+                String speculatedUrl,
+                @Nullable String parallelUrl,
+                int timeoutSeconds) {
             this.url = url;
             this.speculatedUrl = speculatedUrl;
             this.parallelUrl = parallelUrl;
@@ -438,7 +460,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
 
         @Override
-        public void onNavigationEvent(int navigationEvent, Bundle extras) {
+        public void onNavigationEvent(int navigationEvent, @Nullable Bundle extras) {
             switch (navigationEvent) {
                 case CustomTabsCallback.NAVIGATION_STARTED:
                     if (pageLoadStartedMs != NONE) return;
@@ -451,6 +473,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                             () -> {
                                 // In order to record LCP, we need to navigate away, so give a few
                                 // seconds to let LCP settle after page load finishes.
+                                assumeNonNull(mIntent);
                                 mIntent.launchUrl(MainActivity.this, Uri.parse("about:blank"));
                             },
                             3000);
@@ -462,7 +485,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
 
         @Override
-        public void extraCallback(String callbackName, Bundle args) {
+        public void extraCallback(String callbackName, @Nullable Bundle args) {
             if ("onWarmupCompleted".equals(callbackName)) {
                 warmupCompleted = true;
                 return;
@@ -472,6 +495,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 Log.w(TAG, "Unknown extra callback skipped: " + callbackName);
                 return;
             }
+            assumeNonNull(args);
             long firstPaintMs = args.getLong("firstContentfulPaint", NONE);
             long largePaintMs = args.getLong("largestContentfulPaint", NONE);
             long navigationStartMs = args.getLong("navigationStart", NONE);
@@ -549,7 +573,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
      * @param packageName the package to query
      * @return {pss, privateDirty} in kB, or null.
      */
-    private static int[] getPackagePssAndPrivateDirty(Context context, String packageName) {
+    private static int @Nullable [] getPackagePssAndPrivateDirty(
+            Context context, String packageName) {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) return null;
 
         ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
@@ -564,7 +589,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         int[] pidsArray = new int[pids.size()];
         int i = 0;
         for (int pid : pids) pidsArray[i++] = pid;
-        Debug.MemoryInfo infos[] = am.getProcessMemoryInfo(pidsArray);
+        Debug.MemoryInfo[] infos = am.getProcessMemoryInfo(pidsArray);
         if (infos == null || infos.length == 0) return null;
 
         int pss = 0;
@@ -637,7 +662,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     // Chrome (in LibraryPrefetcher), but the call is reimplemented here to avoid restarting
     // Chrome unnecessarily.
     @SuppressLint("WrongConstant")
-    private boolean pinChrome(String fileName, int startOffset, int length) {
+    private boolean pinChrome(@Nullable String fileName, int startOffset, int length) {
         Context context = getApplicationContext();
         Object pinner = context.getSystemService("pinner");
         if (pinner == null) {
@@ -722,7 +747,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         final CustomTabsSession session = client.newSession(cb);
         mIntent = new CustomTabsIntent.Builder(session).build();
         IBinder sessionBinder =
-                BundleCompat.getBinder(mIntent.intent.getExtras(), CustomTabsIntent.EXTRA_SESSION);
+                BundleCompat.getBinder(
+                        assertNonNull(mIntent.intent.getExtras()), CustomTabsIntent.EXTRA_SESSION);
         assert sessionBinder != null;
         forceSpeculationMode(client, sessionBinder, cb.speculationMode);
 
@@ -752,6 +778,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 final Runnable mayLaunchRunnable =
                         () -> {
                             logMemory(cb.packageName, "BeforeMayLaunchUrl");
+                            assumeNonNull(session);
                             session.mayLaunchUrl(Uri.parse(launchInfo.speculatedUrl), null, null);
                             mHandler.postDelayed(launchRunnable, cb.delayToLaunchUrl);
                         };

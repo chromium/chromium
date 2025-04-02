@@ -37,6 +37,7 @@
 namespace content {
 
 struct BiddingAndAuctionServerKey;
+class DataDecoderManager;
 
 // Handles caching (not yet implemented) and dispatching of trusted bidding and
 // scoring signals requests. Only handles requests to Trusted Execution
@@ -216,7 +217,8 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   // around this long, automatically call SetFetchCanStart() for the fetch.
   static constexpr base::TimeDelta kAutoStartDelay = base::Milliseconds(10);
 
-  explicit TrustedSignalsCacheImpl(
+  TrustedSignalsCacheImpl(
+      DataDecoderManager* data_decoder_manager,
       GetCoordinatorKeyCallback get_coordinator_key_callback);
   ~TrustedSignalsCacheImpl() override;
 
@@ -679,6 +681,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   // Virtual for testing.
   virtual std::unique_ptr<TrustedSignalsFetcher> CreateFetcher();
 
+  const raw_ptr<DataDecoderManager> data_decoder_manager_;
   const GetCoordinatorKeyCallback get_coordinator_key_callback_;
 
   mojo::ReceiverSet<auction_worklet::mojom::TrustedSignalsCache,

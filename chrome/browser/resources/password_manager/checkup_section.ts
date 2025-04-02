@@ -134,21 +134,22 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
     };
   }
 
-  focusConfig: FocusConfig;
-  private checkedPasswordsText_: string;
-  private compromisedPasswordsText_: string;
-  private reusedPasswordsText_: string;
-  private weakPasswordsText_: string;
-  private compromisedPasswordsSuggestion_: string;
-  private status_: chrome.passwordsPrivate.PasswordCheckStatus;
-  private compromisedPasswords_: chrome.passwordsPrivate.PasswordUiEntry[];
-  private weakPasswords_: chrome.passwordsPrivate.PasswordUiEntry[];
-  private isCheckRunning_: boolean;
-  private isCheckSuccessful_: boolean;
-  private bannerImage_: string;
-  private reusedPasswords_: chrome.passwordsPrivate.PasswordUiEntry[];
+  declare focusConfig: FocusConfig;
+  declare private checkedPasswordsText_: string;
+  declare private compromisedPasswordsText_: string;
+  declare private reusedPasswordsText_: string;
+  declare private weakPasswordsText_: string;
+  declare private compromisedPasswordsSuggestion_: string;
+  declare private status_: chrome.passwordsPrivate.PasswordCheckStatus;
+  declare private compromisedPasswords_:
+      chrome.passwordsPrivate.PasswordUiEntry[];
+  declare private weakPasswords_: chrome.passwordsPrivate.PasswordUiEntry[];
+  declare private isCheckRunning_: boolean;
+  declare private isCheckSuccessful_: boolean;
+  declare private bannerImage_: string;
+  declare private reusedPasswords_: chrome.passwordsPrivate.PasswordUiEntry[];
   private didCheckAutomatically_: boolean = false;
-  private groupCount_: number;
+  declare private groupCount_: number;
 
   private statusChangedListener_: PasswordCheckStatusChangedListener|null =
       null;

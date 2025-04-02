@@ -14,8 +14,11 @@
 #import "ios/chrome/browser/complex_tasks/model/ios_task_tab_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -51,6 +54,14 @@ base::Time GetMostRecentActivityTime(const web::WebState* web_state) {
     }
   }
   return result;
+}
+
+// Returns whether the given `profile` is the personal profile.
+bool IsPersonalProfile(ProfileIOS* profile) {
+  return profile->GetProfileName() == GetApplicationContext()
+                                          ->GetProfileManager()
+                                          ->GetProfileAttributesStorage()
+                                          ->GetPersonalProfileName();
 }
 
 // Returns whether the primary identity for `profile` is managed.
@@ -168,12 +179,14 @@ bool IOSChromeSyncedTabDelegate::ShouldSync(
   }
 
   if (IsIdentityDiscAccountMenuEnabled()) {
-    // If fast account switching via the account particle disk on the NTP is
-    // enabled, then for managed accounts, only sync tabs that have been updated
-    // after the signin.
+    // For managed accounts in the personal profile, only sync tabs that have
+    // been updated after the signin.
+    // TODO(crbug.com/407498240): Remove this once all managed accounts have
+    // been migrated into their own profiles.
     ProfileIOS* profile =
         ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-    if (ProfileHasPrimaryIdentityManaged(profile)) {
+    if (ProfileHasPrimaryIdentityManaged(profile) &&
+        IsPersonalProfile(profile)) {
       base::Time signin_time =
           profile->GetPrefs()->GetTime(prefs::kLastSigninTimestamp);
       // Note: Don't use GetLastActiveTime() here: (a) it only tracks when the

@@ -389,7 +389,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
     // Specifies the desired corner radius for the window, in pixels. This is
     // handled by the OS windowing system, and the support varies:
-    // - ChromeOS Ash: Fully effective; the specified radius is used.
+    // - ChromeOS Ash & macOS: Fully effective; the specified radius is used.
     // - Windows 11: Partially effective; if a value is set positive, it enables
     //   system-managed rounded corners via the DWMWCP_ROUND window style. The
     //   actual radius is determined by the OS, not this specific value.

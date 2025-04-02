@@ -223,6 +223,39 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         IntentUtils.safeStartActivity(mTab.getContext(), intent);
     }
 
+    public boolean canCurrentTabGoBack() {
+        Tab tab = mTabModelSelector.getCurrentTab();
+        assert tab != null;
+        return tab.canGoBack();
+    }
+
+    public boolean canCurrentTabGoForward() {
+        Tab tab = mTabModelSelector.getCurrentTab();
+        assert tab != null;
+        return tab.canGoForward();
+    }
+
+    public void onCurrentTabGoBack() {
+        Tab tab = mTabModelSelector.getCurrentTab();
+        if (tab != null && tab.canGoBack()) {
+            tab.goBack();
+        }
+    }
+
+    public void onCurrentTabGoForward() {
+        Tab tab = mTabModelSelector.getCurrentTab();
+        if (tab != null && tab.canGoForward()) {
+            tab.goForward();
+        }
+    }
+
+    public void onReloadCurrentTab() {
+        Tab tab = mTabModelSelector.getCurrentTab();
+        if (tab != null) {
+            tab.reload();
+        }
+    }
+
     /**
      * Called when the {@code url} should be opened in the other window with the same incognito
      * state as the current page.

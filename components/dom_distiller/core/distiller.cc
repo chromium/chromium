@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -239,6 +240,10 @@ void DistillerImpl::OnPageDistillationFinished(
     MaybeFetchImage(page_num, image_id,
                     distiller_result->content_images(img_num).url());
   }
+
+  base::UmaHistogramCounts100000(
+      "DomDistiller.WordCount",
+      distiller_result->statistics_info().word_count());
 
   AddPageIfDone(page_num);
   DistillNextPage();

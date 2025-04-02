@@ -37,8 +37,9 @@ import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProp
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
@@ -66,8 +67,8 @@ public class AutofillVcnEnrollBottomSheetRenderTest {
     private static final LinkOpener DO_NOTHING_LINK_OPENER = (unusedUrl, unusedLinkType) -> {};
 
     @Rule
-    public final ChromeTabbedActivityTestRule mTabbedActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public final FreshCtaTransitTestRule mTabbedActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -103,7 +104,7 @@ public class AutofillVcnEnrollBottomSheetRenderTest {
         mRenderTestRule.setVariantPrefix((mIsRightToLeftLayout ? "RTL" : "LTR"));
         ChromeNightModeTestUtils.setUpNightModeForChromeActivity(mIsNightMode);
         mRenderTestRule.setNightModeEnabled(mIsNightMode);
-        mTabbedActivityTestRule.startMainActivityOnBlankPage();
+        mTabbedActivityTestRule.startOnBlankPage();
         mTabbedActivityTestRule.waitForActivityCompletelyLoaded();
         mBottomSheetController =
                 mTabbedActivityTestRule
@@ -122,7 +123,6 @@ public class AutofillVcnEnrollBottomSheetRenderTest {
                     }
                 });
         setRtlForTesting(false);
-        mTabbedActivityTestRule.finishActivity();
     }
 
     @Test

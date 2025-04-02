@@ -2608,7 +2608,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE)
     public void testReorder_MovePastCollapsedGroup() {
         // Mock 5 tabs. Group the second and third tabs.
         initializeTest(false, false, 3, 5);
@@ -2851,7 +2850,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE)
     public void testBottomIndicatorWidth_CollapseAndExpand() {
         // Mock 5 tabs, group first 3 tabs as group1 and group the rest as group2.
         initializeTest(false, false, 0, 5);
@@ -3528,7 +3526,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.DATA_SHARING, ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE})
+    @EnableFeatures({ChromeFeatureList.DATA_SHARING})
     public void testSharedGroupNotificationBubbleShowAndHide_CollapsedGroup() {
         // Initialize shared tab group and collapse group.
         StripLayoutGroupTitle groupTitle =
@@ -3558,7 +3556,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.DATA_SHARING, ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE})
+    @EnableFeatures({ChromeFeatureList.DATA_SHARING})
     public void testSharedGroupNotificationBubbleShowAndHide_ExpandedGroup() {
         // Initialize shared tab group.
         StripLayoutGroupTitle groupTitle =
@@ -4996,7 +4994,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE)
     public void testHandleGroupTitleClick_Collapse() {
         // Initialize with 4 tabs. Group first three tabs.
         HistogramWatcher histogramWatcher =
@@ -5011,13 +5008,14 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.onClick(TIMESTAMP, views[0]);
 
         // Verify the proper event was sent to the TabGroupModelFilter.
-        verify(mTabGroupModelFilter).setTabGroupCollapsed(0, true);
+        verify(mTabGroupModelFilter)
+                .setTabGroupCollapsed(
+                        /* rootId= */ 0, /* isCollapsed= */ true, /* animate= */ true);
         // Verify we record the correct metric.
         histogramWatcher.assertExpected("Should record true, since we're collapsing.");
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE)
     public void testHandleGroupTitleClick_Expand() {
         // Initialize with 4 tabs. Group first three tabs.
         HistogramWatcher histogramWatcher =
@@ -5035,7 +5033,9 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.onClick(TIMESTAMP, views[0]);
 
         // Verify the proper event was sent to the TabGroupModelFilter.
-        verify(mTabGroupModelFilter).setTabGroupCollapsed(0, false);
+        verify(mTabGroupModelFilter)
+                .setTabGroupCollapsed(
+                        /* rootId= */ 0, /* isCollapsed= */ false, /* animate= */ true);
         // Verify we record the correct metric.
         histogramWatcher.assertExpected("Should record false, since we're expanding.");
     }
@@ -5091,7 +5091,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE)
     public void testUpdateTabGroupCollapsed_Collapse() {
         // Initialize with 4 tabs. Group first three tabs.
         initializeTest(false, false, 3, 4);
@@ -5123,7 +5122,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE)
     public void testUpdateTabGroupCollapsed_Expand() {
         // Initialize with 4 tabs. Group first three tabs.
         initializeTest(false, false, 3, 4);
@@ -5158,7 +5156,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE)
     public void testSelectedTabCollapse_MiddleGroup_PrevTabSelected() {
         // Initialize with 5 tabs. Group last two tabs.
         initializeTest(false, false, 3, 5);
@@ -5183,7 +5180,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE)
     public void testSelectedTabCollapse_StartGroup_NextTabSelected() {
         // Initialize with 5 tabs. Group first three tabs.
         initializeTest(false, false, 1, 5);
@@ -5208,7 +5204,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE)
     public void testCollapseSelectedTab_EndGroup_PrevTabSelected() {
         // Initialize with 5 tabs. Group last two tabs.
         initializeTest(false, false, 3, 5);
@@ -5233,7 +5228,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE)
     public void testCollapseSelectedTab_OpenNtp() {
         // Initialize with 5 tabs. Group all five tabs.
         initializeTest(false, false, 3, 5);
@@ -5257,7 +5251,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE)
     public void testTabSelected_ExpandsGroup() {
         // Group first two tabs and collapse.
         int startIndex = 3;
@@ -5297,23 +5290,17 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE)
     public void testTabCreated_InCollapsedGroup_Selected() {
         testTabCreated_InCollapsedGroup(/* selected= */ true);
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE)
     public void testTabCreated_InCollapsedGroup_NotSelected() {
         testTabCreated_InCollapsedGroup(/* selected= */ false);
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE,
-        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
-        ChromeFeatureList.DATA_SHARING
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID, ChromeFeatureList.DATA_SHARING})
     public void testTabGroupSyncIph_GroupTitleBubbleIph_ShowSequentially() {
         // Setup tab strip and group the first tab group.
         setupTabGroup(1, 2);
@@ -5358,11 +5345,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE,
-        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
-        ChromeFeatureList.DATA_SHARING
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID, ChromeFeatureList.DATA_SHARING})
     public void testTabGroupSyncIph_TabBubbleIph_ShowSequentially() {
         // Setup tab strip and group the first tab group.
         setupTabGroup(0, 2);
@@ -5408,11 +5391,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE,
-        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
-        ChromeFeatureList.DATA_SHARING
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID, ChromeFeatureList.DATA_SHARING})
     public void testTabGroupSyncIph_NotShowForCollaboration() {
         // Setup tab strip and group the first tab group.
         setupTabGroup(3, 5);
@@ -5434,10 +5413,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE,
-        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testTabGroupSyncIph_DismissOnOrientationChanged() {
         // Setup tab group and Tab Group Sync iph.
         setupTabGroup(4, 5);

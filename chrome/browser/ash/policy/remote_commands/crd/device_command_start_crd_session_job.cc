@@ -91,6 +91,13 @@ const base::TimeDelta kConnectionAutoAcceptTimeout = base::Seconds(30);
 // automatically terminating sessions exceeding this limit.
 const base::TimeDelta kMaximumRemoteSupportSessionDuration = base::Hours(8);
 
+// Ensure the admin is able to control the host during the CRD session.
+const bool kAllowRemoteInput = true;
+
+// Ensure the admin is able to use clipboard with the host during the CRD
+// session.
+const bool kAllowClipboardSync = true;
+
 std::optional<std::string> FindString(const base::Value::Dict& dict,
                                       std::string_view key) {
   if (!dict.contains(key)) {
@@ -300,6 +307,8 @@ void DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode(
   parameters.show_troubleshooting_tools = ShouldShowTroubleshootingTools();
   parameters.allow_reconnections = ShouldAllowReconnections();
   parameters.allow_file_transfer = ShouldAllowFileTransfer();
+  parameters.allow_remote_input = kAllowRemoteInput;
+  parameters.allow_clipboard_sync = kAllowClipboardSync;
   if (ShouldAutoAcceptSession(is_in_managed_environment)) {
     parameters.connection_auto_accept_timeout = kConnectionAutoAcceptTimeout;
   }

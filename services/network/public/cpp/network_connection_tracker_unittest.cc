@@ -311,7 +311,7 @@ TEST_F(NetworkConnectionTrackerTest, GetConnectionType) {
 
   ConnectionTypeGetter getter1(network_connection_tracker());
   ConnectionTypeGetter getter2(network_connection_tracker());
-  // These two GetConnectionType() will finish asynchonously because network
+  // These two GetConnectionType() will finish asynchronously because network
   // service is not yet set up.
   EXPECT_FALSE(getter1.GetConnectionType());
   EXPECT_FALSE(getter2.GetConnectionType());

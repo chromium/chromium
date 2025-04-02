@@ -1446,7 +1446,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
   base::RunLoop run_loop1;
   scoped_refptr<TrustedSignals::Result> signals1;
   std::optional<std::string> error_msg1;
-  auto request1 = scoring_request_manager_.RequestScoringSignals(
+  auto request1 = request_manager.RequestScoringSignals(
       ToCreativeInfo(kRenderUrl1), ToCreativeInfo(kAdComponentRenderUrls1),
       /*max_trusted_scoring_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
@@ -1456,7 +1456,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
   base::RunLoop run_loop2;
   scoped_refptr<TrustedSignals::Result> signals2;
   std::optional<std::string> error_msg2;
-  auto request2 = scoring_request_manager_.RequestScoringSignals(
+  auto request2 = request_manager.RequestScoringSignals(
       ToCreativeInfo(kRenderUrl2), ToCreativeInfo(kAdComponentRenderUrls2),
       /*max_trusted_scoring_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,

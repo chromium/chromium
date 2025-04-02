@@ -189,7 +189,9 @@
                     "addService",
                     "removeService",
                     "addCharacteristic",
-                    "removeCharacteristic"
+                    "removeCharacteristic",
+                    "addDescriptor",
+                    "removeDescriptor"
                 ]
             }
         ]

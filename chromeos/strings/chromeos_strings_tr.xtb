@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Ekran koruyucuyu devre dışı bırak</translation>
 <translation id="3091839911843451378">İşlem başarısız - Durdu</translation>
 <translation id="3102119246920354026">Önbellek</translation>
-<translation id="3112413615003385433">Öğretmeniniz School Tools'dan içerik kaldırdı</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">havuzlar</translation>
 <translation id="3122883569442693641">Diğer ayrıntılar</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Kısmen etkinleştirildi</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> tonda <ph name="OFFICE_STYLE" /> ofis</translation>
 <translation id="3493187369049186498">Veriler, Chromebook'unuz tarafından ölçülür. Bu değer, sağlayıcı verilerinden farklı olabilir.</translation>
-<translation id="349570724365779960">School Tools, öğrencilere bağlı</translation>
 <translation id="3502426834823382181">tüm uygulamaları göster</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Performans izleme verilerini<ph name="END_LINK1" /> gönder</translation>
 <translation id="3517001332549868749">ChromeOS güncellemesi</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Düzenleme tamamlandı</translation>
 <translation id="3532980081107202182">Yaklaşık <ph name="MIN_REMAINING" /> dakika kaldı</translation>
 <translation id="3533790840489634638">havuz</translation>
-<translation id="3535802910192338629">Öğretmeniniz School Tools'a yeni içerikler ekledi</translation>
 <translation id="3547264467365135390">Formül</translation>
 <translation id="3557205324756024651">Yerel kimlik (isteğe bağlı)</translation>
 <translation id="3565064564551103223">İzin verilen IP'ler</translation>
@@ -1440,7 +1437,6 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="7544853251252956727">Karıştır</translation>
 <translation id="7550715992156305117">Teşhis Rutinleri</translation>
 <translation id="7551123448725492271">Cihazın türü ses sistemi.</translation>
-<translation id="7553913964854052228">School Tools, mikrofonunuzu kullanıyor</translation>
 <translation id="7559239713112547082">Ekran Görüntüsünü Önizle</translation>
 <translation id="7561454561030345039">Bu işlem, yöneticiniz tarafından yönetilir.</translation>
 <translation id="7561759921596375678">Sesi aç</translation>
@@ -1663,7 +1659,6 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8576249514688522074">Başlatılmamış</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> donanım yazılımının <ph name="VERSION" /> sürümüne güncellenmesini tamamlamak için cihazın yeniden başlatılması gerekiyor. Bilgisayarınız birkaç kez yeniden başlatılıyormuş gibi görünebilir. Bu, beklenen bir davranıştır.</translation>
 <translation id="8593058461203131755">medyayı duraklat</translation>
-<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Dolaşım durumu</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> ile ilgili diğer işlemler</translation>
 <translation id="86356131183441916">Açık mor</translation>

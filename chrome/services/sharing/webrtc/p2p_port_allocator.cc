@@ -8,13 +8,16 @@
 #include <utility>
 
 #include "base/check.h"
+#include "third_party/webrtc_overrides/environment.h"
 
 namespace sharing {
 
 P2PPortAllocator::P2PPortAllocator(rtc::NetworkManager* network_manager,
                                    rtc::PacketSocketFactory* socket_factory,
                                    const Config& config)
-    : cricket::BasicPortAllocator(network_manager, socket_factory),
+    : cricket::BasicPortAllocator(WebRtcEnvironment(),
+                                  network_manager,
+                                  socket_factory),
       config_(config) {
   DCHECK(network_manager);
   DCHECK(socket_factory);

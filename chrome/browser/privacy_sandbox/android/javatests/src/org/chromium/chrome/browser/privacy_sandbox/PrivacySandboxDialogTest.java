@@ -89,8 +89,8 @@ public final class PrivacySandboxDialogTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_PRIVACY_SANDBOX)
-                    .setRevision(2)
-                    .setDescription("Changed feature flag behavior for button equalization")
+                    .setRevision(3)
+                    .setDescription("Launched button equalization")
                     .build();
 
     private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
@@ -442,7 +442,6 @@ public final class PrivacySandboxDialogTest {
     @SmallTest
     @Feature({"RenderTest"})
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_EQUALIZED_PROMPT_BUTTONS)
     public void renderEeaNoticeV2AdMeasurementDropdown() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -464,34 +463,7 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
-    @Feature({"RenderTest"})
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
-        ChromeFeatureList.PRIVACY_SANDBOX_EQUALIZED_PROMPT_BUTTONS,
-    })
-    public void renderEeaNoticeV2AdMeasurementDropdownWithEqualizedButtons() throws IOException {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mDialog =
-                            new PrivacySandboxDialogNoticeEeaV2(
-                                    sActivityTestRule.getActivity(),
-                                    new PrivacySandboxBridge(sActivityTestRule.getProfile(false)),
-                                    SurfaceType.BR_APP,
-                                    sActivityTestRule.getProfile(false),
-                                    sActivityTestRule.getActivity().getWindowAndroid());
-                    mDialog.show();
-                });
-        onViewWaiting(withId(R.id.privacy_sandbox_dialog));
-        tryClickOn(withId(R.id.ad_measurement_dropdown_element));
-        renderViewWithId(
-                R.id.privacy_sandbox_dialog,
-                "privacy_sandbox_eea_notice_dialog_v2_ad_measurement_dropdown_equalized_buttons");
-    }
-
-    @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_EQUALIZED_PROMPT_BUTTONS)
     public void eeaNoticeV2AckButton() throws IOException {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_EEA);
         launchDialog();
@@ -630,8 +602,7 @@ public final class PrivacySandboxDialogTest {
     @SmallTest
     @Feature({"RenderTest"})
     @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_EQUALIZED_PROMPT_BUTTONS)
-    public void renderEeaNoticeAdMeasurementDropdownWithEqualizedButtons() throws IOException {
+    public void renderEeaNoticeAdMeasurementDropdown() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mDialog =
@@ -644,7 +615,8 @@ public final class PrivacySandboxDialogTest {
         onViewWaiting(withId(R.id.privacy_sandbox_dialog));
         tryClickOn(withId(R.id.dropdown_element));
         renderViewWithId(
-                R.id.privacy_sandbox_dialog, "privacy_sandbox_eea_notice_dialog_equalized_buttons");
+                R.id.privacy_sandbox_dialog,
+                "privacy_sandbox_eea_notice_dialog_measurement_dropdown");
     }
 
     @Test
@@ -919,10 +891,7 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
-        ChromeFeatureList.PRIVACY_SANDBOX_EQUALIZED_PROMPT_BUTTONS
-    })
+    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS})
     public void controllerShowsEEANotice() throws IOException {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_EEA);
         launchDialog();

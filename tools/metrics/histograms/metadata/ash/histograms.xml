@@ -1229,6 +1229,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Boca.Babelorca.ReceivingStoppedReason"
+    enum="BabelOrcaReceivingStoppedReason" expires_after="2026-03-21">
+  <owner>anasr@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records why receiving captions was turned off at the consumer, whether this
+    was by the user turning off captions, or ending the session or because of a
+    request error that needs user manual retry.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Boca.Babelorca.StreamEndReason"
     enum="BabelOrcaStreamEndReason" expires_after="2026-03-21">
   <owner>anasr@google.com</owner>
@@ -2386,8 +2397,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.AnimationSmoothness.DeskEndGesture" units="%"
     expires_after="2025-07-01">
-  <owner>afakhry@chromium.org</owner>
-  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -2500,7 +2510,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.DeskButton.DeskBar.Enter.PresentationTime"
     units="ms" expires_after="2025-08-10">
-  <owner>sammiequon@chromium.org</owner>
   <owner>dandersson@chromium.org</owner>
   <owner>yongshun@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
@@ -2513,7 +2522,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.DeskButton.DeskBar.Exit.PresentationTime" units="ms"
     expires_after="2025-08-10">
-  <owner>sammiequon@chromium.org</owner>
   <owner>dandersson@chromium.org</owner>
   <owner>yongshun@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
@@ -2635,8 +2643,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.NumberOfDeskTraversals" units="units"
     expires_after="2025-07-27">
-  <owner>afakhry@chromium.org</owner>
-  <owner>sammiequon@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Tracks the number of times a desk (virtual workspace) has visibly changed in
@@ -2854,8 +2861,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.PresentationTime.UpdateGesture" units="ms"
     expires_after="2026-01-29">
-  <owner>afakhry@chromium.org</owner>
-  <owner>sammiequon@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -2869,8 +2875,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.PresentationTime.UpdateGesture.MaxLatency"
     units="ms" expires_after="2026-01-29">
-  <owner>afakhry@chromium.org</owner>
-  <owner>sammiequon@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -3155,7 +3160,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.DeskTemplate.SaveAsTemplatePressed" enum="BooleanHit"
     expires_after="2025-08-12">
   <owner>hewer@chromium.org</owner>
-  <owner>sammiequon@chromium.org</owner>
+  <owner>yongshun@chromium.org</owner>
   <summary>
     Emitted every time the &quot;Save desk as template&quot; option in the desk
     action context menu is pressed.
@@ -3165,7 +3170,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.DeskTemplate.SavedDeskButtonsShown" enum="BooleanHit"
     expires_after="2025-08-12">
   <owner>hewer@chromium.org</owner>
-  <owner>sammiequon@chromium.org</owner>
+  <owner>yongshun@chromium.org</owner>
   <summary>
     Emitted every time the desk action context menu opens and the saved desk
     options are shown.
@@ -3175,7 +3180,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.DeskTemplate.SavedDeskMenuOptionsShown" enum="BooleanHit"
     expires_after="2025-08-12">
   <owner>hewer@chromium.org</owner>
-  <owner>sammiequon@chromium.org</owner>
+  <owner>yongshun@chromium.org</owner>
   <summary>
     Emitted every time the desk action context menu opens and the saved desk
     options are not shown, but would have if the Saved Desk UI revamp feature
@@ -3186,7 +3191,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.DeskTemplate.SaveForLaterPressed" enum="BooleanHit"
     expires_after="2025-08-12">
   <owner>hewer@chromium.org</owner>
-  <owner>sammiequon@chromium.org</owner>
+  <owner>yongshun@chromium.org</owner>
   <summary>
     Emitted every time the &quot;Save desk for later&quot; option in the desk
     action context menu is pressed.
@@ -3196,7 +3201,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.DeskTemplate.ShowSavedDeskButtonsRevampDisabled"
     enum="BooleanHit" expires_after="2025-08-12">
   <owner>hewer@chromium.org</owner>
-  <owner>sammiequon@chromium.org</owner>
+  <owner>yongshun@chromium.org</owner>
   <summary>
     Emitted every time the saved desk buttons in the overview grid are shown.
   </summary>
@@ -3205,7 +3210,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.DeskTemplate.ShowSavedDeskButtonsRevampEnabled"
     enum="BooleanHit" expires_after="2025-08-12">
   <owner>hewer@chromium.org</owner>
-  <owner>sammiequon@chromium.org</owner>
+  <owner>yongshun@chromium.org</owner>
   <summary>
     Emitted every time the saved desk buttons in the overview grid are viable to
     be shown, but don't appear, as the Saved Desk UI revamp feature is enabled.
@@ -3560,7 +3565,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Float.FloatWindowCountsPerSession" units="windows"
     expires_after="2025-12-23">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of floating windows per session, which is from the time a user
@@ -3572,7 +3577,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Float.FloatWindowDuration" units="minutes"
     expires_after="2025-12-23">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@chromium.org</owner>
   <summary>
     The amount of time a user keeps a floating window open and visible. Open and
@@ -3586,7 +3591,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Float.FloatWindowMoveToAnotherDeskCounts" units="windows"
     expires_after="2025-12-23">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@chromium.org</owner>
   <summary>
     The counts of how many times floated windows moved to another desk per
@@ -4068,14 +4073,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.FullRestore.ShowFullRestoreNotification" enum="BooleanHit"
     expires_after="2025-09-21">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>Emitted every time the full restore notification shows up.</summary>
 </histogram>
 
 <histogram name="Ash.FullRestore.ShowInformedRestoreDialog" enum="BooleanHit"
     expires_after="2025-09-21">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>hewer@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>Emmited every time the informed restore dialog shows up.</summary>
 </histogram>
@@ -4616,8 +4621,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Homescreen.AnimationSmoothness" units="%"
     expires_after="2025-09-05">
-  <owner>sammiequon@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <summary>
     Relative smoothness of animations when performing tablet mode homescreen
     animations, recorded when the animation completes. 100% represents ideally
@@ -5031,8 +5036,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.LoginPerf.ManualRestore.{UIFlow}.TotalDuration" units="ms"
     expires_after="2025-08-01">
   <owner>junis@google.com</owner>
-  <owner>sammiequon@chromium.org</owner>
   <owner>xiyuan@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>
     Time from the moment sign in authentication is started until the post login
@@ -5375,7 +5380,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.MultiDisplay.WindowsMovedAfterRemap.DisplayRotated"
     enum="Boolean" expires_after="2025-07-15">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>minch@chromium.org</owner>
   <owner>yunchengs@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -5390,7 +5395,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.MultiDisplay.WindowsMovedAfterRemap.DisplayWorkAreaChanged"
     enum="Boolean" expires_after="2025-07-15">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>minch@chromium.org</owner>
   <owner>yunchengs@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -6176,7 +6181,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Overview.ArrowKeyPresses" units="units"
     expires_after="2025-06-21">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@chromium.org</owner>
   <summary>
     The number of times the arrow keys are pressed in overview mode per session,
@@ -6251,7 +6256,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Overview.Enter.PresentationTime2.{OverviewStartReason}"
     units="ms" expires_after="2025-09-14">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>zxdan@chromium.org</owner>
   <owner>esum@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
@@ -6267,7 +6272,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Overview.Exit.PresentationTime2" units="ms"
     expires_after="2025-09-14">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>zxdan@chromium.org</owner>
   <owner>esum@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
@@ -6279,7 +6284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.Items" units="units" expires_after="2025-09-14">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of items (single windows or groups of windows such as panels) in
@@ -6289,7 +6294,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Overview.KeyPressesOverItemsRatio" units="%"
     expires_after="2025-07-15">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     The ratio between the arrow key presses and the number of overview items,
@@ -6300,7 +6305,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Overview.OverviewClosedItems" units="units"
     expires_after="2025-09-14">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of items closed from the window overview for a single session.
@@ -6310,8 +6315,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Overview.Scroll.PresentationTime.MaxLatency.TabletMode"
     units="ms" expires_after="2025-07-15">
-  <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <summary>
     Maximum latency of the presentation time for scrolling the overview grid in
     overview mode for a scrolling session.
@@ -6320,8 +6325,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Overview.Scroll.PresentationTime.TabletMode" units="ms"
     expires_after="2025-07-15">
-  <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <summary>
     Presentation time for scrolling the overview grid in overview mode. Each
     time the grid is updated by a scroll, the time it takes to update the new
@@ -6331,7 +6336,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Overview.SelectionDepth" units="items"
     expires_after="2025-09-14">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     When a window is selected in overview mode, records that window's position
@@ -6358,7 +6363,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Overview.TimeBetweenActiveWindowChanges" units="seconds"
     expires_after="2025-09-14">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     The amount of time between endings of overview mode sessions which were
@@ -6370,7 +6375,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Overview.TimeBetweenUse" units="ms"
     expires_after="2025-09-14">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     The amount of time between uses of overview mode, recorded when overview
@@ -6381,7 +6386,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Overview.TimeInOverview" units="ms"
     expires_after="2025-09-14">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     The amount of time spent in overview mode. Overview mode is engaged by
@@ -6452,7 +6457,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.PersistentWindow.NumOfWindowsRestoredOnDisplayAdded"
     units="units" expires_after="2025-10-30">
   <owner>minch@chromium.org</owner>
-  <owner>sammiequon@chromium.org</owner>
   <owner>yunchengs@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -6465,7 +6469,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.PersistentWindow.NumOfWindowsRestoredOnScreenRotation"
     units="units" expires_after="2025-10-30">
   <owner>minch@chromium.org</owner>
-  <owner>sammiequon@chromium.org</owner>
   <owner>yunchengs@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -6717,7 +6720,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.PhantomWindowController.Show.PresentationTime" units="ms"
     expires_after="2025-07-15">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -6838,16 +6841,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Pine.DialogClosed" enum="ClosePineDialogType"
     expires_after="2025-04-05">
+  <owner>hewer@chromium.org</owner>
   <owner>minch@chromium.org</owner>
-  <owner>sammiequon@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>Emitted whenever the informed restore dialog closes.</summary>
 </histogram>
 
 <histogram name="Ash.Pine.DialogScreenshotVisibility" enum="Boolean"
     expires_after="2025-08-10">
+  <owner>hewer@chromium.org</owner>
   <owner>minch@chromium.org</owner>
-  <owner>sammiequon@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits true if the informed restore dialog is shown with a shutdown
@@ -6858,7 +6861,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Pine.OnboardingDialog.TurnRestoreOn" enum="Boolean"
     expires_after="2025-08-10">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>hewer@chromium.org</owner>
   <owner>sophiewen@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -6871,7 +6874,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Pine.ScreenshotDecodeDuration" units="ms"
     expires_after="2025-08-10">
   <owner>minch@chromium.org</owner>
-  <owner>sammiequon@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     The amount of time it took to fetch the shutdown screenshot from the disk
@@ -6892,7 +6895,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Pine.ScreenshotOnShutdownStatus"
     enum="ScreenshotOnShutdownStatus" expires_after="2025-08-10">
   <owner>minch@chromium.org</owner>
-  <owner>sammiequon@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded the status on taking the screenshot on shutdown. The recorded enum
@@ -6914,7 +6917,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Pine.TimeToAction.{PineContentsType}" units="ms"
     expires_after="2025-08-10">
   <owner>minch@chromium.org</owner>
-  <owner>sammiequon@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     The amount of time in ms that user takes from when they see the pine
@@ -8635,7 +8638,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.SplitViewResize.AnimationSmoothness.DividerAnimation"
     units="%" expires_after="2025-09-05">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
     Relative smoothness of animation when releasing the split view divider,
@@ -8844,7 +8847,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.TabletMode.AnimationSmoothness.Enter" units="%"
     expires_after="2025-10-25">
   <owner>oshima@chromium.org</owner>
-  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wmp@google.com</owner>
   <summary>
     Relative smoothness of animations when entering tablet mode, recorded when
@@ -8856,7 +8859,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.TabletMode.AnimationSmoothness.Exit" units="%"
     expires_after="2025-10-25">
   <owner>oshima@chromium.org</owner>
-  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wmp@google.com</owner>
   <summary>
     Relative smoothness of animations when exiting tablet mode, recorded when
@@ -9387,8 +9390,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Window.AnimationSmoothness.CrossFade" units="%"
     expires_after="2025-10-16">
-  <owner>sammiequon@chromium.org</owner>
   <owner>wutao@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <summary>
     Relative smoothness of cross fade animation when setting window bounds. 100%
     represents ideally smooth 60 frames per second. 50% represents when only 30
@@ -9400,7 +9403,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Window.AnimationSmoothness.CrossFade.DragMaximize"
     units="%" expires_after="2025-10-16">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>wutao@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     When dragging a maximized window, the window will shrink to restore bounds.
@@ -9416,7 +9420,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Window.AnimationSmoothness.CrossFade.DragUnmaximize"
     units="%" expires_after="2025-10-16">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     When dragging a maximized window, the window will shrink to restore bounds.
@@ -9430,7 +9434,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Window.AnimationSmoothness.Hide" units="%"
     expires_after="2025-10-16">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Relative smoothness of hiding window animation. 100% represents ideally
@@ -9443,7 +9447,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Window.AnimationSmoothness.Minimize" units="%"
     expires_after="2025-10-16">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Relative smoothness of minimizing window animation. 100% represents ideally
@@ -9456,7 +9460,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Window.AnimationSmoothness.Snap" units="%"
     expires_after="2025-10-16">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Relative smoothness of snapping window animation. 100% represents ideally
@@ -9470,7 +9474,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Window.AnimationSmoothness.Unminimize" units="%"
     expires_after="2025-10-16">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Relative smoothness of unminimizing window animation. 100% represents
@@ -9544,7 +9548,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.WindowCycleController.Enter.PresentationTime" units="ms"
     expires_after="2025-09-07">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the presentation time, which is the time in milliseconds it takes
@@ -9568,7 +9572,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.WindowCycleController.Items" units="items"
     expires_after="2025-08-24">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>minch@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
     The number of windows in the Alt+Tab selector. Only recorded once when
@@ -9633,7 +9637,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.WindowCycleController.TimeBetweenTaskSwitches"
     units="seconds" expires_after="2025-08-24">
-  <owner>sammiequon@chromium.org</owner>
+  <owner>minch@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
     The number of seconds between task switches triggered by the next window and

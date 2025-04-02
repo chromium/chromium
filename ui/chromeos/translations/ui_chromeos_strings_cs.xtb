@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">Znakování poděkování</translation>
 <translation id="2088690981887365033">Síť VPN</translation>
 <translation id="209653272837065803">K pokračování v synchronizaci souborů není k dispozici dostatek úložného prostoru</translation>
-<translation id="2111134541987263231">Zapněte možnost <ph name="BEGIN_BOLD" />Povolit v anonymním režimu<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Položky (<ph name="NUMBER_OF_ITEMS" />) budou smazány bez možnosti obnovy.</translation>
 <translation id="2122305276694332719">Automatické připojování ke skryté síti umožňuje ostatním uživatelům zobrazit vaše zařízení a některá vaše nastavení sítě a nedoporučujeme jej.</translation>
 <translation id="2125607626296734455">khmerština</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">Svazek <ph name="VOLUME_NAME" /> byl odpojen.</translation>
 <translation id="2307462900900812319">Konfigurovat síť</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Rozšíření s ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nelze najít. Kontaktujte svého administrátora.}few{Rozšíření s ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nelze najít. Kontaktujte svého administrátora.}many{Rozšíření s ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nelze najít. Kontaktujte svého administrátora.}other{Rozšíření s ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nelze najít. Kontaktujte svého administrátora.}}</translation>
 <translation id="2325650632570794183">Tento typ souboru není podporován. Navštivte prosím Internetový obchod Chrome, kde najdete aplikaci, ve které lze otevřít tento typ souboru.</translation>
 <translation id="2326539130272988168">bulharština</translation>
 <translation id="233822363739146957">K synchronizaci všech vašich souborů není k dispozici dostatek úložného prostoru</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">maráthština</translation>
 <translation id="2923240520113693977">estonština</translation>
 <translation id="2938685643439809023">mongolština</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Rozšíření nelze najít}few{Rozšíření nelze najít}many{Rozšíření nelze najít}other{Rozšíření nelze najít}}</translation>
 <translation id="2943503720238418293">Použijte kratší název</translation>
 <translation id="2949781154072577687">Formátování disku <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Medúza</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">Dokončeno</translation>
 <translation id="3358452157379365236">Kytara</translation>
 <translation id="3368922792935385530">Připojeno</translation>
-<translation id="3372635229069101468">Klikněte na <ph name="BEGIN_BOLD" />Podrobnosti<ph name="END_BOLD" />.</translation>
 <translation id="3382143449143186018">nepálština s klávesnicí InScript</translation>
 <translation id="338691029516748599">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, spravováno administrátorem, připojit</translation>
 <translation id="3408072735282270043">Aktivovat, <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">Jednorožec</translation>
 <translation id="4131235941541910880">Nepotřebné položky přesuňte do koše</translation>
 <translation id="4134804435730168042">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivujte po nastavení zařízení</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Zapněte v anonymním režimu následující rozšíření:}few{Zapněte v anonymním režimu následující rozšíření:}many{Zapněte v anonymním režimu následující rozšíření:}other{Zapněte v anonymním režimu následující rozšíření:}}</translation>
 <translation id="4153015322587141338">Klikněte pravým tlačítkem na soubor a výběrem možnosti <ph name="PIN_COMMAND" /> umožněte rychlý přístup k souborům na poličce.</translation>
 <translation id="4157569377477607576">Zásady administrátora nedoporučují:</translation>
 <translation id="4159731583141908892">Přesunutá položka: <ph name="FILE_NAME" />.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">Ponechat obojí</translation>
 <translation id="4804827417948292437">Avokádo</translation>
 <translation id="4805966553127040832">Obnovování <ph name="COUNT" /> položek…</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{K použití anonymního režimu vaše organizace vyžaduje rozšíření}few{K použití anonymního režimu vaše organizace vyžaduje určitá rozšíření}many{K použití anonymního režimu vaše organizace vyžaduje určitá rozšíření}other{K použití anonymního režimu vaše organizace vyžaduje určitá rozšíření}}</translation>
 <translation id="4826849268470072925">tamilština ITRANS</translation>
-<translation id="482932175346970750">Do prohlížeče zadejte adresu <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />.</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">Zobrazit</translation>
 <translation id="485316830061041779">němčina</translation>
@@ -560,7 +553,6 @@
     <ph name="MARKUP_7" />Sdílejte, vytvářejte a spolupracujte<ph name="MARKUP_8" /> na souborech s ostatními, a to vše na jednom místě.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Obnovené soubory z Disku Google</translation>
 <translation id="5278111733643988471">Pokud tuto položku chcete obnovit, přetáhněte ji do nové složky mimo koš. Původní složka „<ph name="PARENT_FOLDER_NAME" />“ pro tuto položku byla smazána.</translation>
-<translation id="5283101102242354279">Zapnutí rozšíření v anonymním režimu:</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5293615890992542006">Přesunutí tohoto souboru je blokováno zásadami administrátora</translation>
 <translation id="5305688511332277257">Není nainstalován žádný certifikát</translation>
@@ -814,7 +806,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, podrobnosti</translation>
 <translation id="7246947237293279874">Proxy server protokolu FTP</translation>
 <translation id="7248671827512403053">Aplikace</translation>
-<translation id="7252604552361840748">Najděte výše uvedené rozšíření.</translation>
 <translation id="7256405249507348194">Neznámá chyba: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Dostupné služby</translation>
 <translation id="7291818353625820805">Chcete, aby se klávesy opakovaly? Vypněte v Nastavení klávesnice diakritická znaménka</translation>

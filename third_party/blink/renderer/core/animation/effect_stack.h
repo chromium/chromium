@@ -83,6 +83,7 @@ class CORE_EXPORT EffectStack {
   // properties to include in the interpolations map.
   // |partial_effect_stack_cutoff| is an optional cutoff point, used to create
   // a partial effect stack.
+  // TODO(https://crbug.com/40446823): Remove `property_handle_filter`.
   static ActiveInterpolationsMap ActiveInterpolations(
       EffectStack* effect_stack,
       const HeapVector<Member<const InertEffect>>* new_animations,

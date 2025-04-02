@@ -76,6 +76,14 @@ export class FreAppController {
       }
     });
 
+    document.addEventListener('keydown', ev => {
+      if (ev.code === 'Escape') {
+        ev.stopPropagation();
+        ev.preventDefault();
+        freHandler.dismissFre();
+      }
+    });
+
     if (navigator.onLine) {
       this.setState(FreWebUiState.kBeginLoading);
     } else {

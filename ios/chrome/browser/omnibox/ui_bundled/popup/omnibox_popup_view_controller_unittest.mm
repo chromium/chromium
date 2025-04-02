@@ -59,12 +59,9 @@ class OmniboxPopupViewControllerTest : public PlatformTest {
         mockForProtocol:@protocol(AutocompleteResultConsumerDelegate)];
     preview_delegate_ =
         [OCMockObject mockForProtocol:@protocol(PopupMatchPreviewDelegate)];
-    return_delegate_ =
-        [OCMockObject mockForProtocol:@protocol(OmniboxReturnDelegate)];
     popup_view_controller_ = [[OmniboxPopupViewController alloc] init];
     popup_view_controller_.delegate = delegate_;
     popup_view_controller_.matchPreviewDelegate = preview_delegate_;
-    popup_view_controller_.acceptReturnDelegate = return_delegate_;
     // Force view initialisation since this view controller is never added into
     // the hierarchy in this unit test.
     [popup_view_controller_ view];
@@ -81,7 +78,6 @@ class OmniboxPopupViewControllerTest : public PlatformTest {
   }
 
   OCMockObject<AutocompleteResultConsumerDelegate>* delegate_;
-  OCMockObject<OmniboxReturnDelegate>* return_delegate_;
   OCMockObject<PopupMatchPreviewDelegate>* preview_delegate_;
   OmniboxPopupViewController* popup_view_controller_;
 
@@ -219,11 +215,9 @@ TEST_F(OmniboxPopupViewControllerTest, ReturnHighlightedSuggestion) {
              preselectedMatchGroupIndex:0];
   [preview_delegate_ verify];
 
-  // Pressing return key when no suggestion is highlighted calls the
-  // OmniboxReturnDelegate.
-  [[return_delegate_ expect] omniboxReturnPressed:OCMOCK_ANY];
-  [popup_view_controller_ omniboxReturnPressed:nil];
-  [return_delegate_ verify];
+  // Pressing return key when no suggestion is highlighted.
+  EXPECT_FALSE([popup_view_controller_
+      canPerformKeyboardAction:OmniboxKeyboardAction::kReturnKey]);
 
   // Select first suggestion with down arrow.
   ExpectPreviewSuggestion(first_suggestion_group_.suggestions[0], NO);
@@ -236,7 +230,10 @@ TEST_F(OmniboxPopupViewControllerTest, ReturnHighlightedSuggestion) {
       autocompleteResultConsumer:popup_view_controller_
              didSelectSuggestion:first_suggestion_group_.suggestions[0]
                            inRow:0];
-  [popup_view_controller_ omniboxReturnPressed:nil];
+  EXPECT_TRUE([popup_view_controller_
+      canPerformKeyboardAction:OmniboxKeyboardAction::kReturnKey]);
+  [popup_view_controller_
+      performKeyboardAction:OmniboxKeyboardAction::kReturnKey];
   [delegate_ verify];
 }
 

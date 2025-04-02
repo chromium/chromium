@@ -38,6 +38,7 @@
 <translation id="19085484004813472">ଏହା ଏକ ନୂଆ ଫିଚର୍ ଅଟେ</translation>
 <translation id="2006524834898217237">ଏହି ଡିଭାଇସ୍‌ଟି ଇଣ୍ଟର୍ନେଟ୍ ସହ ସଂଯୁକ୍ତ ହୋଇଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="208586643495776849">ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
+<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />ଇନକଗ୍ନିଟୋରେ ଅନୁମତି ଦିଅନ୍ତୁ<ph name="END_BOLD" />କୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1d}other{#d}}</translation>
 <translation id="2148716181193084225">ଆଜି</translation>
 <translation id="2168039046890040389">ଉପର ପୃଷ୍ଠା</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">ଆପଣଙ୍କ ସ୍କ୍ରିନ୍‌ରେ ସ୍ପର୍ଶ ଲକ୍ଷ୍ୟଗୁଡ଼ିକ ଟାପ୍ କରନ୍ତୁ।</translation>
 <translation id="2295140143284145483">ସର୍ଭେ</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{ଏହି ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ସହ କୌଣସି ଏକ୍ସଟେନସନ ମିଳିଲା ନାହିଁ। ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।}other{ଏହି IDଗୁଡ଼ିକ <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ସହ ଏକ୍ସଟେନସନଗୁଡ଼ିକ ମିଳିଲା ନାହିଁ। ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।}}</translation>
 <translation id="2353636109065292463">ଆପଣଙ୍କ ଇଣ୍ଟର୍ନେଟ୍ ସଂଯୋଗ ଯାଞ୍ଚ କରାଯାଉଛି</translation>
 <translation id="2359808026110333948">ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="2388990488038464401">ଆପଣଙ୍କ ଫୋନ୍‌ରୁ ଏହି ନମ୍ବର୍‍କୁ କଲ୍ କରିବେ?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">ସବୁ ଡିଲିଟ୍ କରନ୍ତୁ</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 ଦିନରେ}other{# ଦିନରେ}}</translation>
 <translation id="2922712708897119705">ସ୍ତମ୍ଭ <ph name="COLUMN_NAME" />କୁ ବଡ଼ରୁ ସାନ କ୍ରମରେ ସର୍ଟ୍ କରାଯାଇଛି।</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{ଏକ୍ସଟେନସନକୁ ଖୋଜାଯାଇପାରିବ ନାହିଁ}other{ଏକ୍ସଟେନସନଗୁଡ଼ିକୁ ଖୋଜାଯାଇପାରିବ ନାହିଁ}}</translation>
 <translation id="3036649622769666520">ଓପନ୍ ଫାଇଲ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">ନିମ୍ନଭାଗ</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">ଏଥିରୁ ଏକ କଲ୍ କରନ୍ତୁ</translation>
 <translation id="3306688585798492231">ବିଲ୍ଟ-ଇନ୍ ଡିସପ୍ଲେ</translation>
 <translation id="335581015389089642">ସ୍ପୀଚ୍‌</translation>
+<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />ବିବରଣୀ<ph name="END_BOLD" />ରେ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="3389286852084373014">ଟେକ୍ସଟ୍ ବହୁତ ଲମ୍ବା ଅଟେ</translation>
 <translation id="3406306243914553062">HTML ବିଷୟବସ୍ତୁ</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 ଦିନ ବାକି ଅଛି}other{# ଦିନ ବାକି ଅଛି}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">ସ୍ତମ୍ଭ <ph name="COLUMN_NAME" /> ସାନରୁ ବଡ଼ କ୍ରମରେ ସର୍ଟ୍ କରାଯାଇଛି।</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1ଟି ପଢ଼ାଯାଇନଥିବା ବିଜ୍ଞପ୍ତି}other{#ଟି ପଢ଼ାଯାଇନଥିବା ବିଜ୍ଞପ୍ତି}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{ଇନକଗ୍ନିଟୋରେ ନିମ୍ନୋକ୍ତ ଏକ୍ସଟେନସନକୁ ଚାଲୁ କରନ୍ତୁ:}other{ଇନକଗ୍ନିଟୋରେ ନିମ୍ନୋକ୍ତ ଏକ୍ସଟେନସନଗୁଡ଼ିକୁ ଚାଲୁ କରନ୍ତୁ:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ମାସ ପୂର୍ବେ}other{# ମାସ ପୂର୍ବେ}}</translation>
 <translation id="4289300219472526559">କହିବା ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="4289540628985791613">ଅବଲୋକନ</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">ନମ୍ବର</translation>
 <translation id="4746179598275229723">ଏକ୍ସଟେନସନକୁ ଅନପିନ କରାଯାଇଛି</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 ମାସ ବାକି ଅଛି}other{# ମାସ ବାକି ଅଛି}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{ଇନକଗ୍ନିଟୋ ବ୍ୟବହାର କରିବାକୁ ଆପଣଙ୍କ ସଂସ୍ଥା ଏକ ଏକ୍ସଟେନସନ ଆବଶ୍ୟକ କରେ}other{ଇନକଗ୍ନିଟୋ ବ୍ୟବହାର କରିବାକୁ ଆପଣଙ୍କ ସଂସ୍ଥା କିଛି ଏକ୍ସଟେନସନ ଆବଶ୍ୟକ କରେ}}</translation>
+<translation id="482932175346970750">ଆପଣଙ୍କ ବ୍ରାଉଜରରେ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ଟାଇପ କରନ୍ତୁ</translation>
 <translation id="4888938634149558681">କଲ୍ କରନ୍ତୁ</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 ସେକେଣ୍ଡ}other{# ସେକେଣ୍ଡ}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;ଲେପନ</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">ପଠାଇବାରେ ବିଫଳ ହେଲା</translation>
+<translation id="5283101102242354279">ଇନକଗ୍ନିଟୋରେ ଏକ ଏକ୍ସଟେନସନକୁ ଚାଲୁ କରନ୍ତୁ:</translation>
 <translation id="528468243742722775">ସମାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="5329858601952122676">&amp;ବିଲୋପ</translation>
 <translation id="5361107212971249203">ଟେକ୍ସଟ</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">ପରବର୍ତ୍ତୀ ସମୟରେ ଆପଣଙ୍କ ଆପ୍ଲିକେସନର ଡିସପ୍ଲେ ସେଟିଂସ୍ ରିଷ୍ଟାର୍ଟ ହେଲେ ଏଥିରେ ପରିବର୍ତ୍ତନଗୁଡ଼ିକ କାର୍ଯ୍ୟକାରୀ ହେବ।</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 ମିନିଟ୍ ବାକି ଅଛି}other{# ମିନିଟ୍ ବାକି ଅଛି}}</translation>
+<translation id="7252604552361840748">ଉପରେ ଏକ୍ସଟେନସନ ଖୋଜନ୍ତୁ</translation>
 <translation id="7363164521834647158">ଉତ୍ତର ପଠାନ୍ତୁ</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 ମିନିଟ୍ ପୂର୍ବେ}other{# ମିନିଟ୍ ପୂର୍ବେ}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>

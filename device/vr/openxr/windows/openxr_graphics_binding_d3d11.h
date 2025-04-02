@@ -34,6 +34,7 @@ class OpenXrGraphicsBindingD3D11 : public OpenXrGraphicsBinding {
       const XrSwapchain& color_swapchain) override;
   void ClearSwapchainImages() override;
   base::span<SwapChainInfo> GetSwapChainImages() override;
+  base::span<const SwapChainInfo> GetSwapChainImages() const override;
   bool CanUseSharedImages() const override;
   void CreateSharedImages(gpu::SharedImageInterface* sii) override;
   const SwapChainInfo& GetActiveSwapchainImage() override;
@@ -41,7 +42,7 @@ class OpenXrGraphicsBindingD3D11 : public OpenXrGraphicsBinding {
   bool Render(
       const scoped_refptr<viz::ContextProvider>& context_provider) override;
   void CleanupWithoutSubmit() override;
-  bool ShouldFlipSubmittedImage() override;
+  bool ShouldFlipSubmittedImage() const override;
   void SetOverlayAndWebXrVisibility(bool overlay_visible,
                                     bool webxr_visible) override;
   void SetWebXrTexture(mojo::PlatformHandle texture_handle,

@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">השבתת שומר המסך</translation>
 <translation id="3091839911843451378">נכשלה – משימת ההדפסה הופסקה</translation>
 <translation id="3102119246920354026">מטמון</translation>
-<translation id="3112413615003385433">המורה הסיר/ה תוכן ב'כלי בית הספר'</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">בריכות</translation>
 <translation id="3122883569442693641">פרטים נוספים</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">מופעל חלקית</translation>
 <translation id="3492882532495507361">משרד בסגנון <ph name="OFFICE_STYLE" /> עם נגיעות בעיצוב <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">‏הנתונים נמדדים על ידי מכשיר Chromebook שלך. יכול להיות שהנתונים האלה יהיו שונים מנתוני הספק.</translation>
-<translation id="349570724365779960">‏התלמידים מחוברים ל-‎School Tools</translation>
 <translation id="3502426834823382181">הצגת כל האפליקציות</translation>
 <translation id="3510890413042482857">שליחת <ph name="BEGIN_LINK1" />נתוני מעקב אחר ביצועים<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">‏עדכון של ChromeOS</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">העריכה הסתיימה</translation>
 <translation id="3532980081107202182">נותרו <ph name="MIN_REMAINING" /> דקות בערך</translation>
 <translation id="3533790840489634638">בריכה</translation>
-<translation id="3535802910192338629">נוסף תוכן חדש מהמורה ב'כלי בית הספר'</translation>
 <translation id="3547264467365135390">נוסחה</translation>
 <translation id="3557205324756024651">זהות מקומית (אופציונלי)</translation>
 <translation id="3565064564551103223">‏כתובות IP מורשות</translation>
@@ -1440,7 +1437,6 @@
 <translation id="7544853251252956727">ערבוב</translation>
 <translation id="7550715992156305117">תרחישי אבחון</translation>
 <translation id="7551123448725492271">המכשיר הוא התקן אודיו.</translation>
-<translation id="7553913964854052228">‏המיקרופון בשימוש על ידי School Tools‎</translation>
 <translation id="7559239713112547082">התצוגה המקדימה של צילום המסך</translation>
 <translation id="7561454561030345039">הפעולה הזו מנוהלת על-ידי מנהל המערכת</translation>
 <translation id="7561759921596375678">הפעלת השמע</translation>
@@ -1663,7 +1659,6 @@
 <translation id="8576249514688522074">לא מאותחלת</translation>
 <translation id="8584654835905316966">נדרשת הפעלה מחדש כדי להשלים את התקנת הקושחה של <ph name="DEVICE_NAME" /> לגרסה <ph name="VERSION" />. יכול להיות שייראה כאילו המחשב מופעל מחדש כמה פעמים. זו התנהגות רגילה.</translation>
 <translation id="8593058461203131755">השהיית המדיה</translation>
-<translation id="8619169570378509764">כלי בית הספר</translation>
 <translation id="8620617069779373398">סטטוס נדידה</translation>
 <translation id="8626489604350149811">עוד פעולות לגבי <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">סגול בהיר</translation>

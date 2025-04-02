@@ -13,10 +13,10 @@ cargo_crate("lib") {
   epoch = "2"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/adler2-2.0.0/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/adler2-v2/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/adler2-2.0.0/src/algo.rs",
-    "//third_party/rust/chromium_crates_io/vendor/adler2-2.0.0/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/adler2-v2/src/algo.rs",
+    "//third_party/rust/chromium_crates_io/vendor/adler2-v2/src/lib.rs",
   ]
   inputs = []
 

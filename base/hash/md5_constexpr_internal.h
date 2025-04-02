@@ -241,12 +241,6 @@ struct MD5CE {
   //////////////////////////////////////////////////////////////////////////////
   // WRAPPER FUNCTIONS
 
-  static constexpr uint64_t Hash64(std::string_view data) {
-    IntermediateData intermediate = ProcessMessage(data);
-    return (static_cast<uint64_t>(SwapEndian(intermediate.a)) << 32) |
-           static_cast<uint64_t>(SwapEndian(intermediate.b));
-  }
-
   static constexpr uint32_t Hash32(std::string_view data) {
     IntermediateData intermediate = ProcessMessage(data);
     return SwapEndian(intermediate.a);
@@ -256,10 +250,6 @@ struct MD5CE {
 }  // namespace internal
 
 // Implementations of the functions exposed in the public header.
-
-constexpr uint64_t MD5Hash64Constexpr(std::string_view string) {
-  return internal::MD5CE::Hash64(string);
-}
 
 constexpr uint32_t MD5Hash32Constexpr(std::string_view string) {
   return internal::MD5CE::Hash32(string);

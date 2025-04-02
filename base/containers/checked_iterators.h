@@ -17,6 +17,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span_forward_internal.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 
@@ -52,7 +53,7 @@ class CheckedContiguousIterator {
   // This function CHECKs that `start <= end` and will terminate otherwise.
   UNSAFE_BUFFER_USAGE constexpr CheckedContiguousIterator(T* start,
                                                           const T* end)
-      : start_(start), current_(start), end_(end) {
+      : CheckedContiguousIterator(AssumeValid(start, start, end)) {
     CHECK(start <= end);
   }
 
@@ -67,7 +68,7 @@ class CheckedContiguousIterator {
   UNSAFE_BUFFER_USAGE constexpr CheckedContiguousIterator(const T* start,
                                                           T* current,
                                                           const T* end)
-      : start_(start), current_(current), end_(end) {
+      : CheckedContiguousIterator(AssumeValid(start, current, end)) {
     CHECK(start <= current);
     CHECK(current <= end);
   }
@@ -219,6 +220,21 @@ class CheckedContiguousIterator {
   }
 
  private:
+  template <typename, size_t, typename>
+  friend class span;
+
+  // Helper to allow containers such as `span` to elide constructor `CHECK()`'s
+  // that begin <= current <= end.
+  struct AssumeValid {
+    RAW_PTR_EXCLUSION const T* start;
+    RAW_PTR_EXCLUSION T* current;
+    RAW_PTR_EXCLUSION const T* end;
+  };
+  constexpr explicit CheckedContiguousIterator(AssumeValid pointers)
+      : start_(pointers.start),
+        current_(pointers.current),
+        end_(pointers.end) {}
+
   constexpr void CheckComparable(const CheckedContiguousIterator& other) const {
     CHECK(start_ == other.start_);
     CHECK(end_ == other.end_);

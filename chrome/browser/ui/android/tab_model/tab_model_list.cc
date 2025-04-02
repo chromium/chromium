@@ -30,7 +30,7 @@ void TabModelList::AddTabModel(TabModel* tab_model) {
   tab_model_list_.Get().models_.push_back(tab_model);
 
   for (TabModelListObserver& observer : tab_model_list_.Get().observers_) {
-    observer.OnTabModelAdded();
+    observer.OnTabModelAdded(tab_model);
   }
 }
 
@@ -46,7 +46,7 @@ void TabModelList::RemoveTabModel(TabModel* tab_model) {
   }
 
   for (TabModelListObserver& observer : tab_model_list_.Get().observers_) {
-    observer.OnTabModelRemoved();
+    observer.OnTabModelRemoved(tab_model);
   }
 }
 

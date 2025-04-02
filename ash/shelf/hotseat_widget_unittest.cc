@@ -242,24 +242,6 @@ class HotseatWidgetTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class HotseatWidgetForestTest : public HotseatWidgetTest {
- public:
-  HotseatWidgetForestTest() = default;
-  ~HotseatWidgetForestTest() = default;
-
-  // HotseatWidgetTest:
-  void SetupFeatureLists() override {
-    scoped_feature_list_.InitWithFeatureStates({
-        {features::kHideShelfControlsInTabletMode,
-         !navigation_buttons_shown_in_tablet_mode()},
-        {features::kSunfishFeature, sunfish_or_scanner_enabled()},
-        {features::kScannerUpdate, sunfish_or_scanner_enabled()},
-        {features::kScannerDogfood, sunfish_or_scanner_enabled()},
-        {features::kForestFeature, true},
-    });
-  }
-};
-
 using StackedHotseatWidgetTest = HotseatWidgetTest;
 
 // Counts the number of times the work area changes.
@@ -369,16 +351,6 @@ class HotseatTransitionAnimationObserver
 INSTANTIATE_TEST_SUITE_P(
     All,
     HotseatWidgetTest,
-    testing::Combine(
-        testing::Values(ShelfAutoHideBehavior::kNever,
-                        ShelfAutoHideBehavior::kAlways),
-        /*is_assistant_enabled*/ testing::Bool(),
-        /*navigation_buttons_shown_in_tablet_mode*/ testing::Bool(),
-        /*sunfish_or_scanner_enabled=*/testing::Bool()));
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    HotseatWidgetForestTest,
     testing::Combine(
         testing::Values(ShelfAutoHideBehavior::kNever,
                         ShelfAutoHideBehavior::kAlways),
@@ -1012,37 +984,7 @@ TEST_P(HotseatWidgetTest, ObserverCallsMatch) {
   EXPECT_TRUE(observer.ObserverCountsEqual());
 }
 
-// Tests that a swipe up on the shelf shows the hotseat while in split view.
-TEST_P(HotseatWidgetTest, DisableBlurDuringOverviewMode) {
-  // TODO(sammiequon): Remove this test when forest feature can no longer be
-  // disabled.
-  if (features::IsForestFeatureEnabled()) {
-    return;
-  }
-
-  TabletModeControllerTestApi().EnterTabletMode();
-
-  ASSERT_EQ(
-      ShelfConfig::Get()->shelf_blur_radius(),
-      GetShelfWidget()->hotseat_widget()->GetHotseatBackgroundBlurForTest());
-
-  // Go into overview and check that at the end of the animation, background
-  // blur is disabled.
-  StartOverview();
-  WaitForOverviewAnimation(/*enter=*/true);
-  EXPECT_EQ(
-      0, GetShelfWidget()->hotseat_widget()->GetHotseatBackgroundBlurForTest());
-
-  // Exit overview and check that at the end of the animation, background
-  // blur is enabled again.
-  EndOverview();
-  WaitForOverviewAnimation(/*enter=*/false);
-  EXPECT_EQ(
-      ShelfConfig::Get()->shelf_blur_radius(),
-      GetShelfWidget()->hotseat_widget()->GetHotseatBackgroundBlurForTest());
-}
-
-TEST_P(HotseatWidgetForestTest, EnableBlurDuringOverviewMode) {
+TEST_P(HotseatWidgetTest, EnableBlurDuringOverviewMode) {
   TabletModeControllerTestApi().EnterTabletMode();
 
   const int expected_blur_radius = ShelfConfig::Get()->shelf_blur_radius();

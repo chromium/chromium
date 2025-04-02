@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">Menandatangani terima kasih</translation>
 <translation id="2088690981887365033">Jaringan VPN</translation>
 <translation id="209653272837065803">Ruang penyimpanan tidak cukup untuk melanjutkan sinkronisasi file</translation>
-<translation id="2111134541987263231">Aktifkan <ph name="BEGIN_BOLD" />Izinkan dalam mode Samaran<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> item akan dihapus dan Anda tidak akan dapat memulihkannya.</translation>
 <translation id="2122305276694332719">Menghubungkan ke jaringan tersembunyi secara otomatis akan memungkinkan orang lain melihat perangkat Anda dan beberapa setelan jaringan, sehingga tindakan ini tidak direkomendasikan.</translation>
 <translation id="2125607626296734455">Khmer</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> telah dikeluarkan.</translation>
 <translation id="2307462900900812319">Konfigurasi jaringan</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Ekstensi dengan ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> tidak dapat ditemukan. Hubungi administrator Anda.}other{Ekstensi dengan ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> tidak dapat ditemukan. Hubungi administrator Anda.}}</translation>
 <translation id="2325650632570794183">Jenis file ini tidak didukung. Kunjungi Chrome Webstore untuk menemukan aplikasi yang dapat membuka jenis file ini.</translation>
 <translation id="2326539130272988168">Bulgaria</translation>
 <translation id="233822363739146957">Ruang penyimpanan tidak cukup untuk menyinkronkan semua file Anda</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estonia</translation>
 <translation id="2938685643439809023">Mongolia</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Tidak dapat menemukan ekstensi}other{Tidak dapat menemukan ekstensi}}</translation>
 <translation id="2943503720238418293">Gunakan nama yang lebih pendek</translation>
 <translation id="2949781154072577687">Memformat <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Ubur-ubur</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">Selesai</translation>
 <translation id="3358452157379365236">Gitar</translation>
 <translation id="3368922792935385530">Terhubung</translation>
-<translation id="3372635229069101468">Klik <ph name="BEGIN_BOLD" />Detail<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">Nepali dengan keyboard InScript</translation>
 <translation id="338691029516748599">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Dikelola oleh Administrator Anda, Sambungkan</translation>
 <translation id="3408072735282270043">Aktifkan, <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4131235941541910880">Pindahkan item yang tidak Anda butuhkan ke sampah</translation>
 <translation id="4134804435730168042">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Aktifkan setelah penyiapan perangkat</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Aktifkan ekstensi berikut dalam mode Samaran:}other{Aktifkan ekstensi berikut dalam mode Samaran:}}</translation>
 <translation id="4153015322587141338">Klik kanan file, lalu pilih "<ph name="PIN_COMMAND" />" untuk akses cepat ke file Anda di rak.</translation>
 <translation id="4157569377477607576">Kebijakan administrator tidak merekomendasikan:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> dipindahkan.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">Simpan keduanya</translation>
 <translation id="4804827417948292437">Avokad</translation>
 <translation id="4805966553127040832">Memulihkan <ph name="COUNT" /> item</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Untuk menggunakan mode Samaran, organisasi Anda memerlukan ekstensi}other{Untuk menggunakan mode Samaran, organisasi Anda memerlukan beberapa ekstensi}}</translation>
 <translation id="4826849268470072925">ITRANS Tamil</translation>
-<translation id="482932175346970750">Ketik <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> di browser Anda</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">Lihat</translation>
 <translation id="485316830061041779">Jerman</translation>
@@ -561,7 +554,6 @@
     dalam file bersama orang lain, semuanya di satu tempat.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">File yang dipulihkan dari Google Drive</translation>
 <translation id="5278111733643988471">Untuk memulihkan item ini, tarik ke folder baru di luar sampah. Folder asli "<ph name="PARENT_FOLDER_NAME" />" untuk item ini telah dihapus.</translation>
-<translation id="5283101102242354279">Aktifkan ekstensi dalam mode Samaran:</translation>
 <translation id="5288441970121584418">Burger</translation>
 <translation id="5293615890992542006">Pemindahan file ini diblokir oleh kebijakan administrator</translation>
 <translation id="5305688511332277257">Tidak ada yang dipasang</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Detail</translation>
 <translation id="7246947237293279874">Proxy FTP</translation>
 <translation id="7248671827512403053">Aplikasi</translation>
-<translation id="7252604552361840748">Temukan ekstensi di atas</translation>
 <translation id="7256405249507348194">Kesalahan tidak dikenal: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Layanan yang tersedia</translation>
 <translation id="7291818353625820805">Ingin tombol diulang? Nonaktifkan tanda aksen di Setelan Keyboard</translation>

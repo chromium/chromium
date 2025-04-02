@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabmodel;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Observer of tab changes for all tabs owned by a {@link TabModelSelector}. */
+@NullMarked
 public class TabModelSelectorTabObserver extends EmptyTabObserver {
     private final TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
     private boolean mShouldDeferTabRegisterNotifications;

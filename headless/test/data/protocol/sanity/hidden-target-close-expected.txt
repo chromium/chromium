@@ -1,0 +1,18 @@
+Test closing hidden target
+Create hidden target
+Filtered targets via browser session: [
+    [0] : {
+        targetId : <string 0>
+        url : about:blank?HIDDEN=TARGET
+    }
+]
+Close hidden target
+DetachedFromTarget{
+    method : Target.detachedFromTarget
+    params : {
+        sessionId : <string 1>
+        targetId : <string 0>
+    }
+}
+Filtered targets via browser session: [
+]

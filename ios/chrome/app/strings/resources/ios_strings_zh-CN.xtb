@@ -105,6 +105,7 @@
 <translation id="1411386976162024013">智能镜头视觉搜索</translation>
 <translation id="1417474386970818917">退出账号并删除</translation>
 <translation id="1426410128494586442">是</translation>
+<translation id="1429187656584513419">打开“密码”</translation>
 <translation id="1430915738399379752">打印</translation>
 <translation id="1436671784520050284">继续设置</translation>
 <translation id="143681031165817424">地址仅保存在此设备上</translation>
@@ -288,6 +289,7 @@
 <translation id="2164946989711475905">登录…</translation>
 <translation id="2175927920773552910">二维码</translation>
 <translation id="218350106843433823">自动填充密码和通行密钥</translation>
+<translation id="2184272387334793084">登录后即可将您的密码等信息同步到您的所有设备上</translation>
 <translation id="2186206192313702726">Google 智能镜头</translation>
 <translation id="219283042927675668">分组内的标签页</translation>
 <translation id="2194856509914051091">注意事项</translation>
@@ -590,6 +592,7 @@
 <translation id="3530206579861815432">在所有已同步的设备上快速找到当前打开的和最近关闭的标签页。</translation>
 <translation id="3530767473765895035">管理此设备上的账号…</translation>
 <translation id="3533436815740441613">打开新的标签页</translation>
+<translation id="3533860663366814939">打开“自动填充与密码”设置</translation>
 <translation id="3547356470684043247">查看客户对产品、服务或体验的评估结果，以根据评价做出明智决策</translation>
 <translation id="3557336313807607643">添加到通讯录</translation>
 <translation id="355765753469272474">撤消</translation>
@@ -1512,6 +1515,7 @@
 <translation id="7431851541687113774">关闭地址检测</translation>
 <translation id="7431991332293347422">控制 Google 如何利用您的浏览记录为您提供个性化的 Google 搜索和其他 Google 服务</translation>
 <translation id="7435356471928173109">已被您的管理员关闭</translation>
+<translation id="7437712592381799950">您可以向上滑动，查看更多专为您量身定制的内容。</translation>
 <translation id="7438481509621345350">现在，当打开新标签页时，您会看到来自 <ph name="CHANNEL_NAME" /> 的故事。</translation>
 <translation id="7451023311965289370">{count,plural, =1{书签已保存至“{title}”}other{书签已保存至“{title}”}}</translation>
 <translation id="7451404862887877229">依次点按“隐私与安全”和“安全浏览”</translation>
@@ -1610,10 +1614,12 @@
 <translation id="7841180087127694526">搜索复制的文字</translation>
 <translation id="7841418003178675048">选择您在“新标签页”页面上看到的卡片。</translation>
 <translation id="7846161022626028328">出错了，请重试。</translation>
+<translation id="784623644169604270">近期无活动</translation>
 <translation id="7846296061357476882">Google 服务</translation>
 <translation id="784934925303690534">时间范围</translation>
 <translation id="7851858861565204677">来自其他设备的同步</translation>
 <translation id="7853202427316060426">活动</translation>
+<translation id="7854006015462979438">打开“通用”</translation>
 <translation id="7859988229622350291">一律不翻译</translation>
 <translation id="7863211248337747225">下载应用</translation>
 <translation id="7865127013871431856">翻译选项</translation>

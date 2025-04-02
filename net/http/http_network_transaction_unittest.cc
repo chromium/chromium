@@ -11696,6 +11696,12 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2) {
 
   const char kUrl[] = "https://server/kids/login.aspx";
 
+  const SpdySessionKey kSpdySessionKey(
+      HostPortPair("server", 443), PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+      SessionUsage::kDestination, SocketTag(), NetworkAnonymizationKey(),
+      SecureDnsPolicy::kAllow,
+      /*disable_cert_verification_network_fetches=*/false);
+
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL(kUrl);
@@ -11717,6 +11723,12 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2) {
   // Stream 1 is closed.
   spdy_util_.UpdateWithStreamDestruction(1);
 
+  // GOAWAY is sent.
+  spdy::SpdySerializedFrame go_away(spdy_util_.ConstructSpdyGoAway(
+      /*last_good_stream_id=*/0,
+      MapNetErrorToGoAwayStatus(ERR_HTTP_1_1_REQUIRED),
+      std::string(SpdySession::kHTTP11RequiredErrorMessage)));
+
   // Generate the NTLM messages based on known test data.
   std::string negotiate_msg = base::Base64Encode(std::string_view(
       reinterpret_cast<const char*>(ntlm::test::kExpectedNegotiateMsg),
@@ -11729,7 +11741,8 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2) {
           ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2),
       std::size(ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2)));
 
-  MockWrite writes0[] = {CreateMockWrite(request0, 0)};
+  MockWrite writes0[] = {CreateMockWrite(request0, 0),
+                         CreateMockWrite(go_away, 3)};
   MockRead reads0[] = {CreateMockRead(resp, 1),
                        MockRead(SYNCHRONOUS, ERR_IO_PENDING, 2)};
 
@@ -11797,6 +11810,9 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2) {
 
   rv = callback1.WaitForResult();
   EXPECT_THAT(rv, IsOk());
+  EXPECT_TRUE(session->spdy_session_pool()->HasAvailableSession(
+      kSpdySessionKey,
+      /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
 
   EXPECT_FALSE(trans.IsReadyToRestartForAuth());
 
@@ -11845,6 +11861,9 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2) {
 
   EXPECT_TRUE(session->http_server_properties()->RequiresHTTP11(
       url::SchemeHostPort(request.url), NetworkAnonymizationKey()));
+  EXPECT_FALSE(session->spdy_session_pool()->HasAvailableSession(
+      kSpdySessionKey,
+      /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
 }
 
 // Same as above, but with a host mapping in place. The mapped host is the one
@@ -11857,6 +11876,12 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithHostMapping) {
   const char kMappedUrl[] = "https://server2:12345/kids/login.aspx";
   session_deps_.host_mapping_rules.AddRuleFromString(
       "MAP server server2:12345");
+
+  const SpdySessionKey kMappedSpdySessionKey(
+      HostPortPair("server2", 12345), PRIVACY_MODE_DISABLED,
+      ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*disable_cert_verification_network_fetches=*/false);
 
   HttpRequestInfo request;
   request.method = "GET";
@@ -11879,6 +11904,12 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithHostMapping) {
   // Stream 1 is closed.
   spdy_util_.UpdateWithStreamDestruction(1);
 
+  // GOAWAY is sent.
+  spdy::SpdySerializedFrame go_away(spdy_util_.ConstructSpdyGoAway(
+      /*last_good_stream_id=*/0,
+      MapNetErrorToGoAwayStatus(ERR_HTTP_1_1_REQUIRED),
+      std::string(SpdySession::kHTTP11RequiredErrorMessage)));
+
   // Generate the NTLM messages based on known test data.
   std::string negotiate_msg = base::Base64Encode(std::string_view(
       reinterpret_cast<const char*>(ntlm::test::kExpectedNegotiateMsg),
@@ -11891,7 +11922,8 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithHostMapping) {
           ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2),
       std::size(ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2)));
 
-  MockWrite writes0[] = {CreateMockWrite(request0, 0)};
+  MockWrite writes0[] = {CreateMockWrite(request0, 0),
+                         CreateMockWrite(go_away, 3)};
   MockRead reads0[] = {CreateMockRead(resp, 1),
                        MockRead(SYNCHRONOUS, ERR_IO_PENDING, 2)};
 
@@ -11959,6 +11991,9 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithHostMapping) {
 
   rv = callback1.WaitForResult();
   EXPECT_THAT(rv, IsOk());
+  EXPECT_TRUE(session->spdy_session_pool()->HasAvailableSession(
+      kMappedSpdySessionKey,
+      /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
 
   EXPECT_FALSE(trans.IsReadyToRestartForAuth());
 
@@ -12009,6 +12044,9 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithHostMapping) {
       url::SchemeHostPort(request.url), NetworkAnonymizationKey()));
   EXPECT_TRUE(session->http_server_properties()->RequiresHTTP11(
       url::SchemeHostPort(GURL(kMappedUrl)), NetworkAnonymizationKey()));
+  EXPECT_FALSE(session->spdy_session_pool()->HasAvailableSession(
+      kMappedSpdySessionKey,
+      /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
 }
 
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
@@ -12017,6 +12055,13 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithHostMapping) {
 TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithWebsockets) {
   const GURL kInitialUrl("https://server/");
   const GURL kWebSocketUrl("wss://server/");
+
+  const SpdySessionKey kSpdySessionKey(
+      HostPortPair("server", 443), PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+      SessionUsage::kDestination, SocketTag(), NetworkAnonymizationKey(),
+      SecureDnsPolicy::kAllow,
+      /*disable_cert_verification_network_fetches=*/false);
+
   HttpAuthNtlmMechanism::ScopedProcSetter proc_setter(
       MockGetMSTime, MockGenerateRandom, MockGetHostName);
 
@@ -12062,10 +12107,15 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithWebsockets) {
       spdy_util_.ConstructSpdyResponseHeaders(
           3, std::move(auth_challenge_headers), true));
 
-  MockWrite writes0[] = {CreateMockWrite(initial_request, 0),
-                         CreateMockWrite(settings_ack, 2),
-                         CreateMockWrite(websocket_request, 4),
-                         MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 7)};
+  // GOAWAY is sent.
+  spdy::SpdySerializedFrame go_away(spdy_util_.ConstructSpdyGoAway(
+      /*last_good_stream_id=*/0,
+      MapNetErrorToGoAwayStatus(ERR_HTTP_1_1_REQUIRED),
+      std::string(SpdySession::kHTTP11RequiredErrorMessage)));
+
+  MockWrite writes0[] = {
+      CreateMockWrite(initial_request, 0), CreateMockWrite(settings_ack, 2),
+      CreateMockWrite(websocket_request, 4), CreateMockWrite(go_away, 7)};
   MockRead reads0[] = {CreateMockRead(settings_frame, 1),
                        CreateMockRead(initial_response, 3),
                        CreateMockRead(websocket_auth_challenge, 5),
@@ -12189,6 +12239,9 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithWebsockets) {
   rv = websocket_trans.Start(&websocket_request_info,
                              websocket_callback.callback(), NetLogWithSource());
   EXPECT_THAT(websocket_callback.GetResult(rv), IsOk());
+  EXPECT_TRUE(session->spdy_session_pool()->HasAvailableSession(
+      kSpdySessionKey,
+      /*enable_ip_based_pooling=*/true, /*is_websocket=*/true));
 
   EXPECT_FALSE(websocket_trans.IsReadyToRestartForAuth());
 
@@ -12216,6 +12269,9 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithWebsockets) {
   // WSS.
   EXPECT_TRUE(session->http_server_properties()->RequiresHTTP11(
       url::SchemeHostPort(kInitialUrl), NetworkAnonymizationKey()));
+  EXPECT_FALSE(session->spdy_session_pool()->HasAvailableSession(
+      kSpdySessionKey,
+      /*enable_ip_based_pooling=*/true, /*is_websocket=*/true));
 }
 
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)

@@ -288,6 +288,7 @@
 <translation id="2164946989711475905">Најавете се…</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="218350106843433823">Автоматски пополнувајте лозинки и криптографски клучеви</translation>
+<translation id="2184272387334793084">Најавете се за да ги добиете лозинките и друго на сите ваши уреди</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="219283042927675668">Картички во група</translation>
 <translation id="2194856509914051091">Нешта што треба да се земат предвид</translation>
@@ -440,6 +441,7 @@
 <translation id="2783161812871838616">Побарајте сајт за компјутер</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Лозинката е зачувана на вашата сметка на Google, {EMAIL}}one{Лозинките се зачувани во вашата сметка на Google, {EMAIL}}other{Лозинките се зачувани во вашата сметка на Google, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Додајте лозинка…</translation>
+<translation id="2793703503584038325">Изберете лозинка и допрете ја иконата „Сподели“</translation>
 <translation id="2797302972324086597">Код на земја</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} датотека}one{{COUNT} датотека}other{{COUNT} датотеки}}</translation>
 <translation id="2816489851009559785">Мени → Поставки → Стандарден прелистувач</translation>
@@ -579,6 +581,7 @@
 <translation id="35083190962747987">Отвори ${url}</translation>
 <translation id="3511519535430890904">Додајте заштита при прелистување</translation>
 <translation id="3517216995152707259">Бришењето на вашите податоци од прелистување нема да ве одјави од сметката на Google. За таа цел, <ph name="BEGIN_LINK" />одјавете се од Chrome<ph name="END_LINK" />.</translation>
+<translation id="3519792890877853853">Картичкава прикажува рецензии за производите во вашите отворени картички</translation>
 <translation id="3519905498307021260">{count,plural, =1{Отвори ја картичката}one{Отвори {count} картичка}other{Отвори {count} картички}}</translation>
 <translation id="3523513363815970085">Скриј „Вашите најчесто отворани сајтови“</translation>
 <translation id="3523789730715594198">Може да ја сопрете синхронизацијата во секое време во поставките. Google може да ги персонализира „Пребарување“ и другите услуги според вашата историја.</translation>
@@ -819,6 +822,7 @@
 <translation id="4565377596337484307">Скриј ја лозинката</translation>
 <translation id="4568230126482344545">Скриј „Неодамнешни картички“</translation>
 <translation id="4578835633387306383">Вклучете…</translation>
+<translation id="4580716718466706433">Одете во „Password Manager“</translation>
 <translation id="4587589328781138893">Сајтови</translation>
 <translation id="4592672037257622855">{count,plural, =1{Додадена е страница во вашиот „Список за читање“}one{Додадени се {count} страница во вашиот „Список за читање“}other{Додадени се {count} страници во вашиот „Список за читање“}}</translation>
 <translation id="459644946100970322">Да се вклучат известувањата за цени?</translation>
@@ -858,6 +862,7 @@
 <translation id="4717844083556844785">Тековната веб-страница е отворена во режим „Инкогнито“</translation>
 <translation id="4719927025381752090">Понудувај превод</translation>
 <translation id="4720530280568305198">Вашиот избор се отвори во нова картичка</translation>
+<translation id="472259426228234149">Цена: 100 $ – 180 $</translation>
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="474209246745757965">Купувајте и преведувајте со камерата</translation>
 <translation id="4742407542027196863">Управувајте со лозинките…</translation>
@@ -1606,6 +1611,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7841180087127694526">Пребарајте го копираниот текст</translation>
 <translation id="7841418003178675048">Изберете кои картички да се гледаат на вашата страница во нова картичка.</translation>
 <translation id="7846161022626028328">Се јави грешка. Обидете се повторно.</translation>
+<translation id="784623644169604270">Нема неодамнешна активност</translation>
 <translation id="7846296061357476882">Услуги на Google</translation>
 <translation id="784934925303690534">Временски период</translation>
 <translation id="7851858861565204677">Други уреди</translation>

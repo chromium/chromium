@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, RedirectToSelf) {
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
   // The non-navigation cookie write is correctly attributed to the previous
   // page.
-  EXPECT_TRUE(third_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_TRUE(third_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(third_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url3, &ukm_recorder()));
 
@@ -340,14 +340,14 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, DocumentCookie) {
 
   const BtmPageVisitObserver::VisitTuple& first_visit = recorder.visits()[0];
   EXPECT_THAT(first_visit.prev_page, HasUrlAndSourceIdForBlankPage());
-  EXPECT_FALSE(first_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_FALSE(first_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(first_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
 
   const BtmPageVisitObserver::VisitTuple& second_visit = recorder.visits()[1];
   EXPECT_THAT(second_visit.prev_page,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
-  EXPECT_FALSE(second_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_FALSE(second_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(second_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
 
@@ -355,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, DocumentCookie) {
   EXPECT_THAT(third_visit.prev_page,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
   // url2 accessed cookies; no other page did.
-  EXPECT_TRUE(third_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_TRUE(third_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(third_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url3, &ukm_recorder()));
 
@@ -561,7 +561,7 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
   // Navigational cookie writes are active storage accesses and should be
   // reported.
-  EXPECT_TRUE(second_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_TRUE(second_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(second_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
 
@@ -570,7 +570,7 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
   // Navigational cookie reads are passive storage accesses and shouldn't be
   // reported.
-  EXPECT_FALSE(third_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_FALSE(third_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(third_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url3, &ukm_recorder()));
 
@@ -612,7 +612,7 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
 
   // Navigational cookie writes are active storage accesses and should be
   // reported.
-  EXPECT_TRUE(second_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_TRUE(second_visit.prev_page.had_active_storage_access);
 }
 
 IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
@@ -654,8 +654,8 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
   ASSERT_THAT(second_visit.prev_page,
               HasUrlAndMatchingSourceId(url1b, &ukm_recorder()));
 
-  // The navigational cookie write was done by the redirect not the page.
-  EXPECT_FALSE(second_visit.prev_page.had_qualifying_storage_access);
+  // The navigational cookie write was done by the redirect, not the page.
+  EXPECT_FALSE(second_visit.prev_page.had_active_storage_access);
 }
 
 IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, SubresourceCookie) {
@@ -683,21 +683,21 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, SubresourceCookie) {
 
   const BtmPageVisitObserver::VisitTuple& first_visit = recorder.visits()[0];
   EXPECT_THAT(first_visit.prev_page, HasUrlAndSourceIdForBlankPage());
-  EXPECT_FALSE(first_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_FALSE(first_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(first_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
 
   const BtmPageVisitObserver::VisitTuple& second_visit = recorder.visits()[1];
   EXPECT_THAT(second_visit.prev_page,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
-  EXPECT_TRUE(second_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_TRUE(second_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(second_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
 
   const BtmPageVisitObserver::VisitTuple& third_visit = recorder.visits()[2];
   EXPECT_THAT(third_visit.prev_page,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
-  EXPECT_FALSE(third_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_FALSE(third_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(third_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url3, &ukm_recorder()));
 
@@ -745,7 +745,7 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
 
   const BtmPageVisitObserver::VisitTuple& first_visit = recorder.visits()[0];
   EXPECT_THAT(first_visit.prev_page, HasUrlAndSourceIdForBlankPage());
-  EXPECT_FALSE(first_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_FALSE(first_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(first_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
 
@@ -753,7 +753,7 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
   EXPECT_THAT(second_visit.prev_page,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
   // 1P cookie accesses in iframes should be reported.
-  EXPECT_TRUE(second_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_TRUE(second_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(second_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
 
@@ -761,7 +761,7 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
   EXPECT_THAT(third_visit.prev_page,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
   // Non-CHIPS 3P cookie accesses in iframes should be ignored.
-  EXPECT_FALSE(third_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_FALSE(third_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(third_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url3, &ukm_recorder()));
 
@@ -769,7 +769,7 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
   EXPECT_THAT(fourth_visit.prev_page,
               HasUrlAndMatchingSourceId(url3, &ukm_recorder()));
   // CHIPS 3P cookie accesses in iframes should be reported.
-  EXPECT_TRUE(fourth_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_TRUE(fourth_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(fourth_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url4, &ukm_recorder()));
 
@@ -840,7 +840,7 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, IframeDocumentCookie) {
 
   const BtmPageVisitObserver::VisitTuple& first_visit = recorder.visits()[0];
   EXPECT_THAT(first_visit.prev_page, HasUrlAndSourceIdForBlankPage());
-  EXPECT_FALSE(first_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_FALSE(first_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(first_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
 
@@ -848,7 +848,7 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, IframeDocumentCookie) {
   EXPECT_THAT(second_visit.prev_page,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
   // Iframe 1P cookie accesses should be reported.
-  EXPECT_TRUE(second_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_TRUE(second_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(second_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
 
@@ -856,7 +856,7 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, IframeDocumentCookie) {
   EXPECT_THAT(third_visit.prev_page,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
   // CHIPS 3PC accesses should be reported.
-  EXPECT_TRUE(third_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_TRUE(third_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(third_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url3, &ukm_recorder()));
 
@@ -864,7 +864,7 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, IframeDocumentCookie) {
   EXPECT_THAT(fourth_visit.prev_page,
               HasUrlAndMatchingSourceId(url3, &ukm_recorder()));
   // Non-CHIPS 3PC accesses should be ignored.
-  EXPECT_FALSE(fourth_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_FALSE(fourth_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(fourth_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url4, &ukm_recorder()));
 
@@ -897,21 +897,21 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
 
   const BtmPageVisitObserver::VisitTuple& first_visit = recorder.visits()[0];
   EXPECT_THAT(first_visit.prev_page, HasUrlAndSourceIdForBlankPage());
-  EXPECT_FALSE(first_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_FALSE(first_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(first_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
 
   const BtmPageVisitObserver::VisitTuple& second_visit = recorder.visits()[1];
   EXPECT_THAT(second_visit.prev_page,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
-  EXPECT_TRUE(second_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_TRUE(second_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(second_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
 
   const BtmPageVisitObserver::VisitTuple& third_visit = recorder.visits()[2];
   EXPECT_THAT(third_visit.prev_page,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
-  EXPECT_FALSE(third_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_FALSE(third_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(third_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url3, &ukm_recorder()));
 
@@ -1069,7 +1069,7 @@ IN_PROC_BROWSER_TEST_P(BtmPageVisitObserverSiteDataAccessBrowserTest,
 
   const BtmPageVisitObserver::VisitTuple& first_visit = recorder.visits()[0];
   EXPECT_THAT(first_visit.prev_page, HasUrlAndSourceIdForBlankPage());
-  EXPECT_FALSE(first_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_FALSE(first_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(first_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
 
@@ -1078,14 +1078,14 @@ IN_PROC_BROWSER_TEST_P(BtmPageVisitObserverSiteDataAccessBrowserTest,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
   // Storage accesses by the primary main frame should be attributed to that
   // page's visit.
-  EXPECT_TRUE(second_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_TRUE(second_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(second_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
 
   const BtmPageVisitObserver::VisitTuple& third_visit = recorder.visits()[2];
   EXPECT_THAT(third_visit.prev_page,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
-  EXPECT_FALSE(third_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_FALSE(third_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(third_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url3, &ukm_recorder()));
 
@@ -1112,7 +1112,7 @@ IN_PROC_BROWSER_TEST_P(BtmPageVisitObserverSiteDataAccessBrowserTest,
 
   const BtmPageVisitObserver::VisitTuple& first_visit = recorder.visits()[0];
   EXPECT_THAT(first_visit.prev_page, HasUrlAndSourceIdForBlankPage());
-  EXPECT_FALSE(first_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_FALSE(first_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(first_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
 
@@ -1120,14 +1120,14 @@ IN_PROC_BROWSER_TEST_P(BtmPageVisitObserverSiteDataAccessBrowserTest,
   EXPECT_THAT(second_visit.prev_page,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
   // Storage accesses by iframes should be attributed to the top-level frame.
-  EXPECT_TRUE(second_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_TRUE(second_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(second_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
 
   const BtmPageVisitObserver::VisitTuple& third_visit = recorder.visits()[2];
   EXPECT_THAT(third_visit.prev_page,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
-  EXPECT_FALSE(third_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_FALSE(third_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(third_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url3, &ukm_recorder()));
 
@@ -1157,7 +1157,7 @@ IN_PROC_BROWSER_TEST_P(BtmPageVisitObserverSiteDataAccessBrowserTest,
 
   const BtmPageVisitObserver::VisitTuple& first_visit = recorder.visits()[0];
   EXPECT_THAT(first_visit.prev_page, HasUrlAndSourceIdForBlankPage());
-  EXPECT_FALSE(first_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_FALSE(first_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(first_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
 
@@ -1165,7 +1165,7 @@ IN_PROC_BROWSER_TEST_P(BtmPageVisitObserverSiteDataAccessBrowserTest,
   EXPECT_THAT(second_visit.prev_page,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
   // Storage accesses in fenced frames should be ignored.
-  EXPECT_FALSE(second_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_FALSE(second_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(second_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
 
@@ -1209,7 +1209,7 @@ IN_PROC_BROWSER_TEST_P(BtmPageVisitObserverSiteDataAccessBrowserTest,
 
   const BtmPageVisitObserver::VisitTuple& first_visit = recorder.visits()[0];
   EXPECT_THAT(first_visit.prev_page, HasUrlAndSourceIdForBlankPage());
-  EXPECT_FALSE(first_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_FALSE(first_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(first_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
 
@@ -1217,7 +1217,7 @@ IN_PROC_BROWSER_TEST_P(BtmPageVisitObserverSiteDataAccessBrowserTest,
   EXPECT_THAT(second_visit.prev_page,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
   // Storage accesses in prerendered pages should be ignored.
-  EXPECT_FALSE(second_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_FALSE(second_visit.prev_page.had_active_storage_access);
   EXPECT_THAT(second_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
 

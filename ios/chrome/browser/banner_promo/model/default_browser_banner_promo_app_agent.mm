@@ -312,11 +312,8 @@
         break;
       }
     }
-  } else if (self.promoCurrentlyShown &&
-             _sessionDisplayCount >=
-                 kDefaultBrowserBannerPromoImpressionLimit.Get()) {
-    // Session only ends due to meeting impression limit if the promo is
-    // currently shown.
+  } else if (_sessionDisplayCount >=
+             kDefaultBrowserBannerPromoImpressionLimit.Get()) {
     base::UmaHistogramEnumeration(
         "IOS.DefaultBrowserBannerPromo.PromoSessionEnded",
         IOSDefaultBrowserBannerPromoPromoSessionEndedReason::kImpressionsMet);

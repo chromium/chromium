@@ -48,9 +48,9 @@ export class EditPasskeyDialogElement extends EditPasskeyDialogElementBase {
     };
   }
 
-  passkey: chrome.passwordsPrivate.PasswordUiEntry;
-  private username_: string;
-  private displayName_: string;
+  declare passkey: chrome.passwordsPrivate.PasswordUiEntry;
+  declare private username_: string;
+  declare private displayName_: string;
 
   override ready() {
     super.ready();

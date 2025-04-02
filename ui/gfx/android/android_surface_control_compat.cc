@@ -17,7 +17,6 @@
 #include "base/atomic_sequence_num.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
-#include "base/hash/md5_constexpr.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -503,8 +502,11 @@ struct TransactionAckCtx {
 };
 
 uint64_t GetTraceIdForTransaction(int transaction_id) {
-  constexpr uint64_t kMask =
-      base::MD5Hash64Constexpr("SurfaceControl::Transaction");
+  // Xor with a mask to reduce likelihood of flow id collision with non-surface
+  // tasks. First 64-bits of SHA256 hash of "SurfaceControl::Transaction",
+  // interpreted as a big-endian integer. Python snippet:
+  // hashlib.sha256(b'SurfaceControl::Transaction').hexdigest()[:8]
+  constexpr uint64_t kMask = 0x11119f59;
   return kMask ^ transaction_id;
 }
 

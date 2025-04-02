@@ -340,6 +340,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_with_static_analysis",
             "release_builder",
             "minimal_symbols",
             "strip_debug_info",
@@ -400,6 +401,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "clang_tot",
             "shared",
             "debug",
@@ -442,6 +444,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "clang_tot",
             "shared",
             "release",
@@ -496,6 +499,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "clang_tot",
             "shared",
             "release",
@@ -539,6 +543,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "clang_tot",
             "shared",
             "release",
@@ -583,6 +588,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "clang_tot",
             "release",
             "arm64",

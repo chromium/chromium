@@ -4,10 +4,12 @@
 
 #include "components/tpcd/enterprise_reporting/enterprise_reporting_tab_helper.h"
 
+#include "base/feature_list.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "net/base/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace tpcd::enterprise_reporting {

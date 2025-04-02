@@ -11,15 +11,12 @@
 
 namespace base {
 
-// Calculates the first 32/64 bits of the MD5 digest of the provided data,
-// returned as a uint32_t/uint64_t. When passing |string| with no explicit
-// length the terminating null will not be processed. This abstracts away
-// endianness so that the integer will read as the first 4 or 8 bytes of the
-// MD5 sum, ensuring that the following outputs are equivalent for
-// convenience:
-//
-// printf("%08x\n", MD5Hash32Constexpr("foo"));
-constexpr uint64_t MD5Hash64Constexpr(std::string_view string);
+// Calculates the first 32 bits of the MD5 digest of the provided data,
+// returned as a uint32_t. When passing |string| with no explicit length the
+// terminating null will not be processed. This abstracts away endianness so
+// that the integer will read as the first 4 or 8 bytes of the MD5 sum, ensuring
+// that the following outputs are equivalent for convenience:
+//   printf("%08x\n", MD5Hash32Constexpr("foo"));
 constexpr uint32_t MD5Hash32Constexpr(std::string_view string);
 
 }  // namespace base

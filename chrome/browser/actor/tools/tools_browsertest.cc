@@ -113,6 +113,25 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, BasicSmokeTest) {
   EXPECT_FALSE(result_fail.Get());
 }
 
+// Basic test of the MouseMoveTool.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool) {
+  const GURL url = embedded_test_server()->GetURL("/simple.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Use a random node id that doesn't exist.
+  BrowserAction action =
+      MakeMouseMove(/*content_node_id=*/kNonExistantContentNodeId);
+
+  TabInterface& tab = *active_tab();
+
+  TestFuture<bool> result_fail;
+  actor_coordinator().Act(tab, action, result_fail.GetCallback());
+  // The node id doesn't exist so the tool will return false.
+  // TODO(crbug.com/402218570): Add function to extract real DOMNodeId from the
+  // test page so we can expect a true click returning here.
+  EXPECT_FALSE(result_fail.Get());
+}
+
 // Basic test of the NavigateTool.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, NavigateTool) {
   const GURL url_start = embedded_test_server()->GetURL("/blank.html?start");
@@ -251,9 +270,9 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_BackSameDocument) {
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_BasicIframeBack) {
   const GURL main_frame_url =
       embedded_test_server()->GetURL("/simple_iframe.html");
-  const GURL child_frame_url_1 = embedded_test_server()->GetURL("/basic.html");
+  const GURL child_frame_url_1 = embedded_test_server()->GetURL("/blank.html");
   const GURL child_frame_url_2 =
-      embedded_test_server()->GetURL("/basic.html?next");
+      embedded_test_server()->GetURL("/blank.html?next");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), main_frame_url));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
@@ -310,13 +329,13 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_ConcurrentNavigations) {
   const GURL main_frame_url =
       embedded_test_server()->GetURL("/concurrent_navigations.html");
   const GURL child_frame_1_start_url =
-      embedded_test_server()->GetURL("/basic.html?A1");
+      embedded_test_server()->GetURL("/blank.html?A1");
   const GURL child_frame_1_target_url =
-      embedded_test_server()->GetURL("/basic.html?A2");
+      embedded_test_server()->GetURL("/blank.html?A2");
   const GURL child_frame_2_start_url =
-      embedded_test_server()->GetURL("/basic.html?B1");
+      embedded_test_server()->GetURL("/blank.html?B1");
   const GURL child_frame_2_target_url =
-      embedded_test_server()->GetURL("/basic.html?B2");
+      embedded_test_server()->GetURL("/blank.html?B2");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), main_frame_url));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 

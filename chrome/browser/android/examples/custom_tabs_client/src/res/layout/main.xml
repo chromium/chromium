@@ -654,5 +654,19 @@
             android:layout_height="wrap_content"
             android:checked = "false"
             android:text="@string/share_identity_text" />
+
+        <CheckBox
+            android:id="@+id/open_in_browser_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/open_in_browser_text" />
+
+        <CheckBox
+            android:id="@+id/show_action_button_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "true"
+            android:text="@string/show_action_button_text" />
     </LinearLayout>
 </ScrollView>

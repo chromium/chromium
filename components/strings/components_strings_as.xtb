@@ -298,7 +298,6 @@
 <translation id="1492194039220927094">নীতি বলৱৎ কৰা:</translation>
 <translation id="1495677929897281669">টেবলৈ উভতি যাওক</translation>
 <translation id="1500286806237135498">কেমেৰা (<ph name="CAMERAS_COUNT" />)</translation>
-<translation id="1501859676467574491">আপোনাৰ Google একাউণ্টৰ পৰা কার্ডসমূহ দেখুৱাওক</translation>
 <translation id="1504042622576912555">বাঁহী</translation>
 <translation id="1507202001669085618">&lt;p&gt;আপুনি অনলাইন হোৱাৰ পূর্বে ছাইন ইন কৰিব লগা কোনো ৱাই-ফাই পর্টেল ব্যৱহাৰ কৰিলে এই সমস্যটোৰ সন্মুখীন হ’ব।&lt;/p&gt;
     &lt;p&gt;এই সমস্যাটো সমাধান কৰিবলৈ, আপুনি খুলিবলৈ চেষ্টা কৰি থকা পৃষ্ঠাটোত &lt;শক্তিশালী&gt;সংযোগ কৰক&lt;/শক্তিশালী&gt;-ত ক্লিক কৰক।&lt;/p&gt;</translation>
@@ -1016,6 +1015,7 @@
 <translation id="2742870351467570537">বাছি লোৱা সামগ্ৰীবোৰ আঁতৰাওক</translation>
 <translation id="2743512410823092182">DJৰ উৎস আৰু সৰঞ্জাম</translation>
 <translation id="2743934314332613923">চালকৰ অনুজ্ঞাপত্ৰ আপডে’ট কৰিবনে?</translation>
+<translation id="2759299890026163685">পুনৰ চেষ্টা কৰাৰ আগতে আপোনাৰ সুস্থিৰ ইণ্টাৰনেট সংযোগ থকাটো নিশ্চিত কৰক</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" />ত আপোনাৰ পাছৱৰ্ডটো দিয়ক</translation>
 <translation id="2764001903315068341">কমিক</translation>
 <translation id="2765217105034171413">সৰু</translation>
@@ -1278,6 +1278,7 @@
 <translation id="323107829343500871"><ph name="CREDIT_CARD" />ৰ CVC দিয়ক</translation>
 <translation id="3234666976984236645">এই ছাইটটোত সদায়েই গুৰুত্বপূৰ্ণ সমল ধৰা পেলাওক</translation>
 <translation id="323585066388831737">পাতল ৰঙা</translation>
+<translation id="3235902901585019063">স্থানীয় ফাইলসমূহ <ph name="DATE_TIME" />ত মচা হ’ব। যিকোনো গুৰুত্বপূৰ্ণ ব্যৱসায় বা ব্যক্তিগত তথ্য বাহ্যিকভাৱে ষ্ট’ৰ কৰাটো নিশ্চিত কৰক।</translation>
 <translation id="3236212803136366317">কাৰ্ডৰ লাভসমূহ</translation>
 <translation id="3238395604961564389">লিংকটো ইনক’গনিট’ ৱিণ্ড’ত খোলক</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপোনাৰ ব্ৰাউজাৰৰ ৰূপ কাষ্টমাইজ কৰিবলৈ টেব টিপক আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
@@ -1755,6 +1756,7 @@
 <translation id="4031179711345676612">মাইক্ৰ’ফ’নৰ অনুমতি আছে</translation>
 <translation id="4036753017940930924">ভূমিৰ টুকুৰা আৰু ভূমি</translation>
 <translation id="4039506337798853114">আপোনাৰ কাৰ্ছৰডাল দেখুৱাবলৈ, |<ph name="ACCELERATOR" />| টিপক</translation>
+<translation id="4045226534284799755">পুনৰ চেষ্টা কৰাৰ আগতে আপোনাৰ Microsoft একাউণ্টত ছাইন ইন কৰক</translation>
 <translation id="4045441967987592849">পুনৰ খোলক</translation>
 <translation id="4047351652147966654">১৮ x ২৪ ইঞ্চি</translation>
 <translation id="404831776305217138">"<ph name="EXTENSION_ID" />" আইডিযুক্ত এক্সটেনশ্বনৰ আপডে’ট URL মান্য নহয় অথবা সেইটোৱে অসমৰ্থিত স্কীম ব্যৱহাৰ কৰে। সমৰ্থিত স্কীমসমূহ হৈছে: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> আৰু <ph name="FILE_SCHEME" />।</translation>
@@ -1775,6 +1777,7 @@
 <translation id="4073797364926776829">কাৰ্ড চাওক</translation>
 <translation id="4075732493274867456">ক্লায়েণ্ট আৰু ছাৰ্ভাৰত এটা উমৈহতীয়া SSL প্ৰ্ৰ'টকল সংস্কৰণ বা চাইফাৰ ছুট সমৰ্থন নকৰে।</translation>
 <translation id="4079302484614802869">প্ৰক্সি কনফিগাৰেশ্বন এটা .pac স্ক্রিপ্ট URL ব্যৱহাৰ কৰিবলৈহে ছেট কৰা হয়, স্থিৰ প্ৰক্সি ছাৰ্ভাৰ ব্যৱহাৰ কৰিবলৈ নহয়।</translation>
+<translation id="4080855220442581440">শ্বেয়াৰ কৰা টেবসমূহ স্ক্ৰ’ল কৰা আৰু জুম কৰা</translation>
 <translation id="4082333119419111506">কাগজ (আগতে প্ৰিণ্ট কৰা)</translation>
 <translation id="4082393374666368382">ছেটিংসমূহ - পৰিচালনা</translation>
 <translation id="4084219288110917128">এনভেল’প C1</translation>
@@ -2042,6 +2045,7 @@
 <translation id="4521280267704259211">এনভেল’প ম’নাৰ্ক</translation>
 <translation id="4521916730539354575">বাওঁফালৰ ট্ৰে’</translation>
 <translation id="4522570452068850558">সবিশেষ</translation>
+<translation id="4523580145196408446">লিংক কৰা আছে</translation>
 <translation id="4523643381056109546">ছাইনেজ</translation>
 <translation id="4524138615196389145">এতিয়াৰ পৰা WebAuthn ব্যৱহাৰ কৰি আপোনাৰ কাৰ্ডসমূহ খৰতকীয়াকৈ নিশ্চিত কৰক</translation>
 <translation id="45243788195988825"><ph name="TOPIC" />ক অৱৰোধ কৰক</translation>
@@ -2206,6 +2210,7 @@
 <translation id="4834250788637067901">Google Pay ব্যৱহাৰ কৰা পৰিশোধ পদ্ধতি, অফাৰ আৰু ঠিকনা</translation>
 <translation id="4840250757394056958">আপোনাৰ Chromeৰ ইতিহাস চাওক</translation>
 <translation id="484462545196658690">স্বয়ংক্ৰিয়</translation>
+<translation id="4844937814014739139">শ্বেয়াৰ কৰা টেবসমূহ স্ক্ৰ’ল কৰা আৰু জুম কৰা</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> আৰু বহুতত ৰেহাই পাওক</translation>
 <translation id="484988093836683706">ডিভাইচ আনলক কৰাৰ সুবিধাটো ব্যৱহাৰ কৰক</translation>
 <translation id="4850886885716139402">চাওক</translation>
@@ -2499,6 +2504,7 @@
 <translation id="5344522958567249764">বিজ্ঞাপনৰ গোপনীয়তা পৰিচালনা কৰক</translation>
 <translation id="5344579389779391559">এই পৃষ্ঠাটোৱে আপোনাৰ পৰা মাচুল লোৱাৰ চেষ্টা কৰিব পাৰে</translation>
 <translation id="5345249337934847112">কাগজ (হেভিৱেইট ক’টেড)</translation>
+<translation id="5348330584842140856">এই ফাইলটো স্থানান্তৰ কৰা নহ’ল কাৰণ ই আৰু উপলব্ধ নহয়</translation>
 <translation id="5349543692327946794">লেবেল (ইংকজেট)</translation>
 <translation id="5351548097010183514">ঘৰ বনোৱা সামগ্ৰী আৰু যোগান</translation>
 <translation id="5354143049423063163">হে’জ পুঁজি</translation>
@@ -2763,6 +2769,7 @@
 <translation id="5826507051599432481">কামাণ্ডৰ নাম (CN)</translation>
 <translation id="5830698870816298009">কেমেৰাৰ ব্যৱহাৰ আৰু গতিবিধি</translation>
 <translation id="583281660410589416">অজ্ঞাত</translation>
+<translation id="5837220895135257862">পুনৰ চেষ্টা কৰাৰ আগতে <ph name="CLOUD_PROVIDER" />ত ঠাই খালী কৰক</translation>
 <translation id="5838278095973806738">আপুনি এই চাইটটোত কোনো সংবেদনশীল তথ্য দিয়াটো উচিত নহয় (উদাহৰণ স্বৰূপে, পাছৱৰ্ড বা ক্ৰেডিট কাৰ্ড) কাৰণ এয়া আক্ৰমণকাৰীয়ে চুৰ কৰিব পাৰে।</translation>
 <translation id="5838732667866024867">আপুনি গ্ৰাফত সালসলনি হোৱা দাম পৰ্যালোচনা কৰিবলৈ বাঁও/সোঁমুৱা কাঁড়চিহ্ন ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="5840318881868981258">আপোনাৰ Google একাউণ্ট, <ph name="ACCOUNT" />ত</translation>
@@ -3113,6 +3120,7 @@
 <translation id="6405181733356710802"><ph name="APP_NAME" />লৈ যাবনে?</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" />ৰ ম্যাদ উকলা তাৰিখ আৰু CVC দিয়ক</translation>
 <translation id="6411107829285739505">A4x8</translation>
+<translation id="6412543105195503444">অভিভাৱকৰ অনুমোদন সম্পৰ্কীয় ডায়লগ</translation>
 <translation id="6414010576370319452">ছাল আৰু নখৰ যত্ন</translation>
 <translation id="6415778972515849510">Chromiumএ আপোনাৰ Google একাউণ্ট সুৰক্ষিত কৰাত আৰু আপোনৰ পাছৱৰ্ড সলনি কৰাত সহায় কৰিব পাৰে।</translation>
 <translation id="6416877227920300343">EDP</translation>
@@ -4021,6 +4029,7 @@
 <translation id="799149739215780103">সংযুক্ত কৰক</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" />ৰ সৈতে স্ক্ৰীন শ্বেয়াৰ কৰাৰ সুবিধাটো পুনৰ আৰম্ভ কৰা হৈছে</translation>
 <translation id="7995512525968007366">নির্দিষ্ট কৰা হোৱা নাই</translation>
+<translation id="7997855386298213183">শ্বেয়াৰ কৰা টেব</translation>
 <translation id="800218591365569300">মেম’ৰী খালী কৰিবলৈ অন্য টেব বা প্র’গ্ৰেম বন্ধ কৰি চাওক।</translation>
 <translation id="8002230960325005199">জড়িত হৈ থকা ছাইটসমূহ এটা নতুন টেবত চাওক</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
@@ -4095,6 +4104,7 @@
 <translation id="812020627659652807">এতিয়াই ফাইল মচক</translation>
 <translation id="8120720167840853945">এই নীতিয়ে আন কোনো নীতিৰ ডিফ’ল্ট আচৰণ নিয়ন্ত্ৰণ কৰি থকা নাই।</translation>
 <translation id="8127301229239896662">আপোনাৰ কম্পিউটাৰ বা নেটৱৰ্কত "<ph name="SOFTWARE_NAME" />" ভালকৈ ইনষ্টল কৰা হোৱা নাছিল। আপোনাৰ আইটি প্ৰশাসকক এই সমস্যাটোৰ সমাধান বিচাৰক</translation>
+<translation id="8130113808541743942">ইয়ালৈ স্থানান্তৰ কৰক…</translation>
 <translation id="8131740175452115882">নিশ্চিত কৰক</translation>
 <translation id="8133495915926741232">বিষয়বস্তুৰ কোনবোৰ বিস্তৃত শিতান বিজ্ঞাপন ব্যক্তিগতকৰণ কৰাত সহায় কৰিবলৈ ব্যৱহাৰ কৰিব পাৰি সেয়া বাছনি কৰক। কোনো বিস্তৃত শিতান অফ কৰাটোৱে ইয়াৰ সৈতে সম্পৰ্কিত বিষয়বস্তুও অৱৰোধ কৰিব। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">নিযুক্তি আৰু কৰ্মচাৰীৰ ভৰ্তিকৰণ</translation>

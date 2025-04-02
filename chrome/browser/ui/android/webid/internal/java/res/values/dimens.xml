@@ -13,7 +13,10 @@ found in the LICENSE file.
   <dimen name="account_selection_sheet_close_button_horizontal_margin">12dp</dimen>
   <dimen name="account_selection_sheet_title_height">32dp</dimen>
   <dimen name="account_selection_sheet_item_padding">10dp</dimen>
+  <dimen name="account_selection_account_avatar_margin_end">16dp</dimen>
   <dimen name="account_selection_account_avatar_size">40dp</dimen>
+  <dimen name="account_selection_account_avatar_multi_idp_size">48dp</dimen>
+  <dimen name="account_selection_account_avatar_multi_idp_margin_end">8dp</dimen>
   <dimen name="account_selection_account_avatar_monogram_text_size">16dp</dimen>
   <dimen name="account_selection_login_brand_icon_size">20dp</dimen>
   <dimen name="account_selection_sheet_icon_size">20dp</dimen>

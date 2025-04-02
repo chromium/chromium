@@ -268,14 +268,15 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // ways to get a copy of the internal contents.
   scoped_refptr<StaticBitmapImage> GetUnacceleratedStaticBitmapImage();
 
+  // `src_rect` is always in top-left coordinate space.
   bool CopyToPlatformTexture(gpu::gles2::GLES2Interface*,
                              GLenum dst_target,
                              GLuint dst_texture,
                              GLint dst_level,
                              bool premultiply_alpha,
-                             bool flip_y,
+                             GrSurfaceOrigin destination_origin,
                              const gfx::Point& dst_texture_offset,
-                             const gfx::Rect& src_sub_rectangle,
+                             const gfx::Rect& src_rect,
                              SourceDrawingBuffer);
 
   bool CopyToPlatformMailbox(gpu::raster::RasterInterface*,

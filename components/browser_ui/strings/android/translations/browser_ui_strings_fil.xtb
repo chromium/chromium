@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">Puwersahang i-enable ang zoom</translation>
 <translation id="3905475044299942653">Ihinto ang napakaraming notification</translation>
 <translation id="3908288065506437185">I-block ang mga third-party na cookie sa Incognito mode</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Posibleng hindi gumana ang ilang feature. Puwede pa ring gumamit ng third-party na cookie ang mga nauugnay na site.</translation>
 <translation id="3922092564198021702">Sa iyong telepono, buksan ang Mga Setting</translation>
 <translation id="3933121352599513978">I-collapse ang mga hindi gustong request (inirerekomenda)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">Mga Detalye</translation>
 <translation id="4598549027014564149">Habang nasa Incognito, hindi magagamit ng mga site ang cookies mo para makita ang iyong aktibidad sa pag-browse sa lahat ng site, kahit sa mga nauugnay na site. Hindi ginagamit ang iyong aktibidad sa pag-browse para sa mga bagay tulad ng pag-personalize ng mga ad. Posibleng hindi gumana ang mga feature sa ilang site.</translation>
 <translation id="461356340001513807">Pinapayagan kang mag-sign in sa mga website gamit ang account na mayroon ka gamit ang serbisyo para sa pagkakakilanlan</translation>
-<translation id="4619615317237390068">Mga tab mula sa iba pang device</translation>
 <translation id="4635969503923889910">Huwag payagan ang mga site na gumamit ng mga NFC device</translation>
 <translation id="4644713492825682049">I-delete at i-reset</translation>
 <translation id="4645575059429386691">Pinamamahalaan ng iyong magulang</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">Ibahagi gamit ang</translation>
 <translation id="5001526427543320409">Mga third-party na cookie</translation>
 <translation id="5007392906805964215">Suriin</translation>
-<translation id="5014182796621173645">Bumisita ka <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Payagan</translation>
 <translation id="5048398596102334565">Payagan ang mga site na i-access ang mga sensor ng paggalaw (inirerekomenda)</translation>
 <translation id="5048841907079026162">Pamahalaan ang iyong data mula sa pag-browse</translation>
@@ -443,7 +440,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Pinoprotektahang content</translation>
 <translation id="662080504995468778">Manatili</translation>
-<translation id="6653342741369270081">Pindutin ang button na bumalik para lumabas sa full screen.</translation>
+<translation id="6635327442719709864">Kapag naka-on, puwedeng hilingin ng mga site na gumamit ng mga serial port. Kapag naka-off, hindi magagamit ng mga site ang mga serial port.</translation>
 <translation id="6683865262523156564">Ang site na ito ay nasa isang grupong makakakita ng iyong aktibidad. Tinukoy ng <ph name="RWS_OWNER" /> ang grupo</translation>
 <translation id="6689172468748959065">Mga larawan sa profile</translation>
 <translation id="6697925417670533197">Mga aktibong pag-download</translation>

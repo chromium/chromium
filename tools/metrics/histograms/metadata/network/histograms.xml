@@ -1772,6 +1772,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Network.ContentDecodingInterceptor.CreateDataPipe"
+    enum="CreateDataPipeMojoResult" expires_after="2025-06-18">
+  <owner>horo@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Records the Mojo result code when the ContentDecodingInterceptor attempts to
+    create a new data pipe for delegating the content decoding to the network
+    service. Recorded when content decoding is intercepted for downloads
+    initiated via navigation or for Signed Exchange (SXG) responses, and the
+    RendererSideContentDecoding feature is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Network.DnsProxy.DnsOverHttpsMode"
     enum="DnsProxy.DnsOverHttpsMode" expires_after="2025-12-31">
   <owner>garrick@chromium.org</owner>
@@ -5354,6 +5367,23 @@ chromium-metrics-reviews@google.com.
     enterprise policy, and so on.
 
     This histogram is emitted for every request that undergoes proxy resolution.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.IpProtection.QuicProxiesFailed"
+    units="requests" expires_after="2025-08-24">
+  <owner>djmitche@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Recorded when a connection to a QUIC proxy for IP Protection failed and the
+    HTTPS fallback succeeds, recording the number of requests begun before this
+    failure occurred. In this situation, Chrome falls back to exclusively HTTPS
+    proxies until the network changes, so this metric provides a way to
+    determine what proportion of clients are experiencing this failure, and how
+    quickly they experience the failure. Note that the metric counts requests
+    *begun*, so this value may be greater than one even if the first request
+    fails. This metric is not recorded for clients not configured to use QUIC to
+    connect to IP Protection proxies.
   </summary>
 </histogram>
 

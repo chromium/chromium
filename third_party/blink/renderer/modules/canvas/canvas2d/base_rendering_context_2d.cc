@@ -26,6 +26,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_align.h"
@@ -47,6 +48,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
@@ -77,11 +79,13 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_deferred_paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/flush_reason.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -231,6 +235,13 @@ void BaseRenderingContext2D::placeElement(Element* element,
 
 
 void BaseRenderingContext2D::DispatchContextLostEvent(TimerBase*) {
+  // If `need_dispatch_context_restored_` is `true`, the context has been
+  // restored already (e.g. by fixing a `kInvalidCanvasSize` context loss), but
+  // the oncontextrestored event was postponed until the oncontextlost event was
+  // dispatched first. This is happening now, so irrespective of how this
+  // function returns, `need_dispatch_context_restored_` should be cleared.
+  absl::Cleanup cleanup = [this] { need_dispatch_context_restored_ = false; };
+
   Event* event = Event::CreateCancelable(event_type_names::kContextlost);
   GetCanvasRenderingContextHost()->HostDispatchEvent(event);
 
@@ -240,9 +251,20 @@ void BaseRenderingContext2D::DispatchContextLostEvent(TimerBase*) {
     context_restorable_ = false;
   }
 
-  if (context_restorable_ &&
-      (context_lost_mode_ == CanvasRenderingContext::kRealLostContext ||
-       context_lost_mode_ == CanvasRenderingContext::kSyntheticLostContext)) {
+  if (!context_restorable_) {
+    return;
+  }
+
+  if (need_dispatch_context_restored_) {
+    // The context is already restored (an invalid canvas size was probably
+    // fixed). We can send the restored event right away.
+    dispatch_context_restored_event_timer_.StartOneShot(base::TimeDelta(),
+                                                        FROM_HERE);
+    return;
+  }
+
+  if (context_lost_mode_ == CanvasRenderingContext::kRealLostContext ||
+      context_lost_mode_ == CanvasRenderingContext::kSyntheticLostContext) {
     try_restore_context_attempt_count_ = 0;
     try_restore_context_event_timer_.StartRepeating(kTryRestoreContextInterval,
                                                     FROM_HERE);
@@ -257,12 +279,93 @@ void BaseRenderingContext2D::DispatchContextRestoredEvent(TimerBase*) {
   if (context_lost_mode_ == CanvasRenderingContext::kNotLostContext) {
     return;
   }
+
+  if (!context_restorable_) {
+    return;
+  }
+
+  CanvasRenderingContextHost* host = GetCanvasRenderingContextHost();
+  if (host == nullptr) {
+    // This function can be called in a new task, via
+    // `dispatch_context_restored_event_timer_`. Abort if the host was disposed
+    // since the task was queued.
+    return;
+  }
+
+  host->ClearLayerTexture();
   ResetInternal();
   context_lost_mode_ = CanvasRenderingContext::kNotLostContext;
   Event* event(Event::Create(event_type_names::kContextrestored));
-  GetCanvasRenderingContextHost()->HostDispatchEvent(event);
+  host->HostDispatchEvent(event);
   UseCounter::Count(GetTopExecutionContext(),
                     WebFeature::kCanvasRenderingContext2DContextRestoredEvent);
+}
+
+void BaseRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
+  const CanvasRenderingContextHost* host = GetCanvasRenderingContextHost();
+  if (host == nullptr) [[unlikely]] {
+    // The host was disposed while this callback was pending.
+    try_restore_context_event_timer_.Stop();
+    return;
+  }
+
+  DCHECK(context_lost_mode_ !=
+         CanvasRenderingContext::kWebGLLoseContextLostContext);
+
+  if (context_lost_mode_ == CanvasRenderingContext::kRealLostContext) {
+    if (SharedGpuContext::IsGpuCompositingEnabled()) {
+      if (!SharedGpuContext::SharedImageInterfaceProvider()) {
+        return;
+      }
+    } else {
+      if (!SharedGpuContext::ContextProviderWrapper()) {
+        return;
+      }
+    }
+  }
+
+  // The GPU context is restored, but the canvas was changed to an invalid size
+  // since the canvas was lost. We can't restore the context until the canvas is
+  // given a valid size.
+  if (!IsValidImageSize(host->Size()) && !host->Size().IsEmpty()) {
+    context_lost_mode_ = kInvalidCanvasSize;
+    try_restore_context_event_timer_.Stop();
+    return;
+  }
+
+  RestoreGuard context_is_being_restored(*this);
+  if (GetOrCreateCanvas2DResourceProvider()) {
+    try_restore_context_event_timer_.Stop();
+    DispatchContextRestoredEvent(nullptr);
+    return;
+  }
+
+  // Retry up to `kMaxTryRestoreContextAttempts` times before giving up.
+  if (++try_restore_context_attempt_count_ > kMaxTryRestoreContextAttempts) {
+    try_restore_context_event_timer_.Stop();
+  }
+}
+
+void BaseRenderingContext2D::RestoreFromInvalidSizeIfNeeded() {
+  CanvasRenderingContextHost* host = GetCanvasRenderingContextHost();
+  if (!context_restorable_ || context_lost_mode_ != kInvalidCanvasSize ||
+      !host) {
+    return;
+  }
+  DCHECK(!host->ResourceProvider());
+
+  if (IsValidImageSize(host->Size())) {
+    if (dispatch_context_lost_event_timer_.IsActive()) {
+      // An oncontextlost event is still pending. We can't send the
+      // oncontextrestored right away because the oncontextlost callback could
+      // choose to prevent restoration. Thus, we need to delay queuing the
+      // restored event to after the lost event completed.
+      need_dispatch_context_restored_ = true;
+    } else {
+      dispatch_context_restored_event_timer_.StartOneShot(base::TimeDelta(),
+                                                          FROM_HERE);
+    }
+  }
 }
 
 ImageData* BaseRenderingContext2D::createImageData(
@@ -543,9 +646,9 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
     return;
   }
 
-  bool hasResourceProvider = CanCreateCanvas2dResourceProvider();
-  if (!hasResourceProvider)
+  if (isContextLost() || !CanCreateCanvas2dResourceProvider()) [[unlikely]] {
     return;
+  }
 
   if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(

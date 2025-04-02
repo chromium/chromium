@@ -35,16 +35,6 @@ BASE_FEATURE(kCloseOmniboxPopupOnInactiveAreaClick,
              "CloseOmniboxPopupOnInactiveAreaClick",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Create new Extensions app menu option (removing "More Tools -> Extensions")
-// with submenu to manage extensions and visit chrome web store.
-BASE_FEATURE(kExtensionsMenuInAppMenu,
-             "ExtensionsMenuInAppMenu",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsExtensionMenuInRootAppMenu() {
-  return base::FeatureList::IsEnabled(kExtensionsMenuInAppMenu);
-}
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Enables the feature to remove the last confirmation dialog when relaunching
 // to update Chrome.
@@ -54,12 +44,18 @@ BASE_FEATURE(kFewerUpdateConfirmations,
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+
 // Controls whether we use a different UX for simple extensions overriding
 // settings.
 BASE_FEATURE(kLightweightExtensionOverrideConfirmations,
              "LightweightExtensionOverrideConfirmations",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
+
+BASE_FEATURE(kExtensionsCollapseMainMenu,
+             "ExtensionsCollapseMainMenu",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kOfferPinToTaskbarWhenSettingToDefault,

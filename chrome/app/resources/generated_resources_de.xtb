@@ -3072,6 +3072,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3122883569442693641">Weitere Details</translation>
 <translation id="3124111068741548686">NUTZER-Handles</translation>
 <translation id="3124332159330678621">Personalisiere Chrome nach deinen Vorlieben</translation>
+<translation id="3125816458150005808">Du kannst sie loslösen und über das Menü öffnen</translation>
 <translation id="3126026824346185272">Strg</translation>
 <translation id="3127860049873093642">Verwende ein kompatibles Dell- oder USB-Typ-C-Netzteil, um Lade- und Leistungsprobleme zu vermeiden.</translation>
 <translation id="3127862849166875294">Linux-Laufwerkgröße anpassen</translation>
@@ -5320,6 +5321,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4723140812774948886">Mit nächstem tauschen</translation>
 <translation id="4724450788351008910">Zugehörigkeit geändert</translation>
 <translation id="4725511304875193254">Corgi</translation>
+<translation id="4725762702191453794">Die Tab-Suche ist jetzt an deiner Symbolleiste angepinnt</translation>
 <translation id="4726710355753484204">Zum Heranzoomen drücke Strg + Alt + „Helligkeit erhöhen“.
 Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translation>
 <translation id="4726710629007580002">Beim Versuch, diese Erweiterung zu installieren, wurden Warnungen ausgegeben:</translation>

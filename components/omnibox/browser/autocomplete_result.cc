@@ -1221,6 +1221,10 @@ AutocompleteResult::SessionData::~SessionData() = default;
 void AutocompleteResult::SessionData::Reset() {
   zero_prefix_enabled_ = false;
   num_zero_prefix_suggestions_shown_ = 0u;
+  zero_prefix_search_suggestions_shown_in_session_ = false;
+  zero_prefix_url_suggestions_shown_in_session_ = false;
+  typed_search_suggestions_shown_in_session_ = false;
+  typed_url_suggestions_shown_in_session_ = false;
   gws_event_id_hashes_.clear();
 }
 

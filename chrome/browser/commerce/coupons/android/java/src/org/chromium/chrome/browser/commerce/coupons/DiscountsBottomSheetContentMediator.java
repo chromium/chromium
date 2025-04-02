@@ -17,9 +17,11 @@ import android.view.View.OnClickListener;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.commerce.core.DiscountClusterType;
 import org.chromium.components.commerce.core.DiscountInfo;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -38,6 +40,8 @@ public class DiscountsBottomSheetContentMediator {
     private final Supplier<Tab> mTabSupplier;
     private final ModelList mModelList;
 
+    private boolean mCopyButtonClickedHistogramRecorded;
+
     public DiscountsBottomSheetContentMediator(
             @NonNull Context context,
             @NonNull Supplier<Tab> tabSupplier,
@@ -48,6 +52,7 @@ public class DiscountsBottomSheetContentMediator {
     }
 
     public void requestShowContent(Callback<Boolean> contentReadyCallback) {
+        mCopyButtonClickedHistogramRecorded = false;
         ShoppingServiceFactory.getForProfile(mTabSupplier.get().getProfile())
                 .getDiscountInfoForUrl(
                         mTabSupplier.get().getUrl(),
@@ -78,7 +83,8 @@ public class DiscountsBottomSheetContentMediator {
             }
             PropertyModel propertyModel = propertyModelBuilder.build();
             propertyModel.set(
-                    COPY_BUTTON_ON_CLICK_LISTENER, createCopyButtonOnClickListener(propertyModel));
+                    COPY_BUTTON_ON_CLICK_LISTENER,
+                    createCopyButtonOnClickListener(propertyModel, info));
             mModelList.add(new ListItem(0, propertyModel));
         }
     }
@@ -91,8 +97,17 @@ public class DiscountsBottomSheetContentMediator {
         return mContext.getString(R.string.discount_expiration_date_android, expiryTime);
     }
 
-    private OnClickListener createCopyButtonOnClickListener(PropertyModel propertyModel) {
+    private OnClickListener createCopyButtonOnClickListener(
+            PropertyModel propertyModel, DiscountInfo discountInfo) {
         return view -> {
+            if (!mCopyButtonClickedHistogramRecorded) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Commerce.Discounts.BottomSheet.ClusterTypeOnCopy",
+                        discountInfo.clusterType,
+                        DiscountClusterType.MAX_VALUE);
+                mCopyButtonClickedHistogramRecorded = true;
+            }
+
             Clipboard.getInstance().setText(propertyModel.get(DISCOUNT_CODE));
             resetCopiedButtonText();
             propertyModel.set(

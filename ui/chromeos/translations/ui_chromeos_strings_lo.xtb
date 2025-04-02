@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">ຄົນຂຽນຄຳວ່າຂອບໃຈ</translation>
 <translation id="2088690981887365033">ເຄືອຂ່າຍ VPN</translation>
 <translation id="209653272837065803">ມີພື້ນທີ່ຈັດເກັບຂໍ້ມູນບໍ່ພຽງພໍທີ່ຈະຊິ້ງໄຟລ໌ຕໍ່</translation>
-<translation id="2111134541987263231">ເປີດ <ph name="BEGIN_BOLD" />ອະນຸຍາດໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> ລາຍການຈະຖືກລຶບອອກ ແລະ ທ່ານຈະບໍ່ສາມາດກູ້ຄືນພວກມັນໄດ້.</translation>
 <translation id="2122305276694332719">ການເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍທີ່ເຊື່ອງໄວ້ໂດຍອັດຕະໂນມັດອະນຸຍາດໃຫ້ຄົນອື່ນເຫັນອຸປະກອນຂອງທ່ານ ແລະ ບາງການຕັ້ງຄ່າເຄືອຂ່າຍ ແລະ ບໍ່ແນະນຳໃຫ້ເຊື່ອມຕໍ່.</translation>
 <translation id="2125607626296734455">ພາສາຂະແມ</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">ດາວເຄາະ</translation>
 <translation id="2305020378527873881">ຖອດ <ph name="VOLUME_NAME" /> ອອກແລ້ວ.</translation>
 <translation id="2307462900900812319">ປັບຕັ້ງຄ່າເຄືອຂ່າຍ</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{ບໍ່ພົບສ່ວນຂະຫຍາຍທີ່ມີ ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.}other{ບໍ່ພົບສ່ວນຂະຫຍາຍທີ່ມີ ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.}}</translation>
 <translation id="2325650632570794183">ປະເພດໄຟລ໌ນີ້ບໍ່ຖືກຮອງຮັບ. ກະລຸນາເຂົ້າໄປເບິ່ງ Chrome Web Store ເພື່ອຊອກຫາແອັບທີ່ສາມາດເປີດໄຟລ໌ປະເພດນີ້ໄດ້.</translation>
 <translation id="2326539130272988168">ບັງກາຣຽນ</translation>
 <translation id="233822363739146957">ມີພື້ນທີ່ຈັດເກັບຂໍ້ມູນບໍ່ພຽງພໍທີ່ຈະຊິ້ງໄຟລ໌ທັງໝົດຂອງທ່ານ</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">ພາສາມາຣາທີ</translation>
 <translation id="2923240520113693977">ພາສາເອສໂຕ​ເນຍ</translation>
 <translation id="2938685643439809023">ພາສາມົງໂກລີ</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{ບໍ່ພົບສ່ວນຂະຫຍາຍ}other{ບໍ່ພົບສ່ວນຂະຫຍາຍ}}</translation>
 <translation id="2943503720238418293">ກະ​ລຸ​ນາໃຊ້ຊື່ທີ່ສັ້ນກວ່າ</translation>
 <translation id="2949781154072577687">ກຳລັງຟໍແມັດ <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">ແມງກະພຸນ</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">ສຳ​ເລັດ</translation>
 <translation id="3358452157379365236">ກີຕ້າ</translation>
 <translation id="3368922792935385530">ເຊື່ອມ​ຕໍ່​ແລ້ວ</translation>
-<translation id="3372635229069101468">ຄລິກ <ph name="BEGIN_BOLD" />ລາຍລະອຽດ<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">ພາສາເນປານທີ່ໃຊ້ແປ້ນພິມ InScript</translation>
 <translation id="338691029516748599">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ສັນຍານຄວາມແຮງ <ph name="SIGNAL_STRENGTH" />%, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ, ເຊື່ອມຕໍ່</translation>
 <translation id="3408072735282270043">ເປີດໃຊ້, <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">ຢູນິຄອນ</translation>
 <translation id="4131235941541910880">ຍ້າຍລາຍການທີ່ທ່ານບໍ່ຕ້ອງການໄປໃສ່ຖັງຂີ້ເຫຍື້ອ</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_INDEX" /> ເຄືອຂ່າຍຈາກ <ph name="NETWORK_COUNT" /> ເຄືອຂ່າຍ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ເປີດການນຳໃຊ້ຫຼັງຈາກຕັ້ງຄ່າອຸປະກອນ</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{ເປີດສ່ວນຂະຫຍາຍຕໍ່ໄປນີ້ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ:}other{ເປີດສ່ວນຂະຫຍາຍຕໍ່ໄປນີ້ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ:}}</translation>
 <translation id="4153015322587141338">ຄລິກຂວາໃສ່ໄຟລ໌, ແລ້ວເລືອກ "<ph name="PIN_COMMAND" />" ສຳລັບການເຂົ້າເຖິງດ່ວນຫາໄຟລ໌ຂອງທ່ານໃນຖ້ານ.</translation>
 <translation id="4157569377477607576">ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳ:</translation>
 <translation id="4159731583141908892">ຍ້າຍ <ph name="FILE_NAME" /> ແລ້ວ.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">ຮັກສາ​ທັງ​ສອງ</translation>
 <translation id="4804827417948292437">ອາໂວຄາໂດ</translation>
 <translation id="4805966553127040832">ກຳລັງກູ້ຄືນ <ph name="COUNT" /> ລາຍການ</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{ເພື່ອໃຊ້ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ, ອົງກອນຂອງທ່ານຈຳເປັນຕ້ອງມີສ່ວນຂະຫຍາຍ 1 ລາຍການ}other{ເພື່ອໃຊ້ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ, ອົງກອນຂອງທ່ານຈຳເປັນຕ້ອງມີສ່ວນຂະຫຍາຍຈຳນວນໜຶ່ງ}}</translation>
 <translation id="4826849268470072925">ພາສາທາມິລ (ITRANS)</translation>
-<translation id="482932175346970750">ພິມ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ໃສ່ໃນໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">ເບິ່ງ</translation>
 <translation id="485316830061041779">ພາສາເຢຍລະມັນ</translation>
@@ -561,7 +554,6 @@
     ໃນໄຟລ໌ຕ່າງໆກັບຄົນອື່ນທັງໝົດຢູ່ບ່ອນດຽວ.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">ໄຟລ໌ທີ່ກູ້ຄືນຈາກ Google Drive</translation>
 <translation id="5278111733643988471">ເພື່ອກູ້ຄືນລາຍການນີ້, ກະລຸນາລາກມັນໄປໃສ່ໂຟນເດີໃໝ່ທີ່ຢູ່ນອກຖັງຂີ້ເຫຍື້ອ. ໂຟນເດີເດີມ "<ph name="PARENT_FOLDER_NAME" />" ສຳລັບລາຍການນີ້ຖືກລຶບແລ້ວ.</translation>
-<translation id="5283101102242354279">ເປີດສ່ວນຂະຫຍາຍໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ:</translation>
 <translation id="5288441970121584418">ເບີເກີ</translation>
 <translation id="5293615890992542006">ການຍ້າຍໄຟລ໌ນີ້ຖືກບລັອກໂດຍນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບ</translation>
 <translation id="5305688511332277257">ບໍ່ອັນໃດຖືກ​ຕິດ​ຕັ້ງ</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, ລາຍລະອຽດ</translation>
 <translation id="7246947237293279874">ພຣັອກຊີ FTP</translation>
 <translation id="7248671827512403053">ແອັບພລິເຄຊັນ</translation>
-<translation id="7252604552361840748">ຊອກຫາສ່ວນຂະຫຍາຍຂ້າງເທິງ</translation>
 <translation id="7256405249507348194">ຄວາມ​ຜິດ​ພາດ​ທີ່ບໍ່​ຮັບຮູ້​ໄດ້: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ການ​ບໍ​ລິ​ການ​ທີ່​ມີ​ຢູ່</translation>
 <translation id="7291818353625820805">ຕ້ອງການໃຫ້ປຸ່ມເຮັດວຽກຊ້ຳບໍ? ກະລຸນາປິດເຄື່ອງໝາຍສຳນຽງໃນການຕັ້ງຄ່າແປ້ນພິມ</translation>

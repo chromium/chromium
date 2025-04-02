@@ -7,10 +7,10 @@ package org.chromium.chrome.browser.tabmodel;
 import android.os.Bundle;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -40,8 +40,8 @@ public class TabGroupMetadata {
     public final Token tabGroupId;
     public final LinkedHashMap<Integer, String> tabIdsToUrls;
     public final @ColorInt int tabGroupColor;
-    @Nullable public final String tabGroupTitle;
-    @Nullable public final String mhtmlTabTitle;
+    public final @Nullable String tabGroupTitle;
+    public final @Nullable String mhtmlTabTitle;
     public final boolean tabGroupCollapsed;
     public final boolean isGroupShared;
     public final boolean isIncognito;
@@ -115,8 +115,7 @@ public class TabGroupMetadata {
         if (bundle == null) return null;
 
         // A valid bundle should have all required properties.
-        @Nullable
-        Token tabGroupIdFromBundle =
+        @Nullable Token tabGroupIdFromBundle =
                 Token.maybeCreateFromBundle(bundle.getBundle(KEY_TAB_GROUP_ID));
         LinkedHashMap<Integer, String> tabIdsToUrls =
                 new LinkedHashMap<>(

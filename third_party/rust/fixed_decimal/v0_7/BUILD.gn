@@ -12,18 +12,18 @@ cargo_crate("lib") {
   crate_name = "fixed_decimal"
   epoch = "0.7"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/fixed_decimal-0.7.0/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/fixed_decimal-v0_7/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/fixed_decimal-0.7.0/src/compact.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fixed_decimal-0.7.0/src/decimal.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fixed_decimal-0.7.0/src/integer.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fixed_decimal-0.7.0/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fixed_decimal-0.7.0/src/ops.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fixed_decimal-0.7.0/src/rounding.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fixed_decimal-0.7.0/src/scientific.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fixed_decimal-0.7.0/src/signed_decimal.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fixed_decimal-0.7.0/src/uint_iterator.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fixed_decimal-0.7.0/src/variations.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fixed_decimal-v0_7/src/compact.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fixed_decimal-v0_7/src/decimal.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fixed_decimal-v0_7/src/integer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fixed_decimal-v0_7/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fixed_decimal-v0_7/src/ops.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fixed_decimal-v0_7/src/rounding.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fixed_decimal-v0_7/src/scientific.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fixed_decimal-v0_7/src/signed_decimal.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fixed_decimal-v0_7/src/uint_iterator.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fixed_decimal-v0_7/src/variations.rs",
   ]
   inputs = []
 

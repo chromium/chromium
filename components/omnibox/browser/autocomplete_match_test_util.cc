@@ -27,10 +27,14 @@ bool ParseAnswer(const std::string& answer_json,
 
 }  // namespace
 
-AutocompleteMatch CreateHistoryURLMatch(std::string destination_url) {
+AutocompleteMatch CreateHistoryURLMatch(std::string destination_url,
+                                        bool is_zero_prefix) {
   AutocompleteMatch match;
   match.type = AutocompleteMatchType::Type::HISTORY_URL;
   match.destination_url = GURL(destination_url);
+  if (is_zero_prefix) {
+    match.subtypes.insert(omnibox::SUBTYPE_ZERO_PREFIX);
+  }
   return match;
 }
 
@@ -55,6 +59,14 @@ AutocompleteMatch CreateContextualSearchMatch(std::u16string contents) {
   match.type = AutocompleteMatchType::Type::SEARCH_SUGGEST;
   match.contents = contents;
   match.subtypes.insert(omnibox::SUBTYPE_CONTEXTUAL_SEARCH);
+  return match;
+}
+
+AutocompleteMatch CreateZeroPrefixSearchMatch(std::u16string contents) {
+  AutocompleteMatch match;
+  match.type = AutocompleteMatchType::Type::SEARCH_SUGGEST;
+  match.contents = contents;
+  match.subtypes.insert(omnibox::SUBTYPE_ZERO_PREFIX);
   return match;
 }
 

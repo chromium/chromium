@@ -811,9 +811,13 @@ bool TrustedSignalsCacheImpl::ReceiverRestrictions::operator==(
     const ReceiverRestrictions& other) const = default;
 
 TrustedSignalsCacheImpl::TrustedSignalsCacheImpl(
+    DataDecoderManager* data_decoder_manager,
     GetCoordinatorKeyCallback get_coordinator_key_callback)
-    : get_coordinator_key_callback_(std::move(get_coordinator_key_callback)),
-      network_partition_nonce_cache_(kNonceCacheSize) {}
+    : data_decoder_manager_(data_decoder_manager),
+      get_coordinator_key_callback_(std::move(get_coordinator_key_callback)),
+      network_partition_nonce_cache_(kNonceCacheSize) {
+  DCHECK(data_decoder_manager_);
+}
 
 TrustedSignalsCacheImpl::~TrustedSignalsCacheImpl() {
   // Clearing the LruList should delete all remaining compression group entries.
@@ -1260,9 +1264,9 @@ void TrustedSignalsCacheImpl::StartBiddingSignalsFetch(
     }
   }
   fetch->fetcher->FetchBiddingSignals(
-      fetch_key->url_loader_factory.get(), fetch_key->frame_tree_node_id,
-      std::move(fetch->devtools_auction_ids), fetch_key->main_frame_origin,
-      fetch_key->ip_address_space,
+      *data_decoder_manager_, fetch_key->url_loader_factory.get(),
+      fetch_key->frame_tree_node_id, std::move(fetch->devtools_auction_ids),
+      fetch_key->main_frame_origin, fetch_key->ip_address_space,
       GetNetworkPartitionNonce(fetch_key->network_partition_nonce_key),
       fetch_key->script_origin(), fetch_key->trusted_signals_url(),
       *fetch->coordinator_key, bidding_partition_map,
@@ -1307,9 +1311,9 @@ void TrustedSignalsCacheImpl::StartScoringSignalsFetch(
     }
   }
   fetch->fetcher->FetchScoringSignals(
-      fetch_key->url_loader_factory.get(), fetch_key->frame_tree_node_id,
-      std::move(fetch->devtools_auction_ids), fetch_key->main_frame_origin,
-      fetch_key->ip_address_space,
+      *data_decoder_manager_, fetch_key->url_loader_factory.get(),
+      fetch_key->frame_tree_node_id, std::move(fetch->devtools_auction_ids),
+      fetch_key->main_frame_origin, fetch_key->ip_address_space,
       GetNetworkPartitionNonce(fetch_key->network_partition_nonce_key),
       fetch_key->script_origin(), fetch_key->trusted_signals_url(),
       *fetch->coordinator_key, scoring_partition_map,

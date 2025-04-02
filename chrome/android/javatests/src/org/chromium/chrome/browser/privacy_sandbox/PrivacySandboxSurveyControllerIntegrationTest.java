@@ -226,12 +226,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
         onViewWaiting(withId(R.id.privacy_sandbox_dialog)).check(matches(isCompletelyDisplayed()));
         onViewWaiting(withId(R.id.privacy_sandbox_notice_title), true)
                 .check(matches(isCompletelyDisplayed()));
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.PRIVACY_SANDBOX_EQUALIZED_PROMPT_BUTTONS)) {
-            tryClickOn(withId(R.id.ack_button_equalized));
-        } else {
-            tryClickOn(withId(R.id.ack_button));
-        }
+        tryClickOn(withId(R.id.ack_button));
     }
 
     @Test

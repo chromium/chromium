@@ -2985,6 +2985,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3045447014237878114">Ce site a automatiquement téléchargé plusieurs fichiers</translation>
 <translation id="3046178388369461825">L'espace disque Linux est presque saturé</translation>
 <translation id="304644035656848980">Aperçu de votre microphone</translation>
+<translation id="3046892784550338476">Version <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Page Web, terminé</translation>
 <translation id="304747341537320566">Moteurs de reconnaissance vocale</translation>
 <translation id="3047678109605649715">Il n'y a aucune voix en <ph name="LANGUAGE" /> sur votre appareil. Libérez de l'espace sur votre appareil et réessayez.</translation>
@@ -3077,6 +3078,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3122883569442693641">Plus de détails</translation>
 <translation id="3124111068741548686">Descripteurs de l'UTILISATEUR</translation>
 <translation id="3124332159330678621">Personnaliser Chrome pour donner un nouveau style à votre navigateur</translation>
+<translation id="3125816458150005808">Vous pouvez annuler l'épinglage et l'ouvrir à partir du menu</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Pour éviter les problèmes de recharge et de performance, servez-vous d'un adaptateur d'alimentation conçu par Dell ou d'un adaptateur USB de type C.</translation>
 <translation id="3127862849166875294">Modification de la taille du disque pour Linux</translation>
@@ -5327,6 +5329,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4723140812774948886">Échanger avec le suivant</translation>
 <translation id="4724450788351008910">Modification de l'affiliation</translation>
 <translation id="4725511304875193254">Corgi</translation>
+<translation id="4725762702191453794">La recherche d'onglets est maintenant épinglée sur votre barre d'outils</translation>
 <translation id="4726710355753484204">Appuyez sur Ctrl+Alt+augmenter la luminosité pour zoomer.
 Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4726710629007580002">Il y a eu des avertissements lors de l'installation de cette extension :</translation>

@@ -196,15 +196,15 @@ std::unique_ptr<views::Background> CreateSolidBackground(
 }
 
 // Returns a normal and disabled image model for `symbol`. `is_toggled` and
-// `color_id` control styling. The returned model dimensions wil be `icon_size`
+// `color` control styling. The returned model dimensions wil be `icon_size`
 // x `icon_size` in pixels.
 std::pair<ui::ImageModel, ui::ImageModel> SymbolImages(
     const bool is_toggled,
-    ui::ColorId color_id,
+    ui::ColorVariant color,
     const int icon_size,
     base_icu::UChar32 symbol) {
   const gfx::Size size(icon_size, icon_size);
-  ui::ImageModel normal_model = TextImage::AsImageModel(size, symbol, color_id);
+  ui::ImageModel normal_model = TextImage::AsImageModel(size, symbol, color);
   ui::ImageModel disabled_model =
       TextImage::AsImageModel(size, symbol, cros_tokens::kCrosSysDisabled);
 
@@ -604,9 +604,9 @@ void IconButton::UpdateBackground() {
   }
 
   // Create a background according to the toggled state.
-  ui::ColorVariant color_variant =
+  ui::ColorVariant color =
       is_toggled ? background_toggled_color_ : background_color_;
-  SetBackground(CreateSolidBackground(color_variant, type_));
+  SetBackground(CreateSolidBackground(color, type_));
 }
 
 void IconButton::UpdateBlurredBackgroundShield() {
@@ -624,11 +624,11 @@ void IconButton::UpdateBlurredBackgroundShield() {
         gfx::RoundedCornersF(GetButtonSizeOnType(type_) / 2));
   }
 
-  ui::ColorVariant color_variant =
+  ui::ColorVariant color =
       GetEnabled()
           ? (is_toggled ? background_toggled_color_ : background_color_)
           : cros_tokens::kCrosSysDisabledContainer;
-  blurred_background_shield_->SetColor(color_variant);
+  blurred_background_shield_->SetColor(color);
 }
 
 void IconButton::UpdateVectorIcon(bool color_changes_only) {
@@ -636,14 +636,12 @@ void IconButton::UpdateVectorIcon(bool color_changes_only) {
 
   const int icon_size = icon_size_.value_or(GetIconSizeOnType(type_));
   const bool is_toggled = IsToggledOn();
-  ui::ColorVariant color_variant =
-      is_toggled ? icon_toggled_color_ : icon_color_;
+  ui::ColorVariant color = is_toggled ? icon_toggled_color_ : icon_color_;
 
   if (character_.has_value()) {
-    images = SymbolImages(is_toggled, *color_variant.GetColorId(), icon_size,
-                          *character_);
+    images = SymbolImages(is_toggled, color, icon_size, *character_);
   } else {
-    images = VectorImages(is_toggled, color_variant, icon_size);
+    images = VectorImages(is_toggled, color, icon_size);
   }
 
   if (images.first.IsEmpty()) {

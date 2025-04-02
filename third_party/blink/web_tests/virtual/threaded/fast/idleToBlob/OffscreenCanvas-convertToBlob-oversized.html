@@ -4,8 +4,11 @@
 <script>
 
 async_test(function(t) {
-  var png_max_dimension = 65535;
-  var offscreenCanvas = new OffscreenCanvas(10, png_max_dimension + 1);
+  // The max PNG size is above the max size of the canvas itself. Test with the
+  // canvas max size, to make sure that the rendering pipeline works up to that
+  // limit.
+  var canvas_max_dimension = 65535;
+  var offscreenCanvas = new OffscreenCanvas(10, canvas_max_dimension);
   var ctx = offscreenCanvas.getContext("2d");
   ctx.fillRect(0, 0, 1, 1);
   offscreenCanvas.convertToBlob({type: "image/png"}).then(t.step_func_done(function() {
@@ -38,4 +41,3 @@ async_test(function(t) {
   }));
 }, "Verify that convertToBlob does not crash with oversized source encoded to Webp");
 </script>
-

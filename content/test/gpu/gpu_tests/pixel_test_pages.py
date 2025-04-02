@@ -155,6 +155,17 @@ class TestActionSwitchTabsAndCopyImage(sghitb.TestAction):
     sghitb.EvalInTestIframe(tab, 'copyImage()')
 
 
+class TestActionSleepBeforeRender(sghitb.TestAction):
+  """Wait for 2 seconds before webgpu rendering."""
+
+  def Run(self, test_case: PixelTestPage, tab_data: sghitb.TabData,
+          loop_state: sghitb.LoopState,
+          test_instance: sghitb.SkiaGoldHeartbeatIntegrationTestBase) -> None:
+    tab = tab_data.tab
+    time.sleep(2)
+    sghitb.EvalInTestIframe(tab, 'render()')
+
+
 class TestActionRunOffscreenCanvasIBRCWebGLLowPerfTest(sghitb.TestAction):
   """Runs steps for an offscreen canvas IBRC WebGL test on the low power GPU."""
   def Run(self, test_case: PixelTestPage, tab_data: sghitb.TabData,
@@ -768,6 +779,58 @@ class PixelTestPages():
             other_args=other_args_canvas_accelerated_two_copy),
     ]
 
+  @staticmethod
+  def WebGPUDeviceDestroyPages(base_name) -> list[PixelTestPage]:
+    webgpu_args = cba.ENABLE_WEBGPU_FOR_TESTING + [
+        cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES
+    ]
+
+    standard_crop = ca.NonWhiteContentCropAction(
+        initial_crop=ca.FixedRectCropAction(0, 0, 320, 210))
+
+    offscreen_crop = ca.NonWhiteContentCropAction(
+        initial_crop=ca.FixedRectCropAction(0, 0, 210, 210))
+
+    methods = [
+        'drawImage', 'toDataURL', 'toBlob', 'captureStream',
+        'transferToImageBitmap', 'copyExternalImageToTexture', 'glTexImage2D'
+    ]
+    canvas_tyes = ['onscreen', 'offscreen', 'transferToOffscreen']
+
+    test_actions = [
+        sghitb.TestActionWaitForContinue(SHORT_GLOBAL_TIMEOUT),
+        TestActionSleepBeforeRender(),
+        sghitb.TestActionWaitForFinish(SHORT_GLOBAL_TIMEOUT),
+    ]
+
+    testPages = []
+    for method in methods:
+      for canvas_type in canvas_tyes:
+        if method == 'toDataURL' and canvas_type != 'onscreen':
+          continue  # toDataURL is only supported for onscreen canvas
+        if method == 'captureStream' and canvas_type != 'onscreen':
+          continue  # only test captureStream for onscreen canvas
+        if method == 'transferToImageBitmap' and canvas_type == 'onscreen':
+          continue  # transferToImageBitmap only works on OffScreenCanvas
+
+        arguments = '?method=' + method + '&canvas=' + canvas_type
+
+        canvas_type_name = canvas_type[0].upper() + canvas_type[1:]
+        method_name = method[0].upper() + method[1:]
+        test_name = canvas_type_name + 'Canvas' + '_' + method_name
+
+        crop = standard_crop
+        if canvas_type == 'offscreen':
+          crop = offscreen_crop
+
+        testPages.append(
+            PixelTestPage('pixel_destroyed_webgpu_canvas.html' + arguments,
+                          base_name + '_WebGPUDestroyed_' + test_name,
+                          crop_action=crop,
+                          browser_args=webgpu_args,
+                          test_actions=test_actions))
+
+    return testPages
 
   # Pages that should be run with GPU rasterization enabled.
   @staticmethod

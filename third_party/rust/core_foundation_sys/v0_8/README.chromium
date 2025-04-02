@@ -3,7 +3,7 @@ URL: https://crates.io/crates/core-foundation-sys
 Version: 0.8.7
 Revision: 652bab0a62d87df8a974ffad2ad9f7be218a8b56
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/core-foundation-sys-v0_8/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes
 

@@ -2995,6 +2995,7 @@
 <translation id="3045447014237878114">இந்தத் தளம் தானாகவே பல ஃபைல்களைப் பதிவிறக்கம் செய்தது</translation>
 <translation id="3046178388369461825">Linux டிஸ்க் சேமிப்பிடம் மிகவும் குறைவாக உள்ளது</translation>
 <translation id="304644035656848980">உங்கள் மைக்ரோஃபோனின் மாதிரிக்காட்சி</translation>
+<translation id="3046892784550338476">பதிப்பு <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">வலைப்பக்கம், முழுமையாக</translation>
 <translation id="304747341537320566">பேச்சு என்ஜின்கள்</translation>
 <translation id="3047678109605649715">உங்கள் சாதனத்தில் <ph name="LANGUAGE" /> மொழியில் குரல்கள் எதுவும் இல்லை. உங்கள் சாதனத்தில் சேமிப்பிடத்தைக் காலியாக்கிவிட்டு மீண்டும் முயலவும்.</translation>
@@ -3087,6 +3088,7 @@
 <translation id="3122883569442693641">கூடுதல் விவரங்கள்</translation>
 <translation id="3124111068741548686">USER ஹேண்டில்ஸ்</translation>
 <translation id="3124332159330678621">உங்கள் உலாவிக்குப் புதிய தோற்றத்தைக் கொடுக்க Chromeமைப் பிரத்தியேகமாக்குங்கள்</translation>
+<translation id="3125816458150005808">நீங்கள் அதைப் பிரித்தெடுத்துவிட்டு மெனுவில் இருந்தும் திறக்கலாம்</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">சார்ஜ் செய்வதிலும் செயல்திறனிலும் ஏற்படும் சிக்கல்களைத் தவிர்க்க இணக்கமான Dell அல்லது USB டைப்-சி பவர் அடாப்டரைப் பயன்படுத்தவும்.</translation>
 <translation id="3127862849166875294">Linux டிஸ்க் அளவை மாற்று</translation>
@@ -5337,6 +5339,7 @@
 <translation id="4723140812774948886">அடுத்ததுடன் மாற்று</translation>
 <translation id="4724450788351008910">சேர்ப்பு மாற்றப்பட்டது</translation>
 <translation id="4725511304875193254">கோர்கி</translation>
+<translation id="4725762702191453794">உலாவிப்பக்கத் தேடல் இப்போது உங்கள் கருவிப்பட்டியில் பின் செய்யப்பட்டுள்ளது</translation>
 <translation id="4726710355753484204">பெரிதாக்க, Ctrl + Alt + Brightness Up பட்டன்களைப் பயன்படுத்தவும்.
 சிறிதாக்க, Ctrl + Alt + Brightness Down பட்டன்களைப் பயன்படுத்தவும்.</translation>
 <translation id="4726710629007580002">இந்த நீட்டிப்பை நிறுவ முயற்சிக்கும்போது எச்சரிக்கைகள் இருந்தன:</translation>

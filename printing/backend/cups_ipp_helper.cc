@@ -135,6 +135,9 @@ void ExtractColor(const CupsOptionProvider& printer,
 
 void ExtractDuplexModes(const CupsOptionProvider& printer,
                         PrinterSemanticCapsAndDefaults* printer_info) {
+  printer_info->duplex_default = mojom::DuplexMode::kUnknownDuplexMode;
+  printer_info->duplex_modes.clear();
+
   std::vector<std::string_view> duplex_modes =
       printer.GetSupportedOptionValueStrings(kIppDuplex);
   for (std::string_view duplex : duplex_modes) {
@@ -144,15 +147,12 @@ void ExtractDuplexModes(const CupsOptionProvider& printer,
   }
 
   ipp_attribute_t* attr = printer.GetDefaultOptionValue(kIppDuplex);
-  if (!attr) {
-    printer_info->duplex_default = mojom::DuplexMode::kUnknownDuplexMode;
-    return;
+  if (attr) {
+    const char* const attr_str = ippGetString(attr, 0, nullptr);
+    if (attr_str) {
+      printer_info->duplex_default = DuplexModeFromIpp(attr_str);
+    }
   }
-
-  const char* const attr_str = ippGetString(attr, 0, nullptr);
-  printer_info->duplex_default = attr_str
-                                     ? DuplexModeFromIpp(attr_str)
-                                     : mojom::DuplexMode::kUnknownDuplexMode;
 }
 
 void CopiesRange(const CupsOptionProvider& printer,
@@ -206,6 +206,9 @@ void ExtractResolutions(const CupsOptionProvider& printer,
 #else
   constexpr gfx::Size kDefaultMissingDpi(kDefaultPdfDpi, kDefaultPdfDpi);
 #endif
+
+  printer_info->dpis.clear();
+  printer_info->default_dpi = gfx::Size();
 
   ipp_attribute_t* attr = printer.GetSupportedOptionValues(kIppResolution);
   if (!attr) {
@@ -368,6 +371,9 @@ void CorrectDefaultMediaType(PrinterSemanticCapsAndDefaults*& printer_info) {
 
 void ExtractMediaTypes(const CupsOptionProvider& printer,
                        PrinterSemanticCapsAndDefaults* printer_info) {
+  printer_info->media_types.clear();
+  printer_info->default_media_type =
+      PrinterSemanticCapsAndDefaults::MediaType();
   std::vector<std::string_view> names =
       printer.GetSupportedOptionValueStrings(kIppMediaType);
   if (names.empty()) {
@@ -498,6 +504,7 @@ size_t AddInputTray(const CupsOptionProvider& printer,
 void ExtractAdvancedCapabilities(const CupsOptionProvider& printer,
                                  PrinterSemanticCapsAndDefaults* printer_info) {
   AdvancedCapabilities* options = &printer_info->advanced_capabilities;
+  options->clear();
   size_t attr_count = AddInputTray(printer, options);
   attr_count += AddAttributes(printer, kIppJobAttributes, options);
   attr_count += AddAttributes(printer, kIppDocumentAttributes, options);

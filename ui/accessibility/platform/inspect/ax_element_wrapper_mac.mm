@@ -27,7 +27,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
-namespace ui {
+namespace {
 
 // AXUIElementCopyAttributeValue("AXCustomContent") returns an NSData
 // that contains an NSDictionary in NSKeyedArchiver format.
@@ -50,7 +50,7 @@ NSArray<AXCustomContent*>* CustomContentFromArchive(NSData* archive_data) {
   return base::apple::ObjCCast<NSArray>(contents);
 }
 
-}  // namespace ui
+}  // namespace
 
 namespace ui {
 
@@ -85,15 +85,24 @@ bool AXElementWrapper::IsAXUIElement(id node) {
 }
 
 // static
-NSArray* AXElementWrapper::ChildrenOf(id node) {
-  return AXElementWrapper(node).Children();
+std::vector<gfx::NativeViewAccessible> AXElementWrapper::ChildrenOf(
+    const gfx::NativeViewAccessible node) {
+  NSArray* children = AXElementWrapper(node.Get()).Children();
+  std::vector<gfx::NativeViewAccessible> result;
+  result.reserve(children.count);
+  for (id child in children) {
+    result.emplace_back(child);
+  }
+  return result;
 }
 
-// Returns DOM id of a given node (either AXUIElement or
-// BrowserAccessibilityCocoa).
 // static
-std::string AXElementWrapper::DOMIdOf(id node) {
-  return AXElementWrapper(node).DOMId();
+std::string AXElementWrapper::DOMIdOf(gfx::NativeViewAccessible node) {
+  return AXElementWrapper(node.Get()).DOMId();
+}
+
+AXElementWrapper::AXElementWrapper(id node) : node_(node) {
+  CHECK(node);
 }
 
 bool AXElementWrapper::IsValidElement() const {

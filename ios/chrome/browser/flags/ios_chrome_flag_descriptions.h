@@ -414,9 +414,6 @@ extern const char kIOSReactivationNotificationsDescription[];
 extern const char kIOSProvidesAppNotificationSettingsName[];
 extern const char kIOSProvidesAppNotificationSettingsDescription[];
 
-extern const char kIPHForSafariSwitcherName[];
-extern const char kIPHForSafariSwitcherDescription[];
-
 extern const char
     kLensBlockFetchObjectsInteractionRPCsOnSeparateHandshakeName[];
 extern const char
@@ -689,6 +686,9 @@ extern const char kSafeBrowsingLocalListsUseSBv5Description[];
 extern const char kSafeBrowsingRealTimeLookupName[];
 extern const char kSafeBrowsingRealTimeLookupDescription[];
 
+extern const char kSafeBrowsingTrustedURLName[];
+extern const char kSafeBrowsingTrustedURLDescription[];
+
 extern const char kSafetyCheckMagicStackName[];
 extern const char kSafetyCheckMagicStackDescription[];
 
@@ -812,9 +812,6 @@ extern const char kTabResumptionImagesDescription[];
 
 extern const char kUpdatedFRESequenceName[];
 extern const char kUpdatedFRESequenceDescription[];
-
-extern const char kUseAccountListFromIdentityManagerName[];
-extern const char kUseAccountListFromIdentityManagerDescription[];
 
 extern const char kWaitThresholdMillisecondsForCapabilitiesApiName[];
 extern const char kWaitThresholdMillisecondsForCapabilitiesApiDescription[];

@@ -59,6 +59,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   void set_is_audio_capture_disabled_by_policy(bool value) {
     is_audio_capture_disabled_by_policy_ = value;
   }
+  void set_force_lens_web_error(bool value) { force_lens_web_error_ = value; }
   void set_fake_drive_fs_free_bytes(int64_t bytes) {
     fake_drive_fs_free_bytes_ = bytes;
   }
@@ -190,6 +191,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   bool should_save_after_dlp_check_ = true;
   bool is_camera_disabled_by_policy_ = false;
   bool is_audio_capture_disabled_by_policy_ = false;
+  bool force_lens_web_error_ = false;
   // Counter to track number of times `OnCaptureImageAttempted()` is called, for
   // testing purposes.
   int num_capture_image_attempts_ = 0;

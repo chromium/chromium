@@ -1068,6 +1068,8 @@ static_library("browser") {
     "policy/cloud/user_fm_registration_token_uploader_factory.h",
     "policy/configuration_policy_handler_list_factory.cc",
     "policy/configuration_policy_handler_list_factory.h",
+    "policy/developer_tools_policy_handler.cc",
+    "policy/developer_tools_policy_handler.h",
     "policy/device_management_service_configuration.cc",
     "policy/device_management_service_configuration.h",
     "policy/dm_token_utils.cc",
@@ -1952,6 +1954,7 @@ static_library("browser") {
     "//chrome/browser/prefs:util",
     "//chrome/browser/prefs:util_impl",
     "//chrome/browser/preloading:prefs",
+    "//chrome/browser/preloading/search_preload",
     "//chrome/browser/privacy_budget",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
@@ -3742,6 +3745,8 @@ static_library("browser") {
       "enterprise/signals/context_info_fetcher.h",
       "enterprise/signals/device_info_fetcher.cc",
       "enterprise/signals/device_info_fetcher.h",
+      "enterprise/signals/profile_signals_collector.cc",
+      "enterprise/signals/profile_signals_collector.h",
       "first_run/first_run.cc",
       "first_run/first_run.h",
       "first_run/first_run_dialog.h",
@@ -3995,8 +4000,6 @@ static_library("browser") {
       "performance_manager/user_tuning/user_performance_tuning_notifier.h",
       "policy/browsing_history_policy_handler.cc",
       "policy/browsing_history_policy_handler.h",
-      "policy/developer_tools_policy_handler.cc",
-      "policy/developer_tools_policy_handler.h",
       "policy/device_account_initializer.cc",
       "policy/device_account_initializer.h",
       "policy/extension_developer_mode_policy_handler.cc",
@@ -4272,7 +4275,6 @@ static_library("browser") {
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_cueing:impl",
       "//chrome/browser/enterprise/incognito",
-      "//chrome/browser/enterprise/signals:utils",
       "//chrome/browser/error_reporting",
       "//chrome/browser/feedback:feedback_enum",
       "//chrome/browser/hid",
@@ -6688,6 +6690,15 @@ static_library("browser") {
       "enterprise/connectors/reporting/extension_telemetry_event_router.h",
       "enterprise/connectors/reporting/extension_telemetry_event_router_factory.cc",
       "enterprise/connectors/reporting/extension_telemetry_event_router_factory.h",
+    ]
+  }
+
+  if (enterprise_telomere_reporting) {
+    sources += [
+      "enterprise/connectors/reporting/telomere_event_router.cc",
+      "enterprise/connectors/reporting/telomere_event_router.h",
+      "enterprise/connectors/reporting/telomere_reporting_context.cc",
+      "enterprise/connectors/reporting/telomere_reporting_context.h",
     ]
   }
 

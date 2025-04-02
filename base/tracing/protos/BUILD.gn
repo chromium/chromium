@@ -15,7 +15,10 @@ proto_library("chrome_track_event") {
   generate_cc = false
   generate_python = false
   generate_descriptor = "chrome_track_event.descriptor"
-  generator_visibility = [ "//base/test:gen_cc_chrome_track_event_descriptor" ]
+  generator_visibility = [
+    ":chrome_track_event_resources_grit",
+    "//base/test:gen_cc_chrome_track_event_descriptor",
+  ]
   deps =
       [ "//third_party/perfetto/protos/perfetto/trace/track_event:source_set" ]
 }
@@ -36,5 +39,5 @@ grit("chrome_track_event_resources") {
     "grit/tracing_proto_resources.h",
     "tracing_proto_resources.pak",
   ]
-  deps = [ ":chrome_track_event" ]
+  deps = [ ":chrome_track_event_gen" ]
 }

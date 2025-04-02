@@ -159,6 +159,7 @@ source_set("metrics") {
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells:constants",
     "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list:utils",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card:shop_card_data",
     "//ios/chrome/browser/favicon/ui_bundled",
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/ntp/model:set_up_list_item_type",

@@ -15,7 +15,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 
-import static org.chromium.base.test.transit.Condition.whether;
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import androidx.annotation.Nullable;
@@ -24,19 +23,16 @@ import androidx.test.espresso.NoMatchingViewException;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
-import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.TravelException;
-import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.R;
-import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.transit.layouts.LayoutTypeVisibleCondition;
@@ -98,7 +94,6 @@ public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
             }
         }
 
-        elements.declareEnterCondition(new HubLayoutNotInTransition());
         elements.declareEnterCondition(
                 new LayoutTypeVisibleCondition(mActivityElement, LayoutType.TAB_SWITCHER));
     }
@@ -169,28 +164,5 @@ public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
                                 isDescendantOfA(HUB_PANE_SWITCHER.getViewMatcher()),
                                 withContentDescription(containsString(contentDescription))))
                 .perform(click());
-    }
-
-    private class HubLayoutNotInTransition extends UiThreadCondition {
-        private HubLayoutNotInTransition() {
-            dependOnSupplier(mActivityElement, "ChromeTabbedActivity");
-        }
-
-        @Override
-        protected ConditionStatus checkWithSuppliers() {
-            LayoutManager layoutManager = mActivityElement.get().getLayoutManager();
-            boolean startingToShow = layoutManager.isLayoutStartingToShow(LayoutType.TAB_SWITCHER);
-            boolean startingToHide = layoutManager.isLayoutStartingToHide(LayoutType.TAB_SWITCHER);
-            return whether(
-                    !startingToShow && !startingToHide,
-                    "startingToShow=%b, startingToHide=%b",
-                    startingToShow,
-                    startingToHide);
-        }
-
-        @Override
-        public String buildDescription() {
-            return "LayoutManager is not in transition to or from TAB_SWITCHER (Hub)";
-        }
     }
 }

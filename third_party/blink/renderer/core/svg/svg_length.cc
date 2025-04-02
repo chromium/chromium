@@ -100,12 +100,6 @@ SVGLength* SVGLength::Clone() const {
   return MakeGarbageCollected<SVGLength>(*value_, UnitMode());
 }
 
-SVGPropertyBase* SVGLength::CloneForAnimation(const String& value) const {
-  auto* length = MakeGarbageCollected<SVGLength>(UnitMode());
-  length->SetValueAsString(value);
-  return length;
-}
-
 bool SVGLength::operator==(const SVGLength& other) const {
   return unit_mode_ == other.unit_mode_ && value_ == other.value_;
 }
@@ -229,44 +223,6 @@ void SVGLength::ConvertToSpecifiedUnits(CSSPrimitiveValue::UnitType type,
   value_ = CSSNumericLiteralValue::Create(
       context.ConvertValueFromUserUnits(value_in_user_units, UnitMode(), type),
       type);
-}
-
-SVGLengthMode SVGLength::LengthModeForAnimatedLengthAttribute(
-    const QualifiedName& attr_name) {
-  typedef HashMap<QualifiedName, SVGLengthMode> LengthModeForLengthAttributeMap;
-  DEFINE_STATIC_LOCAL(LengthModeForLengthAttributeMap, length_mode_map, ());
-
-  if (length_mode_map.empty()) {
-    length_mode_map.Set(svg_names::kXAttr, SVGLengthMode::kWidth);
-    length_mode_map.Set(svg_names::kYAttr, SVGLengthMode::kHeight);
-    length_mode_map.Set(svg_names::kCxAttr, SVGLengthMode::kWidth);
-    length_mode_map.Set(svg_names::kCyAttr, SVGLengthMode::kHeight);
-    length_mode_map.Set(svg_names::kDxAttr, SVGLengthMode::kWidth);
-    length_mode_map.Set(svg_names::kDyAttr, SVGLengthMode::kHeight);
-    length_mode_map.Set(svg_names::kFrAttr, SVGLengthMode::kOther);
-    length_mode_map.Set(svg_names::kFxAttr, SVGLengthMode::kWidth);
-    length_mode_map.Set(svg_names::kFyAttr, SVGLengthMode::kHeight);
-    length_mode_map.Set(svg_names::kRAttr, SVGLengthMode::kOther);
-    length_mode_map.Set(svg_names::kRxAttr, SVGLengthMode::kWidth);
-    length_mode_map.Set(svg_names::kRyAttr, SVGLengthMode::kHeight);
-    length_mode_map.Set(svg_names::kWidthAttr, SVGLengthMode::kWidth);
-    length_mode_map.Set(svg_names::kHeightAttr, SVGLengthMode::kHeight);
-    length_mode_map.Set(svg_names::kX1Attr, SVGLengthMode::kWidth);
-    length_mode_map.Set(svg_names::kX2Attr, SVGLengthMode::kWidth);
-    length_mode_map.Set(svg_names::kY1Attr, SVGLengthMode::kHeight);
-    length_mode_map.Set(svg_names::kY2Attr, SVGLengthMode::kHeight);
-    length_mode_map.Set(svg_names::kRefXAttr, SVGLengthMode::kWidth);
-    length_mode_map.Set(svg_names::kRefYAttr, SVGLengthMode::kHeight);
-    length_mode_map.Set(svg_names::kMarkerWidthAttr, SVGLengthMode::kWidth);
-    length_mode_map.Set(svg_names::kMarkerHeightAttr, SVGLengthMode::kHeight);
-    length_mode_map.Set(svg_names::kTextLengthAttr, SVGLengthMode::kWidth);
-    length_mode_map.Set(svg_names::kStartOffsetAttr, SVGLengthMode::kWidth);
-  }
-
-  if (length_mode_map.Contains(attr_name))
-    return length_mode_map.at(attr_name);
-
-  return SVGLengthMode::kOther;
 }
 
 bool SVGLength::NegativeValuesForbiddenForAnimatedLengthAttribute(

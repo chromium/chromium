@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
@@ -17,22 +16,24 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 /**
- * Creates Tabs.  If the TabCreator creates Tabs asynchronously, null pointers will be returned
+ * Creates Tabs. If the TabCreator creates Tabs asynchronously, null pointers will be returned
  * everywhere instead of a Tab.
  *
- * TODO(dfalcantara): Hunt down more places where we don't actually need to return a Tab.
+ * <p>TODO(dfalcantara): Hunt down more places where we don't actually need to return a Tab.
  */
+@NullMarked
 public abstract class TabCreator {
 
     /**
      * Creates a new tab and posts to UI.
+     *
      * @param loadUrlParams parameters of the url load.
      * @param type Information about how the tab was launched.
      * @param parent the parent tab, if present.
      * @return The new tab or null if no tab was created.
      */
     public abstract @Nullable Tab createNewTab(
-            LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent);
+            LoadUrlParams loadUrlParams, @TabLaunchType int type, @Nullable Tab parent);
 
     /**
      * Creates a new tab and posts to UI.
@@ -44,7 +45,10 @@ public abstract class TabCreator {
      * @return The new tab or null if no tab was created.
      */
     public abstract @Nullable Tab createNewTab(
-            LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent, int position);
+            LoadUrlParams loadUrlParams,
+            @TabLaunchType int type,
+            @Nullable Tab parent,
+            int position);
 
     /**
      * Creates a new tab and posts to UI.
@@ -60,7 +64,7 @@ public abstract class TabCreator {
             LoadUrlParams loadUrlParams,
             String title,
             @TabLaunchType int type,
-            Tab parent,
+            @Nullable Tab parent,
             int position);
 
     /**
@@ -86,24 +90,23 @@ public abstract class TabCreator {
 
     /**
      * Creates a Tab to host the given WebContents.
-     * @param parent      The parent tab, if present.
+     *
+     * @param parent The parent tab, if present.
      * @param webContents The web contents to create a tab around.
-     * @param type        The TabLaunchType describing how this tab was created.
-     * @param url         URL to show in the Tab. (Needed only for asynchronous tab creation.)
-     * @return            Whether a Tab was created successfully.
+     * @param type The TabLaunchType describing how this tab was created.
+     * @param url URL to show in the Tab. (Needed only for asynchronous tab creation.)
+     * @return Whether a Tab was created successfully.
      */
     public abstract boolean createTabWithWebContents(
-            @Nullable Tab parent,
-            WebContents webContents,
-            @TabLaunchType int type,
-            @NonNull GURL url);
+            @Nullable Tab parent, WebContents webContents, @TabLaunchType int type, GURL url);
 
     /**
      * Creates a tab around the native web contents pointer.
-     * @param parent      The parent tab, if present.
+     *
+     * @param parent The parent tab, if present.
      * @param webContents The web contents to create a tab around.
-     * @param type        The TabLaunchType describing how this tab was created.
-     * @return            Whether a Tab was created successfully.
+     * @param type The TabLaunchType describing how this tab was created.
+     * @return Whether a Tab was created successfully.
      */
     public final boolean createTabWithWebContents(
             Tab parent, WebContents webContents, @TabLaunchType int type) {

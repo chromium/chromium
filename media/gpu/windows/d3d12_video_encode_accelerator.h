@@ -51,6 +51,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
                            Client* client,
                            std::unique_ptr<MediaLog> media_log) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
+  void Encode(scoped_refptr<VideoFrame> frame,
+              const VideoEncoder::EncodeOptions& options) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
   void RequestEncodingParametersChange(
       const Bitrate& bitrate,
@@ -78,10 +80,11 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
   Microsoft::WRL::ComPtr<ID3D12Resource>
   CreateResourceForSharedMemoryVideoFrame(const VideoFrame& frame);
 
-  void EncodeTask(scoped_refptr<VideoFrame> frame, bool force_keyframe);
+  void EncodeTask(scoped_refptr<VideoFrame> frame,
+                  const VideoEncoder::EncodeOptions& options);
 
   void DoEncodeTask(scoped_refptr<VideoFrame> frame,
-                    bool force_keyframe,
+                    const VideoEncoder::EncodeOptions& options,
                     const BitstreamBuffer& bitstream_buffer);
 
   void DestroyTask();

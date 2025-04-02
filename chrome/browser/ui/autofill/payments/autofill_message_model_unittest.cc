@@ -41,7 +41,7 @@ TEST_F(AutofillMessageModelTest, VerifySaveCardFailureAttributes) {
   EXPECT_EQ(GetMessage(*message_model).GetPrimaryButtonText(),
             ui_params.failure_ok_button_text);
   EXPECT_EQ(GetMessage(*message_model).GetIconResourceId(),
-            ResourceMapper::MapToJavaDrawableId(IDR_AUTOFILL_CC_GENERIC));
+            ResourceMapper::MapToJavaDrawableId(IDR_AUTOFILL_CC_GENERIC_OLD));
   EXPECT_EQ(message_model->GetType(),
             AutofillMessageModel::Type::kSaveCardFailure);
   EXPECT_EQ(message_model->GetTypeAsString(),
@@ -63,7 +63,7 @@ TEST_F(AutofillMessageModelTest, VerifyVirtualCardEnrollFailureAttributes) {
   EXPECT_EQ(GetMessage(*message_model).GetPrimaryButtonText(),
             ui_params.failure_ok_button_text);
   EXPECT_EQ(GetMessage(*message_model).GetIconResourceId(),
-            ResourceMapper::MapToJavaDrawableId(IDR_AUTOFILL_CC_GENERIC));
+            ResourceMapper::MapToJavaDrawableId(IDR_AUTOFILL_CC_GENERIC_OLD));
   EXPECT_EQ(message_model->GetType(),
             AutofillMessageModel::Type::kVirtualCardEnrollFailure);
   EXPECT_EQ(

@@ -638,8 +638,6 @@ class RemoveUkmDataTester {
  private:
   ukm::TestUkmRecorder ukm_recorder_;
   segmentation_platform::UkmDataManagerTestUtils test_utils_;
-
-  base::WeakPtrFactory<RemoveUkmDataTester> weak_ptr_factory_{this};
 };
 
 std::unique_ptr<KeyedService> BuildProtocolHandlerRegistry(
@@ -687,43 +685,6 @@ class ClearDomainReliabilityTester {
   unsigned clear_count_ = 0;
   network::mojom::NetworkContext::DomainReliabilityClearMode last_clear_mode_;
   base::RepeatingCallback<bool(const GURL&)> last_filter_;
-};
-
-class RemoveSecurePaymentConfirmationCredentialsTester {
- public:
-  using MockWrapper = testing::NiceMock<payments::MockWebDataServiceWrapper>;
-  using MockService =
-      testing::NiceMock<payments::MockPaymentManifestWebDataService>;
-  explicit RemoveSecurePaymentConfirmationCredentialsTester(
-      TestingProfile* testing_profile) {
-    webdata_services::WebDataServiceWrapperFactory::GetInstance()
-        ->SetTestingFactory(
-            testing_profile,
-            base::BindRepeating(
-                &RemoveSecurePaymentConfirmationCredentialsTester::
-                    BuildServiceWapper,
-                base::Unretained(this)));
-  }
-
-  std::unique_ptr<KeyedService> BuildServiceWapper(
-      content::BrowserContext* context) {
-    auto wrapper = std::make_unique<MockWrapper>();
-    EXPECT_CALL(*wrapper, GetPaymentManifestWebData)
-        .WillRepeatedly(Return(service_));
-    return std::move(wrapper);
-  }
-
-  void ExpectCallClearSecurePaymentConfirmationCredentials(int times) {
-    EXPECT_CALL(*service_.get(), ClearSecurePaymentConfirmationCredentials)
-        .Times(times)
-        .WillRepeatedly(testing::WithArg<2>([](base::OnceClosure completion) {
-          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE, std::move(completion));
-        }));
-  }
-
- private:
-  scoped_refptr<MockService> service_ = base::MakeRefCounted<MockService>();
 };
 
 class RemovePermissionPromptCountsTest {
@@ -4249,11 +4210,47 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   EXPECT_THAT(domains, IsEmpty());
 }
 
+class
+    ChromeBrowsingDataRemoverDelegateTest_RemoveSecurePaymentConfirmationCredentials
+    : public ChromeBrowsingDataRemoverDelegateTest {
+ public:
+  using MockWrapper = testing::NiceMock<payments::MockWebDataServiceWrapper>;
+  using MockService =
+      testing::NiceMock<payments::MockPaymentManifestWebDataService>;
+
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    TestingProfile::TestingFactories factories =
+        ChromeBrowsingDataRemoverDelegateTest::GetTestingFactories();
+    factories.emplace_back(
+        webdata_services::WebDataServiceWrapperFactory::GetInstance(),
+        base::BindLambdaForTesting([&](content::BrowserContext* context)
+                                       -> std::unique_ptr<KeyedService> {
+          auto wrapper = std::make_unique<MockWrapper>();
+          ON_CALL(*wrapper, GetPaymentManifestWebData)
+              .WillByDefault(Return(service_));
+          return std::move(wrapper);
+        }));
+    return factories;
+  }
+
+  void ExpectCallClearSecurePaymentConfirmationCredentials(int times) {
+    EXPECT_CALL(*service_.get(), ClearSecurePaymentConfirmationCredentials)
+        .Times(times)
+        .WillRepeatedly(testing::WithArg<2>([](base::OnceClosure completion) {
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, std::move(completion));
+        }));
+  }
+
+ private:
+  scoped_refptr<MockService> service_ = base::MakeRefCounted<MockService>();
+};
+
 // Verify that clearing secure payment confirmation credentials data works.
-TEST_F(ChromeBrowsingDataRemoverDelegateTest,
-       RemoveSecurePaymentConfirmationCredentials) {
-  RemoveSecurePaymentConfirmationCredentialsTester tester(GetProfile());
-  tester.ExpectCallClearSecurePaymentConfirmationCredentials(1);
+TEST_F(
+    ChromeBrowsingDataRemoverDelegateTest_RemoveSecurePaymentConfirmationCredentials,
+    RemoveSecurePaymentConfirmationCredentials) {
+  ExpectCallClearSecurePaymentConfirmationCredentials(1);
 
   BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
                                 constants::DATA_TYPE_PASSWORDS, false);

@@ -29,7 +29,6 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.DisplayMetrics;
-import android.util.Pair;
 import android.util.SparseArray;
 import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
@@ -150,7 +149,9 @@ import java.lang.annotation.Annotation;
 import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -1442,7 +1443,8 @@ public class AwContents implements SmartClipProvider {
         public final boolean wasPaused;
         public final boolean wasFocused;
         public final boolean wasWindowFocused;
-        public final @NonNull Map<String, Pair<Object, Class>> javascriptInterfaces;
+        public final @NonNull Map<String, JavascriptInjector.InjectedInterface>
+                javascriptInterfaces;
         public final @Nullable WebMessageListenerInfo[] webMessageListenerInfo;
         public final @Nullable StartupJavascriptInfo[] startupJavascriptInfo;
 
@@ -1759,13 +1761,16 @@ public class AwContents implements SmartClipProvider {
         if (previousState.wasFocused) onFocusChanged(true, 0, null);
 
         // Restore injected JavaScript interfaces.
-        for (Map.Entry<String, Pair<Object, Class>> entry :
+        for (Map.Entry<String, JavascriptInjector.InjectedInterface> entry :
                 previousState.javascriptInterfaces.entrySet()) {
             @SuppressWarnings("unchecked")
-            Class<? extends Annotation> requiredAnnotation = entry.getValue().second;
+            JavascriptInjector.InjectedInterface injected = entry.getValue();
             getJavascriptInjector()
                     .addPossiblyUnsafeInterface(
-                            entry.getValue().first, entry.getKey(), requiredAnnotation);
+                            injected.getInjectedObject(),
+                            entry.getKey(),
+                            injected.getRequiredAnnotation(),
+                            injected.getOriginAllowlist());
         }
 
         // Restore injected WebMessageListeners.
@@ -3672,16 +3677,36 @@ public class AwContents implements SmartClipProvider {
         return result;
     }
 
-    /** @see JavascriptInjector#addPossiblyUnsafeInterface(Object, String, Class) */
+    /**
+     * @see JavascriptInjector#addPossiblyUnsafeInterface(Object, String, Class)
+     */
     public void addJavascriptInterface(Object object, String name) {
+        addJavascriptInterface(object, name, List.of("*"));
+    }
+
+    public List<String> addJavascriptInterface(
+            Object object, String name, @NonNull List<String> originAllowlist) {
+        // TODO(crbug.com/383099115): Get rid of this allowlist version of addJavascriptInterface
+        // and instead rely on some allowlist state.
         if (TRACE) Log.i(TAG, "%s addJavascriptInterface=%s", this, name);
-        if (isDestroyed(WARN)) return;
+        if (isDestroyed(WARN)) return Collections.emptyList();
+
+        if (originAllowlist == null) {
+            throw new IllegalArgumentException(
+                    "A null origin allowlist was provided to addJavascriptInterface");
+        }
+        if (originAllowlist.size() == 0) {
+            throw new IllegalArgumentException(
+                    "The origin allowlist provided to addJavascriptInterface must have values");
+        }
+
         Class<? extends Annotation> requiredAnnotation = null;
         if (mAppTargetSdkVersion >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             requiredAnnotation = JavascriptInterface.class;
         }
 
-        getJavascriptInjector().addPossiblyUnsafeInterface(object, name, requiredAnnotation);
+        return getJavascriptInjector()
+                .addPossiblyUnsafeInterface(object, name, requiredAnnotation, originAllowlist);
     }
 
     /** @see android.webkit.WebView#removeJavascriptInterface(String) */

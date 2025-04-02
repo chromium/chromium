@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_group_suggestion;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
@@ -86,7 +88,7 @@ public class SuggestionEventObserver {
                     }
                 };
         mGroupSuggestionsService =
-                GroupSuggestionsServiceFactory.getForProfile(mTabModel.getProfile());
+                GroupSuggestionsServiceFactory.getForProfile(assumeNonNull(mTabModel.getProfile()));
         mTabModel.addObserver(mTabModelObserver);
         hubManagerSupplier.runSyncOrOnAvailable(
                 hubManager -> {

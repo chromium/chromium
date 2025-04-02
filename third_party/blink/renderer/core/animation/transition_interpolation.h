@@ -15,7 +15,7 @@
 
 namespace blink {
 
-class InterpolationEnvironment;
+class CSSInterpolationEnvironment;
 
 // See the documentation of Interpolation for general information about this
 // class hierarchy.
@@ -72,7 +72,7 @@ class CORE_EXPORT TransitionInterpolation : public Interpolation {
                       property_));
   }
 
-  void Apply(InterpolationEnvironment&) const;
+  void Apply(CSSInterpolationEnvironment&) const;
 
   bool IsTransitionInterpolation() const final { return true; }
 

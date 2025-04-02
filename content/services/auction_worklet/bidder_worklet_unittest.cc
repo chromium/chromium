@@ -396,7 +396,7 @@ class BidderWorkletTest : public testing::Test {
     trusted_signals_cache_key_.reset();
     kanon_keys_.clear();
     kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kNone;
-    bid_is_kanon_ = false;
+    kanon_status_ = auction_worklet::mojom::KAnonymityStatus::kBelowThreshold;
     provide_direct_from_seller_signals_late_ = false;
 
     update_url_.reset();
@@ -659,9 +659,8 @@ class BidderWorkletTest : public testing::Test {
         direct_from_seller_per_buyer_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
         direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
-        kanon_mode_, bid_is_kanon_, browser_signal_render_url_,
-        browser_signal_bid_, browser_signal_bid_currency_,
-        browser_signal_highest_scoring_other_bid_,
+        kanon_status_, browser_signal_render_url_, browser_signal_bid_,
+        browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
         browser_signal_highest_scoring_other_bid_currency_,
         browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
         browser_signal_modeling_signals_, browser_signal_join_count_,
@@ -1088,7 +1087,8 @@ class BidderWorkletTest : public testing::Test {
   mojom::TrustedSignalsCacheKeyPtr trusted_signals_cache_key_;
   auction_worklet::mojom::KAnonymityBidMode kanon_mode_ =
       auction_worklet::mojom::KAnonymityBidMode::kNone;
-  bool bid_is_kanon_;
+  auction_worklet::mojom::KAnonymityStatus kanon_status_ =
+      auction_worklet::mojom::KAnonymityStatus::kBelowThreshold;
   std::optional<GURL> update_url_;
   std::optional<GURL> interest_group_trusted_bidding_signals_url_;
   std::optional<std::vector<std::string>>
@@ -6195,6 +6195,141 @@ TEST_F(BidderWorkletTest, GenerateBidWithInvalidSelectedReportingId) {
        "reporting id"});
 }
 
+TEST_F(BidderWorkletTest, GenerateBidWithTruncatedSelectableReportingIds) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kFledgeAuctionDealSupport, {}},
+       {blink::features::
+            kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon,
+        {
+            {"SelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit", "1"},
+        }},
+       {blink::features::
+            kFledgeTruncateSelectableBuyerAndSellerReportingIdsToKAnonLimit,
+        {}}},
+      {});
+
+  const char kScript[] = R"(
+    function generateBid(interestGroup) {
+      return {
+          ad: ["ad"],
+          bid: interestGroup.ads[0].selectableBuyerAndSellerReportingIds.length,
+          render: interestGroup.ads[0].renderURL,
+          selectedBuyerAndSellerReportingId:
+              interestGroup.ads[0].selectableBuyerAndSellerReportingIds[0],
+      };
+    }
+  )";
+
+  interest_group_ads_.clear();
+  interest_group_ads_.emplace_back(
+      GURL("https://response.test/"),
+      /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/std::nullopt,
+      /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/
+      std::vector<std::string>{"selected-id", "truncated-selected-id"});
+
+  std::vector<mojom::BidderWorkletBidPtr> expected;
+  expected.push_back(TestBidBuilder()
+                         .SetAd(R"(["ad"])")
+                         .SetBid(1)
+                         .SetSelectedBuyerAndSellerReportingId("selected-id")
+                         .Build());
+  RunGenerateBidWithJavascriptExpectingResult(kScript, std::move(expected));
+}
+
+TEST_F(BidderWorkletTest,
+       GenerateBidAttemptsToReturnTruncatedSelectedReportingId) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kFledgeAuctionDealSupport, {}},
+       {blink::features::
+            kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon,
+        {
+            {"SelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit", "1"},
+        }},
+       {blink::features::
+            kFledgeTruncateSelectableBuyerAndSellerReportingIdsToKAnonLimit,
+        {}}},
+      {});
+
+  const char kScript[] = R"(
+    function generateBid(interestGroup) {
+      return {
+          ad: ["ad"],
+          bid: interestGroup.ads[0].selectableBuyerAndSellerReportingIds.length,
+          render: interestGroup.ads[0].renderURL,
+          selectedBuyerAndSellerReportingId: "truncated-selected-id",
+      };
+    }
+  )";
+
+  interest_group_ads_.clear();
+  interest_group_ads_.emplace_back(
+      GURL("https://response.test/"),
+      /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/std::nullopt,
+      /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/
+      std::vector<std::string>{"selected-id", "truncated-selected-id"});
+
+  std::vector<mojom::BidderWorkletBidPtr> expected;
+  RunGenerateBidWithJavascriptExpectingResult(
+      kScript, std::move(expected),
+      /*expected_data_version=*/std::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() Invalid selected buyer and seller "
+       "reporting id"});
+}
+
+// This test has a larger limit than the number of
+// `selectable_buyer_and_seller_reporting_ids`, so nothing is truncated.
+TEST_F(BidderWorkletTest, GenerateBidWithUntruncatedSelectableReportingIds) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kFledgeAuctionDealSupport, {}},
+       {blink::features::
+            kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon,
+        {
+            {"SelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit", "3"},
+        }},
+       {blink::features::
+            kFledgeTruncateSelectableBuyerAndSellerReportingIdsToKAnonLimit,
+        {}}},
+      {});
+
+  const char kScript[] = R"(
+    function generateBid(interestGroup) {
+      return {
+          ad: ["ad"],
+          bid: interestGroup.ads[0].selectableBuyerAndSellerReportingIds.length,
+          render: interestGroup.ads[0].renderURL,
+          selectedBuyerAndSellerReportingId:
+              interestGroup.ads[0].selectableBuyerAndSellerReportingIds[
+                  interestGroup.ads[0].
+                      selectableBuyerAndSellerReportingIds.length - 1],
+      };
+    }
+  )";
+
+  interest_group_ads_.clear();
+  interest_group_ads_.emplace_back(
+      GURL("https://response.test/"),
+      /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/std::nullopt,
+      /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/
+      std::vector<std::string>{"selected-id-1", "selected-id-2"});
+
+  std::vector<mojom::BidderWorkletBidPtr> expected;
+  expected.push_back(TestBidBuilder()
+                         .SetAd(R"(["ad"])")
+                         .SetBid(2)
+                         .SetSelectedBuyerAndSellerReportingId("selected-id-2")
+                         .Build());
+  RunGenerateBidWithJavascriptExpectingResult(kScript, std::move(expected));
+}
+
 // Verify generateBid cannot see the reporting Ids when
 // `selectable_buyer_and_seller_reporting_ids` is not present.
 TEST_F(BidderWorkletTest, GenerateBidAdsWithoutReportingIds) {
@@ -6409,9 +6544,8 @@ TEST_F(BidderWorkletTest, WasmReportWin) {
       direct_from_seller_per_buyer_signals_header_ad_slot_,
       direct_from_seller_auction_signals_,
       direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
-      kanon_mode_, bid_is_kanon_, browser_signal_render_url_,
-      browser_signal_bid_, browser_signal_bid_currency_,
-      browser_signal_highest_scoring_other_bid_,
+      kanon_status_, browser_signal_render_url_, browser_signal_bid_,
+      browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
       browser_signal_highest_scoring_other_bid_currency_,
       browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
       browser_signal_modeling_signals_, browser_signal_join_count_,
@@ -8129,9 +8263,8 @@ TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
       direct_from_seller_per_buyer_signals_header_ad_slot_,
       direct_from_seller_auction_signals_,
       direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
-      kanon_mode_, bid_is_kanon_, browser_signal_render_url_,
-      browser_signal_bid_, browser_signal_bid_currency_,
-      browser_signal_highest_scoring_other_bid_,
+      kanon_status_, browser_signal_render_url_, browser_signal_bid_,
+      browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
       browser_signal_highest_scoring_other_bid_currency_,
       browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
       browser_signal_modeling_signals_, browser_signal_join_count_,
@@ -8187,8 +8320,8 @@ TEST_F(BidderWorkletTest, ReportWinParallel) {
           direct_from_seller_per_buyer_signals_header_ad_slot_,
           direct_from_seller_auction_signals_,
           direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
-          kanon_mode_, bid_is_kanon_, browser_signal_render_url_,
-          browser_signal_bid_, browser_signal_bid_currency_,
+          kanon_status_, browser_signal_render_url_, browser_signal_bid_,
+          browser_signal_bid_currency_,
           browser_signal_highest_scoring_other_bid_,
           browser_signal_highest_scoring_other_bid_currency_,
           browser_signal_made_highest_scoring_other_bid_,
@@ -8247,9 +8380,8 @@ TEST_F(BidderWorkletTest, ReportWinParallelLoadFails) {
         direct_from_seller_per_buyer_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
         direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
-        kanon_mode_, bid_is_kanon_, browser_signal_render_url_,
-        browser_signal_bid_, browser_signal_bid_currency_,
-        browser_signal_highest_scoring_other_bid_,
+        kanon_status_, browser_signal_render_url_, browser_signal_bid_,
+        browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
         browser_signal_highest_scoring_other_bid_currency_,
         browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
         browser_signal_modeling_signals_, browser_signal_join_count_,
@@ -8758,47 +8890,29 @@ TEST_F(BidderWorkletTest, ReportWinNoBrowserSignalRecencyForAdditionalBid) {
 }
 
 TEST_F(BidderWorkletTest, KAnonStatusExposesInReportWinBrowserSignals) {
-  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kEnforce;
-  bid_is_kanon_ = true;
+  kanon_status_ = auction_worklet::mojom::KAnonymityStatus::kUnknown;
   RunReportWinWithFunctionBodyExpectingResult(
-      R"(if (browserSignals.kAnonStatus === "passedAndEnforced")
-        sendReportTo("https://passedAndEnforced.test"))",
-      GURL("https://passedAndEnforced.test"));
+      R"(if (browserSignals.kAnonStatus === "notCalculated")
+        sendReportTo("https://notCalculated.test"))",
+      GURL("https://notCalculated.test"));
 
-  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kEnforce;
-  bid_is_kanon_ = false;
-  RunReportWinWithFunctionBodyExpectingResult(
-      R"(if (browserSignals.kAnonStatus === "passedAndEnforced")
-        sendReportTo("https://passedAndEnforced.test"))",
-      GURL("https://passedAndEnforced.test"));
-
-  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kSimulate;
-  bid_is_kanon_ = true;
-  RunReportWinWithFunctionBodyExpectingResult(
-      R"(if (browserSignals.kAnonStatus === "passedNotEnforced")
-        sendReportTo("https://passedNotEnforced.test"))",
-      GURL("https://passedNotEnforced.test"));
-
-  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kSimulate;
-  bid_is_kanon_ = false;
+  kanon_status_ = auction_worklet::mojom::KAnonymityStatus::kBelowThreshold;
   RunReportWinWithFunctionBodyExpectingResult(
       R"(if (browserSignals.kAnonStatus === "belowThreshold")
         sendReportTo("https://belowThreshold.test"))",
       GURL("https://belowThreshold.test"));
 
-  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kNone;
-  bid_is_kanon_ = true;
+  kanon_status_ = auction_worklet::mojom::KAnonymityStatus::kPassingNotEnforced;
   RunReportWinWithFunctionBodyExpectingResult(
-      R"(if (browserSignals.kAnonStatus === "notCalculated")
-        sendReportTo("https://notCalculated.test"))",
-      GURL("https://notCalculated.test"));
+      R"(if (browserSignals.kAnonStatus === "passedNotEnforced")
+        sendReportTo("https://passedNotEnforced.test"))",
+      GURL("https://passedNotEnforced.test"));
 
-  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kNone;
-  bid_is_kanon_ = false;
+  kanon_status_ = auction_worklet::mojom::KAnonymityStatus::kPassingAndEnforced;
   RunReportWinWithFunctionBodyExpectingResult(
-      R"(if (browserSignals.kAnonStatus === "notCalculated")
-        sendReportTo("https://notCalculated.test"))",
-      GURL("https://notCalculated.test"));
+      R"(if (browserSignals.kAnonStatus === "passedAndEnforced")
+        sendReportTo("https://passedAndEnforced.test"))",
+      GURL("https://passedAndEnforced.test"));
 }
 
 // Subsequent runs of the same script should not affect each other. Same is true
@@ -8850,9 +8964,8 @@ TEST_P(BidderWorkletMultiThreadingTest, ScriptIsolation) {
         direct_from_seller_per_buyer_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
         direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
-        kanon_mode_, bid_is_kanon_, browser_signal_render_url_,
-        browser_signal_bid_, browser_signal_bid_currency_,
-        browser_signal_highest_scoring_other_bid_,
+        kanon_status_, browser_signal_render_url_, browser_signal_bid_,
+        browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
         browser_signal_highest_scoring_other_bid_currency_,
         browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
         browser_signal_modeling_signals_, browser_signal_join_count_,
@@ -10643,9 +10756,8 @@ TEST_F(BidderWorkletTest, CancelationDtor) {
       direct_from_seller_per_buyer_signals_header_ad_slot_,
       direct_from_seller_auction_signals_,
       direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
-      kanon_mode_, bid_is_kanon_, browser_signal_render_url_,
-      browser_signal_bid_, browser_signal_bid_currency_,
-      browser_signal_highest_scoring_other_bid_,
+      kanon_status_, browser_signal_render_url_, browser_signal_bid_,
+      browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
       browser_signal_highest_scoring_other_bid_currency_,
       browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
       browser_signal_modeling_signals_, browser_signal_join_count_,
@@ -13846,9 +13958,8 @@ TEST_F(BidderWorkletLatenciesTest, ReportWinFetchMetrics) {
       direct_from_seller_per_buyer_signals_header_ad_slot_,
       direct_from_seller_auction_signals_,
       direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
-      kanon_mode_, bid_is_kanon_, browser_signal_render_url_,
-      browser_signal_bid_, browser_signal_bid_currency_,
-      browser_signal_highest_scoring_other_bid_,
+      kanon_status_, browser_signal_render_url_, browser_signal_bid_,
+      browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
       browser_signal_highest_scoring_other_bid_currency_,
       browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
       browser_signal_modeling_signals_, browser_signal_join_count_,

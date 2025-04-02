@@ -50,6 +50,7 @@
 #include "chrome/browser/extensions/extension_management_constants.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
@@ -721,6 +722,9 @@ class DevToolsExtensionTest : public DevToolsTest {
 
   // Use std::deque to avoid dangling references to existing elements.
   std::deque<extensions::TestExtensionDir> test_extension_dirs_;
+
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler_;
 };
 
 class DevToolsExperimentalExtensionTest : public DevToolsExtensionTest {

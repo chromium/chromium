@@ -134,6 +134,9 @@ class GlicFreController {
   raw_ptr<content::WebContents> web_contents_ = nullptr;
   AuthController auth_controller_;
 
+  // The invocation source browser.
+  raw_ptr<Browser> source_browser_ = nullptr;
+
   // Tracks the tab that the FRE dialog is shown on.
   raw_ptr<tabs::TabInterface> tab_showing_modal_;
   base::CallbackListSubscription will_detach_subscription_;

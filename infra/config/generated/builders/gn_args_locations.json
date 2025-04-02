@@ -530,7 +530,8 @@
     "Windows deterministic": "ci/Windows deterministic/gn-args.json",
     "linux-win-cross-rel": "ci/linux-win-cross-rel/gn-args.json",
     "win-arm64-dbg": "ci/win-arm64-dbg/gn-args.json",
-    "win-arm64-rel": "ci/win-arm64-rel/gn-args.json"
+    "win-arm64-rel": "ci/win-arm64-rel/gn-args.json",
+    "win-no-safe-browsing-rel": "ci/win-no-safe-browsing-rel/gn-args.json"
   },
   "tryserver.blink": {
     "linux-blink-rel": "try/linux-blink-rel/gn-args.json",
@@ -620,6 +621,7 @@
     "android-cronet-x64-dbg-13-tests": "try/android-cronet-x64-dbg-13-tests/gn-args.json",
     "android-cronet-x64-dbg-14-tests": "try/android-cronet-x64-dbg-14-tests/gn-args.json",
     "android-cronet-x64-dbg-15-tests": "try/android-cronet-x64-dbg-15-tests/gn-args.json",
+    "android-cronet-x64-dbg-16-tests": "try/android-cronet-x64-dbg-16-tests/gn-args.json",
     "android-cronet-x64-rel": "try/android-cronet-x64-rel/gn-args.json",
     "android-cronet-x86-dbg": "try/android-cronet-x86-dbg/gn-args.json",
     "android-cronet-x86-dbg-10-tests": "try/android-cronet-x86-dbg-10-tests/gn-args.json",
@@ -999,6 +1001,7 @@
     "win-clobber-rel": "try/win-clobber-rel/gn-args.json",
     "win-fieldtrial-rel": "try/win-fieldtrial-rel/gn-args.json",
     "win-libfuzzer-asan-rel": "try/win-libfuzzer-asan-rel/gn-args.json",
+    "win-no-safe-browsing-rel": "try/win-no-safe-browsing-rel/gn-args.json",
     "win-perfetto-rel": "try/win-perfetto-rel/gn-args.json",
     "win-rel": "try/win-rel/gn-args.json",
     "win10-code-coverage": "try/win10-code-coverage/gn-args.json",

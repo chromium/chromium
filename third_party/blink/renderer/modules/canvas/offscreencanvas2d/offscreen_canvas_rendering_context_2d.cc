@@ -171,7 +171,6 @@ OffscreenCanvasRenderingContext2D::GetOrCreateCanvasResourceProvider() const {
   if (host == nullptr) [[unlikely]] {
     return nullptr;
   }
-  host->CheckForGpuContextLost();
   return host->GetOrCreateResourceProvider();
 }
 
@@ -334,10 +333,10 @@ void OffscreenCanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   if (context_lost_mode_ != kNotLostContext)
     return;
   context_lost_mode_ = lost_mode;
-  if (CanvasRenderingContextHost* host = Host();
-      host != nullptr && context_lost_mode_ == kSyntheticLostContext)
-      [[unlikely]] {
+  ResetInternal();
+  if (CanvasRenderingContextHost* host = Host()) [[likely]] {
     host->DiscardResourceProvider();
+    host->DiscardResourceDispatcher();
   }
   uint32_t delay = base::RandInt(1, kMaxIframeContextLoseDelay);
   dispatch_context_lost_event_timer_.StartOneShot(base::Milliseconds(delay),
@@ -400,65 +399,6 @@ bool OffscreenCanvasRenderingContext2D::IsCanvas2DBufferValid() const {
   if (IsPaintable())
     return GetCanvasResourceProvider()->IsValid();
   return false;
-}
-
-void OffscreenCanvasRenderingContext2D::DispatchContextLostEvent(
-    TimerBase* time) {
-  ResetInternal();
-  BaseRenderingContext2D::DispatchContextLostEvent(time);
-}
-
-void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
-    TimerBase* timer) {
-  if (context_lost_mode_ == kNotLostContext) {
-    // Canvas was already restored (possibly thanks to a resize), so stop
-    // trying.
-    try_restore_context_event_timer_.Stop();
-    return;
-  }
-
-  DCHECK(context_lost_mode_ != kWebGLLoseContextLostContext);
-
-  if (context_lost_mode_ == kSyntheticLostContext) {
-    // If lost mode is |kSyntheticLostContext| and |context_restorable_| is set
-    // to true, it means context is forced to be lost for testing purpose.
-    // Restore the context.
-    CanvasResourceProvider* provider = GetOrCreateCanvasResourceProvider();
-    if (provider) {
-      try_restore_context_event_timer_.Stop();
-      DispatchContextRestoredEvent(nullptr);
-      return;
-    }
-  } else if (context_lost_mode_ == kRealLostContext) {
-    // If lost mode is |kRealLostContext|, it means the context was not lost due
-    // to surface failure but rather due to a an eviction, which means image
-    // buffer exists.
-    OffscreenCanvas* const canvas = HostAsOffscreenCanvas();
-    CHECK(canvas != nullptr);
-    // Let the OffscreenCanvas know that it should attempt to recreate the
-    // resource dispatcher in order to restore the context.
-    canvas->SetRestoringGpuContext(true);
-    CanvasResourceProvider* provider = GetOrCreateCanvasResourceProvider();
-    canvas->SetRestoringGpuContext(false);
-    if (provider) {
-      try_restore_context_event_timer_.Stop();
-      DispatchContextRestoredEvent(nullptr);
-      return;
-    }
-  }
-
-  // It gets here if lost mode is |kRealLostContext| and it fails to create a
-  // new PaintCanvas. Discard the old resource and allocating a new one here.
-  if (++try_restore_context_attempt_count_ > kMaxTryRestoreContextAttempts) {
-    if (CanvasRenderingContextHost* host = Host()) [[likely]] {
-      host->DiscardResourceProvider();
-    }
-    try_restore_context_event_timer_.Stop();
-    if (CanvasResourceProvider* provider = GetOrCreateCanvasResourceProvider();
-        provider) {
-      DispatchContextRestoredEvent(nullptr);
-    }
-  }
 }
 
 std::optional<cc::PaintRecord> OffscreenCanvasRenderingContext2D::FlushCanvas(

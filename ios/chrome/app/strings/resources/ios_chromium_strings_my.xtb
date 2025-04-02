@@ -91,6 +91,7 @@
 <translation id="3054480780637153380">iOS တွင် Chromium ဆက်တင်များ ဖွင့်ပြီးနောက် “မူရင်း ဘရောင်ဇာအက်ပ်” ကိုတို့ပြီး Chromium ကိုရွေးပါ။</translation>
 <translation id="3102849287235003384">ဝဘ်ဆိုက်အားလုံးမှ သင့် Google Account ထွက်ရန် <ph name="BEGIN_LINK" />Chromium မှ ထွက်ပါ<ph name="END_LINK" />။</translation>
 <translation id="3115956258722352278">Chromium ကို သင့်မူရင်းဘရောင်ဇာအဖြစ် ပြုလုပ်မလား။</translation>
+<translation id="3180939591219927904">“Chromium ပိတ်သည့်အခါ ရုပ်ဖျက်တဘ်များကို လော့ခ်ချရန်” ဖွင့်ပါ</translation>
 <translation id="3242612358525156339">သင့်စက်၏ ဆက်တင်များတွင် “<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” ဖွင့်ပြီး “Chromium” ရွေးပါ</translation>
 <translation id="328933489847748230">{count,plural, =1{ယခု Chromium ဝင်းဒိုး ၁ ခုကို ပြထားသည်}other{ယခု Chromium ဝင်းဒိုး {count} ခုကို ပြထားသည်}}</translation>
 <translation id="3344973607274501920">Chromium က သင့်စကားဝှက်များကို စစ်ဆေး၍မရပါ။ သင့်အင်တာနက် ချိတ်ဆက်မှုကို စစ်ဆေးပါ။</translation>
@@ -186,6 +187,7 @@
 ၁။ ဆက်တင်များ ဖွင့်ပါ
 ၂။ 'မူရင်း ဘရောင်ဇာအက်ပ်' ကို တို့ပါ
 ၃။ Chromium ကိုရွေးပါ</translation>
+<translation id="5482686278086727777">Chromium မှ တဘ်အကြောင်းကြားချက်များ ရယူရန် သင့် iOS ဆက်တင်များရှိ အကြောင်းကြားချက်များကို ဖွင့်ပါ။</translation>
 <translation id="5521125884468363740">Chromium အသုံးပြုသည့် နေရာမှန်သမျှမှ သင့်တဘ်များကိုကြည့်ရန် လက်မှတ်ထိုးဝင်ပြီး စင့်ခ်လုပ်ခြင်းကိုဖွင့်ပါ</translation>
 <translation id="5534584691915394889">Apple Calendar တွင် Chromium နှင့် Google Lens မှ အစီအစဉ်များ ပြုလုပ်ရန် ၎င်းကိုသုံးမည်။</translation>
 <translation id="5571094606370987472">Chromium လတ်တလော တဘ်များ ဖွင့်ရန်။</translation>
@@ -260,6 +262,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">ရွေးချယ်ထားသည့် ဒေတာများကို Chromium နှင့် စင့်ခ်လုပ်ထားသည့် စက်ပစ္စည်းများမှ ဖယ်ရှားလိုက်ပါပြီ။ history.google.com ၌ သင့် Google အကောင့်ထဲတွင် အခြား Google ဝန်ဆောင်မှုများမှ ရှာဖွေမှုများနှင့် လုပ်ဆောင်ချက်များကဲ့သို့ အခြားအင်တာနက် အသုံးပြုမှုမှတ်တမ်း ပုံစံများ ရှိနိုင်ပါသည်။</translation>
 <translation id="7395825497086981028"><ph name="EMAIL" /> အတွက် သင့်စကားဝှက်ကို ‘စကားဝှက်မန်နေဂျာ’ သို့ သိမ်းပါမည်။</translation>
+<translation id="7504829997542308412">Chromium ဖွင့်ပါ</translation>
 <translation id="7531461704633548377">Chromium မှ</translation>
 <translation id="7554983317097061001">Chromium အကြံပြုချက်- Chromium ကို ပုံသေအထိုင်နေရာသို့ ရွှေ့ပါ</translation>
 <translation id="7576863740961052505">Chromium ဆက်တင်များ စီမံရန်</translation>

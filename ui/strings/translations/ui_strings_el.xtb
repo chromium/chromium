@@ -38,6 +38,7 @@
 <translation id="19085484004813472">Αυτή είναι μια νέα λειτουργία</translation>
 <translation id="2006524834898217237">Βεβαιωθείτε ότι αυτή η συσκευή είναι συνδεδεμένη στο διαδίκτυο.</translation>
 <translation id="208586643495776849">Προσπαθήστε ξανά</translation>
+<translation id="2111134541987263231">Ενεργοποιήστε την επιλογή <ph name="BEGIN_BOLD" />Να επιτρέπεται στην ανώνυμη περιήγηση<ph name="END_BOLD" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1ημ.}other{#ημ.}}</translation>
 <translation id="2148716181193084225">Σήμερα</translation>
 <translation id="2168039046890040389">Προηγούμενη σελίδα</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">Πατήστε τους στόχους αφής στην οθόνη σας.</translation>
 <translation id="2295140143284145483">Έρευνα</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Δεν είναι δυνατός ο εντοπισμός μιας επέκτασης με το αναγνωριστικό <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Επικοινωνήστε με τον διαχειριστή σας.}other{Δεν είναι δυνατός ο εντοπισμός των επεκτάσεων με τα αναγνωριστικά <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Επικοινωνήστε με τον διαχειριστή σας.}}</translation>
 <translation id="2353636109065292463">Έλεγχος της σύνδεσής σας στο διαδίκτυο</translation>
 <translation id="2359808026110333948">Συνέχεια</translation>
 <translation id="2388990488038464401">Θέλετε να καλέσετε αυτόν τον αριθμό στο τηλέφωνό σας;</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">Διαγραφή όλων</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{σε 1 η.}other{σε # η.}}</translation>
 <translation id="2922712708897119705">Η στήλη <ph name="COLUMN_NAME" /> ταξινομήθηκε με φθίνουσα σειρά.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Δεν είναι δυνατή η εύρεση της επέκτασης}other{Δεν είναι δυνατή η εύρεση των επεκτάσεων}}</translation>
 <translation id="3036649622769666520">Άνοιγμα Αρχείων</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">Κάτω</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">Πραγματοποιήστε κλήση από</translation>
 <translation id="3306688585798492231">Ενσωματωμένη οθόνη</translation>
 <translation id="335581015389089642">Ομιλία</translation>
+<translation id="3372635229069101468">Κάντε κλικ στο στοιχείο <ph name="BEGIN_BOLD" />Λεπτομέρειες<ph name="END_BOLD" />.</translation>
 <translation id="3389286852084373014">Το κείμενο είναι υπερβολικά μεγάλο</translation>
 <translation id="3406306243914553062">Περιεχόμενο HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{Απομένει 1 ημέρα}other{Απομένουν # ημέρες}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">Η στήλη <ph name="COLUMN_NAME" /> ταξινομήθηκε σε αύξουσα σειρά.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 μη αναγνωσμένη ειδοποίηση}other{# μη αναγνωσμένες ειδοποιήσεις}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Ενεργοποιήστε την παρακάτω επέκταση στην ανώνυμη περιήγηση:}other{Ενεργοποιήστε τις παρακάτω επεκτάσεις στην ανώνυμη περιήγηση:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Πριν από 1 μήνα}other{Πριν από # μήνες}}</translation>
 <translation id="4289300219472526559">Έναρξη ομιλίας</translation>
 <translation id="4289540628985791613">Επισκόπηση</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">αριθμός</translation>
 <translation id="4746179598275229723">Η επέκταση ξεκαρφιτσώθηκε</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Απομένει 1 μήνας}other{Απομένουν # μήνες}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Ο οργανισμός σας απαιτεί μια επέκταση για να χρησιμοποιήσετε την ανώνυμη περιήγηση}other{Ο οργανισμός σας απαιτεί ορισμένες επεκτάσεις για να χρησιμοποιήσετε την ανώνυμη περιήγηση.}}</translation>
+<translation id="482932175346970750">Πληκτρολογήστε <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> στο πρόγραμμα περιήγησης</translation>
 <translation id="4888938634149558681">Πραγματοποίηση κλήσης</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 δευτερόλεπτο}other{# δευτερόλεπτα}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;Επικόλληση</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Αποτυχία αποστολής</translation>
+<translation id="5283101102242354279">Ενεργοποιήστε μια επέκταση στην ανώνυμη περιήγηση:</translation>
 <translation id="528468243742722775">Τέλος</translation>
 <translation id="5329858601952122676">&amp;Διαγραφή</translation>
 <translation id="5361107212971249203">κειμένου</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">Οι ρυθμίσεις προβολής της εφαρμογής σας θα τεθούν σε ισχύ κατά την επόμενη επανεκκίνηση.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Απομένει 1 λεπτό}other{Απομένουν # λεπτά}}</translation>
+<translation id="7252604552361840748">Βρείτε την επέκταση παραπάνω</translation>
 <translation id="7363164521834647158">Αποστολή απάντησης</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Πριν από 1 λεπτό}other{Πριν από # λεπτά}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>

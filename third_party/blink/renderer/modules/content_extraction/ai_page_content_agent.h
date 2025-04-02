@@ -107,12 +107,17 @@ class MODULES_EXPORT AIPageContentAgent final
                                annotated_roles) const;
 
     void AddInteractiveNode(DOMNodeId dom_node_id);
+    void ComputeHitTestableNodesInViewport(
+        const LocalFrame& frame,
+        mojom::blink::AIPageContentFrameData& frame_data);
 
     // The set of nodes which are involved in a user interaction and must
     // produce a ContentNode.
     base::flat_set<DOMNodeId> interactive_dom_node_ids_;
 
     const raw_ref<const mojom::blink::AIPageContentOptions> options_;
+
+    base::flat_map<DOMNodeId, gfx::Rect> dom_node_to_visible_bounding_box_;
 
     // The current depth of the tree being walked.
     int stack_depth_ = 0;

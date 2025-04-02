@@ -28,6 +28,9 @@ namespace content {
 using PrivateAggregationRequests =
     std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
+using FinalizedPrivateAggregationRequests =
+    std::vector<auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr>;
+
 std::optional<base::span<const uint8_t>> CONTENT_EXPORT
 ExtractCompressedBiddingAndAuctionResponse(
     base::span<const uint8_t> decrypted_data);
@@ -207,9 +210,9 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
   // include component losing buyers/sellers PAgg contributions, or
   // contributions from single level auctions or server orchestrated multi-level
   // auctions.
-  std::map<PrivateAggregationKey, PrivateAggregationRequests>
+  std::map<PrivateAggregationKey, FinalizedPrivateAggregationRequests>
       server_filtered_pagg_requests_reserved;
-  std::map<std::string, PrivateAggregationRequests>
+  std::map<std::string, FinalizedPrivateAggregationRequests>
       server_filtered_pagg_requests_non_reserved;
 
   // forDebuggingOnly reports from component winning buyer/seller. These need to

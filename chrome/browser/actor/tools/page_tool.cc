@@ -44,6 +44,14 @@ bool SetClickToolArgs(actor::mojom::ClickActionPtr& click,
   }
   return true;
 }
+
+// Set mojom for mouse move action based on proto. Returns false if the proto
+// does not contain correct/sufficient information, true otherwise.
+void SetMouseMoveToolArgs(actor::mojom::MouseMoveActionPtr& move,
+                          ActionInformation action_info) {
+  move->target = actor::mojom::ToolTarget::New(
+      action_info.move_mouse().target().content_node_id());
+}
 }  // namespace
 
 namespace actor {
@@ -77,7 +85,12 @@ void PageTool::Invoke(InvokeCallback callback) {
     }
     case ActionInformation::ActionInfoCase::kType:
     case ActionInformation::ActionInfoCase::kScroll:
-    case ActionInformation::ActionInfoCase::kMoveMouse:
+    case ActionInformation::ActionInfoCase::kMoveMouse: {
+      auto mouse_move = mojom::MouseMoveAction::New();
+      SetMouseMoveToolArgs(mouse_move, action_info);
+      request->action = mojom::ToolAction::NewMouseMove(std::move(mouse_move));
+      break;
+    }
     case ActionInformation::ActionInfoCase::kDragAndRelease:
     case ActionInformation::ActionInfoCase::kSelect: {
       // Not implemented yet.

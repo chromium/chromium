@@ -820,10 +820,6 @@ Suggestion CreateCreditCardSuggestion(
                                  ? Suggestion::Acceptability::kAcceptable
                                  : Suggestion::Acceptability::kUnacceptable;
   suggestion.payload = Suggestion::Guid(credit_card.guid());
-#if BUILDFLAG(IS_ANDROID)
-  // The card art icon should always be shown at the start of the suggestion.
-  suggestion.is_icon_at_start = true;
-#endif  // BUILDFLAG(IS_ANDROID)
 
   // Manual fallback suggestions labels are computed as if the triggering field
   // type was the credit card number.
@@ -1326,6 +1322,10 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
     suggestion.main_text.value = card_name;
     suggestion.minor_texts.emplace_back(
         credit_card.ObfuscatedNumberWithVisibleLastFourDigits());
+    suggestion.custom_icon = Suggestion::CustomIconUrl(
+        client.GetPersonalDataManager().payments_data_manager().GetCardArtURL(
+            credit_card));
+    suggestion.icon = credit_card.CardIconForAutofillSuggestion();
     std::optional<Suggestion::Text> benefit_label =
         GetCreditCardBenefitSuggestionLabel(credit_card, client);
     if (benefit_label) {

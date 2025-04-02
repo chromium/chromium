@@ -64,6 +64,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -116,6 +117,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/proposed_layout.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
@@ -637,10 +639,9 @@ void ToolbarView::ShowIntentPickerBubble(
   views::Button* highlighted_button = nullptr;
   if (bubble_type == IntentPickerBubbleView::BubbleType::kClickToCall) {
     highlighted_button =
-
         GetPageActionIconView(PageActionIconType::kClickToCall);
   } else if (apps::features::ShouldShowLinkCapturingUX()) {
-    highlighted_button = GetIntentChipButton();
+    highlighted_button = GetIntentChip();
   } else {
     highlighted_button =
         GetPageActionIconView(PageActionIconType::kIntentPicker);
@@ -1157,6 +1158,13 @@ ToolbarButton* ToolbarView::GetBackButton() {
 
 ReloadButton* ToolbarView::GetReloadButton() {
   return reload_;
+}
+
+views::Button* ToolbarView::GetIntentChip() {
+  if (IsPageActionMigrated(PageActionIconType::kIntentPicker)) {
+    return GetPageActionView(kActionShowIntentPicker);
+  }
+  return GetIntentChipButton();
 }
 
 IntentChipButton* ToolbarView::GetIntentChipButton() {

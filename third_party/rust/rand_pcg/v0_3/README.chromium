@@ -3,7 +3,7 @@ URL: https://crates.io/crates/rand_pcg
 Version: 0.3.1
 Revision: 8792268dfe57e49bb4518190bf4fe66176759a44
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/rand_pcg-0.3.1/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/rand_pcg-v0_3/LICENSE-APACHE
 Shipped: no
 Security Critical: no
 

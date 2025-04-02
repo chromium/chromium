@@ -53,6 +53,10 @@ class BackButtonViewBinder {
                         listener.run();
                         return true;
                     });
+        } else if (key == BackButtonProperties.IS_ENABLED) {
+            button.setEnabled(model.get(BackButtonProperties.IS_ENABLED));
+        } else if (key == BackButtonProperties.IS_FOCUSABLE) {
+            button.setFocusable(model.get(BackButtonProperties.IS_FOCUSABLE));
         } else {
             assert false : String.format("Unsupported property key %s", key.toString());
         }

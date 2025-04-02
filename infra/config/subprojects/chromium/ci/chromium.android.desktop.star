@@ -71,6 +71,7 @@ ci.builder(
         configs = [
             "android_desktop",
             "android_builder",
+            "android_with_static_analysis",
             "debug_static_builder",
             "remoteexec",
             "arm64",
@@ -114,6 +115,7 @@ ci.builder(
         configs = [
             "android_desktop",
             "android_builder",
+            "android_with_static_analysis",
             "release_builder",
             "remoteexec",
             "minimal_symbols",
@@ -157,6 +159,7 @@ ci.builder(
         configs = [
             "android_desktop",
             "android_builder",
+            "android_with_static_analysis",
             "debug_static_builder",
             "remoteexec",
             "x64",
@@ -201,6 +204,7 @@ ci.builder(
         configs = [
             "android_desktop",
             "android_builder",
+            "android_with_static_analysis",
             "release_builder",
             "remoteexec",
             "minimal_symbols",

@@ -1891,8 +1891,7 @@ std::vector<Tab*> TabStrip::GetTabsInSplit(const Tab* tab) {
   }
 
   Tab* current_tab = tab->controller()->GetAdjacentTab(tab, 0);
-  // TODO(agale): In the future this might need to support more than two tab
-  // splits.
+  // Note that this only supports having two tabs in a split.
   Tab* start_tab = tab->controller()->GetAdjacentTab(tab, -1);
   if (start_tab && start_tab->split().has_value() &&
       start_tab->split().value() == current_tab->split().value()) {

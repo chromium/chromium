@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AnnotationMode, Ink2Manager, TextAlignment, TextStyle, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import type {CrIconButtonElement, SelectableIconButtonElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationMode, hexToColor, Ink2Manager, TEXT_COLORS, TextAlignment, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {Color, SelectableIconButtonElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -88,45 +88,13 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  // Test that the styles can be toggled.
-  async function testSelectStyles() {
+  // Test that the side panel has a style select element.
+  function testHasStyleSelect() {
     chrome.test.assertEq(AnnotationMode.TEXT, viewer.$.toolbar.annotationMode);
     const sidePanel = viewer.shadowRoot.querySelector('viewer-text-side-panel');
     assert(sidePanel);
-
-    const initialStyles = Ink2Manager.getInstance().getCurrentText().styles;
-
-    // Check that the button toggles its style and aria-pressed state and
-    // triggers a text-changed event when clicked.
-    async function testButton(
-        button: CrIconButtonElement, style: TextStyle, icon: string) {
-      chrome.test.assertEq(icon, button.ironIcon);
-      const initialValue = initialStyles[style];
-      chrome.test.assertEq(initialValue, button.classList.contains('active'));
-      chrome.test.assertEq(
-          initialValue.toString(), button.getAttribute('aria-pressed'));
-
-      const whenChanged =
-          eventToPromise('text-changed', Ink2Manager.getInstance());
-      button.click();
-      const changedEvent = await whenChanged;
-      chrome.test.assertEq(!initialValue, changedEvent.detail.styles[style]);
-      await microtasksFinished();
-      chrome.test.assertEq(!initialValue, button.classList.contains('active'));
-      chrome.test.assertEq(
-          (!initialValue).toString(), button.getAttribute('aria-pressed'));
-    }
-
-    // For each button, check that it can be toggled and change the styles.
-    const buttons = sidePanel.shadowRoot.querySelectorAll('cr-icon-button');
-    chrome.test.assertEq(4, buttons.length);
-    await testButton(buttons[0]!, TextStyle.BOLD, 'pdf:text-format-bold');
-    await testButton(buttons[1]!, TextStyle.ITALIC, 'pdf:text-format-italic');
-    await testButton(
-        buttons[2]!, TextStyle.UNDERLINE, 'pdf:text-format-underline');
-    await testButton(
-        buttons[3]!, TextStyle.STRIKETHROUGH, 'pdf:text-format-strikethrough');
-
+    chrome.test.assertTrue(
+        !!sidePanel.shadowRoot.querySelector('text-styles-selector'));
     chrome.test.succeed();
   },
 
@@ -169,6 +137,53 @@ chrome.test.runTests([
         buttons[2]!, TextAlignment.JUSTIFY, 'pdf:text-align-justify');
     await testButton(buttons[3]!, TextAlignment.RIGHT, 'pdf:text-align-right');
     await testButton(buttons[0]!, TextAlignment.LEFT, 'pdf:text-align-left');
+
+    chrome.test.succeed();
+  },
+
+  // Test that the color can be selected.
+  async function testSelectColor() {
+    chrome.test.assertEq(AnnotationMode.TEXT, viewer.$.toolbar.annotationMode);
+    const sidePanel = viewer.shadowRoot.querySelector('viewer-text-side-panel');
+    assert(sidePanel);
+    const colorSelector =
+        sidePanel.shadowRoot.querySelector('ink-color-selector');
+    assert(colorSelector);
+
+    // Initial state
+    function assertColorsEqual(color1: Color, color2: Color) {
+      chrome.test.assertEq(color1.r, color2.r);
+      chrome.test.assertEq(color1.g, color2.g);
+      chrome.test.assertEq(color1.b, color2.b);
+    }
+    assertColorsEqual({r: 0, g: 0, b: 0}, colorSelector.currentColor);
+    const buttons = colorSelector.shadowRoot.querySelectorAll('input');
+    chrome.test.assertEq(TEXT_COLORS.length, buttons.length);
+    assertColorsEqual(
+        {r: 0, g: 0, b: 0}, Ink2Manager.getInstance().getCurrentText().color);
+    chrome.test.assertTrue(buttons[0]!.checked);
+
+    // Confirm we passed all the right colors to the color selector.
+    chrome.test.assertEq(TEXT_COLORS.length, colorSelector.colors.length);
+    for (let i = 0; i < TEXT_COLORS.length; i++) {
+      chrome.test.assertEq(
+          TEXT_COLORS[i]!.label, colorSelector.colors[i]!.label);
+      chrome.test.assertEq(
+          TEXT_COLORS[i]!.color, colorSelector.colors[i]!.color);
+      chrome.test.assertEq(false, colorSelector.colors[i]!.blended);
+    }
+
+    // Change to a different color by clicking on an unchecked button.
+    const whenChanged =
+        eventToPromise('text-changed', Ink2Manager.getInstance());
+    buttons[1]!.click();
+    const changedEvent = await whenChanged;
+    assertColorsEqual(
+        hexToColor(TEXT_COLORS[1]!.color), changedEvent.detail.color);
+    await microtasksFinished();
+    assertColorsEqual(
+        hexToColor(TEXT_COLORS[1]!.color), colorSelector.currentColor);
+    chrome.test.assertTrue(buttons[1]!.checked);
 
     chrome.test.succeed();
   },

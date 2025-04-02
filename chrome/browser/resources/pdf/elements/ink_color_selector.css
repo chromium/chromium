@@ -37,6 +37,10 @@ cr-grid {
   width: 24px;
 }
 
+.color-chip.blended {
+  background: color-mix(in srgb, var(--item-color) 40%, white);
+}
+
 .color-chip[checked] {
   height: 36px;
   width: 36px;

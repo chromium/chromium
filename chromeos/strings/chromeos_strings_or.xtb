@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">ସ୍କ୍ରିନ୍ ସେଭର୍ ଅକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="3091839911843451378">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟର୍ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="3102119246920354026">କ୍ୟାଶ୍</translation>
-<translation id="3112413615003385433">ଆପଣଙ୍କର ଶିକ୍ଷକ ସ୍କୁଲ ଟୁଲରୁ ବିଷୟବସ୍ତୁ କାଢ଼ି ଦେଇଛନ୍ତି</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">ପୁଲ</translation>
 <translation id="3122883569442693641">ଅଧିକ ବିବରଣୀ</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">ଆଶିଂକ ଭାବେ ସକ୍ରିୟ କରାଯାଇଛି</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> ଟୋନ ସହିତ ଏକ <ph name="OFFICE_STYLE" /> ଅଫିସ</translation>
 <translation id="3493187369049186498">ଡାଟା ବ୍ୟବହାର ଆପଣଙ୍କ Chromebook ଦ୍ୱାରା ମାପ କରାଯାଏ। ଏହା ପ୍ରଦାନକାରୀ ଡାଟାଠାରୁ ଭିନ୍ନ ହୋଇପାରେ।</translation>
-<translation id="349570724365779960">ସ୍କୁଲ ଟୁଲଗୁଡ଼ିକ ଛାତ୍ର/ଛାତ୍ରୀମାନଙ୍କ ସହ କନେକ୍ଟ ହୋଇଛି</translation>
 <translation id="3502426834823382181">ସମସ୍ତ ଆପ୍ ଦେଖନ୍ତୁ</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />ପରଫରମାନ୍ସ ଟ୍ରେସ ତାରିଖ<ph name="END_LINK1" /> ପଠାନ୍ତୁ</translation>
 <translation id="3517001332549868749">ChromeOS ଅପଡେଟ</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">ଏଡିଟିଂ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
 <translation id="3532980081107202182">ପ୍ରାୟ <ph name="MIN_REMAINING" /> ମିନିଟ୍ ବାକି ଅଛି</translation>
 <translation id="3533790840489634638">ପୁଲ</translation>
-<translation id="3535802910192338629">ଆପଣଙ୍କର ଶିକ୍ଷକ ସ୍କୁଲ ଟୁଲରେ ନୂଆ ବିଷୟବସ୍ତୁ ଯୋଗ କରିଛନ୍ତି</translation>
 <translation id="3547264467365135390">ସୂତ୍ର</translation>
 <translation id="3557205324756024651">ସ୍ଥାନୀୟ ପରିଚୟ (ଇଚ୍ଛାଧୀନ)</translation>
 <translation id="3565064564551103223">ଅନୁମତି ଦିଆଯାଇଥିବା IPଗୁଡ଼ିକ</translation>
@@ -1440,7 +1437,6 @@
 <translation id="7544853251252956727">ଅଦଳବଦଳ</translation>
 <translation id="7550715992156305117">ଡାଇଗ୍ନୋଷ୍ଟିକ୍ ରୁଟିନ୍</translation>
 <translation id="7551123448725492271">ଡିଭାଇସଟି ଏକ ଅଡିଓ ଡିଭାଇସ ଅଟେ।</translation>
-<translation id="7553913964854052228">ସ୍କୁଲ ଟୁଲଗୁଡ଼ିକ ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନକୁ ବ୍ୟବହାର କରୁଛି</translation>
 <translation id="7559239713112547082">ସ୍କ୍ରିନସଟର ପ୍ରିଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="7561454561030345039">ଏହି କାର୍ଯ୍ୟ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ</translation>
 <translation id="7561759921596375678">ଭଲ୍ୟୁମକୁ ଚାଲୁ କରନ୍ତୁ</translation>
@@ -1663,7 +1659,6 @@
 <translation id="8576249514688522074">ଆରମ୍ଭ କରାଯାଇନାହିଁ</translation>
 <translation id="8584654835905316966"><ph name="VERSION" />ଭର୍ସନରେ <ph name="DEVICE_NAME" /> ପାଇଁ ଫାର୍ମୱେର ଇନଷ୍ଟଲେସନ ସମ୍ପୂର୍ଣ୍ଣ କରିବାକୁ ଏହାକୁ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ। ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର ଅନେକ ଥର ରିବୁଟ ହୋଇପାରେ। ଏହି ଆଚରଣ ଆଶା କରାଯାଏ।</translation>
 <translation id="8593058461203131755">ମିଡିଆକୁ ବିରତ କରନ୍ତୁ</translation>
-<translation id="8619169570378509764">ସ୍କୁଲ ଟୁଲ</translation>
 <translation id="8620617069779373398">ରୋମିଂ ସ୍ଥିତି</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> ପାଇଁ ଅଧିକ ପଦକ୍ଷେପ</translation>
 <translation id="86356131183441916">ହାଲୁକା ବାଇଗଣୀ</translation>

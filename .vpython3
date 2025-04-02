@@ -714,10 +714,3 @@ wheel: <
   name: "infra/python/wheels/apipkg-py2_py3"
   version: "version:1.5"
 >
-
-# Used by:
-#   //build/android/test_runner.py
-wheel: <
-  name: "infra/python/wheels/zstandard/${vpython_platform}"
-  version: "version:0.16.0"
->

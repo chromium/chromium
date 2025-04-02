@@ -43,6 +43,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
   // Returns whether the delegate supports changing |Bitrate::Mode| using
   // |UpdateRateControl()| during encoding.
   virtual bool SupportsRateControlReconfiguration() const = 0;
+  virtual bool ReportsAverageQp() const;
 
   virtual bool UpdateRateControl(const Bitrate& bitrate, uint32_t framerate);
 
@@ -53,13 +54,13 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
       UINT input_frame_subresource,
       const gfx::ColorSpace& input_frame_color_space,
       const BitstreamBuffer& bitstream_buffer,
-      bool force_keyframe);
+      const VideoEncoder::EncodeOptions& options);
 
   // Do the codec specific encoding.
   virtual EncoderStatus::Or<BitstreamBufferMetadata> EncodeImpl(
       ID3D12Resource* input_frame,
       UINT input_frame_subresource,
-      bool force_keyframe) = 0;
+      const VideoEncoder::EncodeOptions& options) = 0;
 
   void SetFactoriesForTesting(
       base::RepeatingCallback<decltype(CreateD3D12VideoEncoderWrapper)>
@@ -86,17 +87,24 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
  protected:
   class D3D12VideoEncoderRateControl {
    public:
+    enum class FrameType { kIntra, kInterPrev, kInterBiDirectional };
+
+    // Creates an uninitialized rate control.
     D3D12VideoEncoderRateControl();
 
     D3D12VideoEncoderRateControl(const D3D12VideoEncoderRateControl& other);
     D3D12VideoEncoderRateControl& operator=(
         const D3D12VideoEncoderRateControl& other);
 
-    static std::optional<D3D12VideoEncoderRateControl> Create(
-        Bitrate bitrate,
-        uint32_t framerate);
+    static D3D12VideoEncoderRateControl CreateCqp(uint32_t i_frame_qp,
+                                                  uint32_t p_frame_qp,
+                                                  uint32_t b_frame_qp);
+    static D3D12VideoEncoderRateControl Create(Bitrate bitrate,
+                                               uint32_t framerate);
 
     D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE GetMode() const;
+
+    void SetCQP(FrameType frame_type, uint32_t qp);
 
     const D3D12_VIDEO_ENCODER_RATE_CONTROL& GetD3D12VideoEncoderRateControl()
         const {

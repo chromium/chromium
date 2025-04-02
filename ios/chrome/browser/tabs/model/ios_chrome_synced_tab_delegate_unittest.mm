@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -147,12 +148,14 @@ TEST_F(IOSChromeSyncedTabDelegateTest,
   IOSChromeScopedTestingLocalState scoped_testing_local_state;
 
   // Create a BrowserState with the necessary services.
+  TestProfileManagerIOS profile_manager;
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(
       AuthenticationServiceFactory::GetInstance(),
       AuthenticationServiceFactory::GetFactoryWithDelegate(
           std::make_unique<FakeAuthenticationServiceDelegate>()));
-  std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
+  TestProfileIOS* profile =
+      profile_manager.AddProfileWithBuilder(std::move(builder));
 
   const base::Time pre_signin_time = base::Time::Now();
 
@@ -163,7 +166,7 @@ TEST_F(IOSChromeSyncedTabDelegateTest,
           GetApplicationContext()->GetSystemIdentityManager());
   system_identity_manager->AddIdentity(identity);
   AuthenticationService* authentication_service =
-      AuthenticationServiceFactory::GetForProfile(profile.get());
+      AuthenticationServiceFactory::GetForProfile(profile);
   authentication_service->SignIn(identity,
                                  signin_metrics::AccessPoint::kUnknown);
 
@@ -177,7 +180,7 @@ TEST_F(IOSChromeSyncedTabDelegateTest,
 
   // Create a WebState aka "a tab" plus the necessary helpers.
   web::FakeWebState web_state;
-  web_state.SetBrowserState(profile.get());
+  web_state.SetBrowserState(profile);
   web_state.SetNavigationManager(std::move(navigation_manager));
   web_state.SetNavigationItemCount(1);
   IOSChromeSessionTabHelper::CreateForWebState(&web_state);

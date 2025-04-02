@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">Zoom verplicht aan</translation>
 <translation id="3905475044299942653">Houd veel meldingen tegen</translation>
 <translation id="3908288065506437185">Cookies van derden blokkeren in de incognitomodus</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Sommige functies werken misschien niet. Gerelateerde sites kunnen nog steeds cookies van derden gebruiken.</translation>
 <translation id="3922092564198021702">Open Instellingen op je telefoon</translation>
 <translation id="3933121352599513978">Ongewenste verzoeken samenvouwen (aanbevolen)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">Details</translation>
 <translation id="4598549027014564149">Als je de incognitomodus gebruikt, kunnen sites je cookies niet gebruiken om je browse-activiteit op sites te bekijken (ook niet op gerelateerde sites). Je browse-activiteit wordt bijvoorbeeld niet gebruikt om advertenties te personaliseren. Functies op bepaalde sites werken misschien niet.</translation>
 <translation id="461356340001513807">Hiermee kun je inloggen bij websites met het account dat je hebt bij een identiteitsservice</translation>
-<translation id="4619615317237390068">Tabbladen van andere apparaten</translation>
 <translation id="4635969503923889910">Niet toestaan dat sites NFC-apparaten gebruiken</translation>
 <translation id="4644713492825682049">Verwijderen en resetten</translation>
 <translation id="4645575059429386691">Beheerd door je ouder</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">Delen via</translation>
 <translation id="5001526427543320409">Cookies van derden</translation>
 <translation id="5007392906805964215">Bekijken</translation>
-<translation id="5014182796621173645">Je hebt dit <ph name="RECENCY" /> bezocht</translation>
 <translation id="5039804452771397117">Toestaan</translation>
 <translation id="5048398596102334565">Sites toegang geven tot bewegingssensoren (aanbevolen)</translation>
 <translation id="5048841907079026162">Je browsegegevens beheren</translation>
@@ -443,7 +440,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Beschermde content</translation>
 <translation id="662080504995468778">Blijven</translation>
-<translation id="6653342741369270081">Druk op de knop Terug om het volledige scherm te sluiten.</translation>
+<translation id="6635327442719709864">Als deze optie aanstaat, kunnen sites vragen of ze seriële poorten mogen gebruiken. Staat de optie uit, dan kunnen sites geen seriële poorten gebruiken.</translation>
 <translation id="6683865262523156564">Deze site zit in een groep die je activiteit kan bekijken. De groep wordt gedefinieerd door <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Profielfoto's</translation>
 <translation id="6697925417670533197">Actieve downloads</translation>

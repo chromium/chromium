@@ -7,8 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/ash/birch/birch_keyed_service.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -19,21 +17,10 @@
 
 namespace ash {
 
-class BirchKeyedServiceFactoryTest : public BrowserWithTestWindowTest {
- protected:
-  base::test::ScopedFeatureList feature_list_{features::kForestFeature};
-};
+using BirchKeyedServiceFactoryTest = BrowserWithTestWindowTest;
 
 TEST_F(BirchKeyedServiceFactoryTest, SupportWhenFeatureIsEnabled) {
   EXPECT_TRUE(
-      BirchKeyedServiceFactory::GetInstance()->GetService(GetProfile()));
-}
-
-TEST_F(BirchKeyedServiceFactoryTest, NoSupportWhenFeatureIsDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({}, {features::kForestFeature});
-
-  EXPECT_FALSE(
       BirchKeyedServiceFactory::GetInstance()->GetService(GetProfile()));
 }
 

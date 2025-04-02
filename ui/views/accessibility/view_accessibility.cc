@@ -1433,7 +1433,7 @@ void ViewAccessibility::SetChildTreeScaleFactor(float scale_factor) {
 }
 
 gfx::NativeViewAccessible ViewAccessibility::GetNativeObject() const {
-  return nullptr;
+  return gfx::NativeViewAccessible();
 }
 
 void ViewAccessibility::AnnounceAlert(std::u16string_view text) {

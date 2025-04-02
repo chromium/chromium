@@ -323,8 +323,8 @@ void FrameSetLayoutAlgorithm::LayoutChild(const LayoutInputNode& child,
   const LayoutResult* result =
       To<BlockNode>(child).Layout(space_builder.ToConstraintSpace());
   container_builder_.AddResult(
-      *result, position.ConvertToLogical(container_direction, frameset_size,
-                                         child_size));
+      *result, WritingModeConverter(container_direction, frameset_size)
+                   .ToLogical(position, child_size));
 }
 
 }  // namespace blink

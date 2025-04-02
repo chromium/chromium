@@ -1383,7 +1383,6 @@ TEST_P(CapturedSurfaceControllerSendWheelClampTest, ClampMaxWheelDeltaY) {
   run_loop.Run();
 }
 
-// TODO(crbug.com/40276312): Migrate test suite to validate forwardWheel().
 class WebContentsObserverCscNotifiedBySendWheelTest
     : public CapturedSurfaceControllerTestBase {
  public:

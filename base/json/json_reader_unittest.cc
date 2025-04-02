@@ -1207,7 +1207,6 @@ TEST_P(JSONReaderTest, ChromiumExtensions) {
 // For every control character, place it unescaped in a string and ensure that:
 // a) It doesn't parse with JSON_PARSE_RFC
 // b) It doesn't parse with JSON_PARSE_CHROMIUM_EXTENSIONS
-// c) It does parse with JSON_ALLOW_CONTROL_CHARS
 TEST_P(JSONReaderTest, UnescapedControls) {
   std::string input = "\"foo\"";
   // ECMA-404 (JSON standard) section 9: characters from 0x00 to 0x1f must be
@@ -1221,12 +1220,6 @@ TEST_P(JSONReaderTest, UnescapedControls) {
     bool should_parse_with_extensions = (c == '\r' || c == '\n');
     result = JSONReader::Read(input, JSON_PARSE_CHROMIUM_EXTENSIONS);
     EXPECT_EQ(should_parse_with_extensions, result.has_value());
-
-    result = JSONReader::Read(input, JSON_ALLOW_CONTROL_CHARS);
-    ASSERT_TRUE(result.has_value());
-    ASSERT_TRUE(result->is_string());
-    EXPECT_EQ(result->GetString().length(), input.length() - 2);
-    EXPECT_EQ(result->GetString()[0], c);
   }
 }
 

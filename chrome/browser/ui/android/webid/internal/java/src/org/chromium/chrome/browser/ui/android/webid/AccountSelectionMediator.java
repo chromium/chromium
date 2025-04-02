@@ -1244,9 +1244,15 @@ class AccountSelectionMediator {
                 mIsMultipleIdps
                         ? account.getCircledBadgedPictureBitmap()
                         : account.getPictureBitmap();
+        int avatarSize =
+                mIsMultipleIdps
+                        ? mContext.getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.account_selection_account_avatar_multi_idp_size)
+                        : mDesiredAvatarSize;
         accountModel.set(
                 AccountProperties.AVATAR,
-                new AccountProperties.Avatar(displayName, picture, mDesiredAvatarSize));
+                new AccountProperties.Avatar(displayName, picture, avatarSize));
     }
 
     private void setIsMultipleIdps(boolean isMultipleIdps) {

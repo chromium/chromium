@@ -79,6 +79,7 @@ bool GlicFreController::CanShowFreDialog(Browser* browser) {
   if (!browser) {
     return false;
   }
+  source_browser_ = browser;
   // If there is a browser, the FRE can only be shown if no other modal is
   // currently being shown on the same tab.
   tabs::TabInterface* tab = browser->GetActiveTabInterface();
@@ -171,18 +172,16 @@ void GlicFreController::AcceptFre() {
 
   DismissFre();
 
-  // Show a glic window attached to the last active browser of the glic
-  // profile, which should correspond to the browser used by the FRE.
-  if (Browser* new_attached_browser =
-          chrome::FindLastActiveWithProfile(profile_)) {
+  // Show a glic window attached to the invocation source browser.
+  if (source_browser_) {
     GlicKeyedServiceFactory::GetGlicKeyedService(profile_)->ToggleUI(
-        new_attached_browser, /*prevent_close=*/true,
-        mojom::InvocationSource::kFre);
+        source_browser_, /*prevent_close=*/true, mojom::InvocationSource::kFre);
   }
 }
 
 void GlicFreController::DismissFre() {
   web_contents_ = nullptr;
+  source_browser_ = nullptr;
   if (fre_view_ || fre_widget_) {
     auto* service = GlicKeyedServiceFactory::GetGlicKeyedService(profile_);
     glic::GlicProfileManager::GetInstance()->OnUnloadingClientForService(

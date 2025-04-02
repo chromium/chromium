@@ -709,6 +709,9 @@ Things to consider:
 
 Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chromium data in your account<ph name="END_LINK">END_LINK</ph>.
       </message>
+      <message name="IDS_IOS_NON_MODAL_SIGNIN_PROMO_PROMPT" desc="Infobar title for non modal signin promo.">
+        Sign in to Chromium
+      </message>
       <message name="IDS_IOS_NOTIFICATIONS_ALERT_MESSAGE" desc="Text for the Notifications UI Alert Prompt that redirects the user to the iOS notifications permission page">
         To receive notifications from Chromium, turn on notifications in your iOS Settings.
       </message>

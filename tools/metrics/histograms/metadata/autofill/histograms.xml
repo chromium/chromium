@@ -2923,7 +2923,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.FilledFieldType.Password"
     enum="BooleanFieldClassificationType" expires_after="2025-09-30">
-  <owner>theocristea@google.com</owner>
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -3627,7 +3626,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram
     name="Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType"
     enum="FillingAcceptanceByFieldType" expires_after="2025-12-12">
-  <owner>theocristea@google.com</owner>
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -4649,7 +4647,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.ProfileDeleted.{DeletionType}"
     enum="BooleanAutofillDeleteAddress" expires_after="2025-08-24">
   <owner>tchudakov@google.com</owner>
-  <owner>theocristea@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Autofill.ProfileDeleted is emitted in the following scenarios: Settings,
@@ -6164,7 +6161,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.Suggestions.AcceptedType" enum="SuggestionType"
     expires_after="2025-12-12">
-  <owner>theocristea@google.com</owner>
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>

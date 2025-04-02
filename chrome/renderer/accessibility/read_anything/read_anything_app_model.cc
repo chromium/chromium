@@ -907,6 +907,11 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
         OnSelection(event.event_params->event_from);
         break;
       case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
+        if (!features::IsReadAnythingReadAloudEnabled() ||
+            event.event_params->event_from == ax::mojom::EventFrom::kUser) {
+          requires_distillation_ = true;
+        }
+        break;
       case ui::AXEventGenerator::Event::ALERT:
         requires_distillation_ = true;
         break;

@@ -171,6 +171,13 @@ CustomizeToolbarHandler::~CustomizeToolbarHandler() = default;
 
 void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
   std::vector<side_panel::customize_chrome::mojom::ActionPtr> actions;
+  const raw_ptr<BrowserWindowInterface> bwi =
+      webui::GetBrowserWindowInterface(web_contents_);
+  if (!bwi) {
+    std::move(callback).Run(std::move(actions));
+    return;
+  }
+
   const ui::ColorProvider& provider = web_contents_->GetColorProvider();
   const int icon_color_id = ui::kColorSysOnSurface;
   const float scale_factor =
@@ -199,10 +206,6 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
               vector_icons::kForwardArrowChromeRefreshIcon, icon_color_id)
               .Rasterize(&provider),
           scale_factor)));
-
-  const raw_ptr<BrowserWindowInterface> bwi =
-      webui::GetBrowserWindowInterface(web_contents_);
-  CHECK(bwi);
   const auto add_action =
       [&actions, this, &provider, scale_factor, bwi](
           actions::ActionId id,

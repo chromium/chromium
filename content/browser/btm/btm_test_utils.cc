@@ -526,8 +526,10 @@ bool TpcBlockingBrowserClient::IsThirdPartyCookiesAllowedScheme(
 }
 
 PausedCookieAccessObservers::PausedCookieAccessObservers(
-    NotifyCookiesAccessedCallback callback)
-    : CookieAccessObservers(std::move(callback)) {}
+    NotifyCookiesAccessedCallback callback,
+    PendingObserversWithContext observers)
+    : CookieAccessObservers(std::move(callback)),
+      pending_receivers_(std::move(observers)) {}
 
 PausedCookieAccessObservers::~PausedCookieAccessObservers() = default;
 
@@ -537,16 +539,9 @@ void PausedCookieAccessObservers::Add(
   pending_receivers_.emplace_back(std::move(receiver), source);
 }
 
-std::vector<mojo::PendingReceiver<network::mojom::CookieAccessObserver>>
-PausedCookieAccessObservers::TakeReceivers() {
-  std::vector<mojo::PendingReceiver<network::mojom::CookieAccessObserver>>
-      pending_receivers;
-  for (auto& [pending_receiver, source] :
-       std::exchange(pending_receivers_, {})) {
-    pending_receivers.push_back(std::move(pending_receiver));
-  }
-
-  return pending_receivers;
+PausedCookieAccessObservers::PendingObserversWithContext
+PausedCookieAccessObservers::TakeReceiversWithContext() {
+  return std::exchange(pending_receivers_, {});
 }
 
 CookieAccessInterceptor::CookieAccessInterceptor(WebContents& web_contents)
@@ -562,15 +557,8 @@ void CookieAccessInterceptor::DidStartNavigation(
       base::BindRepeating(&NavigationRequest::NotifyCookiesAccessed,
                           // Unretained is safe here because ownership of the
                           // observers is passed to the request below.
-                          base::Unretained(&request)));
-  for (auto& receiver : request.TakeCookieObservers()) {
-    // Since we're taking the observers from the NavigationHandle we can assume
-    // the source is kNavigation.
-    // TODO: crbug.com/394059601 - Replace with TakeReceiversWithContext() once
-    // implemented.
-    observers->Add(std::move(receiver),
-                   CookieAccessDetails::Source::kNavigation);
-  }
+                          base::Unretained(&request)),
+      request.TakeCookieObservers());
   request.SetCookieAccessObserversForTesting(std::move(observers));
 }
 

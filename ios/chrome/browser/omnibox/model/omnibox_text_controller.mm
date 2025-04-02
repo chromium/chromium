@@ -92,6 +92,12 @@
   }
 }
 
+- (void)acceptInput {
+  if (_omniboxViewIOS) {
+    _omniboxViewIOS->OnAccept();
+  }
+}
+
 - (void)prepareForScribble {
   OmniboxTextFieldIOS* textModel = self.textField;
 

@@ -161,4 +161,6 @@ bool NullCaptureModeSession::TakeFocusForSearchResultsPanel(bool reverse) {
 
 void NullCaptureModeSession::ClearPseudoFocus() {}
 
+void NullCaptureModeSession::SetA11yOverrideWindowToSearchResultsPanel() {}
+
 }  // namespace ash

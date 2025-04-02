@@ -65,6 +65,7 @@ namespace {
 constexpr static int kAttachmentBuffer = 20;
 constexpr static int kDetachYDistance = 36;
 constexpr static int kInitialPositionBuffer = 4;
+constexpr static int kMaxWidgetSize = 16'384;
 
 constexpr static base::TimeDelta kAnimationDuration = base::Milliseconds(300);
 
@@ -648,10 +649,6 @@ void GlicWindowController::AuthCheckDoneBeforeShow(
   // Immediately hook up the WebView to the WebContents.
   GetGlicView()->SetWebContents(contents_->web_contents());
 
-  // Make the web view invisible for now, then fade it in after the open
-  // animation finishes.
-  glic_window_animator_->SetGlicWebViewVisibility(false);
-
   // If the web client is already initialized, wait for it to load in parallel.
   if (web_client_) {
     WaitForGlicToLoad();
@@ -669,19 +666,22 @@ bool GlicWindowController::AlwaysDetached() {
   return base::FeatureList::IsEnabled(features::kGlicDetached);
 }
 
-gfx::Rect GlicWindowController::GetInitialDetachedBounds() {
+gfx::Rect GlicWindowController::GetInitialDetachedBounds(Browser* browser) {
+  if (browser) {
+    return GetInitialDetachedBoundsFromBrowser(browser);
+  }
+
   display::Display display = GetDisplayForOpeningDetached();
   gfx::Size widget_size = GetLastRequestedSizeClamped(display.size().height());
 
-  // Right now this only detects whether the glic widget is summoned from the
-  // OS entrypoint and positions itself detached from the browser.
-  // TODO(crbug.com/384061064): Add more logic for when the glic window should
-  // show up in a detached state.
-  gfx::Point position = display.work_area().top_right();
-  position.set_x(position.x() - widget_size.width() -
-                 kDefaultDetachedTopRightDistance);
-  // Start at y=0. The detached open animation changes this.
-  return {position, widget_size};
+  // Get the default position offset equal distances from the top right corner
+  // of the work area (which excludes system UI such as the taskbar).
+  // TODO(crbug.com/384061064): Use the last position if needed.
+  gfx::Point top_right = display.work_area().top_right();
+  int initial_x =
+      top_right.x() - widget_size.width() - kDefaultDetachedTopRightDistance;
+  int initial_y = top_right.y() + kDefaultDetachedTopRightDistance;
+  return {{initial_x, initial_y}, widget_size};
 }
 
 gfx::Rect GlicWindowController::GetInitialDetachedBoundsFromBrowser(
@@ -740,6 +740,10 @@ void GlicWindowController::OpenAttached(Browser& browser) {
   gfx::Size widget_size =
       GetLastRequestedSizeClamped(glic_widget_->GetDisplay().size().height());
 
+  // Make the web view invisible for now, then fade it in after the open
+  // animation finishes.
+  glic_window_animator_->SetGlicWebViewVisibility(false);
+
   glic_window_animator_->RunOpenAttachedAnimation(
       glic_button, widget_size,
       base::BindOnce(&GlicWindowController::OpenAnimationFinished,
@@ -747,9 +751,7 @@ void GlicWindowController::OpenAttached(Browser& browser) {
 }
 
 void GlicWindowController::OpenDetached(Browser* browser) {
-  gfx::Rect initial_bounds = (browser)
-                                 ? GetInitialDetachedBoundsFromBrowser(browser)
-                                 : GetInitialDetachedBounds();
+  gfx::Rect initial_bounds = GetInitialDetachedBounds(browser);
 
   // Make the widget.
   glic_widget_ = CreateGlicWidget(initial_bounds);
@@ -770,10 +772,9 @@ void GlicWindowController::OpenDetached(Browser* browser) {
   }
   GetGlicWidget()->Show();
 
-  glic_window_animator_->RunOpenDetachedAnimation(
-      base::BindOnce(&GlicWindowController::OpenAnimationFinished,
-                     GetWeakPtr()),
-      browser ? 0 : kDefaultDetachedTopRightDistance);
+  // There is no open detached animation so wait for glic to load to continue
+  // opening.
+  SetWindowState(State::kWaitingForGlicToLoad);
 }
 
 // This happens after the web client is initialized. It signals the web client
@@ -1002,6 +1003,11 @@ void GlicWindowController::EnableDragResize(bool enabled) {
   user_resizable_ = enabled;
   if (!GetGlicWidget()) {
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kGlicZOrderChanges)) {
+    GetGlicWidget()->SetZOrderLevel(enabled ? ui::ZOrderLevel::kNormal
+                                            : ui::ZOrderLevel::kFloatingWindow);
   }
 
   if (base::FeatureList::IsEnabled(features::kGlicUserResize)) {
@@ -1468,10 +1474,7 @@ gfx::Size GlicWindowController::GetLastRequestedSizeClamped(
     }
   }
 
-  gfx::Size max(
-      min.width(),
-      display_height * features::kGlicMaxHeightPercentOfScreen.Get() / 100);
-
+  gfx::Size max(kMaxWidgetSize, kMaxWidgetSize);
   gfx::Size result = glic_size_ ? *glic_size_ : min;
 
   result.SetToMax(min);

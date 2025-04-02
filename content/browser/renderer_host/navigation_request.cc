@@ -155,6 +155,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/client_hints.h"
+#include "services/network/public/cpp/content_decoding_interceptor.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
@@ -1498,7 +1499,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
     const GURL& original_url,
     std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
     std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter,
-    int http_response_code) {
+    int http_response_code,
+    base::TimeTicks actual_navigation_start) {
   TRACE_EVENT0("navigation", "NavigationRequest::CreateForSynchronousRendererCommit");
   // TODO(clamy): Improve the *NavigationParams and *CommitParams to avoid
   // copying so many parameters here.
@@ -1511,9 +1513,9 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           is_same_document ? blink::mojom::NavigationType::SAME_DOCUMENT
                            : blink::mojom::NavigationType::DIFFERENT_DOCUMENT,
           blink::NavigationDownloadPolicy(), should_replace_current_entry,
-          GURL() /* base_url_for_data_url*/, base::TimeTicks::Now(),
-          method /* method */, nullptr /* post_data */,
-          network::mojom::SourceLocation::New(),
+          GURL() /* base_url_for_data_url*/, actual_navigation_start,
+          base::TimeTicks::Now() /* navigation_start */, method /* method */,
+          nullptr /* post_data */, network::mojom::SourceLocation::New(),
           false /* started_from_context_menu */, has_transient_activation,
           false /* has_text_fragment_token */,
           network::mojom::CSPDisposition::CHECK,
@@ -2481,6 +2483,39 @@ void NavigationRequest::UpdateNavigationStartTime(const base::TimeTicks& time,
   beforeunload_dialog_shown_ = showed_dialog;
 
   common_params_->navigation_start = time;
+
+  if (for_legacy) {
+    // Legacy PostTasks do not run any actual beforeunload handlers and should
+    // be treated as part of navigation overhead, rather than excluded.
+    //
+    // Note: Due to crbug.com/404286908, it is possible for this function to be
+    // called with data from an earlier NavigationRequest that has been canceled
+    // before this request started, and thus `for_legacy` may not be accurate.
+    // Until that bug is fixed, though, it is still accurate to treat the
+    // current request as legacy (even if it meant to run actual beforeunload
+    // handlers) because the navigation will proceed anyway without waiting for
+    // those handlers.
+    beforeunload_phase2_start_time_ = base::TimeTicks();
+    beforeunload_phase2_end_time_ = base::TimeTicks();
+  } else {
+    // Non-legacy cases that ran beforeunload handlers should set an end time
+    // for BeforeUnload phase 2 if there was a corresponding start time. This
+    // end time should be close to the end of running beforeunload.
+    //
+    // Note: Until crbug.com/404286908 is fixed, it is possible for `time` to be
+    // before the start time, due to updating the wrong NavigationRequest. In
+    // that rare case, use the current time instead to ensure the interval is
+    // well-defined (even if that causes us to ignore a little more time than
+    // necessary by making BeforeUnload phase 2 look a little longer). Also
+    // avoid changing the end time once it is set, in case this is called more
+    // than once.
+    if (!beforeunload_phase2_start_time_.is_null() &&
+        beforeunload_phase2_end_time_.is_null()) {
+      beforeunload_phase2_end_time_ = (beforeunload_phase2_start_time_ <= time)
+                                          ? time
+                                          : base::TimeTicks::Now();
+    }
+  }
 }
 
 bool NavigationRequest::MaybeStartPrerenderingActivationChecks() {
@@ -4981,7 +5016,7 @@ NavigationRequest::CreateNavigationEarlyHintsManagerParams(
 
   mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer;
   cookie_observers_->Add(cookie_observer.InitWithNewPipeAndPassReceiver(),
-                         CookieAccessDetails::Source::kNavigation);
+                         CookieAccessDetails::Source::kNonNavigation);
 
   mojo::PendingRemote<network::mojom::TrustTokenAccessObserver>
       trust_token_observer;
@@ -5843,6 +5878,16 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
           frame_tree_node_->navigator().controller().GetBrowserContext();
       DownloadManagerImpl* download_manager = static_cast<DownloadManagerImpl*>(
           browser_context->GetDownloadManager());
+      if (!response_head_->client_side_content_decoding_types.empty()) {
+        CHECK(base::FeatureList::IsEnabled(
+            network::features::kRendererSideContentDecoding));
+        // If content decoding is required, perform the decoding in the network
+        // service.
+        network::ContentDecodingInterceptor::InterceptOnNetworkService(
+            *GetNetworkService(),
+            response_head_->client_side_content_decoding_types,
+            url_loader_client_endpoints_, response_body_);
+      }
       download_manager->InterceptNavigation(
           std::move(resource_request), redirect_chain_, response_head_.Clone(),
           std::move(response_body_), std::move(url_loader_client_endpoints_),
@@ -9890,9 +9935,11 @@ void NavigationRequest::NotifyCookiesAccessed(
   }
 }
 
-std::vector<mojo::PendingReceiver<network::mojom::CookieAccessObserver>>
+std::vector<
+    std::pair<mojo::PendingReceiver<network::mojom::CookieAccessObserver>,
+              CookieAccessDetails::Source>>
 NavigationRequest::TakeCookieObservers() {
-  return cookie_observers_->TakeReceivers();
+  return cookie_observers_->TakeReceiversWithContext();
 }
 
 void NavigationRequest::OnTrustTokensAccessed(
@@ -11419,7 +11466,7 @@ void NavigationRequest::MaybeRecordNavigationStartAdjustments() {
 
 void NavigationRequest::WillStartBeforeUnload() {
   SetWaitingForRendererResponse();
-  beforeunload_start_time_ = base::TimeTicks().Now();
+  beforeunload_phase2_start_time_ = base::TimeTicks().Now();
 }
 
 NavigationRequest::Timeline::Timeline() = default;
@@ -11438,17 +11485,27 @@ NavigationRequest::GenerateNavigationTimelineForMetrics(
   NavigationRequest::Timeline timeline;
 
   if (is_synchronous_renderer_commit()) {
-    // For synchronous renderer commits, the browser finds out about the
-    // navigation when the DidCommit IPC is received, so treat this as the
-    // navigation start time. Note that most other timestamps won't be
-    // meaningful in that case.
-    //
-    // TODO(alexmos): Record a better renderer-side start time for these cases,
-    // so that we can add a tracing slice for the renderer-side work to do the
-    // synchronous commit.
-    timeline.start = did_commit_ipc_received_time;
+    // For synchronous renderer commits, the start time in the renderer process
+    // should be provided in `actual_navigation_start`.
+    if (!common_params().actual_navigation_start.is_null()) {
+      timeline.start = common_params().actual_navigation_start;
+    } else {
+      // If `actual_navigation_start` is unexpectedly missing, fall back to the
+      // time this IPC was received.
+      timeline.start = did_commit_ipc_received_time;
+    }
+  } else if (!common_params().actual_navigation_start.is_null()) {
+    // Use the actual start time if it is provided, and record how long was
+    // spent on beforeunload phase 1 in the initiating renderer (if any).
+    timeline.start = common_params().actual_navigation_start;
+    if (!begin_params().before_unload_start.is_null()) {
+      timeline.beforeunload_phase1_start = begin_params().before_unload_start;
+      timeline.beforeunload_phase1_end = begin_params().before_unload_end;
+    }
   } else {
-    // If the navigation start time was adjusted due to beforeunload processing,
+    // For any legacy cases where the actual start time isn't provided, fall
+    // back to the `navigation_start` used by web-exposed metrics. However, if
+    // the navigation start time was adjusted due to beforeunload processing,
     // use the original timestamp to ensure that the trace event start time is
     // still accurate.
     //
@@ -11461,7 +11518,11 @@ NavigationRequest::GenerateNavigationTimelineForMetrics(
   }
 
   timeline.navigation_request_creation = creation_time_;
-  timeline.beforeunload_start = beforeunload_start_time_;
+  if (!beforeunload_phase2_start_time_.is_null()) {
+    timeline.beforeunload_phase2_start = beforeunload_phase2_start_time_;
+    timeline.beforeunload_phase2_end = beforeunload_phase2_end_time_;
+  }
+  timeline.common_params_start = common_params().navigation_start;
   timeline.begin_navigation = begin_navigation_time_;
   timeline.loader_start = navigation_handle_timing_.loader_start_time;
   timeline.loader_fetch_start = first_fetch_start_time_;

@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">Oseba, ki se podpisuje v zahvalo</translation>
 <translation id="2088690981887365033">Omrežje VPN</translation>
 <translation id="209653272837065803">Ni dovolj prostora za shranjevanje, da bi se sinhronizacija datotek nadaljevala</translation>
-<translation id="2111134541987263231">Vklopite <ph name="BEGIN_BOLD" />Omogoči v anonimnem načinu<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> elementov bo izbrisanih in ne boste jih mogli obnoviti.</translation>
 <translation id="2122305276694332719">Samodejna povezava s skritim omrežjem omogoča drugim, da vidijo vašo napravo in nekatere nastavitve omrežja, zato tega ne priporočamo.</translation>
 <translation id="2125607626296734455">kmerščina</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881">Pogon <ph name="VOLUME_NAME" /> je bil izvržen.</translation>
 <translation id="2307462900900812319">Konfiguriranje omrežja</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Razširitve z ID-jem <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ni mogoče najti. Obrnite se na skrbnika.}one{Razširitev z ID-ji <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ni mogoče najti. Obrnite se na skrbnika.}two{Razširitev z ID-ji <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ni mogoče najti. Obrnite se na skrbnika.}few{Razširitev z ID-ji <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ni mogoče najti. Obrnite se na skrbnika.}other{Razširitev z ID-ji <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ni mogoče najti. Obrnite se na skrbnika.}}</translation>
 <translation id="2325650632570794183">Ta vrsta datoteke ni podprta. Obiščite spletno trgovino Chrome in poiščite aplikacijo, ki lahko odpre to vrsto datoteke.</translation>
 <translation id="2326539130272988168">bolgarščina</translation>
 <translation id="233822363739146957">Ni dovolj prostora za shranjevanje, da bi lahko sinhronizirali vse datoteke</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">maratščina</translation>
 <translation id="2923240520113693977">estonščina</translation>
 <translation id="2938685643439809023">mongolščina</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Razširitve ni mogoče najti}one{Razširitev ni mogoče najti}two{Razširitev ni mogoče najti}few{Razširitev ni mogoče najti}other{Razširitev ni mogoče najti}}</translation>
 <translation id="2943503720238418293">Uporabite krajše ime</translation>
 <translation id="2949781154072577687">Formatiranje pogona <ph name="DRIVE_NAME" /> …</translation>
 <translation id="2951236788251446349">Meduza</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">Dokončano</translation>
 <translation id="3358452157379365236">Kitara</translation>
 <translation id="3368922792935385530">Povezano</translation>
-<translation id="3372635229069101468">Kliknite <ph name="BEGIN_BOLD" />Podrobnosti<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">nepalščina s tipkovnico InScript</translation>
 <translation id="338691029516748599">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, upravlja ga vaš skrbnik, vzpostavitev povezave</translation>
 <translation id="3408072735282270043">Aktiviraj, <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">Samorog</translation>
 <translation id="4131235941541910880">Nepotrebne elemente premaknite v smetnjak.</translation>
 <translation id="4134804435730168042">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktiviranje po nastavitvi naprave</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Vklopite to razširitev v anonimnem načinu:}one{Vklopite te razširitve v anonimnem načinu:}two{Vklopite te razširitve v anonimnem načinu:}few{Vklopite te razširitve v anonimnem načinu:}other{Vklopite te razširitve v anonimnem načinu:}}</translation>
 <translation id="4153015322587141338">Z desnim gumbom kliknite datoteko in izberite ukaz »<ph name="PIN_COMMAND" />«, če želite hitro dostopati do datotek na polici.</translation>
 <translation id="4157569377477607576">Pravilnik skrbnika ne priporoča:</translation>
 <translation id="4159731583141908892">Premaknjeno: <ph name="FILE_NAME" />.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">Obdrži obe</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4805966553127040832">Obnavljanje elementov (<ph name="COUNT" />)</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Če želite uporabljati anonimni način, vaša organizacija zahteva razširitev}one{Če želite uporabljati anonimni način, vaša organizacija zahteva nekatere razširitve}two{Če želite uporabljati anonimni način, vaša organizacija zahteva nekatere razširitve}few{Če želite uporabljati anonimni način, vaša organizacija zahteva nekatere razširitve}other{Če želite uporabljati anonimni način, vaša organizacija zahteva nekatere razširitve}}</translation>
 <translation id="4826849268470072925">tamilščina (ITRANS)</translation>
-<translation id="482932175346970750">V brskalnik vnesite <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
 <translation id="4843566743023903107">Naprave Chromebase</translation>
 <translation id="4850886885716139402">Prikaži</translation>
 <translation id="485316830061041779">nemščina</translation>
@@ -561,7 +554,6 @@
         na enem mestu.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Obnovljene datoteke iz Googla Drive</translation>
 <translation id="5278111733643988471">Če želite obnoviti ta element, ga povlecite v novo mapo zunaj smetnjaka. Prvotna mapa »<ph name="PARENT_FOLDER_NAME" />« za ta element je bila izbrisana.</translation>
-<translation id="5283101102242354279">Vklopite razširitev v anonimnem načinu:</translation>
 <translation id="5288441970121584418">Burger</translation>
 <translation id="5293615890992542006">Premikanje te datoteke blokira skrbniški pravilnik</translation>
 <translation id="5305688511332277257">Ni nameščenih</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, podrobnosti</translation>
 <translation id="7246947237293279874">Proxy FTP</translation>
 <translation id="7248671827512403053">Aplikacija</translation>
-<translation id="7252604552361840748">Poiščite razširitev zgoraj</translation>
 <translation id="7256405249507348194">Neprepoznana napaka: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Razpoložljive storitve</translation>
 <translation id="7291818353625820805">Želite, da se tipke ponovijo? Izklopite naglasna znamenja v nastavitvah tipkovnice</translation>

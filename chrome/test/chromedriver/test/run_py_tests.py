@@ -391,6 +391,11 @@ _ANDROID_NEGATIVE_FILTER['chromedriver_webview_shell'] = (
     ]
 )
 
+# TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+_DISABLE_MV2_EXPERIMENTS_SWITCH = (
+    'disable-features=ExtensionManifestV2Disabled,' +
+        'ExtensionManifestV2Unsupported')
+
 def _GetChromePathList(driver_path, platform):
   path_mapping = {
     'linux': [os.path.join(driver_path, 'chrome')],
@@ -5186,6 +5191,100 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
         self.WaitForCondition(lambda: self._driver.ExecuteScript(
             'return postures.length === 1')))
 
+  def testSetDisplayFeatures(self):
+    self._driver.Load(
+        self.GetHttpsUrlForFile('/chromedriver/display_features_test.html'))
+    self._driver.ExecuteScript('addViewportSegmentsChangeListener()')
+    original_segments = self._driver.ExecuteScript(
+        'return window.viewport.segments')
+    self._driver.SetDisplayFeatures([
+        { 'orientation': 'vertical', 'maskLength': 20, 'offset': 20 }
+    ])
+    self.assertTrue(
+        self.WaitForCondition(lambda: self._driver.ExecuteScript(
+            'return changeEventReceived == true')))
+    self.assertTrue(
+        self.WaitForCondition(lambda: self._driver.ExecuteScript(
+            'return window.viewport.segments.length === 2')))
+    self.assertNotEqual(
+        original_segments, self._driver.ExecuteScript(
+            'return window.viewport.segments'))
+
+  def testSetDisplayFeaturesInvalidArgument(self):
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "invalid argument: 'features' must be an array",
+        self._driver.SetDisplayFeatures, 2)
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "invalid argument: 'features' must be an array",
+        self._driver.SetDisplayFeatures, 'invalid')
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "invalid argument: 'features' must be an array",
+        self._driver.SetDisplayFeatures, {})
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "invalid argument: a feature must be a dictionary",
+        self._driver.SetDisplayFeatures, [ 3, 4, 5])
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "invalid argument: a feature must contain the offset attribute",
+        self._driver.SetDisplayFeatures, [
+        { 'orientation': 'vertical', 'maskLength': 20 }
+    ])
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "invalid argument: a feature must have a positive offset attribute",
+        self._driver.SetDisplayFeatures, [
+        { 'orientation': 'vertical', 'maskLength': 20, 'offset': -3 }
+    ])
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "invalid argument: a feature must contain the maskLength attribute",
+        self._driver.SetDisplayFeatures, [
+        { 'orientation': 'vertical', 'offset': 20 }
+    ])
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "invalid argument: a feature must have a positive maskLength attribute",
+        self._driver.SetDisplayFeatures, [
+        { 'orientation': 'vertical', 'maskLength': -5, 'offset': 20 }
+    ])
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "invalid argument: a feature must contain the orientation attribute",
+        self._driver.SetDisplayFeatures, [
+        { 'offset': 20, 'maskLength': 20 }
+    ])
+
+  def testClearDisplayFeatures(self):
+    self._driver.Load(
+        self.GetHttpsUrlForFile('/chromedriver/display_features_test.html'))
+    self._driver.ExecuteScript('addViewportSegmentsChangeListener()')
+    original_segments = self._driver.ExecuteScript(
+        'return window.viewport.segments')
+    self._driver.SetDisplayFeatures([
+        { 'orientation': 'vertical', 'maskLength': 20, 'offset': 20 }
+    ])
+    self.assertTrue(
+        self.WaitForCondition(lambda: self._driver.ExecuteScript(
+            'return changeEventReceived == true')))
+    self.assertTrue(
+        self.WaitForCondition(lambda: self._driver.ExecuteScript(
+            'return window.viewport.segments.length === 2')))
+    self.assertNotEqual(
+        original_segments, self._driver.ExecuteScript(
+            'return window.viewport.segments'))
+    self._driver.ExecuteScript('changeEventReceived = false')
+    self._driver.ClearDisplayFeatures()
+    self.assertTrue(
+        self.WaitForCondition(lambda: self._driver.ExecuteScript(
+            'return changeEventReceived == true')))
+    self.assertTrue(self.WaitForCondition(lambda: self._driver.ExecuteScript(
+              'return window.viewport.segments === arguments[0]',
+              original_segments)))
+
   def testCreateVirtualPressureSourceNotConnected(self):
     script = """
       const done = arguments[0];
@@ -6454,13 +6553,17 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
     """Checks that chromedriver can take the extensions in crx format."""
     crx_1 = os.path.join(_TEST_DATA_DIR, 'ext_test_1.crx')
     crx_2 = os.path.join(_TEST_DATA_DIR, 'ext_test_2.crx')
-    self.CreateDriver(chrome_extensions=[self._PackExtension(crx_1),
-                                         self._PackExtension(crx_2)])
+    self.CreateDriver(
+        chrome_extensions=[self._PackExtension(crx_1),
+                           self._PackExtension(crx_2)],
+        chrome_switches=[_DISABLE_MV2_EXPERIMENTS_SWITCH])
 
   def testExtensionsInstallZip(self):
     """Checks that chromedriver can take the extensions in zip format."""
     zip_1 = os.path.join(_TEST_DATA_DIR, 'ext_test_1.zip')
-    self.CreateDriver(chrome_extensions=[self._PackExtension(zip_1)])
+    self.CreateDriver(
+        chrome_extensions=[self._PackExtension(zip_1)],
+        chrome_switches=[_DISABLE_MV2_EXPERIMENTS_SWITCH])
 
   def testCanInspectExtensionWindows(self):
     crx_unpacked = os.path.join(_TEST_DATA_DIR, 'extv2_new_window')
@@ -6469,10 +6572,13 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
     # considered an extension target.
     driver = self.CreateDriver(
         chrome_switches=[
-          'disable-features=ExtensionManifestV2Disabled',
+          _DISABLE_MV2_EXPERIMENTS_SWITCH,
           'load-extension=' + crx_unpacked
         ])
-    time.sleep(0.3)
+
+    # Wait for extension window to be open.
+    self.WaitForCondition(lambda: len(driver.GetWindowHandles()) > 1)
+
     handles = driver.GetWindowHandles()
     self.assertEqual(len(handles), 2)
     for handle in handles:
@@ -6514,7 +6620,7 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
         # Chrome Extension inspection requires enableExtensionTargets = True.
         experimental_options={'enableExtensionTargets': True},
         chrome_extensions=[self._PackExtension(crx)],
-        chrome_switches=['disable-features=ExtensionManifestV2Disabled'])
+        chrome_switches=[_DISABLE_MV2_EXPERIMENTS_SWITCH])
     handles = driver.GetWindowHandles()
     for handle in handles:
       driver.SwitchToWindow(handle)
@@ -6535,7 +6641,7 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
     driver = self.CreateDriver(
         chrome_extensions=[self._PackExtension(crx)],
         experimental_options={'windowTypes': ['background_page']},
-        chrome_switches=['disable-features=ExtensionManifestV2Disabled'])
+        chrome_switches=[_DISABLE_MV2_EXPERIMENTS_SWITCH])
     handles = driver.GetWindowHandles()
     for handle in handles:
       driver.SwitchToWindow(handle)
@@ -6564,7 +6670,10 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
     # the extension's content script's one.
     extension_path = os.path.join(_TEST_DATA_DIR, 'all_frames')
     driver = self.CreateDriver(
-        chrome_switches=['load-extension=%s' % extension_path])
+        chrome_switches=[
+            'load-extension=%s' % extension_path,
+            _DISABLE_MV2_EXPERIMENTS_SWITCH
+        ])
     driver.Load(
         ChromeDriverTest._http_server.GetUrl() + '/chromedriver/container.html')
     driver.SwitchToMainFrame()

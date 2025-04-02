@@ -38,7 +38,7 @@ include_rules = [
   "+ios/chrome/browser/incognito_reauth/ui_bundled",
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/intents/model/intents_donation_helper.h",
-  "+ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h",
+  "+ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h",
   "+ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h",
   "+ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h",
   "+ios/chrome/browser/lens/model/lens_tab_helper.h",

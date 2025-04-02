@@ -398,6 +398,8 @@ def get_ssh_address(target_id: Optional[str],
         run_ffx_command(cmd=cmd, json_out=True,
                         capture_output=True).stdout.strip())
     addr = target[0]['addresses'][0]
+    if 'Ip' in addr:
+        addr = addr['Ip']
     ssh_port = int(addr['ssh_port'])
     if ssh_port == 0:
         # Returning an unset ssh_port means the default port 22.

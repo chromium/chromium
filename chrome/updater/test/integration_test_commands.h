@@ -204,7 +204,11 @@ class IntegrationTestCommands
       const base::FilePath& xc_path,
       std::optional<UpdaterScope> store_flag,
       std::optional<std::string> want_tag) const = 0;
-#endif  // BUILDFLAG(IS_WIN)
+  virtual void ExpectKSAdminXattrBrand(
+      bool elevate,
+      const base::FilePath& path,
+      std::optional<std::string> want_brand) const = 0;
+#endif  // BUILDFLAG(IS_MAC)
   virtual void ExpectLegacyUpdaterMigrated() const = 0;
   virtual void RunRecoveryComponent(const std::string& app_id,
                                     const base::Version& version) const = 0;

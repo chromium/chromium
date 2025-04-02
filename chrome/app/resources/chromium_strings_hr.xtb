@@ -94,6 +94,7 @@
 <translation id="2238130810669087193">Da biste mogli pristupati svojim adresama i drugim podacima na svim svojim uređajima, prijavite se na Chromium. Adresa će se spremiti na vaš Google račun nakon što se prijavite.</translation>
 <translation id="2240214816234246077">U posljednje vrijeme niste posjećivali web-lokaciju. Chromium je uklonio <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Ako dijelite računalo, prijatelji i članovi obitelji mogu zasebno pregledavati i postaviti Chromium prema svojim željama.</translation>
+<translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium preporučuje pauziranje kartice koja usporava preglednik}one{Chromium preporučuje pauziranje kartica koje usporavaju preglednik}few{Chromium preporučuje pauziranje kartica koje usporavaju preglednik}other{Chromium preporučuje pauziranje kartica koje usporavaju preglednik}}</translation>
 <translation id="2313870531055795960">Provjerava URL-ove s popisom nesigurnih web-lokacija pohranjenih u Chromiumu. Ako neka web-lokacija pokuša ukrasti vašu zaporku ili ako preuzmete štetnu datoteku, Chromium također može sigurnom pregledavanju poslati URL-ove, uključujući dijelove sadržaja web-stranice.</translation>
 <translation id="2343156876103232566">Da biste poslali broj s ovog uređaja na svoj Android telefon, prijavite se na Chromium na oba uređaja.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
@@ -149,6 +150,7 @@
 <translation id="2977470724722393594">Chromium je ažuran</translation>
 <translation id="2977506796191543575">Ako neka web-lokacija pokuša ukrasti vašu zaporku ili ako preuzmete štetnu datoteku, Chromium također može sigurnom pregledavanju poslati URL-ove, uključujući dijelove sadržaja web-stranice</translation>
 <translation id="2981563588585023386">Za više sigurnosti online uz postavke koje su odabrali tvoji roditelji, prijavi se na Chromium</translation>
+<translation id="3003694935412297923">Svi zadaci</translation>
 <translation id="3013473503895162900">Otvorite <ph name="URL" /> u novoj kartici u Chromiumu.</translation>
 <translation id="3032706164202344641">Chromium ne može provjeriti vaše zaporke. Pokušajte ponovno kasnije.</translation>
 <translation id="3032787606318309379">Dodavanje u preglednik Chromium...</translation>
@@ -168,6 +170,7 @@
 <translation id="3179665906251668410">Otvori vezu u ano&amp;nimnom prozoru Chromiuma</translation>
 <translation id="3185330573522821672">Prilagodba novog profila u Chromiumu</translation>
 <translation id="3224847870593914902">Da biste uklonili svoj Google račun iz Chromiuma, odjavite se iz Chromiuma na stranici Postavke</translation>
+<translation id="3234316605225071811">Chromium vas poslije može pitati želite li upotrijebiti spremljene podatke za automatsko popunjavanje obrazaca</translation>
 <translation id="3258596308407688501">Chromium ne može čitati iz svojeg podatkovnog direktorija niti u njega pisati:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -264,6 +267,7 @@
 <translation id="4570813286784708942">Chromium je blokirao ovo preuzimanje jer ste isključili sigurno pregledavanje i datoteka se ne može potvrditi</translation>
 <translation id="4594305310729380060">U Upravitelj zaporki na ovom uređaju</translation>
 <translation id="459535195905078186">Aplikacije sustava Chromium</translation>
+<translation id="4598116752460667024">Potražite bilo koji proces s popisa.</translation>
 <translation id="4613863813562375431">Verzija Chromium OS-a</translation>
 <translation id="4621240073146040695">Ažuriranje će uskoro biti gotovo. Za dovršetak ponovo pokrenite Chromium.</translation>
 <translation id="4665829708273112819">Upozorenje: Chromium ne može onemogućiti proširenjima da bilježe vašu povijest pregledavanja. Da biste onemogućili to proširenje u anonimnom načinu, poništite odabir te opcije.</translation>
@@ -310,6 +314,7 @@
 <translation id="5405650547142096840">Uklanjanje iz Chromiuma</translation>
 <translation id="5427571867875391349">Postavite Chrome kao zadani preglednik</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
+<translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium preporučuje pauziranje kartice koja usporava preglednik}one{Chromium preporučuje pauziranje kartica koje usporavaju preglednik}few{Chromium preporučuje pauziranje kartica koje usporavaju preglednik}other{Chromium preporučuje pauziranje kartica koje usporavaju preglednik}}</translation>
 <translation id="5473971139929175403">Chromium možda neće ispravno raditi jer više nije podržan na toj distribuciji Linuxa</translation>
 <translation id="5475924890392386523">Chromium je blokirao ovo preuzimanje jer ta datoteka može naštetiti vašim osobnim računima i računima na društvenim mrežama</translation>
 <translation id="5480860683791598150">Chromium treba dopuštenje za pristup vašoj lokaciji da bi je podijelio s ovom web-lokacijom</translation>
@@ -430,6 +435,7 @@ Neke su značajke možda nedostupne. Navedite neki drugi direktorij profila ili 
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium je otkrio da <ph name="EXTENSION_NAME" /> sadrži zlonamjerni softver</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
+<translation id="6901631050894301805">Postavite Chromium kao zadani preglednik i prikvačite ga na traku sa zadacima</translation>
 <translation id="6929417474050522668">Tijekom eksperimenata Ad measurement API omogućuje web-lokacijama koje posjećujete da od Chromiuma traže podatke koji im pomažu mjeriti izvedbu svojih oglasa. Ad measurement API ograničava praćenje na različitim web-lokacijama tako što se između web-lokacija prenosi što je manje moguće podataka.</translation>
 <translation id="6940431691900807093">Web-lokacija koju posjetite nakon toga od Chromiuma može tražiti podatke o vašim interesima kako bi prilagodila oglase koji će vam se prikazivati. Chromium može dijeliti najviše tri interesa.</translation>
 <translation id="6964305034639999644">Otvori vezu u ano&amp;nimnom prozoru Chromiuma</translation>
@@ -454,6 +460,7 @@ Neke su značajke možda nedostupne. Navedite neki drugi direktorij profila ili 
 <translation id="7223968959479464213">Upravitelj zadataka – Chromium</translation>
 <translation id="7246575524853130370">Vaši interesi prema Chromiumovoj procjeni</translation>
 <translation id="7274695763216404502">Prikvačeno! Ponovo upotrijebite pretraživanje slika s alatne trake</translation>
+<translation id="7288567540154601580">Kartice i proširenja</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium preporučuje da ga uklonite}one{Chromium preporučuje da ih uklonite}few{Chromium preporučuje da ih uklonite}other{Chromium preporučuje da ih uklonite}}</translation>
 <translation id="7309928523159922338">Ad measurement API omogućuje web-lokacijama koje posjećujete da od Chromiuma traže podatke koji im pomažu mjeriti izvedbu svojih oglasa. Ad measurement API ograničava praćenje na različitim web-lokacijama tako što se između web-lokacija prenosi što je manje moguće podataka.</translation>
 <translation id="731795002583552498">Ažuriranje Chromiuma</translation>

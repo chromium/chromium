@@ -71,7 +71,7 @@ struct FlexLine {
            LayoutUnit major_baseline,
            LayoutUnit minor_baseline,
            unsigned main_axis_auto_margin_count)
-      : item_indices(item_indices),
+      : item_indices(std::move(item_indices)),
         main_axis_free_space(main_axis_free_space),
         line_cross_size(line_cross_size),
         major_baseline(major_baseline),

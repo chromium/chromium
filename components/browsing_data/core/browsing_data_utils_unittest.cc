@@ -170,8 +170,62 @@ TEST_F(BrowsingDataUtilsTest, PasswordsCounterResult) {
   store->ShutdownOnUIThread();
 }
 
+#if BUILDFLAG(IS_ANDROID)
 // Tests the output of the History counter.
 TEST_F(BrowsingDataUtilsTest, HistoryCounterResult) {
+  history::HistoryService history_service;
+  HistoryCounter counter(&history_service,
+                         HistoryCounter::GetUpdatedWebHistoryServiceCallback(),
+                         nullptr);
+  counter.Init(prefs(), ClearBrowsingDataTab::ADVANCED, base::DoNothing());
+
+  const struct TestCase {
+    int num_history;
+    int is_sync_enabled;
+    int has_sync_visits;
+    std::string last_visited_domain;
+    int unique_domains;
+    std::string expected_output;
+  } kTestCases[] = {
+      // No sync, no synced visits:
+      {0, false, false, "", 0, "None"},
+      {0, false, false, "google.com", 1, "From google.com"},
+      {1, false, false, "google.com", 1, "From google.com"},
+      {5, false, false, "google.com", 5, "From google.com + 4 sites"},
+      // Sync but not synced visits:
+      {0, true, false, "", 0, "None"},
+      {1, true, false, "google.com", 1, "From google.com"},
+      {0, true, false, "google.com", 1, "From google.com"},
+      {5, true, false, "google.com", 5, "From google.com + 4 sites"},
+      // Sync and synced visits:
+      {0, true, true, "", 0, "From at least 1 site on synced devices"},
+      {1, true, true, "google.com", 1,
+       "From google.com (more on synced devices)"},
+      {0, true, true, "google.com", 1,
+       "From google.com (more on synced devices)"},
+      {5, true, true, "google.com", 5,
+       "From google.com + 4 sites (more on synced devices)"},
+  };
+
+  for (const TestCase& test_case : kTestCases) {
+    HistoryCounter::HistoryResult result(
+        &counter, test_case.num_history, test_case.is_sync_enabled,
+        test_case.has_sync_visits, test_case.last_visited_domain,
+        test_case.unique_domains);
+    SCOPED_TRACE(
+        base::StringPrintf("Test params: %d history, %d has_synced_visits, "
+                           "last visted domain is %s",
+                           test_case.num_history, test_case.has_sync_visits,
+                           test_case.last_visited_domain));
+    std::u16string output = browsing_data::GetCounterTextFromResult(&result);
+    EXPECT_EQ(output, base::ASCIIToUTF16(test_case.expected_output));
+  }
+}
+
+#else  // !BUILDFLAG(IS_ANDROID)
+
+// Tests the output of the History counter.
+TEST_F(BrowsingDataUtilsTest, Deprecated_HistoryCounterResult) {
   history::HistoryService history_service;
   HistoryCounter counter(&history_service,
                          HistoryCounter::GetUpdatedWebHistoryServiceCallback(),
@@ -201,7 +255,7 @@ TEST_F(BrowsingDataUtilsTest, HistoryCounterResult) {
   for (const TestCase& test_case : kTestCases) {
     HistoryCounter::HistoryResult result(&counter, test_case.num_history,
                                          test_case.is_sync_enabled,
-                                         test_case.has_sync_visits);
+                                         test_case.has_sync_visits, "", 0);
     SCOPED_TRACE(
         base::StringPrintf("Test params: %d history, %d has_synced_visits",
                            test_case.num_history, test_case.has_sync_visits));
@@ -209,5 +263,7 @@ TEST_F(BrowsingDataUtilsTest, HistoryCounterResult) {
     EXPECT_EQ(output, base::ASCIIToUTF16(test_case.expected_output));
   }
 }
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace browsing_data

@@ -354,7 +354,7 @@ class AutoFetchPageLoadWatcher::TabWatcher : public TabModelListObserver,
 
   void RegisterTabObserver() {
     if (!TabModelList::models().empty()) {
-      OnTabModelAdded();
+      ObserveNonOffTheRecordTabModel();
     } else {
       TabModelList::AddObserver(this);
     }
@@ -366,22 +366,11 @@ class AutoFetchPageLoadWatcher::TabWatcher : public TabModelListObserver,
   }
 
   // TabModelListObserver.
-  void OnTabModelAdded() override {
-    if (observed_tab_model_)
-      return;
-    // The assumption is that there can be at most one non-off-the-record tab
-    // model. Observe it if it exists.
-    for (TabModel* model : TabModelList::models()) {
-      if (!model->IsOffTheRecord()) {
-        observed_tab_model_ = model;
-        observed_tab_model_->AddObserver(this);
-        impl_->TabModelReady();
-        break;
-      }
-    }
+  void OnTabModelAdded(TabModel* tab_model) override {
+    ObserveNonOffTheRecordTabModel();
   }
 
-  void OnTabModelRemoved() override {
+  void OnTabModelRemoved(TabModel* tab_model) override {
     if (!observed_tab_model_)
       return;
 
@@ -395,6 +384,22 @@ class AutoFetchPageLoadWatcher::TabWatcher : public TabModelListObserver,
  private:
   base::WeakPtr<TabWatcher> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  void ObserveNonOffTheRecordTabModel() {
+    if (observed_tab_model_) {
+      return;
+    }
+    // The assumption is that there can be at most one non-off-the-record tab
+    // model. Observe it if it exists.
+    for (TabModel* model : TabModelList::models()) {
+      if (!model->IsOffTheRecord()) {
+        observed_tab_model_ = model;
+        observed_tab_model_->AddObserver(this);
+        impl_->TabModelReady();
+        break;
+      }
+    }
   }
 
   raw_ptr<InternalImpl> impl_;

@@ -104,18 +104,6 @@
 
 #pragma mark - ChromeAccountManagerServiceObserver
 
-- (void)identityListChanged {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
-    // Listening to `onAccountsOnDeviceChanged` instead.
-    return;
-  }
-  id<SystemIdentity> identity =
-      _accountManagerService->GetIdentityOnDeviceWithGaiaID(GaiaId(_gaiaID));
-  if (!identity) {
-    [self.delegate identityRemovedFromDevice];
-  }
-}
-
 - (void)onChromeAccountManagerServiceShutdown:
     (ChromeAccountManagerService*)accountManagerService {
   [self disconnect];
@@ -124,10 +112,6 @@
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
 - (void)onAccountsOnDeviceChanged {
-  if (!IsUseAccountListFromIdentityManagerEnabled()) {
-    // Listening to `identityListChanged` instead.
-    return;
-  }
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(GaiaId(_gaiaID));
   if (!identity) {

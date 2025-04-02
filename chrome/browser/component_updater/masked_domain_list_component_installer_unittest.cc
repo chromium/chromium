@@ -21,6 +21,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/base/proto_wrapper_passkeys.h"
+#include "net/base/features.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"

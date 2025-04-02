@@ -33,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -99,7 +100,7 @@ public class StaticLayoutUnitTest {
     @Mock private TabContentManager mTabContentManager;
 
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabModel mTabModel;
+    @Spy private TabModel mTabModel;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;

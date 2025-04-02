@@ -28,11 +28,6 @@ FakeTransaction::FakeTransaction(Status result,
                                 blink::mojom::IDBTransactionDurability::Relaxed,
                                 mode),
       result_(result) {}
-void FakeTransaction::Begin(std::vector<PartitionedLock> locks) {
-  if (backing_store()) {
-    Transaction::Begin(std::move(locks));
-  }
-}
 Status FakeTransaction::CommitPhaseOne(BlobWriteCallback callback) {
   return std::move(callback).Run(
       BlobWriteResult::kRunPhaseTwoAndReturnResult,

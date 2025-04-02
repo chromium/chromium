@@ -82,6 +82,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "release_builder",
             "remoteexec",
             "minimal_symbols",
@@ -139,6 +140,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "enable_android_secondary_abi",
             "release_builder",
             "remoteexec",
@@ -197,6 +199,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "android_desktop",
             "enable_android_secondary_abi",
             "release_builder",
@@ -260,6 +263,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "android_desktop",
             "enable_android_secondary_abi",
             "release_builder",

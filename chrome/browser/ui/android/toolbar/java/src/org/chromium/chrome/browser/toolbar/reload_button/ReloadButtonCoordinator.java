@@ -9,7 +9,9 @@ import android.content.res.ColorStateList;
 import android.view.View;
 import android.widget.ImageButton;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -38,10 +40,16 @@ public class ReloadButtonCoordinator {
      *
      * @param view reload button android view.
      * @param delegate that contains reload logic for reload button.
+     * @param tabSupplier a supplier that provides current active tab.
+     * @param ntpLoadingSupplier a supplier that provides loading state of content inside NTP, e.g
+     *     feed, this is not a reload state of the whole tab.
+     * @param themeColorProvider a provider that notifies about theme changes and focus tint.
      */
     public ReloadButtonCoordinator(
             ImageButton view,
             ReloadButtonCoordinator.Delegate delegate,
+            ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<Boolean> ntpLoadingSupplier,
             ThemeColorProvider themeColorProvider) {
         // ThemeColorProvider might not be updated by this time. Keep existing color list.
         final ColorStateList tint =
@@ -65,18 +73,11 @@ public class ReloadButtonCoordinator {
                         model,
                         delegate,
                         themeColorProvider,
+                        tabSupplier,
+                        ntpLoadingSupplier,
                         (text) -> Toast.showAnchoredToast(view.getContext(), view, text),
                         view.getResources());
         PropertyModelChangeProcessor.create(model, view, ReloadButtonViewBinder::bind);
-    }
-
-    /**
-     * Changes button reloading state.
-     *
-     * @param isReloading indicated whether current web page is reloading.
-     */
-    public void setReloading(boolean isReloading) {
-        mMediator.setReloading(isReloading);
     }
 
     /**

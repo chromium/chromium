@@ -715,10 +715,6 @@ const char kIOSProvidesAppNotificationSettingsName[] =
 const char kIOSProvidesAppNotificationSettingsDescription[] =
     "Enabled integration with iOS's ProvidesAppNotificationSettings feature.";
 
-const char kIPHForSafariSwitcherName[] = "IPH for Safari Switcher";
-const char kIPHForSafariSwitcherDescription[] =
-    "Enables displaying IPH for users who are considered Safari Switcher";
-
 extern const char
     kLensBlockFetchObjectsInteractionRPCsOnSeparateHandshakeName[] =
         "Lens blocks fetch objects interaction RPCs on separate handshake";
@@ -1165,6 +1161,11 @@ const char kSafeBrowsingRealTimeLookupDescription[] =
     "When enabled, navigation URLs are checked using real-time queries to Safe "
     "Browsing servers, subject to an opt-in preference.";
 
+extern const char kSafeBrowsingTrustedURLName[] =
+    "Enable the Trusted URL for Safe Browsing";
+extern const char kSafeBrowsingTrustedURLDescription[] =
+    "When enabled, chrome://safe-browsing will be accessible.";
+
 const char kSafetyCheckMagicStackName[] = "Enable Safety Check (Magic Stack)";
 const char kSafetyCheckMagicStackDescription[] =
     "When enabled, the Safety Check module will be displayed in the Magic "
@@ -1374,12 +1375,6 @@ const char kUpdatedFRESequenceName[] =
 const char kUpdatedFRESequenceDescription[] =
     "Updates the sequence of the FRE screens to show the DB promo first, "
     "remove the Sin-In & Sync screens, or both.";
-
-const char kUseAccountListFromIdentityManagerName[] =
-    "Get the list of accounts from IdentityManager";
-const char kUseAccountListFromIdentityManagerDescription[] =
-    "If enabled, UIs query the list of accounts from IdentityManager instead "
-    "of from ChromeAccountManagerService.";
 
 const char kWaitThresholdMillisecondsForCapabilitiesApiName[] =
     "Maximum wait time (in seconds) for a response from the Account "

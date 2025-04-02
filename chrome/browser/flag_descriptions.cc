@@ -194,12 +194,6 @@ const char kAutomaticUsbDetachName[] =
 const char kAutomaticUsbDetachDescription[] =
     "Automatically detach kernel drivers when a USB interface is busy.";
 
-const char kAutomotiveFullscreenToolbarImprovementsName[] =
-    "Enable automotive fullscreen toolbar improvements.";
-const char kAutomotiveFullscreenToolbarImprovementsDescription[] =
-    "In automotive, hides the toolbar when entering fullscreen mode. Swipe on"
-    "edge to reshow the toolbar.";
-
 const char kAuxiliarySearchDonationName[] = "Auxiliary Search Donation";
 const char kAuxiliarySearchDonationDescription[] =
     "If enabled, override Auxiliary Search donation cap.";
@@ -431,11 +425,6 @@ const char kForceStartupSigninPromoDescription[] =
     "If enabled, the full screen signin promo will be forced to show up at "
     "Chrome start-up.";
 
-#if BUILDFLAG(IS_CHROMEOS)
-const char kForestFeatureName[] = "Forest";
-const char kForestFeatureDescription[] = "Enable Forest experiment.";
-#endif
-
 const char kFontationsFontBackendName[] = "Enable Fontations font backend";
 const char kFontationsFontBackendDescription[] =
     "If enabled, the Fontations font backend will be used for web fonts where "
@@ -565,11 +554,6 @@ const char kUseCustomMessagesDomainDescription[] =
 const char kUseDMSAAForTilesName[] = "Use DMSAA for tiles";
 const char kUseDMSAAForTilesDescription[] =
     "Switches skia to use DMSAA instead of MSAA for tile raster";
-
-const char kUseDnsHttpsSvcbAlpnName[] = "Use DNS https alpn";
-const char kUseDnsHttpsSvcbAlpnDescription[] =
-    "When enabled, Chrome may try QUIC on the first connection using the ALPN"
-    " information in the DNS HTTPS record.";
 
 const char kIsolatedSandboxedIframesName[] = "Isolated sandboxed iframes";
 const char kIsolatedSandboxedIframesDescription[] =
@@ -1896,6 +1880,11 @@ const char kExtensionAiDataCollectionDescription[] =
     "Enables an extension API to allow specific extensions to collect data "
     "from browser process. This data may contain profile specific information "
     " and may be otherwise unavailable to an extension.";
+const char kExtensionsCollapseMainMenuName[] = "Collapse Extensions Submenu";
+const char kExtensionsCollapseMainMenuDescription[] =
+    "Enables a mode where if the current profile has no extensions, the "
+    "extensions submenu in the application menu is replaced by a single item, "
+    "e.g. \"Explore Extensions\".";
 const char kExtensionsMenuAccessControlName[] =
     "Extensions Menu Access Control";
 const char kExtensionsMenuAccessControlDescription[] =
@@ -2860,8 +2849,7 @@ const char kOmniboxStarterPackIPHDescription[] =
     "Enables an informational IPH message for the  Site search starter pack "
     "feature";
 
-const char kOmniboxSearchAggregatorName[] =
-    "Omnibox search aggregator";
+const char kOmniboxSearchAggregatorName[] = "Omnibox search aggregator";
 const char kOmniboxSearchAggregatorDescription[] =
     "Enables omnibox suggestions from the search aggregator provider";
 
@@ -3864,6 +3852,11 @@ const char kTranslateForceTriggerOnEnglishDescription[] =
     "with the selected language model active.";
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+const char kEnableHistorySyncOptinExpansionPillName[] =
+    "History Sync Opt-in Expansion Pill";
+const char kEnableHistorySyncOptinExpansionPillDescription[] =
+    "Enables the History Sync Opt-in expansion pill on Desktop platforms.";
+
 const char kEnableHistorySyncOptinName[] = "History Sync Opt-in";
 const char kEnableHistorySyncOptinDescription[] =
     "Enables the History Sync Opt-in screen on Desktop platforms. The screen "
@@ -4368,6 +4361,10 @@ const char kAndroidPdfAssistContentName[] = "Provide assist content for PDF";
 const char kAndroidPdfAssistContentDescription[] =
     "Provide assist content for PDF on Android.";
 
+const char kAndroidSurfaceColorUpdateName[] = "Android surface color update.";
+const char kAndroidSurfaceColorUpdateDescription[] =
+    "If enabled, updates the android surface colors.";
+
 const char kAndroidTabDeclutterName[] = "Android Tab Declutter";
 const char kAndroidTabDeclutterDescription[] =
     "Enables auto-archival and deletion of inactive tabs.";
@@ -4583,6 +4580,10 @@ const char kTabClosureMethodRefactorName[] = "Tab closure method refactor";
 const char kTabClosureMethodRefactorDescription[] =
     "Enables the refactored changes for tab closure methods where existing "
     "methods usages are switched off and newly introduced are made active.";
+
+const char kGridTabSwitcherUpdateName[] = "Grid tab switcher update";
+const char kGridTabSwitcherUpdateDescription[] =
+    "Enables the visual changes in the grid tab switcher.";
 
 const char kDynamicSafeAreaInsetsName[] = "DynamicSafeAreaInsets";
 const char kDynamicSafeAreaInsetsDescription[] =
@@ -4822,6 +4823,9 @@ const char kReadLaterDescription[] =
     "Allow users to save tabs for later. Enables a new button and menu for "
     "accessing tabs saved for later.";
 
+const char kReaderModeDevEntryPointName[] = "Reader Mode developer entry point";
+const char kReaderModeDevEntryPointDescription[] =
+    "Shows a button in the app overflow menu to force reader mode.";
 const char kReaderModeHeuristicsName[] = "Reader Mode triggering";
 const char kReaderModeHeuristicsDescription[] =
     "Determines what pages the Reader Mode infobar is shown on.";
@@ -4945,14 +4949,6 @@ const char kTabGroupSyncDisableNetworkLayerDescription[] =
 const char kTabStripContextMenuAndroidName[] = "Tab Strip Context Menu Android";
 const char kTabStripContextMenuAndroidDescription[] =
     "Enables context menus upon long-pressing on a tab on the tab strip.";
-
-const char kTabStripGroupCollapseAndroidName[] =
-    "Tab Strip Group Collapse Android";
-const char kTabStripGroupCollapseAndroidDescription[] =
-    "Enables tab strip group indicators to be clicked to collapse, temporarily "
-    "hiding the colored outline, the group title, and the grouped tabs. "
-    "Collapsed groups can be clicked again to expand. Synced tab groups will "
-    "immediately be collapsed.";
 
 const char kTabStripGroupDragDropAndroidName[] =
     "Tab Strip Group Drag Drop Android";
@@ -7446,10 +7442,6 @@ const char kSysUiShouldHoldbackDriveIntegrationName[] =
 const char kSysUiShouldHoldbackDriveIntegrationDescription[] =
     "Enables holdback for Drive Integration.";
 
-const char kSysUiShouldHoldbackForestName[] = "Holdback for Forest on chromeOS";
-const char kSysUiShouldHoldbackForestDescription[] =
-    "Enables holdback for Forest.";
-
 const char kSysUiShouldHoldbackTaskManagementName[] =
     "Holdback for Task Management on chromeOS";
 const char kSysUiShouldHoldbackTaskManagementDescription[] =
@@ -8036,6 +8028,9 @@ const char kOidcAuthProfileManagementDescription[] =
 
 const char kGlicName[] = "Glic";
 const char kGlicDescription[] = "Enables glic";
+
+const char kGlicZOrderChangesName[] = "Glic Z Order Changes";
+const char kGlicZOrderChangesDescription[] = "Enables glic z order changing";
 
 const char kGlicUserResizeName[] = "Glic User Resize";
 const char kGlicUserResizeDescription[] =

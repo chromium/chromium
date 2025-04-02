@@ -13,7 +13,6 @@
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
 #include "ash/birch/stub_birch_client.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/geolocation_access_level.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
@@ -22,7 +21,6 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time_override.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "components/prefs/pref_service.h"
@@ -39,7 +37,6 @@ BirchWeatherProvider* GetWeatherProvider() {
 class BirchWeatherProviderTest : public AshTestBase {
  public:
   BirchWeatherProviderTest() : clock_override_(&GetTestTime, nullptr, nullptr) {
-    feature_list_.InitAndEnableFeature(features::kForestFeature);
     // Ensure the time is morning (7 AM) so weather will be fetched.
     SetTestTime(base::Time::Now().LocalMidnight() + base::Hours(7));
   }
@@ -75,7 +72,6 @@ class BirchWeatherProviderTest : public AshTestBase {
  private:
   base::subtle::ScopedTimeClockOverrides clock_override_;
   static base::Time test_time_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // static

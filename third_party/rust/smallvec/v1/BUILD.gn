@@ -13,12 +13,12 @@ cargo_crate("lib") {
   epoch = "1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/smallvec-1.14.0/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/smallvec-v1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/smallvec-1.14.0/src/arbitrary.rs",
-    "//third_party/rust/chromium_crates_io/vendor/smallvec-1.14.0/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/smallvec-1.14.0/src/specialization.rs",
-    "//third_party/rust/chromium_crates_io/vendor/smallvec-1.14.0/src/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/smallvec-v1/src/arbitrary.rs",
+    "//third_party/rust/chromium_crates_io/vendor/smallvec-v1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/smallvec-v1/src/specialization.rs",
+    "//third_party/rust/chromium_crates_io/vendor/smallvec-v1/src/tests.rs",
   ]
   inputs = []
 

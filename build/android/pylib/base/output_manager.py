@@ -32,7 +32,7 @@ class OutputManager:
   @contextlib.contextmanager
   def ArchivedTempfile(
       self, out_filename, out_subdir, datatype=Datatype.TEXT):
-    """Archive file contents asynchonously and then deletes file.
+    """Archive file contents asynchronously and then deletes file.
 
     Args:
       out_filename: Name for saved file.

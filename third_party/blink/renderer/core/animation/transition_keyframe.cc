@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/animation/css_interpolation_types_map.h"
 #include "third_party/blink/renderer/core/animation/interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/pairwise_interpolation_value.h"
+#include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -20,17 +21,34 @@
 
 namespace blink {
 
-void TransitionKeyframe::SetCompositorValue(
-    CompositorKeyframeValue* compositor_value) {
-  DCHECK_EQ(property_.GetCSSProperty().IsCompositableProperty(),
-            static_cast<bool>(compositor_value));
-  compositor_value_ = compositor_value;
+namespace {
+
+class PropertyIterator : public Keyframe::VirtualPropertyIterator {
+ public:
+  explicit PropertyIterator(const PropertyHandle* property)
+      : property_(property) {}
+  ~PropertyIterator() override = default;
+  void Advance(const Keyframe*) override { property_ = nullptr; }
+  PropertyHandle Deref(const Keyframe*) const override { return *property_; }
+  bool AtEnd(const Keyframe*) const override { return !property_; }
+
+ private:
+  const PropertyHandle* property_ = nullptr;
+};
+
+}  // namespace
+
+Keyframe::PropertyIteratorWrapper
+TransitionKeyframe::IterableTransitionKeyframeProperty::begin() const {
+  return Keyframe::PropertyIteratorWrapper(
+      nullptr, std::make_unique<PropertyIterator>(&property_));
 }
 
-PropertyHandleSet TransitionKeyframe::Properties() const {
-  PropertyHandleSet result;
-  result.insert(property_);
-  return result;
+void TransitionKeyframe::SetCompositorValue(
+    CompositorKeyframeValue* compositor_value) {
+  DCHECK_EQ(Property().GetCSSProperty().IsCompositableProperty(),
+            static_cast<bool>(compositor_value));
+  compositor_value_ = compositor_value;
 }
 
 void TransitionKeyframe::AddKeyframePropertiesToV8Object(
@@ -55,11 +73,11 @@ void TransitionKeyframe::AddKeyframePropertiesToV8Object(
   const ComputedStyle* style = state.TakeStyle();
   String property_value =
       AnimationUtils::KeyframeValueFromComputedStyle(
-          property_, *style, document, element->GetLayoutObject())
+          Property(), *style, document, element->GetLayoutObject())
           ->CssText();
 
   String property_name =
-      AnimationInputHelpers::PropertyHandleToKeyframeAttribute(property_);
+      AnimationInputHelpers::PropertyHandleToKeyframeAttribute(Property());
   object_builder.AddString(property_name, property_value);
 }
 
@@ -74,7 +92,7 @@ TransitionKeyframe::CreatePropertySpecificKeyframe(
     const PropertyHandle& property,
     EffectModel::CompositeOperation effect_composite,
     double offset) const {
-  DCHECK(property == property_);
+  DCHECK(property == Property());
   DCHECK(offset == offset_);
   EffectModel::CompositeOperation composite =
       composite_.value_or(effect_composite);

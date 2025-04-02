@@ -1083,6 +1083,32 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
+                       ClosingTheOnlyTabShouldCloseTheAppWindow) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Set up window tracker to track the app window.
+  const SessionID window_id =
+      system_web_app_manager()->GetActiveSystemWebAppWindowID();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+  ASSERT_EQ(boca_app_browser->tab_strip_model()->count(), 1);
+
+  // Close the only tab and verify that the app window is closed.
+  boca_app_browser->tab_strip_model()->CloseWebContentsAt(
+      0, TabCloseTypes::CLOSE_USER_GESTURE);
+  content::RunAllTasksUntilIdle();
+  EXPECT_THAT(FindBocaSystemWebAppBrowser(), IsNull());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
                        BlockFileUrlTypes) {
   // Launch OnTask SWA.
   base::test::TestFuture<bool> launch_future;

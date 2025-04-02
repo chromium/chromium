@@ -25,9 +25,7 @@ public class AutofillSuggestion extends DropdownItemBase {
     private final String mSublabel;
     private final @Nullable String mSecondarySublabel;
     private final @Nullable String mLabelContentDescription;
-    private final @Nullable String mItemTag;
     private final int mIconId;
-    private final boolean mIsIconAtStart;
     private final int mSuggestionType;
     private final boolean mIsDeletable;
     private final boolean mApplyDeactivatedStyle;
@@ -43,13 +41,8 @@ public class AutofillSuggestion extends DropdownItemBase {
      *
      * @param label The main label of the Autofill suggestion.
      * @param sublabel The describing sublabel of the Autofill suggestion.
-     * @param itemTag The tag for the autofill suggestion. For keyboard accessory, this would be
-     *     displayed as an IPH bubble. For the dropdown, this is shown below the secondary text.For
-     *     example: For credit cards with offers, the item tag is set to indicate that the card has
-     *     some cashback offer associated with it.
      * @param iconId The resource ID for the icon associated with the suggestion, or {@code
      *     DropdownItem.NO_ICON} for no icon.
-     * @param isIconAtStart {@code true} if {@code iconId} is displayed before {@code label}.
      * @param popupItemId The type of suggestion.
      * @param isDeletable Whether the item can be deleted by the user.
      * @param applyDeactivatedStyle Whether to apply deactivated style to the suggestion.
@@ -66,9 +59,7 @@ public class AutofillSuggestion extends DropdownItemBase {
             String sublabel,
             @Nullable String secondarySublabel,
             @Nullable String labelContentDescription,
-            @Nullable String itemTag,
             int iconId,
-            boolean isIconAtStart,
             @SuggestionType int popupItemId,
             boolean isDeletable,
             boolean applyDeactivatedStyle,
@@ -82,9 +73,7 @@ public class AutofillSuggestion extends DropdownItemBase {
         mSublabel = sublabel;
         mSecondarySublabel = secondarySublabel;
         mLabelContentDescription = labelContentDescription;
-        mItemTag = itemTag;
         mIconId = iconId;
-        mIsIconAtStart = isIconAtStart;
         mSuggestionType = popupItemId;
         mIsDeletable = isDeletable;
         mApplyDeactivatedStyle = applyDeactivatedStyle;
@@ -116,11 +105,6 @@ public class AutofillSuggestion extends DropdownItemBase {
     }
 
     @Override
-    public @Nullable String getItemTag() {
-        return mItemTag;
-    }
-
-    @Override
     public int getIconId() {
         return mIconId;
     }
@@ -131,14 +115,6 @@ public class AutofillSuggestion extends DropdownItemBase {
             return R.color.insecure_context_payment_disabled_message_text;
         }
         return super.getLabelFontColorResId();
-    }
-
-    @Override
-    public boolean isIconAtStart() {
-        if (mIsIconAtStart) {
-            return true;
-        }
-        return super.isIconAtStart();
     }
 
     @Override
@@ -198,9 +174,7 @@ public class AutofillSuggestion extends DropdownItemBase {
                 && this.mSublabel.equals(other.mSublabel)
                 && Objects.equals(this.mSecondarySublabel, other.mSecondarySublabel)
                 && Objects.equals(this.mLabelContentDescription, other.mLabelContentDescription)
-                && Objects.equals(this.mItemTag, other.mItemTag)
                 && this.mIconId == other.mIconId
-                && this.mIsIconAtStart == other.mIsIconAtStart
                 && this.mSuggestionType == other.mSuggestionType
                 && this.mIsDeletable == other.mIsDeletable
                 && this.mApplyDeactivatedStyle == other.mApplyDeactivatedStyle
@@ -216,13 +190,11 @@ public class AutofillSuggestion extends DropdownItemBase {
         private int mIconId;
         private @Nullable GURL mCustomIconUrl;
         private @Nullable Drawable mIconDrawable;
-        private boolean mIsIconAtStart;
         private boolean mIsDeletable;
         private boolean mApplyDeactivatedStyle;
         private boolean mShouldDisplayTermsAvailable;
         private @Nullable String mFeatureForIph;
         private @Nullable String mIphDescriptionText;
-        private @Nullable String mItemTag;
         private @Nullable String mLabel;
         private @Nullable String mSecondaryLabel;
         private @Nullable String mSubLabel;
@@ -242,11 +214,6 @@ public class AutofillSuggestion extends DropdownItemBase {
 
         public Builder setIconDrawable(Drawable iconDrawable) {
             this.mIconDrawable = iconDrawable;
-            return this;
-        }
-
-        public Builder setIsIconAtStart(boolean isIconAtStart) {
-            this.mIsIconAtStart = isIconAtStart;
             return this;
         }
 
@@ -272,11 +239,6 @@ public class AutofillSuggestion extends DropdownItemBase {
 
         public Builder setIphDescriptionText(String iphDescriptionText) {
             this.mIphDescriptionText = iphDescriptionText;
-            return this;
-        }
-
-        public Builder setItemTag(String itemTag) {
-            this.mItemTag = itemTag;
             return this;
         }
 
@@ -321,9 +283,7 @@ public class AutofillSuggestion extends DropdownItemBase {
                     mSubLabel,
                     mSecondarySubLabel,
                     mLabelContentDescription,
-                    mItemTag,
                     mIconId,
-                    mIsIconAtStart,
                     mSuggestionType,
                     mIsDeletable,
                     mApplyDeactivatedStyle,

@@ -25,12 +25,11 @@ class InterfaceImpl : public mojom::TestResultInterface {
   ~InterfaceImpl() override = default;
 
   // mojom::TestResultInterface
-  void TestSuccess(int32_t value, TestSuccessResultCallback cb) override {
+  void TestSuccess(int32_t value, TestSuccessCallback cb) override {
     std::move(cb).Run(base::ok(value));
   }
 
-  void TestFailure(const std::string& value,
-                   TestFailureResultCallback cb) override {
+  void TestFailure(const std::string& value, TestFailureCallback cb) override {
     std::move(cb).Run(base::unexpected(value));
   }
 

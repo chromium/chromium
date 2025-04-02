@@ -45,6 +45,10 @@ constexpr char kMigrationReconnectionDurationSuffix[] = "ReconnectionDuration";
 constexpr char kMigrationCleanupErrorSuffix[] = "CleanupError";
 constexpr char kMigrationDialogActionSuffix[] = "DialogAction";
 constexpr char kMigrationDialogShownSuffix[] = "DialogShown";
+constexpr char kScheduledTimeInPastInformUser[] =
+    "ScheduledTimeInPast.InformUser";
+constexpr char kScheduledTimeInPastScheduleMigration[] =
+    "ScheduledTimeInPast.ScheduleMigration";
 
 // Constants for cloud providers used in histogram names.
 constexpr char kGoogleDriveProvider[] = "GoogleDrive";
@@ -168,6 +172,13 @@ void SkyVaultMigrationRetryHistogram(int count) {
       1, kMaxRetryCount, kMaxRetryCount);
 }
 
+void SkyVaultDeletionRetryHistogram(int count) {
+  base::UmaHistogramCustomCounts(
+      GetHistogramName(kMigrationRetrySuffix, UploadTrigger::kMigration,
+                       MigrationDestination::kDelete),
+      count, 1, kMaxRetryCount, kMaxRetryCount);
+}
+
 void SkyVaultMigrationStoppedHistogram(MigrationDestination destination,
                                        bool value) {
   base::UmaHistogramBoolean(
@@ -187,6 +198,13 @@ void SkyVaultMigrationWrongStateHistogram(MigrationDestination destination,
       GetHistogramName(kMigrationWrongStateSuffix, UploadTrigger::kMigration,
                        destination),
       state);
+}
+
+void SkyVaultDeletionDoneHistogram(bool success) {
+  base::UmaHistogramBoolean(
+      GetHistogramName(kMigrationFailedSuffix, UploadTrigger::kMigration,
+                       MigrationDestination::kDelete),
+      !success);
 }
 
 void SkyVaultMigrationDoneHistograms(MigrationDestination destination,
@@ -243,6 +261,24 @@ void SkyVaultMigrationCleanupErrorHistogram(MigrationDestination destination,
   base::UmaHistogramBoolean(
       GetHistogramName(kMigrationCleanupErrorSuffix, UploadTrigger::kMigration,
                        destination),
+      value);
+}
+
+void SkyVaultMigrationScheduledTimeInPastInformUser(
+    MigrationDestination destination,
+    bool value) {
+  base::UmaHistogramBoolean(
+      GetHistogramName(kScheduledTimeInPastInformUser,
+                       UploadTrigger::kMigration, destination),
+      value);
+}
+
+void SkyVaultMigrationScheduledTimeInPastScheduleMigration(
+    MigrationDestination destination,
+    bool value) {
+  base::UmaHistogramBoolean(
+      GetHistogramName(kScheduledTimeInPastScheduleMigration,
+                       UploadTrigger::kMigration, destination),
       value);
 }
 

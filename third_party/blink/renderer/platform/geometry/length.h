@@ -296,10 +296,22 @@ class PLATFORM_EXPORT Length {
   bool HasMinIntrinsic() const { return IsMinIntrinsic(); }
   bool HasFitContent() const;
 
+  // IsSpecified() is true for any Lengths that are a fixed length, a percent,
+  // or a calc() expression.  Note that this *includes* calc-size()
+  // expressions that contain sizing keywords, which may not be what you want.
+  // You may want HasOnlyFixedAndPercent instead.
+  // TODO(https://crbug.com/406530491): Audit remaining callers of
+  // IsSpecified().
   bool IsSpecified() const {
     return GetType() == kFixed || GetType() == kPercent ||
            GetType() == kCalculated;
   }
+
+  // HasOnlyFixedAndPercent() is true for any Lengths that are a fixed length,
+  // a percent, or calc() expressions that consist only of those.  (This
+  // excludes calc() expressions with calc-size() that depend on sizing
+  // keywords.)
+  bool HasOnlyFixedAndPercent() const;
 
   bool IsCalculated() const { return GetType() == kCalculated; }
   bool IsCalculatedEqual(const Length&) const;

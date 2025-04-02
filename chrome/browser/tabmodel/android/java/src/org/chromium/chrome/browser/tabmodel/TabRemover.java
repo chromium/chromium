@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
 /**
@@ -18,6 +17,7 @@ import org.chromium.chrome.browser.tab.Tab;
  * <p>This interface, combined with {@link TabUngrouper}, facilitates a shared implementation with
  * the ability to show warning dialogs when events may be destructive to tab groups.
  */
+@NullMarked
 public interface TabRemover {
     /**
      * Closes tabs based on the provided parameters. Refer to {@link TabClosureParams} for different
@@ -31,7 +31,7 @@ public interface TabRemover {
      *     process.
      */
     void closeTabs(
-            @NonNull TabClosureParams tabClosureParams,
+            TabClosureParams tabClosureParams,
             boolean allowDialog,
             @Nullable TabModelActionListener listener);
 
@@ -39,7 +39,7 @@ public interface TabRemover {
      * {@link #closeTabs(TabClosureParams, boolean, TabModelActionListener)} without the {@code
      * listener} or {@code performActionOverride}.
      */
-    default void closeTabs(@NonNull TabClosureParams tabClosureParams, boolean allowDialog) {
+    default void closeTabs(TabClosureParams tabClosureParams, boolean allowDialog) {
         closeTabs(tabClosureParams, allowDialog, /* listener= */ null);
     }
 
@@ -60,13 +60,13 @@ public interface TabRemover {
      *     used to close the tabs.
      */
     void prepareCloseTabs(
-            @NonNull TabClosureParams tabClosureParams,
+            TabClosureParams tabClosureParams,
             boolean allowDialog,
             @Nullable TabModelActionListener listener,
-            @NonNull Callback<TabClosureParams> onPreparedCallback);
+            Callback<TabClosureParams> onPreparedCallback);
 
     /** Closes tabs bypassing any dialogs and data sharing protections. */
-    void forceCloseTabs(@NonNull TabClosureParams tabClosureParams);
+    void forceCloseTabs(TabClosureParams tabClosureParams);
 
     /**
      * Removes the given tab from the model without destroying it. The tab should be inserted into
@@ -79,11 +79,10 @@ public interface TabRemover {
      * @param listener A {@link TabModelActionListener} that receives updates about the closure
      *     process.
      */
-    void removeTab(
-            @NonNull Tab tab, boolean allowDialog, @Nullable TabModelActionListener listener);
+    void removeTab(Tab tab, boolean allowDialog, @Nullable TabModelActionListener listener);
 
     /** {@link #removeTab(Tab, boolean, TabModelActionListener)} without the {@code listener}. */
-    default void removeTab(@NonNull Tab tab, boolean allowDialog) {
+    default void removeTab(Tab tab, boolean allowDialog) {
         removeTab(tab, allowDialog, /* listener= */ null);
     }
 }

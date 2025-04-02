@@ -633,6 +633,7 @@ class TestRunner(object):
           LOGGER.warning('Crashed during %s, resuming...\n',
                          list(result.crashed_tests()))
           test_app.excluded_tests = list(overall_result.all_test_names())
+          test_app.crashed_tests = list(result.crashed_tests())
           # Changing test filter will change selected gtests in this shard.
           # Thus, sharding env vars have to be cleared to ensure needed tests
           # are run. This means there might be duplicate same tests across

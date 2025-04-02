@@ -2984,6 +2984,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3045447014237878114">Bu sayt bir nechta faylni avtomatik yuklab oldi</translation>
 <translation id="3046178388369461825">Linux uchun diskda boʻsh joy deyarli qolmadi</translation>
 <translation id="304644035656848980">Mikrofon namunasi</translation>
+<translation id="3046892784550338476">Versiya: <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">To‘liq veb-sahifa</translation>
 <translation id="304747341537320566">Nutq sintezatorlari</translation>
 <translation id="3047678109605649715">Qurilmangizda <ph name="LANGUAGE" /> ovozlari mavjud emas. Qurilmada joy boʻshating va qayta urining.</translation>
@@ -3076,6 +3077,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3122883569442693641">Batafsil</translation>
 <translation id="3124111068741548686">USER-deskriptorlari</translation>
 <translation id="3124332159330678621">Chromeni moaslash orqali uni yangicha bezating</translation>
+<translation id="3125816458150005808">Uni menyudan yechish yoki ochish mumkin</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Quvvatlash va unumdorlik bilan muammo yuz bermasligi uchun sinalgan Dell yoki USB Type-C quvvat adapteridan foydalaning.</translation>
 <translation id="3127862849166875294">Linux diski hajmini oʻzgartirish</translation>
@@ -5324,6 +5326,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4723140812774948886">Keyingisiga almashtirish</translation>
 <translation id="4724450788351008910">A’zolik o‘zgardi</translation>
 <translation id="4725511304875193254">Korgi</translation>
+<translation id="4725762702191453794">Varaqlardan qidirish tugmasi asboblar paneliga mahkamlandi</translation>
 <translation id="4726710355753484204">Kattalashtirish uchun Ctrl+Alt+Yorqinlikni oshirish tugmalarini bosing.
 Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</translation>
 <translation id="4726710629007580002">Kengaytmani o‘rnatishda ogohlantirishlar bo‘ldi:</translation>

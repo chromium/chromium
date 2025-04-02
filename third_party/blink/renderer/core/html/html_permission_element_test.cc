@@ -1608,7 +1608,7 @@ class HTMLPermissionElementIntersectionTest
     LoadURL("https://example.test/");
     main_resource.Complete(R"HTML(
     <div id='container' style='position: fixed; left: 100px; top: 100px; width: 100px; height: 100px;'>
-      <permission id='camera' type='camera'>
+      <permission id='camera' type='camera'></permission>
     </div>
     )HTML");
 
@@ -1637,7 +1637,7 @@ TEST_F(HTMLPermissionElementIntersectionTest, IntersectionChanged) {
   LoadURL("https://example.test/");
   main_resource.Complete(R"HTML(
     <div id='heading' style='height: 100px;'></div>
-    <permission id='camera' type='camera'>
+    <permission id='camera' type='camera'></permission>
     <div id='trailing' style='height: 700px;'></div>
   )HTML");
 
@@ -1679,7 +1679,7 @@ TEST_F(HTMLPermissionElementIntersectionTest,
   LoadURL("https://example.test/");
   main_resource.Complete(R"HTML(
     <div id='heading' style='height: 700px;'></div>
-    <permission id='camera' type='camera'>
+    <permission id='camera' type='camera'></permission>
   )HTML");
 
   Compositor().BeginFrame();
@@ -1718,7 +1718,7 @@ TEST_F(HTMLPermissionElementIntersectionTest,
   LoadURL("https://example.test/");
   main_resource.Complete(R"HTML(
     <div id='cover' style='position: fixed; left: 0px; top: 100px; width: 100px; height: 100px;'></div>
-    <permission id='camera' type='camera'>
+    <permission id='camera' type='camera'></permission>
   )HTML");
 
   Compositor().BeginFrame();
@@ -1775,7 +1775,7 @@ TEST_F(HTMLPermissionElementIntersectionTest, ClickingDisablePseudoClass) {
     <div id='cover'
       style='position: fixed; left: 0px; top: 100px; width: 100px; height: 100px;'>
     </div>
-    <permission id='camera' type='camera'>
+    <permission id='camera' type='camera'></permission>
   )HTML");
 
   Compositor().BeginFrame();
@@ -1919,7 +1919,7 @@ TEST_F(HTMLPermissionElementLayoutChangeTest, InvalidatePEPCAfterMove) {
     <permission
       style='position: relative; top: 1px; left: 1px;'
       id='camera'
-      type='camera'>
+      type='camera'></permission>
   </body>
   )HTML");
 
@@ -1942,7 +1942,7 @@ TEST_F(HTMLPermissionElementLayoutChangeTest, InvalidatePEPCAfterResize) {
   main_resource.Complete(R"HTML(
   <body>
     <permission
-      style=' height: 3em; width: 40px;' id='camera' type='camera'>
+      style=' height: 3em; width: 40px;' id='camera' type='camera'></permission>
   </body>
   )HTML");
 
@@ -1998,7 +1998,7 @@ TEST_F(HTMLPermissionElementLayoutChangeTest,
   LoadURL("https://example.test/");
   main_resource.Complete(R"HTML(
     <div id='container'>
-      <permission id='camera' type='camera'>
+      <permission id='camera' type='camera'></permission>
     </div>
     )HTML");
   Compositor().BeginFrame();
@@ -2022,7 +2022,7 @@ TEST_F(HTMLPermissionElementLayoutChangeTest,
   main_resource.Complete(R"HTML(
   <body>
     <permission
-      style=' height: 3em; width: 40px;' id='camera' type='camera'>
+      style=' height: 3em; width: 40px;' id='camera' type='camera'></permission>
   </body>
   )HTML");
 

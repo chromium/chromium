@@ -19,10 +19,14 @@ config("cruregistration_include_path") {
 }
 
 source_set("cruregistration_base_sources") {
+  public = [ "$target_gen_dir/CRURegistration.h" ]
   sources = [
-    "$target_gen_dir/CRURegistration.h",
     "CRURegistration-Private.h",
     "CRURegistration.m",
+  ]
+  friend = [
+    ":unit_test_sources",
+    "//chrome/updater:updater_test_sources",
   ]
   public_deps = [ ":cruregistration_header_branding" ]
   assert_no_deps = [

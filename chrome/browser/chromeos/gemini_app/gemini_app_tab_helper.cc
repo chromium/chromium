@@ -4,8 +4,8 @@
 
 #include "chrome/browser/chromeos/gemini_app/gemini_app_tab_helper.h"
 
-#include "base/hash/md5_constexpr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/no_destructor.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/browser_context.h"
@@ -13,19 +13,19 @@
 
 namespace {
 
-// Returns pages mapped to their MD5 hashes.
-std::map<uint64_t, GeminiAppTabHelper::Page>* GetMD5PageHashes() {
+// Returns pages mapped to their hash metric names.
+std::map<uint64_t, GeminiAppTabHelper::Page>* GetPageHashMetricNames() {
   using Page = GeminiAppTabHelper::Page;
-  static base::NoDestructor<std::map<uint64_t, Page>> md5_page_hashes(
+  static base::NoDestructor<std::map<uint64_t, Page>> page_hash_metric_names(
       {{15434391541687473744u, Page::kCongratulations},
-       {2639084485652816410u, Page::kDebug},
-       {8933819972841556021u, Page::kDebug},
-       {11887379483153592206u, Page::kDebug},
+       {2639084485652816410u, Page::kTermsAndConditionsStandard},
+       {8933819972841556021u, Page::kTermsAndConditionsStandard},
+       {11887379483153592206u, Page::kTermsAndConditionsStandard},
        {6579551706563083045u, Page::kOffer},
-       {9605163350832310418u, Page::kTermsAndConditions},
-       {14050260147306734198u, Page::kTermsAndConditions},
-       {18084016612939108325u, Page::kTermsAndConditions}});
-  return md5_page_hashes.get();
+       {9605163350832310418u, Page::kTermsAndConditionsCBX},
+       {14050260147306734198u, Page::kTermsAndConditionsCBX},
+       {18084016612939108325u, Page::kTermsAndConditionsCBX}});
+  return page_hash_metric_names.get();
 }
 
 // Returns whether the specified `web_contents` is off the record.
@@ -56,11 +56,11 @@ void GeminiAppTabHelper::MaybeCreateForWebContents(
 // static
 base::AutoReset<std::map<uint64_t, GeminiAppTabHelper::Page>>
 GeminiAppTabHelper::SetPageUrlsForTesting(std::map<GURL, Page> page_urls) {
-  std::map<uint64_t, Page> md5_page_hashes;
+  std::map<uint64_t, Page> page_hash_metric_names;
   for (const auto& [url, page] : page_urls) {
-    md5_page_hashes.emplace(base::MD5Hash64Constexpr(url.spec()), page);
+    page_hash_metric_names.emplace(base::HashMetricName(url.spec()), page);
   }
-  return {GetMD5PageHashes(), std::move(md5_page_hashes)};
+  return {GetPageHashMetricNames(), std::move(page_hash_metric_names)};
 }
 
 void GeminiAppTabHelper::DidStartNavigation(
@@ -69,21 +69,21 @@ void GeminiAppTabHelper::DidStartNavigation(
     return;
   }
 
-  const std::map<uint64_t, GeminiAppTabHelper::Page>* md5_page_hashes =
-      GetMD5PageHashes();
+  const std::map<uint64_t, GeminiAppTabHelper::Page>* page_hash_metric_names =
+      GetPageHashMetricNames();
 
   // Check for exact page match.
-  auto it = md5_page_hashes->find(
-      base::MD5Hash64Constexpr(navigation_handle->GetURL().spec()));
+  auto it = page_hash_metric_names->find(
+      base::HashMetricName(navigation_handle->GetURL().spec()));
 
   // Check for page match w/o filename.
-  if (it == md5_page_hashes->end()) {
-    it = md5_page_hashes->find(base::MD5Hash64Constexpr(
+  if (it == page_hash_metric_names->end()) {
+    it = page_hash_metric_names->find(base::HashMetricName(
         navigation_handle->GetURL().GetWithoutFilename().spec()));
   }
 
   // Record page visit.
-  if (it != md5_page_hashes->end()) {
+  if (it != page_hash_metric_names->end()) {
     base::UmaHistogramEnumeration("Ash.GeminiApp.Page.Visit",
                                   /*page=*/it->second);
   }

@@ -85,7 +85,6 @@ TEST_F(SMILTimeContainerTest, ServiceAnimationsFlushesPendingSynchronizations) {
 
   // Frame callback before the synchronization timer fires.
   SVGDocumentExtensions::ServiceSmilOnAnimationFrame(GetDocument());
-  SVGDocumentExtensions::ServiceWebAnimationsOnAnimationFrame(GetDocument());
 
   // The frame callback should have flushed any pending updates.
   EXPECT_EQ(100, rect->height()->CurrentValue()->Value(length_context));
@@ -237,7 +236,6 @@ class SMILTimeContainerAnimationPolicyOnceTest : public PageTestBase {
     current_time_ += delta;
     GetAnimationClock().UpdateTime(current_time_);
     SVGDocumentExtensions::ServiceSmilOnAnimationFrame(GetDocument());
-    SVGDocumentExtensions::ServiceWebAnimationsOnAnimationFrame(GetDocument());
   }
 
   void OnContentLoaded(base::OnceCallback<void(Document&)> callback) {

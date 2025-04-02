@@ -94,6 +94,11 @@ public final class Website implements WebsiteEntry {
         return getMainAddress().getTitle();
     }
 
+    @Override
+    public String getDomainAndRegistry() {
+        return assumeNonNull(getAddress().getDomainAndRegistry());
+    }
+
     public boolean representsThirdPartiesOnSite() {
         return mOrigin.getTitle().equals(SITE_WILDCARD)
                 && mEmbedder != null

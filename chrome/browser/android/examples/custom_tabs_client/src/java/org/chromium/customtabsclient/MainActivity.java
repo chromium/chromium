@@ -19,6 +19,7 @@ import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_CLOSE_BUTTON_PO
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_TOOLBAR_CORNER_RADIUS_DP;
+import static androidx.browser.customtabs.CustomTabsIntent.SHARE_STATE_ON;
 
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
@@ -114,6 +115,8 @@ public class MainActivity extends AppCompatActivity
     private static final String SHARED_PREF_THEME = "Theme";
     private static final String SHARED_PREF_URL_HIDING = "UrlHiding";
     private static final String SHARED_PREF_SIDE_SHEET_MAX_BUTTON = "SideSheetMaxButton";
+    private static final String OPEN_IN_BROWSER_BUTTON = "OpenInBrowserButton";
+    private static final String SHOW_ACTION_BUTTON = "ShowActionButton";
     private static final String SHARED_PREF_SIDE_SHEET_ROUNDED_CORNER = "RoundedCorner";
     private static final String SHARED_PREF_CONTENT_SCROLL = "ContentScrollMayResizeTab";
     private static final String SHARED_PREF_SEARCH_IN_CCT = "SearchInCCT";
@@ -176,6 +179,8 @@ public class MainActivity extends AppCompatActivity
     private CheckBox mUrlHidingCheckbox;
     private CheckBox mBackgroundInteractCheckbox;
     private CheckBox mSideSheetMaxButtonCheckbox;
+    private CheckBox mOpenInBrowserButtonCheckbox;
+    private CheckBox mShowActionButtonCheckbox;
     private CheckBox mSideSheetRoundedCornerCheckbox;
     private CheckBox mContentScrollCheckbox;
     private CheckBox mSearchInCctCheckbox;
@@ -700,6 +705,12 @@ public class MainActivity extends AppCompatActivity
         mSideSheetMaxButtonCheckbox = findViewById(R.id.side_sheet_max_button_checkbox);
         mSideSheetMaxButtonCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_SIDE_SHEET_MAX_BUTTON, CHECKED) == CHECKED);
+        mOpenInBrowserButtonCheckbox = findViewById(R.id.open_in_browser_checkbox);
+        mOpenInBrowserButtonCheckbox.setChecked(
+                mSharedPref.getInt(OPEN_IN_BROWSER_BUTTON, CHECKED) == CHECKED);
+        mShowActionButtonCheckbox = findViewById(R.id.show_action_button_checkbox);
+        mShowActionButtonCheckbox.setChecked(
+                mSharedPref.getInt(SHOW_ACTION_BUTTON, CHECKED) == CHECKED);
         mSideSheetRoundedCornerCheckbox = findViewById(R.id.side_sheet_rounded_corner_checkbox);
         mSideSheetRoundedCornerCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_SIDE_SHEET_ROUNDED_CORNER, CHECKED) == CHECKED);
@@ -992,7 +1003,9 @@ public class MainActivity extends AppCompatActivity
         CustomTabsSession session = getSession();
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder(session);
         prepareMenuItems(builder);
-        prepareActionButton(builder);
+        if (mShowActionButtonCheckbox.isChecked()) {
+            prepareActionButton(builder);
+        }
         boolean isPcct = mCctType.equals(CCT_OPTION_PARTIAL);
         prepareAesthetics(builder, isPcct);
 
@@ -1087,6 +1100,11 @@ public class MainActivity extends AppCompatActivity
 
         customTabsIntent.intent.putExtra(EXTRA_OMNIBOX_ENABLED, mSearchInCctCheckbox.isChecked());
 
+        if (mOpenInBrowserButtonCheckbox.isChecked()) {
+            customTabsIntent.intent.putExtra(
+                    "androidx.browser.customtabs.extra.OPEN_IN_BROWSER_STATE", SHARE_STATE_ON);
+        }
+
         if (mCctType.equals(CCT_OPTION_AUTHTAB)) {
             launchAuthTab(url);
             editor.putString(SHARED_PREF_CUSTOM_SCHEME, mCustomScheme);
@@ -1119,6 +1137,11 @@ public class MainActivity extends AppCompatActivity
         editor.putInt(
                 SHARED_PREF_SIDE_SHEET_ROUNDED_CORNER,
                 mSideSheetRoundedCornerCheckbox.isChecked() ? CHECKED : UNCHECKED);
+        editor.putInt(
+                OPEN_IN_BROWSER_BUTTON,
+                mOpenInBrowserButtonCheckbox.isChecked() ? CHECKED : UNCHECKED);
+        editor.putInt(
+                SHOW_ACTION_BUTTON, mShowActionButtonCheckbox.isChecked() ? CHECKED : UNCHECKED);
         editor.putInt(SHARED_PREF_DECORATION, decorationType);
         editor.apply();
     }

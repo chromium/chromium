@@ -104,7 +104,7 @@ void CSSStyleRule::setSelectorText(const ExecutionContext* execution_context,
 
   StyleRule* new_style_rule = StyleRule::Create(
       selector_vector, style_rule_->Properties().ImmutableCopyIfNeeded());
-  if (HeapVector<Member<StyleRuleBase>>* child_rules =
+  if (GCedHeapVector<Member<StyleRuleBase>>* child_rules =
           style_rule_->ChildRules()) {
     for (StyleRuleBase* child_rule : *child_rules) {
       new_style_rule->AddChildRule(child_rule->Renest(new_style_rule));

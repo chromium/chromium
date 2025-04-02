@@ -28,12 +28,12 @@
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 #include "chrome/browser/ui/webui/version/version_ui.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
@@ -209,8 +209,8 @@ void SafetyHubHandler::HandleAllowPermissionsAgainForUnusedSite(
   CHECK(args[0].is_string());
   const std::string& origin_str = args[0].GetString();
 
-  UnusedSitePermissionsService* service =
-      UnusedSitePermissionsServiceFactory::GetForProfile(profile_);
+  RevokedPermissionsService* service =
+      RevokedPermissionsServiceFactory::GetForProfile(profile_);
   CHECK(service);
 
   url::Origin origin = url::Origin::Create(GURL(origin_str));
@@ -226,8 +226,8 @@ void SafetyHubHandler::HandleUndoAllowPermissionsAgainForUnusedSite(
 
   PermissionsData permissions_data =
       GetUnusedSitePermissionsFromDict(args[0].GetDict());
-  UnusedSitePermissionsService* service =
-      UnusedSitePermissionsServiceFactory::GetForProfile(profile_);
+  RevokedPermissionsService* service =
+      RevokedPermissionsServiceFactory::GetForProfile(profile_);
   CHECK(service);
 
   service->UndoRegrantPermissionsForOrigin(permissions_data);
@@ -237,8 +237,8 @@ void SafetyHubHandler::HandleUndoAllowPermissionsAgainForUnusedSite(
 
 void SafetyHubHandler::HandleAcknowledgeRevokedUnusedSitePermissionsList(
     const base::Value::List& args) {
-  UnusedSitePermissionsService* service =
-      UnusedSitePermissionsServiceFactory::GetForProfile(profile_);
+  RevokedPermissionsService* service =
+      RevokedPermissionsServiceFactory::GetForProfile(profile_);
   CHECK(service);
   service->ClearRevokedPermissionsList();
 
@@ -251,8 +251,8 @@ void SafetyHubHandler::HandleUndoAcknowledgeRevokedUnusedSitePermissionsList(
   CHECK(args[0].is_list());
 
   const base::Value::List& unused_site_permissions_list = args[0].GetList();
-  UnusedSitePermissionsService* service =
-      UnusedSitePermissionsServiceFactory::GetForProfile(profile_);
+  RevokedPermissionsService* service =
+      RevokedPermissionsServiceFactory::GetForProfile(profile_);
   CHECK(service);
 
   for (const auto& unused_site_permissions_js : unused_site_permissions_list) {
@@ -297,10 +297,10 @@ void SafetyHubHandler::HandleUndoAcknowledgeRevokedUnusedSitePermissionsList(
 
 base::Value::List SafetyHubHandler::PopulateUnusedSitePermissionsData() {
   base::Value::List result;
-  UnusedSitePermissionsService* service =
-      UnusedSitePermissionsServiceFactory::GetForProfile(profile_);
+  RevokedPermissionsService* service =
+      RevokedPermissionsServiceFactory::GetForProfile(profile_);
   CHECK(service);
-  std::unique_ptr<UnusedSitePermissionsService::UnusedSitePermissionsResult>
+  std::unique_ptr<RevokedPermissionsService::RevokedPermissionsResult>
       service_result = service->GetRevokedPermissions();
   for (const auto& permissions_data : service_result->GetRevokedPermissions()) {
     base::Value::Dict revoked_permission_value;

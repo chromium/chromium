@@ -58,6 +58,8 @@ public final class ContextMenuUtils {
             return params.isAnchor() ? "ImageLink" : "Image";
         } else if (params.getOpenedFromHighlight()) {
             return "SharedHighlightingInteraction";
+        } else if (params.isPage()) {
+            return "Page";
         }
         assert params.isAnchor();
         return "Link";

@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">تشکر با زبان اشاره</translation>
 <translation id="2088690981887365033">‏شبکه VPN</translation>
 <translation id="209653272837065803">فضای ذخیره‌سازی کافی برای ادامه همگام‌سازی فایل‌ها وجود ندارد</translation>
-<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />در «حالت ناشناس» مجاز است<ph name="END_BOLD" /> را روشن کنید</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> مورد حذف خواهد شد و دیگر نمی‌توانید آن‌ها را بازیابی کنید.</translation>
 <translation id="2122305276694332719">اتصال خودکار به شبکه‌ای پنهان به دیگران امکان می‌دهد دستگاه و برخی تنظیمات شبکه‌تان را ببینند، و توصیه نمی‌شود.</translation>
 <translation id="2125607626296734455">خمر</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">سیاره</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> خارج شد.</translation>
 <translation id="2307462900900812319">پیکربندی شبکه</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{افزونه‌ای با شناسه <ph name="BEGIN_LIST" /><ph name="END_LIST" /> پیدا نشد. با سرپرست تماس بگیرید.}one{افزونه‌ای با شناسه <ph name="BEGIN_LIST" /><ph name="END_LIST" /> پیدا نشد. با سرپرست تماس بگیرید.}other{افزونه‌هایی با شناسه‌های <ph name="BEGIN_LIST" /><ph name="END_LIST" /> پیدا نشد. با سرپرست تماس بگیرید.}}</translation>
 <translation id="2325650632570794183">‏این نوع فایل پشتیبانی نمی‌شود. لطفاً به «نت‌بازار Chrome» بروید تا برنامه‌ای را پیدا کنید که بتواند این نوع فایل را باز کند.</translation>
 <translation id="2326539130272988168">بلغاری</translation>
 <translation id="233822363739146957">فضای ذخیره‌سازی کافی برای همگام‌سازی همه فایل‌های شما وجود ندارد</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">ماراتی</translation>
 <translation id="2923240520113693977">استونیایی</translation>
 <translation id="2938685643439809023">مغولی</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{افزونه پیدا نشد}one{افزونه پیدا نشد}other{افزونه‌ها پیدا نشد}}</translation>
 <translation id="2943503720238418293">از نام کوتاه‌تری استفاده کنید</translation>
 <translation id="2949781154072577687">درحال قالب‌بندی <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">عروس دریایی</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">کامل</translation>
 <translation id="3358452157379365236">گیتار</translation>
 <translation id="3368922792935385530">متصل</translation>
-<translation id="3372635229069101468">روی <ph name="BEGIN_BOLD" />جزئیات<ph name="END_BOLD" /> کلیک کنید</translation>
 <translation id="3382143449143186018">نپالی با صفحه‌کلید هندی</translation>
 <translation id="338691029516748599">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، تحت‌مدیریت سرپرست، اتصال</translation>
 <translation id="3408072735282270043">فعال کردن <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">تک‌شاخ</translation>
 <translation id="4131235941541910880">مواردی را که نیاز ندارید به «حذف‌شده‌ها» منتقل کنید</translation>
 <translation id="4134804435730168042">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" /> شبکه، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" />، بعداز راه‌اندازی دستگاه فعال کنید</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{افزونه زیر را در «حالت ناشناس» روشن کنید:}one{افزونه زیر را در «حالت ناشناس» روشن کنید:}other{افزونه‌های زیر را در «حالت ناشناس» روشن کنید:}}</translation>
 <translation id="4153015322587141338">برای دسترسی سریع به فایل‌ها در قفسه، روی فایلی کلیک راست کنید و «<ph name="PIN_COMMAND" />» را انتخاب کنید.</translation>
 <translation id="4157569377477607576">خط‌مشی سرپرست موارد زیر را توصیه نمی‌کند:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> منتقل شد.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">حفظ هر دو</translation>
 <translation id="4804827417948292437">آووکادو</translation>
 <translation id="4805966553127040832">درحال بازیابی <ph name="COUNT" /> مورد</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{برای استفاده از «حالت ناشناس»، سازمانتان به افزونه نیاز دارد}one{برای استفاده از «حالت ناشناس»، سازمانتان به افزونه نیاز دارد}other{برای استفاده از «حالت ناشناس»، سازمانتان به چند افزونه نیاز دارد}}</translation>
 <translation id="4826849268470072925">‏تامیل (ITRANS)</translation>
-<translation id="482932175346970750">‏<ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> را در مرورگرتان تایپ کنید</translation>
 <translation id="4843566743023903107">‏دستگاه‌های Chromebase</translation>
 <translation id="4850886885716139402">نما</translation>
 <translation id="485316830061041779">آلمانی</translation>
@@ -561,7 +554,6 @@
        کنید، همه این کارها را در یک مکان انجام دهید.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">‏فایل‌های بازیابی‌شده از Google Drive</translation>
 <translation id="5278111733643988471">برای بازیابی این مورد، آن را به پوشه جدیدی خارج از «حذف‌شده‌ها» بکشید. پوشه اصلی «<ph name="PARENT_FOLDER_NAME" />» مربوط به این مورد حذف شده است.</translation>
-<translation id="5283101102242354279">افزونه‌ای را در «حالت ناشناس» روشن کنید:</translation>
 <translation id="5288441970121584418">همبرگر</translation>
 <translation id="5293615890992542006">خط‌مشی سرپرست انتقال این فایل را مسدود کرده است</translation>
 <translation id="5305688511332277257">چیزی نصب نشده است</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />، جزئیات</translation>
 <translation id="7246947237293279874">‏پروکسی FTP</translation>
 <translation id="7248671827512403053">برنامه کاربردی</translation>
-<translation id="7252604552361840748">افزونه بالا را پیدا کنید</translation>
 <translation id="7256405249507348194">خطای نامشخص: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">خدمات موجود</translation>
 <translation id="7291818353625820805">می‌خواهید کلیدها تکرار شوند؟ نشانه‌های تکیه را در «تنظیمات صفحه‌کلید» خاموش کنید</translation>

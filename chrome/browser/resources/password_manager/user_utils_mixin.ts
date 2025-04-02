@@ -68,29 +68,25 @@ export const UserUtilMixin = dedupingMixin(
               value: '',
               computed: 'computeAvatarImage_(accountInfo_)',
             },
+
+            syncInfo_: Object,
+            accountInfo_: Object,
           };
         }
 
-      isAccountStorageEnabled:
-        boolean;
-      isEligibleForAccountStorage:
-        boolean;
-      // Whether account storage is enabled and the default storage is account.
-      isAccountStoreUser:
-        boolean;
-      isSyncingPasswords:
-        boolean;
-      accountEmail:
-        string;
-      avatarImage:
-        string;
-      private syncInfo_:
-        SyncInfo;
-      private accountInfo_:
-        AccountInfo;
+        declare isAccountStorageEnabled: boolean;
+        declare isEligibleForAccountStorage: boolean;
+        // Whether account storage is enabled and the default storage is
+        // account.
+        declare isAccountStoreUser: boolean;
+        declare isSyncingPasswords: boolean;
+        declare accountEmail: string;
+        declare avatarImage: string;
+        declare private syncInfo_: SyncInfo;
+        declare private accountInfo_: AccountInfo;
 
-      private setIsAccountStorageEnabledListener_:
-        ((enabled: boolean) => void)|null = null;
+        private setIsAccountStorageEnabledListener_:
+            ((enabled: boolean) => void)|null = null;
 
         override connectedCallback() {
           super.connectedCallback();

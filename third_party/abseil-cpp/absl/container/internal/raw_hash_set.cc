@@ -292,7 +292,7 @@ size_t DropDeletesWithoutResizeAndPrepareInsert(CommonFields& common,
   ConvertDeletedToEmptyAndFullToDeleted(ctrl, capacity);
   const void* hash_fn = policy.hash_fn(common);
   auto hasher = policy.hash_slot;
-  auto transfer = policy.transfer;
+  auto transfer_n = policy.transfer_n;
   const size_t slot_size = policy.slot_size;
 
   size_t total_probe_length = 0;
@@ -337,7 +337,7 @@ size_t DropDeletesWithoutResizeAndPrepareInsert(CommonFields& common,
       // SetCtrl poisons/unpoisons the slots so we have to call it at the
       // right time.
       SetCtrlInLargeTable(common, new_i, h2, slot_size);
-      (*transfer)(set, new_slot_ptr, slot_ptr, 1);
+      (*transfer_n)(set, new_slot_ptr, slot_ptr, 1);
       SetCtrlInLargeTable(common, i, ctrl_t::kEmpty, slot_size);
       // Initialize or change empty space id.
       tmp_space_id = i;
@@ -353,9 +353,9 @@ size_t DropDeletesWithoutResizeAndPrepareInsert(CommonFields& common,
       SanitizerUnpoisonMemoryRegion(tmp_space, slot_size);
 
       // Swap i and new_i elements.
-      (*transfer)(set, tmp_space, new_slot_ptr, 1);
-      (*transfer)(set, new_slot_ptr, slot_ptr, 1);
-      (*transfer)(set, slot_ptr, tmp_space, 1);
+      (*transfer_n)(set, tmp_space, new_slot_ptr, 1);
+      (*transfer_n)(set, new_slot_ptr, slot_ptr, 1);
+      (*transfer_n)(set, slot_ptr, tmp_space, 1);
 
       SanitizerPoisonMemoryRegion(tmp_space, slot_size);
 
@@ -389,6 +389,28 @@ static bool WasNeverFull(CommonFields& c, size_t index) {
          static_cast<size_t>(empty_after.TrailingZeros()) +
                  empty_before.LeadingZeros() <
              Group::kWidth;
+}
+
+// Updates the control bytes to indicate a completely empty table such that all
+// control bytes are kEmpty except for the kSentinel byte.
+void ResetCtrl(CommonFields& common, size_t slot_size) {
+  const size_t capacity = common.capacity();
+  ctrl_t* ctrl = common.control();
+  static constexpr size_t kTwoGroupCapacity = 2 * Group::kWidth - 1;
+  if (ABSL_PREDICT_TRUE(capacity <= kTwoGroupCapacity)) {
+    std::memset(ctrl, static_cast<int8_t>(ctrl_t::kEmpty), Group::kWidth);
+    std::memset(ctrl + capacity, static_cast<int8_t>(ctrl_t::kEmpty),
+                Group::kWidth);
+    if (capacity == kTwoGroupCapacity) {
+      std::memset(ctrl + Group::kWidth, static_cast<int8_t>(ctrl_t::kEmpty),
+                  Group::kWidth);
+    }
+  } else {
+    std::memset(ctrl, static_cast<int8_t>(ctrl_t::kEmpty),
+                capacity + 1 + NumClonedBytes());
+  }
+  ctrl[capacity] = ctrl_t::kSentinel;
+  SanitizerPoisonMemoryRegion(common.slot_array(), slot_size * capacity);
 }
 
 // Initializes control bytes for single element table.
@@ -601,7 +623,7 @@ void InsertOldSooSlotAndInitializeControlBytes(CommonFields& c,
   SanitizerPoisonMemoryRegion(new_slots, policy.slot_size * new_capacity);
   void* target_slot = SlotAddress(new_slots, offset, policy.slot_size);
   SanitizerUnpoisonMemoryRegion(target_slot, policy.slot_size);
-  policy.transfer(&c, target_slot, c.soo_data(), 1);
+  policy.transfer_n(&c, target_slot, c.soo_data(), 1);
   c.set_control</*kGenerateSeed=*/false>(new_ctrl);
   c.set_slots(new_slots);
   ResetCtrl(c, policy.slot_size);
@@ -841,14 +863,14 @@ size_t GrowToNextCapacityAndPrepareInsert(CommonFields& common,
     common.generate_new_seed();
     find_info = FindInfo{0, 0};
   } else {
-    if (is_single_group(new_capacity)) {
+    if (ABSL_PREDICT_TRUE(is_single_group(new_capacity))) {
       GrowIntoSingleGroupShuffleControlBytes(old_ctrl, old_capacity, new_ctrl,
                                              new_capacity);
-      // Single group tables have no deleted slots, so we can transfer all slots
-      // without checking the control bytes.
+      // Single group tables have all slots full on resize. So we can transfer
+      // all slots without checking the control bytes.
       assert(common.size() == old_capacity);
-      policy.transfer(&common, NextSlot(new_slots, slot_size), old_slots,
-                      old_capacity);
+      policy.transfer_n(&common, NextSlot(new_slots, slot_size), old_slots,
+                        old_capacity);
       PoisonEmptySlots(common, slot_size);
       // We put the new element either at the beginning or at the end of the
       // table with approximately equal probability.
@@ -873,7 +895,7 @@ size_t GrowToNextCapacityAndPrepareInsert(CommonFields& common,
   PrepareInsertCommon(common);
   ResetGrowthLeft(common);
 
-  if (has_infoz) {
+  if (ABSL_PREDICT_FALSE(has_infoz)) {
     common.set_has_infoz();
     infoz.RecordStorageChanged(common.size() - 1, new_capacity);
     infoz.RecordRehash(total_probe_length);
@@ -1061,7 +1083,7 @@ void GrowFullSooTableToNextCapacity(CommonFields& common,
     SanitizerPoisonMemoryRegion(next_slot, SooSlotMemcpySize - slot_size);
   } else {
     static_assert(SooSlotMemcpySize == 0);
-    policy.transfer(&common, target_slot, common.soo_data(), 1);
+    policy.transfer_n(&common, target_slot, common.soo_data(), 1);
   }
   common.set_control</*kGenerateSeed=*/true>(new_ctrl);
   common.set_slots(new_slots);
@@ -1112,11 +1134,11 @@ void Rehash(CommonFields& common, const PolicyFunctions& policy, size_t n) {
       assert(policy.slot_align <= alignof(HeapOrSoo));
       HeapOrSoo tmp_slot(uninitialized_tag_t{});
       size_t begin_offset = FindFirstFullSlot(0, cap, common.control());
-      policy.transfer(&common, &tmp_slot,
-                      SlotAddress(common.slot_array(), begin_offset, slot_size),
-                      1);
+      policy.transfer_n(
+          &common, &tmp_slot,
+          SlotAddress(common.slot_array(), begin_offset, slot_size), 1);
       clear_backing_array();
-      policy.transfer(&common, common.soo_data(), &tmp_slot, 1);
+      policy.transfer_n(&common, common.soo_data(), &tmp_slot, 1);
       common.set_full_soo();
       return;
     }

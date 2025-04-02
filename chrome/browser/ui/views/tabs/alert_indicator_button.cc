@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/vector_icons/vector_icons.h"
@@ -30,6 +31,10 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/metrics.h"
 #include "ui/views/view_class_properties.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
+#endif
 
 namespace {
 
@@ -422,7 +427,12 @@ ui::ImageModel AlertIndicatorButton::GetTabAlertIndicatorImage(
       icon = &vector_icons::kCardboardIcon;
       break;
     case TabAlertState::GLIC_ACCESSING:
+#if BUILDFLAG(ENABLE_GLIC)
+      icon =
+          &glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_ACCESSING_ICON);
+#else
       icon = &kTvIcon;
+#endif
       break;
   }
   DCHECK(icon);

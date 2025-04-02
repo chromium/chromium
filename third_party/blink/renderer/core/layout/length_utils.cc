@@ -1881,7 +1881,7 @@ LayoutUnit ClampIntrinsicBlockSize(
 
   // Apply the "fills viewport" quirk if needed.
   if (!IsBreakInside(break_token) && node.IsQuirkyAndFillsViewport() &&
-      style.LogicalHeight().HasAuto() &&
+      style.LogicalHeight().IsAuto() &&
       space.AvailableSize().block_size != kIndefiniteSize) {
     DCHECK_EQ(node.IsBody() && !node.CreatesNewFormattingContext(),
               body_margin_block_sum.has_value());

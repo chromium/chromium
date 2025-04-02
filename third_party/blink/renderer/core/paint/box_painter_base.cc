@@ -325,7 +325,6 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
       ContouredRect rounded_fill_rect(
           FloatRoundedRect(fill_rect, border.GetRadii()),
           border.GetCornerCurvature());
-      rounded_fill_rect.SetOriginRect(border.AsRoundedRect());
       ApplySpreadToShadowShape(rounded_fill_rect, shadow.Spread());
       context.FillContouredRect(
           rounded_fill_rect, Color::kBlack,

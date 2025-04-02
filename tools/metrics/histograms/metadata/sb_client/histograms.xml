@@ -941,7 +941,8 @@ useful for Chirp alerts (go/crca-alerts). -->
     every {RequestType} that comes in.
 
     Starting in M95, the PRIVATE_IP bucket was split to include LOCAL_RESOURCE
-    and CHROME_UI_PAGE.
+    and CHROME_UI_PAGE. Starting in M137, the children histograms start to log
+    the CLASSIFY bucket.
   </summary>
   <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>

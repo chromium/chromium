@@ -54,6 +54,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.view.accessibility.AccessibilityNodeInfo;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
@@ -190,6 +191,9 @@ public class AccessibilityNodeInfoUtils {
         }
         if (node.getLiveRegion() != 0) {
             builder.append(" liveRegion:").append(node.getLiveRegion());
+        }
+        if (node.getExpandedState() != AccessibilityNodeInfo.EXPANDED_STATE_UNDEFINED) {
+            builder.append(" expandedState:").append(node.getExpandedState());
         }
 
         // Child objects - print for non-null cases.

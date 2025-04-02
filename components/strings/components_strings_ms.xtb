@@ -298,7 +298,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1492194039220927094">Penolakan dasar:</translation>
 <translation id="1495677929897281669">Kembali ke tab</translation>
 <translation id="1500286806237135498">Kamera (<ph name="CAMERAS_COUNT" />)</translation>
-<translation id="1501859676467574491">Tunjukkan kad daripada Google Account anda</translation>
 <translation id="1504042622576912555">Jejalur kadbod</translation>
 <translation id="1507202001669085618">&lt;p&gt;Anda akan melihat ralat ini jika menggunakan portal Wi-Fi yang menghendaki anda untuk log masuk sebelum boleh masuk dalam talian.&lt;/p&gt;
     &lt;p&gt;Untuk membetulkan ralat itu, klik &lt;strong&gt;Sambung&lt;/strong&gt; pada halaman yang cuba dibuka.&lt;/p&gt;</translation>
@@ -2051,6 +2050,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4521280267704259211">Sampul Monarki</translation>
 <translation id="4521916730539354575">Dulang Kiri</translation>
 <translation id="4522570452068850558">Butiran</translation>
+<translation id="4523580145196408446">Dipautkan</translation>
 <translation id="4523643381056109546">Papan tanda</translation>
 <translation id="4524138615196389145">Sahkan kad anda dengan lebih cepat dengan menggunakan WebAuthn mulai sekarang</translation>
 <translation id="45243788195988825">Sekat <ph name="TOPIC" /></translation>
@@ -3126,6 +3126,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6405181733356710802">Teruskan ke <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Masukkan tarikh tamat tempoh dan CVC untuk <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
+<translation id="6412543105195503444">Dialog kelulusan ibu/bapa</translation>
 <translation id="6414010576370319452">Penjagaan Kulit &amp; Kuku</translation>
 <translation id="6415778972515849510">Chromium boleh membantu anda melindungi Google Account anda dan menukar kata laluan anda.</translation>
 <translation id="6416877227920300343">EDP</translation>
@@ -4110,6 +4111,7 @@ Butiran tambahan:
 <translation id="812020627659652807">Padamkan fail sekarang</translation>
 <translation id="8120720167840853945">Dasar ini tidak mengawal gelagat lalai sebarang dasar lain.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" tidak dipasang dengan betul pada komputer atau rangkaian anda. Minta pentadbir IT anda menyelesaikan isu ini.</translation>
+<translation id="8130113808541743942">Alihkan kepada…</translation>
 <translation id="8131740175452115882">Sahkan</translation>
 <translation id="8133495915926741232">Pilih kategori topik yang luas yang boleh digunakan untuk memeribadikan iklan. Tindakan mematikan kategori yang lebih luas akan turut menyekat topik yang berkaitan dengan kategori tersebut. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Perekrutan &amp; Pengambilan Pekerja</translation>

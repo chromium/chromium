@@ -38,6 +38,7 @@
 <translation id="19085484004813472">ಇದೊಂದು ಹೊಸ ಫೀಚರ್</translation>
 <translation id="2006524834898217237">ಈ ಸಾಧನವು ಇಂಟರ್ನೆಟ್‌ಗೆ ಸಂಪರ್ಕಗೊಂಡಿರುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="208586643495776849">ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
+<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಅನುಮತಿಸಿ<ph name="END_BOLD" /> ಎಂಬುದನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1ದಿ}one{#ದಿ}other{#ದಿ}}</translation>
 <translation id="2148716181193084225">ಇಂದು</translation>
 <translation id="2168039046890040389">ಪೇಜ್ ಅಪ್</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">ನಿಮ್ಮ ಪರದೆಯಲ್ಲಿ ಸ್ಪರ್ಶ ಟಾರ್ಗೆಟ್‌ಗಳನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="2295140143284145483">ಸಮೀಕ್ಷೆ</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ಜೊತೆಗಿನ ವಿಸ್ತರಣೆಯನ್ನು ಪತ್ತೆಹಚ್ಚಲು ಸಾಧ್ಯವಿಲ್ಲ. ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.}one{ID ಗಳ <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ಜೊತೆಗಿನ ವಿಸ್ತರಣೆಗಳನ್ನು ಪತ್ತೆಹಚ್ಚಲು ಸಾಧ್ಯವಿಲ್ಲ. ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.}other{ID ಗಳ <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ಜೊತೆಗಿನ ವಿಸ್ತರಣೆಗಳನ್ನು ಪತ್ತೆಹಚ್ಚಲು ಸಾಧ್ಯವಿಲ್ಲ. ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.}}</translation>
 <translation id="2353636109065292463">ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2359808026110333948">ಮುಂದುವರೆಸಿ</translation>
 <translation id="2388990488038464401">ನಿಮ್ಮ ಫೋನ್‌ನಿಂದ ಈ ಸಂಖ್ಯೆಗೆ ಕರೆ ಮಾಡಬೇಕೇ?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">ಎಲ್ಲವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1ದಿ. ದಲ್ಲಿ}one{#ದಿ. ಗಳಲ್ಲಿ}other{#ದಿ. ಗಳಲ್ಲಿ}}</translation>
 <translation id="2922712708897119705"><ph name="COLUMN_NAME" /> ಕಾಲಮ್ ಅನ್ನು ಇಳಿಕೆ ಕ್ರಮದಲ್ಲಿ ವಿಂಗಡಿಸಲಾಗಿದೆ.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{ವಿಸ್ತರಣೆಯನ್ನು ಹುಡುಕಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ}one{ವಿಸ್ತರಣೆಗಳನ್ನು ಹುಡುಕಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ}other{ವಿಸ್ತರಣೆಗಳನ್ನು ಹುಡುಕಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ}}</translation>
 <translation id="3036649622769666520">ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">ಕೆಳಗೆ</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">ಈ ಸಾಧನದಿಂದ ಕರೆ ಮಾಡಿ</translation>
 <translation id="3306688585798492231">ಅಂತರ್ನಿರ್ಮಿತ ಡಿಸ್‌ಪ್ಲೇ</translation>
 <translation id="335581015389089642">ಧ್ವನಿ</translation>
+<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />ವಿವರಗಳು<ph name="END_BOLD" /> ಎಂಬುದನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="3389286852084373014">ಪಠ್ಯ ತುಂಬಾ ದೊಡ್ಡದಾಗಿದೆ</translation>
 <translation id="3406306243914553062">HTML ವಿಷಯ</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 ದಿನ ಬಾಕಿ ಉಳಿದಿದೆ}one{# ದಿನಗಳು ಬಾಕಿ ಉಳಿದಿವೆ}other{# ದಿನಗಳು ಬಾಕಿ ಉಳಿದಿವೆ}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> ಕಾಲಮ್ ಅನ್ನು ಏರಿಕೆ ಕ್ರಮದಲ್ಲಿ ವಿಂಗಡಿಸಲಾಗಿದೆ.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 ಓದದಿರುವ ನೋಟಿಫಿಕೇಶನ್}one{# ಓದದಿರುವ ನೋಟಿಫಿಕೇಶನ್‍ಗಳು}other{# ಓದದಿರುವ ನೋಟಿಫಿಕೇಶನ್‍ಗಳು}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಕೆಳಗಿನ ವಿಸ್ತರಣೆಯನ್ನು ಆನ್ ಮಾಡಿ:}one{ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಕೆಳಗಿನ ವಿಸ್ತರಣೆಗಳನ್ನು ಆನ್ ಮಾಡಿ:}other{ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಕೆಳಗಿನ ವಿಸ್ತರಣೆಗಳನ್ನು ಆನ್ ಮಾಡಿ:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ತಿಂಗಳ ಹಿಂದೆ}one{# ತಿಂಗಳುಗಳ ಹಿಂದೆ}other{# ತಿಂಗಳುಗಳ ಹಿಂದೆ}}</translation>
 <translation id="4289300219472526559">ಮಾತನಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="4289540628985791613">ಅವಲೋಕನ</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">ಸಂಖ್ಯೆ</translation>
 <translation id="4746179598275229723">ವಿಸ್ತರಣೆಯನ್ನು ಅನ್‌ಪಿನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 ತಿಂಗಳು ಉಳಿದಿದೆ}one{# ತಿಂಗಳುಗಳು ಉಳಿದಿವೆ}other{# ತಿಂಗಳುಗಳು ಉಳಿದಿವೆ}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{ಅಜ್ಞಾತ ಮೋಡ್ ಅನ್ನು ಬಳಸಲು, ನಿಮ್ಮ ಸಂಸ್ಥೆಗೆ ವಿಸ್ತರಣೆಯ ಅಗತ್ಯವಿದೆ}one{ಅಜ್ಞಾತ ಮೋಡ್ ಅನ್ನು ಬಳಸಲು, ನಿಮ್ಮ ಸಂಸ್ಥೆಗೆ ಕೆಲವು ವಿಸ್ತರಣೆಗಳ ಅಗತ್ಯವಿದೆ}other{ಅಜ್ಞಾತ ಮೋಡ್ ಅನ್ನು ಬಳಸಲು, ನಿಮ್ಮ ಸಂಸ್ಥೆಗೆ ಕೆಲವು ವಿಸ್ತರಣೆಗಳ ಅಗತ್ಯವಿದೆ}}</translation>
+<translation id="482932175346970750">ನಿಮ್ಮ ಬ್ರೌಸರ್‌ನಲ್ಲಿ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ಟೈಪ್ ಮಾಡಿ</translation>
 <translation id="4888938634149558681">ಕರೆ ಮಾಡಿ</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 ಸೆಕೆಂಡ್}one{# ಸೆಕೆಂಡುಗಳು}other{# ಸೆಕೆಂಡುಗಳು}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;ಅಂಟಿಸಿ</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">ಕಳುಹಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
+<translation id="5283101102242354279">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ವಿಸ್ತರಣೆಯೊಂದನ್ನು ಆನ್ ಮಾಡಿ:</translation>
 <translation id="528468243742722775">ಅಂತ್ಯ</translation>
 <translation id="5329858601952122676">&amp;ಅಳಿಸು</translation>
 <translation id="5361107212971249203">ಪಠ್ಯ</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">ಮುಂದಿನ ಬಾರಿ ನೀವು ಅಪ್ಲಿಕೇಶನ್‌ ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿದಾಗ, ಅದರ ಡಿಸ್‌ಪ್ಲೇ ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಕಾರ್ಯಗತಗೊಳ್ಳುತ್ತವೆ.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 ನಿಮಿಷ ಬಾಕಿ ಉಳಿದಿದೆ}one{# ನಿಮಿಷಗಳು ಬಾಕಿ ಉಳಿದಿವೆ}other{# ನಿಮಿಷಗಳು ಬಾಕಿ ಉಳಿದಿವೆ}}</translation>
+<translation id="7252604552361840748">ಮೇಲಿನ ವಿಸ್ತರಣೆಯನ್ನು ಹುಡುಕಿ</translation>
 <translation id="7363164521834647158">ಪ್ರತ್ಯುತ್ತರ ಕಳುಹಿಸಿ</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 ನಿಮಿ ಹಿಂದೆ}one{# ನಿಮಿಷಗಳ ಹಿಂದೆ}other{# ನಿಮಿಷಗಳ ಹಿಂದೆ}}</translation>
 <translation id="7389409599945284130"><ph name="MESSAGE" /> -</translation>

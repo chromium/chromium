@@ -161,18 +161,20 @@ export class SettingsAutofillAiSectionElement extends
         optedIn => this.set('optedIn_.value', !this.ineligibleUser && optedIn));
 
     this.entityInstancesChangedListener_ =
-        (entityInstances => this.entityInstances_ = entityInstances);
+        (entityInstances => this.entityInstances_ =
+             entityInstances.sort(this.entityInstancesWithLabelsComparator_));
     this.entityDataManager_.addEntityInstancesChangedListener(
         this.entityInstancesChangedListener_);
 
     this.entityDataManager_.getAllEntityTypes().then(
         (entityTypes: EntityType[]) => {
-          this.completeEntityTypesList_ = entityTypes;
+          this.completeEntityTypesList_ =
+              entityTypes.sort(this.entityTypesComparator_);
         });
 
     this.entityDataManager_.loadEntityInstances().then(
         (entityInstances: EntityInstanceWithLabels[]) => this.entityInstances_ =
-            entityInstances);
+            entityInstances.sort(this.entityInstancesWithLabelsComparator_));
   }
 
   override disconnectedCallback() {
@@ -184,17 +186,31 @@ export class SettingsAutofillAiSectionElement extends
     this.entityInstancesChangedListener_ = null;
   }
 
-  private onOptInToggleChange_() {
-    this.entityDataManager_.setOptInStatus(this.$.prefToggle.checked);
+  /*
+   * This comparator purposefully uses sensitivity 'base', not to differentiate
+   * between different capitalization or diacritics.
+   */
+  private entityTypesComparator_(a: EntityType, b: EntityType) {
+    return a.typeNameAsString.localeCompare(
+        b.typeNameAsString, undefined, {sensitivity: 'base'});
   }
 
   /**
-   * @returns the accessibility title for the "More Actions button"
-   *     corresponding to the entity instance which is described by `label` and
-   *     `sublabel`.
+   * This comparator compares the labels alphabetically, and, in case of
+   * equality, the sublabels.
+   * This comparator purposefully uses sensitivity 'base', not to differentiate
+   * between different capitalization or diacritics.
    */
-  private getMoreButtonTitle_(label: string, subLabel: string) {
-    return this.i18n('autofillAiMoreActionsForEntityInstance', label, subLabel);
+  private entityInstancesWithLabelsComparator_(
+      a: EntityInstanceWithLabels, b: EntityInstanceWithLabels) {
+    return (a.entityInstanceLabel + a.entityInstanceSubLabel)
+        .localeCompare(
+            b.entityInstanceLabel + b.entityInstanceSubLabel, undefined,
+            {sensitivity: 'base'});
+  }
+
+  private onOptInToggleChange_() {
+    this.entityDataManager_.setOptInStatus(this.$.prefToggle.checked);
   }
 
   /**

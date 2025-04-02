@@ -12,11 +12,10 @@ cargo_crate("lib") {
   crate_name = "itoa"
   epoch = "1"
   crate_type = "rlib"
-  crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/itoa-1.0.15/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/itoa-v1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/itoa-1.0.15/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/itoa-1.0.15/src/udiv128.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itoa-v1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/itoa-v1/src/udiv128.rs",
   ]
   inputs = []
 

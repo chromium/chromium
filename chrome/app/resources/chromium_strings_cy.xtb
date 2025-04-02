@@ -96,6 +96,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2238130810669087193">I gael eich cyfeiriadau a rhagor ar eich holl ddyfeisiau, mewngofnodwch i Chromium. Bydd y cyfeiriad hwn yn cael ei gadw yn eich Cyfrif Google ar ôl i chi fewngofnodi.</translation>
 <translation id="2240214816234246077">Nid ydych wedi ymweld yn ddiweddar. Mae Chromium wedi tynnu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Os ydych yn rhannu cyfrifiadur, gall ffrindiau a theulu bori ar wahân a gosod Chromium yn yr union ffordd y maent eisiau.</translation>
+<translation id="2287771843518581140">{NUM_TABS,plural, =1{Mae Chromium yn argymell seibio'r tab sy'n arafu eich porwr}zero{Mae Chromium yn argymell seibio'r tabiau sy'n arafu eich porwr}two{Mae Chromium yn argymell seibio'r tabiau sy'n arafu eich porwr}few{Mae Chromium yn argymell seibio'r tabiau sy'n arafu eich porwr}many{Mae Chromium yn argymell seibio'r tabiau sy'n arafu eich porwr}other{Mae Chromium yn argymell seibio'r tabiau sy'n arafu eich porwr}}</translation>
 <translation id="2313870531055795960">Yn gwirio URL gyda rhestr o wefannau anniogel sydd wedi'u storio yn Chromium. Os yw gwefan yn ceisio dwyn eich cyfrinair, neu pan fyddwch yn lawrlwytho ffeil niweidiol, gall Chromium hefyd anfon URL, gan gynnwys darnau o gynnwys tudalen, i Pori'n Ddiogel.</translation>
 <translation id="2343156876103232566">I anfon rhif oddi yma i'ch ffôn Android, mewngofnodwch i Chromium ar y ddwy ddyfais.</translation>
 <translation id="2359808026110333948">Parhau</translation>
@@ -312,6 +313,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="5405650547142096840">Tynnu o Chromium</translation>
 <translation id="5427571867875391349">Gosod Chromium fel eich porwr diofyn</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Beta Chromium</translation>
+<translation id="5460618461609401056">{NUM_TABS,plural, =1{Mae Chromium yn Argymell Seibio'r Tab sy'n Arafu Eich Porwr}zero{Mae Chromium yn Argymell Seibio'r Tabiau sy'n Arafu Eich Porwr}two{Mae Chromium yn Argymell Seibio'r Tabiau sy'n Arafu Eich Porwr}few{Mae Chromium yn Argymell Seibio'r Tabiau sy'n Arafu Eich Porwr}many{Mae Chromium yn Argymell Seibio'r Tabiau sy'n Arafu Eich Porwr}other{Mae Chromium yn Argymell Seibio'r Tabiau sy'n Arafu Eich Porwr}}</translation>
 <translation id="5473971139929175403">Mae'n bosib na fydd Chromium yn gweithredu'n gywir oherwydd nad yw'n cael ei gefnogi mwyach ar y dosbarthiad Linux hwn</translation>
 <translation id="5475924890392386523">Gwnaeth Chromium rwystro'r lawrlwythiad hwn oherwydd gall y ffeil niweidio'ch cyfrifon rhwydwaith personol a chymdeithasol</translation>
 <translation id="5480860683791598150">Mae angen mynediad at eich lleoliad ar Chromium i rannu'ch lleoliad gyda'r wefan hon</translation>

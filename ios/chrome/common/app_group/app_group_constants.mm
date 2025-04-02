@@ -105,6 +105,8 @@ NSString* const kYoutubeBundleID = @"com.google.youtube";
 
 NSString* const kPrimaryAccount = @"ios.primary_account";
 
+NSString* const kChromeLikelyDefaultBrowser = @"ChromeLikelyDefaultBrowser";
+
 NSString* ApplicationGroup() {
   return [AppGroupHelper applicationGroup];
 }

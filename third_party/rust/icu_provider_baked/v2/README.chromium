@@ -3,7 +3,7 @@ URL: https://crates.io/crates/icu_provider_baked
 Version: 2.0.0-beta2
 Revision: 610757581c7d141a6f20f97fe839ef171c320bb1
 License: Unicode-3.0
-License File: //third_party/rust/chromium_crates_io/vendor/icu_provider_baked-2.0.0-beta2/LICENSE
+License File: //third_party/rust/chromium_crates_io/vendor/icu_provider_baked-v2/LICENSE
 Shipped: yes
 Security Critical: yes
 

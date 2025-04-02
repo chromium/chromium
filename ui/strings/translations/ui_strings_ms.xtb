@@ -38,6 +38,7 @@
 <translation id="19085484004813472">Ini ciri baharu</translation>
 <translation id="2006524834898217237">Pastikan peranti ini disambungkan ke Internet.</translation>
 <translation id="208586643495776849">Sila cuba lagi</translation>
+<translation id="2111134541987263231">Hidupkan <ph name="BEGIN_BOLD" />Benarkan dalam mod Inkognito<ph name="END_BOLD" /></translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1h}other{#h}}</translation>
 <translation id="2148716181193084225">Hari ini</translation>
 <translation id="2168039046890040389">Halaman Ke Atas</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">Ketik sasaran sentuhan pada skrin anda.</translation>
 <translation id="2295140143284145483">Tinjauan</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Sambungan dengan ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> tidak dapat dikesan. Hubungi pentadbir anda.}other{Sambungan dengan ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> tidak dapat dikesan. Hubungi pentadbir anda.}}</translation>
 <translation id="2353636109065292463">Memeriksa sambungan Internet anda</translation>
 <translation id="2359808026110333948">Teruskan</translation>
 <translation id="2388990488038464401">Panggil nombor ini daripada telefon anda?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">Padamkan Semua</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{dalam 1h}other{dalam #h}}</translation>
 <translation id="2922712708897119705">Lajur <ph name="COLUMN_NAME" /> diisih mengikut urutan menurun.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Tidak menemukan sambungan}other{Tidak menemukan sambungan}}</translation>
 <translation id="3036649622769666520">Buka Fail</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">Bawah</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">Buat panggilan daripada</translation>
 <translation id="3306688585798492231">Paparan terbina dalam</translation>
 <translation id="335581015389089642">Pertuturan</translation>
+<translation id="3372635229069101468">Klik <ph name="BEGIN_BOLD" />Butiran<ph name="END_BOLD" /></translation>
 <translation id="3389286852084373014">Teks terlalu besar</translation>
 <translation id="3406306243914553062">Kandungan HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 hari lagi}other{# hari lagi}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">Lajur <ph name="COLUMN_NAME" /> diisih mengikut urutan menaik.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 Pemberitahuan Belum Dibaca}other{# Pemberitahuan Belum Dibaca}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Hidupkan sambungan berikut dalam mod Inkognito:}other{Hidupkan sambungan berikut dalam mod Inkognito:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 bulan yang lalu}other{# bulan yang lalu}}</translation>
 <translation id="4289300219472526559">Mula Bercakap</translation>
 <translation id="4289540628985791613">Gambaran keseluruhan</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">nombor</translation>
 <translation id="4746179598275229723">Sambungan dinyahsemat</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Berbaki 1 bulan}other{Berbaki # bulan}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Untuk menggunakan mod Inkognito, organisasi anda memerlukan sambungan}other{Untuk menggunakan mod Inkognito, organisasi anda memerlukan beberapa sambungan}}</translation>
+<translation id="482932175346970750">Taip <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> dalam penyemak imbas anda</translation>
 <translation id="4888938634149558681">Buat panggilan</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 saat}other{# saat}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;Tampal</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Gagal dihantar</translation>
+<translation id="5283101102242354279">Hidupkan sambungan dalam mod Inkognito:</translation>
 <translation id="528468243742722775">End</translation>
 <translation id="5329858601952122676">&amp;Padam</translation>
 <translation id="5361107212971249203">teks</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">Tetapan paparan aplikasi anda akan berkuat kuasa apabila aplikasi ini dimulakan semula selepas ini.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 minit lagi}other{# minit lagi}}</translation>
+<translation id="7252604552361840748">Cari sambungan di atas</translation>
 <translation id="7363164521834647158">Hantar balasan</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 min yang lalu}other{# min yang lalu}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>

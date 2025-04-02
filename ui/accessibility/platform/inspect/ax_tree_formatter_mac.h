@@ -40,7 +40,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterMac
       size_t end_index) const;
 
   // AXTreeFormatterMac
-  base::Value::Dict BuildNode(id node) const;
+  base::Value::Dict BuildNode(gfx::NativeViewAccessible node) const;
 
  protected:
   void AddDefaultFilters(

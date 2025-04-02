@@ -48,7 +48,6 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
   if ([self isRunningTest:@selector
             (testReloadOnRemoveSecondaryAccountInOtherProfile)]) {
-    config.features_enabled.push_back(kUseAccountListFromIdentityManager);
     config.features_enabled.push_back(kSeparateProfilesForManagedAccounts);
   }
 

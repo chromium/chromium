@@ -571,7 +571,7 @@ void MockAndroidConnection::Receive(const std::string& data) {
   std::vector<std::string> tokens = base::SplitString(
       lines[0], " ", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   CHECK_EQ(3U, tokens.size());
-  CHECK_EQ("PUT", tokens[0]);
+  CHECK_EQ("GET", tokens[0]);
   CHECK_EQ("HTTP/1.1", tokens[2]);
 
   std::string path(tokens[1]);

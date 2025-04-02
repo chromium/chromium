@@ -359,7 +359,8 @@ class TabResumptionMediatorProxy {
 #pragma mark - Public methods
 
 - (void)openTabResumptionItem:(TabResumptionItem*)item {
-  [self.contentSuggestionsMetricsRecorder recordTabResumptionTabOpened];
+  [self.contentSuggestionsMetricsRecorder
+      recordTabResumptionTabOpened:item.shopCardData];
   tab_resumption_prefs::SetTabResumptionLastOpenedTabURL(item.tabURL,
                                                          _profilePrefs);
   [self.delegate logMagicStackEngagementForType:ContentSuggestionsModuleType::
@@ -441,6 +442,10 @@ class TabResumptionMediatorProxy {
       [self.NTPActionsDelegate recentTabTileDisplayedAtIndex:index];
       break;
   }
+  [self.contentSuggestionsMetricsRecorder
+      recordTabResumptionImpressionWithCustomization:
+          static_cast<TabResumptionItem*>(magicStackModule).shopCardData
+                                             atIndex:index];
 }
 
 #pragma mark - Boolean Observer

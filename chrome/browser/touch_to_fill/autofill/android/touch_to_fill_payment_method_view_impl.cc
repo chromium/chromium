@@ -4,6 +4,8 @@
 
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_impl.h"
 
+#include <variant>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
@@ -13,10 +15,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_controller.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
+#include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/touch_to_fill/autofill/android/internal/jni/TouchToFillPaymentMethodViewBridge_jni.h"
@@ -94,12 +98,23 @@ bool TouchToFillPaymentMethodViewImpl::Show(
 
     Suggestion::PaymentsPayload payments_payload =
         suggestion.GetPayload<Suggestion::PaymentsPayload>();
+    const Suggestion::CustomIconUrl* custom_icon_url =
+        std::get_if<Suggestion::CustomIconUrl>(&suggestion.custom_icon);
+    int android_icon_id = 0;
+    if (suggestion.icon != Suggestion::Icon::kNoIcon) {
+      android_icon_id =
+          controller->GetJavaResourceId(GetIconResourceID(suggestion.icon));
+    }
     suggestions_array.push_back(
         Java_TouchToFillPaymentMethodViewBridge_createAutofillSuggestion(
             env, suggestion.main_text.value, minor_text,
             suggestion.labels[0][0].value, secondarySubLabel,
             payments_payload.main_text_content_description,
-            suggestion.HasDeactivatedStyle(),
+            base::to_underlying(suggestion.type),
+            custom_icon_url ? url::GURLAndroid::FromNativeGURL(
+                                  env, custom_icon_url->value())
+                            : url::GURLAndroid::EmptyGURL(env),
+            android_icon_id, suggestion.HasDeactivatedStyle(),
             payments_payload.should_display_terms_available));
   }
   Java_TouchToFillPaymentMethodViewBridge_showSheet(

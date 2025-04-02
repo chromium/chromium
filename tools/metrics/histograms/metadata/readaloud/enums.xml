@@ -39,6 +39,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="ACTIVITY_ATTACHEMENT_CHANGED"/>
   <int value="10" label="TAB_CLOSED"/>
   <int value="11" label="EXTERNAL_PLAYBACK_REQUEST"/>
+  <int value="12" label="PLAYBACK_MODE_CHANGE"/>
 </enum>
 
 <enum name="ReadAloudEntrypoint">

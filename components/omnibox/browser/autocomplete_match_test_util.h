@@ -17,13 +17,17 @@ AutocompleteMatch CreateAutocompleteMatch(std::string name,
                                           int traditional_relevance,
                                           std::optional<float> ml_output);
 
-AutocompleteMatch CreateHistoryURLMatch(std::string destination_url);
+AutocompleteMatch CreateHistoryURLMatch(std::string destination_url,
+                                        bool is_zero_prefix = false);
 
 AutocompleteMatch CreateCompanyEntityMatch(std::string website_uri);
 
 AutocompleteMatch CreateSearchMatch(std::u16string contents = u"text");
 
 AutocompleteMatch CreateContextualSearchMatch(
+    std::u16string contents = u"text");
+
+AutocompleteMatch CreateZeroPrefixSearchMatch(
     std::u16string contents = u"text");
 
 AutocompleteMatch CreateStarterPackMatch(std::u16string keyword);

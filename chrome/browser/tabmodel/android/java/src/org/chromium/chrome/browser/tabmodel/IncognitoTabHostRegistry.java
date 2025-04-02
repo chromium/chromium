@@ -4,16 +4,20 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Registry for implementations of {@link IncognitoTabHost}.
- * Every host of incognito tabs must be registered here as long as it is alive, so that its
- * incognito tabs are included in such operations as removing all incognito tabs.
+ * Registry for implementations of {@link IncognitoTabHost}. Every host of incognito tabs must be
+ * registered here as long as it is alive, so that its incognito tabs are included in such
+ * operations as removing all incognito tabs.
  */
+@NullMarked
 public class IncognitoTabHostRegistry {
-    private static IncognitoTabHostRegistry sInstance;
+    private static @Nullable IncognitoTabHostRegistry sInstance;
 
     public static IncognitoTabHostRegistry getInstance() {
         if (sInstance == null) {

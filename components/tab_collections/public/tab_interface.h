@@ -113,7 +113,7 @@ class TabInterface : public SupportsHandles<TabInterface> {
   virtual base::CallbackListSubscription RegisterWillDeactivate(
       WillDeactivateCallback callback) = 0;
 
-  // ONLY USE THIS IF YOURE FEATURE NEEDS MORE SPECIFICITY THAN IsActivated().
+  // ONLY USE THIS IF YOUR FEATURE NEEDS MORE SPECIFICITY THAN IsActivated().
   // Whether the tab is visible in the contents area of the browser window.
   // This will directly match the attached state until there are features that
   // provide multiple visible tabs per window. This state is not related to

@@ -133,6 +133,19 @@ try_.builder(
     tryjob = try_.job(),
 )
 
+try_.builder(
+    name = "win-no-safe-browsing-rel",
+    mirrors = ["ci/win-no-safe-browsing-rel"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/win-no-safe-browsing-rel",
+            "dcheck_always_on",
+            "no_symbols",
+        ],
+    ),
+    contact_team_email = "chrome-counter-abuse-core@google.com",
+)
+
 try_.orchestrator_builder(
     name = "win-rel",
     branch_selector = branches.selector.WINDOWS_BRANCHES,

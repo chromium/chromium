@@ -170,21 +170,6 @@ class HelpAppIntegrationTestWithHelpAppOpensInsteadOfReleaseNotesNotification
       features::kHelpAppOpensInsteadOfReleaseNotesNotification};
 };
 
-class HelpAppIntegrationTestWithBirchFeatureEnabled
-    : public HelpAppIntegrationTest {
- public:
-  HelpAppIntegrationTestWithBirchFeatureEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {features::kHelpAppOpensInsteadOfReleaseNotesNotification,
-         features::kForestFeature},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 }  // namespace
 
 // Test that the Help App installs and launches correctly. Runs some spot
@@ -475,15 +460,9 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   EXPECT_EQ(true,
             content::EvalJs(
                 SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
-  if (features::IsForestFeatureEnabled()) {
-    EXPECT_EQ(profile()->GetPrefs()->GetInteger(
-                  prefs::kReleaseNotesSuggestionChipTimesLeftToShow),
-              0);
-  } else {
-    EXPECT_EQ(profile()->GetPrefs()->GetInteger(
-                  prefs::kReleaseNotesSuggestionChipTimesLeftToShow),
-              3);
-  }
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(
+                prefs::kReleaseNotesSuggestionChipTimesLeftToShow),
+            0);
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   // Close the web contents we just created to simulate what would happen in
@@ -496,12 +475,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   // Assert that the notification really is there.
   auto notifications = display_service->GetDisplayedNotificationsForType(
       NotificationHandler::Type::TRANSIENT);
-  if (features::IsForestFeatureEnabled()) {
-    ASSERT_EQ(0u, notifications.size());
-  } else {
-    ASSERT_EQ(1u, notifications.size());
-    ASSERT_EQ("show_release_notes_notification", notifications[0].id());
-  }
+  ASSERT_EQ(0u, notifications.size());
+
   // Click on the notification.
   GURL expected_url = GURL("chrome://help-app/updates");
   content::TestNavigationObserver navigation_observer(expected_url);
@@ -509,12 +484,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   display_service->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                  "show_release_notes_notification",
                                  std::nullopt, std::nullopt);
-#if BUILDFLAG(ENABLE_CROS_HELP_APP)
-  if (!features::IsForestFeatureEnabled()) {
-    EXPECT_NO_FATAL_FAILURE(navigation_observer.Wait());
-    EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
-  }
-#else
+#if !BUILDFLAG(ENABLE_CROS_HELP_APP)
   // We just have the original browser. No new app opens.
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 #endif
@@ -545,15 +515,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(profile()->GetPrefs()->GetInteger(
                 prefs::kReleaseNotesSuggestionChipTimesLeftToShow),
             0);
-#if BUILDFLAG(ENABLE_CROS_HELP_APP)
-  if (!features::IsForestFeatureEnabled()) {
-    EXPECT_NO_FATAL_FAILURE(navigation_observer.Wait());
-    EXPECT_EQ(expected_trusted_frame_url,
-              GetActiveWebContents()->GetVisibleURL());
-    histogram_tester.ExpectUniqueSample("Discover.Overall.AppLaunched",
-                                        apps::LaunchSource::kFromOsLogin, 1);
-  }
-#else
+
+#if !BUILDFLAG(ENABLE_CROS_HELP_APP)
   // We just have the original browser. No new app opens.
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   histogram_tester.ExpectUniqueSample("Discover.Overall.AppLaunched",
@@ -561,8 +524,9 @@ IN_PROC_BROWSER_TEST_P(
 #endif
 }
 
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTestWithBirchFeatureEnabled,
-                       HelpAppRemainsClosed) {
+IN_PROC_BROWSER_TEST_P(
+    HelpAppIntegrationTestWithHelpAppOpensInsteadOfReleaseNotesNotification,
+    HelpAppRemainsClosed) {
   WaitForTestSystemAppInstall();
   base::HistogramTester histogram_tester;
   GURL expected_trusted_frame_url = GURL(kExploreUpdatesPageUrl);
@@ -1339,9 +1303,6 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     HelpAppIntegrationTestWithHelpAppOpensInsteadOfReleaseNotesNotification);
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    HelpAppIntegrationTestWithBirchFeatureEnabled);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     HelpAppIntegrationTestWithAppMallEnabled);

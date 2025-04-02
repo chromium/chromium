@@ -3454,6 +3454,16 @@ even if they fit the naming pattern. -->
   <token key="status" variants="TerminationStatus"/>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.Service.NotReponsive.IsOCR"
+    enum="BooleanYesNo" expires_after="2026-03-21">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records when ScreenAI service does not get a reply from the library in one
+    minute after a request. Records if the request was for OCR or not.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.{feature}.InitializationLatency"
     units="ms" expires_after="2025-09-07">
   <owner>rhalavati@chromium.org</owner>
@@ -3704,36 +3714,14 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram
-    name="DomDistiller.Android.OnDistillableResult.DistillableMobilePageExcluded"
-    enum="Boolean" expires_after="2025-08-24">
+    name="DomDistiller.Android.OnDistillableResult.PageDistillationResult"
+    enum="DistillationResult" expires_after="2025-08-24">
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
-    Records whether current page was excluded because it was found to be mobile
-    friendly. Recorded when ReaderModeManager gets a distillation result.
-  </summary>
-</histogram>
-
-<histogram
-    name="DomDistiller.Android.OnDistillableResult.DistillablePageExcludedByRequestDesktopSite"
-    enum="Boolean" expires_after="2025-08-24">
-  <owner>wylieb@google.com</owner>
-  <owner>chrome-reader-mode-team@google.com</owner>
-  <summary>
-    Records whether the current page is not distillable only because the user is
-    requesting the desktop site. Recorded when ReaderModeManager gets a
-    distillation result.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.Android.OnDistillableResult.PageDistillable"
-    enum="Boolean" expires_after="2025-08-24">
-  <owner>wylieb@google.com</owner>
-  <owner>chrome-reader-mode-team@google.com</owner>
-  <summary>
-    Records whether current page is considered distillable. This is different
-    from the triggering model result because it also includes android business
-    logic. Recorded when ReaderModeManager gets a distillation result.
+    Records the end-state of the distillation result. This is different from the
+    triggering model result because it also includes android business logic.
+    Recorded when ReaderModeManager gets a distillation result.
   </summary>
 </histogram>
 
@@ -3808,6 +3796,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="DomDistiller.Time.RunDistillationJavaScript" units="ms"
+    expires_after="2025-08-24">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    The amount of time the distiller script spent running on the page. This is
+    includes loading the script onto the web page. Recorded after the user has
+    chosen to view a simplified version of the current page.
+  </summary>
+</histogram>
+
 <histogram name="DomDistiller.Time.TimeToProvideResultToAccumulator" units="ms"
     expires_after="2025-08-24">
   <owner>wylieb@google.com</owner>
@@ -3827,6 +3826,17 @@ even if they fit the naming pattern. -->
   <summary>
     Records the amount of time a user spent on a Reader Mode Page. Recorded when
     the user exits reader mode. Only recorded on Android.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.WordCount" units="count"
+    expires_after="2025-08-24">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    Records the word count for the distilled page. Recorded when the page
+    distillation result is received. Recorded per-page even if the article has
+    multiple pages (e.g. a continue reading button).
   </summary>
 </histogram>
 

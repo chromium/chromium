@@ -5604,7 +5604,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5032" label="ButtonTypeAttrInvalid"/>
   <int value="5033" label="ButtonTypeAttrEmptyString"/>
   <int value="5034" label="ProtectedAudienceDirectFromSellerSignals"/>
-  <int value="5035" label="WebGPUSubgroupsFeatures"/>
+  <int value="5035" label="OBSOLETE_WebGPUSubgroupsFeatures"/>
   <int value="5036" label="AudioContextOnError"/>
   <int value="5037" label="NoVarySearchPrerender"/>
   <int value="5038" label="OBSOLETE_V8AITextSession_Clone_Method"/>
@@ -6088,6 +6088,20 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5462" label="ServiceWorkerPushEventListener"/>
   <int value="5463" label="ServiceWorkerPushSubscriptionChangeEventListener"/>
   <int value="5464" label="MediaPlaybackWhileNotVisiblePermissionPolicy"/>
+  <int value="5465" label="FirstLinePseudoElement"/>
+  <int value="5466" label="FirstLetterPseudoElement"/>
+  <int value="5467" label="CheckMarkPseudoElement"/>
+  <int value="5468" label="BeforePseudoElement"/>
+  <int value="5469" label="AfterPseudoElement"/>
+  <int value="5470" label="PickerIconPseudoElement"/>
+  <int value="5471" label="MarkerPseudoElement"/>
+  <int value="5472" label="BackdropPseudoElement"/>
+  <int value="5473" label="SelectionPseudoElement"/>
+  <int value="5474" label="SearchTextPseudoElement"/>
+  <int value="5475" label="TargetTextPseudoElement"/>
+  <int value="5476" label="CustomHighlightPseudoElement"/>
+  <int value="5477" label="SpellingErrorPseudoElement"/>
+  <int value="5478" label="GrammarErrorPseudoElement"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -6530,6 +6544,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="49" label="RpOriginIsOpaque"/>
   <int value="50" label="ConfigNotMatchingType"/>
   <int value="51" label="LoginPopupClosedWithoutSignin"/>
+  <int value="52" label="SuppressedBySegmentationPlatform"/>
 </enum>
 
 <enum name="FedCmRpContext">
@@ -8077,6 +8092,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="311" label="DRAFT_CssIf"/>
   <int value="312" label="WebAppManifestUpdateToken"/>
   <int value="313" label="ReadingFlow"/>
+  <int value="314" label="ComposedRanges"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

@@ -166,8 +166,7 @@ class MockClientSideDetectionService : public ClientSideDetectionService {
   MOCK_METHOD(
       void,
       InquireOnDeviceModel,
-      (ClientPhishingRequest*,
-       std::string,
+      (std::string,
        base::OnceCallback<void(
            std::optional<optimization_guide::proto::ScamDetectionResponse>)>));
 };
@@ -924,6 +923,8 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckPass) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
     GTEST_SKIP();
 
+  base::HistogramTester histogram_tester;
+
   // Navigate the tab to a page.  We should see a StartPhishingDetection IPC.
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
@@ -933,6 +934,13 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckPass) {
   WaitAndCheckPreClassificationChecks();
 
   fake_phishing_detector_.CheckMessage(&url);
+
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult",
+      PreClassificationCheckResult::CLASSIFY, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult.TriggerModel",
+      PreClassificationCheckResult::CLASSIFY, 1);
 }
 
 TEST_F(ClientSideDetectionHostTest,
@@ -2150,10 +2158,10 @@ class ClientSideDetectionHostScamDetectionTest
   }
 
   void SetInquireOnDeviceModelCallback(bool should_return_response) {
-    EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _, _))
+    EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _))
         .WillOnce(testing::Invoke(
             [=, this](
-                ClientPhishingRequest* verdict, std::string rendered_text,
+                std::string rendered_text,
                 base::OnceCallback<void(
                     std::optional<
                         optimization_guide::proto::ScamDetectionResponse>)>
@@ -2334,7 +2342,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
   raw_delegate_->ForceEmptyInnerText();
   // Because the inner text is empty, we will NOT inquire the on-device model.
-  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _, _)).Times(0);
+  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
       /*expected_no_info_reason=*/IntelligentScanInfo::EMPTY_TEXT,
@@ -2364,7 +2372,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
   // Because the URL is on the HC allowlist, we will NOT inquire the
   // on-device model.
-  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _, _)).Times(0);
+  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
       /*expected_no_info_reason=*/IntelligentScanInfo::ALLOWLISTED,
@@ -2395,7 +2403,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
   // Because the client side detection type is POINTER_LOCK_REQUESTED, we will
   // NOT inquire the on-device model.
-  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _, _)).Times(0);
+  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
       /*expected_no_info_reason=*/std::nullopt,
@@ -2535,7 +2543,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   // Because the RTLookupResponse does contain the LlamaForcedTriggerInfo but
   // intelligent_scan field is set to false, we will not inquire the on device
   // model.
-  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _, _)).Times(0);
+  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
       /*expected_no_info_reason=*/std::nullopt,
@@ -2576,7 +2584,7 @@ TEST_F(
   // Because the RTLookupResponse does not contain the LlamaForcedTriggerInfo at
   // all and it wasn't found in the cache, we will not inquire the on device
   // model.
-  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _, _)).Times(0);
+  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
       /*expected_no_info_reason=*/std::nullopt,
@@ -2801,7 +2809,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
                kClientSideDetectionShowLlamaScamVerdictWarning},
               {});
 
-  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _, _)).Times(0);
+  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
       /*expected_no_info_reason=*/std::nullopt,

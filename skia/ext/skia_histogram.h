@@ -33,6 +33,11 @@
   SK_HISTOGRAM_POINTER_HELPER(skia::HistogramExactLinear, "Skia." name, \
                               sample, value_max)
 
+#define SK_HISTOGRAM_CUSTOM_EXACT_LINEAR(name, sample, value_min, value_max,  \
+                                         bucket_count)                        \
+  SK_HISTOGRAM_POINTER_HELPER(skia::HistogramCustomExactLinear, "Skia." name, \
+                              sample, value_min, value_max, bucket_count)
+
 #define SK_HISTOGRAM_MEMORY_KB(name, sample) \
   SK_HISTOGRAM_POINTER_HELPER(skia::HistogramMemoryKB, "Skia." name, sample)
 
@@ -60,6 +65,12 @@ void HistogramExactLinear(std::atomic_uintptr_t* atomic_histogram_pointer,
                           const char* name,
                           int sample,
                           int value_max);
+void HistogramCustomExactLinear(std::atomic_uintptr_t* atomic_histogram_pointer,
+                                const char* name,
+                                int sample,
+                                int value_min,
+                                int value_max,
+                                size_t bucket_count);
 void HistogramMemoryKB(std::atomic_uintptr_t* atomic_histogram_pointer,
                        const char* name,
                        int sample);

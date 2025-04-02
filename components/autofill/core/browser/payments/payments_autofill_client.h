@@ -32,6 +32,7 @@ class AutofillOfferData;
 class AutofillOfferManager;
 enum class AutofillProgressDialogType;
 class AutofillSaveCardBottomSheetBridge;
+class BnplIssuer;
 struct BnplTosModel;
 struct CardUnmaskChallengeOption;
 class CardUnmaskDelegate;
@@ -56,6 +57,7 @@ enum class WebauthnDialogCallbackType;
 
 namespace payments {
 
+struct BnplIssuerContext;
 class BnplManager;
 class MandatoryReauthManager;
 class PaymentsNetworkInterface;
@@ -569,6 +571,17 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
   // Shows the `Save and Fill` modal dialog.
   virtual void ShowCreditCardSaveAndFillDialog();
+
+  // Shows the issuer selection dialog for BNPL when the BNPL suggestion is
+  // selected to let users choose a BNPL issuer.
+  virtual void ShowSelectBnplIssuerDialog(
+      std::vector<BnplIssuerContext> bnpl_issuer_context,
+      std::string app_locale,
+      base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+      base::OnceClosure cancel_callback);
+
+  // Dismiss the issuer selection dialog for BNPL.
+  virtual void DismissSelectBnplIssuerDialog();
 };
 
 }  // namespace payments

@@ -26,8 +26,8 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
-@interface BookmarkPromoController () <SigninPromoViewConsumer,
-                                       IdentityManagerObserverBridgeDelegate>
+@interface BookmarkPromoController () <IdentityManagerObserverBridgeDelegate,
+                                       SigninPromoViewConsumer>
 
 @end
 

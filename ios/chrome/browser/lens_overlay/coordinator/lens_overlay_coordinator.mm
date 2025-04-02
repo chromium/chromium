@@ -25,7 +25,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator_delegate.h"
-#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_tab_change_responder.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_tab_change_audience.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_configuration_factory.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
@@ -102,7 +102,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
                                       LensOverlayOverflowMenuDelegate,
                                       LensOverlayResultConsumer,
                                       LensOverlayResultsPagePresenterDelegate,
-                                      LensOverlayTabChangeResponder>
+                                      LensOverlayTabChangeAudience>
 
 // Whether the `_containerViewController` is currently presented.
 @property(nonatomic, assign, readonly) BOOL isLensOverlayVisible;
@@ -736,8 +736,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   }
 }
 
-- (void)prepareForBackgroundTabChange {
-  if (!_associatedTabHelper) {
+- (void)prepareLensUIForBackgroundTabChange {
+  if (!_associatedTabHelper || !self.isUICreated) {
     return;
   }
 
@@ -745,6 +745,12 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   _associatedTabHelper->RecordSheetDimensionState(
       _resultsPagePresenter.sheetDimension);
   _associatedTabHelper->UpdateSnapshotStorage();
+}
+
+#pragma mark - LensOverlayTabChangeAudience
+
+- (void)backgroundTabWillBecomeActive {
+  [self prepareLensUIForBackgroundTabChange];
 }
 
 #pragma mark - LensOverlayResultConsumer
@@ -1040,7 +1046,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
       HandlerForProtocol(browser->GetCommandDispatcher(), SnackbarCommands);
   _resultMediator.errorHandler = _networkIssuePresenter;
   _resultMediator.delegate = _mediator;
-  _resultMediator.tabChangeResponder = self;
+  _resultMediator.tabChangeAudience = self;
   _mediator.resultConsumer = _resultMediator;
 
   _resultViewController = [[LensResultPageViewController alloc] init];
@@ -1335,6 +1341,9 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   if (_associatedTabHelper) {
     _associatedTabHelper->ClearViewportSnapshot();
   }
+
+  CGFloat guidanceRestHeight = _resultsPagePresenter.presentedResultsPageHeight;
+  [_selectionViewController setGuidanceRestHeight:guidanceRestHeight];
 }
 
 @end

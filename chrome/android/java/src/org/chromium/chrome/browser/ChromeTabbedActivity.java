@@ -3129,13 +3129,22 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
                 tracker.notifyEvent(EventConstants.APP_MENU_NEW_INCOGNITO_TAB_CLICKED);
             }
-        } else if (id == R.id.add_to_group_menu_id) {
+        } else if (id == R.id.add_to_group_menu_id
+                || id == R.id.add_tab_to_group_menu_id
+                || id == R.id.add_tab_to_new_group_menu_id) {
             if (!mTabModelSelector.isTabStateInitialized()) return false;
 
             TabGroupModelFilter filter =
                     mTabModelSelector
                             .getTabGroupModelFilterProvider()
                             .getCurrentTabGroupModelFilter();
+            if (id == R.id.add_to_group_menu_id) {
+                if (filter.getTabGroupCount() == 0) {
+                    RecordUserAction.record("MobileMenuAddToNewGroup");
+                } else {
+                    RecordUserAction.record("MobileMenuAddToGroup");
+                }
+            }
 
             new TabGroupMenuActionHandler(
                             this,

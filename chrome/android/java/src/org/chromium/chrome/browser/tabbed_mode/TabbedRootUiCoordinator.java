@@ -1320,6 +1320,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 EdgeToEdgeControllerFactory.createBottomChin(
                         mActivity.findViewById(R.id.edge_to_edge_bottom_chin),
                         mWindowAndroid.getKeyboardDelegate(),
+                        mInsetObserver,
                         mLayoutManager,
                         mLayoutManager::requestUpdate,
                         mEdgeToEdgeControllerSupplier.get(),

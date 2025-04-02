@@ -31,9 +31,15 @@ struct ClickAction {
   ToolTarget target;
 };
 
-// Union of tool-specific action.
+// Information specific to a mouse move action.
+struct MouseMoveAction {
+  ToolTarget target;
+};
+
+// Union of tool-specific actions.
 union ToolAction {
   ClickAction click;
+  MouseMoveAction mouse_move;
 };
 
 // All information required to invoke a tool in the renderer.

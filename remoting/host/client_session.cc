@@ -729,8 +729,16 @@ void ClientSession::OnConnectionChannelsConnected() {
   connection_->client_stub()->SetCapabilities(capabilities);
 
   // Start the event executor.
-  input_injector_->Start(CreateClipboardProxy());
-  SetDisableInputs(false);
+  // TODO: crbug.com/406740794 - Decouple clipboard and input controls.
+  // Clipboard synchronization and remote input are controlled via two separate
+  // policies. Currently the code has them intertwined together and it is hard
+  // to disable one without disabling the other. These should be separated.
+  if (effective_policies_.allow_remote_input.value_or(true)) {
+    input_injector_->Start(CreateClipboardProxy());
+    SetDisableInputs(false);
+  } else {
+    SetDisableInputs(true);
+  }
 
   // Create MouseShapePump to send mouse cursor shape.
   mouse_shape_pump_ = std::make_unique<MouseShapePump>(

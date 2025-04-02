@@ -84,7 +84,7 @@ class TestInterestGroupPrivateAggregationManager
   // SendHistogramReport() receives asynchronously calls over the Mojo pipe
   // returned by BindNewReceiver().
   std::map<url::Origin,
-           InterestGroupAuctionReporter::PrivateAggregationRequests>
+           InterestGroupAuctionReporter::FinalizedPrivateAggregationRequests>
   TakePrivateAggregationRequests();
 
   std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>

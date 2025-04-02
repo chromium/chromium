@@ -36,6 +36,7 @@
 #include "chrome/browser/content_settings/javascript_optimizer_provider_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/notifications/notification_channels_provider_android.h"
+#include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/webapps/installable/installed_webapp_provider.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -59,6 +60,8 @@ HostContentSettingsMapFactory::HostContentSettingsMapFactory()
               .Build()) {
   DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
 #if BUILDFLAG(IS_ANDROID)
+  DependsOn(
+      safe_browsing::AdvancedProtectionStatusManagerFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
 #endif
   DependsOn(OneTimePermissionsTrackerFactory::GetInstance());
@@ -164,7 +167,7 @@ scoped_refptr<RefcountedKeyedService>
   settings_map->RegisterProvider(
       ProviderType::kJavascriptOptimizerAndroidProvider,
       std::make_unique<JavascriptOptimizerProviderAndroid>(
-          should_record_metrics));
+          profile, should_record_metrics));
 #endif  // defined (OS_ANDROID)
   auto one_time_permission_provider =
       std::make_unique<OneTimePermissionProvider>(

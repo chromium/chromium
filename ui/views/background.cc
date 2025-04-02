@@ -43,7 +43,7 @@ class SolidBackground : public Background {
   }
 
   void OnViewThemeChanged(View* view) override {
-    if (color().GetColorId()) {
+    if (color().IsSemantic()) {
       view->SchedulePaint();
     }
   }
@@ -84,7 +84,7 @@ class RoundedRectBackground : public Background {
   }
 
   void OnViewThemeChanged(View* view) override {
-    if (color().GetColorId()) {
+    if (color().IsSemantic()) {
       view->SchedulePaint();
     }
   }

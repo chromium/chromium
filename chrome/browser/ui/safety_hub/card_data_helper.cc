@@ -19,11 +19,11 @@
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safe_browsing_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
 #include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
 #include "chrome/browser/ui/webui/version/version_ui.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
@@ -130,13 +130,13 @@ base::Value::Dict GetSafeBrowsingCardData(Profile* profile) {
 SafetyHubCardState GetOverallState(Profile* profile) {
   // If there are any modules that need to be reviewed, the overall state is
   // "warning".
-  UnusedSitePermissionsService* usp_service =
-      UnusedSitePermissionsServiceFactory::GetForProfile(profile);
+  RevokedPermissionsService* rp_service =
+      RevokedPermissionsServiceFactory::GetForProfile(profile);
   std::optional<std::unique_ptr<SafetyHubService::Result>> opt_usp_result =
-      usp_service->GetCachedResult();
+      rp_service->GetCachedResult();
   if (opt_usp_result.has_value()) {
     auto* result =
-        static_cast<UnusedSitePermissionsService::UnusedSitePermissionsResult*>(
+        static_cast<RevokedPermissionsService::RevokedPermissionsResult*>(
             opt_usp_result.value().get());
     if (!result->GetRevokedOrigins().empty()) {
       return SafetyHubCardState::kWarning;

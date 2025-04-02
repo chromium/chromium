@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/skyvault/file_location_utils.h"
-#include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -112,15 +111,17 @@ base::FilePath GetMyFilesPath(Profile* profile) {
 }
 
 std::optional<base::Time> GetMigrationStartTime(Profile* profile) {
-  const LocalFilesMigrationManager* manager =
-      LocalFilesMigrationManagerFactory::GetInstance()->GetForBrowserContext(
-          profile);
-  if (!manager) {
-    LOG(ERROR) << "LocalFilesMigrationManager not available for profile. "
-                  "Migration/deletion start time cannot be determined.";
+  if (!base::FeatureList::IsEnabled(features::kSkyVaultV3)) {
     return std::nullopt;
   }
-  return manager->GetMigrationStartTime();
+  PrefService* pref_service = profile->GetPrefs();
+  base::Time scheduled_start_time =
+      pref_service->GetTime(prefs::kSkyVaultMigrationScheduledStartTime);
+  if (scheduled_start_time.is_null()) {
+    LOG(ERROR) << "Migration/deletion start time cannot be determined.";
+    return std::nullopt;
+  }
+  return scheduled_start_time;
 }
 
 }  // namespace policy::local_user_files

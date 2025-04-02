@@ -82,7 +82,7 @@ gfx::Size SolidSidedBorder::GetMinimumSize() const {
 }
 
 void SolidSidedBorder::OnViewThemeChanged(View* view) {
-  if (color().GetColorId()) {
+  if (color().IsSemantic()) {
     view->SchedulePaint();
   }
 }
@@ -143,7 +143,7 @@ gfx::Size RoundedRectBorder::GetMinimumSize() const {
 }
 
 void RoundedRectBorder::OnViewThemeChanged(View* view) {
-  if (color().GetColorId()) {
+  if (color().IsSemantic()) {
     view->SchedulePaint();
   }
 }

@@ -38,6 +38,7 @@
 <translation id="19085484004813472">هذه ميزة جديدة</translation>
 <translation id="2006524834898217237">عليك التأكّد من اتصال الجهاز بالإنترنت.</translation>
 <translation id="208586643495776849">يُرجى إعادة المحاولة</translation>
+<translation id="2111134541987263231">تفعيل <ph name="BEGIN_BOLD" />السماح بالإضافة في وضع التصفّح المتخفي<ph name="END_BOLD" /></translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{يوم واحد}zero{# يوم}two{يومان (#)}few{# أيام}many{# يومًا}other{# يوم}}</translation>
 <translation id="2148716181193084225">اليوم</translation>
 <translation id="2168039046890040389">صفحة  إلى أعلى</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">انقر على أهداف اللمس على شاشتك.</translation>
 <translation id="2295140143284145483">الاستطلاع</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> تيرابايت/ثانية</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{لا يمكن تحديد مكان الإضافة التي تتضمّن المعرّف: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}zero{لا يمكن تحديد مكان الإضافات التي تتضمّن المعرّفات: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}two{لا يمكن تحديد مكان الإضافتَين اللتَين تتضمّنَان المعرّفَين: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}few{لا يمكن تحديد مكان الإضافات التي تتضمّن المعرّفات: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}many{لا يمكن تحديد مكان الإضافات التي تتضمّن المعرّفات: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}other{لا يمكن تحديد مكان الإضافات التي تتضمّن المعرّفات: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}}</translation>
 <translation id="2353636109065292463">التحقُّق من اتصال الإنترنت</translation>
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="2388990488038464401">هل تريد الاتصال بهذا الرقم من هاتفك؟</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">حذف الكل</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{خلال يوم واحد}zero{خلال # يوم}two{خلال يومين (#)}few{خلال # أيام}many{خلال # يومًا}other{خلال # يوم}}</translation>
 <translation id="2922712708897119705">العمود <ph name="COLUMN_NAME" /> مرتَّب تنازليًا.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{يتعذّر العثور على الإضافة}zero{يتعذّر العثور على الإضافات}two{يتعذّر العثور على الإضافتَين}few{يتعذّر العثور على الإضافات}many{يتعذّر العثور على الإضافات}other{يتعذّر العثور على الإضافات}}</translation>
 <translation id="3036649622769666520">فتح الملفات</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> ميغابايت</translation>
 <translation id="3087734570205094154">أسفل</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">إجراء اتصال باستخدام</translation>
 <translation id="3306688585798492231">عرض مُضمَّن</translation>
 <translation id="335581015389089642">الحديث</translation>
+<translation id="3372635229069101468">النقر على <ph name="BEGIN_BOLD" />التفاصيل<ph name="END_BOLD" /></translation>
 <translation id="3389286852084373014">النص كبير جدًا</translation>
 <translation id="3406306243914553062">‏محتوى HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{يتبقى يوم واحد}zero{يتبقى عدد # من الأيام}two{يتبقى يومان (#)}few{يتبقى # أيام}many{يتبقى # يومًا}other{يتبقى # من الأيام}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">العمود <ph name="COLUMN_NAME" /> مرتَّب تصاعديًا.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{إشعار واحد غير مقروء}zero{ما مِن إشعارات غير مقروءة}two{إشعاران غير مقروءين}few{# إشعارات غير مقروءة}many{# إشعارًا غير مقروء}other{# إشعار غير مقروء}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{يجب تفعيل الإضافة التالية في وضع التصفّح المتخفي:}zero{يجب تفعيل الإضافات التالية في وضع التصفّح المتخفي:}two{يجب تفعيل الإضافتَين التاليتَين في وضع التصفّح المتخفي:}few{يجب تفعيل الإضافات التالية في وضع التصفّح المتخفي:}many{يجب تفعيل الإضافات التالية في وضع التصفّح المتخفي:}other{يجب تفعيل الإضافات التالية في وضع التصفّح المتخفي:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{قبل شهر واحد}zero{قبل # شهر}two{قبل شهرين (#)}few{قبل # أشهر}many{قبل # شهرًا}other{قبل # شهر}}</translation>
 <translation id="4289300219472526559">بدء التحدث</translation>
 <translation id="4289540628985791613">نظرة عامة</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">الرقم</translation>
 <translation id="4746179598275229723">تمت إزالة تثبيت الإضافة.</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{يتبقى شهر واحد}zero{يتبقى # شهر}two{يتبقى شهرين (#)}few{يتبقى # أشهر}many{يتبقى # شهرًا}other{يتبقى # شهر}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{يجب تفعيل إضافة واحدة في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}zero{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}two{يجب تفعيل إضافتَين في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}few{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}many{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}other{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}}</translation>
+<translation id="482932175346970750">‏كتابة <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> في المتصفِّح</translation>
 <translation id="4888938634149558681">إجراء مكالمة</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />، <ph name="TYPE_2" />، <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{ثانية واحدة}zero{# من الثواني}two{ثانيتان (#)}few{# ثوانٍ}many{# ثانية}other{# من الثواني}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">ل&amp;صق</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> بيتابايت</translation>
 <translation id="5278860589123563674">تعذّر الإرسال</translation>
+<translation id="5283101102242354279">لتفعيل إضافة في وضع التصفّح المتخفي، يُرجى اتّباع الخطوات الآتية:</translation>
 <translation id="528468243742722775">‏مفتاح End</translation>
 <translation id="5329858601952122676">&amp;حذف</translation>
 <translation id="5361107212971249203">النص</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">ستدخل إعدادات عرض التطبيق حيز التنفيذ عند إعادة تشغيله.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{يتبقى دقيقة واحدة}zero{يتبقى # من الدقائق}two{يتبقى دقيقتان (#)}few{يتبقى # دقائق}many{يتبقى # دقيقة}other{يتبقى # من الدقائق}}</translation>
+<translation id="7252604552361840748">البحث عن الإضافات الموضَّحة أعلاه</translation>
 <translation id="7363164521834647158">إرسال رد</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{قبل دقيقة واحدة}zero{قبل # من الدقاق}two{قبل دقيقتين (#)}few{قبل # دقائق}many{قبل # دقيقة}other{قبل # من الدقائق}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>

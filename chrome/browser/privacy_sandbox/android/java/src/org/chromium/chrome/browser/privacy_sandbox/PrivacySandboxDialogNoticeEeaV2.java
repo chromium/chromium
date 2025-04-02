@@ -90,14 +90,6 @@ public class PrivacySandboxDialogNoticeEeaV2 extends ChromeDialog
 
         ButtonCompat ackButton = mContentView.findViewById(R.id.ack_button);
         ackButton.setOnClickListener(mOnClickListener);
-        ButtonCompat ackButtonEqualized = mContentView.findViewById(R.id.ack_button_equalized);
-        ackButtonEqualized.setOnClickListener(mOnClickListener);
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.PRIVACY_SANDBOX_EQUALIZED_PROMPT_BUTTONS)) {
-            ackButton.setVisibility(View.GONE);
-        } else {
-            ackButtonEqualized.setVisibility(View.GONE);
-        }
         ButtonCompat settingsButton = mContentView.findViewById(R.id.settings_button);
         settingsButton.setOnClickListener(mOnClickListener);
 
@@ -280,7 +272,7 @@ public class PrivacySandboxDialogNoticeEeaV2 extends ChromeDialog
 
     public void processClickImpl(View view) {
         int id = view.getId();
-        if (id == R.id.ack_button || id == R.id.ack_button_equalized) {
+        if (id == R.id.ack_button) {
             handleAckButtonClick();
         } else if (id == R.id.settings_button) {
             handleSettingsButtonClick();

@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/views/page_action/page_action_properties.h"
 #include "components/tab_collections/public/tab_interface.h"
 #include "ui/actions/action_id.h"
 
@@ -46,6 +47,7 @@ struct SuggestionChipConfig {
 class PageActionController : public PinnedToolbarActionsModel::Observer {
  public:
   explicit PageActionController(
+      const PageActionControllerPropertiesMap& controller_properties,
       PinnedToolbarActionsModel* pinned_actions_model,
       PageActionModelFactory* page_action_model_factory = nullptr);
   PageActionController(const PageActionController&) = delete;
@@ -134,6 +136,8 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
 
   std::unique_ptr<PageActionModelInterface> CreateModel(
       actions::ActionId action_id);
+
+  const raw_ref<const PageActionControllerPropertiesMap> controller_properties_;
 
   const raw_ptr<PageActionModelFactory> page_action_model_factory_ = nullptr;
 

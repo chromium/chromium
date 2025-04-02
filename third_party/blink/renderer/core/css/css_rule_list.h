@@ -33,7 +33,7 @@ namespace blink {
 class CSSRule;
 class CSSStyleSheet;
 
-using RuleIndexList = HeapVector<std::pair<Member<CSSRule>, int>>;
+using RuleIndexList = GCedHeapVector<std::pair<Member<CSSRule>, int>>;
 
 class CSSRuleList : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();

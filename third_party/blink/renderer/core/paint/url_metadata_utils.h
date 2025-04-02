@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_URL_METADATA_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_URL_METADATA_UTILS_H_
 
-#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 
 namespace blink {
 

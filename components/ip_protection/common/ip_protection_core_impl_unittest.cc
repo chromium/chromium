@@ -47,6 +47,8 @@ constexpr char kEmptyTokenCacheHistogram[] =
     "NetworkService.IpProtection.EmptyTokenCache2";
 constexpr char kMdlMatchesTimeHistogram[] =
     "NetworkService.MaskedDomainList.MatchesTime";
+constexpr char kQuicProxiesFailedHistogram[] =
+    "NetworkService.IpProtection.QuicProxiesFailed";
 
 constexpr char kMountainViewGeoId[] = "US,US-CA,MOUNTAIN VIEW";
 constexpr char kSunnyvaleGeoId[] = "US,US-CA,SUNNYVALE";
@@ -157,19 +159,19 @@ class FakePRTManager : public IpProtectionProbabilisticRevealTokenManager {
                                                     std::nullopt) {}
   ~FakePRTManager() override = default;
   bool IsTokenAvailable() override { NOTREACHED(); }
-  std::optional<ProbabilisticRevealToken> GetToken(
+  std::optional<std::string> GetToken(
       const std::string& top_level,
       const std::string& third_party) override {
     return response_;
   }
-  void SetMockResponse(ProbabilisticRevealToken mock_response) {
+  void SetMockResponse(std::optional<std::string> mock_response) {
     mock_response_ = mock_response;
   }
   // If SetMockResponse() is called and GetTokens() returns nullopt, this
   // indicates manager did not call RequestTokens().
   void RequestTokens() override { response_ = mock_response_; }
-  std::optional<ProbabilisticRevealToken> response_ = std::nullopt;
-  std::optional<ProbabilisticRevealToken> mock_response_ = std::nullopt;
+  std::optional<std::string> response_ = std::nullopt;
+  std::optional<std::string> mock_response_ = std::nullopt;
 };
 
 class IpProtectionCoreImplTest : public testing::Test {
@@ -528,10 +530,18 @@ TEST_F(IpProtectionCoreImplTest, GetProxyListFromManagerWithQuic) {
               net::ProxyServer::SCHEME_HTTPS, "b-proxy2", std::nullopt),
       })};
   ASSERT_TRUE(ip_protection_core->IsProxyListAvailable());
+
+  // Call GetProxyChainList three times to test counting requests before
+  // failure.
+  EXPECT_EQ(ip_protection_core->GetProxyChainList(),
+            proxy_chain_list_with_quic);
+  EXPECT_EQ(ip_protection_core->GetProxyChainList(),
+            proxy_chain_list_with_quic);
   EXPECT_EQ(ip_protection_core->GetProxyChainList(),
             proxy_chain_list_with_quic);
 
   ip_protection_core->QuicProxiesFailed();
+  histogram_tester_.ExpectBucketCount(kQuicProxiesFailedHistogram, 3, 1);
 
   EXPECT_EQ(ip_protection_core->GetProxyChainList(),
             proxy_chain_list_without_quic);
@@ -799,7 +809,7 @@ TEST_F(IpProtectionCoreImplTest, IncognitoCoreCallsPRTRequest) {
       net::features::kEnableIpProtectionProxy);
   auto ipp_prt_manager =
       std::make_unique<FakePRTManager>(std::make_unique<FakePRTFetcher>());
-  ProbabilisticRevealToken expected_token{};
+  std::string expected_token = "expected_token";
   ipp_prt_manager->SetMockResponse(expected_token);
 
   auto core = std::make_unique<IpProtectionCoreImpl>(
@@ -820,7 +830,7 @@ TEST_F(IpProtectionCoreImplTest, RegularCoreDoesNotCallPRTRequest) {
       net::features::kEnableIpProtectionProxy);
   auto ipp_prt_manager =
       std::make_unique<FakePRTManager>(std::make_unique<FakePRTFetcher>());
-  ProbabilisticRevealToken expected_token{};
+  std::string expected_token = "expected_token";
   ipp_prt_manager->SetMockResponse(expected_token);
 
   auto core = std::make_unique<IpProtectionCoreImpl>(

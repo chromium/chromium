@@ -288,6 +288,7 @@
 <translation id="2164946989711475905">登入…</translation>
 <translation id="2175927920773552910">QR code</translation>
 <translation id="218350106843433823">自動填入密碼和密碼金鑰</translation>
+<translation id="2184272387334793084">登入帳戶即可在任何裝置上存取自己的密碼及其他設定</translation>
 <translation id="2186206192313702726">Google 智慧鏡頭</translation>
 <translation id="219283042927675668">群組中的分頁</translation>
 <translation id="2194856509914051091">注意事項</translation>
@@ -440,6 +441,7 @@
 <translation id="2783161812871838616">切換為電腦版網站</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{密碼已儲存到 Google 帳戶 ({EMAIL})}other{密碼已儲存到 Google 帳戶 ({EMAIL})}}</translation>
 <translation id="2791174088547598693">新增密碼…</translation>
+<translation id="2793703503584038325">選取密碼並輕觸「分享」圖示</translation>
 <translation id="2797302972324086597">國家/地區代碼</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} 個檔案}other{{COUNT} 個檔案}}</translation>
 <translation id="2816489851009559785">「選單」→「設定」→「預設瀏覽器」</translation>
@@ -579,6 +581,7 @@
 <translation id="35083190962747987">開啟 ${url}</translation>
 <translation id="3511519535430890904">新增安全瀏覽保護功能</translation>
 <translation id="3517216995152707259">刪除瀏覽資料並不會登出 Google 帳戶。必須<ph name="BEGIN_LINK" />登出 Chrome<ph name="END_LINK" />，才能登出帳戶。</translation>
+<translation id="3519792890877853853">這張資訊卡會針對已開啟分頁中的產品顯示評論</translation>
 <translation id="3519905498307021260">{count,plural, =1{開啟分頁}other{開啟 {count} 個分頁}}</translation>
 <translation id="3523513363815970085">隱藏「常用網站」</translation>
 <translation id="3523789730715594198">你隨時可以透過「設定」停止同步作業。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
@@ -819,6 +822,7 @@
 <translation id="4565377596337484307">隱藏密碼</translation>
 <translation id="4568230126482344545">隱藏「最近開啟的分頁」</translation>
 <translation id="4578835633387306383">開啟…</translation>
+<translation id="4580716718466706433">前往「密碼管理工具」</translation>
 <translation id="4587589328781138893">網站</translation>
 <translation id="4592672037257622855">{count,plural, =1{已將網頁加入閱讀清單}other{已將 {count} 個網頁加入閱讀清單}}</translation>
 <translation id="459644946100970322">要開啟價格通知嗎？</translation>
@@ -858,6 +862,7 @@
 <translation id="4717844083556844785">目前網頁處於無痕模式</translation>
 <translation id="4719927025381752090">提供翻譯</translation>
 <translation id="4720530280568305198">你選取的項目已在新分頁中開啟</translation>
+<translation id="472259426228234149">價格 $100 - $180 美元</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="474209246745757965">使用相機購物及翻譯</translation>
 <translation id="4742407542027196863">管理密碼…</translation>
@@ -1606,6 +1611,7 @@
 <translation id="7841180087127694526">搜尋複製的文字</translation>
 <translation id="7841418003178675048">選擇新分頁要顯示的資訊卡。</translation>
 <translation id="7846161022626028328">發生錯誤，請再試一次。</translation>
+<translation id="784623644169604270">最近沒有活動</translation>
 <translation id="7846296061357476882">Google 服務</translation>
 <translation id="784934925303690534">時間範圍</translation>
 <translation id="7851858861565204677">其他裝置</translation>

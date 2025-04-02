@@ -39,17 +39,19 @@ class SelectBnplIssuerDialogInteractiveUiTest : public InteractiveBrowserTest {
 
   InteractiveBrowserTestApi::MultiStep InvokeUiAndWaitForShow(
       std::vector<BnplIssuerContext> issuer_contexts) {
-    controller_ = std::make_unique<SelectBnplIssuerDialogControllerImpl>(
-        issuer_contexts, "en-US", accept_callback_.Get(),
-        cancel_callback_.Get());
+    controller_ = std::make_unique<SelectBnplIssuerDialogControllerImpl>();
     return Steps(
         ObserveState(
             views::test::kCurrentFocusedViewId,
             BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()),
-        Do([this]() {
-          controller_->ShowDialog(base::BindOnce(
-              &CreateAndShowBnplIssuerSelectionDialog,
-              controller_->GetWeakPtr(), base::Unretained(web_contents())));
+        Do([this, issuer_contexts]() {
+          controller_->ShowDialog(
+              base::BindOnce(&CreateAndShowBnplIssuerSelectionDialog,
+                             controller_->GetWeakPtr(),
+                             base::Unretained(web_contents())),
+              std::move(issuer_contexts),
+              /*app_locale=*/"en-US", accept_callback_.Get(),
+              cancel_callback_.Get());
         }),
         InAnyContext(WaitForShow(views::DialogClientView::kTopViewId)));
   }
@@ -67,7 +69,7 @@ class SelectBnplIssuerDialogInteractiveUiTest : public InteractiveBrowserTest {
 
   std::unique_ptr<SelectBnplIssuerDialogControllerImpl> controller_;
 
-  base::MockOnceCallback<void(const std::string&)> accept_callback_;
+  base::MockOnceCallback<void(BnplIssuer)> accept_callback_;
   base::MockOnceClosure cancel_callback_;
 };
 

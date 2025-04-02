@@ -26,6 +26,10 @@
 
 namespace blink {
 
+BASE_FEATURE(kIdbDecompressValuesInPlace,
+             "IdbDecompressValuesInPlace",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 // V8 values are stored on disk by IndexedDB using the format implemented in
@@ -82,13 +86,14 @@ bool ShouldTransmitCompressed(size_t uncompressed_length,
     return false;
   }
 
-  // Don't keep compressed if decompressed size is large. Snappy doesn't have
-  // native support for streamed decoding, so decompressing requires
-  // O(uncompressed_length) memory more than handling an uncompressed value
-  // would.
-  // TODO(estade): implement framing as described in
-  // https://github.com/google/snappy/blob/main/framing_format.txt
-  if (compressed_length > 256000U) {
+  // Don't keep compressed if decompressed size is large, unless `kIdbDecompressValuesInPlace`
+  // is enabled. Snappy doesn't have native support for streamed decoding, so decompressing
+  // requires O(uncompressed_length) memory more than handling an uncompressed value would.
+  // TODO(crbug.com/377441266): remove this condition. The value stored in
+  // `IDBValue::data_` is copied when being deserialized, regardless of whether
+  // it's compressed. Thus disabling compression for large values was misguided.
+  if (compressed_length > 256000U &&
+      !base::FeatureList::IsEnabled(kIdbDecompressValuesInPlace)) {
     return false;
   }
 
@@ -308,8 +313,10 @@ void IDBValueUnwrapper::Unwrap(Vector<char>&& wrapper_blob_content,
 }
 
 // static
-bool IDBValueUnwrapper::Decompress(const Vector<char>& buffer,
-                                   Vector<char>* out_buffer) {
+bool IDBValueUnwrapper::Decompress(
+    const Vector<char>& buffer,
+    Vector<char>* out_buffer,
+    SerializedScriptValue::DataBufferPtr* out_buffer_in_place) {
   if (buffer.size() < kHeaderSize) {
     return false;
   }
@@ -324,17 +331,30 @@ bool IDBValueUnwrapper::Decompress(const Vector<char>& buffer,
   base::span<const char> compressed(
       base::as_chars(data_span.subspan(kHeaderSize)));
 
-  Vector<char> decompressed_data;
   size_t decompressed_length;
   if (!snappy::GetUncompressedLength(compressed.data(), compressed.size(),
                                      &decompressed_length)) {
     return false;
   }
 
-  decompressed_data.resize(static_cast<wtf_size_t>(decompressed_length));
-  snappy::RawUncompress(compressed.data(), compressed.size(),
-                        decompressed_data.data());
-  *out_buffer = std::move(decompressed_data);
+  if (out_buffer) {
+    Vector<char> decompressed_data;
+    decompressed_data.resize(static_cast<wtf_size_t>(decompressed_length));
+    if (!snappy::RawUncompress(compressed.data(), compressed.size(),
+                               decompressed_data.data())) {
+      return false;
+    }
+    *out_buffer = std::move(decompressed_data);
+  } else {
+    SerializedScriptValue::DataBufferPtr decompressed_data =
+        SerializedScriptValue::AllocateBuffer(decompressed_length);
+    if (!snappy::RawUncompress(
+            compressed.data(), compressed.size(),
+            reinterpret_cast<char*>(decompressed_data.data()))) {
+      return false;
+    }
+    *out_buffer_in_place = std::move(decompressed_data);
+  }
   return true;
 }
 

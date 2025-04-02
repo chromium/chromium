@@ -1348,6 +1348,7 @@ policies:
   1347: UserSecuritySignalsReporting
   1348: UserSecurityAuthenticatedReporting
   1349: HappyEyeballsV3Enabled
+  1350: FaceGazeEnabled
 
 atomic_groups:
   1: Homepage

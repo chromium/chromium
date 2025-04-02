@@ -65,15 +65,11 @@ base::FilePath ExtensionResource::GetFilePath(
   // If we are allowing the file to be a symlink outside of the root, then the
   // path before resolving the symlink must still be within it.
   if (symlink_policy == FOLLOW_SYMLINKS_ANYWHERE) {
-    std::vector<base::FilePath::StringType> components =
-        relative_path.GetComponents();
     int depth = 0;
-
-    for (std::vector<base::FilePath::StringType>::const_iterator
-         i = components.begin(); i != components.end(); i++) {
-      if (*i == base::FilePath::kParentDirectory) {
+    for (const auto& component : relative_path.GetComponents()) {
+      if (component == base::FilePath::kParentDirectory) {
         depth--;
-      } else if (*i != base::FilePath::kCurrentDirectory) {
+      } else if (component != base::FilePath::kCurrentDirectory) {
         depth++;
       }
       if (depth < 0) {
@@ -84,16 +80,26 @@ base::FilePath ExtensionResource::GetFilePath(
 
   // We must resolve the absolute path of the combined path when
   // the relative path contains references to a parent folder (i.e., '..').
-  // We also check if the path exists because the posix version of
-  // MakeAbsoluteFilePath will fail if the path doesn't exist, and we want the
-  // same behavior on Windows... So until the posix and Windows version of
-  // MakeAbsoluteFilePath are unified, we need an extra call to PathExists,
-  // unfortunately.
-  // TODO(mad): Fix this once MakeAbsoluteFilePath is unified.
-  full_path = base::MakeAbsoluteFilePath(full_path);
-  if (!base::PathExists(full_path) ||
-      (symlink_policy != FOLLOW_SYMLINKS_ANYWHERE &&
-       !clean_extension_root.IsParent(full_path))) {
+  // NormalizeFilePath will fail if the path doesn't exist.
+  if (base::FilePath full_path_normalized;
+      base::NormalizeFilePath(full_path, &full_path_normalized)) {
+    full_path = std::move(full_path_normalized);
+  } else {
+#if BUILDFLAG(IS_WIN)
+    // On Windows, if `NormalizeFilePath` fails, fall back to
+    // `MakeAbsoluteFilePath` and proceed if the file exists. This can happen
+    // if, for example, the file isn't accessible due to permissions.
+    full_path = base::MakeAbsoluteFilePath(full_path);
+    if (full_path.empty() || !base::PathExists(full_path)) {
+      return base::FilePath();
+    }
+#else
+    return base::FilePath();
+#endif
+  }
+
+  if (symlink_policy != FOLLOW_SYMLINKS_ANYWHERE &&
+      !clean_extension_root.IsParent(full_path)) {
     return base::FilePath();
   }
 

@@ -99,16 +99,12 @@
 #pragma mark - Private
 
 - (bool)selectedIdentityIsValid {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
-    if (self.selectedIdentity) {
-      GaiaId gaia(self.selectedIdentity.gaiaID);
-      return base::Contains(_identityManager->GetAccountsOnDevice(), gaia,
-                            [](const AccountInfo& info) { return info.gaia; });
-    }
-    return false;
-  } else {
-    return _accountManagerService->IsValidIdentity(self.selectedIdentity);
+  if (self.selectedIdentity) {
+    GaiaId gaia(self.selectedIdentity.gaiaID);
+    return base::Contains(_identityManager->GetAccountsOnDevice(), gaia,
+                          [](const AccountInfo& info) { return info.gaia; });
   }
+  return false;
 }
 
 // Creates the identity section with its header item, and all the identity items
@@ -169,22 +165,6 @@
 
 #pragma mark - ChromeAccountManagerServiceObserver
 
-- (void)identityListChanged {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
-    // Listening to `onAccountsOnDeviceChanged` instead.
-    return;
-  }
-  [self handleIdentityListChanged];
-}
-
-- (void)identityUpdated:(id<SystemIdentity>)identity {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
-    // Listening to `onExtendedAccountInfoUpdated` instead.
-    return;
-  }
-  [self handleIdentityUpdated:identity];
-}
-
 - (void)onChromeAccountManagerServiceShutdown:
     (ChromeAccountManagerService*)accountManagerService {
   // TODO(crbug.com/40284086): Remove `[self disconnect]`.
@@ -194,20 +174,12 @@
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  if (!IsUseAccountListFromIdentityManagerEnabled()) {
-    // Listening to `identityUpdated` instead.
-    return;
-  }
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
   [self handleIdentityUpdated:identity];
 }
 
 - (void)onAccountsOnDeviceChanged {
-  if (!IsUseAccountListFromIdentityManagerEnabled()) {
-    // Listening to `identityListChanged` instead.
-    return;
-  }
   [self handleIdentityListChanged];
 }
 

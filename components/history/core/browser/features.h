@@ -5,10 +5,13 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_FEATURES_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_FEATURES_H_
 
+#include <limits.h>
+
 #include <string>
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 
 namespace history {
 
@@ -38,20 +41,28 @@ inline constexpr char kMvtScoringParamRecencyFactor_DecayStaircase[] =
 inline constexpr base::FeatureParam<std::string> kMvtScoringParamRecencyFactor(
     &kMostVisitedTilesNewScoring,
     "recency_factor",
+#if BUILDFLAG(IS_ANDROID)
+    kMvtScoringParamRecencyFactor_DecayStaircase);
+#else
     kMvtScoringParamRecencyFactor_Classic);
+#endif  // BUILDFLAG(IS_ANDROID)
 
-// The per-day decay factor for each visit, used  by "decay" only.
+// The per-day decay factor for each visit, used by "decay" only.
 inline constexpr base::FeatureParam<double> kMvtScoringParamDecayPerDay(
     &kMostVisitedTilesNewScoring,
     "decay_per_day",
     1.0);
 
-// The cap to daily visit count for each segment, used  by {"decay",
+// The cap to daily visit count for each segment, used by {"decay",
 // "decay_staircase"}.
 inline constexpr base::FeatureParam<int> kMvtScoringParamDailyVisitCountCap(
     &kMostVisitedTilesNewScoring,
     "daily_visit_count_cap",
+#if BUILDFLAG(IS_ANDROID)
+    10);
+#else
     INT_MAX);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace history
 

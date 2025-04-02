@@ -92,7 +92,7 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
   Transaction* CreateVersionChangeTransaction(
       int64_t id,
       const std::set<int64_t>& scope,
-      BackingStore::Transaction* backing_store_transaction);
+      std::unique_ptr<BackingStore::Transaction> backing_store_transaction);
 
   // Checks if the client is in inactive state and disallow it from activation
   // if so. This is called when the client is not supposed to be inactive,

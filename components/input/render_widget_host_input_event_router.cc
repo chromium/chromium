@@ -376,7 +376,7 @@ void RenderWidgetHostInputEventRouter::OnRenderWidgetHostViewInputDestroyed(
   // If the target that's being destroyed is in the gesture target map, we
   // replace it with nullptr so that we maintain the 1:1 correspondence between
   // map entries and the touch sequences that underly them.
-  for (auto it : touchscreen_gesture_target_map_) {
+  for (auto& it : touchscreen_gesture_target_map_) {
     if (it.second.get() == view)
       it.second = nullptr;
   }

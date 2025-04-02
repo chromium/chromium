@@ -44,6 +44,7 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/elements_upload_data_stream.h"
+#include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
@@ -740,7 +741,8 @@ URLLoader::URLLoader(
       include_load_timing_internal_info_with_response_(
           request.trusted_params.has_value()),
       provide_data_use_updates_(context.DataUseUpdatesEnabled()),
-      partial_decoder_decoding_buffer_size_(net::kMaxBytesToSniff) {
+      partial_decoder_decoding_buffer_size_(net::kMaxBytesToSniff),
+      permissions_policy_(request.permissions_policy) {
   DCHECK(delete_callback_);
 
   // crbug.com/387537990: Experiment with creating the mojo data pipe
@@ -1899,6 +1901,8 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
   DCHECK_EQ(emitted_devtools_raw_request_, emitted_devtools_raw_response_);
   response->emitted_extra_info = emitted_devtools_raw_request_;
 
+  ad_auction_event_record_request_helper_.HandleResponse(*url_request_);
+
   ProcessInboundAttributionInterceptorOnReceivedRedirect(redirect_info,
                                                          std::move(response));
 }
@@ -2106,22 +2110,15 @@ void URLLoader::ProcessInboundSharedStorageInterceptorOnResponseStarted() {
 
 void URLLoader::ProcessInboundAttributionInterceptorOnResponseStarted() {
   if (!attribution_request_helper_) {
-    ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted();
+    ProcessInboundSharedStorageInterceptorOnResponseStarted();
     return;
   }
 
   attribution_request_helper_->Finalize(
       *response_,
       base::BindOnce(
-          &URLLoader::
-              ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted,
+          &URLLoader::ProcessInboundSharedStorageInterceptorOnResponseStarted,
           weak_ptr_factory_.GetWeakPtr()));
-}
-
-void URLLoader::
-    ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted() {
-  ad_auction_event_record_request_helper_.HandleResponse(*url_request_);
-  ProcessInboundSharedStorageInterceptorOnResponseStarted();
 }
 
 void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
@@ -2147,6 +2144,8 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
 
   response_ = BuildResponseHead();
   DispatchOnRawResponse();
+
+  ad_auction_event_record_request_helper_.HandleResponse(*url_request_);
 
   // Parse and remove the Trust Tokens response headers, if any are expected,
   // potentially failing the request if an error occurs.

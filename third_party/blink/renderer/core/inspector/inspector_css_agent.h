@@ -524,7 +524,8 @@ class CORE_EXPORT InspectorCSSAgent final
   void NotifyComputedStyleUpdatedForNode(int node_id);
   static String ResolvePercentagesValues(Element*,
                                          CSSPropertyName,
-                                         const CSSValue*);
+                                         const CSSValue* parsed_value,
+                                         const String& original_value);
 
   Member<InspectorDOMAgent> dom_agent_;
   Member<InspectedFrames> inspected_frames_;

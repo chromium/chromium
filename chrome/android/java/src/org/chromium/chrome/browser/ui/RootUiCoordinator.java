@@ -910,9 +910,7 @@ public class RootUiCoordinator
                 contextualSearchManager.addObserver(mReadAloudContextualSearchObserver);
             }
         }
-        if (BuildInfo.getInstance().isAutomotive
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOMOTIVE_FULLSCREEN_TOOLBAR_IMPROVEMENTS)) {
+        if (BuildInfo.getInstance().isAutomotive) {
             mAutomotiveBackButtonToolbarCoordinator =
                     new AutomotiveBackButtonToolbarCoordinator(
                             mActivity,

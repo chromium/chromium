@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">Tving aktivering af zoom</translation>
 <translation id="3905475044299942653">Sæt en stopper for mange notifikationer</translation>
 <translation id="3908288065506437185">Bloker tredjepartscookies i inkognitotilstand</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Nogle funktioner virker muligvis ikke. Relaterede websites kan stadig bruge tredjepartscookies.</translation>
 <translation id="3922092564198021702">Åbn Indstillinger på din telefon</translation>
 <translation id="3933121352599513978">Skjul uønskede anmodninger (anbefales)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">Info</translation>
 <translation id="4598549027014564149">Når du er i inkognitotilstand, kan websites ikke bruge dine cookies til at se din browseraktivitet på websites, heller ikke på relaterede websites. Din browseraktivitet bruges f.eks. ikke til at personligt tilpasse annoncer. Funktionerne på visse websites virker muligvis ikke.</translation>
 <translation id="461356340001513807">Tillader, at du logger ind på websites med den konto, du har hos en identitetstjeneste</translation>
-<translation id="4619615317237390068">Faner fra andre enheder</translation>
 <translation id="4635969503923889910">Tillad ikke, at websites anvender NFC-enheder</translation>
 <translation id="4644713492825682049">Slet og gendan</translation>
 <translation id="4645575059429386691">Administreret af en af dine forældre</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">Del via</translation>
 <translation id="5001526427543320409">Tredjepartscookies</translation>
 <translation id="5007392906805964215">Gennemgå</translation>
-<translation id="5014182796621173645">Du besøgte websitet <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Tillad</translation>
 <translation id="5048398596102334565">Tillad, at websites kan få adgang til bevægelsessensorer (anbefales)</translation>
 <translation id="5048841907079026162">Administrer dine browserdata</translation>
@@ -443,7 +440,6 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Beskyttet indhold</translation>
 <translation id="662080504995468778">Bliv her</translation>
-<translation id="6653342741369270081">Tryk på knappen Tilbage for at afslutte fuld skærm.</translation>
 <translation id="6683865262523156564">Dette website er i en gruppe, der kan se din aktivitet. Gruppen er defineret af <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Profilbilleder</translation>
 <translation id="6697925417670533197">Aktive downloads</translation>

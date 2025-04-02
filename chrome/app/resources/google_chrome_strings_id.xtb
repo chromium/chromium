@@ -57,6 +57,7 @@
 <translation id="1786044937610313874">Pintasan terbuka di Chrome</translation>
 <translation id="178701303897325119">Ekstensi ini tidak lagi didukung. Chrome merekomendasikan agar Anda menghapusnya.</translation>
 <translation id="1812689907177901597">Dengan menonaktifkan ini, Anda dapat login ke situs Google seperti Gmail tanpa harus login ke Chrome</translation>
+<translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome merekomendasikan untuk menjeda tab yang memperlambat browser Anda}other{Chrome merekomendasikan untuk menjeda tab yang memperlambat browser Anda}}</translation>
 <translation id="1838374766361614909">Hapus penelusuran</translation>
 <translation id="1860536484129686729">Chrome memerlukan izin akses ke kamera untuk situs ini</translation>
 <translation id="1873233029667955273">Google Chrome bukan browser default</translation>
@@ -254,6 +255,7 @@
 <translation id="4281844954008187215">Persyaratan Layanan</translation>
 <translation id="4293420128516039005">Login untuk menyinkronkan dan mempersonalisasi Chrome di perangkat Anda</translation>
 <translation id="430327780270213103">Izinkan ekstensi menampilkan permintaan akses di toolbar Chrome</translation>
+<translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome Merekomendasikan untuk Menjeda Tab yang Memperlambat Browser Anda}other{Chrome Merekomendasikan untuk Menjeda Tab yang Memperlambat Browser Anda}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Untuk mendapatkan personalisasi dan fitur lainnya, sertakan Chrome dalam Aktivitas Web &amp; Aplikasi serta layanan Google tertaut</translation>
 <translation id="4334294535648607276">Download selesai.</translation>

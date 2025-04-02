@@ -412,8 +412,8 @@ inline PhysicalOffset RelativeInsetToPhysical(
 inline LogicalOffset RelativeInsetToLogical(
     PhysicalOffset relative_inset,
     WritingDirectionMode writing_direction) {
-  return relative_inset.ConvertToLogical(writing_direction, PhysicalSize(),
-                                         PhysicalSize());
+  return WritingModeConverter(writing_direction, PhysicalSize())
+      .ToLogical(relative_inset, PhysicalSize());
 }
 
 }  // namespace blink

@@ -44,16 +44,16 @@ class MostVisitedSitesProvider : public AutocompleteProvider {
       const AutocompleteProviderClient* client,
       const AutocompleteInput& input);
 
+  // Returns the number of results to request from history.
   size_t GetRequestedResultSize(const AutocompleteInput& input) const;
+
+  // Returns list of cached sites.
+  history::MostVisitedURLList GetCachedSitesForTesting() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest, NoSRPCoverage);
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest,
                            DesktopProviderDoesNotAllowChromeSites);
-  FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest,
-                           PrefetchingUpdatesCachedSites);
-  FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest,
-                           StartDoesNotUpdateMatchesWhenPrefetchEnabled);
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest, BlocklistedURLs);
 
   ~MostVisitedSitesProvider() override;

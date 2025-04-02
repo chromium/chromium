@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">Person, die in Zeichensprache „danke“ sagt</translation>
 <translation id="2088690981887365033">VPN-Netzwerk</translation>
 <translation id="209653272837065803">Es ist nicht genügend Speicherplatz vorhanden, um die Dateisynchronisierung fortzusetzen</translation>
-<translation id="2111134541987263231">Aktiviere die Option <ph name="BEGIN_BOLD" />Im Inkognitomodus zulassen<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> Elemente werden gelöscht und können nicht wiederhergestellt werden.</translation>
 <translation id="2122305276694332719">Wenn automatisch eine Verbindung zu einem verborgenen Netzwerk hergestellt wird, können andere dein Gerät sowie einige Netzwerkeinstellungen sehen. Dies wird nicht empfohlen.</translation>
 <translation id="2125607626296734455">Khmer</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881">"<ph name="VOLUME_NAME" />" wurde ausgeworfen.</translation>
 <translation id="2307462900900812319">Netzwerk konfigurieren</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Es konnte keine Erweiterung mit der ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> gefunden werden. Wende dich an deinen Administrator.}other{Es konnten keine Erweiterungen mit den IDs <ph name="BEGIN_LIST" /><ph name="END_LIST" /> gefunden werden. Wende dich an deinen Administrator.}}</translation>
 <translation id="2325650632570794183">Dieser Dateityp wird nicht unterstützt. Finde im Chrome Web Store eine App, mit der du diesen Dateityp öffnen kannst.</translation>
 <translation id="2326539130272988168">Bulgarisch</translation>
 <translation id="233822363739146957">Es ist nicht genügend Speicherplatz vorhanden, um alle deine Dateien zu synchronisieren</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estnisch</translation>
 <translation id="2938685643439809023">Mongolisch</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Erweiterung kann nicht gefunden werden}other{Erweiterungen können nicht gefunden werden}}</translation>
 <translation id="2943503720238418293">Verwende einen kürzeren Namen</translation>
 <translation id="2949781154072577687">"<ph name="DRIVE_NAME" />" wird formatiert...</translation>
 <translation id="2951236788251446349">Qualle</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">Fertig</translation>
 <translation id="3358452157379365236">Gitarre</translation>
 <translation id="3368922792935385530">Verbunden</translation>
-<translation id="3372635229069101468">Klicke auf <ph name="BEGIN_BOLD" />Details<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">Nepalesisch mit InScript-Tastatur</translation>
 <translation id="338691029516748599">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von deinem Administrator verwaltet, Verbinden</translation>
 <translation id="3408072735282270043">Aktivieren, <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">Einhorn</translation>
 <translation id="4131235941541910880">Verschiebe nicht benötigte Elemente in den Papierkorb</translation>
 <translation id="4134804435730168042">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Nach Geräteeinrichtung aktivieren</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Aktiviere die folgende Erweiterung im Inkognitomodus:}other{Aktiviere die folgenden Erweiterungen im Inkognitomodus:}}</translation>
 <translation id="4153015322587141338">Klicke mit der rechten Maustaste auf eine Datei und wähle „<ph name="PIN_COMMAND" />“ aus, um schnell auf die Datei in der Ablage zugreifen zu können.</translation>
 <translation id="4157569377477607576">Gemäß der Administratorrichtlinie wird Folgendes nicht empfohlen:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> verschoben.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">Beide behalten</translation>
 <translation id="4804827417948292437">Avocado</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> Elemente werden wiederhergestellt…</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Für die Verwendung des Inkognitomodus ist in deiner Organisation eine Erweiterung erforderlich}other{Für die Verwendung des Inkognitomodus sind in deiner Organisation einige Erweiterungen erforderlich}}</translation>
 <translation id="4826849268470072925">Tamil (ITRANS)</translation>
-<translation id="482932175346970750">Gib <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> in deinen Browser ein</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">Anzeigen</translation>
 <translation id="485316830061041779">Deutsch</translation>
@@ -561,7 +554,6 @@
     deine Dateien mit anderen an einem zentralen Ort.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Wiederhergestellte Dateien von Google Drive</translation>
 <translation id="5278111733643988471">Wenn du dieses Element wiederherstellen möchtest, ziehe es in einen neuen Ordner außerhalb des Papierkorbs. Der ursprüngliche Ordner „<ph name="PARENT_FOLDER_NAME" />“ für dieses Element wurde gelöscht.</translation>
-<translation id="5283101102242354279">So aktivierst du eine Erweiterung im Inkognitomodus:</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5293615890992542006">Die Administratorrichtlinie blockiert das Verschieben dieser Datei</translation>
 <translation id="5305688511332277257">Keine installiert</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Details</translation>
 <translation id="7246947237293279874">FTP-Proxy</translation>
 <translation id="7248671827512403053">App</translation>
-<translation id="7252604552361840748">Suche nach der Erweiterung oben</translation>
 <translation id="7256405249507348194">Unbekannter Fehler: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Verfügbare Dienste</translation>
 <translation id="7291818353625820805">Du möchtest, dass die Tasteneingabe wiederholt wird? Deaktiviere die Akzentzeichen in den Tastatureinstellungen.</translation>

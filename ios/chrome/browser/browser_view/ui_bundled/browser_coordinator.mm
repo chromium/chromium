@@ -68,6 +68,7 @@
 #import "ios/chrome/browser/browser_view/ui_bundled/safe_area_provider.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/tab_events_mediator.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/tab_lifecycle_mediator.h"
+#import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter_coordinator.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
@@ -117,7 +118,6 @@
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
-#import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
@@ -129,6 +129,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator.h"
@@ -844,6 +845,7 @@ enum class ToolbarKind {
   _countryCodePickerCoordinator = nil;
 
   [self hideGoogleOne];
+  [self updateLensUIForBackground];
 
   [self dismissLensPromo];
   [self dismissEnhancedSafeBrowsingPromo];
@@ -858,6 +860,25 @@ enum class ToolbarKind {
 }
 
 #pragma mark - Private
+
+// The Lens UI takes the necessary steps before being backgrounded.
+- (void)updateLensUIForBackground {
+  web::WebState* activeWebState = self.activeWebState;
+  if (!activeWebState) {
+    return;
+  }
+
+  LensOverlayTabHelper* lensOverlayTabHelper =
+      LensOverlayTabHelper::FromWebState(activeWebState);
+  bool isLensOverlayAvailable =
+      IsLensOverlayAvailable(self.profile->GetPrefs()) && lensOverlayTabHelper;
+
+  if (isLensOverlayAvailable &&
+      lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive()) {
+    [HandlerForProtocol(_dispatcher, LensOverlayCommands)
+        prepareLensUIForBackgroundTabChange];
+  }
+}
 
 // Returns whether overscroll actions should be allowed. When screeen size is
 // not regular, they should be enabled.
@@ -3675,6 +3696,14 @@ enum class ToolbarKind {
       prepareToPresentModal:^{
         [weakNTPCoordinator presentLensIconBubble];
       }];
+}
+
+- (void)presentFeedSwipeFirstRunBubble {
+  if ([_NTPCoordinator isFeedVisible] &&
+      GetFeedSwipeIPHVariation() == FeedSwipeIPHVariation::kStaticAfterFRE) {
+    [HandlerForProtocol(_dispatcher, HelpCommands)
+        presentInProductHelpWithType:InProductHelpType::kFeedSwipe];
+  }
 }
 
 #pragma mark - WebNavigationNTPDelegate

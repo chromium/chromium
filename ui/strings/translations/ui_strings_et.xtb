@@ -38,6 +38,7 @@
 <translation id="19085484004813472">See on uus funktsioon</translation>
 <translation id="2006524834898217237">Veenduge, et seadmel oleks internetiühendus.</translation>
 <translation id="208586643495776849">Proovige uuesti</translation>
+<translation id="2111134541987263231">Lülitage sisse valik <ph name="BEGIN_BOLD" />Luba inkognito režiimis<ph name="END_BOLD" /></translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1p}other{#p}}</translation>
 <translation id="2148716181193084225">Täna</translation>
 <translation id="2168039046890040389">Lehekülje üles</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">Puudutage ekraanil puutesihtmärke.</translation>
 <translation id="2295140143284145483">Küsitlus</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Laiendust ID-ga <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ei ole võimalik leida. Võtke ühendust administraatoriga.}other{Laiendusi ID-ga <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ei ole võimalik leida. Võtke ühendust administraatoriga.}}</translation>
 <translation id="2353636109065292463">Interneti-ühenduse kontrollimine</translation>
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2388990488038464401">Kas soovite telefonist sellele numbrile helistada?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">Kustuta kõik</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 p pärast}other{# p pärast}}</translation>
 <translation id="2922712708897119705">Veerg <ph name="COLUMN_NAME" /> on sorditud kahanevas järjestuses.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Laiendust ei leita}other{Laiendusi ei leita}}</translation>
 <translation id="3036649622769666520">Failide avamine</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">Alaserv</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">Helistage rakenduses</translation>
 <translation id="3306688585798492231">Sisseehitatud ekraan</translation>
 <translation id="335581015389089642">Kõne</translation>
+<translation id="3372635229069101468">Klõpsake valikul <ph name="BEGIN_BOLD" />Üksikasjad<ph name="END_BOLD" /></translation>
 <translation id="3389286852084373014">Tekst on liiga pikk</translation>
 <translation id="3406306243914553062">HTML-sisu</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 päev on jäänud}other{# päeva on jäänud}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">Veerg <ph name="COLUMN_NAME" /> on sorditud kasvavas järjestuses.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 lugemata märguanne}other{# lugemata märguannet}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Lülitage inkognito režiimis sisse järgmine laiendus:}other{Lülitage inkognito režiimis sisse järgmised laiendused:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 kuu tagasi}other{# kuud tagasi}}</translation>
 <translation id="4289300219472526559">Alusta rääkimist</translation>
 <translation id="4289540628985791613">Ülevaade</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">number</translation>
 <translation id="4746179598275229723">Laiendus on vabastatud</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 kuu jäänud}other{# kuud jäänud}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Inkognito režiimi kasutamiseks vajab teie organisatsioon laiendust}other{Inkognito režiimi kasutamiseks vajab teie organisatsioon mõningaid laiendusi}}</translation>
+<translation id="482932175346970750">Tippige brauseris <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
 <translation id="4888938634149558681">Helista</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekund}other{# sekundit}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;Kleebi</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Saatmine ebaõnnestus</translation>
+<translation id="5283101102242354279">Lülitage inkognito režiimis sisse laiendus:</translation>
 <translation id="528468243742722775">Lõpeta</translation>
 <translation id="5329858601952122676">&amp;Kustuta</translation>
 <translation id="5361107212971249203">tekstsõnum</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">Teie rakenduse kuvaseaded jõustuvad pärast rakenduse taaskäivitamist.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 min on jäänud}other{# min on jäänud}}</translation>
+<translation id="7252604552361840748">Leidke ülalt laiendus</translation>
 <translation id="7363164521834647158">Saada vastus</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 min tagasi}other{# min tagasi}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>

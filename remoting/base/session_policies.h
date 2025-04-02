@@ -72,6 +72,10 @@ struct SessionPolicies {
   // then the local user of the OS must be foo. Defaults to false.
   // Corresponding Chrome policy: RemoteAccessHostMatchUsername
   std::optional<bool> host_username_match_required;
+
+  // Allow the client to remotely control the host. When disabled the host will
+  // be in a view-only session. Defaults to true.
+  std::optional<bool> allow_remote_input;
 };
 
 std::ostream& operator<<(std::ostream& os,

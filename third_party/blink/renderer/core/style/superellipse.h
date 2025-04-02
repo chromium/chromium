@@ -29,8 +29,8 @@ class Superellipse {
   // https://drafts.csswg.org/css-borders-4/#valdef-corner-shape-value-squircle
   static Superellipse Squircle() { return Superellipse(4); }
 
-  // https://drafts.csswg.org/css-borders-4/#valdef-corner-shape-value-straight
-  static Superellipse Straight() {
+  // https://drafts.csswg.org/css-borders-4/#valdef-corner-shape-value-square
+  static Superellipse Square() {
     return Superellipse(std::numeric_limits<double>::max());
   }
 

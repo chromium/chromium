@@ -90,9 +90,6 @@ constexpr bool IsReadingListAccountStorageEnabled() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-// Flag to allow SHARED_TAB_GROUP_DATA to run in transport mode.
-BASE_DECLARE_FEATURE(kSyncSharedTabGroupDataInTransportMode);
-
 // Flags to allow AUTOFILL_WALLET_METADATA and AUTOFILL_WALLET_OFFER,
 // respectively, to run in transport mode.
 BASE_DECLARE_FEATURE(kSyncEnableWalletMetadataInTransportMode);

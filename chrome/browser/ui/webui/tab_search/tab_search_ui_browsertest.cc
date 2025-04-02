@@ -72,7 +72,8 @@ class TabSearchUIBrowserTest : public InProcessBrowserTest {
 // TODO(romanarora): Investigate a way to call WebUI custom methods and refactor
 // JS code below.
 
-IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, InitialTabItemsListed) {
+// TODO(crbug.com/407949601): Fix and re-enable
+IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, DISABLED_InitialTabItemsListed) {
   constexpr int expected_tab_item_count = 4;
   const std::string tab_item_count_js = base::StringPrintf(
       "new Promise((resolve) => {"

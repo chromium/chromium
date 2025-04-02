@@ -3049,7 +3049,7 @@ bool AXNodeObject::IsTabItemSelected() const {
     return false;
 
   DCHECK(GetElement());
-  const HeapVector<Member<Element>>* elements =
+  const GCedHeapVector<Member<Element>>* elements =
       AXObject::ElementsFromAttributeOrInternals(GetElement(),
                                                  html_names::kAriaControlsAttr);
   if (!elements) {
@@ -6585,7 +6585,7 @@ AXObject::AXObjectVector AXNodeObject::RelationVectorFromAria(
     return AXObjectVector();
   }
 
-  const HeapVector<Member<Element>>* elements_from_attribute =
+  const GCedHeapVector<Member<Element>>* elements_from_attribute =
       ElementsFromAttributeOrInternals(el, attr_name);
   if (!elements_from_attribute) {
     return AXObjectVector();
@@ -7427,7 +7427,7 @@ String AXNodeObject::Description(
   if (!element)
     return String();
 
-  const HeapVector<Member<Element>>* elements_from_attribute =
+  const GCedHeapVector<Member<Element>>* elements_from_attribute =
       ElementsFromAttributeOrInternals(element,
                                        html_names::kAriaDescribedbyAttr);
   if (elements_from_attribute) {

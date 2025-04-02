@@ -13,20 +13,20 @@
 #include "components/webdata/common/web_database.h"
 #include "sql/database.h"
 #include "sql/statement.h"
+#include "sql/transaction.h"
 
 namespace autofill {
 
 namespace {
 
-constexpr std::string_view kLoyaltyCardsTable = "loyalty_card";
-constexpr std::string_view kLoyaltyCardGuid = "guid";
+constexpr std::string_view kLoyaltyCardsTable = "loyalty_cards";
+constexpr std::string_view kLoyaltyCardId = "loyalty_card_id";
 constexpr std::string_view kLoyaltyCardMerchantName = "merchant_name";
 constexpr std::string_view kLoyaltyCardProgramName = "program_name";
 constexpr std::string_view kLoyaltyCardProgramLogo = "program_logo";
-constexpr std::string_view kUnmaskedLoyaltyCardSuffix =
-    "unmasked_loyalty_card_suffix";
+constexpr std::string_view kLoyaltyCardNumber = "loyalty_card_number";
 
-// Expects that `s` is pointing to a query result containing `kLoyaltyCardGuid`,
+// Expects that `s` is pointing to a query result containing `kLoyaltyCardId`,
 // `kLoyaltyCardMerchantName`, `kLoyaltyCardProgramName`,
 // `kLoyaltyCardProgramLogo` and `kUnmaskedLoyaltyCardSuffix` in that order.
 // Constructs a `LoyaltyCard` from that data.
@@ -35,7 +35,7 @@ std::optional<LoyaltyCard> LoyaltyCardFromStatement(sql::Statement& s) {
                    /*merchant_name=*/s.ColumnString(1),
                    /*program_name=*/s.ColumnString(2),
                    /*program_logo=*/GURL(s.ColumnStringView(3)),
-                   /*unmasked_loyalty_card_suffix=*/s.ColumnString(4));
+                   /*loyalty_card_number=*/s.ColumnString(4));
   // Ignore invalid loyalty cards, for more information see
   // `LoyaltyCard::IsValid()`. Loyalty cards coming from sync should be valid,
   // so this situation should not happen.
@@ -67,18 +67,39 @@ bool ValuablesTable::CreateTablesIfNecessary() {
 }
 
 bool ValuablesTable::InitLoyaltyCardsTable() {
-  return CreateTableIfNotExists(
-      db(), kLoyaltyCardsTable,
-      {{kLoyaltyCardGuid, "TEXT PRIMARY KEY NOT NULL"},
-       {kLoyaltyCardMerchantName, "TEXT NOT NULL"},
-       {kLoyaltyCardProgramName, "TEXT NOT NULL"},
-       {kLoyaltyCardProgramLogo, "TEXT NOT NULL"},
-       {kUnmaskedLoyaltyCardSuffix, "TEXT NOT NULL"}});
+  return CreateTableIfNotExists(db(), kLoyaltyCardsTable,
+                                {{kLoyaltyCardId, "TEXT PRIMARY KEY NOT NULL"},
+                                 {kLoyaltyCardMerchantName, "TEXT NOT NULL"},
+                                 {kLoyaltyCardProgramName, "TEXT NOT NULL"},
+                                 {kLoyaltyCardProgramLogo, "TEXT NOT NULL"},
+                                 {kLoyaltyCardNumber, "TEXT NOT NULL"}});
+}
+
+bool ValuablesTable::MigrateToVersion138() {
+  // This is the legacy table name, which existed before and was renamed.
+  const std::string kLoyaltyCardTable = "loyalty_card";
+
+  sql::Transaction transaction(db());
+  // The migration drops the table because no data is supposed to be stored in
+  // it yet.
+  return transaction.Begin() && DropTableIfExists(db(), kLoyaltyCardTable) &&
+         DropTableIfExists(db(), kLoyaltyCardsTable) &&
+         CreateTable(db(), kLoyaltyCardsTable,
+                     {{kLoyaltyCardId, "TEXT PRIMARY KEY NOT NULL"},
+                      {kLoyaltyCardMerchantName, "TEXT NOT NULL"},
+                      {kLoyaltyCardProgramName, "TEXT NOT NULL"},
+                      {kLoyaltyCardProgramLogo, "TEXT NOT NULL"},
+                      {kLoyaltyCardNumber, "TEXT NOT NULL"}}) &&
+         transaction.Commit();
 }
 
 bool ValuablesTable::MigrateToVersion(int version,
                                       bool* update_compatible_version) {
-  // No migrations exist at this point.
+  switch (version) {
+    case 138:
+      *update_compatible_version = true;
+      return MigrateToVersion138();
+  }
   return true;
 }
 
@@ -86,8 +107,8 @@ std::vector<LoyaltyCard> ValuablesTable::GetLoyaltyCards() const {
   sql::Statement query;
   SelectBuilder(
       db(), query, kLoyaltyCardsTable,
-      {kLoyaltyCardGuid, kLoyaltyCardMerchantName, kLoyaltyCardProgramName,
-       kLoyaltyCardProgramLogo, kUnmaskedLoyaltyCardSuffix});
+      {kLoyaltyCardId, kLoyaltyCardMerchantName, kLoyaltyCardProgramName,
+       kLoyaltyCardProgramLogo, kLoyaltyCardNumber});
   std::vector<LoyaltyCard> result;
   while (query.Step()) {
     if (auto loyalty_card = LoyaltyCardFromStatement(query)) {
@@ -106,33 +127,35 @@ bool ValuablesTable::AddOrUpdateLoyaltyCard(
   sql::Statement query;
   InsertBuilder(
       db(), query, kLoyaltyCardsTable,
-      {kLoyaltyCardGuid, kLoyaltyCardMerchantName, kLoyaltyCardProgramName,
-       kLoyaltyCardProgramLogo, kUnmaskedLoyaltyCardSuffix},
+      {kLoyaltyCardId, kLoyaltyCardMerchantName, kLoyaltyCardProgramName,
+       kLoyaltyCardProgramLogo, kLoyaltyCardNumber},
       /*or_replace=*/true);
   int index = 0;
   query.BindString(index++, loyalty_card.id().value());
   query.BindString(index++, loyalty_card.merchant_name());
   query.BindString(index++, loyalty_card.program_name());
   query.BindString(index++, loyalty_card.program_logo().spec());
-  query.BindString(index++, loyalty_card.loyalty_card_suffix());
+  query.BindString(index++, loyalty_card.loyalty_card_number());
   return query.Run();
 }
 
 std::optional<LoyaltyCard> ValuablesTable::GetLoyaltyCardById(
     ValuableId loyalty_card_id) const {
   sql::Statement query;
-  if (SelectByGuid(
-          db(), query, kLoyaltyCardsTable,
-          {kLoyaltyCardGuid, kLoyaltyCardMerchantName, kLoyaltyCardProgramName,
-           kLoyaltyCardProgramLogo, kUnmaskedLoyaltyCardSuffix},
-          loyalty_card_id.value())) {
+  SelectBuilder(
+      db(), query, kLoyaltyCardsTable,
+      {kLoyaltyCardId, kLoyaltyCardMerchantName, kLoyaltyCardProgramName,
+       kLoyaltyCardProgramLogo, kLoyaltyCardNumber},
+      "WHERE loyalty_card_id=?");
+  query.BindString(0, loyalty_card_id.value());
+  if (query.is_valid() && query.Step()) {
     return LoyaltyCardFromStatement(query);
   }
   return std::nullopt;
 }
 
 bool ValuablesTable::RemoveLoyaltyCard(ValuableId loyalty_card_id) {
-  return DeleteWhereColumnEq(db(), kLoyaltyCardsTable, kLoyaltyCardGuid,
+  return DeleteWhereColumnEq(db(), kLoyaltyCardsTable, kLoyaltyCardId,
                              loyalty_card_id.value());
 }
 

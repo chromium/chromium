@@ -49,6 +49,10 @@ class InvalidationListenerImpl : public InvalidationListener,
                            std::string log_prefix);
   ~InvalidationListenerImpl() override;
 
+  InvalidationListenerImpl(const InvalidationListenerImpl& other) = delete;
+  InvalidationListenerImpl& operator=(const InvalidationListenerImpl& other) =
+      delete;
+
   // `InvalidationListener`:
   void AddObserver(Observer* handler) override;
   bool HasObserver(const Observer* handler) const override;

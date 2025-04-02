@@ -13,7 +13,7 @@ namespace blink {
 
 class ComputedStyle;
 
-using PseudoElementStyleCache = HeapVector<Member<const ComputedStyle>, 4>;
+using PseudoElementStyleCache = GCedHeapVector<Member<const ComputedStyle>, 4>;
 
 class CORE_EXPORT StyleCachedData final
     : public GarbageCollected<StyleCachedData> {

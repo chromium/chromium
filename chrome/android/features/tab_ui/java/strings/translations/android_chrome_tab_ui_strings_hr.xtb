@@ -213,6 +213,7 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica <ph name="TITLE_
 <translation id="8820741577754260431">Pogledajte pad cijena na karticama</translation>
 <translation id="8887921976452567404">Zatvorene kartice i grupe mogu se ponovo otvoriti u odjeljku Nedavne kartice i odjeljku Grupe kartica.</translation>
 <translation id="8915916167043355778">Zatvori sve</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Premjesti u novi prozor}one{Premjesti u druge prozore}few{Premjesti u druge prozore}other{Premjesti u druge prozore}}</translation>
 <translation id="9090098097337832354">Zatvorene su informacije o ovoj trgovini</translation>
 <translation id="9114502155681725011">Otvorite izbornik aktivnosti grupe kartica za grupu kartica <ph name="TITLE_OF_GROUP" />, <ph name="COLOR_NAME" /> boja.</translation>
 <translation id="9169141410816678175">Svi će odmah izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i izbrisat će se sa svih uređaja</translation>

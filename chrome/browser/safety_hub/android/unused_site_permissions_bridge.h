@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 
 class Profile;
 

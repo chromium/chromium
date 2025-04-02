@@ -24,8 +24,10 @@ class IncognitoObserverAndroid : public IncognitoObserver,
   ~IncognitoObserverAndroid() override { TabModelList::RemoveObserver(this); }
 
   // TabModelListObserver:
-  void OnTabModelAdded() override { update_closure_.Run(); }
-  void OnTabModelRemoved() override { update_closure_.Run(); }
+  void OnTabModelAdded(TabModel* tab_model) override { update_closure_.Run(); }
+  void OnTabModelRemoved(TabModel* tab_model) override {
+    update_closure_.Run();
+  }
 
  private:
   const base::RepeatingClosure update_closure_;

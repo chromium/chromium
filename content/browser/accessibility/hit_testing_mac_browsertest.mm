@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/apple/foundation_util.h"
 #include "content/browser/accessibility/hit_testing_browsertest.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
@@ -23,9 +24,11 @@ class AccessibilityHitTestingMacBrowserTest
     : public AccessibilityHitTestingBrowserTest {
  public:
   BrowserAccessibilityCocoa* GetWebContentRoot() {
-    return GetRootBrowserAccessibilityManager()
-        ->GetBrowserAccessibilityRoot()
-        ->GetNativeViewAccessible();
+    return base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+        GetRootBrowserAccessibilityManager()
+            ->GetBrowserAccessibilityRoot()
+            ->GetNativeViewAccessible()
+            .Get());
   }
 };
 
@@ -61,8 +64,10 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingMacBrowserTest,
     BrowserAccessibilityCocoa* hit_element = [root
         accessibilityHitTest:NSMakePoint(rect_2_point.x(), rect_2_point.y())];
     BrowserAccessibilityCocoa* expected_element =
-        FindNode(ax::mojom::Role::kGenericContainer, "rect2")
-            ->GetNativeViewAccessible();
+        base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+            FindNode(ax::mojom::Role::kGenericContainer, "rect2")
+                ->GetNativeViewAccessible()
+                .Get());
     EXPECT_ACCESSIBILITY_MAC_HIT_TEST_RESULT(rect_2_point, expected_element,
                                              hit_element);
   }
@@ -73,8 +78,10 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingMacBrowserTest,
     BrowserAccessibilityCocoa* hit_element = [root
         accessibilityHitTest:NSMakePoint(rect_b_point.x(), rect_b_point.y())];
     BrowserAccessibilityCocoa* expected_element =
-        FindNode(ax::mojom::Role::kGenericContainer, "rectB")
-            ->GetNativeViewAccessible();
+        base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+            FindNode(ax::mojom::Role::kGenericContainer, "rectB")
+                ->GetNativeViewAccessible()
+                .Get());
     EXPECT_ACCESSIBILITY_MAC_HIT_TEST_RESULT(rect_b_point, expected_element,
                                              hit_element);
   }

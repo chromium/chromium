@@ -376,7 +376,9 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
             WebDXFeature::kBeforeInstallPrompt},
            {WebFeature::kWebAppManifestLaunchHandler,
             WebDXFeature::kLaunchHandler},
-           {WebFeature::kCSSFunctions, WebDXFeature::kDRAFT_CssFunction}}};
+           {WebFeature::kCSSFunctions, WebDXFeature::kDRAFT_CssFunction},
+           {WebFeature::kSelectionGetComposedRanges,
+            WebDXFeature::kComposedRanges}}};
 
   return *kMap;
 }

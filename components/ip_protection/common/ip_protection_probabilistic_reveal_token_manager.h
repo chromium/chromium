@@ -9,6 +9,8 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <string>
+#include <utility>
 
 #include "base/files/file_path.h"
 #include "base/threading/sequence_bound.h"
@@ -50,7 +52,7 @@ class IpProtectionProbabilisticRevealTokenManager {
   // * Else, seeing the first party for the first time, pick a
   //   token stored in crypter randomly, and randomize it,
   //   and return it.
-  virtual std::optional<ProbabilisticRevealToken> GetToken(
+  virtual std::optional<std::string> GetToken(
       const std::string& top_level,
       const std::string& third_party);
 
@@ -77,6 +79,10 @@ class IpProtectionProbabilisticRevealTokenManager {
   void StoreTokenOutcomeIfEnabled(
       TryGetProbabilisticRevealTokensOutcome outcome);
 
+  // Serializes and base64 encodes the given token.
+  std::optional<std::string> SerializeAndEncodePrt(
+      ProbabilisticRevealToken token);
+
   // True the first time GetToken() is called, false otherwise.
   bool is_initial_get_token_call_ = true;
 
@@ -91,6 +97,9 @@ class IpProtectionProbabilisticRevealTokenManager {
 
   // Number of tokens in the current batch that has the signal.
   int32_t num_tokens_with_signal_ = 0;
+
+  // Epoch id of the current batch of tokens.
+  std::string epoch_id_;
 
   // Map for tokens associated with a first and third party pair.
   // Keys are first party eTLD+1, and values are pairs of,

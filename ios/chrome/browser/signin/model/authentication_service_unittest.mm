@@ -108,12 +108,8 @@ class AuthenticationServiceTestBase : public PlatformTest {
   explicit AuthenticationServiceTestBase(
       bool separate_profiles_for_managed_accounts_enabled) {
     if (separate_profiles_for_managed_accounts_enabled) {
-      // Note: kUseAccountListFromIdentityManager is a prerequisite of
-      // kSeparateProfilesForManagedAccounts.
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{kUseAccountListFromIdentityManager,
-                                kSeparateProfilesForManagedAccounts},
-          /*disabled_features=*/{});
+      scoped_feature_list_.InitAndEnableFeature(
+          kSeparateProfilesForManagedAccounts);
     } else {
       scoped_feature_list_.InitAndDisableFeature(
           kSeparateProfilesForManagedAccounts);
@@ -251,15 +247,11 @@ class AuthenticationServiceTestBase : public PlatformTest {
 
   // Returns the n-th identity on the device, identified by `index`.
   id<SystemIdentity> identity(NSUInteger index) {
-    if (IsUseAccountListFromIdentityManagerEnabled()) {
-      std::vector<AccountInfo> accountInfos =
-          identity_manager()->GetAccountsOnDevice();
-      CHECK_LT(index, accountInfos.size());
-      return account_manager_->GetIdentityOnDeviceWithGaiaID(
-          accountInfos[index].gaia);
-    } else {
-      return [account_manager_->GetAllIdentities() objectAtIndex:index];
-    }
+    std::vector<AccountInfo> accountInfos =
+        identity_manager()->GetAccountsOnDevice();
+    CHECK_LT(index, accountInfos.size());
+    return account_manager_->GetIdentityOnDeviceWithGaiaID(
+        accountInfos[index].gaia);
   }
 
   // Sets a restricted pattern.

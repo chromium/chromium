@@ -332,6 +332,9 @@ void SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
 
   if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups() &&
       saved_group.collaboration_id()) {
+    if (reason == GroupDeletionReason::ClosedLastTab) {
+      tab_group_service->OnLastTabClosed(saved_group);
+    }
     collaboration::CollaborationService* collaboration_service =
         collaboration::CollaborationServiceFactory::GetForProfile(
             browser->profile());
@@ -340,8 +343,6 @@ void SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
     collaboration_service->StartShareOrManageFlow(
         std::move(delegate), saved_group.saved_guid(),
         collaboration::CollaborationServiceShareOrManageEntryPoint::kUnknown);
-    // TODO(crbug.com/403286093): Create a new tab and close current tab to
-    // respect the close action.
     return;
   }
 

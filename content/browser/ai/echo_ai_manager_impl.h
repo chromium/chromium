@@ -79,7 +79,8 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
 
   void DoMockDownloadingAndReturn(base::OnceClosure callback);
 
-  bool summarizer_downloaded_ = false;
+  // The mocked download status of an imagined foundational model.
+  bool model_downloaded_ = false;
 
   mojo::RemoteSet<blink::mojom::ModelDownloadProgressObserver>
       download_progress_observers_;

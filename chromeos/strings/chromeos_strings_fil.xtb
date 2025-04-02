@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">I-disable ang screen saver</translation>
 <translation id="3091839911843451378">Hindi na-print - Huminto</translation>
 <translation id="3102119246920354026">Cache</translation>
-<translation id="3112413615003385433">Nag-alis ng content ang iyong guro sa Mga Tool sa Paaralan</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">mga pool</translation>
 <translation id="3122883569442693641">Higit pang detalye</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Bahagyang na-activate</translation>
 <translation id="3492882532495507361">Isang <ph name="OFFICE_STYLE" /> na opisina na may mga <ph name="OFFICE_COLOR" /> na tone</translation>
 <translation id="3493187369049186498">Sinusukat ng iyong Chromebook ang data. Posibleng naiiba ito sa data ng provider.</translation>
-<translation id="349570724365779960">Nakakonekta sa mga mag-aaral ang Mga Tool sa Paaralan</translation>
 <translation id="3502426834823382181">tingnan ang lahat ng app</translation>
 <translation id="3510890413042482857">Ipadala ang <ph name="BEGIN_LINK1" />data ng pagte-trace sa performance<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Update sa Chrome OS</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Tapos nang mag-edit</translation>
 <translation id="3532980081107202182">Humigit-kumulang <ph name="MIN_REMAINING" /> (na) minuto ang natitira</translation>
 <translation id="3533790840489634638">pool</translation>
-<translation id="3535802910192338629">Nagdagdag ng bagong content ang iyong guro sa Mga Tool sa Paaralan</translation>
 <translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Lokal na pagkakakilanlan (opsyonal)</translation>
 <translation id="3565064564551103223">Mga pinapayagang IP</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">Payagan ang mga serbisyo ng system na gamitin ang iyong lokasyon?</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="66621959568103627">coral pink</translation>
+<translation id="6669485505082792176">Hindi makagawa ng mga larawan nito sa ngayon. Subukang ibahin ang iyong paglalarawan. Tandaang hindi ka makakagawa ng mga larawan ng mga tao, mapaminsalang content, o explicit na content. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">taasan ang liwanag ng keyboard</translation>
 <translation id="6692996468359469499">Kumuha ng impormasyon kaugnay ng iyong pinili</translation>
 <translation id="6694534975463174713">lock</translation>
@@ -1440,7 +1438,6 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="7544853251252956727">I-shuffle</translation>
 <translation id="7550715992156305117">Mga Diagnostic na Routine</translation>
 <translation id="7551123448725492271">Audio device ang device.</translation>
-<translation id="7553913964854052228">Ginagamit ng Mga Tool sa Paaralan ang iyong mikropono</translation>
 <translation id="7559239713112547082">I-preview ang Screenshot</translation>
 <translation id="7561454561030345039">Pinapamahalaan ng iyong administrator ang pagkilos na ito.</translation>
 <translation id="7561759921596375678">I-on ang volume</translation>
@@ -1663,7 +1660,6 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8576249514688522074">Hindi Nasimulan</translation>
 <translation id="8584654835905316966">Nire-require na mag-restart para makumpleto ang pag-install ng firmware para sa <ph name="DEVICE_NAME" /> sa bersyon <ph name="VERSION" />. Posibleng magmukhang nagre-reboot nang ilang beses ang iyong computer. Inaasahan ang gawing ito.</translation>
 <translation id="8593058461203131755">mag-pause ng media</translation>
-<translation id="8619169570378509764">Mga Tool sa Paaralan</translation>
 <translation id="8620617069779373398">Status ng roaming</translation>
 <translation id="8626489604350149811">Higit pang pagkilos para sa <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Light purple</translation>

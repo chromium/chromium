@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
@@ -41,7 +42,9 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_permission_element_strings_map.h"
+#include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -525,10 +528,14 @@ void HTMLPermissionElement::Focus(const FocusParams& params) {
   HTMLElement::Focus(params);
 }
 
-FocusableState HTMLPermissionElement::SupportsFocus(UpdateBehavior) const {
+FocusableState HTMLPermissionElement::SupportsFocus(
+    UpdateBehavior update_behavior) const {
   // The permission element is only focusable if it has a valid type.
-  return permission_descriptors_.empty() ? FocusableState::kNotFocusable
-                                         : FocusableState::kFocusable;
+  if (fallback_mode_) {
+    return HTMLElement::SupportsFocus(update_behavior);
+  }
+
+  return FocusableState::kFocusable;
 }
 
 int HTMLPermissionElement::DefaultTabIndex() const {
@@ -721,6 +728,7 @@ void HTMLPermissionElement::AttributeChanged(
       AddConsoleError("The permission type '" + GetType().GetString() +
                       "' is not supported by the "
                       "permission element.");
+      EnableFallbackMode();
       return;
     }
 
@@ -752,6 +760,12 @@ void HTMLPermissionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 
 void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
   Element::AdjustStyle(builder);
+
+  // As the permission element's type is invalid the permission element starts
+  // behaving as an HTMLUnknownElement.
+  if (fallback_mode_) {
+    return;
+  }
 
   builder.SetOutlineOffset(builder.OutlineOffset().ClampNegativeToZero());
 
@@ -922,6 +936,10 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
 void HTMLPermissionElement::DidRecalcStyle(const StyleRecalcChange change) {
   HTMLElement::DidRecalcStyle(change);
 
+  if (fallback_mode_) {
+    return;
+  }
+
   if (!IsStyleValid()) {
     DisableClickingIndefinitely(DisableReason::kInvalidStyle);
     return;
@@ -939,6 +957,11 @@ void HTMLPermissionElement::DidRecalcStyle(const StyleRecalcChange change) {
 }
 
 void HTMLPermissionElement::DefaultEventHandler(Event& event) {
+  if (fallback_mode_) {
+    HTMLElement::DefaultEventHandler(event);
+    return;
+  }
+
   if (event.type() == event_type_names::kDOMActivate) {
     event.SetDefaultHandled();
     if (event.IsFullyTrusted() ||
@@ -979,6 +1002,7 @@ void HTMLPermissionElement::DefaultEventHandler(Event& event) {
   if (HandleKeyboardActivation(event)) {
     return;
   }
+
   HTMLElement::DefaultEventHandler(event);
 }
 
@@ -1223,7 +1247,7 @@ void HTMLPermissionElement::EnableClickingAfterDelay(
 
 HTMLPermissionElement::ClickingEnabledState
 HTMLPermissionElement::GetClickingEnabledState() const {
-  if (permission_descriptors_.empty()) {
+  if (fallback_mode_) {
     return {false, AtomicString("type_invalid")};
   }
 
@@ -1652,6 +1676,21 @@ HTMLPermissionElement::GetRecentlyAttachedTimeoutRemaining() const {
   }
 
   return it->value - now;
+}
+
+void HTMLPermissionElement::EnableFallbackMode() {
+  CHECK(!fallback_mode_);
+  fallback_mode_ = true;
+  intersection_observer_->unobserve(this);
+
+  // Adding this slot element will make all children of the permission element
+  // render, the permission element's built-in elements are removed at the same
+  // time.
+  UserAgentShadowRoot()->AppendChild(
+      MakeGarbageCollected<HTMLSlotElement>(GetDocument()));
+  UserAgentShadowRoot()->RemoveChild(permission_text_span_);
+
+  MaybeDispatchValidationChangeEvent();
 }
 
 }  // namespace blink

@@ -3,7 +3,7 @@ URL: https://crates.io/crates/diplomat
 Version: 0.10.0
 Revision: 5c383d634b982a5f3199c0fee8421839f9582cfc
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/diplomat-0.10.0/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/diplomat-v0_10/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes
 

@@ -39,6 +39,23 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failed to determine"/>
 </enum>
 
+<enum name="OpenWithLauncherResult">
+<!--
+This is used to record the outcome of attempting to open the Settings app via
+the IOpenWithLauncher COM interface.
+-->
+
+  <int value="0" label="Success">Launched settings and user made a change</int>
+  <int value="1" label="Success no change">
+    Launched settings but user didn't change anything
+  </int>
+  <int value="2" label="CLSID not found">
+    Error getting the COM class ID from the registry
+  </int>
+  <int value="3" label="COM error">Error creating a COM class instance</int>
+  <int value="4" label="Launch error">Launching settings returned an error</int>
+</enum>
+
 <enum name="ProcessNameHash">
   <summary>
     The hash of a lower case process name generated using metrics::HashName.

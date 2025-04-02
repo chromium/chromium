@@ -111,11 +111,10 @@ IN_PROC_BROWSER_TEST_F(
                   .IsValid());
   EXPECT_EQ(PrivacySandboxAttestations::GetInstance()->GetVersionForTesting(),
             version);
-  EXPECT_TRUE(
-      privacy_sandbox_test_util::PrivacySandboxSettingsTestPeer::IsAllowed(
-          PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
-              net::SchemefulSite(GURL(site)),
-              PrivacySandboxAttestationsGatedAPI::kTopics)));
+  EXPECT_TRUE(PrivacySandboxSettingsTestPeer::IsAllowed(
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          net::SchemefulSite(GURL(site)),
+          PrivacySandboxAttestationsGatedAPI::kTopics)));
 
   histogram_tester().ExpectTotalCount(kAttestationsFileSource, 1);
   histogram_tester().ExpectBucketCount(kAttestationsFileSource,
@@ -128,11 +127,10 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsBrowserTest,
                        DifferentHistogramAfterAttestationsFileCheck) {
   std::string site = "https://example.com";
-  EXPECT_FALSE(
-      privacy_sandbox_test_util::PrivacySandboxSettingsTestPeer::IsAllowed(
-          PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
-              net::SchemefulSite(GURL(site)),
-              PrivacySandboxAttestationsGatedAPI::kTopics)));
+  EXPECT_FALSE(PrivacySandboxSettingsTestPeer::IsAllowed(
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          net::SchemefulSite(GURL(site)),
+          PrivacySandboxAttestationsGatedAPI::kTopics)));
 
   // The attestation component has not yet checked the attestations file.
   histogram_tester().ExpectTotalCount(kAttestationStatusUMA, 1);
@@ -152,11 +150,10 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsBrowserTest,
   run_loop.Run();
 
   // Check attestation again.
-  EXPECT_FALSE(
-      privacy_sandbox_test_util::PrivacySandboxSettingsTestPeer::IsAllowed(
-          PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
-              net::SchemefulSite(GURL(site)),
-              PrivacySandboxAttestationsGatedAPI::kTopics)));
+  EXPECT_FALSE(PrivacySandboxSettingsTestPeer::IsAllowed(
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          net::SchemefulSite(GURL(site)),
+          PrivacySandboxAttestationsGatedAPI::kTopics)));
 
   // It should record in a different histogram bucket because the file check has
   // completed but no file was found.
@@ -180,21 +177,21 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsBrowserTestBase,
   RegisterPrivacySandboxAttestationsComponent(
       g_browser_process->component_updater());
 
-    // Wait until the attestations parsing is done.
-    run_loop.Run();
+  // Wait until the attestations parsing is done.
+  run_loop.Run();
 
-    EXPECT_TRUE(PrivacySandboxAttestations::GetInstance()
-                    ->GetVersionForTesting()
-                    .IsValid());
+  EXPECT_TRUE(PrivacySandboxAttestations::GetInstance()
+                  ->GetVersionForTesting()
+                  .IsValid());
 
-    // Make an attestation check to verify the data point is recorded to the
-    // correct histogram bucket.
-    PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
-        net::SchemefulSite(GURL("https://example.com")),
-        PrivacySandboxAttestationsGatedAPI::kTopics);
-    histogram_tester().ExpectTotalCount(kAttestationsFileSource, 1);
-    histogram_tester().ExpectBucketCount(kAttestationsFileSource,
-                                         FileSource::kPreInstalled, 1);
+  // Make an attestation check to verify the data point is recorded to the
+  // correct histogram bucket.
+  PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+      net::SchemefulSite(GURL("https://example.com")),
+      PrivacySandboxAttestationsGatedAPI::kTopics);
+  histogram_tester().ExpectTotalCount(kAttestationsFileSource, 1);
+  histogram_tester().ExpectBucketCount(kAttestationsFileSource,
+                                       FileSource::kPreInstalled, 1);
 }
 
 class PrivacySandboxAttestationPreInstallInteractionWithDownloadTest
@@ -267,11 +264,10 @@ IN_PROC_BROWSER_TEST_F(
 
   // Make an attestation check to verify the data point is recorded to the
   // correct histogram bucket.
-  ASSERT_TRUE(
-      privacy_sandbox_test_util::PrivacySandboxSettingsTestPeer::IsAllowed(
-          PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
-              net::SchemefulSite(GURL("https://example.com")),
-              PrivacySandboxAttestationsGatedAPI::kTopics)));
+  ASSERT_TRUE(PrivacySandboxSettingsTestPeer::IsAllowed(
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          net::SchemefulSite(GURL("https://example.com")),
+          PrivacySandboxAttestationsGatedAPI::kTopics)));
   histogram_tester().ExpectTotalCount(kAttestationsFileSource, 1);
   histogram_tester().ExpectBucketCount(kAttestationsFileSource,
                                        FileSource::kPreInstalled, 1);

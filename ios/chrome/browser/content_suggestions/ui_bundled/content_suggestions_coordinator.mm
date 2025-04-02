@@ -430,7 +430,9 @@ using segmentation_platform::TipIdentifier;
                                     profile)
                    imageFetcher:std::make_unique<
                                     image_fetcher::ImageDataFetcher>(
-                                    profile->GetSharedURLLoaderFactory())];
+                                    profile->GetSharedURLLoaderFactory())
+                  faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                                    profile)];
     [moduleMediators addObject:_shopCardMediator];
     _shopCardMediator.shopCardActionDelegate = self;
   }
@@ -1470,14 +1472,9 @@ using segmentation_platform::TipIdentifier;
 #pragma mark - Helpers
 
 - (bool)hasIdentitiesOnDevice {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
-    return !IdentityManagerFactory::GetForProfile(self.profile)
-                ->GetAccountsOnDevice()
-                .empty();
-  } else {
-    return ChromeAccountManagerServiceFactory::GetForProfile(self.profile)
-        ->HasIdentities();
-  }
+  return !IdentityManagerFactory::GetForProfile(self.profile)
+              ->GetAccountsOnDevice()
+              .empty();
 }
 
 - (void)showMagicStackRecentTabs {

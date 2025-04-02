@@ -141,7 +141,6 @@ source_set("ip_protection_data_types") {
   public_deps = [
     "//base",
     "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
-    "//third_party/boringssl",
   ]
 }
 
@@ -694,6 +693,7 @@ source_set("ip_protection_probabilistic_reveal_token_manager") {
     ":ip_protection_telemetry",
     "//base",
     "//net",
+    "//third_party/boringssl",
   ]
 }
 
@@ -714,6 +714,7 @@ source_set("ip_protection_probabilistic_reveal_token_manager_unittest") {
     "//sql:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/boringssl",
     "//third_party/private-join-and-compute/src:ec_commutative_cipher",
   ]
 }
@@ -756,9 +757,9 @@ bundle_data("tests_bundle_data") {
       [ ":ip_protection_probabilistic_reveal_token_data_storage_unittest" ]
   testonly = true
   sources = [
-    "//components/test/data/ip_protection/probabilistic_reveal_tokens_v2.too_old.sql",
-    "//components/test/data/ip_protection/probabilistic_reveal_tokens_v3.sql",
-    "//components/test/data/ip_protection/probabilistic_reveal_tokens_v4.too_new.sql",
+    "//components/test/data/ip_protection/probabilistic_reveal_tokens_v3.too_old.sql",
+    "//components/test/data/ip_protection/probabilistic_reveal_tokens_v4.sql",
+    "//components/test/data/ip_protection/probabilistic_reveal_tokens_v5.too_new.sql",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]

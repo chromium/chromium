@@ -313,7 +313,7 @@ gfx::NativeViewAccessible AXVirtualView::GetParent() const {
   }
 
   // This virtual view hasn't been added to a parent view yet.
-  return nullptr;
+  return gfx::NativeViewAccessible();
 }
 
 gfx::Rect AXVirtualView::GetBoundsRect(
@@ -351,7 +351,7 @@ gfx::NativeViewAccessible AXVirtualView::HitTestSync(
     int screen_physical_pixel_x,
     int screen_physical_pixel_y) const {
   if (GetData().IsInvisible()) {
-    return nullptr;
+    return gfx::NativeViewAccessible();
   }
 
   // Check if the point is within any of the virtual children of this view.
@@ -379,20 +379,20 @@ gfx::NativeViewAccessible AXVirtualView::HitTestSync(
     return GetNativeObject();
   }
 
-  return nullptr;
+  return gfx::NativeViewAccessible();
 }
 
 gfx::NativeViewAccessible AXVirtualView::GetFocus() const {
   View* owner_view = GetOwnerView();
   if (owner_view) {
     if (!(owner_view->HasFocus())) {
-      return nullptr;
+      return gfx::NativeViewAccessible();
     }
     return owner_view->GetViewAccessibility().GetFocusedDescendant();
   }
 
   // This virtual view hasn't been added to a parent view yet.
-  return nullptr;
+  return gfx::NativeViewAccessible();
 }
 
 ui::AXPlatformNode* AXVirtualView::GetFromNodeID(int32_t id) {

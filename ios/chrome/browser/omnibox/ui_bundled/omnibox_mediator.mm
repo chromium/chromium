@@ -166,6 +166,10 @@ using base::UserMetricsAction;
   [self.omniboxTextController clearText];
 }
 
+- (void)acceptInput {
+  [self.omniboxTextController acceptInput];
+}
+
 - (void)prepareForScribble {
   [self.omniboxTextController prepareForScribble];
 }

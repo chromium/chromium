@@ -22,7 +22,7 @@
 #import "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
 #import "components/autofill/core/browser/form_import/addresses/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/autofill/core/browser/form_import/form_data_importer.h"
-#import "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"
+#import "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #import "components/autofill/core/browser/logging/log_manager.h"
 #import "components/autofill/core/browser/logging/log_router.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"

@@ -159,8 +159,7 @@ bool StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad>::Read(
     viz::DrawQuad* out) {
   auto* quad = static_cast<viz::TextureDrawQuad*>(out);
 
-  if (!data.ReadResourceId(&quad->resource_id) ||
-      !data.ReadResourceSizeInPixels(&quad->overlay_resources.size_in_pixels)) {
+  if (!data.ReadResourceId(&quad->resource_id)) {
     return false;
   }
 

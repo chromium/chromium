@@ -180,7 +180,6 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   if ([self isRunningTest:@selector(testSwitchAccountFromAccountMenu)] ||
       [self isRunningTest:@selector(testSignOutFromAccountFromAccountMenu)]) {
     config.features_enabled.push_back(kIdentityDiscAccountMenu);
-    config.features_enabled.push_back(kUseAccountListFromIdentityManager);
     config.features_enabled.push_back(kSeparateProfilesForManagedAccounts);
   }
 

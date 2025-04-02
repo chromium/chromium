@@ -175,19 +175,18 @@ std::unique_ptr<SkBitmap> BlockMeanAverage(const SkBitmap& image,
 }
 
 #if BUILDFLAG(IS_ANDROID)
-CanExtractVisualFeaturesResult CanExtractVisualFeatures(
-    bool is_extended_reporting,
-    bool is_off_the_record,
-    gfx::Size size) {
+CanExtractVisualFeaturesResult CanExtractVisualFeatures(bool is_user_opted_in,
+                                                        bool is_off_the_record,
+                                                        gfx::Size size) {
 #else
-CanExtractVisualFeaturesResult CanExtractVisualFeatures(
-    bool is_extended_reporting,
-    bool is_off_the_record,
-    gfx::Size size,
-    double zoom_level) {
+CanExtractVisualFeaturesResult CanExtractVisualFeatures(bool is_user_opted_in,
+                                                        bool is_off_the_record,
+                                                        gfx::Size size,
+                                                        double zoom_level) {
 #endif
-  if (!is_extended_reporting)
-    return CanExtractVisualFeaturesResult::kNotExtendedReporting;
+  if (!is_user_opted_in) {
+    return CanExtractVisualFeaturesResult::kUserNotOptedIn;
+  }
 
   if (is_off_the_record)
     return CanExtractVisualFeaturesResult::kOffTheRecord;

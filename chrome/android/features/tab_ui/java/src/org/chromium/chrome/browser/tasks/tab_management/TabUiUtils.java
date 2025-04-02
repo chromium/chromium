@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManage
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -311,12 +312,13 @@ public class TabUiUtils {
             TabGroupModelFilter filter,
             DataSharingTabManager dataSharingTabManager,
             int tabId,
-            String tabGroupDisplayName) {
+            String tabGroupDisplayName,
+            @CollaborationServiceShareOrManageEntryPoint int entry) {
         Tab tab = filter.getTabModel().getTabById(tabId);
         LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
 
         dataSharingTabManager.createOrManageFlow(
-                activity, /* syncId= */ null, localTabGroupId, (ignored) -> {});
+                activity, /* syncId= */ null, localTabGroupId, entry, (ignored) -> {});
     }
 
     /**

@@ -290,8 +290,7 @@ void UpdateSafetyHubServiceAsync(SafetyHubService* service) {
   service->RemoveObserver(test_observer.get());
 }
 
-void UpdateUnusedSitePermissionsServiceAsync(
-    UnusedSitePermissionsService* service) {
+void UpdateRevokedPermissionsServiceAsync(RevokedPermissionsService* service) {
   // Run until the checks complete for unused site permission revocation.
   UpdateSafetyHubServiceAsync(service);
 

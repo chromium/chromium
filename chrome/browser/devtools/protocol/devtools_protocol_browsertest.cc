@@ -34,6 +34,7 @@
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
@@ -1134,6 +1135,9 @@ class ExtensionProtocolTest : public DevToolsProtocolTest {
   // can run after the test body returns.
   base::ScopedPathOverride override_start_dir{base::DIR_START_MENU};
 #endif  // BUILDFLAG(IS_WIN
+
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler_;
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest, ReloadTracedExtension) {
@@ -1793,6 +1797,112 @@ IN_PROC_BROWSER_TEST_F(GetAffectedUrlsForThirdPartyCookieMetadataTest,
   base::Value::List expected =
       base::Value::List().Append(third_party_url_v1).Append(third_party_url_v2);
   EXPECT_EQ(*(result()->FindList("matchedUrls")), expected);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       HiddenTargetIsNotVisibleInTabStrip) {
+  AttachToBrowserTarget();
+
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+
+  SendCommandSync("Target.getTargets");
+  ASSERT_EQ(1u, result()->FindList("targetInfos")->size());
+
+  base::Value::Dict params;
+  params.Set("url", "about:blank");
+  params.Set("hidden", true);
+  SendCommandSync("Target.createTarget", std::move(params));
+
+  // The tab strip should not contain the new tab.
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+
+  // CDP `Target.getTargets` result should contain the new target.
+  SendCommandSync("Target.getTargets");
+  EXPECT_EQ(2u, result()->FindList("targetInfos")->size());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       HiddenTargetClosesWhenSessionClosed) {
+  AttachToBrowserTarget();
+
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+
+  SendCommandSync("Target.getTargets");
+  ASSERT_EQ(1u, result()->FindList("targetInfos")->size());
+
+  base::Value::Dict params;
+  params.Set("url", "about:blank");
+  params.Set("hidden", true);
+  SendCommandSync("Target.createTarget", std::move(params));
+
+  // The tab strip should not contain the new tab.
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+
+  // CDP `Target.getTargets` result should contain the new target.
+  SendCommandSync("Target.getTargets");
+  EXPECT_EQ(2u, result()->FindList("targetInfos")->size());
+
+  // Disconnect and connect to session.
+  agent_host_->DetachClient(this);
+  AttachToBrowserTarget();
+
+  // The hidden target should be closed.
+  SendCommandSync("Target.getTargets");
+  EXPECT_EQ(1u, result()->FindList("targetInfos")->size());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, HiddenTargetCanBeClosed) {
+  AttachToBrowserTarget();
+
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+
+  SendCommandSync("Target.getTargets");
+  ASSERT_EQ(1u, result()->FindList("targetInfos")->size());
+
+  SendCommand("Target.setAutoAttach", base::Value::Dict()
+                                          .Set("autoAttach", true)
+                                          .Set("waitForDebuggerOnStart", false)
+                                          .Set("flatten", true));
+
+  SendCommandSync(
+      "Target.createTarget",
+      base::Value::Dict().Set("url", "about:blank").Set("hidden", true));
+
+  const std::string targetId(*result()->FindStringByDottedPath("targetId"));
+
+  // CDP `Target.getTargets` result should contain the new target.
+  SendCommandSync("Target.getTargets");
+  EXPECT_EQ(2u, result()->FindList("targetInfos")->size());
+
+  SendCommandSync("Target.closeTarget",
+                  base::Value::Dict().Set("targetId", targetId));
+
+  WaitForNotification("Target.detachedFromTarget", true);
+
+  SendCommandSync("Target.getTargets");
+  EXPECT_EQ(1u, result()->FindList("targetInfos")->size());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       NotHiddenTargetIsVisibleInTabStrip) {
+  AttachToBrowserTarget();
+
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+
+  SendCommandSync("Target.getTargets");
+  ASSERT_EQ(1u, result()->FindList("targetInfos")->size());
+
+  base::Value::Dict params;
+  params.Set("url", "about:blank");
+  params.Set("hidden", false);
+  SendCommandSync("Target.createTarget", std::move(params));
+
+  // The tab strip should contain the new tab.
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+
+  // CDP `Target.getTargets` result should contain the new target.
+  SendCommandSync("Target.getTargets");
+  EXPECT_EQ(2u, result()->FindList("targetInfos")->size());
 }
 
 }  // namespace

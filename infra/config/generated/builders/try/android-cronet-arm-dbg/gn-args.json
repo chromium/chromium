@@ -1,5 +1,6 @@
 {
   "gn_args": {
+    "android_static_analysis": "on",
     "arm_use_neon": false,
     "clang_use_default_sample_profile": false,
     "debuggable_apks": false,

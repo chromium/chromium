@@ -1097,6 +1097,8 @@ AutofillPrivateGetAllEntityTypesFunction::Run() {
             autofill_ai_util::GetAddEntityTypeStringForI18n(entity_type);
         private_api_entity_type.edit_entity_type_string =
             autofill_ai_util::GetEditEntityTypeStringForI18n(entity_type);
+        private_api_entity_type.delete_entity_type_string =
+            autofill_ai_util::GetDeleteEntityTypeStringForI18n(entity_type);
         return private_api_entity_type;
       });
   return RespondNow(ArgumentList(

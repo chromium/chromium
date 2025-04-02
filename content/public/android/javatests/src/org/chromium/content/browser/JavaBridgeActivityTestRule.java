@@ -18,6 +18,7 @@ import org.chromium.content_shell_apk.ContentShellActivity;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 
 import java.lang.annotation.Annotation;
+import java.util.List;
 
 /** ActivityTestRule with common functionality for testing the Java Bridge. */
 public class JavaBridgeActivityTestRule extends ContentShellActivityTestRule {
@@ -125,10 +126,11 @@ public class JavaBridgeActivityTestRule extends ContentShellActivityTestRule {
                             WebContents webContents = getWebContents();
                             JavascriptInjector injector =
                                     JavascriptInjector.fromWebContents(webContents);
-                            injector.addPossiblyUnsafeInterface(object1, name1, requiredAnnotation);
+                            injector.addPossiblyUnsafeInterface(
+                                    object1, name1, requiredAnnotation, List.of("*"));
                             if (object2 != null && name2 != null) {
                                 injector.addPossiblyUnsafeInterface(
-                                        object2, name2, requiredAnnotation);
+                                        object2, name2, requiredAnnotation, List.of("*"));
                             }
                             webContents.getNavigationController().reload(true);
                         }

@@ -37,6 +37,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -99,7 +100,7 @@ public class ReturnToChromeUtilUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private ChromeInactivityTracker mInactivityTracker;
     @Mock private Resources mResources;
-    @Mock private TabModel mCurrentTabModel;
+    @Spy private TabModel mCurrentTabModel;
     @Mock private TabCreator mTabCreater;
     @Mock private Tab mTab1;
     @Mock private Tab mNtpTab;

@@ -28,8 +28,8 @@
 
 namespace privacy_sandbox {
 
-using ::privacy_sandbox_test_util::PrivacySandboxSettingsTestPeer;
-using Status = PrivacySandboxSettingsTestPeer::Status;
+using Status =
+    ::privacy_sandbox_test_util::PrivacySandboxSettingsTestPeer::Status;
 
 class PrivacySandboxAttestationsTestBase : public testing::Test {
  public:

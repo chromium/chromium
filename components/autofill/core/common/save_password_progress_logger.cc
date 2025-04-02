@@ -461,6 +461,18 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Password Change finished with result";
     case STRING_PASSWORD_CHANGE_STATE_CHANGED:
       return "Password Change internal state changed to";
+    case STRING_RESOURCE_FAILED_LOADING_NO_SUBMITTED_MANAGER:
+      return "POST error with 400-403 status is detected, ignoring since there "
+             "is no submitted form";
+    case STRING_RESOURCE_FAILED_LOADING_FOR_WRONG_FRAME:
+      return "POST error with 400-403 status is detected, ignoring since it is "
+             "for a different frame";
+    case STRING_RESOURCE_FAILED_LOADING_FOR_WRONG_ORIGIN:
+      return "POST error with 400-403 status is detected, ignoring since it is "
+             "for a different origin";
+    case STRING_RESOURCE_FAILED_LOADING_LOGIN_FAILED:
+      return "POST error with 400-403 status is detected, considering "
+             "current submission failed";
     case SavePasswordProgressLogger::STRING_INVALID:
       return "INVALID";
       // Intentionally no default: clause here -- all IDs need to get covered.

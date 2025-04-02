@@ -129,7 +129,8 @@ found in the LICENSE file.
                 android:layout_marginTop="8dp"
                 android:ellipsize="end"
                 android:gravity="center"
-                android:singleLine="true"/>
+                android:singleLine="true"
+                android:contentDescription="@string/restore_tabs_open_tabs_button_clicked_description" />
             <org.chromium.ui.widget.ButtonCompat
                 android:id="@+id/restore_tabs_button_review_tabs"
                 style="@style/TextButton"
@@ -140,7 +141,8 @@ found in the LICENSE file.
                 android:ellipsize="end"
                 android:gravity="center"
                 android:singleLine="true"
-                android:text="@string/restore_tabs_promo_sheet_review_tabs" />
+                android:text="@string/restore_tabs_promo_sheet_review_tabs"
+                android:contentDescription="@string/restore_tabs_promo_sheet_review_tabs_button_clicked_description" />
         </LinearLayout>
     </ScrollView>
 </FrameLayout>

@@ -114,7 +114,8 @@ using autofill_address_profile_infobar_overlays::
          initWithDelegate:self
       personalDataManager:personalDataManager
           autofillProfile:_autofillProfile.get()
-        isMigrationPrompt:self.config->is_migration_to_account()];
+        isMigrationPrompt:self.config->is_migration_to_account()
+         addManualAddress:NO];
 
   LegacyInfobarEditAddressProfileTableViewController* editModalViewController =
       [[LegacyInfobarEditAddressProfileTableViewController alloc]

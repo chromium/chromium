@@ -2155,6 +2155,15 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
           controller_->client()->GetTemplateURLService(), false);
       std::u16string replacement_string =
           turl ? turl->short_name() : match.contents;
+      // For featured search engines, we also want to add the shortcut name.
+      if (AutocompleteMatch::IsFeaturedSearchType(match.type)) {
+        int message_id = (turl && turl->starter_pack_id() ==
+                                      TemplateURLStarterPackData::kGemini)
+                             ? IDS_ACC_ASK_KEYWORD_MODE_WITH_SHORTCUT
+                             : IDS_ACC_KEYWORD_MODE_WITH_SHORTCUT;
+        return l10n_util::GetStringFUTF16(message_id, match.keyword,
+                                          replacement_string);
+      }
       int message_id = (turl && turl->starter_pack_id() ==
                                     TemplateURLStarterPackData::kGemini)
                            ? IDS_ACC_ASK_KEYWORD_MODE
@@ -2696,7 +2705,11 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
       dropdown_ignored ? fake_single_entry_result
                        : autocomplete_controller()->result(),
       destination_url, is_incognito,
-      match.zero_prefix_suggestions_shown_in_session);
+      match.zero_prefix_suggestions_shown_in_session,
+      match.zero_prefix_search_suggestions_shown_in_session,
+      match.zero_prefix_url_suggestions_shown_in_session,
+      match.typed_search_suggestions_shown_in_session,
+      match.typed_url_suggestions_shown_in_session);
 // Check disabled on iOS as the platform shows a default suggestion on focus
 // (crbug.com/40061502).
 #if !BUILDFLAG(IS_IOS)

@@ -917,11 +917,10 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ShowExtensions(browser_->GetBrowserForOpeningWebUi());
       break;
     case IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS:
-      CHECK(features::IsExtensionMenuInRootAppMenu());
       ShowExtensions(browser_->GetBrowserForOpeningWebUi());
       break;
     case IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE:
-      CHECK(features::IsExtensionMenuInRootAppMenu());
+    case IDC_EXPLORE_EXTENSIONS:
       ShowWebStore(browser_, extension_urls::kAppMenuUtmSource);
       break;
     case IDC_PERFORMANCE:
@@ -1614,13 +1613,13 @@ void BrowserCommandController::UpdateCommandsForExtensionsMenu() {
     return;
   }
 
-  if (features::IsExtensionMenuInRootAppMenu()) {
-    command_updater_.UpdateCommandEnabled(
-        IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS,
-        /*state=*/true);
-    command_updater_.UpdateCommandEnabled(
-        IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE, /*state=*/true);
-  }
+  command_updater_.UpdateCommandEnabled(
+      IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS,
+      /*state=*/true);
+  command_updater_.UpdateCommandEnabled(
+      IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE, /*state=*/true);
+  command_updater_.UpdateCommandEnabled(IDC_EXPLORE_EXTENSIONS,
+                                        /*state=*/true);
 }
 
 void BrowserCommandController::UpdateCommandsForTabState() {

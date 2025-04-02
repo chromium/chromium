@@ -22,7 +22,6 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -44,9 +43,9 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.BookmarkTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
@@ -70,13 +69,9 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     private final BookmarkTestRule mBookmarkTestRule = new BookmarkTestRule();
 
-    @ClassRule
-    public static final ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     // As bookmarks need the fake AccountManagerFacade in AccountManagerTestRule,
     // BookmarkTestRule should be initialized after and destroyed before the
@@ -158,8 +153,8 @@ public class BookmarkPersonalizedSigninPromoTest {
     // Get the activity that hosts the bookmark UI - on phones, this is a BookmarkActivity, on
     // tablets this is a native page.
     private Activity getBookmarkHostActivity() {
-        if (sActivityTestRule.getActivity().isTablet()) {
-            return sActivityTestRule.getActivity();
+        if (mActivityTestRule.getActivity().isTablet()) {
+            return mActivityTestRule.getActivity();
         } else {
             return mBookmarkTestRule.getBookmarkActivity();
         }
@@ -167,7 +162,7 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     private void showBookmarkManagerAndCheckSigninPromoIsDisplayed() {
         var shownHistogram = HistogramWatcher.newSingleRecordWatcher(SHOWN_HISTOGRAM_NAME, 1);
-        mBookmarkTestRule.showBookmarkManager(sActivityTestRule.getActivity());
+        mBookmarkTestRule.showBookmarkManager(mActivityTestRule.getActivity());
         shownHistogram.assertExpected();
 
         // TODO(https://cbug.com/1383638): If this stops the flakes, consider removing
@@ -185,7 +180,7 @@ public class BookmarkPersonalizedSigninPromoTest {
     }
 
     private void showBookmarkManagerAndCheckSigninPromoIsHidden() {
-        mBookmarkTestRule.showBookmarkManager(sActivityTestRule.getActivity());
+        mBookmarkTestRule.showBookmarkManager(mActivityTestRule.getActivity());
 
         RecyclerView recyclerView =
                 getBookmarkHostActivity().findViewById(R.id.selectable_list_recycler_view);

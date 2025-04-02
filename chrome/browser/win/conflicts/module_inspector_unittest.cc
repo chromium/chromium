@@ -62,11 +62,11 @@ class CrashingUtilWinImpl : public chrome::mojom::UtilWin {
 
 base::FilePath GetKernel32DllFilePath() {
   std::unique_ptr<base::Environment> env = base::Environment::Create();
-  std::string sysroot;
-  EXPECT_TRUE(env->GetVar("SYSTEMROOT", &sysroot));
+  std::optional<std::string> sysroot = env->GetVar("SYSTEMROOT");
+  EXPECT_TRUE(sysroot.has_value());
 
-  base::FilePath path =
-      base::FilePath::FromUTF8Unsafe(sysroot).Append(L"system32\\kernel32.dll");
+  base::FilePath path = base::FilePath::FromUTF8Unsafe(sysroot.value())
+                            .Append(L"system32\\kernel32.dll");
 
   return path;
 }

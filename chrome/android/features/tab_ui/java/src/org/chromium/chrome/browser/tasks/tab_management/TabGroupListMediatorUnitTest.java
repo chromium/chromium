@@ -330,7 +330,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(LOCAL_GROUP_ID2))
                 .thenReturn(Tab.INVALID_TAB_ID);
         when(mComprehensiveModel.getCount()).thenReturn(1);
-        when(mComprehensiveModel.getTabAt(0)).thenReturn(mTab1);
+        when(mComprehensiveModel.getTabAtChecked(0)).thenReturn(mTab1);
         when(mTab1.getRootId()).thenReturn(ROOT_ID1);
         when(mTab1.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
         when(mTab1.isClosing()).thenReturn(false);
@@ -365,7 +365,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(LOCAL_GROUP_ID2))
                 .thenReturn(Tab.INVALID_TAB_ID);
         when(mComprehensiveModel.getCount()).thenReturn(1);
-        when(mComprehensiveModel.getTabAt(0)).thenReturn(mTab1);
+        when(mComprehensiveModel.getTabAtChecked(0)).thenReturn(mTab1);
         when(mTab1.getRootId()).thenReturn(ROOT_ID1);
         when(mTab1.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
         when(mTab1.isClosing()).thenReturn(false);
@@ -409,7 +409,7 @@ public class TabGroupListMediatorUnitTest {
         group1.localId = new LocalTabGroupId(LOCAL_GROUP_ID1);
 
         when(mComprehensiveModel.getCount()).thenReturn(1);
-        when(mComprehensiveModel.getTabAt(0)).thenReturn(mTab1);
+        when(mComprehensiveModel.getTabAtChecked(0)).thenReturn(mTab1);
         when(mTab1.getRootId()).thenReturn(ROOT_ID1);
         when(mTab1.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
         when(mTab1.isClosing()).thenReturn(true);
@@ -445,7 +445,7 @@ public class TabGroupListMediatorUnitTest {
         group1.localId = new LocalTabGroupId(LOCAL_GROUP_ID1);
 
         when(mComprehensiveModel.getCount()).thenReturn(1);
-        when(mComprehensiveModel.getTabAt(0)).thenReturn(mTab1);
+        when(mComprehensiveModel.getTabAtChecked(0)).thenReturn(mTab1);
         when(mTab1.getRootId()).thenReturn(ROOT_ID1);
         when(mTab1.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
         when(mTab1.isClosing()).thenReturn(true);
@@ -470,8 +470,8 @@ public class TabGroupListMediatorUnitTest {
         group1.localId = new LocalTabGroupId(LOCAL_GROUP_ID1);
 
         when(mComprehensiveModel.getCount()).thenReturn(2);
-        when(mComprehensiveModel.getTabAt(0)).thenReturn(mTab1);
-        when(mComprehensiveModel.getTabAt(1)).thenReturn(mTab2);
+        when(mComprehensiveModel.getTabAtChecked(0)).thenReturn(mTab1);
+        when(mComprehensiveModel.getTabAtChecked(1)).thenReturn(mTab2);
         when(mTab1.getRootId()).thenReturn(ROOT_ID1);
         when(mTab1.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
         when(mTab2.getRootId()).thenReturn(ROOT_ID1);
@@ -515,7 +515,7 @@ public class TabGroupListMediatorUnitTest {
                 .thenReturn(Tab.INVALID_TAB_ID);
         when(mTabGroupModelFilter.getTabsInGroup(LOCAL_GROUP_ID1)).thenReturn(Arrays.asList(mTab1));
         when(mComprehensiveModel.getCount()).thenReturn(1);
-        when(mComprehensiveModel.getTabAt(0)).thenReturn(mTab1);
+        when(mComprehensiveModel.getTabAtChecked(0)).thenReturn(mTab1);
         when(mTab1.getRootId()).thenReturn(ROOT_ID1);
         when(mTab1.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
         when(mTab1.isClosing()).thenReturn(false);
@@ -558,7 +558,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(LOCAL_GROUP_ID1)).thenReturn(ROOT_ID1);
         when(mTabGroupModelFilter.getTabsInGroup(LOCAL_GROUP_ID1)).thenReturn(Arrays.asList(mTab1));
         when(mComprehensiveModel.getCount()).thenReturn(1);
-        when(mComprehensiveModel.getTabAt(0)).thenReturn(mTab1);
+        when(mComprehensiveModel.getTabAtChecked(0)).thenReturn(mTab1);
         when(mTab1.getRootId()).thenReturn(ROOT_ID1);
         when(mTab1.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
         when(mTab1.isClosing()).thenReturn(true);
@@ -632,7 +632,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(LOCAL_GROUP_ID1)).thenReturn(ROOT_ID1);
         when(mTabGroupModelFilter.getTabsInGroup(LOCAL_GROUP_ID1)).thenReturn(Arrays.asList(mTab1));
         when(mComprehensiveModel.getCount()).thenReturn(1);
-        when(mComprehensiveModel.getTabAt(0)).thenReturn(mTab1);
+        when(mComprehensiveModel.getTabAtChecked(0)).thenReturn(mTab1);
         when(mTab1.getRootId()).thenReturn(ROOT_ID1);
         when(mTab1.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
         when(mTab1.isClosing()).thenReturn(false);
@@ -675,7 +675,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(LOCAL_GROUP_ID1)).thenReturn(ROOT_ID1);
         when(mTabGroupModelFilter.getTabsInGroup(LOCAL_GROUP_ID1)).thenReturn(List.of(mTab1));
         when(mComprehensiveModel.getCount()).thenReturn(1);
-        when(mComprehensiveModel.getTabAt(0)).thenReturn(mTab1);
+        when(mComprehensiveModel.getTabAtChecked(0)).thenReturn(mTab1);
         when(mTab1.getRootId()).thenReturn(ROOT_ID1);
         when(mTab1.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
         when(mTab1.isClosing()).thenReturn(false);
@@ -722,7 +722,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(LOCAL_GROUP_ID1)).thenReturn(ROOT_ID1);
         when(mTabGroupModelFilter.getTabsInGroup(LOCAL_GROUP_ID1)).thenReturn(Arrays.asList(mTab1));
         when(mComprehensiveModel.getCount()).thenReturn(1);
-        when(mComprehensiveModel.getTabAt(0)).thenReturn(mTab1);
+        when(mComprehensiveModel.getTabAtChecked(0)).thenReturn(mTab1);
         when(mTab1.getRootId()).thenReturn(ROOT_ID1);
         when(mTab1.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
         when(mTab1.isClosing()).thenReturn(false);

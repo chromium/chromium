@@ -233,42 +233,18 @@ PathBuilder& PathBuilder::AddContouredRect(
   }
   const FloatRoundedRect& origin_rect = contoured_rect.GetOriginRect();
 
-  if (origin_rect == target_rect) {
+  // This would include the outer border of the rect, as well as shadow and
+  // margin.
+  if (origin_rect == target_rect ||
+      target_rect.Rect().Contains(origin_rect.Rect())) {
     // A rect with no insets/outsets, we can draw all the corners and not worry
     // about intersections.
+    MoveTo(origin_rect.TopRightCorner().origin());
     AddCurvedCorner(builder_, contoured_rect.TopRightCorner());
     AddCurvedCorner(builder_, contoured_rect.BottomRightCorner());
     AddCurvedCorner(builder_, contoured_rect.BottomLeftCorner());
     AddCurvedCorner(builder_, contoured_rect.TopLeftCorner());
     current_path_.reset();
-    return *this;
-  }
-
-  // This would happen when the target rect is an outset of the origin rect,
-  // usually something like a shadow or margin.
-  // Draw the adjusted corners, and then add axis-aligned lines to connect them
-  // to the target (outset) rect.
-  if (target_rect.Rect().Contains(origin_rect.Rect())) {
-    const Corner top_right_corner = contoured_rect.TopRightCorner();
-    const Corner bottom_right_corner = contoured_rect.BottomRightCorner();
-    const Corner bottom_left_corner = contoured_rect.BottomLeftCorner();
-    const Corner top_left_corner = contoured_rect.TopLeftCorner();
-    AddCurvedCorner(builder_, top_right_corner);
-    LineTo(gfx::PointF(target_rect.Rect().right(), top_right_corner.End().y()));
-    LineTo(gfx::PointF(target_rect.Rect().right(),
-                       bottom_right_corner.Start().y()));
-    AddCurvedCorner(builder_, bottom_right_corner);
-    LineTo(gfx::PointF(bottom_right_corner.End().x(),
-                       target_rect.Rect().bottom()));
-    LineTo(gfx::PointF(bottom_left_corner.Start().x(),
-                       target_rect.Rect().bottom()));
-    AddCurvedCorner(builder_, bottom_left_corner);
-    LineTo(gfx::PointF(target_rect.Rect().x(), bottom_left_corner.End().y()));
-    LineTo(gfx::PointF(target_rect.Rect().x(), top_left_corner.Start().y()));
-    AddCurvedCorner(builder_, top_left_corner);
-    LineTo(gfx::PointF(top_left_corner.End().x(), target_rect.Rect().y()));
-    LineTo(gfx::PointF(top_right_corner.Start().x(), target_rect.Rect().y()));
-    Close();
     return *this;
   }
 

@@ -216,7 +216,7 @@ public class ChromeBrowserInitializer {
 
         if (isAsync) {
             // We want to start this queue once the C++ startup tasks have run; allow the
-            // C++ startup to run asynchonously, and set it up to start the Java queue once
+            // C++ startup to run asynchronously, and set it up to start the Java queue once
             // it has finished.
             startChromeBrowserProcessesAsync(
                     delegate.shouldStartGpuProcess(),

@@ -27,11 +27,13 @@ void SkyVaultMigrationMisconfiguredHistogram(MigrationDestination destination,
                                              bool value);
 void SkyVaultMigrationResetHistogram(bool value);
 void SkyVaultMigrationRetryHistogram(int count);
+void SkyVaultDeletionRetryHistogram(int count);
 void SkyVaultMigrationStoppedHistogram(MigrationDestination destination,
                                        bool value);
 void SkyVaultMigrationWrongStateHistogram(MigrationDestination destination,
                                           StateErrorContext context,
                                           State state);
+void SkyVaultDeletionDoneHistogram(bool success);
 void SkyVaultMigrationDoneHistograms(MigrationDestination destination,
                                      bool success,
                                      base::TimeDelta duration);
@@ -46,6 +48,12 @@ void SkyVaultMigrationReconnectionDurationHistogram(
     base::TimeDelta duration);
 void SkyVaultMigrationCleanupErrorHistogram(MigrationDestination destination,
                                             bool value);
+void SkyVaultMigrationScheduledTimeInPastInformUser(
+    MigrationDestination destination,
+    bool value);
+void SkyVaultMigrationScheduledTimeInPastScheduleMigration(
+    MigrationDestination destination,
+    bool value);
 
 // Helper functions to log UMA stats on migration dialog interactions.
 void SkyVaultMigrationDialogActionHistogram(MigrationDestination destination,

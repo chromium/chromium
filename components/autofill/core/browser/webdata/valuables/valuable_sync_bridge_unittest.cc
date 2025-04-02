@@ -42,7 +42,7 @@ constexpr char kInvalidId[] = "";
 LoyaltyCard TestLoyaltyCard(std::string_view id) {
   return LoyaltyCard(ValuableId(std::string(id)), "merchant_name",
                      "program_name", GURL("http://foobar.com/logo.png"),
-                     "card_suffix");
+                     "card_number");
 }
 
 std::vector<LoyaltyCard> ExtractLoyaltyCardsFromDataBatch(
@@ -139,6 +139,18 @@ TEST_F(ValuableSyncBridgeTest, IsEntityDataValid) {
   EXPECT_TRUE(bridge().IsEntityDataValid(*entity));
   // Invalid case.
   entity->specifics.mutable_autofill_valuable()->set_id(kInvalidId);
+  EXPECT_FALSE(bridge().IsEntityDataValid(*entity));
+}
+
+TEST_F(ValuableSyncBridgeTest, IsLoyaltyCardEntityDataValid) {
+  // Valid case.
+  std::unique_ptr<syncer::EntityData> entity =
+      CreateEntityDataFromLoyaltyCard(TestLoyaltyCard(kId1));
+  EXPECT_TRUE(bridge().IsEntityDataValid(*entity));
+  // Invalid logo.
+  entity->specifics.mutable_autofill_valuable()
+      ->mutable_loyalty_card()
+      ->set_program_logo("invalid_url");
   EXPECT_FALSE(bridge().IsEntityDataValid(*entity));
 }
 
@@ -272,7 +284,7 @@ TEST_F(ValuableSyncBridgeTest,
   loyalty_card->mutable_program_name()->assign("program_name");
   loyalty_card->mutable_program_logo()->assign("program_logo");
   loyalty_card->mutable_merchant_name()->assign("merchant_name");
-  loyalty_card->mutable_loyalty_card_suffix()->assign("card_suffix");
+  loyalty_card->mutable_loyalty_card_number()->assign("card_number");
 
   EXPECT_EQ(bridge()
                 .TrimAllSupportedFieldsFromRemoteSpecifics(specifics)
@@ -298,7 +310,7 @@ TEST_F(ValuableSyncBridgeTest,
   loyalty_card->mutable_program_name()->assign("program_name");
   loyalty_card->mutable_program_logo()->assign("program_logo");
   loyalty_card->mutable_merchant_name()->assign("merchant_name");
-  loyalty_card->mutable_loyalty_card_suffix()->assign("card_suffix");
+  loyalty_card->mutable_loyalty_card_number()->assign("card_number");
 
   EXPECT_EQ(bridge()
                 .TrimAllSupportedFieldsFromRemoteSpecifics(

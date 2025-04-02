@@ -7,6 +7,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/animation/animation_input_helpers.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
+#include "third_party/blink/renderer/core/animation/keyframe.h"
+#include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/css/css_keyframe_shorthand_value.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
@@ -34,16 +36,46 @@ MutableCSSPropertyValueSet* CreateCssPropertyValueSet() {
 
 using PropertyResolver = StringKeyframe::PropertyResolver;
 
+StringKeyframe::PropertyIterator::PropertyIterator(
+    const StringKeyframe* keyframe)
+    : css_properties_(keyframe->css_property_map_->Properties()) {}
+
+void StringKeyframe::PropertyIterator::Advance(const Keyframe* keyframe) {
+  css_properties_.take_first_elem();
+}
+
+PropertyHandle StringKeyframe::PropertyIterator::Deref(
+    const Keyframe* keyframe) const {
+  DCHECK(
+      To<StringKeyframe>(keyframe)->css_property_map_->Properties().end() ==
+      css_properties_.end());
+  return PropertyHandle(css_properties_.front().Name());
+}
+
+bool StringKeyframe::PropertyIterator::AtEnd(const Keyframe* keyframe) const {
+  return css_properties_.empty();
+}
+
+Keyframe::PropertyIteratorWrapper
+StringKeyframe::IterableStringKeyframeProperties::begin() const {
+  keyframe_->EnsureCssPropertyMap();
+  return Keyframe::PropertyIteratorWrapper(
+      keyframe_, std::make_unique<PropertyIterator>(keyframe_));
+}
+
+size_t StringKeyframe::IterableStringKeyframeProperties::size() const {
+  keyframe_->EnsureCssPropertyMap();
+  return keyframe_->css_property_map_->Properties().size();
+}
+
 StringKeyframe::StringKeyframe(const StringKeyframe& copy_from)
-    : Keyframe(copy_from.offset_,
+    : Keyframe(MakeGarbageCollected<IterableStringKeyframeProperties>(this),
+               copy_from.offset_,
                copy_from.timeline_offset_,
                copy_from.composite_,
                copy_from.easing_),
       tree_scope_(copy_from.tree_scope_),
       input_properties_(copy_from.input_properties_),
-      presentation_attribute_map_(
-          copy_from.presentation_attribute_map_->MutableCopy()),
-      svg_attribute_map_(copy_from.svg_attribute_map_),
       has_logical_property_(copy_from.has_logical_property_),
       writing_direction_(copy_from.writing_direction_) {
   if (copy_from.css_property_map_)
@@ -146,60 +178,14 @@ void StringKeyframe::SetCSSPropertyValue(const CSSPropertyName& name,
 
 void StringKeyframe::RemoveCustomCSSProperty(const PropertyHandle& property) {
   DCHECK(property.IsCSSCustomProperty());
-  if (css_property_map_)
+  if (css_property_map_) {
     css_property_map_->RemoveProperty(property.CustomPropertyName());
+  }
   input_properties_.erase(property);
 }
 
-void StringKeyframe::SetPresentationAttributeValue(
-    const CSSProperty& property,
-    const String& value,
-    SecureContextMode secure_context_mode,
-    StyleSheetContents* style_sheet_contents) {
-  DCHECK_NE(property.PropertyID(), CSSPropertyID::kInvalid);
-  if (!CSSAnimations::IsAnimationAffectingProperty(property)) {
-    presentation_attribute_map_->ParseAndSetProperty(
-        property.PropertyID(), value, false, secure_context_mode,
-        style_sheet_contents);
-  }
-}
-
-void StringKeyframe::SetSVGAttributeValue(const QualifiedName& attribute_name,
-                                          const String& value) {
-  svg_attribute_map_.Set(&attribute_name, value);
-}
-
-PropertyHandleSet StringKeyframe::Properties() const {
-  // This is not used in time-critical code, so we probably don't need to
-  // worry about caching this result.
-  EnsureCssPropertyMap();
-  PropertyHandleSet properties;
-
-  for (const CSSPropertyValue& property_reference :
-       css_property_map_->Properties()) {
-    const CSSPropertyName& name = property_reference.Name();
-    DCHECK(!name.IsCustomProperty() ||
-           !CSSProperty::Get(name.Id()).IsShorthand())
-        << "Web Animations: Encountered unexpanded shorthand CSS property ("
-        << static_cast<int>(name.Id()) << ").";
-    properties.insert(PropertyHandle(name));
-  }
-
-  for (const CSSPropertyValue& property :
-       presentation_attribute_map_->Properties()) {
-    properties.insert(
-        PropertyHandle(CSSProperty::Get(property.PropertyID()), true));
-  }
-
-  for (auto* const key : svg_attribute_map_.Keys())
-    properties.insert(PropertyHandle(*key));
-
-  return properties;
-}
-
 bool StringKeyframe::HasCssProperty() const {
-  PropertyHandleSet properties = Properties();
-  for (const PropertyHandle& property : properties) {
+  for (const PropertyHandle& property : Properties()) {
     if (property.IsCSSProperty())
       return true;
   }
@@ -219,35 +205,12 @@ void StringKeyframe::AddKeyframePropertiesToV8Object(
 
     object_builder.AddString(property_name, property_value->CssText());
   }
-
-  // Legacy code path for SVG and Presentation attributes.
-  //
-  // TODO(816956): Move these to input_properties_ and remove this. Note that
-  // this code path is not well tested given that removing it didn't cause any
-  // test failures.
-  for (const PropertyHandle& property : Properties()) {
-    if (property.IsCSSProperty())
-      continue;
-
-    String property_name =
-        AnimationInputHelpers::PropertyHandleToKeyframeAttribute(property);
-    String property_value;
-    if (property.IsPresentationAttribute()) {
-      const auto& attribute = property.PresentationAttribute();
-      property_value = PresentationAttributeValue(attribute).CssText();
-    } else {
-      DCHECK(property.IsSVGAttribute());
-      property_value = SvgPropertyValue(property.SvgAttribute());
-    }
-    object_builder.AddString(property_name, property_value);
-  }
 }
 
 void StringKeyframe::Trace(Visitor* visitor) const {
   visitor->Trace(tree_scope_);
   visitor->Trace(input_properties_);
   visitor->Trace(css_property_map_);
-  visitor->Trace(presentation_attribute_map_);
   Keyframe::Trace(visitor);
 }
 
@@ -312,22 +275,10 @@ StringKeyframe::CreatePropertySpecificKeyframe(
     double offset) const {
   EffectModel::CompositeOperation composite =
       composite_.value_or(effect_composite);
-  if (property.IsCSSProperty()) {
-    return MakeGarbageCollected<CSSPropertySpecificKeyframe>(
-        offset, &Easing(), &CssPropertyValue(property), tree_scope_.Get(),
-        composite);
-  }
-
-  if (property.IsPresentationAttribute()) {
-    return MakeGarbageCollected<CSSPropertySpecificKeyframe>(
-        offset, &Easing(),
-        &PresentationAttributeValue(property.PresentationAttribute()),
-        tree_scope_.Get(), composite);
-  }
-
-  DCHECK(property.IsSVGAttribute());
-  return MakeGarbageCollected<SVGPropertySpecificKeyframe>(
-      offset, &Easing(), SvgPropertyValue(property.SvgAttribute()), composite);
+  DCHECK(property.IsCSSProperty());
+  return MakeGarbageCollected<CSSPropertySpecificKeyframe>(
+      offset, &Easing(), &CssPropertyValue(property), tree_scope_.Get(),
+      composite);
 }
 
 bool StringKeyframe::CSSPropertySpecificKeyframe::
@@ -373,20 +324,6 @@ StringKeyframe::CSSPropertySpecificKeyframe::CloneWithOffset(
       offset, easing_, value_.Get(), tree_scope_.Get(), composite_);
   clone->compositor_keyframe_value_cache_ = compositor_keyframe_value_cache_;
   return clone;
-}
-
-Keyframe::PropertySpecificKeyframe*
-SVGPropertySpecificKeyframe::CloneWithOffset(double offset) const {
-  return MakeGarbageCollected<SVGPropertySpecificKeyframe>(offset, easing_,
-                                                           value_, composite_);
-}
-
-Keyframe::PropertySpecificKeyframe*
-SVGPropertySpecificKeyframe::NeutralKeyframe(
-    double offset,
-    scoped_refptr<TimingFunction> easing) const {
-  return MakeGarbageCollected<SVGPropertySpecificKeyframe>(
-      offset, std::move(easing), String(), EffectModel::kCompositeAdd);
 }
 
 // ----- Property Resolver -----

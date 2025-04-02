@@ -807,7 +807,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                             mNativeObj,
                             AccessibilityState.isScreenReaderEnabled(),
                             AccessibilityState.isOnlyPasswordManagersEnabled(),
-                            AccessibilityState.isScreenReaderRunning());
+                            AccessibilityState.isScreenReaderRunning(),
+                            AccessibilityState.getTalkBackEnabledState().second);
 
             // Update the state of enabling/disabling the image descriptions feature. To enable the
             // feature, this instance must be a candidate and a screen reader must be enabled.
@@ -1968,6 +1969,16 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     @CalledByNative
+    private void handleActiveDescendantChanged(int id, int activeDescendantId) {
+        if (activeDescendantId != View.NO_ID) {
+            moveAccessibilityFocusToId(activeDescendantId);
+        } else {
+            // Return focus to the node that had the event dispatched upon it.
+            moveAccessibilityFocusToId(id);
+        }
+    }
+
+    @CalledByNative
     private void handleTextSelectionChanged(int id) {
         sendAccessibilityEvent(id, AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED);
     }
@@ -2081,6 +2092,19 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             }
 
             event.setContentChangeTypes(CONTENT_CHANGE_TYPE_PANE_APPEARED);
+            event.setSource(mView, virtualViewId);
+            requestSendAccessibilityEvent(event);
+        }
+    }
+
+    @CalledByNative
+    private void handleExpandedStateChanged(int virtualViewId) {
+        if (isAccessibilityEnabled()) {
+            AccessibilityEvent event =
+                    AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+            if (event == null) return;
+
+            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_EXPANDED);
             event.setSource(mView, virtualViewId);
             requestSendAccessibilityEvent(event);
         }
@@ -2316,7 +2340,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 long nativeWebContentsAccessibilityAndroid,
                 boolean screenReaderMode,
                 boolean formControlsMode,
-                boolean isScreenReaderRunning);
+                boolean isScreenReaderRunning,
+                boolean onScreenMode);
 
         void disableRendererAccessibility(long nativeWebContentsAccessibilityAndroid);
 

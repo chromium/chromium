@@ -23,7 +23,7 @@ function elementHeight() {
 function runHoverStateOnScrollTest(scrollCallback, targetIndex) {
   verifyTestDriverLoaded();
   const runTest = async (resolve, reject) => {
-    await waitForCompositorCommit();
+    await waitForCompositorReady();
 
     const array = document.getElementsByClassName('hoverme');
     const center = elementCenter(array[0]);
@@ -62,7 +62,7 @@ function runHoverStateOnScrollTest(scrollCallback, targetIndex) {
 
     document.removeEventListener('scroll', scrollListener);
 
-    await waitForCompositorCommit();
+    await waitForCompositorReady();
 
     // Once scrolling is complete, the hover state must update.
     validateHoverState(array, targetIndex, () => {

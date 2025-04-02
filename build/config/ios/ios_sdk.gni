@@ -80,8 +80,8 @@ if (ios_sdk_path == "") {
     if (target_environment == "simulator") {
       ios_sdk_name = "appletvsimulator"
       ios_sdk_platform = "AppleTVSimulator"
-    } else if (target_environement == "device") {
-      ios_sdk_name = "appletv"
+    } else if (target_environment == "device") {
+      ios_sdk_name = "appletvos"
       ios_sdk_platform = "AppleTVOS"
     } else {
       assert(false, "unsupported target_environment=$target_environment")

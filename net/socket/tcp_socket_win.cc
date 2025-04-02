@@ -22,6 +22,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/win/windows_version.h"
 #include "net/base/address_list.h"
 #include "net/base/features.h"

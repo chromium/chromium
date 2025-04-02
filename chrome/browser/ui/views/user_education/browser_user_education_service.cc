@@ -1633,7 +1633,7 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
   registry.RegisterFeature(user_education::NewBadgeSpecification(
       password_manager::features::kPasswordManualFallbackAvailable,
       user_education::Metadata(
-          128, "theocristea@google.com",
+          128, "brunobraga@google.com",
           "For passwords manual fallback; shown in the context menu.")));
 
   registry.RegisterFeature(user_education::NewBadgeSpecification(

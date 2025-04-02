@@ -160,14 +160,13 @@ const char* ResultInterface::MessageToMethodName_(mojo::Message& message) {
 
 #if !BUILDFLAG(IS_FUCHSIA)
 uint32_t ResultInterface::Method_Sym::IPCStableHash() {
-  // This method's address is used for indetifiying the mojo method name after
+  // This method's address is used for identifiying the mojo method name after
   // symbolization. So each IPCStableHash should have a unique address.
   // We cannot use NO_CODE_FOLDING() here - it relies on the uniqueness of
   // __LINE__ value, which is not unique accross different mojo modules.
   // The code below is very similar to NO_CODE_FOLDING, but it uses a unique
   // hash instead of __LINE__.
-  constexpr uint32_t kHash = base::MD5Hash32Constexpr(
-          "(Impl)golden::ResultInterface::Method");
+  static constexpr uint32_t kHash = 0x826d7762;  // IPCStableHash for golden::ResultInterface::Method
   const uint32_t hash = kHash;
   base::debug::Alias(&hash);
   return hash;
@@ -178,7 +177,7 @@ class ResultInterface_Method_ForwardToCallback
     : public mojo::MessageReceiver {
  public:
   ResultInterface_Method_ForwardToCallback(
-      ResultInterface::MethodResultCallback callback
+      ResultInterface::MethodCallback callback
       ) : callback_(std::move(callback)) {
   }
 
@@ -187,7 +186,7 @@ class ResultInterface_Method_ForwardToCallback
 
   bool Accept(mojo::Message* message) override;
  private:
-  ResultInterface::MethodResultCallback callback_;
+  ResultInterface::MethodCallback callback_;
 };
 
 ResultInterfaceProxy::ResultInterfaceProxy(mojo::MessageReceiverWithResponder* receiver)
@@ -195,7 +194,7 @@ ResultInterfaceProxy::ResultInterfaceProxy(mojo::MessageReceiverWithResponder* r
 }
 
 void ResultInterfaceProxy::Method(
-    bool in_a, MethodResultCallback callback) {
+    bool in_a, MethodCallback callback) {
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
   TRACE_EVENT1(
     "mojom", "Send golden::ResultInterface::Method", "input_parameters",
@@ -239,7 +238,7 @@ void ResultInterfaceProxy::Method(
 }
 class ResultInterface_Method_ProxyToResponder : public ::mojo::internal::ProxyToResponder {
  public:
-  static ResultInterface::MethodResultCallback CreateCallback(
+  static ResultInterface::MethodCallback CreateCallback(
       ::mojo::Message& message,
       std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
     std::unique_ptr<ResultInterface_Method_ProxyToResponder> proxy(
@@ -509,7 +508,7 @@ bool UnionTraits<::golden::ResultInterface_Method_ResponseParam_Result::DataView
 namespace golden {
 
 
-void ResultInterfaceInterceptorForTesting::Method(bool a, MethodResultCallback callback) {
+void ResultInterfaceInterceptorForTesting::Method(bool a, MethodCallback callback) {
   GetForwardingInterface()->Method(
     std::move(a)
     , std::move(callback));
@@ -518,6 +517,7 @@ ResultInterfaceAsyncWaiter::ResultInterfaceAsyncWaiter(
     ResultInterface* proxy) : proxy_(proxy) {}
 
 ResultInterfaceAsyncWaiter::~ResultInterfaceAsyncWaiter() = default;
+
 
 
 

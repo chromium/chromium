@@ -16,10 +16,8 @@ import android.util.Pair;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -106,12 +104,9 @@ public class X509Util {
             byte @Nullable [] sctList)
             throws CertificateException {
         try {
-            // TODO(crbug.com/366221093): use normal sdk check once the SDK is finalized.
-            AconfigFlaggedApiDelegate delegate =
-                    ServiceLoaderUtil.maybeCreate(AconfigFlaggedApiDelegate.class);
-            if (delegate != null && !(ocspResponse == null && sctList == null)) {
-                return delegate.checkServerTrusted(
-                        tm, chain, authType, host, ocspResponse, sctList);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA
+                    && !(ocspResponse == null && sctList == null)) {
+                return tm.checkServerTrusted(chain, ocspResponse, sctList, authType, host);
             }
             return tm.checkServerTrusted(chain, authType, host);
         } catch (RuntimeException e) {

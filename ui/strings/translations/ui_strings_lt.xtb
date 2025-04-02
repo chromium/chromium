@@ -38,6 +38,7 @@
 <translation id="19085484004813472">Tai nauja funkcija</translation>
 <translation id="2006524834898217237">Įsitikinkite, kad šis įrenginys prijungtas prie interneto.</translation>
 <translation id="208586643495776849">Bandykite dar kartą</translation>
+<translation id="2111134541987263231">Įjunkite parinktį <ph name="BEGIN_BOLD" />Leisti inkognito režimu<ph name="END_BOLD" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d.}one{# d.}few{# d.}many{# d.}other{# d.}}</translation>
 <translation id="2148716181193084225">Šiandien</translation>
 <translation id="2168039046890040389">Puslapį į viršų</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">Palieskite jutiklines sritis ekrane.</translation>
 <translation id="2295140143284145483">Apklausa</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Nepavyko rasti plėtinio, kurio ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Susisiekite su administratoriumi.}one{Nepavyko rasti plėtinių, kurių ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Susisiekite su administratoriumi.}few{Nepavyko rasti plėtinių, kurių ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Susisiekite su administratoriumi.}many{Nepavyko rasti plėtinių, kurių ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Susisiekite su administratoriumi.}other{Nepavyko rasti plėtinių, kurių ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Susisiekite su administratoriumi.}}</translation>
 <translation id="2353636109065292463">Tikrinamas interneto ryšys</translation>
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2388990488038464401">Skambinti šiuo numeriu iš jūsų telefono?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">Ištrinti viską</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{po 1 d.}one{po # d.}few{po # d.}many{po # d.}other{po # d.}}</translation>
 <translation id="2922712708897119705">Stulpelis „<ph name="COLUMN_NAME" />“ rūšiuojamas mažėjimo tvarka.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Nepavyko rasti plėtinio}one{Nepavyko rasti plėtinių}few{Nepavyko rasti plėtinių}many{Nepavyko rasti plėtinių}other{Nepavyko rasti plėtinių}}</translation>
 <translation id="3036649622769666520">Atidaryti failus</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">Apačia</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">Skambinkite naudodami</translation>
 <translation id="3306688585798492231">Įtaisytasis ekranas</translation>
 <translation id="335581015389089642">Kalba</translation>
+<translation id="3372635229069101468">Spustelėkite <ph name="BEGIN_BOLD" />Išsami informacija<ph name="END_BOLD" />.</translation>
 <translation id="3389286852084373014">Teksto pranešimas per didelis</translation>
 <translation id="3406306243914553062">HTML turinys</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{Liko 1 diena}one{Liko # diena}few{Liko # dienos}many{Liko # dienos}other{Liko # dienų}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">Stulpelis „<ph name="COLUMN_NAME" />“ rūšiuojamas didėjimo tvarka.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 neskaitytas pranešimas}one{# neskaitytas pranešimas}few{# neskaityti pranešimai}many{# neskaityto pranešimo}other{# neskaitytų pranešimų}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Toliau nurodytą plėtinį įjunkite inkognito režimu.}one{Toliau nurodytus plėtinius įjunkite inkognito režimu.}few{Toliau nurodytus plėtinius įjunkite inkognito režimu.}many{Toliau nurodytus plėtinius įjunkite inkognito režimu.}other{Toliau nurodytus plėtinius įjunkite inkognito režimu.}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Prieš 1 mėnesį}one{Prieš # mėnesį}few{Prieš # mėnesius}many{Prieš # mėnesio}other{Prieš # mėnesių}}</translation>
 <translation id="4289300219472526559">Pradėti kalbėti</translation>
 <translation id="4289540628985791613">Apžvalga</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">numeris</translation>
 <translation id="4746179598275229723">Plėtinys atsegtas</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Liko 1 mėnuo}one{Liko # mėnuo}few{Liko # mėnesiai}many{Liko # mėnesio}other{Liko # mėnesių}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Norint naudoti inkognito režimą, organizacijai reikia plėtinio}one{Norint naudoti inkognito režimą, organizacijai reikia kai kurių plėtinių}few{Norint naudoti inkognito režimą, organizacijai reikia kai kurių plėtinių}many{Norint naudoti inkognito režimą, organizacijai reikia kai kurių plėtinių}other{Norint naudoti inkognito režimą, organizacijai reikia kai kurių plėtinių}}</translation>
+<translation id="482932175346970750">Naršyklėje įveskite <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />.</translation>
 <translation id="4888938634149558681">Skambinti</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekundė}one{# sekundė}few{# sekundės}many{# sekundės}other{# sekundžių}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;Įklijuoti</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Nepavyko išsiųsti</translation>
+<translation id="5283101102242354279">Įjunkite plėtinį inkognito režimu.</translation>
 <translation id="528468243742722775">Baigti</translation>
 <translation id="5329858601952122676">&amp;Pašalinti</translation>
 <translation id="5361107212971249203">tekstas</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">Programos vaizdo nustatymai įsigalios kitą kartą ją iš naujo paleidus.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Liko 1 min.}one{Liko # min.}few{Liko # min.}many{Liko # min.}other{Liko # min.}}</translation>
+<translation id="7252604552361840748">Raskite plėtinį anksčiau nurodytu adresu.</translation>
 <translation id="7363164521834647158">Siųsti atsakymą</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Prieš 1 min.}one{Prieš # min.}few{Prieš # min.}many{Prieš # min.}other{Prieš # min.}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>

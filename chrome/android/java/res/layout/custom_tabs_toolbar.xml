@@ -33,6 +33,7 @@ found in the LICENSE file.
             app:tint="@color/default_icon_color_tint_list" />
     </LinearLayout>
 
+    <!-- LINT.IfChange(IncognitoIcon) -->
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/incognito_cct_logo_image_view"
         style="@style/LocationBarButton"
@@ -43,6 +44,7 @@ found in the LICENSE file.
         app:srcCompat="@drawable/ic_incognito_cct_24dp"
         android:visibility="gone"
         android:contentDescription="@string/accessibility_incognito_badge"/>
+    <!-- LINT.ThenChange(//chrome/android/java/res/layout/custom_tab_incognito_icon.xml) -->
 
     <FrameLayout
         android:id="@+id/location_bar_frame_layout"

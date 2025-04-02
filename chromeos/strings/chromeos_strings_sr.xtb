@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Онемогућите чувар екрана</translation>
 <translation id="3091839911843451378">Није успело – заустављено је</translation>
 <translation id="3102119246920354026">Кеш</translation>
-<translation id="3112413615003385433">Наставник је уклонио садржај у Школским алаткама</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">базенима</translation>
 <translation id="3122883569442693641">Још детаља</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Делимично активирано</translation>
 <translation id="3492882532495507361">Канцеларија <ph name="OFFICE_STYLE" /> са <ph name="OFFICE_COLOR" /> нијансама</translation>
 <translation id="3493187369049186498">Податке мери Chromebook. То може да се разликује од података добављача.</translation>
-<translation id="349570724365779960">Школске алатке су повезане са ученицима</translation>
 <translation id="3502426834823382181">прикажи све апликације</translation>
 <translation id="3510890413042482857">Шаљи <ph name="BEGIN_LINK1" />податке о праћењу учинка<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Ажурирање Chrome ОС-а</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Измене су готове</translation>
 <translation id="3532980081107202182">Преостало је још око <ph name="MIN_REMAINING" /> минута</translation>
 <translation id="3533790840489634638">базеном</translation>
-<translation id="3535802910192338629">Наставник је додао нови садржај у Школским алаткама</translation>
 <translation id="3547264467365135390">Формула</translation>
 <translation id="3557205324756024651">Локални идентитет (опционално)</translation>
 <translation id="3565064564551103223">Дозвољене IPа адресе</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">Желите да дозволите системским услугама да користе локацију?</translation>
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="66621959568103627">коралнорозе</translation>
+<translation id="6669485505082792176">Тренутно не можемо да направимо слике на којима је ово. Пробајте да преформулишете опис. Имајте на уму да не можете да правите слике људи, штетан или експлицитан садржај. <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">повећајте осветљеност тастатуре</translation>
 <translation id="6692996468359469499">Пронађите информације у вези са вашим избором</translation>
 <translation id="6694534975463174713">брава</translation>
@@ -1440,7 +1438,6 @@
 <translation id="7544853251252956727">Пусти насумично</translation>
 <translation id="7550715992156305117">Дијагностичке рутине</translation>
 <translation id="7551123448725492271">Уређај је аудио уређај.</translation>
-<translation id="7553913964854052228">Школске алатке користе микрофон</translation>
 <translation id="7559239713112547082">Преглед снимка екрана</translation>
 <translation id="7561454561030345039">Овим подешавањем управља администратор</translation>
 <translation id="7561759921596375678">Укључите звук</translation>
@@ -1663,7 +1660,6 @@
 <translation id="8576249514688522074">Није покренуто</translation>
 <translation id="8584654835905316966">Рестартовање је обавезно да би се довршилa инсталација фирмвера за <ph name="DEVICE_NAME" /> на верзију <ph name="VERSION" />. Може да изгледа као да се рачунар рестартује неколико пута. Ово је очекивано понашање.</translation>
 <translation id="8593058461203131755">паузирајте медије</translation>
-<translation id="8619169570378509764">Школске алатке</translation>
 <translation id="8620617069779373398">Статус роминга</translation>
 <translation id="8626489604350149811">Још радњи за <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Светлољубичасто</translation>

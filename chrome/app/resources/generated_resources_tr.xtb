@@ -2980,6 +2980,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3045447014237878114">Bu site birden fazla dosyayı otomatik olarak indirdi</translation>
 <translation id="3046178388369461825">Linux diskinde boş alan kritik düzeyde</translation>
 <translation id="304644035656848980">Mikrofonunuzun önizlemesi</translation>
+<translation id="3046892784550338476">Sürüm <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Web Sayfası, Tamamı</translation>
 <translation id="304747341537320566">Konuşma Motorları</translation>
 <translation id="3047678109605649715">Cihazınızda <ph name="LANGUAGE" /> ses yok. Cihazınızda yer açıp tekrar deneyin.</translation>
@@ -3072,6 +3073,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3122883569442693641">Diğer ayrıntılar</translation>
 <translation id="3124111068741548686">KULLANICI işleyicileri</translation>
 <translation id="3124332159330678621">Tarayıcınıza yeni bir görünüm kazandırmak için Chrome'u özelleştirin</translation>
+<translation id="3125816458150005808">Sabitlemesini kaldırıp menüden açabilirsiniz</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Şarj ve performans sorunlarını önlemek için uyumlu bir Dell veya USB Type-C güç adaptörü kullanın.</translation>
 <translation id="3127862849166875294">Linux diskini yeniden boyutlandır</translation>
@@ -5320,6 +5322,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4723140812774948886">Sonraki ile değiştir</translation>
 <translation id="4724450788351008910">İlişki Değişti</translation>
 <translation id="4725511304875193254">Korgi</translation>
+<translation id="4725762702191453794">Sekme arama, araç çubuğunuza sabitlendi</translation>
 <translation id="4726710355753484204">Yakınlaştırmak için Ctrl + Alt + Parlalklığı Artır kısayolunu kullanın.
 Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</translation>
 <translation id="4726710629007580002">Bu uzantı yüklenmeye çalışılırken uyarılar oluştu:</translation>

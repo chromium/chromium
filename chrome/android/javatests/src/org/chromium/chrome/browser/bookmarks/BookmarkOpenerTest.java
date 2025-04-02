@@ -31,8 +31,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.MenuUtils;
@@ -51,7 +52,8 @@ import java.util.List;
 @DoNotBatch(reason = "Tabs can't be closed reliably between tests.")
 public class BookmarkOpenerTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private BookmarkOpener mBookmarkOpener;
 
@@ -65,7 +67,7 @@ public class BookmarkOpenerTest {
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         mActionTester = new UserActionTester();
         mTabModelSelector = mActivityTestRule.getActivity().getTabModelSelectorSupplier().get();
 
@@ -266,7 +268,7 @@ public class BookmarkOpenerTest {
     }
 
     private BookmarkId addMobileBookmark(final String title, GURL url) {
-        BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule);
+        BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule.getActivityTestRule());
         BookmarkTestUtil.waitForBookmarkModelLoaded();
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -275,7 +277,7 @@ public class BookmarkOpenerTest {
     }
 
     private BookmarkId addReadingListBookmark(final String title, final GURL url) {
-        BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule);
+        BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule.getActivityTestRule());
         BookmarkTestUtil.waitForBookmarkModelLoaded();
         BookmarkId bookmarkId =
                 ThreadUtils.runOnUiThreadBlocking(

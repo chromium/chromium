@@ -322,6 +322,33 @@ cdm::Status CdmWrapperImpl<11>::InitializeVideoDecoder(
       ToVideoDecoderConfig_2(video_decoder_config));
 }
 
+// Method to try creating CdmWrapper recursively iterating through the listed
+// versions.
+template <int FirstVersion, int... RemainingVersions>
+CdmWrapper* CreateWithVersions(CreateCdmFunc create_cdm_func,
+                               const char* key_system,
+                               uint32_t key_system_size,
+                               GetCdmHostFunc get_cdm_host_func,
+                               void* user_data) {
+  if (IsSupportedAndEnabledCdmInterfaceVersion(FirstVersion)) {
+    CdmWrapper* wrapper = CdmWrapperImpl<FirstVersion>::Create(
+        create_cdm_func, key_system, key_system_size, get_cdm_host_func,
+        user_data);
+    if (wrapper) {
+      return wrapper;
+    }
+  }
+
+  if constexpr (sizeof...(RemainingVersions) > 0) {
+    return CreateWithVersions<RemainingVersions...>(
+        create_cdm_func, key_system, key_system_size, get_cdm_host_func,
+        user_data);
+  } else {
+    // Base case for the last version not succeeding.
+    return nullptr;
+  }
+}
+
 // static
 CdmWrapper* CdmWrapper::Create(CreateCdmFunc create_cdm_func,
                                const char* key_system,
@@ -332,35 +359,9 @@ CdmWrapper* CdmWrapper::Create(CreateCdmFunc create_cdm_func,
                 "Mismatch between CdmWrapper::Create() and "
                 "IsSupportedCdmInterfaceVersion()");
 
-  // Try to create the CDM using the latest CDM interface version.
-  // This is only attempted if requested.
-  CdmWrapper* cdm_wrapper = nullptr;
-
-  // TODO(xhwang): Check whether we can use static loops to simplify this code.
-
-  // Try to use the latest supported and enabled CDM interface first. If it's
-  // not supported by the CDM, try to create the CDM using older supported
-  // versions.
-
-  if (IsSupportedAndEnabledCdmInterfaceVersion(12)) {
-    cdm_wrapper =
-        CdmWrapperImpl<12>::Create(create_cdm_func, key_system, key_system_size,
-                                   get_cdm_host_func, user_data);
-  }
-
-  if (!cdm_wrapper && IsSupportedAndEnabledCdmInterfaceVersion(11)) {
-    cdm_wrapper =
-        CdmWrapperImpl<11>::Create(create_cdm_func, key_system, key_system_size,
-                                   get_cdm_host_func, user_data);
-  }
-
-  if (!cdm_wrapper && IsSupportedAndEnabledCdmInterfaceVersion(10)) {
-    cdm_wrapper =
-        CdmWrapperImpl<10>::Create(create_cdm_func, key_system, key_system_size,
-                                   get_cdm_host_func, user_data);
-  }
-
-  return cdm_wrapper;
+  return CreateWithVersions<12, 11, 10>(create_cdm_func, key_system,
+                                        key_system_size, get_cdm_host_func,
+                                        user_data);
 }
 
 }  // namespace media

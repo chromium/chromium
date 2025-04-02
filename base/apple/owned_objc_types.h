@@ -14,9 +14,16 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
+GENERATE_STRONG_OBJC_PROTOCOL(NSAccessibility)
 GENERATE_STRONG_OBJC_TYPE(NSCursor)
 GENERATE_STRONG_OBJC_TYPE(NSEvent)
 #elif BUILDFLAG(IS_IOS)
+// UIAccessibility is an informal protocol on NSObject, so create an owning type
+// for NSObject specifically for use in accessibility. Do not use this type for
+// general NSObject containment purposes; see
+// https://chromium.googlesource.com/chromium/src/+/main/docs/mac/mixing_cpp_and_objc.md
+// for advice on how to mix C++ and Objective-C in the Chromium project.
+GENERATE_STRONG_OBJC_TYPE(NSObject)
 GENERATE_STRONG_OBJC_TYPE(UIEvent)
 #if BUILDFLAG(USE_BLINK)
 GENERATE_STRONG_OBJC_TYPE(BEKeyEntry)

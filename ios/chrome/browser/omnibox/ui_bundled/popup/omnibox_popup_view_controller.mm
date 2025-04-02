@@ -401,19 +401,18 @@ const CGFloat kHeaderTopPadding = 16.0f;
 #pragma mark - OmniboxKeyboardDelegate
 
 - (BOOL)canPerformKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
-  UITableViewCell* cell =
-      [self.tableView cellForRowAtIndexPath:self.highlightedIndexPath];
+  id<UIContentConfiguration> configuration =
+      [self contentConfigurationAtIndexPath:self.highlightedIndexPath];
 
-  BOOL isActionsRowCell = [cell.contentConfiguration
-      isKindOfClass:OmniboxPopupActionsRowContentConfiguration.class];
-
-  if (isActionsRowCell) {
-    OmniboxPopupActionsRowContentConfiguration* configuration =
+  // Highlighted cell is an action row.
+  if ([configuration
+          isKindOfClass:OmniboxPopupActionsRowContentConfiguration.class]) {
+    auto actionConfiguration =
         base::apple::ObjCCastStrict<OmniboxPopupActionsRowContentConfiguration>(
-            cell.contentConfiguration);
-    if ([configuration canPerformKeyboardAction:keyboardAction]) {
+            configuration);
+    if ([actionConfiguration canPerformKeyboardAction:keyboardAction]) {
       return YES;
-    }
+    };
   }
 
   using enum OmniboxKeyboardAction;
@@ -427,6 +426,8 @@ const CGFloat kHeaderTopPadding = 16.0f;
         return [self.carouselCell canPerformKeyboardAction:keyboardAction];
       }
       return NO;
+    case kReturnKey:
+      return [self canPerformReturnKeyAction];
   }
 }
 
@@ -438,7 +439,6 @@ const CGFloat kHeaderTopPadding = 16.0f;
 
   BOOL isActionsRowCell = [cell.contentConfiguration
       isKindOfClass:OmniboxPopupActionsRowContentConfiguration.class];
-
   if (isActionsRowCell) {
     OmniboxPopupActionsRowContentConfiguration* configuration =
         base::apple::ObjCCastStrict<OmniboxPopupActionsRowContentConfiguration>(
@@ -475,6 +475,8 @@ const CGFloat kHeaderTopPadding = 16.0f;
         }
       }
       break;
+    case kReturnKey:
+      [self performReturnKeyAction];
   }
 }
 
@@ -605,6 +607,28 @@ const CGFloat kHeaderTopPadding = 16.0f;
   [self.matchPreviewDelegate setPreviewSuggestion:suggestion isFirstUpdate:NO];
 }
 
+/// Whether the Return/Enter action can be performed.
+- (BOOL)canPerformReturnKeyAction {
+  if (self.highlightedIndexPath) {
+    id<AutocompleteSuggestion> suggestion =
+        [self suggestionAtIndexPath:self.highlightedIndexPath];
+    return suggestion != nil;
+  }
+  return NO;
+}
+
+/// Performs Return/Enter action.
+- (void)performReturnKeyAction {
+  CHECK([self canPerformReturnKeyAction], kOmniboxRefactoringNotFatalUntil);
+  id<AutocompleteSuggestion> suggestion =
+      [self suggestionAtIndexPath:self.highlightedIndexPath];
+  NSInteger absoluteRow =
+      [self absoluteRowIndexForIndexPath:self.highlightedIndexPath];
+  [self.delegate autocompleteResultConsumer:self
+                        didSelectSuggestion:suggestion
+                                      inRow:absoluteRow];
+}
+
 #pragma mark - OmniboxPopupRowDelegate
 
 - (void)omniboxPopupRowWithConfiguration:
@@ -650,43 +674,6 @@ const CGFloat kHeaderTopPadding = 16.0f;
                                  suggestion:suggestion
                                       inRow:configuration.indexPath.row];
 }
-
-#pragma mark - OmniboxReturnDelegate
-
-- (void)omniboxReturnPressed:(id)sender {
-  if (self.highlightedIndexPath) {
-    id<AutocompleteSuggestion> suggestion =
-        [self suggestionAtIndexPath:self.highlightedIndexPath];
-
-    UITableViewCell* cell =
-        [self.tableView cellForRowAtIndexPath:self.highlightedIndexPath];
-    BOOL isActionsRowCell = [cell.contentConfiguration
-        isKindOfClass:OmniboxPopupActionsRowContentConfiguration.class];
-
-    if (isActionsRowCell) {
-      OmniboxPopupActionsRowContentConfiguration* config =
-          base::apple::ObjCCastStrict<
-              OmniboxPopupActionsRowContentConfiguration>(
-              cell.contentConfiguration);
-      if (config.highlightedActionIndex != NSNotFound) {
-        [config omniboxReturnPressed:sender];
-        return;
-      }
-    }
-
-    if (suggestion) {
-      NSInteger absoluteRow =
-          [self absoluteRowIndexForIndexPath:self.highlightedIndexPath];
-      [self.delegate autocompleteResultConsumer:self
-                            didSelectSuggestion:suggestion
-                                          inRow:absoluteRow];
-      return;
-    }
-  }
-  [self.acceptReturnDelegate omniboxReturnPressed:sender];
-}
-
-#pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
       willDisplayCell:(UITableViewCell*)cell
@@ -1083,6 +1070,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
 
 #pragma mark - Private Methods
 
+/// Returns suggestion at `indexPath` if available.
 - (id<AutocompleteSuggestion>)suggestionAtIndexPath:(NSIndexPath*)indexPath {
   if (indexPath.section < 0 || indexPath.row < 0) {
     return nil;
@@ -1094,6 +1082,13 @@ const CGFloat kHeaderTopPadding = 16.0f;
     return nil;
   }
   return self.currentResult[indexPath.section].suggestions[indexPath.row];
+}
+
+/// Returns the UIContentConfiguration at `indexPath` if available.
+- (id<UIContentConfiguration>)contentConfigurationAtIndexPath:
+    (NSIndexPath*)indexPath {
+  UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+  return cell.contentConfiguration;
 }
 
 /// Returns the absolute row number for `indexPath`, counting every row in every

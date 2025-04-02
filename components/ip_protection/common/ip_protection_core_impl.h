@@ -80,7 +80,7 @@ class IpProtectionCoreImpl
       ProxyLayer proxy_layer);
   IpProtectionProxyConfigManager* GetIpProtectionProxyConfigManagerForTesting();
 
-  std::optional<ProbabilisticRevealToken> GetProbabilisticRevealToken(
+  std::optional<std::string> GetProbabilisticRevealToken(
       const std::string& top_level,
       const std::string& third_party) override;
 
@@ -120,6 +120,10 @@ class IpProtectionCoreImpl
   // Once this value becomes false, it stays false until a network change or
   // browser restart.
   bool ipp_over_quic_;
+
+  // Number of requests made with QUIC proxies. This is used to generate metrics
+  // regarding fallback to H2/H1.
+  int quic_requests_ = 0;
 
   MdlType mdl_type_;
 

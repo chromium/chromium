@@ -208,8 +208,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       const std::optional<std::string>&
           direct_from_seller_auction_signals_header_ad_slot,
       const std::string& seller_signals_json,
-      mojom::KAnonymityBidMode kanon_mode,
-      bool bid_is_kanon,
+      mojom::KAnonymityStatus kanon_status,
       const GURL& browser_signal_render_url,
       double browser_signal_bid,
       const std::optional<blink::AdCurrency>& browser_signal_bid_currency,
@@ -355,8 +354,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     std::optional<std::string> auction_signals_json;
     std::optional<std::string> per_buyer_signals_json;
     std::string seller_signals_json;
-    mojom::KAnonymityBidMode kanon_mode;
-    bool bid_is_kanon;
+    mojom::KAnonymityStatus kanon_status;
     GURL browser_signal_render_url;
     double browser_signal_bid;
     std::optional<blink::AdCurrency> browser_signal_bid_currency;
@@ -584,8 +582,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         const std::optional<std::string>&
             direct_from_seller_auction_signals_header_ad_slot,
         const std::string& seller_signals_json,
-        mojom::KAnonymityBidMode kanon_mode,
-        bool bid_is_kanon,
+        mojom::KAnonymityStatus kanon_status,
         const GURL& browser_signal_render_url,
         double browser_signal_bid,
         const std::optional<blink::AdCurrency>& browser_signal_bid_currency,

@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
 
 #include "base/clang_profiling_buildflags.h"
 #include "base/compiler_specific.h"
@@ -22,7 +21,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
-#include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/display_embedder/compositor_gpu_thread.h"
@@ -33,7 +31,6 @@
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_preferences.h"
-#include "gpu/ipc/common/client_gmb_interface.mojom.h"
 #include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/common/surface_handle.h"
@@ -46,7 +43,6 @@
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/viz/privileged/mojom/gl/gpu_host.mojom.h"
@@ -430,66 +426,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   void SetVisibilityChangedCallback(VisibilityChangedCallback);
 
  private:
-  // This class is used to receive direct IPCs for GMB from renderers without
-  // needing to go/route via the browser process.
-  class ClientGmbInterfaceImpl : public gpu::mojom::ClientGmbInterface,
-                                 public base::trace_event::MemoryDumpProvider {
-   public:
-    ClientGmbInterfaceImpl(
-        int client_id,
-        mojo::PendingReceiver<gpu::mojom::ClientGmbInterface> pending_receiver,
-        raw_ptr<GpuServiceImpl> gpu_service,
-        scoped_refptr<base::SingleThreadTaskRunner> io_runner);
-    ~ClientGmbInterfaceImpl() override;
-
-    // mojom::ClientGmbInterface override
-    void CreateGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
-                               const gfx::Size& size,
-                               gfx::BufferFormat format,
-                               gfx::BufferUsage usage,
-                               gpu::SurfaceHandle surface_handle,
-                               CreateGpuMemoryBufferCallback callback) override;
-    void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id) override;
-    void CopyGpuMemoryBuffer(gfx::GpuMemoryBufferHandle buffer_handle,
-                             base::UnsafeSharedMemoryRegion shared_memory,
-                             CopyGpuMemoryBufferCallback callback) override;
-
-    // Overridden from base::trace_event::MemoryDumpProvider:
-    bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
-                      base::trace_event::ProcessMemoryDump* pmd) override;
-
-    void OnConnectionError();
-    void OnGpuMemoryBufferAllocated(gfx::GpuMemoryBufferId id,
-                                    gfx::GpuMemoryBufferHandle handle);
-    void DestroyAllGpuMemoryBuffers();
-
-   private:
-    struct PendingBufferInfo {
-      PendingBufferInfo();
-      PendingBufferInfo(PendingBufferInfo&&);
-      ~PendingBufferInfo();
-
-      gfx::Size size;
-      gfx::BufferFormat format;
-      base::OnceCallback<void(gfx::GpuMemoryBufferHandle)> callback;
-    };
-
-    const int client_id_;
-    raw_ptr<GpuServiceImpl> gpu_service_;
-    mojo::Receiver<gpu::mojom::ClientGmbInterface> receiver_{this};
-    std::unordered_map<gfx::GpuMemoryBufferId,
-                       PendingBufferInfo,
-                       std::hash<gfx::GpuMemoryBufferId>>
-        pending_buffers_;
-    std::unordered_map<gfx::GpuMemoryBufferId,
-                       gpu::AllocatedBufferInfo,
-                       std::hash<gfx::GpuMemoryBufferId>>
-        allocated_buffers_;
-
-    base::WeakPtr<ClientGmbInterfaceImpl> weak_ptr_;
-    base::WeakPtrFactory<ClientGmbInterfaceImpl> weak_ptr_factory_{this};
-  };
-
   void InitializeWithHostInternal(
       mojo::PendingRemote<mojom::GpuHost> gpu_host,
       gpu::GpuProcessShmCount use_shader_cache_shm_count,
@@ -557,8 +493,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 #endif
 
   void GetDawnInfoOnMain(bool collect_metrics, GetDawnInfoCallback callback);
-
-  void RemoveGmbClient(int client_id);
 
   std::string GetShaderPrefixKey();
 
@@ -673,9 +607,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 
   gpu::GpuMemoryBufferConfigurationSet supported_gmb_configurations_;
   bool supported_gmb_configurations_inited_ = false;
-
-  // Map of client_id to ClientGmbInterfaceImpl object.
-  std::unordered_map<int, std::unique_ptr<ClientGmbInterfaceImpl>> gmb_clients_;
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   scoped_refptr<arc::ProtectedBufferManager> protected_buffer_manager_;

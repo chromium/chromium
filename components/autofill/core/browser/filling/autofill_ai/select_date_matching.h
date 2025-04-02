@@ -61,15 +61,18 @@ struct DatePartRange {
 // Returns a subspan of `options` that represents years.
 // The span is either empty or has at least 3 elements and its `first_value` is
 // a four-digit representation of a year.
-DatePartRange GetYearRange(base::span<const SelectOption> options);
+DatePartRange GetYearRange(
+    base::span<const SelectOption> options LIFETIME_BOUND);
 
 // Returns a subspan of `options` that represents days.
 // The span is either empty or has 28 to 31 elements and its `first_value` is 1.
-DatePartRange GetDayRange(base::span<const SelectOption> options);
+DatePartRange GetDayRange(
+    base::span<const SelectOption> options LIFETIME_BOUND);
 
 // Returns a subspan of `options` that represents months.
 // The span is either empty or 12 elements and its `first_value` is 1.
-DatePartRange GetMonthRange(base::span<const SelectOption> options);
+DatePartRange GetMonthRange(
+    base::span<const SelectOption> options LIFETIME_BOUND);
 
 }  // namespace autofill
 

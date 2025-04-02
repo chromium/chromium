@@ -674,10 +674,6 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
       HandleClipAndSubsampling(candidate);
     }
 
-    // Texture quads for UI elements like scroll bars have empty
-    // |size_in_pixels| as 'set_resource_size_in_pixels' is not called as these
-    // quads are not intended to become overlays.
-    if (!quad->resource_size_in_pixels().IsEmpty()) {
       if (candidate.requires_overlay) {
         candidate.priority_hint = gfx::OverlayPriorityHint::kHardwareProtection;
       } else if (quad->is_video_frame) {
@@ -685,7 +681,6 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
       } else {
         candidate.priority_hint = gfx::OverlayPriorityHint::kRegular;
       }
-    }
 
 #if BUILDFLAG(IS_ANDROID)
     candidate.is_video_in_surface_view =

@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/desktop_capture/desktop_capture_api.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_picker_factory.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_common.h"
@@ -307,6 +308,9 @@ class WebRtcDesktopCaptureBrowserTest : public WebRtcTestBase {
   }
 
   FakeDesktopMediaPickerFactory picker_factory_;
+
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler_;
 };
 
 // TODO(crbug.com/40915051): Fails on MAC.

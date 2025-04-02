@@ -395,9 +395,8 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         fake_user_manager_(std::make_unique<FakeChromeUserManager>()) {
     feature_list_.InitWithFeatures(
-        {features::kForestFeature,
-         ash::features::kReleaseNotesNotificationAllChannels,
-         ash::features::kBirchVideoConferenceSuggestions},
+        {features::kReleaseNotesNotificationAllChannels,
+         features::kBirchVideoConferenceSuggestions},
         {});
   }
 

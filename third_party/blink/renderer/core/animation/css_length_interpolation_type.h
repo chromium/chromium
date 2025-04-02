@@ -50,7 +50,7 @@ class CORE_EXPORT CSSLengthInterpolationType : public CSSInterpolationType {
       ConversionCheckers&) const override;
 
   InterpolationValue MaybeConvertUnderlyingValue(
-      const InterpolationEnvironment&) const final;
+      const CSSInterpolationEnvironment&) const final;
 
   PairwiseInterpolationValue MaybeMergeSingles(
       InterpolationValue&& start,

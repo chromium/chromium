@@ -9,6 +9,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -29,16 +30,32 @@ IDBValue::IDBValue(
       file_system_access_tokens_(std::move(file_system_access_tokens)) {}
 
 IDBValue::~IDBValue() {
+  if (decompression_count_ > 0) {
+    base::UmaHistogramCounts100("IndexedDB.ValueDecompressionCount",
+                                decompression_count_);
+  }
   if (isolate_) {
     external_memory_accounter_.Clear(isolate_.get());
   }
 }
 
 scoped_refptr<SerializedScriptValue> IDBValue::CreateSerializedValue() const {
-  Vector<char> decompressed;
-  if (IDBValueUnwrapper::Decompress(data_, &decompressed)) {
-    const_cast<IDBValue*>(this)->SetData(std::move(decompressed));
+  if (base::FeatureList::IsEnabled(kIdbDecompressValuesInPlace)) {
+    SerializedScriptValue::DataBufferPtr decompressed;
+    if (IDBValueUnwrapper::Decompress(data_, /*out_buffer=*/nullptr,
+                                      /*out_buffer_in_place=*/&decompressed)) {
+      const_cast<IDBValue*>(this)->decompression_count_++;
+      return SerializedScriptValue::Create(std::move(decompressed));
+    }
+  } else {
+    Vector<char> decompressed;
+    if (IDBValueUnwrapper::Decompress(data_, /*out_buffer=*/&decompressed,
+                                      /*out_buffer_in_place=*/nullptr)) {
+      const_cast<IDBValue*>(this)->decompression_count_++;
+      const_cast<IDBValue*>(this)->SetData(std::move(decompressed));
+    }
   }
+
   return SerializedScriptValue::Create(base::as_byte_span(data_));
 }
 

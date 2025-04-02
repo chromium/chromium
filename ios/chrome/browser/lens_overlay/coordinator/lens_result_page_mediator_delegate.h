@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_LENS_OVERLAY_COORDINATOR_LENS_RESULT_PAGE_MEDIATOR_DELEGATE_H_
 
 #import "components/lens/lens_overlay_new_tab_source.h"
-#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_tab_change_responder.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_tab_change_audience.h"
 
 @class LensResultPageMediator;
 class GURL;

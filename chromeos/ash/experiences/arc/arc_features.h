@@ -36,7 +36,6 @@ BASE_DECLARE_FEATURE_PARAM(bool, kEnableArcIdleManagerPendingIdleReactivate);
 BASE_DECLARE_FEATURE(kEnableArcS2Idle);
 BASE_DECLARE_FEATURE(kEnableArcVmDataMigration);
 BASE_DECLARE_FEATURE(kEnableFriendlierErrorDialog);
-BASE_DECLARE_FEATURE(kEnableLazyWebViewInit);
 BASE_DECLARE_FEATURE(kEnablePerVmCoreScheduling);
 BASE_DECLARE_FEATURE(kEnableVirtioBlkForData);
 BASE_DECLARE_FEATURE(kEnableVirtioBlkMultipleWorkers);

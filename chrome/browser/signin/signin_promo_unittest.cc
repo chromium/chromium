@@ -203,16 +203,6 @@ TEST_F(ShowPromoTest, DoNotShowBookmarkSignInPromoWithoutExplicitSignIn) {
   EXPECT_FALSE(ShouldShowBookmarkSignInPromo(*profile()));
 }
 
-TEST_F(ShowPromoTest, DoNotShowBookmarkSignInPromoWithoutMinimizeDeletion) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{
-          switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload});
-
-  EXPECT_FALSE(ShouldShowBookmarkSignInPromo(*profile()));
-}
-
 TEST_F(ShowPromoTest, DoNotShowExtensionSignInPromoWithoutExplicitSignIn) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -320,7 +310,6 @@ class ShowSigninPromoTestWithFeatureFlags : public ShowPromoTest {
         /*enabled_features=*/
         {switches::kImprovedSigninUIOnDesktop,
          switches::kSyncEnableBookmarksInTransportMode,
-         switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload,
          switches::kEnableExtensionsExplicitBrowserSignin},
         /*disabled_features=*/{});
     ON_CALL(*sync_service(), GetDataTypesForTransportOnlyMode())

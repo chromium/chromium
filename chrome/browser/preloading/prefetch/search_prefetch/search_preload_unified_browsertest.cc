@@ -45,6 +45,7 @@
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -335,32 +336,6 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
         ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                   ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
     observer.Wait();
-  }
-
-  void WaitForActivatedPageLoaded() {
-    // TODO(crbug.com/40256454):
-    // `content::WaitForLoadStop(GetActiveWebContents())` would end before the
-    // page actually finishes loading. This is the workaround to ensure that the
-    // page is fully loaded.
-    std::string script_string = R"(
-      function get_inner_html () {
-        if(document.documentElement){
-          return document.documentElement.innerHTML;
-        }
-        return "";
-      }
-      get_inner_html();
-    )";
-    while (true) {
-      std::string inner_html =
-          content::EvalJs(GetActiveWebContents(), script_string)
-              .ExtractString();
-      if (base::Contains(inner_html, "PREFETCH")) {
-        break;
-      }
-      base::RunLoop run_loop;
-      run_loop.RunUntilIdle();
-    }
   }
 
   content::test::PrerenderTestHelper& prerender_helper() {
@@ -1005,29 +980,6 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest, ChunkedResponseBody) {
 
   DispatchDelayedResponseTask();
   content::WaitForLoadStop(GetActiveWebContents());
-
-  // TODO(crbug.com/40256454):
-  // `content::WaitForLoadStop(GetActiveWebContents())` would end before the
-  // page actually finishes loading. This is the workaround to ensure that the
-  // page is fully loaded.
-  std::string script_string = R"(
-      function get_inner_html () {
-        if(document.documentElement){
-          return document.documentElement.innerHTML;
-        }
-        return "";
-      }
-      get_inner_html();
-    )";
-  while (true) {
-    std::string inner_html =
-        content::EvalJs(GetActiveWebContents(), script_string).ExtractString();
-    if (base::Contains(inner_html, "PREFETCH")) {
-      break;
-    }
-    base::RunLoop run_loop;
-    run_loop.RunUntilIdle();
-  }
 
   // Prerender should not retry the request.
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
@@ -1773,7 +1725,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
       GetCanonicalSearchURL(expected_prerender_url), run_loop.QuitClosure());
   NavigateToPrerenderedResult(expected_prerender_url);
   run_loop.Run();
-  WaitForActivatedPageLoaded();
+  content::WaitForLoadStop(GetActiveWebContents());
+
   histogram_tester.ExpectBucketCount(
       "Omnibox.SearchPreload.ResponseDataReaderFinalStatus.Prerender",
       StreamingSearchPrefetchURLLoader::ResponseReader::
@@ -1836,7 +1789,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
                                                         expected_prerender_url);
   NavigateToPrerenderedResult(expected_prerender_url);
   prerender_observer.WaitForActivation();
-  WaitForActivatedPageLoaded();
+  content::WaitForLoadStop(GetActiveWebContents());
 
   // No prerender requests went through network.
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
@@ -2077,7 +2030,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
   // 6. And then we can dispatch the result.
   DispatchDelayedResponseTask();
-  WaitForActivatedPageLoaded();
+  content::WaitForLoadStop(GetActiveWebContents());
 
   // Flush metrics.
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
@@ -2395,7 +2348,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
   // 7.  Navigate to the prerendered page in the same tab.
   NavigateToPrerenderedResult(expected_prerender_url);
-  WaitForActivatedPageLoaded();
+  content::WaitForLoadStop(GetActiveWebContents());
+
 
   // Both of them loaded full content.
   std::string inner_html = content::EvalJs(GetActiveWebContents(),

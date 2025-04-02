@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">Vynútiť povolenie priblíženia</translation>
 <translation id="3905475044299942653">Zastavenie veľkého množstva upozornení</translation>
 <translation id="3908288065506437185">Blokovať súbory cookie tretích strán v režime inkognito</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Niektoré funkcie nemusia fungovať. Súvisiace weby môžu naďalej používať súbory cookie tretej strany.</translation>
 <translation id="3922092564198021702">Otvorte v telefóne Nastavenia</translation>
 <translation id="3933121352599513978">Zbaliť nechcené požiadavky (odporúčané)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">Podrobnosti</translation>
 <translation id="4598549027014564149">Keď ste v režime inkognito, weby nemôžu pomocou súborov cookie zobraziť vašu aktivitu prehliadania na nich (ani súvisiace weby). Aktivita prehliadania sa nepoužíva ani na prispôsobenie reklám. Funkcie na niektorých weboch nemusia fungovať.</translation>
 <translation id="461356340001513807">Umožňuje vám prihlásiť sa na weboch účtom, ktorý ste si zriadili prostredníctvom služby identity</translation>
-<translation id="4619615317237390068">Karty z iných zariadení</translation>
 <translation id="4635969503923889910">Nepovoliť webom používať zariadenia s technológiou NFC</translation>
 <translation id="4644713492825682049">Odstrániť a resetovať</translation>
 <translation id="4645575059429386691">Spravované vaším rodičom</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">Zdieľať</translation>
 <translation id="5001526427543320409">Súbory cookie tretích strán</translation>
 <translation id="5007392906805964215">Prezrieť</translation>
-<translation id="5014182796621173645">Boli ste tam <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Povoliť</translation>
 <translation id="5048398596102334565">Povoliť webom prístup k senzorom pohybu (odporúčané)</translation>
 <translation id="5048841907079026162">Správa údajov prehliadania</translation>
@@ -443,7 +440,6 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Chránený obsah</translation>
 <translation id="662080504995468778">Zostať</translation>
-<translation id="6653342741369270081">Režim celej obrazovky ukončíte klepnutím na tlačidlo Späť.</translation>
 <translation id="6683865262523156564">Tento web je v skupine, ktorej sa zobrazuje vaša aktivita. Skupina je definovaná vlastníkom <ph name="RWS_OWNER" />.</translation>
 <translation id="6689172468748959065">Profilové fotky</translation>
 <translation id="6697925417670533197">Práve sťahované položky</translation>

@@ -85,7 +85,6 @@ source_set("eg2_tests") {
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/ui_bundled:content_suggestions_constant",
-    "//ios/chrome/browser/iph_for_new_chrome_user/model:features",
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_popup_shared",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_accessibility_identifier_constants",

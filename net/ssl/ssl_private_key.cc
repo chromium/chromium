@@ -4,6 +4,7 @@
 
 #include "net/ssl/ssl_private_key.h"
 
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"

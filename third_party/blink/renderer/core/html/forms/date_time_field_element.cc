@@ -207,8 +207,9 @@ AtomicString DateTimeFieldElement::LocaleIdentifier() const {
 }
 
 float DateTimeFieldElement::MaximumWidth(const ComputedStyle&) {
-  const float kPaddingLeftAndRight = 2;  // This should match to html.css.
-  return kPaddingLeftAndRight;
+  // This should be equal to twice the padding set in input_multiple_fields.css.
+  const float kPaddingLeftAndRightCSSPixels = 2;
+  return kPaddingLeftAndRightCSSPixels * GetDocument().DevicePixelRatio();
 }
 
 void DateTimeFieldElement::SetDisabled() {

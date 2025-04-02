@@ -25,7 +25,7 @@ namespace base {
 // Used to hold information about either a drive, or of a combination of a
 // partition residing on a drive and the drive itself, depending on how the
 // object was constructed. In general, when calling GetFileDriveInfo(), this
-// latter case is the one which should be considered. On MacOS, whole media can
+// latter case is the one which should be considered. On macOS, whole media can
 // be queried by using by calling GetIOObjectDriveInfo() with an `IOObject`
 // obtained via IOServiceGetMatchingService() with `kIOMediaWholeKey` set to
 // `true`.
@@ -35,13 +35,13 @@ namespace base {
 //
 // If you add more fields to this structure (platform-specific fields are OK),
 // make sure to update all functions that use it in
-// file_util_{win|posix|apple}.{cc,mm}, too.
+// file_util_{win|posix|mac|ios}.cc, too.
 struct BASE_EXPORT DriveInfo {
   DriveInfo();
   DriveInfo(const DriveInfo&) = delete;
-  DriveInfo(DriveInfo&&) noexcept;
+  DriveInfo(DriveInfo&&);
   DriveInfo& operator=(const DriveInfo&) = delete;
-  DriveInfo& operator=(DriveInfo&&) noexcept;
+  DriveInfo& operator=(DriveInfo&&);
   ~DriveInfo();
 
   // Whether the drive has a seek penalty (i.e. is or is not a spinning disk).
@@ -49,12 +49,23 @@ struct BASE_EXPORT DriveInfo {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-  // Whether the drive is a removable drive.
+  // Whether the drive is a "removable" drive.
   //
-  // Note on macOS: that SSDs that are connected over USB that you can eject
-  // in finder are not necessarily removable and/or ejectable according to
-  // IOKitLib. The reason for this is unknown. The same SSD on Windows is
-  // non-ejectable (in explorer), and marked as non-removable here.
+  // In macOS's IOKit API, a drive is "removable" if "the media is removable
+  // from the drive mechanism" (e.g. DVD media), and can be further marked as
+  // "ejectable" if it can be "eject[ed] from the drive mechanism under software
+  // control" (also e.g. DVD media). If a drive is marked as being "removable"
+  // as per IOKit, then `is_removable` is set to true.
+  //
+  // However, in the Finder, all drives connected via external I/O busses are
+  // marked with an ⏏ icon to allow the user to initiate an unmount on the drive
+  // in preparation for disconnection. Because the Finder offers that ⏏ action,
+  // on macOS, such drives also have `is_removable` set to true.
+  //
+  // However, on Windows, drives in similar situations are not marked as
+  // "ejectable" in Explorer, and thus `is_removable` is set to false in those
+  // cases. For Windows, `is_removable` is a strict reflection of the
+  // `RemovableMedia` flag in `STORAGE_DEVICE_DESCRIPTOR`.
   std::optional<bool> is_removable;
 
   // The size of the media, in bytes.
@@ -80,20 +91,15 @@ struct BASE_EXPORT DriveInfo {
 #endif
 };
 
-// Returns information about the drive on which sits the given file. Also see
-// `DriveInfo`.
+// Given a path to a file (following symlinks), returns information about the
+// drive upon which sits that file. Returns nullopt if the file doesn't exist or
+// if there is another error in looking up the drive.
 BASE_EXPORT std::optional<DriveInfo> GetFileDriveInfo(
     const FilePath& file_path);
 
 #if BUILDFLAG(IS_MAC)
-// BSD name is the file found under `/dev`, not the full path including "/dev".
-BASE_EXPORT std::optional<DriveInfo> GetBSDNameDriveInfo(
-    std::string_view bsd_name);
-
-// The IO Object is the underlying handle to the drive device. This function can
-// be used if already iterating over drives matching certain characteristics.
-// This function fails when the `io_object` does not conform to
-// `kIOMediaClass`.
+// Given an IOObject of a drive's media, returns information about that drive.
+// Returns nullopt if the IOObject does not conform to kIOMediaClass.
 BASE_EXPORT std::optional<DriveInfo> GetIOObjectDriveInfo(
     io_object_t io_object);
 #endif

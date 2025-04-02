@@ -43,6 +43,7 @@
 #include "chrome/browser/download/download_request_limiter.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/download/download_target_determiner.h"
+#include "chrome/browser/download/download_ui_safe_browsing_util.h"
 #include "chrome/browser/download/insecure_download_blocking.h"
 #include "chrome/browser/download/save_package_file_picker.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -183,12 +184,20 @@ using extensions::CrxInstallError;
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID)
 // How long an ephemeral warning lasts before being automatically canceled (if
 // there is no user interaction).
 constexpr base::TimeDelta kEphemeralWarningLifetimeBeforeCancel =
     base::Hours(1);
+
+bool IsEphemeralWarningCancellationEnabled() {
+#if BUILDFLAG(IS_ANDROID)
+  return ShouldShowSafeBrowsingAndroidDownloadWarnings();
 #else
+  return download::IsDownloadBubbleEnabled();
+#endif
+}
+
+#if BUILDFLAG(IS_ANDROID)
 const char kPdfDirName[] = "pdfs";
 #endif
 
@@ -480,7 +489,6 @@ download::DownloadDangerType SavePackageDangerType(
 }
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 
-#if !BUILDFLAG(IS_ANDROID)
 // Events related to ephemeral warning cancellation.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -503,7 +511,6 @@ void LogCancelEphemeralWarningEvent(CancelEphemeralWarningEvent event) {
   base::UmaHistogramEnumeration("SBClientDownload.CancelEphemeralWarning",
                                 event);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void OnCheckDownloadAllowedFailed(
     content::CheckDownloadAllowedCallback check_download_allowed_cb) {
@@ -2204,15 +2211,14 @@ void ChromeDownloadManagerDelegate::OnManagerInitialized() {
     download::GetDownloadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce([]() { base::DeleteFile(GetTempPdfDir()); }));
   }
-#else
-  CancelAllEphemeralWarnings();
 #endif
+
+  CancelAllEphemeralWarnings();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void ChromeDownloadManagerDelegate::ScheduleCancelForEphemeralWarning(
     const std::string& guid) {
-  if (!download::IsDownloadBubbleEnabled()) {
+  if (!IsEphemeralWarningCancellationEnabled()) {
     return;
   }
   LogCancelEphemeralWarningEvent(
@@ -2226,6 +2232,7 @@ void ChromeDownloadManagerDelegate::ScheduleCancelForEphemeralWarning(
 
 void ChromeDownloadManagerDelegate::CancelForEphemeralWarning(
     const std::string& guid) {
+  CHECK(IsEphemeralWarningCancellationEnabled());
   LogCancelEphemeralWarningEvent(
       CancelEphemeralWarningEvent::kCancellationTriggered);
   download::DownloadItem* download = download_manager_->GetDownloadByGuid(guid);
@@ -2250,7 +2257,7 @@ void ChromeDownloadManagerDelegate::CancelForEphemeralWarning(
 }
 
 void ChromeDownloadManagerDelegate::CancelAllEphemeralWarnings() {
-  if (!download::IsDownloadBubbleEnabled()) {
+  if (!IsEphemeralWarningCancellationEnabled()) {
     return;
   }
   content::DownloadManager::DownloadVector downloads;
@@ -2263,4 +2270,3 @@ void ChromeDownloadManagerDelegate::CancelAllEphemeralWarnings() {
     }
   }
 }
-#endif  // !BUILDFLAG(IS_ANDROID)

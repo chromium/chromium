@@ -38,6 +38,7 @@
 <translation id="19085484004813472">To jest nowa funkcja</translation>
 <translation id="2006524834898217237">Upewnij się, że to urządzenie jest połączone z internetem.</translation>
 <translation id="208586643495776849">Spróbuj ponownie</translation>
+<translation id="2111134541987263231">Włącz opcję <ph name="BEGIN_BOLD" />Zezwalaj w trybie incognito<ph name="END_BOLD" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 dzień}few{# dni}many{# dni}other{# dnia}}</translation>
 <translation id="2148716181193084225">Dzisiaj</translation>
 <translation id="2168039046890040389">Strona do góry</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">Kliknij docelowe obszary kliknięcia na ekranie.</translation>
 <translation id="2295140143284145483">Ankieta</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Nie udało się znaleźć rozszerzenia o identyfikatorze <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Skontaktuj się z administratorem.}few{Nie udało się znaleźć rozszerzeń o identyfikatorach <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Skontaktuj się z administratorem.}many{Nie udało się znaleźć rozszerzeń o identyfikatorach <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Skontaktuj się z administratorem.}other{Nie udało się znaleźć rozszerzeń o identyfikatorach <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Skontaktuj się z administratorem.}}</translation>
 <translation id="2353636109065292463">Sprawdzanie połączenia z internetem</translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2388990488038464401">Zadzwonić pod ten numer z Twojego telefonu?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">Usuń wszystko</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{za 1 dzień}few{za # dni}many{za # dni}other{za # dnia}}</translation>
 <translation id="2922712708897119705">Kolumna <ph name="COLUMN_NAME" /> została posortowana malejąco.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Nie można znaleźć rozszerzenia}few{Nie można znaleźć rozszerzeń}many{Nie można znaleźć rozszerzeń}other{Nie można znaleźć rozszerzeń}}</translation>
 <translation id="3036649622769666520">Otwórz pliki</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">Na dół</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">Zadzwoń z:</translation>
 <translation id="3306688585798492231">Wyświetlacz wbudowany</translation>
 <translation id="335581015389089642">Mowa</translation>
+<translation id="3372635229069101468">Kliknij <ph name="BEGIN_BOLD" />Szczegóły<ph name="END_BOLD" /></translation>
 <translation id="3389286852084373014">Tekst jest za długi</translation>
 <translation id="3406306243914553062">Treść HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{Pozostał 1 dzień}few{Pozostały # dni}many{Pozostało # dni}other{Pozostało # dnia}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">Kolumna <ph name="COLUMN_NAME" /> została posortowana rosnąco.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 nieprzeczytane powiadomienie}few{# nieprzeczytane powiadomienia}many{# nieprzeczytanych powiadomień}other{# nieprzeczytanego powiadomienia}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Włącz to rozszerzenie w trybie incognito:}few{Włącz te rozszerzenia w trybie incognito:}many{Włącz te rozszerzenia w trybie incognito:}other{Włącz te rozszerzenia w trybie incognito:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{miesiąc temu}few{# miesiące temu}many{# miesięcy temu}other{# miesiąca temu}}</translation>
 <translation id="4289300219472526559">Zacznij mówić</translation>
 <translation id="4289540628985791613">Przegląd</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">numer</translation>
 <translation id="4746179598275229723">Rozszerzenie zostało odpięte</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Pozostał miesiąc}few{Pozostały # miesiące}many{Pozostało # miesięcy}other{Pozostało # miesiąca}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Aby korzystać z trybu incognito, musisz używać rozszerzenia wymaganego przez organizację}few{Aby korzystać z trybu incognito, musisz używać rozszerzeń wymaganych przez organizację}many{Aby korzystać z trybu incognito, musisz używać rozszerzeń wymaganych przez organizację}other{Aby korzystać z trybu incognito, musisz używać rozszerzeń wymaganych przez organizację}}</translation>
+<translation id="482932175346970750">Wpisz w przeglądarce <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
 <translation id="4888938634149558681">Zadzwoń</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekunda}few{# sekundy}many{# sekund}other{# sekundy}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;Wklej</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Nie udało się wysłać</translation>
+<translation id="5283101102242354279">Włączanie rozszerzenia w trybie incognito:</translation>
 <translation id="528468243742722775">Zakończ</translation>
 <translation id="5329858601952122676">&amp;Usuń</translation>
 <translation id="5361107212971249203">tekst</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">Zmiany ustawień wyświetlania aplikacji zostaną wprowadzone po jej ponownym uruchomieniu.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Pozostała 1 min}few{Pozostały # min}many{Pozostało # min}other{Pozostało # min}}</translation>
+<translation id="7252604552361840748">Znajdź rozszerzenie powyżej</translation>
 <translation id="7363164521834647158">Wyślij odpowiedź</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 min temu}few{# min temu}many{# min temu}other{# min temu}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>

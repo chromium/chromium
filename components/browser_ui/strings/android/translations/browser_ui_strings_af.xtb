@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">Dwing aktivering van zoem</translation>
 <translation id="3905475044299942653">Stop baie kennisgewings</translation>
 <translation id="3908288065506437185">Blokkeer derdepartywebkoekies in Incognitomodus</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Sommige kenmerke sal dalk nie werk nie. Verwante werwe kan steeds derdepartywebkoekies gebruik.</translation>
 <translation id="3922092564198021702">Maak Instellings op jou foon oop</translation>
 <translation id="3933121352599513978">Vou ongewenste versoeke in (aanbeveel)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">Besonderhede</translation>
 <translation id="4598549027014564149">Terwyl jy in Incognitomodus is, kan werwe nie jou webkoekies gebruik om jou blaai-aktiwiteit op werwe, selfs verwante werwe, te sien nie. Jou blaai-aktiwiteit word nie gebruik vir dinge soos om advertensies te personaliseer nie. Kenmerke op sommige werwe sal dalk nie werk nie.</translation>
 <translation id="461356340001513807">Jy kan by webwerwe aanmeld met die rekening wat jy by ’n identiteitdiens het</translation>
-<translation id="4619615317237390068">Oortjies van ander toestelle af</translation>
 <translation id="4635969503923889910">Moenie werwe toelaat om NFC-toestelle te gebruik nie</translation>
 <translation id="4644713492825682049">Vee uit en stel terug</translation>
 <translation id="4645575059429386691">Deur jou ouer bestuur</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">Deel via</translation>
 <translation id="5001526427543320409">Derdepartywebkoekies</translation>
 <translation id="5007392906805964215">Gaan na</translation>
-<translation id="5014182796621173645">Jy het dit <ph name="RECENCY" /> besoek</translation>
 <translation id="5039804452771397117">Laat toe</translation>
 <translation id="5048398596102334565">Laat werwe toegang tot bewegingsensors toe (aanbeveel)</translation>
 <translation id="5048841907079026162">Bestuur jou blaaierdata</translation>
@@ -443,7 +440,6 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Beskermde inhoud</translation>
 <translation id="662080504995468778">Bly</translation>
-<translation id="6653342741369270081">Druk die terugknoppie om volskerm te verlaat.</translation>
 <translation id="6683865262523156564">Hierdie werf is in ’n groep wat jou aktiwiteit kan sien. Die groep word gedefinieer deur <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Profielfoto's</translation>
 <translation id="6697925417670533197">Aktiewe aflaaie</translation>

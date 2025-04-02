@@ -5,7 +5,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++View text:"Checked illegal" checkable checked clickable CollectionItemInfo:[rowSpan=0, colSpan=0, rowIndex=0, colIndex=0] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="treeItem", roleDescription="tree item"]
 ++View text:"Current illegal" stateDescription:"current item" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
 ++View text:"Disabled illegal" disabled actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
-++View text:"Expanded illegal" clickable CollectionItemInfo:[rowSpan=0, colSpan=0, rowIndex=0, colIndex=0] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS, COLLAPSE] bundle:[chromeRole="treeItem", roleDescription="tree item"]
+++View text:"Expanded illegal" clickable expandedState:3 CollectionItemInfo:[rowSpan=0, colSpan=0, rowIndex=0, colIndex=0] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS, COLLAPSE] bundle:[chromeRole="treeItem", roleDescription="tree item"]
 ++Button text:"Haspopup illegal" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", roleDescription="button"]
 ++View text:"Invalid illegal" error:"Invalid entry" contentInvalid actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
 ++View text:"Live illegal" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="log", roleDescription="log"]

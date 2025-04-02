@@ -32,7 +32,7 @@ class CORE_EXPORT CountersAttachmentContext {
     void Trace(Visitor*) const;
   };
 
-  using CounterStack = HeapVector<Member<CounterEntry>>;
+  using CounterStack = GCedHeapVector<Member<CounterEntry>>;
   using CounterInheritanceTable =
       GCedHeapHashMap<AtomicString, Member<CounterStack>>;
 

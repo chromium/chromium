@@ -17,6 +17,7 @@
 <translation id="1052842760770519282">部分密碼無法使用</translation>
 <translation id="1058669287135776095">您已離線。請檢查您的互聯網連線，然後再試一次。</translation>
 <translation id="10614374240317010">永不儲存</translation>
+<translation id="1070689840697074178">你可在此下載 PDF</translation>
 <translation id="107147699690128016">如果變更副檔名，此檔案可能會在其他應用程式中開啟，並可能對裝置造成損害。</translation>
 <translation id="1080365971383768617">在所有裝置上都能使用自己的密碼</translation>
 <translation id="1087176310396019910">潛在垃圾內容</translation>
@@ -63,7 +64,6 @@
 <translation id="1240288207750131269">正在載入<ph name="LANG" /></translation>
 <translation id="124116460088058876">更多語言</translation>
 <translation id="1241792820757384812">密碼將從 <ph name="CHROME_CHANNEL" />的「Google 密碼管理工具」中刪除。你可保留剛剛下載的密碼檔案。</translation>
-<translation id="1242883863226959074">裝置</translation>
 <translation id="124678866338384709">關閉目前分頁</translation>
 <translation id="1246905108078336582">要從剪貼簿中移除建議嗎？</translation>
 <translation id="1258753120186372309">Google Doodle：<ph name="DOODLE_DESCRIPTION" /></translation>
@@ -289,6 +289,7 @@
 <translation id="2362083820973145409">已使用<ph name="USER_NAME" />的身分登入。<ph name="USER_EMAIL" />。開啟設定。</translation>
 <translation id="2363734411417672757">預先載入更多頁面。當其他網站或應用程式要求連結頁面時，系統可能會透過 Google 伺服器預先載入頁面。</translation>
 <translation id="2366554533468315977">此選項適用的網絡價格記錄</translation>
+<translation id="2367818124433749493">開發人員快速鍵</translation>
 <translation id="2385605401818128172">你可以檢查傳送大量通知的網站，並禁止這些網站日後再傳送通知</translation>
 <translation id="2386938421315164605">隱藏和取消隱藏主題</translation>
 <translation id="2390510615457643724">要再次下載「<ph name="FILE_NAME" />」(<ph name="FILE_SIZE" />) 嗎？</translation>
@@ -510,7 +511,6 @@
 <translation id="3398320232533725830">開啟書籤管理員</translation>
 <translation id="3414952576877147120">大小：</translation>
 <translation id="3421726884497337397">選擇何時封鎖第三方 Cookie</translation>
-<translation id="342220687432920852">{HOURS,plural, =1{# 小時前}other{# 小時前}}</translation>
 <translation id="3430670036890315772">如果關閉個人檔案鎖定，系統將移除已儲存的資料</translation>
 <translation id="3435465986463792564">開啟了很多視窗嗎？您可在此管理視窗</translation>
 <translation id="3435575784518354875">如要繼續存取密碼，請立即匯出密碼、更新 Google Play 服務，再將密碼匯入回「Google 密碼管理工具」。<ph name="BEGIN_LINK" />查閱完整指示<ph name="END_LINK" />。</translation>
@@ -693,6 +693,7 @@
 <translation id="4269820728363426813">複製連結網址</translation>
 <translation id="4270730597186910506">追蹤或取消追蹤產品。</translation>
 <translation id="4277529130885813215">改用其他裝置</translation>
+<translation id="427987768447457592">新分頁群組</translation>
 <translation id="4282440837784183472">你的機構 (<ph name="MANAGED_DOMAIN" />) 會管理你登入的帳戶和使用 Chrome 的方式。管理員可設定或限制特定功能。</translation>
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="4285846616383034558">Cookie、快取和其他網站資料</translation>
@@ -955,6 +956,7 @@
 <translation id="5456381639095306749">下載網頁</translation>
 <translation id="5458366071038729214">您可在此找到您追蹤的網站</translation>
 <translation id="5468068603361015296">仍要下載「<ph name="FILE_NAME" />」嗎？</translation>
+<translation id="5471273988133666918">無法移動「<ph name="TAB_TITLE" />」分頁</translation>
 <translation id="548278423535722844">在地圖應用程式中開啟</translation>
 <translation id="5492637351392383067">在裝置上加密</translation>
 <translation id="549660026907543296">以<ph name="MEMBER_FULL_NAME" />的身分加入</translation>
@@ -963,7 +965,6 @@
 <translation id="5517095782334947753">您有來自 <ph name="FROM_ACCOUNT" /> 的書籤、記錄、密碼和其他設定。</translation>
 <translation id="5517326820028369152">近期活動頁底面板</translation>
 <translation id="5526281268548144413">無法關閉多個視窗中的分頁</translation>
-<translation id="5528925345478618296">{MINUTES,plural, =1{# 分鐘前}other{# 分鐘前}}</translation>
 <translation id="5548606607480005320">安全檢查</translation>
 <translation id="5554520618550346933">使用密碼時，如果密碼已在網上發佈，Chrome 將會提醒你。核對時，您的密碼和使用者名稱將會加密，任何人 (包括 Google) 均無法讀取。</translation>
 <translation id="5555525474779371165">選取您的「安全瀏覽」功能</translation>
@@ -1132,6 +1133,7 @@
 <translation id="6295158916970320988">所有網站</translation>
 <translation id="6296366034485697675">匯出並刪除</translation>
 <translation id="629730747756840877">帳戶</translation>
+<translation id="6301526076346731664">開啟 Developer Tools</translation>
 <translation id="6303969859164067831">登出並停用同步功能</translation>
 <translation id="6307241780749477694">你必須驗證身分，才能取得此裝置上的所有密碼</translation>
 <translation id="6312687380483398334">網絡應用程式 (安靜模式)</translation>
@@ -1274,7 +1276,6 @@
 <translation id="6865313869410766144">自動填入表格數據</translation>
 <translation id="6867400383614725881">新無痕式分頁</translation>
 <translation id="686899695320434745">系統不會透過密碼短語將地址加密，此選項讓你在其他 Google 服務中使用這些地址。</translation>
-<translation id="6869056123412990582">電腦</translation>
 <translation id="687838958001010630">任何擁有連結的人均可編輯所有分頁</translation>
 <translation id="6880903702195291049">權限沒有問題</translation>
 <translation id="6883204995689174413">分享</translation>
@@ -1637,7 +1638,6 @@
 <translation id="8419244640277402268">加入</translation>
 <translation id="8422250855136581222">此裝置未關閉任何分頁</translation>
 <translation id="842386925677997438">Chrome 的安全工具</translation>
-<translation id="8424781820952413435">已傳送網頁。如要查看，請在<ph name="DEVICE_TYPE" />上開啟 Chrome</translation>
 <translation id="8427875596167638501">預覽分頁喺畫面下半部分顯示</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8430824733382774043">只分享螢幕截圖</translation>
@@ -1692,7 +1692,6 @@
 <translation id="8611922158252451755">任何擁有連結的人均可編輯所有分頁，因此分享時緊記要謹慎。連結將在 48 小時後失效。</translation>
 <translation id="8616006591992756292">您的 Google 帳戶在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的瀏覽記錄。</translation>
 <translation id="8617240290563765734">您要開啟下載檔案中指定的建議網址嗎？</translation>
-<translation id="8621068256433641644">手機</translation>
 <translation id="8635399646025169806">要保留分頁群組嗎？</translation>
 <translation id="8636825310635137004">如要取得其他裝置上的分頁，請開啟同步處理功能。</translation>
 <translation id="864544049772947936">管理視窗 (<ph name="INSTANCE_COUNTS" /> 個)</translation>

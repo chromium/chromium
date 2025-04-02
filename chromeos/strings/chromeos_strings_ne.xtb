@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">स्क्रिन सेभर असक्षम पार्नुहोस्</translation>
 <translation id="3091839911843451378">प्रिन्ट गर्न सकिएन - प्रिन्ट गर्दा गर्दै रोकियो</translation>
 <translation id="3102119246920354026">केस</translation>
-<translation id="3112413615003385433">तपाईंका शिक्षकले School Tools मा भएको सामग्री हटाउनुभएको छ</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">पुल</translation>
 <translation id="3122883569442693641">थप विवरणहरू</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">आंशिक रूपमा सक्रिय बनाइएको</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> टोन भएको <ph name="OFFICE_STYLE" /> अफिस</translation>
 <translation id="3493187369049186498">Chromebook ले प्रयोग गरिने डेटा मापन गर्छ। यो डेटा सेवा प्रदायकले उपलब्ध गराउने डेटाभन्दा फरक हुन सक्छ।</translation>
-<translation id="349570724365779960">विद्यार्थीहरू School Tools सेसनमा सामेल भएका छन्</translation>
 <translation id="3502426834823382181">सबै एपहरू हेर्नुहोस्</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />पर्फर्मेन्स ट्रेस डेटा<ph name="END_LINK1" /> पठाउनुहोस्</translation>
 <translation id="3517001332549868749">ChromeOS को अपडेट</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">सम्पादन गर्ने कार्य पूरा भयो</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> मिनेट जति बाँकी छ</translation>
 <translation id="3533790840489634638">पुल</translation>
-<translation id="3535802910192338629">तपाईंका शिक्षकले School Tools मा नयाँ सामग्री हाल्नुभएको छ</translation>
 <translation id="3547264467365135390">सूत्र</translation>
 <translation id="3557205324756024651">लोकल आइडेन्टिटी (ऐच्छिक)</translation>
 <translation id="3565064564551103223">अनुमति दिइएका IP</translation>
@@ -1440,7 +1437,6 @@
 <translation id="7544853251252956727">मिसाउनुहोस्</translation>
 <translation id="7550715992156305117">डायग्नोस्टिक रुटिनहरू</translation>
 <translation id="7551123448725492271">यो डिभाइस अडियो डिभाइस हो।</translation>
-<translation id="7553913964854052228">School Tools ले तपाईंको माइक्रोफोन प्रयोग गरिरहेको छ</translation>
 <translation id="7559239713112547082">स्क्रिनसट प्रिभ्यू गर्नुहोस्</translation>
 <translation id="7561454561030345039">यो कार्य तपाईंका एड्मिनले व्यवस्थापन गर्नुभएको छ</translation>
 <translation id="7561759921596375678">भोल्युम अन गर्नुहोस्</translation>
@@ -1663,7 +1659,6 @@
 <translation id="8576249514688522074">सुरु गरिएको छैन</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> को फर्मवेयर अपग्रेड गरी संस्करण <ph name="VERSION" /> इन्स्टल गर्ने प्रक्रिया पूरा गर्न कम्प्युटर रिस्टार्ट गर्नु पर्ने हुन्छ। तपाईंको कम्प्युटर धेरै पटक रिबुट हुन सक्छ। धेरै पटक रिबुट हुन अपेक्षा गरिएको छ।</translation>
 <translation id="8593058461203131755">"मिडिया पज गर्नुहोस्" जनाउने आइकन</translation>
-<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">रोमिङको स्थिति</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> का सम्बन्धमा गर्न सकिने थप कारबाहीहरू</translation>
 <translation id="86356131183441916">हल्का बैजनी रङ</translation>

@@ -1066,6 +1066,17 @@ HttpHandler::HttpHandler(
           WrapToCommand("ClearDevicePosture",
                         base::BindRepeating(&ExecuteClearDevicePosture))),
 
+      // Extensions for Viewport Segments API:
+      // https://drafts.csswg.org/css-viewport-1/#automation-of-the-segments-property
+      CommandMapping(
+          kPost, "session/:sessionId/displayfeatures",
+          WrapToCommand("SetDisplayFeatures",
+                        base::BindRepeating(&ExecuteSetDisplayFeatures))),
+      CommandMapping(
+          kDelete, "session/:sessionId/displayfeatures",
+          WrapToCommand("ClearDisplayFeatures",
+                        base::BindRepeating(&ExecuteClearDisplayFeatures))),
+
       // Extensions for Compute Pressure API:
       // https://w3c.github.io/compute-pressure/#automation
       CommandMapping(kPost, "session/:sessionId/pressuresource",

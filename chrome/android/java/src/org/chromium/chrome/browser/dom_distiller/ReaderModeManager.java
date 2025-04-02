@@ -106,17 +106,9 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     public static final String ACCESSIBILITY_SETTING_HISTOGRAM =
             "DomDistiller.Android.OnDistillableResult.AccessibilitySettingEnabled";
 
-    /** Histogram name for whether a distillable mobile page was excluded. */
-    public static final String DISTILLABLE_MOBILE_PAGE_EXCLUDED_HISTOGRAM =
-            "DomDistiller.Android.OnDistillableResult.DistillableMobilePageExcluded";
-
-    /** Histogram name for whether a distillable mobile page was excluded. */
-    public static final String DISTILLABLE_PAGE_RDS_EXCLUDED_HISTOGRAM =
-            "DomDistiller.Android.OnDistillableResult.DistillablePageExcludedByRequestDesktopSite";
-
     /** Histogram name for the end distillability result. */
-    public static final String PAGE_DISTILLABLE_RESULT_HISTOGRAM =
-            "DomDistiller.Android.OnDistillableResult.PageDistillable";
+    public static final String PAGE_DISTILLATION_RESULT_HISTOGRAM =
+            "DomDistiller.Android.OnDistillableResult.PageDistillationResult";
 
     /** The url of the last page visited if the last page was reader mode page. Otherwise null. */
     private GURL mReaderModePageUrl;
@@ -739,15 +731,11 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
             RecordHistogram.recordBooleanHistogram(
                     ACCESSIBILITY_SETTING_HISTOGRAM,
                     DomDistillerTabUtils.isReaderModeAccessibilitySettingEnabled(tab.getProfile()));
-            RecordHistogram.recordBooleanHistogram(
-                    DISTILLABLE_MOBILE_PAGE_EXCLUDED_HISTOGRAM,
-                    isDistillable && excludeCurrentMobilePage);
-            RecordHistogram.recordBooleanHistogram(
-                    DISTILLABLE_PAGE_RDS_EXCLUDED_HISTOGRAM,
-                    isDistillable && excludeRequestDesktopSite);
-            RecordHistogram.recordBooleanHistogram(
-                    PAGE_DISTILLABLE_RESULT_HISTOGRAM,
-                    distillationStatus == DistillationStatus.POSSIBLE);
+            recordDistillationResult(
+                    distillationStatus,
+                    isDistillable,
+                    excludeCurrentMobilePage,
+                    excludeRequestDesktopSite);
             return new Pair<>(true, distillationStatus);
         }
         return new Pair<>(false, distillationStatus);
@@ -803,5 +791,64 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         // "dismissed". Interacting with the button will undo this "mute" logic.
         addUrlToMutedSites(mDistillerUrl);
         mMessageShown = true;
+    }
+
+    // Describes the end-state of the distillation result, used for metrics reporting. Do not
+    // change/reorder existing entries, and keep in sync with accessibility/histograms.xml.
+    // LINT.IfChange(DistillationResult)
+    @IntDef({
+        DistillationResult.NOT_DISTILLABLE,
+        DistillationResult.DISTILLABLE,
+        DistillationResult.DISTILLABLE_BUT_EXCLUDED_UNKNOWN,
+        DistillationResult.DISTILLABLE_BUT_EXCLUDED_MOBILE,
+        DistillationResult.DISTILLABLE_BUT_EXCLUDED_RDS,
+        DistillationResult.MAX
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @VisibleForTesting
+    @interface DistillationResult {
+        // Native signals that the page isn't distillable.
+        int NOT_DISTILLABLE = 0;
+
+        // Determined to distillability.
+        int DISTILLABLE = 1;
+
+        // Distillable, but excluded for an unknown reason.
+        int DISTILLABLE_BUT_EXCLUDED_UNKNOWN = 2;
+
+        // Distillable, but excluded because the web page is mobile friendly.
+        int DISTILLABLE_BUT_EXCLUDED_MOBILE = 3;
+
+        // Distillable, but excluded because the user is requesting the desktop version.
+        int DISTILLABLE_BUT_EXCLUDED_RDS = 4;
+
+        int MAX = 5;
+    }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:DistillationResult)
+
+    private static void recordDistillationResult(
+            @DistillationStatus int status,
+            boolean isDistillable,
+            boolean excludeMobileFriendly,
+            boolean excludeRequestDesktopSite) {
+        @DistillationResult int result;
+        if (status == DistillationStatus.POSSIBLE) {
+            result = DistillationResult.DISTILLABLE;
+        } else {
+            if (isDistillable) {
+                if (excludeMobileFriendly) {
+                    result = DistillationResult.DISTILLABLE_BUT_EXCLUDED_MOBILE;
+                } else if (excludeRequestDesktopSite) {
+                    result = DistillationResult.DISTILLABLE_BUT_EXCLUDED_RDS;
+                } else {
+                    result = DistillationResult.DISTILLABLE_BUT_EXCLUDED_UNKNOWN;
+                }
+            } else {
+                result = DistillationResult.NOT_DISTILLABLE;
+            }
+        }
+        RecordHistogram.recordEnumeratedHistogram(
+                PAGE_DISTILLATION_RESULT_HISTOGRAM, result, DistillationResult.MAX);
     }
 }

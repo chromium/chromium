@@ -51,17 +51,10 @@ const FakeSystemIdentity* kSecondaryIdentity2 =
     [FakeSystemIdentity fakeIdentity3];
 
 enum FeaturesState {
-  // Using APIs from ChromeAccountManagerService to retrieve accounts, and with
-  // all accounts being assigned to the same single profile.
-  kOldApiWithoutSeparateProfiles,
-  // Using APIs from IdentityManager to retrieve accounts, and with all accounts
-  // being assigned to the same single profile.
-  kNewApiWithoutSeparateProfiles,
-  // Using APIs from IdentityManager to retrieve accounts, and with managed
-  // accounts being assigned into their own separate profiles.
-  kNewApiWithSeparateProfiles
-  // Note: "SeparateProfiles" depends on "NewApi", so there's no
-  // "OldAPiWithSeparateProfiles" variant.
+  // With all accounts being assigned to the same single profile.
+  kWithoutSeparateProfiles,
+  // With managed accounts being assigned into their own separate profiles.
+  kWithSeparateProfiles
 };
 }  // namespace
 
@@ -74,21 +67,12 @@ class AccountMenuMediatorTest
   AccountMenuMediatorTest() {
     base::flat_map<base::test::FeatureRef, bool> feature_states;
     switch (GetParam()) {
-      case kOldApiWithoutSeparateProfiles:
-        feature_states[kUseAccountListFromIdentityManager] = false;
+      case kWithoutSeparateProfiles:
         feature_states[kSeparateProfilesForManagedAccounts] = false;
         break;
-      case kNewApiWithoutSeparateProfiles:
-        feature_states[kUseAccountListFromIdentityManager] = true;
-        feature_states[kSeparateProfilesForManagedAccounts] = false;
-        break;
-      case kNewApiWithSeparateProfiles:
-        feature_states[kUseAccountListFromIdentityManager] = true;
+      case kWithSeparateProfiles:
         feature_states[kSeparateProfilesForManagedAccounts] = true;
         break;
-        // Note: `kSeparateProfilesForManagedAccounts` depends on
-        // `kUseAccountListFromIdentityManager`, so there's no "false + true"
-        // case.
     }
     feature_list_.InitWithFeatureStates(feature_states);
   }
@@ -239,7 +223,7 @@ class AccountMenuMediatorTest
 // consumer.
 TEST_P(AccountMenuMediatorTest, TestAddSecondaryIdentity) {
   if (!@available(iOS 17, *)) {
-    if (GetParam() == kNewApiWithSeparateProfiles) {
+    if (GetParam() == kWithSeparateProfiles) {
       // Separate profiles are only available in iOS 17+.
       return;
     }
@@ -249,10 +233,9 @@ TEST_P(AccountMenuMediatorTest, TestAddSecondaryIdentity) {
   thirdIdentity.userFullName = nil;
   thirdIdentity.userGivenName = nil;
   switch (GetParam()) {
-    case kOldApiWithoutSeparateProfiles:
-    case kNewApiWithSeparateProfiles:
+    case kWithSeparateProfiles:
       break;
-    case kNewApiWithoutSeparateProfiles:
+    case kWithoutSeparateProfiles:
       OCMExpect([consumer_mock_
           updateAccountListWithGaiaIDsToAdd:@[]
                             gaiaIDsToRemove:@[]
@@ -282,7 +265,7 @@ TEST_P(AccountMenuMediatorTest, TestAddSecondaryIdentity) {
 // consumer.
 TEST_P(AccountMenuMediatorTest, TestRemoveSecondaryIdentity) {
   if (!@available(iOS 17, *)) {
-    if (GetParam() == kNewApiWithSeparateProfiles) {
+    if (GetParam() == kWithSeparateProfiles) {
       // Separate profiles are only available in iOS 17+.
       return;
     }
@@ -313,7 +296,7 @@ TEST_P(AccountMenuMediatorTest, TestRemoveSecondaryIdentity) {
 // consumer.
 TEST_P(AccountMenuMediatorTest, TestRemovePrimaryIdentity) {
   if (!@available(iOS 17, *)) {
-    if (GetParam() == kNewApiWithSeparateProfiles) {
+    if (GetParam() == kWithSeparateProfiles) {
       // Separate profiles are only available in iOS 17+.
       return;
     }
@@ -333,7 +316,7 @@ TEST_P(AccountMenuMediatorTest, TestRemovePrimaryIdentity) {
 // Tests the result of secondaryAccountsGaiaIDs.
 TEST_P(AccountMenuMediatorTest, TestSecondaryAccountsGaiaID) {
   if (!@available(iOS 17, *)) {
-    if (GetParam() == kNewApiWithSeparateProfiles) {
+    if (GetParam() == kWithSeparateProfiles) {
       // Separate profiles are only available in iOS 17+.
       return;
     }
@@ -347,7 +330,7 @@ TEST_P(AccountMenuMediatorTest, TestSecondaryAccountsGaiaID) {
 // Tests the result of nameForGaiaID.
 TEST_P(AccountMenuMediatorTest, nameForGaiaID) {
   if (!@available(iOS 17, *)) {
-    if (GetParam() == kNewApiWithSeparateProfiles) {
+    if (GetParam() == kWithSeparateProfiles) {
       // Separate profiles are only available in iOS 17+.
       return;
     }
@@ -359,7 +342,7 @@ TEST_P(AccountMenuMediatorTest, nameForGaiaID) {
 // Tests the result of emailForGaiaID.
 TEST_P(AccountMenuMediatorTest, emailForGaiaID) {
   if (!@available(iOS 17, *)) {
-    if (GetParam() == kNewApiWithSeparateProfiles) {
+    if (GetParam() == kWithSeparateProfiles) {
       // Separate profiles are only available in iOS 17+.
       return;
     }
@@ -371,7 +354,7 @@ TEST_P(AccountMenuMediatorTest, emailForGaiaID) {
 // Tests the result of imageForGaiaID.
 TEST_P(AccountMenuMediatorTest, imageForGaiaID) {
   if (!@available(iOS 17, *)) {
-    if (GetParam() == kNewApiWithSeparateProfiles) {
+    if (GetParam() == kWithSeparateProfiles) {
       // Separate profiles are only available in iOS 17+.
       return;
     }
@@ -385,7 +368,7 @@ TEST_P(AccountMenuMediatorTest, imageForGaiaID) {
 // Tests the result of primaryAccountEmail.
 TEST_P(AccountMenuMediatorTest, TestPrimaryAccountEmail) {
   if (!@available(iOS 17, *)) {
-    if (GetParam() == kNewApiWithSeparateProfiles) {
+    if (GetParam() == kWithSeparateProfiles) {
       // Separate profiles are only available in iOS 17+.
       return;
     }
@@ -396,7 +379,7 @@ TEST_P(AccountMenuMediatorTest, TestPrimaryAccountEmail) {
 // Tests the result of primaryAccountUserFullName.
 TEST_P(AccountMenuMediatorTest, TestPrimaryAccountUserFullName) {
   if (!@available(iOS 17, *)) {
-    if (GetParam() == kNewApiWithSeparateProfiles) {
+    if (GetParam() == kWithSeparateProfiles) {
       // Separate profiles are only available in iOS 17+.
       return;
     }
@@ -408,7 +391,7 @@ TEST_P(AccountMenuMediatorTest, TestPrimaryAccountUserFullName) {
 // Tests the result of primaryAccountAvatar.
 TEST_P(AccountMenuMediatorTest, TestPrimaryAccountAvatar) {
   if (!@available(iOS 17, *)) {
-    if (GetParam() == kNewApiWithSeparateProfiles) {
+    if (GetParam() == kWithSeparateProfiles) {
       // Separate profiles are only available in iOS 17+.
       return;
     }
@@ -422,7 +405,7 @@ TEST_P(AccountMenuMediatorTest, TestPrimaryAccountAvatar) {
 // Tests the result of TestError when there is no error.
 TEST_P(AccountMenuMediatorTest, TestNoError) {
   if (!@available(iOS 17, *)) {
-    if (GetParam() == kNewApiWithSeparateProfiles) {
+    if (GetParam() == kWithSeparateProfiles) {
       // Separate profiles are only available in iOS 17+.
       return;
     }
@@ -433,7 +416,7 @@ TEST_P(AccountMenuMediatorTest, TestNoError) {
 // Tests the result of TestError when passphrase is required.
 TEST_P(AccountMenuMediatorTest, TestError) {
   if (!@available(iOS 17, *)) {
-    if (GetParam() == kNewApiWithSeparateProfiles) {
+    if (GetParam() == kWithSeparateProfiles) {
       // Separate profiles are only available in iOS 17+.
       return;
     }
@@ -461,7 +444,7 @@ TEST_P(AccountMenuMediatorTest, TestError) {
 // when sign-out fail.
 TEST_P(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
   if (!@available(iOS 17, *)) {
-    if (GetParam() == kNewApiWithSeparateProfiles) {
+    if (GetParam() == kWithSeparateProfiles) {
       // Separate profiles are only available in iOS 17+.
       return;
     }
@@ -503,7 +486,7 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
 // when sign-in fail.
 TEST_P(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
   if (!@available(iOS 17, *)) {
-    if (GetParam() == kNewApiWithSeparateProfiles) {
+    if (GetParam() == kWithSeparateProfiles) {
       // Separate profiles are only available in iOS 17+.
       return;
     }
@@ -551,7 +534,7 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
 // when switch is successful.
 TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccessfulSwitch) {
   if (!@available(iOS 17, *)) {
-    if (GetParam() == kNewApiWithSeparateProfiles) {
+    if (GetParam() == kWithSeparateProfiles) {
       // Separate profiles are only available in iOS 17+.
       return;
     }
@@ -591,7 +574,7 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccessfulSwitch) {
 // Tests the result of didTapErrorButton when a passphrase is required.
 TEST_P(AccountMenuMediatorTest, TestTapErrorButtonPassphrase) {
   if (!@available(iOS 17, *)) {
-    if (GetParam() == kNewApiWithSeparateProfiles) {
+    if (GetParam() == kWithSeparateProfiles) {
       // Separate profiles are only available in iOS 17+.
       return;
     }
@@ -612,7 +595,7 @@ TEST_P(AccountMenuMediatorTest, TestTapErrorButtonPassphrase) {
 // Tests the effect of didTapManageYourGoogleAccount.
 TEST_P(AccountMenuMediatorTest, TestDidTapManageYourGoogleAccount) {
   if (!@available(iOS 17, *)) {
-    if (GetParam() == kNewApiWithSeparateProfiles) {
+    if (GetParam() == kWithSeparateProfiles) {
       // Separate profiles are only available in iOS 17+.
       return;
     }
@@ -624,7 +607,7 @@ TEST_P(AccountMenuMediatorTest, TestDidTapManageYourGoogleAccount) {
 // Tests the effect of didTapManageAccounts.
 TEST_P(AccountMenuMediatorTest, TestDidTapEditAccountList) {
   if (!@available(iOS 17, *)) {
-    if (GetParam() == kNewApiWithSeparateProfiles) {
+    if (GetParam() == kWithSeparateProfiles) {
       // Separate profiles are only available in iOS 17+.
       return;
     }
@@ -636,7 +619,7 @@ TEST_P(AccountMenuMediatorTest, TestDidTapEditAccountList) {
 // Tests the effect of didTapAddAccount.
 TEST_P(AccountMenuMediatorTest, TestDidTapAddAccount) {
   if (!@available(iOS 17, *)) {
-    if (GetParam() == kNewApiWithSeparateProfiles) {
+    if (GetParam() == kWithSeparateProfiles) {
       // Separate profiles are only available in iOS 17+.
       return;
     }
@@ -658,7 +641,7 @@ TEST_P(AccountMenuMediatorTest, TestDidTapAddAccount) {
 // Tests the effect of signOutFromTargetRect.
 TEST_P(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
   if (!@available(iOS 17, *)) {
-    if (GetParam() == kNewApiWithSeparateProfiles) {
+    if (GetParam() == kWithSeparateProfiles) {
       // Separate profiles are only available in iOS 17+.
       return;
     }
@@ -686,7 +669,7 @@ TEST_P(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
 // This is a regression test for crbug.com/371046656.
 TEST_P(AccountMenuMediatorTest, TestSignoutAndClose) {
   if (!@available(iOS 17, *)) {
-    if (GetParam() == kNewApiWithSeparateProfiles) {
+    if (GetParam() == kWithSeparateProfiles) {
       // Separate profiles are only available in iOS 17+.
       return;
     }
@@ -710,7 +693,7 @@ TEST_P(AccountMenuMediatorTest, TestSignoutAndClose) {
 // This is a regression test for crbug.com/371046656.
 TEST_P(AccountMenuMediatorTest, TestViewControllerWantToBeClosed) {
   if (!@available(iOS 17, *)) {
-    if (GetParam() == kNewApiWithSeparateProfiles) {
+    if (GetParam() == kWithSeparateProfiles) {
       // Separate profiles are only available in iOS 17+.
       return;
     }
@@ -727,16 +710,13 @@ TEST_P(AccountMenuMediatorTest, TestViewControllerWantToBeClosed) {
 
 INSTANTIATE_TEST_SUITE_P(,
                          AccountMenuMediatorTest,
-                         testing::ValuesIn({kOldApiWithoutSeparateProfiles,
-                                            kNewApiWithoutSeparateProfiles,
-                                            kNewApiWithSeparateProfiles}),
+                         testing::ValuesIn({kWithoutSeparateProfiles,
+                                            kWithSeparateProfiles}),
                          [](const testing::TestParamInfo<FeaturesState>& info) {
                            switch (info.param) {
-                             case kOldApiWithoutSeparateProfiles:
-                               return "OldApiWithoutSeparateProfile";
-                             case kNewApiWithoutSeparateProfiles:
-                               return "NewApiWithoutSeparateProfiles";
-                             case kNewApiWithSeparateProfiles:
-                               return "NewApiWithSeparateProfiles";
+                             case kWithoutSeparateProfiles:
+                               return "WithoutSeparateProfiles";
+                             case kWithSeparateProfiles:
+                               return "WithSeparateProfiles";
                            }
                          });

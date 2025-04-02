@@ -442,4 +442,31 @@ TEST_F(HTMLElementTest, DialogTopLayerRemovalTiming) {
   EXPECT_FALSE(target->IsInTopLayer());
 }
 
+TEST_F(HTMLElementTest, InertAttributeUseCounted) {
+  SetBodyInnerHTML(R"HTML(
+    <div inert></div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kInertAttribute));
+  GetDocument().ClearUseCounterForTesting(WebFeature::kInertAttribute);
+
+  // Set via setAttribute
+  SetBodyInnerHTML(R"HTML(
+    <div id=target></div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kInertAttribute));
+  GetDocument()
+      .getElementById(AtomicString("target"))
+      ->setAttribute(html_names::kInertAttr, AtomicString("true"));
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kInertAttribute));
+  GetDocument().ClearUseCounterForTesting(WebFeature::kInertAttribute);
+
+  // Test that the use counter is not incremented when the inert is
+  // set via style.
+  SetBodyInnerHTML(R"HTML(
+    <div style="interactivity: inert;"></div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kInertAttribute));
+  GetDocument().ClearUseCounterForTesting(WebFeature::kInertAttribute);
+}
+
 }  // namespace blink

@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">強制啟用縮放功能</translation>
 <translation id="3905475044299942653">禁止傳送大量通知</translation>
 <translation id="3908288065506437185">在無痕模式中封鎖第三方 Cookie</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">部分功能可能無法正常運作。相關網站仍可使用第三方 Cookie。</translation>
 <translation id="3922092564198021702">在手機開啟「設定」</translation>
 <translation id="3933121352599513978">收合不需要的要求 (建議)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">詳細資料</translation>
 <translation id="4598549027014564149">在無痕模式下，網站無法使用 Cookie 瞭解您的跨網站瀏覽活動 (即使是相關網站)，因此無法根據瀏覽活動提供個人化廣告等服務。部分網站的功能可能會無法正常運作。</translation>
 <translation id="461356340001513807">讓你使用具有身分識別服務的帳戶來登入網站</translation>
-<translation id="4619615317237390068">在其他裝置上開啟的分頁</translation>
 <translation id="4635969503923889910">不允許網站使用 NFC 裝置</translation>
 <translation id="4644713492825682049">刪除並重設</translation>
 <translation id="4645575059429386691">由您的家長管理</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">共用方式</translation>
 <translation id="5001526427543320409">第三方 Cookie</translation>
 <translation id="5007392906805964215">查看</translation>
-<translation id="5014182796621173645">你在 <ph name="RECENCY" />看過</translation>
 <translation id="5039804452771397117">允許</translation>
 <translation id="5048398596102334565">允許網站存取動作感應器 (建議)</translation>
 <translation id="5048841907079026162">管理瀏覽資料</translation>
@@ -443,7 +440,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">受保護內容</translation>
 <translation id="662080504995468778">不離開</translation>
-<translation id="6653342741369270081">按下返回按鈕即可退出全螢幕。</translation>
+<translation id="6635327442719709864">開咗之後，網站可以要求用序列連接埠。閂咗之後，網站就用唔到序列連接埠。</translation>
 <translation id="6683865262523156564">此網站所屬的群組可查看你的活動。這是 <ph name="RWS_OWNER" /> 定義的群組</translation>
 <translation id="6689172468748959065">個人檔案相片</translation>
 <translation id="6697925417670533197">正在下載的項目</translation>

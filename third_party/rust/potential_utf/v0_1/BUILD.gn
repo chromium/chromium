@@ -12,12 +12,12 @@ cargo_crate("lib") {
   crate_name = "potential_utf"
   epoch = "0.1"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/potential_utf-0.1.2/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/potential_utf-v0_1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/potential_utf-0.1.2/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/potential_utf-0.1.2/src/uchar.rs",
-    "//third_party/rust/chromium_crates_io/vendor/potential_utf-0.1.2/src/ustr.rs",
-    "//third_party/rust/chromium_crates_io/vendor/potential_utf-0.1.2/src/writeable.rs",
+    "//third_party/rust/chromium_crates_io/vendor/potential_utf-v0_1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/potential_utf-v0_1/src/uchar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/potential_utf-v0_1/src/ustr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/potential_utf-v0_1/src/writeable.rs",
   ]
   inputs = []
 

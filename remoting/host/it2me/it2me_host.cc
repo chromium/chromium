@@ -629,10 +629,19 @@ void It2MeHost::UpdateLocalSessionPolicies(
   local_session_policies->allow_file_transfer = false;
   local_session_policies->allow_uri_forwarding = false;
 
+  local_session_policies->allow_remote_input = true;
+
 #if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
   if (is_enterprise_session()) {
     local_session_policies->curtain_required =
         chrome_os_enterprise_params_->curtain_local_user_session;
+
+    local_session_policies->allow_remote_input =
+        chrome_os_enterprise_params_->allow_remote_input;
+
+    if (!chrome_os_enterprise_params_->allow_clipboard_sync) {
+      local_session_policies->clipboard_size_bytes = 0;
+    }
 
 #if BUILDFLAG(IS_CHROMEOS)
     bool enterprise_file_transfer_allowed =

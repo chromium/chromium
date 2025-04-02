@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
+#include "base/notimplemented.h"
 #include "base/rand_util.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"

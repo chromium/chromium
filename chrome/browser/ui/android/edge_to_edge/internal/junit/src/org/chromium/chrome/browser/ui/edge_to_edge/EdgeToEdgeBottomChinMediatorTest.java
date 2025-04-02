@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -55,6 +56,7 @@ public class EdgeToEdgeBottomChinMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
+    @Mock private InsetObserver mInsetObserver;
     @Mock private LayoutManager mLayoutManager;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private BottomControlsStacker mBottomControlsStacker;
@@ -73,6 +75,7 @@ public class EdgeToEdgeBottomChinMediatorTest {
                 new EdgeToEdgeBottomChinMediator(
                         mModel,
                         mKeyboardVisibilityDelegate,
+                        mInsetObserver,
                         mLayoutManager,
                         mEdgeToEdgeController,
                         mBottomControlsStacker,
@@ -429,6 +432,11 @@ public class EdgeToEdgeBottomChinMediatorTest {
         assertTrue("The chin should be visible as all conditions are met.", mModel.get(CAN_SHOW));
 
         mMediator.keyboardVisibilityChanged(true);
+        assertTrue(
+                "The chin should still be visible as the keyboard has a zero inset.",
+                mModel.get(CAN_SHOW));
+
+        mMediator.onKeyboardInsetChanged(180);
         assertFalse(
                 "The chin should not be visible as the keyboard is showing.", mModel.get(CAN_SHOW));
 

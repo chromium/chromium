@@ -55,6 +55,15 @@ enum {
   ANDROID_VIEW_VIEW_ACCESSIBILITY_LIVE_REGION_ASSERTIVE = 2
 };
 
+// These are enums from android.view.accessibility.AccessibilityNodeInfo in
+// Java:
+enum {
+  ANDROID_VIEW_ACCESSIBILITY_EXPANDED_STATE_UNDEFINED = 0,
+  ANDROID_VIEW_ACCESSIBILITY_EXPANDED_STATE_COLLAPSED = 1,
+  ANDROID_VIEW_ACCESSIBILITY_EXPANDED_STATE_PARTIAL = 2,
+  ANDROID_VIEW_ACCESSIBILITY_EXPANDED_STATE_FULL = 3,
+};
+
 // These are enums from
 // android.view.accessibility.AccessibilityNodeInfo.RangeInfo in Java:
 enum { ANDROID_VIEW_ACCESSIBILITY_RANGE_TYPE_FLOAT = 1 };
@@ -557,6 +566,18 @@ int BrowserAccessibilityAndroid::ClickableScore() const {
     case ax::mojom::DefaultActionVerb::kNone:
     default:
       return kNotClickable;
+  }
+}
+
+int BrowserAccessibilityAndroid::ExpandedState() const {
+  if (IsExpanded() && IsCollapsed()) {
+    return ANDROID_VIEW_ACCESSIBILITY_EXPANDED_STATE_PARTIAL;
+  } else if (IsExpanded()) {
+    return ANDROID_VIEW_ACCESSIBILITY_EXPANDED_STATE_FULL;
+  } else if (IsCollapsed()) {
+    return ANDROID_VIEW_ACCESSIBILITY_EXPANDED_STATE_COLLAPSED;
+  } else {
+    return ANDROID_VIEW_ACCESSIBILITY_EXPANDED_STATE_UNDEFINED;
   }
 }
 
@@ -1813,15 +1834,14 @@ int BrowserAccessibilityAndroid::ColumnCount() const {
   }
 
   // For <ol> and <ul> elements on Android (e.g. role kList, kListBox, kMenu,
-  // kMenuBar and kMenuListPopup), the AX code will consider these 0 columns,
-  // but on Android they are 1.
+  // kMenuBar and kMenuListPopup), the AX code may consider these 0 columns (or
+  // more if the element is inside of a table), but on Android they are 1.
   int ax_cols = node()->GetTableColCount().value_or(0);
   if (GetRole() == ax::mojom::Role::kList ||
       GetRole() == ax::mojom::Role::kListBox ||
       GetRole() == ax::mojom::Role::kMenu ||
       GetRole() == ax::mojom::Role::kMenuBar ||
       GetRole() == ax::mojom::Role::kMenuListPopup) {
-    DCHECK_EQ(ax_cols, 0);
     ax_cols = 1;
   }
 

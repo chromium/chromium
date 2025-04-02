@@ -1,0 +1,17 @@
+<!doctype html>
+<html class="reftest-wait">
+<link rel="match" href="2d-presents-frame-after-draw-while-context-lost-expected.html">
+<script src="./2d-presents-frame-after-draw-while-context-lost-impl.js"></script>
+
+<title>
+  Tests that a 2d canvas can still present frames to the compositor if the
+  canvas is drawn to while the GPU context is lost.
+</title>
+
+<canvas id="canvas"></canvas>
+<script type="module">
+  const canvas = document.getElementById('canvas');
+  await TestDrawWhile2dContextLost(canvas);
+  document.documentElement.classList.remove('reftest-wait');
+</script>
+</html>

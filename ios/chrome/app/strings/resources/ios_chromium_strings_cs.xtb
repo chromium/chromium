@@ -90,6 +90,7 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="3054480780637153380">V systému iOS otevřete Nastavení prohlížeče Chromium, klepněte na Výchozí prohlížeč a vyberte Chromium.</translation>
 <translation id="3102849287235003384">Pokud se chcete odhlásit z účtu Google na všech webech, <ph name="BEGIN_LINK" />odhlaste se z Chromia<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Nastavit Chromium jako výchozí prohlížeč?</translation>
+<translation id="3180939591219927904">Zapněte možnost Při zavření Chromia zamknout anonymní karty</translation>
 <translation id="3242612358525156339">V nastavení svého zařízení otevřete sekci <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> a vyberte Chromium</translation>
 <translation id="328933489847748230">{count,plural, =1{Je zobrazeno 1 okno prohlížeče Chromium}few{Jsou zobrazena {count} okna prohlížeče Chromium}many{Je zobrazeno {count} okna prohlížeče Chromium}other{Je zobrazeno {count} oken prohlížeče Chromium}}</translation>
 <translation id="3344973607274501920">Chromiu se nepodařilo zkontrolovat hesla. Zkuste zkontrolovat připojení k internetu.</translation>
@@ -259,6 +260,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Vybraná data byla z prohlížeče Chromium a synchronizovaných zařízení odstraněna. Na stránce history.google.com mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google, například vyhledávací dotazy a aktivita z ostatních služeb Google.</translation>
 <translation id="7395825497086981028">Heslo bude uloženo do Správce hesel pro účet <ph name="EMAIL" />.</translation>
+<translation id="7504829997542308412">Otevřete Chromium</translation>
 <translation id="7531461704633548377">Z prohlížeče Chromium</translation>
 <translation id="7554983317097061001">Tip pro Chromium: Přesuňte Chromium do Docku</translation>
 <translation id="7576863740961052505">Spravovat nastavení prohlížeče Chromium</translation>

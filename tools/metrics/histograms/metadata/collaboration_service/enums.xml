@@ -79,6 +79,16 @@ chromium-metrics-reviews@google.com.
 
 <enum name="CollaborationServiceShareOrManageEntryPoint">
   <int value="0" label="Unknown"/>
+  <int value="1" label="AndroidTabGridDialogShare"/>
+  <int value="2" label="AndroidTabGridDialogManage"/>
+  <int value="3" label="RecentActivity"/>
+  <int value="4" label="AndroidTabGroupContextMenuShare"/>
+  <int value="5" label="AndroidTabGroupContextMenuManage"/>
+  <int value="6" label="Notification"/>
+  <int value="7" label="AndroidMessage"/>
+  <int value="8" label="TabGroupItemMenuShare"/>
+  <int value="9" label="AndroidShareSheetExtra"/>
+  <int value="10" label="DialogToolbarButton"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/collaboration/public/collaboration_flow_entry_point.h:CollaborationServiceShareOrManageEntryPoint) -->

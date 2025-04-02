@@ -24,6 +24,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/resumable_uploader.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -427,6 +428,12 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
       base::BindOnce(&CloudBinaryUploadService::OnContentUploaded,
                      weakptr_factory_.GetWeakPtr(), request_id);
   std::unique_ptr<ConnectorUploadRequest> upload_request;
+  // The downloaded file will not be available for deep scan upload due to the
+  // newly introduced download obfuscation step. We must wait for deobfuscation
+  // to complete before uploading, which is guaranteed under the pre-async
+  // upload behaviour.
+  bool force_sync_upload =
+      request->analysis_connector() == enterprise_connectors::FILE_DOWNLOADED;
   if (request->IsAuthRequest() || !data.contents.empty()) {
     upload_request = MultipartUploadRequest::CreateStringRequest(
         url_loader_factory_, url, metadata, data.contents, histogram_suffix,
@@ -439,7 +446,7 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
                   data.size, data.is_obfuscated, histogram_suffix,
                   std::move(traffic_annotation),
                   std::move(verdict_received_callback),
-                  std::move(content_uploaded_callback))
+                  std::move(content_uploaded_callback), force_sync_upload)
             : MultipartUploadRequest::CreateFileRequest(
                   url_loader_factory_, url, metadata, data.path, data.size,
                   data.is_obfuscated, histogram_suffix,
@@ -453,7 +460,7 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
                   std::move(data.page), histogram_suffix,
                   std::move(traffic_annotation),
                   std::move(verdict_received_callback),
-                  std::move(content_uploaded_callback))
+                  std::move(content_uploaded_callback), force_sync_upload)
             : MultipartUploadRequest::CreatePageRequest(
                   url_loader_factory_, url, metadata, std::move(data.page),
                   histogram_suffix, std::move(traffic_annotation),

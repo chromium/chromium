@@ -1736,6 +1736,9 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_SHOW_DOWNLOADS" desc="The show downloads menu in the app menu">
           &amp;Downloads
         </message>
+        <message name="IDS_EXPLORE_EXTENSIONS" desc="The explore extensions menu item in the app menu">
+          Explore &amp;Extensions
+        </message>
         <message name="IDS_SHOW_EXTENSIONS" desc="The show extensions menu in the app menu">
           &amp;Extensions
         </message>
@@ -1791,6 +1794,9 @@ are declared in tools/grit/grit_args.gni.
         </message>
         <message name="IDS_SHOW_DOWNLOADS" desc="In Title Case: The show downloads menu in the app menu">
           &amp;Downloads
+        </message>
+        <message name="IDS_EXPLORE_EXTENSIONS" desc="In Title Case: The explore extensions menu item in the app menu">
+          Explore &amp;Extensions
         </message>
         <message name="IDS_SHOW_EXTENSIONS" desc="In Title Case: The show extensions menu in the app menu">
           &amp;Extensions
@@ -4735,6 +4741,9 @@ are declared in tools/grit/grit_args.gni.
       </message>
       <message name="IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_TAB_LABEL" desc="Text displayed on an infobar when another (non-current) tab is being shared.">
        Sharing <ph name="TAB_NAME">$1<ex>youtube.com</ex></ph> to <ph name="APP_NAME">$2<ex>meet.google.com</ex></ph>
+      </message>
+      <message name="IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_TAB_TO_THIS_TAB_LABEL" desc="Text displayed on an infobar when another (non-current) tab is being shared.">
+       Sharing <ph name="TAB_NAME">$1<ex>youtube.com</ex></ph> to this tab
       </message>
       <message name="IDS_TAB_SHARING_INFOBAR_SHARE_BUTTON" desc="Text displayed on the button to share current tab.">
        Share this tab instead

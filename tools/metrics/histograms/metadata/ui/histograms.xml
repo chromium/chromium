@@ -44,6 +44,7 @@ chromium-metrics-reviews@google.com.
       summary="The context menu was shown for an image which is also a link."/>
   <variant name=".Link"
       summary="The context menu was shown for a (non-image) link"/>
+  <variant name=".Page" summary="The context menu was shown for a page."/>
   <variant name=".SharedHighlightingInteraction"
       summary="The context menu was shown from tap on highlighted text."/>
   <variant name=".Video" summary="The context menu was shown for a video"/>
@@ -801,6 +802,7 @@ features through Chrome Labs. -->
     <variant name="DistillPage"/>
     <variant name="EnterFullScreen"/>
     <variant name="Exit"/>
+    <variant name="ExploreExtensions"/>
     <variant name="Feedback"/>
     <variant name="Find"/>
     <variant name="HelpPage"/>

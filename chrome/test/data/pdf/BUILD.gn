@@ -62,6 +62,7 @@ build_webui_tests("build") {
 
   if (enable_pdf_ink2) {
     files += [
+      "ink2_annotation_brush_mixin_test.ts",
       "ink2_before_unload_stroke_test.ts",
       "ink2_before_unload_undo_test.ts",
       "ink2_bottom_toolbar_dropdown_test.ts",
@@ -74,6 +75,7 @@ build_webui_tests("build") {
       "ink2_size_selector_test.ts",
       "ink2_test.ts",
       "ink2_text_side_panel_test.ts",
+      "ink2_text_styles_selector_test.ts",
       "ink2_viewer_toolbar_test.ts",
       "selectable_icon_button_test.ts",
     ]

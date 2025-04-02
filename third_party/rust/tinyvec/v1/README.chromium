@@ -3,7 +3,7 @@ URL: https://crates.io/crates/tinyvec
 Version: 1.9.0
 Revision: f83214e657df4fea93be654859fcfe85687a1232
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/tinyvec-1.9.0/LICENSE-APACHE.md
+License File: //third_party/rust/chromium_crates_io/vendor/tinyvec-v1/LICENSE-APACHE.md
 Shipped: yes
 Security Critical: yes
 

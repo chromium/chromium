@@ -40,6 +40,8 @@ class SharedCrdSession {
     bool terminate_upon_input = false;
     bool show_confirmation_dialog = false;
     bool allow_file_transfer = false;
+    bool allow_remote_input = true;
+    bool allow_clipboard_sync = true;
   };
 
   virtual ~SharedCrdSession() = default;

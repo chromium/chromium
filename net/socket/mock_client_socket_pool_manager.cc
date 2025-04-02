@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/notimplemented.h"
 #include "base/values.h"
 #include "net/socket/client_socket_pool.h"
 

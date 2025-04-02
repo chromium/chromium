@@ -694,6 +694,13 @@ class IntegrationTest : public ::testing::Test {
                                           store_flag, want_tag);
   }
 
+  void ExpectKSAdminXattrBrand(bool elevate,
+                               const base::FilePath& path,
+                               std::optional<std::string> want_brand) {
+    test_commands_->ExpectKSAdminXattrBrand(elevate, path,
+                                            std::move(want_brand));
+  }
+
 #endif  // BUILDFLAG(IS_MAC)
 
   void ExpectAppInstalled(const std::string& appid,
@@ -1769,6 +1776,36 @@ TEST_F(IntegrationTest, NoXattrReadPath) {
       tagging::ReadTagFromApplicationInstanceXattr({});
   ASSERT_FALSE(read_result.has_value());
   EXPECT_EQ(read_result.error(), tagging::ErrorCode::kTagNotFound);
+}
+
+TEST_F(IntegrationTest, KSAdminXattrTagReadBrandSuccess) {
+  ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
+  base::ScopedTempFile tag_me;
+  ASSERT_TRUE(tag_me.Create());
+  EXPECT_TRUE(tagging::WriteTagStringToApplicationInstanceXattr(
+      tag_me.path(),
+      "brand=TEST&iid=TestInstallId&appguid=org.chromium.test&ap=example"));
+  ExpectKSAdminXattrBrand(false, tag_me.path(), "TEST");
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, KSAdminXattrTagReadNoBrandSuccess) {
+  ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
+  base::ScopedTempFile tag_me_without_brand;
+  ASSERT_TRUE(tag_me_without_brand.Create());
+  EXPECT_TRUE(tagging::WriteTagStringToApplicationInstanceXattr(
+      tag_me_without_brand.path(),
+      "iid=TestInstallId&appguid=org.chromium.test&ap=example"));
+  ExpectKSAdminXattrBrand(false, tag_me_without_brand.path(), "");
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, KSAdminXattrTagBrandNoXattrFailure) {
+  ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
+  base::ScopedTempFile dont_tag_me;
+  ASSERT_TRUE(dont_tag_me.Create());
+  ExpectKSAdminXattrBrand(false, dont_tag_me.path(), std::nullopt);
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 #endif
 

@@ -4,39 +4,44 @@
 
 #include "base/apple/owned_objc.h"
 
-#include <MacTypes.h>  // For nil, to avoid having to bring in frameworks.
+#include <Foundation/Foundation.h>
 
 #include "build/build_config.h"
 
-#define OWNED_OBJC_IMPL(classname, objctype, ownership)                      \
-  namespace base::apple {                                                    \
-  struct classname::ObjCStorage {                                            \
-    objctype ownership obj;                                                  \
-  };                                                                         \
-  classname::classname() : objc_storage_(std::make_unique<ObjCStorage>()) {} \
-  classname::~classname() = default;                                         \
-  classname::classname(objctype obj) : classname() {                         \
-    objc_storage_->obj = obj;                                                \
-  }                                                                          \
-  classname::classname(const classname& other) : classname() {               \
-    objc_storage_->obj = other.objc_storage_->obj;                           \
-  }                                                                          \
-  classname& classname::operator=(const classname& other) {                  \
-    objc_storage_->obj = other.objc_storage_->obj;                           \
-    return *this;                                                            \
-  }                                                                          \
-  classname::operator bool() const {                                         \
-    return objc_storage_->obj != nil;                                        \
-  }                                                                          \
-  bool classname::operator==(const classname& other) const {                 \
-    return objc_storage_->obj == other.objc_storage_->obj;                   \
-  }                                                                          \
-  bool classname::operator!=(const classname& other) const {                 \
-    return !this->operator==(other);                                         \
-  }                                                                          \
-  objctype classname::Get() const {                                          \
-    return objc_storage_->obj;                                               \
-  }                                                                          \
+#define OWNED_OBJC_IMPL(classname, objctype, ownership)                       \
+  namespace base::apple {                                                     \
+  struct classname::ObjCStorage {                                             \
+    objctype ownership obj;                                                   \
+  };                                                                          \
+  classname::classname() : objc_storage_(std::make_unique<ObjCStorage>()) {}  \
+  classname::~classname() = default;                                          \
+  classname::classname(objctype obj) : classname() {                          \
+    objc_storage_->obj = obj;                                                 \
+  }                                                                           \
+  classname::classname(const classname& other) : classname() {                \
+    objc_storage_->obj = other.objc_storage_->obj;                            \
+  }                                                                           \
+  classname& classname::operator=(const classname& other) {                   \
+    objc_storage_->obj = other.objc_storage_->obj;                            \
+    return *this;                                                             \
+  }                                                                           \
+  classname::operator bool() const {                                          \
+    return objc_storage_->obj != nil;                                         \
+  }                                                                           \
+  bool classname::operator==(const classname& other) const {                  \
+    return objc_storage_->obj == other.objc_storage_->obj;                    \
+  }                                                                           \
+  bool classname::operator!=(const classname& other) const {                  \
+    return !this->operator==(other);                                          \
+  }                                                                           \
+  std::string classname::ToString() const {                                   \
+    return objc_storage_->obj                                                 \
+               ? id<NSObject>(objc_storage_->obj).debugDescription.UTF8String \
+               : std::string("<nil>");                                        \
+  }                                                                           \
+  objctype classname::Get() const {                                           \
+    return objc_storage_->obj;                                                \
+  }                                                                           \
   }  // namespace base::apple
 
 #define GENERATE_STRONG_OBJC_TYPE(name) \

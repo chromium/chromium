@@ -8,6 +8,8 @@
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
@@ -52,7 +54,17 @@ class EmojiBubbleDialogView : public WebUIBubbleDialogView {
                               /*autosize=*/false),
         contents_wrapper_(std::move(contents_wrapper)),
         caret_bounds_(caret_bounds) {
-    set_has_parent(false);
+    // Place the emoji bubble in the float container to ensure it appears above
+    // float and PIP windows for example. See crbug.com/402617739 for more
+    // details.
+    display::Display display =
+        display::Screen::GetScreen()->GetDisplayMatching(caret_bounds);
+    aura::Window* root_window =
+        ash::Shell::GetRootWindowForDisplayId(display.id());
+    CHECK(root_window);
+    set_parent_window(ash::Shell::GetContainer(
+        root_window, ash::kShellWindowId_FloatContainer));
+
     set_corner_radius(20);
     SetProperty(views::kElementIdentifierKey, ash::kEmojiPickerElementId);
   }

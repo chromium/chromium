@@ -260,6 +260,10 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
   }
 
   switch (event_type) {
+    case ui::AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED: {
+      wcax->HandleActiveDescendantChanged(android_node->GetUniqueId());
+      break;
+    }
     case ui::AXEventGenerator::Event::ALERT: {
       wcax->HandlePaneOpened(android_node->GetUniqueId());
       break;
@@ -295,6 +299,11 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
           GetFocus()->IsDescendantOf(android_node)) {
         wcax->HandlePaneOpened(android_node->GetUniqueId());
       }
+      wcax->HandleExpandedStateChanged(android_node->GetUniqueId());
+      break;
+    }
+    case ui::AXEventGenerator::Event::COLLAPSED: {
+      wcax->HandleExpandedStateChanged(android_node->GetUniqueId());
       break;
     }
     case ui::AXEventGenerator::Event::IMAGE_ANNOTATION_CHANGED: {
@@ -362,7 +371,6 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     // Currently unused events on this platform.
     case ui::AXEventGenerator::Event::NONE:
     case ui::AXEventGenerator::Event::ACCESS_KEY_CHANGED:
-    case ui::AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED:
     case ui::AXEventGenerator::Event::ARIA_CURRENT_CHANGED:
     case ui::AXEventGenerator::Event::ARIA_NOTIFICATIONS_POSTED:
     case ui::AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
@@ -373,7 +381,6 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::CARET_BOUNDS_CHANGED:
     case ui::AXEventGenerator::Event::CHECKED_STATE_DESCRIPTION_CHANGED:
     case ui::AXEventGenerator::Event::CHILDREN_CHANGED:
-    case ui::AXEventGenerator::Event::COLLAPSED:
     case ui::AXEventGenerator::Event::CONTROLS_CHANGED:
     case ui::AXEventGenerator::Event::DETAILS_CHANGED:
     case ui::AXEventGenerator::Event::DESCRIBED_BY_CHANGED:

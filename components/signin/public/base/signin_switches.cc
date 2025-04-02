@@ -60,6 +60,30 @@ BASE_FEATURE(kUseHostedDomainForManagementCheckOnSignin,
 BASE_FEATURE(kEnableHistorySyncOptin,
              "EnableHistorySyncOptin",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the History Sync Opt-in expansion pill on Desktop.
+BASE_FEATURE(kEnableHistorySyncOptinExpansionPill,
+             "EnableHistorySyncOptinExpansionPill",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<HistorySyncOptinExpansionPillOption>::Option
+    kHistorySyncOptinExpansionPillOptions[] = {
+        {HistorySyncOptinExpansionPillOption::kBrowseAcrossDevices,
+         "browse-across-devices"},
+        {HistorySyncOptinExpansionPillOption::kSyncTabsAndHistory,
+         "sync-tabs-and-history"},
+        {HistorySyncOptinExpansionPillOption::kSeeTabsFromOtherDevices,
+         "see-tabs-from-other-devices"}};
+
+// Determines the text to be shown in the History Sync Opt-in expansion pill.
+// It is no-op unless "EnableHistorySyncOptin" is enabled.
+constexpr base::FeatureParam<HistorySyncOptinExpansionPillOption>
+    kHistorySyncOptinExpansionPillOption = {
+        &kEnableHistorySyncOptinExpansionPill,
+        "history-sync-optin-expansion-pill-option",
+        HistorySyncOptinExpansionPillOption::kBrowseAcrossDevices,
+        &kHistorySyncOptinExpansionPillOptions};
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

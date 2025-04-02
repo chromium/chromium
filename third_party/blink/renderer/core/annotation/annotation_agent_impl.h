@@ -103,10 +103,10 @@ class CORE_EXPORT AnnotationAgentImpl final
   void Remove();
 
   // mojom::blink::AnnotationAgent
-  void ScrollIntoView() override {
-    const_cast<const AnnotationAgentImpl*>(this)->ScrollIntoView();
+  void ScrollIntoView(bool applies_focus) override {
+    const_cast<const AnnotationAgentImpl*>(this)->ScrollIntoView(applies_focus);
   }
-  void ScrollIntoView() const;
+  void ScrollIntoView(bool applies_focus) const;
 
   const RangeInFlatTree& GetAttachedRange() const {
     CHECK(attached_range_.Get());

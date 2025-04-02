@@ -3724,5 +3724,34 @@ TEST_P(
             server_card.CardNameForAutofillDisplay());
 }
 
+TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
+       GetCreditCardSuggestionsForTouchToFill_Icon) {
+  CreditCard server_card = CreateServerCard();
+  server_card.SetNetworkForMaskedCard(kVisaCard);
+  std::vector<CreditCard> cards = {server_card};
+
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      cards, *autofill_client(), *credit_card_form_event_logger_);
+
+  ASSERT_EQ(suggestions.size(), 1U);
+  EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kCardVisa);
+}
+
+TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
+       GetCreditCardSuggestionsForTouchToFill_CustomIcon) {
+  CreditCard server_card = CreateServerCard();
+  GURL expected_custom_icon_url("https://www.example.com/card-art");
+  server_card.set_card_art_url(expected_custom_icon_url);
+  std::vector<CreditCard> cards = {server_card};
+
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      cards, *autofill_client(), *credit_card_form_event_logger_);
+
+  ASSERT_EQ(suggestions.size(), 1U);
+  const Suggestion::CustomIconUrl* custom_icon_url =
+      std::get_if<Suggestion::CustomIconUrl>(&suggestions[0].custom_icon);
+  EXPECT_EQ(**custom_icon_url, expected_custom_icon_url);
+}
+
 }  // namespace
 }  // namespace autofill

@@ -16,7 +16,7 @@ std::string AXTreeIndexerMac::IndexBy(
   // for example, when text markers, which binary serialization always
   // points to the internal tree, are stringified while running through
   // the external tree.
-  if (AXElementWrapper::TypeOf(node) != type_) {
+  if (AXElementWrapper::TypeOf(node.Get()) != type_) {
     return ":outsider";
   }
   return AXTreeIndexerMacBase::IndexBy(node);

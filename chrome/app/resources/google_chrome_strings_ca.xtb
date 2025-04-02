@@ -57,6 +57,7 @@
 <translation id="1786044937610313874">Les dreceres s'obren a Chrome</translation>
 <translation id="178701303897325119">Aquesta extensió ja no s'admet. Chrome et recomana que la suprimeixis.</translation>
 <translation id="1812689907177901597">En desactivar aquesta opció, pots iniciar la sessió en llocs web de Google, com ara Gmail, sense iniciar la sessió a Chrome</translation>
+<translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome recomana posar en pausa la pestanya que està alentint el navegador}other{Chrome recomana posar en pausa les pestanyes que estan alentint el navegador}}</translation>
 <translation id="1838374766361614909">Esborra la cerca</translation>
 <translation id="1860536484129686729">Per visitar aquest lloc web, Chrome necessita permís per accedir a la càmera</translation>
 <translation id="1873233029667955273">Google Chrome no és el navegador predeterminat</translation>
@@ -254,6 +255,7 @@
 <translation id="4281844954008187215">Condicions del servei</translation>
 <translation id="4293420128516039005">Inicia la sessió per sincronitzar i personalitzar Chrome en tots els teus dispositius</translation>
 <translation id="430327780270213103">Permet que l'extensió mostri sol·licituds d'accés a la barra d'eines de Chrome</translation>
+<translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome recomana posar en pausa la pestanya que està alentint el navegador}other{Chrome recomana posar en pausa les pestanyes que estan alentint el navegador}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Per obtenir personalització i altres funcions, inclou Chrome a Activitat al web i en aplicacions i als serveis de Google enllaçats</translation>
 <translation id="4334294535648607276">S'ha completat la baixada.</translation>

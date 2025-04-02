@@ -4322,7 +4322,7 @@ TEST_F(ExtensionServiceTest, NonCWSForceInstalledDisabledOnNonDomainJoin) {
   scoped_refptr<const Extension> extension =
       CreateExtension("policy_installed", data_dir().AppendASCII("good.crx"),
                       ManifestLocation::kExternalPolicyDownload);
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
 
   {
     ManagementPrefUpdater pref(profile_->GetTestingPrefService());
@@ -4350,7 +4350,7 @@ TEST_F(ExtensionServiceTest, NonCWSForceInstalledEnabledOnDomainJoin) {
   scoped_refptr<const Extension> extension =
       CreateExtension("policy_installed", data_dir().AppendASCII("good.crx"),
                       ManifestLocation::kExternalPolicyDownload);
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
 
   {
     ManagementPrefUpdater pref(profile_->GetTestingPrefService());
@@ -7510,7 +7510,7 @@ TEST_F(ExtensionServiceTest, DisablingComponentExtensions) {
       "external_component_extension",
       base::FilePath(FILE_PATH_LITERAL("//external_component_extension")),
       ManifestLocation::kExternalComponent);
-  service_->AddExtension(external_component_extension.get());
+  registrar()->AddExtension(external_component_extension);
   EXPECT_TRUE(registry()->enabled_extensions().Contains(
       external_component_extension->id()));
   service_->DisableExtension(external_component_extension->id(),
@@ -7522,7 +7522,7 @@ TEST_F(ExtensionServiceTest, DisablingComponentExtensions) {
       "component_extension",
       base::FilePath(FILE_PATH_LITERAL("//component_extension")),
       ManifestLocation::kComponent);
-  service_->AddExtension(component_extension.get());
+  registrar()->AddExtension(component_extension);
   EXPECT_TRUE(
       registry()->enabled_extensions().Contains(component_extension->id()));
   service_->DisableExtension(component_extension->id(),

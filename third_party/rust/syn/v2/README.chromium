@@ -3,7 +3,7 @@ URL: https://crates.io/crates/syn
 Version: 2.0.100
 Revision: 5357c8fb6bd29fd7c829e0aede1dab4b45a6e00f
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/syn-2.0.100/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/syn-v2/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes
 

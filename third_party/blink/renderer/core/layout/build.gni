@@ -166,8 +166,6 @@ blink_core_sources_layout = [
   "geometry/logical_size.h",
   "geometry/margin_strut.cc",
   "geometry/margin_strut.h",
-  "geometry/physical_offset.cc",
-  "geometry/physical_offset.h",
   "geometry/physical_rect.cc",
   "geometry/physical_rect.h",
   "geometry/physical_size.cc",

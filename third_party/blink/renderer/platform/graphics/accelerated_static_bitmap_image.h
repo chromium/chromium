@@ -98,9 +98,9 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
                      GLuint dest_texture_id,
                      GLint dest_level,
                      bool unpack_premultiply_alpha,
-                     bool unpack_flip_y,
+                     GrSurfaceOrigin destination_origin,
                      const gfx::Point& dest_point,
-                     const gfx::Rect& source_sub_rectangle) override;
+                     const gfx::Rect& src_rect) override;
 
   bool CopyToResourceProvider(CanvasResourceProvider* resource_provider,
                               const gfx::Rect& copy_rect) override;

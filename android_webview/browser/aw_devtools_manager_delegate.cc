@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/aw_devtools_manager_delegate.h"
 
+#include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/gfx/browser_view_renderer.h"
 #include "android_webview/common/aw_content_client.h"
 #include "base/json/json_writer.h"
@@ -75,5 +76,9 @@ AwDevToolsManagerDelegate::RemoteDebuggingTargets(TargetType target_type) {
     result.push_back(*it);
   }
   return result;
+}
+
+content::BrowserContext* AwDevToolsManagerDelegate::GetDefaultBrowserContext() {
+  return AwBrowserContext::GetDefault();
 }
 }  // namespace android_webview

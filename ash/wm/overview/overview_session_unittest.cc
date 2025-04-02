@@ -1942,31 +1942,15 @@ TEST_P(OverviewSessionTest, NoWindowsIndicatorPosition) {
 
   display::Screen* screen = display::Screen::GetScreen();
 
-  // The expected y of the label will be the screen minus the shelf and desks
-  // bar.
-  auto get_expected_y = [&screen]() -> int {
-    const int display_height = screen->GetPrimaryDisplay().bounds().height();
-    const int grid_y = kDeskBarZeroStateHeight;
-    int grid_height = display_height - ShelfConfig::Get()->shelf_size() -
-                      kDeskBarZeroStateHeight;
-    return grid_y + grid_height / 2;
-  };
-
-  // Verify that originally the label is in the center of the workspace. For
-  // forest, the padding calculations are much more complicated and we need to
-  // account for the birch bar, so we just check that the widget is roughly
-  // centered vertically.
+  // The padding calculations are complicated and we need to account for the
+  // birch bar, so we just check that the widget is roughly centered vertically.
   gfx::Point no_windows_centerpoint =
       no_windows_widget->GetWindowBoundsInScreen().CenterPoint();
-  if (features::IsForestFeatureEnabled()) {
-    EXPECT_EQ(200, no_windows_centerpoint.x());
-    EXPECT_GT(no_windows_centerpoint.y(), kDeskBarZeroStateHeight);
-    EXPECT_LT(no_windows_centerpoint.y(),
-              screen->GetPrimaryDisplay().bounds().height() -
-                  ShelfConfig::Get()->shelf_size());
-  } else {
-    EXPECT_EQ(gfx::Point(200, get_expected_y()), no_windows_centerpoint);
-  }
+  EXPECT_EQ(200, no_windows_centerpoint.x());
+  EXPECT_GT(no_windows_centerpoint.y(), kDeskBarZeroStateHeight);
+  EXPECT_LT(no_windows_centerpoint.y(),
+            screen->GetPrimaryDisplay().bounds().height() -
+                ShelfConfig::Get()->shelf_size());
 
   // Verify that after rotating the display, the label is centered in the
   // workspace.
@@ -1976,15 +1960,11 @@ TEST_P(OverviewSessionTest, NoWindowsIndicatorPosition) {
       display::Display::RotationSource::ACTIVE);
   no_windows_centerpoint =
       no_windows_widget->GetWindowBoundsInScreen().CenterPoint();
-  if (features::IsForestFeatureEnabled()) {
-    EXPECT_EQ(150, no_windows_centerpoint.x());
-    EXPECT_GT(no_windows_centerpoint.y(), kDeskBarZeroStateHeight);
-    EXPECT_LT(no_windows_centerpoint.y(),
-              screen->GetPrimaryDisplay().bounds().height() -
-                  ShelfConfig::Get()->shelf_size());
-  } else {
-    EXPECT_EQ(gfx::Point(150, get_expected_y()), no_windows_centerpoint);
-  }
+  EXPECT_EQ(150, no_windows_centerpoint.x());
+  EXPECT_GT(no_windows_centerpoint.y(), kDeskBarZeroStateHeight);
+  EXPECT_LT(no_windows_centerpoint.y(),
+            screen->GetPrimaryDisplay().bounds().height() -
+                ShelfConfig::Get()->shelf_size());
 }
 
 // Tests that toggling overview on removes any resize shadows that may have been
@@ -2035,12 +2015,6 @@ TEST_P(OverviewSessionTest, OverviewGridBounds) {
   Shelf* shelf = Shelf::ForWindow(Shell::GetPrimaryRootWindow());
   const gfx::Rect shelf_bounds = shelf->GetIdealBounds();
   EXPECT_FALSE(GetGridBounds().Intersects(shelf_bounds));
-
-  if (!features::IsForestFeatureEnabled()) {
-    const gfx::Rect hotseat_bounds =
-        shelf->hotseat_widget()->GetWindowBoundsInScreen();
-    EXPECT_FALSE(GetGridBounds().Intersects(hotseat_bounds));
-  }
 }
 
 TEST_P(OverviewSessionTest, NoWindowsIndicatorPositionSplitview) {
@@ -4026,27 +4000,13 @@ class FloatOverviewSessionTest : public OverviewTestBase {
   // it is not true on any of the root windows.
   bool IsFloatContainerNormalStacked() const {
     for (aura::Window* root : Shell::GetAllRootWindows()) {
-      if (features::IsForestFeatureEnabled()) {
-        // The float container should be the top-most child of the
-        // `ShutdownScreenshotContainer` when the feature `ForestFeature` is
-        // enabled.
-        auto* shutdown_screenshot_container =
-            root->GetChildById(kShellWindowId_ShutdownScreenshotContainer);
-        EXPECT_EQ(root->GetChildById(kShellWindowId_FloatContainer),
-                  shutdown_screenshot_container->children().back());
-      } else {
-        // The float container should above the always on top container and
-        // below the app list container when the `ForestFeature` is not enabled.
-        if (!window_util::IsStackedBelow(
-                root->GetChildById(kShellWindowId_AlwaysOnTopContainer),
-                root->GetChildById(kShellWindowId_FloatContainer))) {
-          return false;
-        }
-        if (!window_util::IsStackedBelow(
-                root->GetChildById(kShellWindowId_FloatContainer),
-                root->GetChildById(kShellWindowId_AppListContainer))) {
-          return false;
-        }
+      // The float container should be the top-most child of the
+      // `ShutdownScreenshotContainer`.
+      auto* shutdown_screenshot_container =
+          root->GetChildById(kShellWindowId_ShutdownScreenshotContainer);
+      if (root->GetChildById(kShellWindowId_FloatContainer) !=
+          shutdown_screenshot_container->children().back()) {
+        return false;
       }
     }
 
@@ -5036,10 +4996,6 @@ TEST_F(TabletModeOverviewSessionTest, CheckWindowActivateOnTap) {
 }
 
 TEST_F(TabletModeOverviewSessionTest, LayoutValidAfterRotation) {
-  if (!features::IsForestFeatureEnabled()) {
-    return;
-  }
-
   UpdateDisplay("1366x768");
   display::test::ScopedSetInternalDisplayId set_internal(
       Shell::Get()->display_manager(),
@@ -9574,11 +9530,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 // layer stacked below the wallpaper.
 class OverviewWallpaperTest : public OverviewTestBase {
  public:
-  OverviewWallpaperTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kForestFeature},
-        /*disabled_features=*/{});
-  }
+  OverviewWallpaperTest() = default;
   OverviewWallpaperTest(const OverviewWallpaperTest&) = delete;
   OverviewWallpaperTest& operator=(const OverviewWallpaperTest&) = delete;
   ~OverviewWallpaperTest() override = default;
@@ -9616,9 +9568,6 @@ class OverviewWallpaperTest : public OverviewTestBase {
       EXPECT_EQ(in_overview, !wallpaper_view_layer->clip_rect().IsEmpty());
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that the wallpaper layer's clipping (with rounded corners) is applied

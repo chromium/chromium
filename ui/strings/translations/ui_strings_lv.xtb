@@ -38,6 +38,7 @@
 <translation id="19085484004813472">Šī ir jauna funkcija</translation>
 <translation id="2006524834898217237">Pārbaudiet, vai šajā ierīcē ir izveidots savienojums ar internetu.</translation>
 <translation id="208586643495776849">Lūdzu, mēģiniet vēlreiz</translation>
+<translation id="2111134541987263231">Ieslēdziet iestatījumu <ph name="BEGIN_BOLD" />Atļaut inkognito režīmā<ph name="END_BOLD" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d.}zero{# d.}one{# d.}other{# d.}}</translation>
 <translation id="2148716181193084225">Šodien</translation>
 <translation id="2168039046890040389">Augšup</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">Pieskarieties ekrānā redzamajiem pieskāriena mērķiem.</translation>
 <translation id="2295140143284145483">Aptauja</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Nevar atrast paplašinājumu ar tālāk norādīto ID: <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Sazinieties ar administratoru.}zero{Nevar atrast paplašinājumus ar tālāk norādītajiem ID: <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Sazinieties ar administratoru.}one{Nevar atrast paplašinājumus ar tālāk norādītajiem ID: <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Sazinieties ar administratoru.}other{Nevar atrast paplašinājumus ar tālāk norādītajiem ID: <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Sazinieties ar administratoru.}}</translation>
 <translation id="2353636109065292463">Notiek interneta savienojuma pārbaude</translation>
 <translation id="2359808026110333948">Turpināt</translation>
 <translation id="2388990488038464401">Vai zvanīt uz šo numuru no jūsu tālruņa?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">Dzēst visu</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{pēc 1 d.}zero{pēc # d.}one{pēc # d.}other{pēc # d.}}</translation>
 <translation id="2922712708897119705">Vienumi slejā “<ph name="COLUMN_NAME" />” ir sakārtoti dilstošā secībā.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Nevar atrast paplašinājumu}zero{Nevar atrast paplašinājumus}one{Nevar atrast paplašinājumus}other{Nevar atrast paplašinājumus}}</translation>
 <translation id="3036649622769666520">Atvērt failus</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">Apakšā</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">Veiciet zvanu, izmantojot:</translation>
 <translation id="3306688585798492231">Iebūvēts displejs</translation>
 <translation id="335581015389089642">Runa</translation>
+<translation id="3372635229069101468">Noklikšķiniet uz pogas <ph name="BEGIN_BOLD" />Dati<ph name="END_BOLD" />.</translation>
 <translation id="3389286852084373014">Teksts ir pārāk liels</translation>
 <translation id="3406306243914553062">HTML saturs</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{Atlikusi 1 diena}zero{Atlikušas # dienas}one{Atlikusi # diena}other{Atlikušas # dienas}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">Vienumi slejā “<ph name="COLUMN_NAME" />” ir sakārtoti augošā secībā.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 nelasīts paziņojums}zero{# nelasīti paziņojumi}one{# nelasīts paziņojums}other{# nelasīti paziņojumi}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Ieslēdziet šī paplašinājuma izmantošanu inkognito režīmā:}zero{Ieslēdziet šo paplašinājumu izmantošanu inkognito režīmā:}one{Ieslēdziet šo paplašinājumu izmantošanu inkognito režīmā:}other{Ieslēdziet šo paplašinājumu izmantošanu inkognito režīmā:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Pirms 1 mēneša}zero{Pirms # mēnešiem}one{Pirms # mēneša}other{Pirms # mēnešiem}}</translation>
 <translation id="4289300219472526559">Sākt runāt</translation>
 <translation id="4289540628985791613">Kopsavilkums</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">numuru</translation>
 <translation id="4746179598275229723">Paplašinājums ir atsprausts</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Atlicis 1 mēnesis}zero{Atlikuši # mēneši}one{Atlicis # mēnesis}other{Atlikuši # mēneši}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Lai varētu izmantot inkognito režīmu, saskaņā ar jūsu organizācijas prasībām ir nepieciešams noteikts paplašinājums.}zero{Lai varētu izmantot inkognito režīmu, saskaņā ar jūsu organizācijas prasībām ir nepieciešami noteikti paplašinājumi.}one{Lai varētu izmantot inkognito režīmu, saskaņā ar jūsu organizācijas prasībām ir nepieciešami noteikti paplašinājumi.}other{Lai varētu izmantot inkognito režīmu, saskaņā ar jūsu organizācijas prasībām ir nepieciešami noteikti paplašinājumi.}}</translation>
+<translation id="482932175346970750">Pārlūkprogrammā ierakstiet <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />.</translation>
 <translation id="4888938634149558681">Zvanīt</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekunde}zero{# sekundes}one{# sekunde}other{# sekundes}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;Ielīmēt</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Neizdevās nosūtīt</translation>
+<translation id="5283101102242354279">Lai ieslēgtu paplašinājuma izmantošanu inkognito režīmā, veiciet tālāk norādītās darbības.</translation>
 <translation id="528468243742722775">Beigas</translation>
 <translation id="5329858601952122676">Dzēst</translation>
 <translation id="5361107212971249203">ziņojumu</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">Lietojumprogrammas attēlojuma iestatījumi tiks lietoti pēc nākamās restartēšanas reizes.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Atlikusi 1 min}zero{Atlikušas # min}one{Atlikusi # min}other{Atlikušas # min}}</translation>
+<translation id="7252604552361840748">Atrodiet iepriekš norādīto paplašinājumu.</translation>
 <translation id="7363164521834647158">Sūtīt atbildi</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Pirms 1 min}zero{Pirms # min}one{Pirms # min}other{Pirms # min}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>

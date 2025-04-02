@@ -770,8 +770,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Startup.CreateProcessLauncher2.{Status}"
-    units="ms" expires_after="2025-02-05">
+<histogram name="Startup.CreateProcessLauncher2.{Status}" units="ms"
+    expires_after="2025-02-05">
   <owner>ganesh@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>
@@ -786,21 +786,6 @@ chromium-metrics-reviews@google.com.
     <variant name="TimedWaitFailedAtStartup"/>
     <variant name="TimedWaitSucceeded"/>
     <variant name="TimedWaitSucceededAtStartup"/>
-  </token>
-</histogram>
-
-<histogram base="true" name="Startup.DoUpgradeTasks.{Status}" units="ms"
-    expires_after="M99">
-  <owner>gab@chromium.org</owner>
-  <owner>etienneb@chromium.org</owner>
-  <summary>
-    Records the time it took to complete upgrade_util::DoUpgradeTasks() when
-    {Status}.
-  </summary>
-  <token key="Status">
-    <variant name="NoRelaunch"/>
-    <variant name="RelaunchFailed"/>
-    <variant name="RelaunchSucceeded"/>
   </token>
 </histogram>
 

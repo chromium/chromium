@@ -38,6 +38,7 @@
 <translation id="19085484004813472">ഇതൊരു പുതിയ ഫീച്ചറാണ്</translation>
 <translation id="2006524834898217237">ഈ ഉപകരണം ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്‌തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക.</translation>
 <translation id="208586643495776849">വീണ്ടും ശ്രമിക്കുക</translation>
+<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />അദൃശ്യ മോഡിൽ അനുവദിക്കുക<ph name="END_BOLD" /> ഓണാക്കുക</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1ദിവസം}other{# ദിവസം}}</translation>
 <translation id="2148716181193084225">ഇന്ന്</translation>
 <translation id="2168039046890040389">Page Up</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">സ്‌ക്രീനിലുള്ള 'ടാർഗെറ്റുകൾ സ്‌പർശിക്കുക' ടാപ്പുചെയ്യുക.</translation>
 <translation id="2295140143284145483">സർവ്വേ</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> ഐഡിയിൽ ഉള്ള വിപുലീകരണം കണ്ടെത്താനായില്ല. നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> ഐഡികളിൽ ഉള്ള വിപുലീകരണങ്ങൾ കണ്ടെത്താനായില്ല. നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക.}}</translation>
 <translation id="2353636109065292463">നിങ്ങളുടെ ഇന്‍റർനെറ്റ് കണക്ഷൻ പരിശോധിക്കുന്നു</translation>
 <translation id="2359808026110333948">തുടരുക</translation>
 <translation id="2388990488038464401">നിങ്ങളുടെ ഫോണിൽ നിന്ന് ഈ നമ്പറിലേക്ക് വിളിക്കണോ?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">എല്ലാം ഇല്ലാതാക്കൂ</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{ഒരു ദിവസത്തിൽ}other{# ദിവസത്തിൽ}}</translation>
 <translation id="2922712708897119705"><ph name="COLUMN_NAME" /> എന്ന കോളം അവരോഹണക്രമത്തിൽ അടുക്കി.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{വിപുലീകരണം കണ്ടെത്താനാകുന്നില്ല}other{വിപുലീകരണങ്ങൾ കണ്ടെത്താനാകുന്നില്ല}}</translation>
 <translation id="3036649622769666520">ഫയലുകള്‍‌ തുറക്കുക</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">താഴെ</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">ഇതുപയോഗിച്ച് കോൾ ചെയ്യുക</translation>
 <translation id="3306688585798492231">ബിൽറ്റ് ഇൻ ഡിസ്‌പ്ലേ</translation>
 <translation id="335581015389089642">സംഭാഷണം</translation>
+<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />വിശദാംശങ്ങൾ<ph name="END_BOLD" /> എന്നതിൽ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="3389286852084373014">ടെക്‌സ്‌റ്റ് വളരെ വലുതാണ്</translation>
 <translation id="3406306243914553062">HTML ഉള്ളടക്കം</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{ഒരു ദിവസം ശേഷിക്കുന്നു}other{# ദിവസം ശേഷിക്കുന്നു}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> എന്ന കോളം ആരോഹണക്രമത്തിൽ അടുക്കി.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{വായിക്കാത്ത ഒരു അറിയിപ്പ്}other{വായിക്കാത്ത # അറിയിപ്പുകൾ}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{അദൃശ്യ മോഡിൽ ചുവടെയുള്ള വിപുലീകരണം ഓണാക്കുക:}other{അദൃശ്യ മോഡിൽ ചുവടെയുള്ള വിപുലീകരണങ്ങൾ ഓണാക്കുക:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{ഒരു മാസം മുമ്പ്}other{# മാസം മുമ്പ്}}</translation>
 <translation id="4289300219472526559">സംഭാഷണം ആരംഭിക്കുക</translation>
 <translation id="4289540628985791613">അവലോകനം</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">നമ്പർ</translation>
 <translation id="4746179598275229723">വിപുലീകരണം അൺപിൻ ചെയ്തു</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{ഒരു മാസം ശേഷിക്കുന്നു}other{# മാസം ശേഷിക്കുന്നു}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{അദൃശ്യ മോഡ് ഉപയോഗിക്കാൻ, നിങ്ങളുടെ സ്ഥാപനത്തിന് ഒരു വിപുലീകരണം ആവശ്യമാണ്}other{അദൃശ്യ മോഡ് ഉപയോഗിക്കാൻ, നിങ്ങളുടെ സ്ഥാപനത്തിന് ചില വിപുലീകരണങ്ങൾ ആവശ്യമാണ്}}</translation>
+<translation id="482932175346970750">നിങ്ങളുടെ ബ്രൗസറിൽ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> എന്ന് ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="4888938634149558681">കോൾ ചെയ്യുക</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{ഒരു സെക്കന്‍ഡ്}other{# സെക്കൻഡ്}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;ഒട്ടിക്കുക</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">അയയ്ക്കാനായില്ല</translation>
+<translation id="5283101102242354279">അദൃശ്യ മോഡിൽ ഒരു വിപുലീകരണം ഓണാക്കുക:</translation>
 <translation id="528468243742722775">അവസാനിപ്പിക്കുക</translation>
 <translation id="5329858601952122676">&amp;ഇല്ലാതാക്കൂ</translation>
 <translation id="5361107212971249203">ടെക്‌സ്റ്റ്</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">അടുത്ത തവണ റീസ്റ്റാർട്ട് ചെയ്യുമ്പോൾ നിങ്ങളുടെ ആപ്പിന്റെ ഡിസ്‌പ്ലേ ക്രമീകരണം പ്രാബല്യത്തിൽ വരും.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{ഒരു മിനിറ്റ് ശേഷിക്കുന്നു}other{# മിനിറ്റ് ശേഷിക്കുന്നു}}</translation>
+<translation id="7252604552361840748">മുകളിലുള്ള വിപുലീകരണം കണ്ടെത്തുക</translation>
 <translation id="7363164521834647158">മറുപടി അയയ്ക്കുക</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{ഒരു മിനിറ്റ് മുമ്പ്}other{# മിനിറ്റ് മുമ്പ്}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>

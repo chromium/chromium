@@ -45,7 +45,8 @@ std::ostream& operator<<(std::ostream& os,
      << session_policies.maximum_session_duration
      << ", curtain_required: " << session_policies.curtain_required
      << ", host_username_match_required: "
-     << session_policies.host_username_match_required << " }";
+     << session_policies.host_username_match_required
+     << ", allow_remote_input: " << session_policies.allow_remote_input << " }";
   return os;
 }
 

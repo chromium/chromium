@@ -1026,18 +1026,6 @@ class MathFunctionParser {
     return result;
   }
 
-  // TODO: Remove this method once ConsumeNumberRaw_DO_NOT_USE is removed.
-  bool ConsumeNumberRaw(double& result) {
-    if (!calc_value_ || calc_value_->Category() != kCalcNumber ||
-        !calc_value_->ExpressionNode()->IsNumericLiteral()) {
-      return false;
-    }
-    DCHECK(!has_consumed_);  // Cannot consume twice.
-    has_consumed_ = true;
-    result = calc_value_->GetDoubleValue();
-    return true;
-  }
-
  private:
   bool has_consumed_ = false;
   CSSParserTokenStream* stream_;
@@ -1145,18 +1133,6 @@ CSSPrimitiveValue* ConsumeIntegerOrNumberCalc(
 CSSPrimitiveValue* ConsumePositiveInteger(CSSParserTokenStream& stream,
                                           const CSSParserContext& context) {
   return ConsumeInteger(stream, context, 1);
-}
-
-bool ConsumeNumberRaw_DO_NOT_USE(CSSParserTokenStream& stream,
-                                 const CSSParserContext& context,
-                                 double& result) {
-  if (stream.Peek().GetType() == kNumberToken) {
-    result = stream.ConsumeIncludingWhitespace().NumericValue();
-    return true;
-  }
-  MathFunctionParser math_parser(stream, context,
-                                 CSSPrimitiveValue::ValueRange::kAll);
-  return math_parser.ConsumeNumberRaw(result);
 }
 
 CSSPrimitiveValue* ConsumeNumber(CSSParserTokenStream& stream,
@@ -3186,9 +3162,10 @@ static CSSValue* ConsumeDeprecatedWebkitCrossFade(
     return nullptr;
   }
 
-  if (percentage->IsNumericLiteralValue()) {
+  if (const auto* percentage_literal =
+          DynamicTo<CSSNumericLiteralValue>(percentage)) {
     percentage = CSSNumericLiteralValue::Create(
-        ClampTo<double>(percentage->GetDoubleValue(), 0, 1),
+        ClampTo<double>(percentage_literal->GetDoubleValue(), 0, 1),
         CSSPrimitiveValue::UnitType::kNumber);
   }
 
@@ -3213,8 +3190,9 @@ static CSSValue* ConsumeCrossFade(CSSParserTokenStream& stream,
       if (percentage) {
         return nullptr;
       }
-      if (percent_value->IsNumericLiteralValue()) {
-        double val = percent_value->GetDoubleValue();
+      if (const auto* literal =
+              DynamicTo<CSSNumericLiteralValue>(percent_value)) {
+        double val = literal->GetDoubleValue();
         if (!(val >= 0.0 &&
               val <= 100.0)) {  // Includes checks for NaN and infinities.
           return nullptr;
@@ -5202,7 +5180,7 @@ CSSValue* ConsumeCornerShape(CSSParserTokenStream& stream,
   if (auto* ident =
           ConsumeIdent<CSSValueID::kBevel, CSSValueID::kNotch,
                        CSSValueID::kRound, CSSValueID::kScoop,
-                       CSSValueID::kSquircle, CSSValueID::kStraight>(stream)) {
+                       CSSValueID::kSquircle, CSSValueID::kSquare>(stream)) {
     return ident;
   }
 

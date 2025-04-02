@@ -497,8 +497,8 @@ if (is_mac) {
       # Rust demangle support.
       deps = [ "//third_party/rust/rustc_demangle_capi/v0_1:lib" ]
       defines += [ "HAVE_RUSTC_DEMANGLE" ]
-      include_dirs += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-0.1.0/include" ]
-      sources += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-0.1.0/include/rustc_demangle.h" ]
+      include_dirs += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-v0_1/include" ]
+      sources += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-v0_1/include/rustc_demangle.h" ]
     }
     test("breakpad_unittests") {
       sources = [ "breakpad/src/common/module_unittest.cc" ]
@@ -745,8 +745,8 @@ if (is_linux || is_chromeos || is_android) {
       # Rust demangle support.
       deps = [ "//third_party/rust/rustc_demangle_capi/v0_1:lib" ]
       defines += [ "HAVE_RUSTC_DEMANGLE" ]
-      include_dirs += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-0.1.0/include" ]
-      sources += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-0.1.0/include/rustc_demangle.h" ]
+      include_dirs += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-v0_1/include" ]
+      sources += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-v0_1/include/rustc_demangle.h" ]
 
       libs = [ "z" ]
     }

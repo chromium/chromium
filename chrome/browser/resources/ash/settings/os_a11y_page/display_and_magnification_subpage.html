@@ -307,9 +307,9 @@
     deep-link-focus-id$="[[Setting.kReducedAnimationsEnabled]]">
   </settings-toggle-button>
 </template>
-<settings-toggle-button class="hr" id="enableAlwaysShowScrollbars"
-    pref="{{prefs.settings.a11y.overlay_scrollbar.enabled}}" label="$i18n{alwaysShowScrollbarsLabel}"
-    deep-link-focus-id$="[[Setting.kAlwaysShowScrollbarsEnabled]]">
+<settings-toggle-button class="hr" id="enableAlwaysShowScrollbars" icon="os-settings:scroll-vertical"
+  pref="{{prefs.settings.a11y.overlay_scrollbar.enabled}}" label="$i18n{alwaysShowScrollbarsLabel}"
+  deep-link-focus-id$="[[Setting.kAlwaysShowScrollbarsEnabled]]">
 </settings-toggle-button>
 <template is="dom-if" if="[[!isKioskModeActive_]]">
   <cr-link-row id="displaySubpageButton" class="hr"

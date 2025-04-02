@@ -451,7 +451,9 @@ class PerTableSeed {
   // The number of bits in the seed.
   // It is big enough to ensure non-determinism of iteration order.
   // We store the seed inside a uint64_t together with size and other metadata.
-  static constexpr size_t kBitCount = 19;
+  // Using 16 bits allows us to save one `and` instruction in H1 (we use movzwl
+  // instead of movq+and).
+  static constexpr size_t kBitCount = 16;
 
   // Returns the seed for the table. Only the lowest kBitCount are non zero.
   size_t seed() const { return seed_; }
@@ -829,7 +831,7 @@ constexpr size_t NumControlBytes(size_t capacity) {
 
 // Computes the offset from the start of the backing allocation of control.
 // infoz and growth_info are stored at the beginning of the backing array.
-constexpr static size_t ControlOffset(bool has_infoz) {
+constexpr size_t ControlOffset(bool has_infoz) {
   return (has_infoz ? sizeof(HashtablezInfoHandle) : 0) + sizeof(GrowthInfo);
 }
 
@@ -1230,7 +1232,7 @@ constexpr size_t CapacityToGrowth(size_t capacity) {
 //
 // This might not be a valid capacity and `NormalizeCapacity()` should be
 // called on this.
-inline size_t GrowthToLowerboundCapacity(size_t growth) {
+constexpr size_t GrowthToLowerboundCapacity(size_t growth) {
   // `growth*8/7`
   if (Group::kWidth == 8 && growth == 7) {
     // x+(x-1)/7 does not work when x==7.
@@ -1488,17 +1490,6 @@ extern template FindInfo find_first_non_full(const CommonFields&, size_t);
 // performance critical routines.
 FindInfo find_first_non_full_outofline(const CommonFields&, size_t);
 
-// Sets `ctrl` to `{kEmpty, kSentinel, ..., kEmpty}`, marking the entire
-// array as marked as empty.
-inline void ResetCtrl(CommonFields& common, size_t slot_size) {
-  const size_t capacity = common.capacity();
-  ctrl_t* ctrl = common.control();
-  std::memset(ctrl, static_cast<int8_t>(ctrl_t::kEmpty),
-              capacity + 1 + NumClonedBytes());
-  ctrl[capacity] = ctrl_t::kSentinel;
-  SanitizerPoisonMemoryRegion(common.slot_array(), slot_size * capacity);
-}
-
 // Sets sanitizer poisoning for slot corresponding to control byte being set.
 inline void DoSanitizeOnSetCtrl(const CommonFields& c, size_t i, ctrl_t h,
                                 size_t slot_size) {
@@ -1648,8 +1639,7 @@ struct PolicyFunctions {
 
   // Transfers the contents of `count` slots from src_slot to dst_slot.
   // We use ability to transfer several slots in single group table growth.
-  // TODO(b/382423690): consider having separate `transfer` and `transfer_n`.
-  void (*transfer)(void* set, void* dst_slot, void* src_slot, size_t count);
+  void (*transfer_n)(void* set, void* dst_slot, void* src_slot, size_t count);
 
   // Returns the pointer to the CharAlloc stored in the set.
   void* (*get_char_alloc)(CommonFields& common);
@@ -1842,10 +1832,10 @@ void EraseMetaOnly(CommonFields& c, size_t index, size_t slot_size);
 // For trivially relocatable types we use memcpy directly. This allows us to
 // share the same function body for raw_hash_set instantiations that have the
 // same slot size as long as they are relocatable.
+// Separate function for relocating single slot cause significant binary bloat.
 template <size_t SizeOfSlot>
-ABSL_ATTRIBUTE_NOINLINE void TransferRelocatable(void*, void* dst, void* src,
-                                                 size_t count) {
-  // TODO(b/382423690): Experiment with transfer and transfer_n.
+ABSL_ATTRIBUTE_NOINLINE void TransferNRelocatable(void*, void* dst, void* src,
+                                                  size_t count) {
   // TODO(b/382423690): Experiment with making specialization for power of 2 and
   // non power of 2. This would require passing the size of the slot.
   memcpy(dst, src, SizeOfSlot * count);
@@ -3576,7 +3566,8 @@ class raw_hash_set {
     // TODO(b/397453582): Remove support for const hasher.
     return const_cast<std::remove_const_t<hasher>*>(&h->hash_ref());
   }
-  static void transfer_slots_fn(void* set, void* dst, void* src, size_t count) {
+  static void transfer_n_slots_fn(void* set, void* dst, void* src,
+                                  size_t count) {
     auto* src_slot = to_slot(src);
     auto* dst_slot = to_slot(dst);
 
@@ -3636,8 +3627,8 @@ class raw_hash_set {
                                 : &raw_hash_set::get_hash_ref_fn,
         PolicyTraits::template get_hash_slot_fn<hasher>(),
         PolicyTraits::transfer_uses_memcpy()
-            ? TransferRelocatable<sizeof(slot_type)>
-            : &raw_hash_set::transfer_slots_fn,
+            ? TransferNRelocatable<sizeof(slot_type)>
+            : &raw_hash_set::transfer_n_slots_fn,
         std::is_empty_v<Alloc> ? &GetRefForEmptyClass
                                : &raw_hash_set::get_char_alloc_ref_fn,
         &AllocateBackingArray<kBackingArrayAlignment, CharAlloc>,

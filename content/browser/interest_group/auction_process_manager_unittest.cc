@@ -31,6 +31,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
+#include "content/browser/interest_group/data_decoder_manager.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/trusted_signals_cache_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -726,7 +727,9 @@ class AuctionProcessManagerTest
   scoped_refptr<SiteInstance> site_instance1_;
   scoped_refptr<SiteInstance> site_instance2_;
 
+  DataDecoderManager data_decoder_manager_;
   TrustedSignalsCacheImpl trusted_signals_cache_{
+      &data_decoder_manager_,
       base::BindRepeating(
           [](const url::Origin& scope_origin,
              const std::optional<url::Origin>& coordinator,

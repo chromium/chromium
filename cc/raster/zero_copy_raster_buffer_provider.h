@@ -67,13 +67,9 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
 class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
  public:
   ZeroCopyRasterBufferProvider(
-      viz::RasterContextProvider* compositor_context_provider,
-      const RasterCapabilities& raster_caps);
-
-  // Constructor used with software compositing.
-  explicit ZeroCopyRasterBufferProvider(
       const scoped_refptr<gpu::SharedImageInterface>& shared_image_interface,
-      const RasterCapabilities& raster_caps);
+      const RasterCapabilities& raster_caps,
+      bool is_software);
 
   ZeroCopyRasterBufferProvider(const ZeroCopyRasterBufferProvider&) = delete;
   ~ZeroCopyRasterBufferProvider() override;
@@ -108,11 +104,6 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
       const;
 
   bool is_software_ = false;
-
-  // Used with the GPU compositor.
-  raw_ptr<viz::RasterContextProvider> compositor_context_provider_;
-
-  // Used with the software compositor.
   scoped_refptr<gpu::SharedImageInterface> shared_image_interface_;
 
   const viz::SharedImageFormat tile_format_;

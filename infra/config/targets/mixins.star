@@ -1774,7 +1774,7 @@ targets.mixin(
         dimensions = {
             "cpu": "x86-64",
             "gpu": "8086:3e9b",
-            "os": "Mac-15.0",
+            "os": "Mac-14.5",
             "display_attached": "1",
         },
     ),
@@ -2105,13 +2105,6 @@ targets.mixin(
     generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         containment_type = "AUTO",
-    ),
-)
-
-targets.mixin(
-    name = "cros-cbx-dut",
-    skylab = targets.skylab(
-        cros_cbx = True,
     ),
 )
 
@@ -2526,12 +2519,12 @@ targets.mixin(
     generate_pyl_entry = False,
     args = [
         "--xcode-build-version",
-        "16e5129f",
+        "16e140",
     ],
     swarming = targets.swarming(
         named_caches = [
             swarming.cache(
-                name = "xcode_ios_16e5129f",
+                name = "xcode_ios_16e140",
                 path = "Xcode.app",
             ),
         ],

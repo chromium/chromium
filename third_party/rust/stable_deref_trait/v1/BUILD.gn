@@ -12,8 +12,8 @@ cargo_crate("lib") {
   crate_name = "stable_deref_trait"
   epoch = "1"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/stable_deref_trait-1.2.0/src/lib.rs"
-  sources = [ "//third_party/rust/chromium_crates_io/vendor/stable_deref_trait-1.2.0/src/lib.rs" ]
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/stable_deref_trait-v1/src/lib.rs"
+  sources = [ "//third_party/rust/chromium_crates_io/vendor/stable_deref_trait-v1/src/lib.rs" ]
   inputs = []
 
   build_native_rust_unit_tests = false

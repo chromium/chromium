@@ -84,6 +84,9 @@ declare_args() {
   # only supported on iOS 64-bit architecture, but some project build //base
   # for 32-bit architecture.
   ios_stack_profiler_enabled = true
+
+  # Set to true to enable icu4x transliterator
+  enable_rust_translit = false
 }
 
 # Mutex priority inheritance is disabled by default due to security
@@ -249,6 +252,7 @@ component("base") {
     "containers/map_util.h",
     "containers/small_map.h",
     "containers/span.h",
+    "containers/span_forward_internal.h",
     "containers/span_or_size.h",
     "containers/span_reader.h",
     "containers/span_writer.h",
@@ -390,6 +394,7 @@ component("base") {
     "memory/ref_counted_memory.h",
     "memory/safe_ref.h",
     "memory/safe_ref_traits.h",
+    "memory/safety_checks.cc",
     "memory/safety_checks.h",
     "memory/scoped_policy.h",
     "memory/scoped_refptr.h",
@@ -2036,7 +2041,6 @@ component("base") {
       "apple/scoped_typeref.h",
       "file_version_info_apple.h",
       "file_version_info_apple.mm",
-      "files/drive_info_apple.mm",
       "files/file_util_apple.mm",
       "memory/platform_shared_memory_mapper_apple.cc",
       "memory/platform_shared_memory_region_apple.cc",
@@ -2071,6 +2075,7 @@ component("base") {
       "enterprise_util.cc",
       "enterprise_util.h",
       "enterprise_util_mac.mm",
+      "files/drive_info_mac.cc",
       "files/file_path_watcher_fsevents.cc",
       "files/file_path_watcher_fsevents.h",
       "files/file_path_watcher_kqueue.cc",
@@ -2145,7 +2150,6 @@ component("base") {
       "ApplicationServices.framework",
       "AppKit.framework",
       "CoreFoundation.framework",
-      "DiskArbitration.framework",
       "IOKit.framework",
       "OpenDirectory.framework",
     ]
@@ -2156,6 +2160,7 @@ component("base") {
     sources += [
       "base_paths_ios.h",
       "base_paths_ios.mm",
+      "files/drive_info_ios.cc",
       "ios/block_types.h",
       "ios/crb_protocol_observers.h",
       "ios/crb_protocol_observers.mm",
@@ -2806,6 +2811,34 @@ static_library("base_static") {
   }
 }
 
+buildflag_header("i18n_transliterator") {
+  header = "transliterator_buildflags.h"
+  header_dir = "base/i18n"
+  flags = [ "BUILD_RUST_TRANSLIT=$enable_rust_translit" ]
+}
+
+if (enable_rust_translit) {
+  rust_static_library("i18n_transliterator_ffi") {
+    allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
+    crate_root = "i18n/transliterator.rs"
+    sources = [
+      "i18n/translit/custom_transliterator.rs",
+      "i18n/translit/mod.rs",
+      "i18n/transliterator.rs",
+    ]
+    cxx_bindings = [ "i18n/transliterator.rs" ]
+    visibility = [ ":i18n" ]
+    deps = [
+      "//third_party/rust/icu_casemap/v2:lib",
+      "//third_party/rust/icu_experimental/v0_3:lib",
+      "//third_party/rust/icu_locale_core/v2:lib",
+      "//third_party/rust/icu_normalizer/v2:lib",
+      "//third_party/rust/icu_properties/v2:lib",
+      "//third_party/rust/icu_provider/v2:lib",
+    ]
+  }
+}
+
 component("i18n") {
   output_name = "base_i18n"
   sources = [
@@ -2859,8 +2892,14 @@ component("i18n") {
     "//third_party/ced",
     "//third_party/icu",
   ]
-  deps = [ "//build:chromecast_buildflags" ]
+  deps = [
+    ":i18n_transliterator",
+    "//build:chromecast_buildflags",
+  ]
 
+  if (enable_rust_translit) {
+    deps += [ ":i18n_transliterator_ffi" ]
+  }
   if (!is_debug) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
@@ -3318,6 +3357,7 @@ test("base_unittests") {
     "environment_unittest.cc",
     "feature_list_unittest.cc",
     "files/block_tests_writing_to_special_dirs_unittest.cc",
+    "files/drive_info_unittest.cc",
     "files/file_enumerator_unittest.cc",
     "files/file_error_or_unittest.cc",
     "files/file_path_unittest.cc",

@@ -41,22 +41,10 @@ void SVGDocumentExtensions::RemoveTimeContainer(SVGSVGElement* element) {
   time_containers_.erase(element);
 }
 
-void SVGDocumentExtensions::AddWebAnimationsPendingSVGElement(
-    SVGElement& element) {
-  web_animations_pending_svg_elements_.insert(&element);
-}
-
 bool SVGDocumentExtensions::ServiceSmilOnAnimationFrame(Document& document) {
   if (!document.SvgExtensions())
     return false;
   return document.AccessSVGExtensions().ServiceSmilAnimations();
-}
-
-void SVGDocumentExtensions::ServiceWebAnimationsOnAnimationFrame(
-    Document& document) {
-  if (!document.SvgExtensions())
-    return;
-  document.AccessSVGExtensions().ServiceWebAnimations();
 }
 
 bool SVGDocumentExtensions::ServiceSmilAnimations() {
@@ -67,20 +55,6 @@ bool SVGDocumentExtensions::ServiceSmilAnimations() {
         container->TimeContainer()->ServiceAnimations();
   }
   return did_schedule_animation_frame;
-}
-
-void SVGDocumentExtensions::ServiceWebAnimations() {
-  SVGElementSet web_animations_pending_svg_elements;
-  web_animations_pending_svg_elements.swap(
-      web_animations_pending_svg_elements_);
-
-  // TODO(alancutter): Make SVG animation effect application a separate document
-  // lifecycle phase from servicing animations to be responsive to Javascript
-  // manipulation of exposed animation objects.
-  for (auto& svg_element : web_animations_pending_svg_elements)
-    svg_element->ApplyActiveWebAnimations();
-
-  DCHECK(web_animations_pending_svg_elements_.empty());
 }
 
 void SVGDocumentExtensions::StartAnimations() {
@@ -152,7 +126,6 @@ SVGSVGElement* SVGDocumentExtensions::rootElement(const Document& document) {
 void SVGDocumentExtensions::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(time_containers_);
-  visitor->Trace(web_animations_pending_svg_elements_);
 }
 
 }  // namespace blink

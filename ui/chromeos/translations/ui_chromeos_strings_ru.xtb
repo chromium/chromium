@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">Человек пишет благодарственное письмо</translation>
 <translation id="2088690981887365033">Сеть VPN</translation>
 <translation id="209653272837065803">Недостаточно места для продолжения синхронизации файлов.</translation>
-<translation id="2111134541987263231">Включите параметр <ph name="BEGIN_BOLD" />Разрешить использование в режиме инкогнито<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Некоторые объекты (<ph name="NUMBER_OF_ITEMS" />) будут удалены, и вы не сможете их восстановить.</translation>
 <translation id="2122305276694332719">Включать этот параметр не рекомендуется, так как при автоматическом подключении к скрытой сети другие пользователи могут увидеть ваше устройство и некоторые сетевые настройки.</translation>
 <translation id="2125607626296734455">Кхмерский</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881">Том <ph name="VOLUME_NAME" /> извлечен.</translation>
 <translation id="2307462900900812319">Настройка сети</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Расширение со следующим идентификатором не найдено: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Обратитесь к администратору.}one{Расширения со следующими идентификаторами не найдены: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Обратитесь к администратору.}few{Расширения со следующими идентификаторами не найдены: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Обратитесь к администратору.}many{Расширения со следующими идентификаторами не найдены: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Обратитесь к администратору.}other{Расширения со следующими идентификаторами не найдены: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Обратитесь к администратору.}}</translation>
 <translation id="2325650632570794183">Этот тип файла не поддерживается. Зайдите в Интернет-магазин Chrome, чтобы найти приложение, с помощью которого его можно открыть.</translation>
 <translation id="2326539130272988168">Болгарский</translation>
 <translation id="233822363739146957">Недостаточно места для синхронизации всех ваших файлов.</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">Маратхи</translation>
 <translation id="2923240520113693977">Эстонский</translation>
 <translation id="2938685643439809023">Монгольский</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Не удается найти расширение}one{Не удается найти расширения}few{Не удается найти расширения}many{Не удается найти расширения}other{Не удается найти расширения}}</translation>
 <translation id="2943503720238418293">Слишком длинное название.</translation>
 <translation id="2949781154072577687">Форматирование внешнего хранилища "<ph name="DRIVE_NAME" />"…</translation>
 <translation id="2951236788251446349">Медуза</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">Готово</translation>
 <translation id="3358452157379365236">Гитара</translation>
 <translation id="3368922792935385530">Подключено</translation>
-<translation id="3372635229069101468">Нажмите <ph name="BEGIN_BOLD" />Сведения<ph name="END_BOLD" />.</translation>
 <translation id="3382143449143186018">Непальский, раскладка InScript</translation>
 <translation id="338691029516748599">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус защиты – "<ph name="SECURITY_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, под управлением администратора, подключение</translation>
 <translation id="3408072735282270043">Активировать сеть "<ph name="NETWORK_NAME" />"</translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">Единорог</translation>
 <translation id="4131235941541910880">Перемещайте ненужные объекты в корзину.</translation>
 <translation id="4134804435730168042">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – <ph name="NETWORK_NAME" />, поставщик – <ph name="NETWORK_PROVIDER_NAME" />. Чтобы активировать сеть, настройте устройство.</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Разрешите использование в режиме инкогнито следующего расширения:}one{Разрешите использование в режиме инкогнито следующих расширений:}few{Разрешите использование в режиме инкогнито следующих расширений:}many{Разрешите использование в режиме инкогнито следующих расширений:}other{Разрешите использование в режиме инкогнито следующих расширений:}}</translation>
 <translation id="4153015322587141338">Нажмите на файл правой кнопкой мыши и выберите "<ph name="PIN_COMMAND" />".</translation>
 <translation id="4157569377477607576">Не рекомендуется администратором:</translation>
 <translation id="4159731583141908892">Перемещено: <ph name="FILE_NAME" />.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">Оставить обе версии</translation>
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4805966553127040832">Восстановление объектов (<ph name="COUNT" />)…</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{В вашей организации для работы в режиме инкогнито требуется расширение}one{В вашей организации для работы в режиме инкогнито требуются некоторые расширения}few{В вашей организации для работы в режиме инкогнито требуются некоторые расширения}many{В вашей организации для работы в режиме инкогнито требуются некоторые расширения}other{В вашей организации для работы в режиме инкогнито требуются некоторые расширения}}</translation>
 <translation id="4826849268470072925">Тамильский, раскладка ITRANS</translation>
-<translation id="482932175346970750">Введите <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> в адресной строке браузера.</translation>
 <translation id="4843566743023903107">Устройства Chromebase</translation>
 <translation id="4850886885716139402">Смотреть</translation>
 <translation id="485316830061041779">Немецкий</translation>
@@ -561,7 +554,6 @@
     вместе с коллегами в одном удобном сервисе.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Восстановленные файлы с Google Диска</translation>
 <translation id="5278111733643988471">Чтобы восстановить этот объект, перетащите его из корзины в новую папку. Папка "<ph name="PARENT_FOLDER_NAME" />", в которой он находился ранее, была удалена.</translation>
-<translation id="5283101102242354279">Вот как разрешить использовать расширение в режиме инкогнито:</translation>
 <translation id="5288441970121584418">Бургер</translation>
 <translation id="5293615890992542006">Администратор запретил перемещать этот файл.</translation>
 <translation id="5305688511332277257">Не установлено</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, подробная информация</translation>
 <translation id="7246947237293279874">FTP-прокси</translation>
 <translation id="7248671827512403053">Приложение</translation>
-<translation id="7252604552361840748">Найдите указанное выше расширение.</translation>
 <translation id="7256405249507348194">Неопознанная ошибка: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Доступные сервисы</translation>
 <translation id="7291818353625820805">Хотите, чтобы символы вводились повторно? Отключите диакритические знаки в настройках клавиатуры.</translation>

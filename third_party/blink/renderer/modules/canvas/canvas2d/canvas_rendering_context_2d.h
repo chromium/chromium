@@ -87,7 +87,6 @@ class ImageDataSettings;
 class MemoryManagedPaintRecorder;
 class Path2D;
 class SVGResource;
-class TimerBase;
 enum class FlushReason;
 enum class PredefinedColorSpace;
 
@@ -136,7 +135,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void drawFocusIfNeeded(Path2D*, Element*);
 
   void LoseContext(LostContextMode) override;
-  void RestoreProviderAndContextIfPossible() override;
 
   // TaskObserver implementation
   void DidProcessTask(const base::PendingTask&) final;
@@ -232,7 +230,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
                    size_t row_bytes,
                    int x,
                    int y) override;
-  void TryRestoreContextEvent(TimerBase*) override;
 
   bool WillSetFont() const final;
   bool CurrentFontResolvedAndUpToDate() const final;
@@ -247,8 +244,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   // Handles a page visibility change that occurs when the canvas is paintable.
   // TODO(crbug.com/40280152): Fold this method into PageVisibilityChanged().
   void OnPageVisibilityChangeWhenPaintable();
-
-  bool Restore();
 
   void PruneLocalFontCache(size_t target_size);
 

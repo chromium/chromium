@@ -87,7 +87,7 @@ export class PromoCardElement extends PromoCardElementBase {
     };
   }
 
-  promoCard: PromoCard;
+  declare promoCard: PromoCard;
 
   override connectedCallback() {
     super.connectedCallback();

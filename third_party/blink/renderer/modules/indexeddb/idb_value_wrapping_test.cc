@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "idb_value_wrapping.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -560,11 +561,13 @@ TEST(IDBValueUnwrapperTest, Compression) {
       EXPECT_EQ(serialized_bytes[2], 2);
     }
 
-    // Verify whether the decompressed bytes show the standard serialization
-    // marker.
-    Vector<char> decompressed;
-    ASSERT_EQ(test_case.should_compress,
-              IDBValueUnwrapper::Decompress(buffer, &decompressed));
+    {
+      // Verify whether the decompressed bytes show the standard serialization
+      // marker.
+      SerializedScriptValue::DataBufferPtr decompressed;
+      ASSERT_EQ(test_case.should_compress,
+                IDBValueUnwrapper::Decompress(buffer, nullptr, &decompressed));
+    }
 
     // Round trip to v8 value.
     auto value =
@@ -573,6 +576,27 @@ TEST(IDBValueUnwrapperTest, Compression) {
     auto serialized_string = value->CreateSerializedValue();
     EXPECT_TRUE(serialized_string->Deserialize(scope.GetIsolate())
                     ->StrictEquals(v8_value));
+
+    {
+      // The data in `value` is still compressed after
+      // `CreateSerializedValue()`.
+      SerializedScriptValue::DataBufferPtr decompressed;
+      ASSERT_EQ(
+          test_case.should_compress,
+          IDBValueUnwrapper::Decompress(value->Data(), nullptr, &decompressed));
+
+      // ... but not when decompression output overwrites it.
+      base::test::ScopedFeatureList feature_disabler;
+      feature_disabler.InitAndDisableFeature(kIdbDecompressValuesInPlace);
+      serialized_string = value->CreateSerializedValue();
+      EXPECT_FALSE(
+          IDBValueUnwrapper::Decompress(value->Data(), nullptr, &decompressed));
+
+      // Verify round tripping again for good measure, to make sure the code
+      // still works with IdbDecompressValuesInPlace disabled.
+      EXPECT_TRUE(serialized_string->Deserialize(scope.GetIsolate())
+                      ->StrictEquals(v8_value));
+    }
   }
 }
 

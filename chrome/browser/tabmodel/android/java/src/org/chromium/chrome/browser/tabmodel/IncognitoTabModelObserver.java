@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** An observer of {@link IncognitoTabModel} that receives events relevant to incognito tabs. */
+@NullMarked
 public interface IncognitoTabModelObserver {
     /** A delegate to control whether to show or hide the Incognito re-auth dialog. */
     interface IncognitoReauthDialogDelegate {

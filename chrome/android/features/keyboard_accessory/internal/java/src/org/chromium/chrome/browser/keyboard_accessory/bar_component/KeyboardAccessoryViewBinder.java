@@ -137,7 +137,7 @@ class KeyboardAccessoryViewBinder {
                                         chipView.getStartIconViewRect(),
                                         chipView.getContext(),
                                         mRootViewForIPH,
-                                        item.getSuggestion().getItemTag());
+                                        null);
                     } else {
                         isIphShown =
                                 showHelpBubble(
@@ -145,7 +145,7 @@ class KeyboardAccessoryViewBinder {
                                         item.getFeatureForIph(),
                                         chipView,
                                         mRootViewForIPH,
-                                        item.getSuggestion().getItemTag());
+                                        null);
                     }
                 } else if (item.getFeatureForIph()
                         .equals(
@@ -193,17 +193,7 @@ class KeyboardAccessoryViewBinder {
             chipView.getPrimaryTextView().setEllipsize(null);
 
             chipView.getPrimaryTextView().setText(item.getSuggestion().getLabel());
-            if (item.getSuggestion().getItemTag() != null
-                    && !item.getSuggestion().getItemTag().isEmpty()) {
-                chipView.getPrimaryTextView()
-                        .setContentDescription(
-                                item.getSuggestion().getLabel()
-                                        + " "
-                                        + item.getSuggestion().getItemTag());
-            } else {
-                chipView.getPrimaryTextView()
-                        .setContentDescription(item.getSuggestion().getLabel());
-            }
+            chipView.getPrimaryTextView().setContentDescription(item.getSuggestion().getLabel());
             chipView.getSecondaryTextView().setText(item.getSuggestion().getSublabel());
             chipView.getSecondaryTextView()
                     .setVisibility(

@@ -105,6 +105,7 @@
 <translation id="1411386976162024013">「智能鏡頭」視像搜尋</translation>
 <translation id="1417474386970818917">登出並刪除</translation>
 <translation id="1426410128494586442">是</translation>
+<translation id="1429187656584513419">開啟「密碼」</translation>
 <translation id="1430915738399379752">列印</translation>
 <translation id="1436671784520050284">繼續設定</translation>
 <translation id="143681031165817424">地址淨係會儲存喺呢部裝置度</translation>
@@ -288,6 +289,7 @@
 <translation id="2164946989711475905">登入…</translation>
 <translation id="2175927920773552910">二維條碼</translation>
 <translation id="218350106843433823">自動填入密碼與密鑰</translation>
+<translation id="2184272387334793084">登入帳戶即可在任何裝置上存取自己的密碼及其他設定</translation>
 <translation id="2186206192313702726">Google 智能鏡頭</translation>
 <translation id="219283042927675668">群組中的分頁</translation>
 <translation id="2194856509914051091">考慮因素</translation>
@@ -590,6 +592,7 @@
 <translation id="3530206579861815432">快速尋找所有已同步裝置上目前開啟和最近關閉的分頁</translation>
 <translation id="3530767473765895035">管理此裝置上的帳戶…</translation>
 <translation id="3533436815740441613">新分頁</translation>
+<translation id="3533860663366814939">開啟「自動填寫與密碼」設定</translation>
 <translation id="3547356470684043247">閱讀客戶的產品、服務評價或體驗，再根據評論作出決定</translation>
 <translation id="3557336313807607643">新增至通訊錄</translation>
 <translation id="355765753469272474">復原</translation>
@@ -1512,6 +1515,7 @@
 <translation id="7431851541687113774">關閉地址偵測</translation>
 <translation id="7431991332293347422">控制系統如何使用您的瀏覽記錄，為您提供個人化的搜尋內容和其他服務</translation>
 <translation id="7435356471928173109">已由管理員關閉</translation>
+<translation id="7437712592381799950">向上輕掃即可查看更多專屬建議內容。</translation>
 <translation id="7438481509621345350">您將會在開啟新分頁時看到 <ph name="CHANNEL_NAME" /> 的內容。</translation>
 <translation id="7451023311965289370">{count,plural, =1{書籤已儲存至「{title}」}other{書籤已儲存至「{title}」}}</translation>
 <translation id="7451404862887877229">輕按 [私隱權和安全性] &gt; [安全瀏覽]</translation>
@@ -1610,10 +1614,12 @@
 <translation id="7841180087127694526">搜尋已複製的文字</translation>
 <translation id="7841418003178675048">選擇新分頁要顯示的資訊卡。</translation>
 <translation id="7846161022626028328">發生錯誤，請再試一次。</translation>
+<translation id="784623644169604270">沒有近期活動</translation>
 <translation id="7846296061357476882">Google 服務</translation>
 <translation id="784934925303690534">時間範圍</translation>
 <translation id="7851858861565204677">其他裝置</translation>
 <translation id="7853202427316060426">活動</translation>
+<translation id="7854006015462979438">開啟「一般」</translation>
 <translation id="7859988229622350291">永遠不要翻譯</translation>
 <translation id="7863211248337747225">下載應用程式</translation>
 <translation id="7865127013871431856">翻譯選項</translation>

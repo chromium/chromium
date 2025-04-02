@@ -38,6 +38,7 @@
 <translation id="19085484004813472">새로운 기능입니다.</translation>
 <translation id="2006524834898217237">기기가 인터넷에 연결되어 있는지 확인하세요.</translation>
 <translation id="208586643495776849">다시 시도해 주세요.</translation>
+<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />시크릿 모드에서 허용<ph name="END_BOLD" />을 사용 설정합니다.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1일}other{#일}}</translation>
 <translation id="2148716181193084225">오늘</translation>
 <translation id="2168039046890040389">페이지 위로</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">화면에서 터치 대상을 탭하세요.</translation>
 <translation id="2295140143284145483">설문조사</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" />TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{ID가 <ph name="BEGIN_LIST" /><ph name="END_LIST" />인 확장 프로그램을 찾을 수 없습니다. 관리자에게 문의하세요.}other{ID가 <ph name="BEGIN_LIST" /><ph name="END_LIST" />인 확장 프로그램을 찾을 수 없습니다. 관리자에게 문의하세요.}}</translation>
 <translation id="2353636109065292463">인터넷 연결 상태를 확인하세요.</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2388990488038464401">휴대전화에서 이 번호로 전화를 거시겠습니까?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">모두 삭제</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1일 후}other{#일 후}}</translation>
 <translation id="2922712708897119705"><ph name="COLUMN_NAME" /> 열은 내림차순으로 정렬되어 있습니다.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{확장 프로그램을 찾을 수 없음}other{확장 프로그램을 찾을 수 없음}}</translation>
 <translation id="3036649622769666520">파일 열기</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" />MB</translation>
 <translation id="3087734570205094154">맨 아래</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">사용 가능한 전화 서비스</translation>
 <translation id="3306688585798492231">내장 디스플레이</translation>
 <translation id="335581015389089642">음성</translation>
+<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />세부정보<ph name="END_BOLD" />를 클릭합니다.</translation>
 <translation id="3389286852084373014">텍스트가 너무 큼</translation>
 <translation id="3406306243914553062">HTML 콘텐츠</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1일 남음}other{#일 남음}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> 열은 오름차순으로 정렬되어 있습니다.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{읽지 않은 알림 1개}other{읽지 않은 알림 #개}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{시크릿 모드에서 다음 확장 프로그램을 사용 설정합니다.}other{시크릿 모드에서 다음 확장 프로그램을 사용 설정합니다.}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1개월 전}other{#개월 전}}</translation>
 <translation id="4289300219472526559">말하기 시작</translation>
 <translation id="4289540628985791613">개요</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">전화번호</translation>
 <translation id="4746179598275229723">확장 프로그램 고정 해제됨</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1개월 남음}other{#개월 남음}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{시크릿 모드를 사용하려면 조직에 확장 프로그램이 필요합니다}other{시크릿 모드를 사용하려면 조직에 일부 확장 프로그램이 필요합니다}}</translation>
+<translation id="482932175346970750">브라우저에 <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />를 입력합니다.</translation>
 <translation id="4888938634149558681">전화 걸기</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1초}other{#초}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">붙여넣기(&amp;P)</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" />PB</translation>
 <translation id="5278860589123563674">전송 실패</translation>
+<translation id="5283101102242354279">시크릿 모드에서 확장 프로그램을 사용 설정하려면 다음 단계를 따르세요.</translation>
 <translation id="528468243742722775">종료</translation>
 <translation id="5329858601952122676">삭제(&amp;D)</translation>
 <translation id="5361107212971249203">텍스트</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">다음번에 애플리케이션이 다시 시작되면 디스플레이 설정이 적용됩니다.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1분 남음}other{#분 남음}}</translation>
+<translation id="7252604552361840748">위에 나열된 확장 프로그램을 찾습니다.</translation>
 <translation id="7363164521834647158">답장 보내기</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1분 전}other{#분 전}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>

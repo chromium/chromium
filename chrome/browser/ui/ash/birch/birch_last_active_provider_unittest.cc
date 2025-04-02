@@ -5,10 +5,8 @@
 #include "chrome/browser/ui/ash/birch/birch_last_active_provider.h"
 
 #include "ash/birch/birch_model.h"
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -51,14 +49,7 @@ history::QueryResults CreateHistoryQueryResults() {
 
 // BrowserWithTestWindowTest provides a Profile and ash::Shell (which provides
 // a BirchModel) needed by the test.
-class BirchLastActiveProviderTest : public BrowserWithTestWindowTest {
- public:
-  BirchLastActiveProviderTest() = default;
-  ~BirchLastActiveProviderTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_{features::kForestFeature};
-};
+using BirchLastActiveProviderTest = BrowserWithTestWindowTest;
 
 TEST_F(BirchLastActiveProviderTest, RequestBirchDataFetch) {
   BirchLastActiveProvider provider(profile());

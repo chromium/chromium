@@ -108,10 +108,6 @@ export class PrivacySandboxDialogConsentStepElement extends
     this.hideConsentNoticePage_ = true;
   }
 
-  private getButtonsClass_() {
-    return this.equalizedButtons() ? 'tonal-button' : '';
-  }
-
   private computeConsentContentV2FirstDescription_(): string {
     return this.i18n(
         this.shouldShowAdTopicsContentParity_ ?

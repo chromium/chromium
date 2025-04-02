@@ -37,11 +37,6 @@ public class DropdownItemBase implements DropdownItem {
     }
 
     @Override
-    public @Nullable String getItemTag() {
-        return null;
-    }
-
-    @Override
     public int getIconId() {
         return NO_ICON;
     }
@@ -74,11 +69,6 @@ public class DropdownItemBase implements DropdownItem {
     @Override
     public int getSublabelFontSizeResId() {
         return R.dimen.text_size_small;
-    }
-
-    @Override
-    public boolean isIconAtStart() {
-        return false;
     }
 
     @Override

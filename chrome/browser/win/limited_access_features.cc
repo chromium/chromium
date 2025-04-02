@@ -12,7 +12,6 @@
 
 #include <string>
 
-#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/hstring_reference.h"
@@ -49,7 +48,6 @@ bool TryToUnlockLimitedAccessFeature(const std::wstring& feature,
       IID_ILimitedAccessFeaturesStatics, &limited_access_features);
 
   if (!SUCCEEDED(hr)) {
-    LOG(ERROR) << "activation error. HRESULT = " << std::hex << hr;
     return false;
   }
 
@@ -64,20 +62,17 @@ bool TryToUnlockLimitedAccessFeature(const std::wstring& feature,
       HStringReference(attestation.c_str()).Get(),
       &limited_access_features_result);
   if (!SUCCEEDED(hr)) {
-    LOG(ERROR) << "unlock error. HRESULT = " << std::hex << hr;
     return false;
   }
 
   LimitedAccessFeatureStatus status;
   hr = limited_access_features_result->get_Status(&status);
   if (!SUCCEEDED(hr)) {
-    LOG(ERROR) << "get status error. HRESULT = " << std::hex << hr;
     return false;
   }
 
   if ((status != LimitedAccessFeatureStatus_Available) &&
       (status != LimitedAccessFeatureStatus_AvailableWithoutToken)) {
-    LOG(ERROR) << "not available. HRESULT = " << std::hex << hr;
     return false;
   }
   return true;

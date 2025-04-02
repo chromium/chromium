@@ -38,6 +38,7 @@
 <translation id="19085484004813472">Aceasta este o funcție nouă</translation>
 <translation id="2006524834898217237">Verifică dacă dispozitivul este conectat la internet.</translation>
 <translation id="208586643495776849">Încearcă din nou</translation>
+<translation id="2111134541987263231">activează <ph name="BEGIN_BOLD" />Permite în modul incognito<ph name="END_BOLD" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 zi}few{# zile}other{# zile}}</translation>
 <translation id="2148716181193084225">Astăzi</translation>
 <translation id="2168039046890040389">O pagină mai sus</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">Atinge țintele de atingere de pe ecran.</translation>
 <translation id="2295140143284145483">Sondaj</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Nu se poate găsi o extensie cu ID-ul <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Contactează administratorul.}few{Nu se pot găsi extensiile cu ID-urile <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Contactează administratorul.}other{Nu se pot găsi extensiile cu ID-urile <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Contactează administratorul.}}</translation>
 <translation id="2353636109065292463">Se verifică conexiunea la internet</translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2388990488038464401">Apelezi acest număr de pe telefonul tău?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">Șterge tot</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{în o zi}few{în # zile}other{în # zile}}</translation>
 <translation id="2922712708897119705">Coloana <ph name="COLUMN_NAME" /> este sortată în ordine descrescătoare.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Extensia nu a fost găsită}few{Extensiile nu au fost găsite}other{Extensiile nu au fost găsite}}</translation>
 <translation id="3036649622769666520">Deschide fișierele</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">Jos</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">Apelează de pe</translation>
 <translation id="3306688585798492231">Ecran încorporat</translation>
 <translation id="335581015389089642">Voce</translation>
+<translation id="3372635229069101468">dă clic pe <ph name="BEGIN_BOLD" />Detalii<ph name="END_BOLD" />;</translation>
 <translation id="3389286852084373014">Textul este prea mare</translation>
 <translation id="3406306243914553062">Conținut HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{O zi rămasă}few{# zile rămase}other{# de zile rămase}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">Coloana <ph name="COLUMN_NAME" /> este sortată în ordine crescătoare.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{O notificare necitită}few{# notificări necitite}other{# de notificări necitite}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Activează următoarea extensie în modul incognito:}few{Activează următoarele extensii în modul incognito:}other{Activează următoarele extensii în modul incognito:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Acum 1 lună}few{Acum # luni}other{Acum # de luni}}</translation>
 <translation id="4289300219472526559">Începeți să vorbiți</translation>
 <translation id="4289540628985791613">Prezentare generală</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">număr</translation>
 <translation id="4746179598275229723">Fixarea extensiei a fost anulată</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 lună rămasă}few{# luni rămase}other{# de luni rămase}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Pentru a folosi modul incognito, organizația ta are nevoie de o extensie}few{Pentru a folosi modul incognito, organizația ta are nevoie de câteva extensii}other{Pentru a folosi modul incognito, organizația ta are nevoie de câteva extensii}}</translation>
+<translation id="482932175346970750">introdu <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> în browser;</translation>
 <translation id="4888938634149558681">Apelează</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{o secundă}few{# secunde}other{# de secunde}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;Inserează</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Nu s-a trimis</translation>
+<translation id="5283101102242354279">Activează o extensie în modul incognito:</translation>
 <translation id="528468243742722775">Oprește</translation>
 <translation id="5329858601952122676">&amp;Șterge</translation>
 <translation id="5361107212971249203">text</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">Setările de afișare ale aplicației vor fi aplicate la următoarea repornire.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Un min. rămas}few{# min. rămase}other{# min. rămase}}</translation>
+<translation id="7252604552361840748">găsește extensia de mai sus;</translation>
 <translation id="7363164521834647158">Trimite răspunsul</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Acum un min.}few{Acum # min.}other{Acum # min.}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>

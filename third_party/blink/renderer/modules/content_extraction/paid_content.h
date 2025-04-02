@@ -18,8 +18,6 @@ class PaidContent final {
   STACK_ALLOCATED();
 
  public:
-  PaidContent();
-
   // Queries the document for elements marked as isAccessibleForFree=false.
   bool QueryPaidElements(Document& document);
 
@@ -31,7 +29,7 @@ class PaidContent final {
   void AppendHasPartElements(Document& document, JSONObject& hasPart_obj);
 
   // List of nodes marked as isAccessibleForFree=false.
-  Persistent<HeapVector<Member<Element>>> paid_elements_;
+  HeapVector<Member<Element>> paid_elements_;
 };
 
 }  // namespace blink

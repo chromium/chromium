@@ -104,6 +104,7 @@ QuantityBucket GetCrossSiteRedirectQuantity(
 
 void EmitSuspectedTrackerFlowUkm(ukm::SourceId referrer_source_id,
                                  ukm::SourceId entrypoint_source_id,
+                                 bool did_entrypoint_access_storage,
                                  int32_t flow_id,
                                  BtmRedirectType exit_redirect_type) {
   ukm::builders::DIPS_SuspectedTrackerFlowReferrerV2(referrer_source_id)
@@ -112,6 +113,7 @@ void EmitSuspectedTrackerFlowUkm(ukm::SourceId referrer_source_id,
 
   ukm::builders::DIPS_SuspectedTrackerFlowEntrypointV2(entrypoint_source_id)
       .SetExitRedirectType(static_cast<int64_t>(exit_redirect_type))
+      .SetHadActiveStorageAccess(did_entrypoint_access_storage)
       .SetFlowId(flow_id)
       .Record(ukm::UkmRecorder::Get());
 }
@@ -139,21 +141,20 @@ EntrypointInfo::EntrypointInfo(
     bool was_referral_client_redirect_like)
     : site(GetSiteForBtm(server_redirect_info.url)),
       source_id(server_redirect_info.source_id),
-      had_triggering_storage_access(server_redirect_info.did_write_cookies),
+      had_active_storage_access(server_redirect_info.did_write_cookies),
       was_referral_client_redirect(was_referral_client_redirect_like) {}
 
 EntrypointInfo::EntrypointInfo(const BtmNavigationInfo& referral)
     : site(GetSiteForBtm(referral.destination.url)),
       source_id(referral.destination.source_id),
-      had_triggering_storage_access(false),
+      had_active_storage_access(false),
       was_referral_client_redirect(WasClientRedirectLike(referral)) {}
 
 EntrypointInfo::EntrypointInfo(const BtmNavigationInfo& referral,
                                const BtmPageVisitInfo& entrypoint_visit)
     : site(GetSiteForBtm(entrypoint_visit.url)),
       source_id(entrypoint_visit.source_id),
-      had_triggering_storage_access(
-          entrypoint_visit.had_qualifying_storage_access),
+      had_active_storage_access(entrypoint_visit.had_active_storage_access),
       was_referral_client_redirect(WasClientRedirectLike(referral)) {}
 
 InFlowSuccessorInteractionState::InFlowSuccessorInteractionState(
@@ -162,9 +163,8 @@ InFlowSuccessorInteractionState::InFlowSuccessorInteractionState(
 
 InFlowSuccessorInteractionState::~InFlowSuccessorInteractionState() = default;
 
-void InFlowSuccessorInteractionState::
-    RecordTriggeringStorageAccessByEntrypoint() {
-  flow_entrypoint_.had_triggering_storage_access = true;
+void InFlowSuccessorInteractionState::RecordActiveStorageAccessByEntrypoint() {
+  flow_entrypoint_.had_active_storage_access = true;
 }
 
 void InFlowSuccessorInteractionState::IncrementFlowIndex(size_t increment) {
@@ -223,9 +223,9 @@ void BtmNavigationFlowDetector::OnPageVisitReported(
       successor_interaction_tracking_state_.has_value() &&
       !successor_interaction_tracking_state_->IsAtSuccessor();
   if (was_visit_for_successor_flow_entrypoint &&
-      previous_page_->had_qualifying_storage_access) {
+      previous_page_->had_active_storage_access) {
     successor_interaction_tracking_state_
-        ->RecordTriggeringStorageAccessByEntrypoint();
+        ->RecordActiveStorageAccessByEntrypoint();
   }
   // Record any in-flow successor interactions.
   if (previous_page_->received_user_activation &&
@@ -306,7 +306,7 @@ bool BtmNavigationFlowDetector::CanEmitNavFlowNodeUkmForPreviousPage() const {
       GetSiteForBtm(previous_page_->url) != GetSiteForCurrentPage();
 
   return page_has_valid_source_id &&
-         previous_page_->had_qualifying_storage_access &&
+         previous_page_->had_active_storage_access &&
          is_site_different_from_prior_page && is_site_different_from_next_page;
 }
 
@@ -319,7 +319,8 @@ void BtmNavigationFlowDetector::
   }
 
   EmitSuspectedTrackerFlowUkm(previous_page_->source_id, exit_info.source_id,
-                              flow_id, BtmRedirectType::kServer);
+                              exit_info.did_write_cookies, flow_id,
+                              BtmRedirectType::kServer);
 }
 
 bool BtmNavigationFlowDetector::
@@ -344,8 +345,9 @@ void BtmNavigationFlowDetector::
   }
 
   EmitSuspectedTrackerFlowUkm(two_pages_ago_->source_id,
-                              previous_page_->source_id, flow_id,
-                              BtmRedirectType::kClient);
+                              previous_page_->source_id,
+                              previous_page_->had_active_storage_access,
+                              flow_id, BtmRedirectType::kClient);
 }
 
 bool BtmNavigationFlowDetector::
@@ -385,7 +387,6 @@ bool BtmNavigationFlowDetector::CanEmitSuspectedTrackerFlowUkm(
   return referrer_has_valid_source_id && entrypoint_has_valid_source_id &&
          is_entrypoint_site_different_from_referrer &&
          is_entrypoint_site_different_from_exit_page &&
-         entrypoint_info.had_triggering_storage_access &&
          entrypoint_info.was_referral_client_redirect;
 }
 
@@ -416,7 +417,7 @@ void BtmNavigationFlowDetector::MaybeEmitInFlowSuccessorInteraction() {
         .SetSuccessorRedirectIndex(index)
         .SetDidEntrypointAccessStorage(
             successor_interaction_tracking_state_->flow_entrypoint()
-                .had_triggering_storage_access)
+                .had_active_storage_access)
         .Record(ukm::UkmRecorder::Get());
   }
 }

@@ -738,6 +738,51 @@ BUILDERS = {
             'device_os_flavor': 'google',
         },
     },
+    'android-pixel9-perf': {
+        'tests': [{
+            'isolate':
+            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
+        }],
+        'platform':
+        'android-trichrome-chrome-google-64-32-bundle',
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Android',
+            'device_type': 'tokay',
+            'device_os': 'B',
+            'device_os_flavor': 'google',
+        },
+    },
+    'android-pixel9-pro-perf': {
+        'tests': [{
+            'isolate':
+            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
+        }],
+        'platform':
+        'android-trichrome-chrome-google-64-32-bundle',
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Android',
+            'device_type': 'caiman',
+            'device_os': 'B',
+            'device_os_flavor': 'google',
+        },
+    },
+    'android-pixel9-pro-xl-perf': {
+        'tests': [{
+            'isolate':
+            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
+        }],
+        'platform':
+        'android-trichrome-chrome-google-64-32-bundle',
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Android',
+            'device_type': 'komodo',
+            'device_os': 'B',
+            'device_os_flavor': 'google',
+        },
+    },
     'android-go-processor-perf': {
         'platform': 'linux',
         'perf_processor': True,
@@ -767,42 +812,6 @@ BUILDERS = {
             'device_type': 'wembley_2GB',
             'device_os_flavor': 'google',
         },
-    },
-    'android-new-pixel-perf': {
-        'tests': [{
-            'isolate':
-            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
-        }],
-        'platform':
-        'android-trichrome-chrome-google-64-32-bundle',
-        'dimension': {},
-    },
-    'android-new-pixel-perf-pgo': {
-        'tests': [{
-            'isolate':
-            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
-        }],
-        'platform':
-        'android-trichrome-chrome-google-64-32-bundle',
-        'dimension': {},
-    },
-    'android-new-pixel-pro-perf': {
-        'tests': [{
-            'isolate':
-            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
-        }],
-        'platform':
-        'android-trichrome-chrome-google-64-32-bundle',
-        'dimension': {},
-    },
-    'android-new-pixel-pro-perf-pgo': {
-        'tests': [{
-            'isolate':
-            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
-        }],
-        'platform':
-        'android-trichrome-chrome-google-64-32-bundle',
-        'dimension': {},
     },
     'linux-perf': {
         'tests': [

@@ -356,26 +356,30 @@ SVGParsingError SVGTransformList::ParseInternal(const CharType*& ptr,
     delim_parsed = false;
 
     SVGTransformType transform_type = ParseAndSkipTransformType(ptr, end);
-    if (transform_type == SVGTransformType::kUnknown)
+    if (transform_type == SVGTransformType::kUnknown) {
       return SVGParsingError(SVGParseStatus::kExpectedTransformFunction,
                              ptr - start);
+    }
 
-    if (!SkipOptionalSVGSpaces(ptr, end) || *ptr != '(')
+    if (!SkipOptionalSVGSpaces(ptr, end) || *ptr != '(') {
       return SVGParsingError(SVGParseStatus::kExpectedStartOfArguments,
                              ptr - start);
+    }
     UNSAFE_TODO(ptr++);
 
     TransformArguments arguments;
     SVGParseStatus status =
         ParseTransformArgumentsForType(transform_type, ptr, end, arguments);
-    if (status != SVGParseStatus::kNoError)
+    if (status != SVGParseStatus::kNoError) {
       return SVGParsingError(status, ptr - start);
+    }
     DCHECK_GE(arguments.size(),
               kRequiredValuesForType[static_cast<int>(transform_type)]);
 
-    if (!SkipOptionalSVGSpaces(ptr, end) || *ptr != ')')
+    if (!SkipOptionalSVGSpaces(ptr, end) || *ptr != ')') {
       return SVGParsingError(SVGParseStatus::kExpectedEndOfArguments,
                              ptr - start);
+    }
     UNSAFE_TODO(ptr++);
 
     Append(CreateTransformFromValues(transform_type, arguments));
@@ -385,8 +389,9 @@ SVGParsingError SVGTransformList::ParseInternal(const CharType*& ptr,
       delim_parsed = true;
     }
   }
-  if (delim_parsed)
+  if (delim_parsed) {
     return SVGParsingError(SVGParseStatus::kTrailingGarbage, ptr - start);
+  }
   return SVGParseStatus::kNoError;
 }
 
@@ -419,12 +424,6 @@ SVGParsingError SVGTransformList::SetValueAsString(const String& value) {
   if (parse_error != SVGParseStatus::kNoError)
     Clear();
   return parse_error;
-}
-
-SVGPropertyBase* SVGTransformList::CloneForAnimation(
-    const String& value) const {
-  DCHECK(RuntimeEnabledFeatures::WebAnimationsSVGEnabled());
-  return SVGListPropertyHelper::CloneForAnimation(value);
 }
 
 void SVGTransformList::Add(const SVGPropertyBase* other,
@@ -465,8 +464,9 @@ void SVGTransformList::CalculateAnimatedValue(
       To<SVGTransformList>(to_at_end_of_duration_value);
 
   size_t to_list_size = to_list->length();
-  if (!to_list_size)
+  if (!to_list_size) {
     return;
+  }
 
   // Get a reference to the from value before potentially cleaning it out (in
   // the case of a To animation.)
@@ -475,11 +475,12 @@ void SVGTransformList::CalculateAnimatedValue(
   // If there's an existing 'from'/underlying value of the same type use that,
   // else use a "zero transform".
   if (from_list->length() &&
-      from_list->at(0)->TransformType() == to_transform->TransformType())
+      from_list->at(0)->TransformType() == to_transform->TransformType()) {
     effective_from = from_list->at(0);
-  else
+  } else {
     effective_from = MakeGarbageCollected<SVGTransform>(
         to_transform->TransformType(), SVGTransform::kConstructZeroTransform);
+  }
 
   SVGTransform* current_transform =
       SVGTransformDistance(effective_from, to_transform)
@@ -502,8 +503,9 @@ void SVGTransformList::CalculateAnimatedValue(
   if (!parameters.is_additive) {
     // Never resize the animatedTransformList to the toList size, instead either
     // clear the list or append to it.
-    if (!IsEmpty())
+    if (!IsEmpty()) {
       Clear();
+    }
   }
 
   Append(current_transform);

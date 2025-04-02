@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">Gorfodi galluogi chwyddo</translation>
 <translation id="3905475044299942653">Atal llawer o hysbysiadau</translation>
 <translation id="3908288065506437185">Rhwystro cwcis trydydd parti yn y modd Anhysbys</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Mae'n bosib na fydd rhai nodweddion yn gweithio. Gall gwefannau cysylltiedig barhau i ddefnyddio cwcis trydydd parti.</translation>
 <translation id="3922092564198021702">Ar eich ffôn, agorwch y Gosodiadau</translation>
 <translation id="3933121352599513978">Crebachu ceisiadau digroeso (argymhellir)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">Manylion</translation>
 <translation id="4598549027014564149">Tra yn y modd Anhysbys, ni all gwefannau ddefnyddio'ch cwcis i weld eich gweithgarwch pori ar draws gwefannau, hyd yn oed gwefannau cysylltiedig. Nid yw eich gweithgarwch pori yn cael ei ddefnyddio ar gyfer pethau megis personoleiddio hysbysebion. Mae'n bosib na fydd nodweddion ar rai gwefannau yn gweithio.</translation>
 <translation id="461356340001513807">Yn gadael i chi fewngofnodi i wefannau gan ddefnyddio'r cyfrif sydd gennych gyda gwasanaeth hunaniaeth</translation>
-<translation id="4619615317237390068">Tabiau o ddyfeisiau eraill</translation>
 <translation id="4635969503923889910">Peidiwch â chaniatáu i wefannau ddefnyddio dyfeisiau NFC</translation>
 <translation id="4644713492825682049">Dileu ac ailosod</translation>
 <translation id="4645575059429386691">Rheolir gan dy riant</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">Rhannu drwy</translation>
 <translation id="5001526427543320409">Cwcis trydydd parti</translation>
 <translation id="5007392906805964215">Adolygu</translation>
-<translation id="5014182796621173645">Gwnaethoch ymweld â <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Caniatáu</translation>
 <translation id="5048398596102334565">Caniatáu i wefannau gael mynediad at synwyryddion symudiad (argymhellir)</translation>
 <translation id="5048841907079026162">Rheoli eich data pori</translation>
@@ -443,7 +440,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Cynnwys gwarchodedig</translation>
 <translation id="662080504995468778">Aros</translation>
-<translation id="6653342741369270081">Pwyswch y botwm yn ôl i adael y sgrin lawn.</translation>
+<translation id="6635327442719709864">Pan fydd ymlaen, gall gwefannau ofyn am ddefnyddio pyrth cyfresol. Pan fydd wedi'i ddifodd, ni all gwefannau ddefnyddio pyrth cyfresol.</translation>
 <translation id="6683865262523156564">Mae'r wefan hon mewn grŵp sy'n gallu gweld eich gweithgarwch. Diffinnir y grŵp gan <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Lluniau proffil</translation>
 <translation id="6697925417670533197">Lawrlwythiadau gweithredol</translation>

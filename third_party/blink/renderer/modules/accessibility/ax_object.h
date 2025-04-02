@@ -341,9 +341,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
     return std::nullopt;
   }
 
-  static const HeapVector<Member<Element>>* ElementsFromAttributeOrInternals(
-      const Element* from,
-      const QualifiedName& attribute);
+  static const GCedHeapVector<Member<Element>>*
+  ElementsFromAttributeOrInternals(const Element* from,
+                                   const QualifiedName& attribute);
   static Element* ElementFromAttributeOrInternals(
       const Element* from,
       const QualifiedName& attribute);
@@ -1537,7 +1537,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
                              bool* found_text_alternative) const;
   String TextFromElements(bool in_aria_labelledby_traversal,
                           AXObjectSet& visited,
-                          const HeapVector<Member<Element>>& elements,
+                          base::span<const Member<Element>> elements,
                           AXRelatedObjectVector* related_objects) const;
   static bool HasAriaLabelledbyElements(Element* from);
 

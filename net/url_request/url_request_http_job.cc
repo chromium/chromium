@@ -1528,18 +1528,10 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
           request_->accepted_stream_types(), *headers);
 
   if (request()->client_side_content_decoding_enabled()) {
-    std::string mime_type;
-    if (!headers->GetMimeType(&mime_type) ||
-        mime_type != "application/signed-exchange") {
-      // When client side content encoding is enabled, and the mime type is not
-      // signed exchange, the client will decode the body. So returns the
-      // original stream.
-      // Note: We exclude signed exchanges because they are parsed inside the
-      // browser process. So the network service needs to decode them.
-      // TODO(crbug.com/406877444): Remove this special-case MIME type check.
-      client_side_content_decoding_types_ = std::move(types);
-      return upstream;
-    }
+    // When client side content encoding is enabled, the client will decode the
+    // body. So returns the original stream.
+    client_side_content_decoding_types_ = std::move(types);
+    return upstream;
   }
   // Note: If multiple encoding types were specified, this only records the last
   // encoding type.

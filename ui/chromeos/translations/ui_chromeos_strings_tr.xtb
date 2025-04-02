@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">Teşekkürler yazısı</translation>
 <translation id="2088690981887365033">VPN ağı</translation>
 <translation id="209653272837065803">Dosyaları senkronize etmeye devam etmek için yeterli depolama alanı yok</translation>
-<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />Gizli modda izin ver<ph name="END_BOLD" />'i açın</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> öğe silinecek ve bu öğeleri geri yükleyemeyeceksiniz.</translation>
 <translation id="2122305276694332719">Gizli bir ağa otomatik olarak bağlanmak başkalarının cihazınızı ve bazı ağ ayarlarını görmesine olanak sağladığından önerilmez.</translation>
 <translation id="2125607626296734455">Kmerce</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">Gezegen</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> çıkarıldı.</translation>
 <translation id="2307462900900812319">Ağı yapılandır</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> kimliğine sahip bir uzantı bulunamadı. Yöneticinizle iletişime geçin.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> kimliklerine sahip uzantılar bulunamadı. Yöneticinizle iletişime geçin.}}</translation>
 <translation id="2325650632570794183">Bu dosya türü desteklenmiyor. Bu dosya türünü açabilecek bir uygulama bulmak için lütfen Chrome Web Mağazası'nı ziyaret edin.</translation>
 <translation id="2326539130272988168">Bulgarca</translation>
 <translation id="233822363739146957">Tüm dosyalarınızı senkronize etmek için yeterli depolama alanı yok</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estonya Dili</translation>
 <translation id="2938685643439809023">Moğolca</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Uzantı bulunamıyor}other{Uzantılar bulunamıyor}}</translation>
 <translation id="2943503720238418293">Daha kısa bir ad kullanın</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> biçimlendiriliyor...</translation>
 <translation id="2951236788251446349">Denizanası</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">Tamamlandı</translation>
 <translation id="3358452157379365236">Gitar</translation>
 <translation id="3368922792935385530">Bağlı</translation>
-<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />Ayrıntılar<ph name="END_BOLD" />'ı tıklayın</translation>
 <translation id="3382143449143186018">Nepali Alfabetik klavye</translation>
 <translation id="338691029516748599">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor, Bağlan</translation>
 <translation id="3408072735282270043">Etkinleştir, <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">Tek boynuzlu at</translation>
 <translation id="4131235941541910880">İhtiyacınız olmayan öğeleri Çöp Kutusu'na taşıyın</translation>
 <translation id="4134804435730168042">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Cihaz kurulumundan sonra etkinleştir</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Gizli modda aşağıdaki uzantıyı etkinleştirin:}other{Gizli modda aşağıdaki uzantıları etkinleştirin:}}</translation>
 <translation id="4153015322587141338">Raftaki dosyalarınıza hızlı erişim için bir dosyayı sağ tıklayıp "<ph name="PIN_COMMAND" />" seçeneğini kullanın.</translation>
 <translation id="4157569377477607576">Yönetici politikası şunları önermez:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> öğe taşındı.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">Her ikisini de sakla</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> öğe geri yükleniyor</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Gizli modu kullanmak için kuruluşunuzun bir uzantıya ihtiyacı var}other{Gizli modu kullanmak için kuruluşunuzun bazı uzantılara ihtiyacı var}}</translation>
 <translation id="4826849268470072925">Tamilce ITRANS</translation>
-<translation id="482932175346970750">Tarayıcınıza <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> yazın</translation>
 <translation id="4843566743023903107">Chromebase'ler</translation>
 <translation id="4850886885716139402">Görüntüle</translation>
 <translation id="485316830061041779">Almanca</translation>
@@ -561,7 +554,6 @@
     ortak çalışın.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Dosyalar Google Drive'dan geri yüklendi</translation>
 <translation id="5278111733643988471">Bu öğeyi geri yüklemek için çöp kutusu dışındaki yeni bir klasöre sürükleyin. Bu öğenin bulunduğu orijinal klasör ("<ph name="PARENT_FOLDER_NAME" />") silindi.</translation>
-<translation id="5283101102242354279">Gizli modda bir uzantıyı etkinleştirin:</translation>
 <translation id="5288441970121584418">Burger</translation>
 <translation id="5293615890992542006">Bu dosyanın taşınması yönetici politikası tarafından engellendi</translation>
 <translation id="5305688511332277257">Hiç sertifika yüklenmedi</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Ayrıntılar</translation>
 <translation id="7246947237293279874">FTP Proxy'si</translation>
 <translation id="7248671827512403053">Uygulama</translation>
-<translation id="7252604552361840748">Yukarıdaki uzantıyı bulun</translation>
 <translation id="7256405249507348194">Tanınmayan hata: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Kullanılabilir hizmetler</translation>
 <translation id="7291818353625820805">Tuşların tekrarlanmasını ister misiniz? Klavye ayarlarından aksan işaretlerini kapatın</translation>

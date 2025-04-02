@@ -68,6 +68,8 @@ class EmptyWebMediaPlayer : public WebMediaPlayer {
   void SetVolumeMultiplier(double multiplier) override {}
   void SetPowerExperimentState(bool enabled) override {}
   void SuspendForFrameClosed() override {}
+  void RecordAutoPictureInPictureInfo(
+      const WebString& auto_picture_in_picture_info) override {}
   void Paint(cc::PaintCanvas*, const gfx::Rect&, cc::PaintFlags&) override {}
   scoped_refptr<media::VideoFrame> GetCurrentFrameThenUpdate() override;
   std::optional<media::VideoFrame::ID> CurrentFrameId() const override;

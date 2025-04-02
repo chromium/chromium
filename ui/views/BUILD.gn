@@ -136,7 +136,6 @@ component("views") {
     "bubble/tooltip_icon.h",
     "button_drag_utils.h",
     "cascading_property.h",
-    "color_chooser/color_chooser_listener.h",
     "context_menu_controller.h",
     "controls/animated_image_view.h",
     "controls/badge.h",
@@ -640,11 +639,6 @@ component("views") {
     public_deps += [ "//ui/linux:linux_ui" ]
     deps += [ "//ui/base/ime/linux" ]
     sources += [ "controls/menu/menu_config_linux.cc" ]
-  }
-
-  if (is_linux || is_chromeos || is_fuchsia) {
-    public += [ "color_chooser/color_chooser_view.h" ]
-    sources += [ "color_chooser/color_chooser_view.cc" ]
   }
 
   if (is_chromeos) {
@@ -1565,10 +1559,6 @@ test("views_unittests") {
       "//ui/events/ozone/layout:test_support",
       "//ui/ozone",
     ]
-  }
-
-  if (is_linux || is_chromeos) {
-    sources += [ "color_chooser/color_chooser_unittest.cc" ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {

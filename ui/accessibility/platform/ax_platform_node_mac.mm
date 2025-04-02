@@ -4,6 +4,7 @@
 
 #import "ui/accessibility/platform/ax_platform_node_mac.h"
 
+#include "base/apple/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/accessibility/platform/ax_platform_node_cocoa.h"
 
@@ -55,8 +56,11 @@ AXPlatformNode::Pointer AXPlatformNode::Create(
 // static
 AXPlatformNode* AXPlatformNode::FromNativeViewAccessible(
     gfx::NativeViewAccessible accessible) {
-  if ([accessible isKindOfClass:[AXPlatformNodeCocoa class]])
-    return [accessible node];
+  AXPlatformNodeCocoa* node_cocoa =
+      base::apple::ObjCCast<AXPlatformNodeCocoa>(accessible.Get());
+  if (node_cocoa) {
+    return [node_cocoa node];
+  }
   return nullptr;
 }
 
@@ -107,7 +111,7 @@ gfx::NativeViewAccessible AXPlatformNodeMac::GetNativeViewAccessible() {
     objc_storage_->native_node =
         [[AXPlatformNodeCocoa alloc] initWithNode:this];
   }
-  return objc_storage_->native_node;
+  return gfx::NativeViewAccessible(objc_storage_->native_node);
 }
 
 void AXPlatformNodeMac::NotifyAccessibilityEvent(ax::mojom::Event event_type) {

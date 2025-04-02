@@ -13,9 +13,10 @@
 #include "chrome/browser/ui/tabs/test/mock_tab_interface.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
-#include "chrome/browser/ui/views/page_action/mock_page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
+#include "chrome/browser/ui/views/page_action/test_support/mock_page_action_model.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_properties.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/tab_collections/public/tab_interface.h"
@@ -117,8 +118,8 @@ class PageActionControllerTest : public ::testing::Test {
     profile_ = std::make_unique<TestingProfile>();
     pinned_actions_model_ =
         std::make_unique<PinnedToolbarActionsModel>(profile_.get());
-    controller_ =
-        std::make_unique<PageActionController>(pinned_actions_model_.get());
+    controller_ = std::make_unique<PageActionController>(
+        GetPageActionControllerTestProperties(), pinned_actions_model_.get());
     tab_interface_ = std::make_unique<FakeTabInterface>();
     tab_interface_->Activate();
   }
@@ -400,7 +401,9 @@ class MockPageActionModelFactory : public PageActionModelFactory {
 class PageActionControllerMockModelTest : public ::testing::Test {
  public:
   PageActionControllerMockModelTest()
-      : controller_(/*pinned_actions_model=*/nullptr, &model_factory_) {}
+      : controller_(GetPageActionControllerTestProperties(),
+                    /*pinned_actions_model=*/nullptr,
+                    &model_factory_) {}
 
   PageActionController& controller() { return controller_; }
   MockPageActionModelFactory& models() { return model_factory_; }

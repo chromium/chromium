@@ -2997,8 +2997,7 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
   StackScrollTranslationVector scroll_translation_nodes;
   ForAllNonThrottledLocalFrameViews(
       [&scroll_translation_nodes](LocalFrameView& frame_view) {
-        if (RuntimeEnabledFeatures::
-                ScrollableAreasWithScrollNodeOptimizationEnabled()) {
+        if (RuntimeEnabledFeatures::ScrollableAreaOptimizationEnabled()) {
           for (const auto& area :
                frame_view.scrollable_areas_with_scroll_node_) {
             const auto* paint_properties =
@@ -3551,7 +3550,6 @@ void LocalFrameView::ServiceScrollAnimations(base::TimeTicks start_time) {
 
     if (SVGDocumentExtensions::ServiceSmilOnAnimationFrame(*document))
       GetPage()->Animator().SetHasSmilAnimation();
-    SVGDocumentExtensions::ServiceWebAnimationsOnAnimationFrame(*document);
     document->GetDocumentAnimations().UpdateAnimationTimingForAnimationFrame();
   }
 }
@@ -3597,7 +3595,7 @@ void LocalFrameView::RemoveAnimatingScrollableArea(
 
 void LocalFrameView::AddScrollableArea(
     PaintLayerScrollableArea& scrollable_area) {
-  CHECK(RuntimeEnabledFeatures::UnifiedScrollableAreasEnabled());
+  CHECK(RuntimeEnabledFeatures::ScrollableAreaOptimizationEnabled());
   scrollable_areas_.insert(scrollable_area.GetScrollElementId(),
                            scrollable_area);
 }
@@ -3613,14 +3611,14 @@ void LocalFrameView::RemoveScrollableArea(
 
 void LocalFrameView::AddUserScrollableArea(
     PaintLayerScrollableArea& scrollable_area) {
-  CHECK(!RuntimeEnabledFeatures::UnifiedScrollableAreasEnabled());
+  CHECK(!RuntimeEnabledFeatures::ScrollableAreaOptimizationEnabled());
   scrollable_areas_.insert(scrollable_area.GetScrollElementId(),
                            &scrollable_area);
 }
 
 void LocalFrameView::RemoveUserScrollableArea(
     PaintLayerScrollableArea& scrollable_area) {
-  CHECK(!RuntimeEnabledFeatures::UnifiedScrollableAreasEnabled());
+  CHECK(!RuntimeEnabledFeatures::ScrollableAreaOptimizationEnabled());
   scrollable_areas_.erase(scrollable_area.GetScrollElementId());
   RemoveScrollableAreaWithScrollNode(scrollable_area);
 }
@@ -3776,7 +3774,7 @@ void LocalFrameView::DidChangeScrollOffset() {
 
 ScrollableArea* LocalFrameView::ScrollableAreaWithElementId(
     const CompositorElementId& id) {
-  if (!RuntimeEnabledFeatures::UnifiedScrollableAreasEnabled()) {
+  if (!RuntimeEnabledFeatures::ScrollableAreaOptimizationEnabled()) {
     // Check for the layout viewport, which may not be in scrollable_areas_
     // if it is styled overflow: hidden.  (Other overflow: hidden elements won't
     // have composited scrolling layers per crbug.com/784053, so we don't have

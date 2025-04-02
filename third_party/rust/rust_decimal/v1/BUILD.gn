@@ -12,35 +12,36 @@ cargo_crate("lib") {
   crate_name = "rust_decimal"
   epoch = "1"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/lib.rs"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/arithmetic_impls.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/constants.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/decimal.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/fuzz.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/maths.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/mysql.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/ops.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/ops/add.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/ops/array.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/ops/cmp.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/ops/common.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/ops/div.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/ops/legacy.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/ops/mul.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/ops/rem.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/postgres.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/postgres/common.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/postgres/diesel.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/postgres/driver.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/proptest.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/rand.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/rand_0_9.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/rocket.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/serde.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/src/str.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/arithmetic_impls.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/constants.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/decimal.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/fuzz.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/maths.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/mysql.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/ops.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/ops/add.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/ops/array.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/ops/cmp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/ops/common.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/ops/div.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/ops/legacy.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/ops/mul.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/ops/rem.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/postgres.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/postgres/common.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/postgres/diesel.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/postgres/driver.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/proptest.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/rand.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/rand_0_9.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/rocket.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/serde.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/src/str.rs",
   ]
   inputs = []
 
@@ -61,9 +62,10 @@ cargo_crate("lib") {
     "//third_party/rust/arrayvec/v0_7:lib",
     "//third_party/rust/num_traits/v0_2:lib",
   ]
-  build_root = "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/build.rs"
+  build_root =
+      "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/build.rs"
   build_sources = [
-    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.1/build.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/build.rs",
   ]
   build_script_outputs = [ "README-lib.md" ]
   rustflags = [

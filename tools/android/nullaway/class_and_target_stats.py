@@ -60,14 +60,14 @@ def gen_build_target_graph(out_dir: pathlib.Path, include_testonly: bool,
         for target, info in data['targets'].items():
             if not info['testonly']:
                 continue
-        if '__' in target:
-            target = target.split('__')[0]
-        skip.add(target)
+            # If it exists, it should always be True.
+            assert info['testonly'], f'{target} has false testonly value.'
+            skip.add(target)
     for target, info in data['targets'].items():
-        if '__' in target:
-            target = target.split('__')[0]
         if target in skip:
             continue
+        if '__' in target:
+            target = target.split('__')[0]
         for dep in info['deps']:
             if '__' in dep:
                 dep = dep.split('__')[0]

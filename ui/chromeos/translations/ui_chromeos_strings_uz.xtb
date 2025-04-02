@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">Rahmat deb yozish</translation>
 <translation id="2088690981887365033">VPN tarmoq</translation>
 <translation id="209653272837065803">Fayllarni sinxronlashda davom etish uchun xotiradagi joy yetarli emas</translation>
-<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />Inkognito rejimidan foydalanishga ruxsat berish<ph name="END_BOLD" /> parametrini yoqing</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> ta element oʻchib ketadi va qayta tiklanmaydi.</translation>
 <translation id="2122305276694332719">Yashirin tarmoqlarga avtomatik ulanish tavsiya etilmaydi, chunki qurilmangiz va tarmoq sozlamalaringiz boshqalarga koʻrinishi mumkin.</translation>
 <translation id="2125607626296734455">Xmer</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">Sayyora</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> tizimdan uzildi.</translation>
 <translation id="2307462900900812319">Tarmoqni sozlash</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> identifikatorli kengaytma topilmaydi. Administratorga murojaat qiling.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> identifikatorli kengaytmalar topilmaydi. Administratorga murojaat qiling.}}</translation>
 <translation id="2325650632570794183">Bunday fayl turi qo‘llab-quvvatlanmaydi. Bu faylni ocha oladigan ilovani topish uchun Chrome Internet do‘koniga kiring.</translation>
 <translation id="2326539130272988168">Bolgar</translation>
 <translation id="233822363739146957">Barcha fayllarni sinxronlash uchun xotiradagi joy yetarli emas</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estoncha</translation>
 <translation id="2938685643439809023">Mo`g`ul tili</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Kengaytma topilmadi}other{Kengaytmalar topilmadi}}</translation>
 <translation id="2943503720238418293">Nomni qisqartiring</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> formatlanmoqda...</translation>
 <translation id="2951236788251446349">Meduza</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">Tayyor</translation>
 <translation id="3358452157379365236">Gitara</translation>
 <translation id="3368922792935385530">Ulangan</translation>
-<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />Batafsil<ph name="END_BOLD" /> tugmasini bosing</translation>
 <translation id="3382143449143186018">Nepal va InScript klaviaturasi</translation>
 <translation id="338691029516748599">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Himoya: <ph name="SECURITY_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Administrator boshqaruvida, Ulanish</translation>
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> tarmogʻini faollashtirish</translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">Bir shoxli ot</translation>
 <translation id="4131235941541910880">Elementlarni boshqa jildga olish uchun chiqitdon kerak emas</translation>
 <translation id="4134804435730168042">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Qurilma sozlangandan keyin faollashtiriladi</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Inkognito rejimida quyidagi kengaytmani yoqish:}other{Inkognito rejimida quyidagi kengaytmalarni yoqish:}}</translation>
 <translation id="4153015322587141338">Fayl ustida oʻng tugmani bosing va javon ichidagi fayllarga tezkor kirish uchun “<ph name="PIN_COMMAND" />” bandini tanlang.</translation>
 <translation id="4157569377477607576">Administrator tavsiya qilmaydi:</translation>
 <translation id="4159731583141908892">Boshqa joyga olindi: <ph name="FILE_NAME" />.</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">Ikkala versiya qolsin</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> ta fayl tiklanmoqda…</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Tashkilot Inkognito rejimidan foydalanish uchun kengaytmani talab qiladi}other{Tashkilot Inkognito rejimidan foydalanish uchun ayrim kengaytmalarni talab qiladi}}</translation>
 <translation id="4826849268470072925">Tamil (ITRANS klaviaturasi)</translation>
-<translation id="482932175346970750">Brauzerda <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> manzilini yozing</translation>
 <translation id="4843566743023903107">Chromebase qurilmalari</translation>
 <translation id="4850886885716139402">Ko‘rish</translation>
 <translation id="485316830061041779">Nemis</translation>
@@ -561,7 +554,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
     bir joyda joylashgan fayllaringiz ustida hamkorlikda ishlang. <ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Disk‘dan tiklangan fayllar</translation>
 <translation id="5278111733643988471">Bu elementni tiklash uchun uni chiqitdon tashqarisidagi yangi jildga sudrang. Bu elementning asl jildi (<ph name="PARENT_FOLDER_NAME" />) oʻchib ketgan.</translation>
-<translation id="5283101102242354279">Inkognito rejimida kengaytmani yoqing:</translation>
 <translation id="5288441970121584418">Burger</translation>
 <translation id="5293615890992542006">Bu faylni koʻchirish administrator taqiqlagan</translation>
 <translation id="5305688511332277257">O‘rnatilmagan</translation>
@@ -815,7 +807,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Batafsil</translation>
 <translation id="7246947237293279874">FTP proksi-server</translation>
 <translation id="7248671827512403053">Ilova</translation>
-<translation id="7252604552361840748">Yuqoridagi kengaytmani toping</translation>
 <translation id="7256405249507348194">Noma’lum xatolik: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Mavjud xizmatlar</translation>
 <translation id="7291818353625820805">Tugmalar takrorlanishini istaysizmi? Klaviatura sozlamalarida urgʻu belgilarini faolsizlantiring</translation>

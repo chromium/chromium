@@ -66,9 +66,7 @@ Cursor::Cursor(std::unique_ptr<BackingStore::Cursor> cursor,
                indexed_db::CursorType cursor_type,
                blink::mojom::IDBTaskType task_type,
                base::WeakPtr<Transaction> transaction)
-    : bucket_locator_(transaction->BackingStoreTransaction()
-                          ->backing_store()
-                          ->bucket_locator()),
+    : bucket_locator_(transaction->bucket_context()->bucket_locator()),
       task_type_(task_type),
       cursor_type_(cursor_type),
       transaction_(std::move(transaction)),

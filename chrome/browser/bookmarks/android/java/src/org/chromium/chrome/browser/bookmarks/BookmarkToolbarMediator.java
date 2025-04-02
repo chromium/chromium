@@ -77,7 +77,6 @@ class BookmarkToolbarMediator
     private final BookmarkUiPrefs mBookmarkUiPrefs;
     private final BookmarkAddNewFolderCoordinator mBookmarkAddNewFolderCoordinator;
     private final Runnable mEndSearchRunnable;
-    private final BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
     private final BooleanSupplier mIncognitoEnabledSupplier;
     private final BookmarkManagerOpener mBookmarkManagerOpener;
 
@@ -99,7 +98,6 @@ class BookmarkToolbarMediator
             BookmarkUiPrefs bookmarkUiPrefs,
             BookmarkAddNewFolderCoordinator bookmarkAddNewFolderCoordinator,
             Runnable endSearchRunnable,
-            BookmarkMoveSnackbarManager bookmarkMoveSnackbarManager,
             BooleanSupplier incognitoEnabledSupplier,
             BookmarkManagerOpener bookmarkManagerOpener) {
         mContext = context;
@@ -117,7 +115,6 @@ class BookmarkToolbarMediator
         mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
         mBookmarkAddNewFolderCoordinator = bookmarkAddNewFolderCoordinator;
         mEndSearchRunnable = endSearchRunnable;
-        mBookmarkMoveSnackbarManager = bookmarkMoveSnackbarManager;
         mIncognitoEnabledSupplier = incognitoEnabledSupplier;
         mBookmarkManagerOpener = bookmarkManagerOpener;
 
@@ -203,8 +200,8 @@ class BookmarkToolbarMediator
         } else if (id == R.id.selection_mode_move_menu_id) {
             List<BookmarkId> list = mSelectionDelegate.getSelectedItemsAsList();
             if (list.size() >= 1) {
-                mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(
-                        mBookmarkManagerOpener, list.toArray(new BookmarkId[0]));
+                mBookmarkManagerOpener.startFolderPickerActivity(
+                        mContext, mProfile, list.toArray(new BookmarkId[0]));
                 RecordUserAction.record("MobileBookmarkManagerMoveToFolderBulk");
             }
             return true;

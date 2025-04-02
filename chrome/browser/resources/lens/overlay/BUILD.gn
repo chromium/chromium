@@ -106,6 +106,7 @@ build_webui("build_overlay") {
   ]
 
   ts_composite = true
+  ts_tsconfig_base = "//tools/typescript/tsconfig_base_polymer_legacy.json"
   mojo_files_deps =
       [ "//chrome/browser/lens/core/mojom:mojo_bindings_ts__generator" ]
   mojo_files = [

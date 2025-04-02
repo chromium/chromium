@@ -91,14 +91,14 @@ ChromeTracingDelegate::~ChromeTracingDelegate() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void ChromeTracingDelegate::OnTabModelAdded() {
+void ChromeTracingDelegate::OnTabModelAdded(TabModel* tab_model) {
   for (const TabModel* model : TabModelList::models()) {
     if (model->GetProfile()->IsOffTheRecord())
       incognito_launched_ = true;
   }
 }
 
-void ChromeTracingDelegate::OnTabModelRemoved() {}
+void ChromeTracingDelegate::OnTabModelRemoved(TabModel* tab_model) {}
 
 #else
 

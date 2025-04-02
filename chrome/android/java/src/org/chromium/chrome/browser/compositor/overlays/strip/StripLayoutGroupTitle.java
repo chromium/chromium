@@ -18,7 +18,6 @@ import org.chromium.base.Token;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesConfig;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabBubbler;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
@@ -158,11 +157,6 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     @Override
     public void setIncognito(boolean incognito) {
         assert false : "Incognito state of a group title cannot change";
-    }
-
-    @Override
-    public boolean hasClickAction() {
-        return ChromeFeatureList.sTabStripGroupCollapse.isEnabled();
     }
 
     /**

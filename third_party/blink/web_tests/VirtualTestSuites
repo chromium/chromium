@@ -111,6 +111,19 @@
     "args": ["--enable-accelerated-2d-canvas"],
     "expires": "never"
   },
+  "This never expires because it tests a shipping configuration",
+  {
+    "prefix": "cpu-compositing",
+    "owners": ["fserb@chromium.org", "jpgravel@chromium.org"],
+    "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
+    "bases": ["wpt_internal/html/canvas/context-lost"],
+    "exclusive_tests": ["wpt_internal/html/canvas/context-lost"],
+    "args": [
+      "--disable-gpu-compositing",
+      "--enable-threaded-compositing"
+    ],
+    "expires": "never"
+  },
 
   "The threaded virtual suite tests with threaded compositing, which is the",
   "configuration that we ship.  Because this is testing what we ship (in a way",
@@ -1476,6 +1489,7 @@
       "external/wpt/fetch/private-network-access/fenced-frame-no-preflight-required.tentative.https.window.js"
     ],
     "args": ["--enable-features=PrivacySandboxAdsAPIsOverride,Fledge,AdInterestGroupAPI,FencedFramesEnforceFocus,FencedFramesLocalUnpartitionedDataAccess,ExemptUrlFromNetworkRevocationForTesting,FencedFramesCrossOriginEventReportingAllTraffic,FencedFramesReportEventHeaderChanges,FencedFramesSrcPermissionsPolicy,FencedFramesCrossOriginAutomaticBeaconData",
+             "--disable-features=LocalNetworkAccessChecks",
              "--enable-blink-features=FencedFramesDefaultMode"],
     "expires": "Jan 9, 2026"
   },
@@ -1868,7 +1882,7 @@
     "args": [
       "--enable-features=LCPPFontURLPredictor"
     ],
-    "expires": "Apr 1, 2025",
+    "expires": "Apr 1, 2026",
     "owners": [
       "yyanagisawa@chromium.org",
       "kouhei@chromium.org",
@@ -2078,6 +2092,7 @@
       "external/wpt/webnn/conformance_tests/inputs-are-not-modified.https.any.serviceworker.html?gpu",
       "external/wpt/webnn/conformance_tests/inputs-are-not-modified.https.any.sharedworker.html?gpu",
       "external/wpt/webnn/conformance_tests/inputs-are-not-modified.https.any.worker.html?gpu",
+      "external/wpt/webnn/conformance_tests/inputs-with-special-names.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/instance_normalization.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/layer_normalization.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/leaky_relu.https.any.html?gpu",
@@ -2330,6 +2345,7 @@
       "external/wpt/webnn/conformance_tests/inputs-are-not-modified.https.any.serviceworker.html?cpu",
       "external/wpt/webnn/conformance_tests/inputs-are-not-modified.https.any.sharedworker.html?cpu",
       "external/wpt/webnn/conformance_tests/inputs-are-not-modified.https.any.worker.html?cpu",
+      "external/wpt/webnn/conformance_tests/inputs-with-special-names.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/instance_normalization.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/layer_normalization.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/leaky_relu.https.any.html?cpu",
@@ -2578,6 +2594,7 @@
       "external/wpt/webnn/conformance_tests/inputs-are-not-modified.https.any.serviceworker.html?npu",
       "external/wpt/webnn/conformance_tests/inputs-are-not-modified.https.any.sharedworker.html?npu",
       "external/wpt/webnn/conformance_tests/inputs-are-not-modified.https.any.worker.html?npu",
+      "external/wpt/webnn/conformance_tests/inputs-with-special-names.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/instance_normalization.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/layer_normalization.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/leaky_relu.https.any.html?npu",

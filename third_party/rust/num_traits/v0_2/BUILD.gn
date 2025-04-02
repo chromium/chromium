@@ -12,27 +12,28 @@ cargo_crate("lib") {
   crate_name = "num_traits"
   epoch = "0.2"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/num-traits-0.2.19/src/lib.rs"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/num-traits-v0_2/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/num-traits-0.2.19/src/bounds.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-traits-0.2.19/src/cast.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-traits-0.2.19/src/float.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-traits-0.2.19/src/identities.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-traits-0.2.19/src/int.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-traits-0.2.19/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-traits-0.2.19/src/macros.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-traits-0.2.19/src/ops/bytes.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-traits-0.2.19/src/ops/checked.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-traits-0.2.19/src/ops/euclid.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-traits-0.2.19/src/ops/inv.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-traits-0.2.19/src/ops/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-traits-0.2.19/src/ops/mul_add.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-traits-0.2.19/src/ops/overflowing.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-traits-0.2.19/src/ops/saturating.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-traits-0.2.19/src/ops/wrapping.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-traits-0.2.19/src/pow.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-traits-0.2.19/src/real.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-traits-0.2.19/src/sign.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-traits-v0_2/src/bounds.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-traits-v0_2/src/cast.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-traits-v0_2/src/float.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-traits-v0_2/src/identities.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-traits-v0_2/src/int.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-traits-v0_2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-traits-v0_2/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-traits-v0_2/src/ops/bytes.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-traits-v0_2/src/ops/checked.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-traits-v0_2/src/ops/euclid.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-traits-v0_2/src/ops/inv.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-traits-v0_2/src/ops/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-traits-v0_2/src/ops/mul_add.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-traits-v0_2/src/ops/overflowing.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-traits-v0_2/src/ops/saturating.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-traits-v0_2/src/ops/wrapping.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-traits-v0_2/src/pow.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-traits-v0_2/src/real.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-traits-v0_2/src/sign.rs",
   ]
   inputs = []
 

@@ -293,9 +293,7 @@ bool ShouldShowAddressSignInPromo(Profile& profile,
 bool ShouldShowBookmarkSignInPromo(Profile& profile) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (!base::FeatureList::IsEnabled(
-          switches::kSyncEnableBookmarksInTransportMode) ||
-      !base::FeatureList::IsEnabled(
-          switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload)) {
+          switches::kSyncEnableBookmarksInTransportMode)) {
     return false;
   }
 

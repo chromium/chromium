@@ -408,6 +408,73 @@ void BluetoothEmulationHandler::RemoveCharacteristic(
                         in_characteristicId, " from service ", in_serviceId})));
 }
 
+void BluetoothEmulationHandler::AddDescriptor(
+    const std::string& in_address,
+    const std::string& in_serviceId,
+    const std::string& in_characteristicId,
+    const std::string& in_descriptorUuid,
+    std::unique_ptr<AddDescriptorCallback> callback) {
+  if (!is_enabled()) {
+    std::move(callback)->sendFailure(
+        Response::ServerError("BluetoothEmulation not enabled"));
+    return;
+  }
+
+  device::BluetoothUUID uuid(in_descriptorUuid);
+  if (!uuid.IsValid()) {
+    std::move(callback)->sendFailure(Response::InvalidParams(
+        base::StrCat({in_descriptorUuid, " is not a valid UUID"})));
+    return;
+  }
+
+  fake_central_->AddFakeDescriptor(
+      uuid, in_characteristicId, in_serviceId, in_address,
+      base::BindOnce(
+          [](std::unique_ptr<AddDescriptorCallback> callback,
+             const std::string& error_message,
+             const std::optional<std::string>& identifier) {
+            if (!identifier) {
+              std::move(callback)->sendFailure(
+                  Response::ServerError(error_message));
+              return;
+            }
+            std::move(callback)->sendSuccess(*identifier);
+          },
+          std::move(callback),
+          base::StrCat({"Failed to add descriptor ", in_descriptorUuid,
+                        " to characteristic ", in_characteristicId})));
+}
+
+void BluetoothEmulationHandler::RemoveDescriptor(
+    const std::string& in_address,
+    const std::string& in_serviceId,
+    const std::string& in_characteristicId,
+    const std::string& in_descriptorId,
+    std::unique_ptr<RemoveDescriptorCallback> callback) {
+  if (!is_enabled()) {
+    std::move(callback)->sendFailure(
+        Response::ServerError("BluetoothEmulation not enabled"));
+    return;
+  }
+
+  fake_central_->RemoveFakeDescriptor(
+      in_descriptorId, in_characteristicId, in_serviceId, in_address,
+      base::BindOnce(
+          [](std::unique_ptr<RemoveDescriptorCallback> callback,
+             const std::string& error_message, bool success) {
+            if (!success) {
+              std::move(callback)->sendFailure(
+                  Response::ServerError(error_message));
+              return;
+            }
+            std::move(callback)->sendSuccess();
+          },
+          std::move(callback),
+          base::StrCat({"Failed to remove descriptor represented by ",
+                        in_descriptorId, " from characteristic ",
+                        in_characteristicId})));
+}
+
 void BluetoothEmulationHandler::DispatchGATTOperationEvent(
     bluetooth::mojom::GATTOperationType type,
     const std::string& peripheral_address) {

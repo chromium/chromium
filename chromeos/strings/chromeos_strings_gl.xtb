@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Desactivar salvapantallas</translation>
 <translation id="3091839911843451378">Produciuse un erro: a impresora está detida</translation>
 <translation id="3102119246920354026">Caché</translation>
-<translation id="3112413615003385433">A persoa docente quitou contido de School Tools</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">estanques</translation>
 <translation id="3122883569442693641">Máis detalles</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Activado parcialmente</translation>
 <translation id="3492882532495507361">Despacho de aparencia <ph name="OFFICE_STYLE" /> cunha tonalidade <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">A medición dos datos provén do teu Chromebook. É posible que non coincidan cos datos do provedor.</translation>
-<translation id="349570724365779960">School Tools está conectado aos estudantes</translation>
 <translation id="3502426834823382181">mostra todas as aplicacións</translation>
 <translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />datos de seguimento de rendemento<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualiz. Chrome OS</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Edición feita</translation>
 <translation id="3532980081107202182">Quedan <ph name="MIN_REMAINING" /> minutos aproximadamente</translation>
 <translation id="3533790840489634638">estanque</translation>
-<translation id="3535802910192338629">A persoa docente engadiu novo contido a School Tools</translation>
 <translation id="3547264467365135390">Fórmula</translation>
 <translation id="3557205324756024651">Identidade local (opcional)</translation>
 <translation id="3565064564551103223">Enderezos IP permitidos</translation>
@@ -1440,7 +1437,6 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="7544853251252956727">Reprodución aleatoria</translation>
 <translation id="7550715992156305117">Rutinas de diagnóstico</translation>
 <translation id="7551123448725492271">O dispositivo é de audio.</translation>
-<translation id="7553913964854052228">School Tools está utilizando o teu micrófono</translation>
 <translation id="7559239713112547082">Mostrar vista previa da captura de pantalla</translation>
 <translation id="7561454561030345039">O teu administrador xestiona esta acción</translation>
 <translation id="7561759921596375678">Activar o volume</translation>
@@ -1663,7 +1659,6 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8576249514688522074">Non iniciada</translation>
 <translation id="8584654835905316966">É necesario reiniciar o dispositivo para completar a instalación da versión <ph name="VERSION" /> do firmware de <ph name="DEVICE_NAME" />. Pode que pareza que o teu ordenador se reinicia varias veces. É algo xa previsto.</translation>
 <translation id="8593058461203131755">pór en pausa o contido multimedia</translation>
-<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Estado de itinerancia</translation>
 <translation id="8626489604350149811">Máis accións para <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Lila</translation>

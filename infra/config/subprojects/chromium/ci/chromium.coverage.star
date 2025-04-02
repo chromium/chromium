@@ -672,6 +672,7 @@ coverage_builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "cronet_android",
             "debug_static_builder",
             "remoteexec",
@@ -739,6 +740,7 @@ coverage_builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
+            "android_with_static_analysis",
             "cronet_android",
             "debug_static_builder",
             "remoteexec",
@@ -1442,7 +1444,16 @@ coverage_builder(
                 "linux_nvidia_gtx_1660_stable",
             ],
             "webgpu_cts_with_validation_tests": targets.remove(
-                reason = "Don't need validation layers on code coverage bots",
+                reason = "Don't need validation layers on code coverage bots.",
+            ),
+            "webgpu_cts_dedicated_worker_tests": [
+                "linux_nvidia_gtx_1660_stable",
+            ],
+            "webgpu_cts_service_worker_tests": targets.remove(
+                reason = "Dedicated worker tests are probably sufficient.",
+            ),
+            "webgpu_cts_shared_worker_tests": targets.remove(
+                reason = "Dedicated worker tests are probably sufficient.",
             ),
         },
     ),
@@ -1643,13 +1654,22 @@ coverage_builder(
                 "win10_nvidia_gtx_1660_stable",
             ],
             "webgpu_blink_web_tests_with_backend_validation": targets.remove(
-                reason = "Remove from bots where capacity is constrained.",
+                reason = "Don't need validation layers on code coverage bots.",
             ),
             "webgpu_cts_tests": [
                 "win10_nvidia_gtx_1660_stable",
             ],
             "webgpu_cts_with_validation_tests": targets.remove(
-                reason = "Don't need validation layers on code coverage bots",
+                reason = "Don't need validation layers on code coverage bots.",
+            ),
+            "webgpu_cts_dedicated_worker_tests": [
+                "win10_nvidia_gtx_1660_stable",
+            ],
+            "webgpu_cts_service_worker_tests": targets.remove(
+                reason = "Dedicated worker tests are probably sufficient.",
+            ),
+            "webgpu_cts_shared_worker_tests": targets.remove(
+                reason = "Dedicated worker tests are probably sufficient.",
             ),
             "webkit_unit_tests": targets.mixin(
                 swarming = targets.swarming(

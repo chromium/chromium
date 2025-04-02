@@ -288,6 +288,7 @@
 <translation id="2164946989711475905">Kirish…</translation>
 <translation id="2175927920773552910">QR kod</translation>
 <translation id="218350106843433823">Parol va kalitlarni avtomatik kiritish</translation>
+<translation id="2184272387334793084">Barcha qurilmalaringizda parollarni olish uchun hisobingizga kiring.</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="219283042927675668">Guruhdagi varaqlar</translation>
 <translation id="2194856509914051091">Bularni hisobga olish kerak</translation>
@@ -440,6 +441,7 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="2783161812871838616">Kompyuter versiyasi</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Parol Google hisobingizga ({EMAIL}) saqlandi}other{Parollar Google hisobingizga ({EMAIL}) saqlandi}}</translation>
 <translation id="2791174088547598693">Parol kiritish…</translation>
+<translation id="2793703503584038325">Parolni tanlab, “ulashish” belgisini bosing</translation>
 <translation id="2797302972324086597">Mamlakat kodi</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} ta fayl}other{{COUNT} ta fayl}}</translation>
 <translation id="2816489851009559785">Menyu → Sozlamalar → Birlamchi brauzer</translation>
@@ -579,6 +581,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="35083190962747987">${url} sahifasini ochish</translation>
 <translation id="3511519535430890904">Brauzer himoyasini qoʻshish</translation>
 <translation id="3517216995152707259">Brauzer maʼlumotlari oʻchirilsa, Google hisobingizdan chiqmaysiz. Buning uchun <ph name="BEGIN_LINK" />Chrome hisobidan chiqing<ph name="END_LINK" />.</translation>
+<translation id="3519792890877853853">Bu kartochkada ochiq varaqlardagi mahsulotlarning sharhlari chiqadi</translation>
 <translation id="3519905498307021260">{count,plural, =1{Varaqni ochish}other{{count} ta varaqni ochish}}</translation>
 <translation id="3523513363815970085">“Top saytlaringiz” panelini berkitish</translation>
 <translation id="3523789730715594198">Sinxronlashni istalgan vaqt sozlamalar orqali toʻxtatish mumkin. Brauzer tarixi asosida Google Qidiruv va boshqa xizmatlarni moslashtirishi mumkin.</translation>
@@ -819,6 +822,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4565377596337484307">Parolni berkitish</translation>
 <translation id="4568230126482344545">Oxirgi varaqlarni berkitish</translation>
 <translation id="4578835633387306383">Yoqish…</translation>
+<translation id="4580716718466706433">Parollar menejerini oching</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4592672037257622855">{count,plural, =1{Saqlangan sahifalarga sahifa kiritildi}other{Saqlangan sahifalarga {count} ta sahifa kiritildi}}</translation>
 <translation id="459644946100970322">Narxga oid bildirishnomalar yoqilsinmi?</translation>
@@ -858,6 +862,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4717844083556844785">Bu sahifa inkognito rejimida ochilgan</translation>
 <translation id="4719927025381752090">Tarjima qilishni taklif qilish</translation>
 <translation id="4720530280568305198">Tanlaganingiz yangi varaqda ochildi</translation>
+<translation id="472259426228234149">Narxi: 100$ - 180$</translation>
 <translation id="473775607612524610">Yangilash</translation>
 <translation id="474209246745757965">Kamera yordamida xaridlar va tarjima</translation>
 <translation id="4742407542027196863">Parollarni boshqarish…</translation>
@@ -1606,6 +1611,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7841180087127694526">Nusxalangan matnni qidirish</translation>
 <translation id="7841418003178675048">Yangi varaq sahifasida chiqadigan bildirgilarni tanlang.</translation>
 <translation id="7846161022626028328">Xatolik yuz berdi. Qayta urining.</translation>
+<translation id="784623644169604270">Hech qanday harakat yoʻq</translation>
 <translation id="7846296061357476882">Google xizmatlari</translation>
 <translation id="784934925303690534">Vaqt diapazoni</translation>
 <translation id="7851858861565204677">Boshqa qurilmalar</translation>

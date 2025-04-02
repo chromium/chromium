@@ -25,6 +25,7 @@
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/extensions/user_script_listener.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
@@ -850,6 +851,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
 // has active tab permission and file URL access.
 IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
                        GetSiteInteractionActiveTabWithFileURL) {
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler;
+
   Init();
   // We need to use a TestExtensionDir here to allow for the reload when giving
   // an extension file URL access.

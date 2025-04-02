@@ -138,9 +138,9 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 
 }  // namespace
 
-@interface SendTabToSelfCoordinator () <UIViewControllerTransitioningDelegate,
-                                        InfobarModalPositioner,
-                                        SendTabToSelfModalDelegate> {
+@interface SendTabToSelfCoordinator () <InfobarModalPositioner,
+                                        SendTabToSelfModalDelegate,
+                                        UIViewControllerTransitioningDelegate> {
   std::unique_ptr<TargetDeviceListWaiter> _targetDeviceListWaiter;
 }
 

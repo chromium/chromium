@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">Sundluba suumimine</translation>
 <translation id="3905475044299942653">Paljude märguannete peatamine</translation>
 <translation id="3908288065506437185">Blokeeri kolmanda osapoole küpsisefailid inkognito režiimis</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Mõned funktsioonid ei pruugi töötada. Seotud saidid saavad siiski kolmanda osapoole küpsisefaile kasutada.</translation>
 <translation id="3922092564198021702">Avage telefonis menüü Seaded</translation>
 <translation id="3933121352599513978">Ahenda soovimatud taotlused (soovitatud)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">Üksikasjad</translation>
 <translation id="4598549027014564149">Inkognito režiimis ei saa saidid küpsisefailide kaudu teie sirvimistegevusi saitidel (isegi seotud saitidel) jälgida. Teie sirvimistegevusi ei kasutata näiteks reklaamide isikupärastamiseks. Funktsioonid ei pruugi mõnel saidil toimida.</translation>
 <translation id="461356340001513807">Logime teid veebisaitidele sisse, kasutades teie identiteedihaldusteenuses olevat kontot</translation>
-<translation id="4619615317237390068">Muudest seadmetest pärinevad vahelehed</translation>
 <translation id="4635969503923889910">Ärge lubage saitidel kasutada NFC-seadmeid</translation>
 <translation id="4644713492825682049">Kustuta ja lähtesta</translation>
 <translation id="4645575059429386691">Vanema hallatud</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">Jagamine:</translation>
 <translation id="5001526427543320409">Kolmanda osapoole küpsisefailid</translation>
 <translation id="5007392906805964215">Vaata üle</translation>
-<translation id="5014182796621173645">Külastasite <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Luba</translation>
 <translation id="5048398596102334565">Luba saitide jaoks juurdepääs liikumisanduritele (soovitatav)</translation>
 <translation id="5048841907079026162">Sirvimisandmete haldamine</translation>
@@ -443,7 +440,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Kaitstud sisu</translation>
 <translation id="662080504995468778">Jää siia</translation>
-<translation id="6653342741369270081">Täisekraanilt väljumiseks vajutage tagasinuppu.</translation>
+<translation id="6635327442719709864">Kui see on sisse lülitatud, saavad saidid küsida jadaportide kasutamist. Kui see on välja lülitatud, ei saa saidid jadaporte kasutada.</translation>
 <translation id="6683865262523156564">See sait on grupis, mis näeb teie tegevusi. Grupi on määratlenud <ph name="RWS_OWNER" />.</translation>
 <translation id="6689172468748959065">Profiilifotod</translation>
 <translation id="6697925417670533197">Aktiivsed allalaadimised</translation>

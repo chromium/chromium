@@ -99,7 +99,7 @@ MessagePortArray ExtendableMessageEvent::ports() const {
   // Avoid copying once we can make sure that the binding layer won't
   // modify the content.
   if (ports_) {
-    return *ports_;
+    return MessagePortArray(*ports_.Get());
   }
   return MessagePortArray();
 }

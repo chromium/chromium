@@ -234,7 +234,6 @@
 <translation id="3895926599014793903">Forçar zoom</translation>
 <translation id="3905475044299942653">Parar muitas notificações</translation>
 <translation id="3908288065506437185">Bloquear cookies de terceiros no modo de navegação anônima</translation>
-<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">É possível que alguns recursos não funcionem. Os sites relacionados ainda podem usar cookies de terceiros.</translation>
 <translation id="3922092564198021702">No smartphone, acesse as Configurações.</translation>
 <translation id="3933121352599513978">Recolher solicitações indesejadas (recomendado)</translation>
@@ -285,7 +284,6 @@
 <translation id="4570913071927164677">Detalhes</translation>
 <translation id="4598549027014564149">Na navegação anônima, os sites não podem usar cookies para conferir sua atividade de navegação, mesmo sites relacionados. Sua atividade de navegação não é usada para ações como a personalização de anúncios. Os recursos de alguns sites podem não funcionar.</translation>
 <translation id="461356340001513807">Permite fazer login em sites usando a conta que você tem com um serviço de identidade</translation>
-<translation id="4619615317237390068">Guias de outros dispositivos</translation>
 <translation id="4635969503923889910">Não permitir que os sites usem dispositivos NFC</translation>
 <translation id="4644713492825682049">Excluir e redefinir</translation>
 <translation id="4645575059429386691">Gerenciado pelos seus pais</translation>
@@ -315,7 +313,6 @@
 <translation id="4996978546172906250">Compartilhar via</translation>
 <translation id="5001526427543320409">Cookies de terceiros</translation>
 <translation id="5007392906805964215">Revisar</translation>
-<translation id="5014182796621173645">Visitado <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5048398596102334565">Permitir o acesso de sites aos seus sensores de movimento (recomendado)</translation>
 <translation id="5048841907079026162">Gerenciar seus dados de navegação</translation>
@@ -443,7 +440,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Conteúdo protegido</translation>
 <translation id="662080504995468778">Ficar</translation>
-<translation id="6653342741369270081">Pressione o botão "Voltar" para sair da tela cheia.</translation>
+<translation id="6635327442719709864">Quando ativada, os sites podem pedir para usar portas seriais. Quando desativada, os sites não podem usar portas seriais.</translation>
 <translation id="6683865262523156564">Este site está em um grupo que pode ver sua atividade. O grupo é definido por <ph name="RWS_OWNER" />.</translation>
 <translation id="6689172468748959065">Fotos do perfil</translation>
 <translation id="6697925417670533197">Downloads ativos</translation>

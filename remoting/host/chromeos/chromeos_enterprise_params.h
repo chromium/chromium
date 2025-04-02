@@ -31,6 +31,8 @@ struct ChromeOsEnterpriseParams {
   bool terminate_upon_input = false;
   bool curtain_local_user_session = false;
   base::TimeDelta maximum_session_duration;
+  bool allow_remote_input = true;
+  bool allow_clipboard_sync = true;
 
   // Remote machine configuration.
   bool show_troubleshooting_tools = false;

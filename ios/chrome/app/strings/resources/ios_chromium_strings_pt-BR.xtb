@@ -91,6 +91,7 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="3054480780637153380">Abra as configurações do Chromium no iOS, toque em "App de navegador padrão" e selecione o Chromium.</translation>
 <translation id="3102849287235003384">Para sair da sua Conta do Google em todos os sites, <ph name="BEGIN_LINK" />saia do Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Definir o Chromium como o navegador padrão?</translation>
+<translation id="3180939591219927904">Ative a opção "Bloquear guias anônimas ao fechar o Chromium"</translation>
 <translation id="3242612358525156339">Nas configurações do dispositivo, abra "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" e selecione "Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{Mostrando agora 1 janela do Chromium}one{Mostrando agora {count} janela do Chromium}other{Mostrando agora {count} janelas do Chromium}}</translation>
 <translation id="3344973607274501920">Não foi possível verificar suas senhas com o Chromium. Verifique sua conexão de Internet.</translation>
@@ -260,6 +261,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Os dados selecionados foram removidos do Chromium e dos dispositivos sincronizados. É possível que sua Conta do Google tenha outras formas de histórico de navegação, como pesquisas e atividades de outros serviços do Google em history.google.com.</translation>
 <translation id="7395825497086981028">A senha será salva no Gerenciador de senhas da conta <ph name="EMAIL" />.</translation>
+<translation id="7504829997542308412">Abra o Chromium</translation>
 <translation id="7531461704633548377">Do Chromium</translation>
 <translation id="7554983317097061001">Dica do Chromium: mova o Chromium para o Dock</translation>
 <translation id="7576863740961052505">Gerenciar configurações do Chromium</translation>

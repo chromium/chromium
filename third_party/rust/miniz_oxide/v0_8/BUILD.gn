@@ -12,20 +12,21 @@ cargo_crate("lib") {
   crate_name = "miniz_oxide"
   epoch = "0.8"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-0.8.5/src/lib.rs"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-v0_8/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-0.8.5/src/deflate/buffer.rs",
-    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-0.8.5/src/deflate/core.rs",
-    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-0.8.5/src/deflate/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-0.8.5/src/deflate/stored.rs",
-    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-0.8.5/src/deflate/stream.rs",
-    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-0.8.5/src/deflate/zlib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-0.8.5/src/inflate/core.rs",
-    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-0.8.5/src/inflate/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-0.8.5/src/inflate/output_buffer.rs",
-    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-0.8.5/src/inflate/stream.rs",
-    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-0.8.5/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-0.8.5/src/shared.rs",
+    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-v0_8/src/deflate/buffer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-v0_8/src/deflate/core.rs",
+    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-v0_8/src/deflate/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-v0_8/src/deflate/stored.rs",
+    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-v0_8/src/deflate/stream.rs",
+    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-v0_8/src/deflate/zlib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-v0_8/src/inflate/core.rs",
+    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-v0_8/src/inflate/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-v0_8/src/inflate/output_buffer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-v0_8/src/inflate/stream.rs",
+    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-v0_8/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-v0_8/src/shared.rs",
   ]
   inputs = []
 

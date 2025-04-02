@@ -48,7 +48,7 @@ class ExtensionActionIconFactory : public IconImage::Observer {
   // Gets the extension action icon for the tab.
   // If there is an icon set using |SetIcon|, that icon is returned.
   // Else, if there is a default icon set for the extension action, the icon is
-  // created using IconImage. Observer is triggered wheniever the icon gets
+  // created using IconImage. Observer is triggered whenever the icon gets
   // updated.
   // Else, the extension's placeholder icon is returned.
   // In all cases, action's attention and animation icon transformations are

@@ -81,7 +81,7 @@ class InspectorCSSAgentTest : public PageTestBase {
     const CSSValue* value = css_test_helpers::ParseValue(
         *document, "<length-percentage>", value_str);
     return InspectorCSSAgent::ResolvePercentagesValues(element, property_name,
-                                                       value);
+                                                       value, value_str);
   }
 };
 
@@ -536,10 +536,10 @@ TEST_F(InspectorCSSAgentTest, ResolvePercentagesDisplayTable) {
 
   EXPECT_EQ(
       InspectorResolvePercentageValues(element, CSSPropertyID::kWidth, value),
-      g_empty_string);
+      value);
   EXPECT_EQ(
       InspectorResolvePercentageValues(element, CSSPropertyID::kHeight, value),
-      g_empty_string);
+      value);
 }
 
 }  // namespace blink

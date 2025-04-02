@@ -7,9 +7,11 @@ package org.chromium.chrome.modules.readaloud;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
+import java.util.Locale;
 
 /** Encapsulates information about the playback being requested. */
 public class PlaybackArgs {
@@ -51,6 +53,11 @@ public class PlaybackArgs {
                 }
             }
             throw new IllegalArgumentException("Unknown value: " + value);
+        }
+
+        @Override
+        public String toString() {
+            return String.format(Locale.US, "%s (%d)", this.name(), this.getValue());
         }
     }
 
@@ -343,6 +350,9 @@ public class PlaybackArgs {
                 + "\t}\n"
                 + "\tdateModifiedMs="
                 + mDateModifiedMsSinceEpoch
+                + "\n"
+                + "\tplaybackMode="
+                + mPlaybackMode
                 + "\n"
                 + "}";
     }

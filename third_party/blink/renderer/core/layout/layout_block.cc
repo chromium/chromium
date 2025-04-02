@@ -548,8 +548,9 @@ PositionWithAffinity LayoutBlock::PositionForPointIfOutsideAtomicInlineLevel(
   NOT_DESTROYED();
   DCHECK(IsAtomicInlineLevel());
   LogicalOffset logical_offset =
-      point.ConvertToLogical({StyleRef().GetWritingMode(), ResolvedDirection()},
-                             PhysicalSize(Size()), PhysicalSize());
+      WritingModeConverter({StyleRef().GetWritingMode(), ResolvedDirection()},
+                           Size())
+          .ToLogical(point, PhysicalSize());
   if (logical_offset.inline_offset < 0)
     return FirstPositionInOrBeforeThis();
   if (logical_offset.inline_offset >= LogicalWidth())

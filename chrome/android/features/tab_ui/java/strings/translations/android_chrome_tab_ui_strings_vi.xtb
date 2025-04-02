@@ -19,6 +19,7 @@ Nếu bạn xoá, mọi người sẽ lập tức mất quyền truy cập vào 
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Tạo <ph name="NUM_MINS_ONE" /> phút trước}other{Tạo <ph name="NUM_MINS_MANY" /> phút trước}}</translation>
 <translation id="1499635324672558517">Đóng tất cả thẻ ẩn danh?</translation>
 <translation id="1501480321619201731">Xóa nhóm</translation>
+<translation id="1505526451013346974">Thêm vào <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1555130319947370107">Xanh lam</translation>
 <translation id="161042844686301425">Lục lam</translation>
 <translation id="1645759014353344461">Đã nhóm <ph name="TABS_COUNT_MANY" /> thẻ</translation>
@@ -213,6 +214,7 @@ Nếu bạn xoá, mọi người sẽ lập tức mất quyền truy cập vào 
 <translation id="8820741577754260431">Xem các mặt hàng giảm giá trong thẻ của bạn</translation>
 <translation id="8887921976452567404">Bạn có thể mở lại các thẻ và nhóm đã đóng trong phần Các thẻ gần đây và phần Nhóm thẻ.</translation>
 <translation id="8915916167043355778">Đóng tất cả</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Chuyển sang cửa sổ mới}other{Chuyển sang cửa sổ khác}}</translation>
 <translation id="9090098097337832354">Thông tin về cửa hàng này đã đóng</translation>
 <translation id="9114502155681725011">Mở trình đơn thao tác đối với nhóm thẻ cho nhóm thẻ <ph name="TITLE_OF_GROUP" />, màu <ph name="COLOR_NAME" /></translation>
 <translation id="9169141410816678175">Mọi người sẽ mất ngay quyền truy cập vào nhóm thẻ "<ph name="GROUP_NAME" />" và nhóm thẻ này sẽ bị xoá khỏi mọi thiết bị</translation>

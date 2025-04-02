@@ -35,6 +35,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -44,9 +45,11 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.ui.test.util.RenderTestRule.Component;
+import org.chromium.url.GURL;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -180,6 +183,9 @@ public class TouchToFillPaymentMethodRenderTest {
                     VISA.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
                     /* secondarySubLabel= */ "",
                     /* labelContentDescription= */ "",
+                    /* suggestionType= */ SuggestionType.CREDIT_CARD_ENTRY,
+                    /* customIconUrl= */ new GURL(""),
+                    VISA.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
                     /* shouldDisplayTermsAvailable= */ false);
     private static final AutofillSuggestion VISA_SUGGESTION_WITH_CARD_BENEFITS =
@@ -189,6 +195,9 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* subLabel= */ "2% cashback on travel",
                     VISA.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
                     /* labelContentDescription= */ "",
+                    /* suggestionType= */ SuggestionType.CREDIT_CARD_ENTRY,
+                    /* customIconUrl= */ new GURL("http://www.example.com"),
+                    VISA.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
                     /* shouldDisplayTermsAvailable= */ true);
     private static final AutofillSuggestion MASTERCARD_SUGGESTION =
@@ -198,6 +207,9 @@ public class TouchToFillPaymentMethodRenderTest {
                     MASTERCARD.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
                     /* secondarySubLabel= */ "",
                     /* labelContentDescription= */ "",
+                    /* suggestionType= */ SuggestionType.CREDIT_CARD_ENTRY,
+                    /* customIconUrl= */ new GURL("http://www.example.com"),
+                    MASTERCARD.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
                     /* shouldDisplayTermsAvailable= */ false);
     private static final AutofillSuggestion SERVER_MASTERCARD_SUGGESTION =
@@ -208,6 +220,9 @@ public class TouchToFillPaymentMethodRenderTest {
                             ContextUtils.getApplicationContext()),
                     /* secondarySubLabel= */ "",
                     /* labelContentDescription= */ "",
+                    /* suggestionType= */ SuggestionType.CREDIT_CARD_ENTRY,
+                    /* customIconUrl= */ new GURL("http://www.example.com"),
+                    SERVER_MASTERCARD.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
                     /* shouldDisplayTermsAvailable= */ false);
     private static final AutofillSuggestion DISCOVER_SUGGESTION =
@@ -217,6 +232,9 @@ public class TouchToFillPaymentMethodRenderTest {
                     DISCOVER.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
                     /* secondarySubLabel= */ "",
                     /* labelContentDescription= */ "",
+                    /* suggestionType= */ SuggestionType.CREDIT_CARD_ENTRY,
+                    /* customIconUrl= */ new GURL("http://www.example.com"),
+                    DISCOVER.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
                     /* shouldDisplayTermsAvailable= */ false);
     private static final AutofillSuggestion AMERICAN_EXPRESS_SUGGESTION =
@@ -227,6 +245,9 @@ public class TouchToFillPaymentMethodRenderTest {
                             ContextUtils.getApplicationContext()),
                     /* secondarySubLabel= */ "",
                     /* labelContentDescription= */ "",
+                    /* suggestionType= */ SuggestionType.CREDIT_CARD_ENTRY,
+                    /* customIconUrl= */ new GURL("http://www.example.com"),
+                    AMERICAN_EXPRESS.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
                     /* shouldDisplayTermsAvailable= */ false);
     private static final AutofillSuggestion ACCEPTABLE_MASTERCARD_VIRTUAL_CARD_SUGGESTION =
@@ -236,6 +257,9 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* subLabel= */ "Virtual card",
                     /* secondarySubLabel= */ "",
                     /* labelContentDescription= */ "",
+                    /* suggestionType= */ SuggestionType.VIRTUAL_CREDIT_CARD_ENTRY,
+                    /* customIconUrl= */ new GURL(AutofillUiUtils.CAPITAL_ONE_ICON_URL),
+                    MASTERCARD_VIRTUAL_CARD.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
                     /* shouldDisplayTermsAvailable= */ false);
     private static final AutofillSuggestion NON_ACCEPTABLE_MASTERCARD_VIRTUAL_CARD_SUGGESTION =
@@ -245,6 +269,9 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* subLabel= */ "Merchant doesn't accept this virtual card",
                     /* secondarySubLabel= */ "",
                     /* labelContentDescription= */ "",
+                    /* suggestionType= */ SuggestionType.VIRTUAL_CREDIT_CARD_ENTRY,
+                    /* customIconUrl= */ new GURL("http://www.example.com"),
+                    MASTERCARD_VIRTUAL_CARD.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ true,
                     /* shouldDisplayTermsAvailable= */ false);
     private static final AutofillSuggestion MASTERCARD_VIRTUAL_CARD_SUGGESTION_WITH_CARD_BENEFITS =
@@ -254,6 +281,9 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* subLabel= */ "2% cashback on travel",
                     /* secondarySubLabel= */ "Virtual card",
                     /* labelContentDescription= */ "",
+                    /* suggestionType= */ SuggestionType.VIRTUAL_CREDIT_CARD_ENTRY,
+                    /* customIconUrl= */ new GURL("http://www.example.com"),
+                    MASTERCARD_VIRTUAL_CARD.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
                     /* shouldDisplayTermsAvailable= */ true);
     private static final AutofillSuggestion LONG_CARD_NAME_CARD_SUGGESTION =
@@ -264,6 +294,9 @@ public class TouchToFillPaymentMethodRenderTest {
                             ContextUtils.getApplicationContext()),
                     /* secondarySubLabel= */ "",
                     /* labelContentDescription= */ "",
+                    /* suggestionType= */ SuggestionType.CREDIT_CARD_ENTRY,
+                    /* customIconUrl= */ new GURL("http://www.example.com"),
+                    LONG_CARD_NAME_CARD.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
                     /* shouldDisplayTermsAvailable= */ false);
 

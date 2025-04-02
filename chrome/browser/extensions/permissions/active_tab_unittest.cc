@@ -31,6 +31,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -87,14 +88,15 @@ class ActiveTabTest : public ChromeRenderViewHostTestHarness {
 
     // We need to add extensions to the ExtensionService; else trying to commit
     // any of their URLs fails and redirects to about:blank.
-    ExtensionService* service =
-        static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()))
-            ->CreateExtensionService(base::CommandLine::ForCurrentProcess(),
-                                     base::FilePath(), false);
-    service->AddExtension(extension.get());
-    service->AddExtension(another_extension.get());
-    service->AddExtension(extension_without_active_tab.get());
-    service->AddExtension(extension_with_tab_capture.get());
+    static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()))
+        ->CreateExtensionService(base::CommandLine::ForCurrentProcess(),
+                                 base::FilePath(), false);
+    ExtensionRegistrar::Get(profile())->AddExtension(extension);
+    ExtensionRegistrar::Get(profile())->AddExtension(another_extension);
+    ExtensionRegistrar::Get(profile())->AddExtension(
+        extension_without_active_tab);
+    ExtensionRegistrar::Get(profile())->AddExtension(
+        extension_with_tab_capture);
   }
 
   int tab_id() {

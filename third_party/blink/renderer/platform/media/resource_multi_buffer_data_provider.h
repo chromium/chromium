@@ -130,6 +130,8 @@ class PLATFORM_EXPORT ResourceMultiBufferDataProvider
 
   bool invalidated_ = false;
 
+  size_t total_bytes_received_ = 0;
+
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   base::WeakPtrFactory<ResourceMultiBufferDataProvider> weak_factory_{this};

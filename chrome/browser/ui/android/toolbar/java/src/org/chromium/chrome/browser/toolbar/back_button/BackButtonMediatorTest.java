@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.toolbar.back_button;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -47,7 +49,7 @@ public class BackButtonMediatorTest {
     private BackButtonMediator mMediator;
 
     // test properties
-    private Tab mTab;
+    private MockTab mTab;
 
     @Before
     public void setup() {
@@ -66,6 +68,24 @@ public class BackButtonMediatorTest {
                         mShowNavigationPopup);
 
         shadowOf(Looper.getMainLooper()).idle();
+    }
+
+    private static void verifyEnabled(final PropertyModel model) {
+        assertTrue(
+                "Button is disabled, but should be enabled.",
+                model.get(BackButtonProperties.IS_ENABLED));
+        assertTrue(
+                "Button is not focusable, but should be focusable.",
+                model.get(BackButtonProperties.IS_FOCUSABLE));
+    }
+
+    private static void verifyDisabled(final PropertyModel model) {
+        assertFalse(
+                "Button is enabled, but should be disabled.",
+                model.get(BackButtonProperties.IS_ENABLED));
+        assertFalse(
+                "Button is focusable, but should be not focusable.",
+                model.get(BackButtonProperties.IS_FOCUSABLE));
     }
 
     @Test
@@ -142,5 +162,103 @@ public class BackButtonMediatorTest {
 
         mModel.get(BackButtonProperties.LONG_CLICK_LISTENER).run();
         verify(mShowNavigationPopup).onResult(mTab);
+    }
+
+    @Test
+    public void testNewTabWithNoHistory_shouldKeepButtonDisabled() {
+        mTab.setCanGoBack(false);
+        mTabSupplier.set(mTab);
+
+        verifyDisabled(mModel);
+    }
+
+    @Test
+    public void testNewTabWithHistory_shouldEnableButton() {
+        mTab.setCanGoBack(false);
+        mTabSupplier.set(mTab);
+
+        verifyDisabled(mModel);
+    }
+
+    @Test
+    public void testLoadingStartedCanGoBack_shouldEnableButton() {
+        mTab.setCanGoBack(true);
+        mTabSupplier.set(mTab);
+
+        mMediator.getTabObserver().onLoadStarted(mTab, /* toDifferentDocument= */ false);
+        verifyEnabled(mModel);
+    }
+
+    @Test
+    public void testLoadingStartedCantGoBack_shouldDisableButton() {
+        mTab.setCanGoBack(false);
+        mTabSupplier.set(mTab);
+
+        mMediator.getTabObserver().onLoadStarted(mTab, /* toDifferentDocument= */ false);
+        verifyDisabled(mModel);
+    }
+
+    @Test
+    public void testLoadingStoppedCanGoBack_shouldEnableButton() {
+        mTab.setCanGoBack(true);
+        mTabSupplier.set(mTab);
+
+        mMediator.getTabObserver().onLoadStopped(mTab, /* toDifferentDocument= */ false);
+        verifyEnabled(mModel);
+    }
+
+    @Test
+    public void testLoadingStoppedCantGoBack_shouldDisableButton() {
+        mTab.setCanGoBack(false);
+        mTabSupplier.set(mTab);
+
+        mMediator.getTabObserver().onLoadStopped(mTab, /* toDifferentDocument= */ false);
+        verifyDisabled(mModel);
+    }
+
+    @Test
+    public void testHistoryDeleted_shouldDisableButton() {
+        mTab.setCanGoBack(false);
+        mTabSupplier.set(mTab);
+
+        mMediator.getTabObserver().onNavigationEntriesDeleted(mTab);
+        verifyDisabled(mModel);
+    }
+
+    @Test
+    public void testUrlUpdatedCanGoBack_shouldEnableButton() {
+        mTab.setCanGoBack(true);
+        mTabSupplier.set(mTab);
+
+        mMediator.getTabObserver().onUrlUpdated(mTab);
+        verifyEnabled(mModel);
+    }
+
+    @Test
+    public void testUrlUpdatedCantGoBack_shouldDisableButton() {
+        mTab.setCanGoBack(false);
+        mTabSupplier.set(mTab);
+
+        mMediator.getTabObserver().onUrlUpdated(mTab);
+        verifyDisabled(mModel);
+    }
+
+    @Test
+    public void testEnterExitTabSwitcherMode_shouldDisableButton() {
+        mTab.setCanGoBack(true);
+        mTabSupplier.set(mTab);
+
+        mMediator.setTabSwitcherMode(true);
+        verifyDisabled(mModel);
+    }
+
+    @Test
+    public void testExitedTabSwitcherMode_shouldEnableButton() {
+        mTab.setCanGoBack(true);
+        mTabSupplier.set(mTab);
+        mMediator.setTabSwitcherMode(true);
+
+        mMediator.setTabSwitcherMode(false);
+        verifyEnabled(mModel);
     }
 }

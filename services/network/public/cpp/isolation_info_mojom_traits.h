@@ -7,10 +7,8 @@
 
 #include <optional>
 
-#include "base/feature_list.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/network_isolation_partition.h"
 #include "net/cookies/site_for_cookies.h"
