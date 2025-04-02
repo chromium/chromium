@@ -109,9 +109,6 @@ class PLATFORM_EXPORT CanvasResource
     return viz::ReleaseCallback();
   }
 
-  virtual void OnReturnedFromCompositor(
-      scoped_refptr<CanvasResource>&& resource) {}
-
   virtual void SetVizReleaseCallback(viz::ReleaseCallback cb) {
     CHECK(cb.is_null());
   }
@@ -255,7 +252,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   bool CreatesAcceleratedTransferableResources() const override {
     return !GetClientSharedImage()->is_software();
   }
-  void OnReturnedFromCompositor(scoped_refptr<CanvasResource>&& resource) final;
   bool IsValid() const final;
   scoped_refptr<StaticBitmapImage> Bitmap() final;
   void Transfer() final;
