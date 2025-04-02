@@ -188,7 +188,6 @@ if (!is_android) {
     sources = [
       "card_unmask_prompt_view_browsertest.cc",
       "chrome_payments_autofill_client_browsertest.cc",
-      "save_card_bubble_controller_impl_browsertest.cc",
     ]
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -311,7 +310,10 @@ if (!is_android && !is_chromeos_device) {
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "desktop_payments_window_manager_interactive_uitest.cc" ]
+    sources = [
+      "desktop_payments_window_manager_interactive_uitest.cc",
+      "save_card_bubble_controller_impl_interactive_uitest.cc",
+    ]
 
     public_deps = [
       ":payments",
