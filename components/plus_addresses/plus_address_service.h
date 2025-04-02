@@ -12,7 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/observer_list_types.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
-#include "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/common/plus_address_survey_type.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/plus_addresses/plus_address_types.h"

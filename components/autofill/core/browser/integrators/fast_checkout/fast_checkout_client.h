@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_FAST_CHECKOUT_CLIENT_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_FAST_CHECKOUT_CLIENT_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_FAST_CHECKOUT_FAST_CHECKOUT_CLIENT_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_FAST_CHECKOUT_FAST_CHECKOUT_CLIENT_H_
 
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/integrators/fast_checkout_enums.h"
+#include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_enums.h"
 
 class GURL;
 
@@ -56,4 +56,4 @@ class FastCheckoutClient {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_FAST_CHECKOUT_CLIENT_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_FAST_CHECKOUT_FAST_CHECKOUT_CLIENT_H_
