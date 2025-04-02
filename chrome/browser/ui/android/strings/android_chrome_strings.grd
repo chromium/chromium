@@ -4739,16 +4739,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCOUNT_BOOKMARKS_SECTION_HEADER" desc="The section header of account top-level bookmark folders.">
         In your Google Account
       </message>
-      <message name="IDS_LOCAL_BOOKMARK_MOVE_SNACKBAR_MESSAGE" desc="The snackbar message shown when a bookmark is moved to a local folder.">
-        {BOOKMARK_COUNT, plural,
-          =1 {Bookmark saved to "<ph name="FOLDER_NAME">%1$s<ex>Mobile bookmarks</ex></ph>". It is only saved to this device.}
-          other {Bookmarks saved to "<ph name="FOLDER_NAME">%1$s<ex>Mobile bookmarks</ex></ph>". It is only saved to this device.}}
-      </message>
-      <message name="IDS_ACCOUNT_BOOKMARK_MOVE_SNACKBAR_MESSAGE" desc="The snackbar message shown when a bookmark is moved to an account folder.">
-        {BOOKMARK_COUNT, plural,
-          =1 {Bookmark saved to "<ph name="FOLDER_NAME">%1$s<ex>Mobile bookmarks</ex></ph>" in your account, <ph name="ACCOUNT_EMAIL">%2$s<ex>example@gmail.com</ex></ph>.}
-          other {Bookmarks saved to "<ph name="FOLDER_NAME">%1$s<ex>Mobile bookmarks</ex></ph>" in your account, <ph name="ACCOUNT_EMAIL">%2$s<ex>example@gmail.com</ex></ph>.}}
-      </message>
 
 
       <!-- Power bookmarks strings-->
