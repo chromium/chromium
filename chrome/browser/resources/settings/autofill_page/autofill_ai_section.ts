@@ -189,15 +189,6 @@ export class SettingsAutofillAiSectionElement extends
   }
 
   /**
-   * @returns the accessibility title for the "More Actions button"
-   *     corresponding to the entity instance which is described by `label` and
-   *     `sublabel`.
-   */
-  private getMoreButtonTitle_(label: string, subLabel: string) {
-    return this.i18n('autofillAiMoreActionsForEntityInstance', label, subLabel);
-  }
-
-  /**
    * Open the action menu.
    */
   private onMoreButtonClick_(e: DomRepeatEvent<EntityInstanceWithLabels>) {
