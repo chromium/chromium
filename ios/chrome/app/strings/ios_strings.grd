@@ -2178,6 +2178,15 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_EDIT_PASSWORD_DESCRIPTION" desc="Message inside confirmation alert when the user is trying to edit password [iOS only]" meaning="Telling user to ensure provided password matches password on the website.">
         Make sure the password you are saving matches your password for <ph name="WEBSITE">$1<ex>twitter.com</ex></ph>
       </message>
+      <message name="IDS_IOS_ENHANCED_CALENDAR_BOTTOM_SHEET_CANCEL_BUTTON" translateable="false" desc="The title for the enhanced calendar page of the AI prototyping menu [Length: unlimited].">
+        Cancel
+      </message>
+      <message name="IDS_IOS_ENHANCED_CALENDAR_BOTTOM_SHEET_SUBTITLE" translateable="false" desc="The subtitle for the Enhanced Calendar bottom sheet.">
+        Hang tight while we use AI to supercharge your calendar event using the web page's context.
+      </message>
+      <message name="IDS_IOS_ENHANCED_CALENDAR_BOTTOM_SHEET_TITLE" translateable="false" desc="The title for the Enhanced Calendar bottom sheet.">
+        Enhanced Calendar
+      </message>
       <message name="IDS_IOS_ENHANCED_SAFE_BROWSING_PROMO_INSTRUCTIONS_STEP2" desc="Step 2 of instructions telling the user how to enable Enhanced Safe Browsing.">
         Tap "Privacy and Security" and then "Safe Browsing"
       </message>

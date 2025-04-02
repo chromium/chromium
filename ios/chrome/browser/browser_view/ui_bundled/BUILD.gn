@@ -131,6 +131,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/incognito_reauth/ui_bundled:ui",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/ui_bundled:public",
+    "//ios/chrome/browser/intelligence/enhanced_calendar/coordinator",
     "//ios/chrome/browser/intents/model:model_donation_helper",
     "//ios/chrome/browser/itunes_urls/model",
     "//ios/chrome/browser/keyboard/ui_bundled",

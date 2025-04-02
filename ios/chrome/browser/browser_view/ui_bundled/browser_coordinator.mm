@@ -117,6 +117,7 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_coordinator.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
@@ -197,6 +198,7 @@
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/country_code_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
+#import "ios/chrome/browser/shared/public/commands/enhanced_calendar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/feed_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
@@ -328,6 +330,7 @@ enum class ToolbarKind {
     DefaultBrowserGenericPromoCommands,
     DefaultPromoNonModalPresentationDelegate,
     DriveFilePickerCommands,
+    EnhancedCalendarCommands,
     EditMenuBuilder,
     EnterprisePromptCoordinatorDelegate,
     FormInputAccessoryCoordinatorNavigator,
@@ -649,6 +652,9 @@ enum class ToolbarKind {
   LensPromoCoordinator* _lensPromoCoordinator;
   EnhancedSafeBrowsingPromoCoordinator* _enhancedSafeBrowsingPromoCoordinator;
   AutoDeletionCoordinator* _autoDeletionCoordinator;
+
+  // The coordinator for the Enhanced Calendar feature UI (bottom sheet).
+  EnhancedCalendarCoordinator* _enhancedCalendarCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -1047,6 +1053,7 @@ enum class ToolbarKind {
     @protocol(ContextualSheetCommands),
     @protocol(DefaultBrowserPromoNonModalCommands),
     @protocol(DriveFilePickerCommands),
+    @protocol(EnhancedCalendarCommands),
     @protocol(FeedCommands),
     @protocol(PromosManagerCommands),
     @protocol(FindInPageCommands),
@@ -1637,6 +1644,9 @@ enum class ToolbarKind {
 
   [_quickDeleteCoordinator stop];
   _quickDeleteCoordinator = nil;
+
+  [_enhancedCalendarCoordinator stop];
+  _enhancedCalendarCoordinator = nil;
 
   [self hideDriveFilePicker];
   [self hideContextualSheet];
@@ -2524,6 +2534,22 @@ enum class ToolbarKind {
 - (void)setDriveFilePickerSelectedIdentity:
     (id<SystemIdentity>)selectedIdentity {
   [_driveFilePickerCoordinator setSelectedIdentity:selectedIdentity];
+}
+
+#pragma mark - EnhancedCalendarCommands
+
+- (void)showEnhancedCalendarBottomSheetWithIntegrationProvider:
+    (ios::provider::AddToCalendarIntegrationProvider)integrationProvider {
+  _enhancedCalendarCoordinator = [[EnhancedCalendarCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+             integrationProvider:integrationProvider];
+  [_enhancedCalendarCoordinator start];
+}
+
+- (void)hideEnhancedCalendarBottomSheet {
+  [_enhancedCalendarCoordinator stop];
+  _enhancedCalendarCoordinator = nil;
 }
 
 #pragma mark - FeedCommands
