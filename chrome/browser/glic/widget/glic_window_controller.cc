@@ -775,6 +775,9 @@ void GlicWindowController::OpenDetached(Browser* browser) {
   // There is no open detached animation so wait for glic to load to continue
   // opening.
   SetWindowState(State::kWaitingForGlicToLoad);
+
+  // This is needed in case of theme difference between OS and chrome.
+  GetGlicWidget()->ThemeChanged();
 }
 
 // This happens after the web client is initialized. It signals the web client
