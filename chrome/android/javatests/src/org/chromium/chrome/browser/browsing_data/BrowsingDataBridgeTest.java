@@ -27,7 +27,6 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,8 +56,8 @@ import org.chromium.chrome.browser.webapps.TestFetchStorageCallback;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
 import org.chromium.content_public.browser.NavigationController;
@@ -81,13 +80,9 @@ public class BrowsingDataBridgeTest {
     private static final String TEST_FILE_PATH_1 = "/chrome/test/data/browsing_data/a.html";
     private static final String TEST_FILE_PATH_2 = "/chrome/test/data/browsing_data/b.html";
 
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -110,7 +105,7 @@ public class BrowsingDataBridgeTest {
     public void setUp() throws Exception {
         mCallbackHelper = new CallbackHelper();
         mListener = mCallbackHelper::notifyCalled;
-        mTestServer = sActivityTestRule.getTestServer();
+        mTestServer = mActivityTestRule.getTestServer();
         mActionTester = new UserActionTester();
     }
 
@@ -304,14 +299,14 @@ public class BrowsingDataBridgeTest {
         final String url2 = mTestServer.getURL(TEST_FILE_PATH_2);
 
         // Navigate to url1 and url2, close and recreate as frozen tab.
-        Tab tab = sActivityTestRule.loadUrlInNewTab(url1);
-        sActivityTestRule.loadUrl(url2);
+        Tab tab = mActivityTestRule.loadUrlInNewTab(url1);
+        mActivityTestRule.loadUrl(url2);
         Tab[] frozen = new Tab[1];
         WebContents[] restored = new WebContents[1];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabState state = TabStateExtractor.from(tab);
-                    sActivityTestRule
+                    mActivityTestRule
                             .getActivity()
                             .getCurrentTabModel()
                             .getTabRemover()
@@ -319,7 +314,7 @@ public class BrowsingDataBridgeTest {
                                     TabClosureParams.closeTab(tab).allowUndo(false).build(),
                                     /* allowDialog= */ false);
                     frozen[0] =
-                            sActivityTestRule
+                            mActivityTestRule
                                     .getActivity()
                                     .getCurrentTabCreator()
                                     .createFrozenTab(state, tab.getId(), 1);
@@ -370,7 +365,7 @@ public class BrowsingDataBridgeTest {
     public void testInitialNavigationEntryNotPersisted() throws Exception {
         TestWebServer webServer = TestWebServer.start();
         final String noContentUrl = webServer.setResponseWithNoContentStatus("/nocontent.html");
-        Tab tab = sActivityTestRule.loadUrlInNewTab(noContentUrl);
+        Tab tab = mActivityTestRule.loadUrlInNewTab(noContentUrl);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertNull(
@@ -387,8 +382,8 @@ public class BrowsingDataBridgeTest {
         final String url2 = mTestServer.getURL(TEST_FILE_PATH_2);
 
         // Navigate to url1 and url2.
-        Tab tab = sActivityTestRule.loadUrlInNewTab(url1);
-        sActivityTestRule.loadUrl(url2);
+        Tab tab = mActivityTestRule.loadUrlInNewTab(url1);
+        mActivityTestRule.loadUrl(url2);
         NavigationController controller = tab.getWebContents().getNavigationController();
         assertTrue(tab.canGoBack());
         assertEquals(1, controller.getLastCommittedEntryIndex());
@@ -492,7 +487,7 @@ public class BrowsingDataBridgeTest {
 
         final String url = mTestServer.getURL(TEST_FILE_PATH_1);
 
-        final ChromeTabbedActivity firstActivity = sActivityTestRule.getActivity();
+        final ChromeTabbedActivity firstActivity = mActivityTestRule.getActivity();
         final ChromeTabbedActivity secondActivity =
                 MultiWindowTestHelper.createSecondChromeTabbedActivity(firstActivity);
 
