@@ -11,6 +11,7 @@
 #include "content/browser/service_worker/embedded_worker_instance.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/allow_service_worker_result.h"
+#include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_client.h"
@@ -984,14 +985,6 @@ class CookieObserver : public WebContentsObserver {
   base::test::TestFuture<CookieAccessDetails> future_;
 };
 
-MATCHER_P(HasUrl, matcher, "") {
-  return ExplainMatchResult(matcher, arg.url, result_listener);
-}
-
-MATCHER_P(HasSource, matcher, "") {
-  return ExplainMatchResult(matcher, arg.source, result_listener);
-}
-
 }  // namespace
 
 // Tests for the CookieAccessDetails::source reported by
@@ -1016,10 +1009,9 @@ IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, NavigationCookie) {
                           CookieAccessDetails::Type::kChange);
   ASSERT_TRUE(NavigateToURL(web_contents(), url));
   ASSERT_TRUE(observer.Wait());
-  ASSERT_THAT(
-      observer.details(),
-      testing::AllOf(HasUrl(url),
-                     HasSource(CookieAccessDetails::Source::kNavigation)));
+  EXPECT_EQ(observer.details().url, url);
+  EXPECT_EQ(observer.details().source,
+            CookieAccessDetails::Source::kNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, IframeNavigationCookie) {
@@ -1034,10 +1026,9 @@ IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, IframeNavigationCookie) {
   ASSERT_TRUE(NavigateIframeToURL(web_contents(), "test_iframe", iframe_url));
   ASSERT_TRUE(observer.Wait());
 
-  ASSERT_THAT(
-      observer.details(),
-      testing::AllOf(HasUrl(iframe_url),
-                     HasSource(CookieAccessDetails::Source::kNavigation)));
+  EXPECT_EQ(observer.details().url, iframe_url);
+  EXPECT_EQ(observer.details().source,
+            CookieAccessDetails::Source::kNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, NestedIframeNavigationCookie) {
@@ -1057,10 +1048,9 @@ IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, NestedIframeNavigationCookie) {
       ChildFrameAt(ChildFrameAt(web_contents(), 0), 0), inner_iframe_url));
   ASSERT_TRUE(observer.Wait());
 
-  ASSERT_THAT(
-      observer.details(),
-      testing::AllOf(HasUrl(inner_iframe_url),
-                     HasSource(CookieAccessDetails::Source::kNavigation)));
+  EXPECT_EQ(observer.details().url, inner_iframe_url);
+  EXPECT_EQ(observer.details().source,
+            CookieAccessDetails::Source::kNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, JavaScriptCookie) {
@@ -1072,10 +1062,9 @@ IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, JavaScriptCookie) {
   ASSERT_TRUE(ExecJs(web_contents(), "document.cookie = 'foo=bar';"));
   ASSERT_TRUE(observer.Wait());
 
-  ASSERT_THAT(
-      observer.details(),
-      testing::AllOf(HasUrl(url),
-                     HasSource(CookieAccessDetails::Source::kNonNavigation)));
+  EXPECT_EQ(observer.details().url, url);
+  EXPECT_EQ(observer.details().source,
+            CookieAccessDetails::Source::kNonNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, IframeJavaScriptCookie) {
@@ -1092,10 +1081,9 @@ IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, IframeJavaScriptCookie) {
                      "document.cookie = 'foo=bar;Secure;SameSite=None';"));
   ASSERT_TRUE(observer.Wait());
 
-  ASSERT_THAT(
-      observer.details(),
-      testing::AllOf(HasUrl(iframe_url),
-                     HasSource(CookieAccessDetails::Source::kNonNavigation)));
+  EXPECT_EQ(observer.details().url, iframe_url);
+  EXPECT_EQ(observer.details().source,
+            CookieAccessDetails::Source::kNonNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, SubresourceRequestCookie) {
@@ -1114,10 +1102,9 @@ IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, SubresourceRequestCookie) {
                                                img_url)));
   ASSERT_TRUE(observer.Wait());
 
-  ASSERT_THAT(
-      observer.details(),
-      testing::AllOf(HasUrl(img_url),
-                     HasSource(CookieAccessDetails::Source::kNonNavigation)));
+  EXPECT_EQ(observer.details().url, img_url);
+  EXPECT_EQ(observer.details().source,
+            CookieAccessDetails::Source::kNonNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, PrefetchCookie) {
@@ -1140,10 +1127,9 @@ IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, PrefetchCookie) {
                                                prefetch_url)));
   ASSERT_TRUE(observer.Wait());
 
-  ASSERT_THAT(
-      observer.details(),
-      testing::AllOf(HasUrl(prefetch_url),
-                     HasSource(CookieAccessDetails::Source::kNonNavigation)));
+  EXPECT_EQ(observer.details().url, prefetch_url);
+  EXPECT_EQ(observer.details().source,
+            CookieAccessDetails::Source::kNonNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, CookieStoreApi) {
@@ -1155,10 +1141,9 @@ IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, CookieStoreApi) {
   ASSERT_TRUE(ExecJs(web_contents(), "cookieStore.set('foo', 'bar')"));
   ASSERT_TRUE(observer.Wait());
 
-  ASSERT_THAT(
-      observer.details(),
-      testing::AllOf(HasUrl(url),
-                     HasSource(CookieAccessDetails::Source::kNonNavigation)));
+  EXPECT_EQ(observer.details().url, url);
+  EXPECT_EQ(observer.details().source,
+            CookieAccessDetails::Source::kNonNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, Fetch) {
@@ -1172,10 +1157,9 @@ IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, Fetch) {
   ASSERT_TRUE(ExecJs(web_contents(), JsReplace("fetch($1);", fetch_url)));
   ASSERT_TRUE(observer.Wait());
 
-  ASSERT_THAT(
-      observer.details(),
-      testing::AllOf(HasUrl(fetch_url),
-                     HasSource(CookieAccessDetails::Source::kNonNavigation)));
+  EXPECT_EQ(observer.details().url, fetch_url);
+  EXPECT_EQ(observer.details().source,
+            CookieAccessDetails::Source::kNonNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, XMLHttpRequest) {
@@ -1194,10 +1178,9 @@ IN_PROC_BROWSER_TEST_F(CookieSourceBrowserTest, XMLHttpRequest) {
                                                xhr_url)));
   ASSERT_TRUE(observer.Wait());
 
-  ASSERT_THAT(
-      observer.details(),
-      testing::AllOf(HasUrl(xhr_url),
-                     HasSource(CookieAccessDetails::Source::kNonNavigation)));
+  EXPECT_EQ(observer.details().url, xhr_url);
+  EXPECT_EQ(observer.details().source,
+            CookieAccessDetails::Source::kNonNavigation);
 }
 
 }  // namespace content
