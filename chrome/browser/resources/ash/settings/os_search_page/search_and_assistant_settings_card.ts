@@ -127,26 +127,22 @@ export class SearchAndAssistantSettingsCardElement extends
           return isAssistantAllowed();
         },
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kPreferredSearchEngine,
-          Setting.kMagicBoostOnOff,
-          Setting.kMahiOnOff,
-          Setting.kShowOrca,
-          Setting.kLobsterOnOff,
-          Setting.kSunfishOnOff,
-          Setting.kScannerOnOff,
-        ]),
-      },
     };
   }
 
   prefs: PrefsState;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kPreferredSearchEngine,
+    Setting.kMagicBoostOnOff,
+    Setting.kMahiOnOff,
+    Setting.kShowOrca,
+    Setting.kLobsterOnOff,
+    Setting.kSunfishOnOff,
+    Setting.kScannerOnOff,
+  ]);
+
   private isAssistantAllowed_: boolean;
   private isQuickAnswersSupported_: boolean;
   private isMagicBoostFeatureEnabled_: boolean;

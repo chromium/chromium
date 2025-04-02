@@ -179,24 +179,18 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
         computed:
             'computeBatterySaverHidden_(batteryStatus_, batterySaverFeatureEnabled_)',
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kPowerIdleBehaviorWhileCharging,
-          Setting.kPowerSource,
-          Setting.kSleepWhenLaptopLidClosed,
-          Setting.kPowerIdleBehaviorWhileOnBattery,
-          Setting.kAdaptiveCharging,
-          Setting.kBatterySaver,
-        ]),
-      },
-
     };
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kPowerIdleBehaviorWhileCharging,
+    Setting.kPowerSource,
+    Setting.kSleepWhenLaptopLidClosed,
+    Setting.kPowerIdleBehaviorWhileOnBattery,
+    Setting.kAdaptiveCharging,
+    Setting.kBatterySaver,
+  ]);
 
   private acIdleManaged_: boolean;
   private acIdleOptions_: IdleOption[];

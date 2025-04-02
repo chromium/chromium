@@ -281,25 +281,6 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         type: Number,
         value: null,
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kDisplaySize,
-          Setting.kDisplayOrientation,
-          Setting.kDisplayArrangement,
-          Setting.kDisplayResolution,
-          Setting.kDisplayRefreshRate,
-          Setting.kDisplayMirroring,
-          Setting.kAllowWindowsToSpanDisplays,
-          Setting.kAmbientColors,
-          Setting.kTouchscreenCalibration,
-          Setting.kDisplayOverscan,
-        ]),
-      },
     };
   }
 
@@ -320,6 +301,21 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   overscanDisplayId: string;
   primaryDisplayId: string;
   selectedDisplay?: DisplayUnitInfo;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kDisplaySize,
+    Setting.kDisplayOrientation,
+    Setting.kDisplayArrangement,
+    Setting.kDisplayResolution,
+    Setting.kDisplayRefreshRate,
+    Setting.kDisplayMirroring,
+    Setting.kAllowWindowsToSpanDisplays,
+    Setting.kAmbientColors,
+    Setting.kTouchscreenCalibration,
+    Setting.kDisplayOverscan,
+  ]);
+
   private browserProxy_: DevicePageBrowserProxy;
   private brightnessSliderMax_: number;
   private brightnessSliderMin_: number;

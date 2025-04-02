@@ -165,20 +165,6 @@ export class SettingsPerDeviceMouseSubsectionElement extends
         type: Object,
       },
 
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kMouseSwapPrimaryButtons,
-          Setting.kMouseReverseScrolling,
-          Setting.kMouseAcceleration,
-          Setting.kMouseScrollAcceleration,
-          Setting.kMouseSpeed,
-        ]),
-      },
-
       mouseIndex: {
         type: Number,
       },
@@ -261,6 +247,16 @@ export class SettingsPerDeviceMouseSubsectionElement extends
   }
 
   isWelcomeExperienceEnabled: boolean;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kMouseSwapPrimaryButtons,
+    Setting.kMouseReverseScrolling,
+    Setting.kMouseAcceleration,
+    Setting.kMouseScrollAcceleration,
+    Setting.kMouseSpeed,
+  ]);
+
   private mouse: Mouse;
   protected mousePolicies: MousePolicies;
   private primaryRightPref: chrome.settingsPrivate.PrefObject;

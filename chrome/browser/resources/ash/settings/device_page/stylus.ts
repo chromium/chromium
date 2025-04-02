@@ -94,22 +94,17 @@ export class SettingsStylusElement extends SettingsStylusElementBase {
         type: Boolean,
         value: false,
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kStylusToolsInShelf,
-          Setting.kStylusNoteTakingApp,
-        ]),
-      },
-
     };
   }
 
   prefs: PrefsState;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kStylusToolsInShelf,
+    Setting.kStylusNoteTakingApp,
+  ]);
+
   private appChoices_: NoteAppInfo[];
   private browserProxy_: DevicePageBrowserProxy;
   private selectedApp_: NoteAppInfo|null;

@@ -143,22 +143,17 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         computed: 'computeMicrophoneToggleTooltipText_(isMicListEmpty_, ' +
             'microphoneHardwareToggleActive_)',
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kCameraOnOff,
-          Setting.kMicrophoneOnOff,
-          Setting.kSpeakOnMuteDetectionOnOff,
-          Setting.kGeolocationOnOff,
-          Setting.kUsageStatsAndCrashReports,
-        ]),
-      },
     };
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kCameraOnOff,
+    Setting.kMicrophoneOnOff,
+    Setting.kSpeakOnMuteDetectionOnOff,
+    Setting.kGeolocationOnOff,
+    Setting.kUsageStatsAndCrashReports,
+  ]);
 
   private browserProxy_: PrivacyHubBrowserProxy;
   private showPrivacyHubLocationControl_: boolean;

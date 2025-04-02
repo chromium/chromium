@@ -169,19 +169,6 @@ export class SettingsCrostiniSubpageElement extends
         type: Boolean,
         value: false,
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kUninstallCrostini,
-          Setting.kCrostiniDiskResize,
-          Setting.kCrostiniMicAccess,
-          Setting.kCrostiniContainerUpgrade,
-        ]),
-      },
     };
   }
 
@@ -191,6 +178,14 @@ export class SettingsCrostiniSubpageElement extends
       'onArcEnabledChanged_(prefs.arc.enabled.value)',
     ];
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kUninstallCrostini,
+    Setting.kCrostiniDiskResize,
+    Setting.kCrostiniMicAccess,
+    Setting.kCrostiniContainerUpgrade,
+  ]);
 
   private browserProxy_: CrostiniBrowserProxy;
   private canDiskResize_: boolean;

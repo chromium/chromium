@@ -69,19 +69,17 @@ export class SettingsHotspotSubpageElement extends
           };
         },
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>(
-            [Setting.kHotspotOnOff, Setting.kHotspotAutoDisabled]),
-      },
     };
   }
 
   hotspotInfo: HotspotInfo|undefined;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kHotspotOnOff,
+    Setting.kHotspotAutoDisabled,
+  ]);
+
   private isHotspotToggleOn_: boolean;
   private autoDisableVirtualPref_: chrome.settingsPrivate.PrefObject<boolean>;
 

@@ -134,28 +134,23 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
           return loadTimeData.getBoolean('isKioskModeActive');
         },
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kAccessibilityMagnifierFollowsSts,
-          Setting.kColorCorrectionEnabled,
-          Setting.kColorCorrectionFilterType,
-          Setting.kColorCorrectionFilterAmount,
-          Setting.kDockedMagnifier,
-          Setting.kFullscreenMagnifier,
-          Setting.kFullscreenMagnifierMouseFollowingMode,
-          Setting.kFullscreenMagnifierFocusFollowing,
-          Setting.kMagnifierFollowsChromeVox,
-          Setting.kReducedAnimationsEnabled,
-          Setting.kAlwaysShowScrollbarsEnabled,
-        ]),
-      },
     };
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kAccessibilityMagnifierFollowsSts,
+    Setting.kColorCorrectionEnabled,
+    Setting.kColorCorrectionFilterType,
+    Setting.kColorCorrectionFilterAmount,
+    Setting.kDockedMagnifier,
+    Setting.kFullscreenMagnifier,
+    Setting.kFullscreenMagnifierMouseFollowingMode,
+    Setting.kFullscreenMagnifierFocusFollowing,
+    Setting.kMagnifierFollowsChromeVox,
+    Setting.kReducedAnimationsEnabled,
+    Setting.kAlwaysShowScrollbarsEnabled,
+  ]);
 
   private isKioskModeActive_: boolean;
   private screenMagnifierMouseFollowingModePrefValues_: {[key: string]: number};

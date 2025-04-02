@@ -104,19 +104,6 @@ export class OsSettingsPrivacyPageElement extends
       syncStatus: Object,
 
       /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kVerifiedAccess,
-          Setting.kNonSplitSyncEncryptionOptions,
-          Setting.kImproveSearchSuggestions,
-          Setting.kMakeSearchesAndBrowsingBetter,
-        ]),
-      },
-
-      /**
        * True if fingerprint settings should be displayed on this machine.
        */
       fingerprintUnlockEnabled_: {
@@ -232,6 +219,15 @@ export class OsSettingsPrivacyPageElement extends
   }
 
   syncStatus: SyncStatus;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kVerifiedAccess,
+    Setting.kNonSplitSyncEncryptionOptions,
+    Setting.kImproveSearchSuggestions,
+    Setting.kMakeSearchesAndBrowsingBetter,
+  ]);
+
   private authTokenInfo_: chrome.quickUnlockPrivate.TokenInfo|undefined;
   private browserProxy_: PeripheralDataAccessBrowserProxy;
   private authTokenReply_: RequestTokenReply|undefined|null;

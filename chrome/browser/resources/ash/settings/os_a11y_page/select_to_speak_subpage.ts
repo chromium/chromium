@@ -215,18 +215,6 @@ export class SettingsSelectToSpeakSubpageElement extends
               loadTimeData.getString('selectToSpeakLearnMoreUrl');
         },
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kSelectToSpeakWordHighlight,
-          Setting.kSelectToSpeakBackgroundShading,
-          Setting.kSelectToSpeakNavigationControls,
-        ]),
-      },
     };
   }
 
@@ -241,6 +229,13 @@ export class SettingsSelectToSpeakSubpageElement extends
       'languageChanged_(languageFilterVirtualPref_.*)',
     ];
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kSelectToSpeakWordHighlight,
+    Setting.kSelectToSpeakBackgroundShading,
+    Setting.kSelectToSpeakNavigationControls,
+  ]);
 
   private langBrowserProxy_: LanguagesBrowserProxy;
   private enhancedNetworkVoicesVirtualPref_:

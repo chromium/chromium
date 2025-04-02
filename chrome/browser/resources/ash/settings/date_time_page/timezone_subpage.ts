@@ -68,14 +68,6 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
         },
       },
 
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([Setting.kChangeTimeZone]),
-      },
-
       geolocationWarningText_: {
         type: String,
         computed: 'computedGeolocationWarningText(activeTimeZoneDisplayName,' +
@@ -97,6 +89,12 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
   }
 
   activeTimeZoneDisplayName: string;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kChangeTimeZone,
+  ]);
+
   private canSetSystemTimezone_: boolean;
   private browserProxy_: DateTimeBrowserProxy;
   private showEnableSystemGeolocationDialog_: boolean;

@@ -125,21 +125,6 @@ export class SettingsGoogleAssistantSubpageElement extends
       },
 
       dspHotwordState_: Number,
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kAssistantOnOff,
-          Setting.kAssistantRelatedInfo,
-          Setting.kAssistantOkGoogle,
-          Setting.kAssistantNotifications,
-          Setting.kAssistantVoiceInput,
-          Setting.kTrainAssistantVoiceModel,
-        ]),
-      },
     };
   }
 
@@ -153,6 +138,16 @@ export class SettingsGoogleAssistantSubpageElement extends
           'prefs.settings.assistant.disabled_by_policy.value)',
     ];
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kAssistantOnOff,
+    Setting.kAssistantRelatedInfo,
+    Setting.kAssistantOkGoogle,
+    Setting.kAssistantNotifications,
+    Setting.kAssistantVoiceInput,
+    Setting.kTrainAssistantVoiceModel,
+  ]);
 
   private browserProxy_: GoogleAssistantBrowserProxy;
   private dspHotwordState_: DspHotwordState;

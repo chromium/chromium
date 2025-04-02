@@ -109,29 +109,6 @@ export class SettingsPointersElement extends SettingsPointersElementBase {
       },
 
       /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kTouchpadTapToClick,
-          Setting.kTouchpadTapDragging,
-          Setting.kTouchpadReverseScrolling,
-          Setting.kTouchpadAcceleration,
-          Setting.kTouchpadSpeed,
-          Setting.kTouchpadHapticFeedback,
-          Setting.kTouchpadHapticClickSensitivity,
-          Setting.kPointingStickAcceleration,
-          Setting.kPointingStickSpeed,
-          Setting.kPointingStickSwapPrimaryButtons,
-          Setting.kMouseSwapPrimaryButtons,
-          Setting.kMouseReverseScrolling,
-          Setting.kMouseAcceleration,
-          Setting.kMouseSpeed,
-        ]),
-      },
-
-      /**
        * Whether settings should be split per device.
        */
       isDeviceSettingsSplitEnabled_: {
@@ -148,6 +125,25 @@ export class SettingsPointersElement extends SettingsPointersElementBase {
   hasPointingStick: boolean;
   hasTouchpad: boolean;
   hasHapticTouchpad: boolean;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kTouchpadTapToClick,
+    Setting.kTouchpadTapDragging,
+    Setting.kTouchpadReverseScrolling,
+    Setting.kTouchpadAcceleration,
+    Setting.kTouchpadSpeed,
+    Setting.kTouchpadHapticFeedback,
+    Setting.kTouchpadHapticClickSensitivity,
+    Setting.kPointingStickAcceleration,
+    Setting.kPointingStickSpeed,
+    Setting.kPointingStickSwapPrimaryButtons,
+    Setting.kMouseSwapPrimaryButtons,
+    Setting.kMouseReverseScrolling,
+    Setting.kMouseAcceleration,
+    Setting.kMouseSpeed,
+  ]);
+
   private isDeviceSettingsSplitEnabled_: boolean;
 
   /**

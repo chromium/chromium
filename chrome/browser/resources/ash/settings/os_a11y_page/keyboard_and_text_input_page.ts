@@ -114,25 +114,6 @@ export class SettingsKeyboardAndTextInputPageElement extends
         },
       },
 
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kBounceKeys,
-          Setting.kCaretBlinkInterval,
-          Setting.kCaretBrowsing,
-          Setting.kDictation,
-          Setting.kEnableSwitchAccess,
-          Setting.kHighlightKeyboardFocus,
-          Setting.kHighlightTextCaret,
-          Setting.kOnScreenKeyboard,
-          Setting.kSlowKeys,
-          Setting.kStickyKeys,
-        ]),
-      },
-
       focusHighlightEnabledVirtualPref_: {
         type: Object,
         computed: 'computeEnabledWithConflictingFeature_(' +
@@ -185,6 +166,20 @@ export class SettingsKeyboardAndTextInputPageElement extends
           'bounceKeysDelayVirtualPref_.*)',
     ];
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kBounceKeys,
+    Setting.kCaretBlinkInterval,
+    Setting.kCaretBrowsing,
+    Setting.kDictation,
+    Setting.kEnableSwitchAccess,
+    Setting.kHighlightKeyboardFocus,
+    Setting.kHighlightTextCaret,
+    Setting.kOnScreenKeyboard,
+    Setting.kSlowKeys,
+    Setting.kStickyKeys,
+  ]);
 
   private dictationLearnMoreUrl_: string;
   private dictationLocaleMenuSubtitle_: string;

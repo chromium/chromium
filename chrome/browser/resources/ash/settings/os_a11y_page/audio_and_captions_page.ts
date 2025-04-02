@@ -134,24 +134,20 @@ export class SettingsAudioAndCaptionsPageElement extends
           ];
         },
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kFlashNotifications,
-          Setting.kLiveCaption,
-          Setting.kMonoAudio,
-          Setting.kStartupSound,
-        ]),
-      },
     };
   }
 
   languages: LanguagesModel;
   languageHelper: LanguageHelper;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kFlashNotifications,
+    Setting.kLiveCaption,
+    Setting.kMonoAudio,
+    Setting.kStartupSound,
+  ]);
+
   private audioAndCaptionsBrowserProxy_: AudioAndCaptionsPageBrowserProxy;
   private isKioskModeActive_: boolean;
 

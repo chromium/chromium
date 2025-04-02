@@ -267,23 +267,6 @@ export class SettingsCursorAndTouchpadPageElement extends
       },
 
       /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kAutoClickWhenCursorStops,
-          Setting.kDisableTouchpad,
-          Setting.kEnableCursorColor,
-          Setting.kHighlightCursorWhileMoving,
-          Setting.kLargeCursor,
-          Setting.kMouseKeysEnabled,
-          Setting.kOverscrollEnabled,
-          Setting.kTabletNavigationButtons,
-        ]),
-      },
-
-      /**
        * Check if at least one mouse is connected.
        */
       hasMouse_: {
@@ -312,6 +295,18 @@ export class SettingsCursorAndTouchpadPageElement extends
           'isKioskModeActive_)',
     ];
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kAutoClickWhenCursorStops,
+    Setting.kDisableTouchpad,
+    Setting.kEnableCursorColor,
+    Setting.kHighlightCursorWhileMoving,
+    Setting.kLargeCursor,
+    Setting.kMouseKeysEnabled,
+    Setting.kOverscrollEnabled,
+    Setting.kTabletNavigationButtons,
+  ]);
 
   private autoClickDelayOptions_: Option[];
   private autoClickMovementThresholdOptions_: Option[];

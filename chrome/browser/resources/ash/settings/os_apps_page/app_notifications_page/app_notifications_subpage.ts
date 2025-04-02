@@ -73,21 +73,17 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
         type: Array,
         value: [],
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kDoNotDisturbOnOff,
-          Setting.kAppBadgingOnOff,
-        ]),
-      },
     };
   }
 
   prefs: PrefsState;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kDoNotDisturbOnOff,
+    Setting.kAppBadgingOnOff,
+  ]);
+
   private appList_: App[];
   private appNotificationsObserverReceiver_: AppNotificationsObserverReceiver|
       null;
