@@ -398,6 +398,8 @@ chromium-metrics-reviews@google.com.
 <enum name="SafeBrowsingRTLookupResponseVerdictType">
   <int value="0" label="VERDICT_TYPE_UNSPECIFIED"/>
   <int value="1" label="SAFE"/>
+  <int value="50" label="SUSPICIOUS"/>
+  <int value="75" label="WARN"/>
   <int value="100" label="DANGEROUS"/>
 </enum>
 
