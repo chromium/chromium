@@ -209,20 +209,22 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
     main_message.SetInlineStyleProperty(CSSPropertyID::kTransition, "none");
     sub_message.SetInlineStyleProperty(CSSPropertyID::kTransition, "none");
   }
-  // Get the size to decide position later.
-  // TODO(rendering-core): This gets a size, so we should only need to update
-  // to layout.
-  FrameView().UpdateAllLifecyclePhases(DocumentUpdateReason::kOverlay);
-  bubble_size_ = container.VisibleBoundsInLocalRoot().size();
-  // Add one because the content sometimes exceeds the exact width due to
-  // rounding errors.
-  bubble_size_.Enlarge(1, 0);
-  container.SetInlineStyleProperty(CSSPropertyID::kMinWidth,
-                                   bubble_size_.width() / zoom_factor,
-                                   CSSPrimitiveValue::UnitType::kPixels);
-  container.setAttribute(html_names::kClassAttr,
-                         AtomicString("shown-initially"));
-  FrameView().UpdateAllLifecyclePhases(DocumentUpdateReason::kOverlay);
+  if (!RuntimeEnabledFeatures::ValidationBubbleNoForcedLayoutEnabled()) {
+    // Get the size to decide position later.
+    // TODO(rendering-core): This gets a size, so we should only need to update
+    // to layout.
+    FrameView().UpdateAllLifecyclePhases(DocumentUpdateReason::kOverlay);
+    bubble_size_ = container.VisibleBoundsInLocalRoot().size();
+    // Add one because the content sometimes exceeds the exact width due to
+    // rounding errors.
+    bubble_size_.Enlarge(1, 0);
+    container.SetInlineStyleProperty(CSSPropertyID::kMinWidth,
+                                     bubble_size_.width() / zoom_factor,
+                                     CSSPrimitiveValue::UnitType::kPixels);
+    container.setAttribute(html_names::kClassAttr,
+                           AtomicString("shown-initially"));
+    FrameView().UpdateAllLifecyclePhases(DocumentUpdateReason::kOverlay);
+  }
 }
 
 void ValidationMessageOverlayDelegate::WriteDocument(SegmentedBuffer& data) {
@@ -294,6 +296,13 @@ void ValidationMessageOverlayDelegate::AdjustBubblePosition(
     anchor_rect.Intersect(gfx::Rect(anchor_page->GetVisualViewport().Size()));
   }
 
+  Element& container = GetElementById(AtomicString("container"));
+  if (RuntimeEnabledFeatures::ValidationBubbleNoForcedLayoutEnabled()) {
+    // TODO(crbug.com/334963179): Replace bubble_size_ with a stack allocated
+    // variable here when the ValidationBubbleNoForcedLayout flag is removed.
+    bubble_size_ = container.VisibleBoundsInLocalRoot().size();
+  }
+
   bool show_bottom_arrow = false;
   double bubble_y = anchor_rect.bottom();
   if (view_rect.bottom() - anchor_rect.bottom() < bubble_size_.height()) {
@@ -307,7 +316,6 @@ void ValidationMessageOverlayDelegate::AdjustBubblePosition(
   else if (bubble_x + bubble_size_.width() > view_rect.right())
     bubble_x = view_rect.right() - bubble_size_.width();
 
-  Element& container = GetElementById(AtomicString("container"));
   container.SetInlineStyleProperty(CSSPropertyID::kLeft, bubble_x / zoom_factor,
                                    CSSPrimitiveValue::UnitType::kPixels);
   container.SetInlineStyleProperty(CSSPropertyID::kTop, bubble_y / zoom_factor,
