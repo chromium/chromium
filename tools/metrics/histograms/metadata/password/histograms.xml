@@ -1635,7 +1635,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.FillingSuccessIOS" enum="BooleanSuccess"
     expires_after="2025-08-24">
-  <owner>theocristea@google.com</owner>
   <owner>kazinova@google.com</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
