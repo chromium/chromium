@@ -5,10 +5,8 @@
 #include "third_party/blink/renderer/core/workers/dedicated_worker_messaging_proxy.h"
 
 #include <memory>
-#include "base/feature_list.h"
 #include "base/trace_event/typed_macros.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink-forward.h"
@@ -81,6 +79,8 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
     const KURL& script_url,
     const FetchClientSettingsObjectSnapshot& outside_settings_object,
     const v8_inspector::V8StackTraceId& stack_id,
+    // TODO(crbug.com/40093136): Remove this now that PlzDedicatedWorker has
+    // launched.
     const String& source_code,
     RejectCoepUnsafeNone reject_coep_unsafe_none,
     const blink::DedicatedWorkerToken& token,
@@ -112,20 +112,14 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
     // destination, and inside settings."
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kClassicDedicatedWorker);
-    if (base::FeatureList::IsEnabled(features::kPlzDedicatedWorker)) {
-      auto* resource_timing_notifier =
-          WorkerResourceTimingNotifierImpl::CreateForOutsideResourceFetcher(
-              *GetExecutionContext());
-      // TODO(crbug.com/1177199): pass a proper policy container
-      GetWorkerThread()->FetchAndRunClassicScript(
-          script_url, std::move(worker_main_script_load_params),
-          /*policy_container=*/nullptr, outside_settings_object.CopyData(),
-          resource_timing_notifier, stack_id);
-    } else {
-      // Legacy code path (to be deprecated, see https://crbug.com/835717):
-      GetWorkerThread()->EvaluateClassicScript(
-          script_url, source_code, nullptr /* cached_meta_data */, stack_id);
-    }
+    auto* resource_timing_notifier =
+        WorkerResourceTimingNotifierImpl::CreateForOutsideResourceFetcher(
+            *GetExecutionContext());
+    // TODO(crbug.com/1177199): pass a proper policy container
+    GetWorkerThread()->FetchAndRunClassicScript(
+        script_url, std::move(worker_main_script_load_params),
+        /*policy_container=*/nullptr, outside_settings_object.CopyData(),
+        resource_timing_notifier, stack_id);
   } else if (options->type() == script_type_names::kModule) {
     // "module: Fetch a module worker script graph given url, outside settings,
     // destination, the value of the credentials member of options, and inside

@@ -174,10 +174,9 @@ void DevToolsRendererChannel::ChildTargetCreated(
   process->FilterURL(true /* empty_allowed */, &filtered_url);
 
   if (context_type ==
-          blink::mojom::DevToolsExecutionContextType::kDedicatedWorker &&
-      base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
-    // WorkerDevToolsAgentHost for dedicated workers is already created on the
-    // browser process when PlzDedicatedWorker is enabled.
+          blink::mojom::DevToolsExecutionContextType::kDedicatedWorker) {
+    // WorkerDevToolsAgentHost for dedicated workers is already created in the
+    // browser process.
     DCHECK(
         content::DevToolsAgentHost::GetForId(devtools_worker_token.ToString()));
     scoped_refptr<DedicatedWorkerDevToolsAgentHost> agent_host =
@@ -217,14 +216,8 @@ void DevToolsRendererChannel::ChildTargetCreated(
           base::BindOnce(&DevToolsRendererChannel::ChildTargetDestroyed,
                          weak_factory_.GetWeakPtr()));
       break;
-    case blink::mojom::DevToolsExecutionContextType::kDedicatedWorker:
-      CHECK(
-          !base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
-      agent_host = base::MakeRefCounted<DedicatedWorkerDevToolsAgentHost>(
-          process_id_, filtered_url, std::move(name), devtools_worker_token,
-          owner_->GetId(),
-          base::BindOnce(&DevToolsRendererChannel::ChildTargetDestroyed,
-                         weak_factory_.GetWeakPtr()));
+      case blink::mojom::DevToolsExecutionContextType::kDedicatedWorker:
+      NOTREACHED();
   }
   agent_host->SetRenderer(process_id_, std::move(worker_devtools_agent),
                           std::move(host_receiver));

@@ -14,7 +14,6 @@
 #include "base/task/thread_pool.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
@@ -189,51 +188,6 @@ DedicatedOrSharedWorkerFetchContextImpl::
           std::move(pending_resource_load_info_notifier)) {}
 
 scoped_refptr<WebDedicatedOrSharedWorkerFetchContext>
-DedicatedOrSharedWorkerFetchContextImpl::CloneForNestedWorkerDeprecated(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DCHECK(!base::FeatureList::IsEnabled(features::kPlzDedicatedWorker));
-
-  mojo::PendingReceiver<mojom::blink::ServiceWorkerWorkerClient>
-      service_worker_client_receiver;
-  mojo::PendingRemote<mojom::blink::ServiceWorkerWorkerClientRegistry>
-      service_worker_worker_client_registry;
-  if (service_worker_worker_client_registry_) {
-    mojo::PendingRemote<mojom::blink::ServiceWorkerWorkerClient>
-        service_worker_client;
-    service_worker_client_receiver =
-        service_worker_client.InitWithNewPipeAndPassReceiver();
-    service_worker_worker_client_registry_->RegisterWorkerClient(
-        std::move(service_worker_client));
-    service_worker_worker_client_registry_->CloneWorkerClientRegistry(
-        service_worker_worker_client_registry.InitWithNewPipeAndPassReceiver());
-  }
-
-  CrossVariantMojoRemote<mojom::ServiceWorkerContainerHostInterfaceBase>
-      cloned_service_worker_container_host;
-  if (service_worker_container_host_) {
-    std::tie(service_worker_container_host_,
-             cloned_service_worker_container_host) =
-        Platform::Current()->CloneServiceWorkerContainerHost(
-            std::move(service_worker_container_host_));
-  }
-
-  // |pending_subresource_loader_updater| is not used for
-  // non-PlzDedicatedWorker.
-  scoped_refptr<DedicatedOrSharedWorkerFetchContextImpl> new_context =
-      CloneForNestedWorkerInternal(
-          std::move(service_worker_client_receiver),
-          std::move(service_worker_worker_client_registry),
-          std::move(cloned_service_worker_container_host),
-          loader_factory_->Clone(), fallback_factory_->Clone(),
-          /*pending_subresource_loader_updater=*/mojo::NullReceiver(),
-          std::move(task_runner));
-  new_context->controller_service_worker_mode_ =
-      controller_service_worker_mode_;
-
-  return new_context;
-}
-
-scoped_refptr<WebDedicatedOrSharedWorkerFetchContext>
 DedicatedOrSharedWorkerFetchContextImpl::CloneForNestedWorker(
     WebServiceWorkerProviderContext* service_worker_provider_context,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -243,7 +197,6 @@ DedicatedOrSharedWorkerFetchContextImpl::CloneForNestedWorker(
     CrossVariantMojoReceiver<mojom::SubresourceLoaderUpdaterInterfaceBase>
         pending_subresource_loader_updater,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DCHECK(base::FeatureList::IsEnabled(features::kPlzDedicatedWorker));
   DCHECK(pending_loader_factory);
   DCHECK(pending_fallback_factory);
   DCHECK(task_runner);

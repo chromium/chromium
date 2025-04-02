@@ -939,10 +939,6 @@ public final class ProductionSupportedFlagList {
                 "Redact sensitive content during screen sharing, screen recording, and similar"
                         + " actions"),
         Flag.baseFeature(
-                BlinkFeatures.PLZ_DEDICATED_WORKER,
-                "Enable PlzDedicatedWorker. This affects how some URLs are sent to"
-                        + " WebViewClient.shouldInterceptRequest()"),
-        Flag.baseFeature(
                 "BlinkUseLargeEmptySlotSpanRingForBufferRoot",
                 "Tuning memory allocator for speed - large empty slot span ring for Blink buffer"
                         + " root"),

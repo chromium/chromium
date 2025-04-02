@@ -77,15 +77,9 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
           pending_resource_load_info_notifier);
 
   // WebDedicatedOrSharedWorkerFetchContext implementation:
-  // Clones this fetch context for a nested worker.
-  // For non-PlzDedicatedWorker. This will be removed once PlzDedicatedWorker is
-  // enabled by default.
-  scoped_refptr<WebDedicatedOrSharedWorkerFetchContext>
-  CloneForNestedWorkerDeprecated(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
-  // For PlzDedicatedWorker. The cloned fetch context does not inherit some
-  // fields (e.g., blink::WebServiceWorkerProviderContext) from this fetch
-  // context, and instead that takes values passed from the browser process.
+  // The cloned fetch context does not inherit some fields (e.g.,
+  // blink::WebServiceWorkerProviderContext) from this fetch context, and
+  // instead that takes values passed from the browser process.
   scoped_refptr<WebDedicatedOrSharedWorkerFetchContext> CloneForNestedWorker(
       WebServiceWorkerProviderContext* service_worker_provider_context,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -140,13 +134,8 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
   void OnControllerChanged(mojom::ControllerServiceWorkerMode) override;
 
   // Sets the controller service worker mode.
-  // - For dedicated workers (non-PlzDedicatedWorker), they depend on the
-  //   controller of the ancestor frame (directly for non-nested workers, or
-  //   indirectly via its parent worker for nested workers), and inherit its
-  //   controller mode.
-  // - For dedicated workers (PlzDedicatedWorker) and shared workers, the
-  //   controller mode is passed from the browser processw when starting the
-  //   worker.
+  // - For dedicated workers and shared workers, the controller mode is passed
+  // from the browser processw when starting the worker.
   void set_controller_service_worker_mode(
       mojom::ControllerServiceWorkerMode mode);
 
@@ -243,11 +232,8 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
 
   // Initialized on the worker thread when InitializeOnWorkerThread() is called.
   // Used to reconnect to the Network Service after the Network Service crash.
-  // This is only used for dedicated workers when PlzDedicatedWorker is enabled.
-  // When PlzDedicatedWorker is disabled, the ancestor render frame updates the
-  // loaders via Host/TrackedChildURLLoaderFactoryBundle. For shared workers,
-  // the renderer process detects the crash, and terminates the worker instead
-  // of recovery.
+  // This is only used for dedicated workers. For shared workers, the renderer
+  // process detects the crash, and terminates the worker instead of recovery.
   mojo::PendingReceiver<mojom::blink::SubresourceLoaderUpdater>
       pending_subresource_loader_updater_;
   mojo::Receiver<mojom::blink::SubresourceLoaderUpdater>

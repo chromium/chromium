@@ -23,9 +23,6 @@ DedicatedWorkerDevToolsAgentHost* DedicatedWorkerDevToolsAgentHost::GetFor(
 // static
 void DedicatedWorkerDevToolsAgentHost::AddAllAgentHosts(
     DevToolsAgentHost::List* result) {
-  if (!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
-    return;
-  }
   WorkerDevToolsManager::GetInstance().AddAllAgentHosts(result);
 }
 

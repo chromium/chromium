@@ -17763,7 +17763,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "DedicatedWorkerAblationStudyEnabled",
-                        "PlzDedicatedWorker",
                         "ServiceWorkerClientIdAlignedWithSpec"
                     ]
                 }
