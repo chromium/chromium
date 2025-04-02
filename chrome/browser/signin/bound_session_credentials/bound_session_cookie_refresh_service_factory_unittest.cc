@@ -120,6 +120,28 @@ const BoundSessionCookieRefreshServiceFactoryTestParams kTestCases[] = {
         switches::EnableBoundSessionCredentialsDiceSupport::kEnabled,
     },
     {
+        "DisabledWithWsbetaEnabled",
+        {{kEnableBoundSessionCredentialsWsbetaBypass, {}}},
+        {switches::kEnableBoundSessionCredentials},
+        false,
+        switches::EnableBoundSessionCredentialsDiceSupport::kEnabled,
+    },
+    {
+        "DisabledWithWsbetaDisabled",
+        {},
+        {switches::kEnableBoundSessionCredentials,
+         kEnableBoundSessionCredentialsWsbetaBypass},
+        std::nullopt,
+        std::nullopt,
+    },
+    {
+        "EnabledWithWsbetaDisabled",
+        {{switches::kEnableBoundSessionCredentials, {}}},
+        {kEnableBoundSessionCredentialsWsbetaBypass},
+        std::nullopt,
+        switches::EnableBoundSessionCredentialsDiceSupport::kEnabled,
+    },
+    {
         "DisabledByKillSwitch",
         {{switches::kBoundSessionCredentialsKillSwitch, {}},
          {switches::kEnableBoundSessionCredentials, {}}},
