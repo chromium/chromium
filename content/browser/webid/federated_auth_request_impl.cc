@@ -454,6 +454,17 @@ std::vector<uint8_t> Sha256(std::string_view data) {
   return result;
 }
 
+bool CanBypassPermissionStatusCheck(
+    const blink::mojom::RpMode& rp_mode,
+    const MediationRequirement& mediation_requirement) {
+  // Embargo or browser settings should not affect active mode. Since
+  // conditional flow isn't intrusive which was the main reason we added such
+  // controls, we can bypass the check for it as well.
+  return rp_mode == RpMode::kActive ||
+         (IsFedCmDelegationEnabled() &&
+          mediation_requirement == MediationRequirement::kConditional);
+}
+
 }  // namespace
 
 FederatedAuthRequestImpl::FetchData::FetchData() = default;
@@ -904,34 +915,36 @@ void FederatedAuthRequestImpl::RequestToken(
 
   FederatedApiPermissionStatus permission_status = GetApiPermissionStatus();
 
-  std::optional<TokenStatus> error_token_status;
-  FederatedAuthRequestResult request_result =
-      FederatedAuthRequestResult::kError;
+  if (!CanBypassPermissionStatusCheck(rp_mode_, mediation_requirement_)) {
+    std::optional<TokenStatus> error_token_status;
+    FederatedAuthRequestResult request_result =
+        FederatedAuthRequestResult::kError;
 
-  switch (permission_status) {
-    case FederatedApiPermissionStatus::BLOCKED_VARIATIONS:
-      error_token_status = TokenStatus::kDisabledInFlags;
-      request_result = FederatedAuthRequestResult::kDisabledInFlags;
-      break;
-    case FederatedApiPermissionStatus::BLOCKED_SETTINGS:
-      error_token_status = TokenStatus::kDisabledInSettings;
-      request_result = FederatedAuthRequestResult::kDisabledInSettings;
-      break;
-    case FederatedApiPermissionStatus::BLOCKED_EMBARGO:
-      error_token_status = TokenStatus::kDisabledEmbargo;
-      request_result = FederatedAuthRequestResult::kDisabledInSettings;
-      break;
-    case FederatedApiPermissionStatus::GRANTED:
-      // Intentional fall-through.
-      break;
-    default:
-      NOTREACHED();
-  }
+    switch (permission_status) {
+      case FederatedApiPermissionStatus::BLOCKED_VARIATIONS:
+        error_token_status = TokenStatus::kDisabledInFlags;
+        request_result = FederatedAuthRequestResult::kDisabledInFlags;
+        break;
+      case FederatedApiPermissionStatus::BLOCKED_SETTINGS:
+        error_token_status = TokenStatus::kDisabledInSettings;
+        request_result = FederatedAuthRequestResult::kDisabledInSettings;
+        break;
+      case FederatedApiPermissionStatus::BLOCKED_EMBARGO:
+        error_token_status = TokenStatus::kDisabledEmbargo;
+        request_result = FederatedAuthRequestResult::kDisabledInSettings;
+        break;
+      case FederatedApiPermissionStatus::GRANTED:
+        // Intentional fall-through.
+        break;
+      default:
+        NOTREACHED();
+    }
 
-  if (error_token_status && rp_mode_ == RpMode::kPassive) {
-    CompleteRequestWithError(request_result, *error_token_status,
-                             /*should_delay_callback=*/true);
-    return;
+    if (error_token_status) {
+      CompleteRequestWithError(request_result, *error_token_status,
+                               /*should_delay_callback=*/true);
+      return;
+    }
   }
 
   ++num_requests_;
@@ -1681,9 +1694,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // able to disable FedCM API (e.g. via settings or dismissing another FedCM UI
   // on the same RP origin) before the browser receives the accounts response.
   // We should exit early without showing any UI.
-  // Note that for the active flow is not affected by the permission status.
-  if (GetApiPermissionStatus() != FederatedApiPermissionStatus::GRANTED &&
-      rp_mode_ != RpMode::kActive) {
+  if (!CanBypassPermissionStatusCheck(rp_mode_, mediation_requirement_) &&
+      GetApiPermissionStatus() != FederatedApiPermissionStatus::GRANTED) {
     CompleteRequestWithError(FederatedAuthRequestResult::kDisabledInSettings,
                              TokenStatus::kDisabledInSettings,
                              /*should_delay_callback=*/true);
