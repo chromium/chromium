@@ -130,7 +130,6 @@ ts_library("library") {
     "//chrome/browser/resources/lens/overlay:build_ts",
     "//chrome/browser/resources/lens/shared:build_ts",
     "//chrome/browser/resources/new_tab_page:build_ts",
-    "//chrome/browser/resources/omnibox_popup:build_ts",
     "//chrome/browser/resources/password_manager:build_ts",
     "//chrome/browser/resources/pdf:build_ts",
     "//chrome/browser/resources/print_preview:build_ts",
