@@ -228,6 +228,7 @@ ci.gpu.linux_builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_fastbuild",
             "release_try_builder",
             "minimal_symbols",
             "remoteexec",
@@ -267,6 +268,7 @@ ci.gpu.linux_builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_fastbuild",
             "arm64",
             "release_try_builder",
             "minimal_symbols",
@@ -689,6 +691,7 @@ ci.gpu.linux_builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_fastbuild",
             "release_try_builder",
             "minimal_symbols",
             "remoteexec",
@@ -729,6 +732,7 @@ ci.gpu.linux_builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_fastbuild",
             "arm64",
             "release_try_builder",
             "minimal_symbols",
