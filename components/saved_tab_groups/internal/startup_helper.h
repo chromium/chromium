@@ -32,10 +32,6 @@ class StartupHelper {
   StartupHelper(const StartupHelper&) = delete;
   StartupHelper& operator=(const StartupHelper&) = delete;
 
-  // Create tab ID mapping for a group based on left to right order.
-  void MapTabIdsForGroup(const LocalTabGroupID& local_tab_group_id,
-                         const SavedTabGroup& saved_tab_group);
-
   // Cleans up any tab groups from local tab model that have been already
   // deleted from sync.
   void CloseDeletedTabGroupsFromTabModel();
