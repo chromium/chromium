@@ -25,7 +25,6 @@ public class AutofillSuggestion extends DropdownItemBase {
     private final String mSublabel;
     private final @Nullable String mSecondarySublabel;
     private final @Nullable String mLabelContentDescription;
-    private final @Nullable String mItemTag;
     private final int mIconId;
     private final boolean mIsIconAtStart;
     private final int mSuggestionType;
@@ -43,10 +42,6 @@ public class AutofillSuggestion extends DropdownItemBase {
      *
      * @param label The main label of the Autofill suggestion.
      * @param sublabel The describing sublabel of the Autofill suggestion.
-     * @param itemTag The tag for the autofill suggestion. For keyboard accessory, this would be
-     *     displayed as an IPH bubble. For the dropdown, this is shown below the secondary text.For
-     *     example: For credit cards with offers, the item tag is set to indicate that the card has
-     *     some cashback offer associated with it.
      * @param iconId The resource ID for the icon associated with the suggestion, or {@code
      *     DropdownItem.NO_ICON} for no icon.
      * @param isIconAtStart {@code true} if {@code iconId} is displayed before {@code label}.
@@ -66,7 +61,6 @@ public class AutofillSuggestion extends DropdownItemBase {
             String sublabel,
             @Nullable String secondarySublabel,
             @Nullable String labelContentDescription,
-            @Nullable String itemTag,
             int iconId,
             boolean isIconAtStart,
             @SuggestionType int popupItemId,
@@ -82,7 +76,6 @@ public class AutofillSuggestion extends DropdownItemBase {
         mSublabel = sublabel;
         mSecondarySublabel = secondarySublabel;
         mLabelContentDescription = labelContentDescription;
-        mItemTag = itemTag;
         mIconId = iconId;
         mIsIconAtStart = isIconAtStart;
         mSuggestionType = popupItemId;
@@ -113,11 +106,6 @@ public class AutofillSuggestion extends DropdownItemBase {
     @Override
     public @Nullable String getSecondarySublabel() {
         return mSecondarySublabel;
-    }
-
-    @Override
-    public @Nullable String getItemTag() {
-        return mItemTag;
     }
 
     @Override
@@ -198,7 +186,6 @@ public class AutofillSuggestion extends DropdownItemBase {
                 && this.mSublabel.equals(other.mSublabel)
                 && Objects.equals(this.mSecondarySublabel, other.mSecondarySublabel)
                 && Objects.equals(this.mLabelContentDescription, other.mLabelContentDescription)
-                && Objects.equals(this.mItemTag, other.mItemTag)
                 && this.mIconId == other.mIconId
                 && this.mIsIconAtStart == other.mIsIconAtStart
                 && this.mSuggestionType == other.mSuggestionType
@@ -222,7 +209,6 @@ public class AutofillSuggestion extends DropdownItemBase {
         private boolean mShouldDisplayTermsAvailable;
         private @Nullable String mFeatureForIph;
         private @Nullable String mIphDescriptionText;
-        private @Nullable String mItemTag;
         private @Nullable String mLabel;
         private @Nullable String mSecondaryLabel;
         private @Nullable String mSubLabel;
@@ -275,11 +261,6 @@ public class AutofillSuggestion extends DropdownItemBase {
             return this;
         }
 
-        public Builder setItemTag(String itemTag) {
-            this.mItemTag = itemTag;
-            return this;
-        }
-
         public Builder setLabel(String label) {
             this.mLabel = label;
             return this;
@@ -321,7 +302,6 @@ public class AutofillSuggestion extends DropdownItemBase {
                     mSubLabel,
                     mSecondarySubLabel,
                     mLabelContentDescription,
-                    mItemTag,
                     mIconId,
                     mIsIconAtStart,
                     mSuggestionType,

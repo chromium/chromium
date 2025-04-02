@@ -25,16 +25,10 @@ public interface DropdownItem {
     String getSecondaryLabel();
 
     /** Returns the first part of the second line that should be shown in the dropdown. */
-    @Nullable
-    String getSublabel();
+    @Nullable String getSublabel();
 
     /** Returns the second part of the second line that should be shown in the dropdown. */
-    @Nullable
-    String getSecondarySublabel();
-
-    /** Returns the item tag that should be shown in the dropdown. */
-    @Nullable
-    String getItemTag();
+    @Nullable String getSecondarySublabel();
 
     /**
      * Returns the drawable id of the icon that should be shown in the dropdown, or NO_ICON. Note:

@@ -88,18 +88,6 @@ found in the LICENSE file.
                 android:textAlignment="viewStart"
                 android:textAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline" />
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/dropdown_item_tag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/autofill_dropdown_item_label_margin"
-            android:layout_marginStart="@dimen/autofill_dropdown_item_label_margin"
-            android:ellipsize="end"
-            android:includeFontPadding="false"
-            android:singleLine="true"
-            android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline" />
     </LinearLayout>
 
     <ImageView

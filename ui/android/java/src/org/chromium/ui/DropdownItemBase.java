@@ -37,11 +37,6 @@ public class DropdownItemBase implements DropdownItem {
     }
 
     @Override
-    public @Nullable String getItemTag() {
-        return null;
-    }
-
-    @Override
     public int getIconId() {
         return NO_ICON;
     }
