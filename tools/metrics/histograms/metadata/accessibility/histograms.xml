@@ -602,7 +602,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ATK-APIs" enum="AccessibilityATKAPIEnum"
-    expires_after="2025-07-26">
+    expires_after="2025-09-28">
   <owner>jdiggs@chromium.org</owner>
   <owner>jkim@igalia.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -863,7 +863,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ChromeVox.StartUpSpeechDelay" units="ms"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>akihiroota@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -894,7 +894,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosCaretBlinkInterval" units="ms"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1461,7 +1461,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.DependencyParserModel.Create.Duration"
-    units="ms" expires_after="2025-07-28">
+    units="ms" expires_after="2025-09-28">
   <owner>xiangxiao@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1473,7 +1473,7 @@ even if they fit the naming pattern. -->
 
 <histogram
     name="Accessibility.DependencyParserModel.DependencyParserModelState"
-    enum="DependencyParserModelState" expires_after="2025-07-28">
+    enum="DependencyParserModelState" expires_after="2025-09-28">
   <owner>xiangxiao@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1483,7 +1483,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.DependencyParserModel.Inference.Duration"
-    units="ms" expires_after="2025-07-28">
+    units="ms" expires_after="2025-09-28">
   <owner>xiangxiao@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1497,7 +1497,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.DependencyParserModel.Inference.LengthInTokens"
-    units="characters" expires_after="2025-07-28">
+    units="characters" expires_after="2025-09-28">
   <owner>xiangxiao@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1511,7 +1511,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.DependencyParserModel.Inference.Succeed"
-    enum="BooleanDetected" expires_after="2025-07-28">
+    enum="BooleanDetected" expires_after="2025-09-28">
   <owner>xiangxiao@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1526,7 +1526,7 @@ even if they fit the naming pattern. -->
 
 <histogram
     name="Accessibility.DependencyParserModelLoader.DependencyParserModel.WasLoaded"
-    enum="BooleanLoaded" expires_after="2025-07-28">
+    enum="BooleanLoaded" expires_after="2025-09-28">
   <owner>xiangxiao@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1671,7 +1671,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.Android.DialogOption"
-    enum="AccessibilityImageLabelModeAndroid" expires_after="2025-07-27">
+    enum="AccessibilityImageLabelModeAndroid" expires_after="2025-09-28">
   <owner>dtseng@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1682,7 +1682,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.Android.OnlyOnWifi"
-    enum="BooleanEnabled" expires_after="2025-07-27">
+    enum="BooleanEnabled" expires_after="2025-09-28">
   <owner>dtseng@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1694,7 +1694,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.ModalDialogAccepted"
-    enum="BooleanAccepted" expires_after="2025-07-27">
+    enum="BooleanAccepted" expires_after="2025-09-28">
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
   <summary>
@@ -1729,7 +1729,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.{Result}By{Dimension}"
-    units="pixels" expires_after="2025-07-28">
+    units="pixels" expires_after="2025-09-28">
   <owner>dtseng@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1797,7 +1797,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.InlineTextBoxes.Count" units="count"
-    expires_after="2025-04-14">
+    expires_after="2025-10-14">
   <owner>mschillaci@google.com</owner>
   <owner>aleventhal@chromium.org</owner>
   <owner>chrome-a11y-core@chromium.org</owner>
@@ -1811,7 +1811,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.InlineTextBoxes.PresentInUpdate" enum="Boolean"
-    expires_after="2025-04-14">
+    expires_after="2025-10-14">
   <owner>mschillaci@google.com</owner>
   <owner>aleventhal@chromium.org</owner>
   <owner>chrome-a11y-core@chromium.org</owner>
@@ -2438,7 +2438,7 @@ even if they fit the naming pattern. -->
 
 <histogram
     name="Accessibility.Performance.BrowserAccessibilityCocoa::childrenChanged"
-    units="microseconds" expires_after="2025-07-27">
+    units="microseconds" expires_after="2025-09-28">
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2455,7 +2455,7 @@ even if they fit the naming pattern. -->
 
 <histogram
     name="Accessibility.Performance.BrowserAccessibilityCocoa::needsToUpdateChildren"
-    enum="Boolean" expires_after="2025-07-27">
+    enum="Boolean" expires_after="2025-09-28">
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -3519,7 +3519,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.WebSpeech.Duration" units="ms"
-    expires_after="2025-07-28">
+    expires_after="2025-09-28">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -3704,36 +3704,14 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram
-    name="DomDistiller.Android.OnDistillableResult.DistillableMobilePageExcluded"
-    enum="Boolean" expires_after="2025-08-24">
+    name="DomDistiller.Android.OnDistillableResult.PageDistillationResult"
+    enum="DistillationResult" expires_after="2025-08-24">
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
-    Records whether current page was excluded because it was found to be mobile
-    friendly. Recorded when ReaderModeManager gets a distillation result.
-  </summary>
-</histogram>
-
-<histogram
-    name="DomDistiller.Android.OnDistillableResult.DistillablePageExcludedByRequestDesktopSite"
-    enum="Boolean" expires_after="2025-08-24">
-  <owner>wylieb@google.com</owner>
-  <owner>chrome-reader-mode-team@google.com</owner>
-  <summary>
-    Records whether the current page is not distillable only because the user is
-    requesting the desktop site. Recorded when ReaderModeManager gets a
-    distillation result.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.Android.OnDistillableResult.PageDistillable"
-    enum="Boolean" expires_after="2025-08-24">
-  <owner>wylieb@google.com</owner>
-  <owner>chrome-reader-mode-team@google.com</owner>
-  <summary>
-    Records whether current page is considered distillable. This is different
-    from the triggering model result because it also includes android business
-    logic. Recorded when ReaderModeManager gets a distillation result.
+    Records the end-state of the distillation result. This is different from the
+    triggering model result because it also includes android business logic.
+    Recorded when ReaderModeManager gets a distillation result.
   </summary>
 </histogram>
 
@@ -3844,7 +3822,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="SodaInstaller.BinaryInstallationResult" enum="BooleanSuccess"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>yilkal@chromium.org</owner>

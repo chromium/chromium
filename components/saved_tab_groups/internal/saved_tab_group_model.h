@@ -239,6 +239,9 @@ class SavedTabGroupModel {
   // Marks that a tab group is hidden and should not be shown to users.
   void SetGroupHidden(const base::Uuid& group_id);
 
+  // Restores the hidden state of a tab group.
+  void RestoreHiddenGroupFromSync(const base::Uuid& group_id);
+
   // Called to notify of the sync bridge state changes, e.g. whether initial
   // merge or disable sync are in progress. Invoked only for shared tab group
   // bridge.

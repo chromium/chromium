@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_PRELOADING_SPECULATION_RULES_SPECULATION_RULES_PARAMS_H_
 #define CONTENT_BROWSER_PRELOADING_SPECULATION_RULES_SPECULATION_RULES_PARAMS_H_
 
+#include <optional>
+
 #include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
 
@@ -15,8 +17,8 @@ struct CONTENT_EXPORT SpeculationRulesParams {
   SpeculationRulesParams();
   SpeculationRulesParams(blink::mojom::SpeculationTargetHint target_hint,
                          blink::mojom::SpeculationEagerness eagerness,
-                         SpeculationRulesTags tags);
-  ~SpeculationRulesParams() = default;
+                         std::optional<SpeculationRulesTags> tags);
+  ~SpeculationRulesParams();
 
   // Copyable and movable.
   SpeculationRulesParams(const SpeculationRulesParams&);
@@ -33,7 +35,11 @@ struct CONTENT_EXPORT SpeculationRulesParams {
       blink::mojom::SpeculationEagerness::kConservative;
 
   // https://wicg.github.io/nav-speculation/speculation-rules.html#speculation-rule-tags
-  SpeculationRulesTags tags;
+  // Currently this is optional, as tags are not provided when
+  // RuntimeEnabledFeatures::SpeculationRulesTagEnabled() returns false.
+  // TODO(crbug.com/381687257): Make this non-optional after the feature is
+  // launched.
+  std::optional<SpeculationRulesTags> tags;
 };
 
 }  // namespace content

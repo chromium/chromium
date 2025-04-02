@@ -111,12 +111,7 @@ enum class SigninScreenState {
     _prefService = prefService;
     _syncService = syncService;
 
-    if (IsUseAccountListFromIdentityManagerEnabled()) {
-      _hadIdentitiesAtStartup =
-          !_identityManager->GetAccountsOnDevice().empty();
-    } else {
-      _hadIdentitiesAtStartup = _accountManagerService->HasIdentities();
-    }
+    _hadIdentitiesAtStartup = !_identityManager->GetAccountsOnDevice().empty();
 
     if (accessPoint == signin_metrics::AccessPoint::kStartPage) {
       if (!_localPrefService->GetBoolean(prefs::kEulaAccepted)) {
@@ -307,11 +302,7 @@ enum class SigninScreenState {
     return;
   }
   // nil is allowed only if there is no other identity.
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
-    DCHECK(selectedIdentity || _identityManager->GetAccountsOnDevice().empty());
-  } else {
-    DCHECK(selectedIdentity || !_accountManagerService->HasIdentities());
-  }
+  DCHECK(selectedIdentity || _identityManager->GetAccountsOnDevice().empty());
   _selectedIdentity = selectedIdentity;
 
   [self updateConsumerIdentity];
@@ -320,16 +311,12 @@ enum class SigninScreenState {
 #pragma mark - Private
 
 - (bool)selectedIdentityIsValid {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
-    if (self.selectedIdentity) {
-      GaiaId gaia(self.selectedIdentity.gaiaID);
-      return base::Contains(_identityManager->GetAccountsOnDevice(), gaia,
-                            [](const AccountInfo& info) { return info.gaia; });
-    }
-    return false;
-  } else {
-    return _accountManagerService->IsValidIdentity(self.selectedIdentity);
+  if (self.selectedIdentity) {
+    GaiaId gaia(self.selectedIdentity.gaiaID);
+    return base::Contains(_identityManager->GetAccountsOnDevice(), gaia,
+                          [](const AccountInfo& info) { return info.gaia; });
   }
+  return false;
 }
 
 - (void)updateConsumerIdentity {
@@ -394,22 +381,6 @@ enum class SigninScreenState {
 
 #pragma mark - ChromeAccountManagerServiceObserver
 
-- (void)identityListChanged {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
-    // Listening to `onAccountsOnDeviceChanged` instead.
-    return;
-  }
-  [self handleIdentityListChanged];
-}
-
-- (void)identityUpdated:(id<SystemIdentity>)identity {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
-    // Listening to `onExtendedAccountInfoUpdated` instead.
-    return;
-  }
-  [self handleIdentityUpdated:identity];
-}
-
 - (void)onChromeAccountManagerServiceShutdown:
     (ChromeAccountManagerService*)accountManagerService {
   // TODO(crbug.com/40284086): Remove `[self disconnect]`.
@@ -419,18 +390,10 @@ enum class SigninScreenState {
 #pragma mark -  IdentityManagerObserver
 
 - (void)onAccountsOnDeviceChanged {
-  if (!IsUseAccountListFromIdentityManagerEnabled()) {
-    // Listening to `identityListChanged` instead.
-    return;
-  }
   [self handleIdentityListChanged];
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  if (!IsUseAccountListFromIdentityManagerEnabled()) {
-    // Listening to `identityUpdated` instead.
-    return;
-  }
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
   [self handleIdentityUpdated:identity];

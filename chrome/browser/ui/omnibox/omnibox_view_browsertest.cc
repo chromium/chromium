@@ -63,6 +63,7 @@
 #include "components/search_engines/enterprise/search_aggregator_policy_handler.h"
 #include "components/search_engines/enterprise/site_search_policy_handler.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -962,6 +963,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, NonDefaultSubstitutingKeywordTest) {
   data.SetShortName(u"Search abc");
   data.SetKeyword(kSearchText);
   data.SetURL("http://abc.com/{searchTerms}");
+  data.is_active = TemplateURLData::ActiveStatus::kTrue;
   template_url_service->Add(std::make_unique<TemplateURL>(data));
 
   omnibox_view->SetUserText(std::u16string());
@@ -972,17 +974,47 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, NonDefaultSubstitutingKeywordTest) {
   ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
 
   // Check if the default match result is Search Primary Provider.
-  ASSERT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
-            omnibox_view->controller()
-                ->autocomplete_controller()
-                ->result()
-                .default_match()
-                ->type);
-  ASSERT_EQ(kSearchTextURL, omnibox_view->controller()
-                                ->autocomplete_controller()
-                                ->result()
-                                .default_match()
-                                ->destination_url.spec());
+  auto* default_match = omnibox_view->controller()
+                            ->autocomplete_controller()
+                            ->result()
+                            .default_match();
+  EXPECT_EQ(default_match->type, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
+  EXPECT_EQ(default_match->destination_url.spec(), kSearchTextURL);
+
+  omnibox_view->SetUserText(std::u16string());
+  ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
+  ASSERT_FALSE(omnibox_view->model()->PopupIsOpen());
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxViewTest, NonSubstitutingKeywordTest) {
+  OmniboxView* omnibox_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
+
+  Profile* profile = browser()->profile();
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+
+  // Add a non-substituting keyword.
+  TemplateURLData data;
+  data.SetShortName(u"abc");
+  data.SetKeyword(kSearchText);
+  data.SetURL("http://abc.com/");
+  data.is_active = TemplateURLData::ActiveStatus::kTrue;
+  template_url_service->Add(std::make_unique<TemplateURL>(data));
+
+  omnibox_view->SetUserText(std::u16string());
+
+  // We always allow exact matches for non-substituting keywords.
+  ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));
+  ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
+  ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
+
+  auto* default_match = omnibox_view->controller()
+                            ->autocomplete_controller()
+                            ->result()
+                            .default_match();
+  EXPECT_EQ(default_match->type, AutocompleteMatchType::HISTORY_KEYWORD);
+  EXPECT_EQ(default_match->destination_url.spec(), "http://abc.com/");
 
   omnibox_view->SetUserText(std::u16string());
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());

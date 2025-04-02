@@ -375,6 +375,11 @@ void PageImpl::NotifyVirtualKeyboardOverlayRect(
       keyboard_rect);
 }
 
+void PageImpl::NotifyContextMenuInsetsObservers(const gfx::Rect& safe_area) {
+  GetMainDocument().GetAssociatedLocalFrame()->NotifyContextMenuInsetsObservers(
+      safe_area);
+}
+
 void PageImpl::SetVirtualKeyboardMode(ui::mojom::VirtualKeyboardMode mode) {
   if (virtual_keyboard_mode_ == mode) {
     return;

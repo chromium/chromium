@@ -94,6 +94,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabLi
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -1961,7 +1962,7 @@ class TabListMediator implements TabListNotificationHandler {
                                 ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
                                         colorId);
                         String colorDesc = res.getString(colorDescRes);
-                        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+                        if (TabUiUtils.isDataSharingFunctionalityEnabled()
                                 && hasCollaboration(tab)) {
                             contentDescriptionString =
                                     title.isEmpty()
@@ -2619,7 +2620,8 @@ class TabListMediator implements TabListNotificationHandler {
                     filter,
                     mDataSharingTabManager,
                     tabId,
-                    model.get(TabProperties.TITLE));
+                    model.get(TabProperties.TITLE),
+                    CollaborationServiceShareOrManageEntryPoint.TAB_GROUP_ITEM_MENU_SHARE);
         }
     }
 
@@ -2706,8 +2708,7 @@ class TabListMediator implements TabListNotificationHandler {
                     descriptionTitle =
                             TabGroupTitleUtils.getDefaultTitle(mActivity, numOfRelatedTabs);
                 }
-                if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
-                        || !hasCollaboration(tab)) {
+                if (!TabUiUtils.isDataSharingFunctionalityEnabled() || !hasCollaboration(tab)) {
                     return res.getString(
                             R.string
                                     .accessibility_open_tab_group_overflow_menu_with_group_name_with_color,

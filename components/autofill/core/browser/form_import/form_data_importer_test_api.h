@@ -113,6 +113,15 @@ class FormDataImporterTestApi {
     return fdi_->fetched_card_instrument_id_;
   }
 
+  void ImportAndProcessFormData(const FormStructure& submitted_form,
+                                bool profile_autofill_enabled,
+                                bool payment_methods_autofill_enabled,
+                                ukm::SourceId ukm_source_id) {
+    fdi_->ImportAndProcessFormData(submitted_form, profile_autofill_enabled,
+                                   payment_methods_autofill_enabled,
+                                   ukm_source_id);
+  }
+
  private:
   const raw_ref<FormDataImporter> fdi_;
 };

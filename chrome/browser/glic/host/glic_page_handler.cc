@@ -766,7 +766,7 @@ void GlicPageHandler::CreateWebClient(
 }
 
 void GlicPageHandler::PrepareForClient(
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(mojom::PrepareForClientResult)> callback) {
   GetGlicService()->GetAuthController().CheckAuthBeforeLoad(
       std::move(callback));
 }
@@ -796,6 +796,15 @@ void GlicPageHandler::ClosePanel() {
   GetGlicService()->ClosePanel();
 }
 
+void GlicPageHandler::SignInAndClosePanel() {
+  GetGlicService()->GetAuthController().ShowReauthForAccount(
+      base::BindOnce(&GlicWindowController::ShowAfterSignIn,
+                     // Unretained is safe because the keyed service owns the
+                     // auth controller and the window controller.
+                     base::Unretained(&GetGlicService()->window_controller())));
+  GetGlicService()->window_controller().Close();
+}
+
 void GlicPageHandler::ResizeWidget(const gfx::Size& size,
                                    base::TimeDelta duration,
                                    ResizeWidgetCallback callback) {
@@ -807,7 +816,7 @@ void GlicPageHandler::WebUiStateChanged(glic::mojom::WebUiState new_state) {
 }
 
 void GlicPageHandler::AllowedChanged() {
-  page_->SetProfileIsReady(GlicEnabling::IsReadyForProfile(
+  page_->SetProfileReadyState(GlicEnabling::GetProfileReadyState(
       Profile::FromBrowserContext(browser_context_)));
 }
 

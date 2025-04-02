@@ -53,6 +53,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/privacy_sandbox_notice.mojom.h"
 #include "components/privacy_sandbox/privacy_sandbox_notice_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
@@ -114,6 +115,7 @@ using privacy_sandbox_test_util::InputKey;
 using privacy_sandbox_test_util::OutputKey;
 using privacy_sandbox_test_util::StateKey;
 
+using privacy_sandbox::notice::mojom::PrivacySandboxNoticeEvent;
 using privacy_sandbox_test_util::MultipleInputKeys;
 using privacy_sandbox_test_util::MultipleOutputKeys;
 using privacy_sandbox_test_util::MultipleStateKeys;
@@ -2700,7 +2702,7 @@ TEST_P(TopicsConsentTest, DidConsentOptInUpdateNoticeStorage) {
   // Pref
   auto actual =
       notice_storage_->ReadNoticeData(prefs(), GetParam().notice_name);
-  EXPECT_EQ(privacy_sandbox::NoticeEvent::kOptIn,
+  EXPECT_EQ(PrivacySandboxNoticeEvent::kOptIn,
             actual->GetNoticeActionTakenForFirstShownFromEvents()->first);
 
   // Histogram
@@ -2722,7 +2724,7 @@ TEST_P(TopicsConsentTest, DidConsentOptOutUpdateNoticeStorage) {
   auto actual =
       notice_storage_->ReadNoticeData(prefs(), GetParam().notice_name);
 
-  EXPECT_EQ(privacy_sandbox::NoticeEvent::kOptOut,
+  EXPECT_EQ(PrivacySandboxNoticeEvent::kOptOut,
             actual->GetNoticeActionTakenForFirstShownFromEvents()->first);
 
   // Histogram
@@ -2752,7 +2754,7 @@ TEST_P(NoticeAckTest, DidNoticeAckUpdateNoticeStorage) {
   // Pref
   auto actual =
       notice_storage_->ReadNoticeData(prefs(), GetParam().notice_name);
-  EXPECT_EQ(privacy_sandbox::NoticeEvent::kAck,
+  EXPECT_EQ(PrivacySandboxNoticeEvent::kAck,
             actual->GetNoticeActionTakenForFirstShownFromEvents()->first);
 
   // Histogram
@@ -2773,7 +2775,7 @@ TEST_P(NoticeSettingsTest, DidNoticeSettingsUpdateNoticeStorage) {
   // Pref
   auto actual =
       notice_storage_->ReadNoticeData(prefs(), GetParam().notice_name);
-  EXPECT_EQ(privacy_sandbox::NoticeEvent::kSettings,
+  EXPECT_EQ(PrivacySandboxNoticeEvent::kSettings,
             actual->GetNoticeActionTakenForFirstShownFromEvents()->first);
 
   // Histogram

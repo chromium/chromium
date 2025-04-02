@@ -674,6 +674,40 @@ TEST_P(CrdAdminSessionControllerTestWithBoolParams,
   EXPECT_EQ(actual_parameters.allow_file_transfer, GetParam());
 }
 
+TEST_P(CrdAdminSessionControllerTestWithBoolParams,
+       ShouldPassAllowRemoteInputToRemotingService) {
+  InitWithNoReconnectableSession(session_controller());
+  SessionParameters parameters;
+  parameters.allow_remote_input = GetParam();
+
+  remoting::ChromeOsEnterpriseParams actual_parameters;
+  EXPECT_CALL(remoting_service(), StartSession)
+      .WillOnce(SaveParamAndInvokeCallback(&actual_parameters));
+
+  delegate().StartCrdHostAndGetCode(parameters, success_callback(),
+                                    error_callback(),
+                                    session_finished_callback());
+
+  EXPECT_EQ(actual_parameters.allow_remote_input, GetParam());
+}
+
+TEST_P(CrdAdminSessionControllerTestWithBoolParams,
+       ShouldPassAllowClipboardSyncToRemotingService) {
+  InitWithNoReconnectableSession(session_controller());
+  SessionParameters parameters;
+  parameters.allow_clipboard_sync = GetParam();
+
+  remoting::ChromeOsEnterpriseParams actual_parameters;
+  EXPECT_CALL(remoting_service(), StartSession)
+      .WillOnce(SaveParamAndInvokeCallback(&actual_parameters));
+
+  delegate().StartCrdHostAndGetCode(parameters, success_callback(),
+                                    error_callback(),
+                                    session_finished_callback());
+
+  EXPECT_EQ(actual_parameters.allow_clipboard_sync, GetParam());
+}
+
 TEST_F(CrdAdminSessionControllerTest,
        ShouldReportErrorIfStartSessionReturnsError) {
   InitWithNoReconnectableSession(session_controller());

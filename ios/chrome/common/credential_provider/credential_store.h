@@ -12,8 +12,16 @@
 // Manages the storage for credentials.
 @protocol CredentialStore
 
-// All the stored credentials.
+// All the stored credentials. Prefer `getCredentialsWithCompletion` below if
+// synchronous retrieval isn't necessary.
 @property(nonatomic, readonly) NSArray<id<Credential>>* credentials;
+
+// Completion type for `getCredentialsWithCompletion`.
+typedef void (^CredentialFetchCompletion)(NSArray<id<Credential>>*);
+
+// Asynchronously retrieves all credentials in the store in a dispatched async
+// task.
+- (void)getCredentialsWithCompletion:(CredentialFetchCompletion)completion;
 
 // Returns the credential with matching `recordIdentifier` or nil if none.
 - (id<Credential>)credentialWithRecordIdentifier:(NSString*)recordIdentifier;

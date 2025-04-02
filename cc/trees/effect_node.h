@@ -102,22 +102,40 @@ struct CC_EXPORT EffectNode {
   gfx::Size subtree_size;
 
   bool cache_render_surface : 1 = false;
+
+  // This property is set when a copy request is added to the EffectTree,
+  // and is not synced from clients for TreesInViz.
   bool has_copy_request : 1 = false;
+
+  // Whether the effect node is hidden by backface visibility, for single sided
+  // nodes.
+  // This property is computed in EffectTree::UpdateBackfaceVisibility
+  // and is not synced from clients for TreesInViz.
   bool hidden_by_backface_visibility : 1 = false;
+
   // Whether the contents should continue to be visible when rotated such that
   // its back face is facing toward the camera. It's true by default.
   bool double_sided : 1 = true;
   bool trilinear_filtering : 1 = false;
+
+  // Whether the node will be drawn, as determined by the parent node, non-zero
+  // opacity, or having copy requests causing a draw to be required.
+  // This property is computed in EffectTree::UpdateIsDrawn and is not synced
+  // from clients for TreesInViz.
   bool is_drawn : 1 = true;
+
   // In most cases we only need to draw the visible part of any content
   // contributing to the effect. For copy request case, we would need to copy
   // the entire content, and could not only draw the visible part. In the rare
   // case of a backdrop zoom filter we need to take into consideration the
   // content offscreen to make sure the backdrop zoom filter is applied with the
   // correct center.
+  // This property is computed in EffectTree::UpdateOnlyDrawsVisibleContent and
+  // is not synced from clients for TreesInViz.
   bool only_draws_visible_content : 1 = true;
-  // TODO(jaydasika) : Delete this after implementation of
-  // SetHideLayerAndSubtree is cleaned up. (crbug.com/595843)
+
+  // TODO(crbug.com/40461368): Delete this after implementation of
+  // SetHideLayerAndSubtree is cleaned up.
   bool subtree_hidden : 1 = false;
   // Whether this node has a potentially running (i.e., irrespective
   // of exact timeline) filter animation.
@@ -128,24 +146,44 @@ struct CC_EXPORT EffectNode {
   // Whether this node has a potentially running (i.e., irrespective
   // of exact timeline) opacity animation.
   bool has_potential_opacity_animation : 1 = false;
+
   // Whether this node has a child node with kDstIn blend mode.
+  // This property is computed in EffectTree::UpdateHasMaskingChild and is not
+  // synced from clients for TreesInViz.
   bool has_masking_child : 1 = false;
+
   // Whether this node's effect has been changed since the last
   // frame. Needed in order to compute damage rect.
+  // This property is set automatically for TreesInViz and is not synced from
+  // clients.
   bool effect_changed : 1 = false;
+
+  // If set, the node's subtree has a copy request and the layer should
+  // not be skipped for draw property computation.
   bool subtree_has_copy_request : 1 = false;
+
   // If set, the effect node tries to not trigger a render surface due to it
   // having a rounded corner.
   bool is_fast_rounded_corner : 1 = false;
+
+  // This property is computed in EffectTree::UpdateHasFastRoundedCorner and
+  // is not synced from clients for TreesInViz.
   bool node_or_ancestor_has_fast_rounded_corner : 1 = false;
+
   // This is set to true if the node or any ancestor has filters that don't
   // allow LCD text.
+  // This property is computed in EffectTree::UpdateHasFilters and is not
+  // synced from clients for TreesInViz.
   bool lcd_text_disallowed_by_filter : 1 = false;
+
   // All node in the subtree starting from the containing render surface, and
   // before the backdrop filter node in pre tree order, if the backdrop filter
   // doesn't allow LCD text.
   // This is set and used for the impl-side effect tree only.
+  // This property is computed in CalculateDrawProperties and is not synced
+  // from clients for TreesInViz.
   bool lcd_text_disallowed_by_backdrop_filter : 1 = false;
+
   // True if a backdrop effect may be present on this effect (and therefore
   // any side-effects on ancestors should be taken into account).
   bool may_have_backdrop_effect : 1 = false;

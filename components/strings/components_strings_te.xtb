@@ -71,7 +71,6 @@
 <translation id="1122714970786750095">ఎలక్ట్రానిక్స్ &amp; ఎలక్ట్రికల్</translation>
 <translation id="1123753900084781868">ప్రస్తుతానికి లైవ్ క్యాప్షన్ అందుబాటులో లేదు</translation>
 <translation id="1125453215844207206">లేబుల్ లేని గ్రాఫిక్. Googleకు చెందిన AI టెక్నాలజీల సహాయంతో టెక్స్ట్ ఎక్స్‌ట్రాక్ట్ అవుతోంది</translation>
-<translation id="1125573121925420732">వెబ్‌సైట్‌ల యొక్క భద్రతను అప్‌డేట్ చేస్తున్నప్పుడు హెచ్చరికలు కనిపించడం సాధారణమే. ఇది త్వరలోనే మెరుగుపరచబడుతుంది.</translation>
 <translation id="112840717907525620">విధాన కాష్ సరిపోయింది</translation>
 <translation id="1131264053432022307">మీరు కాపీ చేసిన చిత్రం</translation>
 <translation id="1138458427267715730">వెబ్‌లోని ఏదైనా సైట్‌లో ధర తగ్గినప్పుడు మీరు అలర్ట్‌లను పొందండి</translation>
@@ -294,7 +293,6 @@
 <translation id="1492194039220927094">విధానాలను పుష్ చేయి:</translation>
 <translation id="1495677929897281669">తిరిగి ట్యాబ్‌కు వెళ్లు</translation>
 <translation id="1500286806237135498">(<ph name="CAMERAS_COUNT" />) కెమెరాలు</translation>
-<translation id="1501859676467574491">మీ Google ఖాతా నుండి కార్డ్‌లను చూపండి</translation>
 <translation id="1504042622576912555">ఫ్లూట్</translation>
 <translation id="1507202001669085618">&lt;p&gt;ఆన్‌లైన్‌కు వెళ్లడం కంటే ముందు సైన్ ఇన్ చేయాల్సిన అవసరం ఉన్న Wi-Fi పోర్టల్‌ను మీరు ఉపయోగిస్తున్నట్లయితే మీకు ఈ ఎర్రర్ కనిపిస్తుంది.&lt;/p&gt;
     &lt;p&gt;ఎర్రర్‌ను పరిష్కరించడానికి, మీరు తెరవాలనుకుంటున్న పేజీలో &lt;strong&gt;కనెక్ట్ చేయి&lt;/strong&gt;ని నొక్కండి.&lt;/p&gt;</translation>
@@ -2042,6 +2040,7 @@
 <translation id="4521280267704259211">ఎన్వలప్ మోనార్క్</translation>
 <translation id="4521916730539354575">లెఫ్ట్ ట్రే</translation>
 <translation id="4522570452068850558">వివరాలు</translation>
+<translation id="4523580145196408446">లింక్ చేయబడింది</translation>
 <translation id="4523643381056109546">సంకేత చిహ్నాలు</translation>
 <translation id="4524138615196389145">ఇప్పటి నుండి WebAuthn ఉపయోగించి మీ కార్డ్‌లను వేగంగా నిర్ధారించండి</translation>
 <translation id="45243788195988825"><ph name="TOPIC" />‌ను బ్లాక్ చేయండి</translation>
@@ -3114,6 +3113,7 @@
 <translation id="6405181733356710802"><ph name="APP_NAME" />‌కు కొనసాగించాలా?</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> గడువు ముగింపు తేదీ మరియు CVCని నమోదు చేయండి</translation>
 <translation id="6411107829285739505">A4x8</translation>
+<translation id="6412543105195503444">పేరెంట్ ఆమోదం డైలాగ్</translation>
 <translation id="6414010576370319452">చర్మం &amp; గోళ్ల సంరక్షణ</translation>
 <translation id="6415778972515849510">మీ Google ఖాతాను సంరక్షించుకోవడంలో, మీ పాస్‌వర్డ్‌ను మార్చడంలో Chromium మీకు సహాయపడగలదు.</translation>
 <translation id="6416877227920300343">EDP</translation>

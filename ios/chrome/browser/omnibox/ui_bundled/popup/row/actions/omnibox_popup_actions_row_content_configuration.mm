@@ -61,37 +61,39 @@
 #pragma mark OmniboxKeyboardDelegate
 
 - (BOOL)canPerformKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
+  using enum OmniboxKeyboardAction;
   switch (keyboardAction) {
-    case OmniboxKeyboardActionUpArrow: {
+    case kUpArrow: {
       if (self.isBackgroundHighlighted) {
         return NO;
       }
       return YES;
     }
-    case OmniboxKeyboardActionDownArrow: {
+    case kDownArrow: {
       if (self.highlightedActionIndex != NSNotFound) {
         return NO;
       }
       return YES;
     }
-    case OmniboxKeyboardActionLeftArrow:
-    case OmniboxKeyboardActionRightArrow:
+    case kLeftArrow:
+    case kRightArrow:
       return YES;
   }
 }
 
 - (void)performKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
+  using enum OmniboxKeyboardAction;
   switch (keyboardAction) {
-    case OmniboxKeyboardActionUpArrow: {
+    case kUpArrow: {
       self.highlightedActionIndex = NSNotFound;
       break;
     }
-    case OmniboxKeyboardActionDownArrow: {
+    case kDownArrow: {
       self.highlightedActionIndex = 0;
       break;
     }
-    case OmniboxKeyboardActionLeftArrow:
-    case OmniboxKeyboardActionRightArrow: {
+    case kLeftArrow:
+    case kRightArrow: {
       if (self.isBackgroundHighlighted) {
         self.highlightedActionIndex = 0;
       } else {
@@ -101,11 +103,9 @@
             UIUserInterfaceLayoutDirectionRightToLeft;
 
         OmniboxKeyboardAction nextActionButton =
-            isRTL ? OmniboxKeyboardActionLeftArrow
-                  : OmniboxKeyboardActionRightArrow;
+            isRTL ? kLeftArrow : kRightArrow;
         OmniboxKeyboardAction previousActionButton =
-            isRTL ? OmniboxKeyboardActionRightArrow
-                  : OmniboxKeyboardActionLeftArrow;
+            isRTL ? kRightArrow : kLeftArrow;
 
         if (keyboardAction == nextActionButton) {
           if (self.highlightedActionIndex == self.actions.count - 1) {

@@ -26,8 +26,8 @@ static const char kAttach[] = "target remote :4014";
 
 int main(int argc, char** argv) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  std::string mock_nacl_gdb_file;
-  env->GetVar("MOCK_NACL_GDB", &mock_nacl_gdb_file);
+  std::string mock_nacl_gdb_file =
+      env->GetVar("MOCK_NACL_GDB").value_or(std::string());
   CHECK_GE(argc, 5);
   // First argument should be --eval-command.
   CHECK_EQ(strcmp(argv[1], kEvalCommand), 0);

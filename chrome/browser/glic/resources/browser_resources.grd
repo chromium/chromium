@@ -29,6 +29,8 @@ found in the LICENSE file.
       <include name="IDR_GLIC_PROFILE_BANNER_BOTTOM_LEFT_LIGHT" file="glic_profile_banner_bottom_left_light.svg" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_PROFILE_BANNER_TOP_RIGHT_LIGHT" file="glic_profile_banner_top_right_light.svg" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_PROFILE_BRANDING_CSS" file="glic_profile_branding.css" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_TAB_MEDIA_GLIC_ACTIVE" file="tab_media_glic_active.svg" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_ACCESSING_ICON" file="../../../app/vector_icons/tv.icon" type="BINDATA" compress="brotli" />
     </includes>
 
     <!-- NOTE: file is currently marked as untranslatable in

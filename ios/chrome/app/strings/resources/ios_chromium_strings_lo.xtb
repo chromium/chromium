@@ -91,6 +91,7 @@
 <translation id="3054480780637153380">ເປີດການຕັ້ງຄ່າ Chromium ໃນ iOS, ຈາກນັ້ນແຕະ "ແອັບໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ" ແລ້ວເລືອກ Chromium.</translation>
 <translation id="3102849287235003384">ເພື່ອອອກຈາກລະບົບບັນຊີ Google ຂອງທ່ານຢູ່ເວັບໄຊທ໌ທັງໝົດ, ກະລຸນາ <ph name="BEGIN_LINK" />ອອກຈາກລະບົບ Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">ເຮັດໃຫ້ Chromium ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານບໍ?</translation>
+<translation id="3180939591219927904">ເປີດ "ລັອກແຖບບໍ່ເປີດເຜີຍຕົວຕົນເມື່ອທ່ານປິດ Chromium"</translation>
 <translation id="3242612358525156339">ຈາກການຕັ້ງຄ່າຂອງອຸປະກອນຂອງທ່ານ, ໃຫ້ເປີດ "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ແລ້ວເລືອກ "Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{ຕອນນີ້ກຳລັງສະແດງໜ້າຈໍ Chromium 1 ໜ້າຈໍ}other{ຕອນນີ້ກຳລັງສະແດງໜ້າຈໍ Chromium {count} ໜ້າຈໍ}}</translation>
 <translation id="3344973607274501920">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານຂອງທ່ານໄດ້. ລອງກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ.</translation>
@@ -260,6 +261,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">ຂໍ້ມູນທີ່ເລືອກໄດ້ຖືກລຶບອອກຈາກ Chromium ແລະ ອຸປະກອນທີ່ຊິ້ງຂໍ້ມູນແລ້ວ. ບັນຊີ Google ຂອງທ່ານອາດຈະມີປະຫວັດການທ່ອງເວັບຮູບແບບອື່ນ ເຊັ່ນວ່າ ການຊອກຫາ ແລະ ການເຄື່ອນໄຫວຈາກການບໍລິການອື່ນຂອງ Google ຢູ່ history.google.com.</translation>
 <translation id="7395825497086981028">ລະຫັດຜ່ານຂອງທ່ານຈະຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານສຳລັບ <ph name="EMAIL" />.</translation>
+<translation id="7504829997542308412">ເປີດ Chromium</translation>
 <translation id="7531461704633548377">ຈາກ Chromium</translation>
 <translation id="7554983317097061001">ເຄັດລັບສຳລັບ Chromium: ຍ້າຍ Chromium ໄປຫາຖາດແອັບ</translation>
 <translation id="7576863740961052505">ຈັດການການຕັ້ງຄ່າ Chromium</translation>

@@ -417,7 +417,6 @@ class VideoResourceUpdater::FrameResource {
   // Various methods for managing references. See |ref_count_| for details.
   void add_ref() { ++ref_count_; }
   void remove_ref() { --ref_count_; }
-  void clear_refs() { ref_count_ = 0; }
   bool has_refs() const { return ref_count_ != 0; }
 
  private:
@@ -442,13 +441,11 @@ class VideoResourceUpdater::SoftwareFrameResource
       uint32_t frame_resource_id,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
-      scoped_refptr<gpu::SharedImageInterface> shared_image_interface,
-      VideoResourceUpdater* video_resource_updater)
+      scoped_refptr<gpu::SharedImageInterface> shared_image_interface)
       : FrameResource(frame_resource_id,
                       size,
                       viz::SinglePlaneFormat::kBGRA_8888,
-                      /*is_software=*/true),
-        video_resource_updater_(video_resource_updater) {
+                      /*is_software=*/true) {
     shared_image_ =
         shared_image_interface->CreateSharedImageForSoftwareCompositor(
             {viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
@@ -475,8 +472,6 @@ class VideoResourceUpdater::SoftwareFrameResource
 
  private:
   // Used for SharedImage.
-  // SoftwareFrameResource is called only in VideoResourceUpdater.
-  const raw_ptr<VideoResourceUpdater> video_resource_updater_;
   gpu::SyncToken sync_token_;
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
 
@@ -793,7 +788,7 @@ VideoResourceUpdater::FrameResource* VideoResourceUpdater::AllocateResource(
     DCHECK(shared_image_interface());
 
     all_resources_.push_back(std::make_unique<SoftwareFrameResource>(
-        resource_id, size, color_space, shared_image_interface(), this));
+        resource_id, size, color_space, shared_image_interface()));
   } else {
     all_resources_.push_back(std::make_unique<HardwareFrameResource>(
         resource_id, size, format, color_space,
@@ -870,8 +865,6 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwareFrame(
 
   external_resource.type =
       ExternalResourceTypeForHardware(*video_frame, target);
-  external_resource.bits_per_channel = video_frame->BitDepth();
-
   if (external_resource.type == VideoFrameResourceType::NONE) {
     DLOG(ERROR) << "Unsupported Texture format"
                 << VideoPixelFormatToString(video_frame->format());
@@ -1327,8 +1320,6 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
   frame_resource->add_ref();
 
   VideoFrameExternalResource external_resource;
-  external_resource.bits_per_channel = bits_per_channel;
-
   if (software_compositor() || texture_needs_rgb_conversion ||
       IsFrameFormat32BitRGB(input_frame_format)) {
     CHECK(output_si_format.is_single_plane());

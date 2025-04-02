@@ -259,6 +259,12 @@ class DISPLAY_EXPORT Screen {
 // ScopedNativeScreen.
 DISPLAY_EXPORT Screen* CreateNativeScreen();
 
+#if BUILDFLAG(IS_IOS)
+// Returns the internal display device scale factor. This should only
+// be used for loading resources at startup before Screen is initialized.
+DISPLAY_EXPORT float GetInternalDisplayDeviceScaleFactor();
+#endif
+
 // ScopedNativeScreen creates a native screen if there is no screen created yet
 // (e.g. by a unit test).
 class DISPLAY_EXPORT ScopedNativeScreen final {

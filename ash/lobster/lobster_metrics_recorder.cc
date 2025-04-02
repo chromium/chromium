@@ -56,6 +56,10 @@ void RecordLobsterBlockedReason(LobsterSystemCheck failed_reason) {
       return;
     case LobsterSystemCheck::kUnsupportedPolicy:
       RecordLobsterState(LobsterMetricState::kBlockedByPolicy);
+      return;
+    case LobsterSystemCheck::kForcedDisabledOnManagedUsers:
+      // TODO: b:407471938 - add the relevant blocked metrics.
+      return;
   }
 }
 

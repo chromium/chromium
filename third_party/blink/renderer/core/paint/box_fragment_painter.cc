@@ -1330,14 +1330,10 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundWithDecorationData(
 
 void BoxFragmentPainter::PaintGapDecorations(const PaintInfo& paint_info,
                                              const PhysicalRect& paint_rect) {
-  if (!box_fragment_.SupportsGapDecorations()) {
-    return;
+  if (const GapGeometry* gap_geometry = box_fragment_.GapGeometry()) {
+    PaintGaps(kForRows, paint_info, paint_rect, *gap_geometry);
+    PaintGaps(kForColumns, paint_info, paint_rect, *gap_geometry);
   }
-
-  const GapGeometry* gap_geometry = box_fragment_.GapGeometry();
-  CHECK(gap_geometry);
-  PaintGaps(kForRows, paint_info, paint_rect, *gap_geometry);
-  PaintGaps(kForColumns, paint_info, paint_rect, *gap_geometry);
 }
 
 void BoxFragmentPainter::PaintGaps(GridTrackSizingDirection track_direction,
@@ -1685,7 +1681,7 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundForBlockInInline(
 // is implemented for multi-column.
 void BoxFragmentPainter::PaintColumnRules(const PaintInfo& paint_info,
                                           const PhysicalOffset& paint_offset) {
-  if (box_fragment_.SupportsGapDecorations()) {
+  if (box_fragment_.GapGeometry()) {
     return;
   }
 

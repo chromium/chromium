@@ -1,0 +1,21 @@
+name: Release
+
+on:
+  release:
+    types: [released]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package sources into tar.gz
+        run: git ls-tree -r -z --name-only HEAD | tar --null --files-from=- --transform="flags=r;s:^:${{github.event.repository.name}}-${{github.event.release.tag_name}}/:" --sort=name --mtime=2030-01-01T00:00:00Z --owner=0 --group=0 --numeric-owner --create --gzip --file=${{github.event.repository.name}}-${{github.ref_name}}.tar.gz
+      - name: Upload release archive
+        run: gh release upload ${{github.ref_name}} ${{github.event.repository.name}}-${{github.ref_name}}.tar.gz
+        env:
+          GH_TOKEN: ${{github.token}}

@@ -15,9 +15,9 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
@@ -28,8 +28,13 @@ namespace ash {
 namespace {
 const AccountId kDefaultOwnerAccountId =
     AccountId::FromUserEmailGaiaId(test::kTestEmail, GaiaId(test::kTestGaiaId));
-const AccountId kManagedUserAccountId =
-    AccountId::FromUserEmail("example@example.com");
+constexpr char kKioskAppUserEmail[] =
+    "example@kiosk-apps.device-local.localhost";
+constexpr char kWebKioskAppUserEmail[] =
+    "example@web-kiosk-apps.device-local.localhost";
+constexpr char kPublicAccountUserEmail[] =
+    "example@public-accounts.device-local.localhost";
+
 }  // namespace
 
 // Test params:
@@ -44,8 +49,6 @@ class FamilyUserDeviceMetricsTest
     return GetLogInType() == LoggedInUserMixin::LogInType::kChild;
   }
   bool IsUserExisting() const { return std::get<1>(GetParam()); }
-
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged> user_manager_ = nullptr;
 
   LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, /*test_base=*/this, embedded_test_server(), GetLogInType(),
@@ -69,8 +72,6 @@ class FamilyUserDeviceMetricsTest
     // Child users require user policy. Set up an empty one so the user can get
     // through login.
     user_policy_mixin_.RequestPolicyUpdate();
-    user_manager_ =
-        static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
   }
 
  private:
@@ -88,7 +89,8 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, MAYBE_IsDeviceOwner) {
   base::HistogramTester histogram_tester;
 
   // Set the device owner to the logged in user.
-  user_manager_->SetOwnerId(logged_in_user_mixin_.GetAccountId());
+  user_manager::UserManager::Get()->SetOwnerId(
+      logged_in_user_mixin_.GetAccountId());
   logged_in_user_mixin_.LogInUser(
       {ash::LoggedInUserMixin::LoginDetails::kNoBrowserLaunch});
 
@@ -104,7 +106,7 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, MAYBE_IsNotDeviceOwner) {
   base::HistogramTester histogram_tester;
 
   // Set the device owner to an arbitrary account that's not logged in.
-  user_manager_->SetOwnerId(kDefaultOwnerAccountId);
+  user_manager::UserManager::Get()->SetOwnerId(kDefaultOwnerAccountId);
   logged_in_user_mixin_.LogInUser(
       {ash::LoggedInUserMixin::LoginDetails::kNoBrowserLaunch});
 
@@ -221,17 +223,16 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, LoginAsNewRegularUser) {
 IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, GuestUser) {
   base::HistogramTester histogram_tester;
 
-  user_manager_->AddGuestUser();
+  auto* user_manager = user_manager::UserManager::Get();
+  ASSERT_TRUE(user_manager::TestHelper(user_manager).AddGuestUser());
 
   logged_in_user_mixin_.GetLoginManagerMixin()->SkipPostLoginScreens();
   logged_in_user_mixin_.GetLoginManagerMixin()->LoginAsNewRegularUser();
   logged_in_user_mixin_.GetLoginManagerMixin()->WaitForActiveSession();
 
-  size_t total_user_count = IsUserExisting() ? 3 : 2;
-  EXPECT_EQ(total_user_count, user_manager_->GetPersistedUsers().size());
-
   // If no existing users on login screen, then this user is the first and only.
-  const int gaia_users_count = IsUserExisting() ? 2 : 1;
+  const size_t gaia_users_count = IsUserExisting() ? 2 : 1;
+  EXPECT_EQ(gaia_users_count, user_manager->GetPersistedUsers().size());
 
   histogram_tester.ExpectUniqueSample(
       FamilyUserDeviceMetrics::GetGaiaUsersCountHistogramNameForTest(),
@@ -262,11 +263,13 @@ class FamilyUserDeviceMetricsManagedDeviceTest
 IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsManagedDeviceTest, KioskAppUser) {
   base::HistogramTester histogram_tester;
 
-  user_manager_->AddKioskAppUser(kManagedUserAccountId);
+  auto* user_manager = user_manager::UserManager::Get();
+  ASSERT_TRUE(user_manager::TestHelper(user_manager)
+                  .AddKioskAppUser(kKioskAppUserEmail));
   LoginAsNewRegularUser();
 
   size_t total_user_count = IsUserExisting() ? 3 : 2;
-  EXPECT_EQ(total_user_count, user_manager_->GetPersistedUsers().size());
+  EXPECT_EQ(total_user_count, user_manager->GetPersistedUsers().size());
 
   // If no existing users on login screen, then this user is the first and only.
   const int gaia_users_count = IsUserExisting() ? 2 : 1;
@@ -281,11 +284,13 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsManagedDeviceTest,
                        WebKioskAppUser) {
   base::HistogramTester histogram_tester;
 
-  user_manager_->AddWebKioskAppUser(kManagedUserAccountId);
+  auto* user_manager = user_manager::UserManager::Get();
+  ASSERT_TRUE(user_manager::TestHelper(user_manager)
+                  .AddWebKioskAppUser(kWebKioskAppUserEmail));
   LoginAsNewRegularUser();
 
   size_t total_user_count = IsUserExisting() ? 3 : 2;
-  EXPECT_EQ(total_user_count, user_manager_->GetPersistedUsers().size());
+  EXPECT_EQ(total_user_count, user_manager->GetPersistedUsers().size());
 
   // If no existing users on login screen, then this user is the first and only.
   const int gaia_users_count = IsUserExisting() ? 2 : 1;
@@ -300,11 +305,13 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsManagedDeviceTest,
                        PublicAccountUser) {
   base::HistogramTester histogram_tester;
 
-  user_manager_->AddPublicAccountUser(kManagedUserAccountId);
+  auto* user_manager = user_manager::UserManager::Get();
+  ASSERT_TRUE(user_manager::TestHelper(user_manager)
+                  .AddPublicAccountUser(kPublicAccountUserEmail));
   LoginAsNewRegularUser();
 
   size_t total_user_count = IsUserExisting() ? 3 : 2;
-  EXPECT_EQ(total_user_count, user_manager_->GetPersistedUsers().size());
+  EXPECT_EQ(total_user_count, user_manager->GetPersistedUsers().size());
 
   // If no existing users on login screen, then this user is the first and only.
   const int gaia_users_count = IsUserExisting() ? 2 : 1;

@@ -29,6 +29,7 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #import "ui/base/cocoa/user_interface_item_command_handler.h"
 #import "ui/base/cocoa/window_size_constants.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace {
 
@@ -832,8 +833,9 @@ struct NSEdgeAndCornerThicknesses {
 // NSWindow overrides (NSAccessibility informal protocol implementation).
 
 - (NSString*)accessibilityDocument {
-  if (id root = [self rootAccessibilityObject]) {
-    if (auto* cocoaNode = ui::AXPlatformNode::FromNativeViewAccessible(root)) {
+  if (id<NSAccessibility> root = [self rootAccessibilityObject]) {
+    if (auto* cocoaNode = ui::AXPlatformNode::FromNativeViewAccessible(
+            gfx::NativeViewAccessible(root))) {
       return [NSString stringWithUTF8String:cocoaNode->GetRootURL().c_str()];
     }
   }

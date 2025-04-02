@@ -82,8 +82,10 @@ bool FindDescendantRoleWithMaxDepth(const AXPlatformNodeBase* node,
 // Map from each AXPlatformNode's unique id to its instance.
 using UniqueIdMap =
     absl::flat_hash_map<int32_t, raw_ptr<AXPlatformNode, CtnExperimental>>;
-base::LazyInstance<UniqueIdMap>::Leaky g_unique_id_map =
-    LAZY_INSTANCE_INITIALIZER;
+UniqueIdMap& GetUniqueIdMap() {
+  static base::NoDestructor<UniqueIdMap> map;
+  return *map;
+}
 
 // Adds process-wide statistics about accessibility objects to traces.
 class AXPlatformNodeMemoryDumpProvider
@@ -147,17 +149,18 @@ AXPlatformNode::Pointer AXPlatformNode::Create(
 
 // static
 AXPlatformNode* AXPlatformNodeBase::GetFromUniqueId(int32_t unique_id) {
-  UniqueIdMap* unique_ids = g_unique_id_map.Pointer();
-  auto iter = unique_ids->find(unique_id);
-  if (iter != unique_ids->end())
+  UniqueIdMap& unique_ids = GetUniqueIdMap();
+  auto iter = unique_ids.find(unique_id);
+  if (iter != unique_ids.end()) {
     return iter->second;
+  }
 
   return nullptr;
 }
 
 // static
 size_t AXPlatformNodeBase::GetInstanceCountForTesting() {
-  return g_unique_id_map.Get().size();
+  return GetUniqueIdMap().size();
 }
 
 // static
@@ -176,53 +179,60 @@ void AXPlatformNodeBase::Init(AXPlatformNodeDelegate* delegate) {
   delegate_ = delegate;
 
   // This must be called after assigning our delegate.
-  g_unique_id_map.Get()[GetUniqueId()] = this;
+  GetUniqueIdMap()[GetUniqueId()] = this;
 
   static base::NoDestructor<AXPlatformNodeMemoryDumpProvider> dump_provider(
-      g_unique_id_map.Get());
+      GetUniqueIdMap());
 }
 
 const AXNodeData& AXPlatformNodeBase::GetData() const {
   static const base::NoDestructor<AXNodeData> empty_data;
-  if (delegate_)
+  if (delegate_) {
     return delegate_->GetData();
+  }
   return *empty_data;
 }
 
 gfx::NativeViewAccessible AXPlatformNodeBase::GetFocus() const {
-  if (delegate_)
+  if (delegate_) {
     return delegate_->GetFocus();
-  return nullptr;
+  }
+  return gfx::NativeViewAccessible();
 }
 
 gfx::NativeViewAccessible AXPlatformNodeBase::GetParent() const {
-  if (delegate_)
+  if (delegate_) {
     return delegate_->GetParent();
-  return nullptr;
+  }
+  return gfx::NativeViewAccessible();
 }
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetPlatformParent() const {
-  if (delegate_)
+  if (delegate_) {
     return FromNativeViewAccessible(delegate_->GetParent());
+  }
   return nullptr;
 }
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetPlatformTextFieldAncestor() const {
-  if (delegate_)
+  if (delegate_) {
     return FromNativeViewAccessible(delegate_->GetTextFieldAncestor());
+  }
   return nullptr;
 }
 
 size_t AXPlatformNodeBase::GetChildCount() const {
-  if (delegate_)
+  if (delegate_) {
     return delegate_->GetChildCount();
+  }
   return 0;
 }
 
 gfx::NativeViewAccessible AXPlatformNodeBase::ChildAtIndex(size_t index) const {
-  if (delegate_)
+  if (delegate_) {
     return delegate_->ChildAtIndex(index);
-  return nullptr;
+  }
+  return gfx::NativeViewAccessible();
 }
 
 std::string AXPlatformNodeBase::GetName() const {
@@ -338,7 +348,7 @@ std::optional<int> AXPlatformNodeBase::CompareTo(AXPlatformNodeBase& other) {
   //  - |this| is an ancestor of |other|.
   //  - |this|'s first uncommon ancestor comes before |other|'s first uncommon
   //    ancestor. The first uncommon ancestor is defined as the immediate child
-  //    of the lowest common anestor of the two nodes. The first uncommon
+  //    of the lowest common ancestor of the two nodes. The first uncommon
   //    ancestor of |this| and |other| share the same parent (i.e. lowest common
   //    ancestor), so we can just compare the first uncommon ancestors' child
   //    indices to determine their relative positions.
@@ -351,14 +361,15 @@ std::optional<int> AXPlatformNodeBase::CompareTo(AXPlatformNodeBase& other) {
   // traverse from the root, the node that we visited earlier is always going to
   // be before (logically less) the node we visit later.
 
-  if (this == &other)
+  if (this == &other) {
     return std::optional<int>(0);
+  }
 
   // Compute the ancestor stacks of both positions and traverse them from the
   // top most ancestor down, so we can discover the first uncommon ancestors.
   // The first uncommon ancestor is the immediate child of the lowest common
   // ancestor.
-  gfx::NativeViewAccessible common_ancestor = nullptr;
+  gfx::NativeViewAccessible common_ancestor = gfx::NativeViewAccessible();
   base::stack<gfx::NativeViewAccessible> our_ancestors = GetAncestors();
   base::stack<gfx::NativeViewAccessible> other_ancestors = other.GetAncestors();
 
@@ -373,16 +384,19 @@ std::optional<int> AXPlatformNodeBase::CompareTo(AXPlatformNodeBase& other) {
   }
 
   // Nodes do not have a common ancestor, they are not comparable.
-  if (!common_ancestor)
+  if (!common_ancestor) {
     return std::nullopt;
+  }
 
   // Compute the logical order when the common ancestor is |this| or |other|.
   auto* common_ancestor_platform_node =
       FromNativeViewAccessible(common_ancestor);
-  if (common_ancestor_platform_node == this)
+  if (common_ancestor_platform_node == this) {
     return std::optional<int>(-1);
-  if (common_ancestor_platform_node == &other)
+  }
+  if (common_ancestor_platform_node == &other) {
     return std::optional<int>(1);
+  }
 
   // Compute the logical order of |this| and |other| by using their first
   // uncommon ancestors.
@@ -392,8 +406,9 @@ std::optional<int> AXPlatformNodeBase::CompareTo(AXPlatformNodeBase& other) {
     std::optional<int> other_index_in_parent =
         FromNativeViewAccessible(other_ancestors.top())->GetIndexInParent();
 
-    if (!this_index_in_parent || !other_index_in_parent)
+    if (!this_index_in_parent || !other_index_in_parent) {
       return std::nullopt;
+    }
 
     int this_uncommon_ancestor_index = this_index_in_parent.value();
     int other_uncommon_ancestor_index = other_index_in_parent.value();
@@ -409,8 +424,9 @@ std::optional<int> AXPlatformNodeBase::CompareTo(AXPlatformNodeBase& other) {
 }
 
 AXNodeID AXPlatformNodeBase::GetNodeId() const {
-  if (!delegate_)
+  if (!delegate_) {
     return kInvalidAXNodeID;
+  }
 
   return delegate_->GetData().id;
 }
@@ -456,7 +472,7 @@ AXPlatformNodeBase* AXPlatformNodeBase::GetActiveDescendant() const {
 // AXPlatformNode overrides.
 
 void AXPlatformNodeBase::Destroy() {
-  g_unique_id_map.Get().erase(GetUniqueId());
+  GetUniqueIdMap().erase(GetUniqueId());
   AXPlatformNode::Destroy();
   delegate_ = nullptr;
   Dispose();
@@ -467,7 +483,7 @@ void AXPlatformNodeBase::Dispose() {
 }
 
 gfx::NativeViewAccessible AXPlatformNodeBase::GetNativeViewAccessible() {
-  return nullptr;
+  return gfx::NativeViewAccessible();
 }
 
 void AXPlatformNodeBase::NotifyAccessibilityEvent(ax::mojom::Event event_type) {

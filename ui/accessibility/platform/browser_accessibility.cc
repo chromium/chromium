@@ -936,8 +936,9 @@ gfx::NativeViewAccessible BrowserAccessibility::GetParent() const {
 
   AXPlatformTreeManagerDelegate* delegate =
       manager_->GetDelegateFromRootManager();
-  if (!delegate)
-    return nullptr;
+  if (!delegate) {
+    return gfx::NativeViewAccessible();
+  }
   return delegate->AccessibilityGetNativeViewAccessible();
 }
 
@@ -948,36 +949,41 @@ size_t BrowserAccessibility::GetChildCount() const {
 gfx::NativeViewAccessible BrowserAccessibility::ChildAtIndex(
     size_t index) const {
   BrowserAccessibility* child = PlatformGetChild(index);
-  if (!child)
-    return nullptr;
+  if (!child) {
+    return gfx::NativeViewAccessible();
+  }
   return child->GetNativeViewAccessible();
 }
 
 gfx::NativeViewAccessible BrowserAccessibility::GetFirstChild() const {
   BrowserAccessibility* child = PlatformGetFirstChild();
-  if (!child)
-    return nullptr;
+  if (!child) {
+    return gfx::NativeViewAccessible();
+  }
   return child->GetNativeViewAccessible();
 }
 
 gfx::NativeViewAccessible BrowserAccessibility::GetLastChild() const {
   BrowserAccessibility* child = PlatformGetLastChild();
-  if (!child)
-    return nullptr;
+  if (!child) {
+    return gfx::NativeViewAccessible();
+  }
   return child->GetNativeViewAccessible();
 }
 
 gfx::NativeViewAccessible BrowserAccessibility::GetNextSibling() const {
   BrowserAccessibility* sibling = PlatformGetNextSibling();
-  if (!sibling)
-    return nullptr;
+  if (!sibling) {
+    return gfx::NativeViewAccessible();
+  }
   return sibling->GetNativeViewAccessible();
 }
 
 gfx::NativeViewAccessible BrowserAccessibility::GetPreviousSibling() const {
   BrowserAccessibility* sibling = PlatformGetPreviousSibling();
-  if (!sibling)
-    return nullptr;
+  if (!sibling) {
+    return gfx::NativeViewAccessible();
+  }
   return sibling->GetNativeViewAccessible();
 }
 
@@ -1019,29 +1025,32 @@ gfx::NativeViewAccessible BrowserAccessibility::GetLowestPlatformAncestor()
       PlatformGetLowestPlatformAncestor();
   if (lowest_platform_ancestor)
     return lowest_platform_ancestor->GetNativeViewAccessible();
-  return nullptr;
+  return gfx::NativeViewAccessible();
 }
 
 gfx::NativeViewAccessible BrowserAccessibility::GetTextFieldAncestor() const {
   BrowserAccessibility* text_field_ancestor = PlatformGetTextFieldAncestor();
-  if (text_field_ancestor)
+  if (text_field_ancestor) {
     return text_field_ancestor->GetNativeViewAccessible();
-  return nullptr;
+  }
+  return gfx::NativeViewAccessible();
 }
 
 gfx::NativeViewAccessible BrowserAccessibility::GetSelectionContainer() const {
   BrowserAccessibility* selection_container = PlatformGetSelectionContainer();
-  if (selection_container)
+  if (selection_container) {
     return selection_container->GetNativeViewAccessible();
-  return nullptr;
+  }
+  return gfx::NativeViewAccessible();
 }
 
 gfx::NativeViewAccessible BrowserAccessibility::GetTableAncestor() const {
   BrowserAccessibility* table_ancestor =
       manager()->GetFromAXNode(node()->GetTableAncestor());
-  if (table_ancestor)
+  if (table_ancestor) {
     return table_ancestor->GetNativeViewAccessible();
-  return nullptr;
+  }
+  return gfx::NativeViewAccessible();
 }
 
 BrowserAccessibility::PlatformChildIterator::PlatformChildIterator(
@@ -1123,24 +1132,27 @@ gfx::NativeViewAccessible BrowserAccessibility::HitTestSync(
     int physical_pixel_y) const {
   BrowserAccessibility* accessible = manager_->CachingAsyncHitTest(
       gfx::Point(physical_pixel_x, physical_pixel_y));
-  if (!accessible)
-    return nullptr;
+  if (!accessible) {
+    return gfx::NativeViewAccessible();
+  }
 
   return accessible->GetNativeViewAccessible();
 }
 
 gfx::NativeViewAccessible BrowserAccessibility::GetFocus() const {
   BrowserAccessibility* focused = manager()->GetFocus();
-  if (!focused)
-    return nullptr;
+  if (!focused) {
+    return gfx::NativeViewAccessible();
+  }
 
   return focused->GetNativeViewAccessible();
 }
 
 AXPlatformNode* BrowserAccessibility::GetFromNodeID(int32_t id) {
   BrowserAccessibility* node = manager_->GetFromID(id);
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   return node->GetAXPlatformNode();
 }
@@ -1150,12 +1162,14 @@ AXPlatformNode* BrowserAccessibility::GetFromTreeIDAndNodeID(
     int32_t id) {
   BrowserAccessibilityManager* manager =
       BrowserAccessibilityManager::FromID(ax_tree_id);
-  if (!manager)
+  if (!manager) {
     return nullptr;
+  }
 
   BrowserAccessibility* node = manager->GetFromID(id);
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   return node->GetAXPlatformNode();
 }

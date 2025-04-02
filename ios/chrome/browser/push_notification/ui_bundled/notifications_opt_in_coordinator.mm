@@ -156,14 +156,9 @@
 #pragma mark - Private
 
 - (bool)hasIdentitiesOnDevice {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
-    return !IdentityManagerFactory::GetForProfile(self.profile)
-                ->GetAccountsOnDevice()
-                .empty();
-  } else {
-    return ChromeAccountManagerServiceFactory::GetForProfile(self.profile)
-        ->HasIdentities();
-  }
+  return !IdentityManagerFactory::GetForProfile(self.profile)
+              ->GetAccountsOnDevice()
+              .empty();
 }
 
 // Dismisses the base view controller.

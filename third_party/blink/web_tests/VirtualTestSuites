@@ -111,6 +111,19 @@
     "args": ["--enable-accelerated-2d-canvas"],
     "expires": "never"
   },
+  "This never expires because it tests a shipping configuration",
+  {
+    "prefix": "cpu-compositing",
+    "owners": ["fserb@chromium.org", "jpgravel@chromium.org"],
+    "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
+    "bases": ["wpt_internal/html/canvas/context-lost"],
+    "exclusive_tests": ["wpt_internal/html/canvas/context-lost"],
+    "args": [
+      "--disable-gpu-compositing",
+      "--enable-threaded-compositing"
+    ],
+    "expires": "never"
+  },
 
   "The threaded virtual suite tests with threaded compositing, which is the",
   "configuration that we ship.  Because this is testing what we ship (in a way",
@@ -791,80 +804,16 @@
     "expires": "never",
     "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
   },
-  {
-    "prefix": "fluent-non-overlay-scrollbar",
-    "platforms": ["Linux", "Win"],
-    "bases": ["fast/scrolling/scrollbars",
-              "external/wpt/css/css-scrollbars",
-              "scrollbars/scaled-rendering"],
-    "args": ["--enable-features=FluentScrollbar",
-             "--enable-threaded-compositing"],
-    "expires": "Jul 1, 2025",
-    "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
-  },
-  {
-    "prefix": "fluent-non-overlay-scrollbar-dsf-150",
-    "platforms": ["Linux", "Win"],
-    "bases": ["virtual/fluent-non-overlay-scrollbar/composited"],
-    "args": ["--enable-features=FluentScrollbar",
-             "--enable-threaded-compositing",
-             "--force-device-scale-factor=1.5"],
-    "expires": "Jul 1, 2025",
-    "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
-  },
-  {
-    "prefix": "fluent-non-overlay-scrollbar-dsf-200",
-    "platforms": ["Linux", "Win"],
-    "bases": ["virtual/fluent-non-overlay-scrollbar/composited"],
-    "args": ["--enable-features=FluentScrollbar",
-             "--enable-threaded-compositing",
-             "--force-device-scale-factor=2"],
-    "expires": "Jul 1, 2025",
-    "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
-  },
-  {
-    "prefix": "fluent-non-overlay-scrollbar-hc",
-    "platforms": ["Linux", "Win"],
-    "bases": ["virtual/fluent-non-overlay-scrollbar/composited",
-              "virtual/fluent-non-overlay-scrollbar/hover-over-scrollbar-thumb.html"],
-    "args": ["--enable-features=FluentScrollbar",
-             "--enable-threaded-compositing",
-             "--force-high-contrast"],
-    "expires": "Jul 1, 2025",
-    "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
-  },
-  {
-    "prefix": "fluent-non-overlay-scrollbar-dark-mode",
-    "platforms": ["Linux", "Win"],
-    "bases": ["fast/forms/color-scheme/scrollbar",
-              "virtual/fluent-non-overlay-scrollbar/hover-over-scrollbar-thumb.html"],
-    "args": ["--enable-features=FluentScrollbar",
-             "--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true"],
-    "expires": "Jul 1, 2025",
-    "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
-  },
 
   "RasterInducingScroll disabled due to crbug.com/349939555",
   {
     "prefix": "fluent-overlay-scrollbar",
     "platforms": ["Linux", "Win"],
-    "bases": ["virtual/fluent-non-overlay-scrollbar/hover-over-scrollbar-thumb.html",
-              "virtual/fluent-non-overlay-scrollbar/main/hover-over-main-thread.html",
-              "virtual/overlay-scrollbar/overlay-scrollbar-smoke-test.html"],
+    "bases": ["virtual/overlay-scrollbar/overlay-scrollbar-smoke-test.html"],
     "exclusive_tests": ["virtual/overlay-scrollbar/overlay-scrollbar-smoke-test.html"],
     "args": ["--enable-features=FluentOverlayScrollbar",
              "--enable-threaded-compositing",
              "--disable-features=RasterInducingScroll"],
-    "expires": "Jul 1, 2025",
-    "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
-  },
-  {
-    "prefix": "fluent-overlay-scrollbar-hc",
-    "platforms": ["Linux", "Win"],
-    "bases": ["virtual/fluent-non-overlay-scrollbar/hover-over-scrollbar-thumb.html"],
-    "args": ["--enable-features=FluentOverlayScrollbar",
-             "--enable-threaded-compositing",
-             "--force-high-contrast"],
     "expires": "Jul 1, 2025",
     "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
   },
@@ -1490,7 +1439,7 @@
       "external/wpt/shared-storage",
       "http/tests/inspector-protocol/shared-storage"
     ],
-    "args": ["--enable-features=SharedStorageAPI,SharedStorageWebLocks,InterestGroupsInSharedStorageWorklet,Fledge,AdInterestGroupAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges,FencedFramesDefaultMode,SharedStorageAPIEnableWALForDatabase,FencedFramesEnforceFocus,FencedFramesReportEventHeaderChanges,SharedStorageSelectURLSavedQueries,SharedStorageCreateWorkletCustomDataOrigin"],
+    "args": ["--enable-features=SharedStorageAPI,SharedStorageWebLocks,InterestGroupsInSharedStorageWorklet,Fledge,AdInterestGroupAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges,FencedFramesDefaultMode,SharedStorageAPIEnableWALForDatabase,FencedFramesEnforceFocus,FencedFramesReportEventHeaderChanges,SharedStorageSelectURLSavedQueries,SharedStorageCreateWorkletCustomDataOrigin,SharedStorageTransactionalBatchUpdate"],
     "expires": "Jan 31, 2025"
   },
   {

@@ -284,6 +284,11 @@ export declare interface ClientApiDelegate {
   getStudentList(courseId: string): Promise<Identity[]>;
 
   /**
+   * Add students to the current session.
+   */
+  addStudents(ids: string[]): Promise<boolean>;
+
+  /**
    * Get list of assignments in a course.
    */
   getAssignmentList(courseId: string): Promise<Assignment[]>;

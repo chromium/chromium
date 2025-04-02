@@ -264,6 +264,13 @@ enum RemoveStudentError{
   kHTTPError,
 };
 
+enum AddStudentsError{
+  // Invalid access code.
+  kInvalid,
+  // Network failure.
+  kHTTPError,
+};
+
 enum SubmitAccessCodeError {
   kInvalid,
 };
@@ -306,6 +313,8 @@ interface PageHandler {
   => (UpdateSessionError? error);
   // Remove student from session.
   RemoveStudent(string id) => (RemoveStudentError? error);
+  // Add students to a session.
+  AddStudents(array<string> ids) => (AddStudentsError? error);
   // Update OnTask config.
   UpdateOnTaskConfig(OnTaskConfig on_task_config)
   => (UpdateSessionError? error);

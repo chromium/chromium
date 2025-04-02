@@ -70,7 +70,6 @@
 <translation id="1122714970786750095">Electrónica e electricidade</translation>
 <translation id="1123753900084781868">A función Subtítulos instantáneos non está dispoñible nestes intres</translation>
 <translation id="1125453215844207206">Gráfico sen etiquetar. Extraendo texto coa tecnoloxía da IA de Google</translation>
-<translation id="1125573121925420732">Podes ver avisos con frecuencia mentres os sitios web actualizan os seus sistemas de seguranza, pero a situación mellorará en breve.</translation>
 <translation id="112840717907525620">Caché de política correcta</translation>
 <translation id="1131264053432022307">Imaxe que copiaches</translation>
 <translation id="1138458427267715730">Recibe alertas cando baixe o prezo en calquera sitio da Web</translation>
@@ -297,7 +296,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1492194039220927094">Aplicación de políticas:</translation>
 <translation id="1495677929897281669">Volver á pestana</translation>
 <translation id="1500286806237135498">Cámaras (<ph name="CAMERAS_COUNT" />)</translation>
-<translation id="1501859676467574491">Mostra tarxetas da túa Conta de Google</translation>
 <translation id="1504042622576912555">Cartón dunha onda</translation>
 <translation id="1507202001669085618">&lt;p&gt;Verás este erro se utilizas un portal wifi no que tes que iniciar sesión para poder conectarte a Internet.&lt;/p&gt;
     &lt;p&gt;Para solucionar o erro, fai clic en &lt;strong&gt;Conectar&lt;/strong&gt; na páxina que tentas abrir.&lt;/p&gt;</translation>
@@ -568,6 +566,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1975584088563498795">Caixa de correo 10</translation>
 <translation id="1978555033938440688">Versión do firmware</translation>
 <translation id="1979156660928743046">Información sobre o contido multimedia</translation>
+<translation id="1987486584747170374">As túas buscas, os mellores resultados e o contido das páxinas envíanse a Google. Os membros do equipo de revisión non poden usar estes datos para mellorar a IA. A túa organización pode cambiar esta configuración en calquera momento.</translation>
 <translation id="1988881251331415125">Se está ben escrito, podes <ph name="BEGIN_LINK" />probar a executar diagnósticos de conectividade<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567">O URL <ph name="URL" /> quere almacenar un gran volume de datos de forma permanente no teu ordenador local</translation>
@@ -763,6 +762,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2301098101308036335">Que sitios web se visitan e cando.</translation>
 <translation id="230286397113210245">Botón para abrir unha ventá do modo de incógnito. Actívao para abrir unha nova ventá do modo de incógnito e navegar de forma privada</translation>
 <translation id="2306124309679506798">Queres permitir unha experiencia envolvente?</translation>
+<translation id="2307711332257985952">Os enderezos da casa e do traballo xa están dispoñibles en Chrome</translation>
 <translation id="2312234273148520048">Condimentos e aderezos</translation>
 <translation id="2316087952091171402">Menos de <ph name="UPPER_ESTIMATE" />. Algúns sitios pode que carguen máis lentamente a próxima vez que os visites.</translation>
 <translation id="2316159751672436664">Personalizar as túas ferramentas de accesibilidade na configuración de Chrome OS</translation>
@@ -1178,6 +1178,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3102312643185441063">Aforros</translation>
 <translation id="3103188521861412364">Accións e bonos</translation>
 <translation id="3103535543639438037">Compara produtos similares en paralelo</translation>
+<translation id="3103993932858740905">Cando pagas a prazos, complétase un número de tarxeta virtual único. Este número só serve para esta compra.</translation>
 <translation id="3105172416063519923">Código de identificación do recurso:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Comprobar a configuración do DNS seguro<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Bandexa central</translation>

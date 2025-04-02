@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "ui/accessibility/ax_common.h"
 
 namespace blink {
@@ -454,16 +455,18 @@ void AXRelationCache::UpdateReverseElementAttributeRelations(
   }
 }
 
-Vector<QualifiedName>& AXRelationCache::GetTextRelationAttributes() {
+base::span<QualifiedName> AXRelationCache::GetTextRelationAttributes() {
+  // Avoid issues with commas within the type name in DEFINE_STATIC_LOCAL().
+  using QualifiedNameArray = std::array<QualifiedName, 3>;
   DEFINE_STATIC_LOCAL(
-      Vector<QualifiedName>, text_attributes,
+      QualifiedNameArray, text_attributes,
       ({html_names::kAriaLabelledbyAttr, html_names::kAriaLabeledbyAttr,
         html_names::kAriaDescribedbyAttr}));
   return text_attributes;
 }
 
 void AXRelationCache::UpdateReverseTextRelations(Element& source) {
-  Vector<QualifiedName> text_attributes = GetTextRelationAttributes();
+  base::span<QualifiedName> text_attributes = GetTextRelationAttributes();
   for (const QualifiedName& attribute : text_attributes) {
     UpdateReverseTextRelations(source, attribute);
   }
@@ -545,9 +548,11 @@ void AXRelationCache::UpdateReverseOwnsRelations(Element& source) {
                          aria_owns_node_map_);
 }
 
-Vector<QualifiedName>& AXRelationCache::GetOtherRelationAttributes() {
+base::span<QualifiedName> AXRelationCache::GetOtherRelationAttributes() {
+  // Avoid issues with commas within the type name in DEFINE_STATIC_LOCAL().
+  using QualifiedNameArray = std::array<QualifiedName, 5>;
   DEFINE_STATIC_LOCAL(
-      Vector<QualifiedName>, attributes,
+      QualifiedNameArray, attributes,
       ({html_names::kAriaControlsAttr, html_names::kAriaDetailsAttr,
         html_names::kAriaErrormessageAttr, html_names::kAriaFlowtoAttr,
         html_names::kAriaActionsAttr}));
@@ -555,7 +560,7 @@ Vector<QualifiedName>& AXRelationCache::GetOtherRelationAttributes() {
 }
 
 void AXRelationCache::UpdateReverseOtherRelations(Element& source) {
-  Vector<QualifiedName>& attributes = GetOtherRelationAttributes();
+  base::span<QualifiedName> attributes = GetOtherRelationAttributes();
   for (const QualifiedName& attribute : attributes) {
     UpdateReverseRelations(source, attribute, aria_other_relations_id_map_,
                            aria_other_relations_node_map_);
@@ -807,7 +812,7 @@ void AXRelationCache::MapOwnedChildrenWithCleanLayout(
 
 void AXRelationCache::UpdateAriaOwnsFromAttrAssociatedElementsWithCleanLayout(
     AXObject* owner,
-    const HeapVector<Member<Element>>& attr_associated_elements,
+    const GCedHeapVector<Member<Element>>& attr_associated_elements,
     HeapVector<Member<AXObject>>& validated_owned_children_result,
     bool force) {
   CHECK(!object_cache_->IsFrozen());

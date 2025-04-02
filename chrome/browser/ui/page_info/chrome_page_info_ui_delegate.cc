@@ -309,11 +309,6 @@ content::PermissionResult ChromePageInfoUiDelegate::GetPermissionResult(
           permission, url::Origin::Create(site_url_));
 }
 
-bool ChromePageInfoUiDelegate::IsTrackingProtection3pcdEnabled() {
-  return TrackingProtectionSettingsFactory::GetForProfile(GetProfile())
-      ->IsTrackingProtection3pcdEnabled();
-}
-
 std::optional<content::PermissionResult>
 ChromePageInfoUiDelegate::GetEmbargoResult(ContentSettingsType type) {
   return permissions::PermissionsClient::Get()

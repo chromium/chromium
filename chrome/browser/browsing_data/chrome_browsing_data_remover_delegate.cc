@@ -1524,7 +1524,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         CHECK_DEREF((profile_->IsGuestSession() ? profile_->GetOriginalProfile()
                                                 : profile_.get())
                         ->GetPrefs()),
-        search_engines::WipeSearchEngineChoiceReason::kProfileWipe);
+        search_engines::SearchEngineChoiceWipeReason::kProfileWipe);
     search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile_)
         ->ResetState();
   }

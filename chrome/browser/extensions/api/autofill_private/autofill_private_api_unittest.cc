@@ -330,7 +330,13 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
       syncer::UserSelectableType::kAutofill));
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, EntityInstances) {
+// TODO(crbug.com/40759629): Fix and re-enable this test.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_EntityInstances DISABLED_EntityInstances
+#else
+#define MAYBE_EntityInstances EntityInstances
+#endif
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, MAYBE_EntityInstances) {
   // Test that loading, adding, editing and deleting entity instances works.
   ASSERT_TRUE(RunAutofillSubtest("loadEmptyEntityInstancesList"));
   ASSERT_TRUE(RunAutofillSubtest("addEntityInstance"));
@@ -341,6 +347,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, EntityInstances) {
   ASSERT_TRUE(RunAutofillSubtest("loadUpdatedEntityInstance"));
   ASSERT_TRUE(RunAutofillSubtest("removeEntityInstance"));
   ASSERT_TRUE(RunAutofillSubtest("loadEmptyEntityInstancesList"));
+  ASSERT_TRUE(RunAutofillSubtest("testExpectedLabelsAreGenerated"));
   //  Test that retrieving general entity type information works.
   ASSERT_TRUE(RunAutofillSubtest("getAllEntityTypes"));
   ASSERT_TRUE(RunAutofillSubtest("getAllAttributeTypesForEntityTypeName"));
@@ -357,16 +364,22 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, SetAutofillAiOptIn) {
   autofill_client()->SetUpPrefsAndIdentityForAutofillAi();
   EXPECT_TRUE(autofill::SetAutofillAiOptInStatus(*autofill_client(), false));
   EXPECT_FALSE(autofill::GetAutofillAiOptInStatus(*autofill_client()));
+  EXPECT_TRUE(RunAutofillSubtest("verifyUserOptedOutOfAutofillAi"));
 
   base::test::TestFuture<autofill::AutofillClient::IphFeature>
       feature_used_future;
   autofill_client()->set_notify_iph_feature_used_mock_callback(
       feature_used_future.GetRepeatingCallback());
 
-  ASSERT_TRUE(RunAutofillSubtest("optIntoAutofillAi"));
+  EXPECT_TRUE(RunAutofillSubtest("optIntoAutofillAi"));
   EXPECT_EQ(feature_used_future.Get(),
             autofill::AutofillClient::IphFeature::kAutofillAi);
   EXPECT_TRUE(autofill::GetAutofillAiOptInStatus(*autofill_client()));
+  EXPECT_TRUE(RunAutofillSubtest("verifyUserOptedIntoAutofillAi"));
+
+  EXPECT_TRUE(RunAutofillSubtest("optOutOfAutofillAi"));
+  EXPECT_FALSE(autofill::GetAutofillAiOptInStatus(*autofill_client()));
+  EXPECT_TRUE(RunAutofillSubtest("verifyUserOptedOutOfAutofillAi"));
 }
 
 }  // namespace

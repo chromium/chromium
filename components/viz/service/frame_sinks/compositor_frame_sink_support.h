@@ -323,7 +323,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   void MaybeEvictSurfaces();
   void EvictLastActiveSurface();
-  bool ShouldSendBeginFrame(base::TimeTicks timestamp,
+  bool ShouldSendBeginFrame(BeginFrameId frame_id,
+                            base::TimeTicks timestamp,
                             base::TimeDelta vsync_interval);
 
   // Checks if any of the pending surfaces should activate now because their

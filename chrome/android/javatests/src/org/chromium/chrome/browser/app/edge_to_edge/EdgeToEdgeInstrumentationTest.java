@@ -22,7 +22,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,8 +48,8 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerImpl;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -76,13 +75,9 @@ import java.io.IOException;
     ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN
 })
 public class EdgeToEdgeInstrumentationTest {
-    @ClassRule
-    public static final ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule
     public final RenderTestRule renderTestRule =
@@ -113,8 +108,8 @@ public class EdgeToEdgeInstrumentationTest {
 
     @Before
     public void setUp() {
-        mTestServer = sActivityTestRule.getTestServer();
-        mActivity = sActivityTestRule.getActivity();
+        mTestServer = mActivityTestRule.getTestServer();
+        mActivity = mActivityTestRule.getActivity();
         assertNotNull(mActivity);
 
         CriteriaHelper.pollUiThread(
@@ -141,7 +136,7 @@ public class EdgeToEdgeInstrumentationTest {
 
     /** Puts the screen ToEdge by loading a page that has the appropriate HTML. */
     void goToEdge() {
-        sActivityTestRule.loadUrl(mTestServer.getURL(TEST_COVER_PAGE));
+        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_COVER_PAGE));
         waitUntilOptedIntoEdgeToEdge();
         assertTrue("Helper goToEdge failed to go ToEdge", mEdgeToEdgeController.isDrawingToEdge());
         assertTrue(
@@ -151,7 +146,7 @@ public class EdgeToEdgeInstrumentationTest {
 
     /** Puts the screen ToNormal by loading a page that has the appropriate HTML. */
     void optOutOfToEdge() {
-        sActivityTestRule.loadUrl(mTestServer.getURL(TEST_AUTO_PAGE));
+        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_AUTO_PAGE));
         waitUntilNotOptedIntoEdgeToEdge();
         assertFalse(
                 "Helper optOutOfToEdge failed to stop opting into E2E",
@@ -159,7 +154,7 @@ public class EdgeToEdgeInstrumentationTest {
     }
 
     void loadSafeAreaConstrainPage() {
-        sActivityTestRule.loadUrl(mTestServer.getURL(TEST_CONTAIN_PAGE));
+        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_CONTAIN_PAGE));
         waitUntilNotOptedIntoEdgeToEdge();
         assertFalse(
                 "Helper loadSafeAreaConstrainPage failed to stop opting into E2E",

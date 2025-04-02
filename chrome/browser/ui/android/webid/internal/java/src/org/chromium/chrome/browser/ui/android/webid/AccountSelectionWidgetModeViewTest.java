@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.android.webid;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.TextView;
 
@@ -103,6 +104,9 @@ public class AccountSelectionWidgetModeViewTest extends AccountSelectionJUnitTes
                             .with(HeaderProperties.RP_CONTEXT, rpContext.mValue)
                             .with(HeaderProperties.RP_MODE, RpMode.PASSIVE)
                             .with(HeaderProperties.IS_MULTIPLE_IDPS, true)
+                            .with(
+                                    HeaderProperties.HEADER_ICON,
+                                    Bitmap.createBitmap(16, 16, Bitmap.Config.ARGB_8888))
                             .build());
             assertEquals(View.VISIBLE, mContentView.getVisibility());
             TextView title = mContentView.findViewById(R.id.header_title);
@@ -111,6 +115,9 @@ public class AccountSelectionWidgetModeViewTest extends AccountSelectionJUnitTes
                     "Incorrect title",
                     mResources.getString(rpContext.mTitleId, "example.org"),
                     title.getText().toString());
+
+            View headerIcon = mContentView.findViewById(R.id.header_icon);
+            assertEquals(View.VISIBLE, headerIcon.getVisibility());
         }
     }
 

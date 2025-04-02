@@ -400,6 +400,10 @@ FederatedAuthRequestResultToProtocol(
     case FederatedAuthRequestResult::kCorsError: {
       return FederatedAuthRequestIssueReasonEnum::CorsError;
     }
+    case FederatedAuthRequestResult::kSuppressedBySegmentationPlatform: {
+      return FederatedAuthRequestIssueReasonEnum::
+          SuppressedBySegmentationPlatform;
+    }
     case FederatedAuthRequestResult::kSuccess: {
       NOTREACHED();
     }

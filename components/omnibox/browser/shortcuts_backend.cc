@@ -495,9 +495,8 @@ void ShortcutsBackend::InitCompleted() {
 
   main_runner_->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(
-          base::IgnoreResult(&ShortcutsBackend::DeleteOldShortcuts),
-          weak_factory_.GetWeakPtr()),
+      base::BindOnce(base::IgnoreResult(&ShortcutsBackend::DeleteOldShortcuts),
+                     weak_factory_.GetWeakPtr()),
       base::Minutes(kInitialExpirationDelayMinutes));
 }
 
@@ -528,6 +527,10 @@ void ShortcutsBackend::ComputeDatabaseMetrics() {
 
 bool ShortcutsBackend::AddShortcut(
     const ShortcutsDatabase::Shortcut& shortcut) {
+  // TODO(crbug.com/406862326): Mark some matches as non-shortcut-compatible and
+  //   prevent them from being added to the DB, remove them if they've already
+  //   been recorded to the DB, and skip over them when retrieving shortcuts.
+  //   E.g. `HISTORY_KEYWORD` matches.
   if (!initialized())
     return false;
   DCHECK(guid_map_.find(shortcut.id) == guid_map_.end());

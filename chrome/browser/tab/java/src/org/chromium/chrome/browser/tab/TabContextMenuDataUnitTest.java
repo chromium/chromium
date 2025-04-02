@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.tab;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import android.graphics.Point;
@@ -52,14 +54,17 @@ public class TabContextMenuDataUnitTest {
         assertEquals(data, TabContextMenuData.getForTab(mTab));
 
         assertNull(data.getLastTriggeringTouchPositionDp());
+        assertFalse(data.getTabContextMenuVisibilitySupplier().get());
 
         int x = 9;
         int y = 8;
         data.setLastTriggeringTouchPositionDp(x, y);
         assertEquals(new Point(x, y), data.getLastTriggeringTouchPositionDp());
+        assertTrue(data.getTabContextMenuVisibilitySupplier().get());
 
         data.setLastTriggeringTouchPositionDp(null);
         assertNull(data.getLastTriggeringTouchPositionDp());
+        assertFalse(data.getTabContextMenuVisibilitySupplier().get());
     }
 
     @Test(expected = AssertionError.class)

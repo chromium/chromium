@@ -174,7 +174,7 @@ TEST_F(AbstractInlineTextBoxTest, CharacterOffsets) {
 TEST_F(AbstractInlineTextBoxTest, HeapCompactionNoCrash) {
   // Regression test: https://crbug.com/1360006
 
-  using TestVector = HeapVector<Member<LinkedObject>>;
+  using TestVector = GCedHeapVector<Member<LinkedObject>>;
   Persistent<TestVector> vector(MakeGarbageCollected<TestVector>(100));
   SetBodyInnerHTML(R"HTML(<div id="div">012 345</div>)HTML");
 

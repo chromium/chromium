@@ -126,7 +126,8 @@ using autofill_address_profile_infobar_overlays::
                                 ? base::SysUTF16ToNSString(
                                       self.config->user_email().value())
                                 : nil)controller:editModalViewController
-              settingsView:NO];
+              settingsView:NO
+          addManualAddress:NO];
   self.sharedEditViewMediator.consumer = self.sharedEditViewController;
   editModalViewController.handler = self.sharedEditViewController;
 

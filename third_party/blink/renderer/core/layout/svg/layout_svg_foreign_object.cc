@@ -73,7 +73,7 @@ AffineTransform LayoutSVGForeignObject::LocalToSVGParentTransform() const {
   return transform;
 }
 
-LayoutPoint LayoutSVGForeignObject::LocationInternal() const {
+DeprecatedLayoutPoint LayoutSVGForeignObject::LocationInternal() const {
   NOT_DESTROYED();
   return overridden_location_;
 }
@@ -135,7 +135,7 @@ SVGLayoutResult LayoutSVGForeignObject::UpdateSVGLayout(
   // would pull this information from ComputedStyle - in SVG those properties
   // are ignored for non <svg> elements, so we mimic what happens when
   // specifying them through CSS.
-  overridden_location_ = LayoutPoint(zoomed_location);
+  overridden_location_ = DeprecatedLayoutPoint(zoomed_location);
 
   ConstraintSpaceBuilder builder(
       style.GetWritingMode(), style.GetWritingDirection(),

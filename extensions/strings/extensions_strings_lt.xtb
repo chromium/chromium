@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Netinkamas aprašo failas</translation>
 <translation id="7217838517480956708">Šio kompiuterio administratorius reikalauja, kad būtų įdiegtas papildinys „<ph name="EXTENSION_NAME" />“. Jo negalima pašalinti ar pakeisti.</translation>
 <translation id="7612608473764576263">Privačiojo rakto įvesties vertė turi būti galiojančio formato (PKCS#8 formato PEM koduotas RSA raktas).</translation>
+<translation id="7876803335449432072">Nepavyko įkelti turinio scenarijaus failo „<ph name="RELATIVE_PATH" />“, turinio scenarijaus stiliaus failus galima įkelti tik iš palaikomų stiliaus failų, pvz., .css failų.</translation>
 <translation id="7939686037314084444">Nepavyko tinkamai įkelti plėtinio. Gali būti, kad jam nepavyks nuskaityti tinklo užklausų.</translation>
 <translation id="7972881773422714442">Parinktys: „<ph name="EXTENSIONOPTIONS_TAG_NAME" />“</translation>
 <translation id="8035920974645200807">Nukreiptas į naudotoją</translation>
 <translation id="8047248493720652249">Šiam plėtiniui nepavyko pavadinti atsisiuntimo „<ph name="ATTEMPTED_FILENAME" />“, nes kitas plėtinys („<ph name="EXTENSION_NAME" />“) nustatė kitokį failo pavadinimą – „<ph name="ACTUAL_FILENAME" />“.</translation>
 <translation id="8284835137979141223">„<ph name="PRODUCT_NAME" />“ iš „<ph name="VENDOR_NAME" />“</translation>
 <translation id="8517576857589387417">Trūksta aprašo failo arba jis nenuskaitomas</translation>
+<translation id="8621383749470166852">Nepavyko įkelti turinio scenarijaus failo „<ph name="RELATIVE_PATH" />“, turinio scenarijus galima įkelti tik iš palaikomų „JavaScript“ failų, pvz., .js failų.</translation>
 <translation id="8636666366616799973">Paketas netinkamas. Išsami informacija: „<ph name="ERROR_MESSAGE" />“.</translation>
 <translation id="8761756413268424715">„<ph name="APP_NAME" />“ prašo leidimo pasiekti vieną iš jūsų įrenginių:</translation>
 <translation id="8885905466771744233">Privatusis nurodyto plėtinio raktas jau yra. Naudokite šį raktą iš naujo arba pirmiausia jį ištrinkite.</translation>

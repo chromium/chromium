@@ -12,3 +12,4 @@ This is a testharness.js-based test.
 [FAIL] AsyncGeneratorFunction constructor with string where default policy mutates value throws.
   assert_throws_js: function "_ => new AsyncGeneratorFunction('return 1+1')" did not throw
 Harness: the test ran to completion.
+

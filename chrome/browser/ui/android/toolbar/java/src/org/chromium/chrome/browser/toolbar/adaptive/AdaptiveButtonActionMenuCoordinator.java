@@ -27,8 +27,14 @@ import org.chromium.ui.widget.RectProvider;
 
 /** Coordinator for the Adaptive Button action menu, responsible for creating a popup menu. */
 public class AdaptiveButtonActionMenuCoordinator {
+    private final boolean mShowMenu;
+
     // For test.
     private BasicListMenu mListMenu;
+
+    public AdaptiveButtonActionMenuCoordinator(boolean showMenu) {
+        mShowMenu = showMenu;
+    }
 
     /**
      * Creates a long-click listener which shows the adaptive button popup menu.
@@ -40,11 +46,13 @@ public class AdaptiveButtonActionMenuCoordinator {
         if (!AdaptiveToolbarFeatures.isCustomizationEnabled()) return null;
 
         return view -> {
-            displayMenu(
-                    view.getContext(),
-                    (ListMenuButton) view,
-                    buildMenuItems(),
-                    id -> onItemClicked.onResult(id));
+            if (mShowMenu) {
+                displayMenu(
+                        view.getContext(),
+                        (ListMenuButton) view,
+                        buildMenuItems(),
+                        id -> onItemClicked.onResult(id));
+            }
             return true;
         };
     }

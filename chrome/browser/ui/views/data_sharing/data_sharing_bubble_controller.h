@@ -22,6 +22,10 @@ class DataSharingBubbleController
       public views::WidgetObserver,
       public DataSharingUI::Delegate {
  public:
+  using OnCloseCallback = base::OnceCallback<void(
+      std::optional<data_sharing::mojom::GroupAction> action,
+      std::optional<data_sharing::mojom::GroupActionProgress> progress)>;
+
   DataSharingBubbleController(const DataSharingBubbleController&) = delete;
   DataSharingBubbleController& operator=(const DataSharingBubbleController&) =
       delete;
@@ -34,7 +38,7 @@ class DataSharingBubbleController
   void Close();
 
   // Set a callback to invoke when the widget is closed.
-  void SetOnCloseCallback(base::OnceCallback<void()> callback);
+  void SetOnCloseCallback(OnCloseCallback callback);
 
   // Set a callback to invoke when there's an error.
   void SetShowErrorDialogCallback(base::OnceCallback<void()> callback);
@@ -55,6 +59,9 @@ class DataSharingBubbleController
       const std::string& group_id,
       const std::string& access_token,
       base::OnceCallback<void(const std::optional<GURL>&)> callback) override;
+  void OnGroupAction(
+      data_sharing::mojom::GroupAction action,
+      data_sharing::mojom::GroupActionProgress progress) override;
 
   base::WeakPtr<WebUIBubbleDialogView> BubbleViewForTesting() {
     return bubble_view_;
@@ -69,7 +76,7 @@ class DataSharingBubbleController
       bubble_widget_observation_{this};
 
   // Callback to invoke when the widget closes.
-  base::OnceCallback<void()> on_close_callback_;
+  OnCloseCallback on_close_callback_;
 
   // Callback to invoke when there's an error.
   base::OnceCallback<void()> on_error_callback_;
@@ -82,6 +89,13 @@ class DataSharingBubbleController
   // Callback passed from mojom interface to invoke when share link is ready or
   // failed to share.
   base::OnceCallback<void(const std::optional<GURL>&)> share_link_callback_;
+
+  // The latest group action received from Data Sharing SDK.
+  std::optional<data_sharing::mojom::GroupAction> group_action_;
+
+  // Progress of the latest group action received from Data Sharing SDK.
+  std::optional<data_sharing::mojom::GroupActionProgress>
+      group_action_progress_;
 
   base::WeakPtr<WebUIBubbleDialogView> bubble_view_;
 

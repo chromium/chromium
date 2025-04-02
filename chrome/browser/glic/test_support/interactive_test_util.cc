@@ -23,7 +23,9 @@ DEFINE_STATE_IDENTIFIER_VALUE(GlicWindowControllerStateObserver,
                               kGlicWindowControllerState);
 
 GlicAppStateObserver::GlicAppStateObserver(GlicWindowController* controler)
-    : ObservationStateObserver(controler) {}
+    : ObservationStateObserver(controler) {
+  WebUiStateChanged(controler->GetWebUiState());
+}
 
 GlicAppStateObserver::~GlicAppStateObserver() = default;
 
@@ -32,14 +34,6 @@ void GlicAppStateObserver::WebUiStateChanged(mojom::WebUiState state) {
 }
 
 DEFINE_STATE_IDENTIFIER_VALUE(GlicAppStateObserver, kGlicAppState);
-
-LogInAndOpenStateObserver::LogInAndOpenStateObserver(
-    GlicWindowController& controller)
-    : PollingStateObserver(
-          [&controller]() { return controller.log_in_and_open().state(); }) {}
-LogInAndOpenStateObserver::~LogInAndOpenStateObserver() = default;
-
-DEFINE_STATE_IDENTIFIER_VALUE(LogInAndOpenStateObserver, kLogInAndOpenState);
 
 }  // namespace internal
 

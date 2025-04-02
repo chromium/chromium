@@ -4086,6 +4086,7 @@
 <translation id="3820749202859700794">SECG దీర్ఘవృత్తాకార వక్రం secp521r1 (NIST P-521గా కూడా పిలువబడుతుంది)</translation>
 <translation id="3821074617718452587">ఫోన్ హబ్ నోటిఫికేషన్‌లు</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{ఒక ఎక్స్‌టెన్షన్ ఆమోదించబడింది}other{# ఎక్స్‌టెన్షన్‌లు ఆమోదించబడ్డాయి}}</translation>
+<translation id="3822426549715448461">DD</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux కోసం కనీసం <ph name="INSTALL_SIZE" />  స్పేస్ కావాలి.</translation>
 <translation id="3824621460022590830">పరికర ఎన్‌రోల్‌మెంట్ టోకెన్ చెల్లదు. మీ పరికర ఓనర్‌ను లేదా అడ్మినిస్ట్రేట‌ర్‌ను దయచేసి సంప్రదించండి. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
@@ -4614,6 +4615,7 @@
 <translation id="4203769790323223880">కెమెరాకు అనుమతి లేదు</translation>
 <translation id="4204415812590935863">ప్రస్తుతం రూపాన్ని క్రియేట్ చేయడం సాధ్యం కాదు.</translation>
 <translation id="4205157409548006256">Linuxను కాన్ఫిగర్ చేస్తున్నప్పుడు ఎర్రర్ ఏర్పడింది.</translation>
+<translation id="4205643719206044108">సూచనలను అందించడానికి, మీరు సందర్శించే సైట్‌లు, పేజీ కంటెంట్ Googleతో షేర్ చేయబడతాయి</translation>
 <translation id="4206144641569145248">గ్రహాంతరవాసి</translation>
 <translation id="4206323443866416204">అభిప్రాయ రిపోర్ట్‌</translation>
 <translation id="4206585797409671301">రిక్వెస్ట్‌లను చూపించడానికి అనుమతించబడుతుంది</translation>
@@ -8748,6 +8750,7 @@
 <translation id="7199452998289813782"><ph name="DEVICE_NAME" />లో ప్రసారం చేయడాన్ని పాజ్ చేయండి</translation>
 <translation id="720110658997053098">ఈ పరికరాన్ని శాశ్వతంగా కియోస్క్ మోడ్‌లో ఉంచు</translation>
 <translation id="7201118060536064622">'<ph name="DELETED_ITEM_NAME" />' తొలగించబడింది</translation>
+<translation id="7201336084980086208">మీరు మీ డ్రైవింగ్ లైసెన్స్ లేదా పాస్‌పోర్ట్ నంబర్ వంటి ఫారమ్‌లను సమర్పించినప్పుడు ఆటోఫిల్ సమాచారాన్ని సేవ్ చేయడాన్ని ఆఫర్ చేయగలదు</translation>
 <translation id="7201420661433230412">ఫైళ్లను చూడండి</translation>
 <translation id="7201432510117121839">డెస్క్‌టాప్ ఆడియోను ప్రసారం చేయడానికి ఈ పరికరం సపోర్ట్ చేయదు</translation>
 <translation id="7201535955609308429">వెరిఫికేషన్ ప్రోగ్రెస్‌లో ఉన్నప్పుడు దయచేసి వేచి ఉండండి</translation>

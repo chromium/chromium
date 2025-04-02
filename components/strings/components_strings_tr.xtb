@@ -70,7 +70,6 @@
 <translation id="1122714970786750095">Elektronik ve Elektrikli Ürünler</translation>
 <translation id="1123753900084781868">Canlı Altyazı şu anda kullanılamıyor</translation>
 <translation id="1125453215844207206">Etiketlenmemiş grafik. Google Yapay Zeka desteğiyle metin çıkarılıyor</translation>
-<translation id="1125573121925420732">Web siteleri güvenliklerini güncellerken uyarılar yaygın olarak görülebilir. Yakında bu işlev iyileştirilecektir.</translation>
 <translation id="112840717907525620">Politika önbelleği uygun</translation>
 <translation id="1131264053432022307">Kopyalanan Resim</translation>
 <translation id="1138458427267715730">Web'deki herhangi bir sitede fiyat düşüşü olduğunda uyarı alın</translation>
@@ -297,7 +296,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1492194039220927094">Politikalar aktarılabilir:</translation>
 <translation id="1495677929897281669">Sekmeye dön</translation>
 <translation id="1500286806237135498">Kameralar (<ph name="CAMERAS_COUNT" />)</translation>
-<translation id="1501859676467574491">Google Hesabımdaki kartları göster</translation>
 <translation id="1504042622576912555">Flüt</translation>
 <translation id="1507202001669085618">&lt;p&gt;İnternete girmek için oturum açmanızı gerektiren bir kablosuz portal kullanıyorsanız bu hatayı görürsünüz.&lt;/p&gt;
     &lt;p&gt;Hatayı gidermek için, açmaya çalıştığınız sayfada &lt;strong&gt;Bağlan&lt;/strong&gt;'ı tıklayın.&lt;/p&gt;</translation>
@@ -568,6 +566,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1975584088563498795">Posta kutusu 10</translation>
 <translation id="1978555033938440688">Donanım Yazılımı Sürümü</translation>
 <translation id="1979156660928743046">Medya Bilgileri</translation>
+<translation id="1987486584747170374">Aramalarınız, en iyi eşleşmeler ve sayfa içerikleri Google'a gönderilir. Veriler, yapay zekanın iyileştirilmesi için inceleme uzmanları tarafından kullanılmaz. Kuruluşunuz istediği zaman bu ayarları değiştirebilir.</translation>
 <translation id="1988881251331415125">Yazım doğruysa <ph name="BEGIN_LINK" />Bağlantı Teşhisi'ni çalıştırmayı deneyin<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" />, yerel bilgisiayarınızda büyük miktarda veri depolamak istiyor</translation>
@@ -763,6 +762,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2301098101308036335">Hangi web sitelerinin ne zaman ziyaret edildiği.</translation>
 <translation id="230286397113210245">Gizli pencere aç düğmesi, yeni gizli pencere açıp gizli olarak göz atmak için etkinleştirin</translation>
 <translation id="2306124309679506798">Gerçekçi bir deneyime izin verilsin mi?</translation>
+<translation id="2307711332257985952">Ev ve iş adresleriniz artık Chrome'da kullanılabilir</translation>
 <translation id="2312234273148520048">Çeşniler ve Soslar</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" />'tan az. Sonraki ziyaretinizde bazı siteler daha yavaş yüklenebilir.</translation>
 <translation id="2316159751672436664">ChromeOS ayarlarında erişilebilirlik araçlarınızı kişiselleştirin</translation>
@@ -1178,6 +1178,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3102312643185441063">Tasarruf hesabı</translation>
 <translation id="3103188521861412364">Hisse ve Tahviller</translation>
 <translation id="3103535543639438037">Benzer ürünleri yan yana karşılaştırın</translation>
+<translation id="3103993932858740905">Taksitle ödeme yaptığınızda tek seferlik sanal kart numarası doldurulur. Söz konusu numara yalnızca bu satın alma işlemine yöneliktir.</translation>
 <translation id="3105172416063519923">Öğe Kimliği:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Güvenli DNS yapılandırması kontrol etme<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Orta Tepsi</translation>

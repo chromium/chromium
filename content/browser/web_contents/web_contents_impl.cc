@@ -53,6 +53,7 @@
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "components/attribution_reporting/features.h"
 #include "components/download/public/common/download_stats.h"
+#include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "components/input/cursor_manager.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/input/switches.h"
@@ -388,8 +389,7 @@ bool AreValidRegisterProtocolHandlerArguments(
     return false;
   }
 
-  blink::URLSyntaxErrorCode code =
-      blink::IsValidCustomHandlerURLSyntax(url, url.spec());
+  blink::URLSyntaxErrorCode code = blink::IsValidCustomHandlerURLSyntax(url);
   if (code != blink::URLSyntaxErrorCode::kNoError) {
     return false;
   }
@@ -1357,7 +1357,8 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
     SetupRenderInputRouterDelegateConnection();
   }
 
-  if (base::FeatureList::IsEnabled(blink::features::kCanvasInterventions)) {
+  if (base::FeatureList::IsEnabled(
+          fingerprinting_protection_interventions::features::kCanvasNoise)) {
     renderer_preferences_.canvas_noise_token =
         CanvasNoiseTokenData::GetToken(browser_context);
   }
@@ -2493,6 +2494,13 @@ void WebContentsImpl::SetDisplayCutoutSafeArea(gfx::Insets insets) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SetDisplayCutoutSafeArea");
   if (safe_area_insets_host_) {
     safe_area_insets_host_->SetDisplayCutoutSafeArea(insets);
+  }
+}
+
+void WebContentsImpl::SetContextMenuInsets(gfx::Rect safe_area) {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SetContextMenuInsets");
+  if (auto* rwhv = GetRenderWidgetHostView()) {
+    rwhv->NotifyContextMenuInsetsObservers(safe_area);
   }
 }
 
@@ -8879,7 +8887,8 @@ const blink::RendererPreferences& WebContentsImpl::GetRendererPrefs(
           *render_view_host->frame_tree()->GetMainFrame())) {
     return guest->GetRendererPrefs();
   }
-  if (base::FeatureList::IsEnabled(blink::features::kCanvasInterventions)) {
+  if (base::FeatureList::IsEnabled(
+          fingerprinting_protection_interventions::features::kCanvasNoise)) {
     renderer_preferences_.canvas_noise_token =
         CanvasNoiseTokenData::GetToken(GetBrowserContext());
   }

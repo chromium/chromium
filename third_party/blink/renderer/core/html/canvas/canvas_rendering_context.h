@@ -90,6 +90,19 @@ class CORE_EXPORT CanvasRenderingContext
   USING_PRE_FINALIZER(CanvasRenderingContext, Dispose);
 
  public:
+  class RestoreGuard {
+    STACK_ALLOCATED();
+
+   public:
+    explicit RestoreGuard(CanvasRenderingContext& this_ptr) : this_(this_ptr) {
+      this_.is_context_being_restored_ = true;
+    }
+    ~RestoreGuard() { this_.is_context_being_restored_ = false; }
+
+   private:
+    CanvasRenderingContext& this_;
+  };
+
   CanvasRenderingContext(const CanvasRenderingContext&) = delete;
   CanvasRenderingContext& operator=(const CanvasRenderingContext&) = delete;
   ~CanvasRenderingContext() override = default;
@@ -197,6 +210,7 @@ class CORE_EXPORT CanvasRenderingContext
   // page.
   virtual void PageVisibilityChanged() = 0;
   virtual bool isContextLost() const { return true; }
+  bool IsContextBeingRestored() const { return is_context_being_restored_; }
   // TODO(fserb): remove AsV8RenderingContext and AsV8OffscreenRenderingContext.
   virtual V8UnionCanvasRenderingContext2DOrGPUCanvasContextOrImageBitmapRenderingContextOrWebGL2RenderingContextOrWebGLRenderingContext*
   AsV8RenderingContext() {
@@ -248,6 +262,12 @@ class CORE_EXPORT CanvasRenderingContext
 
     // Lost context occurred due to internal implementation reasons.
     kSyntheticLostContext,
+
+    // Lost because an invalid canvas size was used.
+    kInvalidCanvasSize,
+
+    // Lost because the canvas is being disposed.
+    kCanvasDisposed,
   };
   virtual void LoseContext(LostContextMode) {}
   virtual void SendContextLostEventIfNeeded() {}
@@ -264,14 +284,11 @@ class CORE_EXPORT CanvasRenderingContext
   // Canvas2D-specific interface
   virtual void RestoreCanvasMatrixClipStack(cc::PaintCanvas*) const {}
   virtual void Reset() {}
-  virtual void ClearRect(double x, double y, double width, double height) {}
-  virtual void RestoreProviderAndContextIfPossible() {}
-  virtual void SetShouldAntialias(bool) {}
+  virtual void RestoreFromInvalidSizeIfNeeded() {}
   virtual void StyleDidChange(const ComputedStyle* old_style,
                               const ComputedStyle& new_style) {}
   virtual void LangAttributeChanged() {}
   virtual String GetIdFromControl(const Element* element) { return String(); }
-  virtual void ResetUsageTracking() {}
   virtual int LayerCount() const { return 0; }
 
   virtual void setFontForTesting(const String&) { NOTREACHED(); }
@@ -345,6 +362,8 @@ class CORE_EXPORT CanvasRenderingContext
   bool did_print_in_current_task_ = false;
 
   const CanvasRenderingAPI canvas_rendering_type_;
+
+  bool is_context_being_restored_ = false;
 };
 
 }  // namespace blink

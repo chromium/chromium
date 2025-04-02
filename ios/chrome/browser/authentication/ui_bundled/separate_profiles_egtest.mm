@@ -155,7 +155,6 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
   config.features_enabled.push_back(kIdentityDiscAccountMenu);
-  config.features_enabled.push_back(kUseAccountListFromIdentityManager);
   config.features_enabled.push_back(kSeparateProfilesForManagedAccounts);
 
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
@@ -247,7 +246,7 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
       performAction:grey_tap()];
 
   // Wait for the profile to finish loading again.
-  // TODO(crbug.com/331783685): Find a better way to wait for this.
+  // TODO(crbug.com/399033938): Find a better way to wait for this.
   GREYWaitForAppToIdle(@"App failed to idle");
 
   // Use should be signed in without having to see the managed profile
@@ -351,7 +350,7 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
       performAction:grey_tap()];
 
   // Wait for the profile to finish loading again.
-  // TODO(crbug.com/331783685): Find a better way to wait for this.
+  // TODO(crbug.com/399033938): Find a better way to wait for this.
   GREYWaitForAppToIdle(@"App failed to idle");
 
   // Use should be signed in without having to see the managed profile
@@ -1030,7 +1029,6 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
   config.features_enabled.push_back(kIdentityDiscAccountMenu);
-  config.features_enabled.push_back(kUseAccountListFromIdentityManager);
   config.features_enabled.push_back(kSeparateProfilesForManagedAccounts);
   // Note: Can't use the actual feature definition, because its build target
   // depends on a bunch of stuff that mustn't make it into the EG test target.

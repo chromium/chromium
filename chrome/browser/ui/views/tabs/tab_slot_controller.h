@@ -158,7 +158,6 @@ class TabSlotController {
 
   // Returns a vector of all split tabs in a split with the provided tab.
   // Returns an empty vector if `tab` is not a split tab.
-  // TODO(crbug.com/403546598): replace `tab` with split ID.
   virtual std::vector<Tab*> GetTabsInSplit(const Tab* tab) = 0;
 
   // Invoked when a mouse event occurs on `source`.

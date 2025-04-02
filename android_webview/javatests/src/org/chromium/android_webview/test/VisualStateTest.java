@@ -259,7 +259,7 @@ public class VisualStateTest extends AwParameterizedTest {
                             @Override
                             public WebResourceResponseInfo shouldInterceptRequest(
                                     AwWebResourceRequest request) {
-                                if (request.url.equals("intercepted://blue.png")) {
+                                if (request.getUrl().equals("intercepted://blue.png")) {
                                     try {
                                         return new SlowBlueImage();
                                     } catch (Throwable t) {

@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/webrtc_overrides/environment.h"
 
 namespace blink {
 
@@ -18,7 +19,9 @@ P2PPortAllocator::P2PPortAllocator(
     std::unique_ptr<rtc::NetworkManager> network_manager,
     rtc::PacketSocketFactory* socket_factory,
     const Config& config)
-    : cricket::BasicPortAllocator(network_manager.get(), socket_factory),
+    : cricket::BasicPortAllocator(WebRtcEnvironment(),
+                                  network_manager.get(),
+                                  socket_factory),
       network_manager_(std::move(network_manager)),
       config_(config) {
   DCHECK(network_manager_);

@@ -85,7 +85,7 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
 
 - (SheetDimensionState)sheetDimension {
   if (!_detentsManager) {
-    return SheetDimensionStateHidden;
+    return SheetDimensionState::kHidden;
   }
 
   return _detentsManager.sheetDimension;
@@ -326,6 +326,8 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
   CGFloat bottomOffset = MIN(sheetHeight, maximumOffset);
 
   _visibleAreaBottomConstraint.constant = -bottomOffset;
+
+  _presentedResultsPageHeight = sheetHeight;
 }
 
 - (void)adjustSelectionOcclusionInsets {
@@ -385,7 +387,7 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
   }
 
   // Keep peaking only for the duration of the gesture.
-  if (_detentsManager.sheetDimension == SheetDimensionStatePeaking) {
+  if (_detentsManager.sheetDimension == SheetDimensionState::kPeaking) {
     [_detentsManager
         adjustDetentsForState:SheetDetentStateUnrestrictedMovement];
   }
@@ -402,13 +404,13 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
 - (BOOL)lensOverlayDetentsManagerShouldDismissBottomSheet:
     (LensOverlayDetentsManager*)detentsManager {
   switch (self.sheetDimension) {
-    case SheetDimensionStateConsent:
-    case SheetDimensionStateHidden:
+    case SheetDimensionState::kConsent:
+    case SheetDimensionState::kHidden:
       return YES;
-    case SheetDimensionStatePeaking:
-    case SheetDimensionStateLarge:
+    case SheetDimensionState::kPeaking:
+    case SheetDimensionState::kLarge:
       return NO;
-    case SheetDimensionStateMedium:
+    case SheetDimensionState::kMedium:
       // If the user is actively adjusting a selection (by moving the selection
       // frame), it means the sheet dismissal was incidental and shouldn't be
       // processed. Only when the sheet is directly dragged downwards should the

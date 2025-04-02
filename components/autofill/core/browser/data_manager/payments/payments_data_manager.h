@@ -202,16 +202,20 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Returns true if the user has at least 1 masked bank account.
   bool HasMaskedBankAccounts() const;
   // Returns the masked bank accounts that can be suggested to the user.
+  // The returned span may be invalidated asynchronously.
   base::span<const BankAccount> GetMaskedBankAccounts() const;
 
   // Returns the linked BNPL issuers that can be shown to the user. If the "Save
   // and fill payment methods" toggle is off, this will return no BNPL issuers
   // automatically.
+  // The returned span may be invalidated asynchronously.
   base::span<const BnplIssuer> GetLinkedBnplIssuers() const;
 
   // Returns true if the user has at least 1 eWallet account.
   bool HasEwalletAccounts() const;
+
   // Returns the eWallet accounts that can be suggested to the user.
+  // The returned span may be invalidated asynchronously.
   base::span<const Ewallet> GetEwalletAccounts() const;
 
   // Returns the Payments customer data. Returns nullptr if no data is present.
@@ -240,11 +244,13 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   const gfx::Image* GetCreditCardArtImageForUrl(const GURL& card_art_url) const;
 
   // Returns all virtual card usage data linked to the credit card.
+  // The returned span may be invalidated asynchronously.
   base::span<const VirtualCardUsageData> GetVirtualCardUsageData() const;
 
   // Returns the unlinked buy-now-pay-later issuers. This is a list of BNPL
   // issuers that are available to be used but have NOT been linked to the
   // payments account by the user.
+  // The returned span may be invalidated asynchronously.
   base::span<const BnplIssuer> GetUnlinkedBnplIssuers() const;
 
   // Returns all BNPL issuers, both linked and unlinked.
@@ -410,14 +416,6 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Check whether a card is a server card or has a duplicated server card.
   bool IsServerCard(const CreditCard* credit_card) const;
-
-  // Returns whether a row to give the option of showing cards from the user's
-  // account should be shown in the dropdown.
-  virtual bool ShouldShowCardsFromAccountOption() const;
-
-  // Triggered when a user selects the option to see cards from their account.
-  // Records the sync transport consent.
-  void OnUserAcceptedCardsFromAccountOption();
 
   // Records the sync transport consent if the user is in sync transport mode.
   virtual void OnUserAcceptedUpstreamOffer();

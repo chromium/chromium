@@ -803,7 +803,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSettings.UpdatedStatus"
-    enum="DeviceSettingsStatus" expires_after="2025-07-27">
+    enum="DeviceSettingsStatus" expires_after="2025-09-28">
   <owner>rbock@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <owner>managed-devices@google.com</owner>
@@ -1473,7 +1473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.FileActionWarnProceeded"
-    enum="EnterpriseDlpPolicyFileAction" expires_after="2025-07-13">
+    enum="EnterpriseDlpPolicyFileAction" expires_after="2025-09-28">
   <owner>accorsi@google.com</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -1503,7 +1503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.FilesAppOpenTimedOut" enum="Boolean"
-    expires_after="2025-06-01">
+    expires_after="2025-09-28">
   <owner>aidazolic@google.com</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -2024,7 +2024,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentForcedInitial"
-    enum="EnterpriseEnrollmentType" expires_after="2025-06-01">
+    enum="EnterpriseEnrollmentType" expires_after="2026-04-06">
   <owner>asumaneev@google.com</owner>
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2046,7 +2046,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentForcedInitialManualFallback"
-    enum="EnterpriseEnrollmentType" expires_after="2025-06-01">
+    enum="EnterpriseEnrollmentType" expires_after="2026-04-06">
   <owner>asumaneev@google.com</owner>
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2093,7 +2093,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentRecovery" enum="EnterpriseEnrollmentType"
-    expires_after="2025-06-01">
+    expires_after="2026-04-06">
   <owner>asumaneev@google.com</owner>
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2146,7 +2146,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentRollbackManualFallback"
-    enum="EnterpriseEnrollmentType" expires_after="2025-06-01">
+    enum="EnterpriseEnrollmentType" expires_after="2026-04-06">
   <owner>crisguerrero@chromium.org</owner>
   <owner>mpolzer@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2160,7 +2160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentTime.Cancel" units="ms"
-    expires_after="2025-06-01">
+    expires_after="2026-04-06">
   <owner>asumaneev@google.com</owner>
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2170,7 +2170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentTime.Failure" units="ms"
-    expires_after="2025-06-01">
+    expires_after="2026-04-06">
   <owner>asumaneev@google.com</owner>
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2190,7 +2190,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentTokenBased"
-    enum="EnterpriseEnrollmentType" expires_after="2025-06-01">
+    enum="EnterpriseEnrollmentType" expires_after="2026-04-06">
   <owner>jacksontadie@google.com</owner>
   <owner>drcrash@google.com</owner>
   <owner>cros-onboarding-team@google.com</owner>
@@ -2205,7 +2205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentTokenBasedManualFallback"
-    enum="EnterpriseEnrollmentType" expires_after="2025-06-01">
+    enum="EnterpriseEnrollmentType" expires_after="2026-04-06">
   <owner>jacksontadie@google.com</owner>
   <owner>drcrash@google.com</owner>
   <owner>cros-onboarding-team@google.com</owner>
@@ -2342,7 +2342,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.InstallAttributes.ValidOnEnrolledDevice"
-    enum="Boolean" expires_after="2025-06-08">
+    enum="Boolean" expires_after="2026-04-06">
   <owner>igorcov@chromium.org</owner>
   <owner>emaxx@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2723,7 +2723,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyRefresh2" enum="EnterprisePolicyRefresh"
-    expires_after="2025-06-01">
+    expires_after="2026-04-06">
   <owner>asumaneev@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -2796,7 +2796,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.Device" units="days"
-    expires_after="2025-06-08">
+    expires_after="2026-04-06">
   <owner>rbock@google.com</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2816,7 +2816,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.User" units="days"
-    expires_after="2025-04-06">
+    expires_after="2026-04-06">
   <owner>rbock@google.com</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -3168,20 +3168,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Enterprise.SkyVault.Migration.{CloudProvider}.WrongStateContext"
-    enum="EnterpriseSkyVaultMigrationStateErrorContext"
-    expires_after="2025-10-01">
-  <owner>aidazolic@google.com</owner>
-  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
-  <summary>
-    Recorded when an unexpected state transition happens during SkyVault
-    migration of local files to {CloudProvider}. Records the context in which
-    the wrong state error occurred.
-  </summary>
-  <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
-</histogram>
-
-<histogram
     name="Enterprise.SkyVault.Migration.{MigrationDestination}.CleanupError"
     enum="Boolean" expires_after="2025-10-01">
   <owner>aidazolic@google.com</owner>
@@ -3238,6 +3224,38 @@ chromium-metrics-reviews@google.com.
       variants="Enterprise_SkyVaultMigrationDestination"/>
 </histogram>
 
+<histogram
+    name="Enterprise.SkyVault.Migration.{MigrationDestination}.ScheduledTimeInPast.InformUser"
+    enum="Boolean" expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Records whether the scheduled migration start time was in the past when
+    `InformUser()`, which shows the first dialog for {MigrationDestination}.
+    This can occur e.g. if the device was turned off for an extended period
+    after the start time was initially set in a previous session.
+  </summary>
+  <token key="MigrationDestination"
+      variants="Enterprise_SkyVaultMigrationDestination"/>
+</histogram>
+
+<histogram
+    name="Enterprise.SkyVault.Migration.{MigrationDestination}.ScheduledTimeInPast.ScheduleMigration"
+    enum="Boolean" expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Records whether the scheduled migration start time was in the past when
+    `ScheduleMigrationAndInformUser()`, which re-shows the dialog closer to the
+    migration, was called for {MigrationDestination}. This is less likely to
+    occur under normal circumstances and could indicate a bug in the code, or a
+    scenario where the function was called very close to the scheduled
+    expiration time. Frequent occurrences should be investigated.
+  </summary>
+  <token key="MigrationDestination"
+      variants="Enterprise_SkyVaultMigrationDestination"/>
+</histogram>
+
 <histogram name="Enterprise.SkyVault.Migration.{MigrationDestination}.Stopped"
     enum="Boolean" expires_after="2025-10-01">
   <owner>aidazolic@google.com</owner>
@@ -3260,6 +3278,21 @@ chromium-metrics-reviews@google.com.
     Recorded when an unexpected state transition happens during SkyVault
     migration to {MigrationDestination} or deletion of local files. Records the
     unexpected state value.
+  </summary>
+  <token key="MigrationDestination"
+      variants="Enterprise_SkyVaultMigrationDestination"/>
+</histogram>
+
+<histogram
+    name="Enterprise.SkyVault.Migration.{MigrationDestination}.WrongStateContext"
+    enum="EnterpriseSkyVaultMigrationStateErrorContext"
+    expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Recorded when an unexpected state transition happens during SkyVault
+    migration to {MigrationDestination} or deletion of local files. Records the
+    context in which the wrong state error occurred.
   </summary>
   <token key="MigrationDestination"
       variants="Enterprise_SkyVaultMigrationDestination"/>

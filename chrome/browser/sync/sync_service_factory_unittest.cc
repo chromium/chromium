@@ -208,7 +208,7 @@ class SyncServiceFactoryTest : public testing::Test {
     // controller gets instantiated for the type.
 
     if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
-      datatypes.Put(syncer::AUTOFILL_LOYALTY_CARD);
+      datatypes.Put(syncer::AUTOFILL_VALUABLE);
     }
 
     if (base::FeatureList::IsEnabled(syncer::kSyncSharedTabGroupAccountData)) {

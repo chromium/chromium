@@ -201,6 +201,13 @@ class CONTENT_EXPORT WebContentsAndroid {
                                 int left,
                                 int bottom,
                                 int right);
+
+  void SetContextMenuInsets(JNIEnv* env,
+                            int top,
+                            int left,
+                            int bottom,
+                            int right);
+
   void NotifyRendererPreferenceUpdate(JNIEnv* env);
 
   void NotifyBrowserControlsHeightChanged(JNIEnv* env);

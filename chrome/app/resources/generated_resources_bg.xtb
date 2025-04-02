@@ -2991,6 +2991,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3045447014237878114">Този сайт е изтеглил автоматично няколко файла</translation>
 <translation id="3046178388369461825">Свободното място на диска за Linux е критично малко</translation>
 <translation id="304644035656848980">Визуализация на микрофона ви</translation>
+<translation id="3046892784550338476">Версия <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Уеб страница, цялата</translation>
 <translation id="304747341537320566">Машини за синтезиран говор</translation>
 <translation id="3047678109605649715">На устройството ви няма гласове за <ph name="LANGUAGE" />. Освободете място и опитайте отново.</translation>

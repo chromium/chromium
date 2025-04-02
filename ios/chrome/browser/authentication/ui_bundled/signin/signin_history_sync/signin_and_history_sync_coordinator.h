@@ -21,13 +21,15 @@ enum class PromoAction : int;
 // which `accessPoint` the sign in flow was initialized, using which
 // `promoAction` (when relevant) and whether an `optionalHistorySync` (even if
 // it is NO, it might still be skipped if the user previously approved it).
+// `fullscreenPromo`: whether the promo should be displayed in a fullscreen
+// modal.
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                    promoAction:(signin_metrics::PromoAction)promoAction
            optionalHistorySync:(BOOL)optionalHistorySync
-    NS_DESIGNATED_INITIALIZER;
+               fullscreenPromo:(BOOL)fullscreenPromo NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser

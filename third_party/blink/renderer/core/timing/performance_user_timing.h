@@ -39,8 +39,7 @@ class ExceptionState;
 class Performance;
 class V8UnionDoubleOrString;
 
-using PerformanceEntryMap =
-    HeapHashMap<AtomicString, Member<PerformanceEntryVector>>;
+using PerformanceEntryMap = HeapHashMap<AtomicString, PerformanceEntryVector>;
 
 class UserTiming final : public GarbageCollected<UserTiming> {
  public:

@@ -179,8 +179,7 @@ std::optional<BlindSignedAuthToken> IpProtectionCoreImpl::GetAuthToken(
   return result;
 }
 
-std::optional<ProbabilisticRevealToken>
-IpProtectionCoreImpl::GetProbabilisticRevealToken(
+std::optional<std::string> IpProtectionCoreImpl::GetProbabilisticRevealToken(
     const std::string& top_level,
     const std::string& third_party) {
   if (!ipp_prt_manager_) {

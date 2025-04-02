@@ -15,6 +15,7 @@ namespace actor {
 BASE_DECLARE_FEATURE(kGlicActionAllowlist);
 
 BASE_DECLARE_FEATURE_PARAM(std::string, kAllowlist);
+BASE_DECLARE_FEATURE_PARAM(std::string, kAllowlistExact);
 BASE_DECLARE_FEATURE_PARAM(bool, kAllowlistOnly);
 
 }  // namespace actor

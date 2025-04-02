@@ -12,7 +12,6 @@
 #include "net/base/features.h"
 #include "net/base/network_isolation_partition.h"
 #include "net/cookies/cookie_constants.h"
-#include "net/cookies/cookie_switches.h"
 #include "net/cookies/site_for_cookies.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -52,14 +51,16 @@ TEST(CookiePartitionKeyTest, TestFromStorage) {
     }
   }
 
+#if BUILDFLAG(IS_ANDROID)
   {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        kDisablePartitionedCookiesSwitch);
+    base::AutoReset<bool> reset =
+        CookiePartitionKey::DisablePartitioningInScopeForTesting();
     EXPECT_FALSE(
         CookiePartitionKey::FromStorage("https://toplevelsite.com",
                                         /*has_cross_site_ancestor=*/true)
             .has_value());
   }
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 TEST(CookiePartitionKeyTest, TestFromUntrustedInput) {
@@ -104,14 +105,16 @@ TEST(CookiePartitionKeyTest, TestFromUntrustedInput) {
     }
   }
 
+#if BUILDFLAG(IS_ANDROID)
   {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        kDisablePartitionedCookiesSwitch);
+    base::AutoReset<bool> reset =
+        CookiePartitionKey::DisablePartitioningInScopeForTesting();
     EXPECT_FALSE(
         CookiePartitionKey::FromUntrustedInput("https://toplevelsite.com",
                                                /*has_cross_site_ancestor=*/true)
             .has_value());
   }
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 TEST(CookiePartitionKeyTest, Serialization) {

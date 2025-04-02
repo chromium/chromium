@@ -1192,6 +1192,10 @@ void CorsURLLoader::StartNetworkRequest() {
 }
 
 void CorsURLLoader::HandleComplete(URLLoaderCompletionStatus status) {
+  TRACE_EVENT("loading", "CorsURLLoader::HandleComplete",
+              net::NetLogWithSourceToFlow(net_log_), "error_code",
+              status.error_code);
+
   if (request_.trust_token_params) {
     HistogramTrustTokenOperationNetError(request_.trust_token_params->operation,
                                          status.trust_token_operation_status,

@@ -48,9 +48,10 @@ const char* ScopeLimitedUnrecoverableErrorReasonToString(
       return "restricted client";
     case kAdminPolicyEnforced:
       return "admin policy enforced";
-    default:
-      NOTREACHED();
+    case kRemoteConsentResolutionRequired:
+      return "remote consent resolution required";
   }
+  NOTREACHED();
 }
 }  // namespace
 

@@ -427,6 +427,18 @@ Status ExecuteClearDevicePosture(Session* session,
                                  std::unique_ptr<base::Value>* value,
                                  Timeout* timeout);
 
+Status ExecuteSetDisplayFeatures(Session* session,
+                                 WebView* web_view,
+                                 const base::Value::Dict& params,
+                                 std::unique_ptr<base::Value>* value,
+                                 Timeout* timeout);
+
+Status ExecuteClearDisplayFeatures(Session* session,
+                                   WebView* web_view,
+                                   const base::Value::Dict& params,
+                                   std::unique_ptr<base::Value>* value,
+                                   Timeout* timeout);
+
 // Sets the sink to be used when the web page invokes Presentation or Remote
 // Playback API. Uses the "sinkName" value in |params|.
 Status ExecuteSetSinkToUse(Session* session,

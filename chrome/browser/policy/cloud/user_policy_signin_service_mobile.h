@@ -66,7 +66,6 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   // UserPolicySigninServiceBase implementation:
   base::TimeDelta GetTryRegistrationDelay() override;
   void UpdateLastPolicyCheckTime() override;
-  signin::ConsentLevel GetConsentLevelForRegistration() override;
   bool CanApplyPolicies(bool check_for_refresh_token) override;
   void InitializeCloudPolicyManager(
       const AccountId& account_id,

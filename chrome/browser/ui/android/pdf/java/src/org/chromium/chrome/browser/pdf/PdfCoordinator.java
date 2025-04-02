@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
@@ -66,6 +67,9 @@ public class PdfCoordinator {
 
     private int mFindInPageCount;
 
+    /** ProgressBar to be shown during PDF download. */
+    private ProgressBar mProgressBar;
+
     /**
      * Creates a PdfCoordinator for the PdfPage.
      *
@@ -79,6 +83,7 @@ public class PdfCoordinator {
         mActivity = activity;
         mTabId = String.valueOf(tabId);
         mView = LayoutInflater.from(activity).inflate(R.layout.pdf_page, null);
+        mProgressBar = mView.findViewById(R.id.progress_bar);
         mView.setBackgroundColor(
                 ChromeColors.getPrimaryBackgroundColor(activity, profile.isOffTheRecord()));
         mView.addOnAttachStateChangeListener(
@@ -102,6 +107,10 @@ public class PdfCoordinator {
         }
         // Create PdfViewerFragment to start showing the loading spinner.
         mChromePdfViewerFragment = new ChromePdfViewerFragment();
+        // PDF is downloading when the filepath is null.
+        if (filepath == null) {
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
         loadPdfFile(filepath);
     }
 
@@ -229,6 +238,7 @@ public class PdfCoordinator {
                     PdfUtils.recordPdfLoad();
                     mChromePdfViewerFragment.mDocumentLoadStartTimestamp =
                             SystemClock.elapsedRealtime();
+                    mProgressBar.setVisibility(View.GONE);
                     mChromePdfViewerFragment.setDocumentUri(mUri);
                 }
             } catch (Exception e) {

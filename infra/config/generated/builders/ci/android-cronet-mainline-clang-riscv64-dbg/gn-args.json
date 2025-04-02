@@ -1,5 +1,6 @@
 {
   "gn_args": {
+    "android_static_analysis": "on",
     "clang_base_path": "//third_party/cronet_android_mainline_clang/linux-amd64",
     "clang_use_chrome_plugins": false,
     "clang_use_default_sample_profile": false,

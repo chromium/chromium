@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/effect_model.h"
 #include "third_party/blink/renderer/core/animation/interpolation_effect.h"
+#include "third_party/blink/renderer/core/animation/keyframe.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/animation/timeline_range.h"
@@ -60,6 +61,45 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
 
   using PropertySpecificKeyframeVector =
       HeapVector<Member<Keyframe::PropertySpecificKeyframe>>;
+
+  class CORE_EXPORT KeyframeProperties {
+    STACK_ALLOCATED();
+
+   public:
+    struct EndIterator {};
+
+    class CORE_EXPORT Iterator {
+      STACK_ALLOCATED();
+
+     public:
+      explicit Iterator(const KeyframeEffectModelBase* model)
+          : keyframes_(model->GetFrames()) {
+        AdvanceToNextKeyframeWithProperties();
+      }
+
+      Iterator& operator++();
+      PropertyHandle operator*() const { return *current_property_.value(); }
+      bool operator==(EndIterator) const { return keyframes_.empty(); }
+
+     private:
+      void AdvanceToNextKeyframeWithProperties();
+
+      base::span<const Member<Keyframe>> keyframes_;
+      const Keyframe::IterableProperties* keyframe_properties_ = nullptr;
+      std::optional<Keyframe::PropertyIteratorWrapper> current_property_;
+    };
+
+    explicit KeyframeProperties(const KeyframeEffectModelBase* model)
+        : model_(model) {}
+    Iterator begin() const { return Iterator(model_); }
+    EndIterator end() const { return EndIterator(); }
+    bool empty() const { return begin() == end(); }
+    PropertyHandleSet UniqueProperties() const;
+
+   private:
+    const KeyframeEffectModelBase* model_;
+  };
+
   class PropertySpecificKeyframeGroup
       : public GarbageCollected<PropertySpecificKeyframeGroup> {
    public:
@@ -88,12 +128,63 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
     friend class KeyframeEffectModelBase;
   };
 
+  using KeyframeGroupMap =
+      GCedHeapHashMap<PropertyHandle, Member<PropertySpecificKeyframeGroup>>;
+  class CORE_EXPORT IterableDynamicProperties {
+    STACK_ALLOCATED();
+
+   public:
+    struct EndIterator {};
+
+    class CORE_EXPORT Iterator {
+      STACK_ALLOCATED();
+
+     public:
+      explicit Iterator(const KeyframeEffectModelBase* model)
+          : model_(model),
+            current_keyframe_group_(model_->keyframe_groups_->begin()) {
+        AdvanceToNextGroup();
+      }
+
+      Iterator& operator++() {
+        current_keyframe_group_++;
+        AdvanceToNextGroup();
+        return *this;
+      }
+      PropertyHandle operator*() const { return current_keyframe_group_->key; }
+      bool operator==(EndIterator) const {
+        return current_keyframe_group_ == model_->keyframe_groups_->end();
+      }
+
+     private:
+      void AdvanceToNextGroup();
+
+      const KeyframeEffectModelBase* model_;
+      KeyframeGroupMap::const_iterator current_keyframe_group_;
+    };
+
+    explicit IterableDynamicProperties(const KeyframeEffectModelBase* model)
+        : model_(model) {}
+    Iterator begin() const { return Iterator(model_); }
+    EndIterator end() const { return EndIterator(); }
+    bool empty() const { return begin() == end(); }
+    bool Contains(const PropertyHandle& property) const;
+
+   private:
+    const KeyframeEffectModelBase* model_;
+  };
+
   bool AffectedByUnderlyingAnimations() const final { return !IsReplaceOnly(); }
   bool IsReplaceOnly() const;
 
-  PropertyHandleSet Properties() const;
+  // Returns an iterable collection over the properties that are animated by
+  // keyframes in this effect. This includes duplicates of properties
+  // specified in multiple keyframes.
+  KeyframeProperties Properties() const;
 
-  const PropertyHandleSet& EnsureDynamicProperties() const;
+  // Returns an iterable collection over the properties with changing
+  // values that are animated by keyframes in this effect.
+  IterableDynamicProperties DynamicProperties() const;
 
   bool HasStaticProperty() const;
 
@@ -119,8 +210,6 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
     return &keyframe_group_iter->value->Keyframes();
   }
 
-  using KeyframeGroupMap =
-      GCedHeapHashMap<PropertyHandle, Member<PropertySpecificKeyframeGroup>>;
   const KeyframeGroupMap& GetPropertySpecificKeyframeGroups() const {
     EnsureKeyframeGroups();
     return *keyframe_groups_;
@@ -195,6 +284,9 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
   void Trace(Visitor*) const override;
 
  protected:
+  friend class IterableDynamicProperties;
+  friend class IterableDynamicProperties::Iterator;
+
   KeyframeEffectModelBase(CompositeOperation composite,
                           scoped_refptr<TimingFunction> default_keyframe_easing)
       : interpolation_effect_(MakeGarbageCollected<InterpolationEffect>()),
@@ -245,7 +337,6 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
   // to get the 'property-specific keyframes'. For efficiency, we cache the
   // property-specific lists.
   mutable Member<KeyframeGroupMap> keyframe_groups_;
-  mutable std::unique_ptr<PropertyHandleSet> dynamic_properties_;
   mutable Member<InterpolationEffect> interpolation_effect_;
   mutable int last_iteration_;
   mutable double last_fraction_;

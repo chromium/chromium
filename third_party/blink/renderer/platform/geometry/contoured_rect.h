@@ -148,7 +148,8 @@ class PLATFORM_EXPORT ContouredRect {
              gfx::ScaleVector2d(v4(), normalized_point.y());
     }
 
-    Corner AlignedToOrigin(Corner origin) const;
+    Corner AlignedToOrigin(const Corner& origin) const;
+    String ToString() const;
 
    private:
     std::array<gfx::PointF, 4> vertices_;
@@ -195,13 +196,7 @@ class PLATFORM_EXPORT ContouredRect {
   }
 
   void Outset(const gfx::OutsetsF& outsets) { rect_.Outset(outsets); }
-  void OutsetForMarginOrShadow(const gfx::OutsetsF& outsets) {
-    if (HasRoundCurvature()) {
-      rect_.OutsetForMarginOrShadow(outsets);
-    } else {
-      Outset(outsets);
-    }
-  }
+  void OutsetForMarginOrShadow(const gfx::OutsetsF&);
 
   void ConstrainRadii() { rect_.ConstrainRadii(); }
 

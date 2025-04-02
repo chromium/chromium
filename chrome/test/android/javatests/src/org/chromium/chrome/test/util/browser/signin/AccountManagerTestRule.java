@@ -36,9 +36,6 @@ import org.chromium.components.signin.test.util.TestAccounts;
 /**
  * This test rule mocks AccountManagerFacade.
  *
- * <p>TODO(crbug.com/40228092): Migrate usages that need native to {@link SigninTestRule} and remove
- * the methods that call native from this rule.
- *
  * <p>The rule will not invoke any native code, therefore it is safe to use it in Robolectric tests.
  */
 public class AccountManagerTestRule implements TestRule {

@@ -8,12 +8,13 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './database_tab.html.js';
+import {getCss} from './database_tab.css.js';
+import {getHtml} from './database_tab.html.js';
 import {boolToString, durationToString, getOrCreateSiteDataProvider, secondsToString} from './discards.js';
 import type {SiteDataDatabaseSize, SiteDataEntry, SiteDataFeature, SiteDataProviderRemote} from './site_data.mojom-webui.js';
-import {SortedTableMixin} from './sorted_table_mixin.js';
+import {SortedTableMixinLit} from './sorted_table_mixin_lit.js';
 
 /**
  * Compares two db rows by their origin.
@@ -99,8 +100,8 @@ function compareRowsByLoadDuration(a: SiteDataEntry, b: SiteDataEntry): number {
 
 /**
  * @param sortKey The sort key to get a function for.
- * @return {function(SiteDataEntry, SiteDataEntry): number}
- *     A comparison function that compares two tab infos, returns
+ * @return
+ *     A comparison function that compares two site data entries, returns
  *     negative number if a < b, 0 if a === b, and a positive
  *     number if a > b.
  */
@@ -180,47 +181,49 @@ function formatLoadTimeEstimate(
   return value.toString();
 }
 
-interface DatabaseTabElement {
+export interface DatabaseTabElement {
   $: {
     addOriginInput: CrInputElement,
   };
 }
 
-const DatabaseTabElementBase = SortedTableMixin(PolymerElement);
-class DatabaseTabElement extends DatabaseTabElementBase {
+const DatabaseTabElementBase = SortedTableMixinLit(CrLitElement);
+export class DatabaseTabElement extends DatabaseTabElementBase {
   static get is() {
     return 'database-tab';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * List of database rows.
        */
-      rows_: Array,
+      rows_: {type: Array},
 
       /**
        * The database size response.
        */
-      size_: {
-        type: Object,
-        value: {numRows: -1, onDiskSizeKb: -1},
-      },
+      size_: {type: Object},
 
       /**
        * An origin that can be added to requestedOrigins_ by onAddOriginClick_.
        */
-      newOrigin_: String,
+      newOrigin_: {type: String},
     };
   }
 
-  declare private rows_: SiteDataEntry[]|null;
-  declare private size_: SiteDataDatabaseSize;
-  declare private newOrigin_: string;
+  protected accessor rows_: SiteDataEntry[]|null;
+  protected accessor size_:
+      SiteDataDatabaseSize = {numRows: -1n, onDiskSizeKb: -1n};
+  protected accessor newOrigin_: string;
 
   private updateTableTimer_: number = 0;
   private updateSizesTimer_: number = 0;
@@ -228,6 +231,8 @@ class DatabaseTabElement extends DatabaseTabElementBase {
   private siteDataProvider_: SiteDataProviderRemote|null = null;
 
   override connectedCallback() {
+    super.connectedCallback();
+
     this.setSortKey('origin');
     this.requestedOrigins_ = {};
     this.siteDataProvider_ = getOrCreateSiteDataProvider();
@@ -250,6 +255,8 @@ class DatabaseTabElement extends DatabaseTabElementBase {
   }
 
   override disconnectedCallback() {
+    super.disconnectedCallback();
+
     // Clear the update timers to avoid memory leaks.
     clearInterval(this.updateTableTimer_);
     this.updateTableTimer_ = 0;
@@ -292,17 +299,18 @@ class DatabaseTabElement extends DatabaseTabElementBase {
    * An on-click handler that adds the current new origin to requested
    * origins.
    */
-  private onAddOriginClick_() {
+  protected async onAddOriginClick_() {
     this.addNewOrigin_();
 
     // Set the focus back to the input field for convenience.
+    await this.updateComplete;
     this.$.addOriginInput.focus();
   }
 
   /**
    * A key-down handler that adds the current new origin to requested origins.
    */
-  private onOriginKeydown_(e: KeyboardEvent) {
+  protected onOriginKeydown_(e: KeyboardEvent) {
     if (e.key === 'Enter' && this.isValidOrigin_(this.newOrigin_)) {
       this.addNewOrigin_();
       e.stopPropagation();
@@ -321,11 +329,11 @@ class DatabaseTabElement extends DatabaseTabElementBase {
   }
 
   /**
-   * Returns a sort function to compare tab infos based on the provided sort
-   * key and a boolean reverse flag.
+   * Returns a sort function to compare site data entries based on the provided
+   * sort key and a boolean reverse flag.
    * @param sortKey The sort key for the  returned function.
    * @param sortReverse True if sorting is reversed.
-   * @return A comparison function that compares two tab infos, returns
+   * @return A comparison function that compares two site data entries, returns
    *     negative number if a < b, 0 if a === b, and a positive
    *     number if a > b.
    */
@@ -345,10 +353,22 @@ class DatabaseTabElement extends DatabaseTabElementBase {
   }
 
   /**
+   * Returns sorted site data entries, sorted by the current sort key.
+   */
+  protected getSortedRows_(): SiteDataEntry[] {
+    if (!this.rows_) {
+      return [];
+    }
+    const sortFunction =
+        this.computeSortFunction_(this.sortKey, this.sortReverse);
+    return this.rows_.sort(sortFunction);
+  }
+
+  /**
    * @param origin A potentially valid origin string.
    * @return Whether the origin is valid.
    */
-  private isValidOrigin_(origin: string): boolean {
+  protected isValidOrigin_(origin: string): boolean {
     const re = /(https?|ftp):\/\/[a-z+.]/;
 
     return re.test(origin);
@@ -358,7 +378,7 @@ class DatabaseTabElement extends DatabaseTabElementBase {
    * @param origin A potentially valid origin string.
    * @return Whether the origin is valid or empty.
    */
-  private isEmptyOrValidOrigin_(origin: string): boolean {
+  protected isEmptyOrValidOrigin_(origin: string): boolean {
     return !origin || this.isValidOrigin_(origin);
   }
 
@@ -366,7 +386,7 @@ class DatabaseTabElement extends DatabaseTabElementBase {
    * @param value The value to convert.
    * @return A display string representing value.
    */
-  private boolToString_(value: boolean): string {
+  protected boolToString_(value: boolean): string {
     return boolToString(value);
   }
 
@@ -375,7 +395,7 @@ class DatabaseTabElement extends DatabaseTabElementBase {
    * @return A user-friendly string explaining how long ago time
    *     occurred.
    */
-  private lastUseToString_(time: number): string {
+  protected lastUseToString_(time: number): string {
     const nowSecondsFromEpoch = Math.round(Date.now() / 1000);
     return durationToString(nowSecondsFromEpoch - time);
   }
@@ -384,7 +404,7 @@ class DatabaseTabElement extends DatabaseTabElementBase {
    * @param feature The feature in question.
    * @return A human-readable string representing the feature.
    */
-  private featureToString_(feature: SiteDataFeature|null): string {
+  protected featureToString_(feature: SiteDataFeature|null): string {
     if (!feature) {
       return 'N/A';
     }
@@ -409,7 +429,7 @@ class DatabaseTabElement extends DatabaseTabElementBase {
    * @return The requested load time estimate or 'N/A' if
    *     unavailable.
    */
-  private getLoadTimeEstimate_(item: SiteDataEntry, propertyName: string):
+  protected getLoadTimeEstimate_(item: SiteDataEntry, propertyName: string):
       string {
     return formatLoadTimeEstimate(item, propertyName);
   }
@@ -419,7 +439,7 @@ class DatabaseTabElement extends DatabaseTabElementBase {
    *     available.
    * @return A human readable string representing value.
    */
-  private kilobytesToString_(value: number): string {
+  protected kilobytesToString_(value: number): string {
     return value === -1 ? 'N/A' : kilobytesToString(value);
   }
 
@@ -427,8 +447,12 @@ class DatabaseTabElement extends DatabaseTabElementBase {
    * @param value A numeric value or -1, indicating not available.
    * @return A human readable string representing value.
    */
-  private optionalIntegerToString_(value: number): string {
+  protected optionalIntegerToString_(value: number): string {
     return value === -1 ? 'N/A' : value.toString();
+  }
+
+  protected onNewOriginChanged_(e: CustomEvent<{value: string}>) {
+    this.newOrigin_ = e.detail.value;
   }
 }
 

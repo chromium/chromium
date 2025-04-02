@@ -135,7 +135,7 @@ FileManagerSystemAppDelegate::GetWebAppInfo() const {
   AppendFileHandler(
       *info, "view-in-browser",
       {"htm", "html", "mht", "mhtml", "shtml", "xht", "xhtml", "svg", "txt"},
-      "text/plain");
+      "text/*");
 
   // Crostini:
   AppendFileHandler(*info, "install-linux-package", {"deb"});

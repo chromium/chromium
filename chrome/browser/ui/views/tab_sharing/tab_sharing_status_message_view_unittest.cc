@@ -13,7 +13,6 @@ namespace {
 using EndpointInfo = TabSharingStatusMessageView::EndpointInfo;
 using MessageInfo = TabSharingStatusMessageView::MessageInfo;
 using content::GlobalRenderFrameHostId;
-
 using ::testing::ElementsAreArray;
 
 std::vector<std::u16string_view> GetChildTexts(
@@ -34,45 +33,154 @@ class TabSharingStatusMessageViewTest : public ::testing::Test {
   ChromeLayoutProvider layout_provider_;
 };
 
-TEST_F(TabSharingStatusMessageViewTest, TestJustText) {
-  TabSharingStatusMessageView view(
-      MessageInfo(u"Sharing something with something.", {}));
-  EXPECT_THAT(GetChildTexts(view),
-              ElementsAreArray({u"Sharing something with something."}));
+TEST_F(TabSharingStatusMessageViewTest, JustText) {
+  TabSharingStatusMessageView view(MessageInfo(u"Just text.", {}));
+  EXPECT_THAT(GetChildTexts(view), ElementsAreArray({u"Just text."}));
 }
 
-TEST_F(TabSharingStatusMessageViewTest, TestOneButton) {
-  TabSharingStatusMessageView view(
-      MessageInfo(u"Sharing $1 with this tab.", {kTab1}));
-  EXPECT_THAT(GetChildTexts(view),
-              ElementsAreArray({u"Sharing ", u"Tab1", u" with this tab."}));
+TEST_F(TabSharingStatusMessageViewTest, OneButtonOnly) {
+  TabSharingStatusMessageView view(MessageInfo(u"$1", {kTab1}));
+  EXPECT_THAT(GetChildTexts(view), ElementsAreArray({u"Tab1"}));
 }
 
-TEST_F(TabSharingStatusMessageViewTest, TestOneButtonNoPrefix) {
-  TabSharingStatusMessageView view(
-      MessageInfo(u"$1 is shared with this tab.", {kTab1}));
-  EXPECT_THAT(GetChildTexts(view),
-              ElementsAreArray({u"Tab1", u" is shared with this tab."}));
+TEST_F(TabSharingStatusMessageViewTest, OneButtonPrefix) {
+  TabSharingStatusMessageView view(MessageInfo(u"prefix-$1", {kTab1}));
+  EXPECT_THAT(GetChildTexts(view), ElementsAreArray({
+                                       u"prefix-",
+                                       u"Tab1",
+                                   }));
 }
 
-TEST_F(TabSharingStatusMessageViewTest, TestOneButtonNoSuffix) {
-  TabSharingStatusMessageView view(
-      MessageInfo(u"This tab is capturing $1", {kTab1}));
-  EXPECT_THAT(GetChildTexts(view),
-              ElementsAreArray({u"This tab is capturing ", u"Tab1"}));
+TEST_F(TabSharingStatusMessageViewTest, OneButtonPostfix) {
+  TabSharingStatusMessageView view(MessageInfo(u"$1-postfix", {kTab1}));
+  EXPECT_THAT(GetChildTexts(view), ElementsAreArray({u"Tab1", u"-postfix"}));
 }
 
-TEST_F(TabSharingStatusMessageViewTest, TestTwoButtons) {
-  TabSharingStatusMessageView view(
-      MessageInfo(u"Sharing $1 with $2.", {kTab1, kTab2}));
-  EXPECT_THAT(
-      GetChildTexts(view),
-      ElementsAreArray({u"Sharing ", u"Tab1", u" with ", u"Tab2", u"."}));
+TEST_F(TabSharingStatusMessageViewTest, OneButtonPrefixAndPostfix) {
+  TabSharingStatusMessageView view(MessageInfo(u"prefix-$1-postfix", {kTab1}));
+  EXPECT_THAT(GetChildTexts(view),
+              ElementsAreArray({u"prefix-", u"Tab1", u"-postfix"}));
 }
 
-TEST_F(TabSharingStatusMessageViewTest, TestTwoButtonsReversed) {
-  TabSharingStatusMessageView view(
-      MessageInfo(u"$2 is capturing $1.", {kTab1, kTab2}));
+TEST_F(TabSharingStatusMessageViewTest, TwoButtons) {
+  TabSharingStatusMessageView view(MessageInfo(u"$1$2", {kTab1, kTab2}));
+  EXPECT_THAT(GetChildTexts(view), ElementsAreArray({u"Tab1", u"Tab2"}));
+}
+
+TEST_F(TabSharingStatusMessageViewTest, TwoButtonsPrefix) {
+  TabSharingStatusMessageView view(MessageInfo(u"prefix-$1$2", {kTab1, kTab2}));
   EXPECT_THAT(GetChildTexts(view),
-              ElementsAreArray({u"Tab2", u" is capturing ", u"Tab1", u"."}));
+              ElementsAreArray({u"prefix-", u"Tab1", u"Tab2"}));
+}
+
+TEST_F(TabSharingStatusMessageViewTest, TwoButtonsInfix) {
+  TabSharingStatusMessageView view(MessageInfo(u"$1-infix-$2", {kTab1, kTab2}));
+  EXPECT_THAT(GetChildTexts(view),
+              ElementsAreArray({u"Tab1", u"-infix-", u"Tab2"}));
+}
+
+TEST_F(TabSharingStatusMessageViewTest, TwoButtonsPostfix) {
+  TabSharingStatusMessageView view(
+      MessageInfo(u"$1$2-postfix", {kTab1, kTab2}));
+  EXPECT_THAT(GetChildTexts(view),
+              ElementsAreArray({u"Tab1", u"Tab2", u"-postfix"}));
+}
+
+TEST_F(TabSharingStatusMessageViewTest, TwoButtonsPrefixAndInfix) {
+  TabSharingStatusMessageView view(
+      MessageInfo(u"prefix-$1-infix-$2", {kTab1, kTab2}));
+  EXPECT_THAT(GetChildTexts(view),
+              ElementsAreArray({u"prefix-", u"Tab1", u"-infix-", u"Tab2"}));
+}
+
+TEST_F(TabSharingStatusMessageViewTest, TwoButtonsInfixAndPostfix) {
+  TabSharingStatusMessageView view(
+      MessageInfo(u"$1-infix-$2-postfix", {kTab1, kTab2}));
+  EXPECT_THAT(GetChildTexts(view),
+              ElementsAreArray({u"Tab1", u"-infix-", u"Tab2", u"-postfix"}));
+}
+
+TEST_F(TabSharingStatusMessageViewTest, TwoButtonsPrefixAndPostfix) {
+  TabSharingStatusMessageView view(
+      MessageInfo(u"prefix-$1$2-postfix", {kTab1, kTab2}));
+  EXPECT_THAT(GetChildTexts(view),
+              ElementsAreArray({u"prefix-", u"Tab1", u"Tab2", u"-postfix"}));
+}
+
+TEST_F(TabSharingStatusMessageViewTest, TwoButtonsPrefixAndInfixAndPostfix) {
+  TabSharingStatusMessageView view(
+      MessageInfo(u"prefix-$1-infix-$2-postfix", {kTab1, kTab2}));
+  EXPECT_THAT(GetChildTexts(view),
+              ElementsAreArray(
+                  {u"prefix-", u"Tab1", u"-infix-", u"Tab2", u"-postfix"}));
+}
+
+TEST_F(TabSharingStatusMessageViewTest, ReversedTwoButtons) {
+  TabSharingStatusMessageView view(MessageInfo(u"$2$1", {kTab1, kTab2}));
+  EXPECT_THAT(GetChildTexts(view), ElementsAreArray({u"Tab2", u"Tab1"}));
+}
+
+TEST_F(TabSharingStatusMessageViewTest, ReversedTwoButtonsPrefix) {
+  TabSharingStatusMessageView view(MessageInfo(u"prefix-$2$1", {kTab1, kTab2}));
+  EXPECT_THAT(GetChildTexts(view),
+              ElementsAreArray({u"prefix-", u"Tab2", u"Tab1"}));
+}
+
+TEST_F(TabSharingStatusMessageViewTest, ReversedTwoButtonsInfix) {
+  TabSharingStatusMessageView view(MessageInfo(u"$2-infix-$1", {kTab1, kTab2}));
+  EXPECT_THAT(GetChildTexts(view),
+              ElementsAreArray({u"Tab2", u"-infix-", u"Tab1"}));
+}
+
+TEST_F(TabSharingStatusMessageViewTest, ReversedTwoButtonsPostfix) {
+  TabSharingStatusMessageView view(
+      MessageInfo(u"$2$1-postfix", {kTab1, kTab2}));
+  EXPECT_THAT(GetChildTexts(view),
+              ElementsAreArray({u"Tab2", u"Tab1", u"-postfix"}));
+}
+
+TEST_F(TabSharingStatusMessageViewTest, ReversedTwoButtonsPrefixAndInfix) {
+  TabSharingStatusMessageView view(
+      MessageInfo(u"prefix-$2-infix-$1", {kTab1, kTab2}));
+  EXPECT_THAT(GetChildTexts(view),
+              ElementsAreArray({u"prefix-", u"Tab2", u"-infix-", u"Tab1"}));
+}
+
+TEST_F(TabSharingStatusMessageViewTest, ReversedTwoButtonsInfixAndPostfix) {
+  TabSharingStatusMessageView view(
+      MessageInfo(u"$2-infix-$1-postfix", {kTab1, kTab2}));
+  EXPECT_THAT(GetChildTexts(view),
+              ElementsAreArray({u"Tab2", u"-infix-", u"Tab1", u"-postfix"}));
+}
+
+TEST_F(TabSharingStatusMessageViewTest, ReversedTwoButtonsPrefixAndPostfix) {
+  TabSharingStatusMessageView view(
+      MessageInfo(u"prefix-$2$1-postfix", {kTab1, kTab2}));
+  EXPECT_THAT(GetChildTexts(view),
+              ElementsAreArray({u"prefix-", u"Tab2", u"Tab1", u"-postfix"}));
+}
+
+TEST_F(TabSharingStatusMessageViewTest,
+       ReversedTwoButtonsPrefixAndInfixAndPostfix) {
+  TabSharingStatusMessageView view(
+      MessageInfo(u"prefix-$2-infix-$1-postfix", {kTab1, kTab2}));
+  EXPECT_THAT(GetChildTexts(view),
+              ElementsAreArray(
+                  {u"prefix-", u"Tab2", u"-infix-", u"Tab1", u"-postfix"}));
+}
+
+TEST_F(TabSharingStatusMessageViewTest, SpacesPrefix) {
+  TabSharingStatusMessageView view(MessageInfo(u"   $1", {kTab1}));
+  EXPECT_THAT(GetChildTexts(view), ElementsAreArray({u"   ", u"Tab1"}));
+}
+
+TEST_F(TabSharingStatusMessageViewTest, SpacesInfix) {
+  TabSharingStatusMessageView view(MessageInfo(u"$1   $2", {kTab1, kTab2}));
+  EXPECT_THAT(GetChildTexts(view),
+              ElementsAreArray({u"Tab1", u"   ", u"Tab2"}));
+}
+
+TEST_F(TabSharingStatusMessageViewTest, SpacesPostfix) {
+  TabSharingStatusMessageView view(MessageInfo(u"$1   ", {kTab1}));
+  EXPECT_THAT(GetChildTexts(view), ElementsAreArray({u"Tab1", u"   "}));
 }

@@ -295,6 +295,11 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
           GetFocus()->IsDescendantOf(android_node)) {
         wcax->HandlePaneOpened(android_node->GetUniqueId());
       }
+      wcax->HandleExpandedStateChanged(android_node->GetUniqueId());
+      break;
+    }
+    case ui::AXEventGenerator::Event::COLLAPSED: {
+      wcax->HandleExpandedStateChanged(android_node->GetUniqueId());
       break;
     }
     case ui::AXEventGenerator::Event::IMAGE_ANNOTATION_CHANGED: {
@@ -312,6 +317,10 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
         std::u16string text = android_node->GetTextContentUTF16();
         wcax->AnnounceLiveRegionText(text);
       }
+      break;
+    }
+    case ui::AXEventGenerator::Event::MENU_POPUP_START: {
+      wcax->HandleMenuOpened(android_node->GetUniqueId());
       break;
     }
     case ui::AXEventGenerator::Event::NAME_CHANGED: {
@@ -369,7 +378,6 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::CARET_BOUNDS_CHANGED:
     case ui::AXEventGenerator::Event::CHECKED_STATE_DESCRIPTION_CHANGED:
     case ui::AXEventGenerator::Event::CHILDREN_CHANGED:
-    case ui::AXEventGenerator::Event::COLLAPSED:
     case ui::AXEventGenerator::Event::CONTROLS_CHANGED:
     case ui::AXEventGenerator::Event::DETAILS_CHANGED:
     case ui::AXEventGenerator::Event::DESCRIBED_BY_CHANGED:
@@ -392,7 +400,6 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::LIVE_RELEVANT_CHANGED:
     case ui::AXEventGenerator::Event::LIVE_STATUS_CHANGED:
     case ui::AXEventGenerator::Event::MENU_POPUP_END:
-    case ui::AXEventGenerator::Event::MENU_POPUP_START:
     case ui::AXEventGenerator::Event::MENU_ITEM_SELECTED:
     case ui::AXEventGenerator::Event::MULTILINE_STATE_CHANGED:
     case ui::AXEventGenerator::Event::MULTISELECTABLE_STATE_CHANGED:

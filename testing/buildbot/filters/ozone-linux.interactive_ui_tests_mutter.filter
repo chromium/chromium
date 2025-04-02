@@ -50,10 +50,3 @@
 
 # TODO(crbug.com/40800718): Enable once the xdg desktop portal backed implementation is in place.
 -EyeDropperViewAuraInteractiveTest.*
-
-########################################################
-# Tests that have regressed in mutter compared to weston
-########################################################
-
-# TODO(crbug.com/391903220) Now flaky on mutter
--AppMenuFullscreenInteractiveTest.ContextMenu

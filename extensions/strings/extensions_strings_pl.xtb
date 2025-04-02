@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Plik manifestu jest nieprawidłowy</translation>
 <translation id="7217838517480956708">Administrator tego komputera wymaga zainstalowanego rozszerzenia <ph name="EXTENSION_NAME" />. Nie można go usunąć ani modyfikować.</translation>
 <translation id="7612608473764576263">Wartość wejściowa klucza prywatnego musi mieć prawidłowy format (klucz RSA z kodowaniem PEM w formacie PKCS#8).</translation>
+<translation id="7876803335449432072">Nie udało się wczytać pliku „<ph name="RELATIVE_PATH" />” dla skryptu treści. Arkusze stylów skryptów treści mogą być wczytywane tylko z obsługiwanych plików arkuszy stylów, takich jak pliki .css.</translation>
 <translation id="7939686037314084444">Rozszerzenie nie załadowało się poprawnie. Być może nie działa przechwytywanie żądań sieciowych.</translation>
 <translation id="7972881773422714442">Opcje: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Przedni</translation>
 <translation id="8047248493720652249">Rozszerzenie nie może odczytać nazwy pobieranego pliku „<ph name="ATTEMPTED_FILENAME" />”, ponieważ inne rozszerzenie (<ph name="EXTENSION_NAME" />) odczytało odmienną jego nazwę „<ph name="ACTUAL_FILENAME" />”.</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> od <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Brak pliku manifestu lub nie można go odczytać</translation>
+<translation id="8621383749470166852">Nie udało się wczytać pliku „<ph name="RELATIVE_PATH" />” dla skryptu treści. Skrypty treści mogą być wczytywane tylko z obsługiwanych plików JavaScript, takich jak pliki .js.</translation>
 <translation id="8636666366616799973">Pakiet jest nieprawidłowy. Szczegółowe informacje: „<ph name="ERROR_MESSAGE" />”.</translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> żąda dostępu do jednego z Twoich urządzeń:</translation>
 <translation id="8885905466771744233">Klucz prywatny dla określonego rozszerzenia już istnieje. Użyj ponownie tego klucza lub najpierw go usuń.</translation>

@@ -117,6 +117,172 @@ constexpr std::string_view kChannel = "test_channel";
 constexpr std::string_view kScopes[] = {"http://scope1", "http://scope2"};
 constexpr std::string_view kClientId = "client1";
 
+constexpr std::string_view kErrorTokenResponseInvalidCredentials =
+    R"({
+        "error": {
+          "code": 401,
+          "message": "Request had invalid authentication credentials.",
+          "errors": [
+            {
+              "message": "Invalid Credentials",
+              "domain": "global",
+              "reason": "authError",
+              "location": "Authorization",
+              "locationType": "header"
+            }
+          ],
+          "status": "UNAUTHENTICATED"
+        }
+      })";
+
+constexpr std::string_view kErrorTokenResponseInvalidClientId =
+    R"({
+        "error": {
+          "code": 400,
+          "message": "bad client id: abcd",
+          "errors": [
+            {
+              "message": "bad client id: abcd",
+              "domain": "com.google.oauth2",
+              "reason": "invalidClientId"
+            }
+          ]
+        }
+      })";
+
+constexpr std::string_view kErrorTokenResponseInvalidClientIdNoMessage =
+    R"({
+        "error": {
+          "code": 400,
+          "errors": [
+            {
+              "message": "bad client id: abcd",
+              "domain": "com.google.oauth2",
+              "reason": "invalidClientId"
+            }
+          ]
+        }
+      })";
+
+constexpr std::string_view kErrorTokenResponseNoReason =
+    R"({
+      "error": {
+        "code": 401,
+        "message": "Some failure occured.",
+        "errors": [
+          {
+            "domain": "global"
+          }
+        ],
+        "status": "UNAUTHENTICATED"
+      }
+    })";
+
+constexpr std::string_view kErrorTokenResponseNoMessageNoReason =
+    R"({
+      "error": {
+        "code": 401,
+        "errors": [
+          {
+            "domain": "global"
+          }
+        ],
+        "status": "UNAUTHENTICATED"
+      }
+    })";
+
+constexpr std::string_view kErrorTokenResponseUnknownError =
+    R"({
+        "error": {
+          "code": 401,
+          "message": "this is a fake error",
+          "errors": [
+            {
+              "message": "this is a fake error",
+              "domain": "global",
+              "reason": "thisErrorDoesNotExist"
+            }
+          ]
+        }
+      })";
+
+struct MintTokenFailureTestParam {
+  std::string_view test_name;
+  net::HttpStatusCode http_response_code;
+  std::string_view response_body;
+  GoogleServiceAuthError expected_error;
+};
+
+std::vector<MintTokenFailureTestParam> GetMintTokenFailureTestParams() {
+  return {
+      {
+          .test_name = "InvalidCredentials",
+          .http_response_code = net::HTTP_UNAUTHORIZED,
+          .response_body = kErrorTokenResponseInvalidCredentials,
+          .expected_error =
+              GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                  GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                      CREDENTIALS_REJECTED_BY_SERVER),
+      },
+      {
+          .test_name = "InvalidClientId",
+          .http_response_code = net::HTTP_BAD_REQUEST,
+          .response_body = kErrorTokenResponseInvalidClientId,
+          .expected_error =
+              GoogleServiceAuthError::FromServiceError("bad client id: abcd"),
+      },
+      {
+          .test_name = "InvalidClientIdNoMessage",
+          .http_response_code = net::HTTP_BAD_REQUEST,
+          .response_body = kErrorTokenResponseInvalidClientIdNoMessage,
+          .expected_error =
+              GoogleServiceAuthError::FromServiceError("invalidClientId"),
+      },
+      {
+          .test_name = "ErrorNoReason",
+          .http_response_code = net::HTTP_UNAUTHORIZED,
+          .response_body = kErrorTokenResponseNoReason,
+          .expected_error =
+              GoogleServiceAuthError::FromServiceError("Some failure occured."),
+      },
+      {
+          .test_name = "ErrorNoMessageNoReason",
+          .http_response_code = net::HTTP_UNAUTHORIZED,
+          .response_body = kErrorTokenResponseNoMessageNoReason,
+          .expected_error = GoogleServiceAuthError::FromServiceError(
+              "Couldn't parse an error. HTTP code 401"),
+      },
+      {
+          .test_name = "UnknownError",
+          .http_response_code = net::HTTP_UNAUTHORIZED,
+          .response_body = kErrorTokenResponseUnknownError,
+          .expected_error =
+              GoogleServiceAuthError::FromServiceError("this is a fake error"),
+      },
+      {
+          .test_name = "NotAJson",
+          .http_response_code = net::HTTP_UNAUTHORIZED,
+          .response_body = "error=badFormat",
+          .expected_error = GoogleServiceAuthError::FromServiceError(
+              "Couldn't parse an error. HTTP code 401"),
+      },
+      {
+          .test_name = "NotAJson407",
+          .http_response_code = net::HTTP_PROXY_AUTHENTICATION_REQUIRED,
+          .response_body = "error=badFormat",
+          .expected_error = GoogleServiceAuthError::FromServiceUnavailable(
+              "Couldn't parse an error. HTTP code 407"),
+      },
+      {
+          .test_name = "NotAJson500",
+          .http_response_code = net::HTTP_INTERNAL_SERVER_ERROR,
+          .response_body = "error=badFormat",
+          .expected_error = GoogleServiceAuthError::FromServiceUnavailable(
+              "Couldn't parse an error. HTTP code 500"),
+      },
+  };
+}
+
 MATCHER_P4(HasMintTokenResult,
            access_token,
            granted_scopes,
@@ -139,7 +305,7 @@ MATCHER_P4(HasMintTokenResult,
       arg, result_listener);
 }
 
-static RemoteConsentResolutionData CreateRemoteConsentResolutionData() {
+RemoteConsentResolutionData CreateRemoteConsentResolutionData() {
   RemoteConsentResolutionData resolution_data;
   resolution_data.url = GURL("https://test.com/consent?param=value");
   resolution_data.cookies.push_back(
@@ -693,6 +859,28 @@ TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_GoodRemoteConsent) {
       OAuth2MintTokenApiCallResult::kRemoteConsentSuccess, 1);
 }
 
+TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_RemoteConsentNoCookies) {
+  constexpr std::string_view kValidRemoteConsentResponseNoCookies = R"(
+      {
+        "issueAdvice": "remoteConsent",
+        "resolutionData": {
+          "resolutionApproach": "resolveInBrowser",
+          "resolutionUrl": "https://admin.google.com/ServiceNotAllowed"
+      }
+    })";
+
+  CreateClientFlow(/*bound_oauth_token=*/std::string());
+  RemoteConsentResolutionData resolution_data;
+  resolution_data.url = GURL("https://admin.google.com/ServiceNotAllowed");
+  EXPECT_CALL(delegate_, OnRemoteConsentSuccess(Eq(ByRef(resolution_data))));
+  ProcessApiCallSuccess(
+      head_200_.get(),
+      std::make_unique<std::string>(kValidRemoteConsentResponseNoCookies));
+  histogram_tester_.ExpectUniqueSample(
+      kOAuth2MintTokenApiCallResultHistogram,
+      OAuth2MintTokenApiCallResult::kRemoteConsentSuccess, 1);
+}
+
 TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_RemoteConsentFailure) {
   CreateFlow(OAuth2MintTokenFlow::MODE_ISSUE_ADVICE);
   EXPECT_CALL(delegate_, OnMintTokenFailure(_));
@@ -757,3 +945,27 @@ TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_NoGrantedScopes) {
       kOAuth2MintTokenApiCallResultHistogram,
       OAuth2MintTokenApiCallResult::kParseMintTokenFailure, 1);
 }
+
+class OAuth2MintTokenFlowApiCallFailureParamTest
+    : public OAuth2MintTokenFlowTest,
+      public testing::WithParamInterface<MintTokenFailureTestParam> {};
+
+TEST_P(OAuth2MintTokenFlowApiCallFailureParamTest, Test) {
+  CreateClientFlow(/*bound_oauth_token=*/std::string());
+  EXPECT_CALL(delegate_, OnMintTokenFailure(GetParam().expected_error));
+  network::mojom::URLResponseHeadPtr head(
+      network::CreateURLResponseHead(GetParam().http_response_code));
+  ProcessApiCallFailure(
+      net::OK, head.get(),
+      std::make_unique<std::string>(GetParam().response_body));
+  histogram_tester_.ExpectUniqueSample(
+      kOAuth2MintTokenApiCallResultHistogram,
+      OAuth2MintTokenApiCallResult::kApiCallFailure, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         OAuth2MintTokenFlowApiCallFailureParamTest,
+                         testing::ValuesIn(GetMintTokenFailureTestParams()),
+                         [](const auto& info) {
+                           return std::string(info.param.test_name);
+                         });

@@ -2853,34 +2853,6 @@
       ]
     },
     {
-      "id": 403,
-      "description": "Disable hardware MFT Av1 encoder on machines with multiple GPUs except Intel alchemist GPUs",
-      "cr_bugs": [1367038],
-      "os": {
-        "type": "win"
-      },
-      "gpu_count": {
-        "op": ">",
-        "value": "1"
-      },
-      "exceptions": [
-        {
-          "vendor_id": "0x8086",
-          "multi_gpu_category":"any",
-          "intel_gpu_series": [
-            "alchemist"
-          ],
-          "driver_version": {
-            "op": ">=",
-            "value": "31.0.101.4146"
-          }
-        }
-      ],
-      "features": [
-        "disable_accelerated_av1_encode"
-      ]
-    },
-    {
       "id": 404,
       "description": "Disable EGL_EXT_image_dma_buf_import_modifiers for Exo KMS modifier discovery on kms_swrast/llvmpipe",
       "os": {

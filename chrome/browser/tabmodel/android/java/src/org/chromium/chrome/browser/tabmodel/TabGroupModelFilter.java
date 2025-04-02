@@ -249,7 +249,7 @@ public interface TabGroupModelFilter extends SupportsTabModelObserver {
     @Nullable String getTabGroupTitle(@TabId int rootId);
 
     /** Stores the given title for the tab group. */
-    void setTabGroupTitle(@TabId int rootId, String title);
+    void setTabGroupTitle(@TabId int rootId, @Nullable String title);
 
     /** Deletes the stored title for the tab group, defaulting it back to "N tabs." */
     void deleteTabGroupTitle(@TabId int rootId);
@@ -280,6 +280,9 @@ public interface TabGroupModelFilter extends SupportsTabModelObserver {
 
     /** Returns whether the tab group is expanded or collapsed. */
     boolean getTabGroupCollapsed(@TabId int rootId);
+
+    /** Sets whether the tab group is expanded or collapsed, with optional animation. */
+    void setTabGroupCollapsed(@TabId int rootId, boolean isCollapsed, boolean animate);
 
     /** Sets whether the tab group is expanded or collapsed. */
     void setTabGroupCollapsed(@TabId int rootId, boolean isCollapsed);

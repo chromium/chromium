@@ -1,0 +1,11 @@
+[document web]
+++[push button] name='button supports naming with child content'
+++[link] name='link supports naming with child content'
+++++[static] name='This is a link'
+++[section] name='div does not support naming with child content'
+++++[static] name='This is a div'
+++[section] name='span does not support naming with child content'
+++++[static] name='This is a span'
+++[static] name=' '
+++[section] name='region does not support naming with child content'
+++++[static] name='This is a region'

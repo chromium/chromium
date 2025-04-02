@@ -6,10 +6,14 @@ package org.chromium.chrome.browser.tabmodel;
 
 import android.util.SparseArray;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** A map associating a tab id to an {@link AsyncTabParams}. */
+@NullMarked
 public interface AsyncTabParamsManager {
     /**
      * Stores AsyncTabParams used when the tab with the given ID is launched via intent.
+     *
      * @param tabId The ID of the tab that will be launched via intent.
      * @param params The AsyncTabParams to use when creating the Tab.
      */

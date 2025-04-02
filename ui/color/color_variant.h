@@ -51,7 +51,17 @@ class COMPONENT_EXPORT(COLOR) ColorVariant {
   bool operator==(const SkColor& other) const { return GetSkColor() == other; }
   bool operator==(const ColorId& other) const { return GetColorId() == other; }
 
-  std::optional<ColorId> GetColorId() const;
+  // Returns true if this ColorVariant currently holds a semantic color
+  // reference (i.e., a ui::ColorId) rather than a physical color value
+  // (SkColor). Semantic colors represent theme-based colors that require
+  // resolution using a ui::ColorProvider via ConvertToSkColor().
+  bool IsSemantic() const;
+
+  // Returns true if this ColorVariant currently holds a physical color
+  // reference (i.e., a SkColor)
+  bool IsPhysical() const;
+
+  // TODO(b:394420459): Make this method private.
   std::optional<SkColor> GetSkColor() const;
 
   // Resolves the ColorVariant to an SkColor.  If the ColorVariant holds a
@@ -62,6 +72,8 @@ class COMPONENT_EXPORT(COLOR) ColorVariant {
   std::string ToString() const;
 
  private:
+  std::optional<ColorId> GetColorId() const;
+
   std::variant<ColorId, SkColor> color_variant_ = gfx::kPlaceholderColor;
 };
 

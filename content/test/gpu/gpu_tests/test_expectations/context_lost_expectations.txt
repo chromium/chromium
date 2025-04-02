@@ -203,8 +203,9 @@ crbug.com/329145823 [ angle-opengl bigsur graphite-disabled mac-x86_64 no-asan n
 crbug.com/329145823 [ asan graphite-disabled intel-0x3e9b mac-x86_64 no-clang-coverage release sonoma ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ angle-metal graphite-enabled intel-gen-9 mac no-asan release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
 
-# Flaky failure on Mac AMD ASAN - 3 GPU process crashes instead of 4
+# Flaky failure on Mac AMD - 3 GPU process crashes instead of 4
 crbug.com/354748640 [ mac amd asan release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
+crbug.com/354748640 [ mac amd no-asan graphite-disabled release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
 
 # Flaky failure on Mac release NVIDIA - 3 GPU process crashes instead of 4
 crbug.com/355923591 [ mac release nvidia ] GpuCrash_InfoForDualHardwareGpus [ RetryOnFailure ]

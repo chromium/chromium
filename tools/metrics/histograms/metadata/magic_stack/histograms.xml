@@ -346,7 +346,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MagicStack.Clank.TabResumption.SeeMoreLinkClicked"
     enum="MagicStack.Clank.TabResumption.ModuleShowConfig"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>hanxi@google.com</owner>
   <owner>huangs@google.com</owner>
   <summary>

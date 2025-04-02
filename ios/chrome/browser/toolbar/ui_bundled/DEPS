@@ -9,7 +9,7 @@ include_rules = [
   "+ios/chrome/browser/infobars/model/infobar_manager_impl.h",
   "+ios/chrome/browser/infobars/ui_bundled/test_infobar_delegate.h",
   "+ios/chrome/browser/intents/model/intents_donation_helper.h",
-  "+ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h",
+  "+ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h",
   "+ios/chrome/browser/keyboard/ui_bundled",
   "+ios/chrome/browser/location_bar/ui_bundled",
   "+ios/chrome/browser/menu/ui_bundled",

@@ -26,6 +26,7 @@
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -209,6 +210,9 @@ class WebAppFrameToolbarBrowserTest : public web_app::WebAppBrowserTestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
+
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
@@ -515,6 +519,9 @@ class IsolatedWebAppFrameToolbarBrowserTest
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppFrameToolbarBrowserTest,
                        NoExtensionsInToolbarOrMenu) {
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler;
+
   std::unique_ptr iwa =
       web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()).BuildBundle();
 

@@ -70,7 +70,6 @@
 <translation id="1122714970786750095">Elektronik &amp; Listrik</translation>
 <translation id="1123753900084781868">Teks Otomatis tidak tersedia untuk saat ini</translation>
 <translation id="1125453215844207206">Grafik tidak berlabel. Mengekstrak teks, didukung teknologi AI Google</translation>
-<translation id="1125573121925420732">Peringatan mungkin akan sering ditampilkan selama situs mengupdate keamanannya. Situasi ini akan segera diperbaiki.</translation>
 <translation id="112840717907525620">Cache kebijakan Oke</translation>
 <translation id="1131264053432022307">Gambar yang Anda Salin</translation>
 <translation id="1138458427267715730">Dapatkan notifikasi saat ada penurunan harga di situs mana pun di seluruh web</translation>
@@ -297,7 +296,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1492194039220927094">Push kebijakan:</translation>
 <translation id="1495677929897281669">Kembali ke tab</translation>
 <translation id="1500286806237135498">Kamera (<ph name="CAMERAS_COUNT" />)</translation>
-<translation id="1501859676467574491">Tampilkan kartu dari Akun Google Anda</translation>
 <translation id="1504042622576912555">Flute</translation>
 <translation id="1507202001669085618">&lt;p&gt;Anda akan melihat error ini jika menggunakan portal Wi-Fi yang mengharuskan Anda login sebelum terhubung online.&lt;/p&gt;
     &lt;p&gt;Untuk memperbaiki error, klik &lt;strong&gt;Sambungkan&lt;/strong&gt; di halaman yang ingin Anda buka.&lt;/p&gt;</translation>
@@ -569,6 +567,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="1975584088563498795">Kotak surat 10</translation>
 <translation id="1978555033938440688">Versi Firmware</translation>
 <translation id="1979156660928743046">Informasi Media</translation>
+<translation id="1987486584747170374">Penelusuran Anda, kecocokan terbaik, dan konten halamannya dikirim ke Google. Informasi ini tidak akan digunakan oleh petugas peninjau untuk meningkatkan kualitas AI. Organisasi Anda mungkin mengubah setelan ini kapan saja.</translation>
 <translation id="1988881251331415125">Jika ejaan sudah benar, <ph name="BEGIN_LINK" />coba jalankan Diagnostik Konektivitas<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> ingin menyimpan data berukuran besar di komputer lokal Anda secara permanen</translation>
@@ -764,6 +763,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2301098101308036335">Situs yang dikunjungi dan kapan kunjungan tersebut dilakukan.</translation>
 <translation id="230286397113210245">Tombol Buka Jendela Samaran, aktifkan untuk membuka jendela Samaran baru dan menjelajah secara pribadi</translation>
 <translation id="2306124309679506798">Izinkan pengalaman imersif?</translation>
+<translation id="2307711332257985952">Alamat rumah dan kantor Anda kini tersedia di Chrome</translation>
 <translation id="2312234273148520048">Bumbu &amp; Saus</translation>
 <translation id="2316087952091171402">Kurang dari <ph name="UPPER_ESTIMATE" />. Beberapa situs mungkin dimuat lebih lambat pada kunjungan Anda berikutnya.</translation>
 <translation id="2316159751672436664">Personalisasi alat aksesibilitas Anda di setelan ChromeOS</translation>
@@ -1179,6 +1179,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3102312643185441063">Tabungan</translation>
 <translation id="3103188521861412364">Saham &amp; Obligasi</translation>
 <translation id="3103535543639438037">Bandingkan produk serupa secara berdampingan</translation>
+<translation id="3103993932858740905">Jika Anda melakukan pembayaran dengan cicilan, nomor kartu virtual satu kali akan terisi. Nomor ini hanya dapat digunakan untuk pembelian ini.</translation>
 <translation id="3105172416063519923">ID Aset:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Memeriksa konfigurasi DNS aman<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Baki Tengah</translation>

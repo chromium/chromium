@@ -124,6 +124,8 @@ build_webui("build") {
       "elements/viewer_bottom_toolbar_dropdown.ts",
       "elements/viewer_side_panel.html.ts",
       "elements/viewer_side_panel.ts",
+      "elements/viewer_text_side_panel.html.ts",
+      "elements/viewer_text_side_panel.ts",
       "ink2_manager.ts",
     ]
   }
@@ -159,9 +161,11 @@ build_webui("build") {
       "elements/ink_color_selector.css",
       "elements/ink_size_selector.css",
       "elements/selectable_icon_button.css",
+      "elements/side_panel_shared.css",
       "elements/viewer_bottom_toolbar.css",
       "elements/viewer_bottom_toolbar_dropdown.css",
       "elements/viewer_side_panel.css",
+      "elements/viewer_text_side_panel.css",
     ]
   }
 
@@ -173,6 +177,8 @@ build_webui("build") {
   # TypeScript Compiler parameters
   if (enable_ink) {
     ts_tsconfig_base = "tsconfig_base.json"
+  } else {
+    ts_tsconfig_base = "//tools/typescript/tsconfig_base_lit_legacy.json"
   }
   ts_composite = true
   ts_definitions = [

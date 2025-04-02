@@ -47,7 +47,7 @@ class ImageFetcherParams {
 
  public:
   // Sets the UMA client name to report feature-specific metrics. Make sure
-  // |uma_client_name| is also present in histograms.xml.
+  // `uma_client_name` is also present in histograms.xml.
   ImageFetcherParams(
       net::NetworkTrafficAnnotationTag network_traffic_annotation_tag,
       std::string uma_client_name);
@@ -124,7 +124,7 @@ class ImageFetcherParams {
 
   std::optional<int64_t> max_download_bytes_;
   // Only used in rare cases to keep the cache file on disk for certain period
-  // of time. Image files will stay in cache at least for |expiration_interval_|
+  // of time. Image files will stay in cache at least for `expiration_interval_`
   // after last use.
   std::optional<base::TimeDelta> expiration_interval_;
   gfx::Size desired_frame_size_;
@@ -157,10 +157,10 @@ class ImageFetcher {
 
   virtual ~ImageFetcher() = default;
 
-  // Fetch an image and optionally decode it. |image_data_callback| is called
-  // when the image fetch completes, but |image_data_callback| may be empty.
-  // |image_callback| is called when the image is finished decoding.
-  // |image_callback| may be empty if image decoding is not required. If a
+  // Fetch an image and optionally decode it. `image_data_callback` is called
+  // when the image fetch completes, but `image_data_callback` may be empty.
+  // `image_callback` is called when the image is finished decoding.
+  // `image_callback` may be empty if image decoding is not required. If a
   // callback is provided, it will be called exactly once. On failure, an empty
   // string/gfx::Image is returned.
   virtual void FetchImageAndData(const GURL& image_url,
@@ -170,7 +170,7 @@ class ImageFetcher {
 
   // Fetch an image and decode it. An empty gfx::Image will be returned to the
   // callback in case the image could not be fetched. This is the same as
-  // calling FetchImageAndData without an |image_data_callback|.
+  // calling FetchImageAndData without an `image_data_callback`.
   void FetchImage(const GURL& image_url,
                   ImageFetcherCallback callback,
                   ImageFetcherParams params) {
@@ -179,7 +179,7 @@ class ImageFetcher {
   }
 
   // Just fetch the image data, do not decode. This is the same as
-  // calling FetchImageAndData without an |image_callback|.
+  // calling FetchImageAndData without an `image_callback`.
   void FetchImageData(const GURL& image_url,
                       ImageDataFetcherCallback callback,
                       ImageFetcherParams params) {

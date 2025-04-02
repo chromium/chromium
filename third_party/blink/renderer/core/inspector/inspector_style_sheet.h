@@ -300,7 +300,7 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
   Member<CSSStyleSheet> page_style_sheet_;
   String origin_;
   String document_url_;
-  Member<CSSRuleSourceDataList> source_data_;
+  Member<GCedCSSRuleSourceDataList> source_data_;
   String text_;
   CSSRuleVector cssom_flat_rules_;
   CSSRuleVector parsed_flat_rules_;

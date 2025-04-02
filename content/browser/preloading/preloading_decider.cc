@@ -517,6 +517,33 @@ void PreloadingDecider::UpdateSpeculationCandidates(
   // processed.
   std::erase_if(candidates, should_mark_as_on_standby);
 
+  // TODO(crbug.com/381687257): Combine all speculation rules tags merging logic
+  // in PreloadingDecider to reduce code redundancy.
+  // Aggregate all tags for eager candidates.
+  std::map<SpeculationCandidateKey, std::vector<std::optional<std::string>>>
+      tags_map_for_eager_preloading;
+  for (auto& candidate : candidates) {
+    if (candidate->eagerness != blink::mojom::SpeculationEagerness::kEager) {
+      continue;
+    }
+
+    SpeculationCandidateKey key{candidate->url, candidate->action};
+    for (const auto& tag : candidate->tags) {
+      tags_map_for_eager_preloading[key].push_back(tag);
+    }
+  }
+
+  for (auto& candidate : candidates) {
+    if (candidate->eagerness != blink::mojom::SpeculationEagerness::kEager) {
+      continue;
+    }
+
+    SpeculationCandidateKey key{candidate->url, candidate->action};
+    if (tags_map_for_eager_preloading.count(key) != 0) {
+      candidate->tags = tags_map_for_eager_preloading[key];
+    }
+  }
+
   prefetcher_.ProcessCandidatesForPrefetch(candidates);
 
   prerenderer_->ProcessCandidatesForPrerender(candidates);
@@ -688,6 +715,9 @@ std::pair<bool, bool> PreloadingDecider::MaybePrerender(
     PreloadingConfidence confidence) {
   std::pair<bool, bool> result{false, false};
   SpeculationCandidateKey key{url, blink::mojom::SpeculationAction::kPrerender};
+  std::vector<std::optional<std::string>> merged_tags =
+      GetMergedSpeculationTagsFromSuitableCandidates(key, enacting_predictor,
+                                                     confidence);
   std::optional<std::pair<PreloadingDecider::SpeculationCandidateKey,
                           blink::mojom::SpeculationCandidatePtr>>
       matched_candidate_pair =
@@ -697,6 +727,7 @@ std::pair<bool, bool> PreloadingDecider::MaybePrerender(
   }
 
   key = matched_candidate_pair.value().first;
+  matched_candidate_pair.value().second->tags = merged_tags;
   blink::mojom::SpeculationCandidatePtr candidate =
       std::move(matched_candidate_pair.value().second);
   result.first =

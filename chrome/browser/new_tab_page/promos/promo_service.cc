@@ -227,6 +227,7 @@ void PromoService::Refresh() {
   resource_request->url = GetApiUrl();
   resource_request->request_initiator =
       url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   simple_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                     traffic_annotation);

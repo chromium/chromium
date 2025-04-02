@@ -21,6 +21,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller_impl.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_debug_info.h"
@@ -33,6 +34,7 @@
 #include "chrome/common/google_url_loader_throttle.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/variations/synthetic_trials.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -150,14 +152,17 @@ BoundSessionCookieRefreshServiceImpl::BoundSessionCookieRefreshServiceImpl(
     std::unique_ptr<BoundSessionParamsStorage> session_params_storage,
     content::StoragePartition* storage_partition,
     network::NetworkConnectionTracker* network_connection_tracker,
+    const PrefService* profile_prefs,
     bool is_off_the_record_profile)
     : key_service_(key_service),
       session_params_storage_(std::move(session_params_storage)),
       storage_partition_(storage_partition),
       network_connection_tracker_(network_connection_tracker),
+      profile_prefs_(profile_prefs),
       is_off_the_record_profile_(is_off_the_record_profile) {
   CHECK(session_params_storage_);
   CHECK(storage_partition_);
+  CHECK(profile_prefs_);
   data_removal_observation_.Observe(storage_partition_);
 }
 
@@ -179,13 +184,19 @@ void BoundSessionCookieRefreshServiceImpl::Initialize() {
   }
 
   for (const auto& params : bound_session_params) {
-    InitializeBoundSession(params);
+    if (switches::IsBoundSessionCredentialsEnabled(profile_prefs_) ||
+        params.is_wsbeta()) {
+      InitializeBoundSession(params);
+    }
   }
   UpdateAllRenderers();
 }
 
 void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
     const bound_session_credentials::BoundSessionParams& params) {
+  CHECK(switches::IsBoundSessionCredentialsEnabled(profile_prefs_) ||
+        params.is_wsbeta());
+
   if (!session_params_storage_->SaveParams(params)) {
     DVLOG(1) << "Invalid session params or failed to serialize session params.";
     return;
@@ -332,6 +343,11 @@ void BoundSessionCookieRefreshServiceImpl::HandleRequestBlockedOnCookie(
 
 void BoundSessionCookieRefreshServiceImpl::CreateRegistrationRequest(
     BoundSessionRegistrationFetcherParam registration_params) {
+  if (!switches::IsBoundSessionCredentialsEnabled(profile_prefs_) &&
+      !registration_params.is_wsbeta()) {
+    return;
+  }
+
   // Guardrail against registering non-SIDTS DBSC sessions while the client
   // lacks support for running multiple sessions at the same time. Can be
   // overridden with a Finch config parameter.
@@ -478,6 +494,16 @@ BoundSessionCookieRefreshServiceImpl::CreateBoundSessionCookieController(
 
 void BoundSessionCookieRefreshServiceImpl::InitializeBoundSession(
     const bound_session_credentials::BoundSessionParams& bound_session_params) {
+  CHECK(switches::IsBoundSessionCredentialsEnabled(profile_prefs_) ||
+        bound_session_params.is_wsbeta());
+  if (bound_session_params.is_wsbeta()) {
+    // It's unusual to register a synthetic trial with a single group. The
+    // purpose of this trial is to be able to filter out the users having
+    // "wsbeta" sessions (thus ignoring the main experiment).
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        "BoundSessionCredentialsWsbetaSyntheticTrial", "Enabled",
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
+  }
   std::unique_ptr<BoundSessionCookieController> controller =
       CreateBoundSessionCookieController(bound_session_params,
                                          is_off_the_record_profile_);

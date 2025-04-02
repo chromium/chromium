@@ -41,14 +41,21 @@ public class CollaborationServiceImpl implements CollaborationService {
     }
 
     @Override
-    public void startJoinFlow(CollaborationControllerDelegate delegate, GURL url) {
-        CollaborationServiceImplJni.get().startJoinFlow(mNativePtr, delegate.getNativePtr(), url);
+    public void startJoinFlow(
+            CollaborationControllerDelegate delegate,
+            GURL url,
+            @CollaborationServiceJoinEntryPoint int entry) {
+        CollaborationServiceImplJni.get()
+                .startJoinFlow(mNativePtr, delegate.getNativePtr(), url, entry);
     }
 
     @Override
-    public void startShareOrManageFlow(CollaborationControllerDelegate delegate, String syncId) {
+    public void startShareOrManageFlow(
+            CollaborationControllerDelegate delegate,
+            String syncId,
+            @CollaborationServiceShareOrManageEntryPoint int entry) {
         CollaborationServiceImplJni.get()
-                .startShareOrManageFlow(mNativePtr, delegate.getNativePtr(), syncId);
+                .startShareOrManageFlow(mNativePtr, delegate.getNativePtr(), syncId, entry);
     }
 
     @Override
@@ -105,10 +112,16 @@ public class CollaborationServiceImpl implements CollaborationService {
                 long nativeCollaborationServiceAndroid, CollaborationServiceImpl caller);
 
         void startJoinFlow(
-                long nativeCollaborationServiceAndroid, long delegateNativePtr, GURL url);
+                long nativeCollaborationServiceAndroid,
+                long delegateNativePtr,
+                GURL url,
+                int entry);
 
         void startShareOrManageFlow(
-                long nativeCollaborationServiceAndroid, long delegateNativePtr, String syncId);
+                long nativeCollaborationServiceAndroid,
+                long delegateNativePtr,
+                String syncId,
+                int entry);
 
         ServiceStatus getServiceStatus(long nativeCollaborationServiceAndroid);
 

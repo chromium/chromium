@@ -59,6 +59,8 @@ UserNudgeController::UserNudgeController(CaptureModeSession* session,
                                          views::View* view_to_be_highlighted)
     : capture_session_(session),
       view_to_be_highlighted_(view_to_be_highlighted) {
+  widget_observation_.Observe(view_to_be_highlighted->GetWidget());
+
   view_to_be_highlighted_->SetPaintToLayer();
   view_to_be_highlighted_->layer()->SetFillsBoundsOpaquely(false);
 
@@ -145,6 +147,16 @@ void UserNudgeController::SetVisible(bool visible) {
   capture_toast_controller->ShowCaptureToast(CaptureToastType::kUserNudge);
 }
 
+void UserNudgeController::OnWidgetVisibilityChanged(views::Widget* widget,
+                                                    bool visible) {
+  // These layers are created as siblings of `view_to_be_highlighted_`'s
+  // widget's layer, but they should not be visible when the widget is hidden.
+  if (!visible) {
+    base_ring_.SetOpacity(0.f);
+    ripple_ring_.SetOpacity(0.f);
+  }
+}
+
 void UserNudgeController::PerformNudgeAnimations() {
   PerformBaseRingAnimation();
   PerformRippleRingAnimation();
@@ -217,7 +229,7 @@ void UserNudgeController::OnBaseRingAnimationEnded() {
                               weak_ptr_factory_.GetWeakPtr()));
 }
 
-aura::Window* UserNudgeController::GetParentWindow() const {
+aura::Window* UserNudgeController::GetParentWindow() {
   auto* root_window =
       view_to_be_highlighted_->GetWidget()->GetNativeWindow()->GetRootWindow();
   DCHECK(root_window);

@@ -84,7 +84,7 @@ TEST_F(ValuablesDataManagerTest, DataChangedBySync) {
   webdata_service().GetAutofillBackend(
       base::BindOnce([](AutofillWebDataBackend* backend) {
         backend->NotifyOnAutofillChangedBySync(
-            syncer::DataType::AUTOFILL_LOYALTY_CARD);
+            syncer::DataType::AUTOFILL_VALUABLE);
       }));
   // `WaitUntilIdle()` needs to be called twice here:
   // * `NotifyOnAutofillChangedBySync()` posts a task to the UI sequence.

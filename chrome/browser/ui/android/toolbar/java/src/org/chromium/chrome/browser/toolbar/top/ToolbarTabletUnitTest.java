@@ -382,17 +382,6 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    public void testUpdateBackButtonVisibility() {
-        ImageButton btn = mToolbarTablet.findViewById(R.id.back_button);
-        mToolbarTablet.updateBackButtonVisibility(true);
-        assertTrue("Button should be enabled", btn.isEnabled());
-        assertTrue("Button should be focused", btn.isFocusable());
-        mToolbarTablet.updateBackButtonVisibility(false);
-        assertFalse("Button should not be enabled", btn.isEnabled());
-        assertFalse("Button should not be focused", btn.isFocusable());
-    }
-
-    @Test
     public void testUpdateForwardButtonVisibility() {
         ImageButton btn = mToolbarTablet.findViewById(R.id.forward_button);
         mToolbarTablet.updateForwardButtonVisibility(true);

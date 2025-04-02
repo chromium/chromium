@@ -92,6 +92,21 @@
   }
 }
 
+- (void)prepareForScribble {
+  OmniboxTextFieldIOS* textModel = self.textField;
+
+  if (textModel.isPreEditing) {
+    [textModel exitPreEditState];
+    [textModel setText:@""];
+  }
+  [textModel clearAutocompleteText];
+}
+
+- (void)cleanupAfterScribble {
+  [self.textField clearAutocompleteText];
+  [self.textField setAdditionalText:nil];
+}
+
 - (void)onDidBeginEditing {
   if (_omniboxViewIOS) {
     _omniboxViewIOS->OnDidBeginEditing();

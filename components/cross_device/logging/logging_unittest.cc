@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/cross_device/logging/logging.h"
+
 #include <stddef.h>
+
+#include <string_view>
 
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
 #include "components/cross_device/logging/log_buffer.h"
-#include "components/cross_device/logging/logging.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
@@ -27,7 +29,7 @@ std::vector<std::string>& GetStandardLogs() {
 }
 
 bool HandleStandardLogMessage(int severity,
-                              const char* file,
+                              std::string_view file,
                               int line,
                               size_t message_start,
                               const std::string& str) {

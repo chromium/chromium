@@ -339,17 +339,10 @@ UIImageView* BrandingImageView() {
     shouldShowRefresh = NO;
     [cell showActivityIndicator];
   } else {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-    [cell setLeadingIconImage:CustomSymbolTemplateWithPointSize(
-                                  kGooglePlusAddressSymbol,
+    [cell setLeadingIconImage:DefaultSymbolTemplateWithPointSize(
+                                  kShieldedEnvelope,
                                   kPlusAddressSheetCellImageSize)
                 withTintColor:[UIColor colorNamed:kTextSecondaryColor]];
-#else
-    [cell
-        setLeadingIconImage:DefaultSymbolTemplateWithPointSize(
-                                kMailFillSymbol, kPlusAddressSheetCellImageSize)
-              withTintColor:[UIColor colorNamed:kTextSecondaryColor]];
-#endif
     [cell hideActivityIndicator];
   }
 

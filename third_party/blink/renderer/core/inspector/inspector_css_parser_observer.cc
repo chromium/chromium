@@ -266,14 +266,13 @@ void InspectorCSSParserObserver::ObserveComment(unsigned start_offset,
   }
 
   // FIXME: Use the actual rule type rather than STYLE_RULE?
-  CSSRuleSourceDataList* source_data =
-      MakeGarbageCollected<CSSRuleSourceDataList>();
+  CSSRuleSourceDataList source_data;
 
-  InspectorCSSParserObserver observer(comment_text, document_, source_data);
+  InspectorCSSParserObserver observer(comment_text, document_, &source_data);
   CSSParser::ParseDeclarationListForInspector(
       ParserContextForDocument(document_), comment_text, observer);
   Vector<CSSPropertySourceData>& comment_property_data =
-      source_data->front()->property_data;
+      source_data.front()->property_data;
   if (comment_property_data.size() != 1) {
     return;
   }

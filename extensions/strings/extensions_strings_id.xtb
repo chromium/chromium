@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">File manifes tidak valid</translation>
 <translation id="7217838517480956708">Administrator mesin ini membutuhkan <ph name="EXTENSION_NAME" /> untuk dipasang. Persyaratan ini tidak dapat dihapus atau dimodifikasi.</translation>
 <translation id="7612608473764576263">Nilai masukan untuk kunci pribadi harus dalam format yang valid (kunci RSA dengan enkode PEM format PKCS#8).</translation>
+<translation id="7876803335449432072">Tidak dapat memuat file '<ph name="RELATIVE_PATH" />' untuk skrip konten. Lembar gaya skrip konten hanya dapat dimuat dari file lembar gaya yang didukung seperti file .css.</translation>
 <translation id="7939686037314084444">Ekstensi gagal dimuat dengan benar. Ekstensi mungkin tidak dapat menghalangi permintaan jaringan.</translation>
 <translation id="7972881773422714442">Opsi: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Kamera depan</translation>
 <translation id="8047248493720652249">Ekstensi ini gagal memberi nama download "<ph name="ATTEMPTED_FILENAME" />" karena ekstensi lain (<ph name="EXTENSION_NAME" />) menentukan nama file yang berbeda "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> dari <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">File manifes tidak ada atau tidak dapat dibaca</translation>
+<translation id="8621383749470166852">Tidak dapat memuat file '<ph name="RELATIVE_PATH" />' untuk skrip konten. Skrip konten hanya dapat dimuat dari file JavaScript yang didukung seperti file .js.</translation>
 <translation id="8636666366616799973">Paket tidak valid. Detail: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" meminta akses ke salah satu perangkat Anda:</translation>
 <translation id="8885905466771744233">Kunci pribadi untuk ekstensi yang ditentukan sudah ada. Gunakan kembali kunci itu atau hapus terlebih dulu.</translation>

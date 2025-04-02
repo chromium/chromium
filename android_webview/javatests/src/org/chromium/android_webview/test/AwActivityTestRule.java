@@ -235,7 +235,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                     () -> {
                         AwTestContainerView.installDrawFnFunctionTable(useVulkan);
                         AwBrowserProcess.configureChildProcessLauncherForTesting();
-                        AwBrowserProcess.start();
+                        AwBrowserProcess.startForTesting();
                         sBrowserContext = AwBrowserContext.getDefault();
                     });
         }

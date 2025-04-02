@@ -466,7 +466,7 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kForceSearchEngineChoiceScreen)) {
     WipeSearchEngineChoicePrefs(profile_prefs_.get(),
-                                WipeSearchEngineChoiceReason::kCommandLineFlag);
+                                SearchEngineChoiceWipeReason::kCommandLineFlag);
     return;
   }
 
@@ -493,7 +493,7 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
           prefs::kDefaultSearchProviderChoiceScreenCompletionVersion)) {
     WipeSearchEngineChoicePrefs(
         profile_prefs_.get(),
-        WipeSearchEngineChoiceReason::kMissingChoiceVersion);
+        SearchEngineChoiceWipeReason::kMissingChoiceVersion);
     return;
   }
 
@@ -502,7 +502,7 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
   if (!IsValidVersionFormat(choice_version)) {
     WipeSearchEngineChoicePrefs(
         profile_prefs_.get(),
-        WipeSearchEngineChoiceReason::kInvalidChoiceVersion);
+        SearchEngineChoiceWipeReason::kInvalidChoiceVersion);
     return;
   }
 
@@ -552,7 +552,7 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
     // Wipe the choice to force a reprompt.
     LogSearchRepromptKeyHistograms(RepromptResult::kReprompt, is_wildcard);
     WipeSearchEngineChoicePrefs(profile_prefs_.get(),
-                                WipeSearchEngineChoiceReason::kReprompt);
+                                SearchEngineChoiceWipeReason::kReprompt);
     return;
   }
 }

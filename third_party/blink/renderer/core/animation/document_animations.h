@@ -92,7 +92,7 @@ class CORE_EXPORT DocumentAnimations final
 
  protected:
   using ReplaceableAnimationsMap =
-      HeapHashMap<Member<Element>, Member<HeapVector<Member<Animation>>>>;
+      HeapHashMap<Member<Element>, Member<GCedHeapVector<Member<Animation>>>>;
   void RemoveReplacedAnimations(ReplaceableAnimationsMap*);
 
  private:

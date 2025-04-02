@@ -170,8 +170,7 @@ enum DataType {
 
   // Valuables stored in the Google Wallet.
   // Read-only on the client.
-  // TODO(crbug.com/393119606): Rename to AUTOFILL_VALUABLE
-  AUTOFILL_LOYALTY_CARD,
+  AUTOFILL_VALUABLE,
 
   // Account-local metadata for shared tab groups.
   SHARED_TAB_GROUP_ACCOUNT_DATA,
@@ -274,7 +273,7 @@ enum class DataTypeForHistograms {
   kProductComparison = 66,
   kCookies = 67,
   kPlusAddressSettings = 68,
-  kAutofillLoyaltyCard = 69,
+  kAutofillValuable = 69,
   kSharedTabGroupAccountData = 70,
   kMaxValue = kSharedTabGroupAccountData,
 };

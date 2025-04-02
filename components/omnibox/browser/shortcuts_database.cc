@@ -251,10 +251,10 @@ void ShortcutsDatabase::LoadShortcuts(GuidToShortcutMap* shortcuts) {
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    // Given that support for HISTORY_KEYWORD suggestions has been deprecated,
-    // this code is necessary in order to purge any old HISTORY_KEYWORD
-    // entries that might still be present in the shortcuts DB, thereby
-    // preventing ShortcutsProvider from surfacing these invalid suggestions.
+    // `HISTORY_KEYWORD` suggestions are no longer recorded to the shortcut DB
+    // because a) they're redundant with the keyword provider, and b) we haven't
+    // wired in deleting the keyword to delete the shortcut entry. Purge any old
+    // `HISTORY_KEYWORD` entries already recorded to the DB.
     if (type == AutocompleteMatchType::HISTORY_KEYWORD) {
       invalid_shortcuts.push_back(s.ColumnString(0));
       continue;

@@ -85,6 +85,52 @@ SpeechRecognition* SpeechRecognition::Create(ExecutionContext* context) {
   return MakeGarbageCollected<SpeechRecognition>(To<LocalDOMWindow>(context));
 }
 
+void SpeechRecognition::setPhrases(SpeechRecognitionPhraseList* phrases) {
+  // Only on device speech recognition supports contextual biasing.
+  if (phrases->length() > 0 &&
+      mode_ == V8SpeechRecognitionMode::Enum::kCloudOnly) {
+    ErrorOccurred(media::mojom::blink::SpeechRecognitionError::New(
+        media::mojom::blink::SpeechRecognitionErrorCode::
+            kRecognitionContextNotSupported,
+        media::mojom::blink::SpeechAudioErrorDetails::kNone));
+    return;
+  }
+  phrases_ = phrases;
+
+  // If the speech recognition session has started, update the phrases.
+  if (started_) {
+    CHECK(session_);
+    WTF::Vector<media::mojom::blink::SpeechRecognitionPhrasePtr> wtf_phrases;
+    for (unsigned int i = 0; i < phrases->length(); i++) {
+      SpeechRecognitionPhrase* phrase = phrases->item(i);
+      wtf_phrases.emplace_back(
+          media::mojom::blink::SpeechRecognitionPhrase::New(phrase->phrase(),
+                                                            phrase->boost()));
+    }
+    media::mojom::blink::SpeechRecognitionRecognitionContextPtr
+        recognition_context =
+            media::mojom::blink::SpeechRecognitionRecognitionContext::New(
+                std::move(wtf_phrases));
+    session_->UpdateRecognitionContext(std::move(recognition_context));
+  }
+}
+
+void SpeechRecognition::setMode(const V8SpeechRecognitionMode& mode) {
+  // Only on device speech recognition supports contextual biasing. Currently
+  // changing mode after the speech recognition session started does not update
+  // the mode in the system, so we limit the check to only apply before the
+  // session starts.
+  if (phrases_->length() > 0 &&
+      mode == V8SpeechRecognitionMode::Enum::kCloudOnly && !started_) {
+    ErrorOccurred(media::mojom::blink::SpeechRecognitionError::New(
+        media::mojom::blink::SpeechRecognitionErrorCode::
+            kRecognitionContextNotSupported,
+        media::mojom::blink::SpeechAudioErrorDetails::kNone));
+    return;
+  }
+  mode_ = mode;
+}
+
 void SpeechRecognition::start(ExceptionState& exception_state) {
   // https://wicg.github.io/nav-speculation/prerendering.html#web-speech-patch
   // If this is called in prerendering, it should be deferred.
@@ -151,31 +197,6 @@ void SpeechRecognition::abort() {
     stopping_ = true;
     session_->Abort();
   }
-}
-
-void SpeechRecognition::updateContext(SpeechRecognitionContext* context,
-                                      ExceptionState& exception_state) {
-  if (!session_) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "An ongoing speech recognition session is required to update the "
-        "recognition context.");
-    return;
-  }
-
-  WTF::Vector<media::mojom::blink::SpeechRecognitionPhrasePtr> phrases;
-  if (context->phrases()) {
-    for (unsigned int i = 0; i < context->phrases()->length(); i++) {
-      SpeechRecognitionPhrase* phrase = context->phrases()->item(i);
-      phrases.emplace_back(media::mojom::blink::SpeechRecognitionPhrase::New(
-          phrase->phrase(), phrase->boost()));
-    }
-  }
-  media::mojom::blink::SpeechRecognitionRecognitionContextPtr
-      recognition_context =
-          media::mojom::blink::SpeechRecognitionRecognitionContext::New(
-              std::move(phrases));
-  session_->UpdateRecognitionContext(std::move(recognition_context));
 }
 
 // Returns a promise that resolves to a enum indicating whether on-device
@@ -412,7 +433,7 @@ void SpeechRecognition::StartController(
       &SpeechRecognition::OnConnectionError, WrapWeakPersistent(this)));
   auto params = controller_->BuildStartSpeechRecognitionRequestParams(
       std::move(session_receiver), std::move(session_client), *grammars_,
-      context(), lang_, continuous_, interim_results_, max_alternatives_,
+      phrases(), lang_, continuous_, interim_results_, max_alternatives_,
       /*on_device=*/
       (mode_ == V8SpeechRecognitionMode::Enum::kOndevicePreferred ||
        mode_ == V8SpeechRecognitionMode::Enum::kOndeviceOnly),
@@ -439,7 +460,7 @@ SpeechRecognition::~SpeechRecognition() = default;
 void SpeechRecognition::Trace(Visitor* visitor) const {
   visitor->Trace(stream_track_);
   visitor->Trace(grammars_);
-  visitor->Trace(context_);
+  visitor->Trace(phrases_);
   visitor->Trace(controller_);
   visitor->Trace(final_results_);
   visitor->Trace(receiver_);

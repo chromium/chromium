@@ -81,13 +81,13 @@ class CertVerifierServiceFactoryImpl
       GetPlatformRootStoreInfoCallback callback) override;
 #endif
 #endif
-  void UpdateNetworkTime(base::Time system_time,
-                         base::TimeTicks system_ticks,
-                         base::Time current_time) override;
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
   void SetUseChromeRootStore(bool use_crs,
                              SetUseChromeRootStoreCallback callback) override;
 #endif
+  void UpdateNetworkTime(base::Time system_time,
+                         base::TimeTicks system_ticks,
+                         base::Time current_time) override;
 
   // Remove a CertVerifyService from needing updates to the Chrome Root Store.
   void RemoveService(internal::CertVerifierServiceImpl* service_impl);
@@ -99,6 +99,8 @@ class CertVerifierServiceFactoryImpl
   base::WeakPtr<CertVerifierServiceFactoryImpl> GetWeakPtr();
 
  private:
+  void InitializeRootStoreDataIfNecessary();
+
   // Update all the `verifier_services_` with the current data.
   void UpdateVerifierServices();
 

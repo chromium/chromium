@@ -491,19 +491,32 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 - (void)testSignOutWithManagedAccount {
   // Sign In `fakeManagedIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    [SigninEarlGrey
+        signinWithFakeManagedIdentityInPersonalProfile:fakeIdentity];
+  } else {
+    [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  }
 
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
 
-  [SigninEarlGreyUI signOutWithClearDataConfirmation:YES];
+  [SigninEarlGreyUI signOutWithClearDataConfirmation:
+                        !AreSeparateProfilesForManagedAccountsEnabled()];
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGreyUI openMobileBookmarks];
 
-  // Assert that the empty state background is absent.
-  [BookmarkEarlGreyUI verifyEmptyBackgroundIsAbsent];
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    [BookmarkEarlGreyUI openMobileBookmarks];
+    // Assert that the empty state background is absent.
+    [BookmarkEarlGreyUI verifyEmptyBackgroundIsAbsent];
+  } else {
+    // With multi profiles, when we signout from a managed profile,
+    // we switch back to the personal profile, that profile would have
+    // no bookmarks in this test.
+    [BookmarkEarlGreyUI verifyEmptyBackgroundAppears];
+  }
 }
 
 @end

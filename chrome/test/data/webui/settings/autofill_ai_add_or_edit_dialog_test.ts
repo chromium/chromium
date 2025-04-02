@@ -442,7 +442,6 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
         assertDeepEquals(expectedEntityInstance, dialogConfirmedEvent.detail);
       }));
 
-
   interface AddOrEditEntityInstanceDateParamsInterface {
     // True if the user is adding an entity instance, false if the user is
     // editing an entity instance.
@@ -771,44 +770,81 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
     assertTrue(saveButton.disabled);
   });
 
-  test('testMonthPickerChangeLocale', async function() {
-    testEntityInstance.attributeInstances.push(testDateAttributeInstance);
-    dialog.entityInstance = testEntityInstance;
-    document.documentElement.lang = 'cs';
-    document.body.appendChild(dialog);
-    await entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName');
-    await flushTasks();
+  interface MonthPickerHasCorrectMonthsParamsInterface {
+    // The locale for which the test should take place.
+    locale: string;
+    // The months abbreviation in the specified locale.
+    monthsAbbreviations: string[];
+    // The title of the test.
+    title: string;
+  }
 
-    const allSelectorOptions =
-        dialog.shadowRoot!.querySelectorAll<HTMLElement>('option');
-    // The abbreviations are formatted so that they match the way they are found
-    // inside the `textContent` of <option> elements. This way, "led" will not
-    // match "New Caledonia" from the country picker.
-    const czechMonthsAbbreviations = [
-      ' led\n',
-      ' úno\n',
-      ' bře\n',
-      ' dub\n',
-      ' kvě\n',
-      ' čvn\n',
-      ' čvc\n',
-      ' srp\n',
-      ' zář\n',
-      ' říj\n',
-      ' lis\n',
-      ' pro\n',
-    ];
-    const firstOptionInTheMonthSelectorIndex =
-        Array.from(allSelectorOptions)
-            .findIndex(
-                option =>
-                    option.textContent!.includes(czechMonthsAbbreviations[0]!));
-    assertNotEquals(firstOptionInTheMonthSelectorIndex, -1);
+  // The months abbreviations are formatted so that they match the way they are
+  // found inside the `textContent` of <option> elements. This way, "led" will
+  // not match "New Caledonia" from the country picker.
+  const monthPickerHasCorrectMonthsParams:
+      MonthPickerHasCorrectMonthsParamsInterface[] = [
+        {
+          locale: 'en',
+          monthsAbbreviations: [
+            ' Jan\n',
+            ' Feb\n',
+            ' Mar\n',
+            ' Apr\n',
+            ' May\n',
+            ' Jun\n',
+            ' Jul\n',
+            ' Aug\n',
+            ' Sep\n',
+            ' Oct\n',
+            ' Nov\n',
+            ' Dec\n',
+          ],
+          title: 'testMonthPickerHasCorrectMonthsEnglishLocale',
+        },
+        {
+          locale: 'cs',
+          monthsAbbreviations: [
+            ' led\n',
+            ' úno\n',
+            ' bře\n',
+            ' dub\n',
+            ' kvě\n',
+            ' čvn\n',
+            ' čvc\n',
+            ' srp\n',
+            ' zář\n',
+            ' říj\n',
+            ' lis\n',
+            ' pro\n',
+          ],
+          title: 'testMonthPickerHasCorrectMonthsCzechLocale',
+        },
+      ];
 
-    for (let i = 0, j = firstOptionInTheMonthSelectorIndex;
-         i < czechMonthsAbbreviations.length; i++, j++) {
-      assertTrue(allSelectorOptions.item(j).textContent!.includes(
-          czechMonthsAbbreviations[i]!));
-    }
-  });
+  monthPickerHasCorrectMonthsParams.forEach(
+      (params) => test(params.title, async function() {
+        testEntityInstance.attributeInstances.push(testDateAttributeInstance);
+        dialog.entityInstance = testEntityInstance;
+        document.documentElement.lang = params.locale;
+        document.body.appendChild(dialog);
+        await entityDataManager.whenCalled(
+            'getAllAttributeTypesForEntityTypeName');
+        await flushTasks();
+
+        const allSelectorOptions =
+            dialog.shadowRoot!.querySelectorAll<HTMLElement>('option');
+        const firstOptionInTheMonthSelectorIndex =
+            Array.from(allSelectorOptions)
+                .findIndex(
+                    option => option.textContent!.includes(
+                        params.monthsAbbreviations[0]!));
+        assertNotEquals(firstOptionInTheMonthSelectorIndex, -1);
+
+        for (let i = 0, j = firstOptionInTheMonthSelectorIndex;
+             i < params.monthsAbbreviations.length; i++, j++) {
+          assertTrue(allSelectorOptions.item(j).textContent!.includes(
+              params.monthsAbbreviations[i]!));
+        }
+      }));
 });

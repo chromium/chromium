@@ -243,4 +243,9 @@ using base::test::ios::WaitUntilConditionOrTimeout;
           profileSeparationDataMigrationSettings];
 }
 
+- (BOOL)areSeparateProfilesForManagedAccountsEnabled {
+  return
+      [SigninEarlGreyAppInterface areSeparateProfilesForManagedAccountsEnabled];
+}
+
 @end

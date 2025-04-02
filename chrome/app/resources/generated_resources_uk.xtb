@@ -2998,6 +2998,7 @@
 <translation id="3045447014237878114">Цей сайт автоматично завантажив декілька файлів</translation>
 <translation id="3046178388369461825">На диску Linux дуже мало вільного місця</translation>
 <translation id="304644035656848980">Попередній перегляд мікрофона</translation>
+<translation id="3046892784550338476">Версія <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Веб-сторінка, повністю</translation>
 <translation id="304747341537320566">Системи синтезу мовлення</translation>
 <translation id="3047678109605649715">На вашому пристрої немає голосових файлів такою мовою: <ph name="LANGUAGE" />. Звільніть пам’ять і повторіть спробу.</translation>
@@ -3090,6 +3091,7 @@
 <translation id="3122883569442693641">Докладніше</translation>
 <translation id="3124111068741548686">Обробка КОРИСТУВАЧА</translation>
 <translation id="3124332159330678621">Налаштуйте вигляд веб-переглядача Chrome</translation>
+<translation id="3125816458150005808">Ви можете відкріпити його й відкривати через меню</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Щоб уникнути проблем із заряджанням і роботою, використовуйте сумісний адаптер живлення Dell або USB Type-C.</translation>
 <translation id="3127862849166875294">Змінити розмір диска в Linux</translation>
@@ -5340,6 +5342,7 @@
 <translation id="4723140812774948886">Замінити наступним</translation>
 <translation id="4724450788351008910">Зміна приналежності</translation>
 <translation id="4725511304875193254">Коргі</translation>
+<translation id="4725762702191453794">Пошук на вкладках тепер закріплено на панелі інструментів</translation>
 <translation id="4726710355753484204">Щоб наблизити, натисніть комбінацію Ctrl + Alt + клавіша збільшення яскравості.
 Щоб віддалити, натисніть комбінацію Ctrl + Alt + клавіша зменшення яскравості.</translation>
 <translation id="4726710629007580002">Під час спроби встановити це розширення з’являлися застереження.</translation>

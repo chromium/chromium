@@ -11,7 +11,6 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "base/lazy_instance.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_mode.h"
@@ -140,15 +139,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   virtual void Destroy() {}
 
  private:
-  static base::LazyInstance<NativeWindowHandlerCallback>::Leaky
-      native_window_handler_;
-
   static bool allow_ax_mode_changes_;
-
-  // This allows UI menu popups like to act as if they are focused in the
-  // exposed platform accessibility API, even though actual focus remains in
-  // underlying content.
-  static gfx::NativeViewAccessible popup_focus_override_;
 };
 
 }  // namespace ui

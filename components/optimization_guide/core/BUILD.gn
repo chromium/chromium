@@ -686,7 +686,7 @@ action("on_device_model_execution_proto_generator") {
   }
 
   deps = [
-    "//components/optimization_guide/proto:optimization_guide_proto_descriptors",
+    "//components/optimization_guide/proto:optimization_guide_proto_descriptors_gen",
     "//third_party/protobuf:py_proto_runtime",
   ]
 }

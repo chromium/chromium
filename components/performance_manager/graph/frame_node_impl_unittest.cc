@@ -244,6 +244,7 @@ class MockObserver : public MockFrameNodeObserver {
 };
 
 using ::testing::_;
+using ::testing::AnyNumber;
 using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Invoke;
@@ -762,34 +763,28 @@ TEST_F(FrameNodeImplTest, ViewportIntersection) {
 
   MockObserver obs(graph());
 
+  // Ignore OnIsIntersectingLargeArea notifications.
+  EXPECT_CALL(obs, OnIsIntersectingLargeAreaChanged(child_frame_node.get()))
+      .Times(AnyNumber());
+
   // Initially unknown.
-  EXPECT_EQ(child_frame_node->GetViewportIntersection(), std::nullopt);
+  EXPECT_EQ(child_frame_node->GetViewportIntersection(),
+            ViewportIntersection::kUnknown);
 
   EXPECT_CALL(obs, OnViewportIntersectionChanged(child_frame_node.get()));
-  child_frame_node->SetViewportIntersectionForTesting(
-      ViewportIntersection::CreateNotIntersecting());
-  EXPECT_FALSE(child_frame_node->GetViewportIntersection()->is_intersecting());
-  EXPECT_FALSE(child_frame_node->GetViewportIntersection()
-                   ->is_intersecting_large_area());
+  child_frame_node->SetViewportIntersection(
+      ViewportIntersection::kNotIntersecting);
+  EXPECT_EQ(child_frame_node->GetViewportIntersection(),
+            ViewportIntersection::kNotIntersecting);
 
   EXPECT_CALL(obs, OnViewportIntersectionChanged(child_frame_node.get()));
-  child_frame_node->SetViewportIntersectionForTesting(
-      ViewportIntersection::CreateIntersecting(
-          /*is_intersecting_large_area=*/true));
-  EXPECT_TRUE(child_frame_node->GetViewportIntersection()->is_intersecting());
-  EXPECT_TRUE(child_frame_node->GetViewportIntersection()
-                  ->is_intersecting_large_area());
-
-  EXPECT_CALL(obs, OnViewportIntersectionChanged(child_frame_node.get()));
-  child_frame_node->SetViewportIntersectionForTesting(
-      ViewportIntersection::CreateIntersecting(
-          /*is_intersecting_large_area=*/false));
-  EXPECT_TRUE(child_frame_node->GetViewportIntersection()->is_intersecting());
-  EXPECT_FALSE(child_frame_node->GetViewportIntersection()
-                   ->is_intersecting_large_area());
+  child_frame_node->SetViewportIntersection(
+      ViewportIntersection::kIntersecting);
+  EXPECT_EQ(child_frame_node->GetViewportIntersection(),
+            ViewportIntersection::kIntersecting);
 }
 
-TEST_F(FrameNodeImplTest, ViewportIntersection_IsIntersectingLargeArea) {
+TEST_F(FrameNodeImplTest, IsIntersectingLargeArea) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
   auto main_frame_node = CreateFrameNodeAutoId(process.get(), page.get());
@@ -799,34 +794,42 @@ TEST_F(FrameNodeImplTest, ViewportIntersection_IsIntersectingLargeArea) {
   auto local_root = CreateFrameNodeAutoId(other_process.get(), page.get(),
                                           main_frame_node.get());
 
-  // Set the local root to be intersecting with a large area of the viewport.
-  local_root->SetViewportIntersectionForTesting(
-      ViewportIntersection::CreateIntersecting(
-          /*is_intersecting_large_area=*/true));
-  EXPECT_TRUE(
-      local_root->GetViewportIntersection()->is_intersecting_large_area());
+  MockObserver obs(graph());
 
-  // Create a local child frame that intersects with the viewport.
+  // Ignore OnViewportIntersectionChanged notifications.
+  EXPECT_CALL(obs, OnViewportIntersectionChanged(local_root.get()))
+      .Times(AnyNumber());
 
-  auto local_child =
-      CreateFrameNodeAutoId(other_process.get(), page.get(), local_root.get());
-  local_child->SetViewportIntersectionForTesting(
-      /*is_intersecting_viewport*/ true);
+  // By default, a frame is assumed to be intersecting with a large area of the
+  // viewport.
+  EXPECT_TRUE(local_root->IsIntersectingLargeArea());
 
-  // The child inherited the `is_intersecting_large_area` bit from its parent.
-  EXPECT_TRUE(
-      local_child->GetViewportIntersection()->is_intersecting_large_area());
+  EXPECT_CALL(obs, OnIsIntersectingLargeAreaChanged(local_root.get()));
+  local_root->SetIsIntersectingLargeArea(false);
+  EXPECT_FALSE(local_root->IsIntersectingLargeArea());
 
-  // Make the local root intersecting with a non-large area of the viewport.
-  local_root->SetViewportIntersectionForTesting(
-      ViewportIntersection::CreateIntersecting(
-          /*is_intersecting_large_area=*/false));
-  EXPECT_FALSE(
-      local_root->GetViewportIntersection()->is_intersecting_large_area());
+  EXPECT_CALL(obs, OnIsIntersectingLargeAreaChanged(local_root.get()));
+  local_root->SetIsIntersectingLargeArea(true);
+  EXPECT_TRUE(local_root->IsIntersectingLargeArea());
 
-  // The child inherited the `is_intersecting_large_area` bit from its parent.
-  EXPECT_FALSE(
-      local_child->GetViewportIntersection()->is_intersecting_large_area());
+  // IsIntersectingLargeArea() is false if GetViewportIntersection is
+  // kNotIntersecting.
+  EXPECT_CALL(obs, OnIsIntersectingLargeAreaChanged(local_root.get()));
+  local_root->SetViewportIntersection(ViewportIntersection::kNotIntersecting);
+  EXPECT_FALSE(local_root->IsIntersectingLargeArea());
+
+  // Toggling IsIntersectingLargeArea() while the viewport intersection is
+  // kNotIntersecting doesn't affect its value.
+  local_root->SetIsIntersectingLargeArea(false);
+  EXPECT_FALSE(local_root->IsIntersectingLargeArea());
+  local_root->SetIsIntersectingLargeArea(true);
+  EXPECT_FALSE(local_root->IsIntersectingLargeArea());
+
+  // Change the viewport intersection to kIntersecting and observe the property
+  // change.
+  EXPECT_CALL(obs, OnIsIntersectingLargeAreaChanged(local_root.get()));
+  local_root->SetViewportIntersection(ViewportIntersection::kIntersecting);
+  EXPECT_TRUE(local_root->IsIntersectingLargeArea());
 }
 
 TEST_F(FrameNodeImplTest, Visibility) {

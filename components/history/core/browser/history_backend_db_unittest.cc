@@ -35,6 +35,7 @@
 #include "base/uuid.h"
 #include "components/history/core/browser/download_constants.h"
 #include "components/history/core/browser/download_row.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_database.h"
@@ -3191,6 +3192,86 @@ TEST_F(HistoryBackendDBTest, QuerySegmentUsageReturnsNothingForZeroVisits) {
   std::vector<std::unique_ptr<PageUsageData>> results =
       db_->QuerySegmentUsage(/*max_result_count=*/1, base::NullCallback());
   EXPECT_TRUE(results.empty());
+}
+
+TEST_F(HistoryBackendDBTest,
+       QuerySegmentUsageWithWindowSecondarySortsByLastVisit) {
+  CreateBackendAndDatabase();
+
+  const GURL url1("http://www.bar.com");
+  const GURL url2("http://www.foo.com");
+  const GURL url3("http://www.cat.com");
+  const GURL url4("http://www.relevantsite.com");
+  const GURL url5("http://www.anotherone.com");
+  const int visit_count1 = 10;
+  const int visit_count2 = 5;
+  const int visit_count3 = 11;
+  const int visit_count4 = 20;
+  const int visit_count5 = 25;
+
+  URLID url_id1 = db_->AddURL(URLRow(url1));
+  ASSERT_NE(0, url_id1);
+  URLID url_id2 = db_->AddURL(URLRow(url2));
+  ASSERT_NE(0, url_id2);
+  URLID url_id3 = db_->AddURL(URLRow(url3));
+  ASSERT_NE(0, url_id3);
+  URLID url_id4 = db_->AddURL(URLRow(url4));
+  ASSERT_NE(0, url_id4);
+  URLID url_id5 = db_->AddURL(URLRow(url5));
+  ASSERT_NE(0, url_id5);
+
+  SegmentID segment_id1 = db_->CreateSegment(
+      url_id1, VisitSegmentDatabase::ComputeSegmentName(url1));
+  ASSERT_NE(0, segment_id1);
+  SegmentID segment_id2 = db_->CreateSegment(
+      url_id2, VisitSegmentDatabase::ComputeSegmentName(url2));
+  ASSERT_NE(0, segment_id2);
+  SegmentID segment_id3 = db_->CreateSegment(
+      url_id3, VisitSegmentDatabase::ComputeSegmentName(url3));
+  ASSERT_NE(0, segment_id3);
+  SegmentID segment_id4 = db_->CreateSegment(
+      url_id4, VisitSegmentDatabase::ComputeSegmentName(url4));
+  ASSERT_NE(0, segment_id4);
+  SegmentID segment_id5 = db_->CreateSegment(
+      url_id5, VisitSegmentDatabase::ComputeSegmentName(url5));
+  ASSERT_NE(0, segment_id5);
+
+  // Since times are normalized to local midnight, make sure these are over
+  // a day apart.
+  const base::Time url_time_1(base::Time::FromTimeT(200000));
+  const base::Time url_time_2(base::Time::FromTimeT(100000));
+  const base::Time url_time_3(base::Time::FromTimeT(300000));
+  const base::Time url_time_4(base::Time::Now());
+  const base::Time url_time_5(base::Time::Now());
+  ASSERT_TRUE(
+      db_->UpdateSegmentVisitCount(segment_id1, url_time_1, visit_count1));
+  ASSERT_TRUE(
+      db_->UpdateSegmentVisitCount(segment_id2, url_time_2, visit_count2));
+  ASSERT_TRUE(
+      db_->UpdateSegmentVisitCount(segment_id3, url_time_3, visit_count3));
+  ASSERT_TRUE(
+      db_->UpdateSegmentVisitCount(segment_id4, url_time_4, visit_count4));
+  ASSERT_TRUE(
+      db_->UpdateSegmentVisitCount(segment_id5, url_time_5, visit_count5));
+
+  std::vector<std::unique_ptr<PageUsageData>> results = db_->QuerySegmentUsage(
+      /*max_result_count=*/5, base::NullCallback(),
+      /*recency_factor_name=*/kMvtScoringParamRecencyFactor_Classic,
+      /*recency_window_days=*/0);
+
+  ASSERT_EQ(5u, results.size());
+
+  // Sites older than recency window should be scored 0.
+  EXPECT_THAT(results[2]->GetScore(), 0);
+  EXPECT_THAT(results[3]->GetScore(), 0);
+  EXPECT_THAT(results[4]->GetScore(), 0);
+
+  EXPECT_THAT(results[0]->GetURL(), url5);
+  EXPECT_THAT(results[1]->GetURL(), url4);
+  // 0 scored sites should be sorted based on `last_visit_time`.
+  EXPECT_THAT(results[2]->GetURL(), url3);
+  EXPECT_THAT(results[3]->GetURL(), url1);
+  EXPECT_THAT(results[4]->GetURL(), url2);
 }
 
 }  // namespace

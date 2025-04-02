@@ -5,9 +5,10 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Token;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
@@ -16,6 +17,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /** An interface to be notified about changes to a {@link TabGroupModelFilter}. */
+@NullMarked
 public interface TabGroupModelFilterObserver {
     /** The reason for the tab group being removed from {@link TabGroupModelFilter}. */
     @IntDef({
@@ -46,7 +48,7 @@ public interface TabGroupModelFilterObserver {
      * @param newRootId The new root id of the group after merge.
      * @param tabGroupId The tab group id of the group merged to.
      */
-    default void willMergeTabToGroup(Tab movedTab, int newRootId, Token tabGroupId) {}
+    default void willMergeTabToGroup(Tab movedTab, int newRootId, @Nullable Token tabGroupId) {}
 
     /**
      * This method is called before a group is moved.
@@ -117,7 +119,7 @@ public interface TabGroupModelFilterObserver {
             List<Integer> tabOriginalIndex,
             List<Integer> tabOriginalRootId,
             List<Token> tabOriginalTabGroupId,
-            String destinationGroupTitle,
+            @Nullable String destinationGroupTitle,
             int destinationGroupColorId,
             boolean destinationGroupTitleCollapsed) {}
 
@@ -136,7 +138,7 @@ public interface TabGroupModelFilterObserver {
      * @param rootId The current rootId of the tab group.
      * @param newTitle The new title.
      */
-    default void didChangeTabGroupTitle(int rootId, String newTitle) {}
+    default void didChangeTabGroupTitle(int rootId, @Nullable String newTitle) {}
 
     /**
      * This method is called after a new color is set on a tab group.
@@ -151,8 +153,9 @@ public interface TabGroupModelFilterObserver {
      *
      * @param rootId The current rootId of the tab group.
      * @param isCollapsed Whether or not the tab group is now collapsed.
+     * @param animate Whether the collapse or expand should be animated.
      */
-    default void didChangeTabGroupCollapsed(int rootId, boolean isCollapsed) {}
+    default void didChangeTabGroupCollapsed(int rootId, boolean isCollapsed, boolean animate) {}
 
     /**
      * When a tab group's root id needs to change because the tab whose id was previously being used

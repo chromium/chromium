@@ -256,7 +256,17 @@ SELECT
   'slow_input' AS tag
 FROM _chrome_janky_scroll_frames
 WHERE
-  abs(total_input_delta_y) <= 2.001;
+  abs(total_input_delta_y) <= 2.001
+UNION ALL
+-- According to the field traces, long_generation_to_dispatch_end_dur
+-- over 3 ms is correlated with janky frames
+-- (more details at http://b/401003093#comment15).
+SELECT
+  id AS frame_id,
+  'long_generation_to_dispatch_end_dur' AS tag
+FROM _chrome_janky_scroll_frames
+WHERE
+  input_reader_dur + input_dispatcher_dur > time_from_ms(3);
 
 -- Consolidated list of tags for each janky scroll frame.
 CREATE PERFETTO TABLE chrome_tagged_janky_scroll_frames (

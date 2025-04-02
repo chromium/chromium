@@ -650,10 +650,207 @@ TEST_F(AnnotationAgentImplTest, AgentScrollIntoView) {
 
   // Invoking ScrollIntoView on the agent should cause the attached content
   // into the viewport.
-  host_foo.agent_->ScrollIntoView();
+  host_foo.agent_->ScrollIntoView(/*applies_focus=*/false);
   host_foo.FlushForTesting();
 
   EXPECT_TRUE(ExpectInViewport(*element_foo));
+}
+
+// Tests that calling ScrollIntoView with `applies_focus` set to false will not
+// focus the element or clear the focus.
+TEST_F(AnnotationAgentImplTest, AgentScrollIntoViewDoesNotApplyFocus) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      p {
+        font: 10px/1 Ahem;
+      }
+      #foo {
+        position: absolute;
+        top: 1000px;
+      }
+      body {
+        height: 5000px;
+        margin: 0;
+      }
+    </style>
+    <p id='foo' tabindex=0>FOO<p>
+  )HTML");
+
+  LoadAhem();
+  Compositor().BeginFrame();
+
+  Element* element_foo = GetDocument().getElementById(AtomicString("foo"));
+
+  RangeInFlatTree* range_foo =
+      CreateRangeToExpectedText(element_foo, 0, 3, "FOO");
+  auto* agent_foo = CreateAgentForRange(range_foo);
+  ASSERT_TRUE(agent_foo);
+
+  ASSERT_TRUE(ExpectNotInViewport(*element_foo));
+  ASSERT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset(),
+            ScrollOffset());
+
+  MockAnnotationAgentHost host_foo;
+  host_foo.BindToAgent(*agent_foo);
+  Compositor().BeginFrame();
+  ASSERT_TRUE(agent_foo->IsAttached());
+
+  host_foo.FlushForTesting();
+
+  // Attachment must not cause any scrolling.
+  ASSERT_TRUE(ExpectNotInViewport(*element_foo));
+  ASSERT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset(),
+            ScrollOffset());
+  ASSERT_FALSE(element_foo->IsFocusedElementInDocument());
+  ASSERT_EQ(GetDocument().SequentialFocusNavigationStartingPoint(
+                mojom::blink::FocusType::kForward),
+            nullptr);
+
+  // Invoking ScrollIntoView on the agent should cause the attached content
+  // into the viewport.
+  host_foo.agent_->ScrollIntoView(/*applies_focus=*/false);
+  host_foo.FlushForTesting();
+
+  EXPECT_TRUE(ExpectInViewport(*element_foo));
+  EXPECT_FALSE(element_foo->IsFocusedElementInDocument());
+  ASSERT_EQ(GetDocument().SequentialFocusNavigationStartingPoint(
+                mojom::blink::FocusType::kForward),
+            element_foo);
+}
+
+// Tests that calling ScrollIntoView with `applies_focus` set to true will
+// ensure that the element will be focused if focusable.
+TEST_F(AnnotationAgentImplTest, AgentScrollIntoViewAppliesFocusAndFocusable) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      p {
+        font: 10px/1 Ahem;
+      }
+      #foo {
+        position: absolute;
+        top: 1000px;
+      }
+      body {
+        height: 5000px;
+        margin: 0;
+      }
+    </style>
+    <p id='foo' tabindex=0>FOO<p>
+  )HTML");
+
+  LoadAhem();
+  Compositor().BeginFrame();
+
+  Element* element_foo = GetDocument().getElementById(AtomicString("foo"));
+
+  RangeInFlatTree* range_foo =
+      CreateRangeToExpectedText(element_foo, 0, 3, "FOO");
+  auto* agent_foo = CreateAgentForRange(range_foo);
+  ASSERT_TRUE(agent_foo);
+
+  ASSERT_TRUE(ExpectNotInViewport(*element_foo));
+  ASSERT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset(),
+            ScrollOffset());
+
+  MockAnnotationAgentHost host_foo;
+  host_foo.BindToAgent(*agent_foo);
+  Compositor().BeginFrame();
+  ASSERT_TRUE(agent_foo->IsAttached());
+
+  host_foo.FlushForTesting();
+
+  // Attachment must not cause any scrolling.
+  ASSERT_TRUE(ExpectNotInViewport(*element_foo));
+  ASSERT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset(),
+            ScrollOffset());
+  ASSERT_FALSE(element_foo->IsFocusedElementInDocument());
+  ASSERT_EQ(GetDocument().SequentialFocusNavigationStartingPoint(
+                mojom::blink::FocusType::kForward),
+            nullptr);
+
+  // Invoking ScrollIntoView on the agent should cause the attached content
+  // into the viewport.
+  host_foo.agent_->ScrollIntoView(/*applies_focus=*/true);
+  host_foo.FlushForTesting();
+
+  EXPECT_TRUE(ExpectInViewport(*element_foo));
+  EXPECT_TRUE(element_foo->IsFocusedElementInDocument());
+  ASSERT_EQ(GetDocument().SequentialFocusNavigationStartingPoint(
+                mojom::blink::FocusType::kForward),
+            element_foo);
+}
+
+// Tests that calling ScrollIntoView with `applies_focus` set to true will
+// ensure that the focus is cleared and the sequential tab navigation point is
+// correctly set if the element is not focusable.
+TEST_F(AnnotationAgentImplTest,
+       AgentScrollIntoViewAppliesFocusAndNotFocusable) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      p {
+        font: 10px/1 Ahem;
+      }
+      #foo {
+        position: absolute;
+        top: 1000px;
+      }
+      body {
+        height: 5000px;
+        margin: 0;
+      }
+    </style>
+    <p id='foo'>FOO<p>
+  )HTML");
+
+  LoadAhem();
+  Compositor().BeginFrame();
+
+  Element* element_foo = GetDocument().getElementById(AtomicString("foo"));
+
+  RangeInFlatTree* range_foo =
+      CreateRangeToExpectedText(element_foo, 0, 3, "FOO");
+  auto* agent_foo = CreateAgentForRange(range_foo);
+  ASSERT_TRUE(agent_foo);
+
+  ASSERT_TRUE(ExpectNotInViewport(*element_foo));
+  ASSERT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset(),
+            ScrollOffset());
+
+  MockAnnotationAgentHost host_foo;
+  host_foo.BindToAgent(*agent_foo);
+  Compositor().BeginFrame();
+  ASSERT_TRUE(agent_foo->IsAttached());
+
+  host_foo.FlushForTesting();
+
+  // Attachment must not cause any scrolling.
+  ASSERT_TRUE(ExpectNotInViewport(*element_foo));
+  ASSERT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset(),
+            ScrollOffset());
+  ASSERT_FALSE(element_foo->IsFocusedElementInDocument());
+  ASSERT_EQ(GetDocument().SequentialFocusNavigationStartingPoint(
+                mojom::blink::FocusType::kForward),
+            nullptr);
+
+  // Invoking ScrollIntoView on the agent should cause the attached content
+  // into the viewport.
+  host_foo.agent_->ScrollIntoView(/*applies_focus=*/true);
+  host_foo.FlushForTesting();
+
+  EXPECT_TRUE(ExpectInViewport(*element_foo));
+  EXPECT_FALSE(element_foo->IsFocusedElementInDocument());
+  ASSERT_EQ(GetDocument().SequentialFocusNavigationStartingPoint(
+                mojom::blink::FocusType::kForward),
+            element_foo);
 }
 
 // Tests that calling ScrollIntoView will ensure the marker is in the viewport
@@ -708,7 +905,7 @@ TEST_F(AnnotationAgentImplTest, AgentScrollIntoViewZoomed) {
 
   // Invoking ScrollIntoView on the agent should cause the attached content
   // into the viewport.
-  host_foo.agent_->ScrollIntoView();
+  host_foo.agent_->ScrollIntoView(/*applies_focus=*/false);
   host_foo.FlushForTesting();
 
   EXPECT_TRUE(ExpectInViewport(*element_foo));
@@ -753,7 +950,7 @@ TEST_F(AnnotationAgentImplTest, ScrollIntoViewWithDirtyLayout) {
 
   // Invoking ScrollIntoView on the agent should perform layout and then cause
   // the attached content to scroll into the viewport.
-  host_foo.agent_->ScrollIntoView();
+  host_foo.agent_->ScrollIntoView(/*applies_focus=*/false);
   host_foo.FlushForTesting();
 
   EXPECT_TRUE(ExpectInViewport(*element_text));
@@ -809,7 +1006,7 @@ TEST_F(AnnotationAgentImplTest, ScrollIntoViewCollapsedRange) {
   host.FlushForTesting();
 
   // Ensure calling ScrollIntoView doesn't crash.
-  host.agent_->ScrollIntoView();
+  host.agent_->ScrollIntoView(/*applies_focus=*/false);
   host.FlushForTesting();
   EXPECT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset().y(),
             0);
@@ -854,7 +1051,7 @@ TEST_F(AnnotationAgentImplTest, OpenDetailsElement) {
   EXPECT_FALSE(element_details->FastHasAttribute(html_names::kOpenAttr));
 
   // ScrollIntoView, if called, shouldn't cause a scroll yet.
-  agent->ScrollIntoView();
+  agent->ScrollIntoView(/*applies_focus=*/false);
   EXPECT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset(),
             ScrollOffset());
 
@@ -869,7 +1066,7 @@ TEST_F(AnnotationAgentImplTest, OpenDetailsElement) {
   EXPECT_TRUE(host.did_finish_attachment_rect_);
 
   // ScrollIntoView should now correctly scroll to the expanded details element.
-  agent->ScrollIntoView();
+  agent->ScrollIntoView(/*applies_focus=*/false);
   EXPECT_GT(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset().y(),
             100.f);
 }

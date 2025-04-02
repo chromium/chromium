@@ -1194,6 +1194,11 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninExtensionPref) {
   EXPECT_TRUE(
       SigninPrefs(*prefs()).GetExtensionsExplicitBrowserSignin(gaia_id));
 
+  // Verify that we have logged a new opt in.
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.Extensions.ExplicitSigninFromExtensionInstallBubble",
+      /*sample=*/true, /*expected_bucket_count=*/1);
+
 #if !BUILDFLAG(IS_CHROMEOS)
   // Clearing signin.
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
@@ -1225,6 +1230,27 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninExtensionPref) {
 
   EXPECT_TRUE(
       SigninPrefs(*prefs()).GetExtensionsExplicitBrowserSignin(gaia_id));
+
+  // Verify histograms as well that this was for a new opt-in.
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.Extensions.ExplicitSigninFromExtensionInstallBubble",
+      /*sample=*/true, /*expected_bucket_count=*/1);
+
+  // Sign out, then sign in again through the extensions install bubble.
+  manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id),
+      signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::kExtensionInstallBubble);
+
+  // Verify that an entry is recorded for an existing opt-in.
+  histogram_tester_.ExpectBucketCount(
+      "Signin.Extensions.ExplicitSigninFromExtensionInstallBubble",
+      /*sample=*/true, /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      "Signin.Extensions.ExplicitSigninFromExtensionInstallBubble",
+      /*sample=*/false, /*expected_count=*/1);
+
 #endif
 }
 

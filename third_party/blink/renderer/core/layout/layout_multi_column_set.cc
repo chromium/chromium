@@ -103,12 +103,13 @@ class ChildFragmentIterator {
   wtf_size_t child_index_ = 0;
 };
 
-LayoutPoint ComputeLocation(const PhysicalBoxFragment& column_box,
-                            PhysicalOffset column_offset,
-                            LayoutUnit set_inline_size,
-                            const LayoutBlockFlow& container,
-                            wtf_size_t fragment_index,
-                            const PhysicalBoxStrut& border_padding_scrollbar) {
+DeprecatedLayoutPoint ComputeLocation(
+    const PhysicalBoxFragment& column_box,
+    PhysicalOffset column_offset,
+    LayoutUnit set_inline_size,
+    const LayoutBlockFlow& container,
+    wtf_size_t fragment_index,
+    const PhysicalBoxStrut& border_padding_scrollbar) {
   const PhysicalBoxFragment* container_fragment =
       container.GetPhysicalFragment(fragment_index);
   WritingModeConverter converter(
@@ -133,9 +134,9 @@ LayoutPoint ComputeLocation(const PhysicalBoxFragment& column_box,
   }
   // We have calculated the physical offset relative to the border edge of
   // this multicol container fragment. We'll now convert it to a legacy
-  // engine LayoutPoint, which will also take care of converting it into the
-  // flow thread coordinate space, if we happen to be nested inside another
-  // fragmentation context.
+  // engine DeprecatedLayoutPoint, which will also take care of converting it
+  // into the flow thread coordinate space, if we happen to be nested inside
+  // another fragmentation context.
   return ComputeBoxLocation(column_box, physical_offset,
                             *container.GetPhysicalFragment(fragment_index),
                             previous_container_break_token);
@@ -354,7 +355,7 @@ void LayoutMultiColumnSet::WillBeRemovedFromTree() {
   DetachFromFlowThread();
 }
 
-LayoutPoint LayoutMultiColumnSet::LocationInternal() const {
+DeprecatedLayoutPoint LayoutMultiColumnSet::LocationInternal() const {
   NOT_DESTROYED();
   UpdateGeometryIfNeeded();
   return frame_location_;
@@ -377,7 +378,7 @@ void LayoutMultiColumnSet::UpdateGeometry() {
   NOT_DESTROYED();
   DCHECK(!HasValidCachedGeometry());
   SetHasValidCachedGeometry(true);
-  frame_location_ = LayoutPoint();
+  frame_location_ = DeprecatedLayoutPoint();
   ResetColumnHeight();
   const LayoutBlockFlow* container = MultiColumnBlockFlow();
   DCHECK_GT(container->PhysicalFragmentCount(), 0u);

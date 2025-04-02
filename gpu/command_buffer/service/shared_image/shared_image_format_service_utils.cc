@@ -776,16 +776,21 @@ skgpu::graphite::TextureInfo FallbackGraphiteBackendTextureInfo(
     const skgpu::graphite::TextureInfo& texture_info) {
 #if BUILDFLAG(SKIA_USE_DAWN)
   skgpu::graphite::DawnTextureInfo info;
-  if (skgpu::graphite::TextureInfos::GetDawnTextureInfo(texture_info, &info) &&
-      info.fFormat == wgpu::TextureFormat::Undefined) {
+  if (!skgpu::graphite::TextureInfos::GetDawnTextureInfo(texture_info, &info)) {
+    return texture_info;
+  }
+  // Fallback image needs to be renderable in order to draw to it.
+  info.fUsage |= wgpu::TextureUsage::RenderAttachment;
+  if (info.fFormat == wgpu::TextureFormat::Undefined) {
     // For multiplanar textures, the fFormat of promise images is Undefined,
     // so the fViewFormat should be used to create fallback textures.
     info.fFormat = info.fViewFormat;
     info.fAspect = wgpu::TextureAspect::All;
-    return skgpu::graphite::TextureInfos::MakeDawn(info);
   }
-#endif
+  return skgpu::graphite::TextureInfos::MakeDawn(info);
+#else
   return texture_info;
+#endif
 }
 
 }  // namespace gpu

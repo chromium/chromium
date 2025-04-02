@@ -244,7 +244,12 @@ void ClickSignOutInAccountSettings() {
   // Sign in with managed account.
   FakeSystemIdentity* fakeManagedIdentity =
       [FakeSystemIdentity fakeManagedIdentity];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    [SigninEarlGrey
+        signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
+  } else {
+    [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
+  }
 
   // The sign out button should directly sign out the user.
   ClickSignOutInAccountSettings();

@@ -244,7 +244,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   virtual PhysicalSize Size() const;
 
-  void SetLocation(const LayoutPoint& location) {
+  void SetLocation(const DeprecatedLayoutPoint& location) {
     NOT_DESTROYED();
     if (location == frame_location_) {
       return;
@@ -1277,7 +1277,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutUnit ContainingBlockLogicalHeightForPositioned(
       const LayoutBoxModelObject* containing_block) const;
 
-  virtual LayoutPoint LocationInternal() const {
+  virtual DeprecatedLayoutPoint LocationInternal() const {
     NOT_DESTROYED();
     return frame_location_;
   }
@@ -1370,7 +1370,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       const LayoutBox* container_box) const {
     NOT_DESTROYED();
     DCHECK_EQ(container_box, LocationContainer());
-    LayoutPoint location = LocationInternal();
+    DeprecatedLayoutPoint location = LocationInternal();
     if (!container_box || !container_box->HasFlippedBlocksWritingMode())
         [[likely]] {
       return PhysicalOffset(location);
@@ -1401,7 +1401,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // object's border edge to the LocationContainer's border edge. Thus it
   // includes any logical top/left along with this box's margins. It doesn't
   // include transforms, relative position offsets etc.
-  LayoutPoint frame_location_;
+  DeprecatedLayoutPoint frame_location_;
 
   // TODO(crbug.com/1353190): Remove frame_size_.
   PhysicalSize frame_size_;

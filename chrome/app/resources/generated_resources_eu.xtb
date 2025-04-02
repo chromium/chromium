@@ -2982,6 +2982,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3045447014237878114">Webgune honek hainbat fitxategi deskargatu ditu automatikoki</translation>
 <translation id="3046178388369461825">Oso toki gutxi geratzen da Linux-en diskoan</translation>
 <translation id="304644035656848980">Mikrofonoaren aurrebista</translation>
+<translation id="3046892784550338476">Bertsioa: <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Webgune osoa</translation>
 <translation id="304747341537320566">Hizketa-motorrak</translation>
 <translation id="3047678109605649715">Ez dago <ph name="LANGUAGE" /> darabilen ahotsik gailuan. Egin tokia gailuan eta saiatu berriro.</translation>

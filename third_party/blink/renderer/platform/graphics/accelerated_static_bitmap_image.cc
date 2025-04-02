@@ -32,7 +32,6 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkSamplingOptions.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
@@ -74,10 +73,9 @@ AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
     viz::ReleaseCallback release_callback) {
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
       std::move(shared_image), sync_token, shared_image_texture_id, size,
-      format, alpha_type, color_space.ToSkColorSpace(),
-      ImageOrientationEnum::kDefault, std::move(context_provider_wrapper),
-      context_thread_ref, std::move(context_task_runner),
-      std::move(release_callback)));
+      format, alpha_type, color_space, ImageOrientationEnum::kDefault,
+      std::move(context_provider_wrapper), context_thread_ref,
+      std::move(context_task_runner), std::move(release_callback)));
 }
 
 // static
@@ -88,7 +86,7 @@ AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
     const gfx::Size& size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
-    sk_sp<SkColorSpace> sk_color_space,
+    const gfx::ColorSpace& color_space,
     base::OnceCallback<void(const gpu::SyncToken&)> external_callback) {
   auto shared_gpu_context = blink::SharedGpuContext::ContextProviderWrapper();
   if (!shared_gpu_context) {
@@ -119,8 +117,8 @@ AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
 
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
       std::move(shared_image), sync_token, 0u, size, format, alpha_type,
-      std::move(sk_color_space), ImageOrientationEnum::kDefault,
-      shared_gpu_context, base::PlatformThreadRef(),
+      color_space, ImageOrientationEnum::kDefault, shared_gpu_context,
+      base::PlatformThreadRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
       std::move(release_callback)));
 }
@@ -132,7 +130,7 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
     const gfx::Size& size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
-    sk_sp<SkColorSpace> sk_color_space,
+    const gfx::ColorSpace& color_space,
     const ImageOrientation& orientation,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::PlatformThreadRef context_thread_ref,
@@ -143,7 +141,7 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
       size_(size),
       format_(format),
       alpha_type_(alpha_type),
-      sk_color_space_(std::move(sk_color_space)),
+      color_space_(color_space),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       mailbox_ref_(
           base::MakeRefCounted<MailboxRef>(sync_token,
@@ -173,9 +171,9 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
     GLuint dest_texture_id,
     GLint dest_level,
     bool unpack_premultiply_alpha,
-    bool unpack_flip_y,
+    GrSurfaceOrigin destination_origin,
     const gfx::Point& dest_point,
-    const gfx::Rect& source_sub_rectangle) {
+    const gfx::Rect& src_rect) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!IsValid())
     return false;
@@ -193,6 +191,18 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
                                  unpack_premultiply_alpha == true;
   const bool do_alpha_unmultiply = GetAlphaType() == kPremul_SkAlphaType &&
                                    unpack_premultiply_alpha == false;
+
+  // `src_rect` here is always in top-left coordinate space, but
+  // CopySubTextureCHROMIUM source rect is in texture coordinate space, so we
+  // need to adjust.
+  auto source_sub_rectangle = src_rect;
+  if (shared_image_->surface_origin() == kBottomLeft_GrSurfaceOrigin) {
+    source_sub_rectangle.set_y(Size().height() - source_sub_rectangle.bottom());
+  }
+
+  // If source origin doesn't match destination, we need to flip.
+  bool unpack_flip_y = shared_image_->surface_origin() != destination_origin;
+
   dest_gl->CopySubTextureCHROMIUM(
       source_scoped_si_access->texture_id(), 0, dest_target, dest_texture_id,
       dest_level, dest_point.x(), dest_point.y(), source_sub_rectangle.x(),

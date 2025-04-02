@@ -8,12 +8,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 
 /**
  * Helper class to handle persistence of the expanded/collapsed state of a tab group. Default is
  * expanded unless explicitly set.
  */
+@NullMarked
 class TabGroupCollapsedUtils {
     private static final String TAB_GROUP_COLLAPSED_FILE_NAME = "tab_group_collapsed";
 

@@ -30,6 +30,7 @@
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
+#include "components/variations/seed_reader_writer.h"
 #include "components/variations/variations_safe_seed_store_local_state.h"
 #include "components/variations/variations_switches.h"
 #include "components/variations/variations_test_utils.h"
@@ -221,7 +222,6 @@ struct {
   }
 
   std::string GetDeltaData() { return Base64DecodeData(base64_delta_data); }
-
 } kSeedDeltaTestData;
 
 // Sets all seed-related prefs to non-default values. Also, sets seed-file-based
@@ -335,7 +335,7 @@ class VariationsSeedStoreTest : public ::testing::Test {
 
 class SeedStoreGroupTestBase : public ::testing::Test {
  public:
-  explicit SeedStoreGroupTestBase(std::string_view seed_pref,
+  explicit SeedStoreGroupTestBase(SeedFieldsPrefs seed_fields_prefs,
                                   std::string_view field_trial_group)
       : file_writer_thread_("SeedReaderWriter Test thread") {
     scoped_feature_list_.InitWithEmptyFeatureAndFieldTrialLists();
@@ -348,7 +348,7 @@ class SeedStoreGroupTestBase : public ::testing::Test {
 
     // Initialize |seed_reader_writer_|.
     seed_reader_writer_ = std::make_unique<SeedReaderWriter>(
-        &prefs_, temp_dir_.GetPath(), kSeedFilename, seed_pref,
+        &prefs_, temp_dir_.GetPath(), kSeedFilename, seed_fields_prefs,
         version_info::Channel::UNKNOWN,
         std::make_unique<const MockEntropyProviders>(
             MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup})
@@ -374,8 +374,8 @@ class LoadSeedDataGroupTest
     : public SeedStoreGroupTestBase,
       public ::testing::WithParamInterface<std::string_view> {
  public:
-  explicit LoadSeedDataGroupTest()
-      : SeedStoreGroupTestBase(prefs::kVariationsCompressedSeed, GetParam()) {}
+  LoadSeedDataGroupTest()
+      : SeedStoreGroupTestBase(kRegularSeedFieldsPrefs, GetParam()) {}
   ~LoadSeedDataGroupTest() override = default;
 };
 
@@ -710,8 +710,8 @@ class StoreSeedDataGroupTest
     : public SeedStoreGroupTestBase,
       public ::testing::WithParamInterface<StoreSeedDataTestParams> {
  public:
-  explicit StoreSeedDataGroupTest()
-      : SeedStoreGroupTestBase(prefs::kVariationsCompressedSeed,
+  StoreSeedDataGroupTest()
+      : SeedStoreGroupTestBase(kRegularSeedFieldsPrefs,
                                GetParam().field_trial_group) {}
   ~StoreSeedDataGroupTest() override = default;
 
@@ -1016,9 +1016,8 @@ class LoadSafeSeedDataGroupTest
     : public SeedStoreGroupTestBase,
       public ::testing::WithParamInterface<std::string_view> {
  public:
-  explicit LoadSafeSeedDataGroupTest()
-      : SeedStoreGroupTestBase(prefs::kVariationsSafeCompressedSeed,
-                               GetParam()) {}
+  LoadSafeSeedDataGroupTest()
+      : SeedStoreGroupTestBase(kSafeSeedFieldsPrefs, GetParam()) {}
   ~LoadSafeSeedDataGroupTest() override = default;
 };
 
@@ -1291,7 +1290,7 @@ class StoreInvalidSafeSeedTest
       public ::testing::WithParamInterface<StoreInvalidSafeSeedTestParams> {
  public:
   StoreInvalidSafeSeedTest()
-      : SeedStoreGroupTestBase(prefs::kVariationsSafeCompressedSeed,
+      : SeedStoreGroupTestBase(kSafeSeedFieldsPrefs,
                                GetParam().field_trial_group) {}
   ~StoreInvalidSafeSeedTest() override = default;
 };
@@ -1429,7 +1428,7 @@ class StoreSafeSeedDataGroupTest
       public ::testing::WithParamInterface<StoreSeedDataTestParams> {
  public:
   StoreSafeSeedDataGroupTest()
-      : SeedStoreGroupTestBase(prefs::kVariationsSafeCompressedSeed,
+      : SeedStoreGroupTestBase(kSafeSeedFieldsPrefs,
                                GetParam().field_trial_group) {}
   ~StoreSafeSeedDataGroupTest() override = default;
 };
@@ -1869,7 +1868,7 @@ class VariationsSeedStoreTestAllGroups
       public ::testing::WithParamInterface<std::string_view> {
  public:
   explicit VariationsSeedStoreTestAllGroups()
-      : SeedStoreGroupTestBase(prefs::kVariationsCompressedSeed, GetParam()) {}
+      : SeedStoreGroupTestBase(kRegularSeedFieldsPrefs, GetParam()) {}
   ~VariationsSeedStoreTestAllGroups() override = default;
 };
 

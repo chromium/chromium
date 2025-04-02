@@ -242,16 +242,16 @@ TEST_F(LobsterSessionImplTest, CanDownloadACandidateIfItIsInCache) {
                         InflateCandidateCallback done_callback) {
         std::vector<LobsterImageCandidate> inflated_candidates = {
             LobsterImageCandidate(/*id=*/1, /*image_bytes=*/"a1b2c3",
-                                  /*seed=*/30,
-                                  /*user_query=*/"a nice strawberry",
-                                  /*rewritten_query=*/"a nice strawberry")};
+                                  /*seed=*/201,
+                                  /*user_query=*/"a nice raspberry",
+                                  /*rewritten_query=*/"a nice raspberry")};
         std::move(done_callback).Run(std::move(inflated_candidates));
       });
 
   LobsterSessionImpl session(std::move(lobster_client), store,
                              LobsterEntryPoint::kQuickInsert,
                              LobsterMode::kInsert);
-  session.RequestCandidates("a nice strawberry", 2,
+  session.RequestCandidates("a nice raspberry", 2,
                             base::BindOnce([](const LobsterResult&) {}));
 
   base::test::TestFuture<bool> future;
@@ -260,7 +260,7 @@ TEST_F(LobsterSessionImplTest, CanDownloadACandidateIfItIsInCache) {
 
   EXPECT_TRUE(future.Get());
   EXPECT_TRUE(
-      base::PathExists(GetDownloadPath().Append("a nice strawberry.jpeg")));
+      base::PathExists(GetDownloadPath().Append("a nice raspberry.jpeg")));
 }
 
 TEST_F(LobsterSessionImplTest,

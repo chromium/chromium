@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
@@ -14,6 +11,8 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.SupplierUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.content_public.browser.WebContents;
@@ -27,11 +26,12 @@ import java.util.function.Predicate;
 /**
  * A set of convenience methods used for interacting with {@link TabList}s and {@link TabModel}s.
  */
+@NullMarked
 public class TabModelUtils {
     private TabModelUtils() {}
 
     /** Returns the non-incognito instance of the {@link EmptyTabModel}. */
-    public static @NonNull TabModel getEmptyTabModel() {
+    public static TabModel getEmptyTabModel() {
         return EmptyTabModel.getInstance(/* isIncognito= */ false);
     }
 
@@ -66,7 +66,7 @@ public class TabModelUtils {
         int count = model.getCount();
 
         for (int i = 0; i < count; i++) {
-            if (model.getTabAt(i).getUrl().getSpec().contentEquals(url)) return i;
+            if (model.getTabAtChecked(i).getUrl().getSpec().contentEquals(url)) return i;
         }
 
         return TabModel.INVALID_TAB_INDEX;
@@ -90,7 +90,7 @@ public class TabModelUtils {
      * @param model The {@link TabModel} to act on.
      * @return The current {@link Tab} or {@code null} if no {@link Tab} is selected
      */
-    public static Tab getCurrentTab(TabList model) {
+    public static @Nullable Tab getCurrentTab(TabList model) {
         int index = model.index();
         if (index == TabModel.INVALID_TAB_INDEX) return null;
 
@@ -99,10 +99,10 @@ public class TabModelUtils {
 
     /**
      * @param model The {@link TabModel} to act on.
-     * @return      The currently active {@link WebContents}, or {@code null} if no {@link Tab}
-     *              is selected or the selected {@link Tab} has no current {@link WebContents}.
+     * @return The currently active {@link WebContents}, or {@code null} if no {@link Tab} is
+     *     selected or the selected {@link Tab} has no current {@link WebContents}.
      */
-    public static WebContents getCurrentWebContents(TabList model) {
+    public static @Nullable WebContents getCurrentWebContents(TabList model) {
         Tab tab = getCurrentTab(model);
         if (tab == null) return null;
 
@@ -117,7 +117,7 @@ public class TabModelUtils {
      * @param type {@link TabSelectionType} how the tab selection was initiated.
      */
     public static void selectTabById(
-            @NonNull TabModelSelector selector, int tabId, @TabSelectionType int tabSelectionType) {
+            TabModelSelector selector, int tabId, @TabSelectionType int tabSelectionType) {
         if (tabId == Tab.INVALID_TAB_ID) return;
 
         TabModel model = selector.getModelForTabId(tabId);
@@ -144,11 +144,11 @@ public class TabModelUtils {
      * @param tabIdToSkip The ID of the {@link Tab} to skip or {@link Tab.INVALID_TAB_ID}.
      * @return the most recently visited Tab or null if none can be found.
      */
-    public static Tab getMostRecentTab(TabList model, int tabIdToSkip) {
+    public static @Nullable Tab getMostRecentTab(TabList model, int tabIdToSkip) {
         @Nullable Tab mostRecentTab = null;
         long mostRecentTabTime = 0;
         for (int i = 0; i < model.getCount(); i++) {
-            final Tab tab = model.getTabAt(i);
+            final Tab tab = model.getTabAtChecked(i);
             if (tab.getId() == tabIdToSkip || tab.isClosing()) continue;
 
             final long timestamp = tab.getTimestampMillis();
@@ -169,8 +169,7 @@ public class TabModelUtils {
      *     tabModelSelector.
      */
     public static void runOnTabStateInitialized(
-            @NonNull TabModelSelector tabModelSelector,
-            @NonNull Callback<TabModelSelector> callback) {
+            TabModelSelector tabModelSelector, Callback<TabModelSelector> callback) {
         if (tabModelSelector.isTabStateInitialized()) {
             callback.onResult(tabModelSelector);
         } else {
@@ -197,12 +196,12 @@ public class TabModelUtils {
      * initialize (in series).
      */
     public static void runOnTabStateInitialized(
-            Runnable callback, @NonNull TabModelSelector... tabModelSelectors) {
+            Runnable callback, TabModelSelector... tabModelSelectors) {
         runOnTabStateInitializedImpl(callback, /* currentIndex= */ 0, tabModelSelectors);
     }
 
     private static void runOnTabStateInitializedImpl(
-            Runnable callback, int currentIndex, @NonNull TabModelSelector... tabModelSelectors) {
+            Runnable callback, int currentIndex, TabModelSelector... tabModelSelectors) {
         if (currentIndex >= tabModelSelectors.length) {
             callback.run();
             return;
@@ -254,7 +253,7 @@ public class TabModelUtils {
      * @param tab The {@link Tab} to find the {@link TabGroupModelFilter} for.
      * @return the associated {@link TabGroupModelFilter} if found or null.
      */
-    public static TabGroupModelFilter getTabGroupModelFilterByTab(@NonNull Tab tab) {
+    public static @Nullable TabGroupModelFilter getTabGroupModelFilterByTab(Tab tab) {
         final WindowAndroid windowAndroid = tab.getWindowAndroid();
         if (windowAndroid == null) return null;
 
@@ -279,7 +278,7 @@ public class TabModelUtils {
     }
 
     /** Converts a {@link TabList} to a {@link List<Tab>}. */
-    public static @NonNull List<Tab> convertTabListToListOfTabs(@Nullable TabList tabList) {
+    public static List<Tab> convertTabListToListOfTabs(@Nullable TabList tabList) {
         ArrayList<Tab> list = new ArrayList<>();
         if (tabList == null) return list;
 

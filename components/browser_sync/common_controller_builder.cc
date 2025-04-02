@@ -883,11 +883,11 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
   }
 
 #if !BUILDFLAG(IS_IOS)
-  if (!disabled_types.Has(syncer::AUTOFILL_LOYALTY_CARD) &&
+  if (!disabled_types.Has(syncer::AUTOFILL_VALUABLE) &&
       base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
     controllers.push_back(
         std::make_unique<autofill::AutofillValuableDataTypeController>(
-            syncer::AUTOFILL_LOYALTY_CARD,
+            syncer::AUTOFILL_VALUABLE,
             std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
                 account_autofill_web_data_service_.value()->GetDBTaskRunner(),
                 base::BindRepeating(

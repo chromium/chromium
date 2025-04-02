@@ -535,6 +535,11 @@ const blink::MediaStreamDevice* GetStreamDevice(
   return nullptr;
 }
 
+bool IsApplicationLoopbackAudioDevice(MediaStreamDevice* device) {
+  return blink::IsAudioInputMediaType(device->type) &&
+         media::AudioDeviceDescription::IsApplicationLoopbackDevice(device->id);
+}
+
 }  // namespace
 
 // MediaStreamManager::DeviceRequest represents a request to either enumerate
@@ -2217,8 +2222,17 @@ bool MediaStreamManager::GetEligibleCaptureDeviceids(
 void MediaStreamManager::TranslateDeviceIdToSourceId(
     const DeviceRequest* request,
     MediaStreamDevice* device) const {
+  // If the device id contains sensitive information, we replace it with a hash
+  // so that it is not exposed to the Renderer. This happens in the following
+  // cases:
+  // * If the MediaStreamDevice represents a video or audio OS input device
+  // (such as a webcam or microphone), the device id may contain an identifier
+  // supplied by the OS.
+  // * If it is an application loopback device, it may contain an identifier
+  // (such as a process id) supplied by the OS.
   if (blink::IsDeviceMediaType(request->audio_type()) ||
-      blink::IsDeviceMediaType(request->video_type())) {
+      blink::IsDeviceMediaType(request->video_type()) ||
+      IsApplicationLoopbackAudioDevice(device)) {
     device->id =
         GetHMACForRawMediaDeviceID(request->salt_and_origin, device->id);
     if (device->group_id) {
@@ -4625,7 +4639,7 @@ std::unique_ptr<MediaStreamUIProxy> MediaStreamManager::MakeFakeUIProxy(
   }
 
   std::unique_ptr<FakeMediaStreamUIProxy> fake_ui = fake_ui_factory_.Run();
-  fake_ui->SetAvailableDevices(devices);
+  fake_ui->AddAvailableDevices(devices);
 
   return fake_ui;
 }

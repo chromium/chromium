@@ -187,22 +187,6 @@
 
 #pragma mark - ChromeAccountManagerServiceObserver
 
-- (void)identityListChanged {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
-    // Listening to `onAccountsOnDeviceChanged` instead.
-    return;
-  }
-  [self handleIdentityListChanged];
-}
-
-- (void)identityUpdated:(id<SystemIdentity>)identity {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
-    // Listening to `onExtendedAccountInfoUpdated` instead.
-    return;
-  }
-  [self handleIdentityUpdated];
-}
-
 - (void)onChromeAccountManagerServiceShutdown:
     (ChromeAccountManagerService*)accountManagerService {
   // TODO(crbug.com/40067367): This method can be removed once
@@ -234,18 +218,10 @@
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  if (!IsUseAccountListFromIdentityManagerEnabled()) {
-    // Listening to `identityUpdated` instead.
-    return;
-  }
   [self handleIdentityUpdated];
 }
 
 - (void)onAccountsOnDeviceChanged {
-  if (!IsUseAccountListFromIdentityManagerEnabled()) {
-    // Listening to `identityListChanged` instead.
-    return;
-  }
   [self handleIdentityListChanged];
 }
 
@@ -256,7 +232,8 @@
     return;
   }
   AccountErrorUIInfo* newError = GetAccountErrorUIInfo(_syncService);
-  if (newError == _error) {
+  if (_error == newError || [newError isEqual:_error]) {
+    // The first disjunct is necessary for the case when both values are `nil`.
     return;
   }
   _error = newError;

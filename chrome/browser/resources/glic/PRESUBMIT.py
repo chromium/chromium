@@ -24,8 +24,9 @@ def CheckApiChangesAreBackwardsCompatible(input_api, output_api, api_file,
     modification, and a tsconfig.json file to build
     chrome/browser/resources/glic/presubmit/check_api_compatibility.ts.
     """
-    skip_compatibility_check = ('BYPASS_GLIC_API_COMPATIBILITY_CHECK'
-                                in input_api.change.tags)
+    skip_compatibility_check = (
+        'Bypass-Glic-Api-Compatibility-Check'
+        in input_api.change.GitFootersFromDescription())
     if skip_compatibility_check:
         return []
 
@@ -69,7 +70,7 @@ def CheckApiChangesAreBackwardsCompatible(input_api, output_api, api_file,
         '** Your changelist is a backwards-incompatible Glic API change!\n' +
         '** Did you add a non-optional field or function, or change the\n' +
         '** type of an existing field or function?\n' +
-        '** Please fix, or add BYPASS_GLIC_API_COMPATIBILITY_CHECK: <reason>' +
+        '** Please fix, or add Bypass-Glic-Api-Compatibility-Check: <reason>' +
         ' to your changelist description if this is intended. Error:\n  ')
 
     tsc_cmd = [

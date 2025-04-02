@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 import type {AnnotationBrush, AnnotationText, Color, TextStyles} from './constants.js';
-import {AnnotationBrushType, TextAlignment} from './constants.js';
+import {AnnotationBrushType, TextAlignment, TextStyle} from './constants.js';
 import {PluginController} from './controller.js';
 
 export class Ink2Manager extends EventTarget {
@@ -16,8 +16,12 @@ export class Ink2Manager extends EventTarget {
     size: 12,
     color: {r: 0, g: 0, b: 0},
     alignment: TextAlignment.LEFT,
-    styles:
-        {bold: false, italic: false, underline: false, strikethrough: false},
+    styles: {
+      [TextStyle.BOLD]: false,
+      [TextStyle.ITALIC]: false,
+      [TextStyle.UNDERLINE]: false,
+      [TextStyle.STRIKETHROUGH]: false,
+    },
   };
 
   private brushResolver_: PromiseResolver<void>|null = null;
@@ -120,10 +124,12 @@ export class Ink2Manager extends EventTarget {
   }
 
   setTextStyles(styles: TextStyles) {
-    if (this.text_.styles.bold === styles.bold &&
-        this.text_.styles.italic === styles.italic &&
-        this.text_.styles.underline === styles.underline &&
-        this.text_.styles.strikethrough === styles.strikethrough) {
+    if (this.text_.styles[TextStyle.BOLD] === styles[TextStyle.BOLD] &&
+        this.text_.styles[TextStyle.ITALIC] === styles[TextStyle.ITALIC] &&
+        this.text_.styles[TextStyle.UNDERLINE] ===
+            styles[TextStyle.UNDERLINE] &&
+        this.text_.styles[TextStyle.STRIKETHROUGH] ===
+            styles[TextStyle.STRIKETHROUGH]) {
       return;
     }
 

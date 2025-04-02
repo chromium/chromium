@@ -40,7 +40,6 @@ webview:not([hidden]) {
 
 .dialog .container {
   background: var(--color--surface-container);
-  border-radius: 12px;
   color: var(--color--on-surface-variant);
   padding-bottom: 14px;
 }

@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -218,13 +219,17 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         tabGroupModelFilter,
                         dataSharingTabManager,
                         tabId,
-                        tabGroupDisplayName);
+                        tabGroupDisplayName,
+                        CollaborationServiceShareOrManageEntryPoint
+                                .ANDROID_TAB_GROUP_CONTEXT_MENU_SHARE);
                 recordUserAction("ShareGroup");
             } else if (menuId == R.id.manage_sharing) {
                 dataSharingTabManager.createOrManageFlow(
                         activity,
                         /* syncId= */ null,
                         new LocalTabGroupId(tabGroupId),
+                        CollaborationServiceShareOrManageEntryPoint
+                                .ANDROID_TAB_GROUP_CONTEXT_MENU_MANAGE,
                         /* createGroupFinishedCallback= */ null);
                 recordUserAction("ManageSharing");
             } else if (menuId == R.id.recent_activity) {
@@ -343,7 +348,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                             R.drawable.material_ic_delete_24dp,
                             /* enabled= */ true));
         }
-        setListViewHeightBasedOnChildren();
     }
 
     @Override
@@ -383,11 +387,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                             R.drawable.material_ic_delete_24dp,
                             /* enabled= */ true));
         }
-
-        // Manually set the ListView height after adding items, as it's nested in a ScrollView. The
-        // menu must be resized explicitly after new items are added since the ListView height
-        // are set after data change.
-        setListViewHeightBasedOnChildren();
         resizeMenu();
     }
 
@@ -396,7 +395,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
      * ListView behaves like a LinearLayout and relies on the ScrollView for proper scrolling to
      * ensure scrolling for the custom views.
      */
-    private void setListViewHeightBasedOnChildren() {
+    @Override
+    protected void afterCreate() {
         assert mContentView != null : "Menu view should not be null";
 
         ListView listView = mContentView.findViewById(R.id.tab_group_action_menu_list);

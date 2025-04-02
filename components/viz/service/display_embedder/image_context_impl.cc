@@ -24,6 +24,7 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/ganesh/GrContextThreadSafeProxy.h"
+#include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnTypes.h"
@@ -213,15 +214,15 @@ void ImageContextImpl::CreateFallbackImage(
     return;
   }
 
-  if (graphite_ycbcr_info_mismatch_) {
-    // It is not possible to allocate a fallback texture if the failure was due
-    // to a mismatch in YCBCr info between the promise image and the
-    // fulfillment texture.
-    result = CreateFallbackImageResult::kFailedYcbcrMismatch;
-    return;
-  }
-
   if (context_state->graphite_context()) {
+    if (graphite_ycbcr_info_mismatch_) {
+      // It is not possible to allocate a fallback texture if the failure was
+      // due to a mismatch in YCBCr info between the promise image and the
+      // fulfillment texture.
+      result = CreateFallbackImageResult::kFailedYcbcrMismatch;
+      return;
+    }
+
     const auto& tex_infos = texture_infos();
     if (tex_infos.size() != static_cast<size_t>(num_planes) ||
         std::ranges::any_of(tex_infos, [](const auto& tex_info) {
@@ -245,31 +246,51 @@ void ImageContextImpl::CreateFallbackImage(
     }
 #endif
 
+    DCHECK(!fallback_context_state_);
+    fallback_context_state_ = context_state;
     for (int plane_index = 0; plane_index < num_planes; plane_index++) {
       SkISize sk_size =
           gfx::SizeToSkISize(format().GetPlaneSize(plane_index, size()));
       auto tex_info =
           gpu::FallbackGraphiteBackendTextureInfo(tex_infos[plane_index]);
-      graphite_fallback_textures_.push_back(
-          context_state->gpu_main_graphite_recorder()->createBackendTexture(
-              sk_size, tex_info));
-
-      SkColorType color_type = ToClosestSkColorType(format(), plane_index);
-
-      auto sk_surface = SkSurfaces::WrapBackendTexture(
-          context_state->gpu_main_graphite_recorder(),
-          graphite_fallback_textures_[plane_index], color_type, color_space(),
-          /*props=*/nullptr);
-      if (!sk_surface) {
+      auto texture = fallback_context_state_->gpu_main_graphite_recorder()
+                         ->createBackendTexture(sk_size, tex_info);
+      if (!texture.isValid()) {
         DLOG(ERROR) << "Failed to create fallback graphite backend texture";
         DeleteFallbackTextures();
         result = CreateFallbackImageResult::kFailedCreateTexture;
         return;
       }
+      graphite_fallback_textures_.push_back(texture);
+    }
+    graphite_textures_ = graphite_fallback_textures_;
+
+    for (int plane_index = 0; plane_index < num_planes; plane_index++) {
+      SkColorType color_type = ToClosestSkColorType(format(), plane_index);
+      auto sk_surface = SkSurfaces::WrapBackendTexture(
+          fallback_context_state_->gpu_main_graphite_recorder(),
+          graphite_fallback_textures_[plane_index], color_type, color_space(),
+          /*props=*/nullptr);
+      CHECK(sk_surface);
       sk_surface->getCanvas()->clear(
           GetFallbackColorForPlane(format(), plane_index));
     }
-    graphite_textures_ = graphite_fallback_textures_;
+
+    // Snap and insert recording for GPU work needed for clearing the surface.
+    // If this is not done, the fallback image may be used in a Submit after
+    // destruction if it waits too long for snap to happen during rasterization
+    // on GPU main thread.
+    auto recording =
+        fallback_context_state_->gpu_main_graphite_recorder()->snap();
+    if (recording) {
+      skgpu::graphite::InsertRecordingInfo info = {};
+      info.fRecording = recording.get();
+      bool insert_success =
+          fallback_context_state_->graphite_context()->insertRecording(info);
+      if (!insert_success) {
+        DLOG(ERROR) << "Failed to insert recording";
+      }
+    }
     return;
   }
 

@@ -181,7 +181,7 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
         final Tab tab = mModel.getTabById(stripTab.getTabId());
         if (tab == null) return;
         final StripLayoutGroupTitle groupTitle =
-                StripLayoutUtils.findGroupTitle(groupTitles, tab.getRootId());
+                StripLayoutUtils.findGroupTitle(groupTitles, tab.getTabGroupId());
 
         setTrailingMarginForTab(stripTab, groupTitle, shouldHaveTrailingMargin, animationList);
     }
@@ -208,7 +208,7 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
         if (tab.getTrailingMargin() == trailingMargin) return;
 
         // Update group title bottom indicator width if needed.
-        if (groupTitle != null) {
+        if (groupTitle != null && !groupTitle.isCollapsed()) {
             float startWidth = groupTitle.getBottomIndicatorWidth();
             float endWidth =
                     StripLayoutUtils.calculateBottomIndicatorWidth(

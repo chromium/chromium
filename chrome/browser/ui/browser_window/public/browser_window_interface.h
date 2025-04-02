@@ -222,6 +222,9 @@ class BrowserWindowInterface : public content::PageNavigator {
   // //components/web_modal. See crbug.com/377820808.
   virtual void SetWebContentsBlocked(content::WebContents* web_contents,
                                      bool blocked) = 0;
+
+  // Checks if the browser popup is tab modal dialog.
+  virtual bool IsTabModalPopup() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_

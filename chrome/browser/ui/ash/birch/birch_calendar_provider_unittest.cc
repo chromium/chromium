@@ -8,11 +8,9 @@
 
 #include "ash/birch/birch_model.h"
 #include "ash/calendar/calendar_controller.h"
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "base/check.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ash/birch/birch_calendar_fetcher.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
@@ -93,8 +91,6 @@ class BirchCalendarProviderTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{features::kForestFeature};
-
   std::unique_ptr<calendar_test_utils::CalendarClientTestImpl> calendar_client_;
 };
 

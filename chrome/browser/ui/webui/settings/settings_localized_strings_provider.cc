@@ -1476,9 +1476,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   auto* autofill_client =
       autofill::ContentAutofillClient::FromWebContents(web_contents);
   html_source->AddBoolean(
-      "autofillAiOptedIn",
-      autofill_client && autofill::GetAutofillAiOptInStatus(*autofill_client));
-  html_source->AddBoolean(
       "userEligibleForAutofillAi",
       autofill_client &&
           autofill::MayPerformAutofillAiAction(

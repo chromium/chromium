@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,13 +23,13 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 
 import java.util.HashSet;
 import java.util.Set;
 
-/** Tests for the {@link AllTabObsever}. */
+/** Tests for the {@link AllTabObserver}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
@@ -40,13 +39,9 @@ import java.util.Set;
 public class AllTabObserverTest {
     private static final String TEST_PATH = "/chrome/test/data/android/about.html";
 
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Test
     @SmallTest
@@ -85,13 +80,13 @@ public class AllTabObserverTest {
     }
 
     private Tab addTab() {
-        return sActivityTestRule.loadUrlInNewTab(
-                sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
+        return mActivityTestRule.loadUrlInNewTab(
+                mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
     }
 
     private void closeTab(Tab tab) {
         final TabModel model =
-                sActivityTestRule
+                mActivityTestRule
                         .getActivity()
                         .getTabModelSelectorSupplier()
                         .get()

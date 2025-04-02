@@ -11,6 +11,7 @@ include_rules = [
   # refactor ash codes in //chrome to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/apps/app_service",
+  "+chrome/browser/apps/link_capturing",
   "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/apps",
   "+chrome/browser/ash/arc/arc_util.h",

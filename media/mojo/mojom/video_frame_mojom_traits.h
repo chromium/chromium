@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "gpu/ipc/common/mailbox_holder_mojom_traits.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info_mojom_traits.h"
 #include "media/base/ipc/media_param_traits_macros.h"
@@ -19,6 +20,21 @@
 #include "ui/gfx/ipc/color/gfx_param_traits.h"
 
 namespace mojo {
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+template <>
+struct StructTraits<media::mojom::ColorPlaneLayoutDataView,
+                    media::ColorPlaneLayout> {
+  static uint64_t stride(const media::ColorPlaneLayout& r) { return r.stride; }
+
+  static uint64_t offset(const media::ColorPlaneLayout& r) { return r.offset; }
+
+  static uint64_t size(const media::ColorPlaneLayout& r) { return r.size; }
+
+  static bool Read(media::mojom::ColorPlaneLayoutDataView data,
+                   media::ColorPlaneLayout* out);
+};
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 template <>
 struct StructTraits<media::mojom::VideoFrameDataView,

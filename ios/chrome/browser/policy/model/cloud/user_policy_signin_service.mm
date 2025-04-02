@@ -17,6 +17,7 @@
 #import "google_apis/gaia/core_account_id.h"
 #import "google_apis/gaia/gaia_auth_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
@@ -71,6 +72,8 @@ void UserPolicySigninService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   if (IsSignoutEvent(event)) {
     ShutdownCloudPolicyManager();
+  } else if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    TryInitialize();
   }
 }
 
@@ -91,15 +94,14 @@ void UserPolicySigninService::TryInitialize() {
     ShutdownCloudPolicyManager();
     return;
   }
-  AccountId account_id =
-      AccountIdFromAccountInfo(identity_manager()->GetPrimaryAccountInfo(
-          GetConsentLevelForRegistration()));
+  AccountId account_id = AccountIdFromAccountInfo(
+      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   InitializeForSignedInUser(account_id, system_url_loader_factory());
 }
 
 bool UserPolicySigninService::CanApplyPolicies(bool check_for_refresh_token) {
   return CanApplyPoliciesForSignedInUser(check_for_refresh_token,
-                                         GetConsentLevelForRegistration(),
+                                         signin::ConsentLevel::kSignin,
                                          identity_manager());
 }
 
@@ -116,10 +118,6 @@ void UserPolicySigninService::ProhibitSignoutIfNeeded() {}
 
 void UserPolicySigninService::UpdateLastPolicyCheckTime() {
   UpdateLastPolicyCheckTimeInPrefs(pref_service_);
-}
-
-signin::ConsentLevel UserPolicySigninService::GetConsentLevelForRegistration() {
-  return signin::ConsentLevel::kSignin;
 }
 
 void UserPolicySigninService::OnUserPolicyNotificationSeen() {

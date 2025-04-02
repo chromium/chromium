@@ -329,7 +329,7 @@ base::span<const SearchConcept> GetA11ySearchConcepts() {
         SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_A11Y_ALWAYS_SHOW_SCROLLBARS,
        mojom::kDisplayAndMagnificationSubpagePath,
-       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kAlwaysShowScrollbars,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kAlwaysShowScrollbarsEnabled}},

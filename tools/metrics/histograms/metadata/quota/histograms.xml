@@ -139,7 +139,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Quota.DiskspaceShortage" units="MB" expires_after="2025-07-27">
+<histogram name="Quota.DiskspaceShortage" units="MB" expires_after="2025-09-28">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -362,7 +362,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.TotalDiskSpaceIsZero" enum="BooleanVolumeZero"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

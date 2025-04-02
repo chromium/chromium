@@ -14,6 +14,8 @@
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_mediator+testing.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
@@ -40,6 +42,8 @@ class ShopCardMediatorTest : public PlatformTest {
 
     shopping_service_ = std::make_unique<commerce::MockShoppingService>();
     bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
+    favicon_loader_ =
+        IOSChromeFaviconLoaderFactory::GetForProfile(profile_.get());
 
     mediator_ = [[ShopCardMediator alloc]
         initWithShoppingService:shopping_service_.get()
@@ -47,7 +51,8 @@ class ShopCardMediatorTest : public PlatformTest {
                   bookmarkModel:bookmark_model_.get()
                    imageFetcher:std::make_unique<
                                     image_fetcher::ImageDataFetcher>(
-                                    profile_->GetSharedURLLoaderFactory())];
+                                    profile_->GetSharedURLLoaderFactory())
+                  faviconLoader:favicon_loader_];
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled, true);
     pref_service_.registry()->RegisterBooleanPref(
@@ -71,6 +76,7 @@ class ShopCardMediatorTest : public PlatformTest {
   std::unique_ptr<commerce::MockShoppingService> shopping_service_;
   ShopCardMediator* mediator_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  raw_ptr<FaviconLoader> favicon_loader_;
 };
 
 // Test disconnecting the mediator.

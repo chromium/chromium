@@ -44,6 +44,7 @@ chromium-metrics-reviews@google.com.
       summary="The context menu was shown for an image which is also a link."/>
   <variant name=".Link"
       summary="The context menu was shown for a (non-image) link"/>
+  <variant name=".Page" summary="The context menu was shown for a page."/>
   <variant name=".SharedHighlightingInteraction"
       summary="The context menu was shown from tap on highlighted text."/>
   <variant name=".Video" summary="The context menu was shown for a video"/>
@@ -551,7 +552,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUI.ColorsStylesheetServingDuration" units="ms"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>skau@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -587,7 +588,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUI.ShownUrl" enum="WebUIUrlHashes"
-    expires_after="2025-07-27">
+    expires_after="2025-09-28">
   <owner>kerenzhu@chromium.org</owner>
   <owner>dpapad@chromium.org</owner>
   <owner>chrome-webui@google.com</owner>

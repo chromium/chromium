@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -29,6 +30,13 @@ public interface ButtonData {
     /** Returns {@code true} if the button is supposed to be enabled and clickable. */
     boolean isEnabled();
 
+    /** Sets the background resource that will be used to highlight the button. */
+    /* package */ void setBackgroundResource(@DrawableRes int resId);
+
+    /** Gets the background resource that will be used to highlight the button. */
+    @DrawableRes
+    /* package */ int getBackgroundResource();
+
     /**
      * Returns a {@link ButtonSpec} describing button properties which don't change often. When
      * feasible, a {@link ButtonDataProvider} should prefer to reuse a single {@code ButtonSpec}
@@ -49,7 +57,7 @@ public interface ButtonData {
         @AdaptiveToolbarButtonVariant private final int mButtonVariant;
         private final boolean mIsDynamicAction;
         @StringRes private final int mActionChipLabelResId;
-        private final boolean mShowHoverHighlight;
+        private final boolean mShowBackgroundHighlight;
         @StringRes private final int mTooltipTextResId;
         private final boolean mHasErrorBadge;
 
@@ -63,7 +71,7 @@ public interface ButtonData {
                 @AdaptiveToolbarButtonVariant int buttonVariant,
                 int actionChipLabelResId,
                 int tooltipTextResId,
-                boolean showHoverHighlight,
+                boolean showBackgroundHighlight,
                 boolean hasErrorBadge) {
             mDrawable = drawable;
             mOnClickListener = onClickListener;
@@ -75,7 +83,7 @@ public interface ButtonData {
             mIsDynamicAction = AdaptiveToolbarFeatures.isDynamicAction(mButtonVariant);
             mActionChipLabelResId = actionChipLabelResId;
             mTooltipTextResId = tooltipTextResId;
-            mShowHoverHighlight = showHoverHighlight;
+            mShowBackgroundHighlight = showBackgroundHighlight;
             mHasErrorBadge = hasErrorBadge;
         }
 
@@ -139,11 +147,11 @@ public interface ButtonData {
         }
 
         /**
-         * Show hover highlight for optional toolbar buttons(e.g. share, voice search, new tab and
-         * profile).
+         * Returns {@code true} if a background highlight on hover, keyboard focus, press etc.
+         * should be shown for the button.
          */
-        public boolean getShouldShowHoverHighlight() {
-            return mShowHoverHighlight;
+        public boolean shouldShowBackgroundHighlight() {
+            return mShowBackgroundHighlight;
         }
 
         /**

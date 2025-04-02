@@ -293,7 +293,7 @@ class TabListModel extends ModelList {
         // Ensure the last tab is last in the model and the first tab is the first.
         assert endIndex - startIndex == tabs.size() - 1;
         for (int i = startIndex; i <= endIndex; i++) {
-            Tab curTab = tabModel.getTabAt(i);
+            Tab curTab = tabModel.getTabAtChecked(i);
             // Group should be contiguous.
             assert tabs.contains(curTab);
             int index = indexFromTabId(curTab.getId());

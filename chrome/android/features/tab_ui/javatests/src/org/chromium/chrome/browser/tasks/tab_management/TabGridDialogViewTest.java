@@ -60,7 +60,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** BlankUiTestActivity Tests for the {@link TabGridDialogView}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DisableFeatures({ChromeFeatureList.DATA_SHARING})
+@DisableFeatures({ChromeFeatureList.DATA_SHARING, ChromeFeatureList.DATA_SHARING_JOIN_ONLY})
 @Batch(Batch.UNIT_TESTS)
 public class TabGridDialogViewTest {
     @ClassRule

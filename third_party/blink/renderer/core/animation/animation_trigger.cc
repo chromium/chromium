@@ -132,18 +132,16 @@ double ComputeTriggerBoundary(
 void AnimationTrigger::ActionAnimation(Animation* animation) {
   CSSAnimation::ScopedResetIgnoreCSSProperties scoped_ignore_reset(
       DynamicTo<CSSAnimation>(animation));
-
-  if (!timeline_->IsActive()) {
-    return;
-  }
-
-  if (!timeline_->IsProgressBased()) {
+  if (!timeline_ || !timeline_->IsActive() || !timeline_->IsProgressBased()) {
     // Only scroll-triggered animations are supported at the moment.
     return;
   }
 
   ScrollTimeline* timeline =
       DynamicTo<ScrollTimeline>(timeline_->ExposedTimeline());
+  if (!timeline) {
+    return;
+  }
 
   std::optional<double> current_offset = timeline->GetCurrentScrollPosition();
   if (!current_offset) {

@@ -91,6 +91,7 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="3054480780637153380">Ouvrez les paramètres Chromium dans iOS, puis touchez « Appli de navigation par défaut » et sélectionnez Chromium.</translation>
 <translation id="3102849287235003384">Pour vous déconnecter de votre compte Google sur tous les sites Web, <ph name="BEGIN_LINK" />déconnectez-vous de Chrome<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Faire de Chromium votre navigateur par défaut?</translation>
+<translation id="3180939591219927904">Activez « Verrouiller les onglets de navigation privée lorsque vous fermez Chromium »</translation>
 <translation id="3242612358525156339">Dans les réglages de l'appareil, ouvrir « <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> » et sélectionner « Chromium »</translation>
 <translation id="328933489847748230">{count,plural, =1{1 fenêtre de Chromium est maintenant affichée}one{{count} fenêtre de Chromium est maintenant affichée}other{{count} fenêtres de Chromium sont maintenant affichées}}</translation>
 <translation id="3344973607274501920">Chromium n'a pas pu vérifier vos mots de passe. Essayez de vérifier votre connexion Internet.</translation>
@@ -260,6 +261,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Les données sélectionnées ont été supprimées de Chromium et des appareils synchronisés. D'autres formes d'historique de navigation, telles que les recherches et l'activité d'autres services Google, peuvent exister sur votre compte Google. Plus de détails à history.google.com.</translation>
 <translation id="7395825497086981028">Votre mot de passe sera enregistré dans le gestionnaire de mots de passe du compte <ph name="EMAIL" />.</translation>
+<translation id="7504829997542308412">Ouvrez Chromium</translation>
 <translation id="7531461704633548377">De Chromium</translation>
 <translation id="7554983317097061001">Astuce Chromium : Déplacez Chromium vers le Dock</translation>
 <translation id="7576863740961052505">Gérer les paramètres de Chromium</translation>

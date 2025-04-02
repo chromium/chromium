@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -835,7 +836,8 @@ void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
   // message.
   if (!success) {
     LOG(ERROR) << "Failed to unregister service worker for extension id: "
-               << extension_id << " error status was: " << (int)status;
+               << extension_id
+               << " error status was: " << base::to_underlying(status);
     base::UmaHistogramEnumeration(
         "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus",
         status);

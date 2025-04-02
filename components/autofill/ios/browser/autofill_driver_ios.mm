@@ -337,7 +337,7 @@ void AutofillDriverIOS::ScanForms(bool immediately) {
   }
 }
 
-void AutofillDriverIOS::FetchFromsFilteredByName(
+void AutofillDriverIOS::FetchFormsFilteredByName(
     const std::u16string& form_name,
     FormFetchCompletion completion) {
   if (!web_frame()) {

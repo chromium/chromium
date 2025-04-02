@@ -41,6 +41,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/api/file_handlers/mime_util.h"
 #include "net/base/filename_util.h"
 #include "pdf/buildflags.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -48,6 +49,7 @@
 using content::BrowserThread;
 
 namespace file_manager::util {
+
 namespace {
 
 // List of file extensions viewable in the browser.
@@ -234,22 +236,9 @@ bool OpenFileWithAppOrBrowser(Profile* profile,
           path, base::BindOnce(&OpenEncryptedDriveFsFile, file_path));
       return true;
     }
-    LOG(WARNING) << "Failed to open file: " << file_path.value()
+    LOG(WARNING) << "Failed to open file (extension): " << file_path.Extension()
                  << ": no connection to integration service";
     return false;
-  }
-
-  // For things supported natively by the browser, we should open it in a tab.
-  if (IsViewableInBrowser(file_path) || action_id == "view-pdf" ||
-      (action_id == "view-in-browser" && file_path.Extension() == "")) {
-    // Use external file URL if it is provided for the file system.
-    GURL page_url = ash::FileSystemURLToExternalFileURL(file_system_url);
-    if (page_url.is_empty()) {
-      page_url = net::FilePathToFileURL(file_path);
-    }
-
-    OpenNewTab(page_url);
-    return true;
   }
 
   if (drive::util::HasHostedDocumentExtension(file_path)) {
@@ -278,9 +267,48 @@ bool OpenFileWithAppOrBrowser(Profile* profile,
     return true;
   }
 
-  // Failed to open the file of unknown type.
-  LOG(WARNING) << "Unknown file type: " << file_path.value();
-  return false;
+  // For things supported natively by the browser, we should open it in a tab.
+  if (!(action_id == "view-pdf" || action_id == "view-in-browser")) {
+    // Failed to open the file of unknown type.
+    LOG(WARNING) << "Unknown file type (extension): " << file_path.Extension()
+                 << " action: " << action_id;
+    return false;
+  }
+
+  // Check the MIME type to confirm that the file is a text file.
+  auto* mime_type_collector =
+      new extensions::app_file_handler_util::MimeTypeCollector(profile);
+
+  auto process_mime = base::BindOnce(
+      [](LaunchAppCallback callback, base::FilePath file_path,
+         FileSystemURL file_system_url, std::string action_id,
+         extensions::app_file_handler_util::MimeTypeCollector* mime_collector,
+         std::unique_ptr<std::vector<std::string>> mimes) {
+        std::string text_mime = "text/";
+        std::string mime = mimes->size() > 0 ? (*mimes)[0] : "";
+        bool is_text = mimes->size() > 0 && mime.starts_with(text_mime);
+
+        if (is_text || IsViewableInBrowser(file_path) ||
+            action_id == "view-pdf" ||
+            (action_id == "view-in-browser" && file_path.Extension() == "")) {
+          // Use external file URL if it is provided for the file system.
+          GURL page_url = ash::FileSystemURLToExternalFileURL(file_system_url);
+          if (page_url.is_empty()) {
+            page_url = net::FilePathToFileURL(file_path);
+          }
+          OpenNewTab(page_url);
+          return;
+        }
+        LOG(WARNING) << "Not viewable in browser: MIME: " << mime
+                     << " action: " << action_id;
+      },
+      std::move(callback), file_path, file_system_url, action_id,
+      base::Owned(mime_type_collector));
+
+  mime_type_collector->CollectForLocalPaths({file_path},
+                                            std::move(process_mime));
+
+  return true;
 }
 
 }  // namespace file_manager::util

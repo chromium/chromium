@@ -440,6 +440,7 @@
 <translation id="2783161812871838616">Версия для ПК</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Пароль сохранен в вашем аккаунте Google ({EMAIL}).}one{Пароли сохранены в вашем аккаунте Google ({EMAIL}).}few{Пароли сохранены в вашем аккаунте Google ({EMAIL}).}many{Пароли сохранены в вашем аккаунте Google ({EMAIL}).}other{Пароли сохранены в вашем аккаунте Google ({EMAIL}).}}</translation>
 <translation id="2791174088547598693">Добавить пароль</translation>
+<translation id="2793703503584038325">Выберите пароль и нажмите на значок "Поделиться".</translation>
 <translation id="2797302972324086597">Код страны</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} файл}one{{COUNT} файл}few{{COUNT} файла}many{{COUNT} файлов}other{{COUNT} файла}}</translation>
 <translation id="2816489851009559785">Меню → Настройки → Браузер по умолчанию</translation>
@@ -579,6 +580,7 @@
 <translation id="35083190962747987">Открыть URL ${url}</translation>
 <translation id="3511519535430890904">Включите Безопасный просмотр</translation>
 <translation id="3517216995152707259">Удаление данных о работе в браузере не приведет к выходу из аккаунта Google. Вы можете <ph name="BEGIN_LINK" />сделать это вручную<ph name="END_LINK" />.</translation>
+<translation id="3519792890877853853">На этой карточке показаны отзывы на товары с открытых вкладок</translation>
 <translation id="3519905498307021260">{count,plural, =1{Открыть вкладку}one{Открыть {count} вкладку}few{Открыть {count} вкладки}many{Открыть {count} вкладок}other{Открыть {count} вкладки}}</translation>
 <translation id="3523513363815970085">Скрыть любимые сайты</translation>
 <translation id="3523789730715594198">Синхронизацию можно в любой момент отключить в настройках. Google может использовать историю браузера для персонализации Поиска и других сервисов.</translation>
@@ -819,6 +821,7 @@
 <translation id="4565377596337484307">Скрыть пароль</translation>
 <translation id="4568230126482344545">Скрыть раздел "Недавние вкладки"</translation>
 <translation id="4578835633387306383">Включить</translation>
+<translation id="4580716718466706433">Перейдите в Менеджер паролей.</translation>
 <translation id="4587589328781138893">Сайты</translation>
 <translation id="4592672037257622855">{count,plural, =1{Страница добавлена в список для чтения.}one{{count} страница добавлена в список для чтения.}few{{count} страницы добавлено в список для чтения.}many{{count} страниц добавлено в список для чтения.}other{{count} страницы добавлено в список для чтения.}}</translation>
 <translation id="459644946100970322">Включить оповещения об изменении цен?</translation>
@@ -858,6 +861,7 @@
 <translation id="4717844083556844785">Открыто в режиме инкогнито</translation>
 <translation id="4719927025381752090">Предлагать перевод</translation>
 <translation id="4720530280568305198">В результате вашего выбора открылась новая вкладка.</translation>
+<translation id="472259426228234149">Цена: 100–180 долл. США</translation>
 <translation id="473775607612524610">Обновить</translation>
 <translation id="474209246745757965">Ищите товары и переводите текст с помощью камеры.</translation>
 <translation id="4742407542027196863">Управление паролями</translation>

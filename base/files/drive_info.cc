@@ -7,8 +7,8 @@
 namespace base {
 
 DriveInfo::DriveInfo() = default;
-DriveInfo::DriveInfo(DriveInfo&&) noexcept = default;
-DriveInfo& DriveInfo::operator=(DriveInfo&&) noexcept = default;
+DriveInfo::DriveInfo(DriveInfo&&) = default;
+DriveInfo& DriveInfo::operator=(DriveInfo&&) = default;
 DriveInfo::~DriveInfo() = default;
 
 }  // namespace base

@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -47,7 +48,7 @@ namespace policy::local_user_files {
 
 namespace {
 constexpr char kTestFile[] = "test_file.txt";
-}
+}  // namespace
 
 class LocalFilesMigrationManagerTest : public testing::Test {
  public:
@@ -65,7 +66,8 @@ class LocalFilesMigrationManagerTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSkyVault, features::kSkyVaultV2},
+        /*enabled_features=*/
+        {features::kSkyVault, features::kSkyVaultV2, features::kSkyVaultV3},
         /*disabled_features=*/{});
 
     scoped_profile_ = std::make_unique<TestingProfile>();
@@ -174,6 +176,12 @@ class LocalFilesMigrationManagerTest : public testing::Test {
   void SetLocalUserFilesAllowed(bool local_user_files_allowed) {
     scoped_testing_local_state_.Get()->SetBoolean(prefs::kLocalUserFilesAllowed,
                                                   local_user_files_allowed);
+  }
+
+  // Sets the local user files migration destination pref value.
+  void SetMigrationDestination(const std::string& destination) {
+    scoped_testing_local_state_.Get()->SetString(
+        prefs::kLocalUserFilesMigrationDestination, destination);
   }
 
   void SetRetryCount(int count) {
@@ -406,6 +414,102 @@ TEST_F(LocalFilesMigrationManagerTest, HandlesWriteAccessError) {
   base::RunLoop().RunUntilIdle();
   histogram_tester_.ExpectBucketCount(
       "Enterprise.SkyVault.Migration.WriteAccessError", true, 1);
+}
+
+TEST_F(LocalFilesMigrationManagerTest, UsesExistingStartTimeFromPrefs) {
+  SetUpMyFiles();
+  CreateTestFile(kTestFile);
+
+  base::Time start_time = base::Time::Now() + base::Hours(5);
+  profile()->GetPrefs()->SetTime(prefs::kSkyVaultMigrationScheduledStartTime,
+                                 start_time);
+  std::unique_ptr<MockMigrationNotificationManager> notification_manager =
+      std::make_unique<MockMigrationNotificationManager>(profile());
+  EXPECT_CALL(*notification_manager.get(),
+              ShowMigrationInfoDialog(MigrationDestination::kOneDrive,
+                                      start_time, testing::_))
+      .Times(1);
+
+  SetPrefs(State::kPending);
+
+  LocalFilesMigrationManager manager(profile());
+  manager.SetNotificationManagerForTesting(notification_manager.get());
+
+  manager.Initialize();
+  // Wait for async functions to complete.
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(LocalFilesMigrationManagerTest, InformUserShortTimeJumpsToSecond) {
+  SetUpMyFiles();
+  CreateTestFile(kTestFile);
+
+  base::Time start_time = base::Time::Now() + base::Minutes(34);
+  profile()->GetPrefs()->SetTime(prefs::kSkyVaultMigrationScheduledStartTime,
+                                 start_time);
+  std::unique_ptr<MockMigrationNotificationManager> notification_manager =
+      std::make_unique<MockMigrationNotificationManager>(profile());
+  EXPECT_CALL(*notification_manager.get(),
+              ShowMigrationInfoDialog(MigrationDestination::kOneDrive,
+                                      start_time, testing::_))
+      .Times(1);
+
+  SetPrefs(State::kPending);
+
+  LocalFilesMigrationManager manager(profile());
+  manager.SetNotificationManagerForTesting(notification_manager.get());
+
+  manager.Initialize();
+  // Wait for async functions to complete.
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(LocalFilesMigrationManagerTest, StoresScheduledTimeToPrefs) {
+  SetUpMyFiles();
+  CreateTestFile(kTestFile);
+
+  std::unique_ptr<MockMigrationNotificationManager> notification_manager =
+      std::make_unique<MockMigrationNotificationManager>(profile());
+  EXPECT_CALL(*notification_manager.get(), ShowMigrationInfoDialog).Times(1);
+
+  SetPrefs(State::kPending);
+
+  LocalFilesMigrationManager manager(profile());
+  manager.SetNotificationManagerForTesting(notification_manager.get());
+
+  manager.Initialize();
+  // Wait for async functions to complete.
+  base::RunLoop().RunUntilIdle();
+
+  base::Time start_time = profile()->GetPrefs()->GetTime(
+      prefs::kSkyVaultMigrationScheduledStartTime);
+  EXPECT_FALSE(start_time.is_null());
+}
+
+TEST_F(LocalFilesMigrationManagerTest, StartsNowIfStartTimePast) {
+  SetUpMyFiles();
+  CreateTestFile(kTestFile);
+
+  base::Time start_time = base::Time::Now() - base::Hours(5);
+  profile()->GetPrefs()->SetTime(prefs::kSkyVaultMigrationScheduledStartTime,
+                                 start_time);
+  std::unique_ptr<MockMigrationNotificationManager> notification_manager =
+      std::make_unique<MockMigrationNotificationManager>(profile());
+  EXPECT_CALL(*notification_manager.get(), ShowMigrationInfoDialog).Times(0);
+
+  SetPrefs(State::kPending, /*local_user_files_allowed=*/false,
+           /*destination=*/"delete");
+
+  LocalFilesMigrationManager manager(profile());
+  manager.SetNotificationManagerForTesting(notification_manager.get());
+
+  manager.Initialize();
+  // Wait for async functions to complete.
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.Delete.ScheduledTimeInPast.InformUser",
+      true, 1);
 }
 
 TEST_F(LocalFilesMigrationManagerTest, StopsWhenLocalStorageAllowed) {

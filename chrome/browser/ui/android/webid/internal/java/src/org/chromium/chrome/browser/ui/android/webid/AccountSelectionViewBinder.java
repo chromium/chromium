@@ -21,6 +21,7 @@ import android.icu.text.ListFormatter;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -135,6 +136,20 @@ class AccountSelectionViewBinder {
         ImageView avatarView = view.findViewById(R.id.start_icon);
         Resources resources = view.getContext().getResources();
         if (model.get(AccountProperties.SHOW_IDP)) {
+            // Resize the image view and the margin to account for the badging.
+            ViewGroup.LayoutParams layoutParams = avatarView.getLayoutParams();
+            ViewGroup.MarginLayoutParams marginLayoutParams =
+                    (ViewGroup.MarginLayoutParams) layoutParams;
+            int size =
+                    resources.getDimensionPixelSize(
+                            R.dimen.account_selection_account_avatar_multi_idp_size);
+            int marginEnd =
+                    resources.getDimensionPixelSize(
+                            R.dimen.account_selection_account_avatar_multi_idp_margin_end);
+            layoutParams.width = size;
+            layoutParams.height = size;
+            marginLayoutParams.setMarginEnd(marginEnd);
+
             // In this case, we expect the image to be badged and cropped, so we set the image
             // directly instead of using the monogram and invoking AvatarGenerator.makeRoundAvatar.
             Bitmap output = Bitmap.createBitmap(avatarSize, avatarSize, Config.ARGB_8888);
@@ -841,29 +856,33 @@ class AccountSelectionViewBinder {
                 view.findViewById(R.id.header_divider)
                         .setVisibility(!progressBarVisible ? View.VISIBLE : View.GONE);
             }
-            if (key == HeaderProperties.IS_MULTIPLE_IDPS) {
-                // Do not reserve space for IDP icon if there are multiple IDPs.
-                ImageView headerIconView = (ImageView) view.findViewById(R.id.header_idp_icon);
-                if (model.get(HeaderProperties.IS_MULTIPLE_IDPS)) {
-                    headerIconView.setVisibility(View.GONE);
-                }
+        } else if (key == HeaderProperties.HEADER_ICON) {
+            Bitmap brandIcon = model.get(HeaderProperties.HEADER_ICON);
+            // Do not crop the header icon when it is the RP icon, e.g. when there are multiple IDPs
+            // in the current dialog.
+            boolean shouldCircleCrop = !model.get(HeaderProperties.IS_MULTIPLE_IDPS);
+            if (brandIcon == null) {
+                return;
             }
-        } else if (key == HeaderProperties.IDP_BRAND_ICON) {
-            // There should not be an IDP icon when multi IDPs are used.
-            if (model.get(HeaderProperties.IS_MULTIPLE_IDPS)) return;
-            Bitmap brandIcon = model.get(HeaderProperties.IDP_BRAND_ICON);
-            if (brandIcon != null) {
-                int iconSize =
-                        resources.getDimensionPixelSize(
-                                model.get(HeaderProperties.RP_MODE) == RpMode.ACTIVE
-                                        ? R.dimen.account_selection_active_mode_sheet_icon_size
-                                        : R.dimen.account_selection_sheet_icon_size);
+            int iconSize =
+                    resources.getDimensionPixelSize(
+                            model.get(HeaderProperties.RP_MODE) == RpMode.ACTIVE
+                                    ? R.dimen.account_selection_active_mode_sheet_icon_size
+                                    : R.dimen.account_selection_sheet_icon_size);
+            ImageView headerIconView = (ImageView) view.findViewById(R.id.header_icon);
+            if (shouldCircleCrop) {
                 Drawable croppedBrandIcon =
                         createBitmapWithMaskableIconSafeZone(resources, brandIcon, iconSize);
-                ImageView headerIconView = (ImageView) view.findViewById(R.id.header_idp_icon);
                 headerIconView.setImageDrawable(croppedBrandIcon);
-                headerIconView.setVisibility(View.VISIBLE);
+            } else {
+                Bitmap output = Bitmap.createBitmap(iconSize, iconSize, Config.ARGB_8888);
+                Canvas canvas = new Canvas(output);
+                Paint paint = new Paint();
+                paint.setAntiAlias(true);
+                canvas.drawBitmap(brandIcon, null, new Rect(0, 0, iconSize, iconSize), paint);
+                headerIconView.setImageDrawable(new BitmapDrawable(resources, output));
             }
+            headerIconView.setVisibility(View.VISIBLE);
         } else if (key == HeaderProperties.RP_BRAND_ICON) {
             // RP icon is not shown in passive mode.
             if (model.get(HeaderProperties.RP_MODE) == RpMode.PASSIVE) return;
@@ -881,7 +900,7 @@ class AccountSelectionViewBinder {
             }
             boolean isRpIconVisible =
                     brandIcon != null
-                            && model.get(HeaderProperties.IDP_BRAND_ICON) != null
+                            && model.get(HeaderProperties.HEADER_ICON) != null
                             && model.get(HeaderProperties.TYPE)
                                     == HeaderProperties.HeaderType.REQUEST_PERMISSION_MODAL;
             headerIconView.setVisibility(isRpIconVisible ? View.VISIBLE : View.GONE);

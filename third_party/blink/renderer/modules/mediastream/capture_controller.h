@@ -82,6 +82,26 @@ class MODULES_EXPORT CaptureController final
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void SourceChangedZoomLevel(int) override;
 
+  void SetMediaStreamDispatcherHostForTesting(
+      mojo::PendingRemote<mojom::blink::MediaStreamDispatcherHost>);
+#endif
+  void Trace(Visitor* visitor) const override;
+
+ private:
+  struct ValidationResult {
+    ValidationResult(DOMExceptionCode code, String message);
+
+    DOMExceptionCode code;
+    String message;
+  };
+
+  ValidationResult ValidateCapturedSurfaceControlCall() const;
+
+  ScriptPromise<IDLUndefined> UpdateZoomLevel(
+      ScriptState* script_state,
+      mojom::blink::ZoomLevelAction action);
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Deliver a wheel event on the captured tab.
   //
   // `relative_x` is a value from [0, 1). It denotes the relative position
@@ -98,48 +118,6 @@ class MODULES_EXPORT CaptureController final
                  double relative_y,
                  int32_t wheel_delta_x,
                  int32_t wheel_delta_y);
-
-  void SetMediaStreamDispatcherHostForTesting(
-      mojo::PendingRemote<mojom::blink::MediaStreamDispatcherHost>);
-#endif
-  void Trace(Visitor* visitor) const override;
-
- private:
-  // TODO(crbug.com/40276312): Rather than invoking a private method,
-  // these tests should call forwardWheel() and then produce their
-  // own scroll events.
-  FRIEND_TEST_ALL_PREFIXES(CaptureControllerScrollTest,
-                           SendWheelScalesCorrectly);
-  FRIEND_TEST_ALL_PREFIXES(CaptureControllerScrollParametersValidationTest,
-                           ValidateCoordinates);
-
-  struct ValidationResult {
-    ValidationResult(DOMExceptionCode code, String message);
-
-    DOMExceptionCode code;
-    String message;
-  };
-
-  ValidationResult ValidateCapturedSurfaceControlCall() const;
-
-  ScriptPromise<IDLUndefined> UpdateZoomLevel(
-      ScriptState* script_state,
-      mojom::blink::ZoomLevelAction action);
-
-  // This helper scales wheel events and forwards them to the browser process
-  // for further validation, potential user-prompting for permission, and
-  // finally, for forwarding to the captured tab.
-  //
-  // That SendWheel() returns a promise is a historical artifact - it used to be
-  // Web-exposed, but was then made into an implementation detail of the
-  // JS-exposed forwardWheel(). The repeated use of a promise for each
-  // individual forwarded wheel event is wasteful.
-  //
-  // TODO(crbug.com/40276312): Drop the returned promise.
-  ScriptPromise<IDLUndefined> SendWheel(ScriptState* script_state,
-                                        CapturedWheelAction* action);
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   class WheelEventListener;
 
   mojom::blink::MediaStreamDispatcherHost* GetMediaStreamDispatcherHost();

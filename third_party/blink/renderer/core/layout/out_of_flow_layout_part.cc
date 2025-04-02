@@ -684,73 +684,78 @@ OutOfFlowLayoutPart::ApplyPositionAreaOffsets(
     PhysicalOffset default_anchor_scroll_shift,
     const OutOfFlowLayoutPart::ContainingBlockInfo& container_info) const {
   ContainingBlockInfo adjusted_container_info(container_info);
-
-  // If one inset for an axis is tethered to the default anchor, and the other
-  // one is tethered to the original containing block, and if the two tethering
-  // points live in different scroll contexts, the IMCB is affected by the
-  // default anchor scroll shift (so that where the anchor actually appears on
-  // screen determines the size of the IMCB). If none or both are tethered to
-  // the default anchor, this shift has no effect. Reset it in that case.
-  if (offsets.top.has_value() == offsets.bottom.has_value()) {
-    default_anchor_scroll_shift.top = LayoutUnit();
-  }
-  if (offsets.left.has_value() == offsets.right.has_value()) {
-    default_anchor_scroll_shift.left = LayoutUnit();
-  }
-
-  // Figure out which sides have an inset set, and what they might be.
-  PhysicalBoxSides physical_insets_set(
-      offsets.top.has_value(), offsets.right.has_value(),
-      offsets.bottom.has_value(), offsets.left.has_value());
-  LogicalBoxSides insets_set =
-      physical_insets_set.ToLogical(container_info.writing_direction);
-
-  // Substitute any missing insets with the default anchor scroll shift (or 0,
-  // if it's not applicable).
-  PhysicalBoxStrut physical_insets(
-      offsets.top.value_or(default_anchor_scroll_shift.top),
-      offsets.right.value_or(-default_anchor_scroll_shift.left),
-      offsets.bottom.value_or(-default_anchor_scroll_shift.top),
-      offsets.left.value_or(default_anchor_scroll_shift.left));
-  BoxStrut insets =
-      physical_insets.ConvertToLogical(container_info.writing_direction);
+  LogicalRect& rect = adjusted_container_info.rect;
 
   // Reduce the container size and adjust the offset based on the position-area.
-  adjusted_container_info.rect.ContractEdges(
-      insets.block_start, insets.inline_end, insets.block_end,
-      insets.inline_start);
+  const BoxStrut insets =
+      offsets.insets.ConvertToLogical(container_info.writing_direction);
+  rect.ContractEdges(insets.block_start, insets.inline_end, insets.block_end,
+                     insets.inline_start);
 
-  // For 'center' values (aligned with start and end anchor sides), the
-  // containing block is aligned and sized with the anchor, regardless of
-  // whether it's inside the original containing block or not. Otherwise,
-  // ContractEdges above might have created a negative size if the position-area
-  // is aligned with an anchor side outside the containing block.
-  if (adjusted_container_info.rect.size.inline_size < LayoutUnit()) {
-    DCHECK(insets_set.inline_start != insets_set.inline_end)
-        << "If aligned to both anchor edges, or both original containing block "
-           "edges, the size should never be negative.";
+  const LogicalOffset logical_shift =
+      WritingModeConverter(container_info.writing_direction, PhysicalSize())
+          .ToLogical(default_anchor_scroll_shift, PhysicalSize());
 
-    // Collapse the inline size to 0 and align with the single anchor edge
-    // defined by the position-area.
-    if (!insets_set.inline_start) {
-      adjusted_container_info.rect.offset.inline_offset +=
-          adjusted_container_info.rect.size.inline_size;
+  const LogicalBoxSides behaves_as_auto =
+      offsets.behaves_as_auto.ToLogical(container_info.writing_direction);
+
+  // Only apply the shift to sides which behave like auto.
+  // A shift can either be positive or negative (grow/shrink the rectangle).
+  //
+  // If shrinking we only shrink by the shift until the rect becomes zero-size.
+  //
+  // If growing we typically grow by the shift, however if the rect edge is
+  // below original rect edge, we grow only once they cross, below this is
+  // referred to as "slack" which is always positive.
+  if (behaves_as_auto.block_start) {
+    LayoutUnit delta;
+    if (logical_shift.block_offset > LayoutUnit()) {
+      delta = std::min(logical_shift.block_offset, rect.size.block_size);
+    } else {
+      const LayoutUnit slack =
+          std::max(LayoutUnit(), container_info.rect.BlockStartOffset() -
+                                     rect.BlockStartOffset());
+      delta = std::min(LayoutUnit(), logical_shift.block_offset + slack);
     }
-    adjusted_container_info.rect.size.inline_size = LayoutUnit();
+    rect.ShiftBlockStartEdgeTo(rect.BlockStartOffset() + delta);
   }
-  if (adjusted_container_info.rect.size.block_size < LayoutUnit()) {
-    DCHECK(insets_set.block_start != insets_set.block_end)
-        << "If aligned to both anchor edges, or both original containing block "
-           "edges, the size should never be negative.";
-
-    // Collapse the block size to 0 and align with the single anchor edge
-    // defined by the position-area.
-    if (!insets_set.block_start) {
-      adjusted_container_info.rect.offset.block_offset +=
-          adjusted_container_info.rect.size.block_size;
+  if (behaves_as_auto.block_end) {
+    LayoutUnit delta;
+    if (logical_shift.block_offset > LayoutUnit()) {
+      const LayoutUnit slack =
+          std::max(LayoutUnit(), rect.BlockEndOffset() -
+                                     container_info.rect.BlockEndOffset());
+      delta = std::max(LayoutUnit(), logical_shift.block_offset - slack);
+    } else {
+      delta = std::max(logical_shift.block_offset, -rect.size.block_size);
     }
-    adjusted_container_info.rect.size.block_size = LayoutUnit();
+    rect.ShiftBlockEndEdgeTo(rect.BlockEndOffset() + delta);
   }
+  if (behaves_as_auto.inline_start) {
+    LayoutUnit delta;
+    if (logical_shift.inline_offset > LayoutUnit()) {
+      delta = std::min(logical_shift.inline_offset, rect.size.inline_size);
+    } else {
+      const LayoutUnit slack =
+          std::max(LayoutUnit(), container_info.rect.InlineStartOffset() -
+                                     rect.InlineStartOffset());
+      delta = std::min(LayoutUnit(), logical_shift.inline_offset + slack);
+    }
+    rect.ShiftInlineStartEdgeTo(rect.InlineStartOffset() + delta);
+  }
+  if (behaves_as_auto.inline_end) {
+    LayoutUnit delta;
+    if (logical_shift.inline_offset > LayoutUnit()) {
+      const LayoutUnit slack =
+          std::max(LayoutUnit(), rect.InlineEndOffset() -
+                                     container_info.rect.InlineEndOffset());
+      delta = std::max(LayoutUnit(), logical_shift.inline_offset - slack);
+    } else {
+      delta = std::max(logical_shift.inline_offset, -rect.size.inline_size);
+    }
+    rect.ShiftInlineEndEdgeTo(rect.InlineEndOffset() + delta);
+  }
+
   return adjusted_container_info;
 }
 
@@ -1038,8 +1043,10 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
     // Step 1 - determine the start_offset.
     const PhysicalRect& start_rect =
         block_info.value->start_fragment_union_rect;
-    LogicalOffset start_offset = start_rect.offset.ConvertToLogical(
-        container_writing_direction, container_builder_size, start_rect.size);
+    const WritingModeConverter container_converter{container_writing_direction,
+                                                   container_builder_size};
+    LogicalOffset start_offset =
+        container_converter.ToLogical(start_rect.offset, start_rect.size);
 
     // Make sure we add the inline borders, we don't need to do this in the
     // inline direction if the blocks are in opposite directions.
@@ -1049,8 +1056,8 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
 
     // Step 2 - determine the end_offset.
     const PhysicalRect& end_rect = block_info.value->end_fragment_union_rect;
-    LogicalOffset end_offset = end_rect.offset.ConvertToLogical(
-        container_writing_direction, container_builder_size, end_rect.size);
+    LogicalOffset end_offset =
+        container_converter.ToLogical(end_rect.offset, end_rect.size);
 
     // Add in the size of the fragment to get the logical end of the fragment.
     end_offset += end_rect.size.ConvertToLogical(
@@ -1083,12 +1090,13 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
       // writing mode of the builder into account.
       PhysicalSize physical_size =
           ToPhysicalSize(inline_cb_size, GetConstraintSpace().GetWritingMode());
+      const PhysicalOffset start_physical_offset =
+          start_offset.ConvertToPhysical(container_writing_direction,
+                                         container_builder_size, physical_size);
       start_offset =
-          start_offset
-              .ConvertToPhysical(container_writing_direction,
-                                 container_builder_size, physical_size)
-              .ConvertToLogical(GetConstraintSpace().GetWritingDirection(),
-                                container_builder_size, physical_size);
+          WritingModeConverter(GetConstraintSpace().GetWritingDirection(),
+                               container_builder_size)
+              .ToLogical(start_physical_offset, physical_size);
     }
 
     // Subtract out the inline relative offset, if set, so that it can be
@@ -2254,8 +2262,8 @@ OutOfFlowLayoutPart::TryCalculateOffset(
           candidate_style.PositionAreaOffsets()) {
     if (RuntimeEnabledFeatures::CSSAnchorRememberedScrollOffsetEnabled()) {
       Element* elm = To<Element>(node_info.node.GetDOMNode());
-      if (offsets->top.has_value() != offsets->bottom.has_value() ||
-          offsets->left.has_value() != offsets->right.has_value()) {
+      if (offsets->behaves_as_auto.top != offsets->behaves_as_auto.bottom ||
+          offsets->behaves_as_auto.left != offsets->behaves_as_auto.right) {
         // When one inset for an axis is tethered to the default anchor, and the
         // other one is tethered to the original containing block, the IMCB is
         // affected by the default anchor scroll shift. Schedule for calculation

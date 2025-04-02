@@ -50,6 +50,7 @@ std::string GetRegistrationCode(std::string_view type) {
 
   ash::system::StatisticsProvider* provider =
       ash::system::StatisticsProvider::GetInstance();
+
   std::string result;
   if (type == kCouponType) {
     const std::optional<std::string_view> offers_code =

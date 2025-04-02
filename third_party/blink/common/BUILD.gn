@@ -382,6 +382,7 @@ source_set("common_unittests_sources") {
     "bluetooth/web_bluetooth_device_id_unittest.cc",
     "client_hints/client_hints_unittest.cc",
     "client_hints/enabled_client_hints_unittest.cc",
+    "custom_handlers/protocol_handler_utils_unittest.cc",
     "device_memory/approximated_device_memory_unittest.cc",
     "frame/delegated_capability_request_token_unittest.cc",
     "frame/user_activation_state_unittest.cc",

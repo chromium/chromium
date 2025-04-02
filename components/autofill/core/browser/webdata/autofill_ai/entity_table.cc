@@ -39,16 +39,8 @@ void* GetKey() {
   return reinterpret_cast<void*>(&key);
 }
 
-// TODO(crbug.com/394292801): Remove when we migrate to WebDatabase's
-// versioning.
-namespace version {
-constexpr char kTableName[] = "entities_version";
-constexpr char kVersion[] = "version";
-constexpr int kCurrentVersion = 8;
-}  // namespace version
-
 namespace attributes {
-constexpr char kTableName[] = "attributes";
+constexpr char kTableName[] = "autofill_ai_attributes";
 constexpr char kEntityGuid[] = "entity_guid";
 constexpr char kAttributeType[] = "attribute_type";
 constexpr char kFieldType[] = "field_type";
@@ -57,7 +49,7 @@ constexpr char kVerificationStatus[] = "verification_status";
 }  // namespace attributes
 
 namespace entities {
-constexpr char kTableName[] = "entities";
+constexpr char kTableName[] = "autofill_ai_entities";
 constexpr char kGuid[] = "guid";
 constexpr char kEntityType[] = "entity_type";
 constexpr char kNickname[] = "nickname";
@@ -155,35 +147,6 @@ WebDatabaseTable::TypeKey EntityTable::GetTypeKey() const {
 }
 
 bool EntityTable::CreateTablesIfNecessary() {
-  // TODO(crbug.com/394292801): Remove when we migrate to WebDatabase's
-  // versioning.
-  {
-    CreateTableIfNotExists(db(), /*table_name=*/version::kTableName,
-                           /*column_names_and_types=*/
-                           {{version::kVersion, "INTEGER"}});
-    auto get_table_version = [&] {
-      sql::Statement s;
-      SelectBuilder(db(), s, version::kTableName, {version::kVersion});
-      if (s.Step()) {
-        return s.ColumnInt(0);
-      }
-      constexpr int kDefaultVersion = 0;
-      InsertBuilder(db(), s, version::kTableName, {version::kVersion});
-      s.BindInt(0, kDefaultVersion);
-      s.Run();
-      return kDefaultVersion;
-    };
-    if (get_table_version() != version::kCurrentVersion) {
-      sql::Statement s;
-      UpdateBuilder(db(), s, version::kTableName, {version::kVersion},
-                    /*where_clause=*/"");
-      s.BindInt(0, version::kCurrentVersion);
-      s.Run();
-      DropTableIfExists(db(), attributes::kTableName);
-      DropTableIfExists(db(), entities::kTableName);
-    }
-  }
-
   auto create_attributes_table = [&] {
     return CreateTableIfNotExists(
         db(), /*table_name=*/attributes::kTableName,
@@ -228,7 +191,30 @@ bool EntityTable::CreateTablesIfNecessary() {
 bool EntityTable::MigrateToVersion(int version,
                                    bool* update_compatible_version) {
   switch (version) {
-    // No migrations exist at this point.
+    case 138: {
+      // Up to version 138, AutofillAi was purely experimental. To upgrade from
+      // earlier versions, we can simply drop all previous data.
+      DropTableIfExists(db(), "attributes");
+      DropTableIfExists(db(), "entities");
+      DropTableIfExists(db(), "entities_version");
+      CreateTableIfNotExists(db(), /*table_name=*/"autofill_ai_attributes",
+                             /*column_names_and_types=*/
+                             {{"entity_guid", "TEXT NOT NULL"},
+                              {"attribute_type", "TEXT NOT NULL"},
+                              {"field_type", "INTEGER NOT NULL"},
+                              {"value_encrypted", "BLOB NOT NULL"},
+                              {"verification_status", "INTEGER NOT NULL"}},
+                             /*composite_primary_key=*/
+                             {"entity_guid", "attribute_type", "field_type"});
+      CreateTableIfNotExists(db(), /*table_name=*/"autofill_ai_entities",
+                             /*column_names_and_types=*/
+                             {{"guid", "TEXT NOT NULL PRIMARY KEY"},
+                              {"entity_type", "TEXT NOT NULL"},
+                              {"nickname", "TEXT NOT NULL"},
+                              {"date_modified", "INTEGER NOT NULL"}});
+      *update_compatible_version = true;
+      break;
+    }
   }
   return true;
 }

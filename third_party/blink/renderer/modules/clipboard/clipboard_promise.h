@@ -108,9 +108,9 @@ class MODULES_EXPORT ClipboardPromise final
   class ClipboardItemDataPromiseReject;
 
   void HandlePromiseWrite(
-      HeapVector<Member<V8UnionBlobOrString>>* clipboard_item_list);
+      GCedHeapVector<Member<V8UnionBlobOrString>>* clipboard_item_list);
   void WriteClipboardItemData(
-      HeapVector<Member<V8UnionBlobOrString>>* clipboard_item_list);
+      GCedHeapVector<Member<V8UnionBlobOrString>>* clipboard_item_list);
 
   // Rejects the promise for blobs that have invalid MIME types or got rejected
   // with the given exception.

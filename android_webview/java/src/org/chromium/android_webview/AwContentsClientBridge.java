@@ -358,7 +358,7 @@ public class AwContentsClientBridge {
 
         String unreachableWebDataUrl = AwContentsStatics.getUnreachableWebDataUrl();
         boolean isErrorUrl =
-                unreachableWebDataUrl != null && unreachableWebDataUrl.equals(request.url);
+                unreachableWebDataUrl != null && unreachableWebDataUrl.equals(request.getUrl());
 
         if ((!isErrorUrl && errorCode != NetError.ERR_ABORTED) || safebrowsingHit) {
             // NetError.ERR_ABORTED error code is generated for the following reasons:
@@ -378,16 +378,16 @@ public class AwContentsClientBridge {
                     error.errorCode = WebviewErrorCode.ERROR_UNSAFE_RESOURCE;
                 }
             }
-            if (request.isOutermostMainFrame
+            if (request.isOutermostMainFrame()
                     && AwComputedFlags.pageStartedOnCommitEnabled(isRendererInitiated)) {
-                mClient.getCallbackHelper().postOnPageStarted(request.url);
+                mClient.getCallbackHelper().postOnPageStarted(request.getUrl());
             }
             mClient.getCallbackHelper().postOnReceivedError(request, error);
-            if (request.isOutermostMainFrame) {
+            if (request.isOutermostMainFrame()) {
                 // Need to call onPageFinished after onReceivedError for backwards compatibility
                 // with the classic webview. See also AwWebContentsObserver.didFailLoad which is
                 // used when we want to send onPageFinished alone.
-                mClient.getCallbackHelper().postOnPageFinished(request.url);
+                mClient.getCallbackHelper().postOnPageFinished(request.getUrl());
             }
         }
     }

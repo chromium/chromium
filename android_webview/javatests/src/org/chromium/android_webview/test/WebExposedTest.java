@@ -108,7 +108,7 @@ public class WebExposedTest extends AwParameterizedTest {
                                         "onReceivedError: "
                                                 + error.description
                                                 + ", "
-                                                + request.url
+                                                + request.getUrl()
                                                 + "\n"));
                     }
 

@@ -138,7 +138,6 @@
 <translation id="2084809735218147718">ধন্যবাদৰ গীত গাই থকা ব্যক্তিৰ ছবি</translation>
 <translation id="2088690981887365033">VPN নেটৱৰ্ক</translation>
 <translation id="209653272837065803">ফাইল ছিংক কৰাটো অব্যাহত ৰাখিবলৈ পৰ্যাপ্ত ষ্ট’ৰেজৰ স্থান নাই</translation>
-<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />ইনক’গনিট’ ম’ডত অনুমতি দিয়ক<ph name="END_BOLD" /> সুবিধাটো অন কৰক</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> টা বস্তু মচা হ’ব আৰু আপুনি সেইবোৰ পুনঃস্থাপন কৰিব নোৱাৰিব।</translation>
 <translation id="2122305276694332719">লুকাই থকা কোনো নেটৱৰ্কত স্বয়ংক্ৰিয়ভাৱে সংযুক্ত কৰাটোৱে অন্য লোকক আপোনাৰ ডিভাইচ আৰু নেটৱৰ্কৰ কিছুমান ছেটিং চাবলৈ দিয়ে আৰু সেয়েহে সেয়া চুপাৰিছ কৰা নহয়।</translation>
 <translation id="2125607626296734455">খ্‌মেৰ</translation>
@@ -169,7 +168,6 @@
 <translation id="2304820083631266885">গ্ৰহ</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> সুৰক্ষিতভাৱে গুচোৱা হ’ল।</translation>
 <translation id="2307462900900812319">নেটৱৰ্ক কনফিগাৰ কৰক</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> আইডিৰ এক্সেটেনশ্বনৰ অৱস্থান নিৰ্ধাৰণ কৰিব পৰা নগ’ল। আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।}one{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> আইডিৰ এক্সেটেনশ্বনসমূহৰ অৱস্থান নিৰ্ধাৰণ কৰিব পৰা নগ’ল। আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> আইডিৰ এক্সেটেনশ্বনসমূহৰ অৱস্থান নিৰ্ধাৰণ কৰিব পৰা নগ’ল। আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।}}</translation>
 <translation id="2325650632570794183">এইধৰণৰ ফাইল সমৰ্থিত নহয়। অনুগ্ৰহ কৰি Chrome Web Storeত গৈ এইধৰণৰ ফাইল খুলিব পৰা কোনো এপ্ বিচাৰক।</translation>
 <translation id="2326539130272988168">বুলগেৰিয়ান</translation>
 <translation id="233822363739146957">আপোনাৰ আটাইবোৰ ফাইল ছিংক কৰিবলৈ পৰ্যাপ্ত ষ্ট’ৰেজৰ স্থান নাই</translation>
@@ -241,7 +239,6 @@
 <translation id="290843123675549676">মাৰাঠী</translation>
 <translation id="2923240520113693977">ইষ্ট’নিয়া</translation>
 <translation id="2938685643439809023">Mongolian</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{এক্সটেনশ্বন বিচাৰি পোৱা নাই}one{এক্সটেনশ্বনসমূহ বিচাৰি পোৱা নাই}other{এক্সটেনশ্বনসমূহ বিচাৰি পোৱা নাই}}</translation>
 <translation id="2943503720238418293">কোনো চুটি নাম ব্যৱহাৰ কৰক</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> ফৰ্মেট কৰি থকা হৈছে...</translation>
 <translation id="2951236788251446349">জেলীফিশ্ব</translation>
@@ -298,7 +295,6 @@
 <translation id="3356580349448036450">সম্পূৰ্ণ হ’ল</translation>
 <translation id="3358452157379365236">গিটাৰ</translation>
 <translation id="3368922792935385530">সংযোগ কৰা হ’ল</translation>
-<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />সবিশেষ<ph name="END_BOLD" />ত ক্লিক কৰক</translation>
 <translation id="3382143449143186018">InScript কীব’ৰ্ডৰ সৈতে নেপালী</translation>
 <translation id="338691029516748599"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="3408072735282270043">সক্ৰিয়, <ph name="NETWORK_NAME" /></translation>
@@ -388,7 +384,6 @@
 <translation id="4124935795427217608">এশিঙিয়া ঘোঁৰা</translation>
 <translation id="4131235941541910880">আপোনাক নলগা বস্তুসমূহ ট্ৰেশ্বলৈ নিয়ক</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰটো, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ডিভাইচ ছেট আপ কৰাৰ পাছত সক্ৰিয় কৰক</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{ইনক’গনিট’ ম’ডত নিম্নলিখিত এক্সটেনশ্বনটো অন কৰক:}one{ইনক’গনিট’ ম’ডত নিম্নলিখিত এক্সটেনশ্বনসমূহ অন কৰক:}other{ইনক’গনিট’ ম’ডত নিম্নলিখিত এক্সটেনশ্বনসমূহ অন কৰক:}}</translation>
 <translation id="4153015322587141338">শ্বেল্ফত আপোনাৰ ফাইল ক্ষিপ্ৰতাৰে এক্সেছ কৰিবলৈ এটা ফাইলত ৰাইট-ক্লিক কৰক আৰু "<ph name="PIN_COMMAND" />" বাছনি কৰক।</translation>
 <translation id="4157569377477607576">প্ৰশাসকৰ নীতিয়ে এইসমূহ চুপাৰিছ নকৰে:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> স্থানান্তৰ কৰা হ’ল।</translation>
@@ -486,9 +481,7 @@
 <translation id="4801956050125744859">দুয়োটাই ৰাখক</translation>
 <translation id="4804827417948292437">এভ‘কাড‘</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> টা বস্তু পুনঃস্থাপন কৰি থকা হৈছে</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{ইনক’গনিট’ ম’ড ব্যৱহাৰ কৰিবলৈ, আপোনাৰ প্ৰতিষ্ঠানক এটা এক্সটেনশ্বনৰ প্ৰয়োজন}one{ইনক’গনিট’ ম’ড ব্যৱহাৰ কৰিবলৈ, আপোনাৰ প্ৰতিষ্ঠানক কিছুমান এক্সটেনশ্বনৰ প্ৰয়োজন}other{ইনক’গনিট’ ম’ড ব্যৱহাৰ কৰিবলৈ, আপোনাৰ প্ৰতিষ্ঠানক কিছুমান এক্সটেনশ্বনৰ প্ৰয়োজন}}</translation>
 <translation id="4826849268470072925">তামিল ITRANS</translation>
-<translation id="482932175346970750">আপোনাৰ ব্ৰাউজাৰত <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> টাইপ কৰক</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">চাওক</translation>
 <translation id="485316830061041779">জাৰ্মান</translation>
@@ -561,7 +554,6 @@
     <ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Driveৰ পৰা পুনৰুদ্ধাৰ কৰা ফাইল</translation>
 <translation id="5278111733643988471">এই বস্তুটো পুনঃস্থাপন কৰিবলৈ ইয়াক ট্ৰেশ্বৰ বাহিৰত এটা নতুন ফ’ল্ডাৰলৈ টানি আনি এৰক। এই বস্তুটোৰ মূল ফ’ল্ডাৰ "<ph name="PARENT_FOLDER_NAME" />"টো মচা হৈছে।</translation>
-<translation id="5283101102242354279">ইনক’গনিট’ ম’ডত এটা এক্সটেনশ্বন অন কৰক:</translation>
 <translation id="5288441970121584418">বার্গাৰ</translation>
 <translation id="5293615890992542006">এই ফাইলটো অন্য ঠাইলৈ নিয়াটো প্ৰশাসকৰ নীতিয়ে অৱৰোধ কৰিছে</translation>
 <translation id="5305688511332277257">এটাও ইনষ্টল কৰা হোৱা নাই</translation>
@@ -815,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, সবিশেষ</translation>
 <translation id="7246947237293279874">FTP প্ৰক্সি</translation>
 <translation id="7248671827512403053">এপ্লিকেশ্বন</translation>
-<translation id="7252604552361840748">ওপৰত উল্লিখিত এক্সটেনশ্বনটো বিচাৰক</translation>
 <translation id="7256405249507348194">চিনাক্ত কৰিব নোৱাৰা আসোঁৱাহ: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">উপলব্ধ সেৱাসমূহ</translation>
 <translation id="7291818353625820805">কীসমূহ পুনৰাবৃত্তি হোৱাটো বিচাৰেনে? কীব’ৰ্ডৰ ছেটিঙত উচ্চাৰণ চিহ্নসমূহ অফ কৰক</translation>

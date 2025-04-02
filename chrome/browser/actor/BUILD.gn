@@ -18,6 +18,8 @@ source_set("actor") {
     "actor_features.h",
     "site_policy.cc",
     "site_policy.h",
+    "tools/history_tool.cc",
+    "tools/history_tool.h",
     "tools/navigate_tool.cc",
     "tools/navigate_tool.h",
     "tools/page_tool.cc",

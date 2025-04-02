@@ -29,6 +29,7 @@
 <translation id="1356661055722410047">新功能！您可以翻译屏幕上的文字和图片</translation>
 <translation id="1363996462118479832">由于登录时发生错误，Chrome 操作系统无法同步您的数据。</translation>
 <translation id="137466361146087520">Google Chrome 测试版</translation>
+<translation id="1383876407941801731">搜索</translation>
 <translation id="1399397803214730675">该计算机已安装了更高版本的 Google Chrome 浏览器。如果该软件无法正常运行，请卸载 Google Chrome 浏览器，然后重试。</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome 已完成更新。重新启动即可使用最新版本。重启后，Chrome 会自动重新打开您的所有当前标签页。}=1{Chrome 已完成更新。重新启动即可使用最新版本。重启后，Chrome 会自动重新打开您的所有当前标签页，但不会重新打开您的无痕式窗口。}other{Chrome 已完成更新。重新启动即可使用最新版本。重启后，Chrome 会自动重新打开您的所有当前标签页，但不会重新打开您的 # 个无痕式窗口。}}</translation>
 <translation id="1434626383986940139">Chrome Canary 应用</translation>
@@ -119,6 +120,7 @@
 <translation id="2580411288591421699">无法安装与当前运行版本相同的 Google Chrome 浏览器。请关闭 Google Chrome 浏览器，然后重试。</translation>
 <translation id="2586406160782125153">这会从这台设备上删除您的浏览数据。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chrome。</translation>
 <translation id="259935314519650377">未能缓存所下载的安装程序。错误：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
+<translation id="2620436844016719705">系统</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome 会定期进行检查，以确保您的浏览器使用最安全的设置。如有任何事项需要您审核，我们会通知您。</translation>
 <translation id="2652691236519827073">在 Chrome 新标签页中打开链接(&amp;T)</translation>
@@ -519,6 +521,7 @@
 <translation id="7951272445806340501">需要重启 ChromeOS Flex 以应用更新。</translation>
 <translation id="7959172989483770734">管理 Chrome 个人资料</translation>
 <translation id="7962410387636238736">此计算机将不会再收到 Google Chrome 更新，因为 Windows XP 和 Windows Vista 已不再受支持</translation>
+<translation id="8004582292198964060">浏览器</translation>
 <translation id="8005666035647241369">保存到此设备上的 Google 密码管理工具中</translation>
 <translation id="8008534537613507642">重新安装Chrome</translation>
 <translation id="8009904340233602924">在不登录账号的情况下使用 Chrome</translation>

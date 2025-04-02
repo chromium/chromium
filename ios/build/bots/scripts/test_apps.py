@@ -9,7 +9,8 @@ import plistlib
 import struct
 import subprocess
 import time
-from typing import Tuple, List
+import logging
+from typing import Tuple, List, Set
 
 import shard_util
 import test_runner
@@ -22,8 +23,54 @@ import xcode_util
 GENERATE_COMPILED_GTESTS_FILE_TEST_ARG = (
     '--write-compiled-tests-json-to-writable-path')
 
+# crbug.com/407529445: longest filter length before we get
+# "Argument list too long" error. It's only an educated guess and the number
+# can be adjusted any time as needed
+MAX_GTEST_FILTER_LENGTH = 4000
 
-def get_gtest_filter(included, excluded):
+
+def group_gtest_filter(
+    tests: List[str],
+    non_grouped_suites: Set[str],
+    no_grouping_limit: int = MAX_GTEST_FILTER_LENGTH) -> List[str]:
+  """
+    Groups a list of tests based on their test suites,
+    ignoring non_grouped_suites
+
+    Args:
+        tests: A list of tests
+          (e.g., ["A.B", "A.C", "B.A", "B.B", "C.A", "C.D", "C.E"]).
+        non_grouped_suites: tests under non_grouped_suites will not be grouped.
+        no_grouping_limit: if the number of tests is smaller than the limit,
+          then there's no need to group the tests.
+
+    Returns:
+        A list of grouped test patterns for all but the tests
+          in non_grouped_suites, followed by the individual tests of
+          non_grouped_suites.
+        (e.g., ["A.*", "B.*", "C.A", "C.D", "C.E"]).
+  """
+  if not tests or len(tests) <= no_grouping_limit:
+    return tests
+
+  non_grouped_tests = []
+  test_suites = set()
+  result = []
+
+  for test in tests:
+    test_suite = test.split(".")[0]
+    if test_suite in non_grouped_suites:
+      non_grouped_tests.append(test)
+    else:
+      test_suites.add(test_suite)
+
+  for test_suite in sorted(list(test_suites)):
+    result.append(f"{test_suite}.*")
+  result.extend(non_grouped_tests)
+  return result
+
+
+def get_gtest_filter(included, excluded, crashed):
   """Returns the GTest filter to filter the given test cases.
 
   If only included or excluded is provided, uses GTest filter inclusion or
@@ -33,6 +80,7 @@ def get_gtest_filter(included, excluded):
   Args:
     included: List of test cases to be included.
     excluded: List of test cases to be excluded.
+    crashed: List of test cases that crashed in the previous run
 
   Returns:
     A string which can be supplied to --gtest_filter.
@@ -41,6 +89,16 @@ def get_gtest_filter(included, excluded):
   if included and excluded:
     included = list(set(included) - set(excluded))
     excluded = []
+
+  # Group tests based on their test suites to reduce the length of gtest_filter.
+  # A better solution might be to use test-launcher-filter-file
+  non_grouped_suites = set()
+  if crashed:
+    for test in crashed:
+      test_suite = test.split(".")[0]
+      non_grouped_suites.add(test_suite)
+  excluded = group_gtest_filter(excluded, non_grouped_suites)
+
   # A colon-separated list of tests cases.
   # e.g. a:b:c matches a, b, c.
   # e.g. -a:b:c matches everything except a, b, c.
@@ -130,6 +188,7 @@ class GTestsApp(object):
     self.included_tests = kwargs.get('included_tests') or []
     # This may be modified between test launches.
     self.excluded_tests = kwargs.get('excluded_tests') or []
+    self.crashed_tests = kwargs.get('crashed_tests') or []
     self.disabled_tests = []
     self.module_name = os.path.splitext(os.path.basename(test_app))[0]
     self.release = kwargs.get('release')
@@ -165,6 +224,7 @@ class GTestsApp(object):
     # Write data in temp xctest run file.
     with open(xctestrun, "wb") as f:
       plistlib.dump(self.fill_xctestrun_node(), f)
+
     return xctestrun
 
   @staticmethod
@@ -218,7 +278,8 @@ class GTestsApp(object):
     gtest_filter = []
 
     if self.included_tests or self.excluded_tests:
-      gtest_filter = get_gtest_filter(self.included_tests, self.excluded_tests)
+      gtest_filter = get_gtest_filter(self.included_tests, self.excluded_tests,
+                                      self.crashed_tests)
       # Removed previous gtest-filter if exists.
       self.test_args = [el for el in self.test_args
                         if not el.startswith('--gtest_filter=')]
@@ -493,7 +554,8 @@ class DeviceXCTestUnitTestsApp(GTestsApp):
           {'EnvironmentVariables': self.env_vars})
 
     if self.included_tests or self.excluded_tests:
-      gtest_filter = get_gtest_filter(self.included_tests, self.excluded_tests)
+      gtest_filter = get_gtest_filter(self.included_tests, self.excluded_tests,
+                                      self.crashed_tests)
       # Removed previous gtest-filter if exists.
       self.test_args = [
           el for el in self.test_args if not el.startswith('--gtest_filter=')
@@ -586,7 +648,8 @@ class SimulatorXCTestUnitTestsApp(GTestsApp):
           {'EnvironmentVariables': self.env_vars})
 
     if self.included_tests or self.excluded_tests:
-      gtest_filter = get_gtest_filter(self.included_tests, self.excluded_tests)
+      gtest_filter = get_gtest_filter(self.included_tests, self.excluded_tests,
+                                      self.crashed_tests)
       # Removed previous gtest-filter if exists.
       self.test_args = [
           el for el in self.test_args if not el.startswith('--gtest_filter=')

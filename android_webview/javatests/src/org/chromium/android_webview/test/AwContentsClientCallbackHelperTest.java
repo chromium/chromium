@@ -216,7 +216,7 @@ public class AwContentsClientCallbackHelperTest extends AwParameterizedTest {
         receivedErrorHelper.waitForCallback(onReceivedErrorCount);
         Assert.assertEquals(ERROR_CODE, receivedErrorHelper.getError().errorCode);
         Assert.assertEquals(ERROR_MESSAGE, receivedErrorHelper.getError().description);
-        Assert.assertEquals(TEST_URL, receivedErrorHelper.getRequest().url);
+        Assert.assertEquals(TEST_URL, receivedErrorHelper.getRequest().getUrl());
     }
 
     @Test

@@ -1594,7 +1594,9 @@ void ExpectPolicyStatusValues(
   EXPECT_EQ(has_conflict, expected_has_conflict);
 }
 
-void ExpectLegacyPolicyStatusSucceeds(UpdaterScope scope) {
+void ExpectLegacyPolicyStatusSucceeds(
+    UpdaterScope scope,
+    const base::Version& expected_updater_version) {
   Microsoft::WRL::ComPtr<IUnknown> policy_status_server;
   ASSERT_HRESULT_SUCCEEDED(CreateLocalServer(
       IsSystemInstall(scope) ? __uuidof(PolicyStatusSystemClass)
@@ -1611,7 +1613,8 @@ void ExpectLegacyPolicyStatusSucceeds(UpdaterScope scope) {
   base::win::ScopedBstr updater_version;
   ASSERT_HRESULT_SUCCEEDED(
       policy_status2->get_updaterVersion(updater_version.Receive()));
-  EXPECT_STREQ(updater_version.Get(), kUpdaterVersionUtf16);
+  EXPECT_EQ(updater_version.Get(),
+            base::UTF8ToWide(expected_updater_version.GetString()));
 
   DATE last_checked = 0;
   EXPECT_HRESULT_SUCCEEDED(policy_status2->get_lastCheckedTime(&last_checked));

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_group_suggestion;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
@@ -42,7 +44,7 @@ public class GroupSuggestionsPromotionCoordinator {
                 new GroupSuggestionsPromotionMediator(
                         model,
                         GroupSuggestionsServiceFactory.getForProfile(
-                                tabGroupModelFilter.getTabModel().getProfile()),
+                                assumeNonNull(tabGroupModelFilter.getTabModel().getProfile())),
                         bottomSheetController,
                         tabGroupModelFilter,
                         groupSuggestionsBottomSheetContainer);

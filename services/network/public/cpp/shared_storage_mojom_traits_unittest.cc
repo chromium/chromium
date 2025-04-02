@@ -4,7 +4,9 @@
 
 #include "services/network/public/cpp/shared_storage_mojom_traits.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_storage_utils.h"
 #include "services/network/public/mojom/shared_storage.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,8 +79,43 @@ TEST(SharedStorageMojomTraitsTest, SerializeAndDeserializeLockName) {
   }
 }
 
-TEST(SharedStorageMojomTraitsTest,
-     SerializeAndDeserializeBatchUpdateMethodsArgument) {
+TEST(
+    SharedStorageMojomTraitsTest,
+    SerializeAndDeserializeBatchUpdateMethodsArgument_LegacyBatchUpdate_HasInnerMethodLock_Success) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      network::features::kSharedStorageTransactionalBatchUpdate);
+
+  auto method1 = mojom::SharedStorageModifierMethodWithOptions::New(
+      mojom::SharedStorageModifierMethod::NewSetMethod(
+          mojom::SharedStorageSetMethod::New(/*key=*/u"a", /*key=*/u"b",
+                                             /*ignore_if_present=*/true)),
+      /*with_lock=*/"lock1");
+
+  auto method2 = mojom::SharedStorageModifierMethodWithOptions::New(
+      mojom::SharedStorageModifierMethod::NewAppendMethod(
+          mojom::SharedStorageAppendMethod::New(/*key=*/u"c", /*key=*/u"d")),
+      /*with_lock=*/std::nullopt);
+
+  std::vector<mojom::SharedStorageModifierMethodWithOptionsPtr>
+      original_methods;
+  original_methods.push_back(std::move(method1));
+  original_methods.push_back(std::move(method2));
+
+  std::vector<mojom::SharedStorageModifierMethodWithOptionsPtr> copied_methods;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+              mojom::SharedStorageBatchUpdateMethodsArgument>(original_methods,
+                                                              copied_methods));
+  EXPECT_EQ(original_methods, copied_methods);
+}
+
+TEST(
+    SharedStorageMojomTraitsTest,
+    SerializeAndDeserializeBatchUpdateMethodsArgument_TransactionalBatchUpdate_NoInnerMethodLock_Success) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      network::features::kSharedStorageTransactionalBatchUpdate);
+
   auto method1 = mojom::SharedStorageModifierMethodWithOptions::New(
       mojom::SharedStorageModifierMethod::NewSetMethod(
           mojom::SharedStorageSetMethod::New(/*key=*/u"a", /*key=*/u"b",
@@ -100,6 +137,35 @@ TEST(SharedStorageMojomTraitsTest,
               mojom::SharedStorageBatchUpdateMethodsArgument>(original_methods,
                                                               copied_methods));
   EXPECT_EQ(original_methods, copied_methods);
+}
+
+TEST(
+    SharedStorageMojomTraitsTest,
+    SerializeAndDeserializeBatchUpdateMethodsArgument_TransactionalBatchUpdate_HasInnerMethodLock_Failure) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      network::features::kSharedStorageTransactionalBatchUpdate);
+
+  auto method1 = mojom::SharedStorageModifierMethodWithOptions::New(
+      mojom::SharedStorageModifierMethod::NewSetMethod(
+          mojom::SharedStorageSetMethod::New(/*key=*/u"a", /*key=*/u"b",
+                                             /*ignore_if_present=*/true)),
+      /*with_lock=*/"lock1");
+
+  auto method2 = mojom::SharedStorageModifierMethodWithOptions::New(
+      mojom::SharedStorageModifierMethod::NewAppendMethod(
+          mojom::SharedStorageAppendMethod::New(/*key=*/u"c", /*key=*/u"d")),
+      /*with_lock=*/std::nullopt);
+
+  std::vector<mojom::SharedStorageModifierMethodWithOptionsPtr>
+      original_methods;
+  original_methods.push_back(std::move(method1));
+  original_methods.push_back(std::move(method2));
+
+  std::vector<mojom::SharedStorageModifierMethodWithOptionsPtr> copied_methods;
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+               mojom::SharedStorageBatchUpdateMethodsArgument>(original_methods,
+                                                               copied_methods));
 }
 
 }  // namespace

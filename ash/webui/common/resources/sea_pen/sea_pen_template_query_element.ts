@@ -25,7 +25,7 @@ import type {SeaPenOption, SeaPenTemplate} from './constants.js';
 import {getSeaPenTemplates} from './constants.js';
 import {isSeaPenTextInputEnabled, isSeaPenUseExptTemplateEnabled} from './load_time_booleans.js';
 import type {SeaPenQuery, SeaPenThumbnail, SeaPenUserVisibleQuery} from './sea_pen.mojom-webui.js';
-import {getSeaPenThumbnails} from './sea_pen_controller.js';
+import {clearSeaPenThumbnails, getSeaPenThumbnails} from './sea_pen_controller.js';
 import type {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from './sea_pen_generated.mojom-webui.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {logGenerateSeaPenWallpaper} from './sea_pen_metrics_logger.js';
@@ -194,6 +194,7 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    clearSeaPenThumbnails(this.getStore());
     this.resizeObserver_.disconnect();
     this.removeEventListener('click', this.onClick_);
   }

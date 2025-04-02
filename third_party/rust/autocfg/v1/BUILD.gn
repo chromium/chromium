@@ -13,13 +13,13 @@ cargo_crate("buildrs_support") {
   epoch = "1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/autocfg-1.4.0/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/autocfg-v1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/autocfg-1.4.0/src/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/autocfg-1.4.0/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/autocfg-1.4.0/src/rustc.rs",
-    "//third_party/rust/chromium_crates_io/vendor/autocfg-1.4.0/src/tests.rs",
-    "//third_party/rust/chromium_crates_io/vendor/autocfg-1.4.0/src/version.rs",
+    "//third_party/rust/chromium_crates_io/vendor/autocfg-v1/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/autocfg-v1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/autocfg-v1/src/rustc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/autocfg-v1/src/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/autocfg-v1/src/version.rs",
   ]
   inputs = []
 

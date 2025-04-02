@@ -4,6 +4,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "chrome/browser/ui/browser.h"
@@ -30,12 +32,11 @@ namespace {
 static bool had_console_errors = false;
 
 bool HandleMessage(int severity,
-                   const char* file,
+                   std::string_view file,
                    int line,
                    size_t message_start,
                    const std::string& str) {
-  if (severity == logging::LOGGING_ERROR && file &&
-      file == std::string("CONSOLE")) {
+  if (severity == logging::LOGGING_ERROR && file == "CONSOLE") {
     had_console_errors = true;
   }
   return false;

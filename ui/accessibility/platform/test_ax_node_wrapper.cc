@@ -174,13 +174,13 @@ gfx::NativeViewAccessible TestAXNodeWrapper::GetNativeViewAccessible() {
 gfx::NativeViewAccessible TestAXNodeWrapper::GetParent() const {
   if (!node_) {
     // Node may be null if it was just deleted.
-    return nullptr;
+    return gfx::NativeViewAccessible();
   }
   TestAXNodeWrapper* parent_wrapper =
       GetOrCreate(tree_, node_->GetUnignoredParent());
-  return parent_wrapper ?
-      parent_wrapper->ax_platform_node()->GetNativeViewAccessible() :
-      nullptr;
+  return parent_wrapper
+             ? parent_wrapper->ax_platform_node()->GetNativeViewAccessible()
+             : gfx::NativeViewAccessible();
 }
 
 size_t TestAXNodeWrapper::GetChildCount() const {
@@ -189,9 +189,9 @@ size_t TestAXNodeWrapper::GetChildCount() const {
 
 gfx::NativeViewAccessible TestAXNodeWrapper::ChildAtIndex(size_t index) const {
   TestAXNodeWrapper* child_wrapper = InternalGetChild(index);
-  return child_wrapper ?
-      child_wrapper->ax_platform_node()->GetNativeViewAccessible() :
-      nullptr;
+  return child_wrapper
+             ? child_wrapper->ax_platform_node()->GetNativeViewAccessible()
+             : gfx::NativeViewAccessible();
 }
 
 gfx::Rect TestAXNodeWrapper::GetBoundsRect(
@@ -326,7 +326,7 @@ gfx::NativeViewAccessible TestAXNodeWrapper::HitTestSync(
           screen_physical_pixel_x / g_scale_factor,
           screen_physical_pixel_y / g_scale_factor);
   return wrapper ? wrapper->ax_platform_node()->GetNativeViewAccessible()
-                 : nullptr;
+                 : gfx::NativeViewAccessible();
 }
 
 gfx::NativeViewAccessible TestAXNodeWrapper::GetFocus() const {
@@ -337,7 +337,7 @@ gfx::NativeViewAccessible TestAXNodeWrapper::GetFocus() const {
         ->ax_platform_node()
         ->GetNativeViewAccessible();
   }
-  return nullptr;
+  return gfx::NativeViewAccessible();
 }
 
 bool TestAXNodeWrapper::IsMinimized() const {

@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/cras/audio_manager_cras_base.h"
+#include "media/audio/cras/cras_util.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/media_switches.h"
 
@@ -145,7 +146,7 @@ AudioInputStream::OpenOutcome CrasInputStream::Open() {
     return OpenOutcome::kFailed;
   }
 
-  if (libcras_client_connect(client_)) {
+  if (libcras_client_connect_timeout(client_, kCrasConnectTimeoutMs)) {
     DLOG(WARNING) << "Couldn't connect CRAS client.\n";
     ReportStreamOpenResult(
         StreamOpenResult::kCallbackOpenCannotConnectToCrasClient);

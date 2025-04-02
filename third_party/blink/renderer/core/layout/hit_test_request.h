@@ -26,6 +26,7 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -65,12 +66,14 @@ class HitTestRequest {
     kAvoidCache = 1 << 13,
     kIgnoreZeroOpacityObjects = 1 << 14,
     kHitTestVisualOverflow = 1 << 15,
+    kHitNodeCbWithId = 1 << 16,
   };
 
   typedef unsigned HitTestRequestType;
 
   using HitNodeCb =
-      base::RepeatingCallback<ListBasedHitTestBehavior(const Node& node)>;
+      base::RepeatingCallback<ListBasedHitTestBehavior(const Node& node,
+                                                       DOMNodeId dom_node_id)>;
 
   HitTestRequest(HitTestRequestType request_type,
                  const LayoutObject* stop_node = nullptr,
@@ -117,10 +120,7 @@ class HitTestRequest {
   HitTestRequestType GetType() const { return request_type_; }
   const LayoutObject* GetStopNode() const { return stop_node_.Get(); }
 
-  ListBasedHitTestBehavior RunHitNodeCb(const Node& node) const {
-    DCHECK(hit_node_cb_);
-    return hit_node_cb_->Run(node);
-  }
+  ListBasedHitTestBehavior RunHitNodeCb(Node& node) const;
 
   // The Cacheability bits don't affect hit testing computation.
   // TODO(dtapuska): These bits really shouldn't be fields on the HitTestRequest

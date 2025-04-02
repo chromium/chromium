@@ -61,11 +61,12 @@ static ColorParseResult ParseColor(Color& parsed_color,
                                    mojom::blink::ColorScheme color_scheme,
                                    const ui::ColorProvider* color_provider,
                                    bool is_in_web_app_scope) {
-  if (EqualIgnoringASCIICase(color_string, "currentcolor"))
+  if (EqualIgnoringASCIICase(color_string, "currentcolor")) {
     return ColorParseResult::kCurrentColor;
-  const bool kUseStrictParsing = true;
-  if (CSSParser::ParseColor(parsed_color, color_string, kUseStrictParsing))
+  }
+  if (CSSParser::ParseColor(parsed_color, color_string)) {
     return ColorParseResult::kColor;
+  }
   if (CSSParser::ParseSystemColor(parsed_color, color_string, color_scheme,
                                   color_provider, is_in_web_app_scope)) {
     return ColorParseResult::kColor;

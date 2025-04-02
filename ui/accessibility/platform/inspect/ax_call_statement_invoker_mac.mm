@@ -6,11 +6,14 @@
 
 #import <Accessibility/Accessibility.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "ui/accessibility/platform/ax_platform_node_cocoa.h"
 #include "ui/accessibility/platform/ax_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_element_wrapper_mac.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace ui {
 
@@ -95,7 +98,7 @@ AXOptionalNSObject AXCallStatementInvoker::Invoke(
   // a result accessible tree. The tree indexer keeps the mappings between
   // accessible elements and their DOM ids and line numbers.
   if (!target)
-    target = indexer_->NodeBy(property_node.name_or_value);
+    target = indexer_->NodeBy(property_node.name_or_value).Get();
 
   // Case 3: no target either indicates an error or default target (if
   // applicable) or the property node is an object or a scalar value (for
@@ -492,7 +495,7 @@ AXOptionalNSObject AXCallStatementInvoker::ParamFrom(
   if (attribute == "AXIndexForChildUIElement" ||
       attribute == "AXTextMarkerRangeForUIElement") {  // UIElement
     return AXOptionalNSObject::NotNullOrError(
-        PropertyNodeToUIElement(argument));
+        PropertyNodeToUIElement(argument).Get());
   }
   if (attribute == "AXIndexForTextMarker" ||
       attribute == "AXNextWordEndTextMarkerForTextMarker" ||
@@ -640,10 +643,11 @@ gfx::NativeViewAccessible AXCallStatementInvoker::PropertyNodeToUIElement(
   gfx::NativeViewAccessible uielement =
       indexer_->NodeBy(uielement_node.name_or_value);
   if (!uielement) {
-    if (log_failure)
+    if (log_failure) {
       UIELEMENT_FAIL(uielement_node,
                      "no corresponding UIElement was found in the tree")
-    return nil;
+    }
+    return gfx::NativeViewAccessible();
   }
   return uielement;
 }
@@ -652,28 +656,34 @@ id AXCallStatementInvoker::DictionaryNodeToTextMarker(
     const AXPropertyNode& dictnode,
     bool log_failure) const {
   if (!dictnode.IsDict()) {
-    if (log_failure)
+    if (log_failure) {
       TEXTMARKER_FAIL(dictnode, "dictionary is expected")
+    }
     return nil;
   }
   if (dictnode.arguments.size() != 3) {
-    if (log_failure)
+    if (log_failure) {
       TEXTMARKER_FAIL(dictnode, "wrong number of dictionary elements")
+    }
     return nil;
   }
 
-  AXPlatformNodeCocoa* anchor_cocoa = static_cast<AXPlatformNodeCocoa*>(
-      indexer_->NodeBy(dictnode.arguments[0].name_or_value));
+  gfx::NativeViewAccessible anchor =
+      indexer_->NodeBy(dictnode.arguments[0].name_or_value);
+  AXPlatformNodeCocoa* anchor_cocoa =
+      base::apple::ObjCCast<AXPlatformNodeCocoa>(anchor.Get());
   if (!anchor_cocoa) {
-    if (log_failure)
+    if (log_failure) {
       TEXTMARKER_FAIL(dictnode, "1st argument: wrong anchor")
+    }
     return nil;
   }
 
   std::optional<int> offset = dictnode.arguments[1].AsInt();
   if (!offset) {
-    if (log_failure)
+    if (log_failure) {
       TEXTMARKER_FAIL(dictnode, "2nd argument: wrong offset")
+    }
     return nil;
   }
 
@@ -686,8 +696,9 @@ id AXCallStatementInvoker::DictionaryNodeToTextMarker(
   } else if (affinity_str == "up") {
     affinity = ax::mojom::TextAffinity::kUpstream;
   } else {
-    if (log_failure)
+    if (log_failure) {
       TEXTMARKER_FAIL(dictnode, "3rd argument: wrong affinity")
+    }
     return nil;
   }
 

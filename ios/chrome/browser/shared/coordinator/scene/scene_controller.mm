@@ -1943,9 +1943,10 @@ using UserFeedbackDataCallback =
       break;
     case AuthenticationOperation::kForcedSigninAndSync:
       self.signinCoordinator = [SigninCoordinator
-          forcedSigninCoordinatorWithBaseViewController:baseViewController
-                                                browser:mainBrowser
-                                            accessPoint:command.accessPoint];
+          fullscreenSigninCoordinatorWithBaseViewController:baseViewController
+                                                    browser:mainBrowser
+                                                accessPoint:command
+                                                                .accessPoint];
       break;
     case AuthenticationOperation::kInstantSignin:
       self.signinCoordinator = [SigninCoordinator
@@ -1955,19 +1956,21 @@ using UserFeedbackDataCallback =
                                              accessPoint:command.accessPoint
                                              promoAction:command.promoAction];
       break;
-    case AuthenticationOperation::kSheetSigninAndHistorySync:
+    case AuthenticationOperation::kSheetSigninAndHistorySync: {
       self.signinCoordinator = [SigninCoordinator
-          sheetSigninAndHistorySyncCoordinatorWithBaseViewController:
+          signinAndHistorySyncCoordinatorWithBaseViewController:
               baseViewController
-                                                             browser:mainBrowser
-                                                         accessPoint:
-                                                             command.accessPoint
-                                                         promoAction:
-                                                             command.promoAction
-                                                 optionalHistorySync:
-                                                     command
-                                                         .optionalHistorySync];
+                                                        browser:mainBrowser
+                                                    accessPoint:command
+                                                                    .accessPoint
+                                                    promoAction:command
+                                                                    .promoAction
+                                            optionalHistorySync:
+                                                command.optionalHistorySync
+                                                fullscreenPromo:
+                                                    command.fullScreenPromo];
       break;
+    }
     case AuthenticationOperation::kHistorySync:
       self.signinCoordinator = [SigninCoordinator
           historySyncCoordinatorWithBaseViewController:baseViewController

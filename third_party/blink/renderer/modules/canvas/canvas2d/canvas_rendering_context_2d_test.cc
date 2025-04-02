@@ -524,11 +524,8 @@ bool SetUpFullAccelerationAndCcLayer(HTMLCanvasElement& canvas_element) {
   // Install a CanvasResourceProvider that is accelerated and supports direct
   // compositing (the latter is necessary for GetOrCreateCcLayerIfNeeded() to
   // succeed).
-  gfx::Size size = canvas_element.Size();
-  auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      size, RasterModeHint::kPreferGPU, &canvas_element,
-      CompositingMode::kSupportsDirectCompositing);
-  canvas_element.SetResourceProviderForTesting(std::move(provider), size);
+  CHECK(canvas_element.GetOrCreateCanvasResourceProvider(
+      RasterModeHint::kPreferGPU));
 
   // Put the host in GPU compositing mode.
   canvas_element.SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
@@ -2492,7 +2489,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ContextLossAbortsHibernation) {
         CanvasHibernationHandler::HibernationEvent::
             kHibernationAbortedDueGpuContextLoss,
         1);
-    EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
+    EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
     EXPECT_FALSE(handler.IsHibernating());
     EXPECT_FALSE(CanvasElement().IsResourceValid());
   }

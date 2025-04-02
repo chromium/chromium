@@ -33,6 +33,7 @@ import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.MeasureSpec;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageButton;
@@ -68,6 +69,8 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
+import org.chromium.chrome.browser.customtabs.CustomButtonParamsImpl;
 import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
@@ -98,6 +101,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -137,6 +141,7 @@ public class CustomTabToolbarUnitTest {
     @Mock private CustomTabFeatureOverridesManager mFeatureOverridesManager;
     @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
     @Mock private CustomTabMinimizeDelegate mMinimizeDelegate;
+    @Mock private Callback<CustomButtonParams> mCustomButtonCallback;
 
     private Activity mActivity;
     private CustomTabToolbar mToolbar;
@@ -174,6 +179,9 @@ public class CustomTabToolbarUnitTest {
         when(mFeatureOverridesManager.isFeatureEnabled(anyString())).thenReturn(null);
 
         mActivity = Robolectric.buildActivity(TestActivity.class).get();
+        var shareButtonParams = CustomButtonParamsImpl.createShareButton(mActivity, Color.WHITE);
+        var actionButtons = List.of(shareButtonParams);
+        when(mIntentDataProvider.getCustomButtonsOnToolbar()).thenReturn(actionButtons);
         int toolbarLayout =
                 ChromeFeatureList.sCctToolbarRefactor.isEnabled()
                         ? R.layout.new_custom_tab_toolbar
@@ -203,7 +211,8 @@ public class CustomTabToolbarUnitTest {
                     mIntentDataProvider,
                     mFeatureOverridesManager,
                     mMinimizeDelegate,
-                    null);
+                    null,
+                    mCustomButtonCallback);
         }
         mToolbar.setFeatureOverridesManager(mFeatureOverridesManager);
 
@@ -646,9 +655,11 @@ public class CustomTabToolbarUnitTest {
         View closeButton = mToolbar.findViewById(R.id.close_button);
         View menuButton = mToolbar.findViewById(R.id.menu_button_wrapper);
         View minimizeButton = mToolbar.findViewById(R.id.custom_tabs_minimize_button);
+        ViewGroup actionButtons = mToolbar.findViewById(R.id.action_buttons);
         assertNotNull(closeButton);
         assertNotNull(menuButton);
         assertNull(minimizeButton);
+        assertEquals(0, actionButtons.getChildCount());
     }
 
     @Test
@@ -658,9 +669,11 @@ public class CustomTabToolbarUnitTest {
         View closeButton = mToolbar.findViewById(R.id.close_button);
         View menuButton = mToolbar.findViewById(R.id.menu_button_wrapper);
         View minimizeButton = mToolbar.findViewById(R.id.custom_tabs_minimize_button);
+        ViewGroup actionButtons = mToolbar.findViewById(R.id.action_buttons);
         assertNotNull(closeButton);
         assertNotNull(menuButton);
         assertNotNull(minimizeButton);
+        assertEquals(1, actionButtons.getChildCount());
     }
 
     private void assertUrlAndTitleVisible(boolean titleVisible, boolean urlVisible) {

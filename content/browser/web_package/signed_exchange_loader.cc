@@ -18,6 +18,7 @@
 #include "content/browser/web_package/signed_exchange_handler.h"
 #include "content/browser/web_package/signed_exchange_reporter.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_features.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -25,7 +26,9 @@
 #include "net/http/http_util.h"
 #include "net/url_request/redirect_util.h"
 #include "services/network/public/cpp/constants.h"
+#include "services/network/public/cpp/content_decoding_interceptor.h"
 #include "services/network/public/cpp/data_pipe_to_source_stream.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/loading_params.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
@@ -85,6 +88,16 @@ SignedExchangeLoader::SignedExchangeLoader(
       should_redirect_on_failure_(should_redirect_on_failure) {
   DCHECK(outer_request_.url.is_valid());
   DCHECK(outer_response_body);
+  if (!outer_response_head_->client_side_content_decoding_types.empty()) {
+    CHECK(base::FeatureList::IsEnabled(
+        network::features::kRendererSideContentDecoding));
+    // If content decoding is required, perform the decoding in the network
+    // service.
+    network::ContentDecodingInterceptor::InterceptOnNetworkService(
+        *GetNetworkService(),
+        outer_response_head_->client_side_content_decoding_types, endpoints,
+        outer_response_body);
+  }
 
   if (keep_entry_for_prefetch_cache) {
     cache_entry_ = std::make_unique<PrefetchedSignedExchangeCacheEntry>();

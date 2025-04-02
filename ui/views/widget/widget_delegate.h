@@ -172,6 +172,9 @@ class VIEWS_EXPORT WidgetDelegate {
   virtual DialogDelegate* AsDialogDelegate();
 
   // Returns true if the window can be resized.
+  // This has side-effect on Windows. A resizable Windows cannot be translucent,
+  // i.e. Widget::InitParam::WindowOpacity must be kInferred or kOpaque,
+  // otherwise it draws nothing.
   virtual bool CanResize() const;
 
   // Returns true if the window can go into fullscreen.

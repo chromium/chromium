@@ -41,6 +41,21 @@
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
 }
 
++ (void)dismissDefaultBrowserAndRemainingScreens {
+  [[self class] dismissDefaultBrowser];
+
+  id<GREYMatcher> bestFeaturesButtonMatcher = grey_allOf(
+      grey_ancestor(grey_accessibilityID(
+          first_run::kBestFeaturesMainScreenAccessibilityIdentifier)),
+      grey_accessibilityTrait(UIAccessibilityTraitStaticText),
+      grey_accessibilityLabel(
+          l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_START_BROWSING_BUTTON)),
+      nil);
+
+  [[[EarlGrey selectElementWithMatcher:bestFeaturesButtonMatcher]
+      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+}
+
 #pragma mark - XCTestCase
 
 - (void)setUp {
@@ -81,6 +96,9 @@
                                    test_switches::kAddFakeIdentitiesAtStartup);
   config.additional_args.push_back("-FirstRunForceEnabled");
   config.additional_args.push_back("true");
+  config.additional_args.push_back(
+      "--enable-features=BestFeaturesScreenInFirstRunExperience");
+  config.additional_args.push_back("--BestFeaturesScreenInFirstRunParam=1");
   // Relaunches the app at each test to rewind the startup state.
   config.relaunch_policy = ForceRelaunchByKilling;
 

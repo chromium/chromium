@@ -585,9 +585,8 @@ bool ImageReaderGLOwner::OnMemoryDump(
   int i = 0;
   base::AutoLock auto_lock(lock_);
   for (const auto& image : image_refs_) {
-    auto format_runtime = absl::ParsedFormat<'d', 'd'>::New(
-        base::StrCat({kMemoryDumpPrefix, "/image_%d"}));
-    std::string dump_name = absl::StrFormat(*format_runtime, tracing_id(), i++);
+    std::string dump_name = base::StringPrintf(
+        "gpu/media_texture_owner_0x%x/image_%d", tracing_id(), i++);
 
     // If we fail to get AImage size for any reason, we still report the image
     // as a empty size, so it can be diagnosed in necessary.

@@ -205,6 +205,66 @@ LocalFilesMigrationManager::~LocalFilesMigrationManager() = default;
 void LocalFilesMigrationManager::Initialize() {
   Profile* profile = Profile::FromBrowserContext(context_);
   PrefService* pref_service = profile->GetPrefs();
+
+  if (pref_service->GetInitializationStatus() ==
+      PrefService::INITIALIZATION_STATUS_WAITING) {
+    pref_service->AddPrefInitObserver(
+        base::BindOnce(&LocalFilesMigrationManager::OnPrefsInitialized,
+                       weak_factory_.GetWeakPtr()));
+  } else {
+    InitializeFromPrefs();
+  }
+}
+
+void LocalFilesMigrationManager::Shutdown() {
+  weak_factory_.InvalidateWeakPtrs();
+}
+
+void LocalFilesMigrationManager::AddObserver(Observer* observer) {
+  CHECK(observer);
+  observers_.AddObserver(observer);
+
+  if (state_ == State::kCompleted) {
+    observer->OnMigrationSucceeded();
+  }
+}
+
+void LocalFilesMigrationManager::RemoveObserver(Observer* observer) {
+  CHECK(observer);
+  observers_.RemoveObserver(observer);
+}
+
+void LocalFilesMigrationManager::SetNotificationManagerForTesting(
+    MigrationNotificationManager* notification_manager) {
+  CHECK_IS_TEST();
+  notification_manager_ = notification_manager;
+}
+
+void LocalFilesMigrationManager::SetCoordinatorForTesting(
+    std::unique_ptr<MigrationCoordinator> coordinator) {
+  CHECK_IS_TEST();
+  coordinator_ = std::move(coordinator);
+}
+
+void LocalFilesMigrationManager::SetCleanupHandlerForTesting(
+    base::WeakPtr<chromeos::FilesCleanupHandler> cleanup_handler) {
+  CHECK_IS_TEST();
+  cleanup_handler_for_testing_ = cleanup_handler;
+}
+
+void LocalFilesMigrationManager::OnPrefsInitialized(bool success) {
+  if (!success) {
+    LOG(ERROR) << "Initializing preferences failed. Migration/deletion will be "
+                  "retried in the next session.";
+    return;
+  }
+
+  InitializeFromPrefs();
+}
+
+void LocalFilesMigrationManager::InitializeFromPrefs() {
+  Profile* profile = Profile::FromBrowserContext(context_);
+  PrefService* pref_service = profile->GetPrefs();
   state_ = static_cast<State>(
       pref_service->GetInteger(prefs::kSkyVaultMigrationState));
 
@@ -248,7 +308,7 @@ void LocalFilesMigrationManager::Initialize() {
   SkyVaultMigrationEnabledHistogram(migration_destination_, true);
 
   if (IsMigrationMisconfigured(profile, migration_destination_)) {
-    DCHECK(IsCloudDestination(migration_destination_));
+    CHECK(IsCloudDestination(migration_destination_));
     LOG(WARNING) << "Local files migration policy is set to use "
                  << (migration_destination_ ==
                              MigrationDestination::kGoogleDrive
@@ -270,46 +330,6 @@ void LocalFilesMigrationManager::Initialize() {
       FROM_HERE, {base::MayBlock()}, base::BindOnce(&IsMyFilesEmpty, profile),
       base::BindOnce(&LocalFilesMigrationManager::OnMyFilesChecked,
                      weak_factory_.GetWeakPtr()));
-}
-
-void LocalFilesMigrationManager::Shutdown() {
-  weak_factory_.InvalidateWeakPtrs();
-}
-
-void LocalFilesMigrationManager::AddObserver(Observer* observer) {
-  CHECK(observer);
-  observers_.AddObserver(observer);
-
-  if (state_ == State::kCompleted) {
-    observer->OnMigrationSucceeded();
-  }
-}
-
-void LocalFilesMigrationManager::RemoveObserver(Observer* observer) {
-  CHECK(observer);
-  observers_.RemoveObserver(observer);
-}
-
-base::Time LocalFilesMigrationManager::GetMigrationStartTime() const {
-  return migration_start_time_;
-}
-
-void LocalFilesMigrationManager::SetNotificationManagerForTesting(
-    MigrationNotificationManager* notification_manager) {
-  CHECK_IS_TEST();
-  notification_manager_ = notification_manager;
-}
-
-void LocalFilesMigrationManager::SetCoordinatorForTesting(
-    std::unique_ptr<MigrationCoordinator> coordinator) {
-  CHECK_IS_TEST();
-  coordinator_ = std::move(coordinator);
-}
-
-void LocalFilesMigrationManager::SetCleanupHandlerForTesting(
-    base::WeakPtr<chromeos::FilesCleanupHandler> cleanup_handler) {
-  CHECK_IS_TEST();
-  cleanup_handler_for_testing_ = cleanup_handler;
 }
 
 void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
@@ -449,22 +469,46 @@ void LocalFilesMigrationManager::InformUser() {
   CHECK(!local_user_files_allowed_);
   CHECK(IsMigrationEnabled(migration_destination_));
 
-  // TODO(401176561): Keep migration start time over sessions.
-  migration_start_time_ = base::Time::Now() + kTotalMigrationTimeout;
+  const base::Time now = base::Time::Now();
+  base::Time scheduled_start_time = now + kTotalMigrationTimeout;
+  if (base::FeatureList::IsEnabled(features::kSkyVaultV3)) {
+    PrefService* pref_service =
+        Profile::FromBrowserContext(context_)->GetPrefs();
+    scheduled_start_time =
+        pref_service->GetTime(prefs::kSkyVaultMigrationScheduledStartTime);
+    if (scheduled_start_time.is_null()) {
+      scheduled_start_time = now + kTotalMigrationTimeout;
+      pref_service->SetTime(prefs::kSkyVaultMigrationScheduledStartTime,
+                            scheduled_start_time);
+    }
+  }
+
+  const base::TimeDelta remaining_time = scheduled_start_time - now;
+  if (remaining_time.is_negative()) {
+    SkyVaultMigrationScheduledTimeInPastInformUser(migration_destination_,
+                                                   true);
+    OnTimeoutExpired();
+    return;
+  }
+  if (remaining_time <= kFinalMigrationTimeout) {
+    ScheduleMigrationAndInformUser(scheduled_start_time);
+    return;
+  }
 
   notification_manager_->ShowMigrationInfoDialog(
-      migration_destination_, migration_start_time_,
+      migration_destination_, scheduled_start_time,
       base::BindOnce(&LocalFilesMigrationManager::SkipMigrationDelay,
                      weak_factory_.GetWeakPtr()));
   // Schedule another dialog closer to the migration.
   scheduling_timer_->Start(
-      FROM_HERE, migration_start_time_ - kFinalMigrationTimeout,
+      FROM_HERE, scheduled_start_time - kFinalMigrationTimeout,
       base::BindOnce(
           &LocalFilesMigrationManager::ScheduleMigrationAndInformUser,
-          weak_factory_.GetWeakPtr()));
+          weak_factory_.GetWeakPtr(), scheduled_start_time));
 }
 
-void LocalFilesMigrationManager::ScheduleMigrationAndInformUser() {
+void LocalFilesMigrationManager::ScheduleMigrationAndInformUser(
+    const base::Time scheduled_start_time) {
   if (local_user_files_allowed_ ||
       !IsMigrationEnabled(migration_destination_)) {
     return;
@@ -477,13 +521,24 @@ void LocalFilesMigrationManager::ScheduleMigrationAndInformUser() {
     return;
   }
 
+  const base::TimeDelta remaining_time =
+      scheduled_start_time - base::Time::Now();
+  if (remaining_time.is_negative()) {
+    LOG(ERROR) << "Scheduled migration time already passed in "
+                  "ScheduleMigrationAndInformUser(), starting immediately.";
+    SkyVaultMigrationScheduledTimeInPastScheduleMigration(
+        migration_destination_, true);
+    OnTimeoutExpired();
+    return;
+  }
+
   notification_manager_->ShowMigrationInfoDialog(
-      migration_destination_, migration_start_time_,
+      migration_destination_, scheduled_start_time,
       base::BindOnce(&LocalFilesMigrationManager::SkipMigrationDelay,
                      weak_factory_.GetWeakPtr()));
   // Also schedule migration to automatically start after the timeout.
   scheduling_timer_->Start(
-      FROM_HERE, migration_start_time_,
+      FROM_HERE, scheduled_start_time,
       base::BindOnce(&LocalFilesMigrationManager::OnTimeoutExpired,
                      weak_factory_.GetWeakPtr()));
 }
@@ -775,6 +830,8 @@ void LocalFilesMigrationManager::ResetMigrationPrefs() {
   pref_service->SetInteger(prefs::kSkyVaultMigrationRetryCount,
                            current_retry_count_);
   pref_service->SetTime(prefs::kSkyVaultMigrationStartTime, base::Time());
+  pref_service->SetTime(prefs::kSkyVaultMigrationScheduledStartTime,
+                        base::Time());
 }
 
 void LocalFilesMigrationManager::NotifySuccess() {

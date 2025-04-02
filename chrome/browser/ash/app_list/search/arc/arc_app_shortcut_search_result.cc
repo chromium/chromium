@@ -29,6 +29,7 @@ namespace app_list {
 namespace {
 
 using ::ash::string_matching::FuzzyTokenizedStringMatch;
+using ::ash::string_matching::TokenizedString;
 
 constexpr char kAppShortcutSearchPrefix[] = "appshortcutsearch://";
 

@@ -72,7 +72,6 @@ constexpr auto kDelayForGetUnmaskDetails = base::Minutes(3);
 // Suffix for server IDs in the cache indicating that a card is a virtual card.
 constexpr char kVirtualCardIdentifier[] = "_vcn";
 
-#if !BUILDFLAG(IS_IOS)
 bool IsEligibleForCardInfoRetrievalAuthentication(
     const CreditCard& card,
     const std::vector<CardUnmaskChallengeOption>& challenge_options) {
@@ -94,7 +93,6 @@ bool IsEligibleForCardInfoRetrievalAuthentication(
 
   return true;
 }
-#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
 
@@ -518,11 +516,6 @@ void CreditCardAccessManager::StartAuthenticationFlowForVirtualCard(
 
 void CreditCardAccessManager::StartAuthenticationFlowForMaskedServerCard(
     bool fido_auth_enabled) {
-  UnmaskAuthFlowType flow_type;
-#if BUILDFLAG(IS_IOS)
-  // On iOS only the CVC auth is available for masked server card.
-  flow_type = UnmaskAuthFlowType::kCvc;
-#else
   // We check if the card is enrolled in runtime retrieval and only SMS OTP
   // challenge options are present, then render the challenge option selection
   // dialog. Currently the selection dialog box is only supported for SMS OTP
@@ -534,6 +527,11 @@ void CreditCardAccessManager::StartAuthenticationFlowForMaskedServerCard(
     return;
   }
 
+  UnmaskAuthFlowType flow_type;
+#if BUILDFLAG(IS_IOS)
+  // On iOS only the CVC auth is available for masked server card.
+  flow_type = UnmaskAuthFlowType::kCvc;
+#else
   // If not enrolled in runtime retrieval then currently only FIDO and CVC auth
   // are available for masked server card.
   if (!fido_auth_enabled) {

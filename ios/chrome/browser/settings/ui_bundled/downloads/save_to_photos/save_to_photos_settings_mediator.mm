@@ -20,17 +20,14 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 
 @interface SaveToPhotosSettingsMediator () <
-    ChromeAccountManagerServiceObserver,
     IdentityManagerObserverBridgeDelegate,
     PrefObserverDelegate>
 
 @end
 
 @implementation SaveToPhotosSettingsMediator {
-  // Account manager service with observer.
+  // Account manager service.
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
-  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountManagerServiceObserver;
 
   // PrefService with registrar and observer.
   raw_ptr<PrefService> _prefService;
@@ -61,9 +58,6 @@
     CHECK(identityManager);
 
     _accountManagerService = accountManagerService;
-    _accountManagerServiceObserver =
-        std::make_unique<ChromeAccountManagerServiceObserverBridge>(
-            self, _accountManagerService);
 
     _prefService = prefService;
     _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
@@ -103,7 +97,6 @@
 #pragma mark - Public
 
 - (void)disconnect {
-  _accountManagerServiceObserver.reset();
   _accountManagerService = nullptr;
   _prefServiceObserver.reset();
   _prefService = nullptr;
@@ -125,24 +118,6 @@
                            !askEveryTime);
 }
 
-#pragma mark - ChromeAccountManagerServiceObserver
-
-- (void)identityListChanged {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
-    // Listening to `onAccountsOnDeviceChanged` instead.
-    return;
-  }
-  [self handleIdentityListChanged];
-}
-
-- (void)identityUpdated:(id<SystemIdentity>)identity {
-  if (IsUseAccountListFromIdentityManagerEnabled()) {
-    // Listening to `onExtendedAccountInfoUpdated` instead.
-    return;
-  }
-  [self handleIdentityUpdated];
-}
-
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
@@ -162,18 +137,10 @@
 }
 
 - (void)onAccountsOnDeviceChanged {
-  if (!IsUseAccountListFromIdentityManagerEnabled()) {
-    // Listening to `identityListChanged` instead.
-    return;
-  }
   [self handleIdentityListChanged];
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  if (!IsUseAccountListFromIdentityManagerEnabled()) {
-    // Listening to `identityUpdated` instead.
-    return;
-  }
   [self handleIdentityUpdated];
 }
 

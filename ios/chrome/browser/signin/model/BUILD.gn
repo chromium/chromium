@@ -230,6 +230,7 @@ source_set("signin_util_internal") {
   visibility = [
     ":signin_util",
     ":signin_util_internal_unit_tests",
+    "//ios/chrome/browser/search_engines/model:unit_tests",
   ]
   deps = [
     "//base",

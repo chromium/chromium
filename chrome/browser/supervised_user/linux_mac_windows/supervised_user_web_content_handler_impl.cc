@@ -43,7 +43,8 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
   GURL target_url = url_formatter.FormatUrl(url);
   base::TimeTicks start_time = base::TimeTicks::Now();
 
-  if (IsLocalApprovalInProgress()) {
+  if (!url.has_host() || IsLocalApprovalInProgress()) {
+    // A host must exist, because this is allow-listed at the end of the flow.
     std::move(callback).Run(false);
     return;
   }

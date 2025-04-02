@@ -42,7 +42,7 @@ ScreenDetailed* FindScreenDetailedByDisplayId(
 
 MediaStreamSet* MediaStreamSet::Create(
     ExecutionContext* context,
-    const MediaStreamDescriptorVector& stream_descriptors,
+    const GCedMediaStreamDescriptorVector& stream_descriptors,
     UserMediaRequestType request_type,
     MediaStreamSetInitializedCallback callback) {
   DCHECK(IsMainThread());
@@ -53,7 +53,7 @@ MediaStreamSet* MediaStreamSet::Create(
 
 MediaStreamSet::MediaStreamSet(
     ExecutionContext* context,
-    const MediaStreamDescriptorVector& stream_descriptors,
+    const GCedMediaStreamDescriptorVector& stream_descriptors,
     UserMediaRequestType request_type,
     MediaStreamSetInitializedCallback callback)
     : ExecutionContextClient(context),
@@ -95,7 +95,7 @@ void MediaStreamSet::Trace(Visitor* visitor) const {
 
 void MediaStreamSet::InitializeGetAllScreensMediaStreams(
     ExecutionContext* context,
-    const MediaStreamDescriptorVector& stream_descriptors) {
+    const GCedMediaStreamDescriptorVector& stream_descriptors) {
   DCHECK(IsMainThread());
 
   LocalDOMWindow* const window = To<LocalDOMWindow>(context);

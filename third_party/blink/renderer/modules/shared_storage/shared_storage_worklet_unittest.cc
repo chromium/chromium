@@ -29,6 +29,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/shared_storage.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -403,6 +404,9 @@ std::unique_ptr<GlobalScopeCreationParams> MakeTestGlobalScopeCreationParams() {
 class SharedStorageWorkletTest : public PageTestBase {
  public:
   SharedStorageWorkletTest() {
+    transactional_batch_update_feature_.InitAndEnableFeature(
+        network::features::kSharedStorageTransactionalBatchUpdate);
+
     mock_code_cache_host_ = std::make_unique<MockMojomCoceCacheHost>();
   }
 
@@ -542,6 +546,8 @@ class SharedStorageWorkletTest : public PageTestBase {
   base::HistogramTester histogram_tester_;
 
   bool worklet_service_initialized_ = false;
+
+  base::test::ScopedFeatureList transactional_batch_update_feature_;
 
  private:
   CloneableMessage CreateSerializedDictOrUndefined(
@@ -2398,10 +2404,10 @@ TEST_F(SharedStorageWorkletTest, BatchUpdate_Success) {
       class TestClass {
         async run() {
           await sharedStorage.batchUpdate([
-            new SharedStorageSetMethod("key0", "value0", {withLock: "lock1"}),
+            new SharedStorageSetMethod("key0", "value0"),
             new SharedStorageAppendMethod("key1", "value1"),
             new SharedStorageDeleteMethod("key2"),
-            new SharedStorageClearMethod({withLock: "lock2"})
+            new SharedStorageClearMethod()
           ], {withLock: "lock3"});
 
           await sharedStorage.batchUpdate([]);
@@ -2427,7 +2433,7 @@ TEST_F(SharedStorageWorkletTest, BatchUpdate_Success) {
 
   EXPECT_EQ(batch_param0.with_lock, "lock3");
   EXPECT_EQ(batch_param0.methods_with_options.size(), 4u);
-  EXPECT_EQ(batch_param0.methods_with_options[0]->with_lock, "lock1");
+  EXPECT_EQ(batch_param0.methods_with_options[0]->with_lock, std::nullopt);
   EXPECT_TRUE(batch_param0.methods_with_options[0]->method->is_set_method());
   auto& set_method =
       batch_param0.methods_with_options[0]->method->get_set_method();
@@ -2445,11 +2451,36 @@ TEST_F(SharedStorageWorkletTest, BatchUpdate_Success) {
   auto& delete_method =
       batch_param0.methods_with_options[2]->method->get_delete_method();
   EXPECT_EQ(delete_method->key, u"key2");
-  EXPECT_EQ(batch_param0.methods_with_options[3]->with_lock, "lock2");
+  EXPECT_EQ(batch_param0.methods_with_options[3]->with_lock, std::nullopt);
   EXPECT_TRUE(batch_param0.methods_with_options[3]->method->is_clear_method());
 
   EXPECT_EQ(batch_param1.with_lock, std::nullopt);
   EXPECT_EQ(batch_param1.methods_with_options.size(), 0u);
+}
+
+TEST_F(SharedStorageWorkletTest, BatchUpdate_HasInnerMethodLock_Failure) {
+  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+      class TestClass {
+        async run() {
+          await sharedStorage.batchUpdate([
+            new SharedStorageSetMethod("key0", "value0", {withLock: "lock1"})
+          ]);
+        }
+      }
+
+      register("test-operation", TestClass);
+  )");
+
+  EXPECT_TRUE(add_module_result.success);
+
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
+
+  EXPECT_FALSE(run_result.success);
+  EXPECT_THAT(run_result.error_message,
+              testing::HasSubstr("The 'withLock' option is not allowed for "
+                                 "methods within batchUpdate()"));
+
+  EXPECT_EQ(test_client_->observed_batch_update_params_.size(), 0u);
 }
 
 TEST_F(SharedStorageWorkletTest, Set_WithLock) {
@@ -3804,6 +3835,75 @@ TEST_F(SharedStorageWorkletTest,
 
   EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 1u);
   EXPECT_EQ(test_client_->observed_console_log_messages_[0], "123abc");
+}
+
+class SharedStorageWorkletLegacyBatchUpdateTest
+    : public SharedStorageWorkletTest {
+ public:
+  SharedStorageWorkletLegacyBatchUpdateTest() {
+    transactional_batch_update_feature_.Reset();
+    transactional_batch_update_feature_.InitAndDisableFeature(
+        network::features::kSharedStorageTransactionalBatchUpdate);
+  }
+};
+
+TEST_F(SharedStorageWorkletLegacyBatchUpdateTest, BatchUpdate_Success) {
+  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+      class TestClass {
+        async run() {
+          await sharedStorage.batchUpdate([
+            new SharedStorageSetMethod("key0", "value0", {withLock: "lock1"}),
+            new SharedStorageAppendMethod("key1", "value1"),
+            new SharedStorageDeleteMethod("key2"),
+            new SharedStorageClearMethod({withLock: "lock2"})
+          ], {withLock: "lock3"});
+
+          await sharedStorage.batchUpdate([]);
+        }
+      }
+
+      register("test-operation", TestClass);
+  )");
+
+  EXPECT_TRUE(add_module_result.success);
+
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
+
+  EXPECT_TRUE(run_result.success);
+  EXPECT_TRUE(run_result.error_message.empty());
+
+  EXPECT_EQ(test_client_->observed_batch_update_params_.size(), 2u);
+
+  const BatchUpdateParameter& batch_param0 =
+      test_client_->observed_batch_update_params_[0];
+  const BatchUpdateParameter& batch_param1 =
+      test_client_->observed_batch_update_params_[1];
+
+  EXPECT_EQ(batch_param0.with_lock, "lock3");
+  EXPECT_EQ(batch_param0.methods_with_options.size(), 4u);
+  EXPECT_EQ(batch_param0.methods_with_options[0]->with_lock, "lock1");
+  EXPECT_TRUE(batch_param0.methods_with_options[0]->method->is_set_method());
+  auto& set_method =
+      batch_param0.methods_with_options[0]->method->get_set_method();
+  EXPECT_EQ(set_method->key, u"key0");
+  EXPECT_EQ(set_method->value, u"value0");
+  EXPECT_EQ(set_method->ignore_if_present, false);
+  EXPECT_EQ(batch_param0.methods_with_options[1]->with_lock, std::nullopt);
+  EXPECT_TRUE(batch_param0.methods_with_options[1]->method->is_append_method());
+  auto& append_method =
+      batch_param0.methods_with_options[1]->method->get_append_method();
+  EXPECT_EQ(append_method->key, u"key1");
+  EXPECT_EQ(append_method->value, u"value1");
+  EXPECT_EQ(batch_param0.methods_with_options[2]->with_lock, std::nullopt);
+  EXPECT_TRUE(batch_param0.methods_with_options[2]->method->is_delete_method());
+  auto& delete_method =
+      batch_param0.methods_with_options[2]->method->get_delete_method();
+  EXPECT_EQ(delete_method->key, u"key2");
+  EXPECT_EQ(batch_param0.methods_with_options[3]->with_lock, "lock2");
+  EXPECT_TRUE(batch_param0.methods_with_options[3]->method->is_clear_method());
+
+  EXPECT_EQ(batch_param1.with_lock, std::nullopt);
+  EXPECT_EQ(batch_param1.methods_with_options.size(), 0u);
 }
 
 class SharedStorageWebLocksDisabledTest : public SharedStorageWorkletTest {

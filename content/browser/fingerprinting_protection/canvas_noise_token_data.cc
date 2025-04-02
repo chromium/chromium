@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/supports_user_data.h"
+#include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "content/public/browser/browser_context.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -22,7 +23,8 @@ const void* const kBrowserContextCanvasNoiseTokenKey =
 
 // static
 uint64_t CanvasNoiseTokenData::GetToken(BrowserContext* context) {
-  CHECK(base::FeatureList::IsEnabled(blink::features::kCanvasInterventions));
+  CHECK(base::FeatureList::IsEnabled(
+      fingerprinting_protection_interventions::features::kCanvasNoise));
 
   CanvasNoiseTokenData* data = static_cast<CanvasNoiseTokenData*>(
       context->GetUserData(&kBrowserContextCanvasNoiseTokenKey));
@@ -34,7 +36,8 @@ uint64_t CanvasNoiseTokenData::GetToken(BrowserContext* context) {
 
 // static
 uint64_t CanvasNoiseTokenData::SetNewToken(BrowserContext* context) {
-  CHECK(base::FeatureList::IsEnabled(blink::features::kCanvasInterventions));
+  CHECK(base::FeatureList::IsEnabled(
+      fingerprinting_protection_interventions::features::kCanvasNoise));
 
   auto new_data = std::make_unique<CanvasNoiseTokenData>();
   uint64_t token = new_data->session_token_;

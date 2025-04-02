@@ -18,6 +18,7 @@
 #import "components/omnibox/browser/omnibox_event_global_tracker.h"
 #import "components/prefs/pref_service.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
+#import "ios/chrome/browser/bubble/model/utils.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_util.h"
@@ -26,7 +27,6 @@
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view_delegate.h"
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/toolbar_swipe_gesture_in_product_help_view.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/iph_for_new_chrome_user/model/utils.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
@@ -528,8 +528,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
       feature_engagement::kIPHiOSPullToRefreshFeature;
   BOOL userEligibleForPullToRefreshIPH =
       deviceSwitcherResultDispatcher &&
-      iph_for_new_chrome_user::IsUserNewSafariSwitcher(
-          deviceSwitcherResultDispatcher) &&
+      IsUserNewSafariSwitcher(deviceSwitcherResultDispatcher) &&
       _engagementTracker->WouldTriggerHelpUI(pullToRefreshFeature);
   if (!userEligibleForPullToRefreshIPH) {
     return;

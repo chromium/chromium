@@ -24,10 +24,12 @@ ColorVariant::ColorVariant(ColorId color_id) : color_variant_(color_id) {}
 
 ColorVariant::~ColorVariant() = default;
 
-std::optional<ColorId> ColorVariant::GetColorId() const {
-  return std::holds_alternative<ColorId>(color_variant_)
-             ? std::make_optional(std::get<ColorId>(color_variant_))
-             : std::nullopt;
+bool ColorVariant::IsSemantic() const {
+  return !!GetColorId();
+}
+
+bool ColorVariant::IsPhysical() const {
+  return !!GetSkColor();
 }
 
 std::optional<SkColor> ColorVariant::GetSkColor() const {
@@ -38,12 +40,11 @@ std::optional<SkColor> ColorVariant::GetSkColor() const {
 
 SkColor ColorVariant::ConvertToSkColor(
     const ColorProvider* color_provider) const {
-  CHECK(color_provider);
-
   if (auto color = GetSkColor()) {
     return color.value();
   }
 
+  CHECK(color_provider);
   return color_provider->GetColor(GetColorId().value());
 }
 
@@ -53,6 +54,12 @@ std::string ColorVariant::ToString() const {
   }
 
   return ui::ColorIdName(*GetColorId());
+}
+
+std::optional<ColorId> ColorVariant::GetColorId() const {
+  return std::holds_alternative<ColorId>(color_variant_)
+             ? std::make_optional(std::get<ColorId>(color_variant_))
+             : std::nullopt;
 }
 
 }  // namespace ui

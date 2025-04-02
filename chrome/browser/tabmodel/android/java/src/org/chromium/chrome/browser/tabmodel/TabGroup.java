@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.ArrayList;
@@ -21,6 +20,7 @@ import java.util.List;
  * <p>Note that this class is scoped to the "tab_groups" package. It is used internally by {@link
  * TabGroupModelFilter} and any lookups for tab groups should go through that filter.
  */
+@NullMarked
 class TabGroup {
     static final int INVALID_ROOT_ID = -1;
     static final int INVALID_POSITION_IN_GROUP = -1;
@@ -40,7 +40,7 @@ class TabGroup {
      * @param tabList The list of all tabs in the model containing the tab with tabId. This is used
      *     to sort the tab group to match the order in the tab list.
      */
-    void addTab(int tabId, @NonNull TabList tabList) {
+    void addTab(int tabId, TabList tabList) {
         assert tabId != Tab.INVALID_TAB_ID;
 
         mTabIds.add(tabId);
@@ -144,9 +144,9 @@ class TabGroup {
         return ids.get(position - 1);
     }
 
-    private void sortByTabListOrder(@NonNull TabList tabList) {
+    private void sortByTabListOrder(TabList tabList) {
         for (int i = 0; i < tabList.getCount(); i++) {
-            moveToEndInGroup(tabList.getTabAt(i).getId());
+            moveToEndInGroup(tabList.getTabAtChecked(i).getId());
         }
     }
 }

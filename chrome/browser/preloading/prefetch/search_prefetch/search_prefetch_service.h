@@ -279,7 +279,7 @@ class SearchPrefetchService : public KeyedService,
   std::map<GURL, std::unique_ptr<base::OneShotTimer>> prefetch_expiry_timers_;
 
   // The time of the last prefetch network/server error.
-  base::TimeTicks last_error_time_ticks_;
+  base::TimeTicks last_error_time_ticks_ = base::TimeTicks::Min();
 
   // The current state of the DSE.
   std::optional<TemplateURLData> template_url_service_data_;

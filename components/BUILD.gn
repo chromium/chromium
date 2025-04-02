@@ -450,6 +450,7 @@ test("components_unittests") {
       "//components/contextual_search/core/browser:unit_tests",
       "//components/continuous_search/browser:unit_tests",
       "//components/continuous_search/common:unit_tests",
+      "//components/credential_management:unit_tests",
       "//components/custom_handlers:unit_tests",
       "//components/devtools/simple_devtools_protocol_client:unit_tests",
       "//components/discardable_memory/client:unit_tests",

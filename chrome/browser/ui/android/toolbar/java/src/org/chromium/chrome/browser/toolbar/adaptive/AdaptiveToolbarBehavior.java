@@ -38,6 +38,11 @@ public interface AdaptiveToolbarBehavior {
         return true;
     }
 
+    /** Returns {@code true} if a long click on the button shows a popup menu for settings UI. */
+    default boolean canShowSettings() {
+        return true;
+    }
+
     /**
      * Register embedder-specific toolbar action buttons.
      *

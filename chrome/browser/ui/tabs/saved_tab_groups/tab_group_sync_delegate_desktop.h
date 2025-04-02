@@ -66,6 +66,9 @@ class TabGroupSyncDelegateDesktop : public TabGroupSyncDelegate {
           opened_web_contents_to_uuid,
       const SavedTabGroup& saved_group);
 
+  // The profile used to create this delegate.
+  raw_ptr<Profile> profile_ = nullptr;
+
   // The service used to query and manage SavedTabGroups.
   raw_ptr<TabGroupSyncService> service_ = nullptr;
 

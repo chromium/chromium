@@ -440,6 +440,7 @@
 <translation id="2783161812871838616">בקשת אתר שמותאם למחשב</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{‏הסיסמה נשמרה בחשבון Google שלך, {EMAIL}}one{‏הסיסמאות נשמרו בחשבון Google שלך, {EMAIL}}two{‏הסיסמאות נשמרו בחשבון Google שלך, {EMAIL}}other{‏הסיסמאות נשמרו בחשבון Google שלך, {EMAIL}}}</translation>
 <translation id="2791174088547598693">הוספת סיסמה…</translation>
+<translation id="2793703503584038325">בוחרים סיסמה ולוחצים על סמל השיתוף</translation>
 <translation id="2797302972324086597">קוד מדינה</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{קובץ אחד ({COUNT})}one{‫{COUNT} קבצים}two{‫{COUNT} קבצים}other{‫{COUNT} קבצים}}</translation>
 <translation id="2816489851009559785">תפריט ← הגדרות ← דפדפן ברירת המחדל</translation>
@@ -579,6 +580,7 @@
 <translation id="35083190962747987">‏פתיחה של ${url}</translation>
 <translation id="3511519535430890904">הוספת הגנה על הגלישה</translation>
 <translation id="3517216995152707259">‏מחיקת נתוני הגלישה לא מובילה ליציאה מהחשבון שלך ב-Google. כדי לעשות את זה, <ph name="BEGIN_LINK" />צריך לצאת מהחשבון ב-Chrome<ph name="END_LINK" />.</translation>
+<translation id="3519792890877853853">הכרטיס הזה מציג ביקורות על מוצרים בכרטיסיות הפתוחות</translation>
 <translation id="3519905498307021260">{count,plural, =1{פתיחת הכרטיסייה}one{פתיחת {count} הכרטיסיות}two{פתיחת {count} הכרטיסיות}other{פתיחת {count} הכרטיסיות}}</translation>
 <translation id="3523513363815970085">הסתרת הכרטיס "האתרים המובילים שלך"</translation>
 <translation id="3523789730715594198">‏אפשר לעדכן את ההגדרות, בכל רגע, כדי להפסיק את הסנכרון. Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
@@ -819,6 +821,7 @@
 <translation id="4565377596337484307">הסתרת סיסמה</translation>
 <translation id="4568230126482344545">הסתרת הכרטיסיות האחרונות</translation>
 <translation id="4578835633387306383">הפעלה…</translation>
+<translation id="4580716718466706433">מעבר אל "מנהל הסיסמאות"</translation>
 <translation id="4587589328781138893">אתרים</translation>
 <translation id="4592672037257622855">{count,plural, =1{הדף נוסף לרשימת הקריאה}one{‫{count} דפים נוספו לרשימת הקריאה}two{‫{count} דפים נוספו לרשימת הקריאה}other{‫{count} דפים נוספו לרשימת הקריאה}}</translation>
 <translation id="459644946100970322">להפעיל את ההתראות על שינוי במחיר?</translation>
@@ -858,6 +861,7 @@
 <translation id="4717844083556844785">דף האינטרנט הנוכחי מוצג במצב פרטי</translation>
 <translation id="4719927025381752090">הצגת הצעות לתרגום</translation>
 <translation id="4720530280568305198">הבחירה שלך נפתחה בכרטיסייה חדשה</translation>
+<translation id="472259426228234149">‏מחיר ‎$100 - $180</translation>
 <translation id="473775607612524610">עדכון</translation>
 <translation id="474209246745757965">אפשר לקנות ולתרגם באמצעות המצלמה</translation>
 <translation id="4742407542027196863">ניהול סיסמאות…</translation>

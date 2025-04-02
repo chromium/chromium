@@ -11,10 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_client.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
-
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #include "components/variations/service/variations_service.h"
-#endif
 
 namespace regional_capabilities {
 
@@ -57,10 +54,7 @@ RegionalCapabilitiesServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   auto regional_capabilities_service_client =
       std::make_unique<RegionalCapabilitiesServiceClient>(
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-          g_browser_process->variations_service()
-#endif
-      );
+          g_browser_process->variations_service());
 
   return std::make_unique<RegionalCapabilitiesService>(
       CHECK_DEREF(profile->GetPrefs()),

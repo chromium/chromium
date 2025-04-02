@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <atomic>
 #include <cstdint>
+#include <functional>
 #include <type_traits>
 #include <utility>
 

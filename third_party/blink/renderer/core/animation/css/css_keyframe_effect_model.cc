@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/animation/animation_input_helpers.h"
 #include "third_party/blink/renderer/core/animation/animation_utils.h"
+#include "third_party/blink/renderer/core/animation/keyframe.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
@@ -72,7 +73,11 @@ void ResolveComputedValues(Element* element, StringKeyframe* keyframe) {
   if (!element->GetComputedStyle())
     return;
 
-  for (const auto& property : keyframe->Properties()) {
+  // Copy the keyframe properties as Keyframe::RemoveCustomCSSProperty and
+  // Keyframe::SetCSSPropertyValue can both modify the properties being
+  // iterated over.
+  auto properties = keyframe->PropertiesVector();
+  for (const auto& property : properties) {
     if (property.IsCSSCustomProperty()) {
       // At present, custom properties are to be excluded from the keyframes.
       // https://github.com/w3c/csswg-drafts/issues/5126.
@@ -140,7 +145,7 @@ CssKeyframeEffectModel::GetComputedKeyframes(Element* element) {
   KeyframeEffectModelBase::KeyframeVector computed_keyframes;
 
   // Lazy resolution of values for missing properties.
-  PropertyHandleSet all_properties = Properties();
+  PropertyHandleSet all_properties = Properties().UniqueProperties();
   PropertyHandleSet from_properties;
   PropertyHandleSet to_properties;
 

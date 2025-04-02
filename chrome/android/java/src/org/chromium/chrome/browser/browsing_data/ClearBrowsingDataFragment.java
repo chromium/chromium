@@ -167,10 +167,10 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
         }
 
         @Override
-        public void onCounterFinished(String result) {
-            mCheckbox.setSummary(result);
+        public void onCounterFinished(String summary) {
+            mCheckbox.setSummary(summary);
             if (mShouldAnnounceCounterResult) {
-                mCheckbox.announceForAccessibility(result);
+                mCheckbox.announceForAccessibility(summary);
             }
         }
 

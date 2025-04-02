@@ -37,23 +37,19 @@ enum class ChromeOSFallbackCountry {
 class RegionalCapabilitiesServiceClient
     : public RegionalCapabilitiesService::Client {
  public:
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   explicit RegionalCapabilitiesServiceClient(
       variations::VariationsService* variations_service);
-#else
-  RegionalCapabilitiesServiceClient();
-#endif
 
   ~RegionalCapabilitiesServiceClient() override;
+
+  country_codes::CountryId GetVariationsLatestCountryId() override;
 
   country_codes::CountryId GetFallbackCountryId() override;
 
   void FetchCountryId(CountryIdCallback country_id_fetched_callback) override;
 
  private:
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-  const country_codes::CountryId variations_country_id_;
-#endif
+  const country_codes::CountryId variations_latest_country_id_;
 };
 
 }  // namespace regional_capabilities

@@ -38,6 +38,7 @@
 #include "net/base/load_flags.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
@@ -277,6 +278,13 @@ void SaveFileManager::SaveURL(
     mojo::Remote<network::mojom::URLLoaderFactory> factory_remote;
     auto* rfh = RenderFrameHostImpl::FromID(render_process_host_id,
                                             render_frame_routing_id);
+
+    // TODO(crbug.com/382291442): Remove feature guarding once launched.
+    if (base::FeatureList::IsEnabled(
+            network::features::kPopulatePermissionsPolicyOnRequest) &&
+        rfh && rfh->GetPermissionsPolicy()) {
+      request->permissions_policy = *rfh->GetPermissionsPolicy();
+    }
 
     // TODO(qinmin): should this match the if statements in
     // DownloadManagerImpl::BeginResourceDownloadOnChecksComplete so that it

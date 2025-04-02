@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/timer/timer.h"
@@ -612,6 +613,12 @@ void FreezingPolicy::OnFrameNodeAdded(const FrameNode* frame_node) {
     return;
   }
 
+  // Clear `per_origin_pmf_after_freezing_kb` since not all pages in the
+  // browsing instance are frozen when a new page is added.
+  CHECK_EQ(frame_node->GetLifecycleState(), FrameNode::LifecycleState::kRunning,
+           base::NotFatalUntil::M140);
+  browsing_instance_state.per_origin_pmf_after_freezing_kb.clear();
+
   // Update frozen state for browsing instances associated with the frame's
   // page.
   UpdateFrozenState(frame_node->GetPageNode());
@@ -798,8 +805,10 @@ void FreezingPolicy::DiscardFrozenPagesWithGrowingMemoryOnMemoryMeasurement(
         browsing_instance_states_without_initial_measurement.insert(id);
       }
     } else {
-      // Should have been cleared by `OnPageLifecycleStateChanged`.
-      CHECK(state.per_origin_pmf_after_freezing_kb.empty());
+      // Should have been cleared by OnPageLifecycleStateChanged() or
+      // OnFrameNodeAdded().
+      CHECK(state.per_origin_pmf_after_freezing_kb.empty(),
+            base::NotFatalUntil::M140);
     }
   }
 

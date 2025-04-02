@@ -2982,6 +2982,7 @@
 <translation id="3045447014237878114">這個網站已自動下載多個檔案</translation>
 <translation id="3046178388369461825">Linux 磁碟空間嚴重不足</translation>
 <translation id="304644035656848980">麥克風預覽畫面</translation>
+<translation id="3046892784550338476">版本：<ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">完整的網頁</translation>
 <translation id="304747341537320566">語音引擎</translation>
 <translation id="3047678109605649715">裝置上沒有<ph name="LANGUAGE" />語音，請釋出裝置空間，然後再試一次。</translation>

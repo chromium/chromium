@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -510,8 +511,7 @@ class SideBySideBrowserViewTest : public InProcessBrowserTest {
 
 // Tests that GetInactiveSplitTabIndex returns correctly with two adjacent
 // splits.
-IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest,
-                       SplitViewInactiveIndexReturnsCorrectly) {
+IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest, SplitViewActiveIndexTest) {
   // Add enough tabs to create two split views.
   chrome::AddTabAt(browser(), GURL(), -1, true);
   chrome::AddTabAt(browser(), GURL(), -1, true);
@@ -520,19 +520,35 @@ IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest,
   browser()->tab_strip_model()->ActivateTabAt(0);
   browser()->tab_strip_model()->AddToNewSplit(
       {1}, tabs::SplitTabLayout::kHorizontal);
+
   browser()->tab_strip_model()->ActivateTabAt(2);
   browser()->tab_strip_model()->AddToNewSplit(
       {3}, tabs::SplitTabLayout::kHorizontal);
-  // Verify GetInactiveSplitTabIndex() correctly returns the inactive tab if
-  // each index is activated.
+
   browser()->tab_strip_model()->ActivateTabAt(0);
-  EXPECT_EQ(browser_view()->GetInactiveSplitTabIndex(), 1);
-  browser()->tab_strip_model()->ActivateTabAt(1);
-  EXPECT_EQ(browser_view()->GetInactiveSplitTabIndex(), 0);
+  EXPECT_TRUE(browser_view()->multi_contents_view_for_testing());
+  EXPECT_EQ(browser_view()
+                ->multi_contents_view_for_testing()
+                ->GetActiveContentsView(),
+            browser_view()
+                ->multi_contents_view_for_testing()
+                ->start_contents_view_for_testing());
+
   browser()->tab_strip_model()->ActivateTabAt(2);
-  EXPECT_EQ(browser_view()->GetInactiveSplitTabIndex(), 3);
+  EXPECT_EQ(browser_view()
+                ->multi_contents_view_for_testing()
+                ->GetActiveContentsView(),
+            browser_view()
+                ->multi_contents_view_for_testing()
+                ->start_contents_view_for_testing());
+
   browser()->tab_strip_model()->ActivateTabAt(3);
-  EXPECT_EQ(browser_view()->GetInactiveSplitTabIndex(), 2);
+  EXPECT_EQ(browser_view()
+                ->multi_contents_view_for_testing()
+                ->GetActiveContentsView(),
+            browser_view()
+                ->multi_contents_view_for_testing()
+                ->end_contents_view_for_testing());
 }
 
 namespace {

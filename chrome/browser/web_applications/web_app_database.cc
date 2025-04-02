@@ -91,12 +91,7 @@ void WebAppDatabase::Write(
 
 // static
 int WebAppDatabase::GetCurrentDatabaseVersion() {
-  if (base::FeatureList::IsEnabled(
-          features::kWebAppDontAddExistingAppsToSync)) {
     return 1;
-  } else {
-    return 0;
-  }
 }
 
 WebAppDatabase::ProtobufState::ProtobufState() = default;
@@ -140,22 +135,9 @@ void WebAppDatabase::MigrateDatabase(ProtobufState& state) {
   bool did_change_metadata = false;
   std::set<webapps::AppId> changed_apps;
 
-  // Downgrade from version 1 to version 0, i.e. remove any UserInstalled
-  // sources. This can be removed when the kWebAppDontAddExistingAppsToSync
-  // feature has shipped by default and is being removed.
-  if (state.metadata.version() == 1 && GetCurrentDatabaseVersion() == 0) {
-    DCHECK(!base::FeatureList::IsEnabled(
-        features::kWebAppDontAddExistingAppsToSync));
-    MigrateInstallSourceRemoveUserInstalled(state, changed_apps);
-    state.metadata.set_version(0);
-    did_change_metadata = true;
-  }
-
   // Upgrade from version 0 to version 1. This migrates the kSync source to
   // a combination of kSync and kUserInstalled.
   if (state.metadata.version() == 0 && GetCurrentDatabaseVersion() >= 1) {
-    DCHECK(base::FeatureList::IsEnabled(
-        features::kWebAppDontAddExistingAppsToSync));
     MigrateInstallSourceAddUserInstalled(state, changed_apps);
     state.metadata.set_version(1);
     did_change_metadata = true;
@@ -193,20 +175,6 @@ void WebAppDatabase::MigrateInstallSourceAddUserInstalled(
       if (!is_syncing_apps) {
         app_proto.mutable_sources()->set_sync(false);
       }
-      changed_apps.insert(app_id);
-    }
-  }
-}
-
-void WebAppDatabase::MigrateInstallSourceRemoveUserInstalled(
-    ProtobufState& state,
-    std::set<webapps::AppId>& changed_apps) {
-  // Migration from version 1 to version 0.
-  CHECK_GT(state.metadata.version(), 0);
-  for (auto& [app_id, app_proto] : state.apps) {
-    if (app_proto.sources().user_installed()) {
-      app_proto.mutable_sources()->set_sync(true);
-      app_proto.mutable_sources()->set_user_installed(false);
       changed_apps.insert(app_id);
     }
   }

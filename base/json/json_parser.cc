@@ -638,16 +638,13 @@ JSONParser::ConsumeStringPart() {
     // quotation mark, reverse solidus, and the control characters (U+0000
     // through U+001F)".
     if (*c == '\n' || *c == '\r') {
-      if (!(options_ &
-            (JSON_ALLOW_NEWLINES_IN_STRINGS | JSON_ALLOW_CONTROL_CHARS))) {
+      if (!(options_ & JSON_ALLOW_NEWLINES_IN_STRINGS)) {
         ReportError(JSON_UNSUPPORTED_ENCODING, -1);
         return {StringResult::kError, {}};  // No need to return consumed data.
       }
     } else if (*c <= 0x1F) {
-      if (!(options_ & JSON_ALLOW_CONTROL_CHARS)) {
-        ReportError(JSON_UNSUPPORTED_ENCODING, -1);
-        return {StringResult::kError, {}};  // No need to return consumed data.
-      }
+      ReportError(JSON_UNSUPPORTED_ENCODING, -1);
+      return {StringResult::kError, {}};  // No need to return consumed data.
     }
 
     // If this character is not an escape sequence, track any line breaks and

@@ -46,6 +46,7 @@ build_webui("build") {
   ]
 
   ts_composite = true
+  ts_tsconfig_base = "//tools/typescript/tsconfig_base_polymer_legacy.json"
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",

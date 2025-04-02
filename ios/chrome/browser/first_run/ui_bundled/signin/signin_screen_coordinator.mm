@@ -36,6 +36,7 @@
 @interface SigninScreenCoordinator () <IdentityChooserCoordinatorDelegate,
                                        SigninScreenViewControllerDelegate,
                                        TOSCommands,
+                                       UIAdaptivePresentationControllerDelegate,
                                        UMACoordinatorDelegate>
 
 // First run screen delegate.
@@ -83,6 +84,7 @@
     _UMAReportingUserChoice = kDefaultMetricsReportingCheckboxValue;
     _accessPoint = accessPoint;
     _promoAction = promoAction;
+    _baseNavigationController.presentationController.delegate = self;
   }
   return self;
 }
@@ -149,6 +151,18 @@
 
 - (void)interruptAnimated:(BOOL)animated {
   [self.addAccountSigninCoordinator interruptAnimated:animated];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  CHECK(!self.mediator.ignoreDismissGesture);
+  // Cancel the sign-in flow.
+  __weak __typeof(self) weakSelf = self;
+  [self.mediator cancelSignInScreenWithCompletion:^{
+    [weakSelf finishPresentingWithSignIn:NO];
+  }];
 }
 
 #pragma mark - Private

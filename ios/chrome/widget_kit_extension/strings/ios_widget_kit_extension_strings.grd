@@ -230,6 +230,9 @@
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_VOICESEARCH_DISPLAY_NAME" desc="Display name for the lockscreen launcher voice search widget" meaning="String that appears as title in the installation window for the lockscreen launcher Voice Search widget. [CHAR_LIMIT=30][iOS only]">
         Voice Search
       </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_NO_ACCOUNT_LABEL" desc="String used as possible value for the change account action on configurable widgets [iOS only]" meaning="String that appears as value in the Edit widget ui, used to let the user know that no account is used on the widget [iOS only]">
+            No account
+      </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_DESCRIPTION" desc="Description for the quick actions widget" meaning="String that appears as description in the installation window for the Quick Actions widget. [CHAR_LIMIT=150][iOS only]">
         Search or navigate in a new tab, in Incognito mode, using your voice, or with a QR code.
       </message>
@@ -279,6 +282,9 @@ passwords
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_TITLE" desc="Title for the search widget" meaning="String that appears in the Search widget. Should be splited in two lines, each line with a max of 15 characteres. [CHAR_LIMIT=25][iOS only]">
         Search or
 type URL
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SELECT_ACCOUNT_LABEL" desc="String used for the change account action on configurable widgets [iOS only]" meaning="String that appears as title in the Edit widget ui, used to let the user chose which account they want to use on the widget [iOS only]">
+            Account
       </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_DESCRIPTION_IPAD" desc="Description for the chrome shortcuts widget" meaning="String that appears as description in the installation window for the Chrome Shortcuts widget for the iPad [iOS only]">
           Start a new search or open your most visited sites from your iPad homepage.

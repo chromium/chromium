@@ -15,6 +15,7 @@
 #include "build/android_buildflags.h"
 #include "chrome/browser/android/webapk/webapk_features.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/contextmenu/context_menu_features.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/notifications/chime/android/features.h"
 #include "chrome/browser/predictors/predictors_features.h"
@@ -131,6 +132,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kGenericSensorExtraClasses,
     &features::kBackForwardCache,
     &features::kBoardingPassDetector,
+    &features::kContextMenuEmptySpace,
     &features::kHttpsFirstBalancedMode,
     &features::kNetworkServiceInProcess,
     &features::kElasticOverscroll,
@@ -201,7 +203,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAppSpecificHistory,
     &kAsyncNotificationManager,
     &kAsyncNotificationManagerForDownload,
-    &kAutomotiveFullscreenToolbarImprovements,
     &kAuxiliarySearchDonation,
     &kAvoidSelectedTabFocusOnLayoutDoneShowing,
     &kBackgroundThreadPool,
@@ -303,6 +304,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kPowerSavingModeBroadcastReceiverInBackground,
     &kPreconnectOnTabCreation,
     &kPriceChangeModule,
+    &kProcessRankPolicyAndroid,
     &kPwaRestoreUi,
     &kPwaRestoreUiAtStartup,
     &kOmahaMinSdkVersionAndroid,
@@ -318,6 +320,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kReadAloudPlayback,
     &kReadAloudTapToSeek,
     &kReadAloudIPHMenuButtonHighlightCCT,
+    &kReaderModeDevEntryPoint,
     &kRecordSuppressionMetrics,
     &kReengagementNotification,
     &kRelatedSearchesAllLanguage,
@@ -336,7 +339,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabGroupEntryPointsAndroid,
     &kTabGroupParityBottomSheetAndroid,
     &kToolbarPhoneCleanup,
-    &kTabResumptionModuleAndroid,
     &kTabStateFlatBuffer,
     &kTabStripContextMenuAndroid,
     &kTabStripGroupCollapseAndroid,
@@ -359,6 +361,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kWebOtpCrossDeviceSimpleString,
     &kWebApkMinShellVersion,
     &kAndroidWebAppLaunchHandler,
+    &kGridTabSwitcherUpdate,
     &notifications::features::kUseChimeAndroidSdk,
     &paint_preview::kPaintPreviewDemo,
     &language::kCctAutoTranslate,
@@ -387,7 +390,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &privacy_sandbox::kPrivacySandboxNoticeActionDebouncingAndroid,
     &privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements,
     &privacy_sandbox::kPrivacySandboxAdsNoticeCCT,
-    &privacy_sandbox::kPrivacySandboxEqualizedPromptButtons,
     &privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi,
     &privacy_sandbox::kPrivacySandboxSettings4,
     &privacy_sandbox::kPrivacySandboxAdTopicsContentParity,
@@ -410,7 +412,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
         kSegmentationPlatformAndroidHomeModuleRanker,
     &segmentation_platform::features::
         kSegmentationPlatformAndroidHomeModuleRankerV2,
-    &send_tab_to_self::kSendTabToSelfV2,
     &sensitive_content::features::kSensitiveContent,
     &sensitive_content::features::kSensitiveContentWhileSwitchingTabs,
     &switches::kForceStartupSigninPromo,
@@ -531,6 +532,10 @@ BASE_FEATURE(kAndroidPdfAssistContent,
              "AndroidPdfAssistContent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAndroidSurfaceColorUpdate,
+             "AndroidSurfaceColorUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAndroidTabDeclutter,
              "AndroidTabDeclutter",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -586,10 +591,6 @@ BASE_FEATURE(kAsyncNotificationManager,
 BASE_FEATURE(kAsyncNotificationManagerForDownload,
              "AsyncNotificationManagerForDownload",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAutomotiveFullscreenToolbarImprovements,
-             "AutomotiveFullscreenToolbarImprovements",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAuxiliarySearchDonation,
              "AuxiliarySearchDonation",
@@ -710,6 +711,10 @@ BASE_FEATURE(kCCTOpenInBrowserButtonIfEnabledByEmbedder,
 
 BASE_FEATURE(kTabClosureMethodRefactor,
              "TabClosureMethodRefactor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGridTabSwitcherUpdate,
+             "GridTabSwitcherUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTPrewarmTab, "CCTPrewarmTab", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -988,6 +993,10 @@ BASE_FEATURE(kPriceChangeModule,
              "PriceChangeModule",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kProcessRankPolicyAndroid,
+             "ProcessRankPolicyAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPwaRestoreUi, "PwaRestoreUi", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPwaRestoreUiAtStartup,
@@ -1050,6 +1059,10 @@ BASE_FEATURE(kReadAloudServerExperiments,
 
 BASE_FEATURE(kReadAloudIPHMenuButtonHighlightCCT,
              "ReadAloudIPHMenuButtonHighlightCCT",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kReaderModeDevEntryPoint,
+             "ReaderModeDevEntryPoint",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRecordSuppressionMetrics,
@@ -1185,10 +1198,6 @@ BASE_FEATURE(kSearchResumptionModuleAndroid,
 BASE_FEATURE(kStartSurfaceReturnTime,
              "StartSurfaceReturnTime",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabResumptionModuleAndroid,
-             "TabResumptionModuleAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, keep logging and reporting UMA while chrome is backgrounded.
 BASE_FEATURE(kUmaBackgroundSessions,

@@ -370,8 +370,15 @@ template("build_webui") {
       has_polymer =
           filter_include(invoker.ts_deps,
                          [ "//third_party/polymer/v3_0:library" ]) != []
+      has_lit = filter_include(invoker.ts_deps,
+                               [ "//third_party/lit/v3_0:build_ts" ]) != []
       if (has_polymer) {
-        tsconfig_base = "//tools/typescript/tsconfig_base_polymer.json"
+        if (has_lit) {
+          # Config with Lit parameters also for migrating UIs.
+          tsconfig_base = "//tools/typescript/tsconfig_base_mixed.json"
+        } else {
+          tsconfig_base = "//tools/typescript/tsconfig_base_polymer.json"
+        }
 
         # Detect whether the target corresponds to an Ash-only WebUI and use
         # tsconfig_base_polymer_cros.json instead in such cases.
@@ -390,12 +397,8 @@ template("build_webui") {
             tsconfig_base = "//tools/typescript/tsconfig_base_polymer_cros.json"
           }
         }
-      } else {
-        has_lit = filter_include(invoker.ts_deps,
-                                 [ "//third_party/lit/v3_0:build_ts" ]) != []
-        if (has_lit) {
-          tsconfig_base = "//tools/typescript/tsconfig_base_lit.json"
-        }
+      } else if (has_lit) {
+        tsconfig_base = "//tools/typescript/tsconfig_base_lit.json"
       }
     }
 

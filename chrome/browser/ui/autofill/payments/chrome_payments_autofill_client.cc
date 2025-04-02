@@ -59,6 +59,8 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_view.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -96,12 +98,16 @@
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_state.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/promos/ios_promos_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+// TODO(crbug.com/407105162): Remove nogncheck when crbug.com/40147906 is fixed.
+#include "components/tab_collections/public/tab_interface.h"  // nogncheck
 #include "components/webauthn/content/browser/internal_authenticator_impl.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// TODO(crbug.com/407106692): Refactor for Platform-Specific Code Separation.
 namespace autofill::payments {
 
 ChromePaymentsAutofillClient::ChromePaymentsAutofillClient(
@@ -948,6 +954,41 @@ void ChromePaymentsAutofillClient::ShowCreditCardSaveAndFillDialog() {
       save_and_fill_dialog_controller_->GetWeakPtr(), web_contents()));
 #else
   NOTIMPLEMENTED();
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+void ChromePaymentsAutofillClient::ShowSelectBnplIssuerDialog(
+    std::vector<BnplIssuerContext> bnpl_issuer_context,
+    std::string app_locale,
+    base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+    base::OnceClosure cancel_callback) {
+#if !BUILDFLAG(IS_ANDROID)
+  select_bnpl_issuer_dialog_controller_ =
+      std::make_unique<SelectBnplIssuerDialogControllerImpl>();
+  select_bnpl_issuer_dialog_controller_->ShowDialog(
+      base::BindOnce(&CreateAndShowBnplIssuerSelectionDialog,
+                     select_bnpl_issuer_dialog_controller_->GetWeakPtr(),
+                     base::Unretained(web_contents())),
+      std::move(bnpl_issuer_context), std::move(app_locale),
+      std::move(selected_issuer_callback), std::move(cancel_callback));
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+void ChromePaymentsAutofillClient::DismissSelectBnplIssuerDialog() {
+  if (select_bnpl_issuer_dialog_controller_) {
+    select_bnpl_issuer_dialog_controller_->Dismiss();
+    select_bnpl_issuer_dialog_controller_.reset();
+  }
+}
+
+bool ChromePaymentsAutofillClient::IsTabModalPopup() const {
+#if !BUILDFLAG(IS_ANDROID)
+  tabs::TabInterface* const tab_interface =
+      tabs::TabInterface::GetFromContents(web_contents());
+  return tab_interface &&
+         tab_interface->GetBrowserWindowInterface()->IsTabModalPopup();
+#else
+  return false;
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

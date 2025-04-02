@@ -165,8 +165,11 @@ bool ShouldBeInlinified(const Element* element) {
   const Element* parent;
   if (RuntimeEnabledFeatures::RubyFieldsetCrashFixEnabled()) {
     parent = FlatTreeTraversal::ParentElement(*element);
-    while (parent &&
-           parent->GetComputedStyle()->Display() == EDisplay::kContents) {
+    while (parent) {
+      const ComputedStyle* parent_style = parent->GetComputedStyle();
+      if (!parent_style || parent_style->Display() != EDisplay::kContents) {
+        break;
+      }
       parent = FlatTreeTraversal::ParentElement(*parent);
     }
   } else {

@@ -358,7 +358,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // If kOpaque, we can perform optimizations based on the widget being fully
     // opaque. Default is based on ViewsDelegate::GetOpacityForInitParams().
     // Defaults to kOpaque for non-window widgets. Translucent windows may not
-    // always be supported.
+    // always be supported, e.g., resizable windows cannot be translucent
+    // on Windows.
     WindowOpacity opacity = WindowOpacity::kInferred;
 
     bool accept_events = true;
@@ -386,7 +387,15 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // be ignored on some platforms. No value indicates no preference.
     std::optional<int> shadow_elevation;
 
-    // The window corner radius. May be ignored on some platforms.
+    // Specifies the desired corner radius for the window, in pixels. This is
+    // handled by the OS windowing system, and the support varies:
+    // - ChromeOS Ash & macOS: Fully effective; the specified radius is used.
+    // - Windows 11: Partially effective; if a value is set positive, it enables
+    //   system-managed rounded corners via the DWMWCP_ROUND window style. The
+    //   actual radius is determined by the OS, not this specific value.
+    // - Windows 10 & other platforms: Has no effect.
+    // Alternatively, you can set WindowOpacity to kTranslucent and use
+    // views::RoundedRectBackground. This has limitations (see `opacity`).
     std::optional<int> corner_radius;
 
     // Specifies that the system default caption and icon should not be

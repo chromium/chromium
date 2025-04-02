@@ -47,6 +47,7 @@ export class AppManagementAppDetailViewElement extends
         type: Object,
         notify: true,
       },
+
       app_: {
         type: Object,
       },

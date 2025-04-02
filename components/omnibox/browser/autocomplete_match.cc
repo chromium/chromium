@@ -505,6 +505,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::HISTORY_URL:
     case Type::HISTORY_TITLE:
     case Type::HISTORY_BODY:
+    case Type::HISTORY_KEYWORD:
     case Type::NAVSUGGEST:
     case Type::BOOKMARK_TITLE:
     case Type::NAVSUGGEST_PERSONALIZED:
@@ -1385,6 +1386,8 @@ AutocompleteMatch::GetOmniboxEventResultType(int action_index) const {
       return OmniboxEventProto::Suggestion::HISTORY_TITLE;
     case AutocompleteMatchType::HISTORY_BODY:
       return OmniboxEventProto::Suggestion::HISTORY_BODY;
+    case AutocompleteMatchType::HISTORY_KEYWORD:
+      return OmniboxEventProto::Suggestion::HISTORY_KEYWORD;
     case AutocompleteMatchType::NAVSUGGEST:
       return OmniboxEventProto::Suggestion::NAVSUGGEST;
     case AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED:

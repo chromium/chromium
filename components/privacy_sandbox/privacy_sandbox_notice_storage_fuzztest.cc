@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/privacy_sandbox/privacy_sandbox_notice.mojom.h"
 #include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -9,6 +10,7 @@
 
 namespace privacy_sandbox {
 
+using notice::mojom::PrivacySandboxNoticeEvent;
 using ::testing::IsSupersetOf;
 
 void CheckConvertsV1SchemaSuccessfully(NoticeActionTaken notice_action_taken,
@@ -29,9 +31,9 @@ void CheckConvertsV1SchemaSuccessfully(NoticeActionTaken notice_action_taken,
         IsSupersetOf({std::make_pair(*notice_event, notice_taken_time)}));
   }
   if (notice_last_shown != base::Time()) {
-    EXPECT_THAT(
-        data_v2.GetNoticeEvents(),
-        IsSupersetOf({std::make_pair(NoticeEvent::kShown, notice_last_shown)}));
+    EXPECT_THAT(data_v2.GetNoticeEvents(),
+                IsSupersetOf({std::make_pair(PrivacySandboxNoticeEvent::kShown,
+                                             notice_last_shown)}));
   }
 }
 

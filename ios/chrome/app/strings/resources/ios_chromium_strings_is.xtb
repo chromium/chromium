@@ -91,6 +91,7 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chromium-upplifuni
 <translation id="3054480780637153380">Opnaðu stillingar Chromium í iOS, ýttu síðan á „Sjálfgefið vafraforrit“ og veldu Chromium.</translation>
 <translation id="3102849287235003384">Til að skrá þig út af Google reikningnum þínum á öllum vefsvæðum skaltu <ph name="BEGIN_LINK" />skrá þig út af Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Gera Chromium að sjálfgefnum vafra?</translation>
+<translation id="3180939591219927904">Kveiktu á „Læsa huliðsflipum þegar þú lokar Chromium“</translation>
 <translation id="3242612358525156339">Opnaðu „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ og veldu „Chromium“ í stillingum tækisins</translation>
 <translation id="328933489847748230">{count,plural, =1{Sýnir 1 Chromium-glugga}one{Sýnir {count} Chromium-glugga}other{Sýnir {count} Chromium-glugga}}</translation>
 <translation id="3344973607274501920">Chromium gat ekki athugað aðgangsorðin þín. Athugaðu nettenginguna þína.</translation>
@@ -260,6 +261,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Völdu gögnin hafa verið fjarlægð af Chromium og samstilltum tækjum. Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, svo sem yfir leit og virkni í annarri þjónustu Google, á history.google.com.</translation>
 <translation id="7395825497086981028">Aðgangsorðið verður vistað í aðgangsorðastjórnun fyrir <ph name="EMAIL" />.</translation>
+<translation id="7504829997542308412">Opna Chromium</translation>
 <translation id="7531461704633548377">Úr Chromium</translation>
 <translation id="7554983317097061001">Ábending frá Chromium: Færðu Chromium á stikuna</translation>
 <translation id="7576863740961052505">Stjórna stillingum Chromium</translation>

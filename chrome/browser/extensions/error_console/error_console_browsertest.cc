@@ -32,6 +32,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/extension_action_runner.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #endif
 
 using base::UTF8ToUTF16;
@@ -301,6 +302,11 @@ class ErrorConsoleBrowserTest : public ExtensionPlatformBrowserTest {
 
   // Weak reference to the ErrorConsole.
   raw_ptr<ErrorConsole, DanglingUntriaged> error_console_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler_;
+#endif
 };
 
 // Test to ensure that we are successfully reporting manifest errors as an

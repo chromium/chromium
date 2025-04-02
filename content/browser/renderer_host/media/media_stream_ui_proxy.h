@@ -157,7 +157,7 @@ class CONTENT_EXPORT FakeMediaStreamUIProxy : public MediaStreamUIProxy {
 
   ~FakeMediaStreamUIProxy() override;
 
-  void SetAvailableDevices(const blink::MediaStreamDevices& devices);
+  void AddAvailableDevices(const blink::MediaStreamDevices& devices);
   void SetMicAccess(bool access);
   void SetCameraAccess(bool access);
   void SetAudioShare(bool audio_share);

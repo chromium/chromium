@@ -280,18 +280,20 @@ using signin_metrics::PromoAction;
 
 - (void)signOutWithItemView:(UIView*)itemView {
   DCHECK(!_signoutCoordinator);
+  constexpr signin_metrics::ProfileSignout metricSignOut =
+      signin_metrics::ProfileSignout::kUserClickedSignoutSettings;
+
+  __weak __typeof(self) weakSelf = self;
   _signoutCoordinator = [[SignoutActionSheetCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:self.browser
                             rect:itemView.bounds
                             view:itemView
         forceSnackbarOverToolbar:NO
-                      withSource:signin_metrics::ProfileSignout::
-                                     kUserClickedSignoutSettings];
-  __weak __typeof(self) weakSelf = self;
-  _signoutCoordinator.signoutCompletion = ^(BOOL success) {
-    [weakSelf handleSignOutCompleted:success];
-  };
+                      withSource:metricSignOut
+                      completion:^(BOOL success) {
+                        [weakSelf handleSignOutCompleted:success];
+                      }];
   _signoutCoordinator.delegate = self;
   [_signoutCoordinator start];
 }

@@ -198,6 +198,7 @@ public class OmniboxPedalsTest {
     @MediumTest
     @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/338976917
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30)
+    @DisableFeatures(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
     public void testManagePasswordsNoUpmFlow() throws InterruptedException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -248,7 +249,7 @@ public class OmniboxPedalsTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.SAFETY_HUB)
+    @DisableFeatures({ChromeFeatureList.SAFETY_HUB, ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID})
     public void testRunChromeSafetyCheck() throws InterruptedException {
         setSuggestions(createPedalSuggestion(OmniboxPedalId.RUN_CHROME_SAFETY_CHECK));
 

@@ -508,7 +508,7 @@ Refer to README.md for content description and update process.
  <item id="chromeos_scanner_provider" added_in_milestone="135" content_hash_code="04db096b" os_list="chromeos" file_path="components/manta/scanner_provider.cc" />
  <item id="glic_fre_preconnect" added_in_milestone="136" content_hash_code="02865907" os_list="linux,windows" file_path="chrome/browser/glic/fre/glic_fre_controller.cc" />
  <item id="client_download_request_android" added_in_milestone="136" type="branchedcompleting" second_id="client_download_request_for_platform" content_hash_code="0829498b" os_list="android" semantics_fields="2,3,4,8,9" file_path="chrome/browser/safe_browsing/download_protection/download_protection_delegate_android.cc" />
- <item id="chromeos_lens_web_image_search" added_in_milestone="136" content_hash_code="0448d253" os_list="chromeos" file_path="chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.cc" />
+ <item id="chromeos_lens_web_image_search" added_in_milestone="136" content_hash_code="04375d14" os_list="chromeos" file_path="chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.cc" />
  <item id="chromeos_inline_image_request" added_in_milestone="136" content_hash_code="014aba50" os_list="chromeos" file_path="chrome/browser/ash/lobster/lobster_image_provider_from_snapper.cc" />
  <item id="baguette_image_download" added_in_milestone="136" content_hash_code="0416bbbe" os_list="chromeos" file_path="chrome/browser/ash/crostini/baguette_download.cc" />
  <item id="chromeos_walrus_provider" added_in_milestone="136" content_hash_code="0671ae94" os_list="chromeos" file_path="components/manta/walrus_provider.cc" />

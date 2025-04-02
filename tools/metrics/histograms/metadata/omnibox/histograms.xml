@@ -22,6 +22,22 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="Completed">
+  <variant name=""
+      summary="This slice includes all inputs, both 'Completed' and
+               'Interrupted'"/>
+  <variant name=".Completed"
+      summary="The 'Completed' slice only includes inputs that completed;
+               i.e. the last async update completed without interruption by,
+               e.g., closing the omnibox dropdown."/>
+  <variant name=".Interrupted"
+      summary="The 'Interrupted' slice only includes inputs that were
+               interrupted; i.e. the last async update was interrupted by,
+               e.g., closing the omnibox dropdown before completing. It can
+               be misleading to interpret this slice, as neither an increase
+               or decrease is necessarily good."/>
+</variants>
+
 <variants name="NavigationOrSuggestionPrefetch">
   <variant name="NavigationPrefetch"
       summary="Recorded for prefetches where Chrome is relatively confident
@@ -408,19 +424,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     {Completed}
   </summary>
   <token key="Provider" variants="OmniboxProviders"/>
-  <token key="Completed">
-    <variant name=""/>
-    <variant name=".Completed"
-        summary="The 'Completed' slice only includes inputs that completed;
-                 i.e. the last async update completed without interruption
-                 by, e.g., closing the omnibox dropdown."/>
-    <variant name=".Interrupted"
-        summary="The 'Interrupted' slice only includes inputs that were
-                 interrupted; i.e. the last async update was interrupted by,
-                 e.g., closing the omnibox dropdown before completing. It can
-                 be misleading to interpret this slice, as neither an
-                 increase or decrease is necessarily good."/>
-  </token>
+  <token key="Completed" variants="Completed"/>
 </histogram>
 
 <histogram name="Omnibox.AsyncAutocompletionTime2.{Change}{Completed}"
@@ -490,19 +494,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
                  to exactly one of the 'Completed' and 'Interrupted' slices
                  per input."/>
   </token>
-  <token key="Completed">
-    <variant name=""/>
-    <variant name=".Completed"
-        summary="The 'Completed' slice only includes inputs that completed;
-                 i.e. the last async update completed without interruption
-                 by, e.g., closing the omnibox dropdown."/>
-    <variant name=".Interrupted"
-        summary="The 'Interrupted' slice only includes inputs that were
-                 interrupted; i.e. the last async update was interrupted by,
-                 e.g., closing the omnibox dropdown before completing. It can
-                 be misleading to interpret this slice, as neither an
-                 increase or decrease is necessarily good."/>
-  </token>
+  <token key="Completed" variants="Completed"/>
 </histogram>
 
 <histogram name="Omnibox.AutocompletionTime.UpdateResult{Slice}"
@@ -2407,18 +2399,53 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram
+    name="Omnibox.SuggestRequestsSent.ResponseTime2.RequestState{RemoteRequestType}{RemoteRequestCompleted}"
+    units="ms" expires_after="2025-08-10">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    How long it took in milliseconds to receive a responses from the omnibox
+    suggest backends, sliced by whether the request was completed or
+    interrupted. Recorded once per response received, which is at most one time
+    per Omnibox.SuggestRequestsSent is recorded, since some requests are
+    cancelled.
+  </summary>
+  <token key="RemoteRequestType" variants="RemoteRequestType"/>
+  <token key="RemoteRequestCompleted" variants="Completed"/>
+</histogram>
+
+<histogram
     name="Omnibox.SuggestRequestsSent.ResponseTime{RemoteRequestType}{RemoteRequestSuccess}"
     units="ms" expires_after="2025-08-10">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     How long it took in milliseconds to receive a responses from the omnibox
-    suggest backends, sliced by the request type and response success status.
-    Recorded once per response received, which is at most one time per
-    Omnibox.SuggestRequestsSent is recorded, since some requests are cancelled.
+    suggest backends for completed requests only, sliced by the request type and
+    response success status. Recorded once per response received, which is at
+    most one time per Omnibox.SuggestRequestsSent is recorded, since some
+    requests are cancelled.
   </summary>
   <token key="RemoteRequestType" variants="RemoteRequestType"/>
   <token key="RemoteRequestSuccess" variants="RemoteRequestSuccess"/>
+</histogram>
+
+<histogram
+    name="Omnibox.SuggestRequestsSent.ResultCount.EnterpriseSearchAggregatorSuggest{EnterpriseSuggestionType}"
+    units="count" expires_after="2025-08-10">
+  <owner>ananyaseelam@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The number of results returned for each suggestion of type
+    {EnterpriseSuggestionType} and the total number of suggestions. This is
+    logged for successful requests where the result is parsable.
+  </summary>
+  <token key="EnterpriseSuggestionType">
+    <variant name="" summary="Aggregated across all suggestion types"/>
+    <variant name=".Content" summary="Number of content suggestions"/>
+    <variant name=".People" summary="Number of people suggestions"/>
+    <variant name=".Query" summary="Number of query suggestions"/>
+  </token>
 </histogram>
 
 <histogram name="Omnibox.SuggestTiles.DeletedTileIndex" units="position"

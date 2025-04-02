@@ -15,8 +15,8 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_tree_update.h"
-#include "ui/accessibility/ax_updates_and_events.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -24,18 +24,19 @@
 
 namespace tree_fixing {
 
-AXTreeFixingServicesRouter::WebContentsObserver::WebContentsObserver(
-    content::WebContents& web_contents)
+AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
+    AXTreeFixingWebContentsObserver(content::WebContents& web_contents)
     : content::WebContentsObserver(&web_contents) {}
 
-AXTreeFixingServicesRouter::WebContentsObserver::~WebContentsObserver() =
-    default;
+AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
+    ~AXTreeFixingWebContentsObserver() = default;
 
-void AXTreeFixingServicesRouter::WebContentsObserver::
-    AccessibilityEventReceived(const ui::AXUpdatesAndEvents& details) {
+void AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
+    DidStopLoading() {
   if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
     return;
   }
+
   // TODO(crbug.com/401308988): Run fixes here using details.updates.
 }
 
@@ -47,6 +48,12 @@ AXTreeFixingServicesRouter::AXTreeFixingServicesRouter(Profile* profile)
       prefs::kAccessibilityAXTreeFixingEnabled,
       base::BindRepeating(&AXTreeFixingServicesRouter::ToggleEnabledState,
                           weak_factory_.GetWeakPtr()));
+
+  // If the AXTreeFixing feature flag is not enabled, do not initialize.
+  if (!features::IsAXTreeFixingEnabled()) {
+    return;
+  }
+
 #if BUILDFLAG(IS_CHROMEOS)
   if (auto* const accessibility_manager = ash::AccessibilityManager::Get();
       accessibility_manager) {
@@ -66,6 +73,9 @@ AXTreeFixingServicesRouter::~AXTreeFixingServicesRouter() = default;
 void AXTreeFixingServicesRouter::IdentifyMainNode(
     const ui::AXTreeUpdate& ax_tree,
     MainNodeIdentificationCallback callback) {
+  // This should never be called if the feature is not enabled.
+  CHECK(features::IsAXTreeFixingEnabled());
+
   // If this is the first time any client has requested tree fixing in a form
   // that is handled by the ScreenAI service, then create an instance to connect
   // to the service now.
@@ -74,28 +84,30 @@ void AXTreeFixingServicesRouter::IdentifyMainNode(
         std::make_unique<AXTreeFixingScreenAIService>(*this, profile_);
   }
 
-  // We must wait for the ScreenAI service to be ready for requests.
-  if (!can_make_main_node_identification_requests_) {
-    // TODO(crbug.com/401308988): Give a signal to requesters that they need to
-    // re-request? Or, queue requests to be made once service is ready?
+  // If the AXTreeUpdate is empty, do not process the request.
+  if (ax_tree.nodes.empty()) {
     return;
   }
 
+  // We must wait for the ScreenAI service to be ready for requests. We will
+  // queue the request for convenience and to keep the services layer obscured
+  // from clients.
+  if (!can_make_main_node_identification_requests_) {
+    request_queue_.emplace(ax_tree, std::move(callback));
+    return;
+  }
+
+  MakeMainNodeRequestToScreenAI(ax_tree, std::move(callback));
+}
+
+void AXTreeFixingServicesRouter::MakeMainNodeRequestToScreenAI(
+    const ui::AXTreeUpdate& ax_tree,
+    MainNodeIdentificationCallback callback) {
   // Store the callback for later use, and make a request to ScreenAI.
   pending_callbacks_.emplace_back(next_request_id_, std::move(callback));
   screen_ai_service_->IdentifyMainNode(ax_tree, next_request_id_);
   next_request_id_++;
 }
-
-#if !BUILDFLAG(IS_CHROMEOS)
-void AXTreeFixingServicesRouter::OnAXModeAdded(ui::AXMode mode) {
-  if (current_ax_mode_.has_mode(ui::AXMode::kExtendedProperties) !=
-      mode.has_mode(ui::AXMode::kExtendedProperties)) {
-    current_ax_mode_ = mode;
-    ToggleEnabledState();
-  }
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void AXTreeFixingServicesRouter::OnMainNodeIdentified(ui::AXTreeID tree_id,
                                                       ui::AXNodeID node_id,
@@ -119,11 +131,24 @@ void AXTreeFixingServicesRouter::OnMainNodeIdentified(ui::AXTreeID tree_id,
 
 void AXTreeFixingServicesRouter::OnServiceStateChanged(bool service_ready) {
   can_make_main_node_identification_requests_ = service_ready;
-  // TODO(crbug.com/401308988): Follow-up state change by sending or clearing
-  // queued requests (if a queue exists)? Should a signal be sent to clients?
+
+  // If the service is now ready, process any queued requests.
+  if (service_ready) {
+    while (!request_queue_.empty()) {
+      auto& [ax_tree, callback] = request_queue_.front();
+      auto ax_tree_copy = std::move(ax_tree);
+      request_queue_.pop();
+      MakeMainNodeRequestToScreenAI(ax_tree_copy, std::move(callback));
+    }
+  }
 }
 
 void AXTreeFixingServicesRouter::ToggleEnabledState() {
+  // If the AXTreeFixing feature flag is not enabled, do not create observers.
+  if (!features::IsAXTreeFixingEnabled()) {
+    return;
+  }
+
   // TODO(crbug.com/401308988): Downstream service instances such as
   // screen_ai_service_ need to be cleared when accessibility (or user pref) is
   // disabled.
@@ -151,7 +176,7 @@ void AXTreeFixingServicesRouter::ToggleEnabledState() {
       continue;
     }
     web_contents_observers_.push_back(
-        std::make_unique<WebContentsObserver>(*web_contents));
+        std::make_unique<AXTreeFixingWebContentsObserver>(*web_contents));
   }
 }
 
@@ -164,6 +189,14 @@ void AXTreeFixingServicesRouter::OnAccessibilityStatusEvent(
           ash::AccessibilityNotificationType::kToggleSpokenFeedback ||
       details.notification_type ==
           ash::AccessibilityNotificationType::kToggleSelectToSpeak) {
+    ToggleEnabledState();
+  }
+}
+#else   // !BUILDFLAG(IS_CHROMEOS)
+void AXTreeFixingServicesRouter::OnAXModeAdded(ui::AXMode mode) {
+  if (current_ax_mode_.has_mode(ui::AXMode::kExtendedProperties) !=
+      mode.has_mode(ui::AXMode::kExtendedProperties)) {
+    current_ax_mode_ = mode;
     ToggleEnabledState();
   }
 }

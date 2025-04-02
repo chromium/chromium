@@ -188,7 +188,7 @@ public class AdaptiveToolbarUiCoordinator {
                         mContext,
                         activityLifecycleDispatcher,
                         profileSupplier,
-                        new AdaptiveButtonActionMenuCoordinator(),
+                        new AdaptiveButtonActionMenuCoordinator(toolbarBehavior.canShowSettings()),
                         toolbarBehavior,
                         windowAndroid);
         PageSummaryButtonController pageSummaryButtonController =

@@ -5,15 +5,16 @@
 #include "sandbox/win/src/filesystem_policy.h"
 
 #include <windows.h>
+#include <winternl.h>
 
 #include <ntstatus.h>
 #include <stdint.h>
-#include <winternl.h>
 
 #include <string>
 
 #include "base/notreached.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/win_util.h"
 #include "sandbox/win/src/internal_types.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/nt_internals.h"
@@ -64,6 +65,8 @@ NTSTATUS NtCreateFileInTarget(HANDLE* target_file_handle,
     return status;
   }
 
+  // `local_handle` must be valid from CreateFile() call, `target_process` is
+  // trusted and `target_file_handle` is an outparam.
   if (!::DuplicateHandle(::GetCurrentProcess(), local_handle, target_process,
                          target_file_handle, 0, false,
                          DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS)) {
@@ -256,6 +259,13 @@ bool FileSystemPolicy::SetInformationFileAction(EvalResult eval_result,
   // file as specified.
   if (ASK_BROKER != eval_result) {
     *nt_status = STATUS_ACCESS_DENIED;
+    return false;
+  }
+
+  // `target_file_handle` is not trustworthy, providing a pseudohandle here
+  // will cause it to be sent to SetInformationFile which is likely harmless,
+  // but ok to reject before duplication.
+  if (base::win::IsPseudoHandle(target_file_handle)) {
     return false;
   }
 

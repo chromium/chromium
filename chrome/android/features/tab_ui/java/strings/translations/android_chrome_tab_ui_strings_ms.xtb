@@ -213,6 +213,7 @@ Jika anda memadamkan kumpulan, semua orang akan kehilangan akses kepada kumpulan
 <translation id="8820741577754260431">Lihat penurunan harga pada tab anda</translation>
 <translation id="8887921976452567404">Tab dan kumpulan anda yang ditutup boleh dibuka semula daripada bahagian Tab terbaharu dan bahagian Kumpulan tab.</translation>
 <translation id="8915916167043355778">Tutup semua</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Alihkan kepada tetingkap baharu}other{Alihkan kepada tetingkap lain}}</translation>
 <translation id="9090098097337832354">Maklumat tentang kedai ini ditutup</translation>
 <translation id="9114502155681725011">Buka menu tindakan kumpulan tab untuk kumpulan tab <ph name="TITLE_OF_GROUP" />, warna <ph name="COLOR_NAME" />.</translation>
 <translation id="9169141410816678175">Semua orang akan kehilangan akses kepada kumpulan tab "<ph name="GROUP_NAME" />" dengan serta-merta dan kumpulan tab ini akan dipadamkan daripada semua peranti</translation>

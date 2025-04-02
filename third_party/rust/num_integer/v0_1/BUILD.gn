@@ -12,11 +12,12 @@ cargo_crate("lib") {
   crate_name = "num_integer"
   epoch = "0.1"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/num-integer-0.1.46/src/lib.rs"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/num-integer-v0_1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/num-integer-0.1.46/src/average.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-integer-0.1.46/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-integer-0.1.46/src/roots.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-integer-v0_1/src/average.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-integer-v0_1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-integer-v0_1/src/roots.rs",
   ]
   inputs = []
 

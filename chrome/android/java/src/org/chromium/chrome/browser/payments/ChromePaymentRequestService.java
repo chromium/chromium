@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.payments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -399,6 +400,25 @@ public class ChromePaymentRequestService
                                 ErrorStrings.SPC_USER_OPTED_OUT, PaymentErrorReason.USER_OPT_OUT);
                         mSpcAuthnUiController = null;
                     };
+
+            BitmapDrawable issuerIcon = null;
+            BitmapDrawable networkIcon = null;
+            Context context = mDelegate.getContext(mRenderFrameHost);
+            if (context != null) {
+                if (getSelectedPaymentApp().getIssuerIcon() != null) {
+                    issuerIcon =
+                            new BitmapDrawable(
+                                    context.getResources(),
+                                    getSelectedPaymentApp().getIssuerIcon());
+                }
+                if (getSelectedPaymentApp().getNetworkIcon() != null) {
+                    networkIcon =
+                            new BitmapDrawable(
+                                    context.getResources(),
+                                    getSelectedPaymentApp().getNetworkIcon());
+                }
+            }
+
             boolean success =
                     mSpcAuthnUiController.show(
                             getSelectedPaymentApp().getDrawableIcon(),
@@ -409,7 +429,9 @@ public class ChromePaymentRequestService
                             spcMethodData.securePaymentConfirmation.payeeName,
                             payeeOrigin,
                             spcMethodData.securePaymentConfirmation.showOptOut,
-                            spcMethodData.securePaymentConfirmation.rpId);
+                            spcMethodData.securePaymentConfirmation.rpId,
+                            issuerIcon,
+                            networkIcon);
 
             if (success) {
                 mJourneyLogger.setShown();

@@ -120,7 +120,7 @@ bool HostToLocalHostRewrite(GURL* url, web::BrowserState* context) {
   auto templateURL = std::make_unique<TemplateURL>(*templateURLData.get());
   service->SetUserSelectedDefaultSearchProvider(templateURL.get());
   search_engines::WipeSearchEngineChoicePrefs(
-      *prefs, search_engines::WipeSearchEngineChoiceReason::kCommandLineFlag);
+      *prefs, search_engines::SearchEngineChoiceWipeReason::kCommandLineFlag);
 }
 
 + (void)addURLRewriterForHosts:(NSArray<NSString*>*)hosts

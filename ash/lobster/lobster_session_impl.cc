@@ -243,8 +243,8 @@ void LobsterSessionImpl::DownloadCandidate(int candidate_id,
       base::BindOnce(
           [](LobsterClient* lobster_client,
              LobsterImageDownloadActuator* actuator,
-             const base::FilePath& download_dir, StatusCallback status_callback,
-             const LobsterResult& result) {
+             const base::FilePath& download_dir, const std::string& file_name,
+             StatusCallback status_callback, const LobsterResult& result) {
             if (!result.has_value() || result->size() == 0) {
               LOG(ERROR) << "No image candidate";
               std::move(status_callback).Run(false);
@@ -254,7 +254,7 @@ void LobsterSessionImpl::DownloadCandidate(int candidate_id,
 
             const LobsterImageCandidate& image_candidate = (*result)[0];
             actuator->WriteImageToPath(
-                download_dir, image_candidate.user_query, image_candidate.id,
+                download_dir, file_name, image_candidate.id,
                 image_candidate.image_bytes,
                 base::BindOnce(
                     [](StatusCallback status_callback,
@@ -278,7 +278,8 @@ void LobsterSessionImpl::DownloadCandidate(int candidate_id,
                     std::move(status_callback), image_candidate.image_bytes));
           },
           client_.get(), &download_actuator_, download_dir,
-          std::move(status_callback)));
+          // Always use the original user query for the filename
+          candidate->user_query, std::move(status_callback)));
 }
 
 void LobsterSessionImpl::RequestCandidates(const std::string& query,
@@ -362,8 +363,8 @@ void LobsterSessionImpl::CommitAsDownload(int candidate_id,
       base::BindOnce(
           [](LobsterClient* lobster_client,
              LobsterImageDownloadActuator* actuator,
-             const base::FilePath& download_dir, StatusCallback status_callback,
-             const LobsterResult& result) {
+             const base::FilePath& download_dir, const std::string& file_name,
+             StatusCallback status_callback, const LobsterResult& result) {
             if (!result.has_value() || result->size() == 0) {
               LOG(ERROR) << "No image candidate";
               std::move(status_callback).Run(false);
@@ -373,7 +374,7 @@ void LobsterSessionImpl::CommitAsDownload(int candidate_id,
 
             const LobsterImageCandidate& image_candidate = (*result)[0];
             actuator->WriteImageToPath(
-                download_dir, image_candidate.user_query, image_candidate.id,
+                download_dir, file_name, image_candidate.id,
                 image_candidate.image_bytes,
                 base::BindOnce(
                     [](LobsterClient* lobster_client,
@@ -401,7 +402,8 @@ void LobsterSessionImpl::CommitAsDownload(int candidate_id,
                     std::move(status_callback)));
           },
           client_.get(), &download_actuator_, download_dir,
-          std::move(status_callback)));
+          // Always use the original user query for the filename
+          candidate->user_query, std::move(status_callback)));
 }
 
 void LobsterSessionImpl::PreviewFeedback(

@@ -70,7 +70,6 @@
 <translation id="1122714970786750095">Pajisje elektrike dhe elektronike</translation>
 <translation id="1123753900084781868">"Titrat në çast" nuk ofrohen për momentin</translation>
 <translation id="1125453215844207206">Grafikë e paetiketuar. Teksti po nxirret, mundësuar nga IA-ja e Google</translation>
-<translation id="1125573121925420732">Paralajmërimet mund të jenë të zakonshme ndërkohë që uebsajtet përditësojnë sigurinë e tyre. Kjo duhet të përmirësohet së shpejti.</translation>
 <translation id="112840717907525620">Memoria specifike e politikës është në rregull</translation>
 <translation id="1131264053432022307">Imazhi që kopjove</translation>
 <translation id="1138458427267715730">Merr sinjalizime kur çmimi ulet në çdo sajt në ueb</translation>
@@ -297,7 +296,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1492194039220927094">Politikat e detyruara:</translation>
 <translation id="1495677929897281669">Kthehu te skeda</translation>
 <translation id="1500286806237135498">Kamerat (<ph name="CAMERAS_COUNT" />)</translation>
-<translation id="1501859676467574491">Shfaq kartat nga "Llogaria jote e Google"</translation>
 <translation id="1504042622576912555">Karton me valëzime</translation>
 <translation id="1507202001669085618">&lt;p&gt;Do të shikosh këtë gabim nëse përdor një portal Wi-Fi ku duhet të identifikohesh përpara se të hysh online.&lt;/p&gt;
     &lt;p&gt;Për të rregulluar gabimin, kliko te &lt;strong&gt;Lidhu&lt;/strong&gt; në faqen që po përpiqesh të hapësh.&lt;/p&gt;</translation>
@@ -568,6 +566,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1975584088563498795">Kutia postare 10</translation>
 <translation id="1978555033938440688">Versioni i firmuerit</translation>
 <translation id="1979156660928743046">Informacionet e medias</translation>
+<translation id="1987486584747170374">Kërkimet e tua, përputhjet më të mira dhe përmbajtjet e faqeve të tyre dërgohen te Google. Ato nuk do të përdoren nga shqyrtues njerëzorë për të përmirësuar IA-në. Organizata jote mund t'i ndryshojë këto cilësime në çdo kohë.</translation>
 <translation id="1988881251331415125">Nëse nuk ka ndonjë gabim drejtshkrimor, <ph name="BEGIN_LINK" />provo të ekzekutosh "Diagnostikimin e lidhshmërisë"<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> kërkon të ruajë të dhëna të mëdha në mënyrë të përhershme në kompjuterin tënd lokal</translation>
@@ -763,6 +762,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2301098101308036335">Cilat uebsajte vizitohen dhe kur.</translation>
 <translation id="230286397113210245">Butoni "Hap dritaren e fshehtë". Aktivizoje për të hapur një dritare të re të fshehtë për të shfletuar në mënyrë private</translation>
 <translation id="2306124309679506798">Të lejohet një përvojë gjithëpërfshirëse?</translation>
+<translation id="2307711332257985952">Adresat e tua të shtëpisë dhe të punës tani janë të disponueshme në Chrome</translation>
 <translation id="2312234273148520048">Erëza dhe salca</translation>
 <translation id="2316087952091171402">Më pak se <ph name="UPPER_ESTIMATE" />. Disa sajte mund të ngarkohen më ngadalë në vizitën tënde të radhës.</translation>
 <translation id="2316159751672436664">Personalizo veglat e qasshmërisë te cilësimet e ChromeOS</translation>
@@ -1178,6 +1178,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3102312643185441063">Kursimi</translation>
 <translation id="3103188521861412364">Aksionet dhe obligacionet</translation>
 <translation id="3103535543639438037">Krahaso produkte të ngjashme krah për krah</translation>
+<translation id="3103993932858740905">Kur paguan me kalimin e kohës, plotësohet një numër vetëm për një herë i kartës virtuale. Ky numër shërben vetëm për këtë blerje.</translation>
 <translation id="3105172416063519923">ID-ja e elementit:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Po kontrollon konfigurimin e DNS-së së sigurt<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Tabakaja e mesit</translation>

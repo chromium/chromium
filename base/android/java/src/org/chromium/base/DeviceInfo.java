@@ -87,6 +87,7 @@ public final class DeviceInfo {
     @CalledByNativeForTesting
     public static void setGmsVersionCodeForTest(@JniType("std::string") String gmsVersionCode) {
         sGmsVersionCodeForTesting = gmsVersionCode;
+        ResettersForTesting.register(() -> sGmsVersionCodeForTesting = null);
     }
 
     public static boolean isTV() {

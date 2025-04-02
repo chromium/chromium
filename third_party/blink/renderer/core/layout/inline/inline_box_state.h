@@ -321,7 +321,7 @@ class CORE_EXPORT InlineLayoutStateStack {
     unsigned fragment_start;
     unsigned fragment_end;
     // Ruby columns in the above range.
-    Member<HeapVector<Member<LogicalRubyColumn>>> ruby_column_list;
+    Member<GCedHeapVector<Member<LogicalRubyColumn>>> ruby_column_list;
 
     Member<const InlineItem> item;
     LogicalRect rect;

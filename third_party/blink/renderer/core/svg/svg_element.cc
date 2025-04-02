@@ -31,13 +31,6 @@
 
 #include "base/auto_reset.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
-#include "third_party/blink/renderer/core/animation/document_animations.h"
-#include "third_party/blink/renderer/core/animation/effect_stack.h"
-#include "third_party/blink/renderer/core/animation/element_animations.h"
-#include "third_party/blink/renderer/core/animation/invalidatable_interpolation.h"
-#include "third_party/blink/renderer/core/animation/keyframe_effect.h"
-#include "third_party/blink/renderer/core/animation/svg_interpolation_environment.h"
-#include "third_party/blink/renderer/core/animation/svg_interpolation_types_map.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
@@ -181,53 +174,11 @@ String SVGElement::title() const {
   return String();
 }
 
-void SVGElement::SetWebAnimationsPending() {
-  GetDocument().AccessSVGExtensions().AddWebAnimationsPendingSVGElement(*this);
-  EnsureSVGRareData()->SetWebAnimatedAttributesDirty(true);
-}
-
-static bool IsSVGAttributeHandle(const PropertyHandle& property_handle) {
-  return property_handle.IsSVGAttribute();
-}
-
-void SVGElement::ApplyActiveWebAnimations() {
-  ActiveInterpolationsMap active_interpolations_map =
-      EffectStack::ActiveInterpolations(
-          &GetElementAnimations()->GetEffectStack(), nullptr, nullptr,
-          KeyframeEffect::kDefaultPriority, IsSVGAttributeHandle);
-  for (auto& entry : active_interpolations_map) {
-    const QualifiedName& attribute = entry.key.SvgAttribute();
-    SVGInterpolationTypesMap map;
-    SVGInterpolationEnvironment environment(
-        map, *this, PropertyFromAttribute(attribute)->BaseValueBase());
-    InvalidatableInterpolation::ApplyStack(*entry.value, environment);
-  }
-  if (!HasSVGRareData())
-    return;
-  SvgRareData()->SetWebAnimatedAttributesDirty(false);
-}
-
 template <typename T>
 static void ForSelfAndInstances(SVGElement* element, T callback) {
   callback(element);
   for (SVGElement* instance : element->InstancesForElement())
     callback(instance);
-}
-
-void SVGElement::SetWebAnimatedAttribute(const QualifiedName& attribute,
-                                         SVGPropertyBase* value) {
-  SetAnimatedAttribute(attribute, value);
-  EnsureSVGRareData()->WebAnimatedAttributes().insert(attribute);
-}
-
-void SVGElement::ClearWebAnimatedAttributes() {
-  if (!HasSVGRareData())
-    return;
-  HashSet<QualifiedName>& animated_attributes =
-      SvgRareData()->WebAnimatedAttributes();
-  for (const QualifiedName& attribute : animated_attributes)
-    ClearAnimatedAttribute(attribute);
-  animated_attributes.clear();
 }
 
 ElementSMILAnimations* SVGElement::GetSMILAnimations() const {
@@ -288,12 +239,8 @@ void SVGElement::ClearAnimatedMotionTransform() {
   SetAnimatedMotionTransform(AffineTransform());
 }
 
-bool SVGElement::HasNonCSSPropertyAnimations() const {
-  if (HasSVGRareData() && !SvgRareData()->WebAnimatedAttributes().empty())
-    return true;
-  if (GetSMILAnimations() && GetSMILAnimations()->HasAnimations())
-    return true;
-  return false;
+bool SVGElement::HasSMILAnimations() const {
+  return GetSMILAnimations() && GetSMILAnimations()->HasAnimations();
 }
 
 AffineTransform SVGElement::LocalCoordinateSpaceTransform(CTMScope) const {
@@ -857,7 +804,6 @@ void SVGElement::AttributeChanged(const AttributeModificationParams& params) {
 
   if (property) {
     SvgAttributeChanged({*property, params.name, params.reason});
-    UpdateWebAnimatedAttributeOnBaseValChange(*property);
     InvalidateInstances();
     return;
   }
@@ -897,35 +843,7 @@ void SVGElement::BaseValueChanged(const SVGAnimatedPropertyBase& property) {
     UpdateClassList(g_null_atom,
                     AtomicString(class_name_->BaseValue()->Value()));
   }
-  UpdateWebAnimatedAttributeOnBaseValChange(property);
   InvalidateInstances();
-}
-
-void SVGElement::UpdateWebAnimatedAttributeOnBaseValChange(
-    const SVGAnimatedPropertyBase& property) {
-  if (!HasSVGRareData())
-    return;
-  const auto& animated_attributes = SvgRareData()->WebAnimatedAttributes();
-  if (animated_attributes.empty() ||
-      !animated_attributes.Contains(property.AttributeName())) {
-    return;
-  }
-  // TODO(alancutter): Only mark attributes as dirty if their animation depends
-  // on the underlying value.
-  SvgRareData()->SetWebAnimatedAttributesDirty(true);
-  EnsureAttributeAnimValUpdated();
-}
-
-void SVGElement::EnsureAttributeAnimValUpdated() {
-  if (!RuntimeEnabledFeatures::WebAnimationsSVGEnabled())
-    return;
-
-  if ((HasSVGRareData() && SvgRareData()->WebAnimatedAttributesDirty()) ||
-      (GetElementAnimations() &&
-       GetDocument().GetDocumentAnimations().NeedsAnimationTimingUpdate())) {
-    GetDocument().GetDocumentAnimations().UpdateAnimationTimingIfNeeded();
-    ApplyActiveWebAnimations();
-  }
 }
 
 void SVGElement::SynchronizeSVGAttribute(const QualifiedName& name) const {

@@ -6,25 +6,13 @@
  * #type=style-lit
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #import=./pdf_shared.css.js
- * #include=pdf-shared
+ * #import=./side_panel_shared.css.js
+ * #include=pdf-shared side-panel-shared
  * #css_wrapper_metadata_end */
 
 :host {
   --cr-icon-button-margin-end: 0;
   --cr-icon-button-margin-start: 0;
-  background-color: var(--viewer-side-background-color);
-  width: 288px;
-}
-
-:host > * {
-  padding-inline: 16px;
-}
-
-h2 {
-  font: normal 400 13px Roboto, sans-serif;
-  color: var(--google-grey-100);
-  margin: 0;
-  margin-inline-start: 14px;
 }
 
 cr-icon-button {
@@ -40,15 +28,12 @@ cr-icon-button[data-selected="true"] {
   padding-top: 27px;
 }
 
-
 ink-brush-selector {
   border-bottom: 1px solid var(--viewer-border-color);
-  padding-bottom: 12px;
-  padding-top: 4px;
+  padding: 12px 0;
 }
 
 ink-color-selector,
 ink-size-selector {
   margin: 16px 0 32px;
-  padding: 0 8px;
 }

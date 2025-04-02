@@ -148,8 +148,9 @@ void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenFailure(
 void OAuth2MintAccessTokenFetcherAdapter::OnRemoteConsentSuccess(
     const RemoteConsentResolutionData& resolution_data) {
   RecordMetricsAndFireError(
-      GoogleServiceAuthError::FromUnexpectedServiceResponse(
-          "Unexpected remote consent response received."));
+      GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+              kRemoteConsentResolutionRequired));
 }
 
 void OAuth2MintAccessTokenFetcherAdapter::RecordMetricsAndFireError(

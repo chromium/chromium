@@ -87,6 +87,12 @@ SearchEnginesTestEnvironment::SearchEnginesTestEnvironment(
 
 SearchEnginesTestEnvironment::~SearchEnginesTestEnvironment() = default;
 
+void SearchEnginesTestEnvironment::Shutdown() {
+  if (template_url_service_) {
+    template_url_service_->Shutdown();
+  }
+}
+
 sync_preferences::TestingPrefServiceSyncable&
 SearchEnginesTestEnvironment::pref_service() {
   return *pref_service_;

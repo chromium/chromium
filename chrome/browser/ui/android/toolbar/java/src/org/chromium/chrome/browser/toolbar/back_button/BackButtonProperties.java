@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.back_button;
 import android.content.res.ColorStateList;
 
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -18,16 +19,23 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 class BackButtonProperties {
     public static final WritableObjectPropertyKey<Runnable> CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
-    public static WritableObjectPropertyKey<ColorStateList> TINT_COLOR_LIST =
+    public static final WritableObjectPropertyKey<ColorStateList> TINT_COLOR_LIST =
             new WritableObjectPropertyKey<>();
-    public static WritableIntPropertyKey BACKGROUND_HIGHLIGHT_RESOURCE =
+    public static final WritableIntPropertyKey BACKGROUND_HIGHLIGHT_RESOURCE =
             new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<Runnable> LONG_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
+    public static final WritableBooleanPropertyKey IS_ENABLED = new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey IS_FOCUSABLE = new WritableBooleanPropertyKey();
 
     public static PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                CLICK_LISTENER, TINT_COLOR_LIST, BACKGROUND_HIGHLIGHT_RESOURCE, LONG_CLICK_LISTENER
+                CLICK_LISTENER,
+                TINT_COLOR_LIST,
+                BACKGROUND_HIGHLIGHT_RESOURCE,
+                LONG_CLICK_LISTENER,
+                IS_ENABLED,
+                IS_FOCUSABLE,
             };
 
     private BackButtonProperties() {}

@@ -339,17 +339,15 @@ auction_worklet::mojom::PrivateAggregationRequestPtr CreatePaggForEventRequest(
       blink::mojom::DebugModeDetails::New());
 }
 
-auction_worklet::mojom::PrivateAggregationRequestPtr CreatePaggHistogramRequest(
-    absl::uint128 bucket,
-    int value,
-    std::optional<uint64_t> filtering_id) {
-  return auction_worklet::mojom::PrivateAggregationRequest::New(
-      auction_worklet::mojom::AggregatableReportContribution::
-          NewHistogramContribution(
-              blink::mojom::AggregatableReportHistogramContribution::New(
-                  /*bucket=*/bucket,
-                  /*value=*/value,
-                  /*filtering_id=*/filtering_id)),
+auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr
+CreateFinalizedPaggHistogramRequest(absl::uint128 bucket,
+                                    int value,
+                                    std::optional<uint64_t> filtering_id) {
+  return auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
+      blink::mojom::AggregatableReportHistogramContribution::New(
+          /*bucket=*/bucket,
+          /*value=*/value,
+          /*filtering_id=*/filtering_id),
       // TODO(qingxinwu): consider allowing this to be set
       blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
@@ -481,9 +479,12 @@ MATCHER_P(EqualsKAnonGhostWinner,
 template <typename... Ts>
 auto ElementsAreRequests(Ts&... requests) {
   static_assert(
-      std::conjunction<std::is_same<
-          std::remove_const_t<Ts>,
-          auction_worklet::mojom::PrivateAggregationRequestPtr>...>::value);
+      std::conjunction<std::disjunction<
+          std::is_same<std::remove_const_t<Ts>,
+                       auction_worklet::mojom::PrivateAggregationRequestPtr>,
+          std::is_same<std::remove_const_t<Ts>,
+                       auction_worklet::mojom::
+                           FinalizedPrivateAggregationRequestPtr>>...>::value);
   // Need to use `std::ref` as `mojo::StructPtr`s are move-only.
   return testing::UnorderedElementsAre(testing::Eq(std::ref(requests))...);
 }
@@ -2300,8 +2301,9 @@ TEST_F(BiddingAndAuctionPAggResponseTest, ParsePAggResponse) {
   PrivateAggregationKey key = {
       url::Origin::Create(GURL(kOwnerOrigin)),
       url::Origin::Create(GURL(kAggregationCoordinator))};
-  auction_worklet::mojom::PrivateAggregationRequestPtr histogram_request =
-      CreatePaggHistogramRequest(1, 123, std::nullopt);
+  auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr
+      histogram_request =
+          CreateFinalizedPaggHistogramRequest(1, 123, std::nullopt);
   EXPECT_THAT(result->server_filtered_pagg_requests_reserved[std::move(key)],
               ElementsAreRequests(histogram_request));
 
@@ -2566,23 +2568,23 @@ TEST_F(BiddingAndAuctionPAggResponseTest,
       url::Origin::Create(GURL(kAggregationCoordinator2))};
   static const struct {
     std::string event;
-    auction_worklet::mojom::PrivateAggregationRequestPtr pagg_request;
+    auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr pagg_request;
   } kTestCases[] = {
       {
           "reserved.win",
-          CreatePaggHistogramRequest(1, 123, std::nullopt),
+          CreateFinalizedPaggHistogramRequest(1, 123, std::nullopt),
       },
       {
           "reserved.always",
-          CreatePaggHistogramRequest(1, 123, std::nullopt),
+          CreateFinalizedPaggHistogramRequest(1, 123, std::nullopt),
       },
       {
           "reserved.loss",
-          CreatePaggHistogramRequest(1, 123, std::nullopt),
+          CreateFinalizedPaggHistogramRequest(1, 123, std::nullopt),
       },
       {
           "click",
-          CreatePaggHistogramRequest(1, 123, std::nullopt),
+          CreateFinalizedPaggHistogramRequest(1, 123, std::nullopt),
       },
   };
   for (const auto& test_case : kTestCases) {

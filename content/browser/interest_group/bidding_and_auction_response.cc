@@ -817,15 +817,12 @@ void BiddingAndAuctionResponse::TryParsePAggContributions(
     } else {
       // Server already filtered out not needed contributions based on final
       // auction result.
-      auction_worklet::mojom::PrivateAggregationRequestPtr request =
-          auction_worklet::mojom::PrivateAggregationRequest::New(
-              auction_worklet::mojom::AggregatableReportContribution::
-                  NewHistogramContribution(
-                      blink::mojom::AggregatableReportHistogramContribution::
-                          New(
-                              /*bucket=*/U128FromBigEndian(*bucket),
-                              /*value=*/*value,
-                              /*filtering_id=*/filtering_id)),
+      auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr request =
+          auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
+              blink::mojom::AggregatableReportHistogramContribution::New(
+                  /*bucket=*/U128FromBigEndian(*bucket),
+                  /*value=*/*value,
+                  /*filtering_id=*/filtering_id),
               // TODO(qingxinwu): consider allowing this to be set
               blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New());

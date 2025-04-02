@@ -121,20 +121,21 @@
     return;
   }
 
-  signin_metrics::ProfileSignout signout_source_metric = signin_metrics::
-      ProfileSignout::kUserClickedSignoutFromClearBrowsingDataPage;
+  constexpr signin_metrics::ProfileSignout signout_source_metric =
+      signin_metrics::ProfileSignout::
+          kUserClickedSignoutFromClearBrowsingDataPage;
+  __weak __typeof(self) weakSelf = self;
   _signoutCoordinator = [[SignoutActionSheetCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:browser
                             rect:_viewController.view.frame
                             view:_viewController.view
         forceSnackbarOverToolbar:NO
-                      withSource:signout_source_metric];
+                      withSource:signout_source_metric
+                      completion:^(BOOL success) {
+                        [weakSelf handleAuthenticationOperationDidFinish];
+                      }];
   _signoutCoordinator.showUnavailableFeatureDialogHeader = YES;
-  __weak __typeof(self) weakSelf = self;
-  _signoutCoordinator.signoutCompletion = ^(BOOL success) {
-    [weakSelf handleAuthenticationOperationDidFinish];
-  };
   _signoutCoordinator.delegate = self;
   [_signoutCoordinator start];
 }

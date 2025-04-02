@@ -16,7 +16,7 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
-#include "components/autofill_ai/core/browser/autofill_ai_logger.h"
+#include "components/autofill_ai/core/browser/metrics/autofill_ai_logger.h"
 
 namespace autofill {
 class FormData;

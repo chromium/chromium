@@ -120,9 +120,9 @@ TEST_F(AcceleratedStaticBitmapImageTest, CopyToTextureSynchronization) {
   gfx::Point dest_point(0, 0);
   gfx::Rect source_sub_rectangle(0, 0, 10, 10);
   ASSERT_TRUE(bitmap->CopyToTexture(
-      &destination_gl, GL_TEXTURE_2D, 1 /*dest_texture_id*/,
-      0 /*dest_texture_level*/, false /*unpack_premultiply_alpha*/,
-      false /*unpack_flip_y*/, dest_point, source_sub_rectangle));
+      &destination_gl, GL_TEXTURE_2D, /*dest_texture_id=*/1,
+      /*dest_texture_level=*/0, /*unpack_premultiply_alpha=*/false,
+      kTopLeft_GrSurfaceOrigin, dest_point, source_sub_rectangle));
 
   testing::Mock::VerifyAndClearExpectations(&gl_);
   testing::Mock::VerifyAndClearExpectations(&destination_gl);

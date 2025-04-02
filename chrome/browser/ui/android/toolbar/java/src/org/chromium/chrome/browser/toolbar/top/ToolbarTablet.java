@@ -504,13 +504,6 @@ public class ToolbarTablet extends ToolbarLayout
     }
 
     @Override
-    void updateBackButtonVisibility(boolean canGoBack) {
-        boolean enableButton = canGoBack && !mIsInTabSwitcherMode;
-        mBackButton.setEnabled(enableButton);
-        mBackButton.setFocusable(enableButton);
-    }
-
-    @Override
     void updateForwardButtonVisibility(boolean canGoForward) {
         boolean enableButton = canGoForward && !mIsInTabSwitcherMode;
         mForwardButton.setEnabled(enableButton);
@@ -649,7 +642,7 @@ public class ToolbarTablet extends ToolbarLayout
 
         // Set hover highlight for profile, voice search, share and new tab button on tablets. Set
         // box hover highlight for the rest of button variants.
-        if (buttonData.getButtonSpec().getShouldShowHoverHighlight()) {
+        if (buttonData.getButtonSpec().shouldShowBackgroundHighlight()) {
             mOptionalButton.setBackgroundResource(
                     isIncognitoBranded()
                             ? R.drawable.default_icon_background_baseline

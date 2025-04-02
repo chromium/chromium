@@ -475,7 +475,7 @@ NSString* const kDomain2 = @"domain2.com";
   FakeSystemIdentity* fakeManagedIdentity =
       [FakeSystemIdentity identityWithEmail:managedAccountEmail];
 
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
     [SigninEarlGrey
         signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
   } else {
@@ -564,7 +564,7 @@ NSString* const kDomain2 = @"domain2.com";
   FakeSystemIdentity* fakeManagedIdentity =
       [FakeSystemIdentity identityWithEmail:managedAccountEmail];
 
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
     [SigninEarlGrey
         signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
   } else {
@@ -610,7 +610,7 @@ NSString* const kDomain2 = @"domain2.com";
   FakeSystemIdentity* fakeManagedIdentity =
       [FakeSystemIdentity identityWithEmail:managedAccountEmail];
 
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
     [SigninEarlGrey
         signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
   } else {
@@ -658,7 +658,7 @@ NSString* const kDomain2 = @"domain2.com";
   FakeSystemIdentity* fakeManagedIdentity =
       [FakeSystemIdentity identityWithEmail:managedAccountEmail];
 
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
     [SigninEarlGrey
         signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
   } else {

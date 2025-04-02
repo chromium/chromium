@@ -38,8 +38,6 @@
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder_encoder_wrapper.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder_handler.h"
-#include "third_party/blink/renderer/modules/mediarecorder/vea_encoder.h"
-#include "third_party/blink/renderer/modules/mediarecorder/vpx_encoder.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -56,7 +54,6 @@
 
 #if BUILDFLAG(ENABLE_OPENH264)
 #include "media/video/openh264_video_encoder.h"
-#include "third_party/blink/renderer/modules/mediarecorder/h264_encoder.h"
 #endif  // #if BUILDFLAG(ENABLE_OPENH264)
 
 #if BUILDFLAG(ENABLE_LIBAOM)
@@ -1018,82 +1015,6 @@ VideoTrackRecorderImpl::CreateMediaVideoEncoder(
       on_encoded_video_cb_, std::move(on_error_cb));
 }
 
-std::unique_ptr<VideoTrackRecorder::Encoder>
-VideoTrackRecorderImpl::CreateSoftwareVideoEncoder(
-    scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
-    CodecProfile codec_profile,
-    bool is_screencast) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  CHECK(codec_profile.profile.has_value());
-
-  switch (codec_profile.codec_id) {
-#if BUILDFLAG(ENABLE_OPENH264)
-    case CodecId::kH264:
-      return std::make_unique<H264Encoder>(
-          std::move(encoding_task_runner), on_encoded_video_cb_, codec_profile,
-          bits_per_second_, is_screencast,
-          base::BindPostTask(
-              main_thread_task_runner_,
-              WTF::BindRepeating(&CallbackInterface::OnVideoEncodingError,
-                                 WrapPersistent(callback_interface()))));
-#endif
-    case CodecId::kVp8:
-    case CodecId::kVp9:
-      return std::make_unique<VpxEncoder>(
-          std::move(encoding_task_runner),
-          codec_profile.codec_id == CodecId::kVp9, on_encoded_video_cb_,
-          bits_per_second_, is_screencast,
-          base::BindPostTask(
-              main_thread_task_runner_,
-              WTF::BindRepeating(&CallbackInterface::OnVideoEncodingError,
-                                 WrapPersistent(callback_interface()))));
-#if BUILDFLAG(ENABLE_LIBAOM)
-    case CodecId::kAv1: {
-      auto on_error_cb = base::BindPostTask(
-          main_thread_task_runner_,
-          WTF::BindOnce(&CallbackInterface::OnVideoEncodingError,
-                        WrapPersistent(callback_interface())));
-      return std::make_unique<MediaRecorderEncoderWrapper>(
-          std::move(encoding_task_runner), *codec_profile.profile,
-          bits_per_second_, is_screencast,
-          /*gpu_factories=*/nullptr,
-          GetCreateSoftwareVideoEncoderCallback(CodecId::kAv1),
-          on_encoded_video_cb_, std::move(on_error_cb));
-    }
-#endif  // BUILDFLAG(ENABLE_LIBAOM)
-    default:
-      NOTREACHED() << "Unsupported codec: "
-                   << static_cast<int>(codec_profile.codec_id);
-  }
-}
-
-std::unique_ptr<VideoTrackRecorder::Encoder>
-VideoTrackRecorderImpl::CreateHardwareVideoEncoder(
-    scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
-    CodecProfile codec_profile,
-    const gfx::Size& input_size,
-    bool use_import_mode,
-    bool is_screencast) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  CHECK(codec_profile.profile.has_value());
-  const auto [vea_profile, vbr_supported] =
-      GetCodecEnumerator()->FindSupportedVideoCodecProfile(
-          codec_profile.codec_id, *codec_profile.profile);
-
-  // VBR encoding is preferred.
-  media::Bitrate::Mode bitrate_mode = vbr_supported
-                                          ? media::Bitrate::Mode::kVariable
-                                          : media::Bitrate::Mode::kConstant;
-  return std::make_unique<VEAEncoder>(
-      std::move(encoding_task_runner), on_encoded_video_cb_,
-      base::BindPostTask(
-          main_thread_task_runner_,
-          WTF::BindRepeating(&VideoTrackRecorderImpl::OnHardwareEncoderError,
-                             weak_factory_.GetWeakPtr())),
-      bitrate_mode, bits_per_second_, vea_profile, codec_profile.level,
-      input_size, use_import_mode, is_screencast);
-}
-
 void VideoTrackRecorderImpl::InitializeEncoder(
     uint32_t bits_per_second,
     bool allow_vea_encoder,
@@ -1121,31 +1042,11 @@ void VideoTrackRecorderImpl::InitializeEncoder(
   const bool is_screencast =
       static_cast<const MediaStreamVideoTrack*>(track_->GetPlatformTrack())
           ->is_screencast();
-  const bool use_import_mode =
-      frame_storage_type == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER;
   const bool create_vea_encoder = allow_vea_encoder && can_use_vea;
-
-  scoped_refptr<base::SequencedTaskRunner> encoding_task_runner;
-  std::unique_ptr<Encoder> encoder;
-  if (RuntimeEnabledFeatures::MediaRecorderUseMediaVideoEncoderEnabled()) {
-    encoding_task_runner =
-        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
-    encoder = CreateMediaVideoEncoder(encoding_task_runner, codec_profile,
-                                      is_screencast, create_vea_encoder);
-  } else {
-    if (create_vea_encoder) {
-      encoding_task_runner =
-          Platform::Current()->GetGpuFactories()->GetTaskRunner();
-      encoder = CreateHardwareVideoEncoder(encoding_task_runner, codec_profile,
-                                           input_size, use_import_mode,
-                                           is_screencast);
-    } else {
-      encoding_task_runner =
-          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
-      encoder = CreateSoftwareVideoEncoder(encoding_task_runner, codec_profile,
-                                           is_screencast);
-    }
-  }
+  auto encoding_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+  auto encoder = CreateMediaVideoEncoder(encoding_task_runner, codec_profile,
+                                         is_screencast, create_vea_encoder);
 
   UmaHistogramForCodec(create_vea_encoder, codec_profile.codec_id);
   CHECK(encoder);

@@ -94,7 +94,7 @@ ChromeRootStoreData& ChromeRootStoreData::operator=(
     ChromeRootStoreData&& other) = default;
 
 std::optional<ChromeRootStoreData>
-ChromeRootStoreData::CreateChromeRootStoreData(
+ChromeRootStoreData::CreateFromRootStoreProto(
     const chrome_root_store::RootStore& proto) {
   ChromeRootStoreData root_store_data;
 
@@ -154,22 +154,24 @@ ChromeRootStoreData::CreateChromeRootStoreData(
   return root_store_data;
 }
 
-TrustStoreChrome::TrustStoreChrome()
-    : TrustStoreChrome(
-          kChromeRootCertList,
-          /*certs_are_static=*/true,
-          /*version=*/CompiledChromeRootStoreVersion(),
-          /*override_constraints=*/InitializeConstraintsOverrides()) {}
+ChromeRootStoreData ChromeRootStoreData::CreateFromCompiledRootStore() {
+  return ChromeRootStoreData(kChromeRootCertList,
+                             /*certs_are_static=*/true,
+                             /*version=*/CompiledChromeRootStoreVersion());
+}
 
-TrustStoreChrome::TrustStoreChrome(base::span<const ChromeRootCertInfo> certs,
-                                   bool certs_are_static,
-                                   int64_t version,
-                                   ConstraintOverrideMap override_constraints)
-    : override_constraints_(std::move(override_constraints)) {
-  std::vector<
-      std::pair<std::string_view, std::vector<ChromeRootCertConstraints>>>
-      constraints;
+ChromeRootStoreData ChromeRootStoreData::CreateForTesting(
+    base::span<const ChromeRootCertInfo> certs,
+    int64_t version) {
+  return ChromeRootStoreData(certs,
+                             /*certs_are_static=*/false, version);
+}
 
+ChromeRootStoreData::ChromeRootStoreData(
+    base::span<const ChromeRootCertInfo> certs,
+    bool certs_are_static,
+    int64_t version)
+    : version_(version) {
   // TODO(hchao, sleevi): Explore keeping a CRYPTO_BUFFER of just the DER
   // certificate and subject name. This would hopefully save memory compared
   // to keeping the full parsed representation in memory, especially when
@@ -194,23 +196,23 @@ TrustStoreChrome::TrustStoreChrome(base::span<const ChromeRootCertInfo> certs,
     // There should always be a valid cert, because we should be parsing Chrome
     // Root Store static data compiled in.
     CHECK(parsed);
-    if (!cert_info.constraints.empty()) {
-      std::vector<ChromeRootCertConstraints> cert_constraints;
-      for (const auto& constraint : cert_info.constraints) {
-        cert_constraints.emplace_back(constraint);
-      }
-      constraints.emplace_back(parsed->der_cert().AsStringView(),
-                               std::move(cert_constraints));
+    std::vector<ChromeRootCertConstraints> cert_constraints;
+    for (const auto& constraint : cert_info.constraints) {
+      cert_constraints.emplace_back(constraint);
     }
-    trust_store_.AddTrustAnchor(std::move(parsed));
+    anchors_.emplace_back(std::move(parsed), std::move(cert_constraints));
   }
-
-  constraints_ = base::flat_map(std::move(constraints));
-  version_ = version;
 }
 
+TrustStoreChrome::TrustStoreChrome()
+    : TrustStoreChrome(ChromeRootStoreData::CreateFromCompiledRootStore()) {}
+
 TrustStoreChrome::TrustStoreChrome(const ChromeRootStoreData& root_store_data)
-    : override_constraints_(InitializeConstraintsOverrides()) {
+    : TrustStoreChrome(root_store_data, InitializeConstraintsOverrides()) {}
+
+TrustStoreChrome::TrustStoreChrome(const ChromeRootStoreData& root_store_data,
+                                   ConstraintOverrideMap override_constraints)
+    : override_constraints_(std::move(override_constraints)) {
   std::vector<
       std::pair<std::string_view, std::vector<ChromeRootCertConstraints>>>
       constraints;
@@ -363,34 +365,12 @@ std::unique_ptr<TrustStoreChrome> TrustStoreChrome::CreateTrustStoreForTesting(
     ConstraintOverrideMap override_constraints) {
   // Note: wrap_unique is used because the constructor is private.
   return base::WrapUnique(new TrustStoreChrome(
-      certs,
-      /*certs_are_static=*/false,
-      /*version=*/version, std::move(override_constraints)));
+      ChromeRootStoreData::CreateForTesting(certs, version),
+      std::move(override_constraints)));
 }
 
 int64_t CompiledChromeRootStoreVersion() {
   return kRootStoreVersion;
-}
-
-std::vector<ChromeRootStoreData::Anchor> CompiledChromeRootStoreAnchors() {
-  std::vector<ChromeRootStoreData::Anchor> anchors;
-  for (const auto& cert_info : kChromeRootCertList) {
-    bssl::UniquePtr<CRYPTO_BUFFER> cert =
-        x509_util::CreateCryptoBufferFromStaticDataUnsafe(
-            cert_info.root_cert_der);
-    bssl::CertErrors errors;
-    auto parsed = bssl::ParsedCertificate::Create(
-        std::move(cert), x509_util::DefaultParseCertificateOptions(), &errors);
-    DCHECK(parsed);
-
-    std::vector<ChromeRootCertConstraints> cert_constraints;
-    for (const auto& constraint : cert_info.constraints) {
-      cert_constraints.emplace_back(constraint);
-    }
-    anchors.emplace_back(std::move(parsed), std::move(cert_constraints));
-  }
-
-  return anchors;
 }
 
 }  // namespace net

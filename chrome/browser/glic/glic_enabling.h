@@ -16,6 +16,12 @@ class Profile;
 class ProfileAttributesStorage;
 
 namespace glic {
+namespace mojom {
+// TODO(crbug.com/406500707): This forward declaration is needed because we use
+// allow_circular_includes_from. Our build rules should be refactored to avoid
+// this.
+enum class ProfileReadyState : int32_t;
+}  // namespace mojom
 
 // This class provides a central location for checking if GLIC is enabled. It
 // allows for future expansion to include other ways the feature may be disabled
@@ -63,6 +69,9 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   // Whether or not the profile is currently ready for Glic. This means no
   // additional steps must be taken before opening Glic.
   static bool IsReadyForProfile(Profile* profile);
+
+  // Same as IsReadyForProfile, but returns a more detailed state.
+  static mojom::ProfileReadyState GetProfileReadyState(Profile* profile);
 
   // The settings page is shown when:
   // * Flags are enabled

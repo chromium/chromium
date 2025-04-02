@@ -4,14 +4,13 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -28,6 +27,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
  * Tabs remain, the native model will be destroyed and only rebuilt when a new incognito Tab is
  * created.
  */
+@NullMarked
 class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     /** Creates TabModels for use in IncognitoModel. */
     public interface IncognitoTabModelDelegate {
@@ -42,8 +42,9 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     private final ObserverList<TabModelObserver> mObservers = new ObserverList<>();
     private final ObserverList<IncognitoTabModelObserver> mIncognitoObservers =
             new ObserverList<>();
-    private final Callback<Tab> mDelegateModelCurrentTabSupplierObserver;
-    private final ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
+    private final Callback<@Nullable Tab> mDelegateModelCurrentTabSupplierObserver;
+    private final ObservableSupplierImpl<@Nullable Tab> mCurrentTabSupplier =
+            new ObservableSupplierImpl<>();
     private final Callback<Integer> mDelegateModelTabCountSupplierObserver;
     private final ObservableSupplierImpl<Integer> mTabCountSupplier =
             new ObservableSupplierImpl<>();
@@ -51,7 +52,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
             new TabRemover() {
                 @Override
                 public void closeTabs(
-                        @NonNull TabClosureParams tabClosureParams,
+                        TabClosureParams tabClosureParams,
                         boolean allowDialog,
                         @Nullable TabModelActionListener listener) {
                     mDelegateModel
@@ -61,10 +62,10 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
 
                 @Override
                 public void prepareCloseTabs(
-                        @NonNull TabClosureParams tabClosureParams,
+                        TabClosureParams tabClosureParams,
                         boolean allowDialog,
                         @Nullable TabModelActionListener listener,
-                        @NonNull Callback<TabClosureParams> onPreparedCallback) {
+                        Callback<TabClosureParams> onPreparedCallback) {
                     mDelegateModel
                             .getTabRemover()
                             .prepareCloseTabs(
@@ -72,15 +73,13 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
                 }
 
                 @Override
-                public void forceCloseTabs(@NonNull TabClosureParams tabClosureParams) {
+                public void forceCloseTabs(TabClosureParams tabClosureParams) {
                     mDelegateModel.getTabRemover().forceCloseTabs(tabClosureParams);
                 }
 
                 @Override
                 public void removeTab(
-                        @NonNull Tab tab,
-                        boolean allowDialog,
-                        @Nullable TabModelActionListener listener) {
+                        Tab tab, boolean allowDialog, @Nullable TabModelActionListener listener) {
                     mDelegateModel.getTabRemover().removeTab(tab, allowDialog, listener);
                 }
             };
@@ -90,6 +89,8 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     private boolean mActive;
 
     /** Constructor for IncognitoTabModel. */
+    // https://github.com/uber/NullAway/issues/1128
+    @SuppressWarnings("NullAway")
     IncognitoTabModelImpl(IncognitoTabModelDelegate tabModelCreator) {
         mDelegate = tabModelCreator;
         mDelegateModel = EmptyTabModel.getInstance(true);
@@ -156,7 +157,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public Profile getProfile() {
+    public @Nullable Profile getProfile() {
         return mDelegateModel.getProfile();
     }
 
@@ -176,7 +177,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public @NonNull TabRemover getTabRemover() {
+    public TabRemover getTabRemover() {
         return mTabRemoverProxy;
     }
 
@@ -190,7 +191,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public Tab getNextTabIfClosed(int id, boolean uponExit) {
+    public @Nullable Tab getNextTabIfClosed(int id, boolean uponExit) {
         return mDelegateModel.getNextTabIfClosed(id, uponExit);
     }
 
@@ -200,7 +201,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public Tab getTabAt(int index) {
+    public @Nullable Tab getTabAt(int index) {
         return mDelegateModel.getTabAt(index);
     }
 
@@ -220,7 +221,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public @NonNull ObservableSupplier<Tab> getCurrentTabSupplier() {
+    public ObservableSupplier<@Nullable Tab> getCurrentTabSupplier() {
         return mCurrentTabSupplier;
     }
 
@@ -280,12 +281,12 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public @NonNull ObservableSupplier<Integer> getTabCountSupplier() {
+    public ObservableSupplier<Integer> getTabCountSupplier() {
         return mTabCountSupplier;
     }
 
     @Override
-    public @NonNull TabCreator getTabCreator() {
+    public TabCreator getTabCreator() {
         return mDelegate.getIncognitoTabCreator();
     }
 
