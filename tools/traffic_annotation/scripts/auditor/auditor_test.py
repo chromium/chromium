@@ -904,6 +904,16 @@ supervised_user_refresh_token_fetcher\t\tSupervised Users\tFetches an OAuth2 ref
     self.assertTrue(self.auditor.extracted_annotations)
     self.assertFalse(errors)
 
+  def test_run_all_checks_with_path_filter(self):
+    """Test run_all_checks with a path filter defined. This simulates how the
+    CQ auditor performs tests, since we only check updated files."""
+    path_filter = [
+        (TEST_DATA_DIR /
+         "test_sample_annotations.cc").relative_to(SRC_DIR).as_posix()
+    ]
+    errors = self.auditor.run_all_checks(path_filter, True,
+                                         Exporter.GROUPING_XML_PATH)
+    self.assertFalse(errors)
 
 if __name__ == "__main__":
   unittest.main()
