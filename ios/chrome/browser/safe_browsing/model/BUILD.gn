@@ -40,6 +40,7 @@ source_set("model") {
   ]
 
   deps = [
+    ":password_protection_ts",
     "//base",
     "//components/enterprise/connectors/core",
     "//components/feature_engagement/public",
