@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "cc/input/android/offset_tag_android.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
-#include "components/tab_groups/tab_group_id.h"
 #include "ui/android/resources/resource_manager.h"
 
 namespace cc::slim {
@@ -164,7 +163,7 @@ class TabStripSceneLayer : public SceneLayer {
       jboolean foreground,
       jboolean show_reorder_background,
       jboolean show_bubble,
-      const base::android::JavaParamRef<jobject>& jgroup_token,
+      jint id,
       jint tint,
       jint reorder_background_tint,
       jint bubble_tint,
