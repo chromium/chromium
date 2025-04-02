@@ -4,8 +4,6 @@
 
 package org.chromium.components.permissions;
 
-import org.jni_zero.CalledByNative;
-
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -16,16 +14,6 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 public class OsAdditionalSecurityPermissionUtil {
     private static @Nullable OsAdditionalSecurityPermissionProvider sProviderInstance;
-
-    /**
-     * Returns whether the operating system has granted permission to enable javascript optimizers.
-     * Can be queried from any thread.
-     */
-    @CalledByNative
-    public static boolean hasJavascriptOptimizerPermission() {
-        OsAdditionalSecurityPermissionProvider provider = getProviderInstance();
-        return provider == null || provider.hasJavascriptOptimizerPermission();
-    }
 
     /** Requires native to be loaded. */
     public static @Nullable OsAdditionalSecurityPermissionProvider getProviderInstance() {

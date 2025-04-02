@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/prefs/pref_service.h"
@@ -58,22 +59,6 @@ void AdvancedProtectionStatusManagerDesktop::Initialize() {
   SubscribeToSigninEvents();
 }
 
-void AdvancedProtectionStatusManagerDesktop::AddObserver(
-    StatusChangedObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void AdvancedProtectionStatusManagerDesktop::RemoveObserver(
-    StatusChangedObserver* observer) {
-  observers_.RemoveObserver(observer);
-}
-
-void AdvancedProtectionStatusManagerDesktop::NotifyStatusChanged() {
-  for (StatusChangedObserver& observer : observers_) {
-    observer.OnAdvancedProtectionStatusChanged(is_under_advanced_protection_);
-  }
-}
-
 void AdvancedProtectionStatusManagerDesktop::MaybeRefreshOnStartUp() {
   // Retrieves advanced protection service status from primary account's info.
   CoreAccountInfo core_info =
@@ -85,7 +70,7 @@ void AdvancedProtectionStatusManagerDesktop::MaybeRefreshOnStartUp() {
   is_under_advanced_protection_ = core_info.is_under_advanced_protection;
   RecordUMA(is_under_advanced_protection_ ? UmaEvent::kEnabled
                                           : UmaEvent::kDisabled);
-  NotifyStatusChanged();
+  NotifyObserversStatusChanged();
 
   if (pref_service_->HasPrefPath(prefs::kAdvancedProtectionLastRefreshInUs)) {
     last_refreshed_ = base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
@@ -110,23 +95,24 @@ void AdvancedProtectionStatusManagerDesktop::Shutdown() {
 AdvancedProtectionStatusManagerDesktop::
     ~AdvancedProtectionStatusManagerDesktop() = default;
 
-bool AdvancedProtectionStatusManagerDesktop::IsUnderAdvancedProtection() const {
+AdvancedProtectionStatusManager::Type
+AdvancedProtectionStatusManagerDesktop::GetAdvancedProtectionType() const {
   if (!pref_service_->GetBoolean(prefs::kAdvancedProtectionAllowed)) {
-    return false;
+    return Type::kNone;
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceTreatUserAsAdvancedProtection)) {
-    return true;
+    return Type::kProfile;
   }
 
-  return is_under_advanced_protection_;
+  return is_under_advanced_protection_ ? Type::kProfile : Type::kNone;
 }
 
 void AdvancedProtectionStatusManagerDesktop::
     SetAdvancedProtectionStatusForTesting(bool enrolled) {
   is_under_advanced_protection_ = enrolled;
-  NotifyStatusChanged();
+  NotifyObserversStatusChanged();
 }
 
 void AdvancedProtectionStatusManagerDesktop::SubscribeToSigninEvents() {
@@ -197,7 +183,7 @@ void AdvancedProtectionStatusManagerDesktop::OnAdvancedProtectionEnabled() {
   is_under_advanced_protection_ = true;
   UpdateLastRefreshTime();
   ScheduleNextRefresh();
-  NotifyStatusChanged();
+  NotifyObserversStatusChanged();
 }
 
 void AdvancedProtectionStatusManagerDesktop::OnAdvancedProtectionDisabled() {
@@ -207,7 +193,7 @@ void AdvancedProtectionStatusManagerDesktop::OnAdvancedProtectionDisabled() {
   is_under_advanced_protection_ = false;
   UpdateLastRefreshTime();
   CancelFutureRefresh();
-  NotifyStatusChanged();
+  NotifyObserversStatusChanged();
 }
 
 void AdvancedProtectionStatusManagerDesktop::OnAccessTokenFetchComplete(
