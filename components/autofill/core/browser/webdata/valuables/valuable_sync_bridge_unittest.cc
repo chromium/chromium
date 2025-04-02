@@ -142,6 +142,18 @@ TEST_F(ValuableSyncBridgeTest, IsEntityDataValid) {
   EXPECT_FALSE(bridge().IsEntityDataValid(*entity));
 }
 
+TEST_F(ValuableSyncBridgeTest, IsLoyaltyCardEntityDataValid) {
+  // Valid case.
+  std::unique_ptr<syncer::EntityData> entity =
+      CreateEntityDataFromLoyaltyCard(TestLoyaltyCard(kId1));
+  EXPECT_TRUE(bridge().IsEntityDataValid(*entity));
+  // Invalid logo.
+  entity->specifics.mutable_autofill_valuable()
+      ->mutable_loyalty_card()
+      ->set_program_logo("invalid_url");
+  EXPECT_FALSE(bridge().IsEntityDataValid(*entity));
+}
+
 TEST_F(ValuableSyncBridgeTest, GetStorageKey) {
   std::unique_ptr<syncer::EntityData> entity =
       CreateEntityDataFromLoyaltyCard(TestLoyaltyCard(kId1));
