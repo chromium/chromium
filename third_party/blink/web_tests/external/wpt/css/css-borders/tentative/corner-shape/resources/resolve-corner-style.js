@@ -8,7 +8,7 @@ const keywords = {
   bevel: 1,
   round: 2,
   squircle: 4,
-  straight: 1000,
+  square: 1000,
 };
 
 function resolve_corner_style(style, w, h) {

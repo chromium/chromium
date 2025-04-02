@@ -1771,8 +1771,8 @@ Superellipse StyleBuilderConverter::ConvertCornerShape(
         return Superellipse::Squircle();
       case CSSValueID::kScoop:
         return Superellipse::Scoop();
-      case CSSValueID::kStraight:
-        return Superellipse::Straight();
+      case CSSValueID::kSquare:
+        return Superellipse::Square();
       default:
         NOTREACHED();
     }

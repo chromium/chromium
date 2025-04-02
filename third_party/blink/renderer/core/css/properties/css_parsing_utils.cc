@@ -5178,7 +5178,7 @@ CSSValue* ConsumeCornerShape(CSSParserTokenStream& stream,
   if (auto* ident =
           ConsumeIdent<CSSValueID::kBevel, CSSValueID::kNotch,
                        CSSValueID::kRound, CSSValueID::kScoop,
-                       CSSValueID::kSquircle, CSSValueID::kStraight>(stream)) {
+                       CSSValueID::kSquircle, CSSValueID::kSquare>(stream)) {
     return ident;
   }
 
