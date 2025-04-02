@@ -205,6 +205,24 @@ struct TensorTypeMap<int64_t> {
       ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64;
 };
 
+template <>
+struct TensorTypeMap<uint64_t> {
+  static constexpr ONNXTensorElementDataType value =
+      ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT64;
+};
+
+template <>
+struct TensorTypeMap<int8_t> {
+  static constexpr ONNXTensorElementDataType value =
+      ONNX_TENSOR_ELEMENT_DATA_TYPE_INT8;
+};
+
+template <>
+struct TensorTypeMap<uint8_t> {
+  static constexpr ONNXTensorElementDataType value =
+      ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8;
+};
+
 }  // namespace
 
 std::string GetOperandName(std::string_view label, uint64_t id) {
@@ -1151,11 +1169,62 @@ GraphBuilderOrt::AddClampOperation(const mojom::Clamp& clamp) {
                                 fp16_ieee_from_fp32_value(clamp.max_value)));
       break;
     }
-    // TODO(https://github.com/shiyi9801/chromium/issues/60): Add other data
-    // types support. https://onnx.ai/onnx/operators/onnx__Clip.html
-    default:
-      NOTREACHED()
-          << "[WebNN] Clamp only supports float32 and float16 data type.";
+    case OperandDataType::kInt32: {
+      ASSIGN_OR_RETURN(min,
+                       CreateScalarInitializer(
+                           base::saturated_cast<int32_t>(clamp.min_value)));
+      ASSIGN_OR_RETURN(max,
+                       CreateScalarInitializer(
+                           base::saturated_cast<int32_t>(clamp.max_value)));
+      break;
+    }
+    case OperandDataType::kUint32: {
+      ASSIGN_OR_RETURN(min,
+                       CreateScalarInitializer(
+                           base::saturated_cast<uint32_t>(clamp.min_value)));
+      ASSIGN_OR_RETURN(max,
+                       CreateScalarInitializer(
+                           base::saturated_cast<uint32_t>(clamp.max_value)));
+      break;
+    }
+    case OperandDataType::kInt64: {
+      ASSIGN_OR_RETURN(min,
+                       CreateScalarInitializer(
+                           base::saturated_cast<int64_t>(clamp.min_value)));
+      ASSIGN_OR_RETURN(max,
+                       CreateScalarInitializer(
+                           base::saturated_cast<int64_t>(clamp.max_value)));
+      break;
+    }
+    case OperandDataType::kUint64: {
+      ASSIGN_OR_RETURN(min,
+                       CreateScalarInitializer(
+                           base::saturated_cast<uint64_t>(clamp.min_value)));
+      ASSIGN_OR_RETURN(max,
+                       CreateScalarInitializer(
+                           base::saturated_cast<uint64_t>(clamp.max_value)));
+      break;
+    }
+    case OperandDataType::kInt8: {
+      ASSIGN_OR_RETURN(min, CreateScalarInitializer(
+                                base::saturated_cast<int8_t>(clamp.min_value)));
+      ASSIGN_OR_RETURN(max, CreateScalarInitializer(
+                                base::saturated_cast<int8_t>(clamp.max_value)));
+      break;
+    }
+    case OperandDataType::kUint8: {
+      ASSIGN_OR_RETURN(min,
+                       CreateScalarInitializer(
+                           base::saturated_cast<uint8_t>(clamp.min_value)));
+      ASSIGN_OR_RETURN(max,
+                       CreateScalarInitializer(
+                           base::saturated_cast<uint8_t>(clamp.max_value)));
+      break;
+    }
+    default: {
+      NOTREACHED() << "[WebNN] Clamp only supports data type float32, float16, "
+                      "int32, uint32, int64, uint64, int8 and uint8.";
+    }
   }
 
   std::array<const char*, 3> inputs = {input.c_str(), min.c_str(), max.c_str()};

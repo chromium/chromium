@@ -258,7 +258,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*batch_normalization_mean=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        /*cast_input=*/{DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
-       /*clamp_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*clamp_input=*/{DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*concat_inputs=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*conv2d_input=*/{DataTypeConstraint::kFloat16To32, {3, 8}},
@@ -329,17 +329,19 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*expand_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*gather_input=*/
-       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kNonScalarMaxRank},
        /*gather_indices=*/
        {DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes, kMaxRank},
        /*gather_elements_input=*/
-       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kNonScalarMaxRank},
        /*gather_elements_indices=*/
-       {DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes, kMaxRank},
+       {DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
+        kNonScalarMaxRank},
        /*gather_nd_input=*/
-       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kNonScalarMaxRank},
        /*gather_nd_indices=*/
-       {DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes, kMaxRank},
+       {DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
+        kNonScalarMaxRank},
        /*gelu_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*gemm_a=*/
        {DataTypeConstraint::kFloat16To32Ints32To64, SupportedRanks::Exactly(2)},
@@ -360,7 +362,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*instance_normalization_scale=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        /*layer_normalization_input=*/
-       {DataTypeConstraint::kFloat16To32, {1, 8}},
+       {DataTypeConstraint::kFloat16To32, kNonScalarMaxRank},
        /*leaky_relu_input=*/
        {DataTypeConstraint::kFloat16To32, kMaxRank},
        /*linear_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
