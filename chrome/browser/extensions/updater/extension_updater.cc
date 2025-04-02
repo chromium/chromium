@@ -21,14 +21,13 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
+#include "base/notimplemented.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/delayed_install_manager.h"
-#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/external_install_manager.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
@@ -53,12 +52,18 @@
 #include "extensions/browser/updater/extension_update_data.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extension_updater_uma.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_url_handlers.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
+#include "chrome/browser/extensions/extension_management.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -170,7 +175,12 @@ ExtensionUpdater::ExtensionUpdater(Profile* profile)
       registrar_(ExtensionRegistrar::Get(profile)),
       delayed_install_manager_(DelayedInstallManager::Get(profile)),
       pending_extension_manager_(PendingExtensionManager::Get(profile)),
-      external_install_manager_(ExternalInstallManager::Get(profile)) {}
+      external_install_manager_(ExternalInstallManager::Get(profile)) {
+#if !BUILDFLAG(IS_ANDROID)
+  corrupted_extension_reinstaller_ =
+      CorruptedExtensionReinstaller::Get(profile);
+#endif
+}
 
 void ExtensionUpdater::InitAndEnable(
     ExtensionPrefs* extension_prefs,
@@ -248,6 +258,7 @@ void ExtensionUpdater::Stop() {
   pending_extension_manager_ = nullptr;
   external_install_manager_ = nullptr;
   extension_cache_ = nullptr;
+  corrupted_extension_reinstaller_ = nullptr;
 }
 
 void ExtensionUpdater::ScheduleNextCheck() {
@@ -387,9 +398,7 @@ bool ExtensionUpdater::AddExtensionToDownloader(
     const Extension& extension,
     int request_id,
     DownloadFetchPriority fetch_priority) {
-  ExtensionManagement* extension_management =
-      ExtensionManagementFactory::GetForBrowserContext(profile_);
-  GURL update_url = extension_management->GetEffectiveUpdateURL(extension);
+  GURL update_url = GetEffectiveUpdateURL(extension);
   // Skip extensions with empty update URLs converted from user
   // scripts.
   if (extension.converted_from_user_script() && update_url.is_empty()) {
@@ -441,8 +450,6 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
   // and external install sources.
   const PendingExtensionManager* pending_extension_manager =
       PendingExtensionManager::Get(profile_);
-  const CorruptedExtensionReinstaller* corrupted_extension_reinstaller =
-      CorruptedExtensionReinstaller::Get(profile_);
 
   ExtensionUpdateCheckParams update_check_params;
 
@@ -459,18 +466,14 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
       pending_ids.insert(id);
     }
     // Include corrupted extensions that should be repaired.
-    for (const auto& it :
-         corrupted_extension_reinstaller->GetExpectedReinstalls()) {
-      pending_ids.insert(it.first);
-    }
+    pending_ids.merge(GetCorruptedExtensionIds());
 
     for (const ExtensionId& pending_id : pending_ids) {
       const PendingExtensionInfo* info =
           pending_extension_manager->GetById(pending_id);
 
       const bool is_corrupt_reinstall =
-          corrupted_extension_reinstaller->IsReinstallForCorruptionExpected(
-              pending_id);
+          IsReinstallForCorruptionExpected(pending_id);
 
       // Extensions from the webstore that are corrupted do not have
       // PendingExtensionInfo but are still available in the extension registry.
@@ -811,10 +814,7 @@ bool ExtensionUpdater::CanUseUpdateService(
   // Furthermore, we can only update extensions that were installed from the
   // default webstore or extensions with empty update URLs not converted from
   // user scripts.
-  ExtensionManagement* extension_management =
-      ExtensionManagementFactory::GetForBrowserContext(profile_);
-  const GURL& update_url =
-      extension_management->GetEffectiveUpdateURL(*extension);
+  GURL update_url = GetEffectiveUpdateURL(*extension);
   if (update_url.is_empty())
     return !extension->converted_from_user_script();
   return extension_urls::IsWebstoreUpdateUrl(update_url);
@@ -1040,6 +1040,47 @@ void ExtensionUpdater::NotifyIfFinished(int request_id) {
 void ExtensionUpdater::OnAppTerminating() {
   // Shutdown has started. Don't start any more extension updates.
   browser_terminating_ = true;
+}
+
+std::set<ExtensionId> ExtensionUpdater::GetCorruptedExtensionIds() const {
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/404549055): Port CorruptedExtensionInstaller to Android.
+  NOTIMPLEMENTED() << "Corrupted extension update not supported on Android";
+  return {};
+#else
+  std::set<ExtensionId> ids;
+  for (const auto& it :
+       corrupted_extension_reinstaller_->GetExpectedReinstalls()) {
+    ids.insert(it.first);
+  }
+  return ids;
+#endif
+}
+
+bool ExtensionUpdater::IsReinstallForCorruptionExpected(
+    const ExtensionId& id) const {
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/404549055): Port CorruptedExtensionInstaller to Android.
+  // Only log once because this is called inside a loop.
+  NOTIMPLEMENTED_LOG_ONCE() << "IsReinstallForCorruptionExpected";
+  return false;
+#else
+  return corrupted_extension_reinstaller_->IsReinstallForCorruptionExpected(id);
+#endif
+}
+
+GURL ExtensionUpdater::GetEffectiveUpdateURL(const Extension& extension) const {
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/394876083): Use ExtensionManagement when it
+  // is ported to desktop Android.
+  // Only log once because this is called inside a loop.
+  NOTIMPLEMENTED_LOG_ONCE() << "GetEffectiveUpdateURL";
+  return ManifestURL::GetUpdateURL(&extension);
+#else
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(profile_);
+  return extension_management->GetEffectiveUpdateURL(extension);
+#endif
 }
 
 ExtensionUpdater::ScopedSkipScheduledCheckForTest::

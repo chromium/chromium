@@ -38,6 +38,7 @@ class ScopedProfileKeepAlive;
 
 namespace extensions {
 
+class CorruptedExtensionReinstaller;
 class CrxInstallError;
 class CrxInstaller;
 class DelayedInstallManager;
@@ -348,6 +349,16 @@ class ExtensionUpdater : public KeyedService,
   // Called when the browser is terminating.
   void OnAppTerminating();
 
+  // Returns the IDs of corrupted extensions scheduled for reinstall.
+  std::set<ExtensionId> GetCorruptedExtensionIds() const;
+
+  // Are we expecting a reinstall of the extension due to corruption?
+  bool IsReinstallForCorruptionExpected(const ExtensionId& id) const;
+
+  // Get the effective update URL for the extension. Normally this URL comes
+  // from the extension manifest, but may be overridden by policies.
+  GURL GetEffectiveUpdateURL(const Extension& extension) const;
+
   // Whether the updater is enabled (i.e. it's legal to call Start()).
   bool enabled_ = false;
 
@@ -380,6 +391,8 @@ class ExtensionUpdater : public KeyedService,
   raw_ptr<DelayedInstallManager> delayed_install_manager_ = nullptr;
   raw_ptr<PendingExtensionManager> pending_extension_manager_ = nullptr;
   raw_ptr<ExternalInstallManager> external_install_manager_ = nullptr;
+  raw_ptr<CorruptedExtensionReinstaller> corrupted_extension_reinstaller_ =
+      nullptr;
 
   std::map<int, InProgressCheck> requests_in_progress_;
   int next_request_id_ = 0;
