@@ -10075,10 +10075,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20241119_Dogfood",
+                    "name": "Enabled_20250331",
                     "params": {
-                        "activation_level": "enabled",
-                        "enable_console_logging": "true",
+                        "activation_level": "dry_run",
                         "enable_only_if_3pc_blocked": "false",
                         "performance_measurement_rate": "1.0"
                     },
