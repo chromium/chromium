@@ -60,6 +60,9 @@ class GtkUiPlatform {
   // If true, the device scale factor should be multiplied by the font scale. If
   // false, the font size should be multiplied by the font scale.
   virtual bool IncludeFontScaleInDeviceScale() const = 0;
+
+  // Returns true if the cursor size should be multiplied by the scale factor.
+  virtual bool IncludeScaleInCursorSize() const = 0;
 };
 
 }  // namespace gtk
