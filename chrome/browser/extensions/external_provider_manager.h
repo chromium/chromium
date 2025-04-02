@@ -109,6 +109,9 @@ class ExternalProviderManager
       const std::string& extension_id,
       const std::optional<CrxInstallError>& error);
 
+  // Are we expecting a reinstall of the extension due to corruption?
+  bool IsReinstallForCorruptionExpected(const ExtensionId& id) const;
+
   // The BrowserContext with which the manager is associated.
   raw_ptr<content::BrowserContext> context_;
 
