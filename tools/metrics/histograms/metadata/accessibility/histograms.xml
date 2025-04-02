@@ -3796,6 +3796,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="DomDistiller.Time.RunDistillationJavaScript" units="ms"
+    expires_after="2025-08-24">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    The amount of time the distiller script spent running on the page. This is
+    includes loading the script onto the web page. Recorded after the user has
+    chosen to view a simplified version of the current page.
+  </summary>
+</histogram>
+
 <histogram name="DomDistiller.Time.TimeToProvideResultToAccumulator" units="ms"
     expires_after="2025-08-24">
   <owner>wylieb@google.com</owner>
