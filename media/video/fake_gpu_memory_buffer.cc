@@ -11,6 +11,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "build/build_config.h"
+#include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_frame.h"
 
@@ -188,18 +189,5 @@ void FakeGpuMemoryBuffer::OnMemoryDump(
     const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
     uint64_t tracing_process_id,
     int importance) const {}
-
-std::unique_ptr<gpu::GpuMemoryBufferImpl>
-FakeGpuMemoryBufferSupport::CreateGpuMemoryBufferImplFromHandle(
-    gfx::GpuMemoryBufferHandle handle,
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    gpu::GpuMemoryBufferImpl::DestructionCallback callback,
-    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    scoped_refptr<base::UnsafeSharedMemoryPool> pool,
-    base::span<uint8_t> premapped_memory) {
-  return std::make_unique<FakeGpuMemoryBufferImpl>(size, format);
-}
 
 }  // namespace media
