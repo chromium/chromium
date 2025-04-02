@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
+#include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/payments_window_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -110,6 +111,7 @@ void DesktopPaymentsWindowManager::InitBnplFlow(BnplContext context) {
   flow_type_ = FlowType::kBnpl;
   bnpl_context_ = std::move(context);
   CreatePopup(bnpl_context_->initial_url, GetPopupSizeForBnpl());
+  autofill_metrics::LogBnplPopupWindowShown(bnpl_context_->issuer_id);
 }
 
 void DesktopPaymentsWindowManager::DidFinishNavigation(
@@ -302,6 +304,7 @@ void DesktopPaymentsWindowManager::OnWebContentsDestroyedForBnpl() {
   }
   std::move(bnpl_context_->completion_callback)
       .Run(result, std::move(most_recent_url_navigation_));
+  autofill_metrics::LogBnplPopupWindowResult(bnpl_context_->issuer_id, result);
   Reset();
 }
 

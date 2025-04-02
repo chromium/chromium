@@ -2983,6 +2983,16 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/webdata/autofill_webdata_backend_impl.cc:Result) -->
 
+<!-- LINT.IfChange(BnplPopupWindowResult) -->
+
+<enum name="BnplPopupWindowResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failure"/>
+  <int value="2" label="User closed before finishing"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/payments/payments_window_manager.h:BnplFlowResult) -->
+
 <enum name="BnplSuggestionNotShownReason">
   <int value="0" label="Amount extraction failure"/>
   <int value="1" label="Checkout amount not supported"/>

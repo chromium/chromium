@@ -534,7 +534,8 @@ TEST_F(BnplManagerTest, OnIssuerSelected_OnRedirectUrlFetched) {
   EXPECT_CALL(*static_cast<MockPaymentsWindowManager*>(
                   autofill_client_->GetPaymentsAutofillClient()
                       ->GetPaymentsWindowManager()),
-              InitBnplFlow(FieldsAre(kRedirectUrl, response.success_url_prefix,
+              InitBnplFlow(FieldsAre(linked_issuer.issuer_id(), kRedirectUrl,
+                                     response.success_url_prefix,
                                      response.failure_url_prefix,
                                      /*completion_callback=*/_)))
       .Times(1);

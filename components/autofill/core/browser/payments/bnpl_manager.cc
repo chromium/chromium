@@ -347,15 +347,20 @@ void BnplManager::OnRedirectUrlFetched(
     ongoing_flow_state_->redirect_url = std::move(response.redirect_url);
     ongoing_flow_state_->context_token = std::move(response.context_token);
 
-    PaymentsWindowManager::BnplContext bnpl_context;
-    bnpl_context.initial_url = ongoing_flow_state_->redirect_url;
-    bnpl_context.success_url_prefix = std::move(response.success_url_prefix);
-    bnpl_context.failure_url_prefix = std::move(response.failure_url_prefix);
-    bnpl_context.completion_callback = base::BindOnce(
+    PaymentsWindowManager::BnplContext payments_window_bnpl_context;
+    payments_window_bnpl_context.issuer_id =
+        ongoing_flow_state_->issuer.issuer_id();
+    payments_window_bnpl_context.initial_url =
+        ongoing_flow_state_->redirect_url;
+    payments_window_bnpl_context.success_url_prefix =
+        std::move(response.success_url_prefix);
+    payments_window_bnpl_context.failure_url_prefix =
+        std::move(response.failure_url_prefix);
+    payments_window_bnpl_context.completion_callback = base::BindOnce(
         &BnplManager::OnPopupWindowCompleted, weak_factory_.GetWeakPtr());
 
     payments_autofill_client().GetPaymentsWindowManager()->InitBnplFlow(
-        std::move(bnpl_context));
+        std::move(payments_window_bnpl_context));
   } else {
     payments_autofill_client().ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(

@@ -7,7 +7,11 @@
 
 #include <string_view>
 
+#include "components/autofill/core/browser/payments/payments_window_manager.h"
+
 namespace autofill::autofill_metrics {
+
+using BnplFlowResult = payments::PaymentsWindowManager::BnplFlowResult;
 
 // The reason why a BNPL suggestion was not shown on the page.
 enum class BnplSuggestionNotShownReason {
@@ -21,6 +25,9 @@ enum class BnplSuggestionNotShownReason {
 
   kMaxValue = kCheckoutAmountNotSupported,
 };
+
+// Returns the histogram suffix corresponding to the given issuer_id.
+std::string GetHistogramSuffixFromIssuerId(std::string_view issuer_id);
 
 // Logs if the buy-now-pay-later preference is changed by the user through the
 // pay-over-time toggle in the payment methods settings page. Records true when
@@ -36,6 +43,13 @@ void LogBnplTosDialogShown(std::string_view issuer_id);
 
 // Logs that the BNPL suggestion was not shown and the reason why.
 void LogBnplSuggestionNotShownReason(BnplSuggestionNotShownReason reason);
+
+// Logs that the BNPL popup window was shown.
+void LogBnplPopupWindowShown(std::string_view issuer_id);
+
+// Logs the result of the BNPL popup window.
+void LogBnplPopupWindowResult(std::string_view issuer_id,
+                              BnplFlowResult result);
 
 }  // namespace autofill::autofill_metrics
 
