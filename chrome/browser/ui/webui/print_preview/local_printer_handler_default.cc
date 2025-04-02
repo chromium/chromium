@@ -24,6 +24,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/common/printing/printer_capabilities_mac.h"
@@ -64,6 +65,11 @@ scoped_refptr<base::TaskRunner> CreatePrinterHandlerTaskRunner() {
 #endif
 }
 
+void ReportFetchCapabilitiesTime(base::TimeTicks start_time) {
+  base::UmaHistogramTimes("PrintPreview.FetchCapabilitiesTime2",
+                          base::TimeTicks::Now() - start_time);
+}
+
 }  // namespace
 
 // static
@@ -98,6 +104,16 @@ base::Value::Dict
 LocalPrinterHandlerDefault::FetchCapabilitiesOnBlockingTaskRunner(
     const std::string& device_name,
     const std::string& locale) {
+  scoped_refptr<PrintBackend> print_backend(
+      PrintBackend::CreateInstance(locale));
+
+  // Start timing after CreateInstance() to match what gets timed for the
+  // out-of-process query.
+  auto query_start_time = base::TimeTicks::Now();
+  absl::Cleanup metric_reporter = [query_start_time] {
+    ReportFetchCapabilitiesTime(query_start_time);
+  };
+
   PrinterSemanticCapsAndDefaults::Papers user_defined_papers;
 #if BUILDFLAG(IS_MAC)
   user_defined_papers = GetMacCustomPaperSizes();
@@ -109,21 +125,15 @@ LocalPrinterHandlerDefault::FetchCapabilitiesOnBlockingTaskRunner(
   base::ScopedAllowBlocking allow_blocking;
 #endif
 
-  auto query_start_time = base::TimeTicks::Now();
-
-  scoped_refptr<PrintBackend> print_backend(
-      PrintBackend::CreateInstance(locale));
-
   PrinterBasicInfo basic_info;
   mojom::ResultCode result =
       print_backend->GetPrinterBasicInfo(device_name, &basic_info);
-  base::UmaHistogramTimes("PrintPreview.FetchCapabilitiesTime",
-                          base::TimeTicks::Now() - query_start_time);
   if (result != mojom::ResultCode::kSuccess) {
     PRINTER_LOG(ERROR) << "Invalid printer when getting basic info for "
                        << device_name << ", result: " << result;
     return base::Value::Dict();
   }
+
   PRINTER_LOG(EVENT) << "Got basic info for " << device_name;
   return GetSettingsOnBlockingTaskRunner(
       device_name, basic_info, std::move(user_defined_papers), print_backend);
@@ -313,8 +323,7 @@ void LocalPrinterHandlerDefault::OnDidFetchCapabilitiesFromPrintBackendService(
     base::TimeTicks query_start_time,
     GetCapabilityCallback callback,
     mojom::PrinterCapsAndInfoResultPtr result) {
-  base::UmaHistogramTimes("PrintPreview.FetchCapabilitiesTime",
-                          base::TimeTicks::Now() - query_start_time);
+  ReportFetchCapabilitiesTime(query_start_time);
 
   if (result->is_result_code()) {
     PRINTER_LOG(ERROR)
