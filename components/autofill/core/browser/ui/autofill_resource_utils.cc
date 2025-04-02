@@ -50,6 +50,7 @@ constexpr auto kOldDataResources = base::MakeFixedFlatMap<Suggestion::Icon,
     {Suggestion::Icon::kIban, IDR_AUTOFILL_IBAN_OLD},
     {Suggestion::Icon::kBnpl, IDR_AUTOFILL_METADATA_BNPL_GENERIC_OLD},
 #if BUILDFLAG(IS_ANDROID)
+    {Suggestion::Icon::kHome, IDR_ANDROID_AUTOFILL_HOME},
     {Suggestion::Icon::kHttpWarning, IDR_ANDROID_AUTOFILL_HTTP_WARNING},
     {Suggestion::Icon::kHttpsInvalid,
      IDR_ANDROID_AUTOFILL_HTTPS_INVALID_WARNING},
@@ -58,6 +59,7 @@ constexpr auto kOldDataResources = base::MakeFixedFlatMap<Suggestion::Icon,
     {Suggestion::Icon::kCreate, IDR_ANDROID_AUTOFILL_CREATE},
     {Suggestion::Icon::kOfferTag, IDR_ANDROID_AUTOFILL_OFFER_TAG_GREEN},
     {Suggestion::Icon::kPlusAddress, IDR_AUTOFILL_PLUS_ADDRESS},
+    {Suggestion::Icon::kWork, IDR_ANDROID_AUTOFILL_WORK},
 #endif  // BUILDFLAG(IS_ANDROID)
 });
 
