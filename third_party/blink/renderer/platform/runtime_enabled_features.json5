@@ -3984,10 +3984,13 @@
       depends_on: ["CustomizableSelect"],
     },
     {
-      // Implement Selection API across shadow DOM
-      // See https://w3c.github.io/selection-api/
+      // Implement Selection API across shadow DOM: direction and
+      // getComposedRanges().
+      // https://w3c.github.io/selection-api/#dom-selection-getcomposedranges
+      // https://w3c.github.io/selection-api/#dom-selection-direction
+      // This should ship in M137, and it can be removed after M139.
       name: "SelectionAcrossShadowDOM",
-      status: "experimental",
+      status: "stable",
     },
     {
       // See https://crbug.com/395544401
