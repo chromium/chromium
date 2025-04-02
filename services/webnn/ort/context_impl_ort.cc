@@ -259,9 +259,15 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        /*cast_input=*/{DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*clamp_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
-       /*concat_inputs=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
-       /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
-       /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
+       /*concat_inputs=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
+       /*conv2d_input=*/{DataTypeConstraint::kFloat16To32, {3, 8}},
+       /*conv2d_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
+       /*conv_transpose2d_input=*/
+       {DataTypeConstraint::kFloat16To32, {3, 8}},
+       /*conv_transpose2d_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        /*cumulative_sum_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kNonScalarMaxRank},
        /*dequantize_linear_input=*/
@@ -322,28 +328,50 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        {DataTypeConstraint::kFloat16To32, kMaxRank},
        /*expand_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
-       /*gather_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
+       /*gather_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*gather_indices=*/
-       DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
-       /*gather_elements_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
+       {DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes, kMaxRank},
+       /*gather_elements_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*gather_elements_indices=*/
-       DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
-       /*gather_nd_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
+       {DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes, kMaxRank},
+       /*gather_nd_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*gather_nd_indices=*/
-       DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
+       {DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes, kMaxRank},
        /*gelu_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
-       /*gemm_input=*/DataTypeConstraint::kFloat16To32Ints32To64,
-       /*gru_input=*/DataTypeConstraint::kFloat16To32,
-       /*gru_cell_input=*/DataTypeConstraint::kFloat16To32,
+       /*gemm_a=*/
+       {DataTypeConstraint::kFloat16To32Ints32To64, SupportedRanks::Exactly(2)},
+       /*gemm_c=*/
+       {DataTypeConstraint::kFloat16To32Ints32To64, SupportedRanks::UpTo(2)},
+       /*gru_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(3)},
+       /*gru_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
+       /*gru_cell_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
+       /*gru_cell_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        /*hard_sigmoid_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*hard_swish_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
-       /*instance_normalization_input=*/DataTypeConstraint::kFloat16To32,
-       /*layer_normalization_input=*/DataTypeConstraint::kFloat16To32,
+       /*instance_normalization_input=*/
+       {DataTypeConstraint::kFloat16To32, {3, 8}},
+       /*instance_normalization_scale=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
+       /*layer_normalization_input=*/
+       {DataTypeConstraint::kFloat16To32, {1, 8}},
        /*leaky_relu_input=*/
        {DataTypeConstraint::kFloat16To32, kMaxRank},
        /*linear_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
-       /*lstm_input=*/DataTypeConstraint::kFloat16To32,
-       /*lstm_cell_input=*/DataTypeConstraint::kFloat16To32,
+       /*lstm_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(3)},
+       /*lstm_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
+       /*lstm_cell_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
+       /*lstm_cell_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        /*matmul_input=*/
        {DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
        // TODO: Support more data types including int4.

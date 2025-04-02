@@ -72,8 +72,7 @@ const OrtDmlApi* PlatformFunctions::ort_dml_api() {
   if (!ort_dml_api_.get()) {
     const OrtDmlApi* ort_dml_api;
     ort_api_->GetExecutionProviderApi(
-            "DML", ORT_API_VERSION,
-            reinterpret_cast<const void**>(&ort_dml_api));
+        "DML", ORT_API_VERSION, reinterpret_cast<const void**>(&ort_dml_api));
     if (!ort_dml_api) {
       LOG(ERROR) << "[WebNN] Failed to get OrtDmlApi";
       return nullptr;

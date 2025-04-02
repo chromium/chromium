@@ -10,6 +10,10 @@ import("//services/webnn/features.gni")
 # allows WebNN-dependent components to use features without importing the
 # rest of WebNN (ex. //gpu/config).
 mojom_component("features") {
+  if (webnn_use_ort) {
+    enabled_features = [ "webnn_use_ort" ]
+  }
+
   output_prefix = "webnn_mojom_features"
   macro_prefix = "WEBNN_MOJOM_FEATURES"
 
@@ -17,10 +21,6 @@ mojom_component("features") {
 }
 
 mojom_component("mojom") {
-  if (webnn_use_ort) {
-    enabled_features = [ "webnn_use_ort" ]
-  }
-
   output_prefix = "webnn_mojom"
   macro_prefix = "WEBNN_MOJOM"
 
