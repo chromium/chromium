@@ -2222,7 +2222,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AutofillFixFormTracking",
                         "AutofillPreferSavedFormAsSubmittedForm",
                         "AutofillUseSubmittedFormInHtmlSubmission"
                     ]
