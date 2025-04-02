@@ -13,7 +13,6 @@ import {InputTextViewMacro, NewLineMacro} from '/common/action_fulfillment/macro
 import {Macro} from '/common/action_fulfillment/macros/macro.js';
 import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
 import {NavNextSentMacro, NavPrevSentMacro} from '/common/action_fulfillment/macros/nav_sent_macro.js';
-import {RepeatMacro} from '/common/action_fulfillment/macros/repeat_macro.js';
 import * as RepeatableKeyPress from '/common/action_fulfillment/macros/repeatable_key_press_macro.js';
 import {SmartDeletePhraseMacro} from '/common/action_fulfillment/macros/smart_delete_phrase_macro.js';
 import {SmartInsertBeforeMacro} from '/common/action_fulfillment/macros/smart_insert_before_macro.js';
@@ -26,35 +25,28 @@ import {ListCommandsMacro} from '../macros/list_commands_macro.js';
 
 import {ParseStrategy} from './parse_strategy.js';
 
-/**
- * @typedef {{
- *   messageId: string,
- *   build: !Function,
- * }}
- */
-let MacroData;
+interface MacroData {
+  messageId: string;
+  build: new(...args: any[]) => Macro;
+}
 
 /**
  * SimpleMacroFactory converts spoken strings into Macros using string matching.
  */
 class SimpleMacroFactory {
-  /**
-   * @param {!MacroName} macroName
-   * @param {!InputController} inputController
-   */
-  constructor(macroName, inputController) {
+  private macroName_: MacroName;
+  private inputController_: InputController;
+  private commandRegex_: RegExp|null = null;
+
+  constructor(macroName: MacroName, inputController: InputController) {
     if (!SimpleMacroFactory.getData_()[macroName]) {
       throw new Error(
           'Macro is not supported by SimpleMacroFactory: ' + macroName);
     }
 
-    /** @private {!MacroName} */
     this.macroName_ = macroName;
-    /** @private {!InputController} */
     this.inputController_ = inputController;
 
-    /** @private {RegExp} */
-    this.commandRegex_ = null;
     this.initializeCommandRegex_(this.macroName_);
   }
 
@@ -62,10 +54,8 @@ class SimpleMacroFactory {
    * Builds a RegExp that can be used to parse a command. For example, the
    * SmartReplacePhraseMacro can be parsed with the pattern:
    * /replace (.*) with (.*)/i.
-   * @param {!MacroName} macroName
-   * @private
    */
-  initializeCommandRegex_(macroName) {
+  private initializeCommandRegex_(macroName: MacroName) {
     const matchAnythingPattern = '(.*)';
     const args = [];
     switch (macroName) {
@@ -79,8 +69,9 @@ class SimpleMacroFactory {
         args.push(matchAnythingPattern, matchAnythingPattern);
         break;
     }
+    // TODO(crbug.com/314203187): Not null asserted, check that this is correct.
     const message = chrome.i18n.getMessage(
-        SimpleMacroFactory.getData_()[macroName].messageId, args);
+        SimpleMacroFactory.getData_()[macroName]!.messageId, args);
     const pattern = `^${message}$`;
     if (LocaleInfo.considerSpaces()) {
       this.commandRegex_ = new RegExp(pattern, 'i');
@@ -91,19 +82,16 @@ class SimpleMacroFactory {
     }
   }
 
-  /**
-   * @param {string} text
-   * @return {Macro|null}
-   */
-  createMacro(text) {
+  createMacro(text: string): Macro|null {
     // Check whether `text` matches `this.commandRegex_`, ignoring case and
     // whitespace.
     text = text.trim().toLowerCase();
-    if (!this.commandRegex_.test(text)) {
+    // TODO(crbug.com/314203187): Not null asserted, check that this is correct.
+    if (!this.commandRegex_!.test(text)) {
       return null;
     }
 
-    const initialArgs = [];
+    const initialArgs: (InputController|string)[] = [];
     switch (this.macroName_) {
       case MacroName.COPY_SELECTED_TEXT:
       case MacroName.CUT_SELECTED_TEXT:
@@ -136,14 +124,20 @@ class SimpleMacroFactory {
         break;
     }
 
-    const result = this.commandRegex_.exec(text);
+    // TODO(crbug.com/314203187): Not null asserted, check that this is correct.
+    const result = this.commandRegex_!.exec(text);
+    if (!result) {
+      return null;
+    }
+
     // `result[0]` contains the entire matched text, while all subsequent
     // indices contain text matched by each /(.*)/. We're only interested in
     // text matched by /(.*)/, so ignore `result[0]`.
     const extractedArgs = result.slice(1);
     const finalArgs = initialArgs.concat(extractedArgs);
     const data = SimpleMacroFactory.getData_();
-    const macro = new data[this.macroName_].build(...finalArgs);
+    // TODO(crbug.com/314203187): Not null asserted, check that this is correct.
+    const macro = new data[this.macroName_]!.build(...finalArgs);
     if (macro.isSmart() && !LocaleInfo.allowSmartEditing()) {
       return null;
     }
@@ -155,10 +149,8 @@ class SimpleMacroFactory {
    * Returns data that is used to create a macro. `messageId` is used to
    * retrieve the macro's command string and `build` is used to construct the
    * macro.
-   * @return {Object<MacroName, MacroData>}
-   * @private
    */
-  static getData_() {
+  private static getData_(): Partial<Record<MacroName, MacroData>> {
     return {
       [MacroName.DELETE_PREV_CHAR]: {
         messageId: 'dictation_command_delete_prev_char',
@@ -264,24 +256,18 @@ class SimpleMacroFactory {
 
 /** A parsing strategy that utilizes SimpleMacroFactory. */
 export class SimpleParseStrategy extends ParseStrategy {
-  /** @param {!InputController} inputController */
-  constructor(inputController) {
+  /**
+   * Map of macro names to a factory for that macro.
+   */
+  private macroFactoryMap_: Map<MacroName, SimpleMacroFactory> = new Map();
+  private supportedMacros_: Set<MacroName> = new Set();
+
+  constructor(inputController: InputController) {
     super(inputController);
-
-    /**
-     * Map of macro names to a factory for that macro.
-     * @private {!Map<MacroName, !SimpleMacroFactory>}
-     */
-    this.macroFactoryMap_ = new Map();
-
-    /** @private {!Set<!MacroName>} */
-    this.supportedMacros_ = new Set();
-
     this.initialize_();
   }
 
-  /** @private */
-  initialize_() {
+  private initialize_(): void {
     // Adds all macros that are supported by regular expressions. If a macro
     // has a string associated with it in dictation_strings.grd, then it belongs
     // in this set. Don't add macros that require arguments in their utterances
@@ -319,8 +305,7 @@ export class SimpleParseStrategy extends ParseStrategy {
     });
   }
 
-  /** @override */
-  refresh() {
+  override refresh(): void {
     this.enabled = LocaleInfo.areCommandsSupported();
     if (!this.enabled) {
       return;
@@ -330,10 +315,9 @@ export class SimpleParseStrategy extends ParseStrategy {
     this.initialize_();
   }
 
-  /** @override */
-  async parse(text) {
+  override async parse(text: string): Promise<Macro|null> {
     const macros = [];
-    for (const [name, factory] of this.macroFactoryMap_) {
+    for (const [_, factory] of this.macroFactoryMap_) {
       const macro = factory.createMacro(text);
       if (macro) {
         macros.push(macro);

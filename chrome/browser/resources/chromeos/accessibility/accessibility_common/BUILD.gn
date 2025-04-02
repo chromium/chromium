@@ -39,8 +39,6 @@ misc_sources = [
   "dictation/earcons/null_selection.wav",
 ]
 
-js_modules = [ "dictation/parse/simple_parse_strategy.js" ]
-
 # TS files to build.
 ts_modules = [
   "accessibility_common_loader.ts",
@@ -57,6 +55,7 @@ ts_modules = [
   "dictation/parse/parse_strategy.ts",
   "dictation/parse/pumpkin_parse_strategy.ts",
   "dictation/parse/sandboxed_pumpkin_tagger.ts",
+  "dictation/parse/simple_parse_strategy.ts",
   "dictation/parse/pumpkin/pumpkin_constants.ts",
   "dictation/parse/speech_parser.ts",
   "facegaze/bubble_controller.ts",
@@ -132,7 +131,7 @@ ts_library("ts_build") {
 
   definitions = ts_definitions
 
-  in_files = js_modules + ts_modules + copied_ts_modules
+  in_files = ts_modules + copied_ts_modules
 
   tsconfig_base = "../tsconfig.base.json"
 }
@@ -177,7 +176,7 @@ copy("copy_mediapipe_files") {
 # will also be copied into this folder, which will allow us to support a TS
 # build that uses both checked-in and generated files.
 copy("stage_ts_build") {
-  sources = js_modules + ts_modules
+  sources = ts_modules
   outputs = [ "$ts_build_staging_dir/{{source_target_relative}}" ]
 }
 
