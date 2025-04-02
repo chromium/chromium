@@ -959,7 +959,7 @@ LogicalSize ComputeDefaultNaturalSize(const BlockNode& node) {
   const auto& style = node.Style();
   PhysicalSize natural_size(LayoutUnit(300), LayoutUnit(150));
   natural_size.Scale(style.EffectiveZoom());
-  return natural_size.ConvertToLogical(style.GetWritingMode());
+  return ToLogicalSize(natural_size, style.GetWritingMode());
 }
 
 // This takes the aspect-ratio, and natural-sizes and normalizes them returning
@@ -1293,7 +1293,7 @@ LogicalSize ComputeReplacedSize(const BlockNode& node,
   PhysicalSize container_size(svg_root->GetContainerSize());
   if (!container_size.IsEmpty()) {
     LogicalSize size =
-        container_size.ConvertToLogical(node.Style().GetWritingMode());
+        ToLogicalSize(container_size, node.Style().GetWritingMode());
     size.inline_size += border_padding.InlineSum();
     size.block_size += border_padding.BlockSum();
     return size;
@@ -1672,7 +1672,7 @@ FragmentGeometry CalculateInitialFragmentGeometry(
     }
 
     const auto size = node.InitialContainingBlockSize();
-    return {size.ConvertToLogical(style.GetWritingMode()), {}, {}, {}};
+    return {ToLogicalSize(size, style.GetWritingMode()), {}, {}, {}};
   }
 
   const auto border = ComputeBorders(space, node);

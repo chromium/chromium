@@ -43,11 +43,6 @@ struct CORE_EXPORT PhysicalSize {
   LayoutUnit width;
   LayoutUnit height;
 
-  LogicalSize ConvertToLogical(WritingMode mode) const {
-    return mode == WritingMode::kHorizontalTb ? LogicalSize(width, height)
-                                              : LogicalSize(height, width);
-  }
-
   PhysicalSize operator+(const PhysicalSize& other) const {
     return PhysicalSize{this->width + other.width, this->height + other.height};
   }
@@ -140,8 +135,13 @@ struct CORE_EXPORT PhysicalSize {
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const PhysicalSize&);
 
+inline LogicalSize ToLogicalSize(const PhysicalSize& size, WritingMode mode) {
+  return IsHorizontalWritingMode(mode) ? LogicalSize(size.width, size.height)
+                                       : LogicalSize(size.height, size.width);
+}
+
 inline PhysicalSize ToPhysicalSize(const LogicalSize& other, WritingMode mode) {
-  return mode == WritingMode::kHorizontalTb
+  return IsHorizontalWritingMode(mode)
              ? PhysicalSize(other.inline_size, other.block_size)
              : PhysicalSize(other.block_size, other.inline_size);
 }

@@ -2465,7 +2465,7 @@ class ComputedStyle final : public ComputedStyleBase {
 
   LogicalSize LogicalAspectRatio() const {
     DCHECK_NE(AspectRatio().GetType(), EAspectRatioType::kAuto);
-    return AspectRatio().GetLayoutRatio().ConvertToLogical(GetWritingMode());
+    return ToLogicalSize(AspectRatio().GetLayoutRatio(), GetWritingMode());
   }
 
   EBoxSizing BoxSizingForAspectRatio() const {

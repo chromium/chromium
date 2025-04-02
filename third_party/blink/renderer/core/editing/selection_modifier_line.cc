@@ -61,8 +61,8 @@ class AbstractLineBox {
     if (cursor_.Current().IsEmptyLineBox())
       return false;
     const PhysicalSize physical_size = cursor_.Current().Size();
-    const LogicalSize logical_size = physical_size.ConvertToLogical(
-        cursor_.Current().Style().GetWritingMode());
+    const LogicalSize logical_size = ToLogicalSize(
+        physical_size, cursor_.Current().Style().GetWritingMode());
     if (!logical_size.block_size)
       return false;
     for (InlineCursor cursor(cursor_); cursor; cursor.MoveToNext()) {
