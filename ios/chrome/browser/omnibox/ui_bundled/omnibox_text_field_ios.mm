@@ -793,6 +793,8 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     case kRightArrow:
       return ([self isPreEditing] || [self hasAutocompleteText] ||
               [self hasAdditionalText]);
+    case kReturnKey:
+      return [self hasText];
   }
 }
 
@@ -809,6 +811,9 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
       break;
     case kRightArrow:
       [self keyCommandRight];
+      break;
+    case kReturnKey:
+      [self.delegate textFieldDidAcceptInput:self];
       break;
   }
 }

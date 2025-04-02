@@ -78,6 +78,8 @@
     case kLeftArrow:
     case kRightArrow:
       return YES;
+    case kReturnKey:
+      return [self canPerformReturnKeyAction];
   }
 }
 
@@ -121,6 +123,9 @@
       }
       break;
     }
+    case kReturnKey:
+      [self performReturnKeyAction];
+      break;
   }
 }
 
@@ -174,10 +179,12 @@
 
 #pragma mark - Private
 
+/// Whether the Return/Enter action can be performed.
 - (BOOL)canPerformReturnKeyAction {
   return self.highlightedActionIndex != NSNotFound;
 }
 
+/// Performs Return/Enter action.
 - (void)performReturnKeyAction {
   CHECK([self canPerformReturnKeyAction]);
   CHECK(self.highlightedActionIndex < self.actions.count);

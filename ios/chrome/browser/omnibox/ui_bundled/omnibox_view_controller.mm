@@ -264,19 +264,13 @@ using base::UserMetricsAction;
   self.forwardingOnDidChange = NO;
 }
 
-// Delegate method for UITextField, called when user presses the "go" button.
 - (BOOL)textFieldShouldReturn:(UITextField*)textField {
-  if (!self.returnKeyDelegate) {
-    // This can happen when the view controller is still alive but the model is
-    // already deconstructed on shutdown.
-    return YES;
+  // Forward kReturnKey action to the keyboard handler.
+  if ([self canPerformKeyboardAction:OmniboxKeyboardAction::kReturnKey]) {
+    [self performKeyboardAction:OmniboxKeyboardAction::kReturnKey];
+    return NO;
   }
-  if ([self textFieldIsBlank]) {
-    // Do not proceed when input is blank.
-    return YES;
-  }
-  [self.returnKeyDelegate omniboxReturnPressed:self];
-  return NO;
+  return YES;
 }
 
 // Always update the text field colors when we start editing.  It's possible
@@ -414,6 +408,10 @@ using base::UserMetricsAction;
   self.omniboxInteractedWhileFocused = YES;
 
   [self.pasteDelegate didTapPasteToSearchButton:itemProviders];
+}
+
+- (void)textFieldDidAcceptInput:(OmniboxTextFieldIOS*)textField {
+  [self.mutator acceptInput];
 }
 
 #pragma mark - OmniboxKeyboardDelegate

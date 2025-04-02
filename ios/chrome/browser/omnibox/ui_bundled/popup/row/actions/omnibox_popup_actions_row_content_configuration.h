@@ -27,12 +27,6 @@ NSString* const OmniboxPopupActionsRowCellReuseIdentifier =
 
 - (instancetype)init NS_UNAVAILABLE;
 
-/// Whether the Return/Enter action can be performed.
-- (BOOL)canPerformReturnKeyAction;
-
-/// Performs Return/Enter action.
-- (void)performReturnKeyAction;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_ROW_ACTIONS_OMNIBOX_POPUP_ACTIONS_ROW_CONTENT_CONFIGURATION_H_

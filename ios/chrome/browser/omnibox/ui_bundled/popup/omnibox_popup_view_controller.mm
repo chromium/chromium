@@ -426,6 +426,8 @@ const CGFloat kHeaderTopPadding = 16.0f;
         return [self.carouselCell canPerformKeyboardAction:keyboardAction];
       }
       return NO;
+    case kReturnKey:
+      return [self canPerformReturnKeyAction];
   }
 }
 
@@ -473,6 +475,8 @@ const CGFloat kHeaderTopPadding = 16.0f;
         }
       }
       break;
+    case kReturnKey:
+      [self performReturnKeyAction];
   }
 }
 
@@ -652,11 +656,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
 #pragma mark - OmniboxReturnDelegate
 
 - (void)omniboxReturnPressed:(id)sender {
-  if ([self canPerformReturnKeyAction]) {
-    [self performReturnKeyAction];
-  } else {
-    [self.acceptReturnDelegate omniboxReturnPressed:sender];
-  }
+  // TODO(crbug.com/402392448): Remove OmniboxReturnDelegate.
 }
 
 #pragma mark OmniboxReturnDelegate private
@@ -664,19 +664,6 @@ const CGFloat kHeaderTopPadding = 16.0f;
 /// Whether the Return/Enter action can be performed.
 - (BOOL)canPerformReturnKeyAction {
   if (self.highlightedIndexPath) {
-    id<UIContentConfiguration> configuration =
-        [self contentConfigurationAtIndexPath:self.highlightedIndexPath];
-
-    // Highlighted cell is an action row.
-    if ([configuration
-            isKindOfClass:OmniboxPopupActionsRowContentConfiguration.class]) {
-      auto actionConfiguration = base::apple::ObjCCastStrict<
-          OmniboxPopupActionsRowContentConfiguration>(configuration);
-      if ([actionConfiguration canPerformReturnKeyAction]) {
-        return YES;
-      }
-    }
-
     id<AutocompleteSuggestion> suggestion =
         [self suggestionAtIndexPath:self.highlightedIndexPath];
     return suggestion != nil;
@@ -687,33 +674,13 @@ const CGFloat kHeaderTopPadding = 16.0f;
 /// Performs Return/Enter action.
 - (void)performReturnKeyAction {
   CHECK([self canPerformReturnKeyAction], kOmniboxRefactoringNotFatalUntil);
-
-  if (self.highlightedIndexPath) {
-    id<UIContentConfiguration> configuration =
-        [self contentConfigurationAtIndexPath:self.highlightedIndexPath];
-
-    // Highlighted cell is an action row.
-    if ([configuration
-            isKindOfClass:OmniboxPopupActionsRowContentConfiguration.class]) {
-      auto actionConfiguration = base::apple::ObjCCastStrict<
-          OmniboxPopupActionsRowContentConfiguration>(configuration);
-      if ([actionConfiguration canPerformReturnKeyAction]) {
-        [actionConfiguration performReturnKeyAction];
-        return;
-      }
-    }
-
-    id<AutocompleteSuggestion> suggestion =
-        [self suggestionAtIndexPath:self.highlightedIndexPath];
-    if (suggestion) {
-      NSInteger absoluteRow =
-          [self absoluteRowIndexForIndexPath:self.highlightedIndexPath];
-      [self.delegate autocompleteResultConsumer:self
-                            didSelectSuggestion:suggestion
-                                          inRow:absoluteRow];
-      return;
-    }
-  }
+  id<AutocompleteSuggestion> suggestion =
+      [self suggestionAtIndexPath:self.highlightedIndexPath];
+  NSInteger absoluteRow =
+      [self absoluteRowIndexForIndexPath:self.highlightedIndexPath];
+  [self.delegate autocompleteResultConsumer:self
+                        didSelectSuggestion:suggestion
+                                      inRow:absoluteRow];
 }
 
 #pragma mark - UITableViewDelegate
