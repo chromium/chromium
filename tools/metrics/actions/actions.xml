@@ -48984,6 +48984,18 @@ should be able to be added at any place in this file.
 </action-suffix>
 
 <action-suffix separator="." ordering="suffix">
+  <suffix name="LongTapMenu"
+      label="Users added a tab to a tab group by long tap menu"/>
+  <affected-action name="MobileMenuAddToGroup"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="LongTapMenu"
+      label="Users created a new tab group by long tap menu"/>
+  <affected-action name="MobileMenuAddToNewGroup"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
   <suffix name="TabGridDialog"
       label="Users tapped expand button on the tab strip, causing tab grid
              dialog to be shown."/>
