@@ -864,10 +864,6 @@ bool HttpStreamPool::AttemptManager::IsStalledByPoolLimit() {
   }
 }
 
-void HttpStreamPool::AttemptManager::OnRequiredHttp11() {
-  HandleFinalError(ERR_HTTP_1_1_REQUIRED);
-}
-
 void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
     int rv,
     NetErrorDetails details) {
