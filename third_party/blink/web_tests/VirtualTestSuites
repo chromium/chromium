@@ -1881,7 +1881,7 @@
     "args": [
       "--enable-features=LCPPFontURLPredictor"
     ],
-    "expires": "Apr 1, 2025",
+    "expires": "Apr 1, 2026",
     "owners": [
       "yyanagisawa@chromium.org",
       "kouhei@chromium.org",
