@@ -9,7 +9,7 @@ build_task_ids AS (
     b.builder.builder try_builder,
     b.start_time,
   FROM
-    `cr-buildbucket.chromium.builds` b
+    `{builds_project}`.{builds_dataset}.builds b
   WHERE
     b.start_time > '{lookback_start_date}'
     AND b.start_time <= '{lookback_end_date}'
@@ -42,7 +42,7 @@ deduped_tasks AS (
     duration AS running_duration_sec,
     TIMESTAMP_DIFF(
       start_time, create_time, SECOND) pending_time_sec,
-  FROM `chromium-swarm.swarming.task_results_summary`
+  FROM `{tasks_project}`.{tasks_dataset}.task_results_summary
   WHERE
     request.parent_task_id IS NOT NULL
     # Ignore all retry and flakiness step level runs

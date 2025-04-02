@@ -9,7 +9,7 @@ build_task_ids AS (
     b.builder.builder try_builder,
     b.start_time,
   FROM
-    `cr-buildbucket.chromium.builds` b
+    `{builds_project}`.{builds_dataset}.builds b
   WHERE
     b.start_time > '{lookback_start_date}'
     AND b.start_time <= '{lookback_end_date}'

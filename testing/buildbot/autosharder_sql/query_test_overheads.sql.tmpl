@@ -7,7 +7,7 @@ WITH
         b.infra.backend.task.id.id build_task_id,
         b.builder.builder try_builder,
       FROM
-        `cr-buildbucket.chromium.builds` b
+        `{builds_project}`.{builds_dataset}.builds b
       WHERE
         b.start_time > '{lookback_start_date}'
         AND b.start_time <= '{lookback_end_date}'
@@ -49,7 +49,7 @@ WITH
           running_duration_sec,  # Includes task setup time
         TIMESTAMP_DIFF(c.end_time, c.start_time, SECOND) - c.duration task_setup_duration_sec,
         c.start_time
-      FROM `chromium-swarm.swarming.task_results_summary_flat` c
+      FROM `{tasks_project}`.{tasks_dataset}.task_results_summary_flat c
       WHERE
         request.parent_task_id IS NOT NULL
         # Ignore all retry and flakiness step level runs
