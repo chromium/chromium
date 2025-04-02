@@ -234,6 +234,7 @@ public class PaymentManifestVerifier
             PackageInfo packageInfo =
                     mPackageManagerDelegate.getPackageInfoWithSignatures(packageName);
             if (packageInfo == null) {
+                Log.e(TAG, "Unable to get package info with signatures for \"%s\".", packageName);
                 invalidAppsToRemove.add(packageName);
                 continue;
             }
@@ -392,6 +393,7 @@ public class PaymentManifestVerifier
         }
 
         if (webAppManifestUris.length == 0) {
+            Log.e(TAG, "No default_applications value in payment method manfest.");
             if (mIsManifestCacheStaleOrUnusable) mCallback.onFinishedVerification();
             // Cache supported package names and origins as well as possibly "*".
             mCache.addPaymentMethodManifest(
@@ -500,7 +502,10 @@ public class PaymentManifestVerifier
         for (int i = 0; i < manifest.length; i++) {
             WebAppManifestSection section = manifest[i];
             AppInfo appInfo = mDefaultApplications.get(section.id);
-            if (appInfo == null) continue;
+            if (appInfo == null) {
+                Log.e(TAG, "No apps with package name \"%s\".", section.id);
+                continue;
+            }
 
             if (appInfo.version < section.minVersion) {
                 Log.e(
@@ -545,6 +550,8 @@ public class PaymentManifestVerifier
 
     @Override
     public void onManifestDownloadFailure(String errorMessage) {
+        Log.e(TAG, "Failed to download manifest: " + errorMessage);
+
         if (mAtLeastOneManifestFailedToDownloadOrParse) return;
         mAtLeastOneManifestFailedToDownloadOrParse = true;
 
@@ -556,6 +563,8 @@ public class PaymentManifestVerifier
 
     @Override
     public void onManifestParseFailure() {
+        Log.e(TAG, "Failed to parse manifest.");
+
         if (mAtLeastOneManifestFailedToDownloadOrParse) return;
         mAtLeastOneManifestFailedToDownloadOrParse = true;
 
