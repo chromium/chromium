@@ -1,0 +1,11 @@
+Test page enable in hidden target
+Create hidden target
+Attached to the hidden target
+Enable page
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string 0>
+}
+

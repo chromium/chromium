@@ -931,6 +931,8 @@ source_set("browser") {
     "devtools/protocol/fetch_handler.h",
     "devtools/protocol/handler_helpers.cc",
     "devtools/protocol/handler_helpers.h",
+    "devtools/protocol/hidden_target_manager.cc",
+    "devtools/protocol/hidden_target_manager.h",
     "devtools/protocol/input_handler.cc",
     "devtools/protocol/input_handler.h",
     "devtools/protocol/inspector_handler.cc",
