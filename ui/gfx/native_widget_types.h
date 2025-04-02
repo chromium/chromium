@@ -81,7 +81,6 @@ struct IAccessible;
 #ifdef __OBJC__
 @class UIImage;
 #else
-struct objc_object;
 class UIImage;
 #endif  // __OBJC__
 #elif BUILDFLAG(IS_MAC)
@@ -182,11 +181,9 @@ using NativeEvent = base::android::ScopedJavaGlobalRef<jobject>;
 #if BUILDFLAG(IS_WIN)
 using NativeViewAccessible = IAccessible*;
 #elif BUILDFLAG(IS_IOS)
-#ifdef __OBJC__
-using NativeViewAccessible = id;
-#else
-using NativeViewAccessible = struct objc_object*;
-#endif
+// UIAccessibility is an informal protocol on NSObject, so make accessible
+// objects owned NSObjects. Do not use as a general object wrapper.
+using NativeViewAccessible = base::apple::OwnedNSObject;
 #elif BUILDFLAG(IS_MAC)
 using NativeViewAccessible = base::apple::OwnedNSAccessibility;
 #elif BUILDFLAG(IS_LINUX)

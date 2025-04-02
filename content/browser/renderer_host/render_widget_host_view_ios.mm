@@ -32,6 +32,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/native_widget_types.h"
 
 @interface UIApplication (Testing)
 - (BOOL)isRunningTests;
@@ -159,17 +160,18 @@ void RenderWidgetHostViewIOS::CopyFromSurface(
 void RenderWidgetHostViewIOS::InitAsChild(gfx::NativeView parent_view) {}
 void RenderWidgetHostViewIOS::SetSize(const gfx::Size& size) {}
 void RenderWidgetHostViewIOS::SetBounds(const gfx::Rect& rect) {}
+
 gfx::NativeView RenderWidgetHostViewIOS::GetNativeView() {
   return gfx::NativeView(ui_view_->view_);
 }
 
 gfx::NativeViewAccessible RenderWidgetHostViewIOS::GetNativeViewAccessible() {
-  return ui_view_->view_;
+  return gfx::NativeViewAccessible(ui_view_->view_);
 }
 
 gfx::NativeViewAccessible
 RenderWidgetHostViewIOS::AccessibilityGetNativeViewAccessible() {
-  return ui_view_->view_;
+  return gfx::NativeViewAccessible(ui_view_->view_);
 }
 
 void RenderWidgetHostViewIOS::Focus() {
