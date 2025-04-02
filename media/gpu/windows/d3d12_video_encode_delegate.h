@@ -99,9 +99,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
     static D3D12VideoEncoderRateControl CreateCqp(uint32_t i_frame_qp,
                                                   uint32_t p_frame_qp,
                                                   uint32_t b_frame_qp);
-    static std::optional<D3D12VideoEncoderRateControl> Create(
-        Bitrate bitrate,
-        uint32_t framerate);
+    static D3D12VideoEncoderRateControl Create(Bitrate bitrate,
+                                               uint32_t framerate);
 
     D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE GetMode() const;
 

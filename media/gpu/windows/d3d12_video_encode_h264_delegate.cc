@@ -171,7 +171,8 @@ bool D3D12VideoEncodeH264Delegate::SupportsRateControlReconfiguration() const {
 }
 
 bool D3D12VideoEncodeH264Delegate::ReportsAverageQp() const {
-  return software_rate_controller_.has_value();
+  return current_rate_control_.GetMode() ==
+         D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE_CQP;
 }
 
 bool D3D12VideoEncodeH264Delegate::UpdateRateControl(const Bitrate& bitrate,

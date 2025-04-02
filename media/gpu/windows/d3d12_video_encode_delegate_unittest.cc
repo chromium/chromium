@@ -162,11 +162,11 @@ TEST_F(D3D12VideoEncodeDelegateTest, P010InputFormatFor10BitProfile) {
   EXPECT_EQ(encoder_delegate_->GetFormatForTesting(), DXGI_FORMAT_P010);
 }
 
-TEST_F(D3D12VideoEncodeDelegateTest, UnsupportedRateControl) {
+TEST_F(D3D12VideoEncodeDelegateTest, ExternalRateControl) {
   VideoEncodeAccelerator::Config config = GetDefaultH264Config();
   config.bitrate = Bitrate::ExternalRateControl();
   EXPECT_EQ(encoder_delegate_->Initialize(config).code(),
-            EncoderStatus::Codes::kEncoderUnsupportedConfig);
+            EncoderStatus::Codes::kOk);
 }
 
 class D3D12VideoEncodeDelegateTestWithProcessFrame

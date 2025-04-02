@@ -159,12 +159,8 @@ EncoderStatus D3D12VideoEncodeDelegate::Initialize(
   }
   processed_input_frame_.Reset();
 
-  auto rate_control =
+  rate_control_ =
       D3D12VideoEncoderRateControl::Create(config.bitrate, config.framerate);
-  if (!rate_control.has_value()) {
-    return EncoderStatus::Codes::kEncoderUnsupportedConfig;
-  }
-  rate_control_ = rate_control.value();
 
   static constexpr uint32_t kDefaultGOPLength = 3000;
   config.gop_length = config.gop_length.value_or(kDefaultGOPLength);
@@ -183,16 +179,13 @@ bool D3D12VideoEncodeDelegate::ReportsAverageQp() const {
 bool D3D12VideoEncodeDelegate::UpdateRateControl(const Bitrate& bitrate,
                                                  uint32_t framerate) {
   auto rate_control = D3D12VideoEncoderRateControl::Create(bitrate, framerate);
-  if (!rate_control.has_value()) {
-    return false;
-  }
 
-  if (rate_control->GetMode() != rate_control_.GetMode() &&
+  if (rate_control.GetMode() != rate_control_.GetMode() &&
       !SupportsRateControlReconfiguration()) {
     return false;
   }
 
-  rate_control_ = rate_control.value();
+  rate_control_ = rate_control;
   return true;
 }
 
@@ -320,7 +313,7 @@ D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::CreateCqp(
 }
 
 // static
-std::optional<D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl>
+D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl
 D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::Create(
     Bitrate bitrate,
     uint32_t framerate) {
@@ -350,10 +343,22 @@ D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::Create(
       };
       break;
     case Bitrate::Mode::kExternal:
-      // TODO(crbug.com/40275246): wire to CQP
-      LOG(ERROR)
-          << "D3D12VideoEncoder does not support Bitrate::Mode::kExternal";
-      return std::nullopt;
+      // The effective QP value will be set before each frame. Filling a
+      // commonly used default value that would be most likely supported by the
+      // hardware.
+      constexpr uint32_t kDefaultQp = 26;
+      rate_control.params_.cqp = {
+          .ConstantQP_FullIntracodedFrame = kDefaultQp,
+          .ConstantQP_InterPredictedFrame_PrevRefOnly = kDefaultQp,
+          .ConstantQP_InterPredictedFrame_BiDirectionalRef = kDefaultQp,
+      };
+      rate_control.rate_control_ = {
+          .Mode = D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE_CQP,
+          .ConfigParams = {.DataSize = sizeof(rate_control.params_.cqp),
+                           .pConfiguration_CQP = &rate_control.params_.cqp},
+          .TargetFrameRate = {framerate, 1},
+      };
+      break;
   }
   return rate_control;
 }
