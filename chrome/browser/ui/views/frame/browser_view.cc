@@ -5852,6 +5852,14 @@ void BrowserView::ShowIncognitoHistoryDisclaimerDialog() {
                  kHistoryDisclaimerBubble);
 }
 
+bool BrowserView::IsTabModalPopup() const {
+  return browser_->IsTabModalPopup();
+}
+
+void BrowserView::SetIsTabModalPopup(bool is_tab_modal_popup) {
+  browser_->set_is_tab_modal_popup(is_tab_modal_popup);
+}
+
 void BrowserView::UpdateWebAppStatusIconsVisiblity() {
   if (web_app_frame_toolbar()) {
     web_app_frame_toolbar()->UpdateStatusIconsVisibility();

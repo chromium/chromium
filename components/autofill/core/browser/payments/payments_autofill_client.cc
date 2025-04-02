@@ -257,4 +257,8 @@ void PaymentsAutofillClient::ShowSelectBnplIssuerDialog(
 
 void PaymentsAutofillClient::DismissSelectBnplIssuerDialog() {}
 
+bool PaymentsAutofillClient::IsTabModalPopup() const {
+  return false;
+}
+
 }  // namespace autofill::payments
