@@ -2415,7 +2415,7 @@ public class TabGroupModelFilterImplUnitTest {
         mTabGroupModelFilter.setTabGroupCollapsed(TAB2_ROOT_ID, /* isCollapsed= */ true);
         verify(mTabGroupModelFilterObserver)
                 .didChangeTabGroupCollapsed(
-                        TAB2_ROOT_ID, /* isCollapsed= */ true, /* animate= */ true);
+                        TAB2_ROOT_ID, /* isCollapsed= */ true, /* animate= */ false);
     }
 
     @Test

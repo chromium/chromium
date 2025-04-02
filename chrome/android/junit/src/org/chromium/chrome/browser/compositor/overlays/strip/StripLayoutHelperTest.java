@@ -5008,7 +5008,9 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.onClick(TIMESTAMP, views[0]);
 
         // Verify the proper event was sent to the TabGroupModelFilter.
-        verify(mTabGroupModelFilter).setTabGroupCollapsed(0, true);
+        verify(mTabGroupModelFilter)
+                .setTabGroupCollapsed(
+                        /* rootId= */ 0, /* isCollapsed= */ true, /* animate= */ true);
         // Verify we record the correct metric.
         histogramWatcher.assertExpected("Should record true, since we're collapsing.");
     }
@@ -5031,7 +5033,9 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.onClick(TIMESTAMP, views[0]);
 
         // Verify the proper event was sent to the TabGroupModelFilter.
-        verify(mTabGroupModelFilter).setTabGroupCollapsed(0, false);
+        verify(mTabGroupModelFilter)
+                .setTabGroupCollapsed(
+                        /* rootId= */ 0, /* isCollapsed= */ false, /* animate= */ true);
         // Verify we record the correct metric.
         histogramWatcher.assertExpected("Should record false, since we're expanding.");
     }

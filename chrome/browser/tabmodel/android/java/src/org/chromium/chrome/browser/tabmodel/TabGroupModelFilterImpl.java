@@ -1432,7 +1432,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
     @Override
     public void setTabGroupCollapsed(int rootId, boolean isCollapsed) {
-        setTabGroupCollapsed(rootId, isCollapsed, /* animate= */ true);
+        setTabGroupCollapsed(rootId, isCollapsed, /* animate= */ false);
     }
 
     @Override
