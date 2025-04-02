@@ -8907,41 +8907,6 @@
             ]
         }
     ],
-    "EnableCertManagementUIV2": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableCertManagementUIV2"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EnableCertManagementUIV2Write": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableCertManagementUIV2EditCerts",
-                        "EnableCertManagementUIV2Write"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableChromeFatalCrashEventsObserver": [
         {
             "platforms": [

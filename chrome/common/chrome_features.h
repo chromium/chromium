@@ -76,20 +76,22 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kBrowserAppInstanceTracking);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 // Enable the Certificate Management UI v2.
 //
-// TODO(crbug.com/40928765) Remove this flag when UI is complete.
+// TODO(crbug.com/390333881): Remove this flag when launch is complete.
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kEnableCertManagementUIV2);
 // Enable the Certificate Management UI v2 write features.
 //
-// TODO(crbug.com/40928765) Remove this flag when UI is complete.
+// TODO(crbug.com/390333881): Remove this flag when launch is complete.
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kEnableCertManagementUIV2Write);
 
-// TODO(crbug.com/40928765) Remove this flag when UI is complete.
+// TODO(crbug.com/390333881): Remove this flag when launch is complete.
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kEnableCertManagementUIV2EditCerts);
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 #if BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kCrostini);
