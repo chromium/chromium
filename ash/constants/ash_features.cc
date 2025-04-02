@@ -223,9 +223,7 @@ BASE_FEATURE(kBocaOnTaskMuteArcAudio,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables the Boca OnTask pod on ChromeOS.
-BASE_FEATURE(kBocaOnTaskPod,
-             "BocaOnTaskPod",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBocaOnTaskPod, "BocaOnTaskPod", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Boca OnTask enter locked mode countdown duration on
 // ChromeOS.
@@ -242,7 +240,7 @@ constexpr base::FeatureParam<base::TimeDelta>
 // Enables or disables Boca sending student heartbeat requests on ChromeOS.
 BASE_FEATURE(kBocaStudentHeartbeat,
              "BocaStudentHeartbeat",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Boca student heartbeat custom interval on ChromeOS.
 BASE_FEATURE(kBocaStudentHeartbeatCustomInterval,
