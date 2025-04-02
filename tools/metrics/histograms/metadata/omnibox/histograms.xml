@@ -2010,6 +2010,50 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.SuggestionShown.ClientSummarizedResultType"
+    enum="ClientSummarizedResultType" expires_after="2025-06-24">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    When the user makes an omnibox selection to go somewhere, this records
+    whether each (summarized) type of suggestion was shown at least once during
+    the course of the Omnibox session.
+
+    An &quot;Omnibox session&quot; is currently defined as a span of time that
+    starts when the user focuses the Omnibox and ends when the user de-focuses
+    it, whether implicitly (e.g. by selecting one of the suggestions) or
+    explictly (e.g. by clicking on some non-Omnibox browser UI). The session
+    data that's maintained by AutocompleteResult will be initialized when the
+    session starts, updated throughout the course of the session, and ultimately
+    reset when the session ends.
+  </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.SuggestionShown.{OmniboxZeroPrefixState}.ClientSummarizedResultType"
+    enum="ClientSummarizedResultType" expires_after="2025-06-24">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    When the user makes an omnibox selection to go somewhere, this records
+    whether each (summarized) type of suggestion was shown at least once during
+    the course of the Omnibox session.
+
+    An &quot;Omnibox session&quot; is currently defined as a span of time that
+    starts when the user focuses the Omnibox and ends when the user de-focuses
+    it, whether implicitly (e.g. by selecting one of the suggestions) or
+    explictly (e.g. by clicking on some non-Omnibox browser UI). The session
+    data that's maintained by AutocompleteResult will be initialized when the
+    session starts, updated throughout the course of the session, and ultimately
+    reset when the session ends.
+
+    Sliced by zero-prefix state in order to allow us to answer questions like:
+    Did the user see at least one zero-prefix/typed Search/URL suggestion during
+    the course of the Omnibox session?
+  </summary>
+  <token key="OmniboxZeroPrefixState" variants="OmniboxZeroPrefixState"/>
+</histogram>
+
 <histogram name="Omnibox.SuggestionUsed.AnswerInSuggest"
     enum="SuggestionAnswerOptionalType" expires_after="2025-08-24">
   <owner>jdonnelly@chromium.org</owner>

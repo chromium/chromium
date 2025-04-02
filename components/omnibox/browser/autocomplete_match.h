@@ -939,6 +939,18 @@ struct AutocompleteMatch {
   // Omnibox session. This is used for metrics logging.
   bool zero_prefix_suggestions_shown_in_session = false;
 
+  // Whether at least one zero-prefix Search/URL suggestion was shown in the
+  // current Omnibox session. This is used in order to ensure that the relevant
+  // client-side metrics logging code emits the proper values.
+  bool zero_prefix_search_suggestions_shown_in_session = false;
+  bool zero_prefix_url_suggestions_shown_in_session = false;
+
+  // Whether at least one typed Search/URL suggestion was shown in the current
+  // Omnibox session. This is used in order to ensure that the relevant
+  // client-side metrics logging code emits the proper values.
+  bool typed_search_suggestions_shown_in_session = false;
+  bool typed_url_suggestions_shown_in_session = false;
+
   // Optional search terms args.  If present,
   // AutocompleteController::UpdateSearchboxStats() will incorporate this data
   // with additional data it calculates and pass the completed struct to

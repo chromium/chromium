@@ -44,7 +44,11 @@ struct OmniboxLog {
              const AutocompleteResult& result,
              const GURL& destination_url,
              bool is_incognito,
-             bool zero_prefix_suggestions_shown_in_session);
+             bool zero_prefix_suggestions_shown_in_session,
+             bool zero_prefix_search_suggestions_shown_in_session,
+             bool zero_prefix_url_suggestions_shown_in_session,
+             bool typed_search_suggestions_shown_in_session,
+             bool typed_url_suggestions_shown_in_session);
   ~OmniboxLog();
 
   // The user's input text in the omnibox.
@@ -148,6 +152,18 @@ struct OmniboxLog {
   // Whether at least one zero-prefix suggestion was shown in the current
   // Omnibox session. This is used for metrics logging.
   bool zero_prefix_suggestions_shown_in_session = false;
+
+  // Whether at least one zero-prefix Search/URL suggestion was shown in the
+  // current Omnibox session. This is used in order to ensure that the relevant
+  // client-side metrics logging code emits the proper values.
+  bool zero_prefix_search_suggestions_shown_in_session = false;
+  bool zero_prefix_url_suggestions_shown_in_session = false;
+
+  // Whether at least one typed Search/URL suggestion was shown in the current
+  // Omnibox session. This is used in order to ensure that the relevant
+  // client-side metrics logging code emits the proper values.
+  bool typed_search_suggestions_shown_in_session = false;
+  bool typed_url_suggestions_shown_in_session = false;
 
   // The preferred steady state (unfocused) omnibox position. Only logged on
   // iOS phones.
