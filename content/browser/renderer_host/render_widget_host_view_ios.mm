@@ -414,15 +414,6 @@ void RenderWidgetHostViewIOS::UpdateScreenInfo() {
       display_screen->GetScreenInfosNearestDisplay(
           display_screen->GetPrimaryDisplay().id());
 
-  if (UIScreen* ui_screen = ui_view_->view_.window.windowScene.screen) {
-    new_screen_infos.mutable_current().device_scale_factor = [ui_screen scale];
-  }
-  // TODO(crbug.com/406204353): The screen's rect should remain unadjusted. We
-  // will want to adjust the available_rect based on the safe viewport settings.
-  new_screen_infos.mutable_current().rect =
-      new_screen_infos.mutable_current().available_rect =
-          gfx::Rect([ui_view_->view_ bounds]);
-
   if (screen_infos_ == new_screen_infos) {
     return;
   }
