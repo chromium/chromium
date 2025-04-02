@@ -59,6 +59,7 @@ source_set("commands") {
     "quick_delete_commands.h",
     "reading_list_add_command.h",
     "reading_list_add_command.mm",
+    "recent_activity_commands.h",
     "reminder_notifications_commands.h",
     "save_image_to_photos_command.h",
     "save_image_to_photos_command.mm",
