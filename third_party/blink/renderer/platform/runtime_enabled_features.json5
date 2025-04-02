@@ -655,11 +655,6 @@
       ]
     },
     {
-      // crbug.com/40681980
-      name: "ButtonNoAlignItems",
-      status: "stable",
-    },
-    {
       // Enables bypassing CSP checks when we consume a preload.
       // https://crbug.com/348442535
       name: "BypassCSPForPreloads",
