@@ -18,8 +18,8 @@ system_image_name: "system-images;android-32;google_apis;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-32/google_apis/x86_64"
-  # Created in https://ci.chromium.org/ui/b/8735783234873256961
-  # Patched gmscore version 24.26.32 in https://crrev.com/c/5735581
-  version: "Ggu6SCWhbO7GLyFjZgU3xfOkziQGFE6e0hfWY9a8A9kC"
+  # Created in https://ci.chromium.org/ui/b/8719089370664121393
+  # Patched gmscore version 25.07.33 in https://crrev.com/c/6377466
+  version: "8suNvYCLZCZxPMUCgs0JOXpKVm5XIW8pfef4yETgfTkC"
 }
-avd_name: "android_32_google_apis_x64_foldable_landscape"
+avd_name: "android_32_google_apis_x64_foldable"
