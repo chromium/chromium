@@ -166,7 +166,7 @@ class AbstractRebaseliningCommand(Command):
 
     def _test_can_have_suffix(self, test_name: str,
                               suffix: BaselineSuffix) -> bool:
-        wpt_type = self._get_wpt_type(test_name)
+        wpt_type = self._host_port.get_wpt_type(test_name)
         # Only legacy reftests can dump text output, not WPT reftests.
         if wpt_type in {'testharness', 'wdspec'} and suffix == 'txt':
             return True
@@ -178,13 +178,6 @@ class AbstractRebaseliningCommand(Command):
             return False
         # No other WPT-suffix combinations are allowed.
         return not wpt_type
-
-    def _get_wpt_type(self, test_name: str) -> Optional[str]:
-        wpt_dir, url_from_wpt_dir = self._host_port.split_wpt_dir(test_name)
-        if not wpt_dir:
-            return None  # Not a WPT.
-        manifest = self._host_port.wpt_manifest(wpt_dir)
-        return manifest.get_test_type(url_from_wpt_dir)
 
 
 class ChangeSet(object):
