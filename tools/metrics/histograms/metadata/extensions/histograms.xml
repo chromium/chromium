@@ -170,6 +170,17 @@ This is emitted for two scenarios when a worker may be unregistered:
                scenario when the worker is the current worker activation."/>
 </variants>
 
+<variants name="UserType">
+  <variant name=".NonUser"
+      summary="&quot;non-user&quot; profiles (profiles where people can't
+               install extensions, specifically profiles that can have only
+               have non-component extensions installed)"/>
+  <variant name=".User"
+      summary="&quot;user&quot; profiles (profiles where people can install
+               extensions, specifically profiles that can have non-component
+               extensions installed)"/>
+</variants>
+
 <variants name="VerifiedFileType">
   <variant name=".BackgroundPage" summary="Extension background page"/>
   <variant name=".BackgroundScript" summary="Extension background script"/>
@@ -3223,7 +3234,7 @@ This is emitted for two scenarios when a worker may be unregistered:
     open.
 
     Histogram is in the process of being removed in favor of its new versions
-    (Extensions.InstallType.User and Extensions.InstallType.Nonuser) that emit
+    (Extensions.InstallType.User2 and Extensions.InstallType.Nonuser2) that emit
     only on profile open for &quot;user&quot; profiles (profiles where people
     can install extensions, specifically profiles that can have non-component
     extensions installed).
@@ -3232,32 +3243,17 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <!-- TODO(crbug.com/40878021): Change all .NonUser/.User metrics to use histogram suffixes rather than be duplicated here. -->
 
-<histogram name="Extensions.InstallSource.NonUser" enum="ExtensionLocation"
+<histogram name="Extensions.InstallSource{UserType}2" enum="ExtensionLocation"
     expires_after="never">
 <!-- expires-never: Monitoring core extension usage. -->
 
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
-    Installs grouped by the location property in prefs for &quot;non-user&quot;
-    profiles (profiles where people can't install extensions, specifically
-    profiles that can have only have non-component extensions installed).
-    Emitted once per profile open.
+    Installs grouped by the location property in prefs for {UserType}. Emitted
+    once per profile open.
   </summary>
-</histogram>
-
-<histogram name="Extensions.InstallSource.User" enum="ExtensionLocation"
-    expires_after="never">
-<!-- expires-never: Monitoring core extension usage. -->
-
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Installs grouped by the location property in prefs for &quot;user&quot;
-    profiles (profiles where people can install extensions, specifically
-    profiles that can have non-component extensions installed). Emitted once per
-    profile open.
-  </summary>
+  <token key="UserType" variants="UserType"/>
 </histogram>
 
 <histogram name="Extensions.InstallType" enum="ExtensionType"
@@ -3275,32 +3271,17 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.InstallType.NonUser" enum="ExtensionType"
+<histogram name="Extensions.InstallType{UserType}" enum="ExtensionType"
     expires_after="never">
 <!-- expires-never: Monitoring extension usage. -->
 
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
-    Installs grouped by Extension::HistogramType for non-&quot;user
-    profiles&quot; (profiles where people cannot install extensions,
-    specifically profiles that can only have component extensions installed).
-    Emitted once per extension install.
+    Installs grouped by Extension::HistogramType for {UserType}. Emitted once
+    per extension install.
   </summary>
-</histogram>
-
-<histogram name="Extensions.InstallType.User" enum="ExtensionType"
-    expires_after="never">
-<!-- expires-never: Monitoring extension usage. -->
-
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Installs grouped by Extension::HistogramType for &quot;user profiles&quot;
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed). Emitted once per extension
-    install.
-  </summary>
+  <token key="UserType" variants="UserType"/>
 </histogram>
 
 <histogram name="Extensions.ListenersContainerSize.{Container}"

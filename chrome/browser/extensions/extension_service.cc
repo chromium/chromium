@@ -1378,11 +1378,11 @@ void ExtensionService::OnExtensionInstalled(
     UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource",
                               extension->location());
     if (is_user_profile) {
-      UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource.User",
-                                extension->GetType(), 100);
+      UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource.User2",
+                                extension->location(), 100);
     } else {
-      UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource.NonUser",
-                                extension->GetType(), 100);
+      UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource.NonUser2",
+                                extension->location(), 100);
     }
     // TODO(crbug.com/40878021): Address Install metrics below in a follow-up
     // CL.

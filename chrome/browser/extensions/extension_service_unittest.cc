@@ -771,9 +771,9 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
                                 nonuser_expected_total_count);
     histograms.ExpectTotalCount("Extensions.InstallType.User",
                                 user_expected_total_count);
-    histograms.ExpectTotalCount("Extensions.InstallSource.NonUser",
+    histograms.ExpectTotalCount("Extensions.InstallSource.NonUser2",
                                 nonuser_expected_total_count);
-    histograms.ExpectTotalCount("Extensions.InstallSource.User",
+    histograms.ExpectTotalCount("Extensions.InstallSource.User2",
                                 user_expected_total_count);
   }
 
