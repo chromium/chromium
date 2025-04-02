@@ -33,6 +33,8 @@ def _GetMemoryMaxInCurrentCGroup():
 
 
 def _GetCPUCountFromCurrentCGroup():
+  if not os.path.exists("/proc/self/cgroup"):
+    return None
   with open("/proc/self/cgroup") as cgroup:
     lines = cgroup.readlines()
     if len(lines) >= 1:
