@@ -1456,8 +1456,8 @@ gfx::ColorSpace SkiaRenderer::CurrentDrawLayerColorSpace() const {
     return it->second.color_space;
   }
 
-  // If there is no render pass backing, we must be drawing the root pass.
-  CHECK(!output_surface_->capabilities().renderer_allocates_images);
+  // If there is no render pass backing, we must be drawing the root pass or
+  // drawing a render pass overlay backing.
   return RenderPassColorSpace(current_frame()->root_render_pass);
 }
 
