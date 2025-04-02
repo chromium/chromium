@@ -23,27 +23,7 @@ promise_test(async t => {
 }, 'Simple LanguageDetector.detect() call');
 
 promise_test(async t => {
-  let createResult = undefined;
-  const progressEvents = [];
-  let options = {};
-  const downloadComplete = new Promise(resolve => {
-    options.monitor = (m) => {
-      m.addEventListener('downloadprogress', e => {
-        assert_equals(createResult, undefined);
-        assert_equals(e.total, 1);
-        progressEvents.push(e);
-        if (e.loaded == 1) {
-          resolve();
-        }
-      });
-    };
-  });
-
-  createResult = await LanguageDetector.create(options);
-  await downloadComplete;
-  assert_greater_than_equal(progressEvents.length, 2);
-  assert_equals(progressEvents.at(0).loaded, 0);
-  assert_equals(progressEvents.at(-1).loaded, 1);
+  testMonitor(LanguageDetector.create);
 }, 'LanguageDetector.create() notifies its monitor on downloadprogress');
 
 promise_test(async t => {
