@@ -1273,17 +1273,20 @@
       depends_on: ["PseudoElementsFocusable"],
     },
     {
-      // TODO(crbug.com/40932006): Non-standard 'reading-flow' keyword
-      // for reading of grid and flexbox items.
+      // TODO(crbug.com/40932006): CSS 'reading-flow' property for reading order
+      // of grid, flexbox and block items.
       // https://drafts.csswg.org/css-display-4/#reading-flow
+      // This should ship in M137, and it can be removed after M139.
       name: "CSSReadingFlow",
-      status: "experimental",
+      status: "stable",
     },
     {
-      // TODO(crbug.com/393550130): Non-standard 'reading-order' keyword
-      // to overwrite reading-flow order.
+      // TODO(crbug.com/393550130): CSS 'reading-order' property to overwrite
+      // reading-flow order.
+      // https://drafts.csswg.org/css-display-4/#reading-order
+      // This should ship in M137, and it can be removed after M139.
       name: "CSSReadingOrder",
-      status: "experimental",
+      status: "stable",
       depends_on: ["CSSReadingFlow"],
     },
     {
