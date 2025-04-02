@@ -7394,9 +7394,6 @@ crbug.com/1464614 [ Win11-arm64 ] virtual/pna-permission/external/wpt/fetch/priv
 crbug.com/1464614 [ Win11-arm64 ] virtual/pna-workers-enabled/external/wpt/fetch/private-network-access/redirect.tentative.https.window.html [ Failure Pass Timeout ] # Flaky
 crbug.com/1464614 [ Win11-arm64 ] http/tests/media/video-play-stall-before-meta-data.html [ Failure Pass Timeout ] # Flaky
 
-# Gardener 2023-07-26
-crbug.com/1364187 http/tests/misc/scroll-cross-origin-iframes.html [ Failure Pass ]
-
 # Gardener 2023-07-31
 crbug.com/1468996 fast/events/touch/gesture/gesture-tap-active-state.html [ Failure Pass ] # flaky
 crbug.com/1468996 fast/events/touch/gesture/gesture-tap-active-state-hidden-iframe.html [ Failure Pass ] # flaky
