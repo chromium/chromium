@@ -1235,7 +1235,7 @@ void ClientSideDetectionHost::OnInnerTextComplete(
   }
 
   csd_service_->InquireOnDeviceModel(
-      verdict.get(), inner_text,
+      inner_text,
       base::BindOnce(&ClientSideDetectionHost::OnInquireOnDeviceModelDone,
                      weak_factory_.GetWeakPtr(), std::move(verdict),
                      did_match_high_confidence_allowlist));
