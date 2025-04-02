@@ -282,7 +282,9 @@ ExternalSource GetExternalSourceFromExternalImage(
     // generate
     //   required results.
     ImageExtractor image_extractor(image_for_canvas.get(),
-                                   external_image_dst_info.premultiplied_alpha,
+                                   external_image_dst_info.premultiplied_alpha
+                                       ? kPremul_SkAlphaType
+                                       : kUnpremul_SkAlphaType,
                                    PredefinedColorSpaceToSkColorSpace(
                                        external_image_dst_info.color_space));
     sk_image = image_extractor.GetSkImage();

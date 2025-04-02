@@ -293,7 +293,7 @@ ScopedRGBEmulationColorMask::~ScopedRGBEmulationColorMask() {
 }
 
 gfx::Rect WebGLRenderingContextBase::TexImageParams::GetSourceRect(
-    gfx::Size source_size) {
+    gfx::Size source_size) const {
   gfx::Rect rect(unpack_skip_pixels, unpack_skip_rows,
                  width.value_or(source_size.width()),
                  height.value_or(source_size.height()));
@@ -318,8 +318,13 @@ gfx::Rect WebGLRenderingContextBase::TexImageParams::GetSourceRect(
 }
 
 GrSurfaceOrigin
-WebGLRenderingContextBase::TexImageParams::GetDestinationOrigin() {
+WebGLRenderingContextBase::TexImageParams::GetDestinationOrigin() const {
   return unpack_flip_y ? kBottomLeft_GrSurfaceOrigin : kTopLeft_GrSurfaceOrigin;
+}
+
+SkAlphaType WebGLRenderingContextBase::TexImageParams::GetDestinationAlphaType()
+    const {
+  return unpack_premultiply_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType;
 }
 
 void WebGLRenderingContextBase::InitializeWebGLContextLimits(
@@ -5350,9 +5355,8 @@ void WebGLRenderingContextBase::TexImageSkImage(TexImageParams params,
     // during readPixels, if needed. If the input is opaque, do not change it
     // (readPixels fails if the source is opaque and the destination is not).
     if (converted_info.alphaType() != kOpaque_SkAlphaType) {
-      converted_info = converted_info.makeAlphaType(
-          params.unpack_premultiply_alpha ? kPremul_SkAlphaType
-                                          : kUnpremul_SkAlphaType);
+      converted_info =
+          converted_info.makeAlphaType(params.GetDestinationAlphaType());
     }
 
     // Set the color type to perform pixel format conversion during readPixels,
@@ -5393,11 +5397,11 @@ void WebGLRenderingContextBase::TexImageSkImage(TexImageParams params,
   // the source and the requested premultiplication format.
   WebGLImageConversion::AlphaOp alpha_op =
       WebGLImageConversion::kAlphaDoNothing;
-  if (params.unpack_premultiply_alpha &&
+  if (params.GetDestinationAlphaType() == kPremul_SkAlphaType &&
       pixmap.alphaType() == kUnpremul_SkAlphaType) {
     alpha_op = WebGLImageConversion::kAlphaDoPremultiply;
   }
-  if (!params.unpack_premultiply_alpha &&
+  if (params.GetDestinationAlphaType() == kUnpremul_SkAlphaType &&
       pixmap.alphaType() == kPremul_SkAlphaType) {
     alpha_op = WebGLImageConversion::kAlphaDoUnmultiply;
   }
@@ -5842,7 +5846,7 @@ void WebGLRenderingContextBase::TexImageHelperHTMLImageElement(
   }
 
   ImageExtractor image_extractor(
-      image_for_render.get(), params.unpack_premultiply_alpha,
+      image_for_render.get(), params.GetDestinationAlphaType(),
       params.unpack_colorspace_conversion
           ? PredefinedColorSpaceToSkColorSpace(unpack_color_space_)
           : nullptr);
@@ -5984,14 +5988,14 @@ void WebGLRenderingContextBase::TexImageViaGPU(
     if (source_image) {
       source_image->CopyToTexture(
           ContextGL(), params.target, target_texture, params.level,
-          params.unpack_premultiply_alpha, params.GetDestinationOrigin(),
+          params.GetDestinationAlphaType(), params.GetDestinationOrigin(),
           gfx::Point(params.xoffset, params.yoffset), source_sub_rectangle);
     } else {
       WebGLRenderingContextBase* gl = source_canvas_webgl_context;
       ScopedTexture2DRestorer inner_restorer(gl);
       if (!gl->GetDrawingBuffer()->CopyToPlatformTexture(
               ContextGL(), params.target, target_texture, params.level,
-              params.unpack_premultiply_alpha, params.GetDestinationOrigin(),
+              params.GetDestinationAlphaType(), params.GetDestinationOrigin(),
               gfx::Point(params.xoffset, params.yoffset), source_sub_rectangle,
               kBackBuffer)) {
         NOTREACHED();
