@@ -3829,6 +3829,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="DomDistiller.WordCount" units="count"
+    expires_after="2025-08-24">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    Records the word count for the distilled page. Recorded when the page
+    distillation result is received. Recorded per-page even if the article has
+    multiple pages (e.g. a continue reading button).
+  </summary>
+</histogram>
+
 <histogram name="PumpkinInstaller.InstallationSuccess" enum="BooleanSuccess"
     expires_after="2025-05-04">
   <owner>akihiroota@chromium.org</owner>
