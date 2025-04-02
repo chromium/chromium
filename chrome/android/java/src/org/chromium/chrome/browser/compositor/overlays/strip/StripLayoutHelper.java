@@ -1179,7 +1179,7 @@ public class StripLayoutHelper
 
     private boolean shouldEnableGroupSharing() {
         Profile profile = mTabGroupModelFilter.getTabModel().getProfile();
-        if (profile == null || profile.isOffTheRecord()) {
+        if (profile == null || profile.isOffTheRecord() || mTabGroupSyncService == null) {
             return false;
         }
         CollaborationService collaborationService =
