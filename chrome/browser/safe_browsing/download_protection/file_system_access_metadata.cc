@@ -49,7 +49,12 @@ std::string FileSystemAccessMetadata::GetMimeType() const {
       ext = ext.substr(1);
     }
 
-    if (net::GetMimeTypeFromExtension(ext, &mime_type)) {
+    // Searches within chrome's built-in list of filetype/extension
+    // associations, as using `GetMimeTypeFromExtension` includes
+    // platform-defined mime type mappings that can potentially block.
+    // TODO(crbug.com/407598185): Add platform MIME types lookup for better
+    // protection.
+    if (net::GetWellKnownMimeTypeFromExtension(ext, &mime_type)) {
       mime_type_ = mime_type;
     } else {
       // Default to octet-stream for unknown MIME type.

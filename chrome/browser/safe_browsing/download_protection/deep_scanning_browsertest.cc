@@ -39,6 +39,7 @@
 #include "chrome/browser/safe_browsing/download_protection/ppapi_download_request.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_test_utils.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -63,6 +64,7 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/save_page_type.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -82,6 +84,8 @@ constexpr char kResumableUploadUrl[] =
 constexpr int64_t kSingleChunkObfuscationOverhead =
     enterprise_obfuscation::kKeySize + enterprise_obfuscation::kNonceSize +
     enterprise_obfuscation::kAuthTagSize;
+
+constexpr char kTestContent[] = "test content";
 
 // Extract the metadata proto from the raw request string based on multipart
 // upload protocol. Returns true on success.
@@ -1571,6 +1575,308 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, OpenNow) {
   EXPECT_TRUE(base::PathExists(main_file));
   EXPECT_TRUE(base::ContentsEqual(GetTestFilePath(), main_file));
   EXPECT_FALSE(base::PathExists(extra_files_dir));
+}
+
+class FileSystemAccessDeepScanningBrowserTest
+    : public DownloadDeepScanningBrowserTestBase {
+ public:
+  FileSystemAccessDeepScanningBrowserTest()
+      : DownloadDeepScanningBrowserTestBase(/*connectors_machine_scope=*/true,
+                                            /*is_consumer=*/false,
+                                            /*is_obfuscated=*/false) {
+    scoped_feature_list_.InitAndEnableFeature(
+        safe_browsing::kEnterpriseFileSystemAccessDeepScan);
+  }
+
+  void SetUpOnMainThread() override {
+    DownloadDeepScanningBrowserTestBase::SetUpOnMainThread();
+
+    // Setup a temporary directory for the file save path.
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+    // Have file save path automatically selected by picker.
+    ui::SelectFileDialog::SetFactory(
+        std::make_unique<SelectPredeterminedFileDialogFactory>(
+            std::vector<base::FilePath>{GetTestFilePath()}));
+
+    // Navigate to a simple page for FS API calls to run from.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/title1.html")));
+  }
+
+  void TearDownOnMainThread() override {
+    ui::SelectFileDialog::SetFactory(nullptr);
+    DownloadDeepScanningBrowserTestBase::TearDownOnMainThread();
+  }
+
+  base::FilePath GetTestFilePath() {
+    return temp_dir_.GetPath().AppendASCII("test_fsa_file.txt");
+  }
+
+  void InitiateWriteViaFSA(content::WebContents* web_contents,
+                           const std::string& content) {
+    // Script that triggers FSA API write. Executes async and reports results
+    // via messaging.
+    const std::string js_script = R"(
+      (async (content) => {
+        try {
+          const handle = await window.showSaveFilePicker();
+          const writable = await handle.createWritable();
+          await writable.write(content);
+          await writable.close();
+          window.domAutomationController.send("Success");
+        } catch (e) {
+          window.domAutomationController.send("Error: " + e.name +
+                                              " - " + e.message);
+        }
+      })(')" + content + R"(');
+    )";
+
+    content::ExecuteScriptAsync(web_contents, js_script);
+  }
+
+ protected:
+  base::ScopedTempDir temp_dir_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, BlockedWrite) {
+  SetUpReporting();
+
+  // Prepare the scan response with DLP block and successful malware scan.
+  enterprise_connectors::ContentAnalysisResponse response;
+  auto* dlp_result = response.add_results();
+  dlp_result->set_tag("dlp");
+  dlp_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  auto* dlp_rule = dlp_result->add_triggered_rules();
+  dlp_rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
+
+  auto* malware_result = response.add_results();
+  malware_result->set_tag("malware");
+  malware_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+
+  ExpectContentAnalysisResumableMetadataResponse({"dlp", "malware"});
+  ExpectContentAnalysisResumableContentResponse(response);
+
+  // Setup message queue for JS responses.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  content::DOMMessageQueue message_queue(web_contents);
+
+  base::RunLoop validator_run_loop;
+  enterprise_connectors::test::EventReportValidator validator(client());
+  validator.SetDoneClosure(validator_run_loop.QuitClosure());
+
+  InitiateWriteViaFSA(web_contents, kTestContent);
+
+  WaitForDeepScanRequest();
+
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+  std::set<std::string> mimetypes = {"text/plain"};
+  validator.ExpectSensitiveDataEvent(
+      /*url*/ url.spec(),
+      /*tab_url*/ url.spec(),
+      /*source*/ "",
+      /*destination*/ "",
+      /*filename*/ GetTestFilePath().AsUTF8Unsafe(),
+      // echo -n [kTestContent] | sha256sum | tr a-f A-F
+      /*sha*/
+      "6AE8A75555209FD6C44157C0AED8016E763FF435A19CF186F76863140143FF72",
+      /*trigger*/
+      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+      /*dlp_verdict*/ response.results(0),
+      /*mimetypes*/ &mimetypes,
+      /*size*/ sizeof(kTestContent) - 1,
+      enterprise_connectors::EventResultToString(
+          enterprise_connectors::EventResult::BLOCKED),
+      /*username*/ kUserName,
+      /*profile_identifier*/ GetProfileIdentifier(),
+      /*scan_id*/ last_request().request_token(),
+      /*content_transfer_method*/ std::nullopt,
+      /*user_justification*/ std::nullopt);
+
+  EXPECT_EQ(last_request().reason(),
+            enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
+
+  validator_run_loop.Run();
+
+  std::string js_completion_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&js_completion_result));
+  // TODO(crbug.com/407065784): Improve error message for SB checks.
+  EXPECT_EQ(js_completion_result,
+            "\"Error: AbortError - Blocked by Safe Browsing.\"");
+
+  // File is created but remains empty due to block.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_TRUE(base::PathExists(GetTestFilePath()));
+  EXPECT_EQ(0, base::GetFileSize(GetTestFilePath()));
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, AllowedWrite) {
+  SetUpReporting();
+
+  // Prepare the scan response with no DLP or malware rules triggered.
+  enterprise_connectors::ContentAnalysisResponse response;
+  auto* dlp_result = response.add_results();
+  dlp_result->set_tag("dlp");
+  dlp_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+
+  auto* malware_result = response.add_results();
+  malware_result->set_tag("malware");
+  malware_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+
+  ExpectContentAnalysisResumableMetadataResponse({"dlp", "malware"});
+  ExpectContentAnalysisResumableContentResponse(response);
+
+  // Setup message queue for JS responses.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  content::DOMMessageQueue message_queue(web_contents);
+
+  InitiateWriteViaFSA(web_contents, kTestContent);
+
+  WaitForDeepScanRequest();
+
+  EXPECT_EQ(last_request().reason(),
+            enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
+
+  std::string js_completion_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&js_completion_result));
+  EXPECT_EQ(js_completion_result, "\"Success\"");
+
+  // Checks that file is written successfully.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_TRUE(base::PathExists(GetTestFilePath()));
+
+  std::string file_content;
+  EXPECT_TRUE(base::ReadFileToString(GetTestFilePath(), &file_content));
+  EXPECT_EQ(file_content, kTestContent);
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, WarnedWrite) {
+  SetUpReporting();
+
+  // Prepare the scan response with warn DLP rule triggered.
+  enterprise_connectors::ContentAnalysisResponse response;
+  auto* dlp_result = response.add_results();
+  dlp_result->set_tag("dlp");
+  dlp_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  auto* dlp_rule = dlp_result->add_triggered_rules();
+  dlp_rule->set_action(enterprise_connectors::TriggeredRule::WARN);
+
+  auto* malware_result = response.add_results();
+  malware_result->set_tag("malware");
+  malware_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+
+  ExpectContentAnalysisResumableMetadataResponse({"dlp", "malware"});
+  ExpectContentAnalysisResumableContentResponse(response);
+
+  // Setup message queue for JS responses.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  content::DOMMessageQueue message_queue(web_contents);
+
+  base::RunLoop validator_run_loop;
+  enterprise_connectors::test::EventReportValidator validator(client());
+  validator.SetDoneClosure(validator_run_loop.QuitClosure());
+
+  InitiateWriteViaFSA(web_contents, kTestContent);
+
+  WaitForDeepScanRequest();
+
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+  std::set<std::string> mimetypes = {"text/plain"};
+  validator.ExpectSensitiveDataEvent(
+      /*url*/ url.spec(),
+      /*tab_url*/ url.spec(),
+      /*source*/ "",
+      /*destination*/ "",
+      /*filename*/ GetTestFilePath().AsUTF8Unsafe(),
+      // echo -n [kTestContent] | sha256sum | tr a-f A-F
+      /*sha*/
+      "6AE8A75555209FD6C44157C0AED8016E763FF435A19CF186F76863140143FF72",
+      /*trigger*/
+      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+      /*dlp_verdict*/ response.results(0),
+      /*mimetypes*/ &mimetypes,
+      /*size*/ sizeof(kTestContent) - 1,
+      enterprise_connectors::EventResultToString(
+          enterprise_connectors::EventResult::WARNED),
+      /*username*/ kUserName,
+      /*profile_identifier*/ GetProfileIdentifier(),
+      /*scan_id*/ last_request().request_token(),
+      /*content_transfer_method*/ std::nullopt,
+      /*user_justification*/ std::nullopt);
+
+  validator_run_loop.Run();
+
+  // For warn verdicts, we allow the write to happen as there is currently no
+  // dialog that allows the user to bypass warnings.
+  std::string js_completion_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&js_completion_result));
+  EXPECT_EQ(js_completion_result, "\"Success\"");
+
+  // Checks that file is written successfully.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_TRUE(base::PathExists(GetTestFilePath()));
+
+  std::string file_content;
+  EXPECT_TRUE(base::ReadFileToString(GetTestFilePath(), &file_content));
+  EXPECT_EQ(file_content, kTestContent);
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest,
+                       DeepScanFailure) {
+  SetUpReporting();
+
+  // Configure scan response with failed status.
+  enterprise_connectors::ContentAnalysisResponse response;
+  auto* dlp_result = response.add_results();
+  dlp_result->set_tag("dlp");
+  dlp_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
+
+  auto* malware_result = response.add_results();
+  malware_result->set_tag("malware");
+  malware_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
+
+  ExpectContentAnalysisResumableMetadataResponse({"dlp", "malware"});
+  ExpectContentAnalysisResumableContentResponse(response);
+
+  // Setup message queue for JS responses.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  content::DOMMessageQueue message_queue(web_contents);
+
+  InitiateWriteViaFSA(web_contents, kTestContent);
+
+  WaitForDeepScanRequest();
+
+  std::string js_completion_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&js_completion_result));
+
+  // When scan fails, write should still succeed (fail-open behavior).
+  EXPECT_EQ(js_completion_result, "\"Success\"");
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_TRUE(base::PathExists(GetTestFilePath()));
+
+  std::string file_content;
+  EXPECT_TRUE(base::ReadFileToString(GetTestFilePath(), &file_content));
+  EXPECT_EQ(file_content, kTestContent);
 }
 
 }  // namespace safe_browsing
