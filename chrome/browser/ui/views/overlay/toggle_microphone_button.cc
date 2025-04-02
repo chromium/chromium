@@ -38,14 +38,21 @@ void ToggleMicrophoneButton::UpdateImageAndTooltipText() {
     return;
   }
 
+  const bool is_2024_ui = base::FeatureList::IsEnabled(
+      media::kVideoPictureInPictureControlsUpdate2024);
+
   const auto& icon =
-      is_muted_ ? vector_icons::kMicOffIcon : vector_icons::kMicIcon;
+      is_2024_ui
+          ? (is_muted_ ? vector_icons::kMicOffChromeRefreshIcon
+                       : vector_icons::kMicChromeRefreshIcon)
+          : (is_muted_ ? vector_icons::kMicOffIcon : vector_icons::kMicIcon);
+
   auto text = is_muted_ ? IDS_PICTURE_IN_PICTURE_UNMUTE_MICROPHONE_TEXT
                         : IDS_PICTURE_IN_PICTURE_MUTE_MICROPHONE_TEXT;
-  const int icon_padding = base::FeatureList::IsEnabled(
-                               media::kVideoPictureInPictureControlsUpdate2024)
-                               ? kPipWindowIconPadding2024
-                               : kPipWindowIconPadding;
+
+  const int icon_padding =
+      is_2024_ui ? kPipWindowIconPadding2024 : kPipWindowIconPadding;
+
   const int icon_size = std::max(0, width() - (2 * icon_padding));
 
   SetImageModel(views::Button::STATE_NORMAL,

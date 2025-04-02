@@ -38,14 +38,21 @@ void ToggleCameraButton::UpdateImageAndTooltipText() {
     return;
   }
 
-  const auto& icon = is_turned_on_ ? vector_icons::kVideocamIcon
-                                   : vector_icons::kVideocamOffIcon;
+  const bool is_2024_ui = base::FeatureList::IsEnabled(
+      media::kVideoPictureInPictureControlsUpdate2024);
+
+  const auto& icon =
+      is_2024_ui ? (is_turned_on_ ? vector_icons::kVideocamChromeRefreshIcon
+                                  : vector_icons::kVideocamOffChromeRefreshIcon)
+                 : (is_turned_on_ ? vector_icons::kVideocamIcon
+                                  : vector_icons::kVideocamOffIcon);
+
   auto text = is_turned_on_ ? IDS_PICTURE_IN_PICTURE_TURN_OFF_CAMERA_TEXT
                             : IDS_PICTURE_IN_PICTURE_TURN_ON_CAMERA_TEXT;
-  const int icon_padding = base::FeatureList::IsEnabled(
-                               media::kVideoPictureInPictureControlsUpdate2024)
-                               ? kPipWindowIconPadding2024
-                               : kPipWindowIconPadding;
+
+  const int icon_padding =
+      is_2024_ui ? kPipWindowIconPadding2024 : kPipWindowIconPadding;
+
   const int icon_size = std::max(0, width() - (2 * icon_padding));
 
   SetImageModel(views::Button::STATE_NORMAL,
