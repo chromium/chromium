@@ -156,6 +156,7 @@ source_set("network_issue_alert_presenter") {
     ":protocols",
     "//base",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/lens_overlay/model",
     "//ui/base",
     "//url",
   ]
