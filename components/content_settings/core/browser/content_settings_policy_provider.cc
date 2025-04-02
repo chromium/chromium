@@ -37,6 +37,11 @@ struct PrefsForManagedContentSettingsMapEntry {
   ContentSetting setting;
 };
 
+// The order of prefs here matter! Namely in cases where different prefs refer
+// to the same content type the  last entry for given origin wins. The order
+// should always be from the least to the most restrictive policy -
+// ALLOW < ASK < BLOCK. When adding new types consider adding a test that
+// verifies this invariant or documents any necessary deviation.
 constexpr PrefsForManagedContentSettingsMapEntry
     kPrefsForManagedContentSettingsMap[] = {
         {prefs::kManagedAutomaticFullscreenAllowedForUrls,
