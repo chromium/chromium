@@ -7881,12 +7881,12 @@ be describing additional metrics about the same event.
   <summary>
     For this event to be emitted for a URL B, all of the following must be true:
     a tab's primary main frame was navigated to three consecutive URLs
-    A-&gt;B-&gt;C; B accessed cookies or storage; the eTLD+1 for B was different
-    from the eTLD+1s of A and C; at least A and C committed (became the primary
-    main page); and the navigation A-&gt;B was content-initiated but not
-    user-initiated. One of the following must also be true: a) B did not commit
-    and the navigation B-&gt;C was a server redirect; or b) B did commit and the
-    navigation B-&gt;C was content-initiated but not user-initiated.
+    A-&gt;B-&gt;C; the eTLD+1 for B was different from the eTLD+1s of A and C;
+    at least A and C committed (became the primary main page); and the
+    navigation A-&gt;B was content-initiated but not user-initiated. One of the
+    following must also be true: a) B did not commit and the navigation B-&gt;C
+    was a server redirect; or b) B did commit and the navigation B-&gt;C was
+    content-initiated but not user-initiated.
   </summary>
   <metric name="ExitRedirectType" enum="DIPSRedirectType">
     <summary>
@@ -7897,7 +7897,16 @@ be describing additional metrics about the same event.
   <metric name="FlowId">
     <summary>
       A randomly-generated 32-bit id to connect this event with its matching
-      DIPS.SuspectedTrackerFlowReferrer event.
+      DIPS.SuspectedTrackerFlowReferrerV2 event.
+    </summary>
+  </metric>
+  <metric name="HadActiveStorageAccess" enum="Boolean">
+    <summary>
+      Whether the entrypoint actively accessed browser storage (cookies,
+      localStorage, etc.) during this visit. &quot;Actively&quot; means that the
+      entrypoint specifically requested the access; e.g., receiving cookies
+      because the browser automatically sent them in the HTTP request doesn't
+      count.
     </summary>
   </metric>
 </event>
@@ -7908,17 +7917,17 @@ be describing additional metrics about the same event.
   <summary>
     For this event to be emitted for a URL A, all of the following must be true:
     a tab's primary main frame was navigated to three consecutive URLs
-    A-&gt;B-&gt;C; B accessed cookies or storage; the eTLD+1 for B was different
-    from the eTLD+1s of A and C; at least A and C committed (became the primary
-    main page); and the navigation A-&gt;B was content-initiated but not
-    user-initiated. One of the following must also be true: a) B did not commit
-    and the navigation B-&gt;C was a server redirect; or b) B did commit and the
-    navigation B-&gt;C was content-initiated but not user-initiated.
+    A-&gt;B-&gt;C; the eTLD+1 for B was different from the eTLD+1s of A and C;
+    at least A and C committed (became the primary main page); and the
+    navigation A-&gt;B was content-initiated but not user-initiated. One of the
+    following must also be true: a) B did not commit and the navigation B-&gt;C
+    was a server redirect; or b) B did commit and the navigation B-&gt;C was
+    content-initiated but not user-initiated.
   </summary>
   <metric name="FlowId">
     <summary>
       A randomly-generated 32-bit id to connect this event with its matching
-      DIPS.SuspectedTrackerFlowEntrypoint event.
+      DIPS.SuspectedTrackerFlowEntrypointV2 event.
     </summary>
   </metric>
 </event>
