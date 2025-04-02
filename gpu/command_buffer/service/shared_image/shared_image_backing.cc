@@ -473,6 +473,14 @@ void ClearTrackingSharedImageBacking::SetClearedRectInternal(
   cleared_rect_ = cleared_rect;
 }
 
+void ClearTrackingSharedImageBacking::SetClearedInternal() {
+  cleared_rect_ = gfx::Rect(size());
+}
+
+bool ClearTrackingSharedImageBacking::IsClearedInternal() const {
+  return cleared_rect_ == gfx::Rect(size());
+}
+
 scoped_refptr<gfx::NativePixmap> SharedImageBacking::GetNativePixmap() {
   return nullptr;
 }

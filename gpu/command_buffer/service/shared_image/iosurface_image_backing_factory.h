@@ -135,7 +135,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
   // long.
   const raw_ptr<gl::ProgressReporter> progress_reporter_;
 
-  uint32_t texture_target_;
+  const uint32_t texture_target_;
 };
 
 }  // namespace gpu
