@@ -153,8 +153,11 @@ GtkUiPlatformWayland::CreateInputMethodContext(
     ui::LinuxInputMethodContextDelegate* delegate) const {
   // GDK3 doesn't have a way to create foreign wayland windows, so we can't
   // translate from ui::KeyEvent to GdkEventKey for InputMethodContextImplGtk.
-  if (!GtkCheckVersion(4))
+  if (!GtkCheckVersion(4) ||
+      // Don't use GTK IME if Wayland protocol IME feature is enabled.
+      base::FeatureList::IsEnabled(features::kWaylandTextInputV3)) {
     return nullptr;
+  }
   return std::make_unique<InputMethodContextImplGtk>(delegate);
 }
 
