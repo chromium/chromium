@@ -3162,9 +3162,10 @@ static CSSValue* ConsumeDeprecatedWebkitCrossFade(
     return nullptr;
   }
 
-  if (percentage->IsNumericLiteralValue()) {
+  if (const auto* percentage_literal =
+          DynamicTo<CSSNumericLiteralValue>(percentage)) {
     percentage = CSSNumericLiteralValue::Create(
-        ClampTo<double>(percentage->GetDoubleValue(), 0, 1),
+        ClampTo<double>(percentage_literal->GetDoubleValue(), 0, 1),
         CSSPrimitiveValue::UnitType::kNumber);
   }
 
@@ -3189,8 +3190,9 @@ static CSSValue* ConsumeCrossFade(CSSParserTokenStream& stream,
       if (percentage) {
         return nullptr;
       }
-      if (percent_value->IsNumericLiteralValue()) {
-        double val = percent_value->GetDoubleValue();
+      if (const auto* literal =
+              DynamicTo<CSSNumericLiteralValue>(percent_value)) {
+        double val = literal->GetDoubleValue();
         if (!(val >= 0.0 &&
               val <= 100.0)) {  // Includes checks for NaN and infinities.
           return nullptr;
