@@ -332,7 +332,7 @@ bool NoVarySearchCache::EraseHandle::IsGoneForTesting() const {
   return !query_string_;
 }
 
-NoVarySearchCache::Observer::~Observer() = default;
+NoVarySearchCache::Journal::~Journal() = default;
 
 NoVarySearchCache::NoVarySearchCache(size_t max_size) : max_size_(max_size) {
   CHECK_GE(max_size_, 1u);
@@ -424,7 +424,7 @@ void NoVarySearchCache::MaybeInsert(const HttpRequestInfo& request,
   const base::Time update_time = base::Time::Now();
 
   DoInsert(url, base_url, std::move(maybe_cache_key.value()),
-           std::move(maybe_nvs_data.value()), query, update_time, observer_);
+           std::move(maybe_nvs_data.value()), query, update_time, journal_);
 }
 
 bool NoVarySearchCache::ClearData(UrlFilterType filter_type,
@@ -456,19 +456,18 @@ bool NoVarySearchCache::ClearData(UrlFilterType filter_type,
 
 void NoVarySearchCache::Erase(EraseHandle handle) {
   if (QueryString* query_string = handle.query_string_.get()) {
-    if (observer_) {
+    if (journal_) {
       auto& query_string_list = query_string->query_string_list_ref();
-      observer_->OnErase(query_string_list.key_ref->value(),
-                         *query_string_list.nvs_data_ref,
-                         query_string->query());
+      journal_->OnErase(query_string_list.key_ref->value(),
+                        *query_string_list.nvs_data_ref, query_string->query());
     }
 
     EraseQuery(query_string);
   }
 }
 
-void NoVarySearchCache::SetObserver(Observer* observer) {
-  observer_ = observer;
+void NoVarySearchCache::SetJournal(Journal* journal) {
+  journal_ = journal;
 }
 
 void NoVarySearchCache::ReplayInsert(std::string base_url_cache_key,
@@ -489,11 +488,11 @@ void NoVarySearchCache::ReplayInsert(std::string base_url_cache_key,
     return;
   }
 
-  // To be extra careful to avoid re-entrancy, explicitly set `observer` to
+  // To be extra careful to avoid re-entrancy, explicitly set `journal` to
   // nullptr so that no notification is fired for this insertion.
   ReconstructURLAndDoInsert(base_url, std::move(base_url_cache_key),
                             std::move(nvs_data), std::move(query), update_time,
-                            /*observer=*/nullptr);
+                            /*journal=*/nullptr);
 }
 
 void NoVarySearchCache::ReplayErase(const std::string& base_url_cache_key,
@@ -545,11 +544,11 @@ void NoVarySearchCache::MergeFrom(const NoVarySearchCache& newer) {
     std::optional<std::string> query = query_string->query();
     CHECK(!query || query->find('#') == std::string::npos);
 
-    // Set `observer` to nullptr so no notification is fired for this
+    // Set `journal` to nullptr so no notification is fired for this
     // insertion.
     ReconstructURLAndDoInsert(base_url, std::move(base_url_cache_key), nvs_data,
                               std::move(query), query_string->update_time(),
-                              /*observer=*/nullptr);
+                              /*journal=*/nullptr);
   }
 }
 
@@ -623,7 +622,7 @@ void NoVarySearchCache::DoInsert(const GURL& url,
                                  HttpNoVarySearchData nvs_data,
                                  std::optional<std::string_view> query,
                                  base::Time update_time,
-                                 Observer* observer) {
+                                 Journal* journal) {
   const BaseURLCacheKey cache_key(std::move(base_url_cache_key));
   const auto [it, _] = map_.try_emplace(std::move(cache_key));
   const BaseURLCacheKey& cache_key_ref = it->first;
@@ -633,11 +632,11 @@ void NoVarySearchCache::DoInsert(const GURL& url,
   const HttpNoVarySearchData& nvs_data_ref = data_it->first;
   QueryStringList& query_strings = data_it->second;
 
-  const auto call_observer = [observer, &cache_key_ref, &nvs_data_ref,
-                              update_time](const QueryString* query_string) {
-    if (observer) {
-      observer->OnInsert(cache_key_ref.value(), nvs_data_ref,
-                         query_string->query(), update_time);
+  const auto call_journal = [journal, &cache_key_ref, &nvs_data_ref,
+                             update_time](const QueryString* query_string) {
+    if (journal) {
+      journal->OnInsert(cache_key_ref.value(), nvs_data_ref,
+                        query_string->query(), update_time);
     }
   };
 
@@ -655,7 +654,7 @@ void NoVarySearchCache::DoInsert(const GURL& url,
         match->set_update_time(update_time);
         match->MoveToHead(query_strings.list);
         match->MoveToHead(lru_);
-        call_observer(match);
+        call_journal(match);
         return;
       }
 
@@ -671,7 +670,7 @@ void NoVarySearchCache::DoInsert(const GURL& url,
   ++size_;
   auto* query_string =
       QueryString::CreateAndInsert(query, query_strings, lru_, update_time);
-  call_observer(query_string);
+  call_journal(query_string);
   EvictIfOverfull();
 }
 
@@ -681,10 +680,10 @@ void NoVarySearchCache::ReconstructURLAndDoInsert(
     HttpNoVarySearchData nvs_data,
     std::optional<std::string> query,
     base::Time update_time,
-    Observer* observer) {
+    Journal* journal) {
   const GURL url = ReconstructOriginalURLFromQuery(base_url, query);
   DoInsert(url, base_url, std::move(base_url_cache_key), std::move(nvs_data),
-           std::move(query), update_time, observer);
+           std::move(query), update_time, journal);
 }
 
 // static
