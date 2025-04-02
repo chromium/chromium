@@ -7922,6 +7922,29 @@
             ]
         }
     ],
+    "DesktopOmniboxRichAutocompletionMinChar": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_1_v1",
+                    "params": {
+                        "RichAutocompletionAutocompleteShortcutTextMinChar": "1",
+                        "RichAutocompletionAutocompleteTitlesMinChar": "1"
+                    },
+                    "enable_features": [
+                        "OmniboxRichAutocompletion"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopOmniboxShortcutBoost": [
         {
             "platforms": [
