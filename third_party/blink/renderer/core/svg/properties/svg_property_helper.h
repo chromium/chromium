@@ -8,21 +8,11 @@
 #include "third_party/blink/renderer/core/svg/properties/svg_property.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
 template <typename Derived>
 class SVGPropertyHelper : public SVGPropertyBase {
  public:
-  SVGPropertyBase* CloneForAnimation(const WTF::String& value) const override {
-    auto* property = MakeGarbageCollected<Derived>();
-    property->SetValueAsString(value);
-    return property;
-  }
-
   AnimatedPropertyType GetType() const override { return Derived::ClassType(); }
 };
 

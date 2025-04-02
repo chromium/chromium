@@ -49,7 +49,6 @@ class SVGIntegerOptionalInteger final : public SVGPropertyBase {
                             SVGInteger* second_integer);
 
   SVGIntegerOptionalInteger* Clone() const;
-  SVGPropertyBase* CloneForAnimation(const String&) const override;
 
   String ValueAsString() const override;
   SVGParsingError SetValueAsString(const String&);
