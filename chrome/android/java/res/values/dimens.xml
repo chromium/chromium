@@ -230,7 +230,9 @@ found in the LICENSE file.
     <dimen name="custom_tabs_security_icon_width_nested">20dp</dimen>
     <dimen name="custom_tabs_security_icon_padding_left_nested">0dp</dimen>
     <dimen name="custom_tabs_security_icon_padding_right_nested">4dp</dimen>
+    <dimen name="custom_tabs_location_bar_start_spacing">24dp</dimen>
     <dimen name="custom_tabs_location_bar_horizontal_padding">12dp</dimen>
+    <dimen name="custom_tabs_incognito_icon_width">32dp</dimen>
     <dimen name="custom_tabs_menu_footer_icon_size">16sp</dimen>
     <dimen name="custom_tabs_menu_footer_margin_horizontal">8dp</dimen>
     <dimen name="custom_tabs_menu_footer_margin_vertical">12dp</dimen>

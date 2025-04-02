@@ -352,8 +352,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         if (mIntentDataProvider.getCustomTabMode() == INCOGNITO) {
             int incognitoIconWidth =
-                    getResources().getDimensionPixelSize(R.dimen.location_bar_icon_width);
+                    getResources().getDimensionPixelSize(R.dimen.custom_tabs_incognito_icon_width);
             locationBarMinWidth += incognitoIconWidth;
+
+            ViewStub stub = findViewById(R.id.incognito_icon_stub);
+            mIncognitoImageView = (ImageView) stub.inflate();
         }
 
         posParams.availableWidth -= locationBarMinWidth;
@@ -399,7 +402,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             if (!maybeInflateAndPositionCustomButton(buttonParams, posParams)) break;
         }
 
-        mIncognitoImageView = findViewById(R.id.incognito_cct_logo_image_view);
         positionLocationBar(posParams);
     }
 
@@ -487,15 +489,28 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         locationBarLp.setMarginEnd(posParams.totalEndAlignedButtonWidth);
         mLocationBar.getLayout().setLayoutParams(locationBarLp);
 
+        var titleUrlLp = ((MarginLayoutParams) mLocationBar.mTitleUrlContainer.getLayoutParams());
         if (mLocationBar.mOmniboxEnabled) {
-            var titleUrlLp =
-                    ((MarginLayoutParams) mLocationBar.mTitleUrlContainer.getLayoutParams());
             // TODO(crbug.com/402213312): Revisit this when cleaning up CCTNestedSecurityIcon.
             // The security button is static when omnibox is enabled, so offset the url bar for it.
-            titleUrlLp.leftMargin =
-                    getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
-            mLocationBar.mTitleUrlContainer.setLayoutParams(titleUrlLp);
+            int buttonWidth = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+            titleUrlLp.leftMargin += buttonWidth;
         }
+        if (mIntentDataProvider.getCustomTabMode() == INCOGNITO) {
+            int incognitoIconWidth =
+                    getResources().getDimensionPixelSize(R.dimen.custom_tabs_incognito_icon_width);
+            titleUrlLp.leftMargin += incognitoIconWidth;
+        }
+        mLocationBar.mTitleUrlContainer.setLayoutParams(titleUrlLp);
+
+        // Ensure correct spacing between the last start aligned button and the location bar.
+        int desiredSpace =
+                getResources()
+                        .getDimensionPixelSize(R.dimen.custom_tabs_location_bar_start_spacing);
+        int remainingSpace =
+                Math.max(0, desiredSpace - posParams.spacingFromLastStartAlignedButton);
+        setHorizontalPadding(
+                mLocationBar.getLayout(), remainingSpace, mLocationBar.getLayout().getPaddingEnd());
     }
 
     private boolean maybeInflateAndPositionCustomButton(

@@ -18,7 +18,14 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical" >
-        <!-- TODO(crbug.com/402213312): Add the incognito indicator. -->
+        <ViewStub
+            android:id="@+id/incognito_icon_stub"
+            android:inflatedId="@+id/incognito_cct_logo_image_view"
+            android:layout="@layout/custom_tab_incognito_icon"
+            style="@style/LocationBarButton"
+            android:layout_width="@dimen/custom_tabs_incognito_icon_width"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"/>
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/security_button"
             style="@style/LocationBarButton"
