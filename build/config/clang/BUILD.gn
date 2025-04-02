@@ -11,13 +11,6 @@ if (is_ios) {
   import("//build/config/apple/mobile_config.gni")
 }
 
-_use_cros_sysroot_libs =
-    is_chromeos_device && current_toolchain == default_toolchain
-
-if (_use_cros_sysroot_libs) {
-  import("//build/toolchain/cros_toolchain.gni")  # For `cros_target_cc`
-}
-
 # Helper function for adding cflags to use a clang plugin.
 # - `plugin` is the name of the plugin.
 # - `plugin_arguments` is a list of arguments to pass to the plugin.
@@ -146,15 +139,6 @@ group("llvm-symbolizer_data") {
   }
 }
 
-_cros_resource_dir = ""
-if (_use_cros_sysroot_libs) {
-  _cros_resource_dir =
-      exec_script(rebase_path("../../toolchain/cros/get_resource_dir.py"),
-                  [ cros_target_cc ],
-                  "trim string",
-                  [ cros_target_cc ])
-}
-
 template("clang_lib") {
   if (!defined(invoker.libname) || is_wasm) {
     not_needed(invoker, "*")
@@ -167,8 +151,6 @@ template("clang_lib") {
       _prefix = "lib"
       _suffix = ""
       _ext = "a"
-
-      _clang_lib_dir = "$clang_base_path/lib/clang/$clang_version/lib"
       if (is_win) {
         _dir = "windows"
         _prefix = ""
@@ -184,20 +166,6 @@ template("clang_lib") {
         }
       } else if (is_apple) {
         _dir = "darwin"
-      } else if (_use_cros_sysroot_libs) {
-        _clang_lib_dir = _cros_resource_dir
-        _dir = "lib/linux"
-        if (current_cpu == "x64") {
-          _suffix = "-x86_64"
-        } else if (current_cpu == "x86") {
-          _suffix = "-i386"
-        } else if (current_cpu == "arm") {
-          _suffix = "-armhf"
-        } else if (current_cpu == "arm64") {
-          _suffix = "-aarch64"
-        } else {
-          assert(false)  # Unhandled cpu type
-        }
       } else if (is_linux || is_chromeos) {
         if (current_cpu == "x64") {
           _dir = "x86_64-unknown-linux-gnu"
@@ -237,15 +205,9 @@ template("clang_lib") {
         assert(false)  # Unhandled target platform
       }
 
+      _clang_lib_dir = "$clang_base_path/lib/clang/$clang_version/lib"
       _lib_file = "${_prefix}clang_rt.${_libname}${_suffix}.${_ext}"
       libs = [ "$_clang_lib_dir/$_dir/$_lib_file" ]
-
-      # HACK: using ChromeOS' compiler-rt results in DSOs exporting
-      # compiler-rt symbols; figure out why it's (presumably) not using hidden
-      # visibility for most symbols.
-      if (_use_cros_sysroot_libs) {
-        ldflags = [ "-Wl,--exclude-libs=$_lib_file" ]
-      }
     }
   }
 }
