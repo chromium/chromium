@@ -553,6 +553,67 @@ TEST_F(LocalFilesMigrationManagerTest, StopsWhenLocalStorageAllowed) {
       "Enterprise.SkyVault.Migration.OneDrive.Stopped", true, 1);
 }
 
+TEST_F(LocalFilesMigrationManagerTest, DoesNotRetryDeleteIndefinitely) {
+  SetUpMyFiles();
+  base::FilePath test_file_path = CreateTestFile(kTestFile);
+  SetPrefs(State::kCleanup, /*local_user_files_allowed=*/false,
+           /*destination=*/"delete");
+  SetRetryCount(kMaxRetryCount);
+
+  std::unique_ptr<MockCleanupHandler> cleanup_handler =
+      std::make_unique<MockCleanupHandler>();
+  EXPECT_CALL(*cleanup_handler, Cleanup)
+      .WillOnce(
+          [](base::OnceCallback<void(
+                 const std::optional<std::string>& error_message)> callback) {
+            std::move(callback).Run("Something failed");
+          });
+
+  LocalFilesMigrationManager manager(profile());
+  manager.SetCleanupHandlerForTesting(cleanup_handler->GetWeakPtr());
+  manager.Initialize();
+
+  // Wait for async functions, like checking if MyFiles is empty, to complete.
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.Delete.CleanupError", true, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.Delete.Failed", true, 1);
+}
+
+TEST_F(LocalFilesMigrationManagerTest, RetriesDeleteOnSessionStart) {
+  SetUpMyFiles();
+  base::FilePath test_file_path = CreateTestFile(kTestFile);
+  SetPrefs(State::kFailure, /*local_user_files_allowed=*/false,
+           /*destination=*/"delete");
+  SetRetryCount(kMaxRetryCount);
+
+  std::unique_ptr<MockMigrationNotificationManager> notification_manager =
+      std::make_unique<MockMigrationNotificationManager>(profile());
+  EXPECT_CALL(*notification_manager, ShowDeletionCompletedNotification)
+      .Times(1);
+  std::unique_ptr<MockCleanupHandler> cleanup_handler =
+      std::make_unique<MockCleanupHandler>();
+  EXPECT_CALL(*cleanup_handler, Cleanup);
+
+  LocalFilesMigrationManager manager(profile());
+  manager.SetNotificationManagerForTesting(notification_manager.get());
+  manager.SetCleanupHandlerForTesting(cleanup_handler->GetWeakPtr());
+  manager.Initialize();
+
+  // Wait for async functions, like checking if MyFiles is empty, to complete.
+  base::RunLoop().RunUntilIdle();
+
+  // The retry count should be reset.
+  int retry_count =
+      profile()->GetPrefs()->GetInteger(prefs::kSkyVaultMigrationRetryCount);
+  EXPECT_EQ(0, retry_count);
+
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.Delete.Failed", false, 1);
+}
+
 TEST_P(LocalFilesMigrationManagerStateTest, InitializeFromState) {
   SetUpMyFiles();
   CreateTestFile(kTestFile);
