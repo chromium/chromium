@@ -2697,11 +2697,11 @@ if (current_toolchain == default_toolchain) {
   }
 
   if (android_64bit_target_cpu && !defined(android_app_secondary_abi)) {
-    group("monochrome_public_bundle") {
-      deps = [ ":monochrome_64_public_bundle" ]
+    alias_with_wrapper_script("monochrome_public_bundle") {
+      alias_target = ":monochrome_64_public_bundle"
     }
-    group("trichrome_chrome_bundle") {
-      deps = [ ":trichrome_chrome_64_bundle" ]
+    alias_with_wrapper_script("trichrome_chrome_bundle") {
+      alias_target = ":trichrome_chrome_64_bundle"
     }
   } else {
     if (android_64bit_target_cpu) {
