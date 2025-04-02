@@ -4791,6 +4791,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SearchWith.CharSelected" units="characters"
+    expires_after="2025-08-31">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the number of characters selected when performing a Search With.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SearchWith.Trigger" enum="IOSSearchWithContext"
     expires_after="2025-09-07">
   <owner>olivierrobin@chromium.org</owner>
