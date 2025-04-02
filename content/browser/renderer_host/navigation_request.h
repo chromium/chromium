@@ -903,7 +903,8 @@ class CONTENT_EXPORT NavigationRequest
   // Typically this is called when navigation commits to move these observers to
   // the committed document.
   [[nodiscard]] std::vector<
-      mojo::PendingReceiver<network::mojom::CookieAccessObserver>>
+      std::pair<mojo::PendingReceiver<network::mojom::CookieAccessObserver>,
+                CookieAccessDetails::Source>>
   TakeCookieObservers();
 
   void NotifyCookiesAccessed(

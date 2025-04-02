@@ -15397,9 +15397,8 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // still has a valid receiver, `this` will receive delayed IPC calls from
     // the network service. When the remote interface in the network service is
     // destructed, `mojo::ReceiverSet` automatically removes the receiver.
-    for (auto& receiver : navigation_request->TakeCookieObservers()) {
-      cookie_observers_.Add(std::move(receiver),
-                            CookieAccessDetails::Source::kNavigation);
+    for (auto& [receiver, source] : navigation_request->TakeCookieObservers()) {
+      cookie_observers_.Add(std::move(receiver), source);
     }
     for (auto& receiver : navigation_request->TakeTrustTokenObservers()) {
       trust_token_observers_.Add(this, std::move(receiver));

@@ -9935,9 +9935,11 @@ void NavigationRequest::NotifyCookiesAccessed(
   }
 }
 
-std::vector<mojo::PendingReceiver<network::mojom::CookieAccessObserver>>
+std::vector<
+    std::pair<mojo::PendingReceiver<network::mojom::CookieAccessObserver>,
+              CookieAccessDetails::Source>>
 NavigationRequest::TakeCookieObservers() {
-  return cookie_observers_->TakeReceivers();
+  return cookie_observers_->TakeReceiversWithContext();
 }
 
 void NavigationRequest::OnTrustTokensAccessed(
