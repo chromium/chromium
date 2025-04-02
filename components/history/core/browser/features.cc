@@ -14,8 +14,7 @@ namespace history {
 namespace {
 constexpr auto is_android = !!BUILDFLAG(IS_ANDROID);
 constexpr auto kOrganicRepeatableQueriesDefaultValue =
-    is_android ? base::FEATURE_ENABLED_BY_DEFAULT
-               : base::FEATURE_DISABLED_BY_DEFAULT;
+    base::FEATURE_DISABLED_BY_DEFAULT;
 
 // Specifies the scaling behavior, i.e. whether the relevance scales of the
 // top sites and repeatable queries should be first aligned.
