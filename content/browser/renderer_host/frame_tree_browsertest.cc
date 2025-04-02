@@ -328,10 +328,10 @@ class FrameTreeBrowserWithDiscardTest
     RenderProcessHostImpl* root_rph = static_cast<RenderProcessHostImpl*>(
         frame_tree.root()->current_frame_host()->GetProcess());
     if (KeepAliveDiscardedProcess()) {
-      // Increment the worker ref count of the renderer process to keep it
+      // Increment the keep alive ref count of the renderer process to keep it
       // alive post discard, simulating the situation where the process may be
       // shared by multiple frames.
-      root_rph->IncrementWorkerRefCount();
+      root_rph->IncrementKeepAliveRefCount(0);
     }
 
     frame_tree.Discard();
@@ -629,8 +629,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest,
   EXPECT_TRUE(rfh->IsRenderFrameLive());
   EXPECT_TRUE(rph->IsInitializedAndNotDead());
 
-  // Set a worker on the renderer process.
-  rph->IncrementWorkerRefCount();
+  // Set a keep-alive on the renderer process.
+  rph->IncrementKeepAliveRefCount(0);
 
   // Discard the frame tree. The process should remain alive.
   frame_tree.Discard();

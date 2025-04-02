@@ -9809,11 +9809,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   RenderProcessHostImpl* initial_process_host =
       static_cast<RenderProcessHostImpl*>(current_frame_host()->GetProcess());
-  // Increment the worker ref count of the renderer process to keep it alive
+  // Increment the keep alive ref count of the renderer process to keep it alive
   // so it is reused on the back navigation below. The test checks that the
   // session storage state changed in the activated page is correctly propagated
   // after a back navigation that uses an existing renderer process.
-  initial_process_host->IncrementWorkerRefCount();
+  initial_process_host->IncrementKeepAliveRefCount(0);
 
   AddPrerender(kPrerenderingUrl);
   NavigatePrimaryPage(kPrerenderingUrl);

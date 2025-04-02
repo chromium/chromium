@@ -1407,26 +1407,6 @@
             ]
         }
     ],
-    "AttributionReportingInBrowserMigration": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AttributionReportingInBrowserMigration"
-                    ]
-                }
-            ]
-        }
-    ],
     "AudioFocusEnforcementStudy": [
         {
             "platforms": [
@@ -13391,6 +13371,33 @@
                     "enable_features": [
                         "JumpStartOmnibox",
                         "LocalHistoryZeroSuggestBeyondNTP"
+                    ]
+                }
+            ]
+        }
+    ],
+    "KeepAliveInBrowserMigration": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240117",
+                    "enable_features": [
+                        "KeepAliveInBrowserMigration"
+                    ]
+                },
+                {
+                    "name": "AttributionReportingInBrowserMigration",
+                    "enable_features": [
+                        "AttributionReportingInBrowserMigration",
+                        "KeepAliveInBrowserMigration"
                     ]
                 }
             ]
