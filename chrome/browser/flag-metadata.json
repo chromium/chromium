@@ -2559,7 +2559,7 @@
   {
     "name": "enable-bookmarks-selected-type-on-signin-for-testing",
     "owners": [ "msalama@chromium.org", "uno-desktop@google.com" ],
-    "expiry_milestone": 136
+    "expiry_milestone": 140
   },
   {
     "name": "enable-bound-session-credentials",
@@ -8705,7 +8705,7 @@
   {
     "name": "sync-enable-bookmarks-in-transport-mode",
     "owners": [ "msalama@chromium.org", "uno-desktop@google.com" ],
-    "expiry_milestone": 136
+    "expiry_milestone": 140
   },
   {
     "name": "sync-point-graph-validation",
