@@ -340031,10 +340031,6 @@
        "464d8f2612500b9579cc1a4e2b2f911e7000df5b",
        []
       ],
-      "font-stretch-valid-expected.txt": [
-       "7395d936b5ba434eb2b9650483a294fb35bf218f",
-       []
-      ],
       "font-style-computed-expected.txt": [
        "d1287507c7521d65853c9d204ace5a31b34b84d6",
        []
@@ -340061,6 +340057,14 @@
       ],
       "font-weight-valid-expected.txt": [
        "acb02156e89d00efd576a4afa725f86af1f3187a",
+       []
+      ],
+      "font-width-computed-expected.txt": [
+       "6ea2563740fb9d2f47b2ed7382b62b56249ae34a",
+       []
+      ],
+      "font-width-valid-expected.txt": [
+       "c3f954370e301f312fa32d5f0dfd09eaae132f2a",
        []
       ]
      },
@@ -373537,7 +373541,7 @@
       []
      ],
      "cssstyledeclaration-cssfontrule.tentative-expected.txt": [
-      "447b84e7d745bbf1aafd3b408351c2e7ca46c0ba",
+      "3d613983a235479a646fd94137528b84e657d5e4",
       []
      ],
      "cssstyledeclaration-csstext-all-shorthand-expected.txt": [
@@ -397842,6 +397846,10 @@
      ],
      "requirements-for-implementations": {
       "other-elements-attributes-and-apis": {
+       "document-applets-expected.txt": [
+        "817f4c41fdf653e451968f31b22b08e6a11b72ca",
+        []
+       ],
        "original-id.json": [
         "601a7c08d19493c45501a407059dd0ae72891ba2",
         []
@@ -462535,7 +462543,7 @@
    "ai": {
     "language_detection": {
      "detector.https.tentative.any.js": [
-      "8c02df18cbe5b154aafe9b077f2355affffdfae4",
+      "57c98abd206d128b821726ca73d9c24c5c08805b",
       [
        "ai/language_detection/detector.https.tentative.any.html",
        {
@@ -462699,7 +462707,7 @@
       ]
      ],
      "translator_translate.tentative.https.any.js": [
-      "5a800c00c696ca3565b3de3bf60f407b1f4ca05c",
+      "1c5867569d94248e5ae7a17e764aaaa444c4cd72",
       [
        "ai/translator/translator_translate.tentative.https.any.html",
        {
@@ -499264,27 +499272,6 @@
         {}
        ]
       ],
-      "font-stretch-computed.html": [
-       "42e1989b1ae1bfa7c3d2378024eaf79279049a03",
-       [
-        null,
-        {}
-       ]
-      ],
-      "font-stretch-invalid.html": [
-       "0f7f7c88975e792af5a6bcf6dc1e19eae5d69f66",
-       [
-        null,
-        {}
-       ]
-      ],
-      "font-stretch-valid.html": [
-       "90cde6031332b5f6964d6a3ad26a4eead3e86880",
-       [
-        null,
-        {}
-       ]
-      ],
       "font-style-computed.html": [
        "acb870cdc1f3328417843fd0d5259ad1735cc096",
        [
@@ -499588,6 +499575,27 @@
       ],
       "font-weight-valid.html": [
        "2601a132e1405e0a4f7e22cefb156c0900f28172",
+       [
+        null,
+        {}
+       ]
+      ],
+      "font-width-computed.html": [
+       "4e38a5d5e9a8a529305b082f2ef4d6dc350e11d9",
+       [
+        null,
+        {}
+       ]
+      ],
+      "font-width-invalid.html": [
+       "7f30eab3e5b6b4934bae8d92f0e88ebd09a63114",
+       [
+        null,
+        {}
+       ]
+      ],
+      "font-width-valid.html": [
+       "44cbb37fd601f0cb3e04dd09b57ec10458683f6d",
        [
         null,
         {}
@@ -502518,6 +502526,13 @@
        ]
       ]
      },
+     "grid-extrinsically-sized-mutations.html": [
+      "8b1576bd35bc4260f852f78753ade7433f3a544c",
+      [
+       null,
+       {}
+      ]
+     ],
      "grid-important.html": [
       "42896ed200d787a09255f28d31ec0a2238586304",
       [
@@ -635026,6 +635041,13 @@
          {}
         ]
        ],
+       "document-applets.html": [
+        "493e75262e6e398167ae29a8065feca1a3557185",
+        [
+         null,
+         {}
+        ]
+       ],
        "document-color-01.html": [
         "e6f0c2b573eaef279418b373884fb6c41a3b0320",
         [
@@ -702710,7 +702732,7 @@
      "tentative": {
       "static-router": {
        "static-router-resource-timing.https.html": [
-        "9d6137d9c529beb57aacb48aed1dbc99e05fcfb0",
+        "e32436da41b347865875c6fca0bc86080b306c20",
         [
          null,
          {}
@@ -709226,7 +709248,7 @@
      ]
     ],
     "SpeechRecognition-basics.https.html": [
-     "16c22e7c95fbaf13125692bb3ecef865a9f365f5",
+     "827844096f6e58a7b64f1192958c8a2475a1410f",
      [
       null,
       {}
