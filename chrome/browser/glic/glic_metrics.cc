@@ -26,7 +26,7 @@ namespace glic {
 namespace {
 
 constexpr char kHistogramGlicPanelPresentationTime[] =
-    "Glic.PanelPresentationTime";
+    "Glic.PanelPresentationTime2";
 
 enum class ModeOffset : int {
   kTextAttached = 1,
