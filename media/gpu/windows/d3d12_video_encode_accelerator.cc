@@ -88,7 +88,6 @@ D3D12VideoEncodeAccelerator::D3D12VideoEncodeAccelerator(
   encoder_weak_this_ = encoder_weak_this_factory_.GetWeakPtr();
 
   encoder_info_.implementation_name = "D3D12VideoEncodeAccelerator";
-  encoder_info_.reports_average_qp = false;
 }
 
 D3D12VideoEncodeAccelerator::~D3D12VideoEncodeAccelerator() {
@@ -263,6 +262,7 @@ void D3D12VideoEncodeAccelerator::InitializeTask(const Config& config) {
   // support is implemented.
   constexpr uint8_t kFullFramerate = 255;
   encoder_info_.fps_allocation[0] = {kFullFramerate};
+  encoder_info_.reports_average_qp = encoder_->ReportsAverageQp();
 
   child_task_runner_->PostTask(
       FROM_HERE,

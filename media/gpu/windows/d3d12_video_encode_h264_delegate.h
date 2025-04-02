@@ -17,6 +17,7 @@
 #include "media/base/video_codecs.h"
 #include "media/filters/h26x_annex_b_bitstream_builder.h"
 #include "media/gpu/h264_dpb.h"
+#include "media/gpu/h264_rate_controller.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d12_video_encode_delegate.h"
 #include "media/video/video_encode_accelerator.h"
@@ -55,6 +56,9 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeH264Delegate
   ~D3D12VideoEncodeH264Delegate() override;
 
   size_t GetMaxNumOfRefFrames() const override;
+  bool ReportsAverageQp() const override;
+
+  bool UpdateRateControl(const Bitrate& bitrate, uint32_t framerate) override;
 
   bool SupportsRateControlReconfiguration() const override;
 
@@ -87,6 +91,14 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeH264Delegate
   D3D12_VIDEO_ENCODER_SEQUENCE_GOP_STRUCTURE_H264 gop_structure_{};
   D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264 pic_params_{};
   D3D12VideoEncoderRateControl current_rate_control_;
+
+  std::optional<H264RateController> software_rate_controller_;
+  H264RateControllerSettings rate_controller_settings_;
+  // The timestamp of the next frame in the encoded video, to be used for the
+  // rate controller. The value stands for the time delta relative to the
+  // beginning of the video when the frame should be decoded.
+  base::TimeDelta rate_controller_timestamp_;
+
   D3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS input_arguments_{};
   std::array<UINT, 16> list0_reference_frames_{};
 
@@ -97,6 +109,9 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeH264Delegate
 
   H26xAnnexBBitstreamBuilder packed_header_{
       /*insert_emulation_prevention_bytes=*/true};
+
+  // The metadata of the bitstream buffer for the last encode request.
+  BitstreamBufferMetadata metadata_;
 };
 
 }  // namespace media

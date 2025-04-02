@@ -176,6 +176,10 @@ EncoderStatus D3D12VideoEncodeDelegate::Initialize(
   return InitializeVideoEncoder(config);
 }
 
+bool D3D12VideoEncodeDelegate::ReportsAverageQp() const {
+  return false;
+}
+
 bool D3D12VideoEncodeDelegate::UpdateRateControl(const Bitrate& bitrate,
                                                  uint32_t framerate) {
   auto rate_control = D3D12VideoEncoderRateControl::Create(bitrate, framerate);
@@ -295,6 +299,27 @@ D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::operator=(
   return *this;
 }
 
+// static
+D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl
+D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::CreateCqp(
+    uint32_t i_frame_qp,
+    uint32_t p_frame_qp,
+    uint32_t b_frame_qp) {
+  D3D12VideoEncoderRateControl rate_control;
+  rate_control.params_.cqp = {
+      .ConstantQP_FullIntracodedFrame = i_frame_qp,
+      .ConstantQP_InterPredictedFrame_PrevRefOnly = p_frame_qp,
+      .ConstantQP_InterPredictedFrame_BiDirectionalRef = b_frame_qp};
+  rate_control.rate_control_ = {
+      .Mode = D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE_CQP,
+      .ConfigParams = {.DataSize = sizeof(rate_control.params_.cqp),
+                       .pConfiguration_CQP = &rate_control.params_.cqp},
+      .TargetFrameRate = {30, 1},
+  };
+  return rate_control;
+}
+
+// static
 std::optional<D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl>
 D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::Create(
     Bitrate bitrate,
@@ -336,6 +361,23 @@ D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::Create(
 D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE
 D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::GetMode() const {
   return rate_control_.Mode;
+}
+
+void D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::SetCQP(
+    FrameType frame_type,
+    uint32_t qp) {
+  CHECK_EQ(rate_control_.Mode, D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE_CQP);
+  switch (frame_type) {
+    case FrameType::kIntra:
+      params_.cqp.ConstantQP_FullIntracodedFrame = qp;
+      break;
+    case FrameType::kInterPrev:
+      params_.cqp.ConstantQP_InterPredictedFrame_PrevRefOnly = qp;
+      break;
+    case FrameType::kInterBiDirectional:
+      params_.cqp.ConstantQP_InterPredictedFrame_BiDirectionalRef = qp;
+      break;
+  }
 }
 
 bool D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::operator==(
