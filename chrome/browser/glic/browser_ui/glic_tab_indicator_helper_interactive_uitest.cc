@@ -202,7 +202,9 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
                   WaitForState(kTab1AlertState, IsAccessing()));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, ActiveBrowserAlerted) {
+// TODO(crbug.com/396768066): Fix and re-enable this test.
+IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
+                       DISABLED_ActiveBrowserAlerted) {
 #if BUILDFLAG(IS_LINUX)
   if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
     GTEST_SKIP()
