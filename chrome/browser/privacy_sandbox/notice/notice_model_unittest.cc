@@ -19,6 +19,11 @@ using testing::Contains;
 using testing::ValuesIn;
 
 namespace privacy_sandbox {
+
+template <typename T>
+std::unique_ptr<Notice> Make(NoticeId id) {
+  return std::make_unique<T>(id);
+}
 namespace {
 
 class NoticeTest : public testing::Test {
@@ -26,13 +31,13 @@ class NoticeTest : public testing::Test {
   NoticeTest() : catalog_(std::make_unique<NoticeCatalog>()) {}
 
   Notice* RegisterAndRetrieveNotice(PrivacySandboxNotice notice) {
-    return catalog_->RegisterAndRetrieveNewNotice<Notice>(
-        {notice, SurfaceType::kDesktopNewTab});
+    return catalog_->RegisterAndRetrieveNewNotice(
+        &Make<Notice>, {notice, SurfaceType::kDesktopNewTab});
   }
 
   Notice* RegisterAndRetrieveConsent(PrivacySandboxNotice notice) {
-    return catalog_->RegisterAndRetrieveNewNotice<Consent>(
-        {notice, SurfaceType::kDesktopNewTab});
+    return catalog_->RegisterAndRetrieveNewNotice(
+        &Make<Consent>, {notice, SurfaceType::kDesktopNewTab});
   }
 
   NoticeCatalog* notice_catalog() { return catalog_.get(); }
@@ -147,28 +152,28 @@ INSTANTIATE_TEST_SUITE_P(
 class NoticeCatalogNoticeTest : public NoticeTest {};
 
 TEST_F(NoticeCatalogNoticeTest, RegisterNewNoticeSuccessfully) {
-  NoticeCatalog catalog;
   NoticeApi* target_api = notice_catalog()->RegisterAndRetrieveNewApi();
 
   NoticeApi* pre_req_api = notice_catalog()->RegisterAndRetrieveNewApi();
 
-  EXPECT_THAT(notice_catalog()->GetNoticeApis().size(), 2u);
-  Notice* notice = catalog
-                       .RegisterAndRetrieveNewNotice<Notice>(
-                           {PrivacySandboxNotice::kTopicsConsentNotice,
-                            SurfaceType::kDesktopNewTab})
-                       ->SetFeature(&kTopicsConsentDesktopModalFeature)
-                       ->SetTargetApis({target_api})
-                       ->SetPreReqApis({pre_req_api});
+  EXPECT_EQ(notice_catalog()->GetNoticeApis().size(), 2u);
+  Notice* notice =
+      notice_catalog()
+          ->RegisterAndRetrieveNewNotice(
+              &Make<Consent>, {PrivacySandboxNotice::kTopicsConsentNotice,
+                               SurfaceType::kDesktopNewTab})
+          ->SetFeature(&kTopicsConsentDesktopModalFeature)
+          ->SetTargetApis({target_api})
+          ->SetPreReqApis({pre_req_api});
 
-  EXPECT_THAT(notice->GetNoticeType(), NoticeType::kNotice);
+  EXPECT_EQ(notice->GetNoticeType(), NoticeType::kConsent);
   EXPECT_THAT(target_api->GetLinkedNotices(), Contains(notice));
-  EXPECT_THAT(notice->GetNoticeId().first,
-              PrivacySandboxNotice::kTopicsConsentNotice);
-  EXPECT_THAT(notice->GetNoticeId().second, SurfaceType::kDesktopNewTab);
+  EXPECT_EQ(notice->GetNoticeId().first,
+            PrivacySandboxNotice::kTopicsConsentNotice);
+  EXPECT_EQ(notice->GetNoticeId().second, SurfaceType::kDesktopNewTab);
   EXPECT_THAT(notice->GetTargetApis(), Contains(target_api));
   EXPECT_THAT(notice->GetPreReqApis(), Contains(pre_req_api));
-  EXPECT_THAT(notice->GetFeature(), &kTopicsConsentDesktopModalFeature);
+  EXPECT_EQ(notice->GetFeature(), &kTopicsConsentDesktopModalFeature);
 }
 
 TEST_F(NoticeCatalogNoticeTest, RegisterNewNoticeGroupSuccessfully) {
@@ -176,7 +181,8 @@ TEST_F(NoticeCatalogNoticeTest, RegisterNewNoticeGroupSuccessfully) {
 
   NoticeApi* pre_req_api = notice_catalog()->RegisterAndRetrieveNewApi();
 
-  notice_catalog()->RegisterNoticeGroup<Consent>(
+  notice_catalog()->RegisterNoticeGroup(
+      &Make<Consent>,
       {{{PrivacySandboxNotice::kTopicsConsentNotice,
          SurfaceType::kDesktopNewTab},
         &kTopicsConsentDesktopModalFeature},
@@ -187,7 +193,8 @@ TEST_F(NoticeCatalogNoticeTest, RegisterNewNoticeGroupSuccessfully) {
         &kTopicsConsentModalClankCCTFeature}},
       {target_api});
 
-  notice_catalog()->RegisterNoticeGroup<Notice>(
+  notice_catalog()->RegisterNoticeGroup(
+      &Make<Notice>,
       {{{PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
          SurfaceType::kDesktopNewTab},
         &kProtectedAudienceMeasurementNoticeModalFeature},
@@ -208,7 +215,7 @@ TEST_F(NoticeCatalogNoticeTest, RegisterNewNoticeGroupSuccessfully) {
           .find(std::make_pair(PrivacySandboxNotice::kTopicsConsentNotice,
                                SurfaceType::kDesktopNewTab))
           ->second.get();
-  EXPECT_THAT(topics_desktop_notice->GetNoticeType(), NoticeType::kConsent);
+  EXPECT_EQ(topics_desktop_notice->GetNoticeType(), NoticeType::kConsent);
 
   Notice* pa_desktop_notice =
       notice_map
@@ -216,7 +223,7 @@ TEST_F(NoticeCatalogNoticeTest, RegisterNewNoticeGroupSuccessfully) {
               PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
               SurfaceType::kDesktopNewTab))
           ->second.get();
-  EXPECT_THAT(pa_desktop_notice->GetNoticeType(), NoticeType::kNotice);
+  EXPECT_EQ(pa_desktop_notice->GetNoticeType(), NoticeType::kNotice);
 }
 
 TEST_F(NoticeCatalogNoticeTest,
@@ -224,7 +231,8 @@ TEST_F(NoticeCatalogNoticeTest,
   NoticeCatalog catalog;
   NoticeApi* target_api = notice_catalog()->RegisterAndRetrieveNewApi();
 
-  notice_catalog()->RegisterNoticeGroup<Consent>(
+  notice_catalog()->RegisterNoticeGroup(
+      &Make<Consent>,
       {{{PrivacySandboxNotice::kTopicsConsentNotice,
          SurfaceType::kDesktopNewTab},
         &kTopicsConsentDesktopModalFeature},
@@ -242,22 +250,22 @@ TEST_F(NoticeCatalogNoticeTest,
           .find(std::make_pair(PrivacySandboxNotice::kTopicsConsentNotice,
                                SurfaceType::kDesktopNewTab))
           ->second.get();
-  EXPECT_THAT(topics_desktop_notice->GetFeature(),
-              &kTopicsConsentDesktopModalFeature);
+  EXPECT_EQ(topics_desktop_notice->GetFeature(),
+            &kTopicsConsentDesktopModalFeature);
   Notice* topics_brapp_notice =
       notice_map
           .find(std::make_pair(PrivacySandboxNotice::kTopicsConsentNotice,
                                SurfaceType::kClankBrApp))
           ->second.get();
-  EXPECT_THAT(topics_brapp_notice->GetFeature(),
-              &kTopicsConsentModalClankBrAppFeature);
+  EXPECT_EQ(topics_brapp_notice->GetFeature(),
+            &kTopicsConsentModalClankBrAppFeature);
   Notice* topics_cct_notice =
       notice_map
           .find(std::make_pair(PrivacySandboxNotice::kTopicsConsentNotice,
                                SurfaceType::kClankCustomTab))
           ->second.get();
-  EXPECT_THAT(topics_cct_notice->GetFeature(),
-              &kTopicsConsentModalClankCCTFeature);
+  EXPECT_EQ(topics_cct_notice->GetFeature(),
+            &kTopicsConsentModalClankCCTFeature);
 }
 }  // namespace
 }  // namespace privacy_sandbox

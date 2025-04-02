@@ -17,6 +17,11 @@ using notice::mojom::PrivacySandboxNoticeEvent;
 
 using privacy_sandbox::notice::mojom::PrivacySandboxNotice;
 
+template <typename T>
+std::unique_ptr<Notice> Make(NoticeId id) {
+  return std::make_unique<T>(id);
+}
+
 // Defines all existing notices and populates the notice catalog.
 void PopulateNoticeCatalog(std::unique_ptr<NoticeCatalog>& catalog) {
   // TODO(crbug.com/392612108): Add all eligibility and result callbacks.
@@ -26,7 +31,8 @@ void PopulateNoticeCatalog(std::unique_ptr<NoticeCatalog>& catalog) {
   NoticeApi* measurement = catalog->RegisterAndRetrieveNewApi();
 
   // Define Notices.
-  catalog->RegisterNoticeGroup<privacy_sandbox::Consent>(
+  catalog->RegisterNoticeGroup(
+      &Make<Consent>,
       {{{PrivacySandboxNotice::kTopicsConsentNotice,
          SurfaceType::kDesktopNewTab},
         &privacy_sandbox::kTopicsConsentDesktopModalFeature},
@@ -37,7 +43,8 @@ void PopulateNoticeCatalog(std::unique_ptr<NoticeCatalog>& catalog) {
         &privacy_sandbox::kTopicsConsentModalClankCCTFeature}},
       {topics});
 
-  catalog->RegisterNoticeGroup<Notice>(
+  catalog->RegisterNoticeGroup(
+      &Make<Notice>,
       {{{PrivacySandboxNotice::kThreeAdsApisNotice,
          SurfaceType::kDesktopNewTab},
         &privacy_sandbox::kThreeAdsAPIsNoticeModalFeature},
@@ -48,7 +55,8 @@ void PopulateNoticeCatalog(std::unique_ptr<NoticeCatalog>& catalog) {
         &privacy_sandbox::kThreeAdsAPIsNoticeModalClankCCTFeature}},
       {topics, fledge, measurement});
 
-  catalog->RegisterNoticeGroup<Notice>(
+  catalog->RegisterNoticeGroup(
+      &Make<Notice>,
       {{{PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
          SurfaceType::kDesktopNewTab},
         &privacy_sandbox::kProtectedAudienceMeasurementNoticeModalFeature},
@@ -62,7 +70,8 @@ void PopulateNoticeCatalog(std::unique_ptr<NoticeCatalog>& catalog) {
             kProtectedAudienceMeasurementNoticeModalClankCCTFeature}},
       {fledge, measurement});
 
-  catalog->RegisterNoticeGroup<Notice>(
+  catalog->RegisterNoticeGroup(
+      &Make<Notice>,
       {{{PrivacySandboxNotice::kMeasurementNotice, SurfaceType::kDesktopNewTab},
         &privacy_sandbox::kMeasurementNoticeModalFeature},
        {{PrivacySandboxNotice::kMeasurementNotice, SurfaceType::kClankBrApp},

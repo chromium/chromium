@@ -141,29 +141,18 @@ class NoticeCatalog {
   // Registers a new notice api.
   NoticeApi* RegisterAndRetrieveNewApi();
 
-  // Template implementation needs to be inline to bypass linkage issues, other
-  // classes need access to the template implementation source.
   // Registers a new notice.
-  template <typename T>
-  Notice* RegisterAndRetrieveNewNotice(NoticeId notice_id) {
-    notices_.emplace(notice_id, std::make_unique<T>(T(notice_id)));
-    return notices_[notice_id].get();
-  }
+  Notice* RegisterAndRetrieveNewNotice(
+      std::unique_ptr<Notice> (*notice_creator)(NoticeId),
+      NoticeId notice_id);
 
   // Registers a group of notices with the same requirements to be shown (for
   // ex. Topics can have TopicsClankBrApp, TopicsDesktop and TopicsClankCCT)
-  template <typename T>
   void RegisterNoticeGroup(
+      std::unique_ptr<Notice> (*notice_creator)(NoticeId),
       std::vector<std::pair<NoticeId, const base::Feature*>>&& notice_ids,
       std::vector<NoticeApi*>&& target_apis,
-      std::vector<NoticeApi*>&& pre_req_apis = {}) {
-    for (auto [notice_id, feature] : notice_ids) {
-      RegisterAndRetrieveNewNotice<T>(notice_id)
-          ->SetFeature(feature)
-          ->SetTargetApis(target_apis)
-          ->SetPreReqApis(pre_req_apis);
-    }
-  }
+      std::vector<NoticeApi*>&& pre_req_apis = {});
 
  private:
   std::vector<std::unique_ptr<NoticeApi>> apis_;
