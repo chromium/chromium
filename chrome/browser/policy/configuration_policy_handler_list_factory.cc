@@ -2510,6 +2510,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           key::kOnSecurityEventEnterpriseConnector,
           enterprise_connectors::kOnSecurityEventPref,
           enterprise_connectors::kOnSecurityEventScopePref, chrome_schema));
+
+  handlers->AddHandler(std::make_unique<DeveloperToolsPolicyHandler>());
   // Policies for all platforms - End
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -2581,7 +2583,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
                                             base::Value::Type::BOOLEAN)));
 
   handlers->AddHandler(std::make_unique<headless::HeadlessModePolicyHandler>());
-  handlers->AddHandler(std::make_unique<DeveloperToolsPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<DownloadAutoOpenPolicyHandler>(chrome_schema));
 
