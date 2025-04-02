@@ -97,12 +97,12 @@ bool Connection::IsConnected() const {
 Transaction* Connection::CreateVersionChangeTransaction(
     int64_t id,
     const std::set<int64_t>& scope,
-    BackingStore::Transaction* backing_store_transaction) {
+    std::unique_ptr<BackingStore::Transaction> backing_store_transaction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(GetTransaction(id), nullptr) << "Duplicate transaction id." << id;
   return (transactions_[id] = std::make_unique<Transaction>(
               id, this, scope, blink::mojom::IDBTransactionMode::VersionChange,
-              bucket_context_handle_, backing_store_transaction))
+              bucket_context_handle_, std::move(backing_store_transaction)))
       .get();
 }
 
@@ -252,12 +252,10 @@ void Connection::CreateTransaction(
   }
 
   std::set<int64_t> scope(object_store_ids.begin(), object_store_ids.end());
-  BackingStore::Transaction* backing_store_transaction =
-      database_->backing_store()->CreateTransaction(durability, mode).release();
   Transaction* transaction =
       (transactions_[transaction_id] = std::make_unique<Transaction>(
            transaction_id, this, std::move(scope), mode, bucket_context_handle_,
-           backing_store_transaction))
+           database_->backing_store()->CreateTransaction(durability, mode)))
           .get();
 
   transaction->BindReceiver(std::move(transaction_receiver));

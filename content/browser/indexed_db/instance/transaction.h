@@ -52,12 +52,13 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
 
   static void DisableInactivityTimeoutForTesting();
 
-  Transaction(int64_t id,
-              Connection* connection,
-              const std::set<int64_t>& object_store_ids,
-              blink::mojom::IDBTransactionMode mode,
-              BucketContextHandle bucket_context,
-              BackingStore::Transaction* backing_store_transaction);
+  Transaction(
+      int64_t id,
+      Connection* connection,
+      const std::set<int64_t>& object_store_ids,
+      blink::mojom::IDBTransactionMode mode,
+      BucketContextHandle bucket_context,
+      std::unique_ptr<BackingStore::Transaction> backing_store_transaction);
   ~Transaction() override;
 
   void BindReceiver(
