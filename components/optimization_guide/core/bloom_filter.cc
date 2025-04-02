@@ -35,7 +35,7 @@ BloomFilter::BloomFilter(uint32_t num_hash_functions, uint32_t num_bits)
 
 BloomFilter::BloomFilter(uint32_t num_hash_functions,
                          uint32_t num_bits,
-                         std::string filter_data)
+                         const std::string& filter_data)
     : num_hash_functions_(num_hash_functions),
       num_bits_(num_bits),
       bytes_(filter_data.size()) {
@@ -54,8 +54,9 @@ bool BloomFilter::Contains(const std::string& str) const {
     uint64_t n = MurmurHash3(str, i) % num_bits_;
     uint32_t byte_index = (n / 8);
     uint32_t bit_index = n % 8;
-    if ((bytes_[byte_index] & (1 << bit_index)) == 0)
+    if ((bytes_[byte_index] & (1 << bit_index)) == 0) {
       return false;
+    }
   }
   return true;
 }
