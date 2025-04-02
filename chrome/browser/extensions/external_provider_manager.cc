@@ -20,6 +20,7 @@
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_error_controller.h"
 #include "chrome/browser/extensions/external_install_manager.h"
+#include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/extensions/external_provider_manager_factory.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/installed_loader.h"
@@ -43,10 +44,6 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/verifier_formats.h"
 #include "url/gurl.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/external_provider_impl.h"
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/extensions/install_limiter.h"
@@ -92,14 +89,9 @@ void ExternalProviderManager::Shutdown() {
 }
 
 void ExternalProviderManager::CreateExternalProviders() {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/407824044): Port ExternalProviderImpl to desktop Android.
-  NOTIMPLEMENTED() << "External providers not yet supported on Android";
-#else
   ExternalProviderImpl::CreateExternalProviders(
       this, Profile::FromBrowserContext(context_.get()),
       &external_extension_providers_);
-#endif
 }
 
 // Some extensions will autoupdate themselves externally from Chrome.  These
