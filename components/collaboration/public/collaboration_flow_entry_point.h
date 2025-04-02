@@ -17,7 +17,12 @@ namespace collaboration {
 //   org.chromium.components.collaboration)
 enum class CollaborationServiceJoinEntryPoint {
   kUnknown = 0,
-  kMaxValue = kUnknown,
+  kLinkClick = 1,
+  kUserTyped = 2,
+  kExternalApp = 3,
+  kForwardBackButton = 4,
+  kRedirect = 5,
+  kMaxValue = kRedirect,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceJoinEntryPoint)
 

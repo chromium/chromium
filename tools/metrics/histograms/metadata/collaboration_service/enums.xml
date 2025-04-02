@@ -30,6 +30,11 @@ chromium-metrics-reviews@google.com.
 
 <enum name="CollaborationServiceJoinEntryPoint">
   <int value="0" label="Unknown"/>
+  <int value="1" label="Link Click"/>
+  <int value="2" label="User Typed"/>
+  <int value="3" label="External Application"/>
+  <int value="4" label="Forward or Back Button"/>
+  <int value="5" label="Redirect"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/collaboration/public/collaboration_flow_entry_point.h:CollaborationServiceJoinEntryPoint) -->
