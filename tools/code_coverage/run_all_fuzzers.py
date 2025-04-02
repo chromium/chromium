@@ -299,15 +299,19 @@ def _get_all_target_details(args):
         # Centipede RunnerMain will by default set the watchdog thread to all
         # zeros, which means we don't need to worry about rss_limit_mb or
         # timeouts.
-        cmd = [
-            fuzzer_target_binpath,
-            os.path.join(fuzzer_target_corporadir, '*')
-        ]
+        cmd = [fuzzer_target_binpath]
+        # The centipede fuzzing target needs to have all the files listed as
+        # inputs. Unfortunately, this means that if any of the testcases fails,
+        # we won't have coverage for any files in the corpus. For that reason,
+        # we prefer listing the files and fallback on gathering profiles per
+        # testcase if that happens.
+        files = ' '.join(os.listdir(fuzzer_target_corporadir))
       else:  # libfuzzer
         cmd = [
             fuzzer_target_binpath, '-runs=0', '-rss_limit_mb=8192',
             fuzzer_target_corporadir
         ]
+        files = '*'
       all_target_details.append({
           'name':
           fuzzer_target,
@@ -324,7 +328,7 @@ def _get_all_target_details(args):
           'corpus':
           fuzzer_target_corporadir,
           'files':
-          '*'
+          files
       })
 
   # We also want to run ./chrome without a valid X server.
