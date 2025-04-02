@@ -61,8 +61,8 @@ namespace {
 static constexpr int kHoursInOneWeek = 24 * 7;
 static constexpr int kHoursInOneYear = 24 * 365;
 
-BASE_FEATURE(kIncreaseCoookieAccesCacheSize,
-             "IncreaseCoookieAccesCacheSize",
+BASE_FEATURE(kIncreaseCookieAccessCacheSize,
+             "IncreaseCookieAccessCacheSize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // How often to call CookieObserveer.OnCookiesAccessed. This value was picked
@@ -418,7 +418,7 @@ RestrictedCookieManager::RestrictedCookieManager(
       receiver_(this),
       metrics_updater_(metrics_updater),
       max_cookie_cache_count_(
-          base::FeatureList::IsEnabled(kIncreaseCoookieAccesCacheSize)
+          base::FeatureList::IsEnabled(kIncreaseCookieAccessCacheSize)
               ? kIncreasedMaxCookieCacheCount
               : kMaxCookieCacheCount),
       cookies_access_timer_(
