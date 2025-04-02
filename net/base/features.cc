@@ -73,10 +73,6 @@ const base::FeatureParam<base::TimeDelta> kUseDnsHttpsSvcbSecureExtraTimeMin{
     &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbSecureExtraTimeMin",
     base::Milliseconds(5)};
 
-BASE_FEATURE(kUseDnsHttpsSvcbAlpn,
-             "UseDnsHttpsSvcbAlpn",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUseHostResolverCache,
              "UseHostResolverCache",
              base::FEATURE_DISABLED_BY_DEFAULT);

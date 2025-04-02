@@ -8166,11 +8166,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsLinux | kOsMac | kOsWin | kOsCrOS | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kSyncPointGraphValidation)},
 
-    {"use-dns-https-svcb-alpn", flag_descriptions::kUseDnsHttpsSvcbAlpnName,
-     flag_descriptions::kUseDnsHttpsSvcbAlpnDescription,
-     kOsLinux | kOsMac | kOsWin | kOsCrOS | kOsAndroid,
-     FEATURE_VALUE_TYPE(net::features::kUseDnsHttpsSvcbAlpn)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"web-otp-backend", flag_descriptions::kWebOtpBackendName,
      flag_descriptions::kWebOtpBackendDescription, kOsAndroid,
