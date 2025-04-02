@@ -897,6 +897,15 @@ void CaptureModeSessionFocusCycler::AdvanceFocusAfterSearchResultsPanel(
   AdvanceFocus(reverse);
 }
 
+void CaptureModeSessionFocusCycler::
+    SetA11yOverrideWindowToSearchResultsPanel() {
+  auto* search_results_panel_widget =
+      CaptureModeController::Get()->search_results_panel_widget();
+  CHECK(search_results_panel_widget);
+  scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
+      search_results_panel_widget->GetNativeWindow());
+}
+
 void CaptureModeSessionFocusCycler::OnWidgetClosing(views::Widget* widget) {
   OnWidgetDestroying(widget);
 }
