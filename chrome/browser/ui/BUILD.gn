@@ -494,6 +494,8 @@ static_library("ui") {
     "//components/feedback/redaction_tool",
     "//components/find_in_page",
     "//components/fingerprinting_protection_filter/browser",
+    "//components/fingerprinting_protection_filter/interventions/browser",
+    "//components/fingerprinting_protection_filter/interventions/common:features",
     "//components/gcm_driver",
     "//components/google/core/common",
     "//components/heap_profiling/multi_process",
