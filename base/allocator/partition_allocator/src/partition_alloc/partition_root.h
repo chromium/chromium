@@ -1090,6 +1090,9 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #endif  // PA_CONFIG(USE_PARTITION_ROOT_ENUMERATOR)
 
   friend class ThreadCache;
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  friend class internal::InSlotMetadata;
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 };
 
 namespace internal {
@@ -1622,7 +1625,8 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
       QuarantineForBrp(slot_span, object);
     }
 
-    if (!(ref_count->ReleaseFromAllocator())) [[unlikely]] {
+    if (!(ref_count->ReleaseFromAllocator(slot_start, slot_span)))
+        [[unlikely]] {
       PA_CHECK(was_zapped);
       total_size_of_brp_quarantined_bytes.fetch_add(
           slot_span->GetSlotSizeForBookkeeping(), std::memory_order_relaxed);

@@ -251,7 +251,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
 
   // Returns true if the allocation should be reclaimed.
   // This function should be called by the allocator during Free().
-  PA_ALWAYS_INLINE bool ReleaseFromAllocator() {
+  PA_ALWAYS_INLINE bool ReleaseFromAllocator(
+      uintptr_t slot_start,
+      SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span) {
     CheckCookieIfSupported();
 
     CountType old_count =
@@ -263,7 +265,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
     // overwritten by the freelist pointer (or its shadow) for very small slots,
     // thus masking the error away.
     if (!(old_count & kMemoryHeldByAllocatorBit)) [[unlikely]] {
-      DoubleFreeOrCorruptionDetected(old_count);
+      DoubleFreeOrCorruptionDetected(old_count, slot_start, slot_span);
     }
 
     // Release memory when no raw_ptr<> exists anymore:
@@ -446,12 +448,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   }
 #endif  // PA_CONFIG(IN_SLOT_METADATA_CHECK_COOKIE)
 
-  [[noreturn]] PA_NOINLINE PA_NOT_TAIL_CALLED void
-  DoubleFreeOrCorruptionDetected(CountType count) {
-    PA_DEBUG_DATA_ON_STACK("refcount", count);
-    PA_NO_CODE_FOLDING();
-    PA_IMMEDIATE_CRASH();
-  }
+  [[noreturn]] PA_NOINLINE PA_NOT_TAIL_CALLED static void
+  DoubleFreeOrCorruptionDetected(CountType count,
+                                 uintptr_t slot_start,
+                                 SlotSpanMetadata<MetadataKind::kReadOnly>*);
 
   // Note that in free slots, this is overwritten by encoded freelist
   // pointer(s). The way the pointers are encoded on 64-bit little-endian

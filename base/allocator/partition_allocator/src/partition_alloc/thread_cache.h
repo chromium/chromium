@@ -392,6 +392,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
     return *scheduler_loop_quarantine_branch_;
   }
 
+  // Returns true if the given address is in the thread cache's freelist.
+  // Otherwise, returns false.
+  bool IsInFreelist(uintptr_t address, size_t bucket_index, size_t& position);
+
  private:
   friend class tools::HeapDumper;
   friend class tools::ThreadCacheInspector;
