@@ -151,38 +151,31 @@ void TextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,
       gfx::PointF(text_origin()) +
       gfx::Vector2dF(0, font_ascent + emphasis_mark_offset());
 
-  if (RuntimeEnabledFeatures::TextCombineEmphasisNGEnabled()) {
-    const ShapeResultView* shape_view = nullptr;
-    if (RuntimeEnabledFeatures::PlainTextPainterEnabled()) {
-      const PlainTextNode& node = PlainTextPainter::Shared().SegmentAndShape(
-          placeholder_text_run, emphasis_mark_font);
-      if (node.ItemList().empty()) {
-        return;
-      }
-      shape_view = node.ItemList()[0].EnsureView();
-      if (!shape_view) {
-        return;
-      }
-    } else {
-      CachingWordShaper word_shaper(emphasis_mark_font);
-      ShapeResultBuffer buffer;
-      word_shaper.FillResultBuffer(placeholder_text_run, &buffer);
-      if (buffer.ShapeResultSize() == 0) {
-        return;
-      }
-      shape_view = buffer.ViewAt(0);
+  const ShapeResultView* shape_view = nullptr;
+  if (RuntimeEnabledFeatures::PlainTextPainterEnabled()) {
+    const PlainTextNode& node = PlainTextPainter::Shared().SegmentAndShape(
+        placeholder_text_run, emphasis_mark_font);
+    if (node.ItemList().empty()) {
+      return;
     }
-    graphics_context().DrawEmphasisMarks(
-        emphasis_mark_font,
-        TextFragmentPaintInfo{placeholder_text_run.ToStringView(), 0, 1,
-                              shape_view},
-        emphasis_mark(), emphasis_mark_text_origin,
-        PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kForeground));
-    return;
+    shape_view = node.ItemList()[0].EnsureView();
+    if (!shape_view) {
+      return;
+    }
+  } else {
+    CachingWordShaper word_shaper(emphasis_mark_font);
+    ShapeResultBuffer buffer;
+    word_shaper.FillResultBuffer(placeholder_text_run, &buffer);
+    if (buffer.ShapeResultSize() == 0) {
+      return;
+    }
+    shape_view = buffer.ViewAt(0);
   }
-  graphics_context().DeprecatedDrawEmphasisMarks(
-      emphasis_mark_font, placeholder_text_run, emphasis_mark(),
-      emphasis_mark_text_origin,
+  graphics_context().DrawEmphasisMarks(
+      emphasis_mark_font,
+      TextFragmentPaintInfo{placeholder_text_run.ToStringView(), 0, 1,
+                            shape_view},
+      emphasis_mark(), emphasis_mark_text_origin,
       PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kForeground));
 }
 

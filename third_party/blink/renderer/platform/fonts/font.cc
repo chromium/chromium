@@ -236,30 +236,6 @@ bool Font::DeprecatedDrawBidiText(
   return true;
 }
 
-// This function is not used if TextCombineEmphasisNG flag is enabled.
-void Font::DeprecatedDrawEmphasisMarks(cc::PaintCanvas* canvas,
-                                       const TextRun& run,
-                                       const AtomicString& mark,
-                                       const gfx::PointF& point,
-                                       const cc::PaintFlags& flags) const {
-  if (ShouldSkipDrawing())
-    return;
-
-  FontCachePurgePreventer purge_preventer;
-
-  const auto emphasis_glyph_data = GetEmphasisMarkGlyphData(mark);
-  if (!emphasis_glyph_data.font_data)
-    return;
-
-  CachingWordShaper word_shaper(*this);
-  ShapeResultBuffer buffer;
-  word_shaper.FillResultBuffer(run, &buffer);
-  TextRunPaintInfo run_info(run);
-  ShapeResultBloberizer::FillTextEmphasisGlyphs bloberizer(
-      GetFontDescription(), run_info, buffer, emphasis_glyph_data);
-  DrawTextBlobs(bloberizer.Blobs(), *canvas, point, flags);
-}
-
 void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
                              const TextFragmentPaintInfo& text_info,
                              const AtomicString& mark,

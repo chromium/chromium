@@ -579,46 +579,6 @@ ShapeResultBloberizer::FillGlyphsNG::FillGlyphsNG(
   }
 }
 
-// This function is not used if TextCombineEmphasisNG flag is enabled.
-ShapeResultBloberizer::FillTextEmphasisGlyphs::FillTextEmphasisGlyphs(
-    const FontDescription& font_description,
-    const TextRunPaintInfo& run_info,
-    const ShapeResultBuffer& result_buffer,
-    const GlyphData& emphasis)
-    : ShapeResultBloberizer(font_description, Type::kNormal) {
-  gfx::PointF glyph_center =
-      emphasis.font_data->BoundsForGlyph(emphasis.glyph).CenterPoint();
-
-  float advance = 0;
-  auto results = result_buffer.results_;
-
-  if (run_info.run.Rtl()) {
-    unsigned word_offset = run_info.run.length();
-    for (unsigned j = 0; j < results.size(); j++) {
-      unsigned resolved_index = results.size() - 1 - j;
-      const Member<const ShapeResult>& word_result = results[resolved_index];
-      word_offset -= word_result->NumCharacters();
-      StringView text = run_info.run.ToStringView();
-      ClusterCallbackContext context = {this, text, emphasis, glyph_center};
-      advance = word_result->ForEachGraphemeClusters(
-          text, advance, run_info.from, run_info.to, word_offset,
-          AddEmphasisMarkToBloberizer, static_cast<void*>(&context));
-    }
-  } else {  // Left-to-right.
-    unsigned word_offset = 0;
-    for (const auto& word_result : results) {
-      StringView text = run_info.run.ToStringView();
-      ClusterCallbackContext context = {this, text, emphasis, glyph_center};
-      advance = word_result->ForEachGraphemeClusters(
-          text, advance, run_info.from, run_info.to, word_offset,
-          AddEmphasisMarkToBloberizer, static_cast<void*>(&context));
-      word_offset += word_result->NumCharacters();
-    }
-  }
-
-  advance_ = advance;
-}
-
 ShapeResultBloberizer::FillTextEmphasisGlyphsNG::FillTextEmphasisGlyphsNG(
     const FontDescription& font_description,
     const StringView& text,
