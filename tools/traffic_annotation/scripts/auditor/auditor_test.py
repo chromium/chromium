@@ -43,7 +43,8 @@ class AuditorTest(unittest.TestCase):
     self.auditor_ui = AuditorUI(build_path,
                                 path_filters,
                                 no_filtering=False,
-                                test_only=True)
+                                test_only=True,
+                                skip_stale_build_check=True)
     self.auditor = self.auditor_ui.auditor
     self.auditor.file_filter.git_file_for_testing = (TEST_DATA_DIR /
                                                      "git_list.txt")
@@ -887,7 +888,7 @@ class AuditorTest(unittest.TestCase):
     expected_contents = """Unique ID\tLast Update\tSender\tDescription\tTrigger\tData\tDestination\tCookies Allowed\tCookies Store\tSetting\tChrome Policy\tComments\tSource File
 supervised_user_refresh_token_fetcher\t\tSupervised Users\tFetches an OAuth2 refresh token scoped down to the Supervised User Sync scope and tied to the given Supervised User ID, identifying the Supervised User Profile to be created.\tCalled when creating a new Supervised User profile in Chromium to fetch OAuth credentials for using Sync with the new profile.\t"The request is authenticated with an OAuth2 access token identifying the Google account and contains the following information:
 * The Supervised User ID, a randomly generated 64-bit identifier for the profile.
-* The device name, to identify the refresh token in account management."\tGoogle\tNo\t\tUsers can disable this feature by toggling 'Let anyone add a person to Chrome' in Chromium settings, under People.\tSupervisedUserCreationEnabled: false, external_policy: ""\t\thttps://cs.chromium.org/chromium/src/?l=0
+* The device name, to identify the refresh token in account management."\tGoogle\tNo\t\tUsers can disable this feature by toggling 'Let anyone add a person to Chrome' in Chromium settings, under People.\tSupervisedUserCreationEnabled: false, external_policy: ""\t\thttps://cs.chromium.org/chromium/src/chrome/browser/supervised_user/legacy/supervised_user_refresh_token_fetcher.cc?l=166
 """
     self.assertEqual(expected_contents, tsv_contents)
 
