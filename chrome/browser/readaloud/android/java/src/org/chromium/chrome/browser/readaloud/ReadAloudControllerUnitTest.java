@@ -12,8 +12,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -1438,7 +1438,8 @@ public class ReadAloudControllerUnitTest {
         mController.setPlaybackModeAndApplyToPlayback(PlaybackMode.OVERVIEW);
 
         // Pref is updated.
-        verify(mPrefService).setInteger(eq("readaloud.playback_mode"), eq(PlaybackMode.OVERVIEW.getValue()));
+        verify(mPrefService)
+                .setInteger(eq("readaloud.playback_mode"), eq(PlaybackMode.OVERVIEW.getValue()));
 
         // Playback is stopped.
         verify(mPlayback).release();
@@ -1446,6 +1447,7 @@ public class ReadAloudControllerUnitTest {
         // Playback starts again.
         verify(mPlaybackHooks, times(1))
                 .createPlayback(mPlaybackArgsCaptor.capture(), mPlaybackCallbackCaptor.capture());
+        assertEquals(PlaybackMode.UNSPECIFIED, mPlaybackArgsCaptor.getValue().getPlaybackMode());
 
         onPlaybackSuccess(mPlayback);
         verify(mPlayback, times(2)).play();
