@@ -72,6 +72,14 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
   BOOL _stateRequired;
   BOOL _zipRequired;
 
+  // If YES, the new address is being added manually.
+  BOOL _addManualAddress;
+
+  // Indicates if error warnings should be ignored. Prevents displaying error
+  // messages while adding a new address manually from settings, before the
+  // user inputs data.
+  BOOL _ignoreErrorMessage;
+
   // Stores the required field names whose values are empty;
   NSMutableSet<NSString*>* _requiredFieldsWithEmptyValue;
 
@@ -92,7 +100,8 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
                     (id<AutofillProfileEditMediatorDelegate>)delegate
              personalDataManager:(autofill::PersonalDataManager*)dataManager
                  autofillProfile:(autofill::AutofillProfile*)autofillProfile
-               isMigrationPrompt:(BOOL)isMigrationPrompt {
+               isMigrationPrompt:(BOOL)isMigrationPrompt
+                addManualAddress:(BOOL)addManualAddress {
   self = [super init];
 
   if (self) {
@@ -101,6 +110,7 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
     _autofillProfile = autofillProfile;
     _delegate = delegate;
     _isMigrationPrompt = isMigrationPrompt;
+    _addManualAddress = addManualAddress;
     _requiredFieldsWithEmptyValue = [[NSMutableSet<NSString*> alloc] init];
     _selectedCountryCode =
         base::SysUTF8ToNSString(autofill::data_util::GetCountryCodeWithFallback(
@@ -108,6 +118,10 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
     _dynamicallyLoadInputFieldsEnabled = base::FeatureList::IsEnabled(
         kAutofillDynamicallyLoadsFieldsForAddressInput);
     _editedFields = [[NSMutableSet<NSString*> alloc] init];
+
+    // Initially ignore the error warnings when adding an address manually
+    // through settings.
+    _ignoreErrorMessage = _addManualAddress;
 
     [self loadCountries];
   }
@@ -125,6 +139,7 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
   [self fetchAndSetInputAddressFields];
   [self populateCurrentValuesMap];
   [self fetchAndUpdateFieldRequirements];
+  [self initializeRequiredEmptyFieldsForManualAddition];
 
   [_consumer setAccountProfile:[self isAccountProfile]];
 }
@@ -227,12 +242,21 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
 - (BOOL)fieldContainsValidValue:(NSString*)autofillFieldType
                   hasEmptyValue:(BOOL)hasEmptyValue
       moveToAccountFromSettings:(BOOL)moveToAccountFromSettings {
-  if (![self isAutofillFieldTypeRequiredField:autofillFieldType] ||
+  BOOL isRequired = [self isAutofillFieldTypeRequiredField:autofillFieldType];
+
+  // Only required fields need further checks. If not required, it's considered
+  // valid.
+  if (!isRequired) {
+    return YES;
+  }
+
+  // Early return if adding an address through infobar and the text field
+  // contained an empty value when the profile was loaded. An empty value isn't
+  // considered a valid value when adding an address manually through settings.
+  if (!_addManualAddress &&
       [self requiredFieldWasEmptyOnProfileLoadForType:autofillFieldType
                             moveToAccountFromSettings:
                                 moveToAccountFromSettings]) {
-    // Early return if the text field is not a required field or contained an
-    // empty value when the profile was loaded.
     return YES;
   }
 
@@ -241,6 +265,12 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
   if ([_requiredFieldsWithEmptyValue containsObject:autofillFieldType] &&
       !hasEmptyValue) {
     [_requiredFieldsWithEmptyValue removeObject:autofillFieldType];
+
+    // If `_requiredFieldsWithEmptyValue` is empty, error warnings should not be
+    // ignored.
+    if ([self requiredFieldsWithEmptyValuesCount] == 0) {
+      _ignoreErrorMessage = NO;
+    }
     return YES;
   }
 
@@ -279,6 +309,10 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
 }
 
 - (void)validateFieldsAndUpdateButtonStatus {
+  if (_ignoreErrorMessage) {
+    return;
+  }
+
   BOOL shouldShowError = ([self requiredFieldsWithEmptyValuesCount] > 0);
 
   if (shouldShowError != _errorSectionPresented) {
@@ -491,6 +525,33 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
 - (autofill::FieldType)typeNameToFieldType:(NSString*)autofillFieldType {
   return autofill::TypeNameToFieldType(
       base::SysNSStringToUTF8(autofillFieldType));
+}
+
+// Populates `_requiredFieldsWithEmptyValue` with required address field types
+// if adding a new address from settings.
+- (void)initializeRequiredEmptyFieldsForManualAddition {
+  // Early return if we are adding an address through infobar or adding a new
+  // local address manually.
+  if (!_addManualAddress || ![self isAccountProfile]) {
+    return;
+  }
+  if (_line1Required) {
+    [_requiredFieldsWithEmptyValue
+        addObject:
+            [self fieldTypeToTypeName:autofill::ADDRESS_HOME_STREET_ADDRESS]];
+  }
+  if (_cityRequired) {
+    [_requiredFieldsWithEmptyValue
+        addObject:[self fieldTypeToTypeName:autofill::ADDRESS_HOME_CITY]];
+  }
+  if (_stateRequired) {
+    [_requiredFieldsWithEmptyValue
+        addObject:[self fieldTypeToTypeName:autofill::ADDRESS_HOME_STATE]];
+  }
+  if (_zipRequired) {
+    [_requiredFieldsWithEmptyValue
+        addObject:[self fieldTypeToTypeName:autofill::ADDRESS_HOME_ZIP]];
+  }
 }
 
 @end

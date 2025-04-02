@@ -31,6 +31,7 @@ class PersonalDataManager;
              personalDataManager:(autofill::PersonalDataManager*)dataManager
                  autofillProfile:(autofill::AutofillProfile*)profile
                isMigrationPrompt:(BOOL)isMigrationPrompt
+                addManualAddress:(BOOL)addManualAddress
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
