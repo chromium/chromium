@@ -454,14 +454,6 @@ user_education::DisplayNewBadge TestBrowserWindow::MaybeShowNewBadgeFor(
 void TestBrowserWindow::NotifyNewBadgeFeatureUsed(
     const base::Feature& feature) {}
 
-bool TestBrowserWindow::IsTabModalPopup() const {
-  return is_tab_modal_popup_;
-}
-
-void TestBrowserWindow::SetIsTabModalPopup(bool is_tab_modal_popup) {
-  is_tab_modal_popup_ = is_tab_modal_popup;
-}
-
 user_education::FeaturePromoController*
 TestBrowserWindow::SetFeaturePromoController(
     std::unique_ptr<user_education::FeaturePromoController>

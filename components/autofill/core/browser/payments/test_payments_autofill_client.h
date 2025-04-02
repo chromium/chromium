@@ -110,7 +110,6 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const CreditCard> cards_to_suggest,
       base::span<const Suggestion> suggestions) override;
-  bool IsTabModalPopup() const override;
 #if !BUILDFLAG(IS_IOS)
   std::unique_ptr<webauthn::InternalAuthenticator>
   CreateCreditCardInternalAuthenticator(AutofillDriver* driver) override;
@@ -194,10 +193,6 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
     return unmask_authenticator_selection_dialog_shown_;
   }
 
-  void set_is_tab_model_popup(bool is_tab_model_popup) {
-    is_tab_model_popup_ = is_tab_model_popup;
-  }
-
 #if BUILDFLAG(IS_ANDROID)
   // Set up a mock to simulate successful mandatory reauth when autofilling
   // payment methods.
@@ -224,8 +219,6 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
 
   // True if LoadRiskData() was called, false otherwise.
   bool risk_data_loaded_ = false;
-
-  bool is_tab_model_popup_ = false;
 
   AutofillProgressDialogType autofill_progress_dialog_type_ =
       AutofillProgressDialogType::kServerCardUnmaskProgressDialog;

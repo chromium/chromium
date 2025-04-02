@@ -93,8 +93,6 @@ BASE_DECLARE_FEATURE(kAutofillSharedStorageServerCardData);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillShowManualFillForVirtualCards);
 #endif
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillSkipSaveCardForTabModalPopup);
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillSyncEwalletAccounts);
 #endif

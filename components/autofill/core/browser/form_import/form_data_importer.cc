@@ -216,27 +216,6 @@ bool HasSynthesizedTypes(
   });
 }
 
-bool ShouldProcessExtractedCreditCard(
-    const raw_ref<AutofillClient>& client,
-    FormDataImporter::CreditCardImportType credit_card_import_type) {
-  // Processing should not occur if the current window is a tab modal pop-up, as
-  // no credit card save or feature enrollment should happen in this case.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillSkipSaveCardForTabModalPopup) &&
-      client->GetPaymentsAutofillClient()->IsTabModalPopup()) {
-    return false;
-  }
-
-  // If there is no `credit_card_import_type` from form extraction, the
-  // extracted card is not a viable candidate for processing.
-  if (credit_card_import_type ==
-      FormDataImporter::CreditCardImportType::kNoCard) {
-    return false;
-  }
-
-  return true;
-}
-
 }  // namespace
 
 FormDataImporter::ExtractedFormData::ExtractedFormData() = default;
@@ -297,11 +276,11 @@ void FormDataImporter::ImportAndProcessFormData(
       preliminary_imported_address_profiles);
 
   bool cc_prompt_potentially_shown = false;
-  if (ShouldProcessExtractedCreditCard(client_, credit_card_import_type_)) {
-    // Only check IsCreditCardUploadEnabled() if conditions that enable
-    // processing of the extracted credit card are true, in order to prevent
-    // the metrics it logs from being diluted by cases where extracted credit
-    // cards should not be processed or there was no credit card to process.
+  if (credit_card_import_type_ != CreditCardImportType::kNoCard) {
+    // Only check IsCreditCardUploadEnabled() if payment method autofill is
+    // enabled and a credit card was extracted from the form, in order to
+    // prevent the metrics it logs from being diluted by cases where payment
+    // method autofill is off or there was no credit card to process.
     bool credit_card_upload_enabled =
         credit_card_save_manager_->IsCreditCardUploadEnabled();
     cc_prompt_potentially_shown = ProcessExtractedCreditCard(

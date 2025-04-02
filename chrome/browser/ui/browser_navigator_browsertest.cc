@@ -718,7 +718,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupTabModal) {
   params.disposition = WindowOpenDisposition::NEW_POPUP;
   params.is_tab_modal_popup = true;
   params.window_features.bounds = gfx::Rect(0, 0, 200, 200);
-  // Wait for new popup to load and gain focus.
+  // Wait for new popup to to load and gain focus.
   ui_test_utils::NavigateToURL(&params);
 
   // Add a new tab.
@@ -735,9 +735,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupTabModal) {
 
   // Verify the popup window is visible again.
   EXPECT_TRUE(params.browser->window()->IsVisible());
-
-  // Verify the popup window is set as tab model popup.
-  EXPECT_TRUE(params.browser->window()->IsTabModalPopup());
 }
 
 // This test verifies that navigating with WindowOpenDisposition = NEW_WINDOW

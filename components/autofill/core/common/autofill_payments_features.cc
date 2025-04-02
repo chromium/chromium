@@ -226,12 +226,6 @@ BASE_FEATURE(kAutofillShowManualFillForVirtualCards,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Kill switch, when enabled, will prevent the display of the save card bubble
-// within a tab modal pop-up window.
-BASE_FEATURE(kAutofillSkipSaveCardForTabModalPopup,
-             "AutofillSkipSaveCardForTabModalPopup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, adds a timeout on the network request for Unmask requests.
 BASE_FEATURE(kAutofillUnmaskCardRequestTimeout,
              "AutofillUnmaskCardRequestTimeout",

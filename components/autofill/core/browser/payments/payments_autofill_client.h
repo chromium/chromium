@@ -582,9 +582,6 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
   // Dismiss the issuer selection dialog for BNPL.
   virtual void DismissSelectBnplIssuerDialog();
-
-  // Checks if the browser popup is a tab modal popup.
-  virtual bool IsTabModalPopup() const;
 };
 
 }  // namespace payments

@@ -1295,10 +1295,6 @@ Browser* Browser::GetBrowserForMigrationOnly() {
   return this;
 }
 
-bool Browser::IsTabModalPopup() const {
-  return is_tab_modal_popup_;
-}
-
 void Browser::DidBecomeActive() {
   if (!is_active_) {
     is_active_ = true;

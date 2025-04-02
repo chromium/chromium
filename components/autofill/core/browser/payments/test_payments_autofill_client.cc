@@ -220,10 +220,6 @@ bool TestPaymentsAutofillClient::ShowTouchToFillCreditCard(
   return false;
 }
 
-bool TestPaymentsAutofillClient::IsTabModalPopup() const {
-  return is_tab_model_popup_;
-}
-
 #if !BUILDFLAG(IS_IOS)
 std::unique_ptr<webauthn::InternalAuthenticator>
 TestPaymentsAutofillClient::CreateCreditCardInternalAuthenticator(

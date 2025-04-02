@@ -4030,64 +4030,6 @@ TEST_F(FormDataImporterTest,
   EXPECT_EQ(observed_field_types.size(), 1u);
 }
 
-class SkipSaveCardInFormDataImporterTest
-    : public FormDataImporterTest,
-      public testing::WithParamInterface<bool> {
- public:
-  SkipSaveCardInFormDataImporterTest() {
-    feature_list_.InitWithFeatureState(
-        features::kAutofillSkipSaveCardForTabModalPopup,
-        IsSkipSaveCardEnabled());
-  }
-  bool IsSkipSaveCardEnabled() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         SkipSaveCardInFormDataImporterTest,
-                         ::testing::Bool());
-
-// Test that save card functionality is skipped for tab modal popup only when
-// kAutofillSkipSaveCardForTabModalPopup is enabled; otherwise, the card saving
-// functionality is started.
-TEST_P(SkipSaveCardInFormDataImporterTest,
-       ImportAndProcessFormData_TabModalPopup) {
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructDefaultCreditCardFormStructure();
-  test_api(form_data_importer())
-      .set_credit_card_import_type(
-          FormDataImporter::CreditCardImportType::kServerCard);
-  payments_client().set_is_tab_model_popup(true);
-
-  EXPECT_CALL(credit_card_save_manager(), ProceedWithSavingIfApplicable)
-      .Times(IsSkipSaveCardEnabled() ? 0 : 1);
-
-  test_api(form_data_importer())
-      .ImportAndProcessFormData(
-          *form_structure, /*profile_autofill_enabled=*/true,
-          /*payment_methods_autofill_enabled=*/true, ukm_source_id());
-}
-
-// Test that save card functionality is initiated for non tab modal popups.
-TEST_P(SkipSaveCardInFormDataImporterTest,
-       ImportAndProcessFormData_StartSaveCardFlow) {
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructDefaultCreditCardFormStructure();
-  test_api(form_data_importer())
-      .set_credit_card_import_type(
-          FormDataImporter::CreditCardImportType::kServerCard);
-
-  EXPECT_CALL(credit_card_save_manager(), ProceedWithSavingIfApplicable)
-      .Times(1);
-
-  test_api(form_data_importer())
-      .ImportAndProcessFormData(
-          *form_structure, /*profile_autofill_enabled=*/true,
-          /*payment_methods_autofill_enabled=*/true, ukm_source_id());
-}
-
 // Test case for credit card extraction.
 class FormDataImporterTest_ExtractCreditCardFromForm
     : public FormDataImporterTest {
