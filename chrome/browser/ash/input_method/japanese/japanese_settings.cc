@@ -269,6 +269,9 @@ JapaneseSettingsPtr ToMojomInputMethodSettings(const base::Value::Dict& prefs) {
   response->disable_personalized_suggestions =
       prefs.FindBool(kJpPrefDisablePersonalizedSuggestions)
           .value_or(response->disable_personalized_suggestions);
+  response->automatically_switch_to_halfwidth =
+      prefs.FindBool(kJpPrefAutomaticallySwitchToHalfwidth)
+          .value_or(response->automatically_switch_to_halfwidth);
   return response;
 }
 

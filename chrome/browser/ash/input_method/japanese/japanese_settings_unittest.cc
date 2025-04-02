@@ -35,7 +35,7 @@ TEST(JapaneseSettingsTest, OnSetPrefsSetsSettingsFromPrefs) {
   ash::ime::mojom::JapaneseSettingsPtr expected =
       ash::ime::mojom::JapaneseSettings::New();
   expected->automatically_send_statistics_to_google = false;
-  expected->automatically_switch_to_halfwidth = true;
+  expected->automatically_switch_to_halfwidth = false;
   expected->disable_personalized_suggestions = true;
   expected->input_mode = JapaneseSettings::InputMode::kKana;
   expected->keymap_style = JapaneseSettings::KeymapStyle::kChromeos;
