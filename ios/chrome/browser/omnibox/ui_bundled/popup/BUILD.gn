@@ -14,6 +14,7 @@ swift_source_set("popup_swift") {
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
     "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
     "//ios/chrome/common/ui/colors:swift",
     "//ui/base",
   ]
@@ -26,8 +27,6 @@ swift_source_set("popup_swift") {
 
 source_set("popup") {
   sources = [
-    "omnibox_pedal_annotator.h",
-    "omnibox_pedal_annotator.mm",
     "omnibox_popup_coordinator.h",
     "omnibox_popup_coordinator.mm",
     "omnibox_popup_mediator+Testing.h",
@@ -212,7 +211,6 @@ source_set("popup_ui_protocols") {
     "autocomplete_result_consumer.h",
     "content_providing.h",
     "omnibox_icon.h",
-    "omnibox_pedal.h",
     "popup_match_preview_delegate.h",
   ]
 }
@@ -220,7 +218,6 @@ source_set("popup_ui_protocols") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "omnibox_pedal_annotator_unittest.mm",
     "omnibox_popup_mediator_unittest.mm",
     "omnibox_popup_view_controller_unittest.mm",
     "pedal_section_extractor_unittest.mm",

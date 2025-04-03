@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_pedal_annotator.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_pedal_annotator.h"
 
 #import "components/omnibox/browser/actions/omnibox_action.h"
 #import "components/omnibox/browser/actions/omnibox_pedal.h"
