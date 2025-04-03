@@ -150,9 +150,15 @@ class AffiliationBackend : public FacetManagerHost,
   // AffiliationFetcherDelegate:
   void OnFetchSucceeded(
       AffiliationFetcherInterface* fetcher,
-      std::unique_ptr<AffiliationFetcherDelegate::Result> result) override;
-  void OnFetchFailed(AffiliationFetcherInterface* fetcher) override;
-  void OnMalformedResponse(AffiliationFetcherInterface* fetcher) override;
+      std::unique_ptr<AffiliationFetcherDelegate::Result> result) override {}
+  void OnFetchFailed(AffiliationFetcherInterface* fetcher) override {}
+  void OnMalformedResponse(AffiliationFetcherInterface* fetcher) override {}
+
+  void OnFetchFinished(AffiliationFetcherInterface::FetchResult result);
+
+  void RetryRequestIfNeeded();
+  void ProcessSuccessfulFetch(
+      AffiliationFetcherInterface::ParsedFetchResponse result);
 
   // AffiliationFetchThrottlerDelegate:
   bool OnCanSendNetworkRequest() override;

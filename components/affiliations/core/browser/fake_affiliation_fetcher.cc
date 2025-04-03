@@ -20,6 +20,7 @@ void FakeAffiliationFetcher::SimulateSuccess(
     const ParsedFetchResponse& fake_result_data) {
   FetchResult result;
   result.data = fake_result_data;
+  result.http_status_code = net::HTTP_OK;
   // TODO(crbug.com/371938601): clean up delegate.
   delegate_->OnFetchSucceeded(
       this, std::make_unique<ParsedFetchResponse>(fake_result_data));
@@ -27,9 +28,11 @@ void FakeAffiliationFetcher::SimulateSuccess(
 }
 
 void FakeAffiliationFetcher::SimulateFailure() {
+  FetchResult result;
+  result.http_status_code = net::HTTP_INTERNAL_SERVER_ERROR;
   // TODO(crbug.com/371938601): clean up delegate.
   delegate_->OnFetchFailed(this);
-  std::move(result_callback_).Run(FetchResult());
+  std::move(result_callback_).Run(result);
 }
 
 void FakeAffiliationFetcher::StartRequest(

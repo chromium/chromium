@@ -27,6 +27,7 @@
 #include "components/affiliations/core/browser/affiliation_fetcher_interface.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/facet_manager.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace affiliations {
@@ -298,27 +299,24 @@ void AffiliationBackend::RequestNotificationAtTime(const FacetURI& facet_uri,
       time - clock_->Now());
 }
 
-void AffiliationBackend::OnFetchSucceeded(
-    AffiliationFetcherInterface* fetcher,
-    std::unique_ptr<AffiliationFetcherDelegate::Result> result) {
+void AffiliationBackend::ProcessSuccessfulFetch(
+    AffiliationFetcherInterface::ParsedFetchResponse result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  throttler_->InformOfNetworkRequestComplete(true);
-
-  if (!result->psl_extensions.empty()) {
-    cache_->UpdatePslExtensions(result->psl_extensions);
+  if (!result.psl_extensions.empty()) {
+    cache_->UpdatePslExtensions(result.psl_extensions);
   }
 
-  auto psl_extensions = base::MakeFlatSet<std::string>(result->psl_extensions);
-  result->groupings = MergeRelatedGroups(psl_extensions, result->groupings);
+  auto psl_extensions = base::MakeFlatSet<std::string>(result.psl_extensions);
+  result.groupings = MergeRelatedGroups(psl_extensions, result.groupings);
   std::map<std::string, const GroupedFacets*> map_facet_to_group;
-  for (const GroupedFacets& grouped_facets : result->groupings) {
+  for (const GroupedFacets& grouped_facets : result.groupings) {
     for (const Facet& facet : grouped_facets.facets) {
       map_facet_to_group[facet.uri.canonical_spec()] = &grouped_facets;
     }
   }
 
-  for (const AffiliatedFacets& affiliated_facets : result->affiliations) {
+  for (const AffiliatedFacets& affiliated_facets : result.affiliations) {
     AffiliatedFacetsWithUpdateTime affiliation;
     affiliation.facets = affiliated_facets;
     affiliation.last_update_time = clock_->Now();
@@ -365,10 +363,8 @@ void AffiliationBackend::OnFetchSucceeded(
   }
 }
 
-void AffiliationBackend::OnFetchFailed(AffiliationFetcherInterface* fetcher) {
+void AffiliationBackend::RetryRequestIfNeeded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  throttler_->InformOfNetworkRequestComplete(false);
 
   // Trigger a retry if a fetch is still needed.
   for (const auto& facet_manager_pair : facet_managers_) {
@@ -381,12 +377,15 @@ void AffiliationBackend::OnFetchFailed(AffiliationFetcherInterface* fetcher) {
   }
 }
 
-void AffiliationBackend::OnMalformedResponse(
-    AffiliationFetcherInterface* fetcher) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // TODO(engedy): Potentially handle this case differently. crbug.com/437865.
-  OnFetchFailed(fetcher);
+void AffiliationBackend::OnFetchFinished(
+    AffiliationFetcherInterface::FetchResult fetch_result) {
+  if (fetch_result.http_status_code != net::HTTP_OK || !fetch_result.data) {
+    throttler_->InformOfNetworkRequestComplete(false);
+    RetryRequestIfNeeded();
+    return;
+  }
+  throttler_->InformOfNetworkRequestComplete(true);
+  ProcessSuccessfulFetch(std::move(fetch_result.data.value()));
 }
 
 bool AffiliationBackend::OnCanSendNetworkRequest() {
@@ -405,7 +404,8 @@ bool AffiliationBackend::OnCanSendNetworkRequest() {
   ReportStatistics(requested_facet_uris.size());
   return fetcher_manager_->Fetch(
       requested_facet_uris, {.branding_info = true, .psl_extension_list = true},
-      base::DoNothing());
+      base::BindOnce(&AffiliationBackend::OnFetchFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AffiliationBackend::ReportStatistics(size_t requested_facet_uri_count) {
