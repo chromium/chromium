@@ -19,8 +19,7 @@
           aria-hidden="true">
         $i18n{bluetoothPageTitle}
         <div class="secondary" id="bluetoothSecondaryLabel">
-          [[getSecondaryLabel_(
-            LabelType.DISPLAYED_TEXT, systemProperties.*, isBluetoothToggleOn_)]]
+          [[getSecondaryLabel_(LabelTypeEnum_.DISPLAYED_TEXT, systemProperties.*, isBluetoothToggleOn_)]]
         </div>
       </div>
       <template is="dom-if"
@@ -32,7 +31,7 @@
             on-click="onSubpageArrowClick_"
             aria-label="$i18n{bluetoothPageTitle}"
             aria-description$="[[getSecondaryLabel_(
-              LabelType.A11Y, systemProperties.*, isBluetoothToggleOn)]]"
+              LabelTypeEnum_.A11Y, systemProperties.*, isBluetoothToggleOn)]]"
             aria-roledescription="$i18n{subpageArrowRoleDescription}">
         </cr-icon-button>
       </template>

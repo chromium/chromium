@@ -73,7 +73,7 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
       },
 
       /** Mirror Section enum to be used in Polymer data bindings. */
-      Section: {
+      SectionEnum_: {
         type: Object,
         value: Section,
       },
