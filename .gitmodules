@@ -509,7 +509,7 @@
 	url = https://pdfium.googlesource.com/pdfium
 [submodule "third_party/perfetto"]
 	path = third_party/perfetto
-	url = https://android.googlesource.com/platform/external/perfetto
+	url = https://chromium.googlesource.com/external/github.com/google/perfetto
 [submodule "third_party/perl"]
 	path = third_party/perl
 	url = https://chromium.googlesource.com/chromium/deps/perl
