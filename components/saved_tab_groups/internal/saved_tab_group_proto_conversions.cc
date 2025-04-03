@@ -168,6 +168,7 @@ SavedTabGroup DataToSavedTabGroup(const proto::SavedTabGroupData& data) {
   base::Time last_user_interaction_time;
   base::Uuid originating_tab_group_guid;
   bool is_hidden = false;
+  std::optional<base::Time> archival_time;
   if (data.has_local_tab_group_data()) {
     created_before_syncing_tab_groups =
         data.local_tab_group_data().created_before_syncing_tab_groups();
@@ -179,6 +180,8 @@ SavedTabGroup DataToSavedTabGroup(const proto::SavedTabGroupData& data) {
           data.local_tab_group_data().originating_tab_group_guid());
     }
     is_hidden = data.local_tab_group_data().is_group_hidden();
+    archival_time = TimeFromWindowsEpochMicros(
+        data.local_tab_group_data().archival_time_windows_epoch_micros());
   }
 
   SavedTabGroup group = SavedTabGroup(
@@ -193,6 +196,7 @@ SavedTabGroup DataToSavedTabGroup(const proto::SavedTabGroupData& data) {
                                      /*use_originating_tab_group_guid=*/true);
   }
   group.SetIsHidden(is_hidden);
+  group.SetArchivalTime(archival_time);
 
   return group;
 }
@@ -252,6 +256,13 @@ proto::SavedTabGroupData SavedTabGroupToData(const SavedTabGroup& group) {
         group.GetOriginatingTabGroupGuid().value().AsLowercaseString());
   }
   local_data->set_is_group_hidden(group.is_hidden());
+  if (group.archival_time().has_value()) {
+    local_data->set_archival_time_windows_epoch_micros(
+        group.archival_time()
+            .value()
+            .ToDeltaSinceWindowsEpoch()
+            .InMicroseconds());
+  }
 
   pb_data.set_version(kCurrentSchemaVersion);
 

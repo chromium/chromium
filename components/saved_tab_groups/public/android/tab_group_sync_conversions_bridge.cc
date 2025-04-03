@@ -79,13 +79,18 @@ ScopedJavaLocalRef<jobject> JNI_TabGroupSyncConversionsBridge_createGroup(
       env, group.last_updater_cache_guid().value_or(std::string()));
   auto j_collaboration_id =
       ToJavaCollaborationId(env, group.collaboration_id());
+  auto j_archival_time =
+      group.archival_time().has_value()
+          ? group.archival_time().value().InMillisecondsSinceUnixEpoch()
+          : -1;
 
   return Java_TabGroupSyncConversionsBridge_createGroup(
       env, j_sync_id, j_local_id, ConvertUTF16ToJavaString(env, group.title()),
       static_cast<int32_t>(group.color()),
       group.creation_time_windows_epoch_micros().InMillisecondsSinceUnixEpoch(),
       group.update_time_windows_epoch_micros().InMillisecondsSinceUnixEpoch(),
-      j_creator_cache_guid, j_last_updater_cache_guid, j_collaboration_id);
+      j_creator_cache_guid, j_last_updater_cache_guid, j_collaboration_id,
+      j_archival_time);
 }
 
 }  // namespace

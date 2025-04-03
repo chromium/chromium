@@ -127,6 +127,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, SavedTabGroupConversion_NativeToJava) {
   group.SetColor(tab_groups::TabGroupColorId::kRed);
   group.SetCreatorCacheGuid("creator_cache_guid");
   group.SetLastUpdaterCacheGuid("last_updater_cache_guid");
+  group.SetArchivalTime(base::Time::Now());
 
   SavedTabGroupTab tab3(GURL(), kTestTabTitle, group.saved_guid(),
                         /*position=*/std::nullopt,
