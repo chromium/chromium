@@ -324,7 +324,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
 
   // Request with id 1.
   std::vector<AutofillUploadContents> upload_contents_1 = EncodeUploadRequest(
-      *form_structures[0], *randomized_encoder, /*format_strings=*/{},
+      *form_structures[0], *randomized_encoder, /*form_associations=*/{},
+      /*format_strings=*/{},
       /*available_field_types=*/{},
       /*login_form_signature=*/std::nullopt, /*observed_submission=*/true);
   EXPECT_TRUE(crowdsourcing_manager->StartUploadRequest(
@@ -333,7 +334,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
 
   // Request with id 2.
   std::vector<AutofillUploadContents> upload_contents_2 = EncodeUploadRequest(
-      *form_structures[1], *randomized_encoder, /*format_strings=*/{},
+      *form_structures[1], *randomized_encoder, /*form_associations=*/{},
+      /*format_strings=*/{},
       /*available_field_types=*/{},
       /*login_form_signature=*/std::nullopt, /*observed_submission=*/true);
   EXPECT_TRUE(crowdsourcing_manager->StartUploadRequest(
@@ -342,7 +344,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
   // Request with id 3. Upload request with a non-empty additional password form
   // signature.
   std::vector<AutofillUploadContents> upload_contents_3 = EncodeUploadRequest(
-      *form_structures[2], *randomized_encoder, /*format_strings=*/{},
+      *form_structures[2], *randomized_encoder, /*form_associations=*/{},
+      /*format_strings=*/{},
       /*available_field_types=*/{},
       /*login_form_signature=*/FormSignature(42), /*observed_submission=*/true);
   EXPECT_TRUE(crowdsourcing_manager->StartUploadRequest(
@@ -632,7 +635,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, UploadToAPITest) {
                                                                   "dummykey");
 
   std::vector<AutofillUploadContents> upload_contents = EncodeUploadRequest(
-      form_structure, *randomized_encoder, /*format_strings=*/{},
+      form_structure, *randomized_encoder, /*form_associations=*/{},
+      /*format_strings=*/{},
       /*available_field_types=*/{},
       /*login_form_signature=*/std::nullopt, /*observed_submission=*/true);
   EXPECT_TRUE(crowdsourcing_manager->StartUploadRequest(
@@ -729,7 +733,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload) {
 
   // Request with id 0.
   std::vector<AutofillUploadContents> upload_contents = EncodeUploadRequest(
-      form_structure, *randomized_encoder, /*format_strings=*/{},
+      form_structure, *randomized_encoder, /*form_associations=*/{},
+      /*format_strings=*/{},
       /*available_field_types=*/{},
       /*login_form_signature=*/std::nullopt, /*observed_submission=*/true);
   EXPECT_TRUE(crowdsourcing_manager().StartUploadRequest(
@@ -756,7 +761,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload) {
   form_structure.set_submission_source(SubmissionSource::XHR_SUCCEEDED);
   base::HistogramTester histogram;
   std::vector<AutofillUploadContents> upload_contents_2 = EncodeUploadRequest(
-      form_structure, *randomized_encoder, /*format_strings=*/{},
+      form_structure, *randomized_encoder, /*form_associations=*/{},
+      /*format_strings=*/{},
       /*available_field_types=*/{},
       /*login_form_signature=*/std::nullopt, /*observed_submission=*/true);
   EXPECT_TRUE(crowdsourcing_manager().StartUploadRequest(
@@ -835,7 +841,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, RetryLimit_Upload) {
 
   // Request with id 0.
   std::vector<AutofillUploadContents> upload_contents = EncodeUploadRequest(
-      form_structure, *randomized_encoder, /*format_strings=*/{},
+      form_structure, *randomized_encoder, /*form_associations=*/{},
+      /*format_strings=*/{},
       /*available_field_types=*/{},
       /*login_form_signature=*/std::nullopt, /*observed_submission=*/true);
   EXPECT_TRUE(crowdsourcing_manager().StartUploadRequest(
@@ -1204,9 +1211,10 @@ class AutofillServerCommunicationTest
     AutofillCrowdsourcingManager crowdsourcing_manager(
         &client(), version_info::Channel::UNKNOWN);
 
-    std::vector<AutofillUploadContents> upload_contents = EncodeUploadRequest(
-        form, randomized_encoder, /*format_strings=*/{}, available_field_types,
-        login_form_signature, observed_submission);
+    std::vector<AutofillUploadContents> upload_contents =
+        EncodeUploadRequest(form, randomized_encoder, /*form_associations=*/{},
+                            /*format_strings=*/{}, available_field_types,
+                            login_form_signature, observed_submission);
     bool succeeded = crowdsourcing_manager.StartUploadRequest(
         std::move(upload_contents), form.submission_source(),
         is_password_manager_upload);

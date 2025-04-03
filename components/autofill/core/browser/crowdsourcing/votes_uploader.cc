@@ -224,14 +224,10 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   std::vector<CreditCard> copied_credit_cards = base::ToVector(
       credit_cards, [](const CreditCard* card) { return *card; });
 
+  FormStructure::FormAssociations form_associations;
   if (form->IsAutofillable()) {
-    // Associate the form signatures of recently submitted
-    // address/credit card forms to `submitted_form`, if it is an
-    // address/credit card form itself. This information is attached to
-    // the vote.
-    form->set_form_associations(
-        client_->GetFormDataImporter()->GetFormAssociations(
-            form->form_signature()));
+    form_associations = client_->GetFormDataImporter()->GetFormAssociations(
+        form->form_signature());
   }
 
   // Annotate the form with the source language of the page.
@@ -250,7 +246,8 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
              const std::u16string& last_unlocked_credit_card_cvc,
              const std::string& app_locale, bool observed_submission,
              std::unique_ptr<FormStructure> form,
-             std::unique_ptr<RandomizedEncoder> randomized_encoder) {
+             std::unique_ptr<RandomizedEncoder> randomized_encoder,
+             FormStructure::FormAssociations form_associations) {
             DeterminePossibleFieldTypesForUpload(profiles, credit_cards,
                                                  last_unlocked_credit_card_cvc,
                                                  app_locale, *form);
@@ -270,7 +267,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
 
             std::vector<AutofillUploadContents> upload_contents =
                 EncodeUploadRequest(
-                    *form, randomized_encoder.get(),
+                    *form, randomized_encoder.get(), form_associations,
                     DeterminePossibleFormatStringsForUpload(form->fields()),
                     non_empty_types,
                     /*login_form_signature=*/std::nullopt, observed_submission);
@@ -279,7 +276,8 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
           std::move(copied_profiles), std::move(copied_credit_cards),
           last_unlocked_credit_card_cvc, client_->GetAppLocale(),
           observed_submission, std::move(form),
-          RandomizedEncoder::Create(client_->GetPrefs())),
+          RandomizedEncoder::Create(client_->GetPrefs()),
+          std::move(form_associations)),
       base::BindOnce(&VotesUploader::OnFieldTypesDetermined,
                      weak_ptr_factory_.GetWeakPtr(),
                      initial_interaction_timestamp, base::TimeTicks::Now(),

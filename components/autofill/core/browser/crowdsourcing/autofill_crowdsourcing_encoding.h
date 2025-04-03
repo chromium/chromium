@@ -51,6 +51,7 @@ namespace autofill {
 std::vector<AutofillUploadContents> EncodeUploadRequest(
     const FormStructure& form,
     base::optional_ref<RandomizedEncoder> encoder,
+    const FormStructure::FormAssociations& form_associations,
     const std::map<FieldGlobalId, base::flat_set<std::u16string>>&
         format_strings,
     const FieldTypeSet& available_field_types,

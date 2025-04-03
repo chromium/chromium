@@ -347,14 +347,6 @@ class FormStructure {
     std::optional<FormSignature> last_credit_card_form_submitted;
   };
 
-  void set_form_associations(FormAssociations associations) {
-    form_associations_ = associations;
-  }
-
-  const FormAssociations& form_associations() const {
-    return form_associations_;
-  }
-
   base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
   GetServerPredictions(const std::vector<FieldGlobalId>& field_ids) const;
 
@@ -499,11 +491,6 @@ class FormStructure {
 
   // A vector of all iframes in the form.
   std::vector<FrameTokenWithPredecessor> child_frames_;
-
-  // The signatures of forms recently submitted on the same origin within a
-  // small period of time.
-  // Only used for voting-purposes.
-  FormAssociations form_associations_;
 };
 
 LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form);

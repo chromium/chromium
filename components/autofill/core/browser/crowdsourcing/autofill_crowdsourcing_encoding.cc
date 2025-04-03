@@ -689,6 +689,7 @@ base::flat_set<FormSignature> GetFormsForWhichToRunAiModel(
 std::vector<AutofillUploadContents> EncodeUploadRequest(
     const FormStructure& form,
     base::optional_ref<RandomizedEncoder> encoder,
+    const FormStructure::FormAssociations& form_associations,
     const std::map<FieldGlobalId, base::flat_set<std::u16string>>&
         format_strings,
     const FieldTypeSet& available_field_types,
@@ -711,17 +712,17 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
     upload.set_language(form.current_page_language().value());
   }
 
-  if (form.form_associations().last_address_form_submitted) {
+  if (form_associations.last_address_form_submitted) {
     upload.set_last_address_form_submitted(
-        form.form_associations().last_address_form_submitted->value());
+        form_associations.last_address_form_submitted->value());
   }
-  if (form.form_associations().second_last_address_form_submitted) {
+  if (form_associations.second_last_address_form_submitted) {
     upload.set_second_last_address_form_submitted(
-        form.form_associations().second_last_address_form_submitted->value());
+        form_associations.second_last_address_form_submitted->value());
   }
-  if (form.form_associations().last_credit_card_form_submitted) {
+  if (form_associations.last_credit_card_form_submitted) {
     upload.set_last_credit_card_form_submitted(
-        form.form_associations().last_credit_card_form_submitted->value());
+        form_associations.last_credit_card_form_submitted->value());
   }
 
   auto triggering_event =
