@@ -295,17 +295,31 @@ TEST_F(ContentVerifierTest, NormalizeRelativePath) {
   struct TestData {
     base::FilePath::StringViewType input;
     base::FilePath::StringViewType expected;
-  } test_cases[] = {{FPL("foo/bar"), FPL("foo/bar")},
-                    {FPL("foo//bar"), FPL("foo/bar")},
-                    {FPL("foo/bar/"), FPL("foo/bar/")},
-                    {FPL("foo/bar//"), FPL("foo/bar/")},
-                    {FPL("foo/options.html/"), FPL("foo/options.html/")}};
+  } test_cases[] = {
+      {FPL("foo/bar"), FPL("foo/bar")},
+      {FPL("foo//bar"), FPL("foo/bar")},
+      {FPL("foo/bar/"), FPL("foo/bar/")},
+      {FPL("foo/bar//"), FPL("foo/bar/")},
+      {FPL("foo/options.html/"), FPL("foo/options.html/")},
+      {FPL("foo/./bar"), FPL("foo/bar")},
+      {FPL("foo/../bar"), FPL("bar")},
+      {FPL("foo/../.."), FPL("")},
+      {FPL("./foo"), FPL("foo")},
+      {FPL("../foo"), FPL("foo")},
+      {FPL("foo/../../bar"), FPL("bar")},
+  };
 #undef FPL
   for (const auto& test_case : test_cases) {
     base::FilePath input(test_case.input);
     base::FilePath expected(test_case.expected);
     EXPECT_EQ(expected,
               ContentVerifier::NormalizeRelativePathForTesting(input));
+
+    // A leading separator should be ignored.
+    base::FilePath input_with_root(
+        base::FilePath(FILE_PATH_LITERAL("/")).Append(test_case.input));
+    EXPECT_EQ(expected, ContentVerifier::NormalizeRelativePathForTesting(
+                            input_with_root));
   }
 }
 
