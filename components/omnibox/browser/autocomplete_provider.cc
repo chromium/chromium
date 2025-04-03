@@ -181,7 +181,7 @@ AutocompleteProvider::AsOmniboxEventProviderType() const {
     case TYPE_MOST_VISITED_SITES:
       return metrics::OmniboxEventProto::MOST_VISITED_SITES;
     case TYPE_VERBATIM_MATCH:
-      return metrics::OmniboxEventProto::ZERO_SUGGEST;
+      return metrics::OmniboxEventProto::VERBATIM_MATCH;
     case TYPE_VOICE_SUGGEST:
       return metrics::OmniboxEventProto::SEARCH;
     case TYPE_HISTORY_FUZZY:
