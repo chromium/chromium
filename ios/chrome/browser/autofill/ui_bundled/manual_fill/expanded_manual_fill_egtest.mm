@@ -222,11 +222,6 @@ id<GREYMatcher> AutofillFormButton() {
 - (void)setUp {
   [super setUp];
 
-  // The tested UI is not availble on iPad, so there's no need for any setup.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    return;
-  }
-
   // Set up server.
   net::test_server::RegisterDefaultHandlers(self.testServer);
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -333,11 +328,6 @@ id<GREYMatcher> AutofillFormButton() {
 // manual fill view is opened from a field for which there are password
 // suggestions.
 - (void)testOpeningExpandedManualFillViewForPassword {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Expanded manual fill view is only available on iPhone.");
-  }
-
   // Open the expanded manual fill view for a password field.
   [self openExpandedManualFillViewForDataType:ManualFillDataType::kPassword
                                   fieldToFill:kPasswordFieldID];
@@ -369,11 +359,6 @@ id<GREYMatcher> AutofillFormButton() {
 // manual fill view is opened from a field for which there are address
 // suggestions.
 - (void)testOpeningExpandedManualFillViewForAddress {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Expanded manual fill view is only available on iPhone.");
-  }
-
   // Open the expanded manual fill view for an address field.
   [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
                                   fieldToFill:kNameFieldID];
@@ -386,11 +371,6 @@ id<GREYMatcher> AutofillFormButton() {
 // Tests that the right manual filling options are visible when switching from
 // one data type to the other.
 - (void)testSwitchingDataTypes {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Expanded manual fill view is only available on iPhone.");
-  }
-
   [self openExpandedManualFillViewForDataType:ManualFillDataType::kPassword
                                   fieldToFill:kPasswordFieldID];
 
@@ -445,11 +425,6 @@ id<GREYMatcher> AutofillFormButton() {
 // Tests that saved passwords for the current site are visible even when the
 // expanded manual fill view was not initially opened from a password form.
 - (void)testPasswordsVisibleWhenOpenedFromDifferentDataType {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Expanded manual fill view is only available on iPhone.");
-  }
-
   // Open the expanded manual fill view for an address field.
   [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
                                   fieldToFill:kNameFieldID];
@@ -504,11 +479,6 @@ id<GREYMatcher> AutofillFormButton() {
 // Tests that the "Autofill Form" button does not exist for the other data types
 // than addresses if an address field is in focus.
 - (void)testNoAutofillFormButtonForNonAddressTypes {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Expanded manual fill view is only available on iPhone.");
-  }
-
   // Open the expanded manual fill view for an address field.
   [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
                                   fieldToFill:kNameFieldID];
@@ -543,11 +513,6 @@ id<GREYMatcher> AutofillFormButton() {
 // Tests that the "Autofill Form" button does not exist for the other data types
 // than passwords if a password field is in focus.
 - (void)testNoAutofillFormButtonForNonPasswordTypes {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Expanded manual fill view is only available on iPhone.");
-  }
-
   // Open the expanded manual fill view for a password field.
   [self openExpandedManualFillViewForDataType:ManualFillDataType::kPassword
                                   fieldToFill:kPasswordFieldID];
@@ -581,11 +546,6 @@ id<GREYMatcher> AutofillFormButton() {
 // Tests that the "Autofill Form" button does not exist for all of the data
 // types if the type of the focused field can't be associated with any of them.
 - (void)testNoAutofillFormButtonForRandomType {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Expanded manual fill view is only available on iPhone.");
-  }
-
   // Load form.
   LoadForm(self.testServer, ManualFillDataType::kOther);
 
