@@ -72,13 +72,13 @@ export class PrintPreviewDestinationListElement extends
     };
   }
 
-  destinations: Destination[];
-  searchQuery: RegExp|null;
-  loadingDestinations: boolean;
-  private matchingDestinations_: Destination[];
-  private hasDestinations_: boolean;
-  private throbberHidden_: boolean;
-  private hideList_: boolean;
+  declare destinations: Destination[];
+  declare searchQuery: RegExp|null;
+  declare loadingDestinations: boolean;
+  declare private matchingDestinations_: Destination[];
+  declare private hasDestinations_: boolean;
+  declare private throbberHidden_: boolean;
+  declare private hideList_: boolean;
 
   private boundUpdateHeight_: ((e: Event) => void)|null = null;
 
