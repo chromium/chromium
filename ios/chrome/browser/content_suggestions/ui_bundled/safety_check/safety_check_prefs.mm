@@ -19,21 +19,13 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 bool IsSafetyCheckInMagicStackDisabled(PrefService* prefs) {
-  if (IsHomeCustomizationEnabled()) {
-    return !prefs->GetBoolean(
-        prefs::kHomeCustomizationMagicStackSafetyCheckEnabled);
-  } else {
-    return prefs->GetBoolean(kSafetyCheckInMagicStackDisabledPref);
-  }
+  return !prefs->GetBoolean(
+      prefs::kHomeCustomizationMagicStackSafetyCheckEnabled);
 }
 
 void DisableSafetyCheckInMagicStack(PrefService* prefs) {
-  if (IsHomeCustomizationEnabled()) {
-    prefs->SetBoolean(prefs::kHomeCustomizationMagicStackSafetyCheckEnabled,
-                      false);
-  } else {
-    prefs->SetBoolean(kSafetyCheckInMagicStackDisabledPref, true);
-  }
+  prefs->SetBoolean(prefs::kHomeCustomizationMagicStackSafetyCheckEnabled,
+                    false);
 }
 
 }  // namespace safety_check_prefs

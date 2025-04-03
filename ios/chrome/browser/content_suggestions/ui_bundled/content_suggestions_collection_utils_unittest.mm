@@ -88,8 +88,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, doodleFrameIPhonePortrait) {
   base::FieldTrialParams large_fakebox_params = {
       {kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox, "true"}};
   scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{kHomeCustomization, {}},
-                            {kDeprecateFeedHeader, large_fakebox_params}},
+      /*enabled_features=*/{{kDeprecateFeedHeader, large_fakebox_params}},
       /*disabled_features=*/{});
   CGFloat heightLargeLogo =
       DoodleHeight(YES, NO, IPhonePortraitTraitCollection());
@@ -125,8 +124,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, doodleFrameIPhoneLandscape) {
   base::FieldTrialParams large_fakebox_params = {
       {kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox, "true"}};
   scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{kHomeCustomization, {}},
-                            {kDeprecateFeedHeader, large_fakebox_params}},
+      /*enabled_features=*/{{kDeprecateFeedHeader, large_fakebox_params}},
       /*disabled_features=*/{});
   CGFloat heightLargeLogo =
       DoodleHeight(YES, NO, IPhonePortraitTraitCollection());
@@ -229,8 +227,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, fakeOmniboxHeight) {
   base::FieldTrialParams large_fakebox_params = {
       {kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox, "true"}};
   scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{kHomeCustomization, {}},
-                            {kDeprecateFeedHeader, large_fakebox_params}},
+      /*enabled_features=*/{{kDeprecateFeedHeader, large_fakebox_params}},
       /*disabled_features=*/{});
   EXPECT_EQ(65, FakeOmniboxHeight());
 }
@@ -241,8 +238,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, pinnedFakeOmniboxHeight) {
   base::FieldTrialParams large_fakebox_params = {
       {kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox, "true"}};
   scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{kHomeCustomization, {}},
-                            {kDeprecateFeedHeader, large_fakebox_params}},
+      /*enabled_features=*/{{kDeprecateFeedHeader, large_fakebox_params}},
       /*disabled_features=*/{});
   EXPECT_EQ(48, PinnedFakeOmniboxHeight());
 }
@@ -253,8 +249,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, fakeToolbarHeighta) {
   base::FieldTrialParams large_fakebox_params = {
       {kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox, "true"}};
   scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{kHomeCustomization, {}},
-                            {kDeprecateFeedHeader, large_fakebox_params}},
+      /*enabled_features=*/{{kDeprecateFeedHeader, large_fakebox_params}},
       /*disabled_features=*/{});
   EXPECT_EQ(62, FakeToolbarHeight());
 }

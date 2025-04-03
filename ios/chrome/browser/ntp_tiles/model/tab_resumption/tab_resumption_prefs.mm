@@ -37,22 +37,15 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 }
 
 bool IsTabResumptionDisabled(PrefService* prefs) {
-  if (IsHomeCustomizationEnabled()) {
-    return !prefs->GetBoolean(
-        prefs::kHomeCustomizationMagicStackTabResumptionEnabled);
-  }
-  return prefs->GetBoolean(kTabResumptionDisabledPref);
+  return !prefs->GetBoolean(
+      prefs::kHomeCustomizationMagicStackTabResumptionEnabled);
 }
 
 void DisableTabResumption(PrefService* prefs) {
   UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleDisabledHistogram,
                             ContentSuggestionsModuleType::kTabResumption);
-  if (IsHomeCustomizationEnabled()) {
-    prefs->SetBoolean(prefs::kHomeCustomizationMagicStackTabResumptionEnabled,
-                      false);
-  } else {
-    prefs->SetBoolean(kTabResumptionDisabledPref, true);
-  }
+  prefs->SetBoolean(prefs::kHomeCustomizationMagicStackTabResumptionEnabled,
+                    false);
 }
 
 bool IsLastOpenedURL(GURL URL, PrefService* prefs) {

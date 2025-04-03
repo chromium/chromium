@@ -528,10 +528,6 @@ const char kFullscreenSmoothScrollingDescription[] =
     "When enabled, the web view's insets are updated for scoll events. If "
     "disabled, the the web view's frame are updated.";
 
-const char kHomeCustomizationName[] = "Home Customization";
-const char kHomeCustomizationDescription[] =
-    "When enabled, adds a menu to personalize the Home surface.";
-
 const char kHomeMemoryImprovementsName[] = "Home Memory Improvements";
 const char kHomeMemoryImprovementsDescription[] =
     "When enabled, uses code that aims to improve the memory footprint in "

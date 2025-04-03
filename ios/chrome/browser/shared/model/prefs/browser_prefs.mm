@@ -1061,6 +1061,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 
   // Added 03/2025.
   prefs->ClearPref(kIosParcelTrackingPolicyEnabled);
+
+  // Added 04/2025.
+  prefs->ClearPref("set_up_list.disabled");
 }
 
 // This method should be periodically pruned of year+ old migrations.

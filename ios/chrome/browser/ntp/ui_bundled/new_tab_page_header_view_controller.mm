@@ -321,9 +321,7 @@ const CGFloat kMarginMultiplier = 2;
     // needs to respond to user taps first.
     [self addIdentityDisc];
 
-    if (IsHomeCustomizationEnabled()) {
-      [self addCustomizationMenu];
-    }
+    [self addCustomizationMenu];
 
     UIEdgeInsets safeAreaInsets = self.baseViewController.view.safeAreaInsets;
     width = std::max<CGFloat>(
@@ -366,7 +364,6 @@ const CGFloat kMarginMultiplier = 2;
 }
 
 - (void)hideBadgeOnCustomizationMenu {
-  CHECK(IsHomeCustomizationEnabled());
   [self.headerView hideBadgeOnCustomizationMenu];
 }
 

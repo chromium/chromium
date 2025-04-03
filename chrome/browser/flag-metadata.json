@@ -5241,11 +5241,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "home-customization",
-    "owners": [ "adamta@google.com", "rkgibson@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "home-memory-improvements",
     "owners": [ "thegreenfrog@google.com", "ajuma@google.com" ],
     "expiry_milestone": 140

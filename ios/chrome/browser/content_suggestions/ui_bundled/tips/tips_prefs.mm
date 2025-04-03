@@ -20,19 +20,11 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 bool IsTipsInMagicStackDisabled(PrefService* prefs) {
-  if (IsHomeCustomizationEnabled()) {
-    return !prefs->GetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled);
-  } else {
-    return prefs->GetBoolean(kTipsInMagicStackDisabledPref);
-  }
+  return !prefs->GetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled);
 }
 
 void DisableTipsInMagicStack(PrefService* prefs) {
-  if (IsHomeCustomizationEnabled()) {
-    prefs->SetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled, false);
-  } else {
-    prefs->SetBoolean(kTipsInMagicStackDisabledPref, true);
-  }
+  prefs->SetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled, false);
 }
 
 }  // namespace tips_prefs

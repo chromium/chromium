@@ -227,8 +227,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
     [NTPHomeTestCase setUpHelper];
   }
   [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kArticlesForYouEnabled];
-  [ChromeEarlGrey setBoolValue:YES
-                   forUserPref:feed::prefs::kArticlesListVisible];
 
   self.defaultSearchEngine = [SearchEnginesAppInterface defaultSearchEngine];
   [NewTabPageAppInterface disableSetUpList];
@@ -1415,12 +1413,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Tests the "new search" menu item from the new tab menu after disabling the
 // feed.
 - (void)testNewSearchFromNewTabMenuAfterTogglingFeed {
-  // Enable customization.
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_enabled.push_back(kHomeCustomization);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"New Search is only available in phone layout.");
   }
@@ -1617,11 +1609,9 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Tests that the customization menu can be used to toggle the visibility of
 // Home surface modules.
 - (void)testToggleModuleVisiblityInCustomizationMenu {
-  // Enable customization.
+  // Tests most visited tiles visibility separately.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_enabled.push_back(kHomeCustomization);
-  // Tests most visited tiles visibility separately.
   config.features_disabled.push_back(kNewFeedPositioning);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -1731,11 +1721,9 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Tests that the toggles in the main page of the customization menu can be used
 // to navigate to their respective submenus.
 - (void)testNavigateInCustomizationMenu {
-  // Enable customization.
+  // Tests most visited tiles visibility separately.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_enabled.push_back(kHomeCustomization);
-  // Tests most visited tiles visibility separately.
   config.features_disabled.push_back(kNewFeedPositioning);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -1790,12 +1778,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
 // Tests the Discover submenu of the Home customization menu.
 - (void)testCustomizationDiscoverSubmenu {
-  // Enable customization.
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_enabled.push_back(kHomeCustomization);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
   [self resetCustomizationPrefs];
 
   // Open the Home customization menu.
@@ -1955,31 +1937,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
-}
-
-- (void)hideFeedFromNTPMenu {
-  bool feed_visible =
-      [ChromeEarlGrey userBooleanPref:feed::prefs::kArticlesListVisible];
-  GREYAssertTrue(feed_visible, @"Expect feed to be visible!");
-
-  // The feed header button may be offscreen, so scroll to find it if needed.
-  id<GREYMatcher> headerButton =
-      grey_allOf(grey_accessibilityID(kNTPFeedHeaderManagementButtonIdentifier),
-                 grey_sufficientlyVisible(), nil);
-  [[[EarlGrey selectElementWithMatcher:headerButton]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100.0f)
-      onElementWithMatcher:chrome_test_util::NTPCollectionView()]
-      performAction:grey_tap()];
-
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NTPFeedMenuDisableButton()]
-      performAction:grey_tap()];
-  // This ensures that the app is given time to update the pref before checking
-  // its state.
-  [ChromeEarlGreyUI waitForAppToIdle];
-  feed_visible =
-      [ChromeEarlGrey userBooleanPref:feed::prefs::kArticlesListVisible];
-  GREYAssertFalse(feed_visible, @"Expect feed to be hidden!");
 }
 
 // Resets the preferences related to Home customization.

@@ -2383,12 +2383,6 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_FEED_MANAGEMENT_HIDDEN_TEXT" desc="The 'Hidden' row title in the feed management UI.">
         Hidden
       </message>
-      <message name="IDS_IOS_FEED_MANAGEMENT_INTERESTS_TEXT" desc="The 'Interests' row title in the feed management UI.">
-        Interests
-      </message>
-      <message name="IDS_IOS_FEED_MANAGEMENT_TITLE" desc="The title of the feed management UI.">
-        Manage
-      </message>
       <message name="IDS_IOS_FEED_SORT_ACCESSIBILITY_LABEL" desc="The accessibility label for the Following feed header's sort button.">
         Sort button for Following feed.
       </message>

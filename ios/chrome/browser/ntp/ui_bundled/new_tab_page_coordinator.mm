@@ -56,12 +56,9 @@
 #import "ios/chrome/browser/ntp/shared/metrics/new_tab_page_metrics_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/new_tab_page_metrics_recorder.h"
 #import "ios/chrome/browser/ntp/ui_bundled/discover_feed_constants.h"
-#import "ios/chrome/browser/ntp/ui_bundled/discover_feed_manage_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/discover_feed_preview_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_control_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_header_view_controller.h"
-#import "ios/chrome/browser/ntp/ui_bundled/feed_management/feed_management_coordinator.h"
-#import "ios/chrome/browser/ntp/ui_bundled/feed_menu_coordinator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_sign_in_promo_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_coordinator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_wrapper_view_controller.h"
@@ -133,11 +130,9 @@
 @interface NewTabPageCoordinator () <AuthenticationServiceObserving,
                                      BooleanObserver,
                                      ContentSuggestionsDelegate,
-                                     DiscoverFeedManageDelegate,
                                      DiscoverFeedObserverBridgeDelegate,
                                      DiscoverFeedPreviewDelegate,
                                      FeedControlDelegate,
-                                     FeedMenuCoordinatorDelegate,
                                      FeedSignInPromoDelegate,
                                      FeedWrapperViewControllerDelegate,
                                      HomeCustomizationDelegate,
@@ -206,10 +201,6 @@
 // PrefService used by this Coordinator.
 @property(nonatomic, assign) PrefService* prefService;
 
-// Whether the feed is expanded or collapsed. Collapsed
-// means the feed header is shown, but not any of the feed content.
-@property(nonatomic, strong) PrefBackedBoolean* feedExpandedPref;
-
 // The view controller representing the selected feed, such as the Discover or
 // Following feed.
 @property(nonatomic, weak) UIViewController* feedViewController;
@@ -220,9 +211,6 @@
 
 // The view controller representing the NTP feed header.
 @property(nonatomic, strong) FeedHeaderViewController* feedHeaderViewController;
-
-// Coordinator for handling the feed menu.
-@property(nonatomic, strong) FeedMenuCoordinator* feedMenuCoordinator;
 
 // Authentication Service for the user's signed-in state.
 @property(nonatomic, assign) AuthenticationService* authService;
@@ -239,10 +227,6 @@
 // The header view controller containing the fake omnibox and logo.
 @property(nonatomic, strong)
     NewTabPageHeaderViewController* headerViewController;
-
-// The coordinator for handling feed management.
-@property(nonatomic, strong)
-    FeedManagementCoordinator* feedManagementCoordinator;
 
 // Coordinator for Feed top section.
 @property(nonatomic, strong)
@@ -400,8 +384,6 @@
   [_tabGroupIndicatorCoordinator stop];
   _tabGroupIndicatorCoordinator = nil;
 
-  [self.feedManagementCoordinator stop];
-  self.feedManagementCoordinator = nil;
   [self.contentSuggestionsCoordinator stop];
   self.contentSuggestionsCoordinator = nil;
   self.headerViewController = nil;
@@ -438,13 +420,6 @@
   self.feedMetricsRecorder.followDelegate = nil;
   self.feedMetricsRecorder.NTPActionsDelegate = nil;
   self.feedMetricsRecorder = nil;
-
-  [self.feedExpandedPref stop];
-  [self.feedExpandedPref setObserver:nil];
-  self.feedExpandedPref = nil;
-
-  [self.feedMenuCoordinator stop];
-  self.feedMenuCoordinator = nil;
 
   _familyLinkUserCapabilitiesObserverBridge.reset();
   _discoverFeedObserverBridge.reset();
@@ -497,9 +472,7 @@
 }
 
 - (void)focusFakebox {
-  if (IsHomeCustomizationEnabled()) {
-    [self dismissCustomizationMenu];
-  }
+  [self dismissCustomizationMenu];
   _fakeboxTapped = NO;
   [self.NTPViewController focusOmnibox];
 }
@@ -533,12 +506,9 @@
   if (self.profile->IsOffTheRecord()) {
     return;
   }
-  UIView* viewToConstrain =
-      IsHomeCustomizationEnabled()
-          ? [self.headerViewController customizationMenuButton]
-          : self.feedHeaderViewController.managementButton;
-  [LayoutGuideCenterForBrowser(self.browser) referenceView:viewToConstrain
-                                                 underName:kFeedIPHNamedGuide];
+  [LayoutGuideCenterForBrowser(self.browser)
+      referenceView:[self.headerViewController customizationMenuButton]
+          underName:kFeedIPHNamedGuide];
 }
 
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent {
@@ -568,9 +538,7 @@
 
 - (void)didNavigateAwayFromNTP {
   [self cancelOmniboxEdit];
-  if (IsHomeCustomizationEnabled()) {
-    [self dismissCustomizationMenu];
-  }
+  [self dismissCustomizationMenu];
   [self saveNTPState];
   [self updateNTPIsVisible:NO];
   [self updateStartForVisibilityChange:NO];
@@ -635,12 +603,6 @@
   DCHECK(self.prefService);
   DCHECK(self.headerViewController);
 
-  self.feedExpandedPref = [[PrefBackedBoolean alloc]
-      initWithPrefService:self.prefService
-                 prefName:feed::prefs::kArticlesListVisible];
-  // Observer is necessary for multiwindow NTPs to remain in sync.
-  [self.feedExpandedPref setObserver:self];
-
   // Start observing IdentityManager.
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(self.profile);
@@ -694,13 +656,6 @@
   if (!self.feedHeaderViewController) {
     self.feedHeaderViewController =
         [self.componentFactory feedHeaderViewController];
-    self.feedMenuCoordinator = [[FeedMenuCoordinator alloc]
-        initWithBaseViewController:self.NTPViewController
-                           browser:self.browser];
-    self.feedMenuCoordinator.delegate = self;
-    [self.feedMenuCoordinator start];
-    self.feedHeaderViewController.feedMenuHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), FeedMenuCommands);
   }
 
   self.feedHeaderViewController.feedControlDelegate = self;
@@ -895,9 +850,7 @@
 }
 
 - (void)fakeboxTapped {
-  if (IsHomeCustomizationEnabled()) {
-    [self dismissCustomizationMenu];
-  }
+  [self dismissCustomizationMenu];
   _fakeboxTapped = YES;
   [self.NTPViewController focusOmnibox];
 }
@@ -907,9 +860,7 @@
     // Double tap, or tap before dismissing of the previous one is complete.
     return;
   }
-  if (IsHomeCustomizationEnabled()) {
-    [self dismissCustomizationMenu];
-  }
+  [self dismissCustomizationMenu];
   [self.NTPMetricsRecorder recordIdentityDiscTapped];
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
@@ -975,37 +926,6 @@
                                HomeCustomizationEntrypoint::kMain];
 
   [self openCustomizationMenuAtPage:CustomizationMenuPage::kMain animated:YES];
-}
-
-#pragma mark - FeedMenuCoordinatorDelegate
-
-- (void)didSelectFeedMenuItem:(FeedMenuItemType)item {
-  switch (item) {
-    case FeedMenuItemType::kTurnOff:
-      [self setFeedVisibleFromHeader:NO];
-      break;
-    case FeedMenuItemType::kTurnOn:
-      [self setFeedVisibleFromHeader:YES];
-      break;
-    case FeedMenuItemType::kManage:
-      [self handleFeedManageTapped];
-      break;
-    case FeedMenuItemType::kManageActivity:
-      [self.NTPMediator handleNavigateToActivity];
-      break;
-    case FeedMenuItemType::kManageFollowing:
-      [self.NTPMediator handleNavigateToFollowing];
-      break;
-    case FeedMenuItemType::kLearnMore:
-      [self.NTPMediator handleFeedLearnMoreTapped];
-      break;
-  }
-}
-
-#pragma mark - DiscoverFeedManageDelegate
-
-- (void)didTapDiscoverFeedManage {
-  [self handleFeedManageTapped];
 }
 
 #pragma mark - DiscoverFeedPreviewDelegate
@@ -1088,8 +1008,7 @@
 }
 
 - (BOOL)shouldFeedBeVisible {
-  return self.NTPMediator.feedHeaderVisible &&
-         ([self.feedExpandedPref value] || IsHomeCustomizationEnabled());
+  return self.NTPMediator.feedHeaderVisible;
 }
 
 - (BOOL)isFollowingFeedAvailable {
@@ -1461,7 +1380,7 @@
 
 - (BOOL)shouldAllowOverscrollActionsForOverscrollActionsController:
     (OverscrollActionsController*)controller {
-  return !IsHomeCustomizationEnabled() || !_customizationCoordinator;
+  return !_customizationCoordinator;
 }
 
 - (UIView*)toolbarSnapshotViewForOverscrollActionsController:
@@ -1707,19 +1626,9 @@
   viewControllerConfig.browser = self.browser;
   viewControllerConfig.scrollDelegate = self.NTPViewController;
   viewControllerConfig.previewDelegate = self;
-  viewControllerConfig.manageDelegate = self;
   viewControllerConfig.signInPromoDelegate = self;
 
   return viewControllerConfig;
-}
-
-// Toggles feed visibility between hidden or expanded using the feed header
-// menu. A hidden feed will continue to show the header, with a modified label.
-// TODO(crbug.com/1304382): Modify this comment when Web Channels is launched.
-- (void)setFeedVisibleFromHeader:(BOOL)visible {
-  [self.feedExpandedPref setValue:visible];
-  [self.feedMetricsRecorder recordDiscoverFeedVisibilityChanged:visible];
-  [self updateModuleVisibility];
 }
 
 // Configures and returns the feed top section coordinator.
@@ -1732,20 +1641,6 @@
   feedTopSectionCoordinator.NTPDelegate = self;
   [feedTopSectionCoordinator start];
   return feedTopSectionCoordinator;
-}
-
-// Handles the feed management button being tapped.
-- (void)handleFeedManageTapped {
-  [self.feedMetricsRecorder recordHeaderMenuManageTapped];
-  [self.feedManagementCoordinator stop];
-  self.feedManagementCoordinator = nil;
-
-  self.feedManagementCoordinator = [[FeedManagementCoordinator alloc]
-      initWithBaseViewController:self.NTPViewController
-                         browser:self.browser];
-  self.feedManagementCoordinator.navigationDelegate = self.NTPMediator;
-  self.feedManagementCoordinator.feedMetricsRecorder = self.feedMetricsRecorder;
-  [self.feedManagementCoordinator start];
 }
 
 // Private setter for the `webState` property.
@@ -1775,42 +1670,33 @@
     if (visible) {
       self.didAppearTime = base::TimeTicks::Now();
 
-      if (IsHomeCustomizationEnabled()) {
-        [self.NTPMetricsRecorder
-            recordCustomizationState:[self currentCustomizationState]];
+      [self.NTPMetricsRecorder
+          recordCustomizationState:[self currentCustomizationState]];
 
-        PrefService* prefService = self.prefService;
-        BOOL safetyCheckEnabled = prefService->GetBoolean(
-            prefs::kHomeCustomizationMagicStackSafetyCheckEnabled);
-        BOOL setUpListEnabled = prefService->GetBoolean(
-            prefs::kHomeCustomizationMagicStackSetUpListEnabled);
-        BOOL tabResumptionEnabled = prefService->GetBoolean(
-            prefs::kHomeCustomizationMagicStackTabResumptionEnabled);
-        BOOL parcelTrackingEnabled = prefService->GetBoolean(
-            prefs::kHomeCustomizationMagicStackParcelTrackingEnabled);
-        BOOL tipsEnabled = prefService->GetBoolean(
-            prefs::kHomeCustomizationMagicStackTipsEnabled);
-        [self.NTPMetricsRecorder
-            recordMagicStackCustomizationStateWithSetUpList:setUpListEnabled
-                                                safetyCheck:safetyCheckEnabled
-                                              tabResumption:tabResumptionEnabled
-                                             parcelTracking:
-                                                 parcelTrackingEnabled
-                                                       tips:tipsEnabled];
-      }
+      PrefService* prefService = self.prefService;
+      BOOL safetyCheckEnabled = prefService->GetBoolean(
+          prefs::kHomeCustomizationMagicStackSafetyCheckEnabled);
+      BOOL setUpListEnabled = prefService->GetBoolean(
+          prefs::kHomeCustomizationMagicStackSetUpListEnabled);
+      BOOL tabResumptionEnabled = prefService->GetBoolean(
+          prefs::kHomeCustomizationMagicStackTabResumptionEnabled);
+      BOOL parcelTrackingEnabled = prefService->GetBoolean(
+          prefs::kHomeCustomizationMagicStackParcelTrackingEnabled);
+      BOOL tipsEnabled = prefService->GetBoolean(
+          prefs::kHomeCustomizationMagicStackTipsEnabled);
+      [self.NTPMetricsRecorder
+          recordMagicStackCustomizationStateWithSetUpList:setUpListEnabled
+                                              safetyCheck:safetyCheckEnabled
+                                            tabResumption:tabResumptionEnabled
+                                           parcelTracking:parcelTrackingEnabled
+                                                     tips:tipsEnabled];
 
       // TODO(crbug.com/350990359): Deprecate IOS.NTP.Impression when Home
       // Customization launches.
       if (self.NTPMediator.feedHeaderVisible) {
-        if ([self.feedExpandedPref value] || IsHomeCustomizationEnabled()) {
-          [self.NTPMetricsRecorder
-              recordHomeImpression:IOSNTPImpressionType::kFeedVisible
-                    isStartSurface:[self isStartSurface]];
-        } else {
-          [self.NTPMetricsRecorder
-              recordHomeImpression:IOSNTPImpressionType::kFeedCollapsed
-                    isStartSurface:[self isStartSurface]];
-        }
+        [self.NTPMetricsRecorder
+            recordHomeImpression:IOSNTPImpressionType::kFeedVisible
+                  isStartSurface:[self isStartSurface]];
       } else {
         [self.NTPMetricsRecorder
             recordHomeImpression:IOSNTPImpressionType::kFeedDisabled
@@ -1877,7 +1763,6 @@
 // Returns the current customization state represnting the visibility of NTP
 // components.
 - (IOSNTPImpressionCustomizationState)currentCustomizationState {
-  CHECK(IsHomeCustomizationEnabled());
   PrefService* prefService = self.prefService;
   BOOL MVTEnabled =
       prefService->GetBoolean(prefs::kHomeCustomizationMostVisitedEnabled);

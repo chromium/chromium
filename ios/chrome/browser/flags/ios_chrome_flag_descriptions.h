@@ -306,9 +306,6 @@ extern const char kFullscreenTransitionDescription[];
 extern const char kFullscreenSmoothScrollingName[];
 extern const char kFullscreenSmoothScrollingDescription[];
 
-extern const char kHomeCustomizationName[];
-extern const char kHomeCustomizationDescription[];
-
 extern const char kHomeMemoryImprovementsName[];
 extern const char kHomeMemoryImprovementsDescription[];
 

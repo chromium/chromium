@@ -821,12 +821,6 @@ bool IsSaveToPhotosTitleImprovementEnabled();
 // Returns true if the Save to Photos account picker improvement is enabled.
 bool IsSaveToPhotosAccountPickerImprovementEnabled();
 
-// Feature that enables personalization of the Home surface.
-BASE_DECLARE_FEATURE(kHomeCustomization);
-
-// Returns true if Home Customization is enabled.
-bool IsHomeCustomizationEnabled();
-
 // Feature flag to enable app background refresh.
 // Use IsAppBackgroundRefreshEnabled() instead of this constant directly.
 BASE_DECLARE_FEATURE(kEnableAppBackgroundRefresh);

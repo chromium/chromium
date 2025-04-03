@@ -974,17 +974,8 @@ bool IsSaveToPhotosAccountPickerImprovementEnabled() {
              kSaveToPhotosAccountDefaultChoiceImprovementParam, true);
 }
 
-BASE_FEATURE(kHomeCustomization,
-             "HomeCustomization",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsHomeCustomizationEnabled() {
-  return base::FeatureList::IsEnabled(kHomeCustomization);
-}
-
 bool ShouldDeprecateFeedHeader() {
-  return IsHomeCustomizationEnabled() &&
-         base::FeatureList::IsEnabled(kDeprecateFeedHeader);
+  return base::FeatureList::IsEnabled(kDeprecateFeedHeader);
 }
 
 BASE_FEATURE(kEnableAppBackgroundRefresh,

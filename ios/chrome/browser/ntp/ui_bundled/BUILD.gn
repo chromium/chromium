@@ -4,7 +4,6 @@
 
 source_set("ui_bundled") {
   sources = [
-    "discover_feed_manage_delegate.h",
     "discover_feed_preview_delegate.h",
     "feed_control_delegate.h",
     "feed_sign_in_promo_delegate.h",
@@ -93,7 +92,6 @@ source_set("coordinator") {
     ":component_factory_protocol",
     ":constants",
     ":feature_flags",
-    ":feed_menu",
     ":logo",
     ":ntp_internal",
     ":ui_bundled",
@@ -132,7 +130,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/ntp/shared/metrics",
     "//ios/chrome/browser/ntp/shared/metrics:constants",
     "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
-    "//ios/chrome/browser/ntp/ui_bundled/feed_management",
     "//ios/chrome/browser/ntp/ui_bundled/feed_top_section",
     "//ios/chrome/browser/ntp/ui_bundled/incognito",
     "//ios/chrome/browser/overscroll_actions/ui_bundled",
@@ -177,7 +174,6 @@ source_set("ntp_internal") {
   sources = [
     "feed_header_view_controller.h",
     "feed_header_view_controller.mm",
-    "feed_menu_commands.h",
     "feed_wrapper_view_controller.h",
     "feed_wrapper_view_controller.mm",
     "new_tab_page_consumer.h",
@@ -234,7 +230,6 @@ source_set("ntp_internal") {
     "//ios/chrome/browser/ntp/shared/metrics",
     "//ios/chrome/browser/ntp/shared/metrics:constants",
     "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
-    "//ios/chrome/browser/ntp/ui_bundled/feed_management:navigation_delegate",
     "//ios/chrome/browser/ntp/ui_bundled/resources",
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_internal",
@@ -284,29 +279,6 @@ source_set("ntp_internal") {
   ]
 }
 
-source_set("feed_menu") {
-  sources = [
-    "feed_menu_coordinator.h",
-    "feed_menu_coordinator.mm",
-  ]
-  deps = [
-    ":ntp_internal",
-    "//components/feed/core/v2/public/ios:feed_ios_public",
-    "//components/prefs",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/shared/coordinator/alert",
-    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/signin/model:authentication_service",
-    "//ios/chrome/browser/signin/model:authentication_service_factory",
-    "//ui/strings",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -318,7 +290,6 @@ source_set("unit_tests") {
     ":component_factory",
     ":coordinator",
     ":feature_flags",
-    ":feed_menu",
     ":logo",
     ":ntp_internal",
     ":ui_bundled",
