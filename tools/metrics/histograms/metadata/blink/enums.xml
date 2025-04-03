@@ -6529,6 +6529,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="49" label="RpOriginIsOpaque"/>
   <int value="50" label="ConfigNotMatchingType"/>
   <int value="51" label="LoginPopupClosedWithoutSignin"/>
+  <int value="52" label="SuppressedBySegmentationPlatform"/>
 </enum>
 
 <enum name="FedCmRpContext">
