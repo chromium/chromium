@@ -8,7 +8,12 @@ source_set("features") {
     "features.mm",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/public/features",
+  ]
 }
 
 source_set("profile") {

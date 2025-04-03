@@ -862,11 +862,6 @@ bool IsBlueDotOnToolsMenuButtoneEnabled();
 // DO NOT CHECK DIRECTLY, use AreSeparateProfilesForManagedAccountsEnabled()!
 BASE_DECLARE_FEATURE(kSeparateProfilesForManagedAccounts);
 
-// Returns whether the feature to put each managed account into its own separate
-// profile is enabled. This is the case if `kSeparateProfilesForManagedAccounts`
-// is enabled *and* the iOS version is >= 17 (required for multiprofile).
-bool AreSeparateProfilesForManagedAccountsEnabled();
-
 // Feature to control resyncing the omaha ping timer on foregrounding.
 BASE_DECLARE_FEATURE(kOmahaResyncTimerOnForeground);
 
