@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/split_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -1788,6 +1789,32 @@ TEST_F(TabsApiUnitTest, TabsDiscardSavedTabGroupTabNotAllowed) {
   EXPECT_TRUE(api_test_utils::RunFunction(
       function.get(), base::StringPrintf("[%d]", tab_id), profile(),
       api_test_utils::FunctionMode::kNone));
+}
+
+TEST_F(TabsApiUnitTest, SplitTabsWithHighlightFunction) {
+  // Add a couple of web contents to the browser and mark them as split.
+  for (int i = 0; i < /*numTabs=*/2; ++i) {
+    std::unique_ptr<content::WebContents> contents(
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+    CreateSessionServiceTabHelper(contents.get());
+    GetTabStripModel()->AppendWebContents(std::move(contents),
+                                          /*foreground=*/true);
+  }
+  GetTabStripModel()->ActivateTabAt(0);
+  GetTabStripModel()->AddToNewSplit({1}, tabs::SplitTabLayout::kHorizontal);
+
+  // Run extension to highlight tabs
+  auto extension = CreateTabsExtension();
+  std::string args = base::StringPrintf("[{\"tabs\": [%d]}]", 0);
+  scoped_refptr<TabsHighlightFunction> function =
+      base::MakeRefCounted<TabsHighlightFunction>();
+  function->set_extension(extension);
+  ASSERT_TRUE(api_test_utils::RunFunction(function.get(), args, profile(),
+                                          api_test_utils::FunctionMode::kNone));
+
+  // Check that both sides of the split are selected.
+  ASSERT_TRUE(GetTabStripModel()->selection_model().IsSelected(0));
+  ASSERT_TRUE(GetTabStripModel()->selection_model().IsSelected(1));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
