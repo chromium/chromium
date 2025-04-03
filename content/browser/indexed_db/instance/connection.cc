@@ -15,6 +15,7 @@
 #include "base/stl_util.h"
 #include "base/trace_event/base_tracing.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
+#include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/callback_helpers.h"
 #include "content/browser/indexed_db/instance/cursor.h"
 #include "content/browser/indexed_db/instance/database_callbacks.h"
@@ -97,11 +98,12 @@ bool Connection::IsConnected() const {
 Transaction* Connection::CreateVersionChangeTransaction(
     int64_t id,
     const std::set<int64_t>& scope,
-    std::unique_ptr<BackingStore::Transaction> backing_store_transaction) {
+    std::unique_ptr<Transaction::Delegate> backing_store_transaction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(GetTransaction(id), nullptr) << "Duplicate transaction id." << id;
   return (transactions_[id] = std::make_unique<Transaction>(
               id, this, scope, blink::mojom::IDBTransactionMode::VersionChange,
+              blink::mojom::IDBTransactionDurability::Strict,
               bucket_context_handle_, std::move(backing_store_transaction)))
       .get();
 }
@@ -254,7 +256,8 @@ void Connection::CreateTransaction(
   std::set<int64_t> scope(object_store_ids.begin(), object_store_ids.end());
   Transaction* transaction =
       (transactions_[transaction_id] = std::make_unique<Transaction>(
-           transaction_id, this, std::move(scope), mode, bucket_context_handle_,
+           transaction_id, this, std::move(scope), mode, durability,
+           bucket_context_handle_,
            database_->backing_store()->CreateTransaction(durability, mode)))
           .get();
 

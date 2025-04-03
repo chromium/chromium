@@ -31,6 +31,7 @@
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/instance/backing_store_pre_close_task_queue.h"
 #include "content/browser/indexed_db/instance/leveldb_cleanup_scheduler.h"
+#include "content/browser/indexed_db/instance/transaction.h"
 #include "content/browser/indexed_db/status.h"
 #include "content/common/content_export.h"
 #include "storage/browser/blob/blob_data_handle.h"
@@ -95,7 +96,8 @@ class CONTENT_EXPORT BackingStore : public LevelDBCleanupScheduler::Delegate {
     int64_t version_ = -1;
   };
 
-  class CONTENT_EXPORT Transaction {
+  class CONTENT_EXPORT Transaction
+      : public content::indexed_db::Transaction::Delegate {
    public:
     struct BlobWriteState {
       BlobWriteState();
@@ -112,27 +114,25 @@ class CONTENT_EXPORT BackingStore : public LevelDBCleanupScheduler::Delegate {
     Transaction(const Transaction&) = delete;
     Transaction& operator=(const Transaction&) = delete;
 
-    virtual ~Transaction();
+    ~Transaction() override;
 
-    void Begin(std::vector<PartitionedLock> locks);
-
+    // Transaction::Delegate:
+    void Begin(std::vector<PartitionedLock> locks) override;
     // CommitPhaseOne determines what blobs (if any) need to be written to disk
     // and updates the primary blob journal, and kicks off the async writing
     // of the blob files. In case of crash/rollback, the journal indicates what
     // files should be cleaned up.
     // The callback will be called eventually on success or failure, or
     // immediately if phase one is complete due to lack of any blobs to write.
-    virtual Status CommitPhaseOne(BlobWriteCallback callback);
-
+    Status CommitPhaseOne(BlobWriteCallback callback) override;
     // CommitPhaseTwo is called once the blob files (if any) have been written
     // to disk, and commits the actual transaction to the backing store,
     // including blob journal updates, then deletes any blob files deleted
     // by the transaction and not referenced by running scripts.
-    virtual Status CommitPhaseTwo();
+    Status CommitPhaseTwo() override;
+    void Rollback() override;
+    void Reset() override;
 
-    virtual void Rollback();
-
-    void Reset();
     Status PutExternalObjectsIfNeeded(int64_t database_id,
                                       const std::string& object_store_data_key,
                                       std::vector<IndexedDBExternalObject>*);
@@ -394,7 +394,7 @@ class CONTENT_EXPORT BackingStore : public LevelDBCleanupScheduler::Delegate {
                                 base::OnceClosure on_complete);
   // Changes the database version to |version|.
   [[nodiscard]] virtual Status SetDatabaseVersion(
-      Transaction* transaction,
+      Transaction::Delegate* transaction,
       int64_t row_id,
       int64_t version,
       blink::IndexedDBDatabaseMetadata* metadata);
@@ -404,7 +404,7 @@ class CONTENT_EXPORT BackingStore : public LevelDBCleanupScheduler::Delegate {
                                    const std::string& message);
 
   [[nodiscard]] virtual Status CreateObjectStore(
-      Transaction* transaction,
+      Transaction::Delegate* transaction,
       int64_t database_id,
       int64_t object_store_id,
       std::u16string name,
@@ -412,11 +412,11 @@ class CONTENT_EXPORT BackingStore : public LevelDBCleanupScheduler::Delegate {
       bool auto_increment,
       blink::IndexedDBObjectStoreMetadata* metadata);
   [[nodiscard]] virtual Status DeleteObjectStore(
-      Transaction* transaction,
+      Transaction::Delegate* transaction,
       int64_t database_id,
       const blink::IndexedDBObjectStoreMetadata& object_store);
   [[nodiscard]] virtual Status RenameObjectStore(
-      Transaction* transaction,
+      Transaction::Delegate* transaction,
       int64_t database_id,
       std::u16string new_name,
       std::u16string* old_name,
@@ -424,7 +424,7 @@ class CONTENT_EXPORT BackingStore : public LevelDBCleanupScheduler::Delegate {
 
   // Creates a new index metadata and writes it to the transaction.
   [[nodiscard]] virtual Status CreateIndex(
-      Transaction* transaction,
+      Transaction::Delegate* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t index_id,
@@ -435,80 +435,81 @@ class CONTENT_EXPORT BackingStore : public LevelDBCleanupScheduler::Delegate {
       blink::IndexedDBIndexMetadata* metadata);
   // Deletes the index metadata on the transaction (but not any index entries).
   [[nodiscard]] virtual Status DeleteIndex(
-      Transaction* transaction,
+      Transaction::Delegate* transaction,
       int64_t database_id,
       int64_t object_store_id,
       const blink::IndexedDBIndexMetadata& metadata);
   // Renames the given index and writes it to the transaction.
   [[nodiscard]] virtual Status RenameIndex(
-      Transaction* transaction,
+      Transaction::Delegate* transaction,
       int64_t database_id,
       int64_t object_store_id,
       std::u16string new_name,
       std::u16string* old_name,
       blink::IndexedDBIndexMetadata* metadata);
 
-  [[nodiscard]] virtual Status GetRecord(Transaction* transaction,
+  [[nodiscard]] virtual Status GetRecord(Transaction::Delegate* transaction,
                                          int64_t database_id,
                                          int64_t object_store_id,
                                          const blink::IndexedDBKey& key,
                                          IndexedDBValue* record);
-  [[nodiscard]] virtual Status PutRecord(Transaction* transaction,
+  [[nodiscard]] virtual Status PutRecord(Transaction::Delegate* transaction,
                                          int64_t database_id,
                                          int64_t object_store_id,
                                          const blink::IndexedDBKey& key,
                                          IndexedDBValue* value,
                                          RecordIdentifier* record);
-  [[nodiscard]] virtual Status ClearObjectStore(Transaction* transaction,
-                                                int64_t database_id,
-                                                int64_t object_store_id);
-  [[nodiscard]] virtual Status DeleteRecord(Transaction* transaction,
+  [[nodiscard]] virtual Status ClearObjectStore(
+      Transaction::Delegate* transaction,
+      int64_t database_id,
+      int64_t object_store_id);
+  [[nodiscard]] virtual Status DeleteRecord(Transaction::Delegate* transaction,
                                             int64_t database_id,
                                             int64_t object_store_id,
                                             const RecordIdentifier& record);
-  [[nodiscard]] virtual Status DeleteRange(Transaction* transaction,
+  [[nodiscard]] virtual Status DeleteRange(Transaction::Delegate* transaction,
                                            int64_t database_id,
                                            int64_t object_store_id,
                                            const blink::IndexedDBKeyRange&);
   [[nodiscard]] virtual Status GetKeyGeneratorCurrentNumber(
-      Transaction* transaction,
+      Transaction::Delegate* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t* current_number);
   [[nodiscard]] virtual Status MaybeUpdateKeyGeneratorCurrentNumber(
-      Transaction* transaction,
+      Transaction::Delegate* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t new_state,
       bool check_current);
   [[nodiscard]] virtual Status KeyExistsInObjectStore(
-      Transaction* transaction,
+      Transaction::Delegate* transaction,
       int64_t database_id,
       int64_t object_store_id,
       const blink::IndexedDBKey& key,
       RecordIdentifier* found_record_identifier,
       bool* found);
 
-  [[nodiscard]] virtual Status ClearIndex(Transaction* transaction,
+  [[nodiscard]] virtual Status ClearIndex(Transaction::Delegate* transaction,
                                           int64_t database_id,
                                           int64_t object_store_id,
                                           int64_t index_id);
   [[nodiscard]] virtual Status PutIndexDataForRecord(
-      Transaction* transaction,
+      Transaction::Delegate* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t index_id,
       const blink::IndexedDBKey& key,
       const RecordIdentifier& record);
   [[nodiscard]] virtual Status GetPrimaryKeyViaIndex(
-      Transaction* transaction,
+      Transaction::Delegate* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t index_id,
       const blink::IndexedDBKey& key,
       std::unique_ptr<blink::IndexedDBKey>* primary_key);
   [[nodiscard]] virtual Status KeyExistsInIndex(
-      Transaction* transaction,
+      Transaction::Delegate* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t index_id,
@@ -532,21 +533,21 @@ class CONTENT_EXPORT BackingStore : public LevelDBCleanupScheduler::Delegate {
   base::FilePath GetBlobFileName(int64_t database_id, int64_t key) const;
 
   virtual std::unique_ptr<Cursor> OpenObjectStoreKeyCursor(
-      Transaction* transaction,
+      Transaction::Delegate* transaction,
       int64_t database_id,
       int64_t object_store_id,
       const blink::IndexedDBKeyRange& key_range,
       blink::mojom::IDBCursorDirection,
       Status*);
   virtual std::unique_ptr<Cursor> OpenObjectStoreCursor(
-      Transaction* transaction,
+      Transaction::Delegate* transaction,
       int64_t database_id,
       int64_t object_store_id,
       const blink::IndexedDBKeyRange& key_range,
       blink::mojom::IDBCursorDirection,
       Status*);
   virtual std::unique_ptr<Cursor> OpenIndexKeyCursor(
-      Transaction* transaction,
+      Transaction::Delegate* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t index_id,
@@ -554,7 +555,7 @@ class CONTENT_EXPORT BackingStore : public LevelDBCleanupScheduler::Delegate {
       blink::mojom::IDBCursorDirection,
       Status*);
   virtual std::unique_ptr<Cursor> OpenIndexCursor(
-      Transaction* transaction,
+      Transaction::Delegate* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t index_id,
