@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -161,12 +160,9 @@ NSString* GetPromoLabelString(
 }  // namespace
 
 @interface ConsistencyDefaultAccountMediator () <
-    ChromeAccountManagerServiceObserver,
     IdentityManagerObserverBridgeDelegate> {
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
-  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountManagerServiceObserver;
   signin_metrics::AccessPoint _accessPoint;
   raw_ptr<syncer::SyncService> _syncService;
 }
@@ -198,9 +194,6 @@ NSString* GetPromoLabelString(
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(
             _identityManager, self);
-    _accountManagerServiceObserver =
-        std::make_unique<ChromeAccountManagerServiceObserverBridge>(
-            self, _accountManagerService);
   }
   return self;
 }
@@ -216,7 +209,6 @@ NSString* GetPromoLabelString(
   _accountManagerService = nullptr;
   _syncService = nullptr;
   _identityManagerObserver.reset();
-  _accountManagerServiceObserver.reset();
 }
 
 #pragma mark - Properties
@@ -320,13 +312,6 @@ NSString* GetPromoLabelString(
                                   }
                                 }));
   return NO;
-}
-#pragma mark - ChromeAccountManagerServiceObserver
-
-- (void)onChromeAccountManagerServiceShutdown:
-    (ChromeAccountManagerService*)accountManagerService {
-  // TODO(crbug.com/40284086): Remove `[self disconnect]`.
-  [self disconnect];
 }
 
 #pragma mark -  IdentityManagerObserver

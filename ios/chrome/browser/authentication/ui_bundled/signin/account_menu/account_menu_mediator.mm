@@ -30,11 +30,9 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 
-@interface AccountMenuMediator () <ChromeAccountManagerServiceObserver,
-                                   IdentityManagerObserverBridgeDelegate,
+@interface AccountMenuMediator () <IdentityManagerObserverBridgeDelegate,
                                    SyncObserverModelBridge>
 
 // Whether the account menu’s interaction is blocked.
@@ -45,9 +43,6 @@
 @implementation AccountMenuMediator {
   // Account manager service to retrieve Chrome identities.
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
-  // Chrome account manager service observer bridge.
-  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountManagerServiceObserver;
   raw_ptr<AuthenticationService> _authenticationService;
   raw_ptr<signin::IdentityManager> _identityManager;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
@@ -91,9 +86,6 @@
     _userInteractionsBlocked = NO;
     _identities = [NSMutableArray array];
     _accountManagerService = accountManagerService;
-    _accountManagerServiceObserver =
-        std::make_unique<ChromeAccountManagerServiceObserverBridge>(
-            self, _accountManagerService);
     _authenticationService = authService;
     _identityManager = identityManager;
     _identityManagerObserver =
@@ -113,7 +105,6 @@
 - (void)disconnect {
   _blockUpdates = YES;
   _accountManagerService = nullptr;
-  _accountManagerServiceObserver.reset();
   _authenticationService = nullptr;
   _identityManagerObserver.reset();
   _identityManager = nullptr;
@@ -183,15 +174,6 @@
 
 - (AccountErrorUIInfo*)accountErrorUIInfo {
   return _error;
-}
-
-#pragma mark - ChromeAccountManagerServiceObserver
-
-- (void)onChromeAccountManagerServiceShutdown:
-    (ChromeAccountManagerService*)accountManagerService {
-  // TODO(crbug.com/40067367): This method can be removed once
-  // crbug.com/40067367 is fixed.
-  [self disconnect];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate

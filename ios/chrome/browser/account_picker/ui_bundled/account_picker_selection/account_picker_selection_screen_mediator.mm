@@ -12,11 +12,9 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 
 @interface AccountPickerSelectionScreenMediator () <
-    ChromeAccountManagerServiceObserver,
     IdentityManagerObserverBridgeDelegate>
 
 @end
@@ -26,8 +24,6 @@
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
-  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountManagerServiceObserver;
   // Configurators based on identity list.
   __strong NSArray* _sortedIdentityItemConfigurators;
 }
@@ -45,9 +41,6 @@
         std::make_unique<signin::IdentityManagerObserverBridge>(
             _identityManager, self);
     _accountManagerService = accountManagerService;
-    _accountManagerServiceObserver =
-        std::make_unique<ChromeAccountManagerServiceObserverBridge>(
-            self, _accountManagerService);
     _selectedIdentity = selectedIdentity;
     [self loadIdentityItemConfigurators];
   }
@@ -60,7 +53,6 @@
 }
 
 - (void)disconnect {
-  _accountManagerServiceObserver.reset();
   _accountManagerService = nullptr;
   _identityManagerObserver.reset();
   _identityManager = nullptr;
@@ -141,14 +133,6 @@
   DCHECK(configurator);
   [self updateIdentityItemConfigurator:configurator withIdentity:identity];
   [self.consumer reloadIdentityForIdentityItemConfigurator:configurator];
-}
-
-#pragma mark - ChromeAccountManagerServiceObserver
-
-- (void)onChromeAccountManagerServiceShutdown:
-    (ChromeAccountManagerService*)accountManagerService {
-  // TODO(crbug.com/40284086): Remove `[self disconnect]`.
-  [self disconnect];
 }
 
 #pragma mark -  IdentityManagerObserver

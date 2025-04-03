@@ -33,7 +33,6 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -532,8 +531,7 @@ id<SystemIdentity> GetDisplayedIdentity(
 
 }  // namespace
 
-@interface SigninPromoViewMediator () <ChromeAccountManagerServiceObserver,
-                                       IdentityManagerObserverBridgeDelegate,
+@interface SigninPromoViewMediator () <IdentityManagerObserverBridgeDelegate,
                                        SyncObserverModelBridge>
 
 // Redefined to be readwrite. See documentation in the header file.
@@ -576,8 +574,6 @@ id<SystemIdentity> GetDisplayedIdentity(
   raw_ptr<AuthenticationService> _authService;
   // AccountManager Service used to retrive identities.
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
-  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountManagerServiceObserver;
   // IdentityManager used to retrive identities.
   raw_ptr<signin::IdentityManager> _identityManager;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
@@ -695,9 +691,6 @@ id<SystemIdentity> GetDisplayedIdentity(
     _dataTypeToWaitForInitialSync = syncer::DataType::UNSPECIFIED;
     _signinPresenter = signinPresenter;
     _accountSettingsPresenter = accountSettingsPresenter;
-    _accountManagerServiceObserver =
-        std::make_unique<ChromeAccountManagerServiceObserverBridge>(
-            self, _accountManagerService);
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(
             _identityManager, self);
@@ -865,7 +858,6 @@ id<SystemIdentity> GetDisplayedIdentity(
   _identityManager = nullptr;
   _authService = nullptr;
   _syncService = nullptr;
-  _accountManagerServiceObserver.reset();
   _identityManagerObserver.reset();
   _syncObserverBridge.reset();
 }
@@ -1051,14 +1043,6 @@ id<SystemIdentity> GetDisplayedIdentity(
 
 - (void)handleIdentityUpdated {
   [self sendConsumerNotificationWithIdentityChanged:NO];
-}
-
-#pragma mark - ChromeAccountManagerServiceObserver
-
-- (void)onChromeAccountManagerServiceShutdown:
-    (ChromeAccountManagerService*)accountManagerService {
-  // TODO(crbug.com/40284086): Remove `[self disconnect]`.
-  [self disconnect];
 }
 
 #pragma mark -  IdentityManagerObserver

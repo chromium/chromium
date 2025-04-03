@@ -134,7 +134,6 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
@@ -190,7 +189,6 @@ struct EnhancedSafeBrowsingActivePromoData
 
 @interface SettingsTableViewController () <
     BooleanObserver,
-    ChromeAccountManagerServiceObserver,
     DownloadsSettingsCoordinatorDelegate,
     EnhancedSafeBrowsingInlinePromoDelegate,
     GoogleServicesSettingsCoordinatorDelegate,
@@ -263,10 +261,8 @@ struct EnhancedSafeBrowsingActivePromoData
   // Presenter for the signin IPH.
   BubbleViewControllerPresenter* _bubblePresenter;
 
-  // Identity object and observer used for Account Item refresh.
+  // Identity object.
   id<SystemIdentity> _identity;
-  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountManagerServiceObserver;
 
   // PrefMember for voice locale code.
   StringPrefMember _voiceLocaleCode;
@@ -365,9 +361,7 @@ struct EnhancedSafeBrowsingActivePromoData
     AuthenticationService* authService =
         AuthenticationServiceFactory::GetForProfile(_profile);
     _identity = authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-    _accountManagerServiceObserver.reset(
-        new ChromeAccountManagerServiceObserverBridge(self,
-                                                      _accountManagerService));
+
     _featureEngagementTracker =
         feature_engagement::TrackerFactory::GetForProfile(_profile);
 
@@ -2122,7 +2116,6 @@ struct EnhancedSafeBrowsingActivePromoData
   _searchEngineObserverBridge.reset();
   _syncObserverBridge.reset();
   _identityObserverBridge.reset();
-  _accountManagerServiceObserver.reset();
 
   // Remove PrefObserverDelegates.
   _notificationsObserver.delegate = nil;
@@ -2164,16 +2157,6 @@ struct EnhancedSafeBrowsingActivePromoData
             ios::TemplateURLServiceFactory::GetForProfile(_profile)));
     [self reconfigureCellsForItems:@[ _defaultSearchEngineItem ]];
   }
-}
-
-#pragma mark - ChromeAccountManagerServiceObserver
-
-- (void)onChromeAccountManagerServiceShutdown:
-    (ChromeAccountManagerService*)accountManagerService {
-  // TODO(crbug.com/40926211): settingsWillBeDismissed must be called before the
-  // AccountManagerService is destroyed. Switch to DCHECK if the number of
-  // reports is low.
-  DUMP_WILL_BE_CHECK(!_accountManagerServiceObserver.get());
 }
 
 #pragma mark - BooleanObserver

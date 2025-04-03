@@ -13,19 +13,14 @@
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 
 @interface ManagedProfileCreationMediator () <
-    ChromeAccountManagerServiceObserver,
     IdentityManagerObserverBridgeDelegate> {
   BOOL _canShowBrowsingDataMigration;
   BOOL _browsingDataMigrationDisabledByPolicy;
   NSString* _gaiaID;
   // Account manager service to retrieve Chrome identities.
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
-  // Chrome account manager service observer bridge.
-  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountManagerServiceObserver;
 
   raw_ptr<signin::IdentityManager> _identityManager;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
@@ -47,9 +42,6 @@
   self = [super init];
   if (self) {
     _accountManagerService = accountManagerService;
-    _accountManagerServiceObserver =
-        std::make_unique<ChromeAccountManagerServiceObserverBridge>(
-            self, _accountManagerService);
     _identityManager = identityManager;
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
@@ -75,7 +67,6 @@
   _consumer = nil;
   _delegate = nil;
   _accountManagerService = nullptr;
-  _accountManagerServiceObserver.reset();
   _identityManager = nullptr;
   _identityManagerObserver.reset();
 }
@@ -101,13 +92,6 @@
 - (void)updateShouldKeepBrowsingDataSeparate:(BOOL)keepBrowsingDataSeparate {
   self.keepBrowsingDataSeparate = keepBrowsingDataSeparate;
   [self.consumer setKeepBrowsingDataSeparate:self.keepBrowsingDataSeparate];
-}
-
-#pragma mark - ChromeAccountManagerServiceObserver
-
-- (void)onChromeAccountManagerServiceShutdown:
-    (ChromeAccountManagerService*)accountManagerService {
-  [self disconnect];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate

@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -35,16 +34,12 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@interface ManageAccountsMediator () <ChromeAccountManagerServiceObserver,
-                                      IdentityManagerObserverBridgeDelegate>
+@interface ManageAccountsMediator () <IdentityManagerObserverBridgeDelegate>
 @end
 
 @implementation ManageAccountsMediator {
   // Account manager service to retrieve Chrome identities.
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
-  // Chrome account manager service observer bridge.
-  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountManagerServiceObserver;
   raw_ptr<AuthenticationService> _authService;
   raw_ptr<signin::IdentityManager> _identityManager;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
@@ -59,9 +54,6 @@
   self = [super init];
   if (self) {
     _accountManagerService = accountManagerService;
-    _accountManagerServiceObserver =
-        std::make_unique<ChromeAccountManagerServiceObserverBridge>(
-            self, _accountManagerService);
     _authService = authService;
     _identityManager = identityManager;
     _identityManagerObserver =
@@ -73,7 +65,6 @@
 
 - (void)disconnect {
   _accountManagerService = nullptr;
-  _accountManagerServiceObserver.reset();
   _authService = nullptr;
   _identityManager = nullptr;
   _identityManagerObserver.reset();
@@ -123,15 +114,6 @@
 
 - (void)requestSignOutWithItemView:(UIView*)itemView {
   [self.delegate signOutWithItemView:itemView];
-}
-
-#pragma mark - ChromeAccountManagerServiceObserver
-
-- (void)onChromeAccountManagerServiceShutdown:
-    (ChromeAccountManagerService*)accountManagerService {
-  // TODO(crbug.com/40067367): This method can be removed once
-  // crbug.com/40067367 is fixed.
-  [self disconnect];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate

@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
 
@@ -43,8 +42,7 @@ enum class SigninScreenState {
 };
 }  // namespace
 
-@interface SigninScreenMediator () <ChromeAccountManagerServiceObserver,
-                                    IdentityManagerObserverBridgeDelegate> {
+@interface SigninScreenMediator () <IdentityManagerObserverBridgeDelegate> {
 }
 
 // Application local pref.
@@ -71,8 +69,6 @@ enum class SigninScreenState {
   raw_ptr<AuthenticationService> _authenticationService;
   // Identity manager to retrieve Chrome identities.
   raw_ptr<signin::IdentityManager> _identityManager;
-  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountManagerServiceObserver;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
   // State of the sign-in screen.
@@ -101,9 +97,6 @@ enum class SigninScreenState {
     _UMAReportingUserChoice = kDefaultMetricsReportingCheckboxValue;
     _accountManagerService = accountManagerService;
     _authenticationService = authenticationService;
-    _accountManagerServiceObserver =
-        std::make_unique<ChromeAccountManagerServiceObserverBridge>(
-            self, _accountManagerService);
     _identityManager = identityManager;
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(
@@ -162,7 +155,6 @@ enum class SigninScreenState {
   self.localPrefService = nullptr;
   self.prefService = nullptr;
   self.syncService = nullptr;
-  _accountManagerServiceObserver.reset();
   _identityManagerObserver.reset();
 }
 
@@ -373,14 +365,6 @@ enum class SigninScreenState {
                                   }
                                 }));
   return NO;
-}
-
-#pragma mark - ChromeAccountManagerServiceObserver
-
-- (void)onChromeAccountManagerServiceShutdown:
-    (ChromeAccountManagerService*)accountManagerService {
-  // TODO(crbug.com/40284086): Remove `[self disconnect]`.
-  [self disconnect];
 }
 
 #pragma mark -  IdentityManagerObserver
