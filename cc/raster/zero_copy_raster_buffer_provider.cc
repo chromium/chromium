@@ -9,10 +9,12 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "cc/base/features.h"
 #include "cc/resources/resource_pool.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/viz/client/client_resource_provider.h"
@@ -183,17 +185,17 @@ ZeroCopyRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_at_raster_decodes,
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
-  if (is_software_) {
-    bool resource_has_previous_content =
+  bool resource_has_previous_content = false;
+  if (is_software_ ||
+      base::FeatureList::IsEnabled(
+          features::kZeroCopyRBPPartialRasterWithGpuCompositor)) {
+    resource_has_previous_content =
         resource_content_id && resource_content_id == previous_content_id;
-    return std::make_unique<ZeroCopyRasterBufferImpl>(
-        resource, shared_image_interface_, resource_has_previous_content,
-        /*is_software=*/true);
   }
 
   return std::make_unique<ZeroCopyRasterBufferImpl>(
-      resource, shared_image_interface_,
-      /*resource_has_previous_content=*/false, /*is_software=*/false);
+      resource, shared_image_interface_, resource_has_previous_content,
+      is_software_);
 }
 
 void ZeroCopyRasterBufferProvider::Flush() {}
@@ -208,7 +210,9 @@ bool ZeroCopyRasterBufferProvider::IsResourcePremultiplied() const {
 
 bool ZeroCopyRasterBufferProvider::CanPartialRasterIntoProvidedResource()
     const {
-  return is_software_;
+  return is_software_ ||
+         base::FeatureList::IsEnabled(
+             features::kZeroCopyRBPPartialRasterWithGpuCompositor);
 }
 
 bool ZeroCopyRasterBufferProvider::IsResourceReadyToDraw(
