@@ -1068,6 +1068,14 @@ public final class ProductionSupportedFlagList {
                 CcFeatures.EXPORT_FRAME_TIMING_AFTER_FRAME_DONE,
                 "When enabled, moves the layer tree client's metric export call for from beginning"
                         + " of the subsequent frame to the end of the subsequent frame."),
+        Flag.baseFeature(
+                BlinkFeatures.ASYNC_SET_COOKIE,
+                "When enabled, the communication between renderer and network service is "
+                        + "asynchronous when setting cookies."),
+        Flag.baseFeature(
+                NetworkServiceFeatures.GET_COOKIES_ON_SET,
+                "When enabled, the network service returns all the cookies when setting a new "
+                        + "cookie, so that it can be cached."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

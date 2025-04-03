@@ -9845,6 +9845,7 @@
         {
             "platforms": [
                 "android",
+                "android_webview",
                 "chromeos",
                 "fuchsia",
                 "ios",
