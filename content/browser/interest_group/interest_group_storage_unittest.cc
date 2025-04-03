@@ -3868,6 +3868,68 @@ class InterestGroupStorageWithNoIdleFastForwardTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+TEST_F(InterestGroupStorageWithNoIdleFastForwardTest, ViewClickExpire) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  AdAuctionEventRecord record_view;
+  record_view.type = AdAuctionEventRecord::Type::kView;
+  record_view.providing_origin = kViewClickProviderOrigin1;
+  record_view.eligible_origins = {kViewClickEligibleOrigin1};
+  ASSERT_TRUE(record_view.IsValid());
+
+  AdAuctionEventRecord record_click;
+  record_click.type = AdAuctionEventRecord::Type::kClick;
+  record_click.providing_origin = kViewClickProviderOrigin1;
+  record_click.eligible_origins = {kViewClickEligibleOrigin1};
+  ASSERT_TRUE(record_click.IsValid());
+
+  base::Time start_time = base::Time::Now();
+
+  storage->RecordViewClick(record_view);
+  storage->RecordViewClick(record_view);
+  storage->RecordViewClick(record_click);
+  EXPECT_FALSE(
+      storage->CheckViewClickCountsForProviderAndEligibleNotInDbForTesting(
+          kViewClickProviderOrigin1, kViewClickEligibleOrigin1));
+
+  // Quickly fast fordward by 91 days (not 90 to account for rounding),
+  // then a bit more to get maintenance to happen with that much time elapsed.
+  FastForwardWithoutIdlingBy(task_environment(), *storage, base::Days(91));
+  task_environment().FastForwardBy(kIdlePeriod);
+
+  // Check that maintenance (and therefore compaction) has occurred.
+  EXPECT_LE(start_time + base::Days(91),
+            storage->GetLastMaintenanceTimeForTesting());
+
+  EXPECT_TRUE(
+      storage->CheckViewClickCountsForProviderAndEligibleNotInDbForTesting(
+          kViewClickProviderOrigin1, kViewClickEligibleOrigin1));
+
+  // Doing a fancy high-level read via an IG just gives 0 for all counters.
+  InterestGroup g = NewInterestGroup(kViewClickEligibleOrigin1, "cars");
+  g.view_and_click_counts_providers = {{kViewClickProviderOrigin1}};
+  g.expiry = base::Time::Now() + base::Days(90);
+  storage->JoinInterestGroup(g, GURL("https://joining-site.test"));
+
+  std::vector<StorageInterestGroup> groups =
+      storage->GetInterestGroupsForOwner(kViewClickEligibleOrigin1);
+  ASSERT_EQ(1u, groups.size());
+
+  blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+      groups[0].bidding_browser_signals->view_and_click_counts;
+
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_hour);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_day);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_week);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_30_days);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_90_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_hour);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_day);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_week);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_30_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_90_days);
+}
+
 // Like InterestGroupStorage.ExpirationDeletesMetadata, but it also checks edge
 // cases near the expiration point.
 //

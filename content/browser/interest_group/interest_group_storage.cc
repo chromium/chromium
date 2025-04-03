@@ -89,6 +89,10 @@ struct ViewClickCountsForProviderAndEligible {
   ListOfTimestampAndCounts compacted_click_events;
 };
 
+// Reason why a database lookup couldn't produce a result. It could be an
+// error, or just because there is nothing there.
+enum class MissingReason { kNotInDb, kDbError, kDecodeError };
+
 const base::FilePath::CharType kDatabasePath[] =
     FILE_PATH_LITERAL("InterestGroups");
 
@@ -4642,14 +4646,11 @@ void DoUpdateLastKAnonymityReported(sql::Database& db,
 }
 
 // Loads the view and click data for `provider_origin`, `eligible_origin`.
-// Returns std::nullopt on failure, and an empty
-// `ViewClickCountsForProviderAndEligible` if no counts are stored for the given
-// (`provider_origin`, `eligible_origin`) tuple.
-std::optional<ViewClickCountsForProviderAndEligible>
+// Returns data if available, or reason if there isn't otherwise.
+base::expected<ViewClickCountsForProviderAndEligible, MissingReason>
 DoGetViewClickCountsForProviderAndEligible(sql::Database& db,
                                            const url::Origin& provider_origin,
                                            const url::Origin& eligible_origin) {
-  ViewClickCountsForProviderAndEligible result;
   sql::Statement get_counts(
       db.GetCachedStatement(SQL_FROM_HERE,
                             "SELECT uncompacted_view_events,"
@@ -4659,21 +4660,19 @@ DoGetViewClickCountsForProviderAndEligible(sql::Database& db,
                             "FROM view_and_click_events "
                             "WHERE provider_origin=? AND eligible_origin=?"));
   if (!get_counts.is_valid()) {
-    DLOG(ERROR) << "GetViewClickCountsForProviderAndEligible SQL statement did "
-                   "not compile: "
-                << db.GetErrorMessage();
-    return std::nullopt;
+    return base::unexpected(MissingReason::kDbError);
   }
   get_counts.Reset(true);
   get_counts.BindString(0, provider_origin.Serialize());
   get_counts.BindString(1, eligible_origin.Serialize());
   if (!get_counts.Step()) {
-    // No counts stored, return empty counts lists.
-    return result;
+    // No counts stored.
+    return base::unexpected(MissingReason::kNotInDb);
   }
   if (!get_counts.Succeeded()) {
-    return std::nullopt;
+    return base::unexpected(MissingReason::kDbError);
   }
+  ViewClickCountsForProviderAndEligible result;
   if (!result.uncompacted_view_events.ParseFromString(
           get_counts.ColumnStringView(0)) ||
       !result.compacted_view_events.ParseFromString(
@@ -4685,7 +4684,7 @@ DoGetViewClickCountsForProviderAndEligible(sql::Database& db,
     base::UmaHistogramEnumeration(
         "Storage.InterestGroup.ProtoDeserializationResult.ListOfTimestamps",
         InterestGroupStorageProtoSerializationResult::kFailed);
-    return std::nullopt;
+    return base::unexpected(MissingReason::kDecodeError);
   } else {
     base::UmaHistogramEnumeration(
         "Storage.InterestGroup.ProtoDeserializationResult.ListOfTimestamps",
@@ -4718,7 +4717,6 @@ void DoIncrementViewClickCounts(base::Time now,
     view_or_click_counts->past_90_days += count;
   }
   // Older expired events may exist -- maintenance will eventually remove them.
-  // TODO(crbug.com/394108643): Implement click / view removal logic.
 }
 
 // Mutates `group`'s browser signals, filling in loaded view and click counts.
@@ -4741,13 +4739,19 @@ void DoIncrementViewClickCounts(base::Time now,
 
   for (const url::Origin& provider_origin :
        *group.interest_group.view_and_click_counts_providers) {
-    std::optional<ViewClickCountsForProviderAndEligible> partial_counts =
-        DoGetViewClickCountsForProviderAndEligible(
+    base::expected<ViewClickCountsForProviderAndEligible, MissingReason>
+        partial_counts = DoGetViewClickCountsForProviderAndEligible(
             /*db=*/db,
             /*provider_origin=*/provider_origin,
             /*eligible_origin=*/group.interest_group.owner);
-    if (!partial_counts) {
-      return false;
+    if (!partial_counts.has_value()) {
+      switch (partial_counts.error()) {
+        case MissingReason::kDbError:
+        case MissingReason::kDecodeError:
+          return false;
+        case MissingReason::kNotInDb:
+          continue;
+      }
     }
 
     for (int64_t timestamp :
@@ -6102,9 +6106,7 @@ void ClickinessCompactionAddTimestampToMap(base::Time now,
     map[timestamp] += count;
   } else if (event_age <= base::Days(1)) {
     map[TruncateToHour(timestamp)] += count;
-  } else {
-    // TODO(crbug.com/394108643): Drop entries older than 90 days, and
-    // remove resultant DB rows with no events.
+  } else if (event_age <= base::Days(90)) {
     map[TruncateToDay(timestamp)] += count;
   }
 }
@@ -6272,6 +6274,14 @@ bool CompactClickiness(sql::Database& db, base::Time now) {
     return false;
   }
 
+  sql::Statement delete_row(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "DELETE FROM view_and_click_events "
+                            "WHERE provider_origin=? AND eligible_origin=?"));
+  if (!delete_row.is_valid()) {
+    return false;
+  }
+
   // For each (provider_origin, eligible_origin) in view_and_click_events,
   // compact that (provider_origin, eligible_origin), and write the updated
   // results:
@@ -6310,17 +6320,29 @@ bool CompactClickiness(sql::Database& db, base::Time now) {
       return false;
     }
 
-    // Done compacting this (provider_origin, eligible_origin) row -- write the
-    // results back to the database.
-    update_row.BindString(0, raw_views->uncompacted_events);
-    update_row.BindString(1, raw_views->compacted_events);
-    update_row.BindString(2, raw_clicks->uncompacted_events);
-    update_row.BindString(3, raw_clicks->compacted_events);
-    update_row.BindString(4, provider_origin);
-    update_row.BindString(5, eligible_origin);
+    // Done compacting this (provider_origin, eligible_origin) row.
+    // If something is left, write the results back to the database,
+    // otherwise delete it.
+    if (raw_views->uncompacted_events.empty() &&
+        raw_views->compacted_events.empty() &&
+        raw_clicks->uncompacted_events.empty() &&
+        raw_clicks->compacted_events.empty()) {
+      delete_row.BindString(0, provider_origin);
+      delete_row.BindString(1, eligible_origin);
+      if (!delete_row.Run()) {
+        return false;
+      }
+    } else {
+      update_row.BindString(0, raw_views->uncompacted_events);
+      update_row.BindString(1, raw_views->compacted_events);
+      update_row.BindString(2, raw_clicks->uncompacted_events);
+      update_row.BindString(3, raw_clicks->compacted_events);
+      update_row.BindString(4, provider_origin);
+      update_row.BindString(5, eligible_origin);
 
-    if (!update_row.Run()) {
-      return false;
+      if (!update_row.Run()) {
+        return false;
+      }
     }
   }
   if (!get_all_rows_sql.Succeeded()) {
@@ -7436,6 +7458,20 @@ InterestGroupStorage::ComputeCompactClickinessForTesting(
     base::Time now,
     const InterestGroupStorage::ClickinessCompactionRawEvents& raw) {
   return ComputeCompactClickiness(now, raw);
+}
+
+bool InterestGroupStorage::
+    CheckViewClickCountsForProviderAndEligibleNotInDbForTesting(
+        const url::Origin& provider_origin,
+        const url::Origin& eligible_origin) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return false;
+  }
+
+  auto status = DoGetViewClickCountsForProviderAndEligible(
+      *db_, provider_origin, eligible_origin);
+  return !status.has_value() && status.error() == MissingReason::kNotInDb;
 }
 
 void InterestGroupStorage::DatabaseErrorCallback(int extended_error,

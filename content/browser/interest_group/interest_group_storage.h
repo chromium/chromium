@@ -304,6 +304,15 @@ class CONTENT_EXPORT InterestGroupStorage {
       base::Time now,
       const InterestGroupStorage::ClickinessCompactionRawEvents& raw);
 
+  // Returns true if there is no entry for given
+  // (provider_origin, eligible_origin) in database view/click table.
+  //
+  // Returns false if the entry exists, or if there is some sort of an error
+  // with the database.
+  bool CheckViewClickCountsForProviderAndEligibleNotInDbForTesting(
+      const url::Origin& provider_origin,
+      const url::Origin& eligible_origin);
+
  private:
   // Private constructor that allows changing the idle period, used by
   // CreateWithIdlePeriodForTesting().
