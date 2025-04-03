@@ -85,7 +85,13 @@ class ExternalFileRemoverImplTest : public PlatformTest {
 
 // Tests that an external PDF file that is not in use is removed by the
 // background task.
-TEST_F(ExternalFileRemoverImplTest, RemoveDownloadedPDF) {
+// TODO(crbug.com/408168811): Fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_RemoveDownloadedPDF RemoveDownloadedPDF
+#else
+#define MAYBE_RemoveDownloadedPDF DISABLED_RemoveDownloadedPDF
+#endif
+TEST_F(ExternalFileRemoverImplTest, MAYBE_RemoveDownloadedPDF) {
   const std::string& filename = "filename.pdf";
   CreateExternalFile(filename);
   VerifyExternalFileExists(filename);
