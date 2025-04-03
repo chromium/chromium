@@ -29,7 +29,9 @@ const CGFloat kExtraSpacingForSmallerCompleteIcon = 16.0f;
 const CGFloat kContentStackViewSpacing = 16.0f;
 const CGFloat kContentStackVerticalSpacing = 15.0f;
 const CGFloat kIconImageContainerWidth = 64.0f;
-const CGFloat kTryButtonWidth = 64.0f;
+const CGFloat kTryButtonMargin = 10.0f;
+const CGFloat kTryButtonMinWidth = 64.0f;
+const CGFloat kTryButtonMaxWidth = 100.0f;
 const CGFloat kTitleDescriptionSpacing = 5.0f;
 
 // Returns an NSAttributedString with strikethrough.
@@ -43,6 +45,8 @@ NSAttributedString* Strikethrough(NSString* text) {
 
 @implementation SetUpListShowMoreItemView {
   SetUpListItemViewData* _data;
+  NSLayoutConstraint* _tryButtonWidth;
+  UIButton* _tryButton;
 }
 
 - (instancetype)initWithData:(SetUpListItemViewData*)data {
@@ -121,31 +125,32 @@ NSAttributedString* Strikethrough(NSString* text) {
   [contentStack addArrangedSubview:textStack];
 
   if (!_data.complete) {
-    UIButton* tryButton = [[UIButton alloc] init];
-    tryButton.backgroundColor =
+    _tryButton = [[UIButton alloc] init];
+    _tryButton.backgroundColor =
         [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-    tryButton.titleLabel.font = PreferredFontForTextStyle(
+    _tryButton.titleLabel.font = PreferredFontForTextStyle(
         UIFontTextStyleSubheadline, UIFontWeightSemibold);
-    tryButton.titleLabel.adjustsFontForContentSizeCategory = YES;
+    _tryButton.titleLabel.adjustsFontForContentSizeCategory = YES;
+    _tryButton.titleLabel.adjustsFontSizeToFitWidth = YES;
     NSString* tryButtonTitle =
         l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TRY_BUTTON_TEXT);
-    [tryButton setTitle:tryButtonTitle forState:UIControlStateNormal];
-    [tryButton setTitleColor:[UIColor colorNamed:kBlueColor]
-                    forState:UIControlStateNormal];
-    [tryButton addTarget:self
-                  action:@selector(tryTapped)
-        forControlEvents:UIControlEventTouchUpInside];
+    [_tryButton setTitle:tryButtonTitle forState:UIControlStateNormal];
+    [_tryButton setTitleColor:[UIColor colorNamed:kBlueColor]
+                     forState:UIControlStateNormal];
+    [_tryButton addTarget:self
+                   action:@selector(tryTapped)
+         forControlEvents:UIControlEventTouchUpInside];
     NSString* itemTitle = [self titleText];
-    tryButton.accessibilityIdentifier =
+    _tryButton.accessibilityIdentifier =
         [NSString stringWithFormat:@"%@ Try Button", itemTitle];
-    tryButton.accessibilityLabel =
+    _tryButton.accessibilityLabel =
         [NSString stringWithFormat:@"%@, %@", tryButtonTitle, itemTitle];
-    tryButton.layer.cornerRadius = 15;
-    tryButton.pointerInteractionEnabled = YES;
-    [NSLayoutConstraint activateConstraints:@[
-      [tryButton.widthAnchor constraintEqualToConstant:kTryButtonWidth],
-    ]];
-    [contentStack addArrangedSubview:tryButton];
+    _tryButton.layer.cornerRadius = 15;
+    _tryButton.pointerInteractionEnabled = YES;
+    _tryButtonWidth = [_tryButton.widthAnchor constraintEqualToConstant:0];
+    [self updateTryButtonWidth];
+    _tryButtonWidth.active = YES;
+    [contentStack addArrangedSubview:_tryButton];
     self.accessibilityHint = l10n_util::GetNSString(
         IDS_IOS_SET_UP_LIST_TRY_BUTTON_ACCESSIBILITY_HINT);
   } else {
@@ -155,6 +160,13 @@ NSAttributedString* Strikethrough(NSString* text) {
   self.isAccessibilityElement = YES;
   self.accessibilityLabel =
       [NSString stringWithFormat:@"%@, %@", title.text, description.text];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+        @[ UITraitPreferredContentSizeCategory.class ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateTryButtonWidth)];
+  }
 }
 
 // Creates the title label.
@@ -262,6 +274,29 @@ NSAttributedString* Strikethrough(NSString* text) {
 - (void)tryTapped {
   [self.tapDelegate didSelectSetUpListItem:_data.type];
 }
+
+- (void)updateTryButtonWidth {
+  [_tryButton.titleLabel invalidateIntrinsicContentSize];
+  _tryButtonWidth.constant = std::clamp<CGFloat>(
+      _tryButton.titleLabel.intrinsicContentSize.width + kTryButtonMargin * 2,
+      kTryButtonMinWidth, kTryButtonMaxWidth);
+}
+
+#pragma mark - UITraitEnvironment
+
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    [self updateTryButtonWidth];
+  }
+}
+
+#endif
 
 #pragma mark - UIAccessibility
 
