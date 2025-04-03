@@ -4,6 +4,7 @@
 
 #include "content/services/auction_worklet/bidder_lazy_filler.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -191,16 +192,31 @@ bool InterestGroupLazyFiller::FillInObject(
     return false;
   }
 
+  std::optional<size_t> selectable_reporting_ids_limit;
+  if (base::FeatureList::IsEnabled(
+          blink::features::
+              kFledgeTruncateSelectableBuyerAndSellerReportingIdsToKAnonLimit) &&
+      blink::features::
+              kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit
+                  .Get() >= 0) {
+    selectable_reporting_ids_limit = static_cast<size_t>(
+        blink::features::
+            kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit
+                .Get());
+  }
+
   v8::Local<v8::ObjectTemplate> lazy_filler_template;
   if (bidder_worklet_non_shared_params_->ads &&
       !CreateAdVector(
           object, "ads", is_ad_excluded, is_reporting_id_set_excluded,
+          selectable_reporting_ids_limit,
           *bidder_worklet_non_shared_params_->ads, lazy_filler_template)) {
     return false;
   }
   if (bidder_worklet_non_shared_params_->ad_components &&
       !CreateAdVector(object, "adComponents", is_ad_component_excluded,
                       is_reporting_id_set_excluded,
+                      selectable_reporting_ids_limit,
                       *bidder_worklet_non_shared_params_->ad_components,
                       lazy_filler_template)) {
     return false;
@@ -225,6 +241,7 @@ bool InterestGroupLazyFiller::CreateAdVector(
                                  base::optional_ref<const std::string>,
                                  base::optional_ref<const std::string>)>
         is_reporting_id_set_excluded,
+    std::optional<size_t> selectable_reporting_ids_limit,
     const std::vector<blink::InterestGroup::Ad>& ads,
     v8::Local<v8::ObjectTemplate>& lazy_filler_template) {
   v8::Isolate* isolate = v8_helper()->isolate();
@@ -252,22 +269,32 @@ bool InterestGroupLazyFiller::CreateAdVector(
       return false;
     }
     if (ad.selectable_buyer_and_seller_reporting_ids) {
+      // There may be a limit configured on the number of
+      // `selectable_buyer_and_seller_reporting_ids` for which the client would
+      // have previously loaded the k-anon status, and this may, if configured
+      // to do so, only pass those `selectable_buyer_and_seller_reporting_ids`
+      // into `generateBid()` for which k-anon status had been loaded.
+      //
       // For the k-anon restricted run, we limit
       // `selectable_buyer_and_seller_reporting_ids` to only those that would,
       // in combination with the renderUrl and other reporting ids, be
       // k-anonymous for reporting, so that, if the bid returns
       // `selected_buyer_and_seller_reporting_id_required` = true, the bid is,
       // in fact, k-anonymous for reporting.
+      size_t num_selectable_reporting_ids_to_evaluate =
+          selectable_reporting_ids_limit
+              ? std::min(*selectable_reporting_ids_limit,
+                         ad.selectable_buyer_and_seller_reporting_ids->size())
+              : ad.selectable_buyer_and_seller_reporting_ids->size();
       std::vector<std::string_view>
           valid_selectable_buyer_and_seller_reporting_ids;
-      for (auto& selectable_buyer_and_seller_reporting_id :
-           *ad.selectable_buyer_and_seller_reporting_ids) {
+      for (size_t i = 0; i < num_selectable_reporting_ids_to_evaluate; ++i) {
         if (!is_reporting_id_set_excluded.Run(
                 ad.render_url(), ad.buyer_reporting_id,
                 ad.buyer_and_seller_reporting_id,
-                selectable_buyer_and_seller_reporting_id)) {
+                ad.selectable_buyer_and_seller_reporting_ids->at(i))) {
           valid_selectable_buyer_and_seller_reporting_ids.push_back(
-              selectable_buyer_and_seller_reporting_id);
+              ad.selectable_buyer_and_seller_reporting_ids->at(i));
         }
       }
       if ((ad.buyer_reporting_id &&

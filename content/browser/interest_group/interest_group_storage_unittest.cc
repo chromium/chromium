@@ -931,7 +931,7 @@ TEST_F(InterestGroupStorageTest,
   {
     base::test::ScopedFeatureList scoped_feature_to_enforce_limit;
     scoped_feature_to_enforce_limit.InitAndEnableFeatureWithParameters(
-        features::
+        blink::features::
             kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon,
         {{"SelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit", "1"}});
 
@@ -954,7 +954,7 @@ TEST_F(InterestGroupStorageTest,
   {
     base::test::ScopedFeatureList scoped_feature_to_enforce_limit;
     scoped_feature_to_enforce_limit.InitAndEnableFeatureWithParameters(
-        features::
+        blink::features::
             kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon,
         {{"SelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit", "-1"}});
 

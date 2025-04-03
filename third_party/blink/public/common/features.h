@@ -630,6 +630,22 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // Feature flag to disable locally hosted ad auction.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeDisableLocalAdsAuctions);
 
+// Feature flag to limit on the number of
+// `selectableBuyerAndSellerReportingIds` for which the browser fetches k-anon
+// keys.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit);
+
+// Feature flag to truncate the set of `selectableBuyerAndSellerReportingIds`
+// to only those for which k-anon status was fetched, as limited by the
+// kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit parameter
+// defined above.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kFledgeTruncateSelectableBuyerAndSellerReportingIdsToKAnonLimit);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceWebContentsDarkMode);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(ForceDarkInversionMethod,
                                                kForceDarkInversionMethodParam);
