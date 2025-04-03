@@ -40,6 +40,14 @@ chromium-metrics-reviews@google.com.
   <variant name="UserData"/>
 </variants>
 
+<variants name="ProcessMemoryType">
+  <variant name=".Anon" summary="Measures anonymous RSS."/>
+  <variant name=".File" summary="Measures file RSS."/>
+  <variant name=".Shmem" summary="Measures shmem RSS."/>
+  <variant name=".Swap" summary="Measures swap in use."/>
+  <variant name=".Total" summary="Measures total RSS."/>
+</variants>
+
 <histogram name="Platform.Bootlockbox.AvailabilityAtStart"
     enum="BootlockboxAvailability" expires_after="2023-10-24">
   <owner>yich@google.com</owner>
@@ -1492,71 +1500,85 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Mem" units="%" expires_after="2022-07-02">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
-  <owner>sonnyrao@chromium.org</owner>
-  <owner>chromeos-memory@google.com</owner>
-  <summary>
-    Various memory usage % of total memory on Chrome OS devices (snapshotted
-    every 30s). Warning: this histogram was expired from 2021-07-02 to 2022-01;
-    data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="Platform.Meminfo" units="KB" expires_after="2025-08-24">
+<histogram name="Platform.Meminfo{PlatformMeminfoSize}" units="KB"
+    expires_after="2025-08-24">
   <owner>hajimehoshi@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
   <owner>sonnyrao@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
     Various memory usage amount on Chrome OS devices (snapshotted every 30s).
+    {PlatformMeminfoSize}
   </summary>
+  <token key="PlatformMeminfoSize">
+    <variant name=""/>
+    <variant name="FileTotal"
+        summary="Size of file memory (active + inactive)."/>
+    <variant name="MemFreeDerived"
+        summary="Size derived from free+buffers+cached."/>
+    <variant name="MemTotal" summary="Size of total installed memory."/>
+    <variant name="MemUsedDerived"
+        summary="Size of &quot;Total - FreeDerived&quot; memory."/>
+    <variant name="ProcessDataTotal"
+        summary="Size of process data (active + inactive + swap)."/>
+    <variant name="Shmem" summary="Size of shared memory."/>
+    <variant name="Slab" summary="Size of slab memory."/>
+    <variant name="SwapUsed" summary="Size of used swap memory."/>
+    <variant name="Unevictable" summary="Size of unevictable memory."/>
+  </token>
 </histogram>
 
-<histogram name="Platform.Memory.ARC" units="MiB" expires_after="2025-09-14">
-<!-- Name completed by histogram_suffixes name="ProcessMemoryType" -->
-
+<histogram name="Platform.Memory.ARC{ProcessMemoryType}" units="MiB"
+    expires_after="2025-09-14">
   <owner>bgeffon@chromium.org</owner>
   <owner>khmel@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
     Memory usage of all ARC and ARCVM processes in Chrome OS, reported every 10
-    minutes.
+    minutes. {ProcessMemoryType}
   </summary>
+  <token key="ProcessMemoryType" variants="ProcessMemoryType">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Platform.Memory.Browser" units="MiB"
+<histogram name="Platform.Memory.Browser{ProcessMemoryType}" units="MiB"
     expires_after="2025-09-14">
-<!-- Name completed by histogram_suffixes name="ProcessMemoryType" -->
-
   <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
     Memory usage of browser and helper processes (excluding GPU process and
-    renderers) in Chrome OS, reported every 10 minutes.
+    renderers) in Chrome OS, reported every 10 minutes. {ProcessMemoryType}
   </summary>
+  <token key="ProcessMemoryType" variants="ProcessMemoryType">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Platform.Memory.Daemons" units="MiB"
+<histogram name="Platform.Memory.Daemons{ProcessMemoryType}" units="MiB"
     expires_after="2025-08-31">
-<!-- Name completed by histogram_suffixes name="ProcessMemoryType" -->
-
   <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
     Memory usage of user-level daemons in Chrome OS, reported every 10 minutes.
+    {ProcessMemoryType}
   </summary>
+  <token key="ProcessMemoryType" variants="ProcessMemoryType">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Platform.Memory.Gpu" units="MiB" expires_after="2025-09-14">
-<!-- Name completed by histogram_suffixes name="ProcessMemoryType" -->
-
+<histogram name="Platform.Memory.Gpu{ProcessMemoryType}" units="MiB"
+    expires_after="2025-09-14">
   <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
     Memory usage of the GPU process in Chrome OS, reported every 10 minutes.
+    {ProcessMemoryType}
   </summary>
+  <token key="ProcessMemoryType" variants="ProcessMemoryType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Platform.Memory.PsiPolicyError"
@@ -1584,26 +1606,65 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Memory.Renderers" units="MiB"
+<histogram name="Platform.Memory.Renderers{ProcessMemoryType}" units="MiB"
     expires_after="2023-08-08">
-<!-- Name completed by histogram_suffixes name="ProcessMemoryType" -->
-
   <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
     Memory usage of renderer processes in Chrome OS, reported every 10 minutes.
+    {ProcessMemoryType}
   </summary>
+  <token key="ProcessMemoryType" variants="ProcessMemoryType">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Platform.Memory.VMs" units="MiB" expires_after="2025-09-14">
-<!-- Name completed by histogram_suffixes name="ProcessMemoryType" -->
-
+<histogram name="Platform.Memory.VMs{ProcessMemoryType}" units="MiB"
+    expires_after="2025-09-14">
   <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
     Memory usage of VMs (crostini and others, except for ARCVM) in Chrome OS,
-    reported every 10 minutes.
+    reported every 10 minutes. {ProcessMemoryType}
   </summary>
+  <token key="ProcessMemoryType" variants="ProcessMemoryType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Platform.Mem{PlatformMeminfoPercentage}" units="%"
+    expires_after="2022-07-02">
+  <owner>hajimehoshi@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <owner>sonnyrao@chromium.org</owner>
+  <owner>chromeos-memory@google.com</owner>
+  <summary>
+    Various memory usage % of total memory on Chrome OS devices (snapshotted
+    every 30s). Warning: this histogram was expired from 2021-07-02 to 2022-01;
+    data may be missing. {PlatformMeminfoPercentage}
+  </summary>
+  <token key="PlatformMeminfoPercentage">
+    <variant name=""/>
+    <variant name="infoActive" summary="Active memory."/>
+    <variant name="infoActiveAnon"
+        summary="Active anonymous memory (data segments)."/>
+    <variant name="infoActiveFile"
+        summary="Active file-backed memory (executables, ...)."/>
+    <variant name="infoAnonPages"
+        summary="Anonymous memory (executables, ...)."/>
+    <variant name="infoBuffers" summary="Buffer cache (executables, ...)."/>
+    <variant name="infoCached"
+        summary="size of file-backed memory minus swap and buffer cache."/>
+    <variant name="infoInactive" summary="Inactive memory."/>
+    <variant name="infoInactiveAnon"
+        summary="Inactive anonymous memory (data segments)."/>
+    <variant name="infoInactiveFile" summary="Inactive file-backed memory."/>
+    <variant name="infoMapped" summary="Mapped memory."/>
+    <variant name="infoMemFree"
+        summary="Free memory. Logged from ChromeOS; previously logged from
+                 Chromecast from M53 through M97."/>
+    <variant name="infoSwapUsedPercent" summary="Used swap memory."/>
+  </token>
 </histogram>
 
 <histogram name="Platform.MiniDiag.Launch" units="launches"
