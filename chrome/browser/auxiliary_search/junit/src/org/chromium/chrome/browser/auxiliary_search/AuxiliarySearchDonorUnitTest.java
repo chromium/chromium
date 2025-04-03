@@ -636,6 +636,21 @@ public class AuxiliarySearchDonorUnitTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE + ":use_schema_v1/true"
+    })
+    public void testGetSupportedDocumentClasses_UseSchemaV1() {
+        // Enables multiple data source.
+        when(mHooks.isMultiDataTypeEnabledOnDevice()).thenReturn(true);
+        assertTrue(AuxiliarySearchControllerFactory.getInstance().isMultiDataTypeEnabledOnDevice());
+        createAndInitAuxiliarySearchDonor();
+        List<Class<?>> list = mAuxiliarySearchDonor.getSupportedDocumentClasses();
+        assertEquals(1, list.size());
+        assertTrue(list.contains(WebPage.class));
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures({"AndroidAppIntegrationMultiDataSource:use_schema_v1/true"})
     public void testUseSchemaV1() {
         mAuxiliarySearchDonor.resetSchemaSetForTesting();
