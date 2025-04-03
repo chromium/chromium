@@ -13,7 +13,7 @@
 #include <xpc/xpc.h>
 
 #include "base/apple/bundle_locations.h"
-#include "base/apple/mach_port_rendezvous.h"
+#include "base/apple/mach_port_rendezvous_ios.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
