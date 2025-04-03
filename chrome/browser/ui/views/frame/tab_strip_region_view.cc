@@ -339,6 +339,7 @@ bool TabStripRegionView::IsRectInWindowCaption(const gfx::Rect& rect) {
   // visual portions of the child view we treat it as a click to the caption.
   for (View* const child : children()) {
     if (child != tab_strip_container_ && child != reserved_grab_handle_space_ &&
+        child->GetVisible() &&
         child->GetLocalBounds().Intersects(get_target_rect(child))) {
       return !child->HitTestRect(get_target_rect(child));
     }
