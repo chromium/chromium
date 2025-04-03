@@ -17,6 +17,18 @@
 
 namespace autofill {
 
+// Specifies if the Username First Flow vote has intermediate values.
+enum class IsMostRecentSingleUsernameCandidate {
+  // Field is not part of Username First Flow.
+  kNotPartOfUsernameFirstFlow = 0,
+  // Field is candidate for username in Username First Flow and has no
+  // intermediate fields
+  kMostRecentCandidate = 1,
+  // Field is candidate for username in Username First Flow and has intermediate
+  // fields between candidate and password form.
+  kHasIntermediateValuesInBetween = 2,
+};
+
 struct EncodeUploadRequestOptions {
   struct Field {
     Field();
@@ -32,6 +44,18 @@ struct EncodeUploadRequestOptions {
     // Strength of the single username vote signal, if applicable.
     std::optional<AutofillUploadContents::Field::SingleUsernameVoteType>
         single_username_vote_type;
+
+    // If set to `kMostRecentCandidate`, the field is candidate for username
+    // in Username First Flow and the field has no intermediate
+    // fields (like OTP/Captcha) between the candidate and the password form.
+    // If set to `kHasIntermediateValuesInBetween`, the field is candidate for
+    // username in Username First Flow, but has intermediate fields between the
+    // candidate and the password form.
+    // If set to `kNotPartOfUsernameFirstFlow`, the field is not part of
+    // Username First Flow.
+    IsMostRecentSingleUsernameCandidate
+        is_most_recent_single_username_candidate =
+            IsMostRecentSingleUsernameCandidate::kNotPartOfUsernameFirstFlow;
   };
 
   EncodeUploadRequestOptions();

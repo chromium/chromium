@@ -428,20 +428,24 @@ void EncodeFormFieldsForUpload(
           added_field->mutable_randomized_field_metadata());
     }
 
-    if (field_options && field_options->single_username_vote_type) {
-      added_field->set_single_username_vote_type(
-          field_options->single_username_vote_type.value());
-    }
+    if (field_options) {
+      if (field_options->single_username_vote_type) {
+        added_field->set_single_username_vote_type(
+            field_options->single_username_vote_type.value());
+      }
 
-    switch (field->is_most_recent_single_username_candidate()) {
-      case IsMostRecentSingleUsernameCandidate::kNotPartOfUsernameFirstFlow:
-        added_field->clear_is_most_recent_single_username_candidate();
-        break;
-      case IsMostRecentSingleUsernameCandidate::kHasIntermediateValuesInBetween:
-        added_field->set_is_most_recent_single_username_candidate(false);
-        break;
-      case IsMostRecentSingleUsernameCandidate::kMostRecentCandidate:
-        added_field->set_is_most_recent_single_username_candidate(true);
+      switch (field_options->is_most_recent_single_username_candidate) {
+        using enum IsMostRecentSingleUsernameCandidate;
+        case kNotPartOfUsernameFirstFlow:
+          added_field->clear_is_most_recent_single_username_candidate();
+          break;
+        case kHasIntermediateValuesInBetween:
+          added_field->set_is_most_recent_single_username_candidate(false);
+          break;
+        case kMostRecentCandidate:
+          added_field->set_is_most_recent_single_username_candidate(true);
+          break;
+      }
     }
   }
 }

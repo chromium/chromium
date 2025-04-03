@@ -31,18 +31,6 @@
 
 namespace autofill {
 
-// Specifies if the Username First Flow vote has intermediate values.
-enum class IsMostRecentSingleUsernameCandidate {
-  // Field is not part of Username First Flow.
-  kNotPartOfUsernameFirstFlow = 0,
-  // Field is candidate for username in Username First Flow and has no
-  // intermediate fields
-  kMostRecentCandidate = 1,
-  // Field is candidate for username in Username First Flow and has intermediate
-  // fields between candidate and password form.
-  kHasIntermediateValuesInBetween = 2,
-};
-
 // Specifies which type of field value is desired from AutofillField::value().
 // TODO: crbug.com/40227496 - Remove together with `value(ValueSemantics)`.
 enum class ValueSemantics {
@@ -377,18 +365,6 @@ class AutofillField : public FormFieldData {
   }
   bool state_is_a_matching_type() const { return state_is_a_matching_type_; }
 
-  void set_is_most_recent_single_username_candidate(
-      IsMostRecentSingleUsernameCandidate
-          is_most_recent_single_username_candidate) {
-    is_most_recent_single_username_candidate_ =
-        is_most_recent_single_username_candidate;
-  }
-
-  IsMostRecentSingleUsernameCandidate is_most_recent_single_username_candidate()
-      const {
-    return is_most_recent_single_username_candidate_;
-  }
-
   void set_field_log_events(const std::vector<FieldLogEventType>& events) {
     field_log_events_ = events;
   }
@@ -588,18 +564,6 @@ class AutofillField : public FormFieldData {
 
   // Denotes if |ADDRESS_HOME_STATE| should be added to |possible_types_|.
   bool state_is_a_matching_type_ = false;
-
-  // If set to `kMostRecentCandidate`, the field is candidate for username
-  // in Username First Flow and the field has no intermediate
-  // fields (like OTP/Captcha) between the candidate and the password form.
-  // If set to `kHasIntermediateValuesInBetween`, the field is candidate for
-  // username in Username First Flow, but has intermediate fields between the
-  // candidate and the password form.
-  // If set to `kNotPartOfUsernameFirstFlow`, the field is not part of Username
-  // First Flow.
-  IsMostRecentSingleUsernameCandidate
-      is_most_recent_single_username_candidate_ =
-          IsMostRecentSingleUsernameCandidate::kNotPartOfUsernameFirstFlow;
 
   // A list of field log events, which record when user interacts the field
   // during autofill or editing, such as user clicks on the field, the

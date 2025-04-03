@@ -981,10 +981,12 @@ bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
   CHECK_NE(field_type, autofill::UNKNOWN_TYPE);
   CHECK_NE(vote_type, AutofillUploadContents::Field::DEFAULT);
   options.available_field_types.insert(field_type);
+  autofill::EncodeUploadRequestOptions::Field& field_options =
+      options.fields[field->global_id()];
   field->set_possible_types({field_type});
-  options.fields[field->global_id()].single_username_vote_type = vote_type;
-  field->set_is_most_recent_single_username_candidate(
-      is_most_recent_single_username_candidate);
+  field_options.single_username_vote_type = vote_type;
+  field_options.is_most_recent_single_username_candidate =
+      is_most_recent_single_username_candidate;
   return true;
 }
 
