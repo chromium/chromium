@@ -46,6 +46,7 @@
   _mediator = [[SaveCardBottomSheetMediator alloc]
       initWithUIModel:std::move(_saveCardBottomSheetModel)];
   _viewController = [[SaveCardBottomSheetViewController alloc] init];
+  _mediator.consumer = _viewController;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];
@@ -55,6 +56,7 @@
   [_viewController dismissViewControllerAnimated:YES completion:nil];
   _viewController = nil;
   [_mediator disconnect];
+  _mediator.consumer = nil;
   _mediator = nil;
 }
 
