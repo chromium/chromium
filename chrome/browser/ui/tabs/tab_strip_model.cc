@@ -1387,12 +1387,16 @@ void TabStripModel::MoveTabPrevious() {
 
 split_tabs::SplitTabData* TabStripModel::GetSplitData(
     split_tabs::SplitTabId split_id) {
+  if (split_tab_data_map_.find(split_id) == split_tab_data_map_.end()) {
+    return nullptr;
+  }
+
   return split_tab_data_map_[split_id].get();
 }
 
 bool TabStripModel::InsertionIndexBreakSplitContiguity(int index) {
   return ContainsIndex(index - 1) && ContainsIndex(index) &&
-         GetTabAtIndex(index - 1)->IsSplit() &&
+         IsTabSplit(index - 1) &&
          GetTabAtIndex(index - 1)->GetSplit() ==
              GetTabAtIndex(index)->GetSplit();
 }
@@ -3362,6 +3366,52 @@ void TabStripModel::MoveTabToIndexImpl(
   tabs::TabInterface* const tab = GetTabAtIndex(initial_index);
   const bool initial_pinned_state = tab->IsPinned();
   const std::optional<tab_groups::TabGroupId> initial_group = tab->GetGroup();
+
+  // If nothing has changed, noop.
+  if (initial_index == final_index && group == initial_group &&
+      initial_pinned_state == pin) {
+    return;
+  }
+
+  bool is_move_within_split = false;
+  if (tab->IsSplit()) {
+    std::vector<std::pair<tabs::TabInterface*, int>> tabs_in_split =
+        GetTabsAndIndicesInSplit(tab->GetSplit().value());
+    int first_tab_in_split = tabs_in_split[0].second;
+    int last_tab_in_split = tabs_in_split[tabs_in_split.size() - 1].second;
+
+    if (final_index >= first_tab_in_split && final_index <= last_tab_in_split) {
+      is_move_within_split = true;
+    }
+  }
+
+  // Maybe remove the split of the origin tab if it is not moving within the
+  // split. Also, it is possible the tab is not moving indices but properties
+  // like group and pin are getting updated. These cases should also result in
+  // removing the split.
+  if (tab->IsSplit() &&
+      (!is_move_within_split || (initial_index == final_index))) {
+    RemoveSplitImpl(tab->GetSplit().value());
+  }
+
+  // Maybe remove the split tab of the destination if it results in
+  // discontiguity.
+  if (!is_move_within_split && (initial_index != final_index)) {
+    // The logic for finding the previous and next tabs depends on the relative
+    // position of the initial and final index as the indices of the previous
+    // tab and next tab get updated if initial_index < final_index but otherwise
+    // the ordering is the same.
+    int previous_tab_index =
+        (initial_index < final_index) ? final_index : final_index - 1;
+    int next_tab_index =
+        (initial_index < final_index) ? final_index + 1 : final_index;
+    if (ContainsIndex(previous_tab_index) && ContainsIndex(next_tab_index) &&
+        IsTabSplit(previous_tab_index) &&
+        GetTabAtIndex(previous_tab_index)->GetSplit() ==
+            GetTabAtIndex(next_tab_index)->GetSplit()) {
+      RemoveSplitImpl(GetTabAtIndex(previous_tab_index)->GetSplit().value());
+    }
+  }
 
   if (initial_index != final_index) {
     FixOpeners(initial_index);

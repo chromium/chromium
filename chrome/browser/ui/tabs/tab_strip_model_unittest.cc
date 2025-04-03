@@ -1792,7 +1792,7 @@ TEST_F(TabStripModelTest, CommandAddToSplit) {
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
 
-  // Create five tabs with two pinned, select the last.
+  // Create five tabs with two pinned.
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(&tabstrip, 5, 2, "2"));
   // Add tab at index 4 to a group.
@@ -1856,7 +1856,7 @@ TEST_F(TabStripModelTest, AddToSplitInGroup) {
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
 
-  // Create five tabs with two pinned, select the last.
+  // Create five tabs with two pinned.
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(&tabstrip, 5, 2, "2"));
 
@@ -1882,7 +1882,7 @@ TEST_F(TabStripModelTest, AddToSplitInPinned) {
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
 
-  // Create five tabs with two pinned, select the last.
+  // Create five tabs with two pinned.
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(&tabstrip, 5, 2, "2"));
 
@@ -1906,7 +1906,7 @@ TEST_F(TabStripModelTest, UnsplitOperation) {
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
 
-  // Create five tabs with two pinned, select the last.
+  // Create five tabs with two pinned.
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(&tabstrip, 5, 2, "2"));
 
@@ -1923,6 +1923,30 @@ TEST_F(TabStripModelTest, UnsplitOperation) {
 
   tabstrip.RemoveSplit(split_tab_id);
   EXPECT_EQ("0p 3p 1p 2 4", GetTabStripStateString(tabstrip));
+
+  tabstrip.CloseAllTabs();
+  EXPECT_TRUE(tabstrip.empty());
+}
+
+TEST_F(TabStripModelTest, MoveInsideSplitRemovesSplit) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 5, 0, "2"));
+
+  tabstrip.ActivateTabAt(0,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+
+  split_tabs::SplitTabId split_tab_id =
+      tabstrip.AddToNewSplit({3}, tabs::SplitTabLayout::kHorizontal);
+
+  EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->ListTabs().size(), 2u);
+  tabstrip.MoveWebContentsAt(3, 1, false);
+  EXPECT_FALSE(tabstrip.GetSplitData(split_tab_id));
 
   tabstrip.CloseAllTabs();
   EXPECT_TRUE(tabstrip.empty());
