@@ -637,7 +637,14 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTestBase,
   EXPECT_EQ(profile->GetPath(), profile_path);
 }
 
-IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, EphemeralProfile) {
+// Test is flaky on macOS. <https://crbug.com/397731710>
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_EphemeralProfile DISABLED_EphemeralProfile
+#else
+#define MAYBE_EphemeralProfile EphemeralProfile
+#endif
+
+IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, MAYBE_EphemeralProfile) {
   // If multiprofile mode is not enabled, you can't switch between profiles.
   if (!profiles::IsMultipleProfilesEnabled())
     return;
