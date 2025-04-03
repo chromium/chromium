@@ -112,6 +112,18 @@ JNI_TabWebContentsDelegateAndroidImpl_CreateJavaRect(JNIEnv* env,
           static_cast<int>(rect.right()), static_cast<int>(rect.bottom())));
 }
 
+ScopedJavaLocalRef<jobject>
+JNI_TabWebContentsDelegateAndroidImpl_CreateJavaWindowFeatures(
+    JNIEnv* env,
+    const blink::mojom::WindowFeatures& window_features) {
+  return ScopedJavaLocalRef<jobject>(
+      Java_TabWebContentsDelegateAndroidImpl_createWindowFeatures(
+          env, window_features.bounds.x(), window_features.bounds.y(),
+          window_features.bounds.width(), window_features.bounds.height(),
+          window_features.has_x, window_features.has_y,
+          window_features.has_width, window_features.has_height));
+}
+
 void ShowFramebustBlockMessageInternal(content::WebContents* web_contents,
                                        const GURL& url) {
   auto intervention_outcome =
@@ -366,10 +378,13 @@ WebContents* TabWebContentsDelegateAndroid::AddNewContents(
     ScopedJavaLocalRef<jobject> jnew_contents;
     if (new_contents)
       jnew_contents = new_contents->GetJavaWebContents();
+    ScopedJavaLocalRef<jobject> jwindow_features =
+        JNI_TabWebContentsDelegateAndroidImpl_CreateJavaWindowFeatures(
+            env, window_features);
 
     handled = Java_TabWebContentsDelegateAndroidImpl_addNewContents(
         env, obj, jsource, jnew_contents, static_cast<jint>(disposition),
-        nullptr, user_gesture);
+        jwindow_features, user_gesture);
   }
 
   if (was_blocked)

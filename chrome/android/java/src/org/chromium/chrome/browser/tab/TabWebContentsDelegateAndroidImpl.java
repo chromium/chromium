@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditorJni;
 import org.chromium.chrome.browser.usb.UsbNotificationManager;
+import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
@@ -84,6 +85,23 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     }
 
     @CalledByNative
+    private static WindowFeatures createWindowFeatures(
+            int left,
+            int top,
+            int width,
+            int height,
+            boolean hasLeft,
+            boolean hasTop,
+            boolean hasWidth,
+            boolean hasHeight) {
+        Integer nullableLeft = hasLeft ? left : null;
+        Integer nullableTop = hasTop ? top : null;
+        Integer nullableWidth = hasWidth ? width : null;
+        Integer nullableHeight = hasHeight ? height : null;
+        return new WindowFeatures(nullableLeft, nullableTop, nullableWidth, nullableHeight);
+    }
+
+    @CalledByNative
     private static FindNotificationDetails createFindNotificationDetails(
             int numberOfMatches,
             Rect rendererSelectionRect,
@@ -122,10 +140,10 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
             WebContents sourceWebContents,
             WebContents webContents,
             int disposition,
-            Rect initialPosition,
+            WindowFeatures windowFeatures,
             boolean userGesture) {
         return mDelegate.addNewContents(
-                sourceWebContents, webContents, disposition, initialPosition, userGesture);
+                sourceWebContents, webContents, disposition, windowFeatures, userGesture);
     }
 
     @CalledByNative

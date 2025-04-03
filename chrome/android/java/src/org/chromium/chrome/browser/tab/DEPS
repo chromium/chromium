@@ -54,6 +54,7 @@ include_rules = [
   "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupModelFilter.java",
   "+chrome/browser/ui/messages/android/java/src/org/chromium/chrome/browser/ui/messages/snackbar/SnackbarManager.java",
   "+chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/TabObscuringHandler.java",
+  "+chrome/browser/util/android/java/src/org/chromium/chrome/browser/util/WindowFeatures.java",
   "+chrome/browser/feature_engagement/java/src/org/chromium/chrome/browser/feature_engagement/TrackerFactory.java",
   "+chrome/browser/flags",
   "+chrome/browser/preferences",
