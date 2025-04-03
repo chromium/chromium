@@ -16,6 +16,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -172,6 +173,23 @@ void SetPrintableArea(PrintSettings* settings,
   }
 }
 
+std::string PrintScalingTypeToIPPString(mojom::PrintScalingType print_scaling) {
+  switch (print_scaling) {
+    case mojom::PrintScalingType::kAuto:
+      return "auto";
+    case mojom::PrintScalingType::kAutoFit:
+      return "auto-fit";
+    case mojom::PrintScalingType::kFill:
+      return "fill";
+    case mojom::PrintScalingType::kFit:
+      return "fit";
+    case mojom::PrintScalingType::kNone:
+      return "none";
+    default:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 ScopedIppPtr SettingsToIPPOptions(const PrintSettings& settings,
@@ -242,6 +260,14 @@ ScopedIppPtr SettingsToIPPOptions(const PrintSettings& settings,
   if (settings.dpi_horizontal() > 0 && settings.dpi_vertical() > 0) {
     ippAddResolution(options, IPP_TAG_JOB, kIppResolution, IPP_RES_PER_INCH,
                      settings.dpi_horizontal(), settings.dpi_vertical());
+  }
+
+  // print scaling
+  if (settings.print_scaling() !=
+      mojom::PrintScalingType::kUnknownPrintScalingType) {
+    ippAddString(options, IPP_TAG_JOB, IPP_TAG_KEYWORD, kIppPrintScaling,
+                 nullptr,
+                 PrintScalingTypeToIPPString(settings.print_scaling()).c_str());
   }
 
   std::map<std::string, std::vector<int>> multival;

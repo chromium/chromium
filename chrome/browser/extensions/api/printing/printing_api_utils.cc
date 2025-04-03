@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/json/json_reader.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/printer_configuration.h"
@@ -23,6 +24,7 @@
 #include "printing/backend/print_backend.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
+#include "printing/printing_features.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace extensions {
@@ -272,6 +274,34 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
   if (vendor_items.LoadFrom(description)) {
     for (const auto& item : vendor_items) {
       settings->advanced_settings().emplace(item.id, item.value);
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(
+          printing::features::kApiPrintingMarginsAndScale)) {
+    // This item is optional - don't fail if it doesn't exist.
+    cloud_devices::printer::FitToPageTicketItem fit_to_page_ticket;
+    if (fit_to_page_ticket.LoadFrom(description)) {
+      switch (fit_to_page_ticket.value()) {
+        case cloud_devices::printer::FitToPageType::AUTO:
+          settings->set_print_scaling(printing::mojom::PrintScalingType::kAuto);
+          break;
+        case cloud_devices::printer::FitToPageType::AUTO_FIT:
+          settings->set_print_scaling(
+              printing::mojom::PrintScalingType::kAutoFit);
+          break;
+        case cloud_devices::printer::FitToPageType::FILL:
+          settings->set_print_scaling(printing::mojom::PrintScalingType::kFill);
+          break;
+        case cloud_devices::printer::FitToPageType::FIT:
+          settings->set_print_scaling(printing::mojom::PrintScalingType::kFit);
+          break;
+        case cloud_devices::printer::FitToPageType::NONE:
+          settings->set_print_scaling(printing::mojom::PrintScalingType::kNone);
+          break;
+        default:
+          NOTREACHED();
+      }
     }
   }
 

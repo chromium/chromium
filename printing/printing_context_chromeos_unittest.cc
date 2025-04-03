@@ -388,6 +388,31 @@ TEST_F(PrintingContextTest, SettingsToIPPOptionsClientInfoEmpty) {
   EXPECT_FALSE(HasAttribute(kIppClientInfo));
 }
 
+TEST_F(PrintingContextTest, SettingsToIPPOptionsPrintScaling) {
+  // Define test cases for print scaling
+  struct PrintScalingTestCase {
+    mojom::PrintScalingType scaling_type;
+    const char* expected_value;
+  } constexpr kTestCases[] = {
+      {mojom::PrintScalingType::kUnknownPrintScalingType, nullptr},
+      {mojom::PrintScalingType::kAuto, "auto"},
+      {mojom::PrintScalingType::kAutoFit, "auto-fit"},
+      {mojom::PrintScalingType::kFill, "fill"},
+      {mojom::PrintScalingType::kFit, "fit"},
+      {mojom::PrintScalingType::kNone, "none"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    settings_.set_print_scaling(test_case.scaling_type);
+    if (test_case.scaling_type ==
+        mojom::PrintScalingType::kUnknownPrintScalingType) {
+      EXPECT_FALSE(HasAttribute(kIppPrintScaling));
+    } else {
+      TestStringOptionValue(kIppPrintScaling, test_case.expected_value);
+    }
+  }
+}
+
 }  // namespace
 
 }  // namespace printing
