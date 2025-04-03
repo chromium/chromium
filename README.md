@@ -5,8 +5,21 @@ This repository is a chromium fork that has been adapted to use the record/repla
 
 Only one build configuration is currently supported.
 
-1. Install chromium tree and `depot_tools` per https://www.chromium.org/developers/how-tos/get-the-code
+1. Install `depot_tools` and fetch Chromium per https://www.chromium.org/developers/how-tos/get-the-code
    * Warning: The `--no-history` flag is currently untested. Try it if you don't think you won't need to deal with rebase in the future.
+   * NOTE: You might be able to skip fetching downstream chromium by creating the `$REPLAY_DIR/chromium/.gclient` file manually and copying the contents into it (NOTE: This is not in the `src` folder!):
+     ```
+     solutions = [
+     {
+        "name": "src",
+        "url": "https://chromium.googlesource.com/chromium/src.git",
+        "managed": False,
+        "custom_deps": {},
+        "custom_vars": {},
+     },
+     ]
+     ```
+     * After that, you might still need to `git clone` our repo into `$REPLAY_DIR/chromium/src` before it can do anything.
 2. Change to and pull our (instead of the original) origin for chromium.
    * NOTE: The `gclient sync` here updates all subrepositories to the correct point, including both repositories we've modified and ones we haven't.  See "Setting dependency revisions" below for more.
    * NOTE: After `git pull`, you might see "You are not currently on a branch. Please specify which branch you want to merge with.". In this case, `git switch master` will ignore all local changes, and instead tracks and switches to the remote `master` on the current branch ([more info here](https://stackoverflow.com/a/9537923)).
