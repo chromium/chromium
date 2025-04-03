@@ -39,18 +39,8 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult) {
 using SigninCoordinatorCompletionCallback =
     void (^)(SigninCoordinatorResult result, id<SystemIdentity> identity);
 
-// Name of accessibility identifier for the skip sign-in button.
-extern NSString* const kSkipSigninAccessibilityIdentifier;
-// Name of accessibility identifier for the add account button in the sign-in
-// flow.
-extern NSString* const kAddAccountAccessibilityIdentifier;
-// Name of accessibility identifier for the confirmation "Yes I'm In" sign-in
-// button.
-extern NSString* const kConfirmationAccessibilityIdentifier;
 // Name of the accessibility identifier for the History Sync view.
 extern NSString* const kHistorySyncViewAccessibilityIdentifier;
-// Name of accessibility identifier for the more button in the sign-in flow.
-extern NSString* const kMoreAccessibilityIdentifier;
 // Name of accessibility identifier for the web sign-in consistency sheet.
 extern NSString* const kWebSigninAccessibilityIdentifier;
 // Name of accessibility identifier for the primary button that signs in

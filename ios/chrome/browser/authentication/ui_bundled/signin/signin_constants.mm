@@ -4,15 +4,8 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 
-NSString* const kSkipSigninAccessibilityIdentifier =
-    @"SkipSigninAccessibilityIdentifier";
-NSString* const kAddAccountAccessibilityIdentifier =
-    @"AddAccountAccessibilityIdentifier";
-NSString* const kConfirmationAccessibilityIdentifier =
-    @"ConfirmationAccessibilityIdentifier";
 NSString* const kHistorySyncViewAccessibilityIdentifier =
     @"HistorySyncViewAccessibilityIdentifier";
-NSString* const kMoreAccessibilityIdentifier = @"MoreAccessibilityIdentifier";
 NSString* const kWebSigninAccessibilityIdentifier =
     @"WebSigninAccessibilityIdentifier";
 NSString* const kWebSigninPrimaryButtonAccessibilityIdentifier =
