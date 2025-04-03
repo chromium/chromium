@@ -533,6 +533,21 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
           mojom::ScrollToErrorReason::kNoMatchingDocument));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, TextFocusedAfterScroll) {
+  RunTestSequence(
+      InstrumentTab(kActiveTabId),
+      NavigateWebContents(
+          kActiveTabId,
+          embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
+      OpenGlicWindow(GlicWindowMode::kDetached),
+      ExecuteJs(kActiveTabId,
+                "() => { document.getElementById('text').tabIndex = 0; }"),
+      ScrollTo(ExactTextSelector("Some text")),
+      WaitForJsResult(kActiveTabId, "() => did_scroll"),
+      CheckJsResult(kActiveTabId, "() => { return document.activeElement.id; }",
+                    ::testing::Eq("text")));
+}
+
 class GlicAnnotationManagerWithScrollToDisabledUiTest
     : public test::InteractiveGlicTest {
  public:
