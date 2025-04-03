@@ -238,16 +238,6 @@ GURL AffiliationServiceImpl::GetChangePasswordURL(const GURL& url) const {
   return GURL();
 }
 
-void AffiliationServiceImpl::OnFetchSucceeded(
-    AffiliationFetcherInterface* fetcher,
-    std::unique_ptr<AffiliationFetcherInterface::ParsedFetchResponse> result) {}
-
-void AffiliationServiceImpl::OnFetchFailed(
-    AffiliationFetcherInterface* fetcher) {}
-
-void AffiliationServiceImpl::OnMalformedResponse(
-    AffiliationFetcherInterface* fetcher) {}
-
 void AffiliationServiceImpl::OnFetchFinished(
     const FetchInfo& fetch_info,
     AffiliationFetcherInterface::FetchResult fetch_result) {
