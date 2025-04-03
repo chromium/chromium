@@ -7,7 +7,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
 #import "components/omnibox/browser/autocomplete_match_test_util.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_match_formatter.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion_group_impl.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_pedal.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_match_preview_delegate.h"

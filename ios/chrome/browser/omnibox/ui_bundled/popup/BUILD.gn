@@ -185,8 +185,6 @@ source_set("popup_icon") {
 
 source_set("popup_internal") {
   sources = [
-    "autocomplete_match_formatter.h",
-    "autocomplete_match_formatter.mm",
     "autocomplete_suggestion_group_impl.h",
     "autocomplete_suggestion_group_impl.mm",
     "omnibox_icon_formatter.h",

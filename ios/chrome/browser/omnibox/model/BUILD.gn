@@ -7,6 +7,7 @@
 # TODO(crbug.com/394567614): Remove this target once model files have been moved.
 source_set("ui_bundled_interface") {
   sources = [
+    "autocomplete_match_formatter.h",
     "autocomplete_result_wrapper.h",
     "autocomplete_result_wrapper_delegate.h",
     "omnibox_autocomplete_controller.h",
@@ -19,12 +20,14 @@ source_set("ui_bundled_interface") {
   ]
   deps = [
     "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_ui_protocols",
     "//ui/base:types",
   ]
 }
 
 source_set("model") {
   sources = [
+    "autocomplete_match_formatter.mm",
     "autocomplete_result_wrapper.mm",
     "omnibox_autocomplete_controller.mm",
     "omnibox_controller.mm",
@@ -38,16 +41,22 @@ source_set("model") {
     "//components/omnibox/browser",
     "//components/open_from_clipboard",
     "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled:model_interface",
+    "//ios/chrome/browser/omnibox/ui_bundled:omnibox_util",
     "//ios/chrome/browser/omnibox/ui_bundled/popup",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_internal",
+    "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_swift",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_ui_protocols",
     "//ios/chrome/browser/omnibox/ui_bundled/popup/row/actions",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common:string_conversions",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
     "//ui/base:types",
   ]
