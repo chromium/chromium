@@ -769,6 +769,9 @@ if (is_android) {
       "digital_identity_provider.h",
     ]
   }
+  java_cpp_enum("transfer_input_to_viz_result_enum") {
+    sources = [ "android/transfer_input_to_viz_result.h" ]
+  }
 }
 
 proto_library("proto") {

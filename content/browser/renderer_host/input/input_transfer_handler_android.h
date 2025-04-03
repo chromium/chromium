@@ -9,8 +9,8 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "content/browser/renderer_host/input/transfer_input_to_viz_result.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/android/transfer_input_to_viz_result.h"
 #include "content/public/browser/render_widget_host.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/events/android/motion_event_android.h"
