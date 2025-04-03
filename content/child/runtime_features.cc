@@ -402,6 +402,9 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(webnn::mojom::features::
                        kExperimentalWebMachineLearningNeuralNetwork),
            kSetOnlyIfOverridden},
+#if BUILDFLAG(IS_ANDROID)
+          {"WebAppLaunchQueue", raw_ref(features::kAndroidWebAppLaunchHandler)},
+#endif
           {"WebAuthenticationNewBfCacheHandlingBlink",
            raw_ref(device::kWebAuthnNewBfCacheHandling)}};
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {

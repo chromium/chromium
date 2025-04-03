@@ -214,7 +214,6 @@ BASE_DECLARE_FEATURE(kUmaBackgroundSessions);
 BASE_DECLARE_FEATURE(kUpdateCompositorForSurfaceControl);
 BASE_DECLARE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid);
 BASE_DECLARE_FEATURE(kWebOtpCrossDeviceSimpleString);
-BASE_DECLARE_FEATURE(kAndroidWebAppLaunchHandler);
 BASE_DECLARE_FEATURE(kGridTabSwitcherUpdate);
 
 // For FeatureParam, Alphabetical:
