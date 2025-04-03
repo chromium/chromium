@@ -901,6 +901,10 @@ AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
   match.enterprise_search_aggregator_type = suggestion_type;
   match.description = AutocompleteMatch::SanitizeString(description);
   match.contents = AutocompleteMatch::SanitizeString(contents);
+  if (!is_navigation) {
+    match.search_terms_args =
+        std::make_unique<TemplateURLRef::SearchTermsArgs>(match.contents);
+  }
 
   // `NAVSUGGEST` is displayed "<description> - <contents>" and
   // `SEARCH_SUGGEST` is displayed "<contents> - <description>".
