@@ -1596,6 +1596,10 @@ void BookmarkBridge::BookmarkNodeChanged(const BookmarkNode* node) {
       CreateJavaBookmark(node));
 }
 
+void BookmarkBridge::BookmarkNodeFaviconChanged(const BookmarkNode* node) {
+  BookmarkNodeChanged(node);
+}
+
 void BookmarkBridge::BookmarkNodeChildrenReordered(const BookmarkNode* node) {
   if (!IsLoaded() || !java_bookmark_model_ ||
       suppress_observer_notifications_) {
