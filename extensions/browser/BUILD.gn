@@ -554,6 +554,7 @@ source_set("browser_sources") {
     "//content/public/browser:browser",
     "//content/public/common",
     "//extensions:extensions_browser_resources",
+    "//extensions/browser/api/messaging:native_messaging",
     "//extensions/browser/api/storage:settings_namespace",
     "//extensions/browser/api/storage:settings_observer",
     "//extensions/browser/api/system_display:display_info_provider",

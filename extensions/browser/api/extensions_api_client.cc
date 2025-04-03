@@ -4,8 +4,10 @@
 
 #include "extensions/browser/api/extensions_api_client.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "extensions/browser/api/device_permissions_prompt.h"
+#include "extensions/browser/api/messaging/native_message_host.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
@@ -192,6 +194,14 @@ void ExtensionsAPIClient::SaveImageDataToClipboard(
 
 AutomationInternalApiDelegate*
 ExtensionsAPIClient::GetAutomationInternalApiDelegate() {
+  return nullptr;
+}
+
+std::unique_ptr<NativeMessagePortDispatcher>
+ExtensionsAPIClient::CreateNativeMessagePortDispatcher(
+    std::unique_ptr<NativeMessageHost> host,
+    base::WeakPtr<NativeMessagePort> port,
+    scoped_refptr<base::SingleThreadTaskRunner> message_service_task_runner) {
   return nullptr;
 }
 

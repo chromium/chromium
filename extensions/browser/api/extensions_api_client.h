@@ -25,6 +25,10 @@
 
 class GURL;
 
+namespace base {
+class SingleThreadTaskRunner;
+}
+
 namespace content {
 class BrowserContext;
 class WebContents;
@@ -55,6 +59,9 @@ class MessagingDelegate;
 class MetricsPrivateDelegate;
 class MimeHandlerViewGuest;
 class MimeHandlerViewGuestDelegate;
+class NativeMessageHost;
+class NativeMessagePort;
+class NativeMessagePortDispatcher;
 class NonNativeFileSystemDelegate;
 class RulesCacheDelegate;
 class SupervisedUserExtensionsDelegate;
@@ -238,6 +245,12 @@ class ExtensionsAPIClient {
   // Gets keyed service factories that are used in the other methods on this
   // class.
   virtual std::vector<KeyedServiceBaseFactory*> GetFactoryDependencies();
+
+  virtual std::unique_ptr<NativeMessagePortDispatcher>
+  CreateNativeMessagePortDispatcher(
+      std::unique_ptr<NativeMessageHost> host,
+      base::WeakPtr<NativeMessagePort> port,
+      scoped_refptr<base::SingleThreadTaskRunner> message_service_task_runner);
 
   // NOTE: If this interface gains too many methods (perhaps more than 20) it
   // should be split into one interface per API.

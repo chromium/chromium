@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/messaging/native_message_port.h"
+#include "extensions/browser/api/messaging/native_message_port.h"
 
 #include <memory>
 #include <utility>
@@ -11,8 +11,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/extensions/api/messaging/native_message_port_dispatcher.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/api/extensions_api_client.h"
+#include "extensions/browser/api/messaging/native_message_host.h"
+#include "extensions/browser/api/messaging/native_message_port_dispatcher.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
@@ -25,7 +27,7 @@ NativeMessagePort::NativeMessagePort(
     std::unique_ptr<NativeMessageHost> native_message_host)
     : MessagePort(std::move(channel_delegate), port_id),
       host_task_runner_(native_message_host->task_runner()) {
-  dispatcher_ = std::make_unique<NativeMessagePortDispatcher>(
+  dispatcher_ = ExtensionsAPIClient::Get()->CreateNativeMessagePortDispatcher(
       std::move(native_message_host), weak_factory_.GetWeakPtr(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
 }

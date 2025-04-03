@@ -10,11 +10,18 @@
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/extensions_api_client.h"
 
+namespace base {
+class SingleThreadTaskRunner;
+}
+
 namespace extensions {
 
 class ChromeAutomationInternalApiDelegate;
 class ChromeMetricsPrivateDelegate;
 class ClipboardExtensionHelper;
+class NativeMessageHost;
+class NativeMessagePort;
+class NativeMessagePortDispatcher;
 
 // Extra support for extensions APIs in Chrome.
 class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
@@ -107,6 +114,12 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
 
   AutomationInternalApiDelegate* GetAutomationInternalApiDelegate() override;
   std::vector<KeyedServiceBaseFactory*> GetFactoryDependencies() override;
+
+  std::unique_ptr<NativeMessagePortDispatcher>
+  CreateNativeMessagePortDispatcher(std::unique_ptr<NativeMessageHost> host,
+                                    base::WeakPtr<NativeMessagePort> port,
+                                    scoped_refptr<base::SingleThreadTaskRunner>
+                                        message_service_task_runner) override;
 
  private:
   std::unique_ptr<ChromeMetricsPrivateDelegate> metrics_private_delegate_;

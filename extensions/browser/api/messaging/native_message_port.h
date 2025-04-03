@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_API_MESSAGING_NATIVE_MESSAGE_PORT_H_
-#define CHROME_BROWSER_EXTENSIONS_API_MESSAGING_NATIVE_MESSAGE_PORT_H_
+#ifndef EXTENSIONS_BROWSER_API_MESSAGING_NATIVE_MESSAGE_PORT_H_
+#define EXTENSIONS_BROWSER_API_MESSAGING_NATIVE_MESSAGE_PORT_H_
 
 #include <memory>
 #include <string>
@@ -19,6 +19,7 @@ class SingleThreadTaskRunner;
 
 namespace extensions {
 class NativeMessageHost;
+class NativeMessagePortDispatcher;
 struct Message;
 struct PortId;
 
@@ -26,13 +27,6 @@ struct PortId;
 // All methods must be called on the UI Thread of the browser process.
 class NativeMessagePort : public MessagePort {
  public:
-  class Dispatcher {
-   public:
-    virtual ~Dispatcher() = default;
-
-    virtual void DispatchOnMessage(const std::string& message) = 0;
-  };
-
   NativeMessagePort(base::WeakPtr<ChannelDelegate> channel_delegate,
                     const PortId& port_id,
                     std::unique_ptr<NativeMessageHost> native_message_host);
@@ -48,11 +42,11 @@ class NativeMessagePort : public MessagePort {
  private:
   base::ThreadChecker thread_checker_;
   scoped_refptr<base::SingleThreadTaskRunner> host_task_runner_;
-  std::unique_ptr<Dispatcher> dispatcher_;
+  std::unique_ptr<NativeMessagePortDispatcher> dispatcher_;
 
   base::WeakPtrFactory<NativeMessagePort> weak_factory_{this};
 };
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_API_MESSAGING_NATIVE_MESSAGE_PORT_H_
+#endif  // EXTENSIONS_BROWSER_API_MESSAGING_NATIVE_MESSAGE_PORT_H_
