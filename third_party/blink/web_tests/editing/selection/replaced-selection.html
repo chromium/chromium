@@ -29,6 +29,7 @@ First line<br>
 <script>
 function selectStuff(x1, y1, x2, y2) {
     document.body.offsetLeft;
+    getSelection().removeAllRanges();
     if (eventSender) {
         eventSender.mouseMoveTo(x1, y1);
         eventSender.mouseDown();
@@ -40,40 +41,95 @@ function selectStuff(x1, y1, x2, y2) {
 
 const body = document.body;
 
+// The block size of the first line is 20px.
+// The block size of the second line is 100+px becase of replaced2.
+
+function assertAfterImg() {
+  // (BODY, 4) is just after the first IMG.
+  assert_equals(getSelection().focusNode, body);
+  assert_equals(getSelection().focusOffset, 4);
+}
+
+function assertBeforeImg() {
+  // (BODY, 2) is just before the first IMG.
+  assert_equals(getSelection().focusNode, body);
+  assert_equals(getSelection().focusOffset, 2);
+}
+
+test(() => {
+  body.style.writingMode = 'horizontal-tb';
+  //   0|----------------
+  //    |First line
+  //    |
+  //    |
+  //  70|----|
+  //    |    |
+  //    |   *|
+  // 120|----|Second line
+  //    0    20
+  selectStuff(15, 10, 15, 100);
+  assertAfterImg();
+
+  selectStuff(15, 10, 5, 100);
+  assertBeforeImg();
+}, 'Selection in horizontal-tb');
+
 test(() => {
   body.style.writingMode = 'vertical-lr';
   body.offsetHeight;
+  //   0 20     70
+  //  0|----------------
+  //   |F|      |
+  //   |i| *    |
+  // 20|r|------|
+  //   |s S
   selectStuff(10, 15, 30, 15);
-  // (BODY, 4) is just after the first IMG.
-  assert_equals(getSelection().focusNode, body);
-  assert_equals(4, getSelection().focusOffset);
+  assertAfterImg();
+
+  selectStuff(10, 15, 30, 5);
+  assertBeforeImg();
 }, 'Selection in vertical-lr');
 
 test(() => {
   body.style.writingMode = 'sideways-lr';
   body.offsetHeight;
+  //    |s         S
+  // 580|r   |------|
+  //    |i   | *    |
+  //    |F   |      |
+  // 600|----------------
+  //    0    70    120
   selectStuff(10, 600 - 15, 30, 600 - 15);
-  // (BODY, 4) is just after the first IMG.
-  assert_equals(getSelection().focusNode, body);
-  assert_equals(4, getSelection().focusOffset);
+  assertAfterImg();
+
+  selectStuff(10, 600 - 15, 30, 600 - 5);
+  assertBeforeImg();
 }, 'Selection in sideways-lr');
 
 test(() => {
   body.style.writingMode = 'vertical-rl';
   body.offsetHeight;
+  //   680    730   800
+  //   --------------|0
+  //    |      |    F|
+  //    |*     |    i|
+  //    |------|    r|20
+  //     S          s|
   selectStuff(790, 15, 680, 15);
-  // (BODY, 4) is just after the first IMG.
-  assert_equals(getSelection().focusNode, body);
-  assert_equals(4, getSelection().focusOffset);
+  assertAfterImg();
+
+  selectStuff(790, 15, 680, 5);
+  assertBeforeImg();
 }, 'Selection in vertical-rl');
 
 test(() => {
   body.style.writingMode = 'sideways-rl';
   body.offsetHeight;
   selectStuff(790, 15, 680, 15);
-  // (BODY, 4) is just after the first IMG.
-  assert_equals(getSelection().focusNode, body);
-  assert_equals(4, getSelection().focusOffset);
+  assertAfterImg();
+
+  selectStuff(790, 15, 680, 5);
+  assertBeforeImg();
 }, 'Selection in sideways-rl');
 </script>
 </body>
