@@ -226,7 +226,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
                 TabModelJniBridge caller,
                 @JniType("Profile*") Profile profile,
                 @ActivityType int activityType,
-                boolean trackInNativeModelList);
+                boolean isArchivedTabModel);
 
         void broadcastSessionRestoreComplete(
                 long nativeTabModelJniBridge, TabModelJniBridge caller);
