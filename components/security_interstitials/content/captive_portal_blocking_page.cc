@@ -181,8 +181,6 @@ void CaptivePortalBlockingPage::PopulateInterstitialStrings(
   load_time_data.Set("closeDetails", "");
   load_time_data.Set("explanationParagraph", "");
   load_time_data.Set("finalParagraph", "");
-  load_time_data.Set("recurrentErrorParagraph", "");
-  load_time_data.Set("show_recurrent_error_paragraph", false);
   load_time_data.Set(security_interstitials::kDisplayCheckBox, false);
 
   PopulateEnhancedProtectionMessage(load_time_data);

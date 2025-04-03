@@ -237,22 +237,6 @@ input[type=checkbox]:checked ~ .checkbox::before {
   opacity: 1;
 }
 
-#recurrent-error-message {
-  background: #ededed;
-  border-radius: 4px;
-  margin-bottom: 16px;
-  margin-top: 12px;
-  padding: 12px 16px;
-}
-
-.showing-recurrent-error-message #extended-reporting-opt-in {
-  margin-top: 16px;
-}
-
-.showing-recurrent-error-message #enhanced-protection-message {
-  margin-top: 16px;
-}
-
 @media (max-width: 700px) {
   .interstitial-wrapper {
     padding: 0 10%;
