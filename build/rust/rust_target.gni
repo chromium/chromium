@@ -339,6 +339,10 @@ template("rust_target") {
       _rust_deps += [ "//build/rust/std" ]
     }
 
+    if (!defined(invoker.no_allocator_crate) || !invoker.no_allocator_crate) {
+      _rust_deps += [ "//build/rust/std:allocator" ]
+    }
+
     if (_build_unit_tests) {
       _unit_test_target = "${_target_name}_unittests"
       if (defined(invoker.unit_test_target)) {
