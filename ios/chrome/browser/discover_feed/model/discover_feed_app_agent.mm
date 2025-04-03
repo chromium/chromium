@@ -142,10 +142,7 @@ class DiscoverFeedProfileHelperList {
 
  private:
   // Compacts the list of helpers, removing all nil weak pointers.
-  void Compact() {
-    helpers_.erase(std::remove(helpers_.begin(), helpers_.end(), nil),
-                   helpers_.end());
-  }
+  void Compact() { std::erase(helpers_, nil); }
 
   std::vector<__weak id<DiscoverFeedProfileHelper>> helpers_;
 };

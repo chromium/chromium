@@ -212,9 +212,7 @@ void SpeechRecognitionServiceTest::OnSpeechRecognitionRecognitionEvent(
   std::string transcription = result.transcription;
   // The language pack used by the MacOS builder is newer and has punctuation
   // enabled whereas the one used by the Linux builder does not.
-  transcription.erase(
-      std::remove(transcription.begin(), transcription.end(), ','),
-      transcription.end());
+  std::erase(transcription, ',');
   recognition_results_.push_back(std::move(transcription));
   std::move(reply).Run(is_client_requesting_speech_recognition_);
 }

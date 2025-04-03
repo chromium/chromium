@@ -531,8 +531,7 @@ void TabSearchPageHandler::RemoveStaleTab(tabs::TabInterface* tab) {
         inactive_tab_subscriptions_map_.end());
 
   // Remove the TabInterface from stale_tabs_
-  stale_tabs_.erase(std::remove(stale_tabs_.begin(), stale_tabs_.end(), tab),
-                    stale_tabs_.end());
+  std::erase(stale_tabs_, tab);
 
   // Unregister the subscriptions for this TabInterface
   inactive_tab_subscriptions_map_.erase(tab);

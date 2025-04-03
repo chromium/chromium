@@ -46,7 +46,7 @@ AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
   if (!RE2::FullMatch(amount, re, &dollar, nullptr, nullptr, &cent)) {
     return std::nullopt;
   }
-  dollar.erase(std::remove(dollar.begin(), dollar.end(), ','), dollar.end());
+  std::erase(dollar, ',');
 
   uint64_t dollar_value = 0;
   uint64_t cent_value = 0;

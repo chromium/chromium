@@ -280,9 +280,7 @@ void URLDownloader::DownloadOfflineURL(const GURL& url) {
 }
 
 void URLDownloader::CancelDownloadOfflineURL(const GURL& url) {
-  tasks_.erase(
-      std::remove(tasks_.begin(), tasks_.end(), std::make_pair(DOWNLOAD, url)),
-      tasks_.end());
+  base::Erase(tasks_, std::make_pair(DOWNLOAD, url));
 }
 
 void URLDownloader::DownloadPDFOrHTMLCompletionHandler(

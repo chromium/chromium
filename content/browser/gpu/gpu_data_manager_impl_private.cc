@@ -1203,10 +1203,7 @@ void GpuDataManagerImplPrivate::UpdateGpuFeatureInfo(
   if (HardwareAccelerationEnabled() &&
       gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_GL] !=
           gpu::GpuFeatureStatus::kGpuFeatureStatusEnabled) {
-    fallback_modes_.erase(
-        std::remove(fallback_modes_.begin(), fallback_modes_.end(),
-                    gpu::GpuMode::HARDWARE_GL),
-        fallback_modes_.end());
+    std::erase(fallback_modes_, gpu::GpuMode::HARDWARE_GL);
   }
 
   // If Vulkan or Graphite initialization fails, the GPU process can silently

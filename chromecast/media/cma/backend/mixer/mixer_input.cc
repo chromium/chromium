@@ -214,10 +214,7 @@ void MixerInput::RemoveAudioOutputRedirector(
                   << ")";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(redirector);
-  audio_output_redirectors_.erase(
-      std::remove(audio_output_redirectors_.begin(),
-                  audio_output_redirectors_.end(), redirector),
-      audio_output_redirectors_.end());
+  std::erase(audio_output_redirectors_, redirector);
 }
 
 bool MixerInput::Render(

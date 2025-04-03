@@ -91,8 +91,7 @@ bool ParseUuid(const std::string& str, bluetooth_v2_shlib::Uuid* uuid) {
   }
 
   std::string no_dashes = str;
-  no_dashes.erase(std::remove(no_dashes.begin(), no_dashes.end(), '-'),
-                  no_dashes.end());
+  std::erase(no_dashes, '-');
 
   if (no_dashes.size() != kUuidHexNumChars) {
     return false;

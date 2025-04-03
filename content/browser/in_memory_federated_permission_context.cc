@@ -299,9 +299,7 @@ void InMemoryFederatedPermissionContext::RegisterIdP(const ::GURL& configURL) {
 
 void InMemoryFederatedPermissionContext::UnregisterIdP(
     const ::GURL& configURL) {
-  idp_registry_.erase(
-      std::remove(idp_registry_.begin(), idp_registry_.end(), configURL),
-      idp_registry_.end());
+  std::erase(idp_registry_, configURL);
 }
 
 std::vector<GURL> InMemoryFederatedPermissionContext::GetRegisteredIdPs() {
