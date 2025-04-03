@@ -1285,6 +1285,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/night_mode/NightModeUtilsTest.java",
       "src/org/chromium/chrome/browser/payments/AddressEditorTest.java",
       "src/org/chromium/chrome/browser/payments/ContactEditorTest.java",
+      "src/org/chromium/chrome/browser/pdf/PdfPageIphControllerUnitTest.java",
       "src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManagerImplTest.java",
       "src/org/chromium/chrome/browser/quickactionsearchwidget/QuickActionSearchWidgetProviderTest.java",
       "src/org/chromium/chrome/browser/read_later/ReadLaterIphControllerUnitTest.java",
