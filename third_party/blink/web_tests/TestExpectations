@@ -1045,7 +1045,6 @@ crbug.com/1445990 external/wpt/css/css-ui/outline-color-004.html [ Failure ]
 
 crbug.com/807497 external/wpt/css/css-flexbox/anonymous-flex-item-005.html [ Failure ]
 crbug.com/1311206 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-038.html [ Failure ]
-crbug.com/1306037 external/wpt/css/css-flexbox/abspos/dynamic-align-self-001.html [ Failure ]
 
 # Needs "new" flex container intrinsic size algorithm to work in the block direction.
 crbug.com/240765 external/wpt/css/css-flexbox/flex-container-max-content-001.html [ Failure ]
