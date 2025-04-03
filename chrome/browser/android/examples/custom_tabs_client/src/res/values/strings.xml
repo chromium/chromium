@@ -58,6 +58,10 @@
     <string name="theme_button_system">System</string>
     <string name="theme_button_light">Light</string>
     <string name="theme_button_dark">Dark</string>
+    <string name="share_state_text">Share button options</string>
+    <string name="share_state_default_text">Default</string>
+    <string name="share_state_on_text">On</string>
+    <string name="share_state_off_text">Off</string>
     <string name="cct_type">CCT Type:</string>
     <string name="background_interact_text">Interact with Background App</string>
     <string name="side_sheet_max_button_text">Add Max Button(SideSheet only)</string>
@@ -72,6 +76,8 @@
     <string name="share_identity_text">Share Identity</string>
     <string name="open_in_browser_text">Add open in browser button in toolbar</string>
     <string name="show_action_button_text">Show the action button</string>
+    <string name="show_close_button_text">Show the close button</string>
+    <string name="ephemeral_cct_text">Enable Ephemeral Browsing</string>
     <string name="custom_scheme">Custom scheme:</string>
     <string name="auth_tab_result">Received auth result.</string>
     <string name="auth_tab_canceled">AuthTab canceled</string>
