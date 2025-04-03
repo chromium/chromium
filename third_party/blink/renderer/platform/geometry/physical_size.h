@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GEOMETRY_PHYSICAL_SIZE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GEOMETRY_PHYSICAL_SIZE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_PHYSICAL_SIZE_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_PHYSICAL_SIZE_H_
 
-#include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/text/writing_mode.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -20,13 +18,11 @@ namespace blink {
 
 enum AspectRatioFit { kAspectRatioFitShrink, kAspectRatioFitGrow };
 
-struct LogicalSize;
-
 // PhysicalSize is the size of a rect (typically a fragment) in the physical
 // coordinate system.
 // For more information about physical and logical coordinate systems, see:
 // https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/layout/README.md#coordinate-spaces
-struct CORE_EXPORT PhysicalSize {
+struct PLATFORM_EXPORT PhysicalSize {
   constexpr PhysicalSize() = default;
   constexpr PhysicalSize(LayoutUnit width, LayoutUnit height)
       : width(width), height(height) {}
@@ -133,24 +129,13 @@ struct CORE_EXPORT PhysicalSize {
   WTF::String ToString() const;
 };
 
-CORE_EXPORT std::ostream& operator<<(std::ostream&, const PhysicalSize&);
-
-inline LogicalSize ToLogicalSize(const PhysicalSize& size, WritingMode mode) {
-  return IsHorizontalWritingMode(mode) ? LogicalSize(size.width, size.height)
-                                       : LogicalSize(size.height, size.width);
-}
-
-inline PhysicalSize ToPhysicalSize(const LogicalSize& other, WritingMode mode) {
-  return IsHorizontalWritingMode(mode)
-             ? PhysicalSize(other.inline_size, other.block_size)
-             : PhysicalSize(other.block_size, other.inline_size);
-}
+PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const PhysicalSize&);
 
 // Convert an aspect ratio represented as a gfx::SizeF (width:height) to the
 // closest PhysicalSize representation.
-PhysicalSize LayoutRatioFromSizeF(gfx::SizeF ratio);
+PLATFORM_EXPORT PhysicalSize LayoutRatioFromSizeF(gfx::SizeF ratio);
 
-// TODO(crbug.com/962299): These functions should upgraded to force correct
+// TODO(crbug.com/41458361): These functions should upgraded to force correct
 // pixel snapping in a type-safe way.
 inline gfx::Size ToRoundedSize(const PhysicalSize& s) {
   return {s.width.Round(), s.height.Round()};
@@ -164,4 +149,4 @@ inline gfx::Size ToCeiledSize(const PhysicalSize& s) {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GEOMETRY_PHYSICAL_SIZE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_PHYSICAL_SIZE_H_

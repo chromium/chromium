@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BOX_BACKGROUND_PAINT_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BOX_BACKGROUND_PAINT_CONTEXT_H_
 
+#include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
