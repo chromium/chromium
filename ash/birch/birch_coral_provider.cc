@@ -422,7 +422,8 @@ void BirchCoralProvider::RemoveObserver(Observer* observer) {
 }
 
 bool BirchCoralProvider::IsCoralServiceAvailable() {
-  return coral_util::IsCoralAllowedByPolicy(GetPrefService()) &&
+  return !Shell::Get()->session_controller()->IsUserPublicAccount() &&
+         coral_util::IsCoralAllowedByPolicy(GetPrefService()) &&
          GetAndCheckLanguageAvailability() && GetGenAIAvailability();
 }
 
