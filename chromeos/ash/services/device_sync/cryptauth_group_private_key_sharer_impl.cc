@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/services/device_sync/cryptauth_group_private_key_sharer_impl.h"
 
 #include <utility>
@@ -14,13 +9,14 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/byte_conversions.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/device_sync/async_execution_time_metrics_logger.h"
 #include "chromeos/ash/services/device_sync/cryptauth_client.h"
 #include "chromeos/ash/services/device_sync/cryptauth_ecies_encryptor_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key.h"
 #include "chromeos/ash/services/device_sync/cryptauth_task_metrics_logger.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 
 namespace ash {
 
@@ -67,15 +63,9 @@ ShareGroupPrivateKeyNetworkRequestErrorToResultCode(NetworkRequestError error) {
 // The first 8 bytes of the SHA-256 hash of |str|, converted into a 64-bit
 // signed integer in little-endian order. This format is chosen to be consistent
 // with the CryptAuth backend implementation.
-int64_t CalculateInt64Sha256Hash(const std::string& str) {
-  uint8_t hash_bytes[sizeof(int64_t)];
-  crypto::SHA256HashString(str, hash_bytes, sizeof(hash_bytes));
-
-  int64_t hash_int64 = 0;
-  for (size_t i = 0; i < 8u; ++i)
-    hash_int64 |= static_cast<int64_t>(hash_bytes[i]) << (i * 8);
-
-  return hash_int64;
+int64_t CalculateInt64Sha256Hash(std::string_view str) {
+  auto hash = crypto::hash::Sha256(base::as_byte_span(str));
+  return base::I64FromLittleEndian(base::span<const uint8_t>(hash).first<8u>());
 }
 
 void RecordGroupPrivateKeyEncryptionMetrics(

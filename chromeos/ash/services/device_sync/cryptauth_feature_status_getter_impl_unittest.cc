@@ -168,7 +168,7 @@ class DeviceSyncCryptAuthFeatureStatusGetterImplTest
                   batch_get_feature_statuses_request_->device_ids().begin(),
                   batch_get_feature_statuses_request_->device_ids().end()));
     EXPECT_EQ(GetAllCryptAuthFeatureTypeStrings(),
-              base::flat_set<std::string>(
+              base::flat_set<std::string_view>(
                   batch_get_feature_statuses_request_->feature_types().begin(),
                   batch_get_feature_statuses_request_->feature_types().end()));
   }
