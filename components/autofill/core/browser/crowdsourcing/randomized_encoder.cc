@@ -149,21 +149,21 @@ std::string GetEncodingSeed(PrefService* pref_service) {
 }  // namespace
 
 // static
-std::unique_ptr<RandomizedEncoder> RandomizedEncoder::Create(
+std::optional<RandomizedEncoder> RandomizedEncoder::Create(
     PrefService* pref_service) {
   // Early abort if metadata uploads are not enabled.
   if (!pref_service) {
-    return nullptr;
+    return std::nullopt;
   }
 
-  // Return the randomized encoder. Note that for a given client, the seed and
-  // encoding type are constant via prefs/config.
-  const auto seed = GetEncodingSeed(pref_service);
-  const auto encoding_type = GetEncodingType(seed);
+  // For a given `pref_service`, the seed and encoding type are constant.
+  std::string seed = GetEncodingSeed(pref_service);
+  const AutofillRandomizedValue_EncodingType encoding_type =
+      GetEncodingType(seed);
   bool anonymous_url_collection_is_enabled = pref_service->GetBoolean(
       RandomizedEncoder::kUrlKeyedAnonymizedDataCollectionEnabled);
-  return std::make_unique<RandomizedEncoder>(
-      std::move(seed), encoding_type, anonymous_url_collection_is_enabled);
+  return RandomizedEncoder(std::move(seed), encoding_type,
+                           anonymous_url_collection_is_enabled);
 }
 
 RandomizedEncoder::RandomizedEncoder(
@@ -176,6 +176,10 @@ RandomizedEncoder::RandomizedEncoder(
           anonymous_url_collection_is_enabled) {
   DCHECK(encoding_info_ != nullptr);
 }
+
+RandomizedEncoder::RandomizedEncoder(RandomizedEncoder&&) = default;
+RandomizedEncoder& RandomizedEncoder::operator=(RandomizedEncoder&&) = default;
+RandomizedEncoder::~RandomizedEncoder() = default;
 
 std::string RandomizedEncoder::Encode(FormSignature form_signature,
                                       FieldSignature field_signature,

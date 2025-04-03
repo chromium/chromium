@@ -359,7 +359,7 @@ void PopulateRandomizedFieldMetadata(
 // Helper function for EncodeUploadRequest().
 void EncodeFormFieldsForUpload(
     const FormStructure& form,
-    base::optional_ref<RandomizedEncoder> encoder,
+    base::optional_ref<const RandomizedEncoder> encoder,
     const std::map<FieldGlobalId, EncodeUploadRequestOptions::Field>& fields,
     base::span<const AutofillField* const> upload_fields,
     AutofillUploadContents* upload) {
@@ -762,7 +762,7 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
   std::vector<AutofillField*> upload_fields(form.fields().size());
   std::ranges::transform(form.fields(), upload_fields.begin(),
                          &std::unique_ptr<AutofillField>::get);
-  EncodeFormFieldsForUpload(form, options.encoder.get(), options.fields,
+  EncodeFormFieldsForUpload(form, options.encoder, options.fields,
                             upload_fields, &upload);
   std::vector<AutofillUploadContents> uploads = {std::move(upload)};
 
@@ -795,7 +795,7 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
                               (*subform_begin)->renderer_form_id();
                      });
     // SAFETY: The iterators are from the same container.
-    EncodeFormFieldsForUpload(form, options.encoder.get(), options.fields,
+    EncodeFormFieldsForUpload(form, options.encoder, options.fields,
                               UNSAFE_BUFFERS({subform_begin, subform_end}),
                               &uploads.back());
     subform_begin = subform_end;

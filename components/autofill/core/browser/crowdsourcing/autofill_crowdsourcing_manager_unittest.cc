@@ -297,7 +297,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
     SetCorrectFieldHostFormSignatures(*form_structure);
   }
 
-  std::unique_ptr<RandomizedEncoder> randomized_encoder =
+  std::optional<RandomizedEncoder> randomized_encoder =
       RandomizedEncoder::Create(client().GetPrefs());
 
   auto crowdsourcing_manager =
@@ -1265,7 +1265,7 @@ TEST_P(AutofillServerCommunicationTest, Query) {
 TEST_P(AutofillServerCommunicationTest, Upload) {
   AutofillCrowdsourcingManager crowdsourcing_manager(
       &client(), version_info::Channel::UNKNOWN);
-  std::unique_ptr<RandomizedEncoder> randomized_encoder =
+  std::optional<RandomizedEncoder> randomized_encoder =
       RandomizedEncoder::Create(client().GetPrefs());
   EXPECT_EQ(GetParam() != DISABLED,
             SendUploadRequest(FormStructure(test::GetFormData(
@@ -1603,7 +1603,7 @@ TEST_P(AutofillUploadTest, RichMetadata) {
     SCOPED_TRACE(testing::Message()
                  << "submission source = " << submission_source);
     form_structure.set_submission_source(submission_source);
-    std::unique_ptr<RandomizedEncoder> randomized_encoder =
+    std::optional<RandomizedEncoder> randomized_encoder =
         RandomizedEncoder::Create(client().GetPrefs());
 
     payloads().clear();
@@ -1680,7 +1680,7 @@ TEST_P(AutofillUploadTest, Throttling) {
     SCOPED_TRACE(testing::Message()
                  << "submission source = " << submission_source);
     form_structure.set_submission_source(submission_source);
-    std::unique_ptr<RandomizedEncoder> randomized_encoder =
+    std::optional<RandomizedEncoder> randomized_encoder =
         RandomizedEncoder::Create(client().GetPrefs());
 
     // The first attempt should succeed.
@@ -1727,7 +1727,7 @@ TEST_P(AutofillUploadTest, SuccessfulSubmissionOnDisabledThrottling) {
 
   SubmissionSource submission_source = SubmissionSource::FORM_SUBMISSION;
   form_structure.set_submission_source(submission_source);
-  std::unique_ptr<RandomizedEncoder> randomized_encoder =
+  std::optional<RandomizedEncoder> randomized_encoder =
       RandomizedEncoder::Create(client().GetPrefs());
 
   base::HistogramTester histogram_tester;
@@ -1801,7 +1801,7 @@ TEST_P(AutofillUploadTest, PeriodicReset) {
                                     {.role = EMAIL_ADDRESS}}}));
   form_structure.set_submission_source(submission_source);
 
-  std::unique_ptr<RandomizedEncoder> randomized_encoder =
+  std::optional<RandomizedEncoder> randomized_encoder =
       RandomizedEncoder::Create(client().GetPrefs());
 
   base::HistogramTester histogram_tester;
@@ -1860,7 +1860,7 @@ TEST_P(AutofillUploadTest, ResetOnClearUploadHistory) {
                                     {.role = EMAIL_ADDRESS}}}));
   form_structure.set_submission_source(submission_source);
 
-  std::unique_ptr<RandomizedEncoder> randomized_encoder =
+  std::optional<RandomizedEncoder> randomized_encoder =
       RandomizedEncoder::Create(client().GetPrefs());
 
   base::HistogramTester histogram_tester;
@@ -1899,7 +1899,7 @@ TEST_P(AutofillUploadTest, ThrottleMetadataOnPasswordManagerUploads) {
 
   SubmissionSource submission_source = SubmissionSource::FORM_SUBMISSION;
   form_structure.set_submission_source(submission_source);
-  std::unique_ptr<RandomizedEncoder> randomized_encoder =
+  std::optional<RandomizedEncoder> randomized_encoder =
       RandomizedEncoder::Create(client().GetPrefs());
 
   base::HistogramTester histogram_tester;

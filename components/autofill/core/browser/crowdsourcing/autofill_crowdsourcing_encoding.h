@@ -44,7 +44,7 @@ struct EncodeUploadRequestOptions {
 
   // The randomized encoder to use to encode form metadata during upload.
   // If this is nullptr, no randomized metadata is sent.
-  std::unique_ptr<RandomizedEncoder> encoder;
+  std::optional<RandomizedEncoder> encoder;
 
   // The type of the event that was taken as an indication that the form has
   // been successfully submitted.

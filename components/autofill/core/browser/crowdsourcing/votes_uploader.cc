@@ -246,7 +246,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
              const std::u16string& last_unlocked_credit_card_cvc,
              const std::string& app_locale, bool observed_submission,
              std::unique_ptr<FormStructure> form,
-             std::unique_ptr<RandomizedEncoder> randomized_encoder,
+             std::optional<RandomizedEncoder> randomized_encoder,
              FormStructure::FormAssociations form_associations) {
             DeterminePossibleFieldTypesForUpload(profiles, credit_cards,
                                                  last_unlocked_credit_card_cvc,

@@ -275,7 +275,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
   test::FillUploadField(upload.add_field_data(), 2799270304U, 36U);
 
   EncodeUploadRequestOptions options;
-  options.encoder = std::make_unique<RandomizedEncoder>(
+  options.encoder = RandomizedEncoder(
       "seed for testing", AutofillRandomizedValue_EncodingType_ALL_BITS,
       /*anonymous_url_collection_is_enabled=*/true);
   options.available_field_types = {NAME_FIRST,
@@ -381,7 +381,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   // Without encoder.
   EncodeUploadRequestOptions options;
-  options.encoder = nullptr;
+  options.encoder = std::nullopt;
   options.available_field_types = {NAME_FIRST};
   options.observed_submission = true;
 
@@ -389,7 +389,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
               ElementsAre(SerializesSameAs(upload)));
 
   // With encoder.
-  options.encoder = std::make_unique<RandomizedEncoder>(
+  options.encoder = RandomizedEncoder(
       "seed for testing", AutofillRandomizedValue_EncodingType_ALL_BITS,
       /*anonymous_url_collection_is_enabled=*/true);
 
@@ -450,7 +450,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithFormatStrings) {
   }
 
   EncodeUploadRequestOptions options;
-  options.encoder = std::make_unique<RandomizedEncoder>(
+  options.encoder = RandomizedEncoder(
       "seed for testing", AutofillRandomizedValue_EncodingType_ALL_BITS,
       /*anonymous_url_collection_is_enabled=*/true);
   options.fields[form_structure->fields()[1]->global_id()].format_strings = {
@@ -555,7 +555,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   upload_password_field->set_generated_password_changed(true);
 
   EncodeUploadRequestOptions options;
-  options.encoder = std::make_unique<RandomizedEncoder>(
+  options.encoder = RandomizedEncoder(
       "seed for testing", AutofillRandomizedValue_EncodingType_ALL_BITS,
       /*anonymous_url_collection_is_enabled=*/true);
   options.available_field_types = {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS,
@@ -644,7 +644,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
       FieldPropertiesFlags::kHadFocus | FieldPropertiesFlags::kUserTyped);
 
   EncodeUploadRequestOptions options;
-  options.encoder = std::make_unique<RandomizedEncoder>(
+  options.encoder = RandomizedEncoder(
       "seed for testing", AutofillRandomizedValue_EncodingType_ALL_BITS,
       /*anonymous_url_collection_is_enabled=*/true);
   options.available_field_types = {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS};
@@ -703,7 +703,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   test::FillUploadField(upload.add_field_data(), 1029417091U, 9U);
 
   EncodeUploadRequestOptions options;
-  options.encoder = std::make_unique<RandomizedEncoder>(
+  options.encoder = RandomizedEncoder(
       "seed for testing", AutofillRandomizedValue_EncodingType_ALL_BITS,
       /*anonymous_url_collection_is_enabled=*/true);
   options.available_field_types = {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS};
@@ -758,7 +758,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithLabels) {
   test::FillUploadField(upload.add_field_data(), 1318412689U, 9U);
 
   EncodeUploadRequestOptions options;
-  options.encoder = std::make_unique<RandomizedEncoder>(
+  options.encoder = RandomizedEncoder(
       "seed for testing", AutofillRandomizedValue_EncodingType_ALL_BITS,
       /*anonymous_url_collection_is_enabled=*/true);
   options.available_field_types = {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS};
@@ -868,7 +868,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithSubForms) {
   }();
 
   EncodeUploadRequestOptions options;
-  options.encoder = std::make_unique<RandomizedEncoder>(
+  options.encoder = RandomizedEncoder(
       "seed for testing", AutofillRandomizedValue_EncodingType_ALL_BITS,
       /*anonymous_url_collection_is_enabled=*/true);
   options.available_field_types = {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
@@ -926,7 +926,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckDataPresence) {
   // datapresent should be "" == trimmed(0x0000000000000000) ==
   //     0b0000000000000000000000000000000000000000000000000000000000000000
   EncodeUploadRequestOptions options;
-  options.encoder = std::make_unique<RandomizedEncoder>(
+  options.encoder = RandomizedEncoder(
       "seed for testing", AutofillRandomizedValue_EncodingType_ALL_BITS,
       /*anonymous_url_collection_is_enabled=*/true);
   options.observed_submission = true;
@@ -1090,7 +1090,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckDataPresence) {
 
 TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
   EncodeUploadRequestOptions options;
-  options.encoder = std::make_unique<RandomizedEncoder>(
+  options.encoder = RandomizedEncoder(
       "seed for testing", AutofillRandomizedValue_EncodingType_ALL_BITS,
       /*anonymous_url_collection_is_enabled=*/true);
   // Throughout this test, datapresent should be
@@ -1209,7 +1209,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_PasswordsRevealed) {
   }
 
   EncodeUploadRequestOptions options;
-  options.encoder = std::make_unique<RandomizedEncoder>(
+  options.encoder = RandomizedEncoder(
       "seed for testing", AutofillRandomizedValue_EncodingType_ALL_BITS,
       /*anonymous_url_collection_is_enabled=*/true);
   options.available_field_types = {NO_SERVER_DATA};
@@ -1232,7 +1232,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_IsFormTag) {
       fs_field->set_host_form_signature(form_structure.form_signature());
     }
     EncodeUploadRequestOptions options;
-    options.encoder = std::make_unique<RandomizedEncoder>(
+    options.encoder = RandomizedEncoder(
         "seed for testing", AutofillRandomizedValue_EncodingType_ALL_BITS,
         /*anonymous_url_collection_is_enabled=*/true);
     options.available_field_types = {NO_SERVER_DATA};
@@ -1381,7 +1381,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
   }
 
   EncodeUploadRequestOptions options;
-  options.encoder = std::make_unique<RandomizedEncoder>(
+  options.encoder = RandomizedEncoder(
       "seed for testing", AutofillRandomizedValue_EncodingType_ALL_BITS,
       /*anonymous_url_collection_is_enabled=*/true);
   options.available_field_types = {NO_SERVER_DATA};
@@ -1574,7 +1574,7 @@ TEST_F(AutofillCrowdsourcingEncoding, MaxLengthIsNotSentIfFeatureIsOff) {
   }
 
   EncodeUploadRequestOptions options;
-  options.encoder = std::make_unique<RandomizedEncoder>(
+  options.encoder = RandomizedEncoder(
       "seed for testing", AutofillRandomizedValue_EncodingType_ALL_BITS,
       /*anonymous_url_collection_is_enabled=*/true);
   options.available_field_types = {NO_SERVER_DATA};
@@ -1612,7 +1612,7 @@ TEST_F(AutofillCrowdsourcingEncoding, SelectOptionsAreNotSentIfFeatureIsOff) {
   }
 
   EncodeUploadRequestOptions options;
-  options.encoder = std::make_unique<RandomizedEncoder>(
+  options.encoder = RandomizedEncoder(
       "seed for testing", AutofillRandomizedValue_EncodingType_ALL_BITS,
       /*anonymous_url_collection_is_enabled=*/true);
   options.available_field_types = {NO_SERVER_DATA};
@@ -1685,7 +1685,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   }
 
   EncodeUploadRequestOptions options;
-  options.encoder = std::make_unique<RandomizedEncoder>(
+  options.encoder = RandomizedEncoder(
       "seed for testing", AutofillRandomizedValue_EncodingType_ALL_BITS,
       /*anonymous_url_collection_is_enabled=*/true);
   options.available_field_types = {NO_SERVER_DATA};
@@ -1717,7 +1717,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CreateForPasswordManagerUpload) {
   ASSERT_EQ(FieldSignature(100u), form->field(2)->GetFieldSignature());
 
   EncodeUploadRequestOptions options;
-  options.encoder = std::make_unique<RandomizedEncoder>(
+  options.encoder = RandomizedEncoder(
       "seed for testing", AutofillRandomizedValue_EncodingType_ALL_BITS,
       /*anonymous_url_collection_is_enabled=*/true);
   options.observed_submission = true;
@@ -1741,7 +1741,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_MilestoneSet) {
   }
 
   EncodeUploadRequestOptions options;
-  options.encoder = std::make_unique<RandomizedEncoder>(
+  options.encoder = RandomizedEncoder(
       "seed for testing", AutofillRandomizedValue_EncodingType_ALL_BITS,
       /*anonymous_url_collection_is_enabled=*/true);
   options.observed_submission = true;
@@ -1793,7 +1793,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
       FormStructure::RetrieveFromCacheReason::kFormImport);
 
   EncodeUploadRequestOptions options;
-  options.encoder = std::make_unique<RandomizedEncoder>(
+  options.encoder = RandomizedEncoder(
       "seed for testing", AutofillRandomizedValue_EncodingType_ALL_BITS,
       /*anonymous_url_collection_is_enabled=*/true);
   options.observed_submission = true;
@@ -1824,7 +1824,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   FormStructure form_structure(form);
 
   EncodeUploadRequestOptions options;
-  options.encoder = std::make_unique<RandomizedEncoder>(
+  options.encoder = RandomizedEncoder(
       "seed for testing", AutofillRandomizedValue_EncodingType_ALL_BITS,
       /*anonymous_url_collection_is_enabled=*/true);
   options.observed_submission = true;

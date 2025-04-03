@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_RANDOMIZED_ENCODER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_RANDOMIZED_ENCODER_H_
 
-#include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -61,11 +61,16 @@ class RandomizedEncoder {
       "url_keyed_anonymized_data_collection.enabled";
 
   // Factory Function
-  static std::unique_ptr<RandomizedEncoder> Create(PrefService* pref_service);
+  static std::optional<RandomizedEncoder> Create(PrefService* pref_service);
 
   RandomizedEncoder(std::string seed,
                     AutofillRandomizedValue_EncodingType encoding_type,
                     bool anonymous_url_collection_is_enabled);
+  RandomizedEncoder(RandomizedEncoder&&);
+  RandomizedEncoder& operator=(RandomizedEncoder&&);
+  RandomizedEncoder(const RandomizedEncoder&) = delete;
+  RandomizedEncoder& operator=(const RandomizedEncoder&) = delete;
+  ~RandomizedEncoder();
 
   // Encode |data_value| using this instance's |encoding_type_|.
   // If |data_type!=FORM_URL|, the output value's length is limited by
@@ -111,10 +116,11 @@ class RandomizedEncoder {
                     std::string_view data_type) const;
 
  private:
-  const std::string seed_;
-  const raw_ptr<const EncodingInfo> encoding_info_;
-  const bool anonymous_url_collection_is_enabled_;
+  std::string seed_;
+  raw_ptr<const EncodingInfo> encoding_info_;
+  bool anonymous_url_collection_is_enabled_;
 };
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_RANDOMIZED_ENCODER_H_
