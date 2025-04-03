@@ -110,6 +110,7 @@ build_webui("build") {
   if (enable_pdf_ink2) {
     non_web_component_files += [
       "elements/ink_annotation_brush_mixin.ts",
+      "elements/ink_annotation_text_mixin.ts",
       "elements/ink_brush_selector.html.ts",
       "elements/ink_brush_selector.ts",
       "elements/ink_color_selector.html.ts",

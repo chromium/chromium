@@ -24,6 +24,7 @@ export {PluginController} from './controller.js';
 // <if expr="enable_pdf_ink2">
 export {PluginControllerEventType} from './controller.js';
 export {HIGHLIGHTER_COLORS, InkAnnotationBrushMixin, PEN_COLORS} from './elements/ink_annotation_brush_mixin.js';
+export {InkAnnotationTextMixin, TEXT_COLORS, TEXT_SIZES} from './elements/ink_annotation_text_mixin.js';
 export {InkBrushSelectorElement} from './elements/ink_brush_selector.js';
 export {InkColorSelectorElement} from './elements/ink_color_selector.js';
 export {InkSizeSelectorElement, HIGHLIGHTER_SIZES, PEN_SIZES} from './elements/ink_size_selector.js';
@@ -49,7 +50,6 @@ export {ViewerPdfSidenavElement} from './elements/viewer_pdf_sidenav.js';
 export {ViewerPropertiesDialogElement} from './elements/viewer_properties_dialog.js';
 // <if expr="enable_pdf_ink2">
 export {ViewerSidePanelElement} from './elements/viewer_side_panel.js';
-export {TEXT_COLORS} from './elements/viewer_text_side_panel.js';
 // </if>
 export {PAINTED_ATTRIBUTE, ViewerThumbnailElement} from './elements/viewer_thumbnail.js';
 export {ViewerThumbnailBarElement} from './elements/viewer_thumbnail_bar.js';

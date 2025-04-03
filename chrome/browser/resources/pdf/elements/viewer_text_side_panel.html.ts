@@ -15,16 +15,16 @@ export function getHtml(this: ViewerTextSidePanelElement) {
   return html`<!--_html_template_start_-->
     <div class="side-panel-content">
       <h2>Font</h2>
-      <select class="md-select" style="font-family: '${this.currentFont_}';"
-          @change="${this.onFontChange_}"=>
-        ${this.fonts_.map(font => html`
-          <option value="${font}" ?selected="${this.isSelectedFont_(font)}">
+      <select class="md-select" style="font-family: '${this.currentFont}';"
+          @change="${this.onFontSelected}"=>
+        ${this.fonts.map(font => html`
+          <option value="${font}" ?selected="${this.isSelectedFont(font)}">
             ${font}
           </option>`)}
       </select>
-      <select class="md-select" @change="${this.onSizeChange_}">
-        ${this.sizes_.map(size => html`
-          <option value="${size}" ?selected="${this.isSelectedSize_(size)}">
+      <select class="md-select" @change="${this.onSizeSelected}">
+        ${this.sizes.map(size => html`
+          <option value="${size}" ?selected="${this.isSelectedSize(size)}">
             ${size}
           </option>`)}
       </select>
@@ -36,9 +36,9 @@ export function getHtml(this: ViewerTextSidePanelElement) {
     </div>
     <div class="side-panel-content">
       <h2>Text color</h2>
-      <ink-color-selector .colors="${this.colors_}"
-          .currentColor="${this.currentColor_}"
-          @current-color-changed="${this.onCurrentColorChanged_}">
+      <ink-color-selector .colors="${this.colors}"
+          .currentColor="${this.currentColor}"
+          @current-color-changed="${this.onCurrentColorChanged}">
       </ink-color-selector>
     </div>
   <!--_html_template_end_-->`;
