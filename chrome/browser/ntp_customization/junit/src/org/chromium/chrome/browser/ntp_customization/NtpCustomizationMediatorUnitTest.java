@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.ntp_customization;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -15,6 +17,7 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.DISCOVER_FEED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
@@ -36,12 +39,20 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.feed.FeedFeatures;
+import org.chromium.chrome.browser.feed.FeedServiceBridge;
+import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -56,21 +67,28 @@ public class NtpCustomizationMediatorUnitTest {
     @Mock private NtpCustomizationBottomSheetContent mBottomSheetContent;
     @Mock private PropertyModel mViewFlipperPropertyModel;
     @Mock private PropertyModel mContainerPropertyModel;
+    @Mock private PrefService mPrefService;
+    @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
+    @Mock private Profile mProfile;
+    @Mock private ProfileProvider mProfileProvider;
 
     private NtpCustomizationMediator mMediator;
     private Map<Integer, Integer> mViewFlipperMap;
     private ListContainerViewDelegate mListDelegate;
     private Context mContext;
+    private OneshotSupplierImpl<ProfileProvider> mSupplier;
 
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
+        mSupplier = new OneshotSupplierImpl<>();
         mMediator =
                 new NtpCustomizationMediator(
                         mBottomSheetController,
                         mBottomSheetContent,
                         mViewFlipperPropertyModel,
-                        mContainerPropertyModel);
+                        mContainerPropertyModel,
+                        mSupplier);
         mViewFlipperMap = mMediator.getViewFlipperMapForTesting();
         mListDelegate = mMediator.createListDelegate();
     }
@@ -264,12 +282,6 @@ public class NtpCustomizationMediatorUnitTest {
     @Test
     @SmallTest
     public void testListContainerViewDelegate() {
-        // Verifies that the content of the delegate.getListItems() is consist of MAIN and FEEDS
-        // while MAIN comes before FEEDS.
-        List<Integer> content = mListDelegate.getListItems();
-        assertEquals(NTP_CARDS, (int) content.get(0));
-        assertEquals(DISCOVER_FEED, (int) content.get(1));
-
         // Verifies the subtitle of the "feeds" list item is "On" and is null for other list item.
         assertEquals("On", mListDelegate.getListItemSubtitle(DISCOVER_FEED, mContext));
         assertNull(mListDelegate.getListItemSubtitle(MAIN, mContext));
@@ -299,5 +311,36 @@ public class NtpCustomizationMediatorUnitTest {
         mMediator.renderListContent();
         verify(mContainerPropertyModel)
                 .set(eq(LIST_CONTAINER_VIEW_DELEGATE), any(ListContainerViewDelegate.class));
+    }
+
+    @Test
+    @SmallTest
+    public void testBuildListContentWhenProfileIsNotReady() {
+        List<Integer> listContent = mMediator.buildListContent();
+        assertEquals(List.of(NTP_CARDS), listContent);
+    }
+
+    @Test
+    @SmallTest
+    public void testBuildListContent() {
+        // Verifies that "DISCOVER_FEED" misses from the result list if and if only isFeedEnabled()
+        // is false;
+        FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
+        mSupplier.set(mProfileProvider);
+        when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
+        FeedFeatures.setFakePrefsForTest(mPrefService);
+
+        // Mock dependencies to enable FeedFeatures.isFeedEnabled(profile) to return true.
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
+        when(mFeedServiceBridgeJniMock.isEnabled()).thenReturn(true);
+
+        assertTrue(FeedFeatures.isFeedEnabled(mProfile));
+        assertEquals(List.of(NTP_CARDS, DISCOVER_FEED), mMediator.buildListContent());
+
+        // Mock dependencies to enable FeedFeatures.isFeedEnabled(profile) to return false.
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(false);
+
+        assertFalse(FeedFeatures.isFeedEnabled(mProfile));
+        assertEquals(List.of(NTP_CARDS), mMediator.buildListContent());
     }
 }

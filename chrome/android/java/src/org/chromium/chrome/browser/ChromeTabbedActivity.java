@@ -3307,7 +3307,10 @@ public class ChromeTabbedActivity extends ChromeActivity {
             mTabModelSelector.selectModel(false);
             RecordUserAction.record("MobileMenuSwitchOutOfIncognito");
         } else if (id == R.id.ntp_customization_id) {
-            new NtpCustomizationCoordinator(this, mRootUiCoordinator.getBottomSheetController())
+            new NtpCustomizationCoordinator(
+                            this,
+                            mRootUiCoordinator.getBottomSheetController(),
+                            getProfileProviderSupplier())
                     .showBottomSheet();
             NtpCustomizationMetricsUtils.recordOpenBottomSheetEntry(
                     NtpCustomizationCoordinator.EntryPointType.MAIN_MENU);

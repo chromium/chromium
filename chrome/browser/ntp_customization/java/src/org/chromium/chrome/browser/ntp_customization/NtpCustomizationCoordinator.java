@@ -18,7 +18,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ViewFlipper;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsCoordinator;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -58,7 +60,9 @@ public class NtpCustomizationCoordinator {
     }
 
     public NtpCustomizationCoordinator(
-            Context context, BottomSheetController bottomSheetController) {
+            Context context,
+            BottomSheetController bottomSheetController,
+            Supplier<ProfileProvider> profileSupplier) {
         mContext = context;
         View contentView =
                 LayoutInflater.from(mContext)
@@ -93,7 +97,8 @@ public class NtpCustomizationCoordinator {
                         bottomSheetController,
                         bottomSheetContent,
                         viewFlipperPropertyModel,
-                        containerPropertyModel);
+                        containerPropertyModel,
+                        profileSupplier);
         mMediator.registerBottomSheetLayout(MAIN);
 
         mDelegate = createBottomSheetDelegate();
