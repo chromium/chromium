@@ -334,7 +334,7 @@ ci.builder(
             target_bits = 32,
             target_platform = builder_config.target_platform.ANDROID,
         ),
-        android_config = builder_config.android_config(config = "clang_builder_mb_x64"),
+        android_config = builder_config.android_config(config = "base_config"),
         build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
@@ -395,7 +395,7 @@ ci.builder(
             target_bits = 32,
             target_platform = builder_config.target_platform.ANDROID,
         ),
-        android_config = builder_config.android_config(config = "clang_builder_mb_x64"),
+        android_config = builder_config.android_config(config = "base_config"),
         build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
@@ -438,7 +438,7 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
         ),
-        android_config = builder_config.android_config(config = "clang_builder_mb_x64"),
+        android_config = builder_config.android_config(config = "base_config"),
         build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
@@ -493,7 +493,7 @@ ci.builder(
             target_bits = 32,
             target_platform = builder_config.target_platform.ANDROID,
         ),
-        android_config = builder_config.android_config(config = "clang_builder_mb_x64"),
+        android_config = builder_config.android_config(config = "base_config"),
         build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
@@ -537,7 +537,7 @@ ci.builder(
             target_bits = 32,
             target_platform = builder_config.target_platform.ANDROID,
         ),
-        android_config = builder_config.android_config(config = "clang_builder_mb_x64"),
+        android_config = builder_config.android_config(config = "base_config"),
         build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
@@ -582,7 +582,7 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
         ),
-        android_config = builder_config.android_config(config = "clang_builder_mb_x64"),
+        android_config = builder_config.android_config(config = "base_config"),
         build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(
@@ -628,7 +628,7 @@ ci.builder(
             target_bits = 32,
             target_platform = builder_config.target_platform.ANDROID,
         ),
-        android_config = builder_config.android_config(config = "clang_builder_mb_x64"),
+        android_config = builder_config.android_config(config = "base_config"),
         build_gs_bucket = "chromium-clang-archive",
     ),
     gn_args = gn_args.config(

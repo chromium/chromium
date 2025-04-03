@@ -16,7 +16,7 @@
               "builder_group": "chromium.gpu.fyi",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "main_builder_rel_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "build_config": "Release",
@@ -49,7 +49,7 @@
               "builder_group": "chromium.gpu.fyi",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
-                "config": "main_builder_rel_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "build_config": "Release",
