@@ -50,7 +50,7 @@ std::vector<LoyaltyCard> ExtractLoyaltyCardsFromDataBatch(
   std::vector<LoyaltyCard> loyalty_cards;
   while (batch->HasNext()) {
     const syncer::KeyAndData& data_pair = batch->Next();
-    loyalty_cards.push_back(*CreateAutofillLoyaltyCardFromSpecifics(
+    loyalty_cards.push_back(CreateAutofillLoyaltyCardFromSpecifics(
         data_pair.second->specifics.autofill_valuable()));
   }
   return loyalty_cards;
@@ -89,9 +89,7 @@ class ValuableSyncBridgeTest : public testing::Test {
 
   void AddLoyaltyCardsToTheTable(
       const std::vector<LoyaltyCard>& loyalty_cards) {
-    for (const LoyaltyCard& card : loyalty_cards) {
-      table_.AddOrUpdateLoyaltyCard(card);
-    }
+    table_.SetLoyaltyCards(loyalty_cards);
   }
 
   std::vector<LoyaltyCard> GetAllDataFromTable() {

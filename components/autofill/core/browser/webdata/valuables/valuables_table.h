@@ -51,11 +51,10 @@ class ValuablesTable : public WebDatabaseTable {
   // Returns all loyalty cards stored in the database.
   std::vector<LoyaltyCard> GetLoyaltyCards() const;
 
-  // Inserts a new or updates an existing loyalty card into the database using
-  // the loyalty card id as a primary key. Returns `true` if the database
-  // operation succeeded. Returns `false` if the loyalty card's program logo URL
-  // is invalid or the database operation fails.
-  bool AddOrUpdateLoyaltyCard(const LoyaltyCard& loyalty_card) const;
+  // Overwrites the existing set of loyalty cards in the DB with those in
+  // `loyalty_cards`. Returns `true` if the database operation succeeded with no
+  // errors.
+  bool SetLoyaltyCards(const std::vector<LoyaltyCard>& loyalty_cards) const;
 
   // Attempts to retrieve a loyalty card from the database using the
   // `loyalty_card_id` as a unique identifier. Returns `std::nullopt` if there's
@@ -66,10 +65,6 @@ class ValuablesTable : public WebDatabaseTable {
   // Removes the loyalty card from the database using `loyalty_card_id` as a
   // unique identifier. Returns `true` if the operation succeeded.
   bool RemoveLoyaltyCard(ValuableId loyalty_card_id);
-
-  // Removes all loyalty cards stored in the database. Returns `true` if the
-  // operation succeeded.
-  bool ClearLoyaltyCards();
 
  private:
   bool InitLoyaltyCardsTable();

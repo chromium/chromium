@@ -75,9 +75,6 @@ TEST_F(LoyaltyCardSyncUtilTest, CreateEntityDataFromLoyaltyCard) {
 }
 
 TEST_F(LoyaltyCardSyncUtilTest, CreateAutofillLoyaltyCardFromSpecifics) {
-  EXPECT_EQ(CreateAutofillLoyaltyCardFromSpecifics(
-                TestLoyaltyCardSpecifics(kInvalidId)),
-            std::nullopt);
   EXPECT_EQ(TestLoyaltyCard(), CreateAutofillLoyaltyCardFromSpecifics(
                                    TestLoyaltyCardSpecifics(kId1)));
 }

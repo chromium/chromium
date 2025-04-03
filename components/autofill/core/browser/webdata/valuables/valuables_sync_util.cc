@@ -25,11 +25,10 @@ AutofillValuableSpecifics CreateSpecificsFromLoyaltyCard(
   return specifics;
 }
 
-std::optional<LoyaltyCard> CreateAutofillLoyaltyCardFromSpecifics(
+LoyaltyCard CreateAutofillLoyaltyCardFromSpecifics(
     const AutofillValuableSpecifics& specifics) {
-  if (!AreAutofillLoyaltyCardSpecificsValid(specifics)) {
-    return std::nullopt;
-  }
+  // Since the specifics are guaranteed to be valid by `IsEntityDataValid()`,
+  // the conversion will succeed.
   return LoyaltyCard(ValuableId(specifics.id()),
                      specifics.loyalty_card().merchant_name(),
                      specifics.loyalty_card().program_name(),

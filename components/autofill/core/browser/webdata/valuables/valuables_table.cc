@@ -118,25 +118,35 @@ std::vector<LoyaltyCard> ValuablesTable::GetLoyaltyCards() const {
   return result;
 }
 
-bool ValuablesTable::AddOrUpdateLoyaltyCard(
-    const LoyaltyCard& loyalty_card) const {
-  if (!loyalty_card.IsValid()) {
-    // Don't add loyalty cards with non-empty invalid program logo URLs.
-    return false;
-  }
-  sql::Statement query;
+bool ValuablesTable::SetLoyaltyCards(
+    const std::vector<LoyaltyCard>& loyalty_cards) const {
+  // Remove the existing set of loyalty cards.
+  bool response = Delete(db(), kLoyaltyCardsTable);
+
+  sql::Statement insert_cards;
   InsertBuilder(
-      db(), query, kLoyaltyCardsTable,
+      db(), insert_cards, kLoyaltyCardsTable,
       {kLoyaltyCardId, kLoyaltyCardMerchantName, kLoyaltyCardProgramName,
-       kLoyaltyCardProgramLogo, kLoyaltyCardNumber},
-      /*or_replace=*/true);
-  int index = 0;
-  query.BindString(index++, loyalty_card.id().value());
-  query.BindString(index++, loyalty_card.merchant_name());
-  query.BindString(index++, loyalty_card.program_name());
-  query.BindString(index++, loyalty_card.program_logo().spec());
-  query.BindString(index++, loyalty_card.loyalty_card_number());
-  return query.Run();
+       kLoyaltyCardProgramLogo, kLoyaltyCardNumber});
+
+  for (const LoyaltyCard& loyalty_card : loyalty_cards) {
+    if (!loyalty_card.IsValid()) {
+      // Should never happen. Invalid entities are filtered out in
+      // ValuableSyncBridge::IsEntityDataValid. Nevertheless, this case is
+      // handled gracefully.
+      response = false;
+      continue;
+    }
+    int index = 0;
+    insert_cards.BindString(index++, loyalty_card.id().value());
+    insert_cards.BindString(index++, loyalty_card.merchant_name());
+    insert_cards.BindString(index++, loyalty_card.program_name());
+    insert_cards.BindString(index++, loyalty_card.program_logo().spec());
+    insert_cards.BindString(index++, loyalty_card.loyalty_card_number());
+    response &= insert_cards.Run();
+    insert_cards.Reset(/*clear_bound_vars=*/true);
+  }
+  return response;
 }
 
 std::optional<LoyaltyCard> ValuablesTable::GetLoyaltyCardById(
@@ -157,10 +167,6 @@ std::optional<LoyaltyCard> ValuablesTable::GetLoyaltyCardById(
 bool ValuablesTable::RemoveLoyaltyCard(ValuableId loyalty_card_id) {
   return DeleteWhereColumnEq(db(), kLoyaltyCardsTable, kLoyaltyCardId,
                              loyalty_card_id.value());
-}
-
-bool ValuablesTable::ClearLoyaltyCards() {
-  return Delete(db(), kLoyaltyCardsTable);
 }
 
 }  // namespace autofill

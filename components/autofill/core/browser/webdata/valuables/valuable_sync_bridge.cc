@@ -228,13 +228,10 @@ void ValuableSyncBridge::LoadMetadata() {
 
 std::optional<syncer::ModelError> ValuableSyncBridge::SetSyncData(
     const syncer::EntityChangeList& entity_data) {
-  auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
+  std::unique_ptr<sql::Transaction> transaction =
+      web_data_backend_->GetDatabase()->AcquireTransaction();
 
-  // Remove all stored loyalty cards and replace them with new cards.
-  if (!GetValuablesTable()->ClearLoyaltyCards()) {
-    return syncer::ModelError(FROM_HERE,
-                              "Failed to delete loyalty cards from table.");
-  }
+  std::vector<LoyaltyCard> loyalty_cards;
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
     switch (change->type()) {
       case syncer::EntityChange::ACTION_ADD: {
@@ -244,16 +241,8 @@ std::optional<syncer::ModelError> ValuableSyncBridge::SetSyncData(
             change->data().specifics.autofill_valuable();
         switch (autofill_valuable.valuable_data_case()) {
           case sync_pb::AutofillValuableSpecifics::kLoyaltyCard: {
-            std::optional<LoyaltyCard> loyalty_card =
-                CreateAutofillLoyaltyCardFromSpecifics(autofill_valuable);
-            // Since the specifics are guaranteed to be valid by
-            // `IsEntityDataValid()`, the conversion will succeed.
-            DCHECK(loyalty_card);
-            if (!GetValuablesTable()->AddOrUpdateLoyaltyCard(
-                    std::move(*loyalty_card))) {
-              return syncer::ModelError(
-                  FROM_HERE, "Failed to add loyalty card to the table.");
-            }
+            loyalty_cards.push_back(
+                CreateAutofillLoyaltyCardFromSpecifics(autofill_valuable));
             break;
           }
           case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
@@ -270,6 +259,12 @@ std::optional<syncer::ModelError> ValuableSyncBridge::SetSyncData(
                                   "Received unsupported action type.");
       }
     }
+  }
+
+  // TODO(crbug.com/393119606): Only trigger update if the set of loyalty cards
+  // differ.
+  if (!GetValuablesTable()->SetLoyaltyCards(std::move(loyalty_cards))) {
+    return syncer::ModelError(FROM_HERE, "Failed to set loyalty card data.");
   }
 
   // Commits changes through CommitChanges(...) or through the scoped
