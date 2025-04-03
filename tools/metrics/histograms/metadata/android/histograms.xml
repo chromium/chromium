@@ -1422,7 +1422,6 @@ chromium-metrics-reviews@google.com.
     enum="DeviceAuthSource" expires_after="2025-09-07">
   <owner>ioanap@chromium.org</owner>
   <owner>friedrichh@chromium.org</owner>
-  <owner>theocristea@google.com</owner>
   <owner>clhager@google.com</owner>
   <summary>
     Recorded when a UI surface/flow in Chrome on Android chooses to re-auth the
