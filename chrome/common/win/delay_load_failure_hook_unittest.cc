@@ -34,6 +34,27 @@ TEST(ChromeDelayLoadHookTest, DllLoadFailureCrashes) {
   EXPECT_NOTREACHED_DEATH({ __pfnDliFailureHook2(dliFailLoadLib, &dli); });
 }
 
+// This test verifies that DelayLoadFailureHook does not crash for known
+// DLLs.
+TEST(ChromeDelayLoadHookTest, DllLoadFailureDoesNotCrash) {
+  {
+    DelayLoadInfo dli = {.szDll = "MF.dll"};
+    EXPECT_EQ(__pfnDliFailureHook2(dliFailLoadLib, &dli), nullptr);
+  }
+  {
+    DelayLoadInfo dli = {.szDll = "MFPlat.dll"};
+    EXPECT_EQ(__pfnDliFailureHook2(dliFailLoadLib, &dli), nullptr);
+  }
+  {
+    DelayLoadInfo dli = {.szDll = "MFReadWrite.dll"};
+    EXPECT_EQ(__pfnDliFailureHook2(dliFailLoadLib, &dli), nullptr);
+  }
+  {
+    DelayLoadInfo dli = {.szDll = "bthprops.cpl"};
+    EXPECT_EQ(__pfnDliFailureHook2(dliFailLoadLib, &dli), nullptr);
+  }
+}
+
 // This test verifies that if a DLL is failing to load because of lack of
 // memory, an OOM exception is generated rather than just a CHECK so as to
 // distinguish them in crash reports.

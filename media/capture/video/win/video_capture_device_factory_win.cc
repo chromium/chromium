@@ -11,6 +11,7 @@
 
 #include <objbase.h>
 
+#include <delayimp.h>
 #include <mfapi.h>
 #include <mferror.h>
 #include <stddef.h>
@@ -35,6 +36,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/native_library.h"
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/cstring_view.h"
@@ -46,7 +48,6 @@
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_variant.h"
-#include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "media/base/media_switches.h"
 #include "media/base/win/mf_helpers.h"
@@ -227,36 +228,40 @@ bool IsDeviceBlockedForMediaFoundationByDisplayName(
   return kDisplayNamesBlockedForMediaFoundation.contains(display_name);
 }
 
-HMODULE ExpandEnvironmentStringsAndLoadLibrary(base::wcstring_view path) {
-  auto expanded_path = base::win::ExpandEnvironmentVariables(path);
-  if (!expanded_path) {
-    return nullptr;
-  }
-
-  return LoadLibraryExW(expanded_path->c_str(), nullptr,
-                        LOAD_WITH_ALTERED_SEARCH_PATH);
-}
-
 bool LoadMediaFoundationDlls() {
-  static constexpr base::wcstring_view kMfDLLs[] = {
-      L"%WINDIR%\\system32\\mf.dll", L"%WINDIR%\\system32\\mfplat.dll",
-      L"%WINDIR%\\system32\\mfreadwrite.dll",
-      L"%WINDIR%\\system32\\MFCaptureEngine.dll"};
-
   // Mitigate the issues caused by loading DLLs on a background thread
   // (http://crbug/973868).
-  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY_REPEATEDLY();
+  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
 
-  // Load required DLLs.
-  for (const auto& kMfDLL : kMfDLLs) {
-    if (!ExpandEnvironmentStringsAndLoadLibrary(kMfDLL)) {
+  // Force-resolve all imports from modules accessed via /DELAYLOAD. Note that
+  // MF.dll and MFPlat.DLL have already been resolved via
+  // InitializeMediaFoundation(). __HrLoadAllImportsForDll makes a
+  // case-sensitive comparison to the module names in the dll.
+  // LINT.IfChange
+  for (const char* mfdll : {"MFReadWrite.dll"}) {
+    // LINT.ThenChange(//chrome/common/win/delay_load_failure_hook.cc)
+    HRESULT hr = E_FAIL;
+    __try {
+      hr = __HrLoadAllImportsForDll(mfdll);
+    } __except (HRESULT_FACILITY(::GetExceptionCode()) == FACILITY_VISUALCPP
+                    ? EXCEPTION_EXECUTE_HANDLER
+                    : EXCEPTION_CONTINUE_SEARCH) {
+      // Resolution of all imports failed; possibly because the module failed
+      // to load or because one or more imports was not found.
+      hr = E_FAIL;
+    }
+    if (FAILED(hr)) {
       return false;
     }
   }
 
+  // MFCaptureEngine is not imported via delayloads, but may be needed anyway.
+  if (!base::LoadSystemLibrary(L"MFCaptureEngine.dll")) {
+    return false;
+  }
+
   // Load optional DLLs whose availability depends on Windows version.
-  ExpandEnvironmentStringsAndLoadLibrary(
-      L"%WINDIR%\\system32\\mfsensorgroup.dll");
+  base::LoadSystemLibrary(L"mfsensorgroup.dll");
 
   return true;
 }
