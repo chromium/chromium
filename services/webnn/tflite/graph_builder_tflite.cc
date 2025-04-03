@@ -455,6 +455,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
 
   return ContextProperties(
       InputOperandLayout::kNhwc, Resample2DAxes::kChannelsLast,
+      BatchNormalizationAxis::kAny,
       /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
       {/*input=*/kAllDataTypesExceptUint4,
        /*constant=*/kAllDataTypesExceptUint4,

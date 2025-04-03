@@ -1162,6 +1162,7 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
   // TODO: crbug.com/345271830 - specify data types for all parameters.
   ContextProperties properties(
       InputOperandLayout::kNchw, Resample2DAxes::kChannelsFirst,
+      BatchNormalizationAxis::kChannelsFirst,
       /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
       {/*input=*/kFloatsAndInt32,
        /*constant=*/kConstantSupportedDataTypes,
@@ -2043,20 +2044,6 @@ GraphBuilderCoreml::AddOperationForBatchNormalization(
   CHECK(context_properties_.data_type_limits.batch_normalization_input.Supports(
       GetOperand(operation.input_operand_id).descriptor));
 
-  // TODO(crbug.com/338398666): Consider supporting more values for
-  // `operation.axis` by transposing the input. CoreML only supports
-  // batchNormalization over the "channel" dimension, though we don't actually
-  // have any way to know the layout here, so we'll just guess it's:
-  //  - NCH for a 3D input,
-  //  - NCHW for a 4D input, or
-  //  - NCDHW for a 5D input
-  // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS17.normalization.batch_norm
-  if (operation.axis != 1) {
-    return NewNotSupportedError(
-        "Unsupported axis for batchNormalization. It must be the channel "
-        "dimension.");
-  }
-
   uint64_t input_operand_id = operation.input_operand_id;
   const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
   // Rank of 5 causes crashes when not targeting `MLComputeUnitsCPUOnly`, see
@@ -2084,15 +2071,32 @@ GraphBuilderCoreml::AddOperationForBatchNormalization(
   static constexpr char kParamVariance[] = "variance";
 
   // TODO(crbug.com/338529226): These params must all be constant tensors.
+  if (!constant_operands_->contains(operation.mean_operand_id)) {
+    return NewNotSupportedError(
+        "batchNormalization argument mean must be constant.");
+  }
+  if (!constant_operands_->contains(operation.variance_operand_id)) {
+    return NewNotSupportedError(
+        "batchNormalization argument variance must be constant.");
+  }
   RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kParamMean,
                                       operation.mean_operand_id));
   RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kParamVariance,
                                       operation.variance_operand_id));
+
   if (operation.scale_operand_id.has_value()) {
+    if (!constant_operands_->contains(*operation.scale_operand_id)) {
+      return NewNotSupportedError(
+          "batchNormalization argument scale must be constant.");
+    }
     RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kOpParamGamma,
                                         *operation.scale_operand_id));
   }
   if (operation.bias_operand_id.has_value()) {
+    if (!constant_operands_->contains(*operation.bias_operand_id)) {
+      return NewNotSupportedError(
+          "batchNormalization argument bias must be constant.");
+    }
     RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kOpParamBeta,
                                         *operation.bias_operand_id));
   }

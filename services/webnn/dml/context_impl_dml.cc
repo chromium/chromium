@@ -104,6 +104,7 @@ ContextProperties ContextImplDml::GetProperties(
   // TODO: crbug.com/345271830 - specify data types for all parameters.
   ContextProperties properties(
       /*input_operand_layout=*/InputOperandLayout::kNchw, Resample2DAxes::kAny,
+      BatchNormalizationAxis::kAny,
       /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
       {/*input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
        /*constant=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
