@@ -10,7 +10,6 @@
 #include <optional>
 #include <set>
 #include <tuple>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -113,6 +112,7 @@
 #include "skia/ext/platform_canvas.h"
 #include "skia/ext/skia_utils_base.h"
 #include "storage/browser/file_system/isolated_context.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/widget/constants.h"
@@ -177,9 +177,7 @@ bool g_check_for_pending_visual_properties_ack = true;
 // <process id, routing id>
 using RenderWidgetHostID = std::pair<int32_t, int32_t>;
 using RoutingIDWidgetMap =
-    std::unordered_map<RenderWidgetHostID,
-                       RenderWidgetHostImpl*,
-                       base::IntPairHash<RenderWidgetHostID>>;
+    absl::flat_hash_map<RenderWidgetHostID, RenderWidgetHostImpl*>;
 base::LazyInstance<RoutingIDWidgetMap>::DestructorAtExit
     g_routing_id_widget_map = LAZY_INSTANCE_INITIALIZER;
 

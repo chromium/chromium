@@ -12,7 +12,6 @@
 #include <optional>
 #include <string_view>
 #include <tuple>
-#include <unordered_map>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -252,6 +251,8 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "storage/browser/blob/blob_url_store_impl.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
@@ -441,24 +442,20 @@ bool g_allow_injecting_javascript = false;
 
 const char kDotGoogleDotCom[] = ".google.com";
 
-typedef std::unordered_map<GlobalRenderFrameHostId,
-                           RenderFrameHostImpl*,
-                           GlobalRenderFrameHostIdHasher>
-    RoutingIDFrameMap;
+using RoutingIDFrameMap =
+    absl::flat_hash_map<GlobalRenderFrameHostId, RenderFrameHostImpl*>;
 base::LazyInstance<RoutingIDFrameMap>::DestructorAtExit g_routing_id_frame_map =
     LAZY_INSTANCE_INITIALIZER;
 
 // A global set of all sandboxed RenderFrameHosts that could be isolated from
 // the rest of their SiteInstance.
-typedef std::unordered_set<GlobalRenderFrameHostId,
-                           GlobalRenderFrameHostIdHasher>
-    RoutingIDIsolatableSandboxedIframesSet;
+using RoutingIDIsolatableSandboxedIframesSet =
+    absl::flat_hash_set<GlobalRenderFrameHostId>;
 base::LazyInstance<RoutingIDIsolatableSandboxedIframesSet>::DestructorAtExit
     g_routing_id_isolatable_sandboxed_iframes_set = LAZY_INSTANCE_INITIALIZER;
 
-using TokenFrameMap = std::unordered_map<blink::LocalFrameToken,
-                                         RenderFrameHostImpl*,
-                                         blink::LocalFrameToken::Hasher>;
+using TokenFrameMap =
+    absl::flat_hash_map<blink::LocalFrameToken, RenderFrameHostImpl*>;
 base::LazyInstance<TokenFrameMap>::Leaky g_token_frame_map =
     LAZY_INSTANCE_INITIALIZER;
 
