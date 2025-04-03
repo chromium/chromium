@@ -1185,7 +1185,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   MaybeCreateKeepAliveRequestTracker(
       const network::ResourceRequest& request,
       std::optional<ukm::SourceId> ukm_source_id,
-      bool is_attribution_reporting_eligible_request,
       content::KeepAliveRequestTracker::IsContextDetachedCallback
           is_context_detached_callback) override;
 

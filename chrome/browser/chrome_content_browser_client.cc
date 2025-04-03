@@ -9043,10 +9043,8 @@ std::unique_ptr<content::KeepAliveRequestTracker>
 ChromeContentBrowserClient::MaybeCreateKeepAliveRequestTracker(
     const network::ResourceRequest& request,
     std::optional<ukm::SourceId> ukm_source_id,
-    bool is_attribution_reporting_eligible_request,
     content::KeepAliveRequestTracker::IsContextDetachedCallback
         is_context_detached_callback) {
   return ChromeKeepAliveRequestTracker::MaybeCreateKeepAliveRequestTracker(
-      request, ukm_source_id, is_attribution_reporting_eligible_request,
-      std::move(is_context_detached_callback));
+      request, ukm_source_id, std::move(is_context_detached_callback));
 }

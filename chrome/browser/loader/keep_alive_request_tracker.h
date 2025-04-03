@@ -33,15 +33,12 @@ class ChromeKeepAliveRequestTracker : public content::KeepAliveRequestTracker {
   //
   // `ukm_source_id` is the UKM ID to associate with the events logged by the
   // returned tracker.
-  // `is_attribution_reporting_eligible_request` tells if `request` is an
-  // attribution reporting eligible request.
   // `is_context_detached_callback` tells if the context of `request` is
   // detached at the time running the callback.
   static std::unique_ptr<ChromeKeepAliveRequestTracker>
   MaybeCreateKeepAliveRequestTracker(
       const network::ResourceRequest& request,
       std::optional<ukm::SourceId> ukm_source_id,
-      bool is_attribution_reporting_eligible_request,
       IsContextDetachedCallback is_context_detached_callback);
 
  private:
