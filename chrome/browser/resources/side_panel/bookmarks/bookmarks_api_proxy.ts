@@ -58,7 +58,6 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
   constructor() {
     this.callbackRouter = {
       onChanged: chrome.bookmarks.onChanged,
-      onChildrenReordered: chrome.bookmarks.onChildrenReordered,
       onMoved: chrome.bookmarks.onMoved,
       onTabActivated: chrome.tabs.onActivated,
       onTabUpdated: chrome.tabs.onUpdated,

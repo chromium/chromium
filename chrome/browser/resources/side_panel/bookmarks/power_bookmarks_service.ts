@@ -9,6 +9,7 @@ import {PageImageServiceBrowserProxy} from '//resources/cr_components/page_image
 import {ClientId as PageImageServiceClientId} from '//resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import type {BookmarksTreeNode} from './bookmarks.mojom-webui.js';
 import type {BookmarksApiProxy} from './bookmarks_api_proxy.js';
@@ -238,6 +239,9 @@ export class PowerBookmarksService {
           this.onBookmarkNodeAdded_.bind(this));
       this.bookmarksApi_.pageCallbackRouter.onBookmarkNodesRemoved.addListener(
           this.onBookmarkNodesRemoved_.bind(this));
+      this.bookmarksApi_.pageCallbackRouter
+          .onBookmarkParentFolderChildrenReordered.addListener(
+              this.onBookmarkParentFolderChildrenReordered_.bind(this));
 
       this.delegate_.onBookmarksLoaded();
     });
@@ -497,6 +501,36 @@ export class PowerBookmarksService {
       parent.children!.splice(parent.children!.indexOf(removedNode), 1);
       this.delegate_.onBookmarkRemoved(removedNode);
     }
+  }
+
+  // Reorders the children of the node with `folderId` based on the new order in
+  // `childrenOrderedIds`.
+  private onBookmarkParentFolderChildrenReordered_(
+      folderId: string, childrenOrderedIds: string[]) {
+    const folder = this.findBookmarkWithId(folderId)!;
+
+    if (!folder.children) {
+      assert(childrenOrderedIds.length === 0);
+      return;
+    }
+
+    assert(folder.children.length === childrenOrderedIds.length);
+
+    // Create a temporary map of "id -> node" to lookup the nodes based on the
+    // ids.
+    const childrenMap = new Map<string, chrome.bookmarks.BookmarkTreeNode>();
+    for (const child of folder.children) {
+      childrenMap.set(child.id, child);
+    }
+    // Clear and refill the nodes with the proper order from the map.
+    folder.children = [];
+    for (const id of childrenOrderedIds) {
+      folder.children.push(childrenMap.get(id)!);
+    }
+
+    // There is no need to notify the Ui since the order displayed does not
+    // depend on the order of the children in the array of the node. The
+    // displayed order depends on properties of the nodes.
   }
 
   /**

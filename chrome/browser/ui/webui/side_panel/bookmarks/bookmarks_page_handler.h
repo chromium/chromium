@@ -85,7 +85,7 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler,
   void BookmarkNodeFaviconChanged(
       const bookmarks::BookmarkNode* node) override {}
   void BookmarkParentFolderChildrenReordered(
-      const BookmarkParentFolder& folder) override {}
+      const BookmarkParentFolder& folder) override;
   void BookmarkAllUserNodesRemoved() override {}
 
  private:

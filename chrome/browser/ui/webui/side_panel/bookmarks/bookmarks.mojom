@@ -148,4 +148,7 @@ interface BookmarksPage {
   OnBookmarkNodeAdded(BookmarksTreeNode node);
   // Send all the node ids that were removed to the Ui.
   OnBookmarkNodesRemoved(array<string> node_ids);
+  // Send the list of children ids of `folder_id` after a reorder event.
+  OnBookmarkParentFolderChildrenReordered(string folder_id,
+                                          array<string> children_ordered_ids);
 };

@@ -594,6 +594,19 @@ void BookmarksPageHandler::BookmarkNodesRemoved(
   page_->OnBookmarkNodesRemoved(std::move(mojo_node_ids));
 }
 
+void BookmarksPageHandler::BookmarkParentFolderChildrenReordered(
+    const BookmarkParentFolder& folder) {
+  std::string folder_id =
+      GetFolderSidePanelID(*bookmark_merged_surface_, folder);
+  std::vector<std::string> mojo_children_ordered_ids;
+  for (const bookmarks::BookmarkNode* child :
+       bookmark_merged_surface_->GetChildren(folder)) {
+    mojo_children_ordered_ids.push_back(base::ToString(child->id()));
+  }
+  page_->OnBookmarkParentFolderChildrenReordered(folder_id,
+                                                 mojo_children_ordered_ids);
+}
+
 std::string GetFolderSidePanelIDForTesting(
     const BookmarkMergedSurfaceService& bookmark_merged_surface,
     const BookmarkParentFolder& folder) {

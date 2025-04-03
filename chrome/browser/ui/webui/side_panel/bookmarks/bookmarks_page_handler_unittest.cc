@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
@@ -26,6 +27,7 @@ namespace {
 
 using bookmarks::test::AddNodesFromModelString;
 using ::testing::Contains;
+using ::testing::ElementsAre;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 
@@ -82,6 +84,9 @@ class MockBookmarksPage : public side_panel::mojom::BookmarksPage {
               OnBookmarkNodeAdded,
               (side_panel::mojom::BookmarksTreeNodePtr));
   MOCK_METHOD(void, OnBookmarkNodesRemoved, (const std::vector<std::string>&));
+  MOCK_METHOD(void,
+              OnBookmarkParentFolderChildrenReordered,
+              (const std::string&, const std::vector<std::string>&));
 
  private:
   mojo::Receiver<side_panel::mojom::BookmarksPage> receiver_{this};
@@ -398,6 +403,76 @@ TEST_F(BookmarksPageHandlerTest, OnBookmarkNodesRemoved) {
           base::ToString(account_other_node->children()[0].get()->id()),
           base::ToString(account_other_node->children()[1].get()->id()))));
   model()->RemoveAccountPermanentFolders();
+  mock_bookmarks_page().FlushForTesting();
+}
+
+TEST_F(BookmarksPageHandlerTest,
+       OnBookmarkParentFolderChildrenReorderedFromLocalNode) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kSyncEnableBookmarksInTransportMode};
+
+  model()->CreateAccountPermanentFolders();
+
+  const bookmarks::BookmarkNode* other_node = model()->other_node();
+  const bookmarks::BookmarkNode* account_other_node =
+      model()->account_other_node();
+
+  AddNodesFromModelString(model(), other_node, "2 1:[ 3 ]");
+  std::string first_other_node_id =
+      base::ToString(other_node->children()[0].get()->id());
+  std::string second_other_node_id =
+      base::ToString(other_node->children()[1].get()->id());
+  AddNodesFromModelString(model(), account_other_node, "5 4 ");
+  std::string first_account_other_node_id =
+      base::ToString(account_other_node->children()[0].get()->id());
+  std::string second_account_other_node_id =
+      base::ToString(account_other_node->children()[1].get()->id());
+
+  // All merged nodes are part of the notification, but only local nodes are
+  // reorderd.
+  EXPECT_CALL(
+      mock_bookmarks_page(),
+      OnBookmarkParentFolderChildrenReordered(
+          base::ToString(other_node->id()),
+          ElementsAre(first_account_other_node_id, second_account_other_node_id,
+                      second_other_node_id, first_other_node_id)));
+  // Sort local nodes.
+  model()->SortChildren(other_node);
+  mock_bookmarks_page().FlushForTesting();
+}
+
+TEST_F(BookmarksPageHandlerTest,
+       OnBookmarkParentFolderChildrenReorderedFromAccountNode) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kSyncEnableBookmarksInTransportMode};
+
+  model()->CreateAccountPermanentFolders();
+
+  const bookmarks::BookmarkNode* other_node = model()->other_node();
+  const bookmarks::BookmarkNode* account_other_node =
+      model()->account_other_node();
+
+  AddNodesFromModelString(model(), other_node, "2 1:[ 3 ]");
+  std::string first_other_node_id =
+      base::ToString(other_node->children()[0].get()->id());
+  std::string second_other_node_id =
+      base::ToString(other_node->children()[1].get()->id());
+  AddNodesFromModelString(model(), account_other_node, "5 4 ");
+  std::string first_account_other_node_id =
+      base::ToString(account_other_node->children()[0].get()->id());
+  std::string second_account_other_node_id =
+      base::ToString(account_other_node->children()[1].get()->id());
+
+  // All merged nodes are part of the notification, but only account nodes are
+  // reorderd.
+  EXPECT_CALL(
+      mock_bookmarks_page(),
+      OnBookmarkParentFolderChildrenReordered(
+          base::ToString(other_node->id()),
+          ElementsAre(second_account_other_node_id, first_account_other_node_id,
+                      first_other_node_id, second_other_node_id)));
+  // Sort account nodes.
+  model()->SortChildren(account_other_node);
   mock_bookmarks_page().FlushForTesting();
 }
 
