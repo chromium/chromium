@@ -86,7 +86,6 @@
 #include "services/network/net_log_exporter.h"
 #include "services/network/net_log_proxy_sink.h"
 #include "services/network/network_context.h"
-#include "services/network/public/cpp/content_decoding_interceptor.h"
 #include "services/network/public/cpp/crash_keys.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
@@ -1024,24 +1023,6 @@ void NetworkService::SetGssapiLibraryLoadObserver(
   gssapi_library_load_observer_.Bind(std::move(gssapi_library_load_observer));
 }
 #endif  // BUILDFLAG(IS_LINUX)
-
-void NetworkService::InterceptUrlLoaderForBodyDecoding(
-    const std::vector<net::SourceStreamType>& content_encoding_types,
-    mojo::ScopedDataPipeConsumerHandle source_body,
-    mojo::ScopedDataPipeProducerHandle dest_body,
-    mojo::PendingRemote<network::mojom::URLLoader> source_url_loader,
-    mojo::PendingReceiver<network::mojom::URLLoaderClient>
-        source_url_loader_client,
-    mojo::PendingReceiver<network::mojom::URLLoader> dest_url_loader,
-    mojo::PendingRemote<network::mojom::URLLoaderClient>
-        dest_url_loader_client) {
-  ContentDecodingInterceptor::Intercept(
-      content_encoding_types, std::move(source_body), std::move(dest_body),
-      std::move(source_url_loader), std::move(source_url_loader_client),
-      std::move(dest_url_loader), std::move(dest_url_loader_client),
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::TaskPriority::USER_BLOCKING}));
-}
 
 void NetworkService::StartNetLogBounded(base::File file,
                                         uint64_t max_total_size,
