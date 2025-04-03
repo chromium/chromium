@@ -1527,6 +1527,7 @@ android_library("chrome_test_java_various") {
     "src/org/chromium/chrome/browser/locale/LocaleManagerReferralTest.java",
     "src/org/chromium/chrome/browser/locale/LocaleManagerTest.java",
     "src/org/chromium/chrome/browser/login/ChromeHttpAuthHandlerTest.java",
+    "src/org/chromium/chrome/browser/messages/MessageTest.java",
     "src/org/chromium/chrome/browser/modaldialog/ChromeTabModalPresenterTest.java",
     "src/org/chromium/chrome/browser/modaldialog/ModalDialogViewRenderTest.java",
     "src/org/chromium/chrome/browser/multiwindow/MultiWindowIntegrationTest.java",
