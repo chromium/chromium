@@ -303,7 +303,6 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
       do_fail = true;
     }
   } else {
-    destination_url_data->set_range_supported();
     if (content_length != kPositionNotSpecified) {
       destination_url_data->set_length(content_length + byte_pos());
     }

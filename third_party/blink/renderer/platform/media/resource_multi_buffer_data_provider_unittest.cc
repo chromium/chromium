@@ -248,6 +248,13 @@ TEST_F(ResourceMultiBufferDataProviderTest, FullResponse) {
   StopWhenLoad();
 }
 
+TEST_F(ResourceMultiBufferDataProviderTest, FullResponse_FileUrl) {
+  Initialize("file://test.ogv", 0);
+  Start();
+  FullResponse(1024);
+  StopWhenLoad();
+}
+
 // Tests that a partial content response is received.
 TEST_F(ResourceMultiBufferDataProviderTest, PartialResponse) {
   Initialize(kHttpUrl, 100);
