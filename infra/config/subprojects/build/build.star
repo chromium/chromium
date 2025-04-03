@@ -152,7 +152,7 @@ cq_build_perf_builder(
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
-            config = "main_builder",
+            config = "base_config",
         ),
     ),
     gn_args = "try/android-arm64-rel",
@@ -188,7 +188,7 @@ cq_build_perf_builder(
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
-            config = "main_builder",
+            config = "base_config",
         ),
     ),
     gn_args = {
@@ -597,7 +597,7 @@ This builder measures build performance for Android developer builds, by simulat
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
-            config = "main_builder",
+            config = "base_config",
         ),
     ),
     gn_args = {

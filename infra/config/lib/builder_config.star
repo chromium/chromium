@@ -162,7 +162,7 @@ def _android_config(*, config, apply_configs = None):
         fail("config must be provided")
     return struct(
         config = config,
-        apply_configs = args.listify(apply_configs),
+        apply_configs = apply_configs,
     )
 
 def _skylab_upload_location(*, gs_bucket, gs_extra = None):

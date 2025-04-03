@@ -20,14 +20,15 @@
                 "apply_configs": [
                   "remove_all_system_webviews"
                 ],
-                "config": "main_builder_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
+                  "mb",
                   "download_xr_test_apks"
                 ],
                 "build_config": "Debug",
-                "config": "main_builder_mb",
+                "config": "main_builder",
                 "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "android"
@@ -56,14 +57,15 @@
               "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
-                "config": "main_builder_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
+                  "mb",
                   "download_xr_test_apks"
                 ],
                 "build_config": "Debug",
-                "config": "main_builder_mb",
+                "config": "main_builder",
                 "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "android"
