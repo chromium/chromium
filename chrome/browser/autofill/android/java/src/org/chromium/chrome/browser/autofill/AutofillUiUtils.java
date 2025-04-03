@@ -574,14 +574,14 @@ public class AutofillUiUtils {
     }
 
     /**
-     * Adds dimension params to card art URL for credit cards.
-     * @param customIconUrl A FIFE URL to fetch the card art icon.
+     * Adds dimension params to a FIFE image URL.
+     *
+     * @param customIconUrl A FIFE URL to fetch the image.
      * @param width in pixels.
      * @param height in pixels.
-     * @return {@link GURL} formatted with the icon dimensions to fetch the card art icon.
+     * @return {@link GURL} formatted with the icon dimensions to fetch the image.
      */
-    public static GURL getCreditCardIconUrlWithParams(
-            GURL customIconUrl, @Px int width, @Px int height) {
+    public static GURL getFifeIconUrlWithParams(GURL customIconUrl, @Px int width, @Px int height) {
         // Params can be added to a FIFE URL by appending them at the end like URL[=params]. "w"
         // option is used to set the width in pixels, and "h" is used to set the height in pixels.
         StringBuilder url = new StringBuilder(customIconUrl.getSpec());

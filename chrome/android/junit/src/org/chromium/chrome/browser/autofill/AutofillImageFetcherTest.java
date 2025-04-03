@@ -62,16 +62,16 @@ public class AutofillImageFetcherTest {
         CardIconSpecs cardIconSpecsLarge =
                 CardIconSpecs.create(ContextUtils.getApplicationContext(), ImageSize.LARGE);
         GURL cachedValidUrlSmall1 =
-                AutofillUiUtils.getCreditCardIconUrlWithParams(
+                AutofillUiUtils.getFifeIconUrlWithParams(
                         validUrl1, cardIconSpecsSmall.getWidth(), cardIconSpecsSmall.getHeight());
         GURL cachedValidUrlLarge1 =
-                AutofillUiUtils.getCreditCardIconUrlWithParams(
+                AutofillUiUtils.getFifeIconUrlWithParams(
                         validUrl1, cardIconSpecsLarge.getWidth(), cardIconSpecsLarge.getHeight());
         GURL cachedValidUrlSmall2 =
-                AutofillUiUtils.getCreditCardIconUrlWithParams(
+                AutofillUiUtils.getFifeIconUrlWithParams(
                         validUrl2, cardIconSpecsSmall.getWidth(), cardIconSpecsSmall.getHeight());
         GURL cachedValidUrlLarge2 =
-                AutofillUiUtils.getCreditCardIconUrlWithParams(
+                AutofillUiUtils.getFifeIconUrlWithParams(
                         validUrl2, cardIconSpecsLarge.getWidth(), cardIconSpecsLarge.getHeight());
         Bitmap treatedImageSmall =
                 AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
@@ -135,9 +135,9 @@ public class AutofillImageFetcherTest {
         @Px
         int logoSize = AutofillImageFetcherUtils.getPixelSize(R.dimen.square_card_icon_side_length);
         GURL cachedValidUrl1 =
-                AutofillUiUtils.getCreditCardIconUrlWithParams(validUrl1, logoSize, logoSize);
+                AutofillUiUtils.getFifeIconUrlWithParams(validUrl1, logoSize, logoSize);
         GURL cachedValidUrl2 =
-                AutofillUiUtils.getCreditCardIconUrlWithParams(validUrl2, logoSize, logoSize);
+                AutofillUiUtils.getFifeIconUrlWithParams(validUrl2, logoSize, logoSize);
         Bitmap treatedImage = AutofillImageFetcherUtils.treatPixAccountImage(TEST_CARD_ART_IMAGE);
         // Success histograms should be logged for both images.
         HistogramWatcher expectedHistogram =
