@@ -1860,12 +1860,31 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=LCPCriticalPathPredictor:lcpp_adjust_image_load_priority/true,LCPTimingPredictorPrerender2"
+      "--enable-features=LCPCriticalPathPredictor:lcpp_adjust_image_load_priority/true"
     ],
     "expires": "Jun 5, 2026",
     "owners": [
       "chikamune@chromium.org",
       "kouhei@chromium.org"
+    ]
+  },
+  {
+    "prefix": "lcpp-timing-predictor",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "http/tests/lcpp_timing_predictor"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=LCPTimingPredictorPrerender2"
+    ],
+    "expires": "Jun 5, 2026",
+    "owners": [
+      "yoichio@chromium.org"
     ]
   },
   {

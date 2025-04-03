@@ -1,7 +1,7 @@
 <!doctype html>
 <script src="/priorities/resources/common.js"></script>
 <script type=module>
-import {setupLCPTest} from "./resources/common.js";
+import {setupLCPTest} from "../lcp_critical_path_predictor/resources/common.js";
 await setupLCPTest();
 </script>
 <?php
