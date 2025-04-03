@@ -21,6 +21,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller_impl.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_debug_info.h"
@@ -33,6 +34,7 @@
 #include "chrome/common/google_url_loader_throttle.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/variations/synthetic_trials.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -494,6 +496,14 @@ void BoundSessionCookieRefreshServiceImpl::InitializeBoundSession(
     const bound_session_credentials::BoundSessionParams& bound_session_params) {
   CHECK(switches::IsBoundSessionCredentialsEnabled(profile_prefs_) ||
         bound_session_params.is_wsbeta());
+  if (bound_session_params.is_wsbeta()) {
+    // It's unusual to register a synthetic trial with a single group. The
+    // purpose of this trial is to be able to filter out the users having
+    // "wsbeta" sessions (thus ignoring the main experiment).
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        "BoundSessionCredentialsWsbetaSyntheticTrial", "Enabled",
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
+  }
   std::unique_ptr<BoundSessionCookieController> controller =
       CreateBoundSessionCookieController(bound_session_params,
                                          is_off_the_record_profile_);

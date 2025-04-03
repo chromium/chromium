@@ -14,6 +14,7 @@
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/common/buildflags.h"
 #include "components/metrics/metrics_service_accessor.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/variations/synthetic_trials.h"
 #include "ppapi/buildflags/buildflags.h"
 
@@ -23,6 +24,10 @@
 
 #if BUILDFLAG(ENABLE_PPAPI)
 #include "chrome/common/ppapi_metrics.mojom.h"
+#endif
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl.h"
 #endif
 
 class BrowserProcessImpl;
@@ -145,6 +150,9 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   static void SetMetricsAndCrashReportingForTesting(const bool* value);
 
  private:
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  friend class BoundSessionCookieRefreshServiceImpl;
+#endif
   friend class ::CrashesDOMHandler;
   friend class ChromeBrowserFieldTrials;
   // For ClangPGO.
