@@ -1672,7 +1672,7 @@ TEST_F(WallpaperSearchHandlerTest, LaunchHatsSurvey) {
       },
       {});
   EXPECT_CALL(mock_hats_service(),
-              LaunchSurvey(kHatsSurveyTriggerWallpaperSearch, _, _, _, _))
+              LaunchSurvey(kHatsSurveyTriggerWallpaperSearch, _, _, _, _, _, _))
       .Times(1);
   auto handler = MakeHandler(/*session_id=*/123);
   handler->LaunchHatsSurvey();

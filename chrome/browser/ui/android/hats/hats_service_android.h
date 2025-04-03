@@ -122,7 +122,9 @@ class HatsServiceAndroid : public HatsService {
       base::OnceClosure success_callback = base::DoNothing(),
       base::OnceClosure failure_callback = base::DoNothing(),
       const SurveyBitsData& product_specific_bits_data = {},
-      const SurveyStringData& product_specific_string_data = {}) override;
+      const SurveyStringData& product_specific_string_data = {},
+      const std::optional<std::string>& supplied_trigger_id = std::nullopt,
+      const SurveyOptions& survey_options = SurveyOptions()) override;
 
   void LaunchSurveyForWebContents(
       const std::string& trigger,

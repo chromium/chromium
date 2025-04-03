@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_survey_desktop_controller.h"
 
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -92,9 +93,9 @@ class PrivacySandboxSurveyDesktopControllerTest : public testing::Test {
 };
 
 TEST_F(PrivacySandboxSurveyDesktopControllerTest, SentimentSurveyIsLaunched) {
-  EXPECT_CALL(
-      *mock_hats_service_,
-      LaunchSurvey(_, _, _, survey_service()->GetSentimentSurveyPsb(), _));
+  EXPECT_CALL(*mock_hats_service_,
+              LaunchSurvey(_, _, _, survey_service()->GetSentimentSurveyPsb(),
+                           _, _, _));
   TriggerSurvey();
   testing::Mock::VerifyAndClearExpectations(mock_hats_service_);
 }
@@ -103,7 +104,7 @@ TEST_F(PrivacySandboxSurveyDesktopControllerTest,
        SentimentSurveyIsNotLaunched) {
   EXPECT_CALL(
       *mock_hats_service_,
-      LaunchSurvey(_, _, _, survey_service()->GetSentimentSurveyPsb(), _))
+      LaunchSurvey(_, _, _, survey_service()->GetSentimentSurveyPsb(), _, _, _))
       .Times(0);
 
   // Survey should not launch since we haven't seen a NTP.
@@ -112,15 +113,8 @@ TEST_F(PrivacySandboxSurveyDesktopControllerTest,
 }
 
 TEST_F(PrivacySandboxSurveyDesktopControllerTest, EmitsSurveyShownHistogram) {
-  EXPECT_CALL(*mock_hats_service_, LaunchSurvey(_, _, _, _, _))
-      .WillOnce(Invoke([](const std::string& trigger,
-                          base::OnceClosure success_callback,
-                          base::OnceClosure failure_callback,
-                          const SurveyBitsData& survey_specific_bits_data,
-                          const SurveyStringData& survey_specific_string_data) {
-        // Force a failure by calling the failure callback.
-        std::move(success_callback).Run();
-      }));
+  EXPECT_CALL(*mock_hats_service_, LaunchSurvey)
+      .WillOnce(base::test::RunOnceClosure<1>());  // run the success callback
   TriggerSurvey();
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.SentimentSurvey.Status",
@@ -131,15 +125,8 @@ TEST_F(PrivacySandboxSurveyDesktopControllerTest, EmitsSurveyShownHistogram) {
 
 TEST_F(PrivacySandboxSurveyDesktopControllerTest,
        EmitsSurveyLaunchedFailedHistogram) {
-  EXPECT_CALL(*mock_hats_service_, LaunchSurvey(_, _, _, _, _))
-      .WillOnce(Invoke([](const std::string& trigger,
-                          base::OnceClosure success_callback,
-                          base::OnceClosure failure_callback,
-                          const SurveyBitsData& survey_specific_bits_data,
-                          const SurveyStringData& survey_specific_string_data) {
-        // Force a failure by calling the failure callback.
-        std::move(failure_callback).Run();
-      }));
+  EXPECT_CALL(*mock_hats_service_, LaunchSurvey)
+      .WillOnce(base::test::RunOnceClosure<2>());  // run the failure callback
   TriggerSurvey();
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.SentimentSurvey.Status",
