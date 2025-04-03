@@ -100,6 +100,98 @@ std::optional<ModuleVersion> GetModuleVersion(const std::wstring& filename) {
   return std::nullopt;
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(JawsMajorVersion)
+enum class JawsMajorVersion {
+  kLegacy = 0,
+  k2020 = 1,
+  k2021 = 2,
+  k2022 = 3,
+  k2023 = 4,
+  k2024 = 5,
+  k2025 = 6,
+  k2026 = 7,
+  k2027 = 8,
+  k2028 = 9,
+  k2029 = 10,
+  k2030 = 11,
+  k2031 = 12,
+  k2032 = 13,
+  k2033 = 14,
+  k2034 = 15,
+  k2035 = 16,
+  k2036 = 17,
+  k2037 = 18,
+  k2038 = 19,
+  k2039 = 20,
+  k2040 = 21,
+  kPost2040 = 22,
+  kMaxValue = kPost2040,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:JAWSMajorVersion)
+
+JawsMajorVersion MapModuleVersionToJaws(const ModuleVersion& version) {
+  constexpr uint16_t kFirstKnownVersion = 2020;
+  constexpr uint16_t kLastKnownVersion = 2040;
+  if (version.major > kLastKnownVersion) {
+    return JawsMajorVersion::kPost2040;
+  }
+  if (version.major >= kFirstKnownVersion &&
+      version.major <= kLastKnownVersion) {
+    return static_cast<JawsMajorVersion>(version.major -
+                                         (kFirstKnownVersion - 1));
+  }
+  return JawsMajorVersion::kLegacy;
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(NvdaMajorVersion)
+enum class NvdaMajorVersion {
+  kLegacy = 0,
+  k2020 = 1,
+  k2021 = 2,
+  k2022 = 3,
+  k2023 = 4,
+  k2024 = 5,
+  k2025 = 6,
+  k2026 = 7,
+  k2027 = 8,
+  k2028 = 9,
+  k2029 = 10,
+  k2030 = 11,
+  k2031 = 12,
+  k2032 = 13,
+  k2033 = 14,
+  k2034 = 15,
+  k2035 = 16,
+  k2036 = 17,
+  k2037 = 18,
+  k2038 = 19,
+  k2039 = 20,
+  k2040 = 21,
+  kPost2040 = 22,
+  kMaxValue = kPost2040,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:NVDAMajorVersion)
+
+NvdaMajorVersion MapModuleVersionToNvda(const ModuleVersion& version) {
+  constexpr uint16_t kFirstKnownVersion = 2020;
+  constexpr uint16_t kLastKnownVersion = 2040;
+  if (version.major > kLastKnownVersion) {
+    return NvdaMajorVersion::kPost2040;
+  }
+  if (version.major >= kFirstKnownVersion &&
+      version.major <= kLastKnownVersion) {
+    return static_cast<NvdaMajorVersion>(version.major -
+                                         (kFirstKnownVersion - 1));
+  }
+  return NvdaMajorVersion::kLegacy;
+}
+
 // Returns a vector of all Assistive Technologies that are currently running,
 // and their versions if available. We return a vector instead of a map
 // because it's technically possible to have multiple versions of the same
@@ -430,6 +522,22 @@ void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
     most_important_assistive_tech = ui::AssistiveTech::kZdsr;
   } else {
     base::debug::ClearCrashKeyString(ax_zdsr_crash_key);
+  }
+
+  // Histograms for the JAWS and NVDA versions.
+  for (const auto& info : at_infos) {
+    if (info.tech == AccessibilityTarget::kJaws && info.version) {
+      JawsMajorVersion jaws_version = MapModuleVersionToJaws(*info.version);
+      base::UmaHistogramEnumeration("Accessibility.WinJAWSVersion",
+                                    jaws_version);
+      continue;
+    }
+    if (info.tech == AccessibilityTarget::kNvda && info.version) {
+      NvdaMajorVersion nvda_version = MapModuleVersionToNvda(*info.version);
+      base::UmaHistogramEnumeration("Accessibility.WinNVDAVersion",
+                                    nvda_version);
+      continue;
+    }
   }
 
   OnAssistiveTechFound(most_important_assistive_tech);

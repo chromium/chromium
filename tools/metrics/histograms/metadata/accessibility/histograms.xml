@@ -3610,6 +3610,34 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.WinJAWSVersion" enum="JAWSMajorVersion"
+    expires_after="never">
+<!-- expires-never: usage drives a11y prioritization in browser and content. -->
+
+  <owner>aleventhal@chromium.org</owner>
+  <owner>benjamin.beaudry@microsoft.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the major version of JAWS detected. Recorded when the AXMode in the
+    browser process changes, usually when an AT connects or at launch when an AT
+    is already connected.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.WinNVDAVersion" enum="NVDAMajorVersion"
+    expires_after="never">
+<!-- expires-never: usage drives a11y prioritization in browser and content. -->
+
+  <owner>aleventhal@chromium.org</owner>
+  <owner>benjamin.beaudry@microsoft.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the major version of NVDA detected. Recorded when the AXMode in the
+    browser process changes, usually when an AT connects or at launch when an AT
+    is already connected.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.WinStickyKeys" enum="BooleanEnabled"
     expires_after="never">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->

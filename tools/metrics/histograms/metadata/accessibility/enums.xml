@@ -1616,6 +1616,39 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java.java:DistillationResult) -->
 
+<!-- LINT.IfChange(JAWSMajorVersion)-->
+
+<enum name="JAWSMajorVersion">
+  <summary>
+    The major version of the JAWS screen reader that is detected.
+  </summary>
+  <int value="0" label="Legacy"/>
+  <int value="1" label="2020"/>
+  <int value="2" label="2021"/>
+  <int value="3" label="2022"/>
+  <int value="4" label="2023"/>
+  <int value="5" label="2024"/>
+  <int value="6" label="2025"/>
+  <int value="7" label="2026"/>
+  <int value="8" label="2027"/>
+  <int value="9" label="2028"/>
+  <int value="10" label="2029"/>
+  <int value="11" label="2030"/>
+  <int value="12" label="2031"/>
+  <int value="13" label="2032"/>
+  <int value="14" label="2033"/>
+  <int value="15" label="2034"/>
+  <int value="16" label="2035"/>
+  <int value="17" label="2036"/>
+  <int value="18" label="2037"/>
+  <int value="19" label="2038"/>
+  <int value="20" label="2039"/>
+  <int value="21" label="2040"/>
+  <int value="22" label="Post 2040"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/accessibility/browser_accessibility_state_impl_win.cc:JawsMajorVersion) -->
+
 <!-- LINT.IfChange(KeyboardShortcutsSemanticMeaning) -->
 
 <enum name="KeyboardShortcutsSemanticMeaning">
@@ -2007,6 +2040,39 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <!-- LINT.ThenChange(//content/renderer/accessibility/annotations/ax_main_node_annotator.cc:MainNodeAnnotationResult) -->
+
+<!-- LINT.IfChange(NVDAMajorVersion)-->
+
+<enum name="NVDAMajorVersion">
+  <summary>
+    The major version of the NVDA screen reader that is detected.
+  </summary>
+  <int value="0" label="Legacy"/>
+  <int value="1" label="2020"/>
+  <int value="2" label="2021"/>
+  <int value="3" label="2022"/>
+  <int value="4" label="2023"/>
+  <int value="5" label="2024"/>
+  <int value="6" label="2025"/>
+  <int value="7" label="2026"/>
+  <int value="8" label="2027"/>
+  <int value="9" label="2028"/>
+  <int value="10" label="2029"/>
+  <int value="11" label="2030"/>
+  <int value="12" label="2031"/>
+  <int value="13" label="2032"/>
+  <int value="14" label="2033"/>
+  <int value="15" label="2034"/>
+  <int value="16" label="2035"/>
+  <int value="17" label="2036"/>
+  <int value="18" label="2037"/>
+  <int value="19" label="2038"/>
+  <int value="20" label="2039"/>
+  <int value="21" label="2040"/>
+  <int value="22" label="Post 2040"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/accessibility/browser_accessibility_state_impl_win.cc:NvdaMajorVersion) -->
 
 <!-- LINT.IfChange(OCRClientType) -->
 
