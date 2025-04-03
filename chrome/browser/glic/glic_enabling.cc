@@ -55,6 +55,11 @@ bool IsEnterpriseEnabled(Profile* profile) {
   return profile->GetPrefs()->GetInteger(::prefs::kGeminiSettings) ==
          static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled);
 }
+
+bool HasConsentedForProfile(Profile* profile) {
+  return profile->GetPrefs()->GetInteger(prefs::kGlicCompletedFre) ==
+         static_cast<int>(prefs::FreStatus::kCompleted);
+}
 }  // namespace
 
 bool GlicEnabling::IsEnabledByFlags() {
@@ -74,11 +79,7 @@ bool GlicEnabling::IsEnabledForProfile(Profile* profile) {
 }
 
 bool GlicEnabling::IsEnabledAndConsentForProfile(Profile* profile) {
-  if (!IsEnabledForProfile(profile)) {
-    return false;
-  }
-  return (profile->GetPrefs()->GetInteger(glic::prefs::kGlicCompletedFre) ==
-          static_cast<int>(prefs::FreStatus::kCompleted));
+  return IsEnabledForProfile(profile) && HasConsentedForProfile(profile);
 }
 
 bool GlicEnabling::IsReadyForProfile(Profile* profile) {
@@ -135,6 +136,9 @@ GlicEnabling::GlicEnabling(Profile* profile,
       ::prefs::kGeminiSettings,
       base::BindRepeating(&GlicEnabling::OnGlicSettingsPolicyChanged,
                           base::Unretained(this)));
+  pref_registrar_.Add(prefs::kGlicCompletedFre,
+                      base::BindRepeating(&GlicEnabling::UpdateConsentStatus,
+                                          base::Unretained(this)));
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   CHECK(identity_manager);
@@ -146,9 +150,18 @@ bool GlicEnabling::IsAllowed() {
   return IsEnabledForProfile(profile_);
 }
 
+bool GlicEnabling::HasConsented() {
+  return HasConsentedForProfile(profile_);
+}
+
 base::CallbackListSubscription GlicEnabling::RegisterAllowedChanged(
     EnableChangedCallback callback) {
   return enable_changed_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription GlicEnabling::RegisterOnConsentChanged(
+    ConsentChangedCallback callback) {
+  return consent_changed_callback_list_.Add(std::move(callback));
 }
 
 void GlicEnabling::OnGlicSettingsPolicyChanged() {
@@ -196,6 +209,10 @@ void GlicEnabling::UpdateEnabledStatus() {
     entry->SetIsGlicEligible(IsAllowed());
   }
   enable_changed_callback_list_.Notify();
+}
+
+void GlicEnabling::UpdateConsentStatus() {
+  consent_changed_callback_list_.Notify();
 }
 
 }  // namespace glic
