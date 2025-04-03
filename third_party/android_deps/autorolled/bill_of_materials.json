@@ -17,7 +17,7 @@
     {
         "name": "annotation",
         "group": "androidx.annotation",
-        "version": "1.9.1"
+        "version": "1.10.0-SNAPSHOT"
     },
     {
         "name": "annotation-experimental",
@@ -27,7 +27,7 @@
     {
         "name": "annotation-jvm",
         "group": "androidx.annotation",
-        "version": "1.9.1"
+        "version": "1.10.0-SNAPSHOT"
     },
     {
         "name": "appcompat",
