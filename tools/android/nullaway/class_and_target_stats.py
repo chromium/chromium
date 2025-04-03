@@ -178,7 +178,7 @@ def main():
             if '__' in t:
                 t = t.split('__')[0]
             # Skip these jni ones, not interesting.
-            if 'jni_headers_java' in t:
+            if 'jni_headers_java' in t or 'jni_java' in t:
                 continue
             if t in skipped_targets:
                 continue
