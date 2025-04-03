@@ -46,6 +46,8 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/youtube.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -100,14 +102,6 @@ BASE_FEATURE(kScalableIphTestTwo,
 void OverrideStoredPermanentCountry(std::string_view country_code) {
   CHECK(g_browser_process->variations_service()->OverrideStoredPermanentCountry(
       std::string(country_code)));
-}
-
-bool IsGoogleChrome() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return true;
-#else
-  return false;
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 void LockAndUnlockSession() {
@@ -295,15 +289,23 @@ class ScalableIphBrowserTestFeatureOffDebugOn : public ScalableIphBrowserTest {
   }
 };
 
+// Preinstalled apps only deploy on Google Chrome branded builds of Chromium.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 class ScalableIphBrowserTestPreinstallApps : public ScalableIphBrowserTest {
  public:
+  ScalableIphBrowserTestPreinstallApps()
+      : scoped_preinstall_url_allow_list_(
+            web_app::SetPreinstallUrlAllowListForTesting(
+                {{web_app::GetConfigForYouTube().install_url}})) {}
+
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     ScalableIphBrowserTest::SetUpDefaultCommandLine(command_line);
 
-    command_line->RemoveSwitch(switches::kDisableDefaultApps);
     command_line->AppendSwitch(
         ash::switches::kAllowDefaultShelfPinLayoutIgnoringSync);
   }
+
+  web_app::ScopedPreinstallUrlAllowList scoped_preinstall_url_allow_list_;
 };
 
 class ScalableIphBrowserTestHelpApp
@@ -343,6 +345,7 @@ class ScalableIphBrowserTestHelpAppParameterized
     ScalableIphBrowserTestHelpApp::SetUp();
   }
 };
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 class ScalableIphBrowserTestPerksMinecraftRealms
     : public ScalableIphBrowserTest {
@@ -1245,12 +1248,10 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestMultipleIphs, OneIphAtATime) {
   testing::Mock::VerifyAndClearExpectations(mock_tracker());
 }
 
+// Preinstalled apps only deploy on Google Chrome branded builds of Chromium.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestPreinstallApps,
                        AppListItemActivationWebApp) {
-  if (!IsGoogleChrome()) {
-    GTEST_SKIP()
-        << "Google Chrome is required for preinstall apps used by this test";
-  }
 
   // Those constants in `scalable_iph` must be synced with ones in `web_app`.
   // Test them in this test case.
@@ -1283,10 +1284,6 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestPreinstallApps,
 // TODO(crbug.com/328713274): Test is flaky.
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestPreinstallApps,
                        DISABLED_ShelfItemActivationWebApp) {
-  if (!IsGoogleChrome()) {
-    GTEST_SKIP()
-        << "Google Chrome is required for preinstall apps used by this test";
-  }
 
   apps::AppReadinessWaiter(browser()->profile(),
                            scalable_iph::kWebAppYouTubeAppId)
@@ -1299,13 +1296,9 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestPreinstallApps,
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestHelpApp, HelpAppPinnedToShelf) {
-  if (!IsGoogleChrome()) {
-    GTEST_SKIP()
-        << "Google Chrome is required for preinstall apps used by this test";
-  }
-
   EXPECT_TRUE(ash::ShelfModel::Get()->IsAppPinned(ash::kHelpAppId));
 }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 INSTANTIATE_TEST_SUITE_P(
     Perks,
@@ -2059,6 +2052,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestMinor, ScalableIphNotAvailable) {
             ScalableIphFactory::GetForBrowserContext(browser()->profile()));
 }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 INSTANTIATE_TEST_SUITE_P(
     NoHelpAppPin,
     ScalableIphBrowserTestHelpAppParameterized,
@@ -2078,3 +2072,4 @@ IN_PROC_BROWSER_TEST_P(ScalableIphBrowserTestHelpAppParameterized,
                        HelpAppNotPinnedToShelf) {
   EXPECT_FALSE(ash::ShelfModel::Get()->IsAppPinned(ash::kHelpAppId));
 }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
