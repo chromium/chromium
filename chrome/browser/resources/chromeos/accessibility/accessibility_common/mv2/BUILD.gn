@@ -80,23 +80,23 @@ copied_ts_modules = [ "facegaze/facial_gestures.ts" ]
 ts_definitions = [
   "$mediapipe_dir/vision.d.ts",
   "dictation/parse/pumpkin/pumpkin_tagger_externs.d.ts",
-  "../definitions/accessibility_features_mv2.d.ts",
-  "../definitions/accessibility_private_mv2.d.ts",
-  "../definitions/audio.d.ts",
-  "../definitions/automation.d.ts",
-  "../definitions/command_line_private.d.ts",
-  "../definitions/extensions.d.ts",
-  "../definitions/extension_types.d.ts",
-  "../definitions/input_ime.d.ts",
-  "../definitions/input_method_private.d.ts",
-  "../definitions/language_settings_private.d.ts",
-  "../definitions/metrics_private.d.ts",
-  "../definitions/runtime.d.ts",
-  "../definitions/settings_private_mv2.d.ts",
-  "../definitions/speech_recognition_private.d.ts",
-  "../definitions/tabs.d.ts",
-  "../definitions/settings_private_mv2.d.ts",
-  "../definitions/windows.d.ts",
+  "../../definitions/accessibility_features_mv2.d.ts",
+  "../../definitions/accessibility_private_mv2.d.ts",
+  "../../definitions/audio.d.ts",
+  "../../definitions/automation.d.ts",
+  "../../definitions/command_line_private.d.ts",
+  "../../definitions/extensions.d.ts",
+  "../../definitions/extension_types.d.ts",
+  "../../definitions/input_ime.d.ts",
+  "../../definitions/input_method_private.d.ts",
+  "../../definitions/language_settings_private.d.ts",
+  "../../definitions/metrics_private.d.ts",
+  "../../definitions/runtime.d.ts",
+  "../../definitions/settings_private_mv2.d.ts",
+  "../../definitions/speech_recognition_private.d.ts",
+  "../../definitions/tabs.d.ts",
+  "../../definitions/settings_private_mv2.d.ts",
+  "../../definitions/windows.d.ts",
   "//tools/typescript/definitions/chrome_event.d.ts",
   "//tools/typescript/definitions/i18n.d.ts",
   "//tools/typescript/definitions/pending.d.ts",
@@ -108,7 +108,7 @@ ts_library("ts_build") {
 
   composite = true
 
-  deps = [ "../common:ts_build" ]
+  deps = [ "../../common:ts_build" ]
 
   # Targets that need to run before running the TS build.
   extra_deps = [
@@ -133,7 +133,7 @@ ts_library("ts_build") {
 
   in_files = ts_modules + copied_ts_modules
 
-  tsconfig_base = "../tsconfig.base.json"
+  tsconfig_base = "../../tsconfig.base.json"
 }
 
 # Instead of setting up copy targets, use a script to copy all files.
@@ -149,7 +149,7 @@ run_jsbundler("copied_files") {
   deps = [
     ":copy_mediapipe_files",
     ":ts_build",
-    "../common:copied_files",
+    "../../common:copied_files",
   ]
 
   sources =
@@ -201,6 +201,7 @@ source_set("browser_tests") {
     "$root_out_dir/locales/en-US.pak",
     "$root_out_dir/resources.pak",
     "$root_out_dir/resources/chromeos/accessibility/accessibility_common/",
+
     "$root_out_dir/test_data/chrome/browser/resources/chromeos/accessibility/accessibility_common/",
 
     # The test uses data from the original location, not the copied one.
@@ -233,16 +234,16 @@ js2gtest("accessibility_common_extjs_tests") {
   ]
 
   gen_include_files = [
-    "../common/testing/accessibility_test_base.js",
-    "../common/testing/callback_helper.js",
-    "../common/testing/common_e2e_test_base.js",
-    "../common/testing/e2e_test_base.js",
-    "../common/testing/mock_accessibility_private.js",
-    "../common/testing/mock_audio.js",
-    "../common/testing/mock_input_ime.js",
-    "../common/testing/mock_input_method_private.js",
-    "../common/testing/mock_language_settings_private.js",
-    "../common/testing/mock_speech_recognition_private.js",
+    "../../common/testing/accessibility_test_base.js",
+    "../../common/testing/callback_helper.js",
+    "../../common/testing/common_e2e_test_base.js",
+    "../../common/testing/e2e_test_base.js",
+    "../../common/testing/mock_accessibility_private.js",
+    "../../common/testing/mock_audio.js",
+    "../../common/testing/mock_input_ime.js",
+    "../../common/testing/mock_input_method_private.js",
+    "../../common/testing/mock_language_settings_private.js",
+    "../../common/testing/mock_speech_recognition_private.js",
   ]
 
   # The test base classes generate C++ code with these deps.
@@ -261,8 +262,8 @@ js2gtest("accessibility_common_extjs_tests") {
 
 action("pumpkin_test_files") {
   testonly = true
-  script = "../tools/unpack_tar_archive.py"
-  sources = [ "../common/testing/fake_pumpkin_dlc.tar.xz" ]
+  script = "../../tools/unpack_tar_archive.py"
+  sources = [ "../../common/testing/fake_pumpkin_dlc.tar.xz" ]
   out_dir = "$accessibility_common_dir/third_party/pumpkin/"
   files_to_extract = [
     "$out_dir" + "js_pumpkin_tagger_bin.js",
@@ -282,7 +283,7 @@ action("pumpkin_test_files") {
 
   args = [
     "--dest-dir=resources/chromeos/accessibility/accessibility_common/third_party/pumpkin",
-    rebase_path("../common/testing/fake_pumpkin_dlc.tar.xz", root_build_dir),
+    rebase_path("../../common/testing/fake_pumpkin_dlc.tar.xz", root_build_dir),
     string_join(",", files_to_extract),
     out_dir,
   ]
@@ -292,8 +293,8 @@ action("pumpkin_test_files") {
 # Extracts the FaceLandmarker model and WASM for testing purposes.
 action("facegaze_test_files") {
   testonly = true
-  script = "../tools/unpack_tar_archive.py"
-  sources = [ "../common/testing/fake_facegaze_assets_dlc.tar.xz" ]
+  script = "../../tools/unpack_tar_archive.py"
+  sources = [ "../../common/testing/fake_facegaze_assets_dlc.tar.xz" ]
   out_dir = "$accessibility_common_dir/third_party/mediapipe_task_vision/"
   files_to_extract = [
     "$out_dir" + "face_landmarker.task",
@@ -302,7 +303,7 @@ action("facegaze_test_files") {
 
   args = [
     "--dest-dir=resources/chromeos/accessibility/accessibility_common/third_party/mediapipe_task_vision",
-    rebase_path("../common/testing/fake_facegaze_assets_dlc.tar.xz",
+    rebase_path("../../common/testing/fake_facegaze_assets_dlc.tar.xz",
                 root_build_dir),
     string_join(",", files_to_extract),
     out_dir,

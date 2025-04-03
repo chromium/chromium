@@ -42,7 +42,7 @@ export enum FromPumpkinTaggerCommand {
 export enum ToPumpkinTaggerCommand {
   LOAD = 'load',
   TAG = 'tagAndGetNBestHypotheses',
-  REFRESH ='refresh',
+  REFRESH = 'refresh',
 }
 
 /** Defines the message data received from SandboxedPumpkinTagger. */

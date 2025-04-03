@@ -38,6 +38,8 @@ export class ParseStrategy {
 
   /** Accepts text, parses it, and returns a Macro. */
   async parse(text: string): Promise<Macro|null> {
-    throw new Error(`The parse() function must be implemented by each subclass. Trying to parse text: ${text}`);
+    throw new Error(
+        `The parse() function must be implemented by each subclass. Trying to parse text: ${
+            text}`);
   }
 }

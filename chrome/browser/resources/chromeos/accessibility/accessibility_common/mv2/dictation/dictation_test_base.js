@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../../common/testing/e2e_test_base.js']);
-GEN_INCLUDE(['../../common/testing/mock_accessibility_private.js']);
-GEN_INCLUDE(['../../common/testing/mock_audio.js']);
-GEN_INCLUDE(['../../common/testing/mock_input_ime.js']);
-GEN_INCLUDE(['../../common/testing/mock_input_method_private.js']);
-GEN_INCLUDE(['../../common/testing/mock_language_settings_private.js']);
-GEN_INCLUDE(['../../common/testing/mock_speech_recognition_private.js']);
+GEN_INCLUDE(['../../../common/testing/e2e_test_base.js']);
+GEN_INCLUDE(['../../../common/testing/mock_accessibility_private.js']);
+GEN_INCLUDE(['../../../common/testing/mock_audio.js']);
+GEN_INCLUDE(['../../../common/testing/mock_input_ime.js']);
+GEN_INCLUDE(['../../../common/testing/mock_input_method_private.js']);
+GEN_INCLUDE(['../../../common/testing/mock_language_settings_private.js']);
+GEN_INCLUDE(['../../../common/testing/mock_speech_recognition_private.js']);
 
 /**
  * @typedef {{
