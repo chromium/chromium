@@ -219,10 +219,6 @@ export class PowerBookmarksService {
           'onChanged',
           (id: string, changedInfo: chrome.bookmarks.ChangeInfo) =>
               this.onChanged_(id, changedInfo));
-      this.addListener_(
-          'onMoved',
-          (_id: string, movedInfo: chrome.bookmarks.MoveInfo) =>
-              this.onMoved_(movedInfo));
       this.addListener_('onTabActivated', (_info: chrome.tabs.ActiveInfo) => {
         this.bookmarksApi_.getActiveUrl().then(
             url => this.delegate_.setCurrentUrl(url));
@@ -242,6 +238,8 @@ export class PowerBookmarksService {
       this.bookmarksApi_.pageCallbackRouter
           .onBookmarkParentFolderChildrenReordered.addListener(
               this.onBookmarkParentFolderChildrenReordered_.bind(this));
+      this.bookmarksApi_.pageCallbackRouter.onBookmarkNodeMoved.addListener(
+          this.onBookmarkNodeMoved_.bind(this));
 
       this.delegate_.onBookmarksLoaded();
     });
@@ -476,20 +474,21 @@ export class PowerBookmarksService {
     this.findBookmarkImageUrls_(node, false, false);
   }
 
-  private onMoved_(movedInfo: chrome.bookmarks.MoveInfo) {
+  private onBookmarkNodeMoved_(
+      oldParentId: string, oldIndex: number, newParentId: string,
+      newIndex: number) {
     // Remove node from oldParent at oldIndex.
-    const oldParent = this.findBookmarkWithId(movedInfo.oldParentId)!;
-    const movedNode = oldParent.children![movedInfo.oldIndex];
-    Object.assign(
-        movedNode, {index: movedInfo.index, parentId: movedInfo.parentId});
-    oldParent.children!.splice(movedInfo.oldIndex, 1);
+    const oldParent = this.findBookmarkWithId(oldParentId)!;
+    const movedNode = oldParent.children![oldIndex];
+    Object.assign(movedNode, {index: newIndex, parentId: newParentId});
+    oldParent.children!.splice(oldIndex, 1);
 
     // Add the node to the new parent at index.
-    const newParent = this.findBookmarkWithId(movedInfo.parentId)!;
+    const newParent = this.findBookmarkWithId(newParentId)!;
     if (!newParent.children) {
       newParent.children = [];
     }
-    newParent.children.splice(movedInfo.index, 0, movedNode);
+    newParent.children.splice(newIndex, 0, movedNode);
     this.delegate_.onBookmarkMoved(movedNode, oldParent, newParent);
   }
 

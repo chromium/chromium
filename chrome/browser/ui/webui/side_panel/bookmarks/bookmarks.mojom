@@ -47,7 +47,7 @@ enum ViewType {
 struct BookmarksTreeNode {
   string id;
   string parent_id;
-  int32 index;
+  uint32 index;
   string title;
 
   // Non-null for page nodes.
@@ -151,4 +151,7 @@ interface BookmarksPage {
   // Send the list of children ids of `folder_id` after a reorder event.
   OnBookmarkParentFolderChildrenReordered(string folder_id,
                                           array<string> children_ordered_ids);
+  // Send the node index of a moved element: old and new Ui indices.
+  OnBookmarkNodeMoved(string old_parent_index, uint32 old_node_index,
+                      string new_parent_index, uint32 new_node_index);
 };

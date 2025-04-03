@@ -80,7 +80,7 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler,
   void BookmarkNodeMoved(const BookmarkParentFolder& old_parent,
                          size_t old_index,
                          const BookmarkParentFolder& new_parent,
-                         size_t new_index) override {}
+                         size_t new_index) override;
   void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override {}
   void BookmarkNodeFaviconChanged(
       const bookmarks::BookmarkNode* node) override {}

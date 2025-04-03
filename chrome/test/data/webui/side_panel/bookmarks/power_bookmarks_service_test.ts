@@ -13,7 +13,7 @@ import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/pag
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
@@ -410,14 +410,17 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     assertEquals(delegate.getCallCount('onBookmarkAdded'), 1);
   });
 
-  test('CallsOnBookmarkMoved', () => {
+  test('CallsOnBookmarkMoved', async () => {
     const movedBookmark = folders[0]!.children![2]!.children![0]!;
-    bookmarksApi.callbackRouter.onMoved.callListeners(movedBookmark.id, {
-      index: 0,
-      parentId: folders[0]!.id,                   // Moving to other bookmarks.
-      oldParentId: folders[0]!.children![2]!.id,  // Moving from child folder.
-      oldIndex: 0,
-    });
+    assertTrue(!!movedBookmark);
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeMoved(
+        /*oldParentId=*/ folders[0]!.children![2]!
+            .id,  // Moving from child folder.
+        /*oldIndex=*/ 0,
+        /*parentId=*/ folders[0]!.id,  // Moving to other bookmarks.
+        /*index=*/ 0,
+    );
+    await flushTasks();
 
     assertEquals(delegate.getCallCount('onBookmarkMoved'), 1);
   });

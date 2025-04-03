@@ -87,6 +87,9 @@ class MockBookmarksPage : public side_panel::mojom::BookmarksPage {
   MOCK_METHOD(void,
               OnBookmarkParentFolderChildrenReordered,
               (const std::string&, const std::vector<std::string>&));
+  MOCK_METHOD(void,
+              OnBookmarkNodeMoved,
+              (const std::string&, uint32_t, const std::string&, uint32_t));
 
  private:
   mojo::Receiver<side_panel::mojom::BookmarksPage> receiver_{this};
@@ -473,6 +476,33 @@ TEST_F(BookmarksPageHandlerTest,
                       first_other_node_id, second_other_node_id)));
   // Sort account nodes.
   model()->SortChildren(account_other_node);
+  mock_bookmarks_page().FlushForTesting();
+}
+
+TEST_F(BookmarksPageHandlerTest, OnBookmarkNodeMoved) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kSyncEnableBookmarksInTransportMode};
+
+  model()->CreateAccountPermanentFolders();
+
+  const bookmarks::BookmarkNode* other_node = model()->other_node();
+  const bookmarks::BookmarkNode* account_bookmark_bar_node =
+      model()->account_bookmark_bar_node();
+
+  AddNodesFromModelString(model(), other_node, "2 1:[ 3 ]");
+  const bookmarks::BookmarkNode* node_to_move = other_node->children()[0].get();
+  AddNodesFromModelString(model(), account_bookmark_bar_node, "5 4 ");
+
+  EXPECT_CALL(mock_bookmarks_page(),
+              OnBookmarkNodeMoved(
+                  GetFolderSidePanelIDForTesting(
+                      *service(), BookmarkParentFolder::OtherFolder()),
+                  testing::_,
+                  GetFolderSidePanelIDForTesting(
+                      *service(), BookmarkParentFolder::BookmarkBarFolder()),
+                  testing::_));
+
+  model()->Move(node_to_move, account_bookmark_bar_node, 0);
   mock_bookmarks_page().FlushForTesting();
 }
 

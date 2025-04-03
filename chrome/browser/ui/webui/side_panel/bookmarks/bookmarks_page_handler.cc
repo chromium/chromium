@@ -607,6 +607,16 @@ void BookmarksPageHandler::BookmarkParentFolderChildrenReordered(
                                                  mojo_children_ordered_ids);
 }
 
+void BookmarksPageHandler::BookmarkNodeMoved(
+    const BookmarkParentFolder& old_parent,
+    size_t old_index,
+    const BookmarkParentFolder& new_parent,
+    size_t new_index) {
+  page_->OnBookmarkNodeMoved(
+      GetFolderSidePanelID(*bookmark_merged_surface_, old_parent), old_index,
+      GetFolderSidePanelID(*bookmark_merged_surface_, new_parent), new_index);
+}
+
 std::string GetFolderSidePanelIDForTesting(
     const BookmarkMergedSurfaceService& bookmark_merged_surface,
     const BookmarkParentFolder& folder) {

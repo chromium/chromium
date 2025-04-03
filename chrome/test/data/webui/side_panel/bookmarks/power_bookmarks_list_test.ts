@@ -325,13 +325,15 @@ suite('General', () => {
             ['bookmark-1', 'bookmark-5', 'bookmark-4', 'bookmark-3']));
 
     const movedBookmark = FOLDERS[1]!.children![2]!.children![0]!;
-    bookmarksApi.callbackRouter.onMoved.callListeners(movedBookmark.id, {
-      index: 0,
-      parentId: FOLDERS[1]!.id,                   // Moving to other bookmarks.
-      oldParentId: FOLDERS[1]!.children![2]!.id,  // Moving from child folder.
-      oldIndex: 0,
-    });
-
+    assertTrue(!!movedBookmark);
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeMoved(
+        /*oldParentId=*/ FOLDERS[1]!.children![2]!
+            .id,  // Moving from child folder.
+        /*oldIndex=*/ 0,
+        /*parentId=*/ FOLDERS[1]!.id,  // Moving to other bookmarks.
+        /*index=*/ 0,
+    );
+    await microtasksFinished();
     await flushTasks();
 
     assertEquals(
@@ -581,15 +583,17 @@ suite('General', () => {
     assertEquals(4, getBookmarksInList(1).length);
   });
 
-  test('MovesBookmarks', () => {
+  test('MovesBookmarks', async () => {
     const movedBookmark = FOLDERS[1]!.children![2]!.children![0]!;
-    bookmarksApi.callbackRouter.onMoved.callListeners(movedBookmark.id, {
-      index: 0,
-      parentId: FOLDERS[1]!.id,                   // Moving to other bookmarks.
-      oldParentId: FOLDERS[1]!.children![2]!.id,  // Moving from child folder.
-      oldIndex: 0,
-    });
-    flush();
+    assertTrue(!!movedBookmark);
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeMoved(
+        /*oldParentId=*/ FOLDERS[1]!.children![2]!
+            .id,  // Moving from child folder.
+        /*oldIndex=*/ 0,
+        /*parentId=*/ FOLDERS[1]!.id,  // Moving to other bookmarks.
+        /*index=*/ 0,
+    );
+    await flushTasks();
 
     const bookmarks = getBookmarks();
     assertEquals(5, bookmarks.length);
@@ -614,13 +618,14 @@ suite('General', () => {
     await flushTasks();
 
     const movedBookmark = FOLDERS[1]!.children![2]!.children![0]!;
-    bookmarksApi.callbackRouter.onMoved.callListeners(movedBookmark.id, {
-      index: 0,
-      parentId: '1000',
-      oldParentId: FOLDERS[1]!.children![2]!.id,
-      oldIndex: 0,
-    });
-    flush();
+    assertTrue(!!movedBookmark);
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeMoved(
+        /*oldParentId=*/ FOLDERS[1]!.children![2]!.id,
+        /*oldIndex=*/ 0,
+        /*parentId=*/ '1000',
+        /*index=*/ 0,
+    );
+    await flushTasks();
 
     const newFolder = getBookmarkWithId('1000');
     assertTrue(!!newFolder);
@@ -637,26 +642,27 @@ suite('General', () => {
 
     const movedBookmark = getBookmarkWithId('6');
     assertTrue(!!movedBookmark);
-    bookmarksApi.callbackRouter.onMoved.callListeners(movedBookmark.id, {
-      index: 0,
-      parentId: FOLDERS[1]!.id,                   // Moving to other bookmarks.
-      oldParentId: FOLDERS[1]!.children![2]!.id,  // Moving from child folder.
-      oldIndex: 0,
-    });
-    flush();
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeMoved(
+        /*oldParentId=*/ FOLDERS[1]!.children![2]!
+            .id,  // Moving from child folder.
+        /*oldIndex=*/ 0,
+        /*parentId=*/ FOLDERS[1]!.id,  // Moving to other bookmarks.
+        /*index=*/ 0,
+    );
+    await flushTasks();
 
     // Moved bookmark is no longer in active folder, should move from primary
     // to secondary list.
     assertEquals(0, getBookmarksInList(0).length);
     assertEquals(4, getBookmarksInList(1).length);
 
-    bookmarksApi.callbackRouter.onMoved.callListeners(movedBookmark.id, {
-      index: 0,
-      parentId: FOLDERS[1]!.children![2]!.id,  // Moving to child folder.
-      oldParentId: FOLDERS[1]!.id,             // Moving from other bookmarks.
-      oldIndex: 0,
-    });
-    flush();
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeMoved(
+        /*oldParentId=*/ FOLDERS[1]!.id,  // Moving from other bookmarks.
+        /*oldIndex=*/ 0,
+        /*parentId=*/ FOLDERS[1]!.children![2]!.id,  // Moving to child folder.
+        /*index=*/ 0,
+    );
+    await flushTasks();
 
     // Moved bookmark is now in active folder, should move from secondary
     // to primary list.
