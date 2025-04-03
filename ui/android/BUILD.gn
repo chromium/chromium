@@ -521,6 +521,7 @@ android_library("ui_no_recycler_view_java") {
     "//base:content_uri_utils_java",
     "//build/android:build_java",
     "//cc:cc_java",
+    "//components/cached_flags:java",
     "//components/url_formatter/android:url_formatter_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",

@@ -2488,8 +2488,19 @@
     "expiry_milestone": 145
   },
   {
+    "name": "enable-android-window-occlusion",
+    "owners": [
+      "edcourtney@chromium.org",
+      "cros-web-apps-team@google.com"
+    ],
+    "expiry_milestone": 142
+  },
+  {
     "name": "enable-android-window-popup-large-screen",
-    "owners": [ "chominskib@google.com", "cros-web-apps-team@google.com" ],
+    "owners": [
+      "chominskib@google.com",
+      "cros-web-apps-team@google.com"
+    ],
     "expiry_milestone": 142
   },
   {

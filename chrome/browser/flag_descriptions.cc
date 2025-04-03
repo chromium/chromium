@@ -5774,6 +5774,13 @@ const char kAndroidWindowPopupLargeScreenDescription[] =
     "Open an actual new window instead of new tab on window.open() Javascript "
     "call and make moving windows with window.{move|resize}{By|To}() "
     "possible.";
+
+const char kAndroidWindowOcclusionName[] =
+    "Enable occlusion tracking on Android.";
+const char kAndroidWindowOcclusionDescription[] =
+    "Enables occlusion tracking on Android, which can save CPU and memory in "
+    "multi-window environments.";
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Windows, Mac and Android  --------------------------------------------------

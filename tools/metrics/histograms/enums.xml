@@ -18558,6 +18558,7 @@ from previous Chrome versions.
   <int value="1662277267" label="DecodeScriptSourceOffThread:disabled"/>
   <int value="1662466302" label="NtpRealboxUseGoogleGIcon:enabled"/>
   <int value="1662543761" label="PdfOopif:disabled"/>
+  <int value="1663523447" label="AndroidWindowOcclusion:enabled"/>
   <int value="1663574600" label="WebViewDisplayCutout:enabled"/>
   <int value="1664021307" label="sparky-server-url:disabled"/>
   <int value="1664154056" label="CastStreamingMacHardwareH264:disabled"/>
@@ -19451,6 +19452,7 @@ from previous Chrome versions.
   <int value="1989051182" label="view-passwords:enabled"/>
   <int value="1989739884" label="CustomizeChromeWallpaperSearch:enabled"/>
   <int value="1989877708" label="PostScriptPrinting:enabled"/>
+  <int value="1990468492" label="AndroidWindowOcclusion:disabled"/>
   <int value="1990528959" label="SchemefulSameSite:disabled"/>
   <int value="1990562608"
       label="LinkManagedNoticeToChromeUIManagementURL:enabled"/>

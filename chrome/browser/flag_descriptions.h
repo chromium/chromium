@@ -3393,6 +3393,9 @@ extern const char kAndroidMinimalUiLargeScreenDescription[];
 extern const char kAndroidWindowPopupLargeScreenName[];
 extern const char kAndroidWindowPopupLargeScreenDescription[];
 
+extern const char kAndroidWindowOcclusionName[];
+extern const char kAndroidWindowOcclusionDescription[];
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Windows, Mac and Android  --------------------------------------------------
