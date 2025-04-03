@@ -22,6 +22,7 @@ namespace default_status {
 
 namespace {
 
+#if defined(__IPHONE_18_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_2
 void ExpectSuccessHistogramsToHaveNoSamples(
     const base::HistogramTester& histogram_tester) {
   histogram_tester.ExpectTotalCount(
@@ -54,6 +55,7 @@ void ExpectSuccessHistogramsToHaveNoSamples(
   histogram_tester.ExpectTotalCount(
       "IOS.DefaultStatusAPI.HeuristicAssessment42", 0);
 }
+#endif
 
 }  // namespace
 
@@ -526,6 +528,7 @@ TEST_F(DefaultStatusHelperTest, AssignNewCohortIfNeeded) {
 }
 
 // Tests SystemToLocalEnum.
+#if defined(__IPHONE_18_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_2
 TEST_F(DefaultStatusHelperTest, SystemToLocalEnum) API_AVAILABLE(ios(18.4)) {
   DefaultStatusAPIResult result =
       internal::SystemToLocalEnum(UIApplicationCategoryDefaultStatusIsDefault);
@@ -537,6 +540,7 @@ TEST_F(DefaultStatusHelperTest, SystemToLocalEnum) API_AVAILABLE(ios(18.4)) {
       internal::SystemToLocalEnum((UIApplicationCategoryDefaultStatus)1000);
   EXPECT_EQ(result, DefaultStatusAPIResult::kUnknown);
 }
+#endif
 
 // Tests DetermineRetentionStatus.
 TEST_F(DefaultStatusHelperTest, DetermineRetentionStatus) {
@@ -560,6 +564,7 @@ TEST_F(DefaultStatusHelperTest, DetermineRetentionStatus) {
 
 // Tests that QueryDefaultStatusIfReadyAndLogResults doesn't do anything if the
 // system isn't running on the minimum version.
+#if defined(__IPHONE_18_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_2
 TEST_F(DefaultStatusHelperTest, QueryDefaultStatusAPINotAvailable)
 API_AVAILABLE(ios(18.4)) {
   if (@available(iOS 18.4, *)) {
@@ -583,9 +588,11 @@ API_AVAILABLE(ios(18.4)) {
       "IOS.DefaultStatusAPI.CooldownError.DaysLeft", 0);
   ExpectSuccessHistogramsToHaveNoSamples(histogram_tester);
 }
+#endif
 
 // Test that QueryDefaultStatusIfReadyAndLogResults does not do anything if
 // the client is still on cooldown according to local prefs.
+#if defined(__IPHONE_18_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_2
 TEST_F(DefaultStatusHelperTest, QueryDefaultStatusAPIOnLocalCooldown)
 API_AVAILABLE(ios(18.4)) {
   if (!@available(iOS 18.4, *)) {
@@ -611,9 +618,11 @@ API_AVAILABLE(ios(18.4)) {
       "IOS.DefaultStatusAPI.CooldownError.DaysLeft", 0);
   ExpectSuccessHistogramsToHaveNoSamples(histogram_tester);
 }
+#endif
 
 // Test that QueryDefaultStatusIfReadyAndLogResults correctly handles cooldown
 // errors returned by the default status system API.
+#if defined(__IPHONE_18_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_2
 TEST_F(DefaultStatusHelperTest, QueryDefaultStatusAPISystemCooldownError)
 API_AVAILABLE(ios(18.4)) {
   if (!@available(iOS 18.4, *)) {
@@ -653,9 +662,11 @@ API_AVAILABLE(ios(18.4)) {
       "IOS.DefaultStatusAPI.CooldownError.DaysLeft", 100, 1);
   ExpectSuccessHistogramsToHaveNoSamples(histogram_tester);
 }
+#endif
 
 // Test that QueryDefaultStatusIfReadyAndLogResults can handle unknown error
 // types returned by the default status system API.
+#if defined(__IPHONE_18_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_2
 TEST_F(DefaultStatusHelperTest, QueryDefaultStatusAPISystemUnknownError)
 API_AVAILABLE(ios(18.4)) {
   if (!@available(iOS 18.4, *)) {
@@ -687,6 +698,7 @@ API_AVAILABLE(ios(18.4)) {
       "IOS.DefaultStatusAPI.CooldownError.DaysLeft", 0);
   ExpectSuccessHistogramsToHaveNoSamples(histogram_tester);
 }
+#endif
 
 // Tests the success case of QueryDefaultStatusIfReadyAndLogResults for the
 // following scenario:
@@ -694,6 +706,7 @@ API_AVAILABLE(ios(18.4)) {
 //    - Within cohort 1 reporting window
 //    - Is default
 //    - No previous default status API result
+#if defined(__IPHONE_18_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_2
 TEST_F(DefaultStatusHelperTest,
        QueryDefaultStatusAPIStrictCohort1IsDefaultFirstTime)
 API_AVAILABLE(ios(18.4)) {
@@ -764,6 +777,7 @@ API_AVAILABLE(ios(18.4)) {
   histogram_tester.ExpectTotalCount(
       "IOS.DefaultStatusAPI.HeuristicAssessment42", 1);
 }
+#endif
 
 // Tests the success case of QueryDefaultStatusIfReadyAndLogResults for the
 // following scenario:
@@ -771,6 +785,7 @@ API_AVAILABLE(ios(18.4)) {
 //    - Outside cohort 2 reporting window
 //    - Is not default
 //    - Has a previous default status API result of "is default"
+#if defined(__IPHONE_18_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_2
 TEST_F(DefaultStatusHelperTest,
        QueryDefaultStatusAPICohort2IsNotDefaultRecurring)
 API_AVAILABLE(ios(18.4)) {
@@ -845,6 +860,7 @@ API_AVAILABLE(ios(18.4)) {
   histogram_tester.ExpectTotalCount(
       "IOS.DefaultStatusAPI.HeuristicAssessment42", 1);
 }
+#endif
 
 // Tests the success case of QueryDefaultStatusIfReadyAndLogResults for the
 // following scenario:
@@ -852,6 +868,7 @@ API_AVAILABLE(ios(18.4)) {
 //    - Inside cohort 3 reporting window
 //    - Is default
 //    - Has a previous default status API result of "is default"
+#if defined(__IPHONE_18_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_2
 TEST_F(DefaultStatusHelperTest,
        QueryDefaultStatusAPIStrictCohort3IsDefaultRecurring)
 API_AVAILABLE(ios(18.4)) {
@@ -928,5 +945,6 @@ API_AVAILABLE(ios(18.4)) {
   histogram_tester.ExpectTotalCount(
       "IOS.DefaultStatusAPI.HeuristicAssessment42", 1);
 }
+#endif
 
 }  // namespace default_status
