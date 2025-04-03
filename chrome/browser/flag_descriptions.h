@@ -1778,9 +1778,6 @@ extern const char kPasswordFormClientsideClassifierDescription[];
 extern const char kPasswordFormGroupedAffiliationsName[];
 extern const char kPasswordFormGroupedAffiliationsDescription[];
 
-extern const char kPasswordLeakToggleMoveName[];
-extern const char kPasswordLeakToggleMoveDescription[];
-
 extern const char kPasswordManagerShowSuggestionsOnAutofocusName[];
 extern const char kPasswordManagerShowSuggestionsOnAutofocusDescription[];
 

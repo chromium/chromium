@@ -7216,11 +7216,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "password-leak-toggle-move",
-    "owners": ["awado@google.com", "jacastro@chromium.org"],
-    "expiry_milestone": 135
-  },
-  {
     "name": "password-manager-detect-username-in-uff",
     "owners": [
       "vincb@google.com",

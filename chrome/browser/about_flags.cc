@@ -10686,11 +10686,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kEnableCertManagementUIV2EditCerts)},
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
-    {"password-leak-toggle-move",
-     flag_descriptions::kPasswordLeakToggleMoveName,
-     flag_descriptions::kPasswordLeakToggleMoveDescription, kOsAll,
-     FEATURE_VALUE_TYPE(safe_browsing::kPasswordLeakToggleMove)},
-
     {"pwm-show-suggestions-on-autofocus",
      flag_descriptions::kPasswordManagerShowSuggestionsOnAutofocusName,
      flag_descriptions::kPasswordManagerShowSuggestionsOnAutofocusDescription,
