@@ -22,11 +22,13 @@
 
 constexpr size_t kMaxPerCaptureSizeBytes = 50 * 1000L * 1000L;  // 50 MB.
 
-AXTreeFixingScreenshotter::AXTreeFixingScreenshotter()
+AXTreeFixingScreenshotter::AXTreeFixingScreenshotter(
+    ScreenshotDelegate& delegate)
     : paint_preview::PaintPreviewBaseService(
           /*file_mixin=*/nullptr,  // in-memory captures
           /*policy=*/nullptr,      // all content is deemed amenable
           /*is_off_the_record=*/false),
+      screenshot_delegate_(delegate),
       compositor_service_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
       compositor_client_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
   compositor_service_ = paint_preview::StartCompositorService(base::BindOnce(
@@ -38,7 +40,8 @@ AXTreeFixingScreenshotter::AXTreeFixingScreenshotter()
 AXTreeFixingScreenshotter::~AXTreeFixingScreenshotter() = default;
 
 void AXTreeFixingScreenshotter::RequestScreenshot(
-    const raw_ptr<content::WebContents> web_contents) {
+    const raw_ptr<content::WebContents> web_contents,
+    int request_id) {
   if (!web_contents) {
     return;
   }
@@ -50,8 +53,8 @@ void AXTreeFixingScreenshotter::RequestScreenshot(
   capture_params.max_per_capture_size = kMaxPerCaptureSizeBytes;
   CapturePaintPreview(
       capture_params,
-      base::BindOnce(&AXTreeFixingScreenshotter::OnScreenshotCaptured,
-                     weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&AXTreeFixingScreenshotter::OnPaintPreviewCaptured,
+                     weak_ptr_factory_.GetWeakPtr(), request_id));
 }
 
 void AXTreeFixingScreenshotter::OnCompositorServiceDisconnected() {
@@ -59,7 +62,8 @@ void AXTreeFixingScreenshotter::OnCompositorServiceDisconnected() {
   compositor_service_.reset();
 }
 
-void AXTreeFixingScreenshotter::OnScreenshotCaptured(
+void AXTreeFixingScreenshotter::OnPaintPreviewCaptured(
+    int request_id,
     paint_preview::PaintPreviewBaseService::CaptureStatus status,
     std::unique_ptr<paint_preview::CaptureResult> result) {
   if (status != PaintPreviewBaseService::CaptureStatus::kOk ||
@@ -67,15 +71,16 @@ void AXTreeFixingScreenshotter::OnScreenshotCaptured(
     return;
   }
   if (!compositor_client_) {
-    compositor_client_ = compositor_service_->CreateCompositor(
-        base::BindOnce(&AXTreeFixingScreenshotter::SendCompositeRequest,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(result)));
+    compositor_client_ = compositor_service_->CreateCompositor(base::BindOnce(
+        &AXTreeFixingScreenshotter::SendCompositeRequest,
+        weak_ptr_factory_.GetWeakPtr(), request_id, std::move(result)));
     return;
   }
-  SendCompositeRequest(std::move(result));
+  SendCompositeRequest(request_id, std::move(result));
 }
 
 void AXTreeFixingScreenshotter::SendCompositeRequest(
+    int request_id,
     std::unique_ptr<paint_preview::CaptureResult> result) {
   paint_preview::mojom::PaintPreviewBeginCompositeRequestPtr request =
       paint_preview::mojom::PaintPreviewBeginCompositeRequest::New();
@@ -87,10 +92,11 @@ void AXTreeFixingScreenshotter::SendCompositeRequest(
   compositor_client_->BeginMainFrameComposite(
       std::move(request),
       base::BindOnce(&AXTreeFixingScreenshotter::OnCompositeFinished,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), request_id));
 }
 
 void AXTreeFixingScreenshotter::OnCompositeFinished(
+    int request_id,
     paint_preview::mojom::PaintPreviewCompositor::BeginCompositeStatus status,
     paint_preview::mojom::PaintPreviewBeginCompositeResponsePtr response) {
   if (status != paint_preview::mojom::PaintPreviewCompositor::
@@ -104,10 +110,11 @@ void AXTreeFixingScreenshotter::OnCompositeFinished(
   compositor_client_->BitmapForMainFrame(
       gfx::Rect(), /*scale_factor=*/1.0,
       base::BindOnce(&AXTreeFixingScreenshotter::OnBitmapReceived,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), request_id));
 }
 
 void AXTreeFixingScreenshotter::OnBitmapReceived(
+    int request_id,
     paint_preview::mojom::PaintPreviewCompositor::BitmapStatus status,
     const SkBitmap& bitmap) {
   if (status != paint_preview::mojom::PaintPreviewCompositor::BitmapStatus::
@@ -116,5 +123,5 @@ void AXTreeFixingScreenshotter::OnBitmapReceived(
     return;
   }
 
-  // TODO: Save bitmap.
+  screenshot_delegate_->OnScreenshotCaptured(bitmap, request_id);
 }

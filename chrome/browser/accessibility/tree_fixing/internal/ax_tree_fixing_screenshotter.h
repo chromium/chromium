@@ -17,16 +17,40 @@
 class AXTreeFixingScreenshotter
     : public paint_preview::PaintPreviewBaseService {
  public:
-  AXTreeFixingScreenshotter();
+  // Delegate for clients that want to screenshot WebContents.
+  class ScreenshotDelegate {
+   protected:
+    ScreenshotDelegate() = default;
+
+   public:
+    ScreenshotDelegate(const ScreenshotDelegate&) = delete;
+    ScreenshotDelegate& operator=(const ScreenshotDelegate&) = delete;
+    virtual ~ScreenshotDelegate() = default;
+
+    // This method is used to return the captured screenshot to the delegate
+    // (owner) of this instance. When calling RequestScreenshot, the client must
+    // provide a request_id, and this ID is passed back to the client. The
+    // request_id allows clients to make multiple requests in parallel and
+    // uniquely identify each response. It is the responsibility of the client
+    // to handle the logic behind a request_id, this service simply passes the
+    // id through.
+    virtual void OnScreenshotCaptured(const SkBitmap& bitmap,
+                                      int request_id) = 0;
+  };
+
+  explicit AXTreeFixingScreenshotter(ScreenshotDelegate& delegate);
   AXTreeFixingScreenshotter(const AXTreeFixingScreenshotter&) = delete;
   AXTreeFixingScreenshotter& operator=(const AXTreeFixingScreenshotter&) =
       delete;
   ~AXTreeFixingScreenshotter() override;
 
   // Initiates the process of capturing a paint preview screenshot for the
-  // given |web_contents|. On completion, OnScreenshotCaptured() will be
+  // given |web_contents|. On completion, OnPaintPreviewCaptured() will be
   // invoked. Does nothing if |web_contents| is null.
-  void RequestScreenshot(const raw_ptr<content::WebContents> web_contents);
+  // The client should provide a request_id, which is returned to the client
+  // along with the resulting bitmap via a call to OnScreenshotCaptured.
+  void RequestScreenshot(const raw_ptr<content::WebContents> web_contents,
+                         int request_id);
 
  private:
   // Called when the connection to the Paint Preview Compositor Service is lost.
@@ -39,7 +63,8 @@ class AXTreeFixingScreenshotter
   // stage by calling SendCompositeRequest(). If this is the first successful
   // capture, it will also establish the connection to the compositor service
   // via CreateCompositor.
-  void OnScreenshotCaptured(
+  void OnPaintPreviewCaptured(
+      int request_id,
       paint_preview::PaintPreviewBaseService::CaptureStatus status,
       std::unique_ptr<paint_preview::CaptureResult> result);
 
@@ -47,20 +72,28 @@ class AXTreeFixingScreenshotter
   // to begin compositing into a bitmap.
   // OnCompositeFinished() will be called upon completion of the compositing.
   void SendCompositeRequest(
+      int request_id,
       std::unique_ptr<paint_preview::CaptureResult> result);
 
   // Callback invoked when the compositor service finishes the request initiated
   // by SendCompositeRequest(). If compositing was successful (or partially
   // successful), it requests the final bitmap of the main frame.
   void OnCompositeFinished(
+      int request_id,
       paint_preview::mojom::PaintPreviewCompositor::BeginCompositeStatus status,
       paint_preview::mojom::PaintPreviewBeginCompositeResponsePtr response);
 
   // Callback invoked when the compositor service provides the requested bitmap.
-  // This is the final step in the screenshot pipeline.
+  // This is the final step in the screenshot pipeline. This returns the
+  // resulting bitmap to the owner of this instance via the provided delegate.
   void OnBitmapReceived(
+      int request_id,
       paint_preview::mojom::PaintPreviewCompositor::BitmapStatus status,
       const SkBitmap& bitmap);
+
+  // Delegate provided by client to receive screenshot.
+  // Use a raw_ref since we do not own the delegate or control its lifecycle.
+  const raw_ref<ScreenshotDelegate> screenshot_delegate_;
 
   std::unique_ptr<paint_preview::PaintPreviewCompositorService,
                   base::OnTaskRunnerDeleter>
