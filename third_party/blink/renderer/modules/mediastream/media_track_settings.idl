@@ -58,5 +58,6 @@ dictionary MediaTrackSettings {
     [RuntimeEnabled=GetDisplayMedia] boolean suppressLocalAudioPlayback;
 
     // Capture Surface Resolution API
-    [RuntimeEnabled=CapturedSurfaceResolution] double screenPixelRatio;
+    // https://w3c.github.io/mediacapture-screen-share/#dfn-screenpixelratio
+    [RuntimeEnabled=GetDisplayMedia] double screenPixelRatio;
 };
