@@ -49,6 +49,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells:most_visited_tiles",
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells:shortcuts",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/impression_limits:impression_limits",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:cells",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",

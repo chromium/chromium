@@ -5647,6 +5647,14 @@
     "expiry_milestone": 139
   },
   {
+    "name": "ios-shop-card-impression-limits",
+    "owners": [
+      "davidjm@google.com",
+      "gloriafang@google.com"
+    ],
+    "expiry_milestone": 139
+  },
+  {
     "name": "ios-soft-lock",
     "owners": [
       "rubindl@chromium.org",
