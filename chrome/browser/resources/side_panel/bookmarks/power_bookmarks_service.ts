@@ -222,7 +222,6 @@ export class PowerBookmarksService {
           'onMoved',
           (_id: string, movedInfo: chrome.bookmarks.MoveInfo) =>
               this.onMoved_(movedInfo));
-      this.addListener_('onRemoved', (id: string) => this.onRemoved_(id));
       this.addListener_('onTabActivated', (_info: chrome.tabs.ActiveInfo) => {
         this.bookmarksApi_.getActiveUrl().then(
             url => this.delegate_.setCurrentUrl(url));
@@ -237,6 +236,8 @@ export class PowerBookmarksService {
 
       this.bookmarksApi_.pageCallbackRouter.onBookmarkNodeAdded.addListener(
           this.onBookmarkNodeAdded_.bind(this));
+      this.bookmarksApi_.pageCallbackRouter.onBookmarkNodesRemoved.addListener(
+          this.onBookmarkNodesRemoved_.bind(this));
 
       this.delegate_.onBookmarksLoaded();
     });
@@ -488,12 +489,14 @@ export class PowerBookmarksService {
     this.delegate_.onBookmarkMoved(movedNode, oldParent, newParent);
   }
 
-  private onRemoved_(id: string) {
-    const oldPath = this.findPathToId(id);
-    const removedNode = oldPath.pop()!;
-    const oldParent = oldPath[oldPath.length - 1];
-    oldParent.children!.splice(oldParent.children!.indexOf(removedNode), 1);
-    this.delegate_.onBookmarkRemoved(removedNode);
+  private onBookmarkNodesRemoved_(removedNodeIds: string[]) {
+    for (const id of removedNodeIds) {
+      const path = this.findPathToId(id);
+      const removedNode = path.pop()!;
+      const parent = path[path.length - 1];
+      parent.children!.splice(parent.children!.indexOf(removedNode), 1);
+      this.delegate_.onBookmarkRemoved(removedNode);
+    }
   }
 
   /**

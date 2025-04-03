@@ -27,6 +27,7 @@ namespace {
 using bookmarks::test::AddNodesFromModelString;
 using ::testing::Contains;
 using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
 
 // Compares a `side_panel::mojom::BookmarksTreeNodePtr` (arg) with a
 // `bookmarks::BookmarkNode` (node) by comparing their `id` and the ids of their
@@ -80,6 +81,7 @@ class MockBookmarksPage : public side_panel::mojom::BookmarksPage {
   MOCK_METHOD(void,
               OnBookmarkNodeAdded,
               (side_panel::mojom::BookmarksTreeNodePtr));
+  MOCK_METHOD(void, OnBookmarkNodesRemoved, (const std::vector<std::string>&));
 
  private:
   mojo::Receiver<side_panel::mojom::BookmarksPage> receiver_{this};
@@ -348,6 +350,54 @@ TEST_F(BookmarksPageHandlerTest, OnBookmarkNodeAdded) {
       });
   AddNodesFromModelString(model(), model()->account_bookmark_bar_node(),
                           "a1 a2 ");
+  mock_bookmarks_page().FlushForTesting();
+}
+
+TEST_F(BookmarksPageHandlerTest, OnBookmarkNodesRemoved) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kSyncEnableBookmarksInTransportMode};
+
+  model()->CreateAccountPermanentFolders();
+
+  const bookmarks::BookmarkNode* other_node = model()->other_node();
+  const bookmarks::BookmarkNode* account_other_node =
+      model()->account_other_node();
+
+  AddNodesFromModelString(model(), other_node, "1 2:[ 3 ]");
+  AddNodesFromModelString(model(), account_other_node, "4 5 6 ");
+
+  const bookmarks::BookmarkNode* folder_in_other =
+      other_node->children()[1].get();
+  ASSERT_TRUE(folder_in_other->is_folder());
+
+  // Only folder id expected; without its children ids.
+  EXPECT_CALL(mock_bookmarks_page(),
+              OnBookmarkNodesRemoved(
+                  UnorderedElementsAre(base::ToString(folder_in_other->id()))));
+  model()->Remove(folder_in_other,
+                  bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+  mock_bookmarks_page().FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&mock_bookmarks_page());
+
+  const bookmarks::BookmarkNode* first_account_node =
+      account_other_node->children()[1].get();
+  ASSERT_TRUE(first_account_node->is_url());
+
+  EXPECT_CALL(mock_bookmarks_page(),
+              OnBookmarkNodesRemoved(UnorderedElementsAre(
+                  base::ToString(first_account_node->id()))));
+  model()->Remove(first_account_node,
+                  bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+  mock_bookmarks_page().FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&mock_bookmarks_page());
+
+  // 2 remaining nodes in `account_other_node`.
+  EXPECT_CALL(
+      mock_bookmarks_page(),
+      OnBookmarkNodesRemoved(UnorderedElementsAre(
+          base::ToString(account_other_node->children()[0].get()->id()),
+          base::ToString(account_other_node->children()[1].get()->id()))));
+  model()->RemoveAccountPermanentFolders();
   mock_bookmarks_page().FlushForTesting();
 }
 

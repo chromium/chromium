@@ -146,4 +146,6 @@ interface BookmarksPageHandler {
 interface BookmarksPage {
   // Send the information of the newly added node to the Ui.
   OnBookmarkNodeAdded(BookmarksTreeNode node);
+  // Send all the node ids that were removed to the Ui.
+  OnBookmarkNodesRemoved(array<string> node_ids);
 };

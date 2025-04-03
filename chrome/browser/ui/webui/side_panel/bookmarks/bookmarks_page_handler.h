@@ -76,7 +76,7 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler,
                          size_t index) override;
   void BookmarkNodesRemoved(
       const BookmarkParentFolder& parent,
-      const base::flat_set<const bookmarks::BookmarkNode*>& nodes) override {}
+      const base::flat_set<const bookmarks::BookmarkNode*>& nodes) override;
   void BookmarkNodeMoved(const BookmarkParentFolder& old_parent,
                          size_t old_index,
                          const BookmarkParentFolder& new_parent,

@@ -60,7 +60,6 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
       onChanged: chrome.bookmarks.onChanged,
       onChildrenReordered: chrome.bookmarks.onChildrenReordered,
       onMoved: chrome.bookmarks.onMoved,
-      onRemoved: chrome.bookmarks.onRemoved,
       onTabActivated: chrome.tabs.onActivated,
       onTabUpdated: chrome.tabs.onUpdated,
     };

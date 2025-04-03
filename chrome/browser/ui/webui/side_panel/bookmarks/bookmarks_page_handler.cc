@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_page_handler.h"
 
 #include <algorithm>
+#include <iterator>
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -580,6 +581,17 @@ void BookmarksPageHandler::BookmarkNodeAdded(const BookmarkParentFolder& parent,
   // every child node as well.
   page_->OnBookmarkNodeAdded(ConstructMojoNode(
       *bookmark_merged_surface_, parent, added_node, /*with_children=*/false));
+}
+
+void BookmarksPageHandler::BookmarkNodesRemoved(
+    const BookmarkParentFolder& parent,
+    const base::flat_set<const bookmarks::BookmarkNode*>& nodes) {
+  std::vector<std::string> mojo_node_ids;
+  std::ranges::transform(nodes, std::back_inserter(mojo_node_ids),
+                         [](const bookmarks::BookmarkNode* node) {
+                           return base::ToString(node->id());
+                         });
+  page_->OnBookmarkNodesRemoved(std::move(mojo_node_ids));
 }
 
 std::string GetFolderSidePanelIDForTesting(

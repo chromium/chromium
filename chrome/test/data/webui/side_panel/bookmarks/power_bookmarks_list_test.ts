@@ -301,8 +301,7 @@ suite('General', () => {
         JSON.stringify(
             ['bookmark-1', 'bookmark-5', 'bookmark-4', 'bookmark-3']));
 
-    bookmarksApi.callbackRouter.onRemoved.callListeners('4');
-
+    bookmarksApi.callbackRouterRemote.onBookmarkNodesRemoved(['4']);
     await flushTasks();
     await waitAfterNextRender(powerBookmarksList);
 
@@ -461,8 +460,8 @@ suite('General', () => {
     let btn = getAddTabButton();
     assertTrue(btn.disabled);
 
-    bookmarksApi.callbackRouter.onRemoved.callListeners('999');
-    flush();
+    bookmarksApi.callbackRouterRemote.onBookmarkNodesRemoved(['999']);
+    await flushTasks();
 
     btn = getAddTabButton();
     assertFalse(btn.disabled);
@@ -665,11 +664,11 @@ suite('General', () => {
     assertEquals(3, getBookmarksInList(1).length);
   });
 
-  test('RemovesBookmark', () => {
+  test('RemovesBookmark', async () => {
     const originalShownBookmarkCount = getBookmarks().length;
 
-    bookmarksApi.callbackRouter.onRemoved.callListeners('3');
-    flush();
+    bookmarksApi.callbackRouterRemote.onBookmarkNodesRemoved(['3']);
+    await flushTasks();
 
     const removedBookmark = getBookmarkWithId('3');
     assertTrue(!removedBookmark);

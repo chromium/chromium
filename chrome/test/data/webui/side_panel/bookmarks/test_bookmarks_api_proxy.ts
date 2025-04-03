@@ -19,7 +19,6 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
     onChanged: FakeChromeEvent,
     onChildrenReordered: FakeChromeEvent,
     onMoved: FakeChromeEvent,
-    onRemoved: FakeChromeEvent,
     onTabActivated: FakeChromeEvent,
     onTabUpdated: FakeChromeEvent,
   };
@@ -57,7 +56,6 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
       onChanged: new FakeChromeEvent(),
       onChildrenReordered: new FakeChromeEvent(),
       onMoved: new FakeChromeEvent(),
-      onRemoved: new FakeChromeEvent(),
       onTabActivated: new FakeChromeEvent(),
       onTabUpdated: new FakeChromeEvent(),
     };

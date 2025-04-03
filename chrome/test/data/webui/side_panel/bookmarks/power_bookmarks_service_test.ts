@@ -422,10 +422,11 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     assertEquals(delegate.getCallCount('onBookmarkMoved'), 1);
   });
 
-  test('CallsOnBookmarkRemoved', () => {
-    bookmarksApi.callbackRouter.onRemoved.callListeners('4');
+  test('CallsOnBookmarkNodesRemoved', async () => {
+    bookmarksApi.callbackRouterRemote.onBookmarkNodesRemoved(['3', '4']);
+    await flushTasks();
 
-    assertEquals(delegate.getCallCount('onBookmarkRemoved'), 1);
+    assertEquals(delegate.getCallCount('onBookmarkRemoved'), 2);
   });
 
   test('FindsBookmarkWithId', () => {
