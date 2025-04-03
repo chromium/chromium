@@ -9307,11 +9307,11 @@ void WebContentsImpl::DidStopLoading() {
 ui::AXTreeUpdate WebContentsImpl::RequestAXTreeSnapshotWithinBrowserProcess() {
   ui::BrowserAccessibilityManager* root_manager =
       GetRootBrowserAccessibilityManager();
-  CHECK(root_manager && root_manager->ax_tree())
-      << "RequestAXTreeSnapshotWithinBrowserProcess() only supports "
-         "consumption of existing AXTrees already stored in the browser "
-         "process.";
-  CHECK(GetAccessibilityMode().has_mode(ui::AXMode::kWebContents));
+  // A page can be fully loaded before a user turns on accessibility services,
+  // and we can be in a transient state waiting for managers.
+  if (!root_manager || !root_manager->ax_tree()) {
+    return ui::AXTreeUpdate();
+  }
 
   ui::AXTreeUpdate combined_update;
   ui::AXTreeCombiner combiner;

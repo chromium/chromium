@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_iterator.h"
@@ -34,15 +35,35 @@ AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
 
 void AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
     DocumentOnLoadCompletedInPrimaryMainFrame() {
-  router_->IdentifyMainNode(
+  retry_attempts_ = 0;
+  TryIdentifyMainNode();
+}
+
+void AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
+    TryIdentifyMainNode() {
+  bool request_processed = router_->IdentifyMainNode(
       web_contents()->RequestAXTreeSnapshotWithinBrowserProcess(),
       base::BindOnce(&AXTreeFixingServicesRouter::
                          AXTreeFixingWebContentsObserver::OnMainNodeIdentified,
                      base::Unretained(this)));
+
+  // If the request was not processed, it likely means that the accessibility
+  // engine is still spinning-up (e.g. no root BrowserAccessibilityManager yet).
+  // We will retry after a pause, since this is likely a transient state.
+  if (!request_processed && retry_attempts_ <= 3) {
+    retry_attempts_++;
+    content::GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&AXTreeFixingServicesRouter::
+                           AXTreeFixingWebContentsObserver::TryIdentifyMainNode,
+                       base::Unretained(this)),
+        base::Seconds(retry_attempts_));
+  }
 }
 
 void AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
     OnMainNodeIdentified(ui::AXTreeID tree_id, ui::AXNodeID node_id) {
+  retry_attempts_ = 0;
   web_contents()->ApplyAXTreeFixingResult(tree_id, node_id,
                                           ax::mojom::Role::kMain);
 }
@@ -77,7 +98,7 @@ AXTreeFixingServicesRouter::AXTreeFixingServicesRouter(Profile* profile)
 
 AXTreeFixingServicesRouter::~AXTreeFixingServicesRouter() = default;
 
-void AXTreeFixingServicesRouter::IdentifyMainNode(
+bool AXTreeFixingServicesRouter::IdentifyMainNode(
     const ui::AXTreeUpdate& ax_tree,
     MainNodeIdentificationCallback callback) {
   // This should never be called if the feature is not enabled.
@@ -93,18 +114,21 @@ void AXTreeFixingServicesRouter::IdentifyMainNode(
 
   // If the AXTreeUpdate is empty, do not process the request.
   if (ax_tree.nodes.empty()) {
-    return;
+    return false;
   }
 
   // We must wait for the ScreenAI service to be ready for requests. We will
   // queue the request for convenience and to keep the services layer obscured
   // from clients.
   if (!can_make_main_node_identification_requests_) {
-    request_queue_.emplace(ax_tree, std::move(callback));
-    return;
+    // TODO(401308988): Handle queueing requests, or allow observer to have
+    // clearer signal of when to make additional requests; pending UX.
+    // request_queue_.emplace(ax_tree, std::move(callback));
+    return false;
   }
 
   MakeMainNodeRequestToScreenAI(ax_tree, std::move(callback));
+  return true;
 }
 
 void AXTreeFixingServicesRouter::MakeMainNodeRequestToScreenAI(
