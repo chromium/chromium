@@ -1,3 +1,14 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {RequestElement} from './request.js';
+
+export function getHtml(this: RequestElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <cr-expand-button class="cr-row first" ?expanded="${this.expanded_}"
     @expanded-changed="${this.onExpandedChanged_}">
   <span class="label">${this.getTimestamp_()}</span>
@@ -14,7 +25,7 @@
 <cr-collapse ?opened="${this.expanded_}">
   <div class="cr-row" ?hidden="${!this.requestDataJson_}">
     <div class="content"
-        inner-h-t-m-l="${this.getRequestDataHtml_()}">
+        .innerHTML="${this.getRequestDataHtml_()}">
     </div>
     <div class="actions">
       <cr-icon-button class="icon-copy-content" title="copy to clipboard"
@@ -34,3 +45,6 @@
     </div>
   </div>
 </cr-collapse>
+<!--_html_template_end_-->`;
+  // clang-format on
+}
