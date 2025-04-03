@@ -159,6 +159,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   content::WebContents* popup =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(blocked_content::PopupTracker::FromWebContents(popup));
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(popup);
 
   // Perform some user gestures on the page.
   content::SimulateMouseClick(popup, 0, blink::WebMouseEvent::Button::kLeft);

@@ -1008,6 +1008,14 @@ void NotifyCopyableViewInFrame(RenderFrameHost* render_frame_host,
   rwhi->InsertVisualStateCallback(std::move(first_frame_done));
 }
 
+void SimulateEndOfPaintHoldingOnPrimaryMainFrame(WebContents* web_contents) {
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(web_contents);
+  RenderWidgetHostImpl* main_frame_rwh =
+      web_contents_impl->GetPrimaryMainFrame()->GetRenderWidgetHost();
+  main_frame_rwh->ForceFirstFrameAfterNavigationTimeout();
+}
+
 void SimulateMouseClick(WebContents* web_contents,
                         int modifiers,
                         blink::WebMouseEvent::Button button) {
