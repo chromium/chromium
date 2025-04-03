@@ -414,9 +414,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   struct ColorBuffer : public ThreadSafeRefCounted<ColorBuffer> {
     ColorBuffer(base::WeakPtr<DrawingBuffer> drawing_buffer,
-                const gfx::Size&,
-                viz::SharedImageFormat,
-                SkAlphaType alpha_type,
                 scoped_refptr<gpu::ClientSharedImage> shared_image,
                 std::unique_ptr<gpu::SharedImageTexture> shared_image_texture);
     ColorBuffer(const ColorBuffer&) = delete;

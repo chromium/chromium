@@ -831,16 +831,13 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
 
 DrawingBuffer::ColorBuffer::ColorBuffer(
     base::WeakPtr<DrawingBuffer> drawing_buffer,
-    const gfx::Size& size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     std::unique_ptr<gpu::SharedImageTexture> shared_image_texture)
     : owning_thread_ref(base::PlatformThread::CurrentRef()),
       drawing_buffer(std::move(drawing_buffer)),
-      size(size),
-      format(format),
-      alpha_type(alpha_type),
+      size(shared_image->size()),
+      format(shared_image->format()),
+      alpha_type(shared_image->alpha_type()),
       shared_image(std::move(shared_image)),
       shared_image_texture_(std::move(shared_image_texture)) {
   CHECK(this->shared_image);
@@ -2046,8 +2043,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     std::unique_ptr<gpu::SharedImageTexture> si_texture =
         front_buffer_shared_image->CreateGLTexture(gl_);
     front_color_buffer_ = base::MakeRefCounted<ColorBuffer>(
-        weak_factory_.GetWeakPtr(), size, color_buffer_format_,
-        back_buffer_alpha_type, std::move(front_buffer_shared_image),
+        weak_factory_.GetWeakPtr(), std::move(front_buffer_shared_image),
         std::move(si_texture));
   }
 
@@ -2055,10 +2051,9 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   std::unique_ptr<gpu::SharedImageTexture> si_texture =
       back_buffer_shared_image->CreateGLTexture(gl_);
   scoped_refptr<DrawingBuffer::ColorBuffer> color_buffer =
-      base::MakeRefCounted<ColorBuffer>(
-          weak_factory_.GetWeakPtr(), size, color_buffer_format_,
-          back_buffer_alpha_type, std::move(back_buffer_shared_image),
-          std::move(si_texture));
+      base::MakeRefCounted<ColorBuffer>(weak_factory_.GetWeakPtr(),
+                                        std::move(back_buffer_shared_image),
+                                        std::move(si_texture));
   color_buffer->BeginAccess(gpu::SyncToken(), /*readonly=*/false);
   gl_->BindTexture(texture_target, color_buffer->texture_id());
 
