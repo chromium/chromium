@@ -104,6 +104,9 @@ class StarboardApiWrapperBase : public StarboardApiWrapper {
       SbPlayer player,
       SbMediaType sample_type,
       base::span<const SbPlayerSampleInfo> sample_infos) = 0;
+
+  // Tracks whether |EnsureInitialized| was called.
+  bool initialized_ = false;
 };
 
 }  // namespace media

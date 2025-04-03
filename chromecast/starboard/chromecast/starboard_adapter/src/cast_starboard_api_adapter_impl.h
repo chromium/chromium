@@ -5,13 +5,10 @@
 #ifndef CHROMECAST_STARBOARD_CHROMECAST_STARBOARD_ADAPTER_SRC_CAST_STARBOARD_API_ADAPTER_IMPL_H_
 #define CHROMECAST_STARBOARD_CHROMECAST_STARBOARD_ADAPTER_SRC_CAST_STARBOARD_API_ADAPTER_IMPL_H_
 
-#include <mutex>
-#include <unordered_map>
-
-#if SB_API_VERSION >= 15
 #include <future>
+#include <mutex>
 #include <thread>
-#endif  // SB_API_VERSION >= 15
+#include <unordered_map>
 
 #include "chromecast/starboard/chromecast/starboard_adapter/public/cast_starboard_api_adapter.h"
 
@@ -34,9 +31,10 @@ class CastStarboardApiAdapterImpl : public CastStarboardApiAdapter {
 
  private:
   void SbEventHandleInternal(const SbEvent* event);
+  void Initialize();
+  void Release();
 
   // CastStarboardApiAdapter implementation:
-  bool EnsureInitialized() override;
   void Subscribe(void* context,
                  CastStarboardApiAdapterImplCB callback) override;
   void Unsubscribe(void* context) override;
@@ -45,9 +43,9 @@ class CastStarboardApiAdapterImpl : public CastStarboardApiAdapter {
 
 #if SB_API_VERSION >= 15
   std::unique_ptr<std::thread> sb_main_;
+#endif  // SB_API_VERSION >= 15
   std::promise<bool> init_p_;
   std::future<bool> init_f_;
-#endif  // SB_API_VERSION >= 15
   SbWindow window_ = kSbWindowInvalid;
   std::mutex lock_;
   bool initialized_;

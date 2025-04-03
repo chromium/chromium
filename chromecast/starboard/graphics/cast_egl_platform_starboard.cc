@@ -31,24 +31,28 @@ class CastEglPlatformStarboard : public CastEglPlatform {
  public:
   CastEglPlatformStarboard()
 #if !BUILDFLAG(REMOVE_STARBOARD_HEADERS)
-      : sb_adapter_(CastStarboardApiAdapter::GetInstance())
-#endif
+      : sb_adapter_(CastStarboardApiAdapter::GetInstance()) {
+    sb_adapter_->Subscribe(this, nullptr);
+  }
+#else
   {
   }
+#endif
 
   const int* GetEGLSurfaceProperties(const int* desired) override {
     return desired;
   }
 
-  ~CastEglPlatformStarboard() override {}
+  ~CastEglPlatformStarboard() override {
+#if !BUILDFLAG(REMOVE_STARBOARD_HEADERS)
+    sb_adapter_->Unsubscribe(this);
+#endif
+  }
 
   bool InitializeHardware() override {
 #if BUILDFLAG(REMOVE_STARBOARD_HEADERS)
     return false;
 #else
-    if (!sb_adapter_->EnsureInitialized()) {
-      return false;
-    }
     graphics_lib_ =
         dlopen(kGraphicsLibraryName, RTLD_NOW | RTLD_LOCAL | RTLD_DEEPBIND);
     if (!graphics_lib_) {

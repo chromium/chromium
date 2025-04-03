@@ -4,6 +4,10 @@
 
 #include "cast_starboard_api_adapter_impl.h"
 
+#include "base/at_exit.h"
+#include "base/functional/bind.h"
+#include "base/logging.h"
+
 // TODO(b/333961720): remove all the macros in this file and split the impl into
 // two different classes: one for SB 15+, one for older versions of starboard.
 // Only include the relevant one in the BUILD.gn file.
@@ -14,27 +18,55 @@
 #endif  // SB_API_VERSION >= 15
 
 namespace chromecast {
+
 namespace {
-CastStarboardApiAdapterImpl* GetImpl() {
-  static CastStarboardApiAdapterImpl* starboard_adapter =
-      new CastStarboardApiAdapterImpl();
-  return starboard_adapter;
+
+CastStarboardApiAdapterImpl* g_instance = nullptr;
+std::mutex g_instance_mutex;
+
+void DeleteInstance() {
+  std::unique_lock<std::mutex> lock(g_instance_mutex);
+  if (g_instance) {
+    delete g_instance;
+  }
 }
+
 }  // namespace
 
 CastStarboardApiAdapter* CastStarboardApiAdapter::GetInstance() {
-  return GetImpl();
+  // Perform a lazy check, if this is already initialized we can skip checking
+  // inits.
+  if (!g_instance) {
+    // If we do not have an instance, we must re-validate once we have acquired
+    // the mutex that it was not already constructed.
+    std::unique_lock<std::mutex> lock(g_instance_mutex);
+    // The instance is assigned by the class's constructor.
+    if (!g_instance) {
+      new CastStarboardApiAdapterImpl();
+
+      // Since OzonePlatform* is always orphaned, a handle to CastStarboardApi
+      // is still held by CastEglPlatformStarboard rather than being cleaned up
+      // by the last Unsubscribe. Artificially clean it up at process exit.
+      base::AtExitManager::RegisterTask(base::BindOnce(DeleteInstance));
+    }
+  }
+
+  return g_instance;
 }
 
-#if SB_API_VERSION >= 15
 CastStarboardApiAdapterImpl::CastStarboardApiAdapterImpl()
-    : init_f_(init_p_.get_future()), initialized_(false) {}
-#else   // SB_API_VERSION >=15
-CastStarboardApiAdapterImpl::CastStarboardApiAdapterImpl()
-    : initialized_(false) {}
-#endif  // SB_API_VERSION >= 15
+    : initialized_(false) {
+  CHECK(!g_instance);
+  g_instance = this;
+}
 
-CastStarboardApiAdapterImpl::~CastStarboardApiAdapterImpl() {}
+CastStarboardApiAdapterImpl::~CastStarboardApiAdapterImpl() {
+  if (initialized_) {
+    Release();
+  }
+
+  g_instance = nullptr;
+}
 
 SbEglNativeDisplayType CastStarboardApiAdapterImpl::GetEglNativeDisplayType() {
   return SB_EGL_DEFAULT_DISPLAY;
@@ -42,10 +74,9 @@ SbEglNativeDisplayType CastStarboardApiAdapterImpl::GetEglNativeDisplayType() {
 
 // static
 void CastStarboardApiAdapterImpl::SbEventHandle(const SbEvent* event) {
-  GetImpl()->SbEventHandleInternal(event);
+  g_instance->SbEventHandleInternal(event);
 }
 
-#if SB_API_VERSION >= 15
 void CastStarboardApiAdapterImpl::SbEventHandleInternal(const SbEvent* event) {
   // If multiple instances of Starboard become supported, |event->window| may
   // need to be checked here for some types before propagating.
@@ -53,59 +84,68 @@ void CastStarboardApiAdapterImpl::SbEventHandleInternal(const SbEvent* event) {
     case kSbEventTypeStart:
       init_p_.set_value(true);
       break;
+    case kSbEventTypeStop:
+      init_p_.set_value(false);
+      break;
     default:
       for (const auto p : subscribers_) {
-        p.second(p.first, event);
+        if (p.second) {
+          p.second(p.first, event);
+        }
       }
       break;
   }
 }
-#else   // SB_API_VERSION >=15
-void CastStarboardApiAdapterImpl::SbEventHandleInternal(const SbEvent* event) {
-  std::lock_guard<decltype(lock_)> lock(lock_);
-  for (const auto p : subscribers_) {
-    p.second(p.first, event);
-  }
-}
-#endif  // SB_API_VERSION >= 15
+
+void CastStarboardApiAdapterImpl::Initialize() {
+  init_p_ = {};
 
 #if SB_API_VERSION >= 15
-bool CastStarboardApiAdapterImpl::EnsureInitialized() {
-  std::lock_guard<decltype(lock_)> lock(lock_);
-  if (initialized_) {
-    return true;
-  }
-
   sb_main_ = std::make_unique<std::thread>(
       &SbRunStarboardMain, /*argc=*/0, /*argv=*/nullptr,
       &CastStarboardApiAdapterImpl::SbEventHandle);
   sb_main_->detach();
-  initialized_ = init_f_.get();
-  return initialized_;
-}
 #else   // SB_API_VERSION >=15
-bool CastStarboardApiAdapterImpl::EnsureInitialized() {
-  std::lock_guard<decltype(lock_)> lock(lock_);
-  if (initialized_) {
-    return true;
-  }
-
   CastStarboardApiInitialize(/*argc=*/0, /*argv=*/nullptr,
                              &CastStarboardApiAdapterImpl::SbEventHandle);
-  initialized_ = true;
-  return true;
-}
 #endif  // SB_API_VERSION >= 15
+  init_f_ = init_p_.get_future();
+  initialized_ = init_f_.get();
+}
+
+void CastStarboardApiAdapterImpl::Release() {
+  {
+    std::lock_guard<decltype(lock_)> lock(lock_);
+    subscribers_.clear();
+  }
+
+  init_p_ = {};
+#if SB_API_VERSION >= 15
+  SbSystemRequestStop(0);
+#else   // SB_API_VERSION >=15
+  CastStarboardApiFinalize();
+#endif  // SB_API_VERSION >= 15
+  init_f_ = init_p_.get_future();
+  initialized_ = init_f_.get();
+}
 
 void CastStarboardApiAdapterImpl::Subscribe(void* context,
                                             CastStarboardApiAdapterImplCB cb) {
   std::lock_guard<decltype(lock_)> lock(lock_);
+  if (!initialized_) {
+    Initialize();
+  }
   subscribers_.insert({context, cb});
 }
 
 void CastStarboardApiAdapterImpl::Unsubscribe(void* context) {
-  std::lock_guard<decltype(lock_)> lock(lock_);
-  subscribers_.erase(context);
+  {
+    std::lock_guard<decltype(lock_)> lock(lock_);
+    subscribers_.erase(context);
+  }
+  // Defer Release() until the destructor is called.
+  // This helps simplify the complexity around Unsubscribe and AtExit calls
+  // calling at the same time.
 }
 
 SbWindow CastStarboardApiAdapterImpl::GetWindow(
