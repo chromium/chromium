@@ -20,6 +20,7 @@
 #import "components/password_manager/core/browser/generation/password_generator.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
+#import "components/password_manager/core/browser/password_requirements_service.h"
 #import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/signin/public/identity_manager/account_info.h"
@@ -65,6 +66,8 @@ bool CheckForDuplicates(
   raw_ptr<syncer::SyncService> _syncService;
   // Used to create and run validation tasks.
   std::unique_ptr<base::CancelableTaskTracker> _validationTaskTracker;
+  raw_ptr<password_manager::PasswordRequirementsService>
+      _passwordRequirementsService;
 }
 
 // Delegate for this mediator.
@@ -77,18 +80,19 @@ bool CheckForDuplicates(
 // Stores the url entered in the website field.
 @property(nonatomic, assign) GURL URL;
 
+@property(nonatomic, assign) NSString* suggestedPassword;
+
 @end
 
-@implementation AddPasswordMediator {
-  // Stores the last suggested password or nil if no password have
-  // been suggested.
-  NSString* _suggestedPassword;
-}
+@implementation AddPasswordMediator
 
 - (instancetype)initWithDelegate:(id<AddPasswordMediatorDelegate>)delegate
             passwordCheckManager:(IOSChromePasswordCheckManager*)manager
                      prefService:(PrefService*)prefService
-                     syncService:(syncer::SyncService*)syncService {
+                     syncService:(syncer::SyncService*)syncService
+     passwordRequirementsService:
+         (password_manager::PasswordRequirementsService*)
+             passwordRequirementsService {
   DCHECK(delegate);
   DCHECK(manager);
   DCHECK(prefService);
@@ -99,6 +103,7 @@ bool CheckForDuplicates(
     _manager = manager;
     _prefService = prefService;
     _syncService = syncService;
+    _passwordRequirementsService = passwordRequirementsService;
     _sequencedTaskRunner = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::USER_BLOCKING});
     _validationTaskTracker = std::make_unique<base::CancelableTaskTracker>();
@@ -230,12 +235,19 @@ bool CheckForDuplicates(
                                                                   _syncService);
 }
 
-- (NSString*)generatePassword {
-  // The default spec is used to avoiding complicating the user flow.
-  autofill::PasswordRequirementsSpec defaultSpec;
-  _suggestedPassword =
-      base::SysUTF16ToNSString(autofill::GeneratePassword(defaultSpec));
-  return _suggestedPassword;
+// Requests a generated password and calls the completion block with the result.
+- (void)requestGeneratedPasswordWithCompletion:
+    (void (^)(NSString* password))completion {
+  __weak __typeof(self) weakSelf = self;
+  password_manager::FetchPasswordRequirementsSpecCallback callback =
+      base::BindOnce(^(autofill::PasswordRequirementsSpec spec) {
+        NSString* generatedPassword =
+            base::SysUTF16ToNSString(autofill::GeneratePassword(spec));
+        weakSelf.suggestedPassword = generatedPassword;
+        completion(generatedPassword);
+      });
+  _passwordRequirementsService->FetchPasswordRequirementsSpec(
+      self.URL, std::move(callback));
 }
 
 @end

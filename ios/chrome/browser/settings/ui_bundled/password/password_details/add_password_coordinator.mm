@@ -8,9 +8,11 @@
 #import "base/memory/scoped_refptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/password_manager/core/browser/password_requirements_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_password_requirements_service_factory.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_visits_recorder.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_coordinator_delegate.h"
@@ -71,12 +73,14 @@
   self.viewController.presentationController.delegate = self;
 
   self.mediator = [[AddPasswordMediator alloc]
-          initWithDelegate:self
-      passwordCheckManager:IOSChromePasswordCheckManagerFactory::GetForProfile(
-                               profile)
-                               .get()
-               prefService:profile->GetPrefs()
-               syncService:SyncServiceFactory::GetForProfile(profile)];
+                 initWithDelegate:self
+             passwordCheckManager:IOSChromePasswordCheckManagerFactory::
+                                      GetForProfile(profile)
+                                          .get()
+                      prefService:profile->GetPrefs()
+                      syncService:SyncServiceFactory::GetForProfile(profile)
+      passwordRequirementsService:IOSPasswordRequirementsServiceFactory::
+                                      GetForProfile(profile)];
   self.mediator.consumer = self.viewController;
   self.viewController.delegate = self.mediator;
 
