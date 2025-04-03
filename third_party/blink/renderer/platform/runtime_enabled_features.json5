@@ -3333,6 +3333,11 @@
       status: "experimental",
     },
     {
+      // crbug.com/398955086
+      name: "PlaceholderVisibility",
+      status: "stable",
+    },
+    {
       // crbug.com/389726691.
       name: "PlainTextPainter",
       status: "stable",

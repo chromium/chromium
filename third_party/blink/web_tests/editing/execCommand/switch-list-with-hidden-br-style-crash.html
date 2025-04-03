@@ -1,0 +1,35 @@
+<!doctype html>
+<style>
+  br { visibility: hidden; display:None;}
+</style>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+test(() => assert_selection(
+  [
+    // <br> here refers to the placeholder used in listify operation
+    '<div contenteditable>',
+      '<ol>',
+        '<li>foo</li>',
+        '<li>^bar|</li>',
+        '<li>baz</li>',
+      '</ol>',
+    '</div>',
+  ].join(''),
+  'insertUnorderedList',
+  [
+    '<div contenteditable>',
+      '<ol>',
+        '<li>foo</li>',
+      '</ol>',
+      '<ul>',
+        '<li>^bar|</li>',
+      '</ul>',
+      '<ol>',
+        '<li>baz</li>',
+      '</ol>',
+    '</div>',
+  ].join('')),
+  'switch list type on text with hidden BR');
+</script>

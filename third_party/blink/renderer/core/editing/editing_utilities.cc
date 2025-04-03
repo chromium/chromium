@@ -191,6 +191,21 @@ bool IsNodeFullyContained(const EphemeralRange& range, const Node& node) {
          Position::AfterNode(node) <= range.EndPosition();
 }
 
+bool EnsureNodeVisibility(HTMLElement* container) {
+  bool style_changed = false;
+  if (container->GetComputedStyle()->Visibility() == EVisibility::kHidden) {
+    container->SetInlineStyleProperty(CSSPropertyID::kVisibility,
+                                      CSSValueID::kVisible, true);
+    style_changed = true;
+  }
+  if (container->GetComputedStyle()->Display() == EDisplay::kNone) {
+    container->SetInlineStyleProperty(CSSPropertyID::kDisplay,
+                                      CSSValueID::kInline, true);
+    style_changed = true;
+  }
+  return style_changed;
+}
+
 // TODO(editing-dev): We should implement real version which refers
 // "user-select" CSS property.
 bool IsUserSelectContain(const Node& node) {
