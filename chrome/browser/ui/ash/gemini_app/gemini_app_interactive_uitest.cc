@@ -442,7 +442,8 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, PRE_LaunchFromAppList) {}
 
 // Verifies that the Gemini app can be launched from the app list.
-IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, LaunchFromAppList) {
+// TODO(crbug.com/408148646): Re-enable this test.
+IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, DISABLED_LaunchFromAppList) {
   // Views.
   raw_ptr<ash::AppsGridView> apps_grid_view = nullptr;
   raw_ptr<ash::AppListItemView> files_app = nullptr;
