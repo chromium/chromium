@@ -69,6 +69,10 @@ BASE_DECLARE_FEATURE(kLensOverlayMGTInSidePanel);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayUploadChunking);
 
+// Enables a new feedback entrypoint in the Lens side panel.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensSearchSidePanelNewFeedback);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -776,6 +780,10 @@ bool IsLensOverlayUploadChunkingUseDebugOptionsEnabled();
 // The timeout set for upload chunk requests in milliseconds.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayUploadChunkRequestTimeoutMs();
+
+// Whether to the new feedback entry point in the side panel.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensSearchSidePanelNewFeedbackEnabled();
 
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

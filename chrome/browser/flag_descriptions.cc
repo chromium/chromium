@@ -2503,6 +2503,11 @@ const char kLensOverlayLatencyOptimizationsName[] =
 const char kLensOverlayLatencyOptimizationsDescription[] =
     "Enables latency optimizations for the Lens overlay.";
 
+const char kLensSearchSidePanelNewFeedbackName[] =
+    "Lens side panel new feedback";
+const char kLensSearchSidePanelNewFeedbackDescription[] =
+    "Enables a new feedback entry point in the Lens side panel.";
+
 const char kLinkedServicesSettingName[] = "Linked Services Setting";
 const char kLinkedServicesSettingDescription[] =
     "Add Linked Services Setting to the Sync Settings page.";
