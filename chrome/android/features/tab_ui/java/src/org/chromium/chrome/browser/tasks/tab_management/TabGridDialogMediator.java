@@ -1246,9 +1246,6 @@ public class TabGridDialogMediator
     @Override
     public @Nullable CancelLongPressTabItemEventListener onLongPressEvent(
             int tabId, @Nullable View cardView) {
-        if (setupAndShowTabListEditor(tabId)) {
-            RecordUserAction.record("TabMultiSelectV2.OpenLongPressInDialog");
-        }
         return null;
     }
 
