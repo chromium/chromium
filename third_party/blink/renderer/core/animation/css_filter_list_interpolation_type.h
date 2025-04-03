@@ -11,7 +11,7 @@ namespace blink {
 
 class CSSFilterListInterpolationType : public CSSInterpolationType {
  public:
-  CSSFilterListInterpolationType(PropertyHandle property)
+  explicit CSSFilterListInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {}
 
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(

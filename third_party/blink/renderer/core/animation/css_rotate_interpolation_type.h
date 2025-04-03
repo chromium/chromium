@@ -12,7 +12,7 @@ namespace blink {
 
 class CSSRotateInterpolationType : public CSSInterpolationType {
  public:
-  CSSRotateInterpolationType(PropertyHandle property)
+  explicit CSSRotateInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {
     DCHECK_EQ(CssProperty().PropertyID(), CSSPropertyID::kRotate);
   }

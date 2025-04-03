@@ -15,8 +15,8 @@ class ComputedStyle;
 
 class CORE_EXPORT CSSLengthInterpolationType : public CSSInterpolationType {
  public:
-  CSSLengthInterpolationType(PropertyHandle,
-                             const PropertyRegistration* = nullptr);
+  explicit CSSLengthInterpolationType(PropertyHandle,
+                                      const PropertyRegistration* = nullptr);
 
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(
       const ComputedStyle&) const final;

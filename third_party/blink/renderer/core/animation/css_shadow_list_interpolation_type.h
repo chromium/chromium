@@ -13,7 +13,7 @@ class ShadowList;
 
 class CSSShadowListInterpolationType : public CSSInterpolationType {
  public:
-  CSSShadowListInterpolationType(PropertyHandle property)
+  explicit CSSShadowListInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {}
 
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(

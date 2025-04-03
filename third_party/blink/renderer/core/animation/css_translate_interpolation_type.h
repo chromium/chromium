@@ -12,7 +12,7 @@ namespace blink {
 
 class CSSTranslateInterpolationType : public CSSInterpolationType {
  public:
-  CSSTranslateInterpolationType(PropertyHandle property)
+  explicit CSSTranslateInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {
     DCHECK_EQ(CssProperty().PropertyID(), CSSPropertyID::kTranslate);
   }

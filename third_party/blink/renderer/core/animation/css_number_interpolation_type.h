@@ -12,9 +12,10 @@ namespace blink {
 
 class CORE_EXPORT CSSNumberInterpolationType : public CSSInterpolationType {
  public:
-  CSSNumberInterpolationType(PropertyHandle property,
-                             const PropertyRegistration* registration = nullptr,
-                             bool round_to_integer = false)
+  explicit CSSNumberInterpolationType(
+      PropertyHandle property,
+      const PropertyRegistration* registration = nullptr,
+      bool round_to_integer = false)
       : CSSInterpolationType(property, registration),
         round_to_integer_(round_to_integer) {
     // This integer flag only applies to registered custom properties.
