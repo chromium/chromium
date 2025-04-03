@@ -3205,6 +3205,15 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_LENS_OVERLAY_TOOLTIP_TEXT" desc="The Lens overlay tooltip displayed text.">
         Search your screen
       </message>
+      <message name="IDS_IOS_LENS_OVERLAY_TRANSLATE_ERROR_SUBTITLE" desc="The subtitle that appears in the bottom sheet of the Lens Overlay when translate fails.">
+        Make sure the text you're translating is clear and in frame.
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_TRANSLATE_ERROR_TITLE" desc="The title of the message that appears in the bottom sheet of the Lens Overlay when translate fails.">
+        No text found
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_TRANSLATE_INDICATION_TITLE" desc="The text that appears in the zero state after a translation took place in Lens Overlay.">
+        Translated text
+      </message>
       <message name="IDS_IOS_LENS_PRODUCT_NAME" desc="The brand name of Google Lens that will appear in menu titles as a single string.">
         Google Lens
       </message>

@@ -9,6 +9,8 @@
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_detents_manager.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_pan_tracker.h"
+#import "ios/chrome/browser/lens_overlay/ui/info_message/lens_translate_error_view_controller.h"
+#import "ios/chrome/browser/lens_overlay/ui/info_message/lens_translate_indication_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_results_page_presenter_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -250,11 +252,22 @@ const CGFloat kOpacityAnimationDuration = 0.4;
 }
 
 - (void)showInfoMessage:(LensOverlayBottomSheetInfoMessageType)infoMessageType {
-  [_detentsManager adjustDetentsForState:SheetDetentStateInfoMessage];
+  UIViewController* infoMessageViewController;
+  switch (infoMessageType) {
+    case LensOverlayBottomSheetInfoMessageType::kImageTranslatedIndication:
+      infoMessageViewController =
+          [[LensTranslateIndicationViewController alloc] init];
+      break;
+    case LensOverlayBottomSheetInfoMessageType::kNoTranslatableTextWarning:
+      infoMessageViewController =
+          [[LensTranslateErrorViewController alloc] init];
+      break;
+  }
 
-  // TODO(crbug.com/405199044): Replace with the real UI once built.
-  UIViewController* infoMessageViewController = [[UIViewController alloc] init];
-  infoMessageViewController.view.backgroundColor = [UIColor whiteColor];
+  _detentsManager.infoMessageHeight =
+      infoMessageViewController.preferredContentSize.height;
+
+  [_detentsManager adjustDetentsForState:SheetDetentStateInfoMessage];
   [_presentationNavigationController
       pushViewController:infoMessageViewController
                 animated:YES];

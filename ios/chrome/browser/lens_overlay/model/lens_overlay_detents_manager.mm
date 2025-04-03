@@ -26,9 +26,6 @@ NSString* const kInfoMessageSheetDetentIdentifier =
 // The detent height in points for the 'peak' state of the bottom sheet.
 const CGFloat kPeakDetentHeight = 100.0;
 
-// The detent height in points for the error message state of the bottom sheet.
-const CGFloat kinfoMessageDetentHeight = 160.0;
-
 // The percentage of the screen that will be covered by the bottom sheet in
 // translate mode.
 const CGFloat kTranslateSheetHeightRatio = 0.33;
@@ -305,9 +302,10 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
 }
 
 - (UISheetPresentationControllerDetent*)infoMessageDetent {
+  __weak __typeof(self) weakSelf = self;
   auto infoMessageHeightResolver = ^CGFloat(
       id<UISheetPresentationControllerDetentResolutionContext> context) {
-    return kinfoMessageDetentHeight;
+    return weakSelf.infoMessageHeight;
   };
   return [UISheetPresentationControllerDetent
       customDetentWithIdentifier:kInfoMessageSheetDetentIdentifier
