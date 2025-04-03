@@ -28,32 +28,23 @@ use std::path::{Path, PathBuf};
 pub fn vendor(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     // Vendoring needs to work with real crates.io, not with our locally vendored
     // crates.
-    without_cargo_config_toml(paths, || vendor_impl(args, paths))?;
+    without_cargo_config_toml(paths, || download_crates(&args, paths))?;
+
+    // Updating metadata should be performed on the locally vendored crates
+    update_vendored_metadata(&args, paths)?;
+
     println!("Vendor successful: run gnrt gen to generate GN rules.");
     Ok(())
 }
 
-fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
+fn download_crates(args: &VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     let config_file_path = paths.third_party_config_file;
     let config = config::BuildConfig::from_path(config_file_path)?;
-
-    // `unwrap` ok, because `BuildConfig::from_path` would have failed if there is
-    // no parent.
-    let third_party_dir = paths.third_party_config_file.parent().unwrap();
-    let readme_template_path = third_party_dir.join(&config.gn_config.readme_file_template);
-    let readme_handlebars = init_handlebars(&readme_template_path).context("init_handlebars")?;
-    let vet_template_path = third_party_dir.join(&config.vet_config.config_template);
-    let vet_handlebars = init_handlebars(&vet_template_path).context("init_handlebars")?;
 
     println!("Vendoring crates from {}", paths.third_party_cargo_root.display());
 
     let graph =
         get_guppy_package_graph(paths.third_party_cargo_root.into(), vec![], HashMap::new())?;
-    let root = match graph.query_workspace().initials().exactly_one() {
-        Ok(root) => root,
-        Err(_) => anyhow::bail!("cargo workspace must contain exactly one package"),
-    }
-    .id();
 
     let guppy_resolved_package_ids: HashSet<deps::PackageId> =
         deps::collect_dependencies(&graph, &config.resolve.root, &config)?
@@ -141,11 +132,51 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
         std::fs::remove_dir_all(paths.third_party_cargo_root.join("vendor").join(d))
             .with_context(|| format!("removing {}", d))?
     }
+    Ok(())
+}
+
+fn update_vendored_metadata(args: &VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
+    let config_file_path = paths.third_party_config_file;
+    let config = config::BuildConfig::from_path(config_file_path)?;
+
+    // `unwrap` ok, because `BuildConfig::from_path` would have failed if there is
+    // no parent.
+    let third_party_dir = paths.third_party_config_file.parent().unwrap();
+    let readme_template_path = third_party_dir.join(&config.gn_config.readme_file_template);
+    let readme_handlebars = init_handlebars(&readme_template_path).context("init_handlebars")?;
+    let vet_template_path = third_party_dir.join(&config.vet_config.config_template);
+    let vet_handlebars = init_handlebars(&vet_template_path).context("init_handlebars")?;
+
+    // Fetch the package graph again based on the locally vendored crates, to ensure
+    // that locally applied patches which impact the package graph are considered.
+    // Although --offline is passed, this function also expects to be executed
+    // with a cargo config.toml that uses the locally vendored crates.
+    let graph = get_guppy_package_graph(
+        paths.third_party_cargo_root.into(),
+        vec!["--offline".to_string()],
+        HashMap::new(),
+    )?;
+    let root = match graph.query_workspace().initials().exactly_one() {
+        Ok(root) => root,
+        Err(_) => anyhow::bail!("cargo workspace must contain exactly one package"),
+    }
+    .id();
 
     let find_group = |id| find_inherited_privilege_group(id, root, &graph, &config);
     let find_security_critical =
         |id| find_inherited_security_critical_flag(id, root, &graph, &config);
     let find_shipped = |id| find_inherited_shipped_flag(id, root, &graph, &config);
+
+    let guppy_resolved_package_ids: HashSet<deps::PackageId> =
+        deps::collect_dependencies(&graph, &config.resolve.root, &config)?
+            .iter()
+            .map(|p| p.into())
+            .collect();
+    let is_removed = |guppy_package_id: &guppy::PackageId| -> bool {
+        let p = graph.metadata(&guppy_package_id).unwrap();
+        config.resolve.remove_crates.contains(p.name())
+            || !guppy_resolved_package_ids.contains(&(&p).into())
+    };
 
     let filter_removed = |meta: &PackageMetadata| {
         !config.resolve.remove_crates.contains(meta.name())
