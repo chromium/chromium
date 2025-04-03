@@ -92,9 +92,9 @@ public class PhotoPickerDialog extends FullscreenAlertDialog
             ContentResolver contentResolver,
             PhotoPickerListener listener,
             boolean multiSelectionAllowed,
-            List<String> mimeTypes) {
-        // TODO(crbug.com/401075913): Support shouldPadForContent in //components.
-        super(assertNonNull(windowAndroid.getContext().get()), /* shouldPadForContent= */ false);
+            List<String> mimeTypes,
+            boolean shouldPadForContent) {
+        super(assertNonNull(windowAndroid.getContext().get()), shouldPadForContent);
 
         mListenerWrapper = new PhotoPickerListenerWrapper(listener);
 
