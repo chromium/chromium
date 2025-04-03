@@ -580,6 +580,10 @@ BASE_FEATURE(kGetCookiesOnSet,
              "GetCookiesOnSet",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIncreaseCookieAccessCacheSize,
+             "IncreaseCookieAccessCacheSize",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPopulatePermissionsPolicyOnRequest,
              "PopulatePermissionsPolicyOnRequest",
              base::FEATURE_DISABLED_BY_DEFAULT);

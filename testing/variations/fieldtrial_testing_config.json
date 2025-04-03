@@ -13116,12 +13116,14 @@
             ]
         }
     ],
-    "IncreaseCoookieAccesCacheSize": [
+    "IncreaseCookieAccessCacheSize": [
         {
             "platforms": [
                 "android",
                 "android_webview",
                 "chromeos",
+                "fuchsia",
+                "ios",
                 "linux",
                 "mac",
                 "windows"
@@ -13130,7 +13132,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "IncreaseCoookieAccesCacheSize"
+                        "IncreaseCookieAccessCacheSize"
                     ]
                 }
             ]
