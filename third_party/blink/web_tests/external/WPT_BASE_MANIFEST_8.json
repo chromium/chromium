@@ -171265,6 +171265,123 @@
         {}
        ]
       ],
+      "block-ellipsis-013.html": [
+       "c9fe0aba59fbf8e89380e3f31af9f394fc45c068",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/block-ellipsis-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-ellipsis-014.html": [
+       "4961cf3a7a233dab974506cabde867d8136ab748",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/block-ellipsis-014-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-ellipsis-015.html": [
+       "0a0046711c0965535cdc3a5e31c0d34c05742ed1",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/block-ellipsis-015-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-ellipsis-016.html": [
+       "00e4c601e3667b0878ba864670912bdffcba8927",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/block-ellipsis-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-ellipsis-017.html": [
+       "05f7896f5659158648a1a92917b8311c5f10ae2b",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/block-ellipsis-017-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-ellipsis-018.html": [
+       "9c4ae82d0038311852cc63d2116c11c3bde8421c",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-ellipsis-019.tentative.html": [
+       "afee5d6eddc1336adbed4d4ae235ea53a058a3fe",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-ellipsis-020.tentative.html": [
+       "473aad392c1207213c9547be4eae24c94aac7cd9",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-ellipsis-021.tentative.html": [
+       "517245ac8b09285d8da041adfdb5fe2030ee2fb8",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "line-clamp-001.html": [
        "c8cfcb1066de1a1d5c98e147c8e47499069046be",
        [
@@ -354200,6 +354317,18 @@
        ],
        "block-ellipsis-012-ref.html": [
         "7f9c44293e8e6bdc768a1ab0bc5ac50564f519ff",
+        []
+       ],
+       "block-ellipsis-014-ref.html": [
+        "d135a74cfad7cfaab7ded439de29f3b8881497df",
+        []
+       ],
+       "block-ellipsis-015-ref.html": [
+        "baa8dd1a8d7271389e10d1058e674cc64a86e34b",
+        []
+       ],
+       "block-ellipsis-017-ref.html": [
+        "7a801508e2e564bad79b512c4e327632399c2ce7",
         []
        ],
        "line-clamp-010-ref.html": [
@@ -704177,7 +704306,7 @@
      ]
     ],
     "event-post-dispatch.html": [
-     "98157a69b9c21f82b3fc8ee45343da0c50003839",
+     "a8fe0a24b1d53907f31c7c88787879493297147f",
      [
       null,
       {}
@@ -721731,7 +721860,7 @@
       ]
      ],
      "close.any.js": [
-      "45261e7ca7e01dd056df13cbc8a6816ba7ba9b22",
+      "3b2c07cc3bfea1bf09a4c170f08e10c5be495848",
       [
        "streams/writable-streams/close.any.html",
        {
@@ -762144,7 +762273,7 @@
       ]
      ],
      "dequantizeLinear.https.any.js": [
-      "310dd03fcb5e46c9209951f6243e988f85c8e810",
+      "35c15055661d4cde7033faca57d6436795f02fc8",
       [
        "webnn/conformance_tests/dequantizeLinear.https.any.html?cpu",
        {
