@@ -8195,12 +8195,6 @@ const char kSupervisedProfileSafeSearchDescription[] =
     "Enables SafeSearch in Google Search for supervised users in the pending "
     "state.";
 
-const char kSupervisedProfileReauthForYouTubeName[] =
-    "Supervised Profile YouTube reauth";
-const char kSupervisedProfileReauthForYouTubeDescription[] =
-    "Ask supervised users to re-authenticate when attempting to access YouTube "
-    "in the pending state.";
-
 const char kSupervisedProfileReauthForBlockedSiteName[] =
     "Supervised Profile blocked site reauth";
 const char kSupervisedProfileReauthForBlockedSiteDescription[] =

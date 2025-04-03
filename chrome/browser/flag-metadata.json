@@ -8690,14 +8690,6 @@
     "expiry_milestone": 133
   },
   {
-    "name": "supervised-profile-youtube-reauth",
-    "owners": [
-      "tju@google.com",
-      "chrome-kids-eng@google.com"
-    ],
-    "expiry_milestone": 134
-  },
-  {
     "name": "supervised-user-block-interstitial-v3",
     "owners": [
       "ddac@google.com",

@@ -169,20 +169,16 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
   // Other Google-owned sites either already requires authentication (e.g.
   // Google Photos), or have restrictions forced (e.g. SafeSearch).
   GURL request_url = navigation_handle()->GetURL();
-  if (!base::FeatureList::IsEnabled(
-          supervised_user::kForceSupervisedUserReauthenticationForYouTube) ||
-      !google_util::IsYoutubeDomainUrl(request_url,
+  if (!google_util::IsYoutubeDomainUrl(request_url,
                                        google_util::ALLOW_SUBDOMAIN,
                                        google_util::ALLOW_NON_STANDARD_PORTS) ||
-     !SupervisedUserVerificationPage::ShouldShowPage(
+      !SupervisedUserVerificationPage::ShouldShowPage(
           *child_account_service_)) {
     // This interstitial should only be displayed for YouTube request.
     return content::NavigationThrottle::PROCEED;
   }
 
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kExemptYouTubeInfrastructureFromBlocking) &&
-      IsYouTubeInfrastructureSubframe(navigation_handle())) {
+  if (IsYouTubeInfrastructureSubframe(navigation_handle())) {
     // Controls integration between google.com and youtube.com.
     return content::NavigationThrottle::PROCEED;
   }

@@ -10957,13 +10957,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          supervised_user::kForceSafeSearchForUnauthenticatedSupervisedUsers)},
 
-    {"supervised-profile-youtube-reauth",
-     flag_descriptions::kSupervisedProfileReauthForYouTubeName,
-     flag_descriptions::kSupervisedProfileReauthForYouTubeDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(
-         supervised_user::kForceSupervisedUserReauthenticationForYouTube)},
-
     {"supervised-profile-filtering-fallback",
      flag_descriptions::kSupervisedProfileFilteringFallbackName,
      flag_descriptions::kSupervisedProfileFilteringFallbackDescription,

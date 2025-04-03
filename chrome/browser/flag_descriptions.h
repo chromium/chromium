@@ -4846,9 +4846,6 @@ extern const char kSupervisedProfileHideGuestDescription[];
 extern const char kSupervisedProfileSafeSearchName[];
 extern const char kSupervisedProfileSafeSearchDescription[];
 
-extern const char kSupervisedProfileReauthForYouTubeName[];
-extern const char kSupervisedProfileReauthForYouTubeDescription[];
-
 extern const char kSupervisedProfileReauthForBlockedSiteName[];
 extern const char kSupervisedProfileReauthForBlockedSiteDescription[];
 
