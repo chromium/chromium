@@ -91,6 +91,8 @@ void PageInfoAdPersonalizationContentView::SetAdPersonalizationInfo(
   description_label->SetMultiLine(true);
   description_label->SetEnabledColor(kColorPageInfoForeground);
   description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  description_label->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_LABEL);
   // TODO(crbug.com/40244046): Figure out why without additional horizontal
   // margin the size is being calculated incorrectly and the topics labels are
   // being cut off.
