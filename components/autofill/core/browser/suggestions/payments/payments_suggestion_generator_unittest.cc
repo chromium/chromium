@@ -30,7 +30,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
-#include "components/autofill/core/browser/integrators/mock_autofill_optimization_guide.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"

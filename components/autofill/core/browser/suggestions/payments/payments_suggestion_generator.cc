@@ -35,7 +35,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
-#include "components/autofill/core/browser/integrators/autofill_optimization_guide.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"

@@ -24,7 +24,7 @@
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/autofill/core/browser/data_model/payments/payment_instrument.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
-#include "components/autofill/core/browser/integrators/autofill_optimization_guide.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"

@@ -72,7 +72,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_delegate.h"
 #include "components/autofill/core/browser/integrators/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/mock_autofill_compose_delegate.h"
-#include "components/autofill/core/browser/integrators/mock_autofill_optimization_guide.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/mock_autofill_plus_address_delegate.h"
