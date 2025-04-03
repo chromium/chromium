@@ -261,10 +261,13 @@ enum class AccessPoint : int {
   // Access point triggered when a user attempts to join a tab group without
   // being signed in or synced.
   kCollaborationJoinTabGroup = 76,
+  // Access point triggered when a user attempts to opt-in to history sync from
+  // the history sync opt-in expanded pill.
+  kHistorySyncOptinExpansionPill = 77,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kCollaborationJoinTabGroup,  // This must be last.
+  kMaxValue = kHistorySyncOptinExpansionPill,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 
