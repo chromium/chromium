@@ -89,6 +89,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/app/notifications/ContextualNotificationPermissionRequesterImpl.java",
   "java/src/org/chromium/chrome/browser/app/reengagement/ReengagementActivity.java",
   "java/src/org/chromium/chrome/browser/app/send_tab_to_self/SendTabToSelfNotificationReceiver.java",
+  "java/src/org/chromium/chrome/browser/app/serial/SerialNotificationServiceImpl.java",
   "java/src/org/chromium/chrome/browser/app/tab_activity_glue/ActivityTabWebContentsDelegateAndroid.java",
   "java/src/org/chromium/chrome/browser/app/tab_activity_glue/ReparentingDelegateFactory.java",
   "java/src/org/chromium/chrome/browser/app/tab_activity_glue/ReparentingTabGroupTask.java",

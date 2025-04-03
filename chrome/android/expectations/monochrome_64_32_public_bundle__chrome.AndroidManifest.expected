@@ -880,6 +880,10 @@
         android:name="org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService"
         android:exported="false">
     </service>  # DIFF-ANCHOR: b56e4a55
+    <service  # DIFF-ANCHOR: 48408303
+        android:name="org.chromium.chrome.browser.app.serial.SerialNotificationService"
+        android:exported="false">
+    </service>  # DIFF-ANCHOR: 48408303
     <service  # DIFF-ANCHOR: 2af739d5
         android:name="org.chromium.chrome.browser.app.usb.UsbNotificationService"
         android:exported="false">

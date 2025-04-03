@@ -278,6 +278,9 @@ CHAR_LIMIT guidelines:
       <message name="IDS_NOTIFICATION_CATEGORY_USB" desc="Label for USB-related notifications, within a list of notification categories. [CHAR_LIMIT=32]">
         USB
       </message>
+      <message name="IDS_NOTIFICATION_CATEGORY_SERIAL" desc="Label for serial-port-related notifications, within a list of notification categories. [CHAR_LIMIT=32]">
+        Serial
+      </message>
       <message name="IDS_NOTIFICATION_CATEGORY_COLLABORATION" desc="Label for collaboration-related notifications, within a list of notification categories. [CHAR_LIMIT=32]">
         Collaboration
       </message>
