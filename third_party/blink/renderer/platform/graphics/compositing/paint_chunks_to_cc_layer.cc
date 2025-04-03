@@ -888,7 +888,8 @@ void ConversionContext<cc::DisplayItemList>::EmitDrawScrollingContentsOp(
   DCHECK_EQ(previous_transform_, nullptr);
 
   // Switch to the parent of the scroll translation in the current context.
-  auto action = SwitchToTransform(*scroll_translation.UnaliasedParent());
+  const auto* scroll_container_transform = scroll_translation.UnaliasedParent();
+  auto action = SwitchToTransform(*scroll_container_transform);
   // This should not need to switch to any other scroll translation.
   CHECK(!action);
 
@@ -912,6 +913,12 @@ void ConversionContext<cc::DisplayItemList>::EmitDrawScrollingContentsOp(
   result_.PushDrawScrollingContentsOp(
       scroll_translation.ScrollNode()->GetCompositorElementId(),
       std::move(scrolling_contents_list), visual_rect);
+
+  // Accumulate effect bounds in case the scrolling contents op is a part of an
+  // effect group.
+  UpdateEffectBounds(
+      gfx::RectF(scroll_translation.ScrollNode()->ContainerRect()),
+      *scroll_container_transform);
 }
 
 template <>

@@ -1274,6 +1274,68 @@ TEST_P(PaintChunksToCcLayerTest, ScrollingContentsIntoDisplayItemList) {
   }
 }
 
+TEST_P(PaintChunksToCcLayerTest, ScrollingContentsUnderEffect) {
+  auto* t1 = Create2DTranslation(t0(), 10, 20);
+  auto* e1 = CreateOpacityEffect(e0(), *t1, &c0(), 0.5);
+  auto scroll_state = CreateScrollTranslationState(
+      PropertyTreeState(*t1, c0(), *e1), -50, -60, gfx::Rect(5, 5, 50, 300),
+      gfx::Size(100, 400));
+  TestChunks chunks;
+  chunks.AddChunk(*t1, c0(), *e1);
+  chunks.AddChunk(scroll_state);
+  chunks.AddChunk(*t1, c0(), *e1);
+
+  auto cc_list = base::MakeRefCounted<cc::DisplayItemList>();
+  PaintChunksToCcLayer::ConvertInto(chunks.Build(), PropertyTreeState::Root(),
+                                    gfx::Vector2dF(), nullptr, *cc_list);
+
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    EXPECT_THAT(
+        cc_list->paint_op_buffer(),
+        ElementsAre(PaintOpIs<cc::SaveOp>(),
+                    PaintOpEq<cc::TranslateOp>(10, 20),  // <t1>
+                    PaintOpEq<cc::SaveLayerAlphaOp>(SkRect::MakeWH(100, 305),
+                                                    0.5f),  // <e1>
+                    PaintOpIs<cc::DrawRecordOp>(),          // chunk 0
+                    PaintOpIs<cc::SaveOp>(),
+                    PaintOpEq<cc::ClipRectOp>(
+                        SkRect::MakeXYWH(5, 5, 50, 300), SkClipOp::kIntersect,
+                        /*antialias=*/true),  // <overflow-clip>
+                    PaintOpIs<cc::DrawScrollingContentsOp>(),
+                    PaintOpIs<cc::RestoreOp>(),     // </overflow-clip>
+                    PaintOpIs<cc::DrawRecordOp>(),  // chunk 2
+                    PaintOpIs<cc::RestoreOp>(),     // </t1>
+                    PaintOpIs<cc::RestoreOp>()));   // </e1>
+    EXPECT_EQ(
+        gfx::Rect(15, 25, 50, 300),
+        cc_list->raster_inducing_scrolls()
+            .at(scroll_state.Transform().ScrollNode()->GetCompositorElementId())
+            .visual_rect);
+  } else {
+    EXPECT_THAT(
+        cc_list->paint_op_buffer(),
+        ElementsAre(
+            PaintOpIs<cc::SaveOp>(),
+            PaintOpEq<cc::TranslateOp>(10, 20),  // <t1>
+            // Currently we don't apply clips when mapping effect bounds.
+            PaintOpEq<cc::SaveLayerAlphaOp>(
+                SkRect::MakeXYWH(-50, -60, 150, 160), 0.5f),  // <e1>
+            PaintOpIs<cc::DrawRecordOp>(),                    // chunk 0
+            PaintOpIs<cc::SaveOp>(),
+            PaintOpEq<cc::ClipRectOp>(SkRect::MakeXYWH(5, 5, 50, 300),
+                                      SkClipOp::kIntersect,
+                                      /*antialias=*/true),  // <overflow-clip>
+            PaintOpIs<cc::SaveOp>(),
+            PaintOpEq<cc::TranslateOp>(-50, -60),  // <scroll-translation>
+            PaintOpIs<cc::DrawRecordOp>(),         // chunk 1
+            PaintOpIs<cc::RestoreOp>(),            // </scroll-translation>
+            PaintOpIs<cc::RestoreOp>(),            // </overflow-clip>
+            PaintOpIs<cc::DrawRecordOp>(),         // chunk 2
+            PaintOpIs<cc::RestoreOp>(),            // </t1>
+            PaintOpIs<cc::RestoreOp>()));          // </e1>
+  }
+}
+
 TEST_P(PaintChunksToCcLayerTest,
        ScrollingContentsIntoDisplayItemListOverflowClipInLayerState) {
   if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
