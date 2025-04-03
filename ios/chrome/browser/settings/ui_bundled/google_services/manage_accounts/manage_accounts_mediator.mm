@@ -138,8 +138,7 @@
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
-  [self.consumer
-      updateIdentityViewItem:[self identityViewItemForIdentity:identity]];
+  [self handleIdentityUpdated:identity];
 }
 
 - (void)onAccountsOnDeviceChanged {
@@ -157,6 +156,11 @@
 }
 
 #pragma mark - Private
+
+- (void)handleIdentityUpdated:(id<SystemIdentity>)identity {
+  [self.consumer
+      updateIdentityViewItem:[self identityViewItemForIdentity:identity]];
+}
 
 - (IdentityViewItem*)identityViewItemForIdentity:(id<SystemIdentity>)identity {
   IdentityViewItem* identityViewItem = [[IdentityViewItem alloc] init];
@@ -176,9 +180,9 @@
 // Returns true if `identity` is known to be managed.
 // Returns false if the identity is known not to be managed or if the management
 // status is unknown. If the management status is unknown, it is fetched by
-// calling `FetchManagedStatusForIdentity`. `identityUpdated` will be called
-// asynchronously when the management status if retrieved and the identity is
-// managed.
+// calling `FetchManagedStatusForIdentity`. `handleIdentityUpdated` will be
+// called asynchronously when the management status if retrieved and the
+// identity is managed.
 - (BOOL)isIdentityKnownToBeManaged:(id<SystemIdentity>)identity {
   if (std::optional<BOOL> managed = IsIdentityManaged(identity);
       managed.has_value()) {
@@ -188,7 +192,7 @@
   __weak __typeof(self) weakSelf = self;
   FetchManagedStatusForIdentity(identity, base::BindOnce(^(bool managed) {
                                   if (managed) {
-                                    [weakSelf identityUpdated:identity];
+                                    [weakSelf handleIdentityUpdated:identity];
                                   }
                                 }));
   return NO;
