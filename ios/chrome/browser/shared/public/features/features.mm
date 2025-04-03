@@ -1037,6 +1037,10 @@ BASE_FEATURE(kSeparateProfilesForManagedAccounts,
              "SeparateProfilesForManagedAccounts",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSeparateProfilesForManagedAccountsKillSwitch,
+             "SeparateProfilesForManagedAccountsKillSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kOmahaResyncTimerOnForeground,
              "OmahaResyncTimerOnForeground",
              base::FEATURE_ENABLED_BY_DEFAULT);

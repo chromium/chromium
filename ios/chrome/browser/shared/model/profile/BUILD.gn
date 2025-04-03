@@ -9,6 +9,7 @@ source_set("features") {
   ]
 
   deps = [
+    ":profile",
     "//base",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/shared/model/application_context",
