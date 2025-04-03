@@ -154,9 +154,12 @@ class GlicMetrics {
   void OnGlicWindowOpen(bool attached, mojom::InvocationSource source);
   // Called when the glic window is open and ready.
   void OnGlicWindowOpenAndReady();
+  // Called just after the the glic window has been loaded into the UI.
+  void OnGlicWindowShown();
+  // Called when the glic window is resized.
+  void OnGlicWindowResize();
   // Called when the glic window finishes closing.
   void OnGlicWindowClose();
-  // Called when the glic window attaches or detaches.
 
   // Must be called immediately after constructor before any calls from
   // glic.mojom.
@@ -173,6 +176,9 @@ class GlicMetrics {
  private:
   // Called when `impression_timer_` fires.
   void OnImpressionTimerFired();
+
+  // Called when `glic_window_size_timer_` fires.
+  void OnGlicWindowSizeTimerFired();
 
   // Stores the source id at the time that context is requested.
   void StoreSourceId();
@@ -203,6 +209,9 @@ class GlicMetrics {
 
   // Used to record impressions of glic entry points.
   base::RepeatingTimer impression_timer_;
+
+  // Used to record metrics about the glic window size.
+  base::RepeatingTimer glic_window_size_timer_;
 
   // A context-free source id used when no web contents is targeted.
   ukm::SourceId no_url_source_id_;

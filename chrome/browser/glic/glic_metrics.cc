@@ -28,6 +28,8 @@ namespace {
 constexpr char kHistogramGlicPanelPresentationTime[] =
     "Glic.PanelPresentationTime2";
 
+constexpr static base::TimeDelta kLogSizeMetricsDelay = base::Minutes(3);
+
 enum class ModeOffset : int {
   kTextAttached = 1,
   kAudioAttached = 2,
@@ -230,6 +232,18 @@ void GlicMetrics::OnGlicWindowOpenAndReady() {
   ResetGlicWindowPresentationTimingState();
 }
 
+void GlicMetrics::OnGlicWindowShown() {
+  GlicMetrics::OnGlicWindowSizeTimerFired();
+  glic_window_size_timer_.Start(
+      FROM_HERE, kLogSizeMetricsDelay,
+      base::BindRepeating(&GlicMetrics::OnGlicWindowSizeTimerFired,
+                          base::Unretained(this)));
+}
+
+void GlicMetrics::OnGlicWindowResize() {
+  base::RecordAction(base::UserMetricsAction("GlicPanelResized"));
+}
+
 void GlicMetrics::OnGlicWindowClose() {
   base::RecordAction(base::UserMetricsAction("GlicSessionEnd"));
   base::UmaHistogramCounts1000("Glic.Session.ResponseCount",
@@ -262,6 +276,8 @@ void GlicMetrics::OnGlicWindowClose() {
   base::UmaHistogramCounts100("Glic.Session.AttachStateChanges",
                               attach_change_count_);
   attach_change_count_ = 0;
+
+  glic_window_size_timer_.Stop();
 }
 
 void GlicMetrics::SetControllers(GlicWindowController* window_controller,
@@ -319,6 +335,19 @@ void GlicMetrics::OnImpressionTimerFired() {
       glic::GlicLauncherConfiguration::GetGlobalHotkey();
   base::UmaHistogramBoolean("Glic.OsEntrypoint.Settings.ShortcutStatus",
                             saved_hotkey != ui::Accelerator());
+}
+
+void GlicMetrics::OnGlicWindowSizeTimerFired() {
+  // A 4K screen is 3840 or 4096 pixels wide and 2160 tall. Doubling this and
+  // rounding up to 10000 should give a reasonable upper bound on DIPs for
+  // both directions.
+  gfx::Size currentSize = window_controller_->GetSize();
+  base::UmaHistogramCounts10000("Glic.PanelWebUi.Size.Width",
+                                currentSize.width());
+  base::UmaHistogramCounts10000("Glic.PanelWebUi.Size.Height",
+                                currentSize.height());
+  base::UmaHistogramCounts10M("Glic.PanelWebUi.Size.Area",
+                              currentSize.GetArea());
 }
 
 void GlicMetrics::OnMaybeEnabledAndConsentForProfileChanged() {
