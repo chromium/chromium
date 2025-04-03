@@ -279,8 +279,9 @@ class MostVisitedSites :
       const std::set<std::string>& hosts_to_skip,
       size_t num_max_tiles);
 
-  // Ensures |custom_links_| is initialized, then runs |custom_links_action|.
-  // Performs on-failure cleanup. Returns whether the action was successful.
+  // Ensures |custom_links_manager_| is initialized, then runs
+  // |custom_links_action|. Performs on-failure cleanup. Returns whether the
+  // action was successful.
   bool ApplyCustomLinksAction(base::OnceCallback<bool()> custom_links_action);
 
   // Callback for when an update is reported by CustomLinksManager.
@@ -344,7 +345,7 @@ class MostVisitedSites :
 
   scoped_refptr<history::TopSites> top_sites_;
   std::unique_ptr<PopularSites> const popular_sites_;
-  std::unique_ptr<CustomLinksManager> const custom_links_;
+  std::unique_ptr<CustomLinksManager> const custom_links_manager_;
   std::unique_ptr<IconCacher> const icon_cacher_;
   std::unique_ptr<HomepageClient> homepage_client_;
   bool is_default_chrome_app_migrated_;
