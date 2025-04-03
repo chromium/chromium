@@ -1196,7 +1196,7 @@
 <translation id="3121994479408824897">Перейти на страницу <ph name="DOMAIN" /></translation>
 <translation id="3122696783148405307">Показать результаты за последние 30 дней</translation>
 <translation id="3126023634486644099">Этикетки (самоклеящиеся)</translation>
-<translation id="3133565499688974786">Теперь <ph name="SEARCH_ENGINE_NAME" /> – поисковая система по умолчанию.</translation>
+<translation id="3133565499688974786">Теперь поисковая система по умолчанию – <ph name="SEARCH_ENGINE_NAME" />.</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – Поиск по разделу "<ph name="KEYWORD_SHORT_NAME" />"</translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Нет}=1{данные для входа в 1 аккаунт}one{данные для входа в # аккаунт}few{данные для входа в # аккаунта}many{данные для входа в # аккаунтов}other{данные для входа в # аккаунта}}</translation>
 <translation id="3140646734028448730">Услуги для бизнеса</translation>
