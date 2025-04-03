@@ -16,6 +16,7 @@
 #import "base/ios/ns_error_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/no_destructor.h"
+#import "base/notreached.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
@@ -35,6 +36,7 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/browser_container/model/edit_menu_tab_helper.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/enterprise/connectors/ios_enterprise_interstitial.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/follow/model/follow_java_script_feature.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
@@ -116,9 +118,10 @@ namespace {
 // The tag describing the product name with a placeholder for the version.
 const char kProductTagWithPlaceholder[] = "CriOS/%s";
 
-// Returns the safe browsing error page HTML.
+// Returns the consumer or Enterprise safe browsing error page HTML.
 NSString* GetSafeBrowsingErrorPageHTML(web::WebState* web_state,
-                                       int64_t navigation_id) {
+                                       int64_t navigation_id,
+                                       NSInteger error_code) {
   // Fetch the unsafe resource causing this error page from the WebState's
   // container.
   SafeBrowsingUnsafeResourceContainer* container =
@@ -127,8 +130,28 @@ NSString* GetSafeBrowsingErrorPageHTML(web::WebState* web_state,
       container->GetMainFrameUnsafeResource();
 
   // Construct the blocking page and associate it with the WebState.
-  std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage> page =
-      SafeBrowsingBlockingPage::Create(*resource);
+  std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage> page;
+  switch (static_cast<SafeBrowsingErrorCode>(error_code)) {
+    case SafeBrowsingErrorCode::kUnsafeResource:
+      page = SafeBrowsingBlockingPage::Create(*resource);
+      break;
+
+    case SafeBrowsingErrorCode::kEnterpriseBlock:
+      page =
+          enterprise_connectors::IOSEnterpriseInterstitial::CreateBlockingPage(
+              *resource);
+      break;
+
+    case SafeBrowsingErrorCode::kEnterpriseWarn:
+      page =
+          enterprise_connectors::IOSEnterpriseInterstitial::CreateWarningPage(
+              *resource);
+      break;
+
+    default:
+      NOTREACHED() << "Unsupported safe browsing error code " << error_code;
+  }
+
   std::string error_page_content = page->GetHtmlContents();
   security_interstitials::IOSBlockingPageTabHelper::FromWebState(web_state)
       ->AssociateBlockingPage(navigation_id, std::move(page));
@@ -442,9 +465,8 @@ void ChromeWebClient::PrepareErrorPage(
       base::ios::GetFinalUnderlyingErrorFromError(error);
   if ([final_underlying_error.domain
           isEqualToString:kSafeBrowsingErrorDomain]) {
-    // TODO(crbug.com/399379745): Handle enterprise safe browsing error codes.
-    std::move(callback).Run(
-        GetSafeBrowsingErrorPageHTML(web_state, navigation_id));
+    std::move(callback).Run(GetSafeBrowsingErrorPageHTML(
+        web_state, navigation_id, final_underlying_error.code));
   } else if ([final_underlying_error.domain
                  isEqualToString:kLookalikeUrlErrorDomain]) {
     // Only kLookalikeUrlErrorCode is supported.
