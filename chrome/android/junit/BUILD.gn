@@ -389,11 +389,6 @@ if (is_android) {
       "src/org/chromium/chrome/browser/bookmarks/FakeBookmarkModel.java",
       "src/org/chromium/chrome/browser/compositor/overlays/strip/TestTabModel.java",
       "src/org/chromium/chrome/browser/multiwindow/MultiWindowTestUtils.java",
-
-      # TODO: This is a test file that's used by another test file
-      # DesktopSiteSettingsIphControllerUnitTest.java which is in different
-      # package. We should try to remove this dependency if possible.
-      "src/org/chromium/chrome/browser/tab/RequestDesktopUtilsUnitTest.java",
     ]
 
     deps = chrome_junit_tests_helper_deps
