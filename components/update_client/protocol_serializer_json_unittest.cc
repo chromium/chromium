@@ -62,7 +62,7 @@ TEST(SerializeRequestJSON, Serialize) {
                             std::move(apps)));
     constexpr char regex[] =
         R"({"request":{"@os":"\w+","@updater":"prod_id",)"
-        R"("acceptformat":"crx3,download,puff,run",)"
+        R"("acceptformat":"crx3,download,puff,run,zucchini",)"
         R"("apps":\[{"ap":"ap1","appid":"id1","attr1":"1","attr2":"2",)"
         R"("brand":"BRND","cohort":"c1","cohorthint":"ch1","cohortname":"cn1",)"
         R"("data":\[{"index":"foobar_install_data_index","name":"install"}],)"
@@ -147,7 +147,8 @@ TEST(SerializeRequestJSON, UpdaterStateAttributes) {
       {}));
   constexpr char regex[] =
       R"({"request":{"@os":"\w+","@updater":"prod_id",)"
-      R"("acceptformat":"crx3,download,puff,run","arch":"\w+","dedup":"cr",)"
+      R"("acceptformat":"crx3,download,puff,run,zucchini",)"
+      R"("arch":"\w+","dedup":"cr",)"
       R"("dlpref":"cacheable","domainjoined":true,"extra":"params",)"
       R"("hw":{"avx":(true|false),)"
       R"("physmemory":\d+,"sse":(true|false),"sse2":(true|false),)"

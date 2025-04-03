@@ -42,6 +42,8 @@ source_set("in_process_patcher") {
   deps = [
     ":update_client",
     "//base",
+    "//components/zucchini:zucchini_io",
+    "//components/zucchini:zucchini_lib",
     "//third_party/puffin:libpuffpatch",
   ]
   include_dirs = [ "//third_party/puffin/src/include" ]
@@ -67,6 +69,7 @@ source_set("patch_impl") {
     ":update_client",
     "//components/services/patch/public/cpp",
     "//components/services/patch/public/mojom",
+    "//components/zucchini:zucchini_lib",
     "//mojo/public/cpp/bindings",
   ]
 }
@@ -107,6 +110,8 @@ static_library("update_client") {
     "op_install.h",
     "op_puffin.cc",
     "op_puffin.h",
+    "op_zucchini.cc",
+    "op_zucchini.h",
     "patcher.h",
     "persisted_data.cc",
     "persisted_data.h",
@@ -167,6 +172,7 @@ static_library("update_client") {
     "//components/crx_file",
     "//components/prefs",
     "//components/version_info",
+    "//components/zucchini:zucchini_lib",
     "//crypto",
     "//third_party/zlib/google:compression_utils",
     "//url",
@@ -270,6 +276,9 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/update_client/updatecheck_reply_noupdate.json",
     "//components/test/data/update_client/updatecheck_reply_parse_error.json",
     "//components/test/data/update_client/updatecheck_reply_unknownapp.json",
+    "//components/test/data/update_client/zucchini_patch_test/app1.zip",
+    "//components/test/data/update_client/zucchini_patch_test/app1_to_app2.zucchini",
+    "//components/test/data/update_client/zucchini_patch_test/app2.zip",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]
@@ -291,6 +300,7 @@ source_set("unit_tests") {
     "crx_cache_unittest.cc",
     "op_download_unittest.cc",
     "op_puffin_unittest.cc",
+    "op_zucchini_unittest.cc",
     "persisted_data_unittest.cc",
     "ping_manager_unittest.cc",
     "protocol_parser_json_unittest.cc",

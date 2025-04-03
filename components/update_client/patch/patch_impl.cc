@@ -5,9 +5,12 @@
 #include "components/update_client/patch/patch_impl.h"
 
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/services/patch/public/cpp/patch.h"
+#include "components/update_client/update_client_errors.h"
+#include "components/zucchini/zucchini.h"
 
 namespace update_client {
 
@@ -25,6 +28,39 @@ class PatcherImpl : public Patcher {
     patch::PuffPatch(callback_.Run(), std::move(old_file),
                      std::move(patch_file), std::move(destination_file),
                      std::move(callback));
+  }
+
+  void PatchZucchini(base::File old_file,
+                     base::File patch_file,
+                     base::File destination_file,
+                     PatchCompleteCallback callback) const override {
+    if (!old_file.IsValid()) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback),
+                                    static_cast<int>(
+                                        UnpackerError::kPatchInvalidOldFile)));
+      return;
+    }
+    if (!patch_file.IsValid()) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              std::move(callback),
+              static_cast<int>(UnpackerError::kPatchInvalidPatchFile)));
+      return;
+    }
+    if (!destination_file.IsValid()) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback),
+                                    static_cast<int>(
+                                        UnpackerError::kPatchInvalidNewFile)));
+      return;
+    }
+    patch::ZucchiniPatch(callback_.Run(), std::move(old_file),
+                         std::move(patch_file), std::move(destination_file),
+                         base::BindOnce([](zucchini::status::Code result) {
+                           return static_cast<int>(result);
+                         }).Then(std::move(callback)));
   }
 
  protected:

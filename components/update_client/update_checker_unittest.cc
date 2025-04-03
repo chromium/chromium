@@ -284,7 +284,8 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   ASSERT_TRUE(request->FindString("@updater"));
   EXPECT_EQ("fake_prodid", *request->FindString("@updater"));
   ASSERT_TRUE(request->FindString("acceptformat"));
-  EXPECT_EQ("crx3,download,puff,run", *request->FindString("acceptformat"));
+  EXPECT_EQ("crx3,download,puff,run,zucchini",
+            *request->FindString("acceptformat"));
   EXPECT_TRUE(request->contains("arch"));
   ASSERT_TRUE(request->FindString("dedup"));
   EXPECT_EQ("cr", *request->FindString("dedup"));
