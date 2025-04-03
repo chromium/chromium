@@ -171,10 +171,6 @@ class ProfileNetworkContextService
   // Gets the current CTPolicy from preferences.
   network::mojom::CTPolicyPtr GetCTPolicy();
 
-  // Update the CTPolicy for the given NetworkContexts.
-  void UpdateCTPolicyForContexts(
-      const std::vector<network::mojom::NetworkContext*>& contexts);
-
   // Update the CTPolicy for the all of profiles_'s NetworkContexts.
   void UpdateCTPolicy();
 

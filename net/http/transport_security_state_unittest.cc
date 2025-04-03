@@ -96,12 +96,15 @@ constexpr auto kBadPath = std::to_array<const char*>({
     nullptr,
 });
 
-class MockRequireCTDelegate : public TransportSecurityState::RequireCTDelegate {
+class MockRequireCTDelegate : public RequireCTDelegate {
  public:
-  MOCK_METHOD3(IsCTRequiredForHost,
-               CTRequirementLevel(std::string_view hostname,
-                                  const X509Certificate* chain,
-                                  const HashValueVector& hashes));
+  MOCK_CONST_METHOD3(IsCTRequiredForHost,
+                     CTRequirementLevel(std::string_view hostname,
+                                        const X509Certificate* chain,
+                                        const HashValueVector& hashes));
+
+ protected:
+  ~MockRequireCTDelegate() override = default;
 };
 
 bool operator==(const TransportSecurityState::STSState& lhs,
@@ -949,8 +952,7 @@ TEST_F(TransportSecurityStateTest, HstsHostBypassList) {
 TEST_F(TransportSecurityStateTest, RequireCTConsultsDelegate) {
   using ::testing::_;
   using ::testing::Return;
-  using CTRequirementLevel =
-      TransportSecurityState::RequireCTDelegate::CTRequirementLevel;
+  using CTRequirementLevel = RequireCTDelegate::CTRequirementLevel;
 
   // Dummy cert to use as the validation chain. The contents do not matter.
   scoped_refptr<X509Certificate> cert =
@@ -966,28 +968,28 @@ TEST_F(TransportSecurityStateTest, RequireCTConsultsDelegate) {
   // date.
   {
     TransportSecurityState state;
-    const TransportSecurityState::CTRequirementsStatus original_status =
-        state.CheckCTRequirements(
-            "www.example.com", true, hashes, cert.get(),
-            ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS);
+    const ct::CTRequirementsStatus original_status = state.CheckCTRequirements(
+        "www.example.com", true, hashes, cert.get(),
+        ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS);
 
-    MockRequireCTDelegate always_require_delegate;
-    EXPECT_CALL(always_require_delegate, IsCTRequiredForHost(_, _, _))
+    scoped_refptr<MockRequireCTDelegate> always_require_delegate =
+        base::MakeRefCounted<MockRequireCTDelegate>();
+    EXPECT_CALL(*always_require_delegate, IsCTRequiredForHost(_, _, _))
         .WillRepeatedly(Return(CTRequirementLevel::REQUIRED));
-    state.SetRequireCTDelegate(&always_require_delegate);
-    EXPECT_EQ(TransportSecurityState::CT_REQUIREMENTS_NOT_MET,
+    state.SetRequireCTDelegate(always_require_delegate);
+    EXPECT_EQ(ct::CTRequirementsStatus::CT_REQUIREMENTS_NOT_MET,
               state.CheckCTRequirements(
                   "www.example.com", true, hashes, cert.get(),
                   ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
-    EXPECT_EQ(TransportSecurityState::CT_REQUIREMENTS_NOT_MET,
+    EXPECT_EQ(ct::CTRequirementsStatus::CT_REQUIREMENTS_NOT_MET,
               state.CheckCTRequirements(
                   "www.example.com", true, hashes, cert.get(),
                   ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS));
-    EXPECT_EQ(TransportSecurityState::CT_REQUIREMENTS_MET,
+    EXPECT_EQ(ct::CTRequirementsStatus::CT_REQUIREMENTS_MET,
               state.CheckCTRequirements(
                   "www.example.com", true, hashes, cert.get(),
                   ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
-    EXPECT_EQ(TransportSecurityState::CT_REQUIREMENTS_MET,
+    EXPECT_EQ(ct::CTRequirementsStatus::CT_REQUIREMENTS_MET,
               state.CheckCTRequirements(
                   "www.example.com", true, hashes, cert.get(),
                   ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY));
@@ -1003,20 +1005,20 @@ TEST_F(TransportSecurityStateTest, RequireCTConsultsDelegate) {
   // it should indicate CT is not required.
   {
     TransportSecurityState state;
-    const TransportSecurityState::CTRequirementsStatus original_status =
-        state.CheckCTRequirements(
-            "www.example.com", true, hashes, cert.get(),
-            ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS);
+    const ct::CTRequirementsStatus original_status = state.CheckCTRequirements(
+        "www.example.com", true, hashes, cert.get(),
+        ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS);
 
-    MockRequireCTDelegate never_require_delegate;
-    EXPECT_CALL(never_require_delegate, IsCTRequiredForHost(_, _, _))
+    scoped_refptr<MockRequireCTDelegate> never_require_delegate =
+        base::MakeRefCounted<MockRequireCTDelegate>();
+    EXPECT_CALL(*never_require_delegate, IsCTRequiredForHost(_, _, _))
         .WillRepeatedly(Return(CTRequirementLevel::NOT_REQUIRED));
-    state.SetRequireCTDelegate(&never_require_delegate);
-    EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
+    state.SetRequireCTDelegate(never_require_delegate);
+    EXPECT_EQ(ct::CTRequirementsStatus::CT_NOT_REQUIRED,
               state.CheckCTRequirements(
                   "www.example.com", true, hashes, cert.get(),
                   ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
-    EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
+    EXPECT_EQ(ct::CTRequirementsStatus::CT_NOT_REQUIRED,
               state.CheckCTRequirements(
                   "www.example.com", true, hashes, cert.get(),
                   ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS));
@@ -1034,8 +1036,7 @@ TEST_F(TransportSecurityStateTest, RequireCTConsultsDelegate) {
 TEST(CTEmergencyDisableTest, CTEmergencyDisable) {
   using ::testing::_;
   using ::testing::Return;
-  using CTRequirementLevel =
-      TransportSecurityState::RequireCTDelegate::CTRequirementLevel;
+  using CTRequirementLevel = RequireCTDelegate::CTRequirementLevel;
 
   // Dummy cert to use as the validation chain. The contents do not matter.
   scoped_refptr<X509Certificate> cert =
@@ -1049,29 +1050,30 @@ TEST(CTEmergencyDisableTest, CTEmergencyDisable) {
   TransportSecurityState state;
   state.SetCTEmergencyDisabled(true);
 
-  MockRequireCTDelegate always_require_delegate;
-  EXPECT_CALL(always_require_delegate, IsCTRequiredForHost(_, _, _))
+  scoped_refptr<MockRequireCTDelegate> always_require_delegate =
+      base::MakeRefCounted<MockRequireCTDelegate>();
+  EXPECT_CALL(*always_require_delegate, IsCTRequiredForHost(_, _, _))
       .WillRepeatedly(Return(CTRequirementLevel::REQUIRED));
-  state.SetRequireCTDelegate(&always_require_delegate);
-  EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
+  state.SetRequireCTDelegate(always_require_delegate);
+  EXPECT_EQ(ct::CTRequirementsStatus::CT_NOT_REQUIRED,
             state.CheckCTRequirements(
                 "www.example.com", true, hashes, cert.get(),
                 ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
-  EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
+  EXPECT_EQ(ct::CTRequirementsStatus::CT_NOT_REQUIRED,
             state.CheckCTRequirements(
                 "www.example.com", true, hashes, cert.get(),
                 ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS));
-  EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
+  EXPECT_EQ(ct::CTRequirementsStatus::CT_NOT_REQUIRED,
             state.CheckCTRequirements(
                 "www.example.com", true, hashes, cert.get(),
                 ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
-  EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
+  EXPECT_EQ(ct::CTRequirementsStatus::CT_NOT_REQUIRED,
             state.CheckCTRequirements(
                 "www.example.com", true, hashes, cert.get(),
                 ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY));
 
   state.SetRequireCTDelegate(nullptr);
-  EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
+  EXPECT_EQ(ct::CTRequirementsStatus::CT_NOT_REQUIRED,
             state.CheckCTRequirements(
                 "www.example.com", true, hashes, cert.get(),
                 ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));

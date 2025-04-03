@@ -1120,24 +1120,10 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentCtAndCrsUpdaterTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_ok.GetURL("c.example.com", "/simple.html")));
-  switch (GetParam()) {
-    case CTEnforcement::kEnabled:
-    case CTEnforcement::kEnabledWithStaticCTEnforcement:
-    case CTEnforcement::kDisabledByFeature:
-      // Should be trusted if CT is enabled since the SCTNotAfter constraint is
-      // satisfied by the SCT from log1. Should be trusted if CT feature is
-      // disabled since SCTNotAfter fails open when CT is disabled.
-      EXPECT_EQ(u"OK",
-                chrome_test_utils::GetActiveWebContents(this)->GetTitle());
-      break;
-    case CTEnforcement::kDisabledByProto:
-      // Should be distrusted if CT is disabled by proto kill switch since the
-      // proto kill switch short-circuits the loading of the rest of the proto,
-      // so the test configured CT logs are not trusted.
-      EXPECT_NE(u"OK",
-                chrome_test_utils::GetActiveWebContents(this)->GetTitle());
-      break;
-  }
+  // Should be trusted if CT is enabled since the SCTNotAfter constraint is
+  // satisfied by the SCT from log1. Should be trusted if CT feature is
+  // disabled since SCTNotAfter fails open when CT is disabled.
+  EXPECT_EQ(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
 
   // Install CRS update that trusts root with a SCTNotAfter constraint that is
   // before both of the valid SCTs.
@@ -1159,16 +1145,13 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentCtAndCrsUpdaterTest,
   switch (GetParam()) {
     case CTEnforcement::kEnabled:
     case CTEnforcement::kEnabledWithStaticCTEnforcement:
-    case CTEnforcement::kDisabledByProto:
       // Should be distrusted if CT is enabled. The SCTNotAfter constraint is
       // not satisfied by any valid SCT. The SCT from the unknown log is not
       // counted even though the timestamp matches the constraint.
-      // Should be distrusted if CT is disabled by proto kill switch since the
-      // proto kill switch short-circuits the loading of the rest of the proto,
-      // so the test configured CT logs are not trusted.
       EXPECT_NE(u"OK",
                 chrome_test_utils::GetActiveWebContents(this)->GetTitle());
       break;
+    case CTEnforcement::kDisabledByProto:
     case CTEnforcement::kDisabledByFeature:
       // Should be trusted if CT feature is disabled since SCTNotAfter fails
       // open when CT is disabled.
@@ -1194,25 +1177,11 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentCtAndCrsUpdaterTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_ok.GetURL("c.example.com", "/simple.html")));
-  switch (GetParam()) {
-    case CTEnforcement::kEnabled:
-    case CTEnforcement::kEnabledWithStaticCTEnforcement:
-    case CTEnforcement::kDisabledByFeature:
-      // Should be trusted if CT is enabled since the SCTAlltAfter constraint is
-      // satisfied by the SCT from both logs.
-      // Should be trusted if CT feature is disabled since SCTAllAfter fails
-      // open when CT is disabled.
-      EXPECT_EQ(u"OK",
-                chrome_test_utils::GetActiveWebContents(this)->GetTitle());
-      break;
-    case CTEnforcement::kDisabledByProto:
-      // Should be distrusted if CT is disabled by proto kill switch since the
-      // proto kill switch short-circuits the loading of the rest of the proto,
-      // so the test configured CT logs are not trusted.
-      EXPECT_NE(u"OK",
-                chrome_test_utils::GetActiveWebContents(this)->GetTitle());
-      break;
-  }
+  // Should be trusted if CT is enabled since the SCTAlltAfter constraint is
+  // satisfied by the SCT from both logs.
+  // Should be trusted if CT feature is disabled since SCTAllAfter fails
+  // open when CT is disabled.
+  EXPECT_EQ(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
 
   // Install CRS update that trusts root with a SCTAllAfter constraint that is
   // before one of the SCTs but after the other.
@@ -1234,15 +1203,12 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentCtAndCrsUpdaterTest,
   switch (GetParam()) {
     case CTEnforcement::kEnabled:
     case CTEnforcement::kEnabledWithStaticCTEnforcement:
-    case CTEnforcement::kDisabledByProto:
       // Should be distrusted since one of the SCTs was before the SCTAllAfter
       // constraint.
-      // Should be distrusted if CT is disabled by proto kill switch since the
-      // proto kill switch short-circuits the loading of the rest of the proto,
-      // so the test configured CT logs are not trusted.
       EXPECT_NE(u"OK",
                 chrome_test_utils::GetActiveWebContents(this)->GetTitle());
       break;
+    case CTEnforcement::kDisabledByProto:
     case CTEnforcement::kDisabledByFeature:
       // Should be trusted if CT feature is disabled since SCTAllAfter fails
       // open when CT is disabled.

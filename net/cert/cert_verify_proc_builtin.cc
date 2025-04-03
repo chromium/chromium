@@ -37,6 +37,7 @@
 #include "net/cert/internal/revocation_checker.h"
 #include "net/cert/internal/system_trust_store.h"
 #include "net/cert/qwac.h"
+#include "net/cert/require_ct_delegate.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/time_conversions.h"
@@ -82,6 +83,8 @@ constexpr base::TimeDelta kPerAttemptMinVerificationTimeLimit =
 // The minimum RSA key size for SimplePathBuilderDelegate.
 constexpr size_t kMinRsaModulusLengthBits = 1024;
 
+DEFINE_CERT_ERROR_ID(kCtRequirementsNotMet,
+                     "Path does not meet CT requirements");
 DEFINE_CERT_ERROR_ID(kPathLacksEVPolicy, "Path does not have an EV policy");
 DEFINE_CERT_ERROR_ID(kPathLacksQwacPolicy, "Path does not have QWAC policies");
 DEFINE_CERT_ERROR_ID(kChromeRootConstraintsFailed,
@@ -260,6 +263,22 @@ bool IsSelfSignedCertOnLocalNetwork(const X509Certificate* cert,
   return X509Certificate::IsSelfSigned(cert->cert_buffer());
 }
 
+// Appends the SHA256 hashes of |spki_bytes| to |*hashes|.
+void AppendPublicKeyHashes(const bssl::der::Input& spki_bytes,
+                           HashValueVector* hashes) {
+  hashes->emplace_back(crypto::hash::Sha256(spki_bytes));
+}
+
+// Appends the SubjectPublicKeyInfo hashes for all certificates in
+// |path| to |*hashes|.
+void AppendPublicKeyHashes(const bssl::CertPathBuilderResultPath& path,
+                           HashValueVector* hashes) {
+  for (const std::shared_ptr<const bssl::ParsedCertificate>& cert :
+       path.certs) {
+    AppendPublicKeyHashes(cert->tbs().spki_tlv, hashes);
+  }
+}
+
 // CertVerifyProcTrustStore wraps a SystemTrustStore with additional trust
 // anchors and TestRootCerts.
 class CertVerifyProcTrustStore {
@@ -343,6 +362,8 @@ class PathBuilderDelegateDataImpl : public bssl::CertPathBuilderDelegateData {
   SignedCertificateTimestampAndStatusList scts;
   ct::CTPolicyCompliance ct_policy_compliance =
       ct::CTPolicyCompliance::CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE;
+  ct::CTRequirementsStatus ct_requirement_status =
+      ct::CTRequirementsStatus::CT_NOT_REQUIRED;
 };
 
 // TODO(eroman): The path building code in this file enforces its idea of weak
@@ -355,9 +376,11 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
   // requires RSA keys to be at least 1024-bits large, and optionally accepts
   // SHA1 certificates.
   PathBuilderDelegateImpl(
+      std::string_view hostname,
       const CRLSet* crl_set,
       CTVerifier* ct_verifier,
       const CTPolicyEnforcer* ct_policy_enforcer,
+      const RequireCTDelegate* require_ct_delegate,
       CertNetFetcher* net_fetcher,
       VerificationType verification_type,
       bssl::SimplePathBuilderDelegate::DigestPolicy digest_policy,
@@ -374,9 +397,11 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       const NetLogWithSource& net_log)
       : bssl::SimplePathBuilderDelegate(kMinRsaModulusLengthBits,
                                         digest_policy),
+        hostname_(hostname),
         crl_set_(crl_set),
         ct_verifier_(ct_verifier),
         ct_policy_enforcer_(ct_policy_enforcer),
+        require_ct_delegate_(require_ct_delegate),
         net_fetcher_(net_fetcher),
         verification_type_(verification_type),
         flags_(flags),
@@ -480,6 +505,17 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
                                   net_fetcher_, &path->errors,
                                   &delegate_data->stapled_ocsp_verify_result);
 
+    CheckCertificateTransparency(path, cert_for_ct_verify.get(), delegate_data);
+  }
+
+  void CheckCertificateTransparency(
+      bssl::CertPathBuilderResultPath* path,
+      X509Certificate* cert_for_ct_verify,
+      PathBuilderDelegateDataImpl* delegate_data) {
+    if (!ct_policy_enforcer_->IsCtEnabled()) {
+      return;
+    }
+
     ct::SCTList verified_scts;
     for (const auto& sct_and_status : delegate_data->scts) {
       if (sct_and_status.status == ct::SCT_STATUS_OK) {
@@ -487,7 +523,57 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       }
     }
     delegate_data->ct_policy_compliance = ct_policy_enforcer_->CheckCompliance(
-        cert_for_ct_verify.get(), verified_scts, current_time_, *net_log_);
+        cert_for_ct_verify, verified_scts, current_time_, *net_log_);
+
+    // TODO(crbug.com/41392053): The SPKI hashes are calculated here, during
+    // CRLSet checks, and in AssignVerifyResult. Calculate once and cache in
+    // delegate_data so that it can be reused.
+    HashValueVector public_key_hashes;
+    AppendPublicKeyHashes(*path, &public_key_hashes);
+
+    bool is_issued_by_known_root = false;
+    const bssl::ParsedCertificate* trusted_cert = path->GetTrustedCert();
+    if (trusted_cert) {
+      is_issued_by_known_root = trust_store_->IsKnownRoot(trusted_cert);
+    }
+
+    delegate_data->ct_requirement_status =
+        RequireCTDelegate::CheckCTRequirements(
+            require_ct_delegate_.get(), hostname_, is_issued_by_known_root,
+            public_key_hashes, cert_for_ct_verify,
+            delegate_data->ct_policy_compliance);
+
+    switch (delegate_data->ct_requirement_status) {
+      case ct::CTRequirementsStatus::CT_REQUIREMENTS_NOT_MET:
+        path->errors.GetErrorsForCert(0)->AddError(kCtRequirementsNotMet);
+        break;
+      case ct::CTRequirementsStatus::CT_REQUIREMENTS_MET:
+        break;
+      case ct::CTRequirementsStatus::CT_NOT_REQUIRED:
+        if (flags_ & CertVerifyProc::VERIFY_SXG_CT_REQUIREMENTS) {
+          // CT is not required if the certificate does not chain to a publicly
+          // trusted root certificate.
+          if (!is_issued_by_known_root) {
+            break;
+          }
+          // For old certificates (issued before 2018-05-01),
+          // CheckCTRequirements() may return CT_NOT_REQUIRED, so we check the
+          // compliance status here.
+          // TODO(crbug.com/40580363): Remove this condition once we require
+          // signing certificates to have CanSignHttpExchanges extension,
+          // because such certificates should be naturally after 2018-05-01.
+          if (delegate_data->ct_policy_compliance ==
+                  net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS ||
+              delegate_data->ct_policy_compliance ==
+                  net::ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY) {
+            break;
+          }
+          // Require CT compliance, by overriding CT_NOT_REQUIRED and treat it
+          // as ERR_CERTIFICATE_TRANSPARENCY_REQUIRED.
+          path->errors.GetErrorsForCert(0)->AddError(kCtRequirementsNotMet);
+        }
+        break;
+    }
   }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -748,9 +834,11 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
         NetLogEventType::CERT_VERIFY_PROC_PATH_BUILDER_DEBUG, "debug", msg);
   }
 
+  std::string_view hostname_;
   raw_ptr<const CRLSet> crl_set_;
   raw_ptr<CTVerifier> ct_verifier_;
   raw_ptr<const CTPolicyEnforcer> ct_policy_enforcer_;
+  raw_ptr<const RequireCTDelegate> require_ct_delegate_;
   raw_ptr<CertNetFetcher> net_fetcher_;
   const VerificationType verification_type_;
   const int flags_;
@@ -839,6 +927,7 @@ class CertVerifyProcBuiltin : public CertVerifyProc {
   const scoped_refptr<CertNetFetcher> net_fetcher_;
   const std::unique_ptr<CTVerifier> ct_verifier_;
   const scoped_refptr<CTPolicyEnforcer> ct_policy_enforcer_;
+  const scoped_refptr<const RequireCTDelegate> require_ct_delegate_;
   const std::unique_ptr<SystemTrustStore> system_trust_store_;
   std::vector<net::CertVerifyProc::CertificateWithConstraints>
       additional_constraints_;
@@ -858,6 +947,7 @@ CertVerifyProcBuiltin::CertVerifyProcBuiltin(
       net_fetcher_(std::move(net_fetcher)),
       ct_verifier_(std::move(ct_verifier)),
       ct_policy_enforcer_(std::move(ct_policy_enforcer)),
+      require_ct_delegate_(instance_params.require_ct_delegate),
       system_trust_store_(std::move(system_trust_store)),
       time_tracker_(std::move(time_tracker)) {
   DCHECK(system_trust_store_);
@@ -1027,25 +1117,6 @@ void AddIntermediatesToIssuerSource(X509Certificate* x509_cert,
   }
 }
 
-// Appends the SHA256 hashes of |spki_bytes| to |*hashes|.
-// TODO(eroman): Hashes are also calculated at other times (such as when
-//               checking CRLSet). Consider caching to avoid recalculating (say
-//               in the delegate's PathInfo).
-void AppendPublicKeyHashes(const bssl::der::Input& spki_bytes,
-                           HashValueVector* hashes) {
-  hashes->emplace_back(crypto::hash::Sha256(spki_bytes));
-}
-
-// Appends the SubjectPublicKeyInfo hashes for all certificates in
-// |path| to |*hashes|.
-void AppendPublicKeyHashes(const bssl::CertPathBuilderResultPath& path,
-                           HashValueVector* hashes) {
-  for (const std::shared_ptr<const bssl::ParsedCertificate>& cert :
-       path.certs) {
-    AppendPublicKeyHashes(cert->tbs().spki_tlv, hashes);
-  }
-}
-
 // Sets the bits on |cert_status| for all the errors present in |errors| (the
 // errors for a particular path).
 void MapPathBuilderErrorsToCertStatus(const bssl::CertPathErrors& errors,
@@ -1083,6 +1154,10 @@ void MapPathBuilderErrorsToCertStatus(const bssl::CertPathErrors& errors,
       errors.ContainsError(bssl::cert_errors::kIterationLimitExceeded) ||
       errors.ContainsError(kChromeRootConstraintsFailed)) {
     *cert_status |= CERT_STATUS_AUTHORITY_INVALID;
+  }
+
+  if (errors.ContainsError(kCtRequirementsNotMet)) {
+    *cert_status |= CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED;
   }
 
   // IMPORTANT: If the path was invalid for a reason that was not
@@ -1139,6 +1214,7 @@ struct BuildPathAttempt {
 bssl::CertPathBuilder::Result TryBuildPath(
     const std::shared_ptr<const bssl::ParsedCertificate>& target,
     bssl::CertIssuerSourceStatic* intermediates,
+    const std::string& hostname,
     CertVerifyProcTrustStore* trust_store,
     const std::vector<net::CertVerifyProc::CertificateWithConstraints>&
         additional_constraints,
@@ -1153,6 +1229,7 @@ bssl::CertPathBuilder::Result TryBuildPath(
     const CRLSet* crl_set,
     CTVerifier* ct_verifier,
     const CTPolicyEnforcer* ct_policy_enforcer,
+    const RequireCTDelegate* require_ct_delegate,
     CertNetFetcher* net_fetcher,
     const EVRootCAMetadata* ev_metadata,
     bool* checked_revocation,
@@ -1169,10 +1246,10 @@ bssl::CertPathBuilder::Result TryBuildPath(
   }
 
   PathBuilderDelegateImpl path_builder_delegate(
-      crl_set, ct_verifier, ct_policy_enforcer, net_fetcher, verification_type,
-      digest_policy, flags, trust_store, additional_constraints, ocsp_response,
-      sct_list, ev_metadata, deadline, current_time, checked_revocation,
-      net_log);
+      hostname, crl_set, ct_verifier, ct_policy_enforcer, require_ct_delegate,
+      net_fetcher, verification_type, digest_policy, flags, trust_store,
+      additional_constraints, ocsp_response, sct_list, ev_metadata, deadline,
+      current_time, checked_revocation, net_log);
 
   std::optional<CertIssuerSourceAia> aia_cert_issuer_source;
 
@@ -1272,6 +1349,7 @@ int AssignVerifyResult(
     verify_result->ocsp_result = delegate_data->stapled_ocsp_verify_result;
     verify_result->scts = std::move(delegate_data->scts);
     verify_result->policy_compliance = delegate_data->ct_policy_compliance;
+    verify_result->ct_requirement_status = delegate_data->ct_requirement_status;
   }
 
   if (IsCertStatusError(verify_result->cert_status)) {
@@ -1434,14 +1512,15 @@ int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
 
     // Run the attempt through the path builder.
     result = TryBuildPath(
-        target, &intermediates, &trust_store, additional_constraints_,
+        target, &intermediates, hostname, &trust_store, additional_constraints_,
         cur_attempt.use_system_time ? der_verification_system_time
                                     : der_verification_custom_time,
         cur_attempt.use_system_time ? base::Time::Now() : custom_time, deadline,
         cur_attempt.verification_type, cur_attempt.digest_policy, flags,
         ocsp_response, sct_list, crl_set(), ct_verifier_.get(),
-        ct_policy_enforcer_.get(), net_fetcher_.get(), ev_metadata,
-        &checked_revocation_for_some_path, net_log);
+        ct_policy_enforcer_.get(), require_ct_delegate_.get(),
+        net_fetcher_.get(), ev_metadata, &checked_revocation_for_some_path,
+        net_log);
 
     net_log.EndEvent(NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT,
                      [&] { return NetLogPathBuilderResult(result); });

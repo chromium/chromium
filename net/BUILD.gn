@@ -374,6 +374,8 @@ component("net") {
     "cert/multi_threaded_cert_verifier.h",
     "cert/qwac.cc",
     "cert/qwac.h",
+    "cert/require_ct_delegate.cc",
+    "cert/require_ct_delegate.h",
     "cert/root_cert_list_generated.h",
     "cert/sct_auditing_delegate.h",
     "cert/sct_status_flags.cc",

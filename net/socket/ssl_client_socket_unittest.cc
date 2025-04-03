@@ -586,14 +586,6 @@ class DeleteSocketCallback : public TestCompletionCallbackBase {
   raw_ptr<StreamSocket, DanglingUntriaged> socket_;
 };
 
-class MockRequireCTDelegate : public TransportSecurityState::RequireCTDelegate {
- public:
-  MOCK_METHOD3(IsCTRequiredForHost,
-               CTRequirementLevel(std::string_view host,
-                                  const X509Certificate* chain,
-                                  const HashValueVector& hashes));
-};
-
 class MockSCTAuditingDelegate : public SCTAuditingDelegate {
  public:
   MOCK_METHOD(bool, IsSCTAuditingEnabled, ());
@@ -4547,47 +4539,6 @@ INSTANTIATE_TEST_SUITE_P(RSAKeyUsageInstantiation,
                          SSLClientSocketKeyUsageTest,
                          Combine(ValuesIn(kKeyUsageTests), Bool()));
 
-// Test that when CT is required (in this case, by the delegate), the
-// absence of CT information is a socket error.
-TEST_P(SSLClientSocketVersionTest, CTIsRequired) {
-  ASSERT_TRUE(
-      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
-  scoped_refptr<X509Certificate> server_cert =
-      embedded_test_server()->GetCertificate();
-
-  // Certificate is trusted and chains to a public root.
-  CertVerifyResult verify_result;
-  verify_result.is_issued_by_known_root = true;
-  verify_result.verified_cert = server_cert;
-  verify_result.public_key_hashes =
-      MakeHashValueVector(kGoodHashValueVectorInput);
-  verify_result.policy_compliance =
-      ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
-  cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
-
-  // Set up CT
-  MockRequireCTDelegate require_ct_delegate;
-  transport_security_state_->SetRequireCTDelegate(&require_ct_delegate);
-  EXPECT_CALL(require_ct_delegate, IsCTRequiredForHost(_, _, _))
-      .WillRepeatedly(Return(TransportSecurityState::RequireCTDelegate::
-                                 CTRequirementLevel::NOT_REQUIRED));
-  EXPECT_CALL(require_ct_delegate,
-              IsCTRequiredForHost(host_port_pair().host(), _, _))
-      .WillRepeatedly(Return(TransportSecurityState::RequireCTDelegate::
-                                 CTRequirementLevel::REQUIRED));
-
-  SSLConfig ssl_config;
-  int rv;
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
-  SSLInfo ssl_info;
-  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
-
-  EXPECT_THAT(rv, IsError(ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
-  EXPECT_TRUE(ssl_info.cert_status &
-              CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED);
-  EXPECT_FALSE(sock_->IsConnected());
-}
-
 // Test that when CT is required, setting ignore_certificate_errors
 // ignores errors in CT.
 TEST_P(SSLClientSocketVersionTest, IgnoreCertificateErrorsBypassesRequiredCT) {
@@ -4604,18 +4555,9 @@ TEST_P(SSLClientSocketVersionTest, IgnoreCertificateErrorsBypassesRequiredCT) {
       MakeHashValueVector(kGoodHashValueVectorInput);
   verify_result.policy_compliance =
       ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
-  cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
-
-  // Set up CT
-  MockRequireCTDelegate require_ct_delegate;
-  transport_security_state_->SetRequireCTDelegate(&require_ct_delegate);
-  EXPECT_CALL(require_ct_delegate, IsCTRequiredForHost(_, _, _))
-      .WillRepeatedly(Return(TransportSecurityState::RequireCTDelegate::
-                                 CTRequirementLevel::NOT_REQUIRED));
-  EXPECT_CALL(require_ct_delegate,
-              IsCTRequiredForHost(host_port_pair().host(), _, _))
-      .WillRepeatedly(Return(TransportSecurityState::RequireCTDelegate::
-                                 CTRequirementLevel::REQUIRED));
+  verify_result.cert_status = CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED;
+  cert_verifier_->AddResultForCert(server_cert.get(), verify_result,
+                                   ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
 
   SSLConfig ssl_config;
   ssl_config.ignore_certificate_errors = true;
@@ -4650,23 +4592,15 @@ TEST_P(SSLClientSocketVersionTest, PKPMoreImportantThanCT) {
       MakeHashValueVector(kBadHashValueVectorInput);
   verify_result.policy_compliance =
       ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
-  cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
+  verify_result.cert_status = CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED;
+  cert_verifier_->AddResultForCert(server_cert.get(), verify_result,
+                                   ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
 
   transport_security_state_->EnableStaticPinsForTesting();
   transport_security_state_->SetPinningListAlwaysTimelyForTesting(true);
   ScopedTransportSecurityStateSource scoped_security_state_source;
 
   const char kCTHost[] = "hsts-hpkp-preloaded.test";
-
-  // Set up CT.
-  MockRequireCTDelegate require_ct_delegate;
-  transport_security_state_->SetRequireCTDelegate(&require_ct_delegate);
-  EXPECT_CALL(require_ct_delegate, IsCTRequiredForHost(_, _, _))
-      .WillRepeatedly(Return(TransportSecurityState::RequireCTDelegate::
-                                 CTRequirementLevel::NOT_REQUIRED));
-  EXPECT_CALL(require_ct_delegate, IsCTRequiredForHost(kCTHost, _, _))
-      .WillRepeatedly(Return(TransportSecurityState::RequireCTDelegate::
-                                 CTRequirementLevel::REQUIRED));
 
   SSLConfig ssl_config;
   int rv;
@@ -4699,13 +4633,6 @@ TEST_P(SSLClientSocketVersionTest, SCTAuditingReportCollected) {
   verify_result.policy_compliance =
       ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS;
   cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
-
-  // Set up CT and auditing delegate.
-  MockRequireCTDelegate require_ct_delegate;
-  transport_security_state_->SetRequireCTDelegate(&require_ct_delegate);
-  EXPECT_CALL(require_ct_delegate, IsCTRequiredForHost(_, _, _))
-      .WillRepeatedly(Return(TransportSecurityState::RequireCTDelegate::
-                                 CTRequirementLevel::REQUIRED));
 
   MockSCTAuditingDelegate sct_auditing_delegate;
   context_ = std::make_unique<SSLClientContext>(

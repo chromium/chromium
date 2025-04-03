@@ -123,7 +123,6 @@ data/ssl/certificates/leaf_from_known_root.pem
 data/ssl/certificates/lets-encrypt-dst-x3-root.pem
 data/ssl/certificates/lets-encrypt-isrg-x1-root.pem
 data/ssl/certificates/localhost_cert.pem
-data/ssl/certificates/may_2018.pem
 data/ssl/certificates/mit.davidben.der
 data/ssl/certificates/multi-root-A-by-B.pem
 data/ssl/certificates/multi-root-B-by-C.pem

@@ -343,47 +343,20 @@ bool TransportSecurityState::HasPublicKeyPins(std::string_view host) {
   return GetPKPState(host, &pkp_state) && pkp_state.HasPublicKeyPins();
 }
 
-TransportSecurityState::CTRequirementsStatus
-TransportSecurityState::CheckCTRequirements(
+ct::CTRequirementsStatus TransportSecurityState::CheckCTRequirements(
     std::string_view host,
     bool is_issued_by_known_root,
     const HashValueVector& public_key_hashes,
     const X509Certificate* validated_certificate_chain,
     ct::CTPolicyCompliance policy_compliance) {
-  using CTRequirementLevel = RequireCTDelegate::CTRequirementLevel;
-
   // If CT is emergency disabled, we don't require CT for any host.
   if (ct_emergency_disable_) {
-    return CT_NOT_REQUIRED;
+    return ct::CTRequirementsStatus::CT_NOT_REQUIRED;
   }
 
-  // CT is not required if the certificate does not chain to a publicly
-  // trusted root certificate.
-  if (!is_issued_by_known_root) {
-    return CT_NOT_REQUIRED;
-  }
-
-  // A connection is considered compliant if it has sufficient SCTs or if the
-  // build is outdated. Other statuses are not considered compliant; this
-  // includes COMPLIANCE_DETAILS_NOT_AVAILABLE because compliance must have been
-  // evaluated in order to determine that the connection is compliant.
-  bool complies =
-      (policy_compliance ==
-           ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS ||
-       policy_compliance == ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY);
-
-  CTRequirementLevel ct_required = CTRequirementLevel::NOT_REQUIRED;
-  if (require_ct_delegate_) {
-    // Allow the delegate to override the CT requirement state.
-    ct_required = require_ct_delegate_->IsCTRequiredForHost(
-        host, validated_certificate_chain, public_key_hashes);
-  }
-  switch (ct_required) {
-    case CTRequirementLevel::REQUIRED:
-      return complies ? CT_REQUIREMENTS_MET : CT_REQUIREMENTS_NOT_MET;
-    case CTRequirementLevel::NOT_REQUIRED:
-      return CT_NOT_REQUIRED;
-  }
+  return RequireCTDelegate::CheckCTRequirements(
+      require_ct_delegate_.get(), host, is_issued_by_known_root,
+      public_key_hashes, validated_certificate_chain, policy_compliance);
 }
 
 void TransportSecurityState::SetDelegate(
@@ -392,9 +365,10 @@ void TransportSecurityState::SetDelegate(
   delegate_ = delegate;
 }
 
-void TransportSecurityState::SetRequireCTDelegate(RequireCTDelegate* delegate) {
+void TransportSecurityState::SetRequireCTDelegate(
+    scoped_refptr<RequireCTDelegate> delegate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  require_ct_delegate_ = delegate;
+  require_ct_delegate_ = std::move(delegate);
 }
 
 void TransportSecurityState::UpdatePinList(

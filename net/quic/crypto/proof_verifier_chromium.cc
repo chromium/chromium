@@ -133,8 +133,6 @@ class ProofVerifierChromium::Job {
 
   bool ShouldAllowUnknownRootForHost(const std::string& hostname);
 
-  int CheckCTRequirements();
-
   // Must be before `cert_verifier_request_`, to avoid dangling pointer
   // warnings, as the Request may be storing a raw pointer to which may have a
   // raw_ptr to its `cert_verify_result`.
@@ -404,10 +402,15 @@ int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {
       verify_details_->cert_verify_result;
   const CertStatus cert_status = cert_verify_result.cert_status;
 
-  // If the connection was good, check HPKP and CT status simultaneously,
-  // but prefer to treat the HPKP error as more serious, if there was one.
-  if (result == OK) {
-    int ct_result = CheckCTRequirements();
+  // If the connection was good or failed with a CT error, check HPKP
+  // and prefer to treat the HPKP error as more serious, if there are both.
+  if (result == OK || result == ERR_CERTIFICATE_TRANSPARENCY_REQUIRED) {
+    if (sct_auditing_delegate_) {
+      sct_auditing_delegate_->MaybeEnqueueReport(
+          HostPortPair(hostname_, port_),
+          cert_verify_result.verified_cert.get(), cert_verify_result.scts);
+    }
+
     TransportSecurityState::PKPStatus pin_validity =
         transport_security_state_->CheckPublicKeyPins(
             hostname_, cert_verify_result.is_issued_by_known_root,
@@ -425,8 +428,6 @@ int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {
         // Do nothing.
         break;
     }
-    if (result != ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN && ct_result != OK)
-      result = ct_result;
   }
 
   if (result == OK &&
@@ -500,34 +501,6 @@ bool ProofVerifierChromium::Job::VerifySignature(
 
   DVLOG(1) << "VerifyFinal success";
   return true;
-}
-
-int ProofVerifierChromium::Job::CheckCTRequirements() {
-  const CertVerifyResult& cert_verify_result =
-      verify_details_->cert_verify_result;
-
-  TransportSecurityState::CTRequirementsStatus ct_requirement_status =
-      transport_security_state_->CheckCTRequirements(
-          hostname_, cert_verify_result.is_issued_by_known_root,
-          cert_verify_result.public_key_hashes,
-          cert_verify_result.verified_cert.get(),
-          cert_verify_result.policy_compliance);
-
-  if (sct_auditing_delegate_) {
-    sct_auditing_delegate_->MaybeEnqueueReport(
-        HostPortPair(hostname_, port_), cert_verify_result.verified_cert.get(),
-        cert_verify_result.scts);
-  }
-
-  switch (ct_requirement_status) {
-    case TransportSecurityState::CT_REQUIREMENTS_NOT_MET:
-      verify_details_->cert_verify_result.cert_status |=
-          CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED;
-      return ERR_CERTIFICATE_TRANSPARENCY_REQUIRED;
-    case TransportSecurityState::CT_REQUIREMENTS_MET:
-    case TransportSecurityState::CT_NOT_REQUIRED:
-      return OK;
-  }
 }
 
 ProofVerifierChromium::ProofVerifierChromium(

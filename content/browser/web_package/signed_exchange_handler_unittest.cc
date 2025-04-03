@@ -33,7 +33,9 @@
 #include "net/base/load_flags.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/test_completion_callback.h"
+#include "net/cert/cert_status_flags.h"
 #include "net/cert/ct_policy_enforcer.h"
+#include "net/cert/ct_policy_status.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/sct_auditing_delegate.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
@@ -235,7 +237,7 @@ class SignedExchangeHandlerTest
   // Creates a net::CertVerifyResult with some useful default values.
   net::CertVerifyResult CreateCertVerifyResult() {
     net::CertVerifyResult result;
-    result.cert_status = net::OK;
+    result.cert_status = 0;
     result.ocsp_result.response_status = bssl::OCSPVerifyResult::PROVIDED;
     result.ocsp_result.revocation_status = bssl::OCSPRevocationStatus::GOOD;
     // Return CT_POLICY_COMPLIES_VIA_SCTS by default. This may be overridden by
@@ -254,7 +256,10 @@ class SignedExchangeHandlerTest
     result.verified_cert = original_cert;
     auto mock_cert_verifier = std::make_unique<net::MockCertVerifier>();
     mock_cert_verifier->AddResultForCertAndHost(
-        original_cert, "test.example.org", result, net::OK);
+        original_cert, "test.example.org", result,
+        net::IsCertStatusError(result.cert_status)
+            ? net::MapCertStatusToNetError(result.cert_status)
+            : net::OK);
     SetCertVerifier(std::move(mock_cert_verifier));
   }
 
@@ -801,7 +806,7 @@ TEST_P(SignedExchangeHandlerTest, CertVerifierParams) {
       LoadCertificate("prime256v1-sha256.public.pem");
   net::CertVerifyResult fake_result;
   fake_result.verified_cert = original_cert;
-  fake_result.cert_status = net::OK;
+  fake_result.cert_status = 0;
   fake_result.ocsp_result.response_status = bssl::OCSPVerifyResult::PROVIDED;
   fake_result.ocsp_result.revocation_status = bssl::OCSPRevocationStatus::GOOD;
 
@@ -850,6 +855,9 @@ TEST_P(SignedExchangeHandlerTest, NotEnoughSCTsFromPubliclyTrustedCert) {
   cert_result.is_issued_by_known_root = true;
   cert_result.policy_compliance =
       net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
+  cert_result.ct_requirement_status =
+      net::ct::CTRequirementsStatus::CT_REQUIREMENTS_NOT_MET;
+  cert_result.cert_status = net::CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED;
   SetupMockCertVerifier("prime256v1-sha256.public.pem", cert_result);
 
 

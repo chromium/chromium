@@ -26,6 +26,7 @@
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/cert/require_ct_delegate.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/http/transport_security_state_source.h"
 #include "net/log/net_log_with_source.h"
@@ -79,39 +80,6 @@ class NET_EXPORT TransportSecurityState {
 
    protected:
     virtual ~Delegate() = default;
-  };
-
-  class NET_EXPORT RequireCTDelegate {
-   public:
-    // Provides a capability for altering the default handling of Certificate
-    // Transparency information, allowing it to be always required for some
-    // hosts, for some hosts to be opted out of the default policy, or
-    // allowing the TransportSecurityState to apply the default security
-    // policies.
-    enum class CTRequirementLevel {
-      // The host is required to always supply Certificate Transparency
-      // information that complies with the CT policy.
-      REQUIRED,
-
-      // The host is explicitly not required to supply Certificate
-      // Transparency information that complies with the CT policy.
-      NOT_REQUIRED,
-    };
-
-    // Called by the TransportSecurityState, allows the Delegate to override
-    // the default handling of Certificate Transparency requirements, if
-    // desired.
-    // |hostname| contains the host being contacted, serving the certificate
-    // |chain|, with the set of hashesh |hashes|. Note that |hashes| and
-    // |chain| are not guaranteed to be in the same order - that is, the first
-    // hash in |hashes| is NOT guaranteed to be for the leaf cert in |chain|.
-    virtual CTRequirementLevel IsCTRequiredForHost(
-        std::string_view hostname,
-        const X509Certificate* chain,
-        const HashValueVector& hashes) = 0;
-
-   protected:
-    virtual ~RequireCTDelegate() = default;
   };
 
   // A STSState describes the strict transport security state (required
@@ -263,17 +231,6 @@ class NET_EXPORT TransportSecurityState {
                bool include_subdomains);
   };
 
-  // Indicates whether a connection met CT requirements.
-  enum CTRequirementsStatus {
-    // CT was not required for the connection.
-    CT_NOT_REQUIRED,
-    // CT was required for the connection and valid Certificate Transparency
-    // information was provided.
-    CT_REQUIREMENTS_MET,
-    // CT was required for the connection but valid CT info was not provided.
-    CT_REQUIREMENTS_NOT_MET,
-  };
-
   TransportSecurityState();
 
   // Creates a TransportSecurityState object that will skip the check to force
@@ -317,7 +274,12 @@ class NET_EXPORT TransportSecurityState {
   //
   // The behavior may be further be altered by setting a RequireCTDelegate
   // via |SetRequireCTDelegate()|.
-  CTRequirementsStatus CheckCTRequirements(
+  //
+  // DEPRECATED: CT requirements are enforced inside the cert verifier now.
+  // Do not add new uses of this method.
+  // TODO(crbug.com/41392053): Remove this and the other CT related stuff from
+  // this file.
+  ct::CTRequirementsStatus CheckCTRequirements(
       std::string_view host,
       bool is_issued_by_known_root,
       const HashValueVector& public_key_hashes,
@@ -336,10 +298,7 @@ class NET_EXPORT TransportSecurityState {
   // information that complies with the CT policy provided by a
   // CTPolicyEnforcer.
   // If nullptr, no delegate will be consulted.
-  // The caller retains ownership of the |delegate|, and must persist for
-  // the lifetime of this object or until called with nullptr, whichever
-  // occurs first.
-  void SetRequireCTDelegate(RequireCTDelegate* delegate);
+  void SetRequireCTDelegate(scoped_refptr<RequireCTDelegate> delegate);
 
   // If |emergency_disable| is set to true, will stop requiring CT
   // compliance on any further requests regardless of host or certificate
@@ -527,7 +486,7 @@ class NET_EXPORT TransportSecurityState {
   // True if public key pinning bypass is enabled for local trust anchors.
   bool enable_pkp_bypass_for_local_trust_anchors_ = true;
 
-  raw_ptr<RequireCTDelegate> require_ct_delegate_ = nullptr;
+  scoped_refptr<RequireCTDelegate> require_ct_delegate_;
 
   std::set<std::string, std::less<>> hsts_host_bypass_list_;
 

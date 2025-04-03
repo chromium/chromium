@@ -41,6 +41,7 @@
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
 #include "components/certificate_transparency/chrome_ct_policy_enforcer.h"
+#include "components/certificate_transparency/chrome_require_ct_delegate.h"
 #include "services/network/public/mojom/ct_log_info.mojom.h"
 #endif
 
@@ -84,6 +85,17 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
     UpdateCertVerifierInstanceParams(
         creation_params->initial_additional_certificates, &instance_params);
   }
+#if BUILDFLAG(IS_CT_SUPPORTED)
+  scoped_refptr<certificate_transparency::ChromeRequireCTDelegate>
+      require_ct_delegate = base::MakeRefCounted<
+          certificate_transparency::ChromeRequireCTDelegate>();
+  if (creation_params->ct_policy) {
+    require_ct_delegate->UpdateCTPolicies(
+        creation_params->ct_policy->excluded_hosts,
+        creation_params->ct_policy->excluded_spkis);
+  }
+  instance_params.require_ct_delegate = std::move(require_ct_delegate);
+#endif
 
   std::unique_ptr<net::CertVerifierWithUpdatableProc> cert_verifier =
       CreateCertVerifier(creation_params.get(), cert_net_fetcher, impl_params,
@@ -316,7 +328,19 @@ void CertVerifierServiceFactoryImpl::UpdateCtLogList(
 
   std::move(callback).Run();
 }
-#endif
+
+void CertVerifierServiceFactoryImpl::DisableCtEnforcement(
+    DisableCtEnforcementCallback callback) {
+  // Clear the ct_policy_enforcer, which will cause a DefaultCTPolicyEnforcer
+  // to be used, which disables CT enforcement. If UpdateCtLogList is called
+  // later, CT enforcement will be re-enabled.
+  proc_params_.ct_policy_enforcer.reset();
+
+  UpdateVerifierServices();
+
+  std::move(callback).Run();
+}
+#endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 void CertVerifierServiceFactoryImpl::OnCRLSetParsed(
     scoped_refptr<net::CRLSet> parsed_crl_set) {

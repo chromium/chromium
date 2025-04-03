@@ -24,6 +24,7 @@
 #include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -302,29 +303,43 @@ TEST_F(MultiThreadedCertVerifierTest, ConvertsFlagsToFlags) {
       ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem"));
   ASSERT_TRUE(test_cert);
 
-  EXPECT_CALL(
-      *mock_verify_proc_,
-      VerifyInternal(_, _, _, _, CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES,
-                     _, _))
-      .WillRepeatedly(
-          DoAll(SetCertVerifyRevokedResult(), Return(ERR_CERT_REVOKED)));
+  const struct TestConfig {
+    int verifier_flag;
+    int expected_proc_flag;
+  } kTestConfig[] = {
+      {CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES,
+       CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES},
+      {CertVerifier::VERIFY_SXG_CT_REQUIREMENTS,
+       CertVerifyProc::VERIFY_SXG_CT_REQUIREMENTS},
+  };
+  for (const auto& test_config : kTestConfig) {
+    SCOPED_TRACE(absl::StrFormat("verifier_flag=%i expected_proc_flag=%i",
+                                 test_config.verifier_flag,
+                                 test_config.expected_proc_flag));
 
-  CertVerifyResult verify_result;
-  TestCompletionCallback callback;
-  std::unique_ptr<CertVerifier::Request> request;
-  int error = verifier_->Verify(
-      CertVerifier::RequestParams(test_cert, "www.example.com",
-                                  CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES,
-                                  /*ocsp_response=*/std::string(),
-                                  /*sct_list=*/std::string()),
-      &verify_result, callback.callback(), &request, NetLogWithSource());
-  ASSERT_THAT(error, IsError(ERR_IO_PENDING));
-  EXPECT_TRUE(request);
-  error = callback.WaitForResult();
-  EXPECT_TRUE(IsCertificateError(error));
-  EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
+    EXPECT_CALL(
+        *mock_verify_proc_,
+        VerifyInternal(_, _, _, _, test_config.expected_proc_flag, _, _))
+        .WillRepeatedly(
+            DoAll(SetCertVerifyRevokedResult(), Return(ERR_CERT_REVOKED)));
 
-  testing::Mock::VerifyAndClearExpectations(mock_verify_proc_.get());
+    CertVerifyResult verify_result;
+    TestCompletionCallback callback;
+    std::unique_ptr<CertVerifier::Request> request;
+    int error = verifier_->Verify(
+        CertVerifier::RequestParams(test_cert, "www.example.com",
+                                    test_config.verifier_flag,
+                                    /*ocsp_response=*/std::string(),
+                                    /*sct_list=*/std::string()),
+        &verify_result, callback.callback(), &request, NetLogWithSource());
+    ASSERT_THAT(error, IsError(ERR_IO_PENDING));
+    EXPECT_TRUE(request);
+    error = callback.WaitForResult();
+    EXPECT_TRUE(IsCertificateError(error));
+    EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
+
+    testing::Mock::VerifyAndClearExpectations(mock_verify_proc_.get());
+  }
 }
 
 // Tests swapping in new Chrome Root Store Data.

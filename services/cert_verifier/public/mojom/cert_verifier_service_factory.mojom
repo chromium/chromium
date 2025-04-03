@@ -11,6 +11,7 @@ import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
 import "services/network/public/mojom/cert_verifier_service_updater.mojom";
+import "services/network/public/mojom/network_context.mojom";
 import "services/network/public/mojom/network_param.mojom";
 
 [EnableIf=is_ct_supported]
@@ -39,6 +40,10 @@ struct CertVerifierCreationParams {
   // TODO(crbug.com/370696616): Also see if verifications can be blocked until
   // PKIMetadata component updates are finished.
   bool wait_for_update = false;
+
+  // Initial certificate transparency policies.
+  [EnableIf=is_ct_supported]
+  network.mojom.CTPolicy? ct_policy;
 };
 
 // Information about a certificate in the Chrome Root Store
@@ -97,6 +102,10 @@ interface CertVerifierServiceFactory {
   [EnableIf=is_ct_supported]
   UpdateCtLogList(array<network.mojom.CTLogInfo> log_list,
                   mojo_base.mojom.Time update_time) => ();
+
+  // Disables CT Enforcement until the next UpdateCtLogList call.
+  [EnableIf=is_ct_supported]
+  DisableCtEnforcement() => ();
 
   // Updates the ChromeRootStore used by the CertVerifierServiceFactory with a
   // new version. The callback will be run once the update has been processed
