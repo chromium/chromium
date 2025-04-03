@@ -9,6 +9,7 @@ use crate::{
     crates,
     gn::{target_spec_to_condition, Condition},
     group::Group,
+    inherit::find_inherited_privilege_group,
 };
 
 use anyhow::{bail, Context, Result};
@@ -259,6 +260,13 @@ pub fn collect_dependencies(
         .collect::<HashSet<_>>();
     let feature_set = cargo_set.target_features().union(cargo_set.host_features());
     let package_set = feature_set.to_package_set();
+    let root_id = cargo_set
+        .initials()
+        .to_package_set()
+        .root_ids(DependencyDirection::Forward)
+        .exactly_one()
+        .map_err(|_| ())
+        .expect("`resolve_root_package_set` should have verified `exactly_one` root");
 
     // Translate the packages into an internal `gnrt` representation.
     let is_toplevel_dep = |package: &PackageMetadata| -> bool {
@@ -291,8 +299,7 @@ pub fn collect_dependencies(
 
             let BuildTargets { lib_target, bin_targets, build_script } =
                 get_build_targets(&package, extra_config).with_context(err_context)?;
-            let group = get_privilege_group(&package, extra_config, is_toplevel_dep)
-                .with_context(err_context)?;
+            let group = find_inherited_privilege_group(package.id(), root_id, graph, extra_config);
 
             Ok(Package {
                 package_name: package.name().to_string(),
@@ -559,110 +566,6 @@ impl std::fmt::Display for TargetType {
             Self::Lib(typ) => typ.fmt(f),
             Self::Bin => f.write_str("bin"),
             Self::BuildScript => f.write_str("custom-build"),
-        }
-    }
-}
-
-fn get_privilege_group(
-    package: &PackageMetadata,
-    extra_config: &BuildConfig,
-    is_toplevel_dep: impl Fn(&PackageMetadata) -> bool,
-) -> Result<Group> {
-    // If the dependency is a top-level dep of Chromium, then it defaults to this
-    // privilege level.
-    // TODO: Default should be sandbox??
-    const DEFAULT_FOR_TOPLEVEL: Group = Group::Safe;
-
-    let package_name = package.name();
-    let get_group_from_config = |package: &PackageMetadata| -> Option<Group> {
-        extra_config.per_crate_config.get(package.name())?.group
-    };
-
-    // If `package` transitively depends on `Test` `descendant1` and `Safe`
-    // `descendant2`, then it is okay if `package` is just `Test` (but it can't
-    // be higher).  So `**max**_from_descendants = ...descendant-groups...
-    // **min**_by_key`.
-    //
-    // TODO(lukasza): Performance improvement opportunity.  Recomputing
-    // descendants / ancestors information for every `package` is simple and
-    // works, but is also inefficient.  If needed we should try caching this
-    // information somehow.
-    let max_from_descendants = package
-        .graph()
-        .query_forward([package.id()])?
-        .resolve()
-        .packages(DependencyDirection::Forward)
-        .filter_map(|p| get_group_from_config(&p).map(|group| (p.name(), group)))
-        .min_by_key(|(_package_name, group)| *group);
-
-    // If `Test` `ancestor1` and `Safe` `ancestor2` transitively depend on
-    // `package`, then package needs to be `Safe` or better (max of `Test` and
-    // `Safe`).  So `**min**_from_ancestors = ...ancestor-groups...
-    // **max**_by_key`.
-    let min_from_ancestors =
-        package
-            .graph()
-            .query_reverse([package.id()])?
-            .resolve()
-            .packages(DependencyDirection::Reverse)
-            .filter_map(|package| {
-                get_group_from_config(&package)
-                    .or_else(|| {
-                        if is_toplevel_dep(&package) {
-                            Some(DEFAULT_FOR_TOPLEVEL)
-                        } else {
-                            None
-                        }
-                    })
-                    .map(|group| (package.name(), group))
-            })
-            .max_by_key(|(_package_name, group)| *group);
-
-    let configured_group = get_group_from_config(package);
-    match configured_group {
-        None => match (min_from_ancestors, max_from_descendants) {
-            (None, None) => {
-                assert!(is_toplevel_dep(package));
-                Ok(DEFAULT_FOR_TOPLEVEL)
-            }
-            (Some((_, min_from_ancestors)), None) => Ok(min_from_ancestors),
-            (None, Some((_, max_from_descendants))) => Ok(max_from_descendants),
-            (
-                Some((ancestor_example, min_from_ancestors)),
-                Some((descendant_example, max_from_descendants)),
-            ) => {
-                if min_from_ancestors > max_from_descendants {
-                    bail!(
-                        "`{descendant_example}` is configured as `{max_from_descendants}`; \
-                         `{ancestor_example}` is configured as `{min_from_ancestors}`; \
-                         `{min_from_ancestors}` cannot transitively \
-                         depend on `max_from_descendants`."
-                    );
-                }
-                Ok(min_from_ancestors)
-            }
-        },
-        Some(configured_group) => {
-            if let Some((ancestor_example, min_from_ancestors)) = min_from_ancestors {
-                if min_from_ancestors > configured_group {
-                    bail!(
-                        "`{package_name}` is configured as `{configured_group}`; \
-                         `{ancestor_example}` is configured as `{min_from_ancestors}`; \
-                         `{min_from_ancestors}` cannot transitively depend on `configured`."
-                    );
-                }
-            }
-            if let Some((descendant_example, max_from_descendants)) = max_from_descendants {
-                if max_from_descendants < configured_group {
-                    bail!(
-                        "`{package_name}` is configured as `{configured_group}`; \
-                         `{descendant_example}` is configured as `{max_from_descendants}`; \
-                         `{configured_group}` cannot transitively \
-                         depend on `max_from_descendants`."
-                    );
-                }
-            }
-            Ok(configured_group)
         }
     }
 }
