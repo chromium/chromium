@@ -13982,6 +13982,8 @@ from previous Chrome versions.
   <int value="-100148609" label="EvDetailsInPageInfo:disabled"/>
   <int value="-99781021" label="disable-roboto-font-ui"/>
   <int value="-99433146" label="LacrosLaunchAtLoginScreen:enabled"/>
+  <int value="-99310969"
+      label="DeviceBoundSessionAccessObserverSharedRemote:disabled"/>
   <int value="-97599565" label="WebViewNewInvalidateHeuristic:disabled"/>
   <int value="-97511671" label="AnimatedImageDragShadow:disabled"/>
   <int value="-97145978" label="DesktopPWAsStayInWindow:enabled"/>
@@ -19272,6 +19274,8 @@ from previous Chrome versions.
       label="OmniboxPreserveDefaultMatchAgainstAsyncUpdate:enabled"/>
   <int value="1921543515" label="ExoLockNotification:enabled"/>
   <int value="1921615454" label="DataSharingAndroidV2:disabled"/>
+  <int value="1922609313"
+      label="DeviceBoundSessionAccessObserverSharedRemote:enabled"/>
   <int value="1923052799" label="CrostiniUseDlc:disabled"/>
   <int value="1923496816" label="AssistantIntentTranslateInfo:disabled"/>
   <int value="1923780021" label="PrivacyReorderedAndroid:enabled"/>

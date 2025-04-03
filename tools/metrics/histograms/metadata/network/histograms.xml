@@ -5758,6 +5758,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="NetworkService.URLLoader.CloneDeviceBoundSessionAccessObserver"
+    units="microseconds" expires_after="2025-08-24">
+  <owner>horo@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Records the time taken (in microseconds) by the
+    `DeviceBoundSessionAccessObserver::Clone()` function call itself, executed
+    within the network service's URLLoader. This function initiates an
+    asynchronous IPC call; this histogram measures the duration of this
+    initiating call on the network service thread, not the time until the
+    asynchronous IPC operation completes in the background.
+
+    This measurement occurs only for relevant resource requests when the
+    `DeviceBoundSessionAccessObserverSharedRemote` optimization feature is
+    disabled.
+
+    Note that clients without high-resolution clocks will report 0 for very
+    short times.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

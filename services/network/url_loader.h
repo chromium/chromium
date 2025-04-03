@@ -881,10 +881,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       url_loader_network_observer_ = nullptr;
   const mojo::Remote<mojom::DevToolsObserver> devtools_observer_remote_;
   const raw_ptr<mojom::DevToolsObserver> devtools_observer_ = nullptr;
-  const mojo::Remote<mojom::DeviceBoundSessionAccessObserver>
+  mojo::Remote<mojom::DeviceBoundSessionAccessObserver>
       device_bound_session_observer_remote_;
-  const raw_ptr<mojom::DeviceBoundSessionAccessObserver>
+  raw_ptr<mojom::DeviceBoundSessionAccessObserver>
       device_bound_session_observer_ = nullptr;
+  const scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
+      device_bound_session_observer_shared_remote_;
 
   // Request helper responsible for processing Shared Storage headers
   // (https://github.com/WICG/shared-storage#from-response-headers).

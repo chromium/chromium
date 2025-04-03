@@ -427,6 +427,21 @@ T* PtrOrFallback(const mojo::Remote<T>& remote, T* fallback) {
   return remote.is_bound() ? remote.get() : fallback;
 }
 
+scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
+MaybeInitializeDeviceBoundSessionAccessObserverSharedRemote(
+    mojo::Remote<mojom::DeviceBoundSessionAccessObserver>& remote,
+    URLLoaderContext& context) {
+  if (!base::FeatureList::IsEnabled(
+          features::kDeviceBoundSessionAccessObserverSharedRemote)) {
+    return nullptr;
+  }
+  if (remote) {
+    return base::MakeRefCounted<
+        RefCountedDeviceBoundSessionAccessObserverRemote>(std::move(remote));
+  }
+  return context.GetDeviceBoundSessionAccessObserverSharedRemote();
+}
+
 // Retrieves the Cookie header from either `cors_exempt_headers` or `headers`.
 std::string GetCookiesFromHeaders(
     const net::HttpRequestHeaders& headers,
@@ -568,6 +583,10 @@ bool IncludesValidLoadField(const net::HttpResponseHeaders* headers) {
 
 mojo::SharedRemote<mojom::DeviceBoundSessionAccessObserver> Clone(
     mojom::DeviceBoundSessionAccessObserver& observer) {
+  TRACE_EVENT("loading", "CloneDeviceBoundSessionAccessObserver");
+  base::ScopedUmaHistogramTimer timer(
+      "NetworkService.URLLoader.CloneDeviceBoundSessionAccessObserver",
+      base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kMicrosecondTimes);
   mojo::SharedRemote<mojom::DeviceBoundSessionAccessObserver> new_observer;
   observer.Clone(new_observer.BindNewPipeAndPassReceiver());
   return new_observer;
@@ -718,6 +737,10 @@ URLLoader::URLLoader(
       device_bound_session_observer_(
           PtrOrFallback(device_bound_session_observer_remote_,
                         context.GetDeviceBoundSessionAccessObserver())),
+      device_bound_session_observer_shared_remote_(
+          MaybeInitializeDeviceBoundSessionAccessObserverSharedRemote(
+              device_bound_session_observer_remote_,
+              context)),
       shared_storage_request_helper_(
           std::make_unique<SharedStorageRequestHelper>(
               shared_storage_writable_eligible,
@@ -1002,9 +1025,23 @@ void URLLoader::ConfigureRequest(
   }
 
   // Device bound session access can happen asynchronously as a result
-  // of this URLRequest. So create a separate Remote that will outlive
-  // this.
-  if (device_bound_session_observer_) {
+  // of this URLRequest. So pass a refcounted shared Remote that will outlive
+  // `this`.
+  if (device_bound_session_observer_shared_remote_) {
+    // Clear `device_bound_session_observer_` to avoid dangling ptr.
+    device_bound_session_observer_ = nullptr;
+    url_request_->SetDeviceBoundSessionAccessCallback(base::BindRepeating(
+        [](scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
+               shared_remote,
+           const net::device_bound_sessions::SessionAccess& access) {
+          shared_remote.get()->data->OnDeviceBoundSessionAccessed(access);
+        },
+        device_bound_session_observer_shared_remote_));
+  } else if (device_bound_session_observer_) {
+    // This is just for the experiment to measure the impact on the
+    // DeviceBoundSessionAccessObserverSharedRemote feature.
+    // TODO(crbug.com/407680127): Remove this and when the feature is enabled
+    // and the feature flag is removed.
     url_request_->SetDeviceBoundSessionAccessCallback(base::BindRepeating(
         &mojom::DeviceBoundSessionAccessObserver::OnDeviceBoundSessionAccessed,
         Clone(*device_bound_session_observer_)));

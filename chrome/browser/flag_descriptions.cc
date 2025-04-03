@@ -3300,6 +3300,12 @@ const char kRendererSideContentDecodingDescription[] =
     "network service sends compressed HTTP response bodies to the renderer "
     "process.";
 
+const char kDeviceBoundSessionAccessObserverSharedRemoteName[] =
+    "Reduce device bound session access observer IPC";
+const char kDeviceBoundSessionAccessObserverSharedRemoteDescription[] =
+    "Enables the optimization of reducing unnecessary IPC for cloning "
+    "DeviceBoundSessionAccessObserver.";
+
 #if BUILDFLAG(SKIA_BUILD_RUST_PNG)
 const char kRustyPngName[] = "Rust-based PNG image handling";
 const char kRustyPngDescription[] =

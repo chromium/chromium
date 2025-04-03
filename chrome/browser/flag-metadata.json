@@ -1977,6 +1977,11 @@
     "expiry_milestone": 132
   },
   {
+    "name": "device-bound-session-access-observer-shared-remote",
+    "owners": ["horo@chromium.org", "net-dev@chromium.org" ],
+    "expiry_milestone": 146
+  },
+  {
     "name": "device-posture",
     "owners": [ "alexis.menard@intel.com" ],
     "expiry_milestone": 140

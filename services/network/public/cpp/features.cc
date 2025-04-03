@@ -592,4 +592,8 @@ BASE_FEATURE(kStorageAccessHeadersRespectPermissionsPolicy,
              "StorageAccessHeadersRespectPermissionsPolicy",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDeviceBoundSessionAccessObserverSharedRemote,
+             "DeviceBoundSessionAccessObserverSharedRemote",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace network::features

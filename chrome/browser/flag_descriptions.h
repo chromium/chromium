@@ -1905,6 +1905,9 @@ extern const char kRenderDocumentDescription[];
 extern const char kRendererSideContentDecodingName[];
 extern const char kRendererSideContentDecodingDescription[];
 
+extern const char kDeviceBoundSessionAccessObserverSharedRemoteName[];
+extern const char kDeviceBoundSessionAccessObserverSharedRemoteDescription[];
+
 #if BUILDFLAG(SKIA_BUILD_RUST_PNG)
 extern const char kRustyPngName[];
 extern const char kRustyPngDescription[];

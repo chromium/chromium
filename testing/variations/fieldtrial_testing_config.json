@@ -8062,6 +8062,26 @@
             ]
         }
     ],
+    "DeviceBoundSessionAccessObserverSharedRemote": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enable",
+                    "enable_features": [
+                        "DeviceBoundSessionAccessObserverSharedRemote"
+                    ]
+                }
+            ]
+        }
+    ],
     "DeviceBoundSessionCredentials": [
         {
             "platforms": [
