@@ -9558,6 +9558,7 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/enterprise/connectors/analysis:features",
       "//components/enterprise/common/proto:browser_events_proto",
+      "//components/enterprise/common/proto:chrome_reporting_entity",
       "//components/enterprise/connectors/core",
       "//components/enterprise/connectors/core:test_support",
     ]
