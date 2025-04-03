@@ -23,11 +23,18 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_action_delegate.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_data.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_favicon_consumer.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_favicon_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_item.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+#import "ios/chrome/common/ui/favicon/favicon_constants.h"
+#import "ios/chrome/common/ui/favicon/favicon_view.h"
 
-@interface ShopCardMediator () <PrefObserverDelegate>
+@interface ShopCardMediator () <PrefObserverDelegate,
+                                ShopCardFaviconConsumerSource>
 @end
 
 @implementation ShopCardMediator {
@@ -40,6 +47,10 @@
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   raw_ptr<PrefService> _prefService;
   PrefChangeRegistrar _prefChangeRegistrar;
+
+  raw_ptr<FaviconLoader> _faviconLoader;
+  bool _faviconCallbackCalledOnce;
+  id<ShopCardFaviconConsumer> _faviconConsumer;
 }
 
 - (instancetype)
@@ -47,7 +58,8 @@
                 prefService:(PrefService*)prefService
               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                imageFetcher:
-                   (std::unique_ptr<image_fetcher::ImageDataFetcher>)fetcher {
+                   (std::unique_ptr<image_fetcher::ImageDataFetcher>)fetcher
+              faviconLoader:(FaviconLoader*)faviconLoader {
   self = [super init];
   if (self) {
     _shoppingService = shoppingService;
@@ -62,6 +74,7 @@
     _prefObserverBridge->ObserveChangesForPreference(
         prefs::kHomeCustomizationMagicStackShopCardReviewsEnabled,
         &_prefChangeRegistrar);
+    _faviconLoader = faviconLoader;
   }
   return self;
 }
@@ -70,10 +83,16 @@
   _shoppingService = nil;
   _bookmarkModel = nil;
   _imageFetcher = nil;
+  _faviconLoader = nil;
 }
 
 - (void)reset {
   _shopCardItem = nil;
+}
+
+#pragma mark - ShopCardFaviconConsumerSource
+- (void)addFaviconConsumer:(id<ShopCardFaviconConsumer>)consumer {
+  _faviconConsumer = consumer;
 }
 
 - (void)setDelegate:(id<ShopCardMediatorDelegate>)delegate {
@@ -148,7 +167,7 @@
             return;
           }
           [strongSelf onProductImageFetchedResult:imageData
-                                  productImageUrl:productImageUrl];
+                                       productUrl:GURL(bookmark->url())];
         }),
         NO_TRAFFIC_ANNOTATION_YET);
 
@@ -161,6 +180,7 @@
   _shopCardItem = [[ShopCardItem alloc] init];
   _shopCardItem.shopCardData = [[ShopCardData alloc] init];
   _shopCardItem.commandHandler = self;
+  _shopCardItem.shopCardFaviconConsumerSource = self;
   _shopCardItem.shopCardData.shopCardItemType =
       ShopCardItemType::kPriceDropForTrackedProducts;
   if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
@@ -198,10 +218,12 @@
 }
 
 - (void)onProductImageFetchedResult:(const std::string&)imageData
-                    productImageUrl:(const GURL&)productImageUrl {
+                         productUrl:(const GURL&)productUrl {
   if (!_shopCardItem) {
     _shopCardItem = [[ShopCardItem alloc] init];
   }
+  _shopCardItem.shopCardFaviconConsumerSource = self;
+
   if (!_shopCardItem.shopCardData) {
     _shopCardItem.shopCardData = [[ShopCardData alloc] init];
   }
@@ -209,11 +231,32 @@
                                 length:imageData.size()];
   if (data) {
     self->_shopCardItem.shopCardData.productImage = data;
-  }
-  // TODO(crbug.com/392970898): fetch favicon here or inside the data, using
-  // product url.
 
+    // Fetch favicon if product image available.
+    // TODO(crbug.com/392970898): add support for no product image case
+    __weak ShopCardMediator* weakSelf = self;
+    _faviconLoader->FaviconForPageUrl(
+        productUrl, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
+        /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
+          [weakSelf onFaviconReceived:attributes];
+        });
+  }
   [self.delegate insertShopCard];
+}
+
+- (void)onFaviconReceived:(FaviconAttributes*)attributes {
+  if (attributes.faviconImage && !attributes.usesDefaultImage) {
+    self->_shopCardItem.shopCardData.faviconImage = attributes.faviconImage;
+    if (_faviconCallbackCalledOnce) {
+      [_faviconConsumer faviconCompleted:attributes.faviconImage];
+    }
+  }
+  // Return early without calling the delegate, if callback already called.
+  // Can't condition on faviconImage, because it may be null.
+  if (_faviconCallbackCalledOnce) {
+    return;
+  }
+  _faviconCallbackCalledOnce = true;
 }
 
 - (ShopCardItem*)shopCardItemToShow {
