@@ -361,11 +361,11 @@ void EncodeFormFieldsForUpload(
     const FormStructure& form,
     base::optional_ref<RandomizedEncoder> encoder,
     const std::map<FieldGlobalId, EncodeUploadRequestOptions::Field>& fields,
-    base::span<AutofillField*> upload_fields,
+    base::span<const AutofillField* const> upload_fields,
     AutofillUploadContents* upload) {
   DCHECK(!IsMalformed(form));
 
-  for (AutofillField* field : upload_fields) {
+  for (const AutofillField* const field : upload_fields) {
     // Don't upload checkable fields.
     if (IsCheckable(field->check_status())) {
       continue;

@@ -289,7 +289,9 @@ class AutofillField : public FormFieldData {
                          base::PassKey<FormStructure> pass_key);
 
   void set_initial_value_hash(uint32_t value) { initial_value_hash_ = value; }
-  std::optional<uint32_t> initial_value_hash() { return initial_value_hash_; }
+  std::optional<uint32_t> initial_value_hash() const {
+    return initial_value_hash_;
+  }
 
   // TODO: crbug.com/40227496 - Remove when kAutofillFixValueSemantics is
   // cleaned up.
