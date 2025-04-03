@@ -59,9 +59,6 @@ export declare interface GlicWebClient {
   initialize(glicBrowserHost: GlicBrowserHost): Promise<void>;
 
   /**
-   * @todo Remove void promise value once the web client returns OpenPanelInfo.
-   *       https://crbug.com/391946150
-   *
    * @todo The browser is currently storing the previous panel size, but the web
    *       client should be updated to set the panel size when handling this
    *       call. https://crbug.com/392141194
@@ -81,8 +78,8 @@ export declare interface GlicWebClient {
    * Important: The panel is only made user-visible once the returned promise is
    * resolved or failed (failures are ignored and the panel is still shown).
    */
-  notifyPanelWillOpen?(panelOpeningData: PanelOpeningData&
-                       PanelState): Promise<void|OpenPanelInfo>;
+  notifyPanelWillOpen?
+      (panelOpeningData: PanelOpeningData&PanelState): Promise<OpenPanelInfo>;
 
   /**
    * Called right after the panel was hidden away and is not visible to

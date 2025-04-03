@@ -60,8 +60,13 @@ class WebClient implements GlicWebClient {
   }
 
   async notifyPanelWillOpen(_panelOpeningData: PanelOpeningData):
-      Promise<void|OpenPanelInfo> {
+      Promise<OpenPanelInfo> {
     this.firstOpened.resolve();
+
+    const openPanelInfo: OpenPanelInfo = {
+      startingMode: WebClientMode.TEXT,
+    };
+    return openPanelInfo;
   }
 
   async waitForFirstOpen() {
@@ -507,9 +512,9 @@ class ApiTests extends ApiTestFixtureBase {
 class WebClientThatOpensOnce extends WebClient {
   notifyPanelWillOpenCallCount = 0;
   override async notifyPanelWillOpen(panelOpeningData: PanelOpeningData):
-      Promise<void> {
+      Promise<OpenPanelInfo> {
     this.notifyPanelWillOpenCallCount += 1;
-    super.notifyPanelWillOpen(panelOpeningData);
+    return super.notifyPanelWillOpen(panelOpeningData);
   }
 }
 
@@ -528,7 +533,7 @@ class NotifyPanelWillOpenTest extends ApiTestFixtureBase {
 
 class InitiallyNotResizableWebClient extends WebClient {
   override async notifyPanelWillOpen(_panelOpeningData: PanelOpeningData):
-      Promise<void|OpenPanelInfo> {
+      Promise<OpenPanelInfo> {
     return {startingMode: WebClientMode.TEXT, canUserResize: false};
   }
 }
