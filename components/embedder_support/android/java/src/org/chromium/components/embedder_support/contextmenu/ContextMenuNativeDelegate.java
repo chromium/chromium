@@ -48,6 +48,14 @@ public interface ContextMenuNativeDelegate {
     void searchForImage();
 
     /**
+     * Opens DevTools to inspect the specified HTML element in the render frame.
+     *
+     * @param x The x-coordinate of the element to be inspected in dps.
+     * @param y The y-coordinate of the element to be inspected in dps.
+     */
+    void inspectElement(int x, int y);
+
+    /**
      * Get the current {@link RenderFrameHost} that the context menu was triggered on, to be shared.
      *
      * @return {@link RenderFrameHost}.

@@ -3215,6 +3215,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CONTEXTMENU_UNPIN" desc="This string is shown in the context menu to remove an existing Custom Tile.">
         Unpin
       </message>
+      <message name="IDS_CONTEXTMENU_INSPECT_ELEMENT" desc="This string is shown in the context menu to inspect an element in a web page using the developer tools. [CHAR_LIMIT=30]">
+        Inspect
+      </message>
 
       <!-- Swipe refresh -->
       <message name="IDS_ACCESSIBILITY_SWIPE_REFRESH" desc="Content description for the swipe refresh action.">
@@ -5621,6 +5624,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_CONTEXTMENU_VIDEO_TITLE" desc="The title of a context menu tab when the item pressed contains more than one type. This indicates that all the actions are related to a video.">
         VIDEO
+      </message>
+      <message name="IDS_CONTEXTMENU_DEVELOPER_TITLE" desc="The title of a context menu tab when the item pressed contains more than one type. This indicates that all the actions are related to tools for developers.">
+        DEVELOPER
       </message>
 
       <!-- Multi-instance Switcher Dialog strings -->
