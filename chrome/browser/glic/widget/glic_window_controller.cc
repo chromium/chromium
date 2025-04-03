@@ -1423,6 +1423,7 @@ GlicWindowController::AddWindowActivationChangedCallback(
 void GlicWindowController::Preload() {
   if (!contents_) {
     CreateContents();
+    contents_->web_contents()->Resize(GetInitialDetachedBounds(nullptr));
   }
 }
 

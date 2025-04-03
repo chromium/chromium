@@ -133,16 +133,25 @@ class GlicProfileManagerUiTest
     });
   }
 
-  auto CheckWarmed(bool primary_warmed, bool secondary_warmed) {
+  auto CheckWarmedAndSized(bool primary_warmed, bool secondary_warmed) {
     return Do([primary_warmed, secondary_warmed, this]() {
-      auto IsWarmed = [](GlicKeyedService* service) {
-        return service->window_controller().IsWarmed() ||
-               service->window_controller().fre_controller()->IsWarmed() ||
-               service->window_controller().IsPanelOrFreShowing();
+      auto IsWarmedAndSized = [](GlicKeyedService* service) {
+        const bool warmed =
+            service->window_controller().IsWarmed() ||
+            service->window_controller().fre_controller()->IsWarmed() ||
+            service->window_controller().IsPanelOrFreShowing();
+        if (!warmed) {
+          return false;
+        }
+        auto* contents = service->window_controller().GetWebContents();
+        if (!contents) {
+          contents = service->window_controller().GetFreWebContents();
+        }
+        return contents && !contents->GetSize().IsEmpty();
       };
 
-      EXPECT_EQ(primary_warmed, IsWarmed(GetService(true)));
-      EXPECT_EQ(secondary_warmed, IsWarmed(GetService(false)));
+      EXPECT_EQ(primary_warmed, IsWarmedAndSized(GetService(true)));
+      EXPECT_EQ(secondary_warmed, IsWarmedAndSized(GetService(false)));
     });
   }
 
@@ -212,7 +221,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, ConsistentPreload) {
       WaitForShow(kGlicButtonElementId),
       // Since we've artificially set high memory pressure, nothing
       // should be preloaded yet.
-      CheckWarmed(false, false),
+      CheckWarmedAndSized(false, false),
       // Resetting the memory pressure will enable preloading again.
       ResetMemoryPressure(),
       // Attempt to preload for the primary profile.
@@ -220,7 +229,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, ConsistentPreload) {
       // Since there is no contention, this should have succeeded
       // (and we should not have attempted to warm the other web
       // client, so it should not yet be warmed).
-      CheckWarmed(true, false),
+      CheckWarmedAndSized(true, false),
       // This stores a pointer to the web client contents so that we can check
       // that the the shown contents match (otherwise, we've warmed for no
       // reason).
@@ -244,7 +253,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, PreloadMutex) {
   RunTestSequence(WaitForShow(kGlicButtonElementId),
                   // Since we've artificially set high memory pressure, nothing
                   // should be preloaded yet.
-                  CheckWarmed(false, false),
+                  CheckWarmedAndSized(false, false),
                   // Resetting the memory pressure will enable preloading again.
                   ResetMemoryPressure(),
                   // Attempt to preload for the primary profile.
@@ -252,20 +261,20 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, PreloadMutex) {
                   // Since there is no contention, this should have succeeded
                   // (and we should not have attempted to warm the other web
                   // client, so it should not yet be warmed).
-                  CheckWarmed(true, false),
+                  CheckWarmedAndSized(true, false),
                   // Warming the secondary profile will cause another web client
                   // to come into existence.
                   CreateAndWarmGlic(/*primary_profile=*/false),
                   // The first service should only remain warmed if we have the
                   // feature `kGlicWarmMultiple` enabled.
-                  CheckWarmed(ShouldWarmMultiple(), true));
+                  CheckWarmedAndSized(ShouldWarmMultiple(), true));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, ShowMutex) {
   RunTestSequence(WaitForShow(kGlicButtonElementId),
                   // Since we've artificially set high memory pressure, nothing
                   // should be preloaded yet.
-                  CheckWarmed(false, false),
+                  CheckWarmedAndSized(false, false),
                   // Resetting the memory pressure will enable preloading again.
                   ResetMemoryPressure(),
                   // Attempt to preload for the secondary profile.
@@ -273,11 +282,11 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, ShowMutex) {
                   // Since there is no contention, this should have succeeded
                   // (and we should not have attempted to warm the other web
                   // client, so it should not yet be warmed).
-                  CheckWarmed(false, true),
+                  CheckWarmedAndSized(false, true),
                   OpenGlicWindow(GlicWindowMode::kAttached),
                   // The first service should only remain warmed if we have the
                   // feature `kGlicWarmMultiple` enabled.
-                  CheckWarmed(true, ShouldWarmMultiple()));
+                  CheckWarmedAndSized(true, ShouldWarmMultiple()));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, FreMutex) {
@@ -285,7 +294,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, FreMutex) {
       WaitForShow(kGlicButtonElementId),
       // Since we've artificially set high memory pressure, nothing
       // should be preloaded yet.
-      CheckWarmed(false, false),
+      CheckWarmedAndSized(false, false),
       // Resetting the memory pressure will enable preloading again.
       ResetMemoryPressure(),
       // Attempt to preload for the secondary profile.
@@ -293,7 +302,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, FreMutex) {
       // Since there is no contention, this should have succeeded
       // (and we should not have attempted to warm the other web
       // client, so it should not yet be warmed).
-      CheckWarmed(false, true), SetNeedsFRE(),
+      CheckWarmedAndSized(false, true), SetNeedsFRE(),
       ObserveState(
           kFreWebUiState,
           base::BindOnce(&GlicProfileManagerUiTest::GetFreController,
@@ -302,21 +311,21 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, FreMutex) {
       WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
       // The first service should only remain warmed if we have the
       // feature `kGlicWarmMultiple` enabled.
-      CheckWarmed(true, ShouldWarmMultiple()));
+      CheckWarmedAndSized(true, ShouldWarmMultiple()));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, DoNotWarmWhenShowing) {
   RunTestSequence(WaitForShow(kGlicButtonElementId),
                   // Since we've artificially set high memory pressure, nothing
                   // should be preloaded yet.
-                  CheckWarmed(false, false),
+                  CheckWarmedAndSized(false, false),
                   // Resetting the memory pressure will enable preloading again.
                   ResetMemoryPressure(),
                   OpenGlicWindow(GlicWindowMode::kAttached),
-                  CheckWarmed(true, false),
+                  CheckWarmedAndSized(true, false),
                   // Attempt to preload for the secondary profile.
                   CreateAndWarmGlic(/*primary_profile=*/false),
-                  CheckWarmed(true, ShouldWarmMultiple()));
+                  CheckWarmedAndSized(true, ShouldWarmMultiple()));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, DoNotWarmWhenShowingFre) {
@@ -324,7 +333,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, DoNotWarmWhenShowingFre) {
       WaitForShow(kGlicButtonElementId),
       // Since we've artificially set high memory pressure, nothing
       // should be preloaded yet.
-      CheckWarmed(false, false),
+      CheckWarmedAndSized(false, false),
       // Resetting the memory pressure will enable preloading again.
       ResetMemoryPressure(), SetNeedsFRE(),
       ObserveState(
@@ -333,17 +342,17 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, DoNotWarmWhenShowingFre) {
                          base::Unretained(this), /*primary_profile=*/true)),
       ToggleGlicWindow(GlicWindowMode::kAttached),
       WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
-      CheckWarmed(true, false),
+      CheckWarmedAndSized(true, false),
       // Attempt to preload for the secondary profile.
       CreateAndWarmGlic(/*primary_profile=*/false),
-      CheckWarmed(true, ShouldWarmMultiple()));
+      CheckWarmedAndSized(true, ShouldWarmMultiple()));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, MemPressureClearsCache) {
   RunTestSequence(WaitForShow(kGlicButtonElementId),
                   // Since we've artificially set high memory pressure, nothing
                   // should be preloaded yet.
-                  CheckWarmed(false, false),
+                  CheckWarmedAndSized(false, false),
                   // Resetting the memory pressure will enable preloading again.
                   ResetMemoryPressure(),
                   // Attempt to preload for the primary profile.
@@ -351,29 +360,29 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, MemPressureClearsCache) {
                   // Since there is no contention, this should have succeeded
                   // (and we should not have attempted to warm the other web
                   // client, so it should not yet be warmed).
-                  CheckWarmed(true, false),
+                  CheckWarmedAndSized(true, false),
                   SendMemoryPressureSignal(/*primary_profile=*/true),
-                  CheckWarmed(false, false));
+                  CheckWarmedAndSized(false, false));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, MemPressureDoesNotClearShown) {
   RunTestSequence(WaitForShow(kGlicButtonElementId),
                   // Since we've artificially set high memory pressure, nothing
                   // should be preloaded yet.
-                  CheckWarmed(false, false),
+                  CheckWarmedAndSized(false, false),
                   // Resetting the memory pressure will enable preloading again.
                   ResetMemoryPressure(),
                   OpenGlicWindow(GlicWindowMode::kAttached),
-                  CheckWarmed(true, false),
+                  CheckWarmedAndSized(true, false),
                   SendMemoryPressureSignal(/*primary_profile=*/true),
                   // Since the window is showing, we shouldn't close it.
-                  CheckWarmed(true, false),
+                  CheckWarmedAndSized(true, false),
                   // This should close the window.
                   ToggleGlicWindow(GlicWindowMode::kAttached),
                   // Since the window was shown, it is the last active glic and
                   // should not be cleared.
                   SendMemoryPressureSignal(/*primary_profile=*/true),
-                  CheckWarmed(true, false));
+                  CheckWarmedAndSized(true, false));
 }
 
 INSTANTIATE_TEST_SUITE_P(
