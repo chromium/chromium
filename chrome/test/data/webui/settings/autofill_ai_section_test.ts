@@ -129,32 +129,32 @@ suite('AutofillAiSectionUiTest', function() {
 
     testEntityInstance = {
       type: {
-        typeName: 2,
-        typeNameAsString: 'Car',
-        addEntityTypeString: 'Add car',
-        editEntityTypeString: 'Edit car',
-        deleteEntityTypeString: 'Delete car',
+        typeName: 1,
+        typeNameAsString: 'Driver\'s license',
+        addEntityTypeString: 'Add driver\'s license',
+        editEntityTypeString: 'Edit driver\'s license',
+        deleteEntityTypeString: 'Delete driver\'s license',
       },
       attributeInstances: [
         {
           type: {
-            typeName: 8,
-            typeNameAsString: 'Owner',
+            typeName: 5,
+            typeNameAsString: 'Name',
             dataType: AttributeTypeDataType.STRING,
           },
-          value: 'Mark Nolan',
+          value: 'John Doe',
         },
         {
           type: {
-            typeName: 10,
-            typeNameAsString: 'Registration',
+            typeName: 7,
+            typeNameAsString: 'Number',
             dataType: AttributeTypeDataType.STRING,
           },
           value: 'ABCDE123',
         },
       ],
-      guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
-      nickname: 'My car',
+      guid: 'd70b5bb7-49a6-4276-b4b7-b014dacdc9e6',
+      nickname: 'My license',
     };
     // Initially not sorted alphabetically. The production code should sort them
     // alphabetically.
@@ -249,6 +249,9 @@ suite('AutofillAiSectionUiTest', function() {
 
   removeEntityInstanceParams.forEach(
       (params) => test(params.title, async function() {
+        entityDataManager.setGetEntityInstanceByGuidResponse(
+            testEntityInstance);
+
         const actionMenuButton =
             entityInstancesListElement.querySelector<HTMLElement>(
                 '#moreButton');
@@ -268,6 +271,8 @@ suite('AutofillAiSectionUiTest', function() {
                 .querySelector<SettingsSimpleConfirmationDialogElement>(
                     '#removeEntityInstanceDialog');
         assertTrue(!!removeEntityInstanceDialog);
+        assertEquals(
+            'Delete driver\'s license', removeEntityInstanceDialog.titleText);
 
         if (params.confirmed) {
           removeEntityInstanceDialog.$.confirm.click();

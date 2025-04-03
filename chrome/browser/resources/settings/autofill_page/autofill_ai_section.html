@@ -137,7 +137,7 @@
 </template>
 <template is="dom-if" if="[[showRemoveEntityInstanceDialog_]]" restamp>
   <settings-simple-confirmation-dialog id="removeEntityInstanceDialog"
-      title-text="$i18n{autofillAiDeleteEntityInstanceDialogTitle}"
+      title-text="[[activeEntityInstance_.type.deleteEntityTypeString]]"
       body-text="$i18n{autofillAiDeleteEntityInstanceDialogText}"
       confirm-text="$i18n{delete}"
       on-close="onRemoveEntityInstanceDialogClose_">

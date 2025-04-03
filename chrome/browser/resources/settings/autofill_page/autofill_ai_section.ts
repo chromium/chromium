@@ -146,9 +146,6 @@ export class SettingsAutofillAiSectionElement extends
   private showRemoveEntityInstanceDialog_: boolean;
   private entityInstances_: EntityInstanceWithLabels[];
 
-  // The correspondent `EntityInstanceWithLabels` model for any entity instance
-  // related action menus or dialogs.
-  private activeEntityInstanceWithLabels_: EntityInstanceWithLabels|null;
   private entityInstancesChangedListener_: EntityInstancesChangedListener|null =
       null;
   private entityDataManager_: EntityDataManagerProxy =
@@ -214,15 +211,6 @@ export class SettingsAutofillAiSectionElement extends
   }
 
   /**
-   * Open the action menu.
-   */
-  private onMoreButtonClick_(e: DomRepeatEvent<EntityInstanceWithLabels>) {
-    this.activeEntityInstanceWithLabels_ = e.model.item;
-    const moreButton = e.target as HTMLElement;
-    this.$.actionMenu.get().showAt(moreButton);
-  }
-
-  /**
    * Handles tapping on the "Add" entity instance button.
    */
   private onAddButtonClick_(e: Event) {
@@ -251,13 +239,23 @@ export class SettingsAutofillAiSectionElement extends
   }
 
   /**
-   * Handles tapping on the "Edit" entity instance button in the action menu.
+   * Open the action menu.
    */
-  private async onMenuEditEntityInstanceClick_(e: Event) {
-    e.preventDefault();
+  private async onMoreButtonClick_(
+      e: DomRepeatEvent<EntityInstanceWithLabels>) {
+    const moreButton = e.target as HTMLElement;
     this.activeEntityInstance_ =
         await this.entityDataManager_.getEntityInstanceByGuid(
-            this.activeEntityInstanceWithLabels_!.guid);
+            e.model.item.guid);
+    this.$.actionMenu.get().showAt(moreButton);
+  }
+
+  /**
+   * Handles tapping on the "Edit" entity instance button in the action menu.
+   */
+  private onMenuEditEntityInstanceClick_(e: Event) {
+    e.preventDefault();
+    assert(this.activeEntityInstance_);
     this.addOrEditEntityInstanceDialogTitle_ =
         this.activeEntityInstance_.type.editEntityTypeString;
     this.showAddOrEditEntityInstanceDialog_ = true;
@@ -281,6 +279,7 @@ export class SettingsAutofillAiSectionElement extends
   private onAddOrEditEntityInstanceDialogClose_(e: Event) {
     e.stopPropagation();
     this.showAddOrEditEntityInstanceDialog_ = false;
+    this.activeEntityInstance_ = null;
   }
 
   private onRemoveEntityInstanceDialogClose_() {
@@ -289,11 +288,12 @@ export class SettingsAutofillAiSectionElement extends
             .querySelector<SettingsSimpleConfirmationDialogElement>(
                 '#removeEntityInstanceDialog')!.wasConfirmed();
     if (wasDeletionConfirmed) {
+      assert(this.activeEntityInstance_);
       this.entityDataManager_.removeEntityInstance(
-          this.activeEntityInstanceWithLabels_!.guid);
+          this.activeEntityInstance_.guid);
     }
-
     this.showRemoveEntityInstanceDialog_ = false;
+    this.activeEntityInstance_ = null;
   }
 }
 
