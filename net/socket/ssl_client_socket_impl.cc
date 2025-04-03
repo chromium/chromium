@@ -1572,6 +1572,9 @@ SSLClientSessionCache::Key SSLClientSocketImpl::GetSessionCacheKey(
     key.network_anonymization_key = ssl_config_.network_anonymization_key;
   }
   key.privacy_mode = ssl_config_.privacy_mode;
+  key.proxy_chain = ssl_config_.proxy_chain;
+  key.proxy_chain_index = ssl_config_.proxy_chain_index;
+  key.session_usage = ssl_config_.session_usage;
   return key;
 }
 

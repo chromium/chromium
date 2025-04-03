@@ -3161,6 +3161,73 @@ TEST_P(SSLClientSocketVersionTest,
   sock_.reset();
 }
 
+// Tests that the session cache is sharded by session usage and proxy chain.
+TEST_P(SSLClientSocketVersionTest,
+       SessionResumptionDifferentSessionUsageAndProxyChain) {
+  const SchemefulSite kSiteA(GURL("https://a.test"));
+
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
+
+  // First, perform a full handshake.
+  SSLConfig ssl_config;
+  ssl_config.session_usage = SessionUsage::kDestination;
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  ASSERT_THAT(rv, IsOk());
+  SSLInfo ssl_info;
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, ssl_info.handshake_type);
+
+  // TLS 1.2 with False Start and TLS 1.3 cause the ticket to arrive later, so
+  // use the socket to ensure the session ticket has been picked up. Do this for
+  // every connection to avoid problems with TLS 1.3 single-use tickets.
+  EXPECT_THAT(MakeHTTPRequest(sock_.get()), IsOk());
+
+  // The next connection should resume.
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  ASSERT_THAT(rv, IsOk());
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_EQ(SSLInfo::HANDSHAKE_RESUME, ssl_info.handshake_type);
+  EXPECT_THAT(MakeHTTPRequest(sock_.get()), IsOk());
+  sock_.reset();
+
+  // Using a different SessionUsage uses a different session cache
+  // key.
+  ssl_config.session_usage = SessionUsage::kProxy;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  ASSERT_THAT(rv, IsOk());
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, ssl_info.handshake_type);
+  EXPECT_THAT(MakeHTTPRequest(sock_.get()), IsOk());
+  sock_.reset();
+
+  // We, however, can resume under that newly-established session.
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  ASSERT_THAT(rv, IsOk());
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_EQ(SSLInfo::HANDSHAKE_RESUME, ssl_info.handshake_type);
+  EXPECT_THAT(MakeHTTPRequest(sock_.get()), IsOk());
+  sock_.reset();
+
+  // Repeat with a different proxy chain
+  ssl_config.proxy_chain = ProxyChain::FromSchemeHostAndPort(
+      ProxyServer::SCHEME_HTTPS, "proxy", 8080);
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  ASSERT_THAT(rv, IsOk());
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, ssl_info.handshake_type);
+  EXPECT_THAT(MakeHTTPRequest(sock_.get()), IsOk());
+  sock_.reset();
+
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  ASSERT_THAT(rv, IsOk());
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_EQ(SSLInfo::HANDSHAKE_RESUME, ssl_info.handshake_type);
+  EXPECT_THAT(MakeHTTPRequest(sock_.get()), IsOk());
+  sock_.reset();
+}
+
 // Tests that connections with certificate errors do not add entries to the
 // session cache.
 TEST_P(SSLClientSocketVersionTest, CertificateErrorNoResume) {
