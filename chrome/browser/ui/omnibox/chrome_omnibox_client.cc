@@ -81,6 +81,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -342,6 +343,30 @@ void ChromeOmniboxClient::OnFocusChanged(OmniboxFocusState state,
   if (auto* helper =
           OmniboxTabHelper::FromWebContents(location_bar_->GetWebContents())) {
     helper->OnFocusChanged(state, reason);
+  }
+}
+
+void ChromeOmniboxClient::OnKeywordModeChanged(bool entered,
+                                               const std::u16string& keyword) {
+  if (entered) {
+    // Note, entry into keyword mode is not sufficient signal to start lens and
+    // that is handled by separate explicit actions; but whenever the '@page'
+    // keyword mode is exited, lens should be closed.
+    return;
+  }
+  if (content::WebContents* web_contents = location_bar_->GetWebContents()) {
+    if (LensOverlayController* lens_controller =
+            LensOverlayController::GetController(web_contents)) {
+      if (TemplateURL* template_url =
+              GetTemplateURLService()->GetTemplateURLForKeyword(keyword)) {
+        if (template_url->starter_pack_id() ==
+            TemplateURLStarterPackData::kPage) {
+          // TODO(crbug.com/408073216): Create and use new dismissal source.
+          lens_controller->CloseUIAsync(
+              lens::LensOverlayDismissalSource::kEscapeKeyPress);
+        }
+      }
+    }
   }
 }
 
