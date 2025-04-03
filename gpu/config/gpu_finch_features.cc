@@ -852,7 +852,7 @@ BASE_FEATURE(kANGLEPerContextBlobCache,
 #if BUILDFLAG(IS_APPLE)
 BASE_FEATURE(kIOSurfaceMultiThreading,
              "IOSurfaceMultiThreading",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 }  // namespace features
