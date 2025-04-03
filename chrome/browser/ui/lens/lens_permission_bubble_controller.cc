@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
+#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -107,20 +109,26 @@ void LensPermissionBubbleController::RequestPermission(
 
 std::unique_ptr<views::Widget> LensPermissionBubbleController::ShowDialogWidget(
     content::WebContents* web_contents) {
-  std::unique_ptr<views::BubbleDialogModelHost> model_host =
+  // The widget will own `model_host` through DialogDelegate.
+  views::BubbleDialogModelHost* model_host =
       views::BubbleDialogModelHost::CreateModal(
-          CreateLensPermissionDialogModel(), ui::mojom::ModalType::kChild);
+          CreateLensPermissionDialogModel(), ui::mojom::ModalType::kChild)
+          .release();
   model_host->SetOwnershipOfNewWidget(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
-  // The widget will own `model_host` through DialogDelegate.
   std::unique_ptr<views::Widget> widget =
-      constrained_window::ShowWebModalDialogViewsOwned(
-          model_host.release(), web_contents,
-          views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+      tab_interface_->GetTabFeatures()
+          ->tab_dialog_manager()
+          ->CreateShowDialogAndBlockTabInteraction(model_host);
   widget->MakeCloseSynchronous(
       base::BindOnce(&LensPermissionBubbleController::CloseDialogWidget,
                      base::Unretained(this)));
+
+  views::View* focused_view = model_host->GetInitiallyFocusedView();
+  CHECK(focused_view);
+  focused_view->RequestFocus();
+
   return widget;
 }
 
