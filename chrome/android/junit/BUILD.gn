@@ -416,7 +416,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/UndoRefocusHelperTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.app") {
@@ -432,7 +433,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/app/tabmodel/TabbedModeTabModelOrchestratorUnitTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -469,7 +471,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetMediatorTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -481,7 +484,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/background_sync/PeriodicBackgroundSyncChromeWakeUpTaskTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -520,7 +524,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtilsTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -555,7 +560,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/browserservices/ui/view/DisclosureSnackbarTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -593,7 +599,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/compositor/scene_layer/TabStripSceneLayerTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -603,7 +610,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/contextmenu/ContextMenuHeaderMediatorTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -618,7 +626,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/contextualsearch/SelectionClientManagerTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -679,7 +688,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/customtabs/shadows/ShadowExternalNavigationDelegateImpl.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -691,7 +701,8 @@ if (is_android) {
       "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/RecentActivityActionHandlerUnitTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -703,7 +714,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/download/service/DownloadBackgroundTaskTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -716,7 +728,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/dragdrop/DragAndDropLauncherActivityUnitTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.feed") {
@@ -726,7 +739,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/feed/FeedSurfaceMediatorTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -740,7 +754,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/firstrun/TosDialogBehaviorSharedPrefInvalidatorUnitTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -751,7 +766,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/fullscreen/FullscreenHtmlApiHandlerLegacyUnitTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -766,7 +782,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/history/HistoryUiTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -777,7 +794,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/homepage/settings/HomepageSettingsUnitTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.hub") {
@@ -788,7 +806,8 @@ if (is_android) {
       "//chrome/android/java/src/org/chromium/chrome/browser/hub/NewTabAnimationUtilsUnitTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.media") {
@@ -806,7 +825,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/media/ui/MediaNotificationTitleUpdatedTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -817,7 +837,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/notifications/NotificationTriggerSchedulerTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.ntp") {
@@ -827,7 +848,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/ntp/RecentTabsPageUnitTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -849,7 +871,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/offlinepages/measurements/OfflineMeasurementsBackgroundTaskUnitTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.omaha") {
@@ -865,7 +888,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/omaha/metrics/UpdateSuccessMetricsTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -876,7 +900,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/page_info/PermissionParamsListBuilderUnitTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -892,7 +917,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/password_manager/settings/TimedCallbackDelayerTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -904,7 +930,8 @@ if (is_android) {
       "//chrome/browser/commerce/price_tracking/android/javatests/src/org/chromium/chrome/browser/price_tracking/PriceTrackingNotificationBridgeUnitTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -918,7 +945,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionSnackbarLimiterTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -929,7 +957,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/search_engines/settings/SearchEngineAdapterTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -940,7 +969,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/searchwidget/SearchActivityUtilsUnitTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -954,7 +984,8 @@ if (is_android) {
       "//chrome/android/java/src/org/chromium/chrome/browser/segmentation_platform/SignalAccumulatorTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.share") {
@@ -987,7 +1018,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/share/ShareHelperUnitTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.signin") {
@@ -999,7 +1031,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/signin/SigninManagerImplTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -1016,7 +1049,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/suggestions/tile/tile_edit_dialog/CustomTileEditViewUnitTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.sync") {
@@ -1026,7 +1060,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/sync/ui/SyncErrorMessageImpressionTrackerTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.tab") {
@@ -1047,7 +1082,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/tab/tab_restore/HistoricalTabSaverImplUnitTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -1059,7 +1095,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/tabbed_mode/TabbedNavigationBarColorControllerUnitTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -1077,7 +1114,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/tabmodel/UndoTabModelUnitTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.tasks") {
@@ -1178,7 +1216,8 @@ if (is_android) {
       "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabUiMetricsHelperUnitTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -1190,7 +1229,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/toolbar/adaptive/OptionalNewTabButtonControllerActivityTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.ui") {
@@ -1202,7 +1242,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/ui/system/StatusBarColorControllerUnitTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   robolectric_library(
@@ -1222,7 +1263,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/webapps/WebappRegistryTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 
   # This target contains test files in packages which has <= 2 test files.
@@ -1298,6 +1340,7 @@ if (is_android) {
       "src/org/chromium/content/browser/webid/IdentityCredentialsDelegateTest.java",
     ]
 
-    deps = chrome_junit_tests_deps
+    deps = []
+    deps += chrome_junit_tests_deps
   }
 }
