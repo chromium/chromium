@@ -33,7 +33,10 @@ build_epoll_based_tools = is_linux || is_chromeos
 config("quiche_internal_config") {
   cflags = []
   if (is_clang) {
-    cflags += [ "-Wno-sign-compare" ]
+    cflags += [
+      "-Wno-sign-compare",
+      "-Wno-deprecated-declarations",
+    ]
   }
 }
 
