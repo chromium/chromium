@@ -3859,6 +3859,15 @@ be describing additional metrics about the same event.
       metric is recorded.
     </summary>
   </metric>
+  <metric name="CancelReason" enum="FedCmCancelReason">
+    <summary>
+      Records the reason that the FedCM dialog was closed (e.g. user clicked the
+      dialog close button). Recorded when the FedCM dialog is closed without the
+      user selecting an account. This includes instances where the close action
+      is less intentional such as the virtual keyboard showing triggering the
+      dialog close.
+    </summary>
+  </metric>
   <metric name="Disconnect.FrameType" enum="FedCmRequesterFrameType">
     <summary>
       Records the type of frame that invokes disconnect(). Records once for each

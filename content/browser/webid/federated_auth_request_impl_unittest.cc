@@ -8200,4 +8200,24 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForAccountSelectionScrollPosition) {
   CheckAllFedCmSessionIDs();
 }
 
+TEST_F(FederatedAuthRequestImplTest, CancelReasonMetrics) {
+  MockConfiguration config = kConfigurationValid;
+  config.accounts_dialog_action = AccountsDialogAction::kClose;
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedAuthRequestResult::kShouldEmbargo,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+  RunAuthTest(kDefaultRequestParameters, expectations, config);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.CancelReason",
+      IdentityRequestDialogController::DismissReason::kCloseButton, 1);
+  ExpectUkmValueInEntry(
+      "CancelReason", FedCmEntry::kEntryName,
+      static_cast<std::underlying_type_t<
+          IdentityRequestDialogController::DismissReason>>(
+          IdentityRequestDialogController::DismissReason::kCloseButton));
+  CheckAllFedCmSessionIDs();
+}
+
 }  // namespace content
