@@ -260,15 +260,6 @@ void ClickView(const views::View* view) {
   event_generator.ClickLeftButton();
 }
 
-void ClickSaveDeskAsTemplateButton() {
-  ClickView(GetSaveDeskAsTemplateButton());
-  // Wait for the template to be stored in the model.
-  WaitForSavedDeskUI();
-  // Clicking the save template button selects the newly created template's name
-  // field. We can press enter or escape or click to select out of it.
-  ui::test::EventGenerator event_generator(Shell::GetPrimaryRootWindow());
-  SendKey(ui::VKEY_RETURN, &event_generator);
-}
 
 void SelectSaveDeskAsTemplateMenuItem(int index) {
   views::MenuItemView* menu_item =
@@ -1004,11 +995,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   ToggleOverview();
   WaitForOverviewEnterAnimation();
 
-  if (features::IsForestFeatureEnabled()) {
-    SelectSaveDeskAsTemplateMenuItem(/*index=*/1);
-  } else {
-    ClickSaveDeskAsTemplateButton();
-  }
+  SelectSaveDeskAsTemplateMenuItem(/*index=*/1);
 
   ToggleOverview();
   WaitForOverviewExitAnimation();
@@ -2207,11 +2194,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   // Capture the active desk as a template.
   ToggleOverview();
   WaitForOverviewEnterAnimation();
-  if (features::IsForestFeatureEnabled()) {
-    SelectSaveDeskAsTemplateMenuItem(/*index=*/2);
-  } else {
-    ClickSaveDeskAsTemplateButton();
-  }
+  SelectSaveDeskAsTemplateMenuItem(/*index=*/2);
   ToggleOverview();
   WaitForOverviewExitAnimation();
 

@@ -229,20 +229,6 @@ const views::Button* GetLibraryButton() {
   return desks_bar_view->library_button();
 }
 
-const views::Button* GetSaveDeskAsTemplateButton() {
-  auto* overview_grid = GetPrimaryOverviewGrid();
-  return overview_grid
-             ? OverviewGridTestApi(overview_grid).GetSaveDeskAsTemplateButton()
-             : nullptr;
-}
-
-const views::Button* GetSaveDeskForLaterButton() {
-  auto* overview_grid = GetPrimaryOverviewGrid();
-  return overview_grid
-             ? OverviewGridTestApi(overview_grid).GetSaveDeskForLaterButton()
-             : nullptr;
-}
-
 const views::Button* GetSavedDeskItemButton(int index) {
   auto* item = GetItemViewFromSavedDeskGrid(index);
   return item ? static_cast<views::Button*>(item) : nullptr;

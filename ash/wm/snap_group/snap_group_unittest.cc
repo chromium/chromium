@@ -1675,7 +1675,6 @@ TEST_F(FasterSplitScreenTest, AccessibilityFocusAnnotator) {
   ASSERT_TRUE(focus_widget);
   OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
   ASSERT_FALSE(grid->desks_widget());
-  ASSERT_FALSE(OverviewGridTestApi(grid).GetSaveDeskForLaterButton());
   auto* split_view_setup_widget = grid->split_view_setup_widget();
   ASSERT_TRUE(split_view_setup_widget);
 

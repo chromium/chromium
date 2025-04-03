@@ -3333,48 +3333,21 @@ TEST_P(OverviewSessionTest, AccessibilityFocusAnnotator) {
   auto* item_widget2 = GetOverviewItemForWindow(window2.get())->item_widget();
   auto* item_widget3 = GetOverviewItemForWindow(window3.get())->item_widget();
 
-  // With this flag enabled, there are is no saved desk save desk container.
-  if (features::IsForestFeatureEnabled()) {
-    // Order should be [focus_widget, item_widget1, item_widget2, item_widget3,
-    // desk_widget, save_widget].
-    CheckA11yOverrides("focus", focus_widget, desk_widget, item_widget1);
-    CheckA11yOverrides("item1", item_widget1, focus_widget, item_widget2);
-    CheckA11yOverrides("item2", item_widget2, item_widget1, item_widget3);
-    CheckA11yOverrides("item3", item_widget3, item_widget2, desk_widget);
-    CheckA11yOverrides("desk", desk_widget, item_widget3, focus_widget);
-
-    // Remove `window2`. The new order should be [focus_widget, item_widget1,
-    // item_widget3, desk_widget, save_widget].
-    window2.reset();
-    CheckA11yOverrides("focus", focus_widget, desk_widget, item_widget1);
-    CheckA11yOverrides("item1", item_widget1, focus_widget, item_widget3);
-    CheckA11yOverrides("item3", item_widget3, item_widget1, desk_widget);
-    CheckA11yOverrides("desk", desk_widget, item_widget3, focus_widget);
-    return;
-  }
-
-  SavedDeskSaveDeskButton* save_button =
-      OverviewGridTestApi(grid).GetSaveDeskForLaterButton();
-  ASSERT_TRUE(save_button);
-  views::Widget* save_widget = save_button->GetWidget();
-
   // Order should be [focus_widget, item_widget1, item_widget2, item_widget3,
   // desk_widget, save_widget].
-  CheckA11yOverrides("focus", focus_widget, save_widget, item_widget1);
+  CheckA11yOverrides("focus", focus_widget, desk_widget, item_widget1);
   CheckA11yOverrides("item1", item_widget1, focus_widget, item_widget2);
   CheckA11yOverrides("item2", item_widget2, item_widget1, item_widget3);
   CheckA11yOverrides("item3", item_widget3, item_widget2, desk_widget);
-  CheckA11yOverrides("desk", desk_widget, item_widget3, save_widget);
-  CheckA11yOverrides("save", save_widget, desk_widget, focus_widget);
+  CheckA11yOverrides("desk", desk_widget, item_widget3, focus_widget);
 
   // Remove `window2`. The new order should be [focus_widget, item_widget1,
   // item_widget3, desk_widget, save_widget].
   window2.reset();
-  CheckA11yOverrides("focus", focus_widget, save_widget, item_widget1);
+  CheckA11yOverrides("focus", focus_widget, desk_widget, item_widget1);
   CheckA11yOverrides("item1", item_widget1, focus_widget, item_widget3);
   CheckA11yOverrides("item3", item_widget3, item_widget1, desk_widget);
-  CheckA11yOverrides("desk", desk_widget, item_widget3, save_widget);
-  CheckA11yOverrides("save", save_widget, desk_widget, focus_widget);
+  CheckA11yOverrides("desk", desk_widget, item_widget3, focus_widget);
 }
 
 // Tests that accessibility overrides are set as expected on overview related
