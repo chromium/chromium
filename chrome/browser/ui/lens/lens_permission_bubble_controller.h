@@ -13,6 +13,7 @@
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/tab_collections/public/tab_interface.h"
+#include "ui/views/widget/widget.h"
 
 namespace content {
 class WebContents;
@@ -63,11 +64,14 @@ class LensPermissionBubbleController {
   std::unique_ptr<ui::DialogModel> CreateLensPermissionDialogModel();
   void OnHelpCenterLinkClicked(const ui::Event& event);
   void OnPermissionDialogAccept();
-  void OnPermissionDialogCancel();
-  void OnPermissionDialogClose();
   void OnPermissionPreferenceUpdated(RequestPermissionCallback callback);
   void TabWillDetach(tabs::TabInterface* tab,
                      tabs::TabInterface::DetachReason reason);
+
+  // Creates and shows the dialog widget.
+  std::unique_ptr<views::Widget> ShowDialogWidget(
+      content::WebContents* web_contents);
+  void CloseDialogWidget(views::Widget::ClosedReason reason);
 
   // Invocation source for the lens overlay.
   LensOverlayInvocationSource invocation_source_;
@@ -78,7 +82,7 @@ class LensPermissionBubbleController {
   // Registrar for pref change notifications.
   PrefChangeRegistrar pref_observer_;
   // Pointer to the widget that contains the current open dialog, if any.
-  raw_ptr<views::Widget> dialog_widget_ = nullptr;
+  std::unique_ptr<views::Widget> dialog_widget_;
 
   base::CallbackListSubscription tab_will_detach_subscription_;
 

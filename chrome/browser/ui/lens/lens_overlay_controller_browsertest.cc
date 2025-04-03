@@ -950,8 +950,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
   ClickBubbleDialogButton(bubble_widget_delegate,
                           bubble_widget_delegate->GetOkButton());
-  // Wait for the bubble to be destroyed.
-  views::test::WidgetDestroyedWaiter(bubble_widget).Wait();
   ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
                    ->HasOpenDialogWidget());
 
@@ -1013,8 +1011,6 @@ IN_PROC_BROWSER_TEST_F(
       bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
   ClickBubbleDialogButton(bubble_widget_delegate,
                           bubble_widget_delegate->GetOkButton());
-  // Wait for the bubble to be destroyed.
-  views::test::WidgetDestroyedWaiter(bubble_widget).Wait();
   ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
                    ->HasOpenDialogWidget());
 
@@ -1074,8 +1070,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
   ClickBubbleDialogButton(bubble_widget_delegate,
                           bubble_widget_delegate->GetCancelButton());
-  // Wait for the bubble to be destroyed.
-  views::test::WidgetDestroyedWaiter(bubble_widget).Wait();
   ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
                    ->HasOpenDialogWidget());
 
@@ -8015,8 +8009,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
       bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
   ClickBubbleDialogButton(bubble_widget_delegate,
                           bubble_widget_delegate->GetOkButton());
-  // Wait for the bubble to be destroyed.
-  views::test::WidgetDestroyedWaiter(bubble_widget).Wait();
   ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
                    ->HasOpenDialogWidget());
 
@@ -8075,8 +8067,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
       bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
   ClickBubbleDialogButton(bubble_widget_delegate,
                           bubble_widget_delegate->GetCancelButton());
-  // Wait for the bubble to be destroyed.
-  views::test::WidgetDestroyedWaiter(bubble_widget).Wait();
   ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
                    ->HasOpenDialogWidget());
 
@@ -8119,8 +8109,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
 
   // Simulate pref being enabled elsewhere.
   prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
-  // Wait for the bubble to be destroyed.
-  views::test::WidgetDestroyedWaiter(bubble_widget).Wait();
   ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
                    ->HasOpenDialogWidget());
 
