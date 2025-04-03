@@ -12,6 +12,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
@@ -54,6 +55,11 @@ class BASE_EXPORT Token {
                                     const Token& rhs) = default;
   friend constexpr bool operator==(const Token& lhs,
                                    const Token& rhs) = default;
+
+  template <typename H>
+  friend H AbslHashValue(H h, const Token& token) {
+    return H::combine(std::move(h), token.words_);
+  }
 
   // Generates a string representation of this Token useful for e.g. logging.
   std::string ToString() const;

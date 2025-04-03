@@ -5,7 +5,6 @@
 #include "content/renderer/render_frame_impl.h"
 
 #include <algorithm>
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -145,6 +144,7 @@
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
 #include "services/tracing/public/cpp/perfetto/track_name_recorder.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
@@ -327,12 +327,12 @@ constexpr base::TimeDelta kDelaySecondsForContentStateSyncHidden =
 constexpr base::TimeDelta kDelaySecondsForContentStateSync = base::Seconds(1);
 
 #if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-typedef std::map<int, RenderFrameImpl*> RoutingIDFrameMap;
+using RoutingIDFrameMap = absl::flat_hash_map<int, RenderFrameImpl*>;
 static base::LazyInstance<RoutingIDFrameMap>::DestructorAtExit
     g_routing_id_frame_map = LAZY_INSTANCE_INITIALIZER;
 #endif
 
-typedef std::map<blink::WebFrame*, RenderFrameImpl*> FrameMap;
+using FrameMap = absl::flat_hash_map<blink::WebFrame*, RenderFrameImpl*>;
 base::LazyInstance<FrameMap>::DestructorAtExit g_frame_map =
     LAZY_INSTANCE_INITIALIZER;
 
