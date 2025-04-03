@@ -105,6 +105,9 @@ class MODULES_EXPORT AIPageContentAgent final
     void AddAnnotatedRoles(const LayoutObject& object,
                            Vector<mojom::blink::AIPageContentAnnotatedRole>&
                                annotated_roles) const;
+    bool IsGenericContainer(
+        const LayoutObject& object,
+        const mojom::blink::AIPageContentAttributes& attributes) const;
 
     void AddInteractiveNode(DOMNodeId dom_node_id);
     void ComputeHitTestableNodesInViewport(

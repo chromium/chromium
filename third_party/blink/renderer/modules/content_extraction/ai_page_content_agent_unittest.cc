@@ -1930,21 +1930,11 @@ TEST_F(AIPageContentAgentTest, FormWithRadio) {
   CheckTextNode(*form.children_nodes[3], "I have a car");
 }
 
-TEST_F(AIPageContentAgentTest, InteractiveElements) {
+TEST_F(AIPageContentAgentTest, InteractiveElementsTextArea) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
       "<body>"
-      "  <style>"
-      "    div {"
-      "      resize: both;"
-      "      overflow: auto;"
-      "      border: 1px solid black;"
-      "      width: 200px;"
-      "    }"
-      "  </style>"
       "  <textarea>text</textarea>"
-      "  <button>button</button>"
-      "  <div>resize</div>"
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
@@ -1953,7 +1943,7 @@ TEST_F(AIPageContentAgentTest, InteractiveElements) {
   ASSERT_TRUE(content->root_node);
 
   const auto& root = *content->root_node;
-  EXPECT_EQ(root.children_nodes.size(), 3u);
+  EXPECT_EQ(root.children_nodes.size(), 1u);
 
   const auto& text_area = *root.children_nodes[0];
   CheckFormControlNode(text_area, mojom::blink::FormControlType::kTextArea);
@@ -1972,8 +1962,27 @@ TEST_F(AIPageContentAgentTest, InteractiveElements) {
   EXPECT_TRUE(text_area.content_attributes->node_interaction_info
                   ->can_resize_horizontal);
 
-  EXPECT_EQ(text_area.children_nodes.size(), 1u);
-  const auto& text_area_text = *text_area.children_nodes[0];
+  // Text area uses a UA shadow DOM internally to create an editable box.
+  const auto& shadow_div = *text_area.children_nodes[0];
+  EXPECT_EQ(shadow_div.children_nodes.size(), 1u);
+  CheckContainerNode(shadow_div);
+  EXPECT_TRUE(
+      shadow_div.content_attributes->node_interaction_info->is_selectable);
+  EXPECT_TRUE(
+      shadow_div.content_attributes->node_interaction_info->is_editable);
+  EXPECT_FALSE(
+      shadow_div.content_attributes->node_interaction_info->is_focusable);
+  EXPECT_FALSE(
+      shadow_div.content_attributes->node_interaction_info->is_draggable);
+  EXPECT_TRUE(
+      shadow_div.content_attributes->node_interaction_info->is_clickable);
+  EXPECT_FALSE(shadow_div.content_attributes->node_interaction_info
+                   ->can_resize_vertical);
+  EXPECT_FALSE(shadow_div.content_attributes->node_interaction_info
+                   ->can_resize_horizontal);
+
+  EXPECT_EQ(shadow_div.children_nodes.size(), 1u);
+  const auto& text_area_text = *shadow_div.children_nodes[0];
   CheckTextNode(text_area_text, "text");
   EXPECT_TRUE(
       text_area_text.content_attributes->node_interaction_info->is_selectable);
@@ -1989,8 +1998,24 @@ TEST_F(AIPageContentAgentTest, InteractiveElements) {
                    ->can_resize_vertical);
   EXPECT_FALSE(text_area_text.content_attributes->node_interaction_info
                    ->can_resize_horizontal);
+}
 
-  const auto& button = *root.children_nodes[1];
+TEST_F(AIPageContentAgentTest, InteractiveElementsButton) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <button>button</button>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContentWithActionableElements();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& button = *root.children_nodes[0];
   CheckFormControlNode(button, mojom::blink::FormControlType::kButtonSubmit);
   EXPECT_TRUE(button.content_attributes->node_interaction_info->is_selectable);
   EXPECT_FALSE(button.content_attributes->node_interaction_info->is_editable);
@@ -2002,25 +2027,33 @@ TEST_F(AIPageContentAgentTest, InteractiveElements) {
   EXPECT_FALSE(
       button.content_attributes->node_interaction_info->can_resize_horizontal);
 
-  EXPECT_EQ(button.children_nodes.size(), 1u);
+  ASSERT_EQ(button.children_nodes.size(), 1u);
   const auto& button_text = *button.children_nodes[0];
   CheckTextNode(button_text, "button");
-  EXPECT_TRUE(
-      button_text.content_attributes->node_interaction_info->is_selectable);
-  EXPECT_FALSE(
-      button_text.content_attributes->node_interaction_info->is_editable);
-  EXPECT_FALSE(
-      button_text.content_attributes->node_interaction_info->is_focusable);
-  EXPECT_FALSE(
-      button_text.content_attributes->node_interaction_info->is_draggable);
-  EXPECT_FALSE(
-      button_text.content_attributes->node_interaction_info->is_clickable);
-  EXPECT_FALSE(button_text.content_attributes->node_interaction_info
-                   ->can_resize_vertical);
-  EXPECT_FALSE(button_text.content_attributes->node_interaction_info
-                   ->can_resize_horizontal);
+  EXPECT_FALSE(button_text.content_attributes->node_interaction_info);
+}
 
-  const auto& resize = *root.children_nodes[2];
+TEST_F(AIPageContentAgentTest, InteractiveElementsResizableDiv) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <style>"
+      "    div {"
+      "      resize: both;"
+      "      overflow: auto;"
+      "      border: 1px solid black;"
+      "      width: 200px;"
+      "    }"
+      "  </style>"
+      "  <div>resize</div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContentWithActionableElements();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& resize = *content->root_node->children_nodes[0];
   CheckContainerNode(resize);
   EXPECT_TRUE(resize.content_attributes->node_interaction_info->is_selectable);
   EXPECT_FALSE(resize.content_attributes->node_interaction_info->is_editable);
@@ -2049,6 +2082,10 @@ TEST_F(AIPageContentAgentTest, InteractiveElements) {
                    ->can_resize_vertical);
   EXPECT_FALSE(resize_text.content_attributes->node_interaction_info
                    ->can_resize_horizontal);
+  EXPECT_TRUE(resize_text.content_attributes->node_interaction_info
+                  ->scrolls_overflow_x);
+  EXPECT_TRUE(resize_text.content_attributes->node_interaction_info
+                  ->scrolls_overflow_y);
 }
 
 TEST_F(AIPageContentAgentTest, Selection) {

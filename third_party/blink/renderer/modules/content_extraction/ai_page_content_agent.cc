@@ -157,46 +157,6 @@ const LayoutIFrame* GetIFrame(const LayoutObject& object) {
   return DynamicTo<LayoutIFrame>(object);
 }
 
-bool IsGenericContainer(
-    const LayoutObject& object,
-    const Vector<mojom::blink::AIPageContentAnnotatedRole>& annotated_roles,
-    const base::flat_set<DOMNodeId>& interactive_dom_node_ids) {
-  if (object.Style()->GetPosition() == EPosition::kFixed) {
-    return true;
-  }
-
-  if (object.Style()->GetPosition() == EPosition::kSticky) {
-    return true;
-  }
-
-  if (object.Style()->ScrollsOverflow()) {
-    return true;
-  }
-
-  if (object.IsInTopOrViewTransitionLayer()) {
-    return true;
-  }
-
-  if (const auto* element = DynamicTo<HTMLElement>(object.GetNode())) {
-    if (element->HasTagName(html_names::kFigureTag)) {
-      return true;
-    }
-  }
-
-  if (!annotated_roles.empty()) {
-    return true;
-  }
-
-  // Use `ExistingIdForNode` since an Id should have already been generated if
-  // this node is interactive.
-  if (interactive_dom_node_ids.contains(
-          DOMNodeIds::ExistingIdForNode(object.GetNode()))) {
-    return true;
-  }
-
-  return false;
-}
-
 std::optional<DOMNodeId> GetDomNodeId(const LayoutObject& object) {
   auto* node = object.GetNode();
   if (object.IsLayoutView()) {
@@ -697,6 +657,59 @@ void AIPageContentAgent::ContentBuilder::AddMetaData(
   }
 }
 
+bool AIPageContentAgent::ContentBuilder::IsGenericContainer(
+    const LayoutObject& object,
+    const mojom::blink::AIPageContentAttributes& attributes) const {
+  if (object.Style()->GetPosition() == EPosition::kFixed) {
+    return true;
+  }
+
+  if (object.Style()->GetPosition() == EPosition::kSticky) {
+    return true;
+  }
+
+  // This has some duplication with the scrollability in InteractionInfo but is
+  // still required for 2 reasons:
+  // 1. The interaction info is only computed when actionable elements are
+  //    requested.
+  // 2. The interaction info is meant to capture the current state (is the
+  //    element scrollable given the current content). This is a heuristic to
+  //    decide whether a node is likely to be a "container" based on the author
+  //    making it scrollable.
+  // TODO(khushalsagar): Consider removing this, no consumer relies on this
+  // behaviour.
+  if (object.Style()->ScrollsOverflow()) {
+    return true;
+  }
+
+  if (object.IsInTopOrViewTransitionLayer()) {
+    return true;
+  }
+
+  if (const auto* element = DynamicTo<HTMLElement>(object.GetNode())) {
+    if (element->HasTagName(html_names::kFigureTag)) {
+      return true;
+    }
+  }
+
+  if (!attributes.annotated_roles.empty()) {
+    return true;
+  }
+
+  if (attributes.node_interaction_info) {
+    return true;
+  }
+
+  // Use `ExistingIdForNode` since an Id should have already been generated if
+  // this node is interactive.
+  if (interactive_dom_node_ids_.contains(
+          DOMNodeIds::ExistingIdForNode(object.GetNode()))) {
+    return true;
+  }
+
+  return false;
+}
+
 void AIPageContentAgent::ContentBuilder::AddInteractiveNode(
     DOMNodeId dom_node_id) {
   CHECK_NE(dom_node_id, kInvalidDOMNodeId);
@@ -819,7 +832,11 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
       mojom::blink::AIPageContentAttributes::New();
   mojom::blink::AIPageContentAttributes& attributes =
       *content_node->content_attributes;
+
+  // Compute state that is used to decide whether this node generates a
+  // ContentNode before making the decision below.
   AddAnnotatedRoles(object, attributes.annotated_roles);
+  AddNodeInteractionInfo(object, attributes);
 
   // Set the attribute type and add any special attributes if the attribute type
   // requires it.
@@ -881,8 +898,7 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
                          element->HasTagName(html_names::kDdTag))) {
     attributes.attribute_type =
         mojom::blink::AIPageContentAttributeType::kListItem;
-  } else if (IsGenericContainer(object, attributes.annotated_roles,
-                                interactive_dom_node_ids_)) {
+  } else if (IsGenericContainer(object, attributes)) {
     // Be sure to set annotated roles before calling IsGenericContainer, as
     // IsGenericContainer will check for annotated roles.
     // Keep container at the bottom of the list as it is the least specific.
@@ -898,8 +914,6 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
   }
 
   AddNodeGeometry(object, attributes);
-
-  AddNodeInteractionInfo(object, attributes);
 
   return content_node;
 }
@@ -1131,15 +1145,14 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     return;
   }
 
-  attributes.node_interaction_info =
-      mojom::blink::AIPageContentNodeInteractionInfo::New();
-  mojom::blink::AIPageContentNodeInteractionInfo& node_interaction_info =
-      *attributes.node_interaction_info;
+  mojom::blink::AIPageContentNodeInteractionInfo node_interaction_info;
+
   const ComputedStyle& style = *object.Style();
   node_interaction_info.scrolls_overflow_x = style.ScrollsOverflowX();
   node_interaction_info.scrolls_overflow_y = style.ScrollsOverflowY();
-  bool is_selectable = object.IsSelectable();
-  node_interaction_info.is_selectable = is_selectable;
+
+  node_interaction_info.is_selectable =
+      style.UsedUserSelect() != EUserSelect::kNone;
 
   if (auto* node = object.GetNode()) {
     node_interaction_info.is_editable = IsEditable(*node);
@@ -1159,6 +1172,25 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     node_interaction_info.is_focusable = element->IsFocusable();
     node_interaction_info.is_draggable = element->draggable();
     node_interaction_info.is_clickable = element->IsMaybeClickable();
+  }
+
+  const bool needs_interaction_info =
+      node_interaction_info.scrolls_overflow_x ||
+      node_interaction_info.scrolls_overflow_y ||
+      // The common case is for the content to be selectable. So assume that's
+      // the default and only force a ContentNode if we need to indicate some
+      // content is not selectable.
+      !node_interaction_info.is_selectable ||
+      node_interaction_info.is_editable ||
+      node_interaction_info.can_resize_horizontal ||
+      node_interaction_info.can_resize_vertical ||
+      node_interaction_info.is_focusable ||
+      node_interaction_info.is_draggable || node_interaction_info.is_clickable;
+
+  if (needs_interaction_info) {
+    attributes.node_interaction_info =
+        mojom::blink::AIPageContentNodeInteractionInfo::New();
+    *attributes.node_interaction_info = node_interaction_info;
   }
 }
 
