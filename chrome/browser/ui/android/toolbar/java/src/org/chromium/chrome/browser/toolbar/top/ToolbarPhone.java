@@ -1843,8 +1843,6 @@ public class ToolbarPhone extends ToolbarLayout
         // change.
         updateVisualsForLocationBarState();
 
-        updateButtonsTranslationY();
-
         postInvalidateOnAnimation();
     }
 
