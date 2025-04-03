@@ -1610,11 +1610,27 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             intent);
             tabs.add(tab);
         }
+
+        // Dragging a collapsed tab group to a new window can result in a window with a single
+        // collapsed group and no tab in foreground. To prevent this, we skip applying the
+        // collapsed state and select the first tab in the dropped group instead.
+        TabModel tabModel = getCurrentTabModel();
+        Tab selectedTab = TabModelUtils.getCurrentTab(tabModel);
+        if (selectedTab == null) {
+            TabModelUtils.setIndex(tabModel, /* index= */ 0);
+        }
+
+        // 4. Regroup tabs and restore the original group properties(e.g. color, title, collapsed
+        // state).
         TabGroupModelFilter tabGroupModelFilter =
                 mTabModelSelector
                         .getTabGroupModelFilterProvider()
                         .getTabGroupModelFilter(tabGroupMetadata.isIncognito);
-        TabGroupUtils.regroupTabs(tabGroupModelFilter, tabs, tabGroupMetadata);
+        TabGroupUtils.regroupTabs(
+                tabGroupModelFilter,
+                tabs,
+                tabGroupMetadata,
+                /* shouldApplyCollapse= */ selectedTab != null);
         return true;
     }
 
