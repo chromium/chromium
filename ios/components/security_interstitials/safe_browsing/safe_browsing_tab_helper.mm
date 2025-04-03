@@ -11,6 +11,7 @@
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/numerics/safe_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #import "components/safe_browsing/core/common/features.h"
@@ -31,12 +32,29 @@ using safe_browsing::SafeBrowsingUrlCheckerImpl;
 using security_interstitials::UnsafeResource;
 
 namespace {
+
 // Creates a PolicyDecision that cancels a navigation to show a safe browsing
-// error.
-web::WebStatePolicyDecider::PolicyDecision CreateSafeBrowsingErrorDecision() {
+// error for an unsafe `resource`.
+web::WebStatePolicyDecider::PolicyDecision CreateSafeBrowsingErrorDecision(
+    const UnsafeResource& resource) {
+  SafeBrowsingErrorCode error_code;
+  switch (resource.threat_type) {
+    case safe_browsing::SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
+      error_code = SafeBrowsingErrorCode::kEnterpriseBlock;
+      break;
+
+    case safe_browsing::SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN:
+      error_code = SafeBrowsingErrorCode::kEnterpriseWarn;
+      break;
+
+    default:
+      error_code = SafeBrowsingErrorCode::kUnsafeResource;
+      break;
+  }
+
   return web::WebStatePolicyDecider::PolicyDecision::CancelAndDisplayError(
       [NSError errorWithDomain:kSafeBrowsingErrorDomain
-                          code:kUnsafeResourceErrorCode
+                          code:base::checked_cast<NSInteger>(error_code)
                       userInfo:nil]);
 }
 
@@ -207,7 +225,8 @@ SafeBrowsingTabHelper::PolicyDecider::CreatePolicyDecision(
   web::WebStatePolicyDecider::PolicyDecision policy_decision =
       web::WebStatePolicyDecider::PolicyDecision::Allow();
   if (result.show_error_page) {
-    policy_decision = CreateSafeBrowsingErrorDecision();
+    CHECK(result.resource);
+    policy_decision = CreateSafeBrowsingErrorDecision(*result.resource);
   } else if (!result.proceed) {
     policy_decision = web::WebStatePolicyDecider::PolicyDecision::Cancel();
   }
@@ -316,7 +335,8 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
     // TODO(crbug.com/40681490): This should directly return the safe browsing
     // error decision once error pages for cancelled requests are supported.
     // For now, only cancelled response errors are displayed properly.
-    pending_main_frame_query_->decision = CreateSafeBrowsingErrorDecision();
+    pending_main_frame_query_->decision =
+        CreateSafeBrowsingErrorDecision(*main_frame_resource);
     return std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
   }

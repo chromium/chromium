@@ -9,6 +9,7 @@
 #import <memory>
 
 #import "base/command_line.h"
+#import "base/numerics/safe_conversions.h"
 #import "base/run_loop.h"
 #import "base/strings/string_split.h"
 #import "base/strings/sys_string_conversions.h"
@@ -312,9 +313,11 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForSafeBrowsingError) {
   SafeBrowsingUnsafeResourceContainer::FromWebState(&web_state)
       ->StoreMainFrameUnsafeResource(resource);
 
-  NSError* error = [NSError errorWithDomain:kSafeBrowsingErrorDomain
-                                       code:kUnsafeResourceErrorCode
-                                   userInfo:nil];
+  NSError* error =
+      [NSError errorWithDomain:kSafeBrowsingErrorDomain
+                          code:base::checked_cast<NSInteger>(
+                                   SafeBrowsingErrorCode::kUnsafeResource)
+                      userInfo:nil];
   __block bool callback_called = false;
   __block NSString* page = nil;
   base::OnceCallback<void(NSString*)> callback =

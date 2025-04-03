@@ -442,8 +442,7 @@ void ChromeWebClient::PrepareErrorPage(
       base::ios::GetFinalUnderlyingErrorFromError(error);
   if ([final_underlying_error.domain
           isEqualToString:kSafeBrowsingErrorDomain]) {
-    // Only kUnsafeResourceErrorCode is supported.
-    DCHECK_EQ(kUnsafeResourceErrorCode, final_underlying_error.code);
+    // TODO(crbug.com/399379745): Handle enterprise safe browsing error codes.
     std::move(callback).Run(
         GetSafeBrowsingErrorPageHTML(web_state, navigation_id));
   } else if ([final_underlying_error.domain
