@@ -23720,6 +23720,27 @@
             ]
         }
     ],
+    "SwiftShaderDeprecation": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "SwiftShaderDisabled",
+                    "disable_features": [
+                        "AllowSoftwareGLFallbackDueToCrashes",
+                        "AllowSwiftShaderFallback"
+                    ]
+                }
+            ]
+        }
+    ],
     "SyncIncreaseNudgeDelayForSingleClient": [
         {
             "platforms": [
