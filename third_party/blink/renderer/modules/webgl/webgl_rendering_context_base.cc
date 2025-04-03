@@ -6273,8 +6273,8 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
         video_renderer->CopyVideoFrameTexturesToGLTexture(
             raster_context_provider, ContextGL(), media_video_frame,
             params.target, texture->Object(), adjusted_internalformat,
-            params.format, params.type, params.level, unpack_premultiply_alpha_,
-            unpack_flip_y_)) {
+            params.format, params.type, params.level,
+            params.GetDestinationAlphaType(), params.GetDestinationOrigin())) {
       return;
     }
 
@@ -6289,8 +6289,8 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
         video_renderer->CopyVideoFrameYUVDataToGLTexture(
             raster_context_provider, ContextGL(), media_video_frame,
             params.target, texture->Object(), adjusted_internalformat,
-            params.format, params.type, params.level, unpack_premultiply_alpha_,
-            unpack_flip_y_)) {
+            params.format, params.type, params.level,
+            params.GetDestinationAlphaType(), params.GetDestinationOrigin())) {
       return;
     }
   }
@@ -6303,20 +6303,24 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     ScopedUnpackParametersResetRestore unpack_params(
         this, unpack_flip_y_ || unpack_premultiply_alpha_);
 
-    const bool premultiply_alpha =
-        unpack_premultiply_alpha_ && unpack_colorspace_conversion_ == GL_NONE;
+    // TODO(crbug.com/378688985): UNPACK_COLORSPACE_CONVERSION_WEBGL shouldn't
+    // affect alpha type (and the format doesn't even have alpha channel).
+    const auto alpha_type = unpack_colorspace_conversion_ == GL_NONE
+                                ? params.GetDestinationAlphaType()
+                                : kUnpremul_SkAlphaType;
 
     if (params.function_id == kTexImage2D &&
         media::PaintCanvasVideoRenderer::TexImage2D(
             params.target, texture->Object(), ContextGL(), caps,
             media_video_frame.get(), params.level, adjusted_internalformat,
-            params.format, params.type, unpack_flip_y_, premultiply_alpha)) {
+            params.format, params.type, params.GetDestinationOrigin(),
+            alpha_type)) {
       return;
     } else if (params.function_id == kTexSubImage2D &&
                media::PaintCanvasVideoRenderer::TexSubImage2D(
                    params.target, ContextGL(), media_video_frame.get(),
                    params.level, params.format, params.type, params.xoffset,
-                   params.yoffset, unpack_flip_y_, premultiply_alpha)) {
+                   params.yoffset, params.GetDestinationOrigin(), alpha_type)) {
       return;
     }
   }
