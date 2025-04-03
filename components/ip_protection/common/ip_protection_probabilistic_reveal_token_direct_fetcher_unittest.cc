@@ -57,8 +57,7 @@ using ::testing::StartsWith;
 
 constexpr size_t kGetProbabilisticRevealTokenResponseMaxBodySize = 40 * 1024;
 constexpr char kIssuerServerUrl[] =
-    "https://prod.probabilisticrevealtoken.goog/v1/ipblinding/"
-    "getProbabilisticRevealToken";
+    "https://aaftokenissuer.pa.googleapis.com/v1/issueprts";
 
 absl::StatusOr<std::string> GetTestPublicKeyBytes(uint64_t private_key) {
   Context context;

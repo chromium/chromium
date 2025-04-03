@@ -320,6 +320,27 @@ BASE_FEATURE(kAsyncMultiPortPath,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// Probabilistic reveal tokens configuration settings
+BASE_FEATURE(kEnableProbabilisticRevealTokens,
+             "EnableProbabilisticRevealTokens",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kProbabilisticRevealTokenServer{
+    &kEnableProbabilisticRevealTokens,
+    /*name=*/"ProbabilisticRevealTokenServer",
+    /*default_value=*/"https://aaftokenissuer.pa.googleapis.com"};
+
+const base::FeatureParam<std::string> kProbabilisticRevealTokenServerPath{
+    &kEnableProbabilisticRevealTokens,
+    /*name=*/"ProbabilisticRevealTokenServerPath",
+    /*default_value=*/"/v1/issueprts"};
+
+const base::FeatureParam<bool>
+    kAttachProbabilisticRevealTokensOnAllProxiedRequests{
+        &kEnableProbabilisticRevealTokens,
+        /*name=*/"AttachProbabilisticRevealTokensOnAllProxiedRequests",
+        /*default_value=*/false};
+
 // IP protection experiment configuration settings
 BASE_FEATURE(kEnableIpProtectionProxy,
              "EnableIpPrivacyProxy",
@@ -329,26 +350,10 @@ const base::FeatureParam<std::string> kIpPrivacyTokenServer{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyTokenServer",
     /*default_value=*/"https://prod.ipprotectionauth.goog"};
 
-const base::FeatureParam<std::string> kIpPrivacyProbabilisticRevealTokenServer{
-    &kEnableIpProtectionProxy,
-    /*name=*/"IpPrivacyProbabilisticRevealTokenServer",
-    /*default_value=*/"https://prod.probabilisticrevealtoken.goog"};
-
 const base::FeatureParam<std::string> kIpPrivacyTokenServerGetInitialDataPath{
     &kEnableIpProtectionProxy,
     /*name=*/"IpPrivacyTokenServerGetInitialDataPath",
     /*default_value=*/"/v1/ipblinding/getInitialData"};
-
-const base::FeatureParam<std::string>
-    kIpPrivacyProbabilisticRevealTokenServerPath{
-        &kEnableIpProtectionProxy,
-        /*name=*/"IpPrivacyProbabilisticRevealTokenServerPath",
-        /*default_value=*/"/v1/ipblinding/getProbabilisticRevealToken"};
-
-const base::FeatureParam<bool> kIpPrivacyStoreProbabilisticRevealTokens{
-    &kEnableIpProtectionProxy,
-    /*name=*/"IpPrivacyStoreProbabilisticRevealTokens",
-    /*default_value=*/false};
 
 const base::FeatureParam<std::string> kIpPrivacyTokenServerGetTokensPath{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyTokenServerGetTokensPath",

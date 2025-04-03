@@ -250,6 +250,14 @@ void IpProtectionCoreImpl::GeoObserved(const std::string& geo_id) {
 
 bool IpProtectionCoreImpl::ShouldRequestIncludeProbabilisticRevealToken(
     const GURL& request_url) {
+  if (!base::FeatureList::IsEnabled(
+          net::features::kEnableProbabilisticRevealTokens)) {
+    return false;
+  }
+  if (net::features::kAttachProbabilisticRevealTokensOnAllProxiedRequests
+          .Get()) {
+    return true;
+  }
   return probabilistic_reveal_token_registry_->IsRegistered(request_url);
 }
 
