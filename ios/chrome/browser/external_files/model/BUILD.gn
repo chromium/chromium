@@ -23,3 +23,21 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/web_state_list",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "external_file_remover_impl_unittest.mm" ]
+  deps = [
+    ":model",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/sessions/model",
+    "//ios/chrome/browser/sessions/model:fake",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}
