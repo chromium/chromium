@@ -1751,6 +1751,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   template <typename Functor>
   bool PseudoElementStylesDependOnFunc(Functor& func) const;
 
+  // Returns true if the element satisfies conditions for focusability for
+  // spatial navigation, even if the spatial navigation is not currently
+  // enabled.
+  bool HasSpatialNavigationFocusHeuristics() const;
+
   // Returns true if this element has generate a pseudo element whose box is a
   // sibling box of its originating element's box. In this case we cannot skip
   // style recalc for size containers because that would break necessary layout

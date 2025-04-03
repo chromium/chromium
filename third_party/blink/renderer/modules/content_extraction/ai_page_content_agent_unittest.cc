@@ -3131,5 +3131,49 @@ TEST_F(AIPageContentAgentTest, HitTestElementsTransform) {
                 gfx::Rect(208, 208, 100, 100));
 }
 
+TEST_F(AIPageContentAgentTest, CursorForClickability) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div style='cursor: pointer'>pointer</div>"
+      "  <article>article</article>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContentWithActionableElements();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+  EXPECT_EQ(content->root_node->children_nodes.size(), 2u);
+
+  const auto& cursor = *content->root_node->children_nodes[0];
+  EXPECT_TRUE(cursor.content_attributes->node_interaction_info);
+  EXPECT_TRUE(cursor.content_attributes->node_interaction_info->is_clickable);
+
+  const auto& article = *content->root_node->children_nodes[1];
+  EXPECT_FALSE(article.content_attributes->node_interaction_info);
+}
+
+TEST_F(AIPageContentAgentTest, LinkForClickability) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <a href='test.com'>valid</a>"
+      "  <a>invalid</a>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContentWithActionableElements();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+  EXPECT_EQ(content->root_node->children_nodes.size(), 2u);
+
+  const auto& valid = *content->root_node->children_nodes[0];
+  EXPECT_TRUE(valid.content_attributes->node_interaction_info);
+  EXPECT_TRUE(valid.content_attributes->node_interaction_info->is_clickable);
+
+  const auto& invalid = *content->root_node->children_nodes[1];
+  EXPECT_FALSE(invalid.content_attributes->node_interaction_info);
+}
+
 }  // namespace
 }  // namespace blink

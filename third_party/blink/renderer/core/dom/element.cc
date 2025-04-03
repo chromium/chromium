@@ -7096,6 +7096,10 @@ bool Element::SupportsSpatialNavigationFocus() const {
     return false;
   }
 
+  return HasSpatialNavigationFocusHeuristics();
+}
+
+bool Element::HasSpatialNavigationFocusHeuristics() const {
   if (!GetLayoutObject()) {
     return false;
   }
@@ -7235,26 +7239,12 @@ bool Element::IsMaybeClickable() {
   if (IsClickableControl(this)) {
     return true;
   }
+
   if (HasActivationBehavior()) {
     return true;
   }
-  if (HasJSBasedEventListeners(event_type_names::kClick) ||
-      HasJSBasedEventListeners(event_type_names::kKeydown) ||
-      HasJSBasedEventListeners(event_type_names::kKeypress) ||
-      HasJSBasedEventListeners(event_type_names::kKeyup) ||
-      HasJSBasedEventListeners(event_type_names::kMouseover) ||
-      HasJSBasedEventListeners(event_type_names::kMouseenter)) {
-    return true;
-  }
-  if (HasEventListeners(event_type_names::kClick) ||
-      HasEventListeners(event_type_names::kKeydown) ||
-      HasEventListeners(event_type_names::kKeypress) ||
-      HasEventListeners(event_type_names::kKeyup) ||
-      HasEventListeners(event_type_names::kMouseover) ||
-      HasEventListeners(event_type_names::kMouseenter)) {
-    return true;
-  }
-  return false;
+
+  return HasSpatialNavigationFocusHeuristics();
 }
 
 bool Element::IsFocusable(UpdateBehavior update_behavior) const {
