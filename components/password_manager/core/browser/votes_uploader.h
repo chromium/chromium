@@ -328,7 +328,7 @@ class VotesUploader {
   bool SetSingleUsernameVoteOnUsernameForm(
       autofill::AutofillField* field,
       const SingleUsernameVoteData& single_username,
-      autofill::FieldTypeSet* available_field_types,
+      autofill::EncodeUploadRequestOptions& options,
       autofill::FormSignature form_signature,
       autofill::IsMostRecentSingleUsernameCandidate
           is_most_recent_single_username_candidate,

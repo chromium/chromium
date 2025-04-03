@@ -377,15 +377,6 @@ class AutofillField : public FormFieldData {
   }
   bool state_is_a_matching_type() const { return state_is_a_matching_type_; }
 
-  void set_single_username_vote_type(
-      AutofillUploadContents::Field::SingleUsernameVoteType vote_type) {
-    single_username_vote_type_ = vote_type;
-  }
-  std::optional<AutofillUploadContents::Field::SingleUsernameVoteType>
-  single_username_vote_type() const {
-    return single_username_vote_type_;
-  }
-
   void set_is_most_recent_single_username_candidate(
       IsMostRecentSingleUsernameCandidate
           is_most_recent_single_username_candidate) {
@@ -597,10 +588,6 @@ class AutofillField : public FormFieldData {
 
   // Denotes if |ADDRESS_HOME_STATE| should be added to |possible_types_|.
   bool state_is_a_matching_type_ = false;
-
-  // Strength of the single username vote signal, if applicable.
-  std::optional<AutofillUploadContents::Field::SingleUsernameVoteType>
-      single_username_vote_type_;
 
   // If set to `kMostRecentCandidate`, the field is candidate for username
   // in Username First Flow and the field has no intermediate

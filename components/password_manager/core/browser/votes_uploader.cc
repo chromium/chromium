@@ -935,7 +935,7 @@ bool VotesUploader::SendUploadRequest(
 bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
     AutofillField* field,
     const SingleUsernameVoteData& single_username,
-    FieldTypeSet* available_field_types,
+    autofill::EncodeUploadRequestOptions& options,
     FormSignature form_signature,
     IsMostRecentSingleUsernameCandidate
         is_most_recent_single_username_candidate,
@@ -980,9 +980,9 @@ bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
 
   CHECK_NE(field_type, autofill::UNKNOWN_TYPE);
   CHECK_NE(vote_type, AutofillUploadContents::Field::DEFAULT);
-  available_field_types->insert(field_type);
+  options.available_field_types.insert(field_type);
   field->set_possible_types({field_type});
-  field->set_single_username_vote_type(vote_type);
+  options.fields[field->global_id()].single_username_vote_type = vote_type;
   field->set_is_most_recent_single_username_candidate(
       is_most_recent_single_username_candidate);
   return true;
@@ -1082,8 +1082,7 @@ bool VotesUploader::MaybeSendSingleUsernameVote(
       continue;
     }
     if (!SetSingleUsernameVoteOnUsernameForm(
-            field, single_username, &options.available_field_types,
-            predictions.form_signature,
+            field, single_username, options, predictions.form_signature,
             is_most_recent_single_username_candidate,
             is_forgot_password_vote)) {
       // The single username field has no field type. Don't send vote.

@@ -26,7 +26,12 @@ struct EncodeUploadRequestOptions {
     Field& operator=(Field&&);
     ~Field();
 
+    // All date format strings that match the field value.
     base::flat_set<std::u16string> format_strings;
+
+    // Strength of the single username vote signal, if applicable.
+    std::optional<AutofillUploadContents::Field::SingleUsernameVoteType>
+        single_username_vote_type;
   };
 
   EncodeUploadRequestOptions();

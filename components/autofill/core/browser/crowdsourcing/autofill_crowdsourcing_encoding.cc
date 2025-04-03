@@ -376,6 +376,11 @@ void EncodeFormFieldsForUpload(
       continue;
     }
 
+    const EncodeUploadRequestOptions::Field* field_options = nullptr;
+    if (auto it = fields.find(field->global_id()); it != fields.end()) {
+      field_options = &it->second;
+    }
+
     auto* added_field = upload->add_field_data();
     for (auto field_type : field->possible_types()) {
       added_field->add_autofill_type(field_type);
@@ -423,9 +428,9 @@ void EncodeFormFieldsForUpload(
           added_field->mutable_randomized_field_metadata());
     }
 
-    if (field->single_username_vote_type()) {
+    if (field_options && field_options->single_username_vote_type) {
       added_field->set_single_username_vote_type(
-          field->single_username_vote_type().value());
+          field_options->single_username_vote_type.value());
     }
 
     switch (field->is_most_recent_single_username_candidate()) {

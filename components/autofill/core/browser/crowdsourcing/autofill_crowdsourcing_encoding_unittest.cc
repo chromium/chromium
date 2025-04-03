@@ -1678,8 +1678,6 @@ TEST_F(AutofillCrowdsourcingEncoding,
   form.set_fields({field});
 
   FormStructure form_structure(form);
-  form_structure.field(0)->set_single_username_vote_type(
-      AutofillUploadContents::Field::STRONG);
   form_structure.field(0)->set_is_most_recent_single_username_candidate(
       IsMostRecentSingleUsernameCandidate::kMostRecentCandidate);
   for (auto& fs_field : form_structure) {
@@ -1692,11 +1690,13 @@ TEST_F(AutofillCrowdsourcingEncoding,
       /*anonymous_url_collection_is_enabled=*/true);
   options.available_field_types = {NO_SERVER_DATA};
   options.observed_submission = true;
+  options.fields[form_structure.field(0)->global_id()]
+      .single_username_vote_type = AutofillUploadContents::Field::STRONG;
 
   std::vector<AutofillUploadContents> uploads =
       EncodeUploadRequest(form_structure, options);
   ASSERT_EQ(1u, uploads.size());
-  EXPECT_EQ(form_structure.field(0)->single_username_vote_type(),
+  EXPECT_EQ(AutofillUploadContents::Field::STRONG,
             uploads.front().field_data(0).single_username_vote_type());
   EXPECT_TRUE(
       uploads.front().field_data(0).is_most_recent_single_username_candidate());
