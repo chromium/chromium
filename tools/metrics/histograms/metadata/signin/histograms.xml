@@ -2163,6 +2163,22 @@ the browser and content area. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.OAuth2MintToken.Response" enum="OAuth2Response"
+    expires_after="2025-08-24">
+  <owner>alexilin@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    OAuth2 result of the OAuth2MintToken API call based on the server response.
+    Recorded after the response is processed excluding net failure cases.
+    Desktop only.
+
+    This is recorded together with
+    &quot;Signin.OAuth2MintToken.ApiCallResult&quot; but uses the same result
+    type as &quot;Gaia.ResponseForOAuth2AccessToken&quot;.
+  </summary>
+</histogram>
+
 <histogram name="Signin.OAuth2TokenGetResult" enum="GoogleServiceAuthError"
     expires_after="never">
 <!-- expires-never: This is needed as long as Chrome is fetching access tokens

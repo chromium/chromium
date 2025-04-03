@@ -21081,6 +21081,8 @@ Called by update_net_error_codes.py.-->
   <int value="12" label="Internal Failure"/>
   <int value="13" label="Admin Policy Enforced"/>
   <int value="14" label="Access Denied"/>
+  <int value="15" label="User Consent Required"/>
+  <int value="16" label="Token Binding Challenge Received"/>
 </enum>
 
 <!-- LINT.ThenChange(//google_apis/gaia/oauth2_response.h:OAuth2Response) -->
