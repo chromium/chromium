@@ -28,6 +28,7 @@ export {InkBrushSelectorElement} from './elements/ink_brush_selector.js';
 export {InkColorSelectorElement} from './elements/ink_color_selector.js';
 export {InkSizeSelectorElement, HIGHLIGHTER_SIZES, PEN_SIZES} from './elements/ink_size_selector.js';
 export {SelectableIconButtonElement} from './elements/selectable_icon_button.js';
+export {TextAlignmentSelectorElement} from './elements/text_alignment_selector.js';
 export {TextStylesSelectorElement} from './elements/text_styles_selector.js';
 // </if>
 export {ViewerAttachmentElement} from './elements/viewer_attachment.js';

@@ -584,6 +584,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, SelectableIconButton) {
   RunTestsInJsModule("selectable_icon_button_test.js", "test.pdf");
 }
 
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2TextAlignmentSelector) {
+  RunTestsInJsModule("ink2_text_alignment_selector_test.js", "test.pdf");
+}
+
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2TextSidePanel) {
   // The window must be at least 960px to show the text side panel.
   GetActiveWebContents()->Resize({0, 0, 960, 100});

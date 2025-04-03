@@ -11,10 +11,6 @@
  * #include=md-select-lit side-panel-shared
  * #css_wrapper_metadata_end */
 
-:host {
-  --cr-radio-group-item-padding: 6px;
-}
-
 .md-select {
   --cr-focus-outline-color: var(--viewer-icon-focus-outline-color);
   --md-select-option-bg-color: var(--google-grey-800);
@@ -35,14 +31,12 @@
   background-color: var(--google-grey-800);
 }
 
-cr-icon-button.active {
-  --cr-icon-button-fill-color: var(--viewer-icon-ink-selected-fill-color);
-  background-color: var(--viewer-icon-ink-selected-background-color);
-  border-radius: 50%;
+text-styles-selector {
+  padding-top: 16px;
 }
 
-cr-radio-group, text-styles-selector {
-  padding-top: 16px;
+text-alignment-selector {
+  padding-top: 8px;
 }
 
 .side-panel-content:nth-child(2) {
@@ -51,6 +45,5 @@ cr-radio-group, text-styles-selector {
 }
 
 .side-panel-content:nth-child(3) {
-  /* 8px + 24px bottom padding from second item to make 32px total spacing */
-  padding-top: 8px;
+  padding-top: 0;
 }

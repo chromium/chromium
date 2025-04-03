@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AnnotationMode, hexToColor, Ink2Manager, TEXT_COLORS, TextAlignment, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import type {Color, SelectableIconButtonElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationMode, hexToColor, Ink2Manager, TEXT_COLORS, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {Color} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -88,56 +88,15 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  // Test that the side panel has a style select element.
-  function testHasStyleSelect() {
+  // Test that the side panel has a style select and alignment select element.
+  function testHasSelectors() {
     chrome.test.assertEq(AnnotationMode.TEXT, viewer.$.toolbar.annotationMode);
     const sidePanel = viewer.shadowRoot.querySelector('viewer-text-side-panel');
     assert(sidePanel);
     chrome.test.assertTrue(
         !!sidePanel.shadowRoot.querySelector('text-styles-selector'));
-    chrome.test.succeed();
-  },
-
-  // Test that the alignment can be selected.
-  async function testSelectAlignment() {
-    chrome.test.assertEq(AnnotationMode.TEXT, viewer.$.toolbar.annotationMode);
-    const sidePanel = viewer.shadowRoot.querySelector('viewer-text-side-panel');
-    assert(sidePanel);
-
-    // Initial state
-    const buttons =
-        sidePanel.shadowRoot.querySelectorAll('selectable-icon-button');
-    chrome.test.assertEq(4, buttons.length);
-    chrome.test.assertEq(
-        TextAlignment.LEFT,
-        Ink2Manager.getInstance().getCurrentText().alignment);
-    chrome.test.assertTrue(buttons[0]!.checked);
-
-    // Test the radio button goes from not selected to selected when it is
-    // clicked.
-    async function testButton(
-        button: SelectableIconButtonElement, alignment: TextAlignment,
-        icon: string) {
-      chrome.test.assertFalse(button.checked);
-      chrome.test.assertEq(icon, button.icon);
-
-      const whenChanged =
-          eventToPromise('text-changed', Ink2Manager.getInstance());
-      button.click();
-      const changedEvent = await whenChanged;
-      chrome.test.assertEq(alignment, changedEvent.detail.alignment);
-      await microtasksFinished();
-      chrome.test.assertTrue(button.checked);
-    }
-
-    // Start with CENTER button since LEFT button is checked by default.
-    await testButton(
-        buttons[1]!, TextAlignment.CENTER, 'pdf:text-align-center');
-    await testButton(
-        buttons[2]!, TextAlignment.JUSTIFY, 'pdf:text-align-justify');
-    await testButton(buttons[3]!, TextAlignment.RIGHT, 'pdf:text-align-right');
-    await testButton(buttons[0]!, TextAlignment.LEFT, 'pdf:text-align-left');
-
+    chrome.test.assertTrue(
+        !!sidePanel.shadowRoot.querySelector('text-alignment-selector'));
     chrome.test.succeed();
   },
 

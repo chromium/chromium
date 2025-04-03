@@ -8,14 +8,14 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  display: block;
+  display: flex;
 }
 
 cr-icon-button {
   --cr-icon-button-fill-color: var(--viewer-icon-ink-fill-color);
   --cr-icon-button-focus-outline-color: var(--viewer-icon-focus-outline-color);
-  --cr-icon-button-margin-end: 6px;
-  --cr-icon-button-margin-start: 6px;
+  --cr-icon-button-margin-end: 8px;
+  --cr-icon-button-margin-start: 8px;
 }
 
 cr-icon-button.active {

@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {AnnotationText, TextStyles} from '../constants.js';
 import {TextStyle} from '../constants.js';
 import {Ink2Manager} from '../ink2_manager.js';
 
+import {InkTextObserverMixin} from './ink_text_observer_mixin.js';
 import {getCss} from './text_styles_selector.css.js';
 import {getHtml} from './text_styles_selector.html.js';
 
+const TextStylesSelectorElementBase = InkTextObserverMixin(CrLitElement);
 
-export class TextStylesSelectorElement extends CrLitElement {
+export class TextStylesSelectorElement extends TextStylesSelectorElementBase {
   static get is() {
     return 'text-styles-selector';
   }
@@ -39,26 +40,6 @@ export class TextStylesSelectorElement extends CrLitElement {
     [TextStyle.STRIKETHROUGH]: false,
   };
 
-  private tracker_: EventTracker = new EventTracker();
-
-  constructor() {
-    super();
-    this.onTextChanged_(Ink2Manager.getInstance().getCurrentText());
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-    this.tracker_.add(
-        Ink2Manager.getInstance(), 'text-changed',
-        (e: Event) =>
-            this.onTextChanged_((e as CustomEvent<AnnotationText>).detail));
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.tracker_.removeAll();
-  }
-
   protected getTextStyles_(): TextStyle[] {
     return Object.values(TextStyle);
   }
@@ -78,7 +59,7 @@ export class TextStylesSelectorElement extends CrLitElement {
     return this.currentStyles_[style] ? 'true' : 'false';
   }
 
-  private onTextChanged_(text: AnnotationText) {
+  override onTextChanged(text: AnnotationText) {
     this.currentStyles_ = text.styles;
   }
 }

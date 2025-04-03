@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {AnnotationText, Color} from '../constants.js';
-import {TextAlignment} from '../constants.js';
 import {Ink2Manager} from '../ink2_manager.js';
 import {hexToColor} from '../pdf_viewer_utils.js';
 
 import type {ColorOption} from './ink_color_selector.js';
+import {InkTextObserverMixin} from './ink_text_observer_mixin.js';
 import {getCss} from './viewer_text_side_panel.css.js';
 import {getHtml} from './viewer_text_side_panel.html.js';
 
@@ -48,7 +47,9 @@ export const TEXT_COLORS: ColorOption[] = [
   {label: 'ink2BrushColorBlue3', color: '#1967d2', blended: false},
 ];
 
-export class ViewerTextSidePanelElement extends CrLitElement {
+const ViewerTextSidePanelElementBase = InkTextObserverMixin(CrLitElement);
+
+export class ViewerTextSidePanelElement extends ViewerTextSidePanelElementBase {
   static get is() {
     return 'viewer-text-side-panel';
   }
@@ -63,7 +64,6 @@ export class ViewerTextSidePanelElement extends CrLitElement {
 
   static override get properties() {
     return {
-      currentAlignment_: {type: String},
       currentColor_: {type: Object},
       currentFont_: {type: String},
       currentSize_: {type: Number},
@@ -73,7 +73,6 @@ export class ViewerTextSidePanelElement extends CrLitElement {
     };
   }
 
-  protected currentAlignment_: TextAlignment = TextAlignment.LEFT;
   protected currentColor_: Color = hexToColor(TEXT_COLORS[0]!.color);
   protected currentFont_: string = '';
   protected currentSize_: number = TEXT_SIZES[0]!;
@@ -86,26 +85,6 @@ export class ViewerTextSidePanelElement extends CrLitElement {
     'Monospace',
   ];
   protected sizes_ = TEXT_SIZES;
-
-  private tracker_: EventTracker = new EventTracker();
-
-  constructor() {
-    super();
-    this.onTextChanged_(Ink2Manager.getInstance().getCurrentText());
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-    this.tracker_.add(
-        Ink2Manager.getInstance(), 'text-changed',
-        (e: Event) =>
-            this.onTextChanged_((e as CustomEvent<AnnotationText>).detail));
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.tracker_.removeAll();
-  }
 
   protected isSelectedFont_(font: string) {
     return font === this.currentFont_;
@@ -125,11 +104,6 @@ export class ViewerTextSidePanelElement extends CrLitElement {
     Ink2Manager.getInstance().setTextSize(newValue);
   }
 
-  protected onSelectedAlignmentChanged_(e: CustomEvent<{value: string}>) {
-    const newAlignment = e.detail.value as TextAlignment;
-    Ink2Manager.getInstance().setTextAlignment(newAlignment);
-  }
-
   protected onCurrentColorChanged_(e: CustomEvent<{value: Color}>) {
     // Avoid poking the plugin if the value hasn't actually changed.
     const newColor = e.detail.value;
@@ -140,11 +114,10 @@ export class ViewerTextSidePanelElement extends CrLitElement {
     }
   }
 
-  private onTextChanged_(text: AnnotationText) {
+  override onTextChanged(text: AnnotationText) {
     this.currentColor_ = text.color;
     this.currentFont_ = text.font;
     this.currentSize_ = text.size;
-    this.currentAlignment_ = text.alignment;
   }
 }
 
