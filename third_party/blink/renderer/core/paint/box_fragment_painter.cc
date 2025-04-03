@@ -1493,14 +1493,11 @@ void BoxFragmentPainter::PaintGaps(GridTrackSizingDirection track_direction,
       // * `0` if the intersection is at the content edge of the container.
       // * The cross gutter size if it is an intersection with another gap.
       // https://drafts.csswg.org/css-gaps-1/#crossing-gap-width
-      LayoutUnit start_width = gap_geometry.IntersectionIncludesContentEdge(
-                                   start, num_intersections, gap[start])
+      LayoutUnit start_width = gap[start].is_at_edge_of_container
                                    ? LayoutUnit()
                                    : cross_gutter_width;
-      LayoutUnit end_width = gap_geometry.IntersectionIncludesContentEdge(
-                                 end, num_intersections, gap[end])
-                                 ? LayoutUnit()
-                                 : cross_gutter_width;
+      LayoutUnit end_width =
+          gap[end].is_at_edge_of_container ? LayoutUnit() : cross_gutter_width;
 
       // Outset values are used to offset the end points of gap decorations.
       // Percentage values are resolved against the crossing gap width of the
