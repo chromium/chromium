@@ -49,6 +49,7 @@ include_rules = [
   "+components/app_constants/constants.h",
   "+components/app_launch_prefetch",
   "+components/app_restore",
+  "+components/application_locale_storage",
   "+components/assist_ranker",
   "+components/autofill/android",
   "+components/autofill/content/browser",

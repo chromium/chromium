@@ -181,6 +181,7 @@ test("components_unittests") {
     "//components/affiliations/core/browser:unit_tests",
     "//components/aggregation_service:unit_tests",
     "//components/apdu:unit_tests",
+    "//components/application_locale_storage:unit_tests",
     "//components/assist_ranker:unit_tests",
     "//components/attribution_reporting:unit_tests",
     "//components/autofill/core/browser:unit_tests",

@@ -2045,6 +2045,7 @@ static_library("browser") {
     "//chrome/common/notifications",
     "//chrome/installer/util:with_no_strings",
     "//chrome/services/speech/buildflags",
+    "//components/application_locale_storage",
     "//components/assist_ranker",
     "//components/autofill/core/browser",
     "//components/back_forward_cache",

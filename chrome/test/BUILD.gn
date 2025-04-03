@@ -504,6 +504,7 @@ static_library("test_support") {
     "//chrome/browser/ui/webui:configs",
     "//chrome/browser/ui/zoom",
     "//chrome/common/search:mojo_bindings",
+    "//components/application_locale_storage",
     "//components/autofill/content/renderer:test_support",
     "//components/blocked_content:blocked_content",
     "//components/content_settings/browser",
