@@ -387,16 +387,15 @@ export class PowerBookmarksListElement extends PolymerElement implements
     this.hasLoadedData_ = true;
   }
 
-  onBookmarkChanged(id: string, changedInfo: chrome.bookmarks.ChangeInfo) {
+  onBookmarkChanged(id: string) {
     const bookmark = this.bookmarksService_.findBookmarkWithId(id)!;
      this.updatedElementIds_ = [bookmark.id];
     if (this.bookmarkShouldShow_(bookmark) ||
         this.bookmarkIsShowing_(bookmark)) {
       this.updateDisplayLists_();
     }
-    Object.keys(changedInfo).forEach(key => {
-      this.notifyPathIfVisible_(id, key);
-    });
+    this.notifyPathIfVisible_(id, 'title');
+    this.notifyPathIfVisible_(id, 'url');
     this.updateShoppingData_();
   }
 

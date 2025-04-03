@@ -34,8 +34,8 @@ export class TestPowerBookmarksDelegate extends TestBrowserProxy {
     this.methodCalled('onBookmarksLoaded');
   }
 
-  onBookmarkChanged(id: string, changedInfo: chrome.bookmarks.ChangeInfo) {
-    this.methodCalled('onBookmarkChanged', id, changedInfo);
+  onBookmarkChanged(id: string) {
+    this.methodCalled('onBookmarkChanged', id);
   }
 
   onBookmarkAdded(

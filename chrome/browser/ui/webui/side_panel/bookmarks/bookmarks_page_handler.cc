@@ -617,6 +617,13 @@ void BookmarksPageHandler::BookmarkNodeMoved(
       GetFolderSidePanelID(*bookmark_merged_surface_, new_parent), new_index);
 }
 
+void BookmarksPageHandler::BookmarkNodeChanged(
+    const bookmarks::BookmarkNode* node) {
+  page_->OnBookmarkNodeChanged(base::ToString(node->id()),
+                               base::UTF16ToUTF8(node->GetTitle()),
+                               node->is_url() ? node->url().spec() : "");
+}
+
 std::string GetFolderSidePanelIDForTesting(
     const BookmarkMergedSurfaceService& bookmark_merged_surface,
     const BookmarkParentFolder& folder) {

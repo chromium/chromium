@@ -396,11 +396,9 @@ suite('General', () => {
 
   test('UpdatesChangedBookmarks', async () => {
     const changedBookmark = FOLDERS[1]!.children![0]!;
-    bookmarksApi.callbackRouter.onChanged.callListeners(changedBookmark.id, {
-      title: 'New title',
-      url: 'http://new/url',
-    });
-    flush();
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeChanged(
+        changedBookmark.id, 'New title', 'http://new/url');
+    await flushTasks();
 
     const bookmark = getBookmarkWithId('3');
     assertTrue(!!bookmark);
@@ -421,20 +419,16 @@ suite('General', () => {
     assertEquals(0, getBookmarks().length);
 
     const changedBookmark = FOLDERS[1]!.children![0]!;
-    bookmarksApi.callbackRouter.onChanged.callListeners(changedBookmark.id, {
-      title: 'abcdef',
-      url: 'http://new/url',
-    });
-    flush();
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeChanged(
+        changedBookmark.id, 'abcdef', 'http://new/url');
+    await flushTasks();
 
     // Bookmark matches search term and should display.
     assertEquals(1, getBookmarks().length);
 
-    bookmarksApi.callbackRouter.onChanged.callListeners(changedBookmark.id, {
-      title: 'New title',
-      url: 'http://new/url',
-    });
-    flush();
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeChanged(
+        changedBookmark.id, 'New title', 'http://new/url');
+    await flushTasks();
 
     // Bookmark no longer matches search term and should not display.
     assertEquals(0, getBookmarks().length);

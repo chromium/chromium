@@ -16,7 +16,6 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
   callbackRouterRemote: BookmarksPageRemote;
 
   callbackRouter: {
-    onChanged: FakeChromeEvent,
     onTabActivated: FakeChromeEvent,
     onTabUpdated: FakeChromeEvent,
   };
@@ -51,7 +50,6 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
     ]);
 
     this.callbackRouter = {
-      onChanged: new FakeChromeEvent(),
       onTabActivated: new FakeChromeEvent(),
       onTabUpdated: new FakeChromeEvent(),
     };

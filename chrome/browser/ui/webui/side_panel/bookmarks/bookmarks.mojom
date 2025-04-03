@@ -154,4 +154,6 @@ interface BookmarksPage {
   // Send the node index of a moved element: old and new Ui indices.
   OnBookmarkNodeMoved(string old_parent_index, uint32 old_node_index,
                       string new_parent_index, uint32 new_node_index);
+  // Send the new information of the bookmark.
+  OnBookmarkNodeChanged(string id, string new_title, string new_url);
 };

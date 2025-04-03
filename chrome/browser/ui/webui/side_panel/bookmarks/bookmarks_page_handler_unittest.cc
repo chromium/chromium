@@ -90,6 +90,9 @@ class MockBookmarksPage : public side_panel::mojom::BookmarksPage {
   MOCK_METHOD(void,
               OnBookmarkNodeMoved,
               (const std::string&, uint32_t, const std::string&, uint32_t));
+  MOCK_METHOD(void,
+              OnBookmarkNodeChanged,
+              (const std::string&, const std::string&, const std::string&));
 
  private:
   mojo::Receiver<side_panel::mojom::BookmarksPage> receiver_{this};

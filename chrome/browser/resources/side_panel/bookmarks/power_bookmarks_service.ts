@@ -31,7 +31,7 @@ export interface PowerBookmarksDelegate {
   setCurrentUrl(url: string|undefined): void;
   setImageUrl(bookmark: chrome.bookmarks.BookmarkTreeNode, url: string): void;
   onBookmarksLoaded(): void;
-  onBookmarkChanged(id: string, changedInfo: chrome.bookmarks.ChangeInfo): void;
+  onBookmarkChanged(id: string): void;
   onBookmarkAdded(
       bookmark: chrome.bookmarks.BookmarkTreeNode,
       parent: chrome.bookmarks.BookmarkTreeNode): void;
@@ -214,11 +214,6 @@ export class PowerBookmarksService {
                                               }) => {
       this.folders_ =
           result.nodes.map((node) => toExtensionsBookmarkTreeNode(node));
-
-      this.addListener_(
-          'onChanged',
-          (id: string, changedInfo: chrome.bookmarks.ChangeInfo) =>
-              this.onChanged_(id, changedInfo));
       this.addListener_('onTabActivated', (_info: chrome.tabs.ActiveInfo) => {
         this.bookmarksApi_.getActiveUrl().then(
             url => this.delegate_.setCurrentUrl(url));
@@ -240,6 +235,9 @@ export class PowerBookmarksService {
               this.onBookmarkParentFolderChildrenReordered_.bind(this));
       this.bookmarksApi_.pageCallbackRouter.onBookmarkNodeMoved.addListener(
           this.onBookmarkNodeMoved_.bind(this));
+      this.bookmarksApi_.pageCallbackRouter.onBookmarkNodeChanged.addListener(
+          this.onBookmarkNodeChanged_.bind(this));
+
 
       this.delegate_.onBookmarksLoaded();
     });
@@ -444,9 +442,12 @@ export class PowerBookmarksService {
     this.listeners_.set(eventName, callback);
   }
 
-  private onChanged_(id: string, changedInfo: chrome.bookmarks.ChangeInfo) {
+  private onBookmarkNodeChanged_(id: string, newTitle: string, newUrl: string) {
     const bookmark = this.findBookmarkWithId(id)!;
-    Object.assign(bookmark, changedInfo);
+    bookmark.title = newTitle;
+    if (bookmark.url && newUrl) {
+      bookmark.url = newUrl;
+    }
     // Deep copy is necessary to ensure that the original bookmark object is
     // not directly mutated. This helps LitElement's change detection recognize
     // the changes since the reference to the object will change.
@@ -458,7 +459,7 @@ export class PowerBookmarksService {
       parent.children![index] = deepCopyBookmark;
     }
     this.findBookmarkImageUrls_(deepCopyBookmark, false, true);
-    this.delegate_.onBookmarkChanged(id, changedInfo);
+    this.delegate_.onBookmarkChanged(id);
   }
 
   private onBookmarkNodeAdded_(addedNode: BookmarksTreeNode): void {

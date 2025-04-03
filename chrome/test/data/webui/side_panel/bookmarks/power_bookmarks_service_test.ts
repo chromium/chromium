@@ -384,12 +384,11 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     assertEquals(sortedBookmarks[2]!.id, '3');
   });
 
-  test('CallsOnBookmarkChanged', () => {
+  test('CallsOnBookmarkChanged', async () => {
     const changedBookmark = folders[0]!.children![0]!;
-    bookmarksApi.callbackRouter.onChanged.callListeners(changedBookmark.id, {
-      title: 'New title',
-      url: 'http://new/url',
-    });
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeChanged(
+        changedBookmark.id, 'New title', 'http://new/url');
+    await flushTasks();
 
     assertEquals(delegate.getCallCount('onBookmarkChanged'), 1);
   });
