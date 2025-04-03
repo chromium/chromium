@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.IBinder;
 import android.view.ContextThemeWrapper;
+import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -111,10 +112,41 @@ public class CompositorViewHolderUnitTest {
     private static final MotionEvent MOTION_ACTION_HOVER_ENTER =
             MotionEvent.obtain(TOUCH_TIME, TOUCH_TIME, MotionEvent.ACTION_HOVER_ENTER, 1, 1, 0);
 
+    private static final MotionEvent MOTION_ACTION_BUTTON_RELEASE_MOUSE;
+
     private static final WindowInsetsCompat VISIBLE_SYSTEM_BARS_WINDOW_INSETS =
             new WindowInsetsCompat.Builder()
                     .setInsets(WindowInsetsCompat.Type.systemBars(), Insets.of(0, 100, 0, 100))
                     .build();
+
+    static {
+        MotionEvent.PointerCoords[] coords = new MotionEvent.PointerCoords[1];
+        coords[0] = new MotionEvent.PointerCoords();
+        coords[0].x = 1f;
+        coords[0].y = 1f;
+
+        MotionEvent.PointerProperties[] properties = new MotionEvent.PointerProperties[1];
+        properties[0] = new MotionEvent.PointerProperties();
+        properties[0].id = 0;
+        properties[0].toolType = MotionEvent.TOOL_TYPE_MOUSE;
+
+        MOTION_ACTION_BUTTON_RELEASE_MOUSE =
+                MotionEvent.obtain(
+                        0,
+                        0,
+                        MotionEvent.ACTION_BUTTON_RELEASE,
+                        1,
+                        properties,
+                        coords,
+                        0,
+                        0,
+                        1f,
+                        1f,
+                        0,
+                        0,
+                        InputDevice.SOURCE_CLASS_POINTER,
+                        0);
+    }
 
     enum EventSource {
         IN_MOTION,
@@ -899,6 +931,20 @@ public class CompositorViewHolderUnitTest {
         verify(mLayoutManager).onHoverEvent(MOTION_ACTION_HOVER_ENTER);
         Assert.assertTrue(
                 "#onHoverEvent should return true if the LayoutManager consumes the event.",
+                consumed);
+    }
+
+    @Test
+    public void testDispatchGenericMotionEvent() {
+        when(mLayoutManager.dispatchGenericMotionEvent(MOTION_ACTION_BUTTON_RELEASE_MOUSE))
+                .thenReturn(true);
+        boolean consumed =
+                mCompositorViewHolder.dispatchGenericMotionEvent(
+                        MOTION_ACTION_BUTTON_RELEASE_MOUSE);
+        verify(mLayoutManager).dispatchGenericMotionEvent(MOTION_ACTION_BUTTON_RELEASE_MOUSE);
+        Assert.assertTrue(
+                "#dispatchGenericMotionEvent should return true if the LayoutManager consumes the"
+                        + " event.",
                 consumed);
     }
 

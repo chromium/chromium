@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.graphics.RectF;
+import android.view.InputDevice;
 import android.view.MotionEvent;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -143,5 +144,62 @@ public class AreaMotionEventFilterUnitTest {
         // Moving outside the filter area will be considered an ACTION_HOVER_EXIT for further
         // handling.
         verify(mHandler).onHoverExit();
+    }
+
+    @Test
+    public void testGenericMotionEvent() {
+        verifyGenericMotionEvent(
+                MotionEvent.ACTION_BUTTON_RELEASE,
+                MotionEvent.TOOL_TYPE_MOUSE,
+                InputDevice.SOURCE_CLASS_POINTER);
+        verifyGenericMotionEvent(
+                MotionEvent.ACTION_BUTTON_PRESS,
+                MotionEvent.TOOL_TYPE_MOUSE,
+                InputDevice.SOURCE_CLASS_POINTER);
+        verifyGenericMotionEvent(
+                MotionEvent.ACTION_SCROLL,
+                MotionEvent.TOOL_TYPE_MOUSE,
+                InputDevice.SOURCE_CLASS_POINTER);
+
+        verifyGenericMotionEvent(
+                MotionEvent.ACTION_BUTTON_RELEASE,
+                MotionEvent.TOOL_TYPE_FINGER,
+                InputDevice.SOURCE_MOUSE);
+        verifyGenericMotionEvent(
+                MotionEvent.ACTION_BUTTON_PRESS,
+                MotionEvent.TOOL_TYPE_FINGER,
+                InputDevice.SOURCE_MOUSE);
+        verifyGenericMotionEvent(
+                MotionEvent.ACTION_SCROLL, MotionEvent.TOOL_TYPE_FINGER, InputDevice.SOURCE_MOUSE);
+    }
+
+    private void verifyGenericMotionEvent(int action, int toolType, int source) {
+        Assert.assertTrue(
+                mEventFilter.onGenericMotionEvent(
+                        createGenericMotionEvent(1f, 1f, action, toolType, source)));
+
+        Assert.assertFalse(
+                mEventFilter.onGenericMotionEvent(
+                        createGenericMotionEvent(
+                                mTriggerRect.width() + 1,
+                                mTriggerRect.height() + 1,
+                                action,
+                                toolType,
+                                source)));
+    }
+
+    private static MotionEvent createGenericMotionEvent(
+            float x, float y, int action, int toolType, int source) {
+        MotionEvent.PointerCoords[] coords = new MotionEvent.PointerCoords[1];
+        coords[0] = new MotionEvent.PointerCoords();
+        coords[0].x = x;
+        coords[0].y = y;
+
+        MotionEvent.PointerProperties[] properties = new MotionEvent.PointerProperties[1];
+        properties[0] = new MotionEvent.PointerProperties();
+        properties[0].id = 0;
+        properties[0].toolType = toolType;
+
+        return MotionEvent.obtain(0, 0, action, 1, properties, coords, 0, 0, x, y, 0, 0, source, 0);
     }
 }

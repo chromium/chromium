@@ -10,6 +10,8 @@ import android.view.MotionEvent;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.ui.util.MotionEventUtils;
+
 /**
  * A {@link AreaMotionEventFilter} intercepts all events that start in a specific Rect on the
  * screen.
@@ -123,6 +125,21 @@ public class AreaMotionEventFilter extends MotionEventFilter {
                 mHasHoverEnterOrMoveEventInArea = false;
                 mHoverExitedArea = true;
                 return super.onInterceptHoverEventInternal(e);
+            }
+        }
+        return false;
+    }
+
+    @Override
+    protected boolean onGenericMotionEventInternal(MotionEvent e) {
+        // Prevent action generating motion events from leaking to underlying layers.
+        if ((MotionEventUtils.isMouseEvent(e) || MotionEventUtils.isTrackpadEvent(e))
+                && isMotionEventInArea(e)) {
+            int action = e.getActionMasked();
+            if (action == MotionEvent.ACTION_BUTTON_PRESS
+                    || action == MotionEvent.ACTION_BUTTON_RELEASE
+                    || action == MotionEvent.ACTION_SCROLL) {
+                return true;
             }
         }
         return false;
