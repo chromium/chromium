@@ -1492,20 +1492,19 @@ void BrowserView::ShowSplitView() {
 
   std::vector<tabs::TabInterface*> split_tabs = split_tab_data->ListTabs();
 
+  for (int i = 0; i < static_cast<int>(split_tabs.size()); i++) {
+    multi_contents_view_->SetWebContentsAtIndex(split_tabs[i]->GetContents(),
+                                                i);
+  }
   const int first_split_tab_index =
       browser_->tab_strip_model()->GetIndexOfTab(split_tabs[0]);
   const int relative_active_position = active_index - first_split_tab_index;
-  multi_contents_view_->SetActivePosition(relative_active_position);
-
-  for (int i = 0; i < static_cast<int>(split_tabs.size()); i++) {
-    multi_contents_view_->SetWebContents(split_tabs[i]->GetContents(),
-                                         i == relative_active_position);
-  }
+  multi_contents_view_->SetActiveIndex(relative_active_position);
 }
 
 void BrowserView::HideSplitView() {
   CHECK(multi_contents_view_);
-  multi_contents_view_->SetWebContents(nullptr, false);
+  multi_contents_view_->CloseSplitView();
 }
 
 void BrowserView::ActivateWebContents(content::WebContents* web_contents) {
