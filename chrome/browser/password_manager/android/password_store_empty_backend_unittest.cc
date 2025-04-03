@@ -7,10 +7,12 @@
 #include <variant>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/password_manager/android/password_store_android_account_backend.h"
+#include "chrome/browser/password_manager/android/password_store_android_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -111,4 +113,12 @@ TEST_F(PasswordStoreEmptyBackendTest,
   EXPECT_TRUE(std::get<PasswordChanges>(result).value().empty());
 }
 
+TEST_F(PasswordStoreEmptyBackendTest,
+       DisableAutoSignInForOriginsRunsCompletion) {
+  PasswordStoreBackend* backend = CreateAndInitBackend();
+  base::test::TestFuture<void> future;
+  backend->DisableAutoSignInForOriginsAsync(base::NullCallback(),
+                                            future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+}
 }  // namespace password_manager
