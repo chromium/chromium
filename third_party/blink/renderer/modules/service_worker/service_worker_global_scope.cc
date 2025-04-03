@@ -1544,40 +1544,15 @@ void ServiceWorkerGlobalScope::StartFetchEvent(
       wait_until_observer);
   FetchEventInit* event_init = FetchEventInit::Create();
   event_init->setCancelable(true);
-  // Note on how clientId / resultingClientID works.
+  // Note on how clientId / resultingClientID are set:
   //
-  // Legacy behavior:
-  // main resource load -> only resultingClientId.
+  // main resource, dedicatedworker script, or sharedworker script load
+  //   -> clientId and resultingClientId.
   // sub resource load -> only clientId.
-  // worker script load -> only clientId. (treated as subresource)
-  // * TODO(crbug.com/1064920): PlzDedicatedWorker makes this as main resource
-  //   load. We should fix this.
-  //
-  // Expected behavior:
-  // main resource load -> clientId and resultingClientId.
-  // sub resource load -> only clientId.
-  // worker script load -> clientId and resultingClientId.
-  //                       (treated as main resource)
-  // * We need to plumb a proper client ID to realize this.
-  if (base::FeatureList::IsEnabled(
-          features::kServiceWorkerClientIdAlignedWithSpec)) {
-    // TODO(crbug.com/1520512): set the meaningful client_id for main resource.
-    event_init->setClientId(params->client_id);
-    event_init->setResultingClientId(params->request->is_main_resource_load
-                                         ? params->resulting_client_id
-                                         : String());
-  } else {
-    bool is_main_resource_load = params->request->is_main_resource_load;
-    if (is_main_resource_load &&
-        params->request->destination ==
-            network::mojom::RequestDestination::kWorker) {
-      is_main_resource_load = false;
-    }
-    event_init->setClientId(is_main_resource_load ? String()
-                                                  : params->client_id);
-    event_init->setResultingClientId(
-        is_main_resource_load ? params->resulting_client_id : String());
-  }
+  event_init->setClientId(params->client_id);
+  event_init->setResultingClientId(params->request->is_main_resource_load
+                                       ? params->resulting_client_id
+                                       : String());
   event_init->setIsReload(params->request->is_reload);
 
   mojom::blink::FetchAPIRequest& fetch_request = *params->request;

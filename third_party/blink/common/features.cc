@@ -2384,13 +2384,6 @@ BASE_FEATURE(kServiceWorkerUpdateDelay,
              "ServiceWorkerUpdateDelay",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If disabled, client_id and resultingClientId behavior keeps the old
-// Chromium behavior.
-// This is workaround for crbug.com/1520512 until the fix gets ready.
-BASE_FEATURE(kServiceWorkerClientIdAlignedWithSpec,
-             "ServiceWorkerClientIdAlignedWithSpec",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, beacons (and friends) have ResourceLoadPriority::kLow,
 // not ResourceLoadPriority::kVeryLow.
 BASE_FEATURE(kSetLowPriorityForBeacon,
