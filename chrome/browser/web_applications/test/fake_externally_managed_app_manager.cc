@@ -25,7 +25,6 @@ void FakeExternallyManagedAppManager::InstallNow(
 void FakeExternallyManagedAppManager::Install(
     ExternalInstallOptions install_options,
     OnceInstallCallback callback) {
-  install_requests_.push_back(install_options);
   if (handle_install_request_callback_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTaskAndReplyWithResult(
         FROM_HERE,
@@ -33,6 +32,7 @@ void FakeExternallyManagedAppManager::Install(
         base::BindOnce(std::move(callback), install_options.install_url));
     return;
   }
+
   ExternallyManagedAppManager::Install(install_options, std::move(callback));
 }
 
@@ -45,11 +45,7 @@ void FakeExternallyManagedAppManager::InstallApps(
     return;
   }
 
-  std::ranges::copy(install_options_list,
-                    std::back_inserter(install_requests_));
-  if (!drop_requests_for_testing_) {
-    ExternallyManagedAppManager::InstallApps(install_options_list, callback);
-  }
+  ExternallyManagedAppManager::InstallApps(install_options_list, callback);
 }
 
 void FakeExternallyManagedAppManager::UninstallApps(

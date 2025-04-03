@@ -85,6 +85,18 @@ struct ExternallyManagedAppManagerInstallResult {
 // re-initiated, and if successful, the placeholder app is removed.
 class ExternallyManagedAppManager {
  public:
+  // Test class to drop requests instead of enqueueing them for installation.
+  // TODO(crbug.com/408163317): Do not use, this is an implementation detail and
+  // will be removed later.
+  class ScopedDropRequestsForTesting {
+   public:
+    ScopedDropRequestsForTesting();
+    ScopedDropRequestsForTesting(const ScopedDropRequestsForTesting&) = delete;
+    ScopedDropRequestsForTesting& operator=(
+        const ScopedDropRequestsForTesting&) = delete;
+    ~ScopedDropRequestsForTesting();
+  };
+
   using InstallResult = ExternallyManagedAppManagerInstallResult;
 
   using OnceInstallCallback =

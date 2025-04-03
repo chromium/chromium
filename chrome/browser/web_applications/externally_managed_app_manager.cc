@@ -44,6 +44,17 @@
 
 namespace web_app {
 
+namespace {
+
+// TODO(crbug.com/408163317): Do not use, this is an implementation detail and
+// will be removed later.
+bool& DropRequestsForTesting() {
+  static bool drop_requests_for_testing_ = false;
+  return drop_requests_for_testing_;
+}
+
+}  // namespace
+
 ExternallyManagedAppManagerInstallResult::
     ExternallyManagedAppManagerInstallResult() = default;
 
@@ -67,6 +78,17 @@ bool ExternallyManagedAppManagerInstallResult::operator==(
     const ExternallyManagedAppManagerInstallResult& other) const {
   return std::tie(code, app_id, did_uninstall_and_replace) ==
          std::tie(other.code, other.app_id, other.did_uninstall_and_replace);
+}
+
+ExternallyManagedAppManager::ScopedDropRequestsForTesting::
+    ScopedDropRequestsForTesting() {
+  CHECK_IS_TEST();
+  DropRequestsForTesting() = true;  // IN-TEST
+}
+
+ExternallyManagedAppManager::ScopedDropRequestsForTesting::
+    ~ScopedDropRequestsForTesting() {
+  DropRequestsForTesting() = false;  // IN-TEST
 }
 
 ExternallyManagedAppManager::SynchronizeRequest::SynchronizeRequest(
@@ -152,6 +174,11 @@ void ExternallyManagedAppManager::Install(
 void ExternallyManagedAppManager::InstallApps(
     std::vector<ExternalInstallOptions> install_options_list,
     const RepeatingInstallCallback& callback) {
+  if (DropRequestsForTesting()) {
+    CHECK_IS_TEST();
+    return;
+  }
+
   for (auto& install_options : install_options_list) {
     pending_installs_metadata_.push_back(
         std::make_unique<ExternalInstallMetadata>(std::move(install_options),
