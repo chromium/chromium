@@ -1719,6 +1719,9 @@ int URLLoader::ProcessAcceptCHFrameOnConnected(
     const net::TransportInfo& info,
     net::URLRequest* url_request,
     net::CompletionOnceCallback callback) {
+  TRACE_EVENT("loading", "URLLoader::ProcessAcceptCHFrameOnConnected",
+              net::NetLogWithSourceToFlow(url_request->net_log()), "url",
+              url_request->url());
   if (!accept_ch_frame_observer_ || info.accept_ch_frame.empty() ||
       !base::FeatureList::IsEnabled(features::kAcceptCHFrame)) {
     return net::OK;
@@ -1738,15 +1741,22 @@ int URLLoader::ProcessAcceptCHFrameOnConnected(
     // `accept_ch_frame_observer_` is owned by `this`, so passing in
     // `callback` is safe.
     auto record = [](net::CompletionOnceCallback callback,
-                     base::TimeTicks call_time, int status) {
+                     base::TimeTicks call_time, uint64_t trace_id, int status) {
       base::UmaHistogramMicrosecondsTimes(
           "Net.URLLoader.AcceptCH.RoundTripTime",
           base::TimeTicks::Now() - call_time);
+      TRACE_EVENT_NESTABLE_ASYNC_END1(
+          "loading", "AcceptCHObserver::OnAcceptCHFrameReceived call",
+          TRACE_ID_LOCAL(trace_id), "status", status);
       std::move(callback).Run(status);
     };
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+        "loading", "AcceptCHObserver::OnAcceptCHFrameReceived call",
+        TRACE_ID_LOCAL(this), "url", url_request->url());
     accept_ch_frame_observer_->OnAcceptCHFrameReceived(
         url::Origin::Create(url_request->url()), hints,
-        base::BindOnce(record, std::move(callback), base::TimeTicks::Now()));
+        base::BindOnce(record, std::move(callback), base::TimeTicks::Now(),
+                       TRACE_ID_LOCAL(this).raw_id()));
     return net::ERR_IO_PENDING;
   }
   return net::OK;
