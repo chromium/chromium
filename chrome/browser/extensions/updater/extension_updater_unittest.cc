@@ -200,6 +200,7 @@ class StubExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   // ExtensionRegistrar::Delegate:
   void PreAddExtension(const Extension* extension,
                        const Extension* old_extension) override {}
+  void OnAddNewOrUpdatedExtension(const Extension* extension) override {}
   void PostActivateExtension(
       scoped_refptr<const Extension> extension) override {}
   void PostDeactivateExtension(

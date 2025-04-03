@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sync/model/string_ordinal.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
@@ -65,6 +66,9 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
     // being replaced, in the case of a reload or upgrade.
     virtual void PreAddExtension(const Extension* extension,
                                  const Extension* old_extension) = 0;
+
+    // Handles extension install tasks before AddExtension.
+    virtual void OnAddNewOrUpdatedExtension(const Extension* extension) = 0;
 
     // Handles updating the browser context when an extension is activated
     // (becomes enabled).
@@ -152,6 +156,18 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   // the enabled, disabled, blocklisted or blocked set. If the extension is
   // added as enabled, it will be activated.
   void AddExtension(scoped_refptr<const Extension> extension);
+
+  // Updates preferences for a new or updated extension; notifies observers that
+  // the extension is installed, e.g., to update event handlers on background
+  // pages; and performs other extension install tasks before calling
+  // AddExtension.
+  // |install_flags| is a bitmask of InstallFlags.
+  void AddNewOrUpdatedExtension(const Extension* extension,
+                                const base::flat_set<int>& disable_reasons,
+                                int install_flags,
+                                const syncer::StringOrdinal& page_ordinal,
+                                const std::string& install_parameter,
+                                base::Value::Dict ruleset_install_prefs);
 
   // Removes |extension| from the extension system by deactivating it if it is
   // enabled and removing references to it from the ExtensionRegistry's

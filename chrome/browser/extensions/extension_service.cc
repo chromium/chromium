@@ -829,9 +829,9 @@ void ExtensionService::AddComponentExtension(const Extension* extension) {
 
     // TODO(crbug.com/40508457): If needed, add support for Declarative Net
     // Request to component extensions and pass the ruleset install prefs here.
-    AddNewOrUpdatedExtension(extension, {}, kInstallFlagNone,
-                             syncer::StringOrdinal(), std::string(),
-                             /*ruleset_install_prefs=*/{});
+    extension_registrar_->AddNewOrUpdatedExtension(
+        extension, {}, kInstallFlagNone, syncer::StringOrdinal(), std::string(),
+        /*ruleset_install_prefs=*/{});
     return;
   }
 
@@ -965,9 +965,9 @@ void ExtensionService::OnExtensionInstalled(
           &delay_reason);
   switch (action) {
     case InstallGate::INSTALL:
-      AddNewOrUpdatedExtension(extension, disable_reasons, install_flags,
-                               page_ordinal, install_parameter,
-                               std::move(ruleset_install_prefs));
+      extension_registrar_->AddNewOrUpdatedExtension(
+          extension, disable_reasons, install_flags, page_ordinal,
+          install_parameter, std::move(ruleset_install_prefs));
       return;
     case InstallGate::DELAY:
       extension_prefs_->SetDelayedInstallInfo(
@@ -1025,25 +1025,6 @@ void ExtensionService::OnExtensionManagementSettingsChanged() {
       kAllowUnpublishedExtensions) {
     CWSInfoService::Get(profile_)->CheckAndMaybeFetchInfo();
   }
-}
-
-void ExtensionService::AddNewOrUpdatedExtension(
-    const Extension* extension,
-    const base::flat_set<int>& disable_reasons,
-    int install_flags,
-    const syncer::StringOrdinal& page_ordinal,
-    const std::string& install_parameter,
-    base::Value::Dict ruleset_install_prefs) {
-  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  extension_prefs_->OnExtensionInstalled(
-      extension, disable_reasons, page_ordinal, install_flags,
-      install_parameter, std::move(ruleset_install_prefs));
-  delayed_install_manager_->Remove(extension->id());
-  if (InstallVerifier::NeedsVerification(*extension, GetBrowserContext())) {
-    InstallVerifier::Get(GetBrowserContext())->VerifyExtension(extension->id());
-  }
-
-  extension_registrar_->FinishInstallation(extension);
 }
 
 bool ExtensionService::FinishDelayedInstallationIfReady(

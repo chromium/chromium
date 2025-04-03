@@ -142,6 +142,9 @@ void ShellExtensionLoader::PreAddExtension(const Extension* extension,
                                        disable_reason::DISABLE_RELOAD);
 }
 
+void ShellExtensionLoader::OnAddNewOrUpdatedExtension(
+    const Extension* extension) {}
+
 void ShellExtensionLoader::PostActivateExtension(
     scoped_refptr<const Extension> extension) {}
 

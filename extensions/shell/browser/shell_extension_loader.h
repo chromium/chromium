@@ -55,6 +55,7 @@ class ShellExtensionLoader : public ExtensionRegistrar::Delegate {
   bool CanAddExtension(const Extension* extension) override;
   void PreAddExtension(const Extension* extension,
                        const Extension* old_extension) override;
+  void OnAddNewOrUpdatedExtension(const Extension* extension) override;
   void PostActivateExtension(scoped_refptr<const Extension> extension) override;
   void PostDeactivateExtension(
       scoped_refptr<const Extension> extension) override;

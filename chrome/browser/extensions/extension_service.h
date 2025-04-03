@@ -440,18 +440,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // Signals *ready_ and sends a notification to the listeners.
   void SetReadyAndNotifyListeners();
 
-  // Update preferences for a new or updated extension; notify observers that
-  // the extension is installed, e.g., to update event handlers on background
-  // pages; and perform other extension install tasks before calling
-  // AddExtension.
-  // |install_flags| is a bitmask of InstallFlags.
-  void AddNewOrUpdatedExtension(const Extension* extension,
-                                const base::flat_set<int>& disable_reasons,
-                                int install_flags,
-                                const syncer::StringOrdinal& page_ordinal,
-                                const std::string& install_parameter,
-                                base::Value::Dict ruleset_install_prefs);
-
   // Manages the blocklisted extensions, intended as callback from
   // Blocklist::GetBlocklistedIDs.
   void ManageBlocklist(const Blocklist::BlocklistStateMap& blocklisted_ids);

@@ -117,6 +117,14 @@ void ChromeExtensionRegistrarDelegate::PreAddExtension(
   CheckPermissionsIncrease(extension, !!old_extension);
 }
 
+void ChromeExtensionRegistrarDelegate::OnAddNewOrUpdatedExtension(
+    const Extension* extension) {
+  delayed_install_manager_->Remove(extension->id());
+  if (InstallVerifier::NeedsVerification(*extension, profile_)) {
+    InstallVerifier::Get(profile_)->VerifyExtension(extension->id());
+  }
+}
+
 void ChromeExtensionRegistrarDelegate::PostActivateExtension(
     scoped_refptr<const Extension> extension) {
   // Update policy permissions in case they were changed while extension was not

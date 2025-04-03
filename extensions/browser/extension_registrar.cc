@@ -207,6 +207,23 @@ void ExtensionRegistrar::AddNewExtension(
   }
 }
 
+void ExtensionRegistrar::AddNewOrUpdatedExtension(
+    const Extension* extension,
+    const base::flat_set<int>& disable_reasons,
+    int install_flags,
+    const syncer::StringOrdinal& page_ordinal,
+    const std::string& install_parameter,
+    base::Value::Dict ruleset_install_prefs) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  extension_prefs_->OnExtensionInstalled(
+      extension, disable_reasons, page_ordinal, install_flags,
+      install_parameter, std::move(ruleset_install_prefs));
+
+  delegate_->OnAddNewOrUpdatedExtension(extension);
+
+  FinishInstallation(extension);
+}
+
 void ExtensionRegistrar::RemoveExtension(const ExtensionId& extension_id,
                                          UnloadedExtensionReason reason) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
