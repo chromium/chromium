@@ -23,7 +23,6 @@
 #include "base/test/test_future.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/affiliations/core/browser/affiliation_backend.h"
-#include "components/affiliations/core/browser/affiliation_fetcher_delegate.h"
 #include "components/affiliations/core/browser/affiliation_fetcher_interface.h"
 #include "components/affiliations/core/browser/fake_affiliation_api.h"
 #include "components/affiliations/core/browser/mock_affiliation_consumer.h"
@@ -239,7 +238,7 @@ TEST_F(AffiliationServiceImplTest,
       Facet(FacetURI::FromPotentiallyInvalidSpec(kM1ExampleURL)),
       Facet(FacetURI::FromPotentiallyInvalidSpec(kOneExampleURL),
             FacetBrandingInfo(), GURL(kOneExampleChangePasswordURL))};
-  AffiliationFetcherDelegate::Result test_result;
+  AffiliationFetcherInterface::ParsedFetchResponse test_result;
   test_result.groupings.push_back(group);
   std::move(fetch_result_callback).Run(GetSuccessfulFetchResult(test_result));
   base::test::RunUntil([&]() { return completion_callback.IsReady(); });
@@ -271,7 +270,7 @@ TEST_F(AffiliationServiceImplTest,
   group.facets = {Facet(FacetURI::FromPotentiallyInvalidSpec(k1ExampleURL),
                         FacetBrandingInfo(), GURL(k1ExampleChangePasswordURL)),
                   Facet(FacetURI::FromPotentiallyInvalidSpec(kM1ExampleURL))};
-  AffiliationFetcherDelegate::Result test_result;
+  AffiliationFetcherInterface::ParsedFetchResponse test_result;
   test_result.groupings.push_back(group);
   std::move(fetch_result_callback).Run(GetSuccessfulFetchResult(test_result));
   base::test::RunUntil([&]() { return completion_callback.IsReady(); });
@@ -301,7 +300,7 @@ TEST_F(AffiliationServiceImplTest,
   group.facets = {Facet(FacetURI::FromPotentiallyInvalidSpec(k1ExampleURL)),
                   Facet(FacetURI::FromPotentiallyInvalidSpec(kM1ExampleURL)),
                   Facet(FacetURI::FromPotentiallyInvalidSpec(kOneExampleURL))};
-  AffiliationFetcherDelegate::Result test_result;
+  AffiliationFetcherInterface::ParsedFetchResponse test_result;
   test_result.groupings.push_back(group);
   std::move(fetch_result_callback).Run(GetSuccessfulFetchResult(test_result));
 
@@ -440,7 +439,7 @@ TEST_F(AffiliationServiceImplTest, FoundForRequestedFacetMetric) {
             FacetBrandingInfo(), GURL(k1ExampleChangePasswordURL)),
       Facet(FacetURI::FromPotentiallyInvalidSpec(kOneExampleURL),
             FacetBrandingInfo(), GURL(kOneExampleChangePasswordURL))};
-  AffiliationFetcherDelegate::Result test_result;
+  AffiliationFetcherInterface::ParsedFetchResponse test_result;
   test_result.groupings.push_back(group);
 
   std::move(fetch_result_callback).Run(GetSuccessfulFetchResult(test_result));
@@ -473,7 +472,7 @@ TEST_F(AffiliationServiceImplTest, FoundForGroupedFacetMetric) {
   group.facets = {Facet(FacetURI::FromPotentiallyInvalidSpec(k1ExampleURL),
                         FacetBrandingInfo(), GURL(k1ExampleChangePasswordURL)),
                   Facet(FacetURI::FromPotentiallyInvalidSpec(kM1ExampleURL))};
-  AffiliationFetcherDelegate::Result test_result;
+  AffiliationFetcherInterface::ParsedFetchResponse test_result;
   test_result.groupings.push_back(group);
 
   std::move(fetch_result_callback).Run(GetSuccessfulFetchResult(test_result));
@@ -508,7 +507,7 @@ TEST_F(AffiliationServiceImplTest, FoundForMainDomainMetric) {
   main_domain_group.facets = {
       Facet(FacetURI::FromPotentiallyInvalidSpec("https://example.com"),
             FacetBrandingInfo(), GURL(k1ExampleChangePasswordURL))};
-  AffiliationFetcherDelegate::Result test_result;
+  AffiliationFetcherInterface::ParsedFetchResponse test_result;
   test_result.groupings.push_back(group);
   test_result.groupings.push_back(main_domain_group);
 
@@ -577,7 +576,7 @@ TEST_F(AffiliationServiceImplTest, SupportForMultipleRequests) {
   group1.facets = {Facet(FacetURI::FromPotentiallyInvalidSpec(k1ExampleURL),
                          FacetBrandingInfo(),
                          GURL(k1ExampleChangePasswordURL))};
-  AffiliationFetcherDelegate::Result test_result1;
+  AffiliationFetcherInterface::ParsedFetchResponse test_result1;
   test_result1.groupings.push_back(group1);
   std::move(fetch_result_callback).Run(GetSuccessfulFetchResult(test_result1));
   base::test::RunUntil([&]() { return completion_callback_1.IsReady(); });
@@ -588,7 +587,7 @@ TEST_F(AffiliationServiceImplTest, SupportForMultipleRequests) {
   group2.facets = {Facet(FacetURI::FromPotentiallyInvalidSpec(k2ExampleURL),
                          FacetBrandingInfo(),
                          GURL(k2ExampleChangePasswordURL))};
-  AffiliationFetcherDelegate::Result test_result2;
+  AffiliationFetcherInterface::ParsedFetchResponse test_result2;
   test_result2.groupings.push_back(group2);
   std::move(new_fetch_result_callback)
       .Run(GetSuccessfulFetchResult(test_result2));
@@ -731,7 +730,7 @@ TEST_F(AffiliationServiceImplTest, PrefetchChangePasswordURLForAndroidApp) {
             FacetBrandingInfo(), GURL(k1ExampleChangePasswordURL)),
       Facet(FacetURI::FromPotentiallyInvalidSpec(kOneExampleURL),
             FacetBrandingInfo(), GURL(kOneExampleChangePasswordURL))};
-  AffiliationFetcherDelegate::Result test_result;
+  AffiliationFetcherInterface::ParsedFetchResponse test_result;
   test_result.groupings.push_back(group);
 
   std::move(fetch_result_callback).Run(GetSuccessfulFetchResult(test_result));
@@ -762,7 +761,7 @@ TEST_F(AffiliationServiceImplTest, PrefetchChangePasswordURLForUrlWithPath) {
             FacetBrandingInfo(), GURL(k1ExampleChangePasswordURL)),
       Facet(FacetURI::FromPotentiallyInvalidSpec(kOneExampleURL),
             FacetBrandingInfo(), GURL(k1ExampleChangePasswordURL))};
-  AffiliationFetcherDelegate::Result test_result;
+  AffiliationFetcherInterface::ParsedFetchResponse test_result;
   test_result.groupings.push_back(group);
 
   std::move(fetch_result_callback).Run(GetSuccessfulFetchResult(test_result));

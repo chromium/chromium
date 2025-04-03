@@ -148,7 +148,8 @@ class AffiliationServiceImpl : public AffiliationService,
   // AffiliationFetcherDelegate:
   void OnFetchSucceeded(
       AffiliationFetcherInterface* fetcher,
-      std::unique_ptr<AffiliationFetcherDelegate::Result> result) override;
+      std::unique_ptr<AffiliationFetcherInterface::ParsedFetchResponse> result)
+      override;
   void OnFetchFailed(AffiliationFetcherInterface* fetcher) override;
   void OnMalformedResponse(AffiliationFetcherInterface* fetcher) override;
   void OnFetchFinished(const FetchInfo& fetch_info,

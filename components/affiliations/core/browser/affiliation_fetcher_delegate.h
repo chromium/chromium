@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "components/affiliations/core/browser/affiliation_fetcher_interface.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 
 namespace affiliations {
@@ -17,20 +18,7 @@ class AffiliationFetcherInterface;
 // the fetch. It is safe to destroy the fetcher in any of the event handlers.
 class AffiliationFetcherDelegate {
  public:
-  // Encapsulates the response to an affiliations request.
-  struct Result {
-    Result();
-    Result(const Result& other);
-    Result(Result&& other);
-    Result& operator=(const Result& other);
-    Result& operator=(Result&& other);
-    ~Result();
-    bool operator==(const Result& other) const = default;
-
-    std::vector<AffiliatedFacets> affiliations;
-    std::vector<GroupedFacets> groupings;
-    std::vector<std::string> psl_extensions;
-  };
+  using Result = AffiliationFetcherInterface::ParsedFetchResponse;
 
   // Called when affiliation information has been successfully retrieved. The
   // |result| will contain at most as many equivalence class as facet URIs in

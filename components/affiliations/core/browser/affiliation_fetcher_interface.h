@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "components/affiliations/core/browser/affiliation_fetcher_delegate.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "net/http/http_status_code.h"
 
@@ -16,7 +15,22 @@ namespace affiliations {
 
 class AffiliationFetcherInterface {
  public:
-  using ParsedFetchResponse = AffiliationFetcherDelegate::Result;
+  // Encapsulates the response to an affiliations request.
+  struct ParsedFetchResponse {
+    ParsedFetchResponse();
+    ParsedFetchResponse(const ParsedFetchResponse& other);
+    ParsedFetchResponse(ParsedFetchResponse&& other);
+    ParsedFetchResponse& operator=(const ParsedFetchResponse& other);
+    ParsedFetchResponse& operator=(ParsedFetchResponse&& other);
+    ~ParsedFetchResponse();
+    bool operator==(const ParsedFetchResponse& other) const = default;
+
+    std::vector<AffiliatedFacets> affiliations;
+    std::vector<GroupedFacets> groupings;
+    std::vector<std::string> psl_extensions;
+  };
+
+  // Encapsulates the result of a fetch over network.
   struct FetchResult {
     FetchResult();
     FetchResult(const FetchResult& other);

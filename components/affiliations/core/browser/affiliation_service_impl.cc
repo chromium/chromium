@@ -139,7 +139,7 @@ struct AffiliationServiceImpl::FetchInfo {
   }
 
   ChangePasswordUrlMatch GetChangePasswordURL(
-      const AffiliationFetcherDelegate::Result& result) const {
+      const AffiliationFetcherInterface::ParsedFetchResponse& result) const {
     std::map<FacetURI, AffiliationServiceImpl::ChangePasswordUrlMatch>
         uri_to_url = CreateFacetUriToChangePasswordUrlMap(result.groupings);
 
@@ -240,7 +240,7 @@ GURL AffiliationServiceImpl::GetChangePasswordURL(const GURL& url) const {
 
 void AffiliationServiceImpl::OnFetchSucceeded(
     AffiliationFetcherInterface* fetcher,
-    std::unique_ptr<AffiliationFetcherDelegate::Result> result) {}
+    std::unique_ptr<AffiliationFetcherInterface::ParsedFetchResponse> result) {}
 
 void AffiliationServiceImpl::OnFetchFailed(
     AffiliationFetcherInterface* fetcher) {}

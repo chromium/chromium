@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/affiliations/core/browser/affiliation_fetcher_delegate.h"
 #include "components/affiliations/core/browser/affiliation_fetcher_interface.h"
 
 namespace net {
@@ -67,8 +68,9 @@ class HashAffiliationFetcher : public AffiliationFetcherInterface {
   // member of exactly one returned equivalence class.
   // Returns false if the response was gravely ill-formed or self-inconsistent.
   // Unknown kinds of facet URIs and new protocol buffer fields will be ignored.
-  bool ParseResponse(const std::string& serialized_response,
-                     AffiliationFetcherDelegate::Result* result) const;
+  bool ParseResponse(
+      const std::string& serialized_response,
+      AffiliationFetcherInterface::ParsedFetchResponse* result) const;
 
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
 

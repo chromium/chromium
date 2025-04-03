@@ -29,7 +29,6 @@ source_set("affiliations") {
     "affiliation_fetch_throttler.cc",
     "affiliation_fetch_throttler.h",
     "affiliation_fetch_throttler_delegate.h",
-    "affiliation_fetcher_delegate.cc",
     "affiliation_fetcher_delegate.h",
     "affiliation_fetcher_factory.h",
     "affiliation_fetcher_factory_impl.cc",
