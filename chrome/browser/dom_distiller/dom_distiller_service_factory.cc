@@ -9,7 +9,6 @@
 
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 
-#include <string_view>
 #include <utility>
 
 #include "base/task/sequenced_task_runner.h"
@@ -91,7 +90,8 @@ DomDistillerServiceFactory::BuildServiceInstanceForBrowserContext(
 
   dom_distiller::proto::DomDistillerOptions options;
   if (VLOG_IS_ON(1)) {
-    options.set_debug_level(logging::GetVlogLevelHelper(FROM_HERE.file_name()));
+    options.set_debug_level(logging::GetVlogLevelHelper(
+        FROM_HERE.file_name(), ::strlen(FROM_HERE.file_name())));
   }
   // Options for pagination algorithm:
   // - "next": detect anchors with "next" text

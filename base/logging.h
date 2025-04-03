@@ -310,7 +310,8 @@ BASE_EXPORT bool ShouldCreateLogMessage(int severity);
 // Gets the VLOG default verbosity level.
 BASE_EXPORT int GetVlogVerbosity();
 
-BASE_EXPORT int GetVlogLevelHelper(std::string_view file);
+// Note that |N| is the size *with* the null terminator.
+BASE_EXPORT int GetVlogLevelHelper(const char* file_start, size_t N);
 
 // Gets the current vlog level for the given file (usually taken from __FILE__).
 template <size_t N>
@@ -322,7 +323,7 @@ int GetVlogLevel(const char (&file)[N]) {
 #if defined(OFFICIAL_BUILD) && !DCHECK_IS_ON() && BUILDFLAG(IS_ANDROID)
   return -1;
 #else
-  return GetVlogLevelHelper(std::string_view(file, N - 1));
+  return GetVlogLevelHelper(file, N);
 #endif  // defined(OFFICIAL_BUILD) && !DCHECK_IS_ON() && BUILDFLAG(IS_ANDROID)
 }
 
@@ -357,7 +358,7 @@ BASE_EXPORT void RegisterAbslAbortHook();
 // however clients can use this function to override with their own handling
 // (e.g. a silent one for Unit Tests)
 using LogAssertHandlerFunction =
-    base::RepeatingCallback<void(std::string_view file,
+    base::RepeatingCallback<void(const char* file,
                                  int line,
                                  std::string_view message,
                                  std::string_view stack_trace)>;
@@ -375,7 +376,7 @@ class BASE_EXPORT ScopedLogAssertHandler {
 // Returns true to signal that it handled the message and the message
 // should not be sent to other log destinations.
 typedef bool (*LogMessageHandlerFunction)(int severity,
-                                          std::string_view file,
+                                          const char* file,
                                           int line,
                                           size_t message_start,
                                           const std::string& str);
@@ -603,21 +604,17 @@ constexpr LogSeverity LOGGING_DCHECK = LOGGING_FATAL;
 // above.
 class BASE_EXPORT LogMessage {
  public:
-  // file must be a static string, such as one obtained from the __FILE__ macro.
-  LogMessage(std::string_view file LIFETIME_BOUND,
-             int line,
-             LogSeverity severity);
-
   LogMessage(const char* file, int line, LogSeverity severity);
 
   LogMessage(const LogMessage&) = delete;
+  LogMessage& operator=(const LogMessage&) = delete;
   virtual ~LogMessage();
 
   std::ostream& stream() { return stream_; }
 
   LogSeverity severity() const { return severity_; }
   std::string str() const { return stream_.str(); }
-  std::string_view file() const { return file_; }
+  const char* file() const { return file_; }
   int line() const { return line_; }
 
   // Gets file:line: message in a format suitable for crash reporting.
@@ -627,7 +624,7 @@ class BASE_EXPORT LogMessage {
   void Flush();
 
  private:
-  void Init(std::string_view file, int line);
+  void Init(const char* file, int line);
 
   void HandleFatal(size_t stack_start, const std::string& str_newline) const;
 
@@ -636,7 +633,7 @@ class BASE_EXPORT LogMessage {
   size_t message_start_;  // Offset of the start of the message (past prefix
                           // info).
   // The file and line information passed in to the constructor.
-  const std::string_view file_;
+  const char* const file_;
   const int line_;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -684,7 +681,7 @@ BASE_EXPORT std::string SystemErrorCodeToString(SystemErrorCode error_code);
 // Appends a formatted system message of the GetLastError() type.
 class BASE_EXPORT Win32ErrorLogMessage : public LogMessage {
  public:
-  Win32ErrorLogMessage(std::string_view file LIFETIME_BOUND,
+  Win32ErrorLogMessage(const char* file,
                        int line,
                        LogSeverity severity,
                        SystemErrorCode err);
@@ -711,7 +708,7 @@ class BASE_EXPORT Win32ErrorLogMessageFatal final
 // Appends a formatted system message of the errno type
 class BASE_EXPORT ErrnoLogMessage : public LogMessage {
  public:
-  ErrnoLogMessage(std::string_view file LIFETIME_BOUND,
+  ErrnoLogMessage(const char* file,
                   int line,
                   LogSeverity severity,
                   SystemErrorCode err);
