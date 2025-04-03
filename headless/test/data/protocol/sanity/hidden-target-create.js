@@ -21,6 +21,9 @@
   testRunner.browserP().Target.onDetachedFromTarget((event) => {
     testRunnerLog(event, 'DetachedFromTarget');
   });
+  testRunner.browserP().Target.onTargetDestroyed((event) => {
+    testRunnerLog(event, 'TargetDestroyed');
+  });
   /**
    * Filter out the targets that are already present in the existing targets set
    * keeping only the new targets. If the result is an error, return the error.
@@ -68,7 +71,9 @@
       `Filtered targets via browser session: `);
 
   testRunnerLog('Disconnect the parent session');
-  await newBrowserSession.disconnect();
+  newBrowserSession.disconnect();
+
+  await testRunner.browserP().Target.onceTargetDestroyed();
 
   // Verify the hidden target's session is closed.
   testRunnerLog(

@@ -34,11 +34,6 @@ Response TargetHandler::Disable() {
     auto agent_host = content::DevToolsAgentHost::GetForId(target_id);
     if (agent_host) {
       // The target is still alive, so destroy it.
-      DCHECK(agent_host->GetWebContents());
-
-      HeadlessWebContentsImpl* web_contents =
-          HeadlessWebContentsImpl::From(agent_host->GetWebContents());
-      web_contents->Close();
       agent_host->Close();
     }
     hidden_web_contents_.erase(hidden_web_contents_.begin());

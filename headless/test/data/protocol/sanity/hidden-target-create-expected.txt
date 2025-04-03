@@ -35,6 +35,12 @@ DetachedFromTarget{
         targetId : <string 0>
     }
 }
+TargetDestroyed{
+    method : Target.targetDestroyed
+    params : {
+        targetId : <string 0>
+    }
+}
 Expected error response: {
     code : -32001
     message : Session with given id not found.
