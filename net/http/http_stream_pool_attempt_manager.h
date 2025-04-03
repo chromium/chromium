@@ -509,6 +509,8 @@ class HttpStreamPool::AttemptManager
 
   const NetLogWithSource net_log_;
 
+  const base::TimeTicks created_time_;
+
   // Keeps the initial attempt state. Set when `this` starts a job or
   // preconnect.
   std::optional<InitialAttemptState> initial_attempt_state_;

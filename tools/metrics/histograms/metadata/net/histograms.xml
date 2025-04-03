@@ -2761,6 +2761,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpStreamPool.AttemptManagerAliveTime" units="ms"
+    expires_after="2025-07-13">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Time from when an HttpStreamPool::AttemptManager is created to when the
+    AttemptManager is destroyed. Recorded when an AttemptManager is destroyed.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpStreamPool.Existing{Protocol}SessionFoundTime"
     units="ms" expires_after="2025-07-13">
   <owner>bashi@chromium.org</owner>

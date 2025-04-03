@@ -351,6 +351,7 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
       net_log_(NetLogWithSource::Make(
           net_log,
           NetLogSourceType::HTTP_STREAM_POOL_ATTEMPT_MANAGER)),
+      created_time_(base::TimeTicks::Now()),
       jobs_(NUM_PRIORITIES),
       stream_attempt_delay_(GetStreamAttemptDelay()),
       should_block_stream_attempt_(!stream_attempt_delay_.is_zero()) {
@@ -374,6 +375,8 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
 }
 
 HttpStreamPool::AttemptManager::~AttemptManager() {
+  base::UmaHistogramTimes("Net.HttpStreamPool.AttemptManagerAliveTime",
+                          base::TimeTicks::Now() - created_time_);
   net_log().EndEvent(NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_ALIVE);
   group_->net_log().AddEventReferencingSource(
       NetLogEventType::HTTP_STREAM_POOL_GROUP_ATTEMPT_MANAGER_DESTROYED,
