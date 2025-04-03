@@ -131,7 +131,7 @@ Refer to README.md for content description and update process.
  <item id="omaha_client_android_uc" added_in_milestone="99" content_hash_code="0757ca45" os_list="android" file_path="chrome/android/java/src/org/chromium/chrome/browser/omaha/OmahaBase.java" />
  <item id="omnibox_documentsuggest" added_in_milestone="69" content_hash_code="07917541" os_list="linux,windows,chromeos,android" file_path="components/omnibox/browser/document_suggestions_service.cc" />
  <item id="omnibox_navigation_observer" added_in_milestone="62" content_hash_code="043a7a2f" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.cc" />
- <item id="omnibox_result_change" added_in_milestone="62" content_hash_code="017a7557" os_list="linux,windows,chromeos,android" file_path="chrome/browser/bitmap_fetcher/bitmap_fetcher_service.cc" />
+ <item id="omnibox_result_change" added_in_milestone="62" content_hash_code="00bbc4fe" os_list="linux,windows,chromeos,android" file_path="chrome/browser/bitmap_fetcher/bitmap_fetcher_service.cc" />
  <item id="omnibox_suggest" added_in_milestone="62" content_hash_code="0524cc7e" os_list="linux,windows,chromeos,android" file_path="components/omnibox/browser/remote_suggestions_service.cc" />
  <item id="omnibox_suggest_deletion" added_in_milestone="62" content_hash_code="017d302e" os_list="linux,windows,chromeos,android" file_path="components/omnibox/browser/remote_suggestions_service.cc" />
  <item id="omnibox_zerosuggest" added_in_milestone="62" content_hash_code="071e32e9" os_list="linux,windows,chromeos,android" file_path="components/omnibox/browser/remote_suggestions_service.cc" />

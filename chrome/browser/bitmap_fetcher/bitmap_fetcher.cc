@@ -10,6 +10,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/data_url.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/url_constants.h"
@@ -35,7 +36,8 @@ BitmapFetcher::~BitmapFetcher() = default;
 void BitmapFetcher::Init(net::ReferrerPolicy referrer_policy,
                          network::mojom::CredentialsMode credentials_mode,
                          const net::HttpRequestHeaders& additional_headers,
-                         const url::Origin& initiator) {
+                         const url::Origin& initiator,
+                         bool is_same_site_request) {
   if (simple_loader_ != nullptr)
     return;
 
@@ -43,6 +45,10 @@ void BitmapFetcher::Init(net::ReferrerPolicy referrer_policy,
   resource_request->url = url_;
   resource_request->referrer_policy = referrer_policy;
   resource_request->credentials_mode = credentials_mode;
+  if (is_same_site_request) {
+    resource_request->site_for_cookies =
+        net::SiteForCookies::FromUrl(resource_request->url);
+  }
   resource_request->headers.MergeFrom(additional_headers);
   resource_request->request_initiator = initiator;
   simple_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
