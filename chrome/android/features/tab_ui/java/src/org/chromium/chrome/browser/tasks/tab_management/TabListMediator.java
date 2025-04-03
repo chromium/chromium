@@ -1950,55 +1950,73 @@ class TabListMediator implements TabListNotificationHandler {
         int numOfRelatedTabs = getRelatedTabsForId(tab.getId()).size();
         TextResolver contentDescriptionResolver =
                 (context) -> {
-                    String contentDescriptionString;
-                    if (isInTabGroup) {
-                        String title = getLatestTitleForTab(tab, /* useDefault= */ false);
-                        Resources res = context.getResources();
-                        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-                        @TabGroupColorId
-                        int colorId = filter.getTabGroupColorWithFallback(tab.getRootId());
-                        final @StringRes int colorDescRes =
-                                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
-                                        colorId);
-                        String colorDesc = res.getString(colorDescRes);
-                        if (TabUiUtils.isDataSharingFunctionalityEnabled()
-                                && hasCollaboration(tab)) {
-                            contentDescriptionString =
-                                    title.isEmpty()
-                                            ? res.getQuantityString(
-                                                    R.plurals
-                                                            .accessibility_expand_shared_tab_group_with_color,
-                                                    numOfRelatedTabs,
-                                                    numOfRelatedTabs,
-                                                    colorDesc)
-                                            : res.getQuantityString(
-                                                    R.plurals
-                                                            .accessibility_expand_shared_tab_group_with_group_name_with_color,
-                                                    numOfRelatedTabs,
-                                                    title,
-                                                    numOfRelatedTabs,
-                                                    colorDesc);
+                    if (!isInTabGroup) return null;
+                    String title = getLatestTitleForTab(tab, /* useDefault= */ false);
+                    Resources res = context.getResources();
+                    TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
+                    @TabGroupColorId
+                    int colorId = filter.getTabGroupColorWithFallback(tab.getRootId());
+                    final @StringRes int colorDescRes =
+                            ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                                    colorId);
+                    String colorDesc = res.getString(colorDescRes);
+                    if (TabUiUtils.isDataSharingFunctionalityEnabled() && hasCollaboration(tab)) {
+                        TabCardLabelData tabCardLabelData =
+                                model.get(TabProperties.TAB_CARD_LABEL_DATA);
+                        CharSequence tabCardLabelDesc = "";
+                        if (tabCardLabelData != null) {
+                            tabCardLabelDesc =
+                                    tabCardLabelData.resolveContentDescriptionWithTextFallback(
+                                            context);
+                        }
+                        if (TextUtils.isEmpty(tabCardLabelDesc)) {
+                            return TextUtils.isEmpty(title)
+                                    ? res.getQuantityString(
+                                            R.plurals
+                                                    .accessibility_expand_shared_tab_group_with_color,
+                                            numOfRelatedTabs,
+                                            numOfRelatedTabs,
+                                            colorDesc)
+                                    : res.getQuantityString(
+                                            R.plurals
+                                                    .accessibility_expand_shared_tab_group_with_group_name_with_color,
+                                            numOfRelatedTabs,
+                                            title,
+                                            numOfRelatedTabs,
+                                            colorDesc);
                         } else {
-                            contentDescriptionString =
-                                    title.isEmpty()
-                                            ? res.getQuantityString(
-                                                    R.plurals
-                                                            .accessibility_expand_tab_group_with_color,
-                                                    numOfRelatedTabs,
-                                                    numOfRelatedTabs,
-                                                    colorDesc)
-                                            : res.getQuantityString(
-                                                    R.plurals
-                                                            .accessibility_expand_tab_group_with_group_name_with_color,
-                                                    numOfRelatedTabs,
-                                                    title,
-                                                    numOfRelatedTabs,
-                                                    colorDesc);
+                            return TextUtils.isEmpty(title)
+                                    ? res.getQuantityString(
+                                            R.plurals
+                                                    .accessibility_expand_shared_tab_group_with_color_with_card_label,
+                                            numOfRelatedTabs,
+                                            numOfRelatedTabs,
+                                            colorDesc,
+                                            tabCardLabelDesc)
+                                    : res.getQuantityString(
+                                            R.plurals
+                                                    .accessibility_expand_shared_tab_group_with_group_name_with_color_with_card_label,
+                                            numOfRelatedTabs,
+                                            title,
+                                            numOfRelatedTabs,
+                                            colorDesc,
+                                            tabCardLabelDesc);
                         }
                     } else {
-                        contentDescriptionString = null;
+                        return TextUtils.isEmpty(title)
+                                ? res.getQuantityString(
+                                        R.plurals.accessibility_expand_tab_group_with_color,
+                                        numOfRelatedTabs,
+                                        numOfRelatedTabs,
+                                        colorDesc)
+                                : res.getQuantityString(
+                                        R.plurals
+                                                .accessibility_expand_tab_group_with_group_name_with_color,
+                                        numOfRelatedTabs,
+                                        title,
+                                        numOfRelatedTabs,
+                                        colorDesc);
                     }
-                    return contentDescriptionString;
                 };
         model.set(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER, contentDescriptionResolver);
     }
@@ -2494,6 +2512,9 @@ class TabListMediator implements TabListNotificationHandler {
             int tabId = model.get(TabProperties.TAB_ID);
             if (tabIdsToBeUpdated.contains(tabId)) {
                 updateCallback.onResult(model);
+                updateDescriptionString(
+                        mCurrentTabGroupModelFilterSupplier.get().getTabModel().getTabById(tabId),
+                        model);
             }
         }
     }

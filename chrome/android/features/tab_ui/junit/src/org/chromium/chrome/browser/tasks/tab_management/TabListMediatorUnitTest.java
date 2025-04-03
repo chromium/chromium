@@ -4579,6 +4579,65 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testShareUpdateTabCardLabelsContentDescription() {
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(mProfile)).thenReturn(true);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
+        // Setup a tab group with {tab2, tab3}.
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab2, tab3));
+        createTabGroup(group1, TAB2_ID, TAB_GROUP_ID);
+        setupSyncedGroup(/* isShared= */ true);
+
+        TabCardLabelData tabCardLabelData =
+                new TabCardLabelData(
+                        TabCardLabelType.ACTIVITY_UPDATE,
+                        (context) -> "Test label",
+                        /* asyncImageFactory= */ null,
+                        (context) -> "Alice changed");
+
+        Map<Integer, TabCardLabelData> dataMap = new HashMap<>();
+        dataMap.put(TAB2_ID, tabCardLabelData);
+
+        mMediator.updateTabCardLabels(dataMap);
+
+        String targetString1 =
+                "Expand shared tab group with 2 tabs, color Grey, with label Alice changed.";
+        assertEquals(
+                targetString1,
+                mModelList
+                        .get(POSITION2)
+                        .model
+                        .get(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER)
+                        .resolve(mContext));
+
+        mTabGroupModelFilter.setTabGroupTitle(TAB2_ID, CUSTOMIZED_DIALOG_TITLE1);
+        String targetString2 =
+                "Expand shared Cool Tabs tab group with 2 tabs, color Grey, with label Alice"
+                        + " changed.";
+        assertEquals(
+                targetString2,
+                mModelList
+                        .get(POSITION2)
+                        .model
+                        .get(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER)
+                        .resolve(mContext));
+
+        dataMap.replace(TAB2_ID, null);
+        mMediator.updateTabCardLabels(dataMap);
+        String targetString3 = "Expand shared Cool Tabs tab group with 2 tabs, color Grey.";
+        assertEquals(
+                targetString3,
+                mModelList
+                        .get(POSITION2)
+                        .model
+                        .get(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER)
+                        .resolve(mContext));
+    }
+
+    @Test
     public void testObserversRemovedAfterHiding() {
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
 
