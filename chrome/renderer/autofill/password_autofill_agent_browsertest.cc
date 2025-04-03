@@ -4837,6 +4837,42 @@ TEST_F(PasswordAutofillAgentTest, ModifySearchField) {
   SimulateUserInputChangeForElement(username_element_, kAliceUsername);
 }
 
+// Tests that filling presaved password manually by the user results in
+// notifying the browser about explicit user field edit.
+TEST_F(PasswordAutofillAgentTest, ModifyFieldsByManualFillingNotifiesBrowser) {
+  // Propagate fill data for filling on manual fallback.
+  fill_data_.wait_for_username = true;
+  SimulateOnFillPasswordForm(fill_data_);
+
+  SimulateElementClick(username_element_);
+  EXPECT_CALL(fake_driver_,
+              UserModifiedNonPasswordField(
+                  form_util::GetFieldRendererId(username_element_),
+                  std::u16string(kAliceUsername16),
+                  /*autocomplete_attribute_has_username=*/false,
+                  /*is_likely_otp=*/false));
+  EXPECT_CALL(fake_driver_, UserModifiedPasswordField);
+  // Trigger manual filling and check filled values.
+  password_autofill_agent_->FillPasswordSuggestion(
+      kAliceUsername16, kAlicePassword16, base::DoNothing());
+}
+
+// Tests that filling on pageload does not notify the browser about explicit
+// user field edits.
+TEST_F(PasswordAutofillAgentTest,
+       ModifyFieldsByFillingOnPageloadDoesNotNotifyBrowser) {
+  // Propagate fill data should trigger filling on pageload.
+  EXPECT_CALL(fake_driver_, UserModifiedNonPasswordField).Times(0);
+  EXPECT_CALL(fake_driver_, UserModifiedPasswordField).Times(0);
+  SimulateOnFillPasswordForm(fill_data_);
+  // Simulate a click on the page to not only preview, but actually fill fields.
+  SimulateElementClick(username_element_);
+
+  // Make sure that fields were filled on the pageload.
+  CheckTextFieldsDOMState(kAliceUsername, /*username_autofilled=*/true,
+                          kAlicePassword, /*password_autofilled=*/true);
+}
+
 // Tests that user inputs are propagated to the browser properly when a Shadow
 // DOM tree starts between the <form> and <input> tags.
 TEST_F(PasswordAutofillAgentTest,

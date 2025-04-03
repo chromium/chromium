@@ -336,6 +336,14 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
     const raw_ref<PasswordAutofillAgent> agent_;
   };
 
+  // Various ways of how user can modify the field value.
+  enum class FieldModificationType {
+    // The field was typed in.
+    kManualTyping = 0,
+    // The field was filled by Chrome on explicit user trigger.
+    kFillingOnUserTrigger = 1,
+  };
+
   struct PasswordInfo {
     FieldRef password_field;
     PasswordFormFillData fill_data;
@@ -599,8 +607,9 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
       const blink::WebFormElement& cleared_form);
 
   // Notifies the PasswordManager about a field modification.
-  void NotifyPasswordManagerAboutFieldModification(
-      const blink::WebInputElement& element);
+  void NotifyPasswordManagerAboutUserFieldModification(
+      const blink::WebInputElement& element,
+      FieldModificationType modification_type);
 
   // Shows suggestions on the focused element if it was focused before the form
   // was processed by the password manager.
