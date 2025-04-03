@@ -214,6 +214,16 @@ public final class ProductionSupportedFlagList {
                 NetFeatures.FURTHER_OPTIMIZE_PARSING_DATA_URLS,
                 "Further optimize parsing data: URLs."),
         Flag.baseFeature(
+                BlinkFeatures.PRELOAD_LINK_REL_DATA_URLS,
+                "Allow preloading data: URLs with link rel=preload"),
+        Flag.baseFeature(
+                BlinkFeatures.BYPASS_CSP_FOR_PRELOADS,
+                "Enables bypassing CSP checks when we consume a preload"),
+        Flag.baseFeature(
+                BlinkFeatures.DOCUMENT_POLICY_EXPECT_NO_LINKED_RESOURCES,
+                "Enables the ability to use Document Policy header to control feature"
+                        + " ExpectNoLinkedResources."),
+        Flag.baseFeature(
                 AwFeatures.WEBVIEW_EXTRA_HEADERS_SAME_ORIGIN_ONLY,
                 "Only allow extra headers added via loadUrl() to be sent to the same origin "
                         + "as the original request."),
