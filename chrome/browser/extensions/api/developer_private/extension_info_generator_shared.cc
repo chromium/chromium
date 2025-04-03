@@ -588,8 +588,8 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
 
   // User Scripts toggle.
   info.user_scripts_access.is_enabled =
-      UserScriptManager::CanExtensionUseUserScriptsAPI(extension);
-  const UserScriptManager* user_script_manager =
+      UserScriptManager::IsUserScriptsAPIPermissionAvailable(extension);
+  UserScriptManager* user_script_manager =
       ExtensionSystem::Get(browser_context_)->user_script_manager();
   if (user_script_manager) {  // Not created in some unit tests.
     info.user_scripts_access.is_active =

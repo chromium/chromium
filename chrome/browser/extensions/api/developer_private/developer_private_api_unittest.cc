@@ -733,7 +733,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
       extension_system->user_script_manager();
   ASSERT_TRUE(user_script_manager);
   auto user_scripts_enabled = [&]() {
-    return user_script_manager->IsUserScriptPrefEnabled(id);
+    return user_script_manager->IsUserScriptPrefEnabledForTesting(id);
   };
   TestExtensionPrefSetting(base::BindLambdaForTesting(user_scripts_enabled),
                            "userScriptsAccess", id,
