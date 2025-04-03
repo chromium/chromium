@@ -147,6 +147,19 @@ TEST_F(SQLiteFeaturesTest, ForeignKeySupport) {
   EXPECT_EQ("", ExecuteWithResult(&db_, kSelectChildrenSql));
 }
 
+// Ensure that our SQLite version omits enforcement of CHECK constraints.
+TEST_F(SQLiteFeaturesTest, NoCheckConstraint) {
+  // CHECK constraints still parse.
+  ASSERT_TRUE(
+      db_.Execute("CREATE TABLE foo ("
+                  "id INTEGER PRIMARY KEY,"
+                  "foo INTEGER CHECK(foo > 0))"));
+
+  // But they are not enforced.
+  ASSERT_TRUE(db_.Execute("INSERT INTO foo VALUES (1,0)"));
+  EXPECT_EQ("1|0", ExecuteWithResults(&db_, "SELECT * FROM foo", "|", "\n"));
+}
+
 // Ensure that our SQLite version supports booleans.
 TEST_F(SQLiteFeaturesTest, BooleanSupport) {
   ASSERT_TRUE(
