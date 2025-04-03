@@ -1328,7 +1328,7 @@ BASE_FEATURE(kSkyVaultV2, "SkyVaultV2", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the SkyVault V3 changes, which improve the resilience of file uploads
 // and error handling.
-BASE_FEATURE(kSkyVaultV3, "SkyVaultV3", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSkyVaultV3, "SkyVaultV3", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables SmartDim on Chrome OS.
 BASE_FEATURE(kSmartDim, "SmartDim", base::FEATURE_DISABLED_BY_DEFAULT);
