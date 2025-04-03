@@ -4,8 +4,6 @@
 
 package org.chromium.components.autofill;
 
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
@@ -33,7 +31,6 @@ public class AutofillSuggestion extends DropdownItemBase {
     private final @Nullable String mFeatureForIph;
     private final @Nullable String mIphDescriptionText;
     private final @Nullable GURL mCustomIconUrl;
-    private final @Nullable Drawable mIconDrawable;
 
     /**
      * Constructs a Autofill suggestion container. Use the {@link AutofillSuggestion.Builder}
@@ -50,7 +47,6 @@ public class AutofillSuggestion extends DropdownItemBase {
      * @param featureForIph The IPH feature for the autofill suggestion. If present, it'll be
      *     attempted to be shown in the keyboard accessory.
      * @param customIconUrl The {@link GURL} for the custom icon, if any.
-     * @param iconDrawable The {@link Drawable} for an icon, if any.
      */
     @VisibleForTesting
     public AutofillSuggestion(
@@ -66,8 +62,7 @@ public class AutofillSuggestion extends DropdownItemBase {
             boolean shouldDisplayTermsAvailable,
             @Nullable String featureForIph,
             @Nullable String iphDescriptionText,
-            @Nullable GURL customIconUrl,
-            @Nullable Drawable iconDrawable) {
+            @Nullable GURL customIconUrl) {
         mLabel = label;
         mSecondaryLabel = secondaryLabel;
         mSublabel = sublabel;
@@ -81,7 +76,6 @@ public class AutofillSuggestion extends DropdownItemBase {
         mFeatureForIph = featureForIph;
         mIphDescriptionText = iphDescriptionText;
         mCustomIconUrl = customIconUrl;
-        mIconDrawable = iconDrawable;
     }
 
     @Override
@@ -120,11 +114,6 @@ public class AutofillSuggestion extends DropdownItemBase {
     @Override
     public @Nullable GURL getCustomIconUrl() {
         return mCustomIconUrl;
-    }
-
-    @Override
-    public @Nullable Drawable getIconDrawable() {
-        return mIconDrawable;
     }
 
     public @Nullable String getLabelContentDescription() {
@@ -181,15 +170,13 @@ public class AutofillSuggestion extends DropdownItemBase {
                 && this.mShouldDisplayTermsAvailable == other.mShouldDisplayTermsAvailable
                 && Objects.equals(this.mFeatureForIph, other.mFeatureForIph)
                 && Objects.equals(this.mIphDescriptionText, other.mIphDescriptionText)
-                && Objects.equals(this.mCustomIconUrl, other.mCustomIconUrl)
-                && areIconsEqual(this.mIconDrawable, other.mIconDrawable);
+                && Objects.equals(this.mCustomIconUrl, other.mCustomIconUrl);
     }
 
     /** Builder for the {@link AutofillSuggestion}. */
     public static final class Builder {
         private int mIconId;
         private @Nullable GURL mCustomIconUrl;
-        private @Nullable Drawable mIconDrawable;
         private boolean mIsDeletable;
         private boolean mApplyDeactivatedStyle;
         private boolean mShouldDisplayTermsAvailable;
@@ -209,11 +196,6 @@ public class AutofillSuggestion extends DropdownItemBase {
 
         public Builder setCustomIconUrl(GURL customIconUrl) {
             this.mCustomIconUrl = customIconUrl;
-            return this;
-        }
-
-        public Builder setIconDrawable(Drawable iconDrawable) {
-            this.mIconDrawable = iconDrawable;
             return this;
         }
 
@@ -290,27 +272,7 @@ public class AutofillSuggestion extends DropdownItemBase {
                     mShouldDisplayTermsAvailable,
                     mFeatureForIph,
                     mIphDescriptionText,
-                    mCustomIconUrl,
-                    mIconDrawable);
+                    mCustomIconUrl);
         }
-    }
-
-    public static boolean areIconsEqual(
-            @Nullable Drawable iconDrawable1, @Nullable Drawable iconDrawable2) {
-        if (iconDrawable1 == null) {
-            return iconDrawable2 == null;
-        }
-        // If the icons are custom Bitmap images.
-        if (iconDrawable1 instanceof BitmapDrawable) {
-            if (iconDrawable2 instanceof BitmapDrawable) {
-                return ((BitmapDrawable) iconDrawable1)
-                        .getBitmap()
-                        .sameAs(((BitmapDrawable) iconDrawable2).getBitmap());
-            }
-            return false;
-        }
-        // Icons with {@code iconId} which are fetched from resources are already checked for
-        // equality.
-        return true;
     }
 }

@@ -11,7 +11,8 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
-    android:orientation="horizontal" >
+    android:orientation="horizontal"
+    android:baselineAligned="false" >
 
     <!-- These layout params are overwritten in DropdownAdapter.java -->
     <LinearLayout
@@ -20,7 +21,8 @@ found in the LICENSE file.
         android:layout_height="0dp"
         android:layout_weight="1"
         android:gravity="center_vertical"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        tools:ignore="UselessParent">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -82,12 +84,4 @@ found in the LICENSE file.
                 android:textAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline" />
         </LinearLayout>
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/end_dropdown_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        tools:ignore="ContentDescription" />
-
 </LinearLayout>

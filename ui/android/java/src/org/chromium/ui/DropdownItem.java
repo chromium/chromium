@@ -4,8 +4,6 @@
 
 package org.chromium.ui;
 
-import android.graphics.drawable.Drawable;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
@@ -41,15 +39,7 @@ public interface DropdownItem {
      * Returns the url for the icon to be downloaded. If present, the downloaded icon should be
      * preferred over the resource id returned by getIconId().
      */
-    @Nullable
-    GURL getCustomIconUrl();
-
-    /**
-     * Returns the drawable for the icon. It is either the custom card art if available, or the
-     * drawable of the id returned by getIconId().
-     */
-    @Nullable
-    Drawable getIconDrawable();
+    @Nullable GURL getCustomIconUrl();
 
     /** Returns true if the item should be enabled in the dropdown. */
     boolean isEnabled();

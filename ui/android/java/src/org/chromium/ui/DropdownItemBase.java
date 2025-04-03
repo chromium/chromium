@@ -4,8 +4,6 @@
 
 package org.chromium.ui;
 
-import android.graphics.drawable.Drawable;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
@@ -83,11 +81,6 @@ public class DropdownItemBase implements DropdownItem {
 
     @Override
     public @Nullable GURL getCustomIconUrl() {
-        return null;
-    }
-
-    @Override
-    public @Nullable Drawable getIconDrawable() {
         return null;
     }
 }
