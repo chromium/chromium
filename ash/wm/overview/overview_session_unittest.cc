@@ -109,6 +109,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chromeos/ui/base/app_types.h"
@@ -1450,38 +1451,52 @@ TEST_P(OverviewSessionTest, ClickModalWindowParent) {
   EXPECT_TRUE(wm::IsActiveWindow(child.get()));
 }
 
-// Verifies bubble transient windows hide in Overview, reappear on Overview
-// exit.
-TEST_P(OverviewSessionTest, HideBubbleTransient) {
+// Verifies bubble transient windows stay visible in Overview, regardless
+// of anchored or not.
+TEST_P(OverviewSessionTest, DoNotHideBubbleTransient) {
   std::unique_ptr<aura::Window> window(
       CreateAppWindow(gfx::Rect(0, 0, 300, 300)));
+  enum BubbleType {
+    kAnchored,
+    kNotAnchored,
+  };
+  for (auto anchor :
+       {views::BubbleBorder::TOP_RIGHT, views::BubbleBorder::NONE}) {
+    SCOPED_TRACE(anchor == views::BubbleBorder::NONE ? "No Anchor"
+                                                     : "Anchored");
+    // Create a bubble widget that's anchored to frame.
+    views::View* anchor_view = anchor == views::BubbleBorder::NONE
+                                   ? nullptr
+                                   : NonClientFrameViewAsh::Get(window.get());
+    auto bubble_delegate = std::make_unique<views::BubbleDialogDelegateView>(
+        views::BubbleDialogDelegateView::CreatePassKey(), anchor_view, anchor);
 
-  // Create a bubble widget that's anchored to frame.
-  auto bubble_delegate = std::make_unique<views::BubbleDialogDelegateView>(
-      views::BubbleDialogDelegateView::CreatePassKey(),
-      NonClientFrameViewAsh::Get(window.get()), views::BubbleBorder::TOP_RIGHT);
+    // The line below is essential to make sure that the bubble doesn't get
+    // closed when entering overview.
+    bubble_delegate->set_close_on_deactivate(false);
+    bubble_delegate->set_parent_window(window.get());
+    views::Widget* bubble_widget(views::BubbleDialogDelegateView::CreateBubble(
+        std::move(bubble_delegate)));
+    aura::Window* bubble_window = bubble_widget->GetNativeWindow();
+    ASSERT_TRUE(window_util::AsBubbleDialogDelegate(bubble_window));
 
-  // The line below is essential to make sure that the bubble doesn't get closed
-  // when entering overview.
-  bubble_delegate->set_close_on_deactivate(false);
-  bubble_delegate->set_parent_window(window.get());
-  views::Widget* bubble_widget(views::BubbleDialogDelegateView::CreateBubble(
-      std::move(bubble_delegate)));
-  aura::Window* bubble_window = bubble_widget->GetNativeWindow();
-  ASSERT_TRUE(window_util::AsBubbleDialogDelegate(bubble_window));
+    bubble_widget->Show();
+    EXPECT_TRUE(wm::HasTransientAncestor(bubble_window, window.get()));
 
-  bubble_widget->Show();
-  EXPECT_TRUE(wm::HasTransientAncestor(bubble_window, window.get()));
+    // bubble transient windows should be visible in Overview mode.
+    ToggleOverview();
+    ASSERT_TRUE(IsInOverviewSession());
+    EXPECT_TRUE(bubble_window->IsVisible());
 
-  // Hides bubble transient windows on entering Overview mode.
-  ToggleOverview();
-  ASSERT_TRUE(IsInOverviewSession());
-  EXPECT_FALSE(bubble_window->IsVisible());
+    // Re-shows bubble transient windows on exiting Overview mode.
+    ToggleOverview();
+    ASSERT_FALSE(IsInOverviewSession());
+    EXPECT_TRUE(bubble_window->IsVisible());
 
-  // Re-shows bubble transient windows on exiting Overview mode.
-  ToggleOverview();
-  ASSERT_FALSE(IsInOverviewSession());
-  EXPECT_TRUE(bubble_window->IsVisible());
+    auto weak_widget_ptr = bubble_widget->GetWeakPtr();
+    bubble_widget->Close();
+    ASSERT_TRUE(base::test::RunUntil([&]() { return !weak_widget_ptr; }));
+  }
 }
 
 // Tests that windows remain on the display they are currently on in overview

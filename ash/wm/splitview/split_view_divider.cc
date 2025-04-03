@@ -28,6 +28,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_targeter_delegate.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -798,11 +799,24 @@ void SplitViewDivider::RefreshStackingOrder() {
 }
 
 void SplitViewDivider::StartObservingTransientChild(aura::Window* transient) {
-  // Confine the bounds of a transient window if the given `transient` is a
+  // Confine the bounds of a transient window iif the given `transient` is a
   // bubble dialog or dialog window.
   if (!window_util::AsBubbleDialogDelegate(transient) &&
       !window_util::AsDialogDelegate(transient)) {
     return;
+  }
+
+  // Do not adjust if the bubble dialog is attached to an anchor.
+  auto* widget = views::Widget::GetTopLevelWidgetForNativeView(transient);
+  if (widget->widget_delegate() &&
+      widget->widget_delegate()->AsBubbleDialogDelegate()) {
+    auto* bubble_dialog_delegate =
+        widget->widget_delegate()->AsBubbleDialogDelegate();
+    bool has_anchor = bubble_dialog_delegate->GetAnchorView() &&
+                      !bubble_dialog_delegate->GetAnchorRect().IsEmpty();
+    if (has_anchor) {
+      return;
+    }
   }
 
   // Explicitly check and early return if the `transient` is the divider native

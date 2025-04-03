@@ -40,7 +40,6 @@
 #include "chromeos/ui/frame/frame_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/transient_window_client.h"
-#include "ui/aura/scoped_window_event_targeting_blocker.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -54,6 +53,7 @@
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/shadow_controller.h"
@@ -146,6 +146,32 @@ class ScopedOverviewTransformWindow::LayerCachingAndFilteringObserver
   raw_ptr<ui::Layer> layer_;
 };
 
+ScopedOverviewTransformWindow::TransientInfo::TransientInfo(
+    aura::Window* transient)
+    : event_targeting_blocker(transient) {
+  auto* widget = views::Widget::GetTopLevelWidgetForNativeView(transient);
+  auto* bubble_dialog_delegate =
+      widget && widget->widget_delegate()
+          ? widget->widget_delegate()->AsBubbleDialogDelegate()
+          : nullptr;
+  if (bubble_dialog_delegate) {
+    adjust_if_offscreen = bubble_dialog_delegate->adjust_if_offscreen();
+    bubble_dialog_delegate->set_adjust_if_offscreen(false);
+  }
+}
+
+ScopedOverviewTransformWindow::TransientInfo::~TransientInfo() {
+  auto* widget = views::Widget::GetTopLevelWidgetForNativeView(
+      event_targeting_blocker.window());
+  auto* bubble_dialog_delegate =
+      widget && widget->widget_delegate()
+          ? widget->widget_delegate()->AsBubbleDialogDelegate()
+          : nullptr;
+  if (bubble_dialog_delegate) {
+    bubble_dialog_delegate->set_adjust_if_offscreen(adjust_if_offscreen);
+  }
+}
+
 ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
     OverviewItem* overview_item,
     aura::Window* window)
@@ -158,17 +184,13 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
   std::vector<raw_ptr<aura::Window, VectorExperimental>>
       transient_children_to_hide;
   for (auto* transient : GetTransientTreeIterator(window)) {
-    event_targeting_blocker_map_[transient] =
-        std::make_unique<aura::ScopedWindowEventTargetingBlocker>(transient);
+    transient_windows_info_map_.emplace(
+        transient, std::make_unique<TransientInfo>(transient));
 
-    if (window_util::AsBubbleDialogDelegate(transient)) {
-      transient->SetProperty(kHideInOverviewKey, true);
-    } else {
-      transient->SetProperty(chromeos::kIsShowingInOverviewKey, true);
-      // Add this as `aura::WindowObserver` for observing `kHideInOverviewKey`
-      // property changes.
-      window_observations_.AddObservation(transient);
-    }
+    transient->SetProperty(chromeos::kIsShowingInOverviewKey, true);
+    // Add this as `aura::WindowObserver` for observing `kHideInOverviewKey`
+    // property changes.
+    window_observations_.AddObservation(transient);
 
     // Hide transient children which have been specified to be hidden in
     // overview mode.
@@ -230,8 +252,8 @@ ScopedOverviewTransformWindow::~ScopedOverviewTransformWindow() {
 
   for (auto* transient : GetTransientTreeIterator(window_)) {
     ClearWindowProperties(transient);
-    DCHECK(event_targeting_blocker_map_.contains(transient));
-    event_targeting_blocker_map_.erase(transient);
+    DCHECK(transient_windows_info_map_.contains(transient));
+    transient_windows_info_map_.erase(transient);
   }
 
   UpdateRoundedCorners(/*show=*/false);
@@ -580,10 +602,9 @@ void ScopedOverviewTransformWindow::OnTransientChildWindowAdded(
   if (parent != window_ && !::wm::HasTransientAncestor(parent, window_))
     return;
 
-  DCHECK(!event_targeting_blocker_map_.contains(transient_child));
-  event_targeting_blocker_map_[transient_child] =
-      std::make_unique<aura::ScopedWindowEventTargetingBlocker>(
-          transient_child);
+  DCHECK(!transient_windows_info_map_.contains(transient_child));
+  transient_windows_info_map_.emplace(
+      transient_child, std::make_unique<TransientInfo>(transient_child));
   transient_child->SetProperty(chromeos::kIsShowingInOverviewKey, true);
 
   // Hide transient children which have been specified to be hidden in
@@ -605,8 +626,8 @@ void ScopedOverviewTransformWindow::OnTransientChildWindowRemoved(
     return;
 
   ClearWindowProperties(transient_child);
-  DCHECK(event_targeting_blocker_map_.contains(transient_child));
-  event_targeting_blocker_map_.erase(transient_child);
+  DCHECK(transient_windows_info_map_.contains(transient_child));
+  transient_windows_info_map_.erase(transient_child);
 
   if (window_observations_.IsObservingSource(transient_child))
     window_observations_.RemoveObservation(transient_child);
