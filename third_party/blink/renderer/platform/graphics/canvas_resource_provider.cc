@@ -626,6 +626,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     is_cleared_ = true;
     RasterRecordOOP(std::move(last_recording), needs_clear,
                     resource()->GetClientSharedImage()->mailbox());
+    resource()->GetSyncToken();
   }
 
   bool ShouldReplaceTargetBuffer(
