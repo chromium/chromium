@@ -6,13 +6,15 @@ import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import type {ClickModifiers} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 
 import type {ActionSource, SortOrder, ViewType} from './bookmarks.mojom-webui.js';
-import {BookmarksPageHandlerFactory, BookmarksPageHandlerRemote} from './bookmarks.mojom-webui.js';
+import {BookmarksPageCallbackRouter, BookmarksPageHandlerFactory, BookmarksPageHandlerRemote} from './bookmarks.mojom-webui.js';
 import type {BookmarksTreeNode} from './bookmarks.mojom-webui.js';
 
 let instance: BookmarksApiProxy|null = null;
 
 export interface BookmarksApiProxy {
   callbackRouter: {[key: string]: ChromeEvent<Function>};
+  pageCallbackRouter: BookmarksPageCallbackRouter;
+
   bookmarkCurrentTabInFolder(folderId: string): void;
   cutBookmark(id: string): void;
   contextMenuOpenBookmarkInNewTab(ids: string[], source: ActionSource): void;
@@ -49,23 +51,26 @@ export interface BookmarksApiProxy {
 
 export class BookmarksApiProxyImpl implements BookmarksApiProxy {
   callbackRouter: {[key: string]: ChromeEvent<Function>};
+
+  pageCallbackRouter: BookmarksPageCallbackRouter;
   handler: BookmarksPageHandlerRemote;
 
   constructor() {
     this.callbackRouter = {
       onChanged: chrome.bookmarks.onChanged,
       onChildrenReordered: chrome.bookmarks.onChildrenReordered,
-      onCreated: chrome.bookmarks.onCreated,
       onMoved: chrome.bookmarks.onMoved,
       onRemoved: chrome.bookmarks.onRemoved,
       onTabActivated: chrome.tabs.onActivated,
       onTabUpdated: chrome.tabs.onUpdated,
     };
 
+    this.pageCallbackRouter = new BookmarksPageCallbackRouter();
     this.handler = new BookmarksPageHandlerRemote();
 
     const factory = BookmarksPageHandlerFactory.getRemote();
     factory.createBookmarksPageHandler(
+        this.pageCallbackRouter.$.bindNewPipeAndPassRemote(),
         this.handler.$.bindNewPipeAndPassReceiver());
   }
 

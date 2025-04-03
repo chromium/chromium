@@ -12,7 +12,7 @@ export class TestPowerBookmarksDelegate extends TestBrowserProxy {
       'setImageUrl',
       'onBookmarksLoaded',
       'onBookmarkChanged',
-      'onBookmarkCreated',
+      'onBookmarkAdded',
       'onBookmarkMoved',
       'onBookmarkRemoved',
       'getTrackedProductInfos',
@@ -38,10 +38,10 @@ export class TestPowerBookmarksDelegate extends TestBrowserProxy {
     this.methodCalled('onBookmarkChanged', id, changedInfo);
   }
 
-  onBookmarkCreated(
+  onBookmarkAdded(
       bookmark: chrome.bookmarks.BookmarkTreeNode,
       parent: chrome.bookmarks.BookmarkTreeNode) {
-    this.methodCalled('onBookmarkCreated', bookmark, parent);
+    this.methodCalled('onBookmarkAdded', bookmark, parent);
   }
 
   onBookmarkMoved(

@@ -394,16 +394,20 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     assertEquals(delegate.getCallCount('onBookmarkChanged'), 1);
   });
 
-  test('CallsOnBookmarkCreated', () => {
-    bookmarksApi.callbackRouter.onCreated.callListeners('999', {
+  test('CallsOnBookmarkAdded', async () => {
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeAdded({
       id: '999',
       title: 'New bookmark',
       index: 0,
       parentId: folders[0]!.id,
       url: 'http://new/bookmark',
+      children: null,
+      dateAdded: null,
+      dateLastUsed: null,
     });
+    await flushTasks();
 
-    assertEquals(delegate.getCallCount('onBookmarkCreated'), 1);
+    assertEquals(delegate.getCallCount('onBookmarkAdded'), 1);
   });
 
   test('CallsOnBookmarkMoved', () => {

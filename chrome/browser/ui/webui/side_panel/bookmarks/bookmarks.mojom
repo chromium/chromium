@@ -61,9 +61,12 @@ struct BookmarksTreeNode {
 
 // Used by the Read Later WebUI page (for the side panel) to bootstrap
 // bidirectional communication.
+// Also initializes the `page` remote that allows communication from the browser
+// to the renderer.
 interface BookmarksPageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
-  CreateBookmarksPageHandler(pending_receiver<BookmarksPageHandler> handler);
+  CreateBookmarksPageHandler(pending_remote<BookmarksPage> page,
+                             pending_receiver<BookmarksPageHandler> handler);
 };
 
 // Browser-side handler for requests from WebUI page.
@@ -137,4 +140,10 @@ interface BookmarksPageHandler {
   // nodes are merged into one).
   // The `id` of those nodes will be the local storage id node.
   GetAllBookmarks() => (array<BookmarksTreeNode> nodes);
+};
+
+// Called from C++ to TS. (Browser -> Renderer)
+interface BookmarksPage {
+  // Send the information of the newly added node to the Ui.
+  OnBookmarkNodeAdded(BookmarksTreeNode node);
 };

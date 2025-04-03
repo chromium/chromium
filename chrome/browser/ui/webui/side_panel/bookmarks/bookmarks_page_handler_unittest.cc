@@ -11,6 +11,7 @@
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_test_utils.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmark_prefs.h"
+#include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks.mojom.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -62,6 +63,28 @@ MATCHER_P2(MatchesNode, node, service, "") {
   return true;
 }
 
+class MockBookmarksPage : public side_panel::mojom::BookmarksPage {
+ public:
+  MockBookmarksPage() = default;
+  ~MockBookmarksPage() override = default;
+
+  mojo::PendingRemote<side_panel::mojom::BookmarksPage> BindAndGetRemote() {
+    DCHECK(!receiver_.is_bound());
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
+  void Reset() { receiver_.reset(); }
+
+  MOCK_METHOD(void,
+              OnBookmarkNodeAdded,
+              (side_panel::mojom::BookmarksTreeNodePtr));
+
+ private:
+  mojo::Receiver<side_panel::mojom::BookmarksPage> receiver_{this};
+};
+
 class BookmarksPageHandlerTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
@@ -83,6 +106,9 @@ class BookmarksPageHandlerTest : public BrowserWithTestWindowTest {
   BookmarkMergedSurfaceService* service() {
     return bookmark_merged_service_.get();
   }
+  testing::NiceMock<MockBookmarksPage>& mock_bookmarks_page() {
+    return mock_bookmarks_page_;
+  }
 
   void CreateHandler(int managed_bookmarks_count = 0) {
     CHECK(!handler_);
@@ -100,6 +126,7 @@ class BookmarksPageHandlerTest : public BrowserWithTestWindowTest {
 
     handler_ = std::make_unique<BookmarksPageHandler>(
         mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler>(),
+        mock_bookmarks_page_.BindAndGetRemote(),
         /*bookmarks_ui=*/nullptr, bookmark_merged_service_.get());
   }
 
@@ -110,6 +137,7 @@ class BookmarksPageHandlerTest : public BrowserWithTestWindowTest {
 
   void ClearHandler() {
     handler_.reset();
+    mock_bookmarks_page_.Reset();
     bookmark_merged_service_.reset();
     bookmark_model_.reset();
     managed_bookmark_service_.reset();
@@ -122,6 +150,8 @@ class BookmarksPageHandlerTest : public BrowserWithTestWindowTest {
   std::unique_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<BookmarkMergedSurfaceService> bookmark_merged_service_;
+
+  testing::NiceMock<MockBookmarksPage> mock_bookmarks_page_;
 
   std::unique_ptr<BookmarksPageHandler> handler_;
 };
@@ -264,6 +294,61 @@ TEST_F(BookmarksPageHandlerTest, GetAllBookmarksContentWithAccountNodes) {
         EXPECT_THAT(nodes, Contains(MatchesNode(mobile_node, service())));
       });
   handler()->GetAllBookmarks(mock_callback.Get());
+}
+
+TEST_F(BookmarksPageHandlerTest, OnBookmarkNodeAdded) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kSyncEnableBookmarksInTransportMode};
+
+  const std::string expected_bookmark_side_panel_id =
+      GetFolderSidePanelIDForTesting(*service(),
+                                     BookmarkParentFolder::BookmarkBarFolder());
+
+  // Make sure that nodes added directly to the bookmark_bar folder have the
+  // correct parent id computed for the side panel.
+  EXPECT_CALL(mock_bookmarks_page(), OnBookmarkNodeAdded(testing::_))
+      .Times(3)
+      .WillRepeatedly([&](side_panel::mojom::BookmarksTreeNodePtr mojo_node) {
+        EXPECT_EQ(expected_bookmark_side_panel_id, mojo_node->parent_id);
+      });
+  AddNodesFromModelString(model(), model()->bookmark_bar_node(), "1 2 3 ");
+  mock_bookmarks_page().FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&mock_bookmarks_page());
+
+  // When adding a folder, only the folder should have this side panel id as the
+  // parent id, sub elements should just have the new folder as parent id.
+  EXPECT_CALL(mock_bookmarks_page(), OnBookmarkNodeAdded(testing::_))
+      .Times(3)
+      .WillRepeatedly([&](side_panel::mojom::BookmarksTreeNodePtr mojo_node) {
+        if (mojo_node->url.has_value()) {
+          EXPECT_NE(expected_bookmark_side_panel_id, mojo_node->parent_id);
+        } else {
+          // Folder but should not have children as it will be sent with
+          // separate notification.
+          EXPECT_FALSE(mojo_node->children.has_value());
+          EXPECT_EQ(expected_bookmark_side_panel_id, mojo_node->parent_id);
+        }
+      });
+  AddNodesFromModelString(model(), model()->bookmark_bar_node(), "f1:[ 4 5 ]");
+  mock_bookmarks_page().FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&mock_bookmarks_page());
+
+  model()->CreateAccountPermanentFolders();
+  // Permanent nodes do not trigger a notification.
+  EXPECT_CALL(mock_bookmarks_page(), OnBookmarkNodeAdded(testing::_)).Times(0);
+  mock_bookmarks_page().FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&mock_bookmarks_page());
+
+  // Adding direct children to the account node should also have the side panel
+  // bookmark bar id as their parent id.
+  EXPECT_CALL(mock_bookmarks_page(), OnBookmarkNodeAdded(testing::_))
+      .Times(2)
+      .WillRepeatedly([&](side_panel::mojom::BookmarksTreeNodePtr mojo_node) {
+        EXPECT_EQ(expected_bookmark_side_panel_id, mojo_node->parent_id);
+      });
+  AddNodesFromModelString(model(), model()->account_bookmark_bar_node(),
+                          "a1 a2 ");
+  mock_bookmarks_page().FlushForTesting();
 }
 
 }  // namespace

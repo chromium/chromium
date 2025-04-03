@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 class BookmarksSidePanelUI;
 class BookmarkMergedSurfaceService;
@@ -21,6 +22,7 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler,
   // `bookmark_merged_surface` must not be null and must outlive this object.
   explicit BookmarksPageHandler(
       mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver,
+      mojo::PendingRemote<side_panel::mojom::BookmarksPage> page,
       BookmarksSidePanelUI* bookmarks_ui,
       BookmarkMergedSurfaceService* bookmark_merged_surface);
   BookmarksPageHandler(const BookmarksPageHandler&) = delete;
@@ -71,7 +73,7 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler,
   // BookmarkMergedSurfaceServiceObserver:
   void BookmarkMergedSurfaceServiceLoaded() override;
   void BookmarkNodeAdded(const BookmarkParentFolder& parent,
-                         size_t index) override {}
+                         size_t index) override;
   void BookmarkNodesRemoved(
       const BookmarkParentFolder& parent,
       const base::flat_set<const bookmarks::BookmarkNode*>& nodes) override {}
@@ -92,6 +94,7 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler,
   void SendAllBookmarks(GetAllBookmarksCallback callback);
 
   mojo::Receiver<side_panel::mojom::BookmarksPageHandler> receiver_;
+  mojo::Remote<side_panel::mojom::BookmarksPage> page_;
   raw_ptr<BookmarksSidePanelUI> bookmarks_ui_ = nullptr;
   raw_ptr<BookmarkMergedSurfaceService> bookmark_merged_surface_ = nullptr;
 

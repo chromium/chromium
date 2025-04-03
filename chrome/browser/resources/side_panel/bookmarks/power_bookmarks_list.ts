@@ -60,6 +60,7 @@ import type {PowerBookmarksLabelsElement} from './power_bookmarks_labels.js';
 import {getTemplate} from './power_bookmarks_list.html.js';
 import type {Label} from './power_bookmarks_service.js';
 import {editingDisabledByPolicy, PowerBookmarksService} from './power_bookmarks_service.js';
+import type {PowerBookmarksDelegate} from './power_bookmarks_service.js';
 import {getFolderLabel} from './power_bookmarks_utils.js';
 
 const ADD_FOLDER_ACTION_UMA = 'Bookmarks.FolderAddedFromSidePanel';
@@ -116,7 +117,8 @@ interface SectionVisibility {
   footer?: boolean;
 }
 
-export class PowerBookmarksListElement extends PolymerElement {
+export class PowerBookmarksListElement extends PolymerElement implements
+    PowerBookmarksDelegate {
   static get is() {
     return 'power-bookmarks-list';
   }
@@ -398,7 +400,7 @@ export class PowerBookmarksListElement extends PolymerElement {
     this.updateShoppingData_();
   }
 
-  onBookmarkCreated(
+  onBookmarkAdded(
       bookmark: chrome.bookmarks.BookmarkTreeNode,
       parent: chrome.bookmarks.BookmarkTreeNode) {
     if (this.bookmarkShouldShow_(bookmark)) {

@@ -310,9 +310,10 @@ BookmarksSidePanelUI::GetShoppingListContextMenuController() {
 }
 
 void BookmarksSidePanelUI::CreateBookmarksPageHandler(
+    mojo::PendingRemote<side_panel::mojom::BookmarksPage> page,
     mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver) {
   bookmarks_page_handler_ = std::make_unique<BookmarksPageHandler>(
-      std::move(receiver), this,
+      std::move(receiver), std::move(page), this,
       BookmarkMergedSurfaceServiceFactory::GetForProfile(
           Profile::FromWebUI(web_ui())));
 }

@@ -26,7 +26,7 @@ import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 
@@ -252,7 +252,7 @@ suite('General', () => {
     assertEquals(FOLDERS[1]!.children!.length + 1, getBookmarks().length);
   });
 
-  test('RebuildsKeyboardNavigationOnCreated', async () => {
+  test('RebuildsKeyboardNavigationOnBoomkmarkNodeAdded', async () => {
     await flushTasks();
 
     assertEquals(
@@ -263,14 +263,17 @@ suite('General', () => {
         JSON.stringify(
             ['bookmark-1', 'bookmark-5', 'bookmark-4', 'bookmark-3']));
 
-    bookmarksApi.callbackRouter.onCreated.callListeners('999', {
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeAdded({
       id: '999',
       title: 'New bookmark of current url',
       index: 0,
       parentId: FOLDERS[1]!.id,
-      url: powerBookmarksList.getCurrentUrlForTesting(),
+      url: powerBookmarksList.getCurrentUrlForTesting()!,
+      children: null,
+      dateAdded: null,
+      dateLastUsed: null,
     });
-
+    await microtasksFinished();
     await flushTasks();
 
     assertEquals(
@@ -442,15 +445,18 @@ suite('General', () => {
     assertFalse(btn.disabled);
   });
 
-  test('UpdatesAddTabButton', () => {
-    bookmarksApi.callbackRouter.onCreated.callListeners('999', {
+  test('UpdatesAddTabButton', async () => {
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeAdded({
       id: '999',
       title: 'New bookmark of current url',
       index: 0,
       parentId: FOLDERS[1]!.id,
-      url: powerBookmarksList.getCurrentUrlForTesting(),
+      url: powerBookmarksList.getCurrentUrlForTesting()!,
+      children: null,
+      dateAdded: null,
+      dateLastUsed: null,
     });
-    flush();
+    await flushTasks();
 
     let btn = getAddTabButton();
     assertTrue(btn.disabled);
@@ -462,39 +468,49 @@ suite('General', () => {
     assertFalse(btn.disabled);
   });
 
-  test('AddsCreatedBookmark', () => {
-    bookmarksApi.callbackRouter.onCreated.callListeners('999', {
+  test('AddsCreatedBookmark', async () => {
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeAdded({
       id: '999',
       title: 'New bookmark',
       index: 0,
       parentId: FOLDERS[1]!.id,
       url: 'http://new/bookmark',
+      children: null,
+      dateAdded: null,
+      dateLastUsed: null,
     });
-    flush();
+    await flushTasks();
 
     const bookmarks = getBookmarks();
     assertEquals(5, bookmarks.length);
   });
 
-  test('AddsCreatedBookmarkForNewFolder', () => {
+  test('AddsCreatedBookmarkForNewFolder', async () => {
     // Create a new folder without a children array.
-    bookmarksApi.callbackRouter.onCreated.callListeners('1000', {
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeAdded({
       id: '1000',
       title: 'New folder',
       index: 0,
       parentId: FOLDERS[1]!.id,
+      url: null,
+      children: null,
+      dateAdded: null,
+      dateLastUsed: null,
     });
-    flush();
+    await flushTasks();
 
     // Create a new bookmark within that folder.
-    bookmarksApi.callbackRouter.onCreated.callListeners('1001', {
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeAdded({
       id: '1001',
       title: 'New bookmark in new folder',
       index: 0,
       parentId: '1000',
       url: 'http://google.com',
+      children: null,
+      dateAdded: null,
+      dateLastUsed: null,
     });
-    flush();
+    await flushTasks();
 
     const bookmarks = getBookmarks();
     assertEquals(5, bookmarks.length);
@@ -512,14 +528,17 @@ suite('General', () => {
     assertEquals(1, getBookmarksInList(0).length);
     assertEquals(3, getBookmarksInList(1).length);
 
-    bookmarksApi.callbackRouter.onCreated.callListeners('123', {
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeAdded({
       id: '123',
       title: 'New bookmark',
       index: 0,
       parentId: '5',
       url: 'http://new/bookmark',
+      children: null,
+      dateAdded: null,
+      dateLastUsed: null,
     });
-    flush();
+    await flushTasks();
 
     // New bookmark matches search term and is under active folder, gets
     // displayed in primary list
@@ -527,28 +546,34 @@ suite('General', () => {
     assertEquals(2, getBookmarksInList(0).length);
     assertEquals(3, getBookmarksInList(1).length);
 
-    bookmarksApi.callbackRouter.onCreated.callListeners('456', {
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeAdded({
       id: '456',
       title: 'foo',
       index: 0,
       parentId: FOLDERS[1]!.id,
       url: 'http://foo',
+      children: null,
+      dateAdded: null,
+      dateLastUsed: null,
     });
-    flush();
+    await flushTasks();
 
     // New bookmark does not match search term, doesn't get displayed
     assertFalse(!!getBookmarkWithId('456'));
     assertEquals(2, getBookmarksInList(0).length);
     assertEquals(3, getBookmarksInList(1).length);
 
-    bookmarksApi.callbackRouter.onCreated.callListeners('789', {
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeAdded({
       id: '789',
       title: 'Bookmark',
       index: 0,
       parentId: FOLDERS[1]!.id,
       url: 'http://bookmark',
+      children: null,
+      dateAdded: null,
+      dateLastUsed: null,
     });
-    flush();
+    await flushTasks();
 
     // New bookmark matches search term and is not under active folder, gets
     // displayed in secondary list
@@ -575,15 +600,19 @@ suite('General', () => {
     assertEquals(0, childFolder.children!.length);
   });
 
-  test('MovesBookmarksIntoNewFolder', () => {
+  test('MovesBookmarksIntoNewFolder', async () => {
     // Create a new folder without a children array.
-    bookmarksApi.callbackRouter.onCreated.callListeners('1000', {
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeAdded({
       id: '1000',
       title: 'New folder',
       index: 0,
       parentId: FOLDERS[1]!.id,
+      url: null,
+      children: null,
+      dateAdded: null,
+      dateLastUsed: null,
     });
-    flush();
+    await flushTasks();
 
     const movedBookmark = FOLDERS[1]!.children![2]!.children![0]!;
     bookmarksApi.callbackRouter.onMoved.callListeners(movedBookmark.id, {

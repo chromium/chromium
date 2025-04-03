@@ -26,12 +26,12 @@ export interface Label {
   active: boolean;
 }
 
-interface PowerBookmarksDelegate {
+export interface PowerBookmarksDelegate {
   setCurrentUrl(url: string|undefined): void;
   setImageUrl(bookmark: chrome.bookmarks.BookmarkTreeNode, url: string): void;
   onBookmarksLoaded(): void;
   onBookmarkChanged(id: string, changedInfo: chrome.bookmarks.ChangeInfo): void;
-  onBookmarkCreated(
+  onBookmarkAdded(
       bookmark: chrome.bookmarks.BookmarkTreeNode,
       parent: chrome.bookmarks.BookmarkTreeNode): void;
   onBookmarkMoved(
@@ -219,10 +219,6 @@ export class PowerBookmarksService {
           (id: string, changedInfo: chrome.bookmarks.ChangeInfo) =>
               this.onChanged_(id, changedInfo));
       this.addListener_(
-          'onCreated',
-          (_id: string, node: chrome.bookmarks.BookmarkTreeNode) =>
-              this.onCreated_(node));
-      this.addListener_(
           'onMoved',
           (_id: string, movedInfo: chrome.bookmarks.MoveInfo) =>
               this.onMoved_(movedInfo));
@@ -238,6 +234,10 @@ export class PowerBookmarksService {
               this.delegate_.setCurrentUrl(tab.url);
             }
           });
+
+      this.bookmarksApi_.pageCallbackRouter.onBookmarkNodeAdded.addListener(
+          this.onBookmarkNodeAdded_.bind(this));
+
       this.delegate_.onBookmarksLoaded();
     });
   }
@@ -458,7 +458,8 @@ export class PowerBookmarksService {
     this.delegate_.onBookmarkChanged(id, changedInfo);
   }
 
-  private onCreated_(node: chrome.bookmarks.BookmarkTreeNode) {
+  private onBookmarkNodeAdded_(addedNode: BookmarksTreeNode): void {
+    const node = toExtensionsBookmarkTreeNode(addedNode);
     const parent = this.findBookmarkWithId(node.parentId as string)!;
     if (!node.url && !node.children) {
       // Newly created folders in this session may not have an array of
@@ -466,7 +467,7 @@ export class PowerBookmarksService {
       node.children = [];
     }
     parent.children!.splice(node.index!, 0, node);
-    this.delegate_.onBookmarkCreated(node, parent);
+    this.delegate_.onBookmarkAdded(node, parent);
     this.findBookmarkImageUrls_(node, false, false);
   }
 
