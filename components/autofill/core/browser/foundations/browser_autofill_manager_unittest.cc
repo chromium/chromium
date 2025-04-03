@@ -183,6 +183,7 @@ using upload_contents_matchers::ObservedSubmissionIs;
 
 constexpr Suggestion::Icon kAddressEntryIcon = Suggestion::Icon::kAccount;
 constexpr char kPlusAddress[] = "plus+remote@plus.plus";
+constexpr char kEllipsisDotSeparator[] = "\u2022";
 
 // Action `SaveArgElementsTo<k>(pointer)` saves the value pointed to by the
 // `k`th (0-based) argument of the mock function by moving it to `*pointer`.
@@ -204,13 +205,22 @@ bool ShouldSplitCardNameAndLastFourDigitsForMetadata() {
   return !BUILDFLAG(IS_IOS);
 }
 
+bool ShouldUseNewFopDisplay() {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  return false;
+#else
+  return base::FeatureList::IsEnabled(
+      features::kAutofillEnableNewFopDisplayDesktop);
+#endif
+}
+
 // The number of obfuscation dots we use as a prefix when showing a credit
 // card's last four.
 int ObfuscationLengthForCreditCardLastFourDigits() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return 2;
 #else
-  return 4;
+  return ShouldUseNewFopDisplay() ? 2 : 4;
 #endif
 }
 
@@ -226,7 +236,13 @@ std::vector<std::vector<Suggestion::Text>> GenerateLabelsFromCreditCard(
       {Suggestion::Text(card.ObfuscatedNumberWithVisibleLastFourDigits(
           ObfuscationLengthForCreditCardLastFourDigits()))}};
 #else
-  if (ShouldSplitCardNameAndLastFourDigitsForMetadata()) {
+  if (ShouldUseNewFopDisplay()) {
+    suggestion_labels = {
+        {Suggestion::Text(card.NetworkAndLastFourDigits(
+             ObfuscationLengthForCreditCardLastFourDigits())),
+         Suggestion::Text(u"•"),
+         Suggestion::Text(card.AbbreviatedExpirationDateForDisplay(false))}};
+  } else if (ShouldSplitCardNameAndLastFourDigitsForMetadata()) {
     // First label contains card name details and second label contains
     // obfuscated last four.
     suggestion_labels = {
@@ -260,18 +276,44 @@ Suggestion GenerateSuggestionFromCardDetails(
           : nickname;
   std::string obfuscated_card_digits = test::ObfuscatedCardDigitsAsUTF8(
       last_four, ObfuscationLengthForCreditCardLastFourDigits());
+  std::string network_and_last_four =
+      base::StrCat({base::UTF16ToUTF8(CreditCard::NetworkForDisplay(network)),
+                    std::string("  "), obfuscated_card_digits});
+  std::vector<std::vector<Suggestion::Text>> network_last_four_and_exp_labels =
+      std::vector<std::vector<Suggestion::Text>>{
+          {Suggestion::Text(base::UTF8ToUTF16(network_and_last_four)),
+           Suggestion::Text(u"•"),
+           Suggestion::Text(base::UTF8ToUTF16(expiration_date_label))}};
   if (type == CREDIT_CARD_NUMBER) {
+    if (ShouldUseNewFopDisplay()) {
+      if (!nickname.empty()) {
+        return Suggestion(
+            /*main_text=*/nickname,
+            /*labels=*/network_last_four_and_exp_labels, icon,
+            SuggestionType::kCreditCardEntry);
+      } else {
+        std::vector<std::string> minor_texts = {kEllipsisDotSeparator,
+                                                expiration_date_label};
+        return Suggestion(
+            /*main_text=*/network_and_last_four,
+            /*minor_text_labels=*/minor_texts,
+            /*label=*/"", icon, SuggestionType::kCreditCardEntry);
+      }
+    }
     if (ShouldSplitCardNameAndLastFourDigitsForMetadata()) {
       std::vector<std::string> minor_text = {obfuscated_card_digits};
       return Suggestion(
-          /*main_text=*/network_or_nickname, minor_text,
+          /*main_text=*/network_or_nickname,
+          /*minor_text_labels=*/minor_text,
           /*label=*/expiration_date_label, icon,
           SuggestionType::kCreditCardEntry);
     } else {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-      // We use a longer label on desktop platforms.
-      expiration_date_label =
-          std::string("Expires on ") + expiration_date_label;
+      if (!ShouldUseNewFopDisplay()) {
+        // We use a longer label on desktop platforms.
+        expiration_date_label =
+            std::string("Expires on ") + expiration_date_label;
+      }
 #endif
       return Suggestion(
           /*main_text=*/base::StrCat(
@@ -286,6 +328,8 @@ Suggestion GenerateSuggestionFromCardDetails(
       // The label is formatted as either "••••1234" or "••1234".
       labels.push_back(
           {Suggestion::Text(base::UTF8ToUTF16(obfuscated_card_digits))});
+    } else if (ShouldUseNewFopDisplay()) {
+      labels = network_last_four_and_exp_labels;
     } else if (ShouldSplitCardNameAndLastFourDigitsForMetadata()) {
       // The label is formatted as "Product Description/Nickname/Network
       // ••••1234".
@@ -1968,7 +2012,15 @@ class BrowserAutofillManagerTestForMetadataCardSuggestions
     : public BrowserAutofillManagerTest,
       public testing::WithParamInterface<bool> {
  public:
-  BrowserAutofillManagerTestForMetadataCardSuggestions()  = default;
+  BrowserAutofillManagerTestForMetadataCardSuggestions() {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    feature_flags_.InitAndEnableFeature(
+        features::kAutofillEnableNewFopDisplayDesktop);
+#endif
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_flags_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -7283,7 +7335,12 @@ class BrowserAutofillManagerTestForSharingNickname
   BrowserAutofillManagerTestForSharingNickname()
       : local_nickname_(GetParam().local_nickname),
         server_nickname_(GetParam().server_nickname),
-        expected_nickname_(GetParam().expected_nickname) {}
+        expected_nickname_(GetParam().expected_nickname) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    feature_flags_.InitAndEnableFeature(
+        features::kAutofillEnableNewFopDisplayDesktop);
+#endif
+  }
 
   CreditCard GetLocalCard() {
     CreditCard local_card("287151C8-6AB1-487C-9095-28E80BE5DA15",
@@ -7315,7 +7372,7 @@ class BrowserAutofillManagerTestForSharingNickname
     return masked_server_card;
   }
 
-  base::test::ScopedFeatureList card_metadata_flags_;
+  base::test::ScopedFeatureList feature_flags_;
   std::string local_nickname_;
   std::string server_nickname_;
   std::string expected_nickname_;

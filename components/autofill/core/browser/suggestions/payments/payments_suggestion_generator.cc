@@ -63,6 +63,7 @@ namespace autofill {
 namespace {
 
 constexpr uint64_t kCentsPerDollar = 100;
+constexpr char16_t kEllipsisDotSeparator[] = u"\u2022";
 
 Suggestion CreateSeparator() {
   Suggestion suggestion;
@@ -128,12 +129,21 @@ std::map<std::string, const AutofillOfferData*> GetCardLinkedOffers(
   return {};
 }
 
+bool ShouldUseNewFopDisplay() {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  return false;
+#else
+  return base::FeatureList::IsEnabled(
+      features::kAutofillEnableNewFopDisplayDesktop);
+#endif
+}
+
 int GetObfuscationLength() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // On Android and iOS, the obfuscation length is 2.
   return 2;
 #else
-  return 4;
+  return ShouldUseNewFopDisplay() ? 2 : 4;
 #endif
 }
 
@@ -271,12 +281,22 @@ GetSuggestionMainTextAndMinorTextForCard(const CreditCard& credit_card,
   }
 
   if (trigger_field_type == CREDIT_CARD_NUMBER) {
+    if (ShouldUseNewFopDisplay()) {
+      std::optional<std::u16string> identifier =
+          credit_card.CardIdentifierForAutofillDisplay(nickname);
+      if (identifier.has_value()) {
+        return create_text(*identifier);
+      } else {
+        return create_text(
+            credit_card.NetworkAndLastFourDigits(GetObfuscationLength()),
+            credit_card.AbbreviatedExpirationDateForDisplay(false));
+      }
+    }
     if (ShouldSplitCardNameAndLastFourDigits()) {
       return create_text(credit_card.CardNameForAutofillDisplay(nickname),
                          credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
                              GetObfuscationLength()));
     }
-
     return create_text(credit_card.CardNameAndLastFourDigits(
         nickname, GetObfuscationLength()));
   }
@@ -366,6 +386,18 @@ void SetSuggestionLabelsForCard(
         credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale))}};
 #else
     std::vector<std::vector<Suggestion::Text>> labels;
+
+    // If the main text is the card's nickname or product description,
+    // the network, last four digits, and expiration date must be displayed
+    // separately in another row.
+    if (ShouldUseNewFopDisplay() && !suggestion.main_text.value.empty() &&
+        suggestion.minor_texts.empty()) {
+      labels.push_back({Suggestion::Text(credit_card.NetworkAndLastFourDigits(
+                            GetObfuscationLength())),
+                        Suggestion::Text(kEllipsisDotSeparator),
+                        Suggestion::Text(credit_card.GetInfo(
+                            CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale))});
+    }
     std::optional<Suggestion::Text> benefit_label =
         GetCreditCardBenefitSuggestionLabel(credit_card, client);
     if (benefit_label) {
@@ -389,10 +421,13 @@ void SetSuggestionLabelsForCard(
         }
       }
     }
-    labels.push_back({Suggestion::Text(
-        ShouldSplitCardNameAndLastFourDigits()
-            ? credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale)
-            : credit_card.DescriptiveExpiration(app_locale))});
+    if (!ShouldUseNewFopDisplay()) {
+      labels.push_back({Suggestion::Text(
+          ShouldSplitCardNameAndLastFourDigits()
+              ? credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+                                    app_locale)
+              : credit_card.DescriptiveExpiration(app_locale))});
+    }
     suggestion.labels = std::move(labels);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     return;
@@ -428,6 +463,15 @@ void SetSuggestionLabelsForCard(
           credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
               GetObfuscationLength()))}};
     }
+    return;
+  }
+
+  if (ShouldUseNewFopDisplay()) {
+    suggestion.labels = {{Suggestion::Text(credit_card.NetworkAndLastFourDigits(
+                              GetObfuscationLength())),
+                          Suggestion::Text(kEllipsisDotSeparator),
+                          Suggestion::Text(credit_card.GetInfo(
+                              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale))}};
     return;
   }
 
@@ -543,16 +587,31 @@ void AdjustVirtualCardSuggestionContent(Suggestion& suggestion,
     suggestion.labels = {};
     std::optional<Suggestion::Text> benefit_label =
         GetCreditCardBenefitSuggestionLabel(credit_card, client);
+    if (ShouldUseNewFopDisplay() && suggestion.minor_texts.empty()) {
+      // minor_texts empty means that the card has either nickname or
+      // product description, so add network and last four digits as a
+      // separate label.
+      suggestion.labels = {{Suggestion::Text(
+          credit_card.NetworkAndLastFourDigits(GetObfuscationLength()))}};
+    }
     if (benefit_label && client.GetPersonalDataManager()
                              .payments_data_manager()
                              .IsCardEligibleForBenefits(credit_card)) {
-      suggestion.labels.push_back({*benefit_label});
+      // For the new-FOP display feature, when the merchant opts out
+      // (that is, the suggestion is not acceptable), the benefit is not
+      // shown because a merchant opt-out message will be displayed instead.
+      if (!ShouldUseNewFopDisplay() || suggestion.IsAcceptable()) {
+        suggestion.labels.push_back({*benefit_label});
+      }
     }
   }
-  if (suggestion.IsAcceptable()) {
+  // For the new-FOP display feature, a virtual card label will not be added
+  // as it will be shown as a badge.
+  if (!ShouldUseNewFopDisplay() && suggestion.IsAcceptable()) {
     suggestion.labels.push_back(
         std::vector<Suggestion::Text>{Suggestion::Text(virtual_card_label)});
-  } else {
+  }
+  if (!suggestion.IsAcceptable()) {
     suggestion.labels.push_back(std::vector<Suggestion::Text>{
         Suggestion::Text(virtual_card_disabled_label)});
   }
@@ -803,7 +862,11 @@ Suggestion CreateCreditCardSuggestion(
       credit_card, client, trigger_field_type);
   suggestion.main_text = std::move(main_text);
   if (!minor_text.value.empty()) {
-    suggestion.minor_texts = {std::move(minor_text)};
+    if (ShouldUseNewFopDisplay()) {
+      suggestion.minor_texts.emplace_back(kEllipsisDotSeparator,
+                                          Suggestion::Text::IsPrimary(true));
+    }
+    suggestion.minor_texts.emplace_back(std::move(minor_text));
   }
   SetSuggestionLabelsForCard(credit_card, client, trigger_field_type,
                              metadata_logging_context, suggestion);

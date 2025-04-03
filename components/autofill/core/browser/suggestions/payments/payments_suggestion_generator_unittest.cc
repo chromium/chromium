@@ -77,6 +77,11 @@ using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// A dot ("•") separator.
+inline constexpr char16_t kEllipsisDotSeparator[] = u"\u2022";
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 Matcher<Suggestion> EqualLabels(
     const std::vector<std::vector<Suggestion::Text>>& suggestion_objects) {
   return Field(&Suggestion::labels, suggestion_objects);
@@ -326,7 +331,8 @@ class AutofillCreditCardBenefitsLabelTest
         /*enabled_features=*/
         {features::kAutofillEnableCardBenefitsForAmericanExpress,
          features::kAutofillEnableCardBenefitsForBmo,
-         features::kAutofillEnableCardBenefitsIph},
+         features::kAutofillEnableCardBenefitsIph,
+         features::kAutofillEnableNewFopDisplayDesktop},
         /*disabled_features=*/{});
 
     std::u16string benefit_description;
@@ -422,17 +428,13 @@ INSTANTIATE_TEST_SUITE_P(
 #if !BUILDFLAG(IS_ANDROID)
 // Checks that for FPAN suggestions that the benefit description is displayed.
 TEST_P(AutofillCreditCardBenefitsLabelTest, BenefitSuggestionLabel_Fpan) {
-  EXPECT_THAT(
-      CreateCreditCardSuggestionForTest(card(), *autofill_client(),
-                                        CREDIT_CARD_NUMBER,
-                                        /*virtual_card_option=*/false,
-                                        /*card_linked_offer_available=*/false)
-          .labels,
-      ElementsAre(
-          std::vector<Suggestion::Text>{
-              Suggestion::Text(expected_benefit_text())},
-          std::vector<Suggestion::Text>{Suggestion::Text(card().GetInfo(
-              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, /*app_locale=*/"en-US"))}));
+  EXPECT_THAT(CreateCreditCardSuggestionForTest(
+                  card(), *autofill_client(), CREDIT_CARD_NUMBER,
+                  /*virtual_card_option=*/false,
+                  /*card_linked_offer_available=*/false)
+                  .labels,
+              ElementsAre(std::vector<Suggestion::Text>{
+                  Suggestion::Text(expected_benefit_text())}));
 }
 
 // Checks that feature is set to display the credit card benefit IPH for
@@ -492,21 +494,36 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
 }
 
 // Checks that for virtual cards suggestion the benefit description is shown
-// with a virtual card label appended.
+// as a label.
 TEST_P(AutofillCreditCardBenefitsLabelTest,
        BenefitSuggestionLabel_VirtualCard) {
+  EXPECT_THAT(CreateCreditCardSuggestionForTest(
+                  card(), *autofill_client(), CREDIT_CARD_NUMBER,
+                  /*virtual_card_option=*/true,
+                  /*card_linked_offer_available=*/false)
+                  .labels,
+              ElementsAre(std::vector<Suggestion::Text>{
+                  Suggestion::Text(expected_benefit_text())}));
+}
+
+// Checks that for merchant opt-out virtual cards suggestion the benefit
+// description is not shown.
+TEST_P(AutofillCreditCardBenefitsLabelTest,
+       BenefitSuggestionLabel_VirtualCard_MerchantOptOut) {
+  CreditCard virtual_card = CreditCard::CreateVirtualCard(card());
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_client()->GetAutofillOptimizationGuide()),
+          ShouldBlockFormFieldSuggestion)
+      .WillByDefault(testing::Return(true));
   EXPECT_THAT(
-      CreateCreditCardSuggestionForTest(card(), *autofill_client(),
+      CreateCreditCardSuggestionForTest(virtual_card, *autofill_client(),
                                         CREDIT_CARD_NUMBER,
                                         /*virtual_card_option=*/true,
                                         /*card_linked_offer_available=*/false)
           .labels,
-      ElementsAre(
-          std::vector<Suggestion::Text>{
-              Suggestion::Text(expected_benefit_text())},
-          std::vector<Suggestion::Text>{
-              Suggestion::Text(l10n_util::GetStringUTF16(
-                  IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE))}));
+      ElementsAre(std::vector<Suggestion::Text>{
+          Suggestion::Text(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE))}));
 }
 
 // Checks that for credit card suggestions with eligible benefits, the
@@ -538,6 +555,135 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
   }
   autofill_client()->set_last_committed_primary_main_frame_url(
       GURL("https://random-url.com"));
+  Suggestion suggestion = CreateCreditCardSuggestionForTest(
+      card(), *autofill_client(), CREDIT_CARD_NUMBER,
+      /*virtual_card_option=*/false,
+      /*card_linked_offer_available=*/false);
+
+  // Merchant benefit description is not returned.
+  EXPECT_TRUE(suggestion.labels.empty());
+}
+
+// Checks that the category benefit description is not displayed for suggestions
+// where the webpage's category in the optimization guide is different from the
+// benefit's applicable category.
+TEST_P(AutofillCreditCardBenefitsLabelTest,
+       BenefitSuggestionLabelNotDisplayed_CategoryIsDifferent) {
+  if (!std::holds_alternative<CreditCardCategoryBenefit>(GetBenefit())) {
+    GTEST_SKIP() << "This test should not run for non-category benefits.";
+  }
+
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_client()->GetAutofillOptimizationGuide()),
+          AttemptToGetEligibleCreditCardBenefitCategory)
+      .WillByDefault(testing::Return(
+          CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory));
+  Suggestion suggestion = CreateCreditCardSuggestionForTest(
+      card(), *autofill_client(), CREDIT_CARD_NUMBER,
+      /*virtual_card_option=*/false,
+      /*card_linked_offer_available=*/false);
+
+  // Category benefit description is not returned.
+  EXPECT_TRUE(suggestion.labels.empty());
+}
+
+// Checks that the benefit description is not displayed when benefit suggestions
+// are disabled for the given card and url.
+TEST_P(AutofillCreditCardBenefitsLabelTest,
+       BenefitSuggestionLabelNotDisplayed_BlockedUrl) {
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_client()->GetAutofillOptimizationGuide()),
+          ShouldBlockBenefitSuggestionLabelsForCardAndUrl)
+      .WillByDefault(testing::Return(true));
+  Suggestion suggestion = CreateCreditCardSuggestionForTest(
+      card(), *autofill_client(), CREDIT_CARD_NUMBER,
+      /*virtual_card_option=*/false,
+      /*card_linked_offer_available=*/false);
+
+  // Benefit description is not returned.
+  EXPECT_TRUE(suggestion.labels.empty());
+}
+
+// Checks that for FPAN suggestions that the benefit description is displayed.
+TEST_P(AutofillCreditCardBenefitsLabelTest,
+       BenefitSuggestionLabel_Fpan_NewFopDisplayOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableNewFopDisplayDesktop);
+  EXPECT_THAT(
+      CreateCreditCardSuggestionForTest(card(), *autofill_client(),
+                                        CREDIT_CARD_NUMBER,
+                                        /*virtual_card_option=*/false,
+                                        /*card_linked_offer_available=*/false)
+          .labels,
+      ElementsAre(
+          std::vector<Suggestion::Text>{
+              Suggestion::Text(expected_benefit_text())},
+          std::vector<Suggestion::Text>{Suggestion::Text(card().GetInfo(
+              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, /*app_locale=*/"en-US"))}));
+}
+
+// Checks that for virtual cards suggestion the benefit description is shown
+// with a virtual card label appended.
+TEST_P(AutofillCreditCardBenefitsLabelTest,
+       BenefitSuggestionLabel_VirtualCard_NewFopDisplayOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableNewFopDisplayDesktop);
+
+  EXPECT_THAT(
+      CreateCreditCardSuggestionForTest(card(), *autofill_client(),
+                                        CREDIT_CARD_NUMBER,
+                                        /*virtual_card_option=*/true,
+                                        /*card_linked_offer_available=*/false)
+          .labels,
+      ElementsAre(
+          std::vector<Suggestion::Text>{
+              Suggestion::Text(expected_benefit_text())},
+          std::vector<Suggestion::Text>{
+              Suggestion::Text(l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE))}));
+}
+
+// Checks that for merchant opt-out virtual cards suggestion the benefit
+// description is not shown.
+TEST_P(AutofillCreditCardBenefitsLabelTest,
+       BenefitSuggestionLabel_VirtualCard_MerchantOptOut_NewFopDisplayOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableNewFopDisplayDesktop);
+  CreditCard virtual_card = CreditCard::CreateVirtualCard(card());
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_client()->GetAutofillOptimizationGuide()),
+          ShouldBlockFormFieldSuggestion)
+      .WillByDefault(testing::Return(true));
+  EXPECT_THAT(
+      CreateCreditCardSuggestionForTest(virtual_card, *autofill_client(),
+                                        CREDIT_CARD_NUMBER,
+                                        /*virtual_card_option=*/true,
+                                        /*card_linked_offer_available=*/false)
+          .labels,
+      ElementsAre(
+          std::vector<Suggestion::Text>{
+              Suggestion::Text(expected_benefit_text())},
+          std::vector<
+              Suggestion::Text>{Suggestion::Text(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE))}));
+}
+
+// Checks that the merchant benefit description is not displayed for suggestions
+// where the webpage's URL is different from the benefit's applicable URL.
+TEST_P(
+    AutofillCreditCardBenefitsLabelTest,
+    BenefitSuggestionLabelNotDisplayed_MerchantUrlIsDifferent_NewFopDisplayOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableNewFopDisplayDesktop);
+  if (!std::holds_alternative<CreditCardMerchantBenefit>(GetBenefit())) {
+    GTEST_SKIP() << "This test should not run for non-merchant benefits.";
+  }
+  autofill_client()->set_last_committed_primary_main_frame_url(
+      GURL("https://random-url.com"));
   // Merchant benefit description is not returned.
   EXPECT_THAT(
       CreateCreditCardSuggestionForTest(card(), *autofill_client(),
@@ -552,8 +698,12 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
 // Checks that the category benefit description is not displayed for suggestions
 // where the webpage's category in the optimization guide is different from the
 // benefit's applicable category.
-TEST_P(AutofillCreditCardBenefitsLabelTest,
-       BenefitSuggestionLabelNotDisplayed_CategoryIsDifferent) {
+TEST_P(
+    AutofillCreditCardBenefitsLabelTest,
+    BenefitSuggestionLabelNotDisplayed_CategoryIsDifferent_NewFopDisplayOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableNewFopDisplayDesktop);
   if (!std::holds_alternative<CreditCardCategoryBenefit>(GetBenefit())) {
     GTEST_SKIP() << "This test should not run for non-category benefits.";
   }
@@ -578,7 +728,10 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
 // Checks that the benefit description is not displayed when benefit suggestions
 // are disabled for the given card and url.
 TEST_P(AutofillCreditCardBenefitsLabelTest,
-       BenefitSuggestionLabelNotDisplayed_BlockedUrl) {
+       BenefitSuggestionLabelNotDisplayed_BlockedUrl_NewFopDisplayOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableNewFopDisplayDesktop);
   ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
               autofill_client()->GetAutofillOptimizationGuide()),
           ShouldBlockBenefitSuggestionLabelsForCardAndUrl)
@@ -2056,7 +2209,19 @@ TEST_P(AutofillIbanSuggestionContentTest, GetLocalAndServerIbanSuggestions) {
 // This class helps test the credit card contents that are displayed in
 // Autofill suggestions. It covers suggestions on Desktop/Android dropdown,
 // and on Android keyboard accessory.
-using AutofillCreditCardSuggestionContentTest = PaymentsSuggestionGeneratorTest;
+class AutofillCreditCardSuggestionContentTest
+    : public PaymentsSuggestionGeneratorTest {
+ public:
+  AutofillCreditCardSuggestionContentTest() {
+    feature_list_metadata_.InitAndEnableFeature(
+        features::kAutofillEnableNewFopDisplayDesktop);
+  }
+
+  ~AutofillCreditCardSuggestionContentTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_metadata_;
+};
 
 // Verify that the suggestion's texts are populated correctly for a virtual card
 // suggestion when the cardholder name field is focused.
@@ -2106,24 +2271,20 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
               EqualLabels({{CreditCard::GetObfuscatedStringForCardDigits(
                   /*obfuscation_length=*/2, u"1111")}}));
 #else
-  // There should be 1 lines of labels with 2 columns:
-  // 1. Card name "Visa".
-  // 2. obfuscated last 4 digits "....1111".
-  ASSERT_EQ(virtual_card_name_field_suggestion.labels.size(), 2U);
-  ASSERT_EQ(virtual_card_name_field_suggestion.labels[0].size(), 2U);
-  EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][0].value, u"Visa");
-  EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][1].value,
-            CreditCard::GetObfuscatedStringForCardDigits(
-                /*obfuscation_length=*/4, u"1111"));
+  // There should be 1 lines of labels with 3 columns:
+  // 1. Card Network + last 4 digits.
+  // 2. A dot ("•") separator.
+  // 3. Expiration date.
+  EXPECT_THAT(
+      virtual_card_name_field_suggestion,
+      EqualLabels(
+          {{server_card.NetworkAndLastFourDigits(/*obfuscation_length=*/2),
+            kEllipsisDotSeparator,
+            server_card.AbbreviatedExpirationDateForDisplay(false)}}));
 #endif
   EXPECT_EQ(virtual_card_name_field_suggestion.IsAcceptable(), true);
   EXPECT_EQ(virtual_card_name_field_suggestion.iph_metadata.feature,
             &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  ASSERT_EQ(virtual_card_name_field_suggestion.labels[1].size(), 1U);
-  EXPECT_EQ(virtual_card_name_field_suggestion.labels[1][0].value,
-            u"Virtual card");
-#endif
 }
 
 // Verify that the suggestion's texts are populated correctly for a virtual card
@@ -2158,11 +2319,14 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
             CreditCard::GetObfuscatedStringForCardDigits(
                 /*obfuscation_length=*/2, u"1111"));
 #else
-  // Card name and the obfuscated last four digits are shown separately.
-  EXPECT_EQ(virtual_card_number_field_suggestion.main_text.value, u"Visa");
+  // For Desktop, display the card name and the last 4 digits, followed
+  // by a dot separator and expiration date.
+  EXPECT_EQ(virtual_card_number_field_suggestion.main_text.value,
+            server_card.NetworkAndLastFourDigits(/*obfuscation_length=*/2));
   EXPECT_EQ(virtual_card_number_field_suggestion.minor_texts[0].value,
-            CreditCard::GetObfuscatedStringForCardDigits(
-                /*obfuscation_length=*/4, u"1111"));
+            kEllipsisDotSeparator);
+  EXPECT_EQ(virtual_card_number_field_suggestion.minor_texts[1].value,
+            server_card.AbbreviatedExpirationDateForDisplay(false));
 #endif
   EXPECT_EQ(virtual_card_number_field_suggestion.IsAcceptable(), true);
   EXPECT_EQ(virtual_card_number_field_suggestion.iph_metadata.feature,
@@ -2170,10 +2334,6 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 #if BUILDFLAG(IS_ANDROID)
   // For the keyboard accessory, there is no label.
   ASSERT_TRUE(virtual_card_number_field_suggestion.labels.empty());
-// For Desktop dropdown, "Virtual card" is the label.
-#elif !BUILDFLAG(IS_IOS)
-  EXPECT_THAT(virtual_card_number_field_suggestion,
-              EqualLabels({{u"Virtual card"}}));
 #endif
 }
 
@@ -2205,14 +2365,14 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
               EqualLabels({{CreditCard::GetObfuscatedStringForCardDigits(
                   /*obfuscation_length=*/2, u"1111")}}));
 #else
-  // For Desktop/Android, the label is "CardName  ....1111". Card name and
-  // last four are shown separately.
-  ASSERT_EQ(real_card_name_field_suggestion.labels.size(), 1U);
-  ASSERT_EQ(real_card_name_field_suggestion.labels[0].size(), 2U);
-  EXPECT_EQ(real_card_name_field_suggestion.labels[0][0].value, u"Visa");
-  EXPECT_EQ(real_card_name_field_suggestion.labels[0][1].value,
-            CreditCard::GetObfuscatedStringForCardDigits(
-                /*obfuscation_length=*/4, u"1111"));
+  // For Desktop, the label is "Visa ..1111 • 02/29". Network name and
+  // last four followed by expiration date.
+  EXPECT_THAT(
+      real_card_name_field_suggestion,
+      EqualLabels(
+          {{server_card.NetworkAndLastFourDigits(/*obfuscation_length=*/2),
+            kEllipsisDotSeparator,
+            server_card.AbbreviatedExpirationDateForDisplay(false)}}));
 #endif
 }
 
@@ -2236,26 +2396,36 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
       base::StrCat({u"Visa  ", CreditCard::GetObfuscatedStringForCardDigits(
                                    /*obfuscation_length=*/2, u"1111")}));
   EXPECT_TRUE(real_card_number_field_suggestion.minor_texts.empty());
-#elif BUILDFLAG(IS_ANDROID)
-  // For Android, split the first line and populate the card name and
-  // the last 4 digits separately.
-  EXPECT_EQ(real_card_number_field_suggestion.main_text.value, u"Visa");
-  EXPECT_EQ(real_card_number_field_suggestion.minor_texts[0].value,
-            CreditCard::GetObfuscatedStringForCardDigits(2, u"1111"));
-#else
-  // For Desktop, split the first line and populate the card name and
-  // the last 4 digits separately.
-  EXPECT_EQ(real_card_number_field_suggestion.main_text.value, u"Visa");
-  EXPECT_EQ(real_card_number_field_suggestion.minor_texts[0].value,
-            CreditCard::GetObfuscatedStringForCardDigits(4, u"1111"));
-#endif
-
   // The label is the expiration date formatted as mm/yy.
   EXPECT_THAT(
       real_card_number_field_suggestion,
       EqualLabels(
           {{base::StrCat({base::UTF8ToUTF16(test::NextMonth()), u"/",
                           base::UTF8ToUTF16(test::NextYear().substr(2))})}}));
+#elif BUILDFLAG(IS_ANDROID)
+  // For Android, split the first line and populate the card name and
+  // the last 4 digits separately.
+  EXPECT_EQ(real_card_number_field_suggestion.main_text.value, u"Visa");
+  EXPECT_EQ(real_card_number_field_suggestion.minor_texts[0].value,
+            CreditCard::GetObfuscatedStringForCardDigits(2, u"1111"));
+  // The label is the expiration date formatted as mm/yy.
+  EXPECT_THAT(
+      real_card_number_field_suggestion,
+      EqualLabels(
+          {{base::StrCat({base::UTF8ToUTF16(test::NextMonth()), u"/",
+                          base::UTF8ToUTF16(test::NextYear().substr(2))})}}));
+#else
+  // For Desktop, display the card name and the last 4 digits, followed
+  // by a dot separator and expiration date.
+  EXPECT_EQ(real_card_number_field_suggestion.main_text.value,
+            server_card.NetworkAndLastFourDigits(/*obfuscation_length=*/2));
+  EXPECT_EQ(real_card_number_field_suggestion.minor_texts[0].value,
+            kEllipsisDotSeparator);
+  EXPECT_EQ(real_card_number_field_suggestion.minor_texts[1].value,
+            server_card.AbbreviatedExpirationDateForDisplay(false));
+  // The label is empty.
+  EXPECT_TRUE(real_card_number_field_suggestion.labels.empty());
+#endif
 }
 
 // Verify that the suggestion's texts are populated correctly for a local and
@@ -2452,8 +2622,138 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
                         IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE) +
                     u" • " + card_type + u" " + obfuscated_number}}));
 }
-
 #endif  // BUILDFLAG(IS_IOS)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Verify that the suggestion's texts are populated correctly for a virtual card
+// suggestion when the cardholder name field is focused.
+TEST_F(
+    AutofillCreditCardSuggestionContentTest,
+    CreateCreditCardSuggestion_VirtualCardMetadata_NameField_NewFopDisplayOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableNewFopDisplayDesktop);
+  CreditCard server_card = CreateServerCard();
+
+  // Name field suggestion for virtual cards.
+  Suggestion virtual_card_name_field_suggestion =
+      CreateCreditCardSuggestionForTest(server_card, *autofill_client(),
+                                        CREDIT_CARD_NAME_FULL,
+                                        /*virtual_card_option=*/true,
+                                        /*card_linked_offer_available=*/false);
+
+  // On other platforms, the cardholder name is shown on the first line.
+  EXPECT_EQ(virtual_card_name_field_suggestion.main_text.value,
+            u"Elvis Presley");
+  EXPECT_TRUE(virtual_card_name_field_suggestion.minor_texts.empty());
+
+  // There should be 1 lines of labels with 2 columns:
+  // 1. Card name "Visa".
+  // 2. obfuscated last 4 digits "....1111".
+  ASSERT_EQ(virtual_card_name_field_suggestion.labels.size(), 2U);
+  ASSERT_EQ(virtual_card_name_field_suggestion.labels[0].size(), 2U);
+  EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][0].value, u"Visa");
+  EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][1].value,
+            CreditCard::GetObfuscatedStringForCardDigits(
+                /*obfuscation_length=*/4, u"1111"));
+  EXPECT_EQ(virtual_card_name_field_suggestion.IsAcceptable(), true);
+  EXPECT_EQ(virtual_card_name_field_suggestion.iph_metadata.feature,
+            &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
+  ASSERT_EQ(virtual_card_name_field_suggestion.labels[1].size(), 1U);
+  EXPECT_EQ(virtual_card_name_field_suggestion.labels[1][0].value,
+            u"Virtual card");
+}
+
+// Verify that the suggestion's texts are populated correctly for a virtual card
+// suggestion when the card number field is focused.
+TEST_F(
+    AutofillCreditCardSuggestionContentTest,
+    CreateCreditCardSuggestion_VirtualCardMetadata_NumberField_NewFopDisplayOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableNewFopDisplayDesktop);
+  CreditCard server_card = CreateServerCard();
+
+  // Card number field suggestion for virtual cards.
+  Suggestion virtual_card_number_field_suggestion =
+      CreateCreditCardSuggestionForTest(server_card, *autofill_client(),
+                                        CREDIT_CARD_NUMBER,
+                                        /*virtual_card_option=*/true,
+                                        /*card_linked_offer_available=*/false);
+
+  // Card name and the obfuscated last four digits are shown separately.
+  EXPECT_EQ(virtual_card_number_field_suggestion.main_text.value, u"Visa");
+  EXPECT_EQ(virtual_card_number_field_suggestion.minor_texts[0].value,
+            CreditCard::GetObfuscatedStringForCardDigits(
+                /*obfuscation_length=*/4, u"1111"));
+  EXPECT_EQ(virtual_card_number_field_suggestion.IsAcceptable(), true);
+  EXPECT_EQ(virtual_card_number_field_suggestion.iph_metadata.feature,
+            &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
+  EXPECT_THAT(virtual_card_number_field_suggestion,
+              EqualLabels({{u"Virtual card"}}));
+}
+
+// Verify that the suggestion's texts are populated correctly for a masked
+// server card suggestion when the cardholder name field is focused.
+TEST_F(
+    AutofillCreditCardSuggestionContentTest,
+    CreateCreditCardSuggestion_MaskedServerCardMetadata_NameField_NewFopDisplayOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableNewFopDisplayDesktop);
+  CreditCard server_card = CreateServerCard();
+
+  // Name field suggestion for non-virtual cards.
+  Suggestion real_card_name_field_suggestion =
+      CreateCreditCardSuggestionForTest(server_card, *autofill_client(),
+                                        CREDIT_CARD_NAME_FULL,
+                                        /*virtual_card_option=*/false,
+                                        /*card_linked_offer_available=*/false);
+
+  // Only the name is displayed on the first line.
+  EXPECT_EQ(real_card_name_field_suggestion.main_text.value, u"Elvis Presley");
+  EXPECT_TRUE(real_card_name_field_suggestion.minor_texts.empty());
+  // Card network and last four are shown separately.
+  ASSERT_EQ(real_card_name_field_suggestion.labels.size(), 1U);
+  ASSERT_EQ(real_card_name_field_suggestion.labels[0].size(), 2U);
+  EXPECT_EQ(real_card_name_field_suggestion.labels[0][0].value, u"Visa");
+  EXPECT_EQ(real_card_name_field_suggestion.labels[0][1].value,
+            CreditCard::GetObfuscatedStringForCardDigits(
+                /*obfuscation_length=*/4, u"1111"));
+}
+
+// Verify that the suggestion's texts are populated correctly for a masked
+// server card suggestion when the card number field is focused.
+TEST_F(
+    AutofillCreditCardSuggestionContentTest,
+    CreateCreditCardSuggestion_MaskedServerCardMetadata_NumberField_NewFopDisplayOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableNewFopDisplayDesktop);
+  CreditCard server_card = CreateServerCard();
+
+  // Card number field suggestion for non-virtual cards.
+  Suggestion real_card_number_field_suggestion =
+      CreateCreditCardSuggestionForTest(server_card, *autofill_client(),
+                                        CREDIT_CARD_NUMBER,
+                                        /*virtual_card_option=*/false,
+                                        /*card_linked_offer_available=*/false);
+
+  // Split the first line and populate the card name and the last 4 digits
+  // separately.
+  EXPECT_EQ(real_card_number_field_suggestion.main_text.value, u"Visa");
+  EXPECT_EQ(real_card_number_field_suggestion.minor_texts[0].value,
+            CreditCard::GetObfuscatedStringForCardDigits(4, u"1111"));
+
+  // The label is the expiration date formatted as mm/yy.
+  EXPECT_THAT(
+      real_card_number_field_suggestion,
+      EqualLabels(
+          {{base::StrCat({base::UTF8ToUTF16(test::NextMonth()), u"/",
+                          base::UTF8ToUTF16(test::NextYear().substr(2))})}}));
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // The boolean param denotes if merchant has opted out of VCN.
 class AutofillCreditCardSuggestionContentVcnMerchantOptOutTest
@@ -2529,6 +2829,124 @@ TEST_P(
             CreditCard::GetObfuscatedStringForCardDigits(
                 /*obfuscation_length=*/2, u"4444"));
 #else
+  // Desktop: There should be one line for network and last four, and one line
+  // if merchant opt-out virtual card text.
+  ASSERT_EQ(virtual_card_name_field_suggestion.labels.size(),
+            is_merchant_opted_out() ? 2U : 1U);
+  if (is_merchant_opted_out()) {
+    EXPECT_THAT(
+        virtual_card_name_field_suggestion,
+        EqualLabels(
+            {{server_card.NetworkAndLastFourDigits(/*obfuscation_length=*/2),
+              kEllipsisDotSeparator,
+              server_card.AbbreviatedExpirationDateForDisplay(false)},
+             {l10n_util::GetStringUTF16(expected_message_id())}}));
+  } else {
+    EXPECT_THAT(
+        virtual_card_name_field_suggestion,
+        EqualLabels(
+            {{server_card.NetworkAndLastFourDigits(/*obfuscation_length=*/2),
+              kEllipsisDotSeparator,
+              server_card.AbbreviatedExpirationDateForDisplay(false)}}));
+  }
+#endif
+}
+
+// Verify that the suggestion's texts are populated correctly for a virtual
+// card suggestion when the card number field is focused based on if
+// merchant accepts virtual cards.
+TEST_P(
+    AutofillCreditCardSuggestionContentVcnMerchantOptOutTest,
+    CreateCreditCardSuggestion_VirtualCardMetadata_MerchantOptOut_NumberField) {
+  CreditCard server_card = test::GetVirtualCard();
+
+  // Card number field suggestion for virtual cards.
+  Suggestion virtual_card_number_field_suggestion =
+      CreateCreditCardSuggestionForTest(server_card, *autofill_client(),
+                                        CREDIT_CARD_NUMBER,
+                                        /*virtual_card_option=*/true,
+                                        /*card_linked_offer_available=*/false);
+
+  // `IsAcceptable()` returns false only when flag is enabled and merchant has
+  // opted out of VCN.
+  EXPECT_EQ(virtual_card_number_field_suggestion.IsAcceptable(),
+            !is_merchant_opted_out());
+  // `HasDeactivatedStyle()` returns true only when merchant has opted out of
+  // VCN.
+  EXPECT_EQ(virtual_card_number_field_suggestion.HasDeactivatedStyle(),
+            is_merchant_opted_out());
+  EXPECT_EQ(
+      virtual_card_number_field_suggestion.iph_metadata.feature,
+      virtual_card_number_field_suggestion.HasDeactivatedStyle()
+          ? &feature_engagement::
+                kIPHAutofillDisabledVirtualCardSuggestionFeature
+          : &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
+
+#if BUILDFLAG(IS_ANDROID)
+  // In Android, when filling card number, the labels are removed.
+  ASSERT_TRUE(virtual_card_number_field_suggestion.labels.empty());
+#elif BUILDFLAG(IS_IOS)
+  // In iOS, when filling card number, only the expiration date will be shown.
+  ASSERT_EQ(virtual_card_number_field_suggestion.labels.size(), 1U);
+  EXPECT_EQ(virtual_card_number_field_suggestion.labels[0].size(), 1U);
+  EXPECT_NE(virtual_card_number_field_suggestion.labels[0][0].value,
+            l10n_util::GetStringUTF16(expected_message_id()));
+#else
+  // Desktop, the label should be one-line message if it's merchant opt out.
+  EXPECT_EQ(virtual_card_number_field_suggestion.labels.size(),
+            is_merchant_opted_out() ? 1U : 0U);
+#endif
+}
+
+// Verify that the suggestion's texts are populated correctly for a virtual
+// card suggestion when the cardholder name field is focused based on if
+// merchant accepts virtual cards.
+TEST_P(
+    AutofillCreditCardSuggestionContentVcnMerchantOptOutTest,
+    CreateCreditCardSuggestion_VirtualCardMetadata_MerchantOptOut_NameField_NewFopDisplayOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableNewFopDisplayDesktop);
+  CreditCard server_card = test::GetVirtualCard();
+
+  // Name field suggestion for virtual cards.
+  Suggestion virtual_card_name_field_suggestion =
+      CreateCreditCardSuggestionForTest(server_card, *autofill_client(),
+                                        CREDIT_CARD_NAME_FULL,
+                                        /*virtual_card_option=*/true,
+                                        /*card_linked_offer_available=*/false);
+
+  // `IsAcceptable()` returns false only when merchant has opted out of VCN.
+  EXPECT_EQ(virtual_card_name_field_suggestion.IsAcceptable(),
+            !is_merchant_opted_out());
+
+  // `HasDeactivatedStyle()` returns true only when merchant has opted out of
+  // VCN.
+  EXPECT_EQ(virtual_card_name_field_suggestion.HasDeactivatedStyle(),
+            is_merchant_opted_out());
+  EXPECT_EQ(
+      virtual_card_name_field_suggestion.iph_metadata.feature,
+      virtual_card_name_field_suggestion.HasDeactivatedStyle()
+          ? &feature_engagement::
+                kIPHAutofillDisabledVirtualCardSuggestionFeature
+          : &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
+#if BUILDFLAG(IS_ANDROID)
+  // Android: There should be only 1 line of label: obfuscated last 4 digits
+  // "..4444".
+  EXPECT_THAT(virtual_card_name_field_suggestion,
+              EqualLabels({{CreditCard::GetObfuscatedStringForCardDigits(
+                  /*obfuscation_length=*/2, u"4444")}}));
+#elif BUILDFLAG(IS_IOS)
+  // iOS: In dropdown, there should be one line, with the value equal to
+  // obfuscated last four digits. And in AdjustVirtualCardSuggestionContent
+  // we would make minor text the value, and set main text as the virtual card
+  // label.
+  ASSERT_EQ(virtual_card_name_field_suggestion.labels.size(), 1U);
+  ASSERT_EQ(virtual_card_name_field_suggestion.labels[0].size(), 1U);
+  EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][0].value,
+            CreditCard::GetObfuscatedStringForCardDigits(
+                /*obfuscation_length=*/2, u"4444"));
+#else
   // Desktop: There should be two lines, where first line is the card number
   // and second line is the virtual card text.
   ASSERT_EQ(virtual_card_name_field_suggestion.labels.size(), 2U);
@@ -2543,7 +2961,10 @@ TEST_P(
 // merchant accepts virtual cards.
 TEST_P(
     AutofillCreditCardSuggestionContentVcnMerchantOptOutTest,
-    CreateCreditCardSuggestion_VirtualCardMetadata_MerchantOptOut_NumberField) {
+    CreateCreditCardSuggestion_VirtualCardMetadata_MerchantOptOut_NumberField_NewFopDisplayOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableNewFopDisplayDesktop);
   CreditCard server_card = test::GetVirtualCard();
 
   // Card number field suggestion for virtual cards.
