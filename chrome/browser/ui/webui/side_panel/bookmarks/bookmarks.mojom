@@ -70,9 +70,16 @@ interface BookmarksPageHandlerFactory {
 };
 
 // Browser-side handler for requests from WebUI page.
+// Folder parent ID should use string IDs as it can represent merged nodes.
+// Regular ID (non merged folder or url) can be directly passed as int64, it
+// can also support string based IDs.
 interface BookmarksPageHandler {
   // Bookmarks the current active tab in the given folder.
-  BookmarkCurrentTabInFolder(int64 folder_id);
+  BookmarkCurrentTabInFolder(string folder_id);
+
+  // Creates a folder in `folder_id` at the first position with `title`.
+  // Returns the id of the newly created node.
+  CreateFolder(string folder_id, string title) => (string new_folder_id);
 
   // Opens the edit bookmark dialog.
   ExecuteEditCommand(array<int64> node_ids, ActionSource source);

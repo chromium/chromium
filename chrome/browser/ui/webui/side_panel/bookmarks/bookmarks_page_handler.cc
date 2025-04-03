@@ -6,15 +6,19 @@
 
 #include <algorithm>
 #include <iterator>
+#include <optional>
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/bookmark_parent_folder.h"
 #include "chrome/browser/bookmarks/bookmark_parent_folder_children.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
@@ -240,6 +244,54 @@ std::string GetFolderSidePanelID(
   return base::ToString(folder.as_non_permanent_folder()->id());
 }
 
+// Will return `std::nullopt` if `side_panel_id` does not correspond to a
+// permanent node special ID or is not an actual int64 id. Invalid inputs should
+// result in no-ops.
+std::optional<BookmarkParentFolder> GetBookmarkParentFolderFromSidePanel(
+    const BookmarkMergedSurfaceService& bookmark_merged_surface,
+    const std::string& side_panel_id) {
+  // TODO(crbug.com/380806881): Checks for permanent folder IDs when fixed Side
+  // Panel IDs will be implemented. It should simplify the checks here.
+  if (side_panel_id ==
+      GetPermanentFolderSidePanelID(
+          bookmark_merged_surface,
+          BookmarkParentFolder::PermanentFolderType::kBookmarkBarNode)) {
+    return BookmarkParentFolder::BookmarkBarFolder();
+  }
+  if (side_panel_id ==
+      GetPermanentFolderSidePanelID(
+          bookmark_merged_surface,
+          BookmarkParentFolder::PermanentFolderType::kOtherNode)) {
+    return BookmarkParentFolder::OtherFolder();
+  }
+  if (side_panel_id ==
+      GetPermanentFolderSidePanelID(
+          bookmark_merged_surface,
+          BookmarkParentFolder::PermanentFolderType::kMobileNode)) {
+    return BookmarkParentFolder::MobileFolder();
+  }
+  if (side_panel_id ==
+      GetPermanentFolderSidePanelID(
+          bookmark_merged_surface,
+          BookmarkParentFolder::PermanentFolderType::kManagedNode)) {
+    return BookmarkParentFolder::ManagedFolder();
+  }
+
+  int64_t folder_id;
+  // Conversion check validity.
+  if (!base::StringToInt64(side_panel_id, &folder_id)) {
+    if (mojo::IsInMessageDispatch()) {
+      mojo::ReportBadMessage(
+          "Unsupported conversion: side_panel_id should either be a permanent "
+          "merged node ID or represent an int64 id value");
+    }
+    return std::nullopt;
+  }
+
+  return BookmarkParentFolder::FromFolderNode(bookmarks::GetBookmarkNodeByID(
+      bookmark_merged_surface.bookmark_model(), folder_id));
+}
+
 std::vector<side_panel::mojom::BookmarksTreeNodePtr> ConstructMojoChildNodes(
     const BookmarkMergedSurfaceService& bookmark_merged_surface,
     const BookmarkParentFolder& parent,
@@ -307,13 +359,48 @@ BookmarksPageHandler::BookmarksPageHandler(
 
 BookmarksPageHandler::~BookmarksPageHandler() = default;
 
-void BookmarksPageHandler::BookmarkCurrentTabInFolder(int64_t folder_id) {
+void BookmarksPageHandler::BookmarkCurrentTabInFolder(
+    const std::string& folder_id) {
   Browser* browser = chrome::FindLastActive();
   if (!browser) {
     return;
   }
 
-  chrome::BookmarkCurrentTabInFolder(browser, folder_id);
+  std::optional<BookmarkParentFolder> parent =
+      GetBookmarkParentFolderFromSidePanel(*bookmark_merged_surface_,
+                                           folder_id);
+  if (!parent) {
+    return;
+  }
+  chrome::BookmarkCurrentTabInFolder(
+      browser, bookmark_merged_surface_->bookmark_model(),
+      bookmark_merged_surface_->GetDefaultParentForNewNodes(*parent)->id());
+}
+
+void BookmarksPageHandler::CreateFolder(const std::string& folder_id,
+                                        const std::string& title,
+                                        CreateFolderCallback callback) {
+  Browser* browser = chrome::FindLastActive();
+  if (!browser) {
+    return;
+  }
+
+  std::optional<BookmarkParentFolder> parent =
+      GetBookmarkParentFolderFromSidePanel(*bookmark_merged_surface_,
+                                           folder_id);
+  if (!parent) {
+    std::move(callback).Run("");
+    return;
+  }
+  const bookmarks::BookmarkNode* parent_node =
+      bookmark_merged_surface_->GetDefaultParentForNewNodes(*parent);
+
+  bookmarks::BookmarkModel* model = bookmark_merged_surface_->bookmark_model();
+  const bookmarks::BookmarkNode* new_folder =
+      model->AddFolder(parent_node, /*index=*/0, base::UTF8ToUTF16(title));
+  model->SetDateFolderModified(parent_node, base::Time::Now());
+
+  std::move(callback).Run(base::ToString(new_folder->id()));
 }
 
 void BookmarksPageHandler::ExecuteOpenInNewTabCommand(

@@ -899,11 +899,11 @@ export class PowerBookmarksListElement extends PolymerElement implements
     let parentId = event.detail.folderId;
     for (const folder of event.detail.newFolders) {
       chrome.metricsPrivate.recordUserAction(ADD_FOLDER_ACTION_UMA);
-      const newFolder =
+      const result: {newFolderId: string} =
           await this.bookmarksApi_.createFolder(folder.parentId!, folder.title);
-      folder.children!.forEach(child => child.parentId = newFolder.id);
+      folder.children!.forEach(child => child.parentId = result.newFolderId);
       if (folder.id === parentId) {
-        parentId = newFolder.id;
+        parentId = result.newFolderId;
       }
       // Removing folders added in edit menu while editing a bookmark as they
       // are made with TEMP_FOLDER_ID_PREFIX bookmark-id and are again created
@@ -1058,8 +1058,8 @@ export class PowerBookmarksListElement extends PolymerElement implements
     chrome.metricsPrivate.recordUserAction(ADD_FOLDER_ACTION_UMA);
     this.bookmarksApi_
         .createFolder(newParent.id, loadTimeData.getString('newFolderTitle'))
-        .then((newFolder) => {
-          this.renamingId_ = newFolder.id;
+        .then((result: {newFolderId: string}) => {
+          this.renamingId_ = result.newFolderId;
         });
   }
 

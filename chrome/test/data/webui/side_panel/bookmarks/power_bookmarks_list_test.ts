@@ -124,6 +124,11 @@ suite('General', () => {
         '#addCurrentTabButton')!;
   }
 
+  function getAddNewFolderButton() {
+    return powerBookmarksList.shadowRoot!.querySelector<CrButtonElement>(
+        '.new-folder-row')!;
+  }
+
   function getBookmarkWithId(id: string): chrome.bookmarks.BookmarkTreeNode|
       undefined {
     return getBookmarks().find((bookmark) => bookmark.id === id);
@@ -461,6 +466,15 @@ suite('General', () => {
 
     btn = getAddTabButton();
     assertFalse(btn.disabled);
+  });
+
+  test('AddNewFolderClicked', async () => {
+    const addNewFolderButton = getAddNewFolderButton();
+    assertTrue(!!addNewFolderButton);
+    assertFalse(addNewFolderButton.disabled);
+
+    addNewFolderButton.click();
+    await bookmarksApi.whenCalled('createFolder');
   });
 
   test('AddsCreatedBookmark', async () => {

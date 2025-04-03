@@ -117,9 +117,9 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
   }
 
   createFolder(parentId: string, title: string):
-      Promise<chrome.bookmarks.BookmarkTreeNode> {
+      Promise<{newFolderId: string}> {
     this.methodCalled('createFolder', parentId, title);
-    return Promise.resolve({id: '0', title: 'foo'});
+    return Promise.resolve({newFolderId: '0'});
   }
 
   cutBookmark(id: string) {

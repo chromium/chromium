@@ -29,8 +29,7 @@ export interface BookmarksApiProxy {
   contextMenuRemoveFromBookmarksBar(id: string, source: ActionSource): void;
   contextMenuDelete(ids: string[], source: ActionSource): void;
   copyBookmark(id: string): Promise<void>;
-  createFolder(parentId: string, title: string):
-      Promise<chrome.bookmarks.BookmarkTreeNode>;
+  createFolder(parentId: string, title: string): Promise<{newFolderId: string}>;
   editBookmarks(
       ids: string[], newTitle: string|undefined, newUrl: string|undefined,
       newParentId: string|undefined): void;
@@ -71,7 +70,7 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
   }
 
   bookmarkCurrentTabInFolder(folderId: string) {
-    this.handler.bookmarkCurrentTabInFolder(BigInt(folderId));
+    this.handler.bookmarkCurrentTabInFolder(folderId);
   }
 
   cutBookmark(id: string) {
@@ -123,8 +122,7 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
   }
 
   createFolder(parentId: string, title: string) {
-    return chrome.bookmarks.create(
-        {parentId: parentId, title: title, index: 0});
+    return this.handler.createFolder(parentId, title);
   }
 
   editBookmarks(
