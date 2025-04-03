@@ -456,7 +456,8 @@ class TabStripModel : public TabGroupController {
   // closed.
   bool IsTabClosable(const content::WebContents* contents) const;
 
-  split_tabs::SplitTabData* GetSplitData(split_tabs::SplitTabId split_id);
+  const split_tabs::SplitTabData* GetSplitData(
+      split_tabs::SplitTabId split_id) const;
 
   // Returns the group that contains the tab at |index|, or nullopt if the tab
   // index is invalid or not grouped.

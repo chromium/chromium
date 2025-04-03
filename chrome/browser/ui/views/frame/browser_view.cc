@@ -1487,7 +1487,7 @@ void BrowserView::ShowSplitView() {
       browser_->tab_strip_model()->GetTabAtIndex(active_index)->GetSplit();
 
   CHECK(split_tab_id.has_value());
-  split_tabs::SplitTabData* split_tab_data =
+  const split_tabs::SplitTabData* split_tab_data =
       browser_->tab_strip_model()->GetSplitData(split_tab_id.value());
 
   std::vector<tabs::TabInterface*> split_tabs = split_tab_data->ListTabs();

@@ -27,7 +27,7 @@ class SplitTabData {
   void set_split_layout(tabs::SplitTabLayout split_layout) {
     split_layout_ = split_layout;
   }
-  tabs::SplitTabLayout split_layout() { return split_layout_; }
+  tabs::SplitTabLayout split_layout() const { return split_layout_; }
 
   std::vector<tabs::TabInterface*> ListTabs() const;
 

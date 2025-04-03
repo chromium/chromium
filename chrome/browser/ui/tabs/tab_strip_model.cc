@@ -1380,13 +1380,13 @@ void TabStripModel::MoveTabPrevious() {
   MoveTabRelative(TabRelativeDirection::kPrevious);
 }
 
-split_tabs::SplitTabData* TabStripModel::GetSplitData(
-    split_tabs::SplitTabId split_id) {
+const split_tabs::SplitTabData* TabStripModel::GetSplitData(
+    split_tabs::SplitTabId split_id) const {
   if (split_tab_data_map_.find(split_id) == split_tab_data_map_.end()) {
     return nullptr;
   }
 
-  return split_tab_data_map_[split_id].get();
+  return split_tab_data_map_.at(split_id).get();
 }
 
 bool TabStripModel::InsertionIndexBreakSplitContiguity(int index) {
