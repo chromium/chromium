@@ -268,13 +268,13 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         assertThat(getSheetItems().getChildCount(), is(2));
 
         assertThat(getBankAccountNameAt(0).getText(), is("bankName1"));
-        assertThat(getBankAccountPaymentRailAt(0).getText(), is("Pix  •"));
+        assertThat(getBankAccountPaymentRailAt(0).getText(), is("Pix  •  "));
         assertThat(getBankAccountTypeAt(0).getText(), is("Checking"));
         assertThat(getBankAccountNumberAt(0).getText(), is("••••1111"));
         assertThat(getBankAccountAdditionalInfoAt(0).getText(), is("Limit per Pix R$ 500"));
 
         assertThat(getBankAccountNameAt(1).getText(), is("bankName2"));
-        assertThat(getBankAccountPaymentRailAt(1).getText(), is("Pix  •"));
+        assertThat(getBankAccountPaymentRailAt(1).getText(), is("Pix  •  "));
         assertThat(getBankAccountTypeAt(1).getText(), is("Savings"));
         assertThat(getBankAccountNumberAt(1).getText(), is("••••2222"));
         assertThat(getBankAccountAdditionalInfoAt(1).getText(), is("Limit per Pix R$ 500"));
