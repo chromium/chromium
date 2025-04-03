@@ -229,11 +229,9 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
     // address/credit card forms to `submitted_form`, if it is an
     // address/credit card form itself. This information is attached to
     // the vote.
-    if (std::optional<FormStructure::FormAssociations> associations =
-            client_->GetFormDataImporter()->GetFormAssociations(
-                form->form_signature())) {
-      form->set_form_associations(*associations);
-    }
+    form->set_form_associations(
+        client_->GetFormDataImporter()->GetFormAssociations(
+            form->form_signature()));
   }
 
   // Annotate the form with the source language of the page.

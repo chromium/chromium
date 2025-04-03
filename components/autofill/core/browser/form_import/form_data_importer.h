@@ -120,7 +120,7 @@ class FormDataImporter : public AddressDataManager::Observer,
                           const history::DeletionInfo& deletion_info) override;
 
   // See `FormAssociator::GetFormAssociations()`.
-  std::optional<FormStructure::FormAssociations> GetFormAssociations(
+  FormStructure::FormAssociations GetFormAssociations(
       FormSignature form_signature) const {
     return form_associator_.GetFormAssociations(form_signature);
   }

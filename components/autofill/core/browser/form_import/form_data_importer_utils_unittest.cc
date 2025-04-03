@@ -146,13 +146,12 @@ TEST_P(FormAssociatorTest, FormAssociator) {
 
   auto associations =
       form_associator.GetFormAssociations(FormSignature{test.size() - 1});
-  EXPECT_TRUE(associations);
   EXPECT_EQ(expected_associations.last_address_form_submitted,
-            associations->last_address_form_submitted);
+            associations.last_address_form_submitted);
   EXPECT_EQ(expected_associations.second_last_address_form_submitted,
-            associations->second_last_address_form_submitted);
+            associations.second_last_address_form_submitted);
   EXPECT_EQ(expected_associations.last_credit_card_form_submitted,
-            associations->last_credit_card_form_submitted);
+            associations.last_credit_card_form_submitted);
 }
 
 }  // namespace
