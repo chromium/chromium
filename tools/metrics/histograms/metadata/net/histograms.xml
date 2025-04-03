@@ -7067,17 +7067,6 @@ chromium-metrics-reviews@google.com.
   <token key="Stage" variants="URLLoaderThrottleStages"/>
 </histogram>
 
-<histogram name="Net.URLRequest.DelegateConnectedDelay" units="ms"
-    expires_after="2025-10-01">
-  <owner>hayato@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    The time between when a URLRequest calls a CONNECTED delegate that can block
-    it, and when the delegate is completed. Recorded every time the delegate is
-    called and completed. Emitted when the delegate is completed.
-  </summary>
-</histogram>
-
 <histogram
     name="Net.URLRequest.ReferrerHasInformativePath{ReferrerPolicySameOrigin}"
     enum="BooleanPathIsInformative" expires_after="2023-04-16">

@@ -6942,11 +6942,6 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
   navigation_handle_timing_.final_request_ssl_delay = ssl_delay;
 
   if (response_head_->load_timing_internal_info) {
-    navigation_handle_timing_.create_stream_delay =
-        response_head_->load_timing_internal_info->create_stream_delay;
-    navigation_handle_timing_.url_request_delegate_connected_delay =
-        response_head_->load_timing_internal_info
-            ->url_request_delegate_connected_delay;
     navigation_handle_timing_.initialize_stream_delay =
         response_head_->load_timing_internal_info->initialize_stream_delay;
     // Reset `load_timing_internal_info` to make sure that isn't exposed.
