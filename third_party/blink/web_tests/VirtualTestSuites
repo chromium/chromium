@@ -1646,7 +1646,7 @@
       "--disable-features=KeepAliveInBrowserMigration,Prerender2FallbackPrefetchSpecRules"
     ],
     "owners": ["nhiroki@chromium.org", "yoichio@chromium.org"],
-    "expires": "Apr 1, 2025"
+    "expires": "Apr 1, 2026"
   },
   {
     "prefix": "prerender2-fallback-prefetch-spec-rules",
@@ -1942,7 +1942,7 @@
     "args": [
       "--enable-features=LCPScriptObserver"
     ],
-    "expires": "Apr 1, 2025",
+    "expires": "Apr 1, 2026",
     "owners": [
       "alexnj@chromium.org",
       "kouhei@chromium.org",
