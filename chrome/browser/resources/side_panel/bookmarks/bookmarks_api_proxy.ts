@@ -15,8 +15,30 @@ export interface BookmarksApiProxy {
   callbackRouter: {[key: string]: ChromeEvent<Function>};
   pageCallbackRouter: BookmarksPageCallbackRouter;
 
+  // Side Panel Activation and basic bookmark information retrieval.
+  showUi(): void;
+  getAllBookmarks(): Promise<{nodes: BookmarksTreeNode[]}>;
+  getActiveUrl(): Promise<string|undefined>;
+
+  // Side Panel display choices.
+  setSortOrder(sortOrder: SortOrder): void;
+  setViewType(viewType: ViewType): void;
+
+  // Side Panel operations.
   bookmarkCurrentTabInFolder(folderId: string): void;
-  cutBookmark(id: string): void;
+  createFolder(parentId: string, title: string): Promise<{newFolderId: string}>;
+  editBookmarks(
+      ids: string[], newTitle: string|undefined, newUrl: string|undefined,
+      newParentId: string|undefined): void;
+  deleteBookmarks(ids: string[]): Promise<void>;
+  undo(): void;
+  renameBookmark(id: string, title: string): void;
+  openBookmark(
+      id: string, depth: number, clickModifiers: ClickModifiers,
+      source: ActionSource): void;
+
+  // Context menu.
+  showContextMenu(id: string, x: number, y: number, source: ActionSource): void;
   contextMenuOpenBookmarkInNewTab(ids: string[], source: ActionSource): void;
   contextMenuOpenBookmarkInNewWindow(ids: string[], source: ActionSource): void;
   contextMenuOpenBookmarkInIncognitoWindow(ids: string[], source: ActionSource):
@@ -28,24 +50,6 @@ export interface BookmarksApiProxy {
   contextMenuAddToBookmarksBar(id: string, source: ActionSource): void;
   contextMenuRemoveFromBookmarksBar(id: string, source: ActionSource): void;
   contextMenuDelete(ids: string[], source: ActionSource): void;
-  copyBookmark(id: string): Promise<void>;
-  createFolder(parentId: string, title: string): Promise<{newFolderId: string}>;
-  editBookmarks(
-      ids: string[], newTitle: string|undefined, newUrl: string|undefined,
-      newParentId: string|undefined): void;
-  deleteBookmarks(ids: string[]): Promise<void>;
-  getActiveUrl(): Promise<string|undefined>;
-  openBookmark(
-      id: string, depth: number, clickModifiers: ClickModifiers,
-      source: ActionSource): void;
-  pasteToBookmark(parentId: string, destinationId?: string): Promise<void>;
-  renameBookmark(id: string, title: string): void;
-  setSortOrder(sortOrder: SortOrder): void;
-  setViewType(viewType: ViewType): void;
-  showContextMenu(id: string, x: number, y: number, source: ActionSource): void;
-  showUi(): void;
-  undo(): void;
-  getAllBookmarks(): Promise<{nodes: BookmarksTreeNode[]}>;
 }
 
 export class BookmarksApiProxyImpl implements BookmarksApiProxy {
@@ -71,10 +75,6 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
 
   bookmarkCurrentTabInFolder(folderId: string) {
     this.handler.bookmarkCurrentTabInFolder(folderId);
-  }
-
-  cutBookmark(id: string) {
-    chrome.bookmarkManagerPrivate.cut([id]);
   }
 
   contextMenuOpenBookmarkInNewTab(ids: string[], source: ActionSource) {
@@ -117,10 +117,6 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
     this.handler.executeDeleteCommand(ids.map(id => BigInt(id)), source);
   }
 
-  copyBookmark(id: string) {
-    return chrome.bookmarkManagerPrivate.copy([id]);
-  }
-
   createFolder(parentId: string, title: string) {
     return this.handler.createFolder(parentId, title);
   }
@@ -159,11 +155,6 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
       id: string, depth: number, clickModifiers: ClickModifiers,
       source: ActionSource) {
     this.handler.openBookmark(BigInt(id), depth, clickModifiers, source);
-  }
-
-  pasteToBookmark(parentId: string, destinationId?: string) {
-    const destination = destinationId ? [destinationId] : [];
-    return chrome.bookmarkManagerPrivate.paste(parentId, destination);
   }
 
   renameBookmark(id: string, title: string) {
