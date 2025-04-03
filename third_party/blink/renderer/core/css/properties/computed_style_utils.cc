@@ -2786,7 +2786,7 @@ CSSValue* ComputedStyleUtils::ValueForCornerShape(
     return CSSIdentifierValue::Create(CSSValueID::kSquircle);
   }
   return MakeGarbageCollected<cssvalue::CSSSuperellipseValue>(
-      *CSSNumericLiteralValue::Create(superellipse.Exponent(),
+      *CSSNumericLiteralValue::Create(superellipse.Parameter(),
                                       CSSPrimitiveValue::UnitType::kNumber));
 }
 

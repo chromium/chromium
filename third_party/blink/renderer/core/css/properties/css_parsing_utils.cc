@@ -5191,14 +5191,18 @@ CSSValue* ConsumeCornerShape(CSSParserTokenStream& stream,
   CSSParserTokenStream::RestoringBlockGuard guard(stream);
   stream.ConsumeWhitespace();
   const CSSPrimitiveValue* param = nullptr;
-  if (stream.Peek().Id() == CSSValueID::kInfinity) {
+  if (stream.Peek().Id() == CSSValueID::kNegativeInfinity) {
+    param =
+        CSSNumericLiteralValue::Create(-std::numeric_limits<double>::infinity(),
+                                       CSSPrimitiveValue::UnitType::kNumber);
+    stream.ConsumeIncludingWhitespace();
+  } else if (stream.Peek().Id() == CSSValueID::kInfinity) {
     param =
         CSSNumericLiteralValue::Create(std::numeric_limits<double>::infinity(),
                                        CSSPrimitiveValue::UnitType::kNumber);
     stream.ConsumeIncludingWhitespace();
   } else {
-    param = ConsumeNumber(stream, context,
-                          CSSPrimitiveValue::ValueRange::kNonNegative);
+    param = ConsumeNumber(stream, context, CSSPrimitiveValue::ValueRange::kAll);
   }
   if (!param) {
     return nullptr;
