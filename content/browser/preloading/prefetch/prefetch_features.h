@@ -96,6 +96,20 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchServiceWorker);
 // see crbug.com/40262310 for more details.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchBrowsingDataRemoval);
 
+// Replace current prefetch queue with a new queue and scheduler, which allows
+// prioritization, concurrent prefetches, bursting.
+//
+// For more details, see
+// https://docs.google.com/document/d/1W0Nk3Nq6NaUXkBppOUC5zyNmhVqMjYShm1bydGYd9qc
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchScheduler);
+
+// Controls params for tests of `PrefetchScheduler`.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchSchedulerTesting);
+CONTENT_EXPORT extern const base::FeatureParam<size_t>
+    kPrefetchSchedulerTestingActiveSetSizeLimitForBase;
+CONTENT_EXPORT extern const base::FeatureParam<size_t>
+    kPrefetchSchedulerTestingActiveSetSizeLimitForBurst;
+
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_
