@@ -343,9 +343,6 @@ TEST_F(OmniboxMetricsProviderTest, RecordMetrics_MultipleSearch) {
     EXPECT_EQ(ukm_recorder.GetEntriesByName(entry_name).size(), 1ul);
     auto* entry = ukm_recorder.GetEntriesByName(entry_name)[0].get();
     ukm_recorder.ExpectEntryMetric(
-        entry, ukm::builders::Omnibox_SuggestionUsed::kResultTypeGroupName,
-        static_cast<uint64_t>(ClientSummarizedResultType::kSearch));
-    ukm_recorder.ExpectEntryMetric(
         entry, ukm::builders::Omnibox_SuggestionUsed::kPageClassificationName,
         static_cast<uint64_t>(
             metrics::OmniboxEventProto_PageClassification_NTP_REALBOX));
@@ -357,18 +354,28 @@ TEST_F(OmniboxMetricsProviderTest, RecordMetrics_MultipleSearch) {
         static_cast<uint64_t>(
             metrics::OmniboxEventProto_Suggestion::SEARCH_SUGGEST));
     ukm_recorder.ExpectEntryMetric(
+        entry, ukm::builders::Omnibox_SuggestionUsed::kResultTypeGroupName,
+        static_cast<uint64_t>(ClientSummarizedResultType::kSearch));
+    ukm_recorder.ExpectEntryMetric(
         entry, ukm::builders::Omnibox_SuggestionUsed::kSelectedIndexName, 1ul);
-    ukm_recorder.ExpectEntryMetric(
-        entry, ukm::builders::Omnibox_SuggestionUsed::kTypedLengthName, 7ul);
-    ukm_recorder.ExpectEntryMetric(
-        entry, ukm::builders::Omnibox_SuggestionUsed::kTypingDurationMsName,
-        0ul);
     // With exponential bucketing scheme with a standard spacing of 2.0, 10
     // falls into the 8-16 bucket as the boundaries of the buckets increase
     // exponentially, e.g., 1, 2, 4, 8, 16, etc.
     ukm_recorder.ExpectEntryMetric(
         entry, ukm::builders::Omnibox_SuggestionUsed::kTimeSinceLastFocusMsName,
         8ul);
+    ukm_recorder.ExpectEntryMetric(
+        entry, ukm::builders::Omnibox_SuggestionUsed::kTypedLengthName, 7ul);
+    ukm_recorder.ExpectEntryMetric(
+        entry, ukm::builders::Omnibox_SuggestionUsed::kTypingDurationMsName,
+        0ul);
+    ukm_recorder.ExpectEntryMetric(
+        entry,
+        ukm::builders::Omnibox_SuggestionUsed::kZeroPrefixSearchShownName,
+        false);
+    ukm_recorder.ExpectEntryMetric(
+        entry, ukm::builders::Omnibox_SuggestionUsed::kZeroPrefixUrlShownName,
+        false);
   }
   {
     base::HistogramTester histogram_tester;
@@ -415,9 +422,6 @@ TEST_F(OmniboxMetricsProviderTest, RecordMetrics_MultipleSearch) {
     EXPECT_EQ(ukm_recorder.GetEntriesByName(entry_name).size(), 1ul);
     auto* entry = ukm_recorder.GetEntriesByName(entry_name)[0].get();
     ukm_recorder.ExpectEntryMetric(
-        entry, ukm::builders::Omnibox_SuggestionUsed::kResultTypeGroupName,
-        static_cast<uint64_t>(ClientSummarizedResultType::kSearch));
-    ukm_recorder.ExpectEntryMetric(
         entry, ukm::builders::Omnibox_SuggestionUsed::kPageClassificationName,
         static_cast<uint64_t>(
             metrics::OmniboxEventProto_PageClassification_NTP_REALBOX));
@@ -429,18 +433,28 @@ TEST_F(OmniboxMetricsProviderTest, RecordMetrics_MultipleSearch) {
         static_cast<uint64_t>(
             metrics::OmniboxEventProto_Suggestion::SEARCH_SUGGEST));
     ukm_recorder.ExpectEntryMetric(
+        entry, ukm::builders::Omnibox_SuggestionUsed::kResultTypeGroupName,
+        static_cast<uint64_t>(ClientSummarizedResultType::kSearch));
+    ukm_recorder.ExpectEntryMetric(
         entry, ukm::builders::Omnibox_SuggestionUsed::kSelectedIndexName, 1ul);
-    ukm_recorder.ExpectEntryMetric(
-        entry, ukm::builders::Omnibox_SuggestionUsed::kTypedLengthName, 0ul);
-    ukm_recorder.ExpectEntryMetric(
-        entry, ukm::builders::Omnibox_SuggestionUsed::kTypingDurationMsName,
-        0ul);
     // With exponential bucketing scheme with a standard spacing of 2.0, 10
     // falls into the 8-16 bucket as the boundaries of the buckets increase
     // exponentially, e.g., 1, 2, 4, 8, 16, etc.
     ukm_recorder.ExpectEntryMetric(
         entry, ukm::builders::Omnibox_SuggestionUsed::kTimeSinceLastFocusMsName,
         8ul);
+    ukm_recorder.ExpectEntryMetric(
+        entry, ukm::builders::Omnibox_SuggestionUsed::kTypedLengthName, 0ul);
+    ukm_recorder.ExpectEntryMetric(
+        entry, ukm::builders::Omnibox_SuggestionUsed::kTypingDurationMsName,
+        0ul);
+    ukm_recorder.ExpectEntryMetric(
+        entry,
+        ukm::builders::Omnibox_SuggestionUsed::kZeroPrefixSearchShownName,
+        true);
+    ukm_recorder.ExpectEntryMetric(
+        entry, ukm::builders::Omnibox_SuggestionUsed::kZeroPrefixUrlShownName,
+        true);
   }
 }
 

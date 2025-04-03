@@ -16458,6 +16458,18 @@ be describing additional metrics about the same event.
       Bucketed into exponential intervals with a standard bucket_spacing of 2.0.
     </summary>
   </metric>
+  <metric name="ZeroPrefixSearchShown" enum="Boolean">
+    <summary>
+      Whether at least one zero-prefix Search suggestion was shown in the
+      Omnibox session.
+    </summary>
+  </metric>
+  <metric name="ZeroPrefixUrlShown" enum="Boolean">
+    <summary>
+      Whether at least one zero-prefix URL suggestion was shown in the Omnibox
+      session.
+    </summary>
+  </metric>
 </event>
 
 <event name="OmniboxSecurityIndicator.FormSubmission">

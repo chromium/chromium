@@ -436,23 +436,26 @@ void OmniboxMetricsProvider::RecordMetrics(const OmniboxLog& log) {
     return;
   }
   ukm::builders::Omnibox_SuggestionUsed event(log.ukm_source_id);
-  event.SetResultTypeGroup(static_cast<int64_t>(client_summarized_result_type));
-  event.SetResultType(static_cast<int64_t>(omnibox_event_result_type));
   event.SetPageClassification(
       static_cast<int64_t>(log.current_page_classification));
   event.SetProviderType(static_cast<int64_t>(provider_type));
+  event.SetResultType(static_cast<int64_t>(omnibox_event_result_type));
+  event.SetResultTypeGroup(static_cast<int64_t>(client_summarized_result_type));
   event.SetSelectedIndex(log.selection.line);
+  // Set the time since the user last focused the omnibox only if set/valid.
+  if (log.elapsed_time_since_user_focused_omnibox != kDefaultTimeDelta) {
+    event.SetTimeSinceLastFocusMs(ukm::GetExponentialBucketMinForUserTiming(
+        log.elapsed_time_since_user_focused_omnibox.InMilliseconds()));
+  }
   event.SetTypedLength(log.text.length());
   // Set the typing duration only if set/valid.
   if (log.elapsed_time_since_user_first_modified_omnibox != kDefaultTimeDelta) {
     event.SetTypingDurationMs(ukm::GetExponentialBucketMinForUserTiming(
         log.elapsed_time_since_user_first_modified_omnibox.InMilliseconds()));
   }
-  // Set the time since the user last focused the omnibox only if set/valid.
-  if (log.elapsed_time_since_user_focused_omnibox != kDefaultTimeDelta) {
-    event.SetTimeSinceLastFocusMs(ukm::GetExponentialBucketMinForUserTiming(
-        log.elapsed_time_since_user_focused_omnibox.InMilliseconds()));
-  }
+  event.SetZeroPrefixSearchShown(
+      log.zero_prefix_search_suggestions_shown_in_session);
+  event.SetZeroPrefixUrlShown(log.zero_prefix_url_suggestions_shown_in_session);
   event.Record(ukm::UkmRecorder::Get());
 }
 
