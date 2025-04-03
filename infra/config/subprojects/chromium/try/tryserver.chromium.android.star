@@ -1312,7 +1312,7 @@ try_.builder(
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
-            config = "main_builder",
+            config = "base_config",
         ),
     ),
     gn_args = gn_args.config(
@@ -1565,7 +1565,7 @@ try_.gpu.optional_tests_builder(
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
-            config = "main_builder",
+            config = "base_config",
         ),
         build_gs_bucket = "chromium-gpu-fyi-archive",
     ),

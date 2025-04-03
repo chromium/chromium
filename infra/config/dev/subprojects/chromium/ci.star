@@ -116,14 +116,15 @@ ci_builder(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "main_builder_mb",
+            config = "main_builder",
+            apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
             target_arch = builder_config.target_arch.ARM,
             target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
-            config = "main_builder_mb",
+            config = "base_config",
         ),
     ),
     gn_args = gn_args.config(
