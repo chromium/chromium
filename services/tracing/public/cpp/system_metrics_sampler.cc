@@ -30,14 +30,6 @@ namespace {
 
 constexpr base::TimeDelta kDefaultSamplingInterval = base::Seconds(5);
 
-#if BUILDFLAG(IS_WIN)
-// Returns memory in bytes from pages count.
-size_t GetTotalMemory(size_t num_pages, size_t page_size) {
-  return base::ValueOrDefaultForType<size_t>(
-      base::CheckedNumeric(num_pages) * page_size, 0U);
-}
-#endif  // BUILDFLAG(IS_WIN)
-
 }  // namespace
 
 void SystemMetricsSampler::Register(bool system_wide) {
@@ -117,27 +109,25 @@ void SystemMetricsSampler::SystemSampler::SampleSystemMetrics() {
 
 #if BUILDFLAG(IS_WIN)
 void SystemMetricsSampler::SystemSampler::SampleMemoryMetrics() {
-  PERFORMANCE_INFORMATION performance_info = {};
-  performance_info.cb = sizeof(performance_info);
-  bool get_performance_info_result =
-      ::GetPerformanceInfo(&performance_info, sizeof(performance_info));
-  if (!get_performance_info_result) {
+  MEMORYSTATUSEX mem_status = {};
+  mem_status.dwLength = sizeof(mem_status);
+  if (!::GlobalMemoryStatusEx(&mem_status)) {
     return;
   }
 
   TRACE_COUNTER(
       TRACE_DISABLED_BY_DEFAULT("system_metrics"),
       perfetto::CounterTrack("CommitMemoryLimit", perfetto::Track::Global(0)),
-      GetTotalMemory(performance_info.CommitLimit, performance_info.PageSize));
-  TRACE_COUNTER(
-      TRACE_DISABLED_BY_DEFAULT("system_metrics"),
-      perfetto::CounterTrack("CommitMemoryTotal", perfetto::Track::Global(0)),
-      GetTotalMemory(performance_info.CommitTotal, performance_info.PageSize));
+      mem_status.ullTotalPageFile);
+
+  TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("system_metrics"),
+                perfetto::CounterTrack("CommitMemoryAvailable",
+                                       perfetto::Track::Global(0)),
+                mem_status.ullAvailPageFile);
   TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("system_metrics"),
                 perfetto::CounterTrack("AvailablePhysicalMemory",
                                        perfetto::Track::Global(0)),
-                GetTotalMemory(performance_info.PhysicalAvailable,
-                               performance_info.PageSize));
+                mem_status.ullAvailPhys);
 }
 #endif  // BUILDFLAG(IS_WIN)
 
