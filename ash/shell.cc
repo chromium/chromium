@@ -1634,11 +1634,9 @@ void Shell::Init(
   // used in its constructor.
   app_list_controller_ = std::make_unique<AppListControllerImpl>();
 
-  if (features::IsForestFeatureEnabled()) {
-    birch_model_ = std::make_unique<BirchModel>();
-    birch_privacy_nudge_controller_ =
-        std::make_unique<BirchPrivacyNudgeController>();
-  }
+  birch_model_ = std::make_unique<BirchModel>();
+  birch_privacy_nudge_controller_ =
+      std::make_unique<BirchPrivacyNudgeController>();
 
   autoclick_controller_ = std::make_unique<AutoclickController>();
 

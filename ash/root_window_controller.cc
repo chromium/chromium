@@ -840,8 +840,7 @@ void RootWindowController::ShowContextMenu(
     ui::mojom::MenuSourceType source_type) {
   // Show birch bar context menu for the primary user in clamshell mode Overview
   // without a partial split screen.
-  if (features::IsForestFeatureEnabled() &&
-      Shell::Get()->session_controller()->IsUserPrimary() &&
+  if (Shell::Get()->session_controller()->IsUserPrimary() &&
       OverviewController::Get()->InOverviewSession() &&
       !split_view_overview_session_) {
     root_window_menu_model_adapter_ = BuildBirchMenuModelAdapter(source_type);
