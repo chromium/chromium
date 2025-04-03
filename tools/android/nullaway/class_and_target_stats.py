@@ -11,6 +11,8 @@ shown first, followed by targets with one dep that needs annotation, etc.
 
 import argparse
 import collections
+import csv
+import datetime
 import json
 import pathlib
 import re
@@ -102,6 +104,9 @@ def main():
         type=pathlib.Path,
         help='Used to generate project.json in the outdir and use it for the '
         'target graph. Defaults to out/Debug.')
+    parser.add_argument('--csv',
+                        type=pathlib.Path,
+                        help='Also output a .csv file for further processing')
     parser.add_argument(
         '-v',
         '--verbose',
@@ -272,6 +277,19 @@ For the status prefix:[A B C] <target-name>:
 this target.
 - C (shows up only with -v and -a) is the number of unmarked targets that this \
 target depends on.''')
+
+    if args.csv:
+        timestamp = datetime.datetime.now(datetime.UTC).timestamp()
+        print(f"Writing csv to {args.csv}")
+        with open(args.csv, 'w') as csv_output_file:
+            csv_writer = csv.writer(csv_output_file)
+            for t in targets_list:
+                status = [
+                    t[2:], targets_num_unmarked[t],
+                    len(targets_unmarked_dependents[t]),
+                    len(targets_unmarked_deps[t]), timestamp
+                ]
+                csv_writer.writerow(status)
 
 
 if __name__ == '__main__':
