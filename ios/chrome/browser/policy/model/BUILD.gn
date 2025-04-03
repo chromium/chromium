@@ -30,6 +30,8 @@ source_set("model") {
     "device_management_service_configuration_ios.mm",
     "management_state.h",
     "management_state.mm",
+    "management_status_providers_ios.h",
+    "management_status_providers_ios.mm",
     "new_tab_page_location_policy_handler.cc",
     "new_tab_page_location_policy_handler.h",
     "policy_conversions_client_ios.h",

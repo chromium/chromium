@@ -271,9 +271,12 @@ ProfileIOSImpl::ProfileIOSImpl(
       base::BindRepeating(&ApplicationContext::GetNetworkConnectionTracker,
                           base::Unretained(GetApplicationContext())));
 
-  policy_connector_ =
-      BuildProfilePolicyConnector(policy_schema_registry_.get(), connector,
-                                  user_cloud_policy_manager_.get());
+  policy_connector_ = BuildProfilePolicyConnector(
+      policy_schema_registry_.get(), connector,
+      user_cloud_policy_manager_.get(),
+      user_cloud_policy_manager_ && user_cloud_policy_manager_->core()
+          ? user_cloud_policy_manager_->core()->store()
+          : nullptr);
 
   // Register Profile preferences.
   RegisterProfilePrefs(pref_registry_.get());

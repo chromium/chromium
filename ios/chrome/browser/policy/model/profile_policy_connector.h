@@ -14,6 +14,7 @@
 class BrowserPolicyConnectorIOS;
 
 namespace policy {
+class CloudPolicyStore;
 class ConfigurationPolicyProvider;
 class PolicyService;
 class SchemaRegistry;
@@ -35,7 +36,12 @@ class ProfilePolicyConnector {
   // Initializes this connector.
   void Init(policy::SchemaRegistry* schema_registry,
             BrowserPolicyConnectorIOS* browser_policy_connector,
-            policy::ConfigurationPolicyProvider* user_policy_provider);
+            policy::ConfigurationPolicyProvider* user_policy_provider,
+            policy::CloudPolicyStore* policy_store);
+
+  // Returns true if this Profile is under any kind of policy management. You
+  // must call this method only when the policies system is fully initialized.
+  bool IsManaged() const;
 
   // Sets the local_test_policy_provider as active and all other policy
   // providers to inactive.
@@ -43,6 +49,9 @@ class ProfilePolicyConnector {
 
   // Reverts the effects of UseLocalTestPolicyProvider.
   void RevertUseLocalTestPolicyProvider();
+
+  // Returns true if policies from chrome://policy/test are applied.
+  bool IsUsingLocalTestPolicyProvider() const;
 
   // Shuts this connector down in preparation for destruction.
   void Shutdown();
@@ -72,6 +81,8 @@ class ProfilePolicyConnector {
 
   raw_ptr<policy::LocalTestPolicyProvider> local_test_policy_provider_ =
       nullptr;
+
+  raw_ptr<const policy::CloudPolicyStore> policy_store_ = nullptr;
 
   // The PolicyService that manages policy for this connector's Profile.
   std::unique_ptr<policy::PolicyService> policy_service_;
