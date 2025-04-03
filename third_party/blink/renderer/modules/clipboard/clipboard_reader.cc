@@ -5,7 +5,6 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
-#include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
@@ -24,6 +23,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 
 namespace blink {
 
@@ -49,7 +49,7 @@ class ClipboardPngReader final : public ClipboardReader {
 
     Blob* blob = nullptr;
     if (data.size()) {
-      blob = Blob::Create(data, kMimeTypeImagePng);
+      blob = Blob::Create(data, ui::kMimeTypePng);
     }
     promise_->OnRead(blob);
   }
@@ -115,7 +115,7 @@ class ClipboardTextReader final : public ClipboardReader {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     Blob* blob = nullptr;
     if (utf8_bytes.size()) {
-      blob = Blob::Create(utf8_bytes, kMimeTypeTextPlain);
+      blob = Blob::Create(utf8_bytes, ui::kMimeTypePlainText);
     }
     promise_->OnRead(blob);
   }
@@ -199,7 +199,7 @@ class ClipboardHtmlReader final : public ClipboardReader {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     Blob* blob = nullptr;
     if (utf8_bytes.size()) {
-      blob = Blob::Create(utf8_bytes, kMimeTypeTextHTML);
+      blob = Blob::Create(utf8_bytes, ui::kMimeTypeHtml);
     }
     promise_->OnRead(blob);
   }
@@ -277,7 +277,7 @@ class ClipboardSvgReader final : public ClipboardReader {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     Blob* blob = nullptr;
     if (utf8_bytes.size()) {
-      blob = Blob::Create(utf8_bytes, kMimeTypeImageSvg);
+      blob = Blob::Create(utf8_bytes, ui::kMimeTypeSvg);
     }
     promise_->OnRead(blob);
   }
@@ -334,20 +334,20 @@ ClipboardReader* ClipboardReader::Create(SystemClipboard* system_clipboard,
         system_clipboard, promise, mime_type);
   }
 
-  if (mime_type == kMimeTypeImagePng) {
+  if (mime_type == ui::kMimeTypePng) {
     return MakeGarbageCollected<ClipboardPngReader>(system_clipboard, promise);
   }
 
-  if (mime_type == kMimeTypeTextPlain) {
+  if (mime_type == ui::kMimeTypePlainText) {
     return MakeGarbageCollected<ClipboardTextReader>(system_clipboard, promise);
   }
 
-  if (mime_type == kMimeTypeTextHTML) {
+  if (mime_type == ui::kMimeTypeHtml) {
     return MakeGarbageCollected<ClipboardHtmlReader>(system_clipboard, promise,
                                                      sanitize_html);
   }
 
-  if (mime_type == kMimeTypeImageSvg) {
+  if (mime_type == ui::kMimeTypeSvg) {
     return MakeGarbageCollected<ClipboardSvgReader>(system_clipboard, promise);
   }
 
