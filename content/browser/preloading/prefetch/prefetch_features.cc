@@ -82,20 +82,4 @@ BASE_FEATURE(kPrefetchBrowsingDataRemoval,
              "PrefetchBrowsingDataRemoval",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrefetchScheduler,
-             "PrefetchScheduler",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPrefetchSchedulerTesting,
-             "PrefetchSchedulerTesting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<size_t>
-    kPrefetchSchedulerTestingActiveSetSizeLimitForBase{
-        &kPrefetchSchedulerTesting,
-        "kPrefetchSchedulerTestingActiveSetSizeLimitForBase", 1};
-const base::FeatureParam<size_t>
-    kPrefetchSchedulerTestingActiveSetSizeLimitForBurst{
-        &kPrefetchSchedulerTesting,
-        "kPrefetchSchedulerTestingActiveSetSizeLimitForBurst", 1};
-
 }  // namespace features

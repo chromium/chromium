@@ -44,7 +44,6 @@ class PrefetchMatchResolver;
 class PrefetchOriginProber;
 class PrefetchProxyConfigurator;
 class PrefetchServiceDelegate;
-class PrefetchScheduler;
 class ServiceWorkerContext;
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -221,15 +220,6 @@ class CONTENT_EXPORT PrefetchService {
                          base::WeakPtr<PrefetchServingPageMetricsContainer>
                              serving_page_metrics_container);
 
-  // Exposes methods for `PrefetchScheduler`. See documentation of private
-  // methods with the same names.
-  void EvictPrefetch(base::PassKey<PrefetchScheduler>,
-                     base::WeakPtr<PrefetchContainer> prefetch_container);
-  bool StartSinglePrefetch(base::PassKey<PrefetchScheduler>,
-                           base::WeakPtr<PrefetchContainer> prefetch_container);
-
-  PrefetchScheduler& GetPrefetchSchedulerForTesting() { return *scheduler_; }
-
   base::WeakPtr<PrefetchService> GetWeakPtr();
 
  private:
@@ -346,11 +336,8 @@ class CONTENT_EXPORT PrefetchService {
   void EvictPrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
   // Starts the given |prefetch_container|.
   //
-  // Returns true iff a prefetch is started and the caller should regard this is
-  // active.
-  //
   // Precondition: `prefetch_container` must be valid.
-  bool StartSinglePrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
+  void StartSinglePrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
 
   // Creates a new URL loader and starts a network request for
   // |prefetch_container|. |MakePrefetchRequest| must have been previously
@@ -448,16 +435,6 @@ class CONTENT_EXPORT PrefetchService {
   void ResetPrefetchContainer(
       base::WeakPtr<PrefetchContainer> prefetch_container);
 
-  // Methods for scheduling
-  void ScheduleAndProgress(base::WeakPtr<PrefetchContainer> prefetch_container);
-  void ResetPrefetchContainerAndProgress(
-      base::WeakPtr<PrefetchContainer> prefetch_container);
-  void ResetPrefetchContainersAndProgress(
-      std::vector<base::WeakPtr<PrefetchContainer>> prefetch_containers);
-  // CAUTION: This doesn't call `ResetPrefetchContainer()` to preserve current
-  // behavior.
-  void RemoveFromSchedulerAndProgress(PrefetchContainer& prefetch_container);
-
   // Returns `true` if the `prefetch_container` is stale. I.e.
   // the prefetch either is not or never will be servable to a
   // navigation.
@@ -488,17 +465,9 @@ class CONTENT_EXPORT PrefetchService {
 
   // A FIFO queue of prefetches that have been confirmed to be eligible but have
   // not started yet.
-  //
-  // It is used only if `!UsePrefetchScheduler()`.
-  //
-  // TODO(crbug.com/406754449): Remove it.
   std::vector<base::WeakPtr<PrefetchContainer>> prefetch_queue_;
 
   // Current prefetch with an in-progress request (if any).
-  //
-  // It is used only if `!UsePrefetchScheduler()`.
-  //
-  // TODO(crbug.com/406754449): Remove it.
   std::optional<PrefetchContainer::Key> active_prefetch_;
 
   // Prefetches owned by `this`. All `PrefetchContainer`s added by
@@ -510,13 +479,6 @@ class CONTENT_EXPORT PrefetchService {
 #if DCHECK_IS_ON()
   bool prefetch_reentrancy_guard_ = false;
 #endif
-
-  // Manages queue of prefetches, active set, and scheduling.
-  //
-  // It is used only if `UsePrefetchScheduler()`.
-  //
-  // TODO(crbug.com/406754449): Remove the last sentence.
-  std::unique_ptr<PrefetchScheduler> scheduler_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
