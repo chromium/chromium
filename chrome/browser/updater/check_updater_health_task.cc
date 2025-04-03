@@ -5,6 +5,7 @@
 #include "chrome/browser/updater/check_updater_health_task.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -12,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -45,6 +47,25 @@ void CheckUpdaterHealthTask::CheckAndRecordUpdaterHealth(
   }
 
 #if BUILDFLAG(IS_WIN)
+  // System service metrics.
+  if (IsSystemInstall(scope_)) {
+    for (const bool is_internal_service : {false, true}) {
+      const std::wstring service_name =
+          GetServiceName(is_internal_service, version);
+      const std::string_view uma_suffix =
+          is_internal_service ? "Internal" : "SxS";
+      base::UmaHistogramBoolean(
+          base::StrCat(
+              {"GoogleUpdate.UpdaterHealth.ServicePresent.", uma_suffix}),
+          IsServicePresent(service_name));
+      base::UmaHistogramBoolean(
+          base::StrCat(
+              {"GoogleUpdate.UpdaterHealth.ServiceEnabled.", uma_suffix}),
+          IsServiceEnabled(service_name));
+    }
+  }
+
+  // Scheduled task metrics.
   scoped_refptr<TaskScheduler> task_scheduler =
       TaskScheduler::CreateInstance(scope_);
   const std::wstring task_name =

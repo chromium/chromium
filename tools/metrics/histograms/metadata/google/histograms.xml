@@ -98,6 +98,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GoogleUpdate.UpdaterHealth.ServiceEnabled.{Type}"
+    enum="BooleanEnabled" expires_after="2026-03-12">
+  <owner>ganesh@chromium.org</owner>
+  <owner>omaha-support@google.com</owner>
+  <summary>
+    Records true if the Windows service is enabled for the active updater.
+    Recorded when the browser creates the main loop, and subsequently at 5 hour
+    intervals as long as the browser is running. `Type` is either the
+    side-by-side service or the internal service.
+  </summary>
+  <token key="Type">
+    <variant name="Internal"
+        summary="&quot;Internal&quot; is for the internal service."/>
+    <variant name="SxS"
+        summary="&quot;SxS&quot; is for the side-by-side service."/>
+  </token>
+</histogram>
+
+<histogram name="GoogleUpdate.UpdaterHealth.ServicePresent.{Type}"
+    enum="BooleanPresent" expires_after="2026-03-12">
+  <owner>ganesh@chromium.org</owner>
+  <owner>omaha-support@google.com</owner>
+  <summary>
+    Records true if the Windows service is present for the active updater.
+    Recorded when the browser creates the main loop, and subsequently at 5 hour
+    intervals as long as the browser is running. `Type` is either the
+    side-by-side service or the internal service.
+  </summary>
+  <token key="Type">
+    <variant name="Internal"
+        summary="&quot;Internal&quot; is for the internal service."/>
+    <variant name="SxS"
+        summary="&quot;SxS&quot; is for the side-by-side service."/>
+  </token>
+</histogram>
+
 <histogram name="GoogleUpdate.UpdaterHealth.UpdaterValid" enum="BooleanValid"
     expires_after="2026-03-12">
   <owner>ganesh@chromium.org</owner>
