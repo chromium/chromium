@@ -892,12 +892,28 @@ void LineBreaker::NextLine(LineInfo* line_info) {
   //    before a forced new-line.
   //  - During min/max content sizing (to correctly determine the line width).
   //
+  // With line-clamp, the entire contents of the line can be replaced by an
+  // ellipsis. This can only happen when the non-displaced line would create a
+  // line box, and the line box is still created after the replacement.
+  //
   // TODO(kojii): There are cases where we need to PlaceItems() without creating
   // line boxes. These cases need to be reviewed.
   const bool should_create_line_box =
       ShouldCreateLineBox(item_results) ||
       (force_non_empty_if_last_line_ && line_info->IsLastLine()) ||
       mode_ != LineBreakerMode::kContent;
+
+  // Don't add a line-clamp ellipsis if we're in an empty line or a
+  // block-in-inline.
+  if (line_clamp_ellipsis_width_ &&
+      (!should_create_line_box || line_info->IsBlockInInline())) {
+    line_clamp_ellipsis_width_ = LayoutUnit();
+  }
+
+  // If the line-clamp ellipsis would overflow, the entire line is replaced.
+  if (line_clamp_ellipsis_width_ && !CanFitOnLine()) {
+    Rewind(0, line_info);
+  }
 
   if (!should_create_line_box) {
     if (To<LayoutBlockFlow>(node_.GetLayoutBox())->HasLineIfEmpty())
