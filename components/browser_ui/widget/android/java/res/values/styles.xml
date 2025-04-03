@@ -38,10 +38,12 @@ found in the LICENSE file.
         <item name="android:background">@drawable/incognito_card_bg</item>
     </style>
 
+    <!-- LINT.IfChange(MaterialCardStyle) -->
     <style name="MaterialCardStyle">
         <item name="cornerRadius">@dimen/card_rounded_corner_radius</item>
-        <item name="cardElevation">@dimen/default_elevation_2</item>
+        <item name="cardBackgroundColor">@macro/default_card_bg_color</item>
     </style>
+    <!-- LINT.ThenChange(//components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/MaterialCardViewNoShadow.java) -->
 
     <style name="ListActionButton" parent="@style/TextButton">
         <item name="android:minHeight">48dp</item>

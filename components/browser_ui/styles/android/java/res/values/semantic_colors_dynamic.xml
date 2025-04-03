@@ -5,6 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- LINT.IfChange -->
     <macro name="default_bg_color">?attr/colorSurface</macro>
     <macro name="default_bg_color_elev_0">?attr/colorSurface</macro>
     <macro name="default_bg_color_inverse">?attr/colorSurfaceInverse</macro>
@@ -52,4 +53,7 @@ found in the LICENSE file.
     <!-- Gated by full dynamic colors param, no fallback needed. -->
     <macro name="circular_progress_icon_color_small_large">?attr/colorPrimary</macro>
     <macro name="circular_progress_outer_circle_progress_color_small">?attr/colorPrimary</macro>
+
+    <macro name="default_card_bg_color">?attr/colorSurfaceContainer</macro>
+    <!-- LINT.ThenChange(//components/browser_ui/styles/android/java/src/org/chromium/components/browser_ui/styles/SemanticColorUtils.java) -->
 </resources>
