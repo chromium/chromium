@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "cc/raster/raster_buffer.h"
 #include "cc/raster/raster_buffer_provider.h"
-#include "cc/trees/raster_capabilities.h"
 
 namespace base {
 namespace trace_event {
@@ -68,7 +67,7 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
  public:
   ZeroCopyRasterBufferProvider(
       const scoped_refptr<gpu::SharedImageInterface>& shared_image_interface,
-      const RasterCapabilities& raster_caps,
+      const viz::SharedImageFormat& format,
       bool is_software);
 
   ZeroCopyRasterBufferProvider(const ZeroCopyRasterBufferProvider&) = delete;

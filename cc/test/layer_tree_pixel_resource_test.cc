@@ -79,7 +79,7 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
 
       return std::make_unique<ZeroCopyRasterBufferProvider>(
           host_impl->layer_tree_frame_sink()->shared_image_interface(),
-          raster_caps, /*is_software=*/true);
+          raster_caps.tile_format, /*is_software=*/true);
     case TestRasterType::kGpu:
       EXPECT_TRUE(compositor_context_provider);
       EXPECT_TRUE(worker_context_provider);
@@ -94,7 +94,8 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
       EXPECT_FALSE(use_software_renderer());
 
       return std::make_unique<ZeroCopyRasterBufferProvider>(
-          compositor_context_provider->SharedImageInterface(), raster_caps,
+          compositor_context_provider->SharedImageInterface(),
+          raster_caps.tile_format,
           /*is_software=*/false);
     case TestRasterType::kOneCopy:
       EXPECT_TRUE(compositor_context_provider);

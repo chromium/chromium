@@ -166,11 +166,11 @@ bool ZeroCopyRasterBufferImpl::SupportsBackgroundThreadPriority() const {
 
 ZeroCopyRasterBufferProvider::ZeroCopyRasterBufferProvider(
     const scoped_refptr<gpu::SharedImageInterface>& shared_image_interface,
-    const RasterCapabilities& raster_caps,
+    const viz::SharedImageFormat& format,
     bool is_software)
     : is_software_(is_software),
       shared_image_interface_(shared_image_interface),
-      tile_format_(raster_caps.tile_format) {
+      tile_format_(format) {
   CHECK(shared_image_interface_)
       << "SharedImageInterface is null in ZeroCopyRasterBufferProvider ctor!";
 }

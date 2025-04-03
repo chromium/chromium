@@ -4209,7 +4209,8 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
 
   if (!compositor_context_provider) {
     return std::make_unique<ZeroCopyRasterBufferProvider>(
-        layer_tree_frame_sink_->shared_image_interface(), raster_caps_,
+        layer_tree_frame_sink_->shared_image_interface(),
+        raster_caps_.tile_format,
         /*is_software=*/true);
   }
 
@@ -4239,7 +4240,8 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
 
   if (use_zero_copy) {
     return std::make_unique<ZeroCopyRasterBufferProvider>(
-        compositor_context_provider->SharedImageInterface(), raster_caps_,
+        compositor_context_provider->SharedImageInterface(),
+        raster_caps_.tile_format,
         /*is_software=*/false);
   }
 
