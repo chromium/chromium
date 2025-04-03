@@ -11,10 +11,9 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 
 // Objective-C protocol mirroring ChromeAccountManagerService::Observer.
+// TODO(crbug.com/377467350): Remove this protocol.
 @protocol ChromeAccountManagerServiceObserver <NSObject>
 @optional
-- (void)identityListChanged;
-- (void)identityUpdated:(id<SystemIdentity>)identity;
 - (void)onChromeAccountManagerServiceShutdown:
     (ChromeAccountManagerService*)accountManagerService;
 @end
@@ -34,8 +33,6 @@ class ChromeAccountManagerServiceObserverBridge
 
  private:
   // ChromeAccountManagerService::Observer implementation.
-  void OnIdentitiesInProfileChanged() override;
-  void OnIdentityInProfileUpdated(id<SystemIdentity> identity) override;
   void OnChromeAccountManagerServiceShutdown(
       ChromeAccountManagerService* chrome_account_manager_service) override;
 

@@ -18,20 +18,7 @@ ChromeAccountManagerServiceObserverBridge::
 }
 
 ChromeAccountManagerServiceObserverBridge::
-    ~ChromeAccountManagerServiceObserverBridge() {}
-
-void ChromeAccountManagerServiceObserverBridge::OnIdentitiesInProfileChanged() {
-  if ([observer_ respondsToSelector:@selector(identityListChanged)]) {
-    [observer_ identityListChanged];
-  }
-}
-
-void ChromeAccountManagerServiceObserverBridge::OnIdentityInProfileUpdated(
-    id<SystemIdentity> identity) {
-  if ([observer_ respondsToSelector:@selector(identityUpdated:)]) {
-    [observer_ identityUpdated:identity];
-  }
-}
+    ~ChromeAccountManagerServiceObserverBridge() = default;
 
 void ChromeAccountManagerServiceObserverBridge::
     OnChromeAccountManagerServiceShutdown(
