@@ -97,12 +97,8 @@ class NavigationState
     // recorded an access type for.
     urls.push_back(navigation_handle.GetURL());
 
-    // TODO - crbug.com/406841434: `CHECK` the result of `filter_.Filter`
-    // instead of dumping.
-    bool were_all_accesses_matched = filter_.Filter(urls, accesses);
-    if (!were_all_accesses_matched) {
-      base::debug::DumpWithoutCrashing();
-    }
+    // TODO - crbug.com/406841434: `CHECK` the result of `filter_.Filter`.
+    filter_.Filter(urls, accesses);
 
     int i = 0;
     for (const size_t redirect_chain_index : server_redirect_chain_indices_) {
