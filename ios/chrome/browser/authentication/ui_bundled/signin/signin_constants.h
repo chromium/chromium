@@ -59,8 +59,6 @@ extern NSString* const kWebSigninPrimaryButtonAccessibilityIdentifier;
 // Name of accessibility identifier for "Skip" button in the web sign-in
 // consistency sheet.
 extern NSString* const kWebSigninSkipButtonAccessibilityIdentifier;
-// Name of the accessibility identifier for the Tangible Sync view.
-extern NSString* const kTangibleSyncViewAccessibilityIdentifier;
 // Name of the accessibility identifier for the "add account" button in the
 // consistency account chooser.
 extern NSString* const kConsistencyAccountChooserAddAccountIdentifier;

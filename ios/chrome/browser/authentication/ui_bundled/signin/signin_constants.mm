@@ -19,8 +19,6 @@ NSString* const kWebSigninPrimaryButtonAccessibilityIdentifier =
     @"WebSigninPrimaryButtonAccessibilityIdentifier";
 NSString* const kWebSigninSkipButtonAccessibilityIdentifier =
     @"WebSigninSkipButtonAccessibilityIdentifier";
-NSString* const kTangibleSyncViewAccessibilityIdentifier =
-    @"TangibleSyncViewAccessibilityIdentifier";
 NSString* const kConsistencyAccountChooserAddAccountIdentifier =
     @"ConsistencyAccountChooserAddAccountIdentifier";
 

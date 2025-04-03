@@ -82,14 +82,7 @@ id<GREYMatcher> GetForcedSigninScreenMatcher() {
 // Checks that the forced sign-in prompt is fully dismissed by making sure
 // that there isn't any forced sign-in screen displayed.
 void VerifyForcedSigninFullyDismissed() {
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
-      assertWithMatcher:grey_nil()];
-
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kTangibleSyncViewAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:GetForcedSigninScreenMatcher()]
       assertWithMatcher:grey_nil()];
 }
 
