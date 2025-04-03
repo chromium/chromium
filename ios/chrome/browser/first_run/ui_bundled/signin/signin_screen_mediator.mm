@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_consumer.h"
+#import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_mediator_delegate.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -166,8 +167,7 @@ enum class SigninScreenState {
 }
 
 - (void)startSignInWithAuthenticationFlow:
-            (AuthenticationFlow*)authenticationFlow
-                               completion:(ProceduralBlock)completion {
+    (AuthenticationFlow*)authenticationFlow {
   [self userAttemptedToSignin];
   RecordMetricsReportingDefaultState();
 
@@ -178,18 +178,10 @@ enum class SigninScreenState {
         base::NotFatalUntil::M140);
   [self.consumer setUIEnabled:NO];
   __weak __typeof(self) weakSelf = self;
-  [authenticationFlow startSignInWithCompletion:^(
-                          SigninCoordinatorResult result) {
-    [weakSelf.consumer setUIEnabled:YES];
-    if (result != SigninCoordinatorResultSuccess) {
-      return;
-    }
-    [weakSelf.logger logSigninCompletedWithResult:SigninCoordinatorResultSuccess
-                                     addedAccount:weakSelf.addedAccount];
-    if (completion) {
-      completion();
-    }
-  }];
+  [authenticationFlow
+      startSignInWithCompletion:^(SigninCoordinatorResult result) {
+        [weakSelf authenticationFlowCompletion:result];
+      }];
 }
 
 - (void)cancelSignInScreenWithCompletion:(ProceduralBlock)completion {
@@ -310,6 +302,17 @@ enum class SigninScreenState {
 
 #pragma mark - Private
 
+// Completion for the authentication flow.
+- (void)authenticationFlowCompletion:(SigninCoordinatorResult)result {
+  [self.consumer setUIEnabled:YES];
+  if (result != SigninCoordinatorResultSuccess) {
+    return;
+  }
+  [self.logger logSigninCompletedWithResult:SigninCoordinatorResultSuccess
+                               addedAccount:self.addedAccount];
+  [self.delegate mediatorFinishedSignin:self];
+}
+
 - (bool)selectedIdentityIsValid {
   if (self.selectedIdentity) {
     GaiaId gaia(self.selectedIdentity.gaiaID);
@@ -394,4 +397,5 @@ enum class SigninScreenState {
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
   [self handleIdentityUpdated:identity];
 }
+
 @end

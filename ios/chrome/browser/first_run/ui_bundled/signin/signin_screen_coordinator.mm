@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_consumer.h"
 #import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_mediator.h"
+#import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_mediator_delegate.h"
 #import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_view_controller.h"
 #import "ios/chrome/browser/first_run/ui_bundled/tos/tos_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/uma/uma_coordinator.h"
@@ -34,6 +35,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
 @interface SigninScreenCoordinator () <IdentityChooserCoordinatorDelegate,
+                                       SigninScreenMediatorDelegate,
                                        SigninScreenViewControllerDelegate,
                                        TOSCommands,
                                        UIAdaptivePresentationControllerDelegate,
@@ -126,6 +128,7 @@
                         accessPoint:_accessPoint
                         promoAction:_promoAction];
   self.mediator.consumer = self.viewController;
+  self.mediator.delegate = self;
   if (self.mediator.ignoreDismissGesture) {
     self.viewController.modalInPresentation = YES;
   }
@@ -224,12 +227,7 @@
                          presentingViewController:self.viewController
                                        anchorView:nil
                                        anchorRect:CGRectNull];
-  __weak __typeof(self) weakSelf = self;
-  ProceduralBlock completion = ^() {
-    [weakSelf finishPresentingWithSignIn:YES];
-  };
-  [self.mediator startSignInWithAuthenticationFlow:authenticationFlow
-                                        completion:completion];
+  [self.mediator startSignInWithAuthenticationFlow:authenticationFlow];
 }
 
 // Calls the mediator and the delegate when the coordinator is finished.
@@ -247,6 +245,13 @@
                UMAReportingValue:self.mediator.UMAReportingUserChoice];
   self.UMACoordinator.delegate = self;
   [self.UMACoordinator start];
+}
+
+#pragma mark - SigninScreenMediatorDelegate
+
+- (void)mediatorFinishedSignin:(SigninScreenMediator*)mediator {
+  CHECK_EQ(mediator, self.mediator);
+  [self finishPresentingWithSignIn:YES];
 }
 
 #pragma mark - IdentityChooserCoordinatorDelegate
