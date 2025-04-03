@@ -317,11 +317,6 @@ void LayerTreeHostImpl::DidUpdateScrollAnimationCurve() {
   events_metrics_manager_.SaveActiveEventMetrics();
 }
 
-void LayerTreeHostImpl::AccumulateScrollDeltaForTracing(
-    const gfx::Vector2dF& delta) {
-  scroll_accumulated_this_frame_ += delta;
-}
-
 void LayerTreeHostImpl::DidStartPinchZoom() {
   client_->RenewTreePriority();
   frame_trackers_.StartSequence(FrameSequenceTrackerType::kPinchZoom);
@@ -1188,8 +1183,9 @@ LayerTreeHostImpl::GetScopedEventMetricsMonitor(
   return events_metrics_manager_.GetScopedMonitor(std::move(done_callback));
 }
 
-void LayerTreeHostImpl::NotifyInputEvent() {
+void LayerTreeHostImpl::NotifyInputEvent(bool is_fling) {
   frame_rate_estimator_.NotifyInputEvent();
+  has_non_fling_input_since_last_frame_ |= (!is_fling);
 }
 
 void LayerTreeHostImpl::QueueSwapPromiseForMainThreadScrollUpdate(
@@ -3133,6 +3129,19 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
       CurrentBeginFrameArgs().frame_time;
   metadata.frame_interval_inputs.has_input =
       frame_rate_estimator_.input_priority_mode();
+  has_non_fling_input_since_last_frame_ = false;
+
+  if (frame->damage_reasons.Has(DamageReason::kCompositorScroll)) {
+    // Sanity check frame time delta.
+    if (begin_frame_time_delta_.InMicroseconds() < 100 ||
+        begin_frame_time_delta_.InMicroseconds() > 1000000) {
+      metadata.frame_interval_inputs.major_scroll_speed_in_pixels_per_second =
+          0.f;
+    } else {
+      metadata.frame_interval_inputs.major_scroll_speed_in_pixels_per_second =
+          frame_max_scroll_delta_ / begin_frame_time_delta_.InSecondsF();
+    }
+  }
 
   if (!frame->video_layer_preferred_intervals.empty() &&
       frame->damage_reasons.Has(DamageReason::kVideoLayer)) {
@@ -3445,6 +3454,15 @@ bool LayerTreeHostImpl::WillBeginImplFrame(const viz::BeginFrameArgs& args) {
                                       input_delegate_->IsCurrentlyScrolling() &&
                                       !input_delegate_->HasQueuedInput());
   }
+
+  frame_max_scroll_delta_ = 0.f;
+  if (current_begin_frame_tracker_.HasLast()) {
+    begin_frame_time_delta_ =
+        args.frame_time - current_begin_frame_tracker_.Last().frame_time;
+  } else {
+    begin_frame_time_delta_ = base::TimeDelta();
+  }
+
   impl_thread_phase_ = ImplThreadPhase::INSIDE_IMPL_FRAME;
   current_begin_frame_tracker_.Start(args);
   frame_trackers_.NotifyBeginImplFrame(args);
@@ -4667,7 +4685,12 @@ void LayerTreeHostImpl::WillScrollContent(ElementId element_id) {
   }
 }
 
-void LayerTreeHostImpl::DidScrollContent(ElementId element_id, bool animated) {
+void LayerTreeHostImpl::DidScrollContent(ElementId element_id,
+                                         bool animated,
+                                         const gfx::Vector2dF& scroll_delta) {
+  scroll_accumulated_this_frame_ += scroll_delta;
+  frame_max_scroll_delta_ =
+      std::max(std::abs(scroll_delta.x()), std::abs(scroll_delta.y()));
   if (settings().scrollbar_flash_after_any_scroll_update) {
     FlashAllScrollbars(true);
   } else {
