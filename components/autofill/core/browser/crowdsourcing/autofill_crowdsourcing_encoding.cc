@@ -360,8 +360,7 @@ void PopulateRandomizedFieldMetadata(
 void EncodeFormFieldsForUpload(
     const FormStructure& form,
     base::optional_ref<RandomizedEncoder> encoder,
-    const std::map<FieldGlobalId, base::flat_set<std::u16string>>&
-        format_strings,
+    const std::map<FieldGlobalId, EncodeUploadRequestOptions::Field>& fields,
     base::span<AutofillField*> upload_fields,
     AutofillUploadContents* upload) {
   DCHECK(!IsMalformed(form));
@@ -401,9 +400,8 @@ void EncodeFormFieldsForUpload(
           field->initial_value_changed().value());
     }
 
-    if (auto it = format_strings.find(field->global_id());
-        it != format_strings.end()) {
-      for (const std::u16string& format_string : it->second) {
+    if (auto it = fields.find(field->global_id()); it != fields.end()) {
+      for (const std::u16string& format_string : it->second.format_strings) {
         DCHECK(data_util::IsValidDateFormat(format_string));
         auto* added_format_string = added_field->add_format_string();
         added_format_string->set_type(
@@ -686,43 +684,51 @@ base::flat_set<FormSignature> GetFormsForWhichToRunAiModel(
 
 }  // namespace
 
+EncodeUploadRequestOptions::Field::Field() = default;
+EncodeUploadRequestOptions::Field::Field(Field&&) = default;
+EncodeUploadRequestOptions::Field& EncodeUploadRequestOptions::Field::operator=(
+    Field&&) = default;
+EncodeUploadRequestOptions::Field::~Field() = default;
+
+EncodeUploadRequestOptions::EncodeUploadRequestOptions() = default;
+EncodeUploadRequestOptions::EncodeUploadRequestOptions(
+    EncodeUploadRequestOptions&&) = default;
+EncodeUploadRequestOptions&
+EncodeUploadRequestOptions::EncodeUploadRequestOptions::operator=(
+    EncodeUploadRequestOptions&&) = default;
+EncodeUploadRequestOptions::~EncodeUploadRequestOptions() = default;
+
 std::vector<AutofillUploadContents> EncodeUploadRequest(
     const FormStructure& form,
-    base::optional_ref<RandomizedEncoder> encoder,
-    const FormStructure::FormAssociations& form_associations,
-    const std::map<FieldGlobalId, base::flat_set<std::u16string>>&
-        format_strings,
-    const FieldTypeSet& available_field_types,
-    std::optional<FormSignature> login_form_signature,
-    bool observed_submission) {
-  DCHECK_EQ(FirstNonCapturedType(form, available_field_types),
+    const EncodeUploadRequestOptions& options) {
+  DCHECK_EQ(FirstNonCapturedType(form, options.available_field_types),
             MAX_VALID_FIELD_TYPE);
 
-  std::string data_present = EncodeFieldTypes(available_field_types);
+  std::string data_present = EncodeFieldTypes(options.available_field_types);
 
   AutofillUploadContents upload;
-  upload.set_submission(observed_submission);
+  upload.set_submission(options.observed_submission);
   upload.set_client_version(
       std::string(version_info::GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form.form_signature().value());
   upload.set_autofill_used(false);
   upload.set_data_present(data_present);
   upload.set_has_form_tag(form.is_form_element());
-  if (!form.current_page_language()->empty() && encoder.has_value()) {
+  if (!form.current_page_language()->empty() && options.encoder) {
     upload.set_language(form.current_page_language().value());
   }
 
-  if (form_associations.last_address_form_submitted) {
+  if (options.form_associations.last_address_form_submitted) {
     upload.set_last_address_form_submitted(
-        form_associations.last_address_form_submitted->value());
+        options.form_associations.last_address_form_submitted->value());
   }
-  if (form_associations.second_last_address_form_submitted) {
+  if (options.form_associations.second_last_address_form_submitted) {
     upload.set_second_last_address_form_submitted(
-        form_associations.second_last_address_form_submitted->value());
+        options.form_associations.second_last_address_form_submitted->value());
   }
-  if (form_associations.last_credit_card_form_submitted) {
+  if (options.form_associations.last_credit_card_form_submitted) {
     upload.set_last_credit_card_form_submitted(
-        form_associations.last_credit_card_form_submitted->value());
+        options.form_associations.last_credit_card_form_submitted->value());
   }
 
   auto triggering_event =
@@ -735,24 +741,24 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
       static_cast<AutofillUploadContents_SubmissionIndicatorEvent>(
           triggering_event));
 
-  if (login_form_signature.has_value()) {
-    upload.set_login_form_signature(login_form_signature->value());
+  if (options.login_form_signature.has_value()) {
+    upload.set_login_form_signature(options.login_form_signature->value());
   }
 
   if (IsMalformed(form)) {
     return {};  // Malformed form, skip it.
   }
 
-  if (encoder.has_value()) {
-    PopulateRandomizedFormMetadata(*encoder, form,
+  if (options.encoder) {
+    PopulateRandomizedFormMetadata(*options.encoder, form,
                                    upload.mutable_randomized_form_metadata());
   }
 
   std::vector<AutofillField*> upload_fields(form.fields().size());
   std::ranges::transform(form.fields(), upload_fields.begin(),
                          &std::unique_ptr<AutofillField>::get);
-  EncodeFormFieldsForUpload(form, encoder, format_strings, upload_fields,
-                            &upload);
+  EncodeFormFieldsForUpload(form, &*options.encoder, options.fields,
+                            upload_fields, &upload);
   std::vector<AutofillUploadContents> uploads = {std::move(upload)};
 
   // Build AutofillUploadContents for the renderer forms that have been
@@ -784,7 +790,7 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
                               (*subform_begin)->renderer_form_id();
                      });
     // SAFETY: The iterators are from the same container.
-    EncodeFormFieldsForUpload(form, encoder, format_strings,
+    EncodeFormFieldsForUpload(form, &*options.encoder, options.fields,
                               UNSAFE_BUFFERS({subform_begin, subform_end}),
                               &uploads.back());
     subform_begin = subform_end;

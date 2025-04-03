@@ -252,25 +252,33 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
                                                  last_unlocked_credit_card_cvc,
                                                  app_locale, *form);
 
-            FieldTypeSet non_empty_types;
+            EncodeUploadRequestOptions options;
+            options.encoder = std::move(randomized_encoder);
+            options.form_associations = std::move(form_associations);
+            options.observed_submission = observed_submission;
+
+            for (auto& [field_id, format_strings] :
+                 DeterminePossibleFormatStringsForUpload(form->fields())) {
+              options.fields[field_id].format_strings =
+                  std::move(format_strings);
+            }
+
             for (const AutofillProfile& profile : profiles) {
-              profile.GetNonEmptyTypes(app_locale, &non_empty_types);
+              profile.GetNonEmptyTypes(app_locale,
+                                       &options.available_field_types);
             }
             for (const CreditCard& card : credit_cards) {
-              card.GetNonEmptyTypes(app_locale, &non_empty_types);
+              card.GetNonEmptyTypes(app_locale, &options.available_field_types);
             }
             // As CVC is not stored, treat it separately.
             if (!last_unlocked_credit_card_cvc.empty() ||
-                non_empty_types.contains(CREDIT_CARD_NUMBER)) {
-              non_empty_types.insert(CREDIT_CARD_VERIFICATION_CODE);
+                options.available_field_types.contains(CREDIT_CARD_NUMBER)) {
+              options.available_field_types.insert(
+                  CREDIT_CARD_VERIFICATION_CODE);
             }
 
             std::vector<AutofillUploadContents> upload_contents =
-                EncodeUploadRequest(
-                    *form, randomized_encoder.get(), form_associations,
-                    DeterminePossibleFormatStringsForUpload(form->fields()),
-                    non_empty_types,
-                    /*login_form_signature=*/std::nullopt, observed_submission);
+                EncodeUploadRequest(*form, options);
             return std::pair(std::move(form), std::move(upload_contents));
           },
           std::move(copied_profiles), std::move(copied_credit_cards),

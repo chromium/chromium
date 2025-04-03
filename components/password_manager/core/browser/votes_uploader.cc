@@ -896,12 +896,14 @@ VotesUploader::EncodeUploadRequest(
   // Annotate the form with the source language of the page.
   form.set_current_page_language(client_->GetPageLanguage());
 
+  autofill::EncodeUploadRequestOptions options;
+  options.encoder = RandomizedEncoder::Create(client_->GetPrefs());
+  options.available_field_types = available_field_types;
+  options.login_form_signature = login_form_signature;
+  options.observed_submission = true;
+
   std::vector<AutofillUploadContents> upload_contents =
-      autofill::EncodeUploadRequest(
-          form, RandomizedEncoder::Create(client_->GetPrefs()).get(),
-          /*form_associations=*/{},
-          /*format_strings=*/{}, available_field_types, login_form_signature,
-          /*observed_submission=*/true);
+      autofill::EncodeUploadRequest(form, options);
   CHECK(!upload_contents.empty());
 
   upload_contents[0].set_passwords_revealed(

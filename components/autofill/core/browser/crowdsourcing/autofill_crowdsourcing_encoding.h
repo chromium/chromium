@@ -17,6 +17,34 @@
 
 namespace autofill {
 
+struct EncodeUploadRequestOptions {
+  struct Field {
+    Field();
+    Field(const Field&&) = delete;
+    Field(Field&&);
+    Field& operator=(const Field&&) = delete;
+    Field& operator=(Field&&);
+    ~Field();
+
+    base::flat_set<std::u16string> format_strings;
+  };
+
+  EncodeUploadRequestOptions();
+  EncodeUploadRequestOptions(const EncodeUploadRequestOptions&) = delete;
+  EncodeUploadRequestOptions(EncodeUploadRequestOptions&&);
+  EncodeUploadRequestOptions& operator=(const EncodeUploadRequestOptions&) =
+      delete;
+  EncodeUploadRequestOptions& operator=(EncodeUploadRequestOptions&&);
+  ~EncodeUploadRequestOptions();
+
+  std::unique_ptr<RandomizedEncoder> encoder;
+  FormStructure::FormAssociations form_associations;
+  FieldTypeSet available_field_types;
+  std::optional<FormSignature> login_form_signature;
+  bool observed_submission = false;
+  std::map<FieldGlobalId, Field> fields;
+};
+
 // Encodes the given FormStructure as a vector of protobufs.
 //
 // On success, the returned vector is non-empty. The first element encodes the
@@ -50,13 +78,7 @@ namespace autofill {
 // form signatures of forms 1 and 2.
 std::vector<AutofillUploadContents> EncodeUploadRequest(
     const FormStructure& form,
-    base::optional_ref<RandomizedEncoder> encoder,
-    const FormStructure::FormAssociations& form_associations,
-    const std::map<FieldGlobalId, base::flat_set<std::u16string>>&
-        format_strings,
-    const FieldTypeSet& available_field_types,
-    std::optional<FormSignature> login_form_signature,
-    bool observed_submission);
+    const EncodeUploadRequestOptions& options);
 
 // Encodes the list of `forms` and their fields that are valid into an
 // `AutofillPageQueryRequest` proto. The queried FormSignatures and
