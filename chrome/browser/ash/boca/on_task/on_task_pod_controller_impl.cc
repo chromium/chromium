@@ -160,22 +160,15 @@ void OnTaskPodControllerImpl::OnWindowVisibilityChanged(aura::Window* window,
   }
 }
 
-void OnTaskPodControllerImpl::OnPauseModeChanged() {
+void OnTaskPodControllerImpl::OnPauseModeChanged(bool paused) {
   if (!pod_widget_) {
     return;
   }
-  views::View* const pod_widget_contents_view = pod_widget_->GetContentsView();
-  if (!pod_widget_contents_view) {
-    return;
+  if (paused) {
+    pod_widget_->Hide();
+  } else {
+    pod_widget_->Show();
   }
-  OnTaskPodView* const on_task_pod_view =
-      static_cast<OnTaskPodView*>(pod_widget_contents_view);
-
-  on_task_pod_view->OnLockedModeUpdate();
-
-  // Resize and reset bounds of the widget to fit the contents view.
-  pod_widget_->SetSize(on_task_pod_view->GetPreferredSize());
-  pod_widget_->SetBounds(CalculateWidgetBounds());
 }
 
 void OnTaskPodControllerImpl::OnPageNavigationContextChanged() {

@@ -32,7 +32,7 @@ class MockOnTaskPodController : public OnTaskPodController {
               SetSnapLocation,
               (OnTaskPodSnapLocation snap_location),
               (override));
-  MOCK_METHOD(void, OnPauseModeChanged, (), (override));
+  MOCK_METHOD(void, OnPauseModeChanged, (bool), (override));
   MOCK_METHOD(void, OnPageNavigationContextChanged, (), (override));
   MOCK_METHOD(bool, CanNavigateToPreviousPage, (), (override));
   MOCK_METHOD(bool, CanNavigateToNextPage, (), (override));

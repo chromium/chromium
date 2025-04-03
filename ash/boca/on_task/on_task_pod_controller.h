@@ -35,7 +35,7 @@ class OnTaskPodController {
   virtual void ToggleTabStripVisibility(bool show) = 0;
 
   // Notifies pod widget when the app is paused or unpaused.
-  virtual void OnPauseModeChanged() = 0;
+  virtual void OnPauseModeChanged(bool paused) = 0;
 
   // Notifies pod widget when there is an update in the page navigation context
   // (tab switch, URL navigation, etc.).
