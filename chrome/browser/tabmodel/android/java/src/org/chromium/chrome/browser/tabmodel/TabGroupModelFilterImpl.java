@@ -207,11 +207,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public void createSingleTabGroup(int tabId) {
-        createSingleTabGroup(getTabModel().getTabByIdChecked(tabId));
-    }
-
-    @Override
     public void createSingleTabGroup(Tab tab) {
         createSingleTabGroupInternal(tab, Token.createRandom());
     }
@@ -245,11 +240,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
             observer.didMergeTabToGroup(tab);
         }
-    }
-
-    @Override
-    public void mergeTabsToGroup(int sourceTabId, int destinationTabId) {
-        mergeTabsToGroup(sourceTabId, destinationTabId, false);
     }
 
     @Override
@@ -1428,11 +1418,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
             observer.didChangeTabGroupCollapsed(rootId, isCollapsed, animate);
         }
-    }
-
-    @Override
-    public void setTabGroupCollapsed(int rootId, boolean isCollapsed) {
-        setTabGroupCollapsed(rootId, isCollapsed, /* animate= */ false);
     }
 
     @Override
