@@ -17,7 +17,60 @@ sys.path.insert(1, os.path.join(os.path.dirname(__file__), '..'))
 import gn_helpers
 
 
-def _GetTotalMemoryInBytes():
+def _GetMemoryMaxInCurrentCGroup(explanation):
+  with open("/proc/self/cgroup") as cgroup:
+    lines = cgroup.readlines()
+    if len(lines) >= 1:
+      cgroupname = lines[0].strip().split(':')[-1]
+      memmax = '/sys/fs/cgroup' + cgroupname + '/memory.max'
+      if os.path.exists(memmax):
+        with open(memmax) as f:
+          data = f.read().strip()
+          explanation.append(f'# cgroup {cgroupname} memory.max={data}')
+          try:
+            return int(data)
+          except ValueError as ex:
+            explanation.append(f'# cgroup memory.max exception {ex}')
+            return None
+  explanation.append(f'# cgroup memory.max not found')
+  return None
+
+
+def _GetCPUCountFromCurrentCGroup(explanation):
+  with open("/proc/self/cgroup") as cgroup:
+    lines = cgroup.readlines()
+    if len(lines) >= 1:
+      cgroupname = lines[0].strip().split(':')[-1]
+      cpuset = '/sys/fs/cgroup' + cgroupname + '/cpuset.cpus'
+      if os.path.exists(cpuset):
+        with open(cpuset) as f:
+          data = f.read().strip()
+          explanation.append(f'# cgroup {cgroupname} cpuset.cpus={data}')
+          try:
+            return _CountCPUs(data)
+          except ValueError as ex:
+            explanation.append(f'# cgroup cpuset.cpus exception {ex}')
+            return None
+  explanation.append(f'# cgroup cpuset.cpus not found')
+  return None
+
+
+def _CountCPUs(cpuset):
+  n = 0
+  for s in cpuset.split(','):
+    r = s.split('-')
+    if len(r) == 1 and int(r[0]) >= 0:
+      n += 1
+      continue
+    elif len(r) == 2:
+      n += int(r[1]) - int(r[0]) + 1
+    else:
+      # wrong range?
+      return 0
+  return n
+
+
+def _GetTotalMemoryInBytes(explanation):
   if sys.platform in ('win32', 'cygwin'):
     import ctypes
 
@@ -38,6 +91,10 @@ def _GetTotalMemoryInBytes():
     ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat))
     return stat.ullTotalPhys
   elif sys.platform.startswith('linux'):
+    if os.path.exists("/proc/self/cgroup"):
+      memmax = _GetMemoryMaxInCurrentCGroup(explanation)
+      if memmax:
+        return memmax
     if os.path.exists("/proc/meminfo"):
       with open("/proc/meminfo") as meminfo:
         memtotal_re = re.compile(r'^MemTotal:\s*(\d*)\s*kB')
@@ -64,7 +121,7 @@ def _GetDefaultConcurrentLinks(per_link_gb, reserve_gb, thin_lto_type,
   if override_ram_in_gb:
     mem_total_gb = override_ram_in_gb
   else:
-    mem_total_gb = float(_GetTotalMemoryInBytes()) / 2**30
+    mem_total_gb = float(_GetTotalMemoryInBytes(explanation)) / 2**30
   adjusted_mem_total_gb = max(0, mem_total_gb - reserve_gb)
 
   # Ensure that there is at least as many links allocated for the secondary as
@@ -72,10 +129,20 @@ def _GetDefaultConcurrentLinks(per_link_gb, reserve_gb, thin_lto_type,
   mem_cap = int(
       max(1, adjusted_mem_total_gb / (per_link_gb + secondary_per_link_gb)))
 
-  try:
-    cpu_count = multiprocessing.cpu_count()
-  except:
-    cpu_count = 1
+  cpu_count = None
+  if sys.platform.startswith('linux'):
+    try:
+      if os.path.exists('/proc/self/cgroup'):
+        cpu_count = _GetCPUCountFromCurrentCGroup(explanation)
+    except Exception as ex:
+      explanation.append(f'# cpu_count from cgroup exception {ex}')
+  if not cpu_count:
+    try:
+      cpu_count = multiprocessing.cpu_count()
+      explanation.append(f'# cpu_count from multiprocessing {cpu_count}')
+    except Exception as ex:
+      cpu_count = 1
+      explanation.append(f'# cpu_count from multiprocessing exception {ex}')
 
   # A local LTO links saturate all cores, but only for some amount of the link.
   cpu_cap = cpu_count
@@ -83,9 +150,9 @@ def _GetDefaultConcurrentLinks(per_link_gb, reserve_gb, thin_lto_type,
     assert thin_lto_type == 'local'
     cpu_cap = min(cpu_count, 6)
 
-  explanation.append(
-      'cpu_count={} cpu_cap={} mem_total_gb={:.1f}GiB adjusted_mem_total_gb={:.1f}GiB'
-      .format(cpu_count, cpu_cap, mem_total_gb, adjusted_mem_total_gb))
+  explanation.append(f'cpu_count={cpu_count} cpu_cap={cpu_cap} ' +
+                     f'mem_total_gb={mem_total_gb:.1f}GiB ' +
+                     f'adjusted_mem_total_gb={adjusted_mem_total_gb:.1f}GiB')
 
   num_links = min(mem_cap, cpu_cap)
   if num_links == cpu_cap:
