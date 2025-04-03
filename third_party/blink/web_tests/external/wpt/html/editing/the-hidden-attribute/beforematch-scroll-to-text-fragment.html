@@ -36,7 +36,7 @@ promise_test(t => new Promise((resolve, reject) => {
   const key = token();
   test_driver.bless('Open a scroll to text fragment URL', () => {
     window.open(
-      `resources/beforematch-scroll-to-text-fragment-with-anchor.html?key=${key}#:~:text=foo`,
+      `resources/beforematch-scroll-to-text-fragment-with-anchor.html?key=${key}#bar:~:text=foo`,
       '_blank',
       'noopener');
   });

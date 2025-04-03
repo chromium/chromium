@@ -19,12 +19,12 @@
 
   parentid.addEventListener('beforematch', () => {
     results.beforematchFiredOnParent = true;
-  });
-
-  requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      const params = new URLSearchParams(window.location.search);
-      stashResultsThenClose(params.get('key'), results);
+      requestAnimationFrame(() => {
+        const params = new URLSearchParams(window.location.search);
+        stashResultsThenClose(params.get('key'), results);
+      });
     });
   });
+
 </script>
