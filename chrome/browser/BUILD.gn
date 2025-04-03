@@ -6691,6 +6691,9 @@ static_library("browser") {
       "enterprise/connectors/reporting/extension_telemetry_event_router_factory.cc",
       "enterprise/connectors/reporting/extension_telemetry_event_router_factory.h",
     ]
+    deps += [ "//components/enterprise/common/proto:chrome_reporting_entity" ]
+    public_deps +=
+        [ "//components/enterprise/common/proto:browser_events_proto" ]
   }
 
   if (enterprise_telomere_reporting) {
