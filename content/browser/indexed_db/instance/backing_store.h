@@ -144,8 +144,6 @@ class CONTENT_EXPORT BackingStore : public LevelDBCleanupScheduler::Delegate {
       return transaction_.get();
     }
 
-    virtual uint64_t GetTransactionSize();
-
     void SetTombstoneThresholdExceeded(bool tombstone_threshold_exceeded) {
       tombstone_threshold_exceeded_ = tombstone_threshold_exceeded;
     }

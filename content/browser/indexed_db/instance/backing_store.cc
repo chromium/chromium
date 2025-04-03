@@ -4650,11 +4650,6 @@ void BackingStore::Transaction::Rollback() {
   }
 }
 
-uint64_t BackingStore::Transaction::GetTransactionSize() {
-  DCHECK(transaction_);
-  return transaction_->GetTransactionSize();
-}
-
 Status BackingStore::Transaction::PutExternalObjectsIfNeeded(
     int64_t database_id,
     const std::string& object_store_data_key,

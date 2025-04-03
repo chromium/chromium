@@ -36,9 +36,6 @@ Status FakeTransaction::CommitPhaseOne(BlobWriteCallback callback) {
 Status FakeTransaction::CommitPhaseTwo() {
   return result_;
 }
-uint64_t FakeTransaction::GetTransactionSize() {
-  return 0;
-}
 void FakeTransaction::Rollback() {}
 
 }  // namespace content::indexed_db

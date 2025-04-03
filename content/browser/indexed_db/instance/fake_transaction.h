@@ -23,7 +23,6 @@ class FakeTransaction : public BackingStore::Transaction {
 
   Status CommitPhaseOne(BlobWriteCallback) override;
   Status CommitPhaseTwo() override;
-  uint64_t GetTransactionSize() override;
   void Rollback() override;
 
  private:
