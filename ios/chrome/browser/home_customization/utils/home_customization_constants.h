@@ -61,11 +61,20 @@ extern NSString* const kCustomizationCollectionMainIdentifier;
 extern NSString* const kCustomizationCollectionMagicStackIdentifier;
 extern NSString* const kCustomizationCollectionDiscoverIdentifier;
 
+// The identifiers for the background cells.
+extern NSString* const kBackgroundCellIdentifier;
+
+// The identifier for the background picker cell.
+extern NSString* const kBackgroundPickerCellIdentifier;
+
 // The URLs for the links in the Discover submenu.
 extern const char kDiscoverFollowingURL[];
 extern const char kDiscoverHiddenURL[];
 extern const char kDiscoverActivityURL[];
 extern const char kDiscoverLearnMoreURL[];
+
+// The number of recent backgrounds to show.
+extern const NSInteger kNumberOfRecentBackgrounds;
 
 // The size of the toggle cell's icon.
 extern const CGFloat kToggleIconPointSize;
