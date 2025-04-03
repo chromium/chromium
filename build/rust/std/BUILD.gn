@@ -20,7 +20,6 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
 import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
-import("//build/rust/rust_static_library.gni")
 
 rust_allocator_uses_partition_alloc = false
 if (build_with_chromium) {
@@ -37,54 +36,18 @@ buildflag_header("buildflags") {
 }
 
 if (toolchain_has_rust) {
-  # All targets which depend on Rust code but are not linked by rustc must
-  # depend on this. Usually, this dependency will come from the rust_target() GN
-  # template. However, cargo_crate() does *not* include this dependency so any
-  # C++ targets which directly depend on a cargo_crate() must depend on this.
-  rust_static_library("allocator") {
-    sources = [ "allocator/lib.rs" ]
-    crate_root = "allocator/lib.rs"
-    cxx_bindings = [ "allocator/lib.rs" ]
-
-    deps = [
-      ":allocator_impls",
-      ":allocator_shim_definitions",
-    ]
-
-    no_chromium_prelude = true
-    no_allocator_crate = true
-    allow_unsafe = true
-  }
-
-  static_library("allocator_impls") {
+  # If clang performs the link step, we need to provide the allocator symbols
+  # that are normally injected by rustc during linking.
+  #
+  # We also "happen to" use this to redirect allocations to PartitionAlloc,
+  # though that would be better done through a #[global_allocator] crate (see
+  # above).
+  source_set("remap_alloc") {
     public_deps = []
     if (rust_allocator_uses_partition_alloc) {
       public_deps += [ "//base/allocator/partition_allocator:partition_alloc" ]
     }
-
-    sources = [
-      "allocator_impls.cc",
-      "allocator_impls.h",
-    ]
-
-    deps = [
-      ":allocator_cpp_shared",
-      ":buildflags",
-      ":std",
-    ]
-
-    visibility = [ ":*" ]
-  }
-
-  source_set("allocator_shim_definitions") {
-    sources = [ "allocator_shim_definitions.cc" ]
-
-    deps = [ ":allocator_cpp_shared" ]
-
-    visibility = [ ":*" ]
-  }
-
-  source_set("allocator_cpp_shared") {
+    deps = [ ":buildflags" ]
     sources = [
       # `alias.*`, `compiler_specific.h`, and `immediate_crash.*` have been
       # copied from `//base`.
@@ -93,11 +56,7 @@ if (toolchain_has_rust) {
       "alias.h",
       "compiler_specific.h",
       "immediate_crash.h",
-    ]
-
-    visibility = [
-      ":allocator_impls",
-      ":allocator_shim_definitions",
+      "remap_alloc.cc",
     ]
   }
 
@@ -310,6 +269,8 @@ if (toolchain_has_rust) {
       foreach(libname, stdlib_files + skip_stdlib_files) {
         deps += [ "rules:$libname" ]
       }
+
+      public_deps = [ ":remap_alloc" ]
     }
   } else {
     action("find_stdlib") {

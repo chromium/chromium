@@ -495,10 +495,7 @@ if (is_mac) {
       defines = [ "HAVE_MACH_O_NLIST_H" ]
 
       # Rust demangle support.
-      deps = [
-        "//build/rust/std:allocator",
-        "//third_party/rust/rustc_demangle_capi/v0_1:lib",
-      ]
+      deps = [ "//third_party/rust/rustc_demangle_capi/v0_1:lib" ]
       defines += [ "HAVE_RUSTC_DEMANGLE" ]
       include_dirs += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-v0_1/include" ]
       sources += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-v0_1/include/rustc_demangle.h" ]
@@ -746,10 +743,7 @@ if (is_linux || is_chromeos || is_android) {
       include_dirs = [ "breakpad/src" ]
 
       # Rust demangle support.
-      deps = [
-        "//build/rust/std:allocator",
-        "//third_party/rust/rustc_demangle_capi/v0_1:lib",
-      ]
+      deps = [ "//third_party/rust/rustc_demangle_capi/v0_1:lib" ]
       defines += [ "HAVE_RUSTC_DEMANGLE" ]
       include_dirs += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-v0_1/include" ]
       sources += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-v0_1/include/rustc_demangle.h" ]
