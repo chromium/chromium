@@ -977,10 +977,6 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.IGNORE_DUPLICATE_NAVS,
                 "Ignore duplicate navigations, keeping the older navigations instead."),
         Flag.baseFeature(
-                ContentFeatures.USE_BROWSER_CALCULATED_ORIGIN,
-                "Use origin calculated in the browser process rather than renderer process for"
-                        + " navigations."),
-        Flag.baseFeature(
                 "AllowSensorsToEnterBfcache",
                 "Allow pages with sensors to enter back/forward cache."),
         Flag.baseFeature(

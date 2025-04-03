@@ -370,11 +370,8 @@ struct OldPageInfo {
 // Used by commit IPC messages. Holds the parameters needed by the renderer to
 // commit a navigation besides those in CommonNavigationParams.
 struct CommitNavigationParams {
-  // The origin to be used for committing the navigation, if specified.
-  // It is currently only specified on error document navigations, where the
-  // origin should be an opaque origin based on the URL that failed to load.
-  // TODO(https://crbug.com/888079): Always provide origin_to_commit.
-  url.mojom.Origin? origin_to_commit;
+  // The origin to be used for committing the navigation, always specified.
+  url.mojom.Origin origin_to_commit;
 
   // The storage key of the document that will be created by the navigation.
   // This is compatible with the origin that the browser calculates for this

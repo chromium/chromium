@@ -1377,7 +1377,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
   // renderer and sent to the browser instead of being measured here.
   blink::mojom::CommitNavigationParamsPtr commit_params =
       blink::mojom::CommitNavigationParams::New(
-          std::nullopt,
+          url::Origin(),
           // The correct storage key will be computed before committing the
           // navigation.
           blink::StorageKey(), override_user_agent,
@@ -1533,7 +1533,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
   // not used by the browser after commit.
   blink::mojom::CommitNavigationParamsPtr commit_params =
       blink::mojom::CommitNavigationParams::New(
-          std::nullopt,
+          url::Origin(),
           // The correct storage key is computed right after creating the
           // NavigationRequest below.
           blink::StorageKey(), is_overriding_user_agent, redirects,
@@ -6160,7 +6160,7 @@ void NavigationRequest::CommitErrorPage(
   const url::Origin& previous_origin = previous_rfh->GetLastCommittedOrigin();
   bool is_error_page_with_same_precursor =
       previous_origin.GetTupleOrPrecursorTupleIfOpaque().IsValid() &&
-      commit_params_->origin_to_commit->GetTupleOrPrecursorTupleIfOpaque() ==
+      commit_params_->origin_to_commit.GetTupleOrPrecursorTupleIfOpaque() ==
           previous_origin.GetTupleOrPrecursorTupleIfOpaque();
   if (!is_error_page_with_same_precursor) {
     commit_params_->force_new_document_sequence_number = true;
@@ -6495,19 +6495,15 @@ void NavigationRequest::CommitNavigation() {
     // state.
     RenderFrameHostImpl* previous_rfh = frame_tree_node()->current_frame_host();
     const url::Origin& previous_origin = previous_rfh->GetLastCommittedOrigin();
-    // Skip this check if kUseBrowserCalculatedOrigin is disabled.
-    if (base::FeatureList::IsEnabled(features::kUseBrowserCalculatedOrigin)) {
-      bool is_cross_origin_navigation =
-          !commit_params_->origin_to_commit->IsSameOriginWith(previous_origin);
-      bool compatible_with_error_page =
-          previous_rfh->IsErrorDocument() &&
-          previous_origin.GetTupleOrPrecursorTupleIfOpaque().IsValid() &&
-          commit_params_->origin_to_commit
-                  ->GetTupleOrPrecursorTupleIfOpaque() ==
-              previous_origin.GetTupleOrPrecursorTupleIfOpaque();
-      if (is_cross_origin_navigation && !compatible_with_error_page) {
-        commit_params_->force_new_document_sequence_number = true;
-      }
+    bool is_cross_origin_navigation =
+        !commit_params_->origin_to_commit.IsSameOriginWith(previous_origin);
+    bool compatible_with_error_page =
+        previous_rfh->IsErrorDocument() &&
+        previous_origin.GetTupleOrPrecursorTupleIfOpaque().IsValid() &&
+        commit_params_->origin_to_commit.GetTupleOrPrecursorTupleIfOpaque() ==
+            previous_origin.GetTupleOrPrecursorTupleIfOpaque();
+    if (is_cross_origin_navigation && !compatible_with_error_page) {
+      commit_params_->force_new_document_sequence_number = true;
     }
   }
 
@@ -8401,30 +8397,7 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   SetExpectedProcess(GetRenderFrameHost()->GetProcess());
 
   commit_params_->is_load_data_with_base_url = IsLoadDataWithBaseURL();
-
-  // Set origin_to_commit for all cases if kUseBrowserCalculatedOrigin is
-  // enabled, and for these two cases otherwise:
-  // 1) Error pages, which should always commit in an opaque origin (with the
-  // precursor reflecting the destination URL).
-  // 2) data: URLs, which should also be opaque.
-  // Set the origin here because otherwise the origin (and hence the nonce) is
-  // separately calculated on the renderer side and sent with DidCommit. At that
-  // point the origin used to create the SiteInstance will differ from the one
-  // committed in the renderer. For data: URLs, a consistent nonce across the
-  // browser and renderer can be used to determine which data: URL SiteInstance
-  // should be used in RenderFrameProxyHost::OpenURL.
-  // We do not need to set it for LoadDataWithBaseURL cases, because it will not
-  // lead to ambiguous cases where multiple data: SiteInstances will be in the
-  // same group. However, when the base URL is empty, LoadDataWithBaseURL is
-  // treated like a regular data: URL.
-  if (base::FeatureList::IsEnabled(features::kUseBrowserCalculatedOrigin) ||
-      is_error ||
-      (common_params_->url.SchemeIs(url::kDataScheme) &&
-       !IsLoadDataWithBaseURL())) {
-    commit_params_->origin_to_commit = origin_to_commit;
-    CHECK(base::FeatureList::IsEnabled(features::kUseBrowserCalculatedOrigin) ||
-          !is_error || origin_to_commit->opaque());
-  }
+  commit_params_->origin_to_commit = origin_to_commit.value();
 
   if (!IsSameDocument()) {
 #if DCHECK_IS_ON()

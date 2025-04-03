@@ -4085,7 +4085,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
 
   blink::mojom::CommitNavigationParamsPtr commit_params =
       blink::mojom::CommitNavigationParams::New(
-          std::nullopt,
+          url::Origin(),
           // The correct storage key will be computed before committing the
           // navigation.
           blink::StorageKey(), override_user_agent, params.redirect_chain,

@@ -993,10 +993,7 @@ void FillMiscNavigationParams(
   DCHECK(!commit_params.can_load_local_resources);
 #endif
 
-  if (commit_params.origin_to_commit) {
-    navigation_params->origin_to_commit =
-        commit_params.origin_to_commit.value();
-  }
+  navigation_params->origin_to_commit = commit_params.origin_to_commit;
   navigation_params->storage_key = std::move(commit_params.storage_key);
 
   navigation_params->frame_policy = commit_params.frame_policy;
@@ -2744,11 +2741,6 @@ void RenderFrameImpl::CommitNavigation(
   DCHECK(navigation_client_impl_);
   DCHECK(!blink::IsRendererDebugURL(common_params->url));
   DCHECK(!NavigationTypeUtils::IsSameDocument(common_params->navigation_type));
-  // `origin_to_commit` must only be set on failed navigations or  data: URL
-  // navigations, except when kUseBrowserCalculatedOrigin is enabled.
-  CHECK(!commit_params->origin_to_commit ||
-        common_params->url.SchemeIs(url::kDataScheme) ||
-        base::FeatureList::IsEnabled(features::kUseBrowserCalculatedOrigin));
   LogCommitHistograms(commit_params->commit_sent, is_main_frame_,
                       common_params->url);
 
@@ -3108,8 +3100,6 @@ void RenderFrameImpl::CommitFailedNavigation(
                frame_token_);
   DCHECK(navigation_client_impl_);
   DCHECK(!NavigationTypeUtils::IsSameDocument(common_params->navigation_type));
-  // `origin_to_commit` must be set on failed navigations.
-  CHECK(commit_params->origin_to_commit);
 
   // The browser process should not send us an initiator_base_url in a failed
   // navigation.

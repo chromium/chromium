@@ -15944,14 +15944,9 @@ void RenderFrameHostImpl::SendCommitNavigation(
 
   base::ElapsedTimer timer;
   DCHECK_EQ(net::OK, navigation_request->GetNetErrorCode());
-  if (commit_params->origin_to_commit) {
-    DCHECK(
-        base::FeatureList::IsEnabled(features::kUseBrowserCalculatedOrigin) ||
-        common_params->url.SchemeIs(url::kDataScheme));
-    CHECK_EQ(commit_params->origin_to_commit.value(),
-             navigation_request->browser_side_origin_to_commit_with_debug_info()
-                 .first.value());
-  }
+  CHECK_EQ(commit_params->origin_to_commit,
+           navigation_request->browser_side_origin_to_commit_with_debug_info()
+               .first.value());
   IncreaseCommitNavigationCounter();
   mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host;
   mojo::PendingRemote<blink::mojom::CodeCacheHost>
@@ -16128,9 +16123,7 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
         subresource_loader_factories,
     const blink::DocumentToken& document_token,
     blink::mojom::PolicyContainerPtr policy_container) {
-  // `origin_to_commit` must be set on failed navigations.
-  DCHECK(commit_params->origin_to_commit);
-  CHECK_EQ(commit_params->origin_to_commit.value(),
+  CHECK_EQ(commit_params->origin_to_commit,
            navigation_request->browser_side_origin_to_commit_with_debug_info()
                .first.value());
   DCHECK(navigation_client && navigation_request);
