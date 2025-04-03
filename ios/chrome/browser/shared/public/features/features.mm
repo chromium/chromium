@@ -1353,3 +1353,11 @@ BASE_FEATURE(kRunDefaultStatusCheck,
 bool IsRunDefaultStatusCheckEnabled() {
   return base::FeatureList::IsEnabled(kRunDefaultStatusCheck);
 }
+
+BASE_FEATURE(kContainedTabGroup,
+             "ContainedTabGroup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsContainedTabGroupEnabled() {
+  return base::FeatureList::IsEnabled(kContainedTabGroup);
+}

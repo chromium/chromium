@@ -1101,4 +1101,10 @@ BASE_DECLARE_FEATURE(kRunDefaultStatusCheck);
 // Returns whether `kRunDefaultStatusCheck` is enabled.
 bool IsRunDefaultStatusCheckEnabled();
 
+// Feature flag to have the tab group visually contained.
+BASE_DECLARE_FEATURE(kContainedTabGroup);
+
+// Whether the feature associated with contained tab group is enabled.
+bool IsContainedTabGroupEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

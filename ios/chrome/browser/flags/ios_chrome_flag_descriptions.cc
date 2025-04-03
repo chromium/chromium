@@ -240,6 +240,10 @@ const char kCollaborationMessagingDescription[] =
     "including features such as recent activity, dirty dots, and description "
     "action chips.";
 
+const char kContainedTabGroupName[] = "Contained tab group";
+const char kContainedTabGroupDescription[] =
+    "When enabled the tab group in the tab grid is not presented fullscreen.";
+
 const char kContentNotificationExperimentName[] =
     "Content Notification Experiment";
 const char kContentNotificationExperimentDescription[] =

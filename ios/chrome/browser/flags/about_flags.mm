@@ -2610,6 +2610,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafeBrowsingTrustedURLName,
      flag_descriptions::kSafeBrowsingTrustedURLDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSafeBrowsingTrustedURL)},
+    {"contained-tab-group", flag_descriptions::kContainedTabGroupName,
+     flag_descriptions::kContainedTabGroupDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kContainedTabGroup)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

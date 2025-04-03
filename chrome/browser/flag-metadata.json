@@ -1573,6 +1573,11 @@
     "expiry_milestone": 140
   },
   {
+      "name": "contained-tab-group",
+      "owners": ["gambard@google.com", "bling-flags@google.com"],
+      "expiry_milestone": 140
+  },
+  {
     "name": "content-notification-experiment",
     "owners": [ "tinazwang@google.com", "chrome-sherlock@google.com"],
     "expiry_milestone": 135

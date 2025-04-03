@@ -135,6 +135,9 @@ extern const char kBreakpadNoDelayInitialUploadDescription[];
 extern const char kCollaborationMessagingName[];
 extern const char kCollaborationMessagingDescription[];
 
+extern const char kContainedTabGroupName[];
+extern const char kContainedTabGroupDescription[];
+
 extern const char kContentNotificationExperimentName[];
 extern const char kContentNotificationExperimentDescription[];
 
