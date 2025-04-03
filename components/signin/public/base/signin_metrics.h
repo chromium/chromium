@@ -123,8 +123,11 @@ enum class ProfileSignout {
   kUserClickedSignoutInAccountMenu = 36,
   // User disabled allow chrome sign-in from google settings page.
   kUserDisabledAllowChromeSignIn = 37,
+  // User was forced signed out as there was a supervised user added to the
+  // device.
+  kSignoutBeforeSupervisedSignin = 38,
   // Keep this as the last enum.
-  kMaxValue = kUserDisabledAllowChromeSignIn
+  kMaxValue = kSignoutBeforeSupervisedSignin
 };
 
 // Enum values which enumerates all access points where sign in could be
