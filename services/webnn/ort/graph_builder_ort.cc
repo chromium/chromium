@@ -444,6 +444,77 @@ GraphBuilderOrt::CreateScalarInitializer(const DataType& value) {
       /*shape=*/{}, base::span_from_ref(value));
 }
 
+void GraphBuilderOrt::FindBoolOperands() {
+  std::unordered_set<uint64_t> bool_output_operands;
+  std::unordered_set<uint64_t> bool_input_operands;
+  for (const mojom::OperationPtr& operation : graph_info_->operations) {
+    // Find all operands that are bool output.
+    switch (operation->which()) {
+      case mojom::Operation::Tag::kElementWiseBinary: {
+        const auto& binary = *operation->get_element_wise_binary();
+        if (binary.kind == mojom::ElementWiseBinary::Kind::kLesser ||
+            binary.kind == mojom::ElementWiseBinary::Kind::kLesserOrEqual ||
+            binary.kind == mojom::ElementWiseBinary::Kind::kGreater ||
+            binary.kind == mojom::ElementWiseBinary::Kind::kGreaterOrEqual ||
+            binary.kind == mojom::ElementWiseBinary::Kind::kEqual ||
+            binary.kind == mojom::ElementWiseBinary::Kind::kNotEqual ||
+            binary.kind == mojom::ElementWiseBinary::Kind::kLogicalAnd ||
+            binary.kind == mojom::ElementWiseBinary::Kind::kLogicalOr ||
+            binary.kind == mojom::ElementWiseBinary::Kind::kLogicalXor) {
+          bool_output_operands.insert(binary.output_operand_id);
+        }
+        break;
+      }
+      case mojom::Operation::Tag::kElementWiseUnary: {
+        const auto& unary = *operation->get_element_wise_unary();
+        if (unary.kind == mojom::ElementWiseUnary::Kind::kLogicalNot) {
+          bool_output_operands.insert(unary.output_operand_id);
+        }
+        break;
+      }
+      default:
+        break;
+    }
+
+    // Find all operands that are used as bool input.
+    switch (operation->which()) {
+      case mojom::Operation::Tag::kElementWiseBinary: {
+        const auto& binary = *operation->get_element_wise_binary();
+        if (binary.kind == mojom::ElementWiseBinary::Kind::kLogicalAnd ||
+            binary.kind == mojom::ElementWiseBinary::Kind::kLogicalOr ||
+            binary.kind == mojom::ElementWiseBinary::Kind::kLogicalXor) {
+          bool_input_operands.insert(binary.lhs_operand_id);
+          bool_input_operands.insert(binary.rhs_operand_id);
+        }
+        break;
+      }
+      case mojom::Operation::Tag::kElementWiseUnary: {
+        const auto& unary = *operation->get_element_wise_unary();
+        if (unary.kind == mojom::ElementWiseUnary::Kind::kLogicalNot) {
+          bool_input_operands.insert(unary.input_operand_id);
+        }
+        break;
+      }
+      case mojom::Operation::Tag::kWhere: {
+        const auto& where = *operation->get_where();
+        bool_input_operands.insert(where.condition_operand_id);
+        break;
+      }
+      default:
+        break;
+    }
+  }
+
+  // Find all operands that can skip cast operators. If an operand is a bool
+  // output and also used as bool input, it can skip inserting cast operator
+  // to/from uint8.
+  for (auto id : bool_output_operands) {
+    if (bool_input_operands.count(id)) {
+      bool_operands_.insert(id);
+    }
+  }
+}
+
 void GraphBuilderOrt::AddCastNode(std::string_view node,
                                   std::string_view input,
                                   std::string_view output,
@@ -866,15 +937,20 @@ void GraphBuilderOrt::AddElementWiseLogicalOperation(
     lhs = GetOperandNameById(element_wise_binary->lhs_operand_id);
     rhs = GetOperandNameById(element_wise_binary->rhs_operand_id);
 
-    // Some ONNX logical operators only support bool input.
+    // For some ONNX logical operators that require bool input, add a cast if
+    // the operand is not in the skipped list.
     if (element_wise_binary->kind ==
             mojom::ElementWiseBinary::Kind::kLogicalAnd ||
         element_wise_binary->kind ==
             mojom::ElementWiseBinary::Kind::kLogicalOr ||
         element_wise_binary->kind ==
             mojom::ElementWiseBinary::Kind::kLogicalXor) {
-      lhs = PrependCast(lhs, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
-      rhs = PrependCast(rhs, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
+      if (!bool_operands_.count(element_wise_binary->lhs_operand_id)) {
+        lhs = PrependCast(lhs, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
+      }
+      if (!bool_operands_.count(element_wise_binary->rhs_operand_id)) {
+        rhs = PrependCast(rhs, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
+      }
     }
 
     inputs = {lhs.c_str(), rhs.c_str()};
@@ -883,30 +959,34 @@ void GraphBuilderOrt::AddElementWiseLogicalOperation(
         absl::get<const mojom::ElementWiseUnary*>(operation);
     lhs = GetOperandNameById(element_wise_unary->input_operand_id);
 
-    // Some ONNX logical operators only support bool input.
+    // For some ONNX logical operators that require bool input, add a cast if
+    // the operand is not in the skipped list.
     if (element_wise_unary->kind ==
-        mojom::ElementWiseUnary::Kind::kLogicalNot) {
+            mojom::ElementWiseUnary::Kind::kLogicalNot &&
+        !bool_operands_.count(element_wise_unary->input_operand_id)) {
       lhs = PrependCast(lhs, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
     }
 
     inputs = {lhs.c_str()};
   }
 
-  const std::string bool_output = GenerateNextOperandName();
-  std::array<const char*, 1> outputs = {bool_output.c_str()};
-
-  model_editor_.AddNode(op_type, node, inputs, outputs);
-
   // ONNX logical operators only support bool output. To support output with the
-  // WebNN data type, it is necessary to insert a cast operator after a logical
-  // operator.
+  // WebNN data type, append a cast if the operand is not in the skipped list.
   uint64_t output_operand_id = absl::visit(
       [](const auto* op) { return op->output_operand_id; }, operation);
-  OperandDataType output_data_type =
-      GetOperand(output_operand_id).descriptor.data_type();
   std::string output = GetOperandNameById(output_operand_id);
-  AppendCast(bool_output, output,
-             OperandTypeToONNXTensorElementDataType(output_data_type));
+  if (bool_operands_.count(output_operand_id)) {
+    std::array<const char*, 1> outputs = {output.c_str()};
+    model_editor_.AddNode(op_type, node, inputs, outputs);
+  } else {
+    const std::string bool_output = GenerateNextOperandName();
+    std::array<const char*, 1> bool_outputs = {bool_output.c_str()};
+    model_editor_.AddNode(op_type, node, inputs, bool_outputs);
+    ONNXTensorElementDataType output_type =
+        OperandTypeToONNXTensorElementDataType(
+            GetOperand(output_operand_id).descriptor.data_type());
+    AppendCast(bool_output, output, output_type);
+  }
 }
 
 // ONNX doesn't support `notEqual`, emulate it by `logicalNot(equal(a, b))`.
@@ -924,22 +1004,25 @@ void GraphBuilderOrt::AddElementWiseLogicalNotEqualOperation(
   model_editor_.AddNode(kOpTypeEqual, equal_node, equal_inputs, equal_outputs);
 
   // Step 2: calculate `logicalNot(equal_output)`
-  const std::string not_output = GenerateNextOperandName();
-  std::array<const char*, 1> not_outputs = {not_output.c_str()};
+  // ONNX logical operators only support bool output. To support output with the
+  // WebNN data type, append a cast if the operand is not in the skipped list.
+  uint64_t output_operand_id = not_equal.output_operand_id;
+  std::string output = GetOperandNameById(output_operand_id);
   const std::string not_node =
       GenerateNextOperationName("inserted_not_to_emulate_" + not_equal.label);
-  model_editor_.AddNode(kOpTypeLogicalNot, not_node, equal_outputs,
-                        not_outputs);
-
-  // ONNX logical operators only support bool output. To support output with the
-  // WebNN data type, it is necessary to insert a cast operator after a logical
-  // operator.
-  uint64_t output_operand_id = not_equal.output_operand_id;
-  OperandDataType output_data_type =
-      GetOperand(output_operand_id).descriptor.data_type();
-  std::string output = GetOperandNameById(output_operand_id);
-  AppendCast(not_output, output,
-             OperandTypeToONNXTensorElementDataType(output_data_type));
+  if (bool_operands_.count(output_operand_id)) {
+    std::array<const char*, 1> outputs = {output.c_str()};
+    model_editor_.AddNode(kOpTypeLogicalNot, not_node, equal_outputs, outputs);
+  } else {
+    const std::string bool_output = GenerateNextOperandName();
+    std::array<const char*, 1> bool_outputs = {bool_output.c_str()};
+    model_editor_.AddNode(kOpTypeLogicalNot, not_node, equal_outputs,
+                          bool_outputs);
+    ONNXTensorElementDataType output_type =
+        OperandTypeToONNXTensorElementDataType(
+            GetOperand(output_operand_id).descriptor.data_type());
+    AppendCast(bool_output, output, output_type);
+  }
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
@@ -3117,7 +3200,9 @@ void GraphBuilderOrt::AddWhereOperation(const mojom::Where& where) {
   // ONNX only supports bool data type for the condition input of Where, insert
   // a Cast node to convert the condition input to bool.
   std::string condition = GetOperandNameById(where.condition_operand_id);
-  condition = PrependCast(condition, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
+  if (!bool_operands_.count(where.condition_operand_id)) {
+    condition = PrependCast(condition, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
+  }
 
   const std::string true_value =
       GetOperandNameById(where.true_value_operand_id);
@@ -3143,6 +3228,9 @@ GraphBuilderOrt::BuildModel() {
   for (const auto& [constant_id, _] : constant_operands_) {
     RETURN_IF_ERROR(AddInitializer(constant_id));
   }
+
+  // Find all the bool operands.
+  FindBoolOperands();
 
   // Add operations.
   for (const mojom::OperationPtr& operation : graph_info_->operations) {

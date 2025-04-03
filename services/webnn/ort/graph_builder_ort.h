@@ -132,6 +132,11 @@ class GraphBuilderOrt {
   [[nodiscard]] base::expected<std::string, mojom::ErrorPtr>
   CreateScalarInitializer(const DataType& value);
 
+  // Iterate over the graph info before adding nodes to find the bool operands.
+  // For example:
+  // [Less] -> Bool -> [Cast] -> Uint8 -> [Cast] -> Bool -> [Where]
+  void FindBoolOperands();
+
   void AddCastNode(std::string_view node,
                    std::string_view input,
                    std::string_view output,
@@ -330,6 +335,10 @@ class GraphBuilderOrt {
 
   // Used for inserting new operation into graph.
   uint64_t next_operation_id_ = 0;
+
+  // Operands that can be kept in bool data type without inserting cast
+  // operators to/from uint8 data type.
+  std::unordered_set<uint64_t> bool_operands_;
 
   // A reference to the WebNN compute graph that `this` instance is converting
   // to ONNX model. The creator of `this` must ensure the GraphInfo reference
