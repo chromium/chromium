@@ -436,6 +436,8 @@ component("net") {
     "cookies/cookie_util.h",
     "cookies/parsed_cookie.cc",
     "cookies/parsed_cookie.h",
+    "cookies/ref_unique_cookie_key.cc",
+    "cookies/ref_unique_cookie_key.h",
     "cookies/site_for_cookies.cc",
     "cookies/site_for_cookies.h",
     "cookies/static_cookie_policy.cc",
