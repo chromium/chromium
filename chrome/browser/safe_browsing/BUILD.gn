@@ -494,6 +494,7 @@ static_library("safe_browsing") {
         "//components/safe_browsing:buildflags",
         "//components/safe_browsing/android:remote_database_manager",
         "//components/safe_browsing/android:safe_browsing_mobile",
+        "//google_apis/common:request_util",
         "//ui/android:android",
 
         # TODO(crbug.com/41437292): Use //chrome/browser after fixing cyclic
