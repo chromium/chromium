@@ -4077,6 +4077,7 @@
 <translation id="3820749202859700794">SECG 椭圆曲线 secp521r1（又称 NIST P-521）</translation>
 <translation id="3821074617718452587">Phone Hub 通知</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{有 1 个扩展程序已获批准}other{有 # 个扩展程序已获批准}}</translation>
+<translation id="3822426549715448461">DD</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">建议为 Linux 留出至少 <ph name="INSTALL_SIZE" /> 的空间。</translation>
 <translation id="3824621460022590830">设备注册令牌无效。请与设备所有者或管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
@@ -4605,6 +4606,7 @@
 <translation id="4203769790323223880">已拒绝授予摄像头使用权限</translation>
 <translation id="4204415812590935863">目前无法创建主题。</translation>
 <translation id="4205157409548006256">配置 Linux 时出错。</translation>
+<translation id="4205643719206044108">为了提供建议，系统会将您访问的网站和网页内容分享给 Google</translation>
 <translation id="4206144641569145248">外星人</translation>
 <translation id="4206323443866416204">反馈报告</translation>
 <translation id="4206585797409671301">可以显示请求</translation>
@@ -6970,6 +6972,7 @@
 <translation id="5916655001090539219">自动朗读</translation>
 <translation id="5916664084637901428">已启用</translation>
 <translation id="59174027418879706">已启用</translation>
+<translation id="5919305207330938913">收集的所有数据都会遵照 Google<ph name="BEGIN_LINK" />《隐私权政策》<ph name="END_LINK" />加以使用。</translation>
 <translation id="5920543303088087579">您的管理员已禁止连接到此网络</translation>
 <translation id="5922963926582976524">断开智能热点网络连接</translation>
 <translation id="5924047253200400718">获取帮助<ph name="SCANNING_STATUS" /></translation>
@@ -7480,6 +7483,7 @@
 <translation id="6283438600881103103">您将立即自动退出。
 <ph name="DOMAIN" /> 要求您使智能卡保持插入状态。</translation>
 <translation id="628352644014831790">4 秒</translation>
+<translation id="6283823201263716145">处于演示模式的设备会自动向 Google 发送崩溃报告以及诊断数据和使用情况数据，以帮助改进功能和性能。</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> 的下载方式实属异常，因此它可能存在危险。</translation>
 <translation id="6285770818046456882">正与您分享内容的设备取消了传输</translation>
 <translation id="628699625505156622">使用位置信息：允许具有位置信息权限的 ChromeOS 及 Android 应用、网站和服务使用此设备的位置信息。开启“位置信息精确度”设置可为 Android 应用和服务提供更精确的位置信息。为此，Google 会定期处理来自此设备的传感器信息和无线信号信息，然后汇总根据无线信号识别的位置信息。Google 会在不识别任何个人身份的情况下，使用这些信息来提高位置信息精确度和改善基于地理位置的服务，并根据 Google 和第三方的合法权益来改进、提供和维护 Google 服务，以满足用户的需求。<ph name="BEGIN_LINK1" />详细了解如何使用位置信息<ph name="END_LINK1" /></translation>
@@ -8741,6 +8745,7 @@
 <translation id="7199452998289813782">暂停投放到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="720110658997053098">让此设备永久处于自助服务终端模式</translation>
 <translation id="7201118060536064622">已删除“<ph name="DELETED_ITEM_NAME" />”</translation>
+<translation id="7201336084980086208">当您提交表单时，自动填充功能可以询问您是否要保存信息，例如驾照或护照号码</translation>
 <translation id="7201420661433230412">查看文件</translation>
 <translation id="7201432510117121839">此设备不支持投放桌面设备中的音频</translation>
 <translation id="7201535955609308429">正在验证，请稍候</translation>
@@ -9342,6 +9347,7 @@
 <translation id="7641720519047586765">已从此网站中删除此通行密钥</translation>
 <translation id="764178579712141045">已添加 <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">隐藏敏感内容</translation>
+<translation id="7643117827468520640">查看这些条款</translation>
 <translation id="7643842463591647490">{0,plural, =1{# 个打开的窗口}other{# 个打开的窗口}}</translation>
 <translation id="7643932971554933646">允许网站查看文件？</translation>
 <translation id="7644953783774050577">全部不选</translation>
@@ -10799,7 +10805,7 @@
 <translation id="8647385344110255847">经您授权后，您的孩子便可使用 Google Play 安装应用</translation>
 <translation id="8647834505253004544">网址无效</translation>
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" />或<ph name="RE_SCAN_LINK" /></translation>
-<translation id="8648408795949963811">护眼模式色温</translation>
+<translation id="8648408795949963811">夜间光效色温</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> 想获得以下权限：<ph name="FIRST_PERMISSION" />、<ph name="SECOND_PERMISSION" />，等等</translation>
 <translation id="8649026945479135076">您访问的网站经常会记住您感兴趣的内容，以便为您提供个性化体验。网站还可以将您的兴趣信息存储在 Chrome 中。</translation>
 <translation id="8650543407998814195">既然您已无法再访问自己的旧个人资料，不妨将其移除。</translation>

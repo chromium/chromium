@@ -2049,6 +2049,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4521280267704259211">Ümbrik Monarh</translation>
 <translation id="4521916730539354575">Vasakpoolne salv</translation>
 <translation id="4522570452068850558">Üksikasjad</translation>
+<translation id="4523580145196408446">Lingitud</translation>
 <translation id="4523643381056109546">Siltide valmistamine</translation>
 <translation id="4524138615196389145">Kinnitage oma kaardid kiiremini, kasutades edaspidi WebAuthn-autentimist</translation>
 <translation id="45243788195988825">Blokeeri <ph name="TOPIC" /></translation>
@@ -3124,6 +3125,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6405181733356710802">Kas minna edasi rakendusse <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Sisestage krediitkaardi <ph name="CREDIT_CARD" /> aegumiskuupäev ja CVC</translation>
 <translation id="6411107829285739505">A4 × 8</translation>
+<translation id="6412543105195503444">Vanemliku kinnituse dialoogiaken</translation>
 <translation id="6414010576370319452">Naha- ja küünehooldus</translation>
 <translation id="6415778972515849510">Chromium aitab teil oma Google'i kontot kaitsta ja parooli muuta.</translation>
 <translation id="6416877227920300343">EDP</translation>
@@ -4108,6 +4110,7 @@ Lisateave:
 <translation id="812020627659652807">Kustuta failid kohe</translation>
 <translation id="8120720167840853945">See reegel ei juhi ühegi muu reegli vaikekäitumist.</translation>
 <translation id="8127301229239896662">Tarkvara „<ph name="SOFTWARE_NAME" />” ei installitud teie arvutisse või võrku korralikult. Paluge IT-administraatoril see probleem lahendada.</translation>
+<translation id="8130113808541743942">Teisaldamine asukohta...</translation>
 <translation id="8131740175452115882">Kinnita</translation>
 <translation id="8133495915926741232">Valige, milliseid üldiseid teemade kategooriaid võib kasutada reklaamide isikupärastamise hõlbustamiseks. Üldisema kategooria väljalülitamine blokeerib ka sellega seotud teemad. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Töölevõtmine ja värbamine</translation>

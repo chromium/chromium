@@ -17,6 +17,7 @@
 <translation id="1052842760770519282">無法存取部分密碼</translation>
 <translation id="1058669287135776095">你已離線。請檢查網際網路連線，然後再試一次。</translation>
 <translation id="10614374240317010">一律不儲存</translation>
+<translation id="1070689840697074178">你可以在這裡下載 PDF</translation>
 <translation id="107147699690128016">如果變更副檔名，這個檔案可能會在其他應用程式中開啟，並可能對裝置造成損害。</translation>
 <translation id="1080365971383768617">在所有裝置上都能使用自己的密碼</translation>
 <translation id="1087176310396019910">疑似垃圾內容</translation>
@@ -517,11 +518,13 @@
 <translation id="3439276997620616816">這裡會顯示最近關閉的分頁</translation>
 <translation id="3443221991560634068">重新載入目前網頁</translation>
 <translation id="3444179773590444986">要針對網站的深色主題提供意見嗎？</translation>
+<translation id="3448874648066942074">使用 AI 歸納網頁摘要</translation>
 <translation id="3452832259067974318">為保護個人隱私，Chrome 不會在這個欄位中自動填入密碼。</translation>
 <translation id="3467081767799433066">藉由廣告評估機制，網站間可分享某些特定資料，以便評估廣告成效，例如使用者是否在造訪網站後購物。</translation>
 <translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
 <translation id="3478363558367712427">你可以選擇搜尋引擎</translation>
 <translation id="3479552764303398839">現在不要</translation>
+<translation id="3482805106082349287">使用鍵盤、語音、無痕模式或相機搜尋</translation>
 <translation id="3487903178221457900">其他人 (包括應用程式) 可能可以存取匯出的檔案。匯出後，系統會從 Chrome 中刪除密碼。</translation>
 <translation id="3488199663160411179">名稱</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />建議的內容</translation>
@@ -783,6 +786,7 @@
 <translation id="4698061626562952596">在此查看閒置分頁</translation>
 <translation id="4699172675775169585">快取圖片和檔案</translation>
 <translation id="4710167854527459075">由新到舊排序</translation>
+<translation id="4718044610319080485">啟動 AI 助理</translation>
 <translation id="4719927025381752090">提供翻譯</translation>
 <translation id="4720556299488643018">取消訂閱</translation>
 <translation id="4732120983431207637">堆疊回溯器</translation>
@@ -898,6 +902,7 @@
 <translation id="5174700554036517242">分頁已恢復初始高度</translation>
 <translation id="5180063720319462041">頁面內容已翻譯成<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5191251636205085390">進一步瞭解用於取代第三方 Cookie 的全新技術並進行控管</translation>
+<translation id="5197649123261764478">輕鬆存取書籤</translation>
 <translation id="5204967432542742771">輸入密碼</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{正在下載檔案…}other{正在下載 # 個檔案…}}</translation>
 <translation id="5210286577605176222">跳至上一個分頁</translation>
@@ -927,6 +932,7 @@
 <translation id="5328542107300944283">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 的帳戶操作</translation>
 <translation id="5342314432463739672">權限要求</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" />未造訪任何網站</translation>
+<translation id="5354716139000094027">使用 AI 歸納摘要</translation>
 <translation id="5355191726083956201">已啟用強化防護功能</translation>
 <translation id="5375374982898812658">你將立即無法存取「<ph name="GROUP_NAME" />」分頁群組，且該群組會從你的所有裝置中刪除</translation>
 <translation id="5375577065097716013">使用 Google 智慧鏡頭搜尋圖片 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
@@ -936,6 +942,7 @@
 <translation id="539881862970320163">建議使用高強度密碼。鍵盤已隱藏。</translation>
 <translation id="5409881200985013443">要在「<ph name="CLIENT_NAME" />」上提交 <ph name="ONE_TIME_CODE" /> 嗎？</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) 邀請你加入分頁群組。知道連結的使用者都可以編輯所有分頁，請謹慎考慮是否加入。連結將在 48 小時後失效。</translation>
+<translation id="5412388166586147626">無法開啟 AI 助理，請再試一次。</translation>
 <translation id="5414836363063783498">驗證中…</translation>
 <translation id="5415871492522952905">所有已同步的裝置上都會有你的歷史記錄和分頁，方便你繼續執行先前的工作</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) 將立即無法存取「<ph name="GROUP_NAME" />」分頁群組</translation>
@@ -955,6 +962,7 @@
 <translation id="5456381639095306749">下載網頁</translation>
 <translation id="5458366071038729214">這裡會顯示你追蹤的網站</translation>
 <translation id="5468068603361015296">仍要下載「<ph name="FILE_NAME" />」嗎？</translation>
+<translation id="5471273988133666918">無法移動分頁「<ph name="TAB_TITLE" />」</translation>
 <translation id="548278423535722844">在地圖應用程式中開啟</translation>
 <translation id="5492637351392383067">裝置端加密</translation>
 <translation id="549660026907543296">以<ph name="MEMBER_FULL_NAME" />的身分加入</translation>
@@ -969,6 +977,7 @@
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="555671485580955310">同步歷史記錄和分頁</translation>
 <translation id="555816257274242153">已停止追蹤價格</translation>
+<translation id="5561445479436807659">暢玩有趣的恐龍遊戲</translation>
 <translation id="5561549206367097665">正在等待網路連線…</translation>
 <translation id="5568069709869097550">無法登入</translation>
 <translation id="557018954714092179">建立新資料夾</translation>
@@ -1516,6 +1525,7 @@
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{貴機構已封鎖這 1 個下載項目}other{貴機構已封鎖這 # 個下載項目}}</translation>
 <translation id="7914399737746719723">應用程式已安裝</translation>
 <translation id="7919123827536834358">自動翻譯這些語言</translation>
+<translation id="7921782882718083488">歸納本頁摘要</translation>
 <translation id="7926975587469166629">卡片暱稱</translation>
 <translation id="7929962904089429003">開啟選單</translation>
 <translation id="7934668619883965330">無法下載檔案，因為系統不支援檔案格式。</translation>
@@ -1672,6 +1682,7 @@
 <translation id="8540136935098276800">請輸入正確格式的網址</translation>
 <translation id="854522910157234410">開啟以下網頁</translation>
 <translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{閒置分頁 (1)}other{閒置分頁 (#)}}</translation>
+<translation id="8547466829003330976">使用 AI 審查 PDF</translation>
 <translation id="8551513938758868521">退出 Chrome 時鎖定無痕分頁</translation>
 <translation id="8559961053328923750">對於收集用來評估廣告成效的資料，Chrome 會限制網站可透過瀏覽器分享的資料總量</translation>
 <translation id="8559990750235505898">詢問是否將網頁內容翻譯成其他語言</translation>
@@ -1769,6 +1780,7 @@
 <translation id="9022871169049522985">網站和廣告主可評估廣告成效</translation>
 <translation id="9035378196785279980">移至\u2026</translation>
 <translation id="9042893549633094279">隱私權和安全性</translation>
+<translation id="9047347135558855162">快速啟動 Chrome 搜尋</translation>
 <translation id="9050666287014529139">通關密語</translation>
 <translation id="9055497320631373736">已將網站加回廣告建議資格清單</translation>
 <translation id="9057030985451135243">瞭解共用分頁群組</translation>

@@ -106,6 +106,7 @@
 <translation id="1411386976162024013">لینز کی ویژوئل تلاش</translation>
 <translation id="1417474386970818917">سائن آؤٹ کریں اور حذف کریں</translation>
 <translation id="1426410128494586442">ہاں</translation>
+<translation id="1429187656584513419">پاس ورڈز کھولیں</translation>
 <translation id="1430915738399379752">پرنٹ کریں</translation>
 <translation id="1436671784520050284">سیٹ اپ جاری رکھیں</translation>
 <translation id="143681031165817424">پتہ صرف اس آلہ پر محفوظ ہے</translation>
@@ -592,6 +593,7 @@
 <translation id="3530206579861815432">اپنے مطابقت پذیر آلات پر کھلے اور حال ہی میں بند ٹیبز کو تیزی سے تلاش کریں۔</translation>
 <translation id="3530767473765895035">اس آلے پر اکاؤنٹس کا نظم کریں…</translation>
 <translation id="3533436815740441613">نیا ٹیب</translation>
+<translation id="3533860663366814939">آٹو فل اور پاس ورڈز کی ترتیبات کو کھولیں</translation>
 <translation id="3547356470684043247">کسٹمر کے پروڈکٹس، سروسز یا تجربوں کے تجزیے پڑھیں تاکہ تجزیوں کے ساتھ اپنے فیصلوں کو مطلع کرنے میں مدد مل سکے</translation>
 <translation id="3557336313807607643">رابطوں میں شامل کریں</translation>
 <translation id="355765753469272474">کالعدم کریں</translation>
@@ -1522,6 +1524,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7431851541687113774">پتہ کی شناخت آف کریں</translation>
 <translation id="7431991332293347422">تلاش کو ذاتی نوعیت کا بنانے کیلئے آپ کی براؤزنگ کی سرگزشت جس طریقے سے استعمال کی جاتی ہے اسے کنٹرول کریں اور مزید بہت کچھ</translation>
 <translation id="7435356471928173109">آپ کے منتظم کے ذریعے آف کر دیا گیا</translation>
+<translation id="7437712592381799950">آپ کیلئے تیار کردہ مزید مواد دیکھنے کیلئے، آپ اوپر سوائپ کر سکتے ہیں۔</translation>
 <translation id="7438481509621345350">نیا ٹیب کھولنے پر اب آپ کو <ph name="CHANNEL_NAME" /> سے کہانیاں دکھائی دیں گی۔</translation>
 <translation id="7451023311965289370">{count,plural, =1{"{title}" میں بُک مارک کو محفوظ کیا گیا}other{"{title}" میں بُک مارکس کو محفوظ کیا گیا}}</translation>
 <translation id="7451404862887877229">"رازداری اور سیکیورٹی" اور پھر "محفوظ براؤزنگ" پر تھپتھپائیں</translation>
@@ -1625,6 +1628,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="784934925303690534">وقت کی حد</translation>
 <translation id="7851858861565204677">دیگر آلات</translation>
 <translation id="7853202427316060426">سرگرمی</translation>
+<translation id="7854006015462979438">'عام' کھولیں</translation>
 <translation id="7859988229622350291">کبھی بھی ترجمہ نہ کریں</translation>
 <translation id="7863211248337747225">ایپ حاصل کریں</translation>
 <translation id="7865127013871431856">ترجمہ کے اختیارات</translation>

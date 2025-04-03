@@ -114,6 +114,15 @@
 <translation id="1065175969514496951">การตั้งค่านโยบายจะให้สิทธิ์เข้าถึง URL ที่ระบุไว้ในระหว่างการตรวจสอบสิทธิ์ (เช่น ในหน้าจอการเข้าสู่ระบบและหน้าจอล็อก) โดยเป็นข้อยกเว้นสำหรับ <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> ดูรูปแบบของรายการย่อยในรายการนี้ได้จากคำอธิบายของนโยบายดังกล่าว ตัวอย่างเช่น การตั้งค่า <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> เป็น <ph name="WILDCARD_VALUE" /> จะบล็อกคำขอทั้งหมด และคุณจะใช้นโยบายนี้เพื่ออนุญาตการเข้าถึงรายการ URL ที่จำกัดไว้ได้ ตลอดจนใช้ในการเปิดข้อยกเว้นให้แก่บางรูปแบบ โดเมนย่อยของโดเมนอื่นๆ พอร์ต หรือเส้นทางที่เฉพาะเจาะจง โดยใช้รูปแบบที่ระบุไว้ที่ ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ) ตัวกรองที่เฉพาะเจาะจงมากที่สุดจะเป็นตัวกำหนดว่า URL หนึ่งๆ ถูกบล็อกหรือได้รับอนุญาต นโยบาย <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> มีความสำคัญเหนือ <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> นโยบายนี้ระบุรายการได้ไม่เกิน 1,000 รายการ
 
 การไม่ตั้งค่านโยบายจะทำให้ไม่มีข้อยกเว้นสำหรับ <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /></translation>
+<translation id="1065501094422559251">นโยบายนี้ควบคุมการตั้งค่าโค้ดแบบไดนามิกสำหรับ <ph name="PRODUCT_NAME" />
+
+การปิดใช้โค้ดแบบไดนามิกช่วยเพิ่มความปลอดภัยให้กับ <ph name="PRODUCT_NAME" /> โดยการป้องกันไม่ให้โค้ดแบบไดนามิกและโค้ดของบุคคลที่สามที่อาจเป็นอันตรายเปลี่ยนแปลงลักษณะการทำงานของ <ph name="PRODUCT_NAME" /> แต่ก็อาจทำให้เกิดปัญหาด้านความเข้ากันได้กับซอฟต์แวร์ของบุคคลที่สาม (เช่น ไดรเวอร์เครื่องพิมพ์บางตัว) ซึ่งต้องเรียกใช้ภายในกระบวนการของเบราว์เซอร์
+
+หากตั้งค่านโยบายเป็น 0 - ค่าเริ่มต้นหรือไม่ได้ตั้งค่า <ph name="PRODUCT_NAME" /> จะใช้การตั้งค่าเริ่มต้น
+
+หากตั้งค่านโยบายเป็น 1 - DisabledForBrowser ระบบจะป้องกันไม่ให้กระบวนการของเบราว์เซอร์ <ph name="PRODUCT_NAME" /> สร้างโค้ดแบบไดนามิก
+
+หมายเหตุ: อ่านเพิ่มเติมเกี่ยวกับนโยบายการลดการประมวลผล (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies)</translation>
 <translation id="1068801725746725727">เปิดใช้การรับแบบสำรวจเกี่ยวกับ Google Safe Browsing</translation>
 <translation id="107045325503547419">ขึ้นอยู่กับกระบวนการเปิดตัวฟีเจอร์</translation>
 <translation id="1073983258515362346">รายงานข้อมูลเกี่ยวกับแบ็กไลต์ของอุปกรณ์
@@ -808,7 +817,7 @@ URL ต้องเป็นรูปแบบมาตรฐาน เช่น
       หากไม่ได้ตั้งค่านโยบายนี้สำหรับเว็บไซต์ นโยบายจาก <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> ก็จะมีผลกับเว็บไซต์เมื่อตั้งค่าไว้ ไม่เช่นนั้นสิทธิ์ดังกล่าวจะเป็นไปตามค่าเริ่มต้นของเบราว์เซอร์และอนุญาตให้ผู้ใช้เลือกสิทธิ์สำหรับแต่ละเว็บไซต์</translation>
 <translation id="1574258262373444557">ไม่ใช้ <ph name="AES_KL_NAME" /> เป็นอัลกอริทึมสำหรับการเข้ารหัสพื้นที่เก็บข้อมูลของผู้ใช้</translation>
 <translation id="1575015449587326319">นโยบายการกำหนดค่าสำหรับเครื่องมือเชื่อมต่อ Chrome Enterprise OnFileDownloaded</translation>
-<translation id="1576797364335927541">ปิดใช้<ph name="ALR_FEATURE_NAME" /></translation>
+<translation id="1576797364335927541">ปิดใช้ <ph name="ALR_FEATURE_NAME" /></translation>
 <translation id="1577162851453388235">Direct Sockets API ช่วยให้สื่อสารกับอุปกรณ์ปลายทางที่กำหนดเองได้โดยใช้ TCP และ UDP
 โปรดดูรายละเอียดที่ https://github.com/WICG/direct-sockets
 

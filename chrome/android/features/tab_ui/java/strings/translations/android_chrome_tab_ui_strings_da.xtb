@@ -213,6 +213,7 @@ Hvis du sletter den, mister alle øjeblikkeligt adgangen til fanegruppen "<ph na
 <translation id="8820741577754260431">Se prisfald på dine faner</translation>
 <translation id="8887921976452567404">Dine lukkede faner og grupper kan åbnes igen via sektionerne Seneste faner og Fanegrupper.</translation>
 <translation id="8915916167043355778">Luk alle</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Flyt til et nyt vindue}one{Flyt til et andet vindue}other{Flyt til et andet vindue}}</translation>
 <translation id="9090098097337832354">Oplysningerne om denne butik er lukket</translation>
 <translation id="9114502155681725011">Åbn handlingsmenuen for fanegrupper for fanegruppen <ph name="TITLE_OF_GROUP" /> i farven <ph name="COLOR_NAME" />.</translation>
 <translation id="9169141410816678175">Alle mister øjeblikkeligt adgangen til fanegruppen "<ph name="GROUP_NAME" />", og den slettes fra alle enheder</translation>

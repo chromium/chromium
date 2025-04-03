@@ -1015,6 +1015,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2742870351467570537">Remove selected items</translation>
 <translation id="2743512410823092182">DJ Resources and Equipment</translation>
 <translation id="2743934314332613923">Update driving licence?</translation>
+<translation id="2759299890026163685">Make sure that you have a stable Internet connection before trying again</translation>
 <translation id="2759825833388495838">fill in your password on <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Comics</translation>
 <translation id="2765217105034171413">Small</translation>
@@ -1279,6 +1280,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="323107829343500871">Enter the CVC for <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Always detect important content on this site</translation>
 <translation id="323585066388831737">Light red</translation>
+<translation id="3235902901585019063">Local files will be deleted on <ph name="DATE_TIME" />. Make sure that any critical business or personal data is stored externally.</translation>
 <translation id="3236212803136366317">Card benefits</translation>
 <translation id="3238395604961564389">Open link in Incognito window</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to customise the look of your browser</translation>
@@ -1757,6 +1759,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4031179711345676612">Microphone allowed</translation>
 <translation id="4036753017940930924">Lots and land</translation>
 <translation id="4039506337798853114">To show your cursor, press |<ph name="ACCELERATOR" />|</translation>
+<translation id="4045226534284799755">Sign in to your Microsoft account before trying again</translation>
 <translation id="4045441967987592849">Re-open</translation>
 <translation id="4047351652147966654">18 in x 24 in</translation>
 <translation id="404831776305217138">Update URL for extension with ID ‘<ph name="EXTENSION_ID" />’ is invalid or uses an unsupported scheme. Supported schemes are: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> and <ph name="FILE_SCHEME" />.</translation>
@@ -1777,6 +1780,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4073797364926776829">View card</translation>
 <translation id="4075732493274867456">The client and server don't support a common SSL protocol version or cipher suite.</translation>
 <translation id="4079302484614802869">Proxy configuration is set to use a .pac script URL, not fixed proxy servers.</translation>
+<translation id="4080855220442581440">scrolling and zooming shared tabs</translation>
 <translation id="4082333119419111506">Paper (preprinted)</translation>
 <translation id="4082393374666368382">Settings – Management</translation>
 <translation id="4084219288110917128">Envelope C1</translation>
@@ -2209,6 +2213,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4834250788637067901">Payment methods, offers and addresses using Google Pay</translation>
 <translation id="4840250757394056958">View your Chrome history</translation>
 <translation id="484462545196658690">Auto</translation>
+<translation id="4844937814014739139">Scrolling and zooming shared tabs</translation>
 <translation id="484671803914931257">Get discount on <ph name="MERCHANT_NAME" /> and more</translation>
 <translation id="484988093836683706">Use device unlock</translation>
 <translation id="4850886885716139402">View</translation>
@@ -2502,6 +2507,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5344522958567249764">Manage ads privacy</translation>
 <translation id="5344579389779391559">This page may try to charge you money</translation>
 <translation id="5345249337934847112">Paper (heavyweight coated)</translation>
+<translation id="5348330584842140856">This file wasn't moved because it no longer exists</translation>
 <translation id="5349543692327946794">Labels (inkjet)</translation>
 <translation id="5351548097010183514">Building Materials and Supplies</translation>
 <translation id="5354143049423063163">Hedge funds</translation>
@@ -2766,6 +2772,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5826507051599432481">Common Name (CN)</translation>
 <translation id="5830698870816298009">camera use and movement</translation>
 <translation id="583281660410589416">Unknown</translation>
+<translation id="5837220895135257862">Free up space in <ph name="CLOUD_PROVIDER" /> before trying again</translation>
 <translation id="5838278095973806738">You should not enter any sensitive information on this site (for example, passwords or credit cards) because it could be stolen by attackers.</translation>
 <translation id="5838732667866024867">You can use the left/right arrow to review price changes on the graph</translation>
 <translation id="5840318881868981258">In your Google Account, <ph name="ACCOUNT" /></translation>
@@ -4026,6 +4033,7 @@ Additional details:
 <translation id="799149739215780103">Bind</translation>
 <translation id="7992044431894087211">Screen sharing with <ph name="APPLICATION_TITLE" /> was resumed</translation>
 <translation id="7995512525968007366">Not Specified</translation>
+<translation id="7997855386298213183">shared tabs</translation>
 <translation id="800218591365569300">Try closing other tabs or programmes to free up memory.</translation>
 <translation id="8002230960325005199">See related sites in a new tab</translation>
 <translation id="8003046808285812021">'<ph name="SEARCH_TERMS" />'</translation>
@@ -4100,6 +4108,7 @@ Additional details:
 <translation id="812020627659652807">Delete files now</translation>
 <translation id="8120720167840853945">This policy is not controlling the default behaviour of any other policies.</translation>
 <translation id="8127301229239896662">'<ph name="SOFTWARE_NAME" />' wasn’t installed properly on your computer or network. Ask your IT administrator to resolve this issue.</translation>
+<translation id="8130113808541743942">Move to…</translation>
 <translation id="8131740175452115882">Confirm</translation>
 <translation id="8133495915926741232">Choose which broad categories of topics can be used to help personalise ads. Turning off a broader category will also block its related topics. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Recruitment and Staffing</translation>

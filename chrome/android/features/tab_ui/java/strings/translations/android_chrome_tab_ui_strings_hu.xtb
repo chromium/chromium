@@ -19,6 +19,7 @@ Törlés esetén mindenki azonnal elveszíti a hozzáférését a(z) „<ph name
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> perce létrehozva}other{<ph name="NUM_MINS_MANY" /> perce létrehozva}}</translation>
 <translation id="1499635324672558517">Bezárja az összes inkognitó lapot?</translation>
 <translation id="1501480321619201731">Csoport törlése</translation>
+<translation id="1505526451013346974">Hozzáadás ehhez: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1555130319947370107">Kék</translation>
 <translation id="161042844686301425">Cián</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> lap csoportosítva</translation>

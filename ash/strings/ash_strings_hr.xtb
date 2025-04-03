@@ -112,6 +112,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1306549533752902673">PREPORUČENE APLIKACIJE</translation>
 <translation id="1310396869741602366">Promjena tona</translation>
 <translation id="1312604459020188865">Jačina signala <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">Odabran je marker za gornji rub, upotrijebite tipke sa strelicama za pomicanje</translation>
 <translation id="1316069254387866896">Uvijek prikaži policu</translation>
 <translation id="132346741904777634">Kamera je poravnata s gornjim lijevim kutom. Došlo je do sukoba s površinom sustava.</translation>
 <translation id="132415371743256095">Zatvorite <ph name="DESK_NAME" /> i prozore</translation>
@@ -150,7 +151,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1455242230282523554">Prikaz postavki jezika</translation>
 <translation id="1459693405370120464">Vrijeme</translation>
 <translation id="1460620680449458626">Isključen je zvuk.</translation>
-<translation id="1462439140224375968">Izrađen je Google dokument</translation>
+<translation id="1462439140224375968">Google dokument izrađen</translation>
 <translation id="14648076227129703">To omogućuje pristup kameri za aplikacije <ph name="APP1_NAME" /> i <ph name="APP2_NAME" /> te sve aplikacije i web-lokacije s dopuštenjem za kameru</translation>
 <translation id="1467432559032391204">Ulijevo</translation>
 <translation id="146902737843070955">Ovu promjenu zatražio je vaš administrator</translation>
@@ -186,6 +187,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1557622599341396706">Prikaži naziv radne površine</translation>
 <translation id="1569384531973824928">To omogućuje pristup svim aplikacijama i web-lokacijama s dopuštenjem za kameru i mikrofon. Možda ćete morati osvježiti web-stranicu ili ponovo pokrenuti aplikaciju.</translation>
 <translation id="1571697193564730395">Prekidač značajke Ne uznemiravaj. <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">Odabran je marker za lijevi rub, upotrijebite tipke sa strelicama za pomicanje</translation>
 <translation id="1576623706766186887">Smanjivanje kad je povećalo uključeno</translation>
 <translation id="1582946770779745370">Dostupna je nadzorna ploča igre. Pritisnite <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, a zatim <ph name="LAUNCHER_KEY_NAME" /> + g kad god želite da biste je otvorili</translation>
 <translation id="1586324912145647027">Otvaranje radne površine od 1 do 8</translation>
@@ -600,7 +602,7 @@ U suprotnom će se ugrađena dodirna podloga ponovno omogućiti za <ph name="TIM
 <translation id="301584155502740476">Prikažite pojedinosti žarišne točke. Žarišna je točka isključena.</translation>
 <translation id="3017079585324758401">Pozadina</translation>
 <translation id="3018135054368884502">Premotavanje multimedijskog sadržaja unaprijed</translation>
-<translation id="3026897869154397692">Dodali ste u Kalendar</translation>
+<translation id="3026897869154397692">Dodano u Kalendar</translation>
 <translation id="3033545621352269033">Uključeno</translation>
 <translation id="3033912566804961911">Kombiniranje s radnom površinom <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Otvori datoteke</translation>
@@ -609,6 +611,7 @@ U suprotnom će se ugrađena dodirna podloga ponovno omogućiti za <ph name="TIM
 <translation id="304097922505898963">Otvaranje aplikacije Tipkovni prečaci</translation>
 <translation id="304417730895741346">Prikvačene i otvorene aplikacije nalaze se na traci. Da biste prikvačili aplikaciju na traku, desnom tipkom kliknite aplikaciju ili dodirnite dodirnu podlogu s dva prsta.</translation>
 <translation id="3045488863354895414">Dobar dan,</translation>
+<translation id="3045670165536837541">Odabran je marker za gornji desni kut, upotrijebite tipke sa strelicama za pomicanje</translation>
 <translation id="3047761520276763270">Pokušajte reći:</translation>
 <translation id="3053407068093039599">Uključivanje/isključivanje pristupa kameri</translation>
 <translation id="3055162170959710888">Uređaj je danas korišten <ph name="USED_TIME" /></translation>
@@ -1764,6 +1767,7 @@ Novo instaliranje</translation>
 <translation id="6696025732084565524">Potrebno je preuzeti važno ažuriranje za vašu odvojivu tipkovnicu</translation>
 <translation id="6697913454192220372">Dodaj novu radnu površinu</translation>
 <translation id="6700713906295497288">Gumb izbornika IME-a</translation>
+<translation id="6704073473590541209">Odabran je marker za desni rub, upotrijebite tipke sa strelicama za pomicanje</translation>
 <translation id="6706742084323792866">Tipkovnica za unos PIN-a</translation>
 <translation id="6710213216561001401">Prethodno</translation>
 <translation id="6723839937902243910">Napajanje</translation>
@@ -1787,6 +1791,7 @@ Novo instaliranje</translation>
 <translation id="6781002679438061620">Radna površina 9</translation>
 <translation id="6782182743534150858">Radna površina 13</translation>
 <translation id="6782919488259222803">Pretraživanje trenutačne stranice</translation>
+<translation id="6783348167101855071">Odabran je marker za donji desni kut, upotrijebite tipke sa strelicama za pomicanje</translation>
 <translation id="6786750046913594791">Zatvori mapu</translation>
 <translation id="6790428901817661496">Reproduciraj</translation>
 <translation id="6792262051831399889">Nije dostupan</translation>
@@ -1907,7 +1912,7 @@ Novo instaliranje</translation>
 <translation id="7228968829656641943">Odaberite za pretraživanje zaslona. Pritisnite Tab, a zatim razmaknicu da biste se kretali pomoću tipkovnice.</translation>
 <translation id="7229029500464092426">Memorija <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ukupno</translation>
 <translation id="7239814253344511868">Oba gumba miša</translation>
-<translation id="7240636904654154599">Izrađena je Google tablica</translation>
+<translation id="7240636904654154599">Google tablica izrađena</translation>
 <translation id="7244725679040769470">Preostalo baterije: još oko <ph name="PERCENTAGE" />%. Priključite uređaj na napajanje.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ovaj se Chromebook treba pokrenuti ponovo da bi se primijenilo ažuriranje. To može potrajati minutu.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -1942,6 +1947,7 @@ Novo instaliranje</translation>
 <translation id="7371404428569700291">Snimanje prozora</translation>
 <translation id="7372069265635026568">Dostupno <ph name="AVAILABLE_MEMORY" /> memorije od ukupno <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Omogućuje pristup mikrofonu za sve aplikacije i web-lokacije s dopuštenjem za mikrofon</translation>
+<translation id="7376933029363911338">Odabran je marker za donji rub, upotrijebite tipke sa strelicama za pomicanje</translation>
 <translation id="7377169924702866686">Uključena je opcija Caps Lock.</translation>
 <translation id="7377481913241237033">Povezivanje pomoću koda</translation>
 <translation id="7378203170292176219">Povucite da biste odabrali područje za snimanje</translation>
@@ -2038,6 +2044,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="7658239707568436148">Odustani</translation>
 <translation id="7659861092419699379">Zatvoreni su radna površina i prozori</translation>
 <translation id="7660160718439869192">Uređaj <ph name="NAME" /> pojavit će se na uređajima povezanima s računom <ph name="EMAIL" /></translation>
+<translation id="7661694115779363471">Odabran je marker za donji lijevi kut, upotrijebite tipke sa strelicama za pomicanje</translation>
 <translation id="7662283695561029522">Dodirnite da biste konfigurirali</translation>
 <translation id="7670953955701272011">Otvorite ovaj datum u Google kalendaru</translation>
 <translation id="7671610481353807627">Aplikacije su poredane po boji</translation>
@@ -2206,6 +2213,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8155628902202578800">Otvorite dijalog za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Upotrebljava se <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Sadržaj</translation>
+<translation id="8172370561760918656">Odabran je marker za gornji lijevi kut, upotrijebite tipke sa strelicama za pomicanje</translation>
 <translation id="81817143961839203">Umetanje slike nije uspjelo</translation>
 <translation id="8185090165691050712">Uključivanje/isključivanje izbornika za promjenu veličine načina zaključavanja</translation>
 <translation id="8192727139462702395">Kada isključite Bluetooth, ovi vanjski uređaji prekinut će vezu s vašim uređajem <ph name="DEVICE_TYPE" />:</translation>
@@ -2420,7 +2428,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8921624153894383499">Google asistent ne govori taj jezik.</translation>
 <translation id="8926951137623668982">Polica je uvijek skrivena</translation>
 <translation id="8929566928381252430">Pokušavate li upotrijebiti Caps Lock? Upotrijebite</translation>
-<translation id="8929623844713377237">Kontakt je izrađen</translation>
+<translation id="8929623844713377237">Kontakt izrađen</translation>
 <translation id="8934418770423095813">Izradi Google dokument</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 datoteka}one{# datoteka}few{# datoteke}other{# datoteka}}</translation>
 <translation id="8936501819958976551">deaktivirano</translation>

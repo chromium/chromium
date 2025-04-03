@@ -112,6 +112,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1306549533752902673">APP CONSIGLIATE</translation>
 <translation id="1310396869741602366">Modifica tono</translation>
 <translation id="1312604459020188865">Intensità del segnale <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">Punto di manipolazione del bordo superiore selezionato, utilizza i tasti freccia per spostarlo</translation>
 <translation id="1316069254387866896">Mostra sempre barra delle app</translation>
 <translation id="132346741904777634">Fotocamera allineata all'angolo in alto a sinistra. Conflitto con la piattaforma di sistema.</translation>
 <translation id="132415371743256095">Chiudi <ph name="DESK_NAME" /> e finestre</translation>
@@ -186,6 +187,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1557622599341396706">Mostra nome scrivania</translation>
 <translation id="1569384531973824928">Consente l'accesso per tutte le app e tutti i siti web che hanno le autorizzazioni di accesso al microfono e alla fotocamera. Potresti dover aggiornare la pagina web o riavviare l'app.</translation>
 <translation id="1571697193564730395">Attiva/disattiva Non disturbare. <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">Punto di manipolazione del bordo sinistro selezionato, utilizza i tasti freccia per spostarlo</translation>
 <translation id="1576623706766186887">Diminuisci lo zoom quando la lente d'ingrandimento è attiva</translation>
 <translation id="1582946770779745370">Pannello di gioco disponibile. Premi <ph name="LAUNCHER_KEY_NAME" /> + Maiusc + Esc, quindi <ph name="LAUNCHER_KEY_NAME" /> + G in qualsiasi momento per aprire</translation>
 <translation id="1586324912145647027">Vai alla scrivania 1 di 8</translation>
@@ -609,6 +611,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="304097922505898963">Apri l'app Key Shortcuts</translation>
 <translation id="304417730895741346">Le app bloccate e aperte si trovano nella barra delle app. Per bloccare un'app sulla barra delle app, fai clic con il tasto destro del mouse su un'app o tocca il touchpad con due dita.</translation>
 <translation id="3045488863354895414">Buon pomeriggio,</translation>
+<translation id="3045670165536837541">Punto di manipolazione in alto a destra selezionato, utilizza i tasti freccia per spostarlo</translation>
 <translation id="3047761520276763270">Prova a dire:</translation>
 <translation id="3053407068093039599">Attiva/disattiva l'accesso alla fotocamera</translation>
 <translation id="3055162170959710888">Oggi hai utilizzato questo dispositivo per <ph name="USED_TIME" /></translation>
@@ -1761,6 +1764,7 @@ Nuova installazione</translation>
 <translation id="6696025732084565524">La tastiera rimovibile richiede un aggiornamento critico</translation>
 <translation id="6697913454192220372">Aggiungi nuova scrivania</translation>
 <translation id="6700713906295497288">Pulsante di menu IME</translation>
+<translation id="6704073473590541209">Punto di manipolazione del bordo destro selezionato, utilizza i tasti freccia per spostarlo</translation>
 <translation id="6706742084323792866">Blocca tastiera</translation>
 <translation id="6710213216561001401">Precedente</translation>
 <translation id="6723839937902243910">Alimentazione</translation>
@@ -1784,6 +1788,7 @@ Nuova installazione</translation>
 <translation id="6781002679438061620">Scrivania 9</translation>
 <translation id="6782182743534150858">Scrivania 13</translation>
 <translation id="6782919488259222803">Cerca nella pagina corrente</translation>
+<translation id="6783348167101855071">Punto di manipolazione in basso a destra selezionato, utilizza i tasti freccia per spostarlo</translation>
 <translation id="6786750046913594791">Chiudi cartella</translation>
 <translation id="6790428901817661496">Riproduci</translation>
 <translation id="6792262051831399889">Non disponibile</translation>
@@ -1939,6 +1944,7 @@ Nuova installazione</translation>
 <translation id="7371404428569700291">Finestra di registrazione</translation>
 <translation id="7372069265635026568">Memoria disponibile: <ph name="AVAILABLE_MEMORY" /> su un totale di <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Consente l'accesso al microfono per tutti i siti web e le app che hanno l'autorizzazione di accesso al microfono</translation>
+<translation id="7376933029363911338">Punto di manipolazione del bordo inferiore selezionato, usa i tasti freccia per spostarlo</translation>
 <translation id="7377169924702866686">La funzione Bloc maiusc è attiva.</translation>
 <translation id="7377481913241237033">Connessione tramite codice</translation>
 <translation id="7378203170292176219">Trascina per selezionare l'area da registrare</translation>
@@ -2035,6 +2041,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7659861092419699379">La scrivania e le finestre sono state chiuse</translation>
 <translation id="7660160718439869192">Il dispositivo <ph name="NAME" /> verrà mostrato sui dispositivi collegati all'account <ph name="EMAIL" /></translation>
+<translation id="7661694115779363471">Punto di manipolazione in basso a sinistra selezionato, utilizza i tasti freccia per spostarlo</translation>
 <translation id="7662283695561029522">Tocca per configurare</translation>
 <translation id="7670953955701272011">Apri questa data in Google Calendar</translation>
 <translation id="7671610481353807627">Le app sono ordinate per colore</translation>
@@ -2203,6 +2210,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8155628902202578800">Apri la finestra di dialogo delle informazioni per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">In uso: <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Contenuti</translation>
+<translation id="8172370561760918656">Punto di manipolazione in alto a sinistra selezionato, utilizza i tasti freccia per spostarlo</translation>
 <translation id="81817143961839203">Inserimento immagine non riuscito</translation>
 <translation id="8185090165691050712">Attiva/disattiva il menu per la modalità di blocco del ridimensionamento</translation>
 <translation id="8192727139462702395">Se disattivi il Bluetooth, questi dispositivi esterni verranno scollegati da <ph name="DEVICE_TYPE" />:</translation>

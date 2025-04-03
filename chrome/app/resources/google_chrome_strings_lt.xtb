@@ -161,6 +161,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2945997411976714835">Diegimo klaida: nepavyko pradėti diegimo programos proceso.</translation>
 <translation id="2969728957078202736">„<ph name="PAGE_TITLE" />“ – prisijungimas prie tinklo – „Chrome“</translation>
 <translation id="2970681950995291301">Jei norite pašalinti „Google“ paskyrą iš „Chrome“, atsijunkite nuo „Chrome“ puslapyje „Nustatymai“</translation>
+<translation id="2991167882679440829">Slaptažodžiai ir kiti „Chrome“ duomenys, kuriuos išsaugojote „Google“ paskyroje, bus pašalinti iš šio įrenginio. Jei norite vėl juos naudoti naršyklėje „Chrome“, prisijunkite iš naujo.</translation>
 <translation id="2994465299455873643">Teikiamos šifravimo paslaugos ir suteikiamas saugus būdas atkurti naršyklę „<ph name="BROWSER_NAME" />“, jei ji pasensta. Jei ši paslauga išjungta, naršyklė „<ph name="BROWSER_NAME" />“ gali prarasti prieigą prie šifruotų duomenų ir gali nepavykti atkurti „<ph name="BROWSER_NAME" />“.</translation>
 <translation id="3003694935412297923">Visos užduotys</translation>
 <translation id="3018957014024118866">Taip pat ištrinti duomenis iš „Chrome“ (<ph name="URL" />)</translation>

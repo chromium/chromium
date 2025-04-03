@@ -61,6 +61,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1786044937610313874">Shkurtoret hapen në Chrome</translation>
 <translation id="178701303897325119">Kjo shtesë nuk mbështetet më. Chrome rekomandon që ta heqësh më mirë atë.</translation>
 <translation id="1812689907177901597">Duke çaktivizuar këtë, mund të identifikohesh në sajtet e Google si Gmail pa u identifikuar në Chrome</translation>
+<translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome rekomandon vendosjen në pauzë të skedës që ngadalëson shfletuesin}other{Chrome rekomandon vendosjen në pauzë të skedave që ngadalësojnë shfletuesin}}</translation>
 <translation id="1838374766361614909">Fshi kërkimin</translation>
 <translation id="1860536484129686729">Chrome ka nevojë për leje për t'u qasur te kamera jote për këtë sajt</translation>
 <translation id="1873233029667955273">Google Chrome nuk është shfletuesi i parazgjedhur</translation>
@@ -257,6 +258,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4281844954008187215">Kushtet e shërbimit</translation>
 <translation id="4293420128516039005">Identifikohu për të sinkronizuar dhe personalizuar Chrome nëpër pajisjet e tua</translation>
 <translation id="430327780270213103">Lejo që shtesat të shfaqin kërkesat për qasje në shiritin e veglave të Chrome</translation>
+<translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome rekomandon vendosjen në pauzë të skedës që ngadalëson shfletuesin}other{Chrome rekomandon vendosjen në pauzë të skedave që ngadalësojnë shfletuesin}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Për të marrë personalizimin dhe veçoritë e tjera, përfshi Chrome në "Aktivitetin e uebit dhe të aplikacioneve" dhe në shërbimet e lidhura të Google</translation>
 <translation id="4334294535648607276">Shkarkimi përfundoi</translation>

@@ -80,6 +80,7 @@
 <translation id="2049376729098081731">보다 맞춤설정된 Google 서비스 환경을 사용하기 위해 Chromium 방문 기록을 포함할지 선택하세요.</translation>
 <translation id="2086476982681781442">사기성 파일이며 기기에 예기치 않은 변경사항이 적용될 수 있기 때문에 Chromium에서 이 다운로드를 차단했습니다.</translation>
 <translation id="2088953378266246249">Chromium의 루트 인증서 관리 방식에 관한 정보</translation>
+<translation id="2099452623287920103">Google 계정에 저장된 비밀번호 및 기타 Chromium 데이터가 이 기기에서 삭제됩니다. Chromium에서 다시 사용하려면 다시 로그인하세요</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Chromium을 1분 동안 사용하지 않으면 조직에서 인터넷 사용 기록을 자동으로 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다. 탭이 열린 상태로 유지됩니다.}other{Chromium을 #분 동안 사용하지 않으면 조직에서 인터넷 사용 기록을 자동으로 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다. 탭이 열린 상태로 유지됩니다.}}</translation>
 <translation id="2126108037660393668">다운로드한 파일을 확인할 수 없습니다.</translation>
 <translation id="2137162749895930932">번역 화면 닫기</translation>
@@ -151,6 +152,7 @@
 <translation id="2977470724722393594">Chromium이 최신 버전임</translation>
 <translation id="2977506796191543575">사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chromium에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="2981563588585023386">부모님의 선택을 통해 온라인에서 더 안전하게 보호받으려면 Chromium에 로그인하세요</translation>
+<translation id="3003694935412297923">모든 작업</translation>
 <translation id="3013473503895162900">Chromium의 새 탭에서 <ph name="URL" /> 주소가 열립니다.</translation>
 <translation id="3032706164202344641">Chromium에서 비밀번호를 확인할 수 없습니다. 나중에 다시 시도하세요.</translation>
 <translation id="3032787606318309379">Chromium에 추가하는 중...</translation>
@@ -170,6 +172,7 @@
 <translation id="3179665906251668410">Chromium 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="3185330573522821672">새로운 Chromium 프로필 맞춤설정</translation>
 <translation id="3224847870593914902">Chromium에서 Google 계정을 삭제하려면 설정 페이지를 통해 Chromium에서 로그아웃하세요</translation>
+<translation id="3234316605225071811">나중에 Chromium에서 저장된 정보를 사용하여 양식을 자동으로 작성할지 묻습니다.</translation>
 <translation id="3258596308407688501">Chromium에서 데이터 디렉터리를 읽고 쓸 수 없습니다.
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -266,6 +269,7 @@
 <translation id="4570813286784708942">사용자가 세이프 브라우징을 사용 중지했으며 파일을 확인할 수 없기 때문에 Chromium에서 이 다운로드를 차단했습니다.</translation>
 <translation id="4594305310729380060">기기의 비밀번호 관리자에 저장합니다.</translation>
 <translation id="459535195905078186">Chromium 앱</translation>
+<translation id="4598116752460667024">목록에서 프로세스를 검색합니다.</translation>
 <translation id="4613863813562375431">ChromiumOS 버전</translation>
 <translation id="4621240073146040695">업데이트가 거의 완료되었습니다. 업데이트를 완료하려면 Chromium을 다시 시작하세요.</translation>
 <translation id="4665829708273112819">경고: Chromium에서는 확장 프로그램에 인터넷 사용 기록이 저장될 수 있습니다. 시크릿 모드에서 이 확장 프로그램을 사용 중지하려면 옵션을 선택 해제하세요.</translation>
@@ -433,6 +437,7 @@
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium에서 "<ph name="EXTENSION_NAME" />"에 멀웨어가 포함된 것을 발견했습니다.</translation>
 <translation id="6896758677409633944">복사</translation>
+<translation id="6901631050894301805">Chromium을 기본 브라우저로 설정하고 태스크 바에 고정하세요.</translation>
 <translation id="6929417474050522668">무료 체험을 사용 설정한 경우 방문하는 사이트에서는 Ad measurement를 활용해 광고의 실적을 측정하는 데 도움이 되는 정보를 Chromium에 요청할 수 있습니다. Ad measurement는 사이트 간에 최소한의 정보만 전송함으로써 크로스 사이트 추적을 제한합니다.</translation>
 <translation id="6940431691900807093">이후 방문한 사이트에서 광고 개인 최적화를 위해 내 관심분야를 알려달라고 Chromium에 요청할 수 있습니다. Chromium은 최대 3개의 관심분야를 공유할 수 있습니다.</translation>
 <translation id="6964305034639999644">Chromium 시크릿 창에서 링크 열기(&amp;G)</translation>
@@ -457,6 +462,7 @@
 <translation id="7223968959479464213">작업 관리자 - Chromium</translation>
 <translation id="7246575524853130370">Chromium에서 예측한 내 관심분야</translation>
 <translation id="7274695763216404502">고정되었습니다. 툴바에서 이미지 검색을 다시 사용해 보세요.</translation>
+<translation id="7288567540154601580">탭 및 확장 프로그램</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium에서 삭제할 것을 권장합니다.}other{Chromium에서 삭제할 것을 권장합니다.}}</translation>
 <translation id="7309928523159922338">방문하는 사이트에서는 Ad measurement를 활용해 광고의 실적을 측정하는 데 도움이 되는 정보를 Chromium에 요청할 수 있습니다. Ad measurement는 사이트 간에 최소한의 정보만 전송함으로써 크로스 사이트 추적을 제한합니다.</translation>
 <translation id="731795002583552498">Chromium 업데이트 중</translation>

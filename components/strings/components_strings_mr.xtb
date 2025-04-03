@@ -1015,6 +1015,7 @@
 <translation id="2742870351467570537">निवडलेले आयटम काढून टाका</translation>
 <translation id="2743512410823092182">डीजे स्रोत आणि उपकरणे</translation>
 <translation id="2743934314332613923">ड्रायव्हरच्या परवान्यासंबंधित माहिती अपडेट करायची आहे का?</translation>
+<translation id="2759299890026163685">पुन्हा प्रयत्न करण्यापूर्वी तुमच्याकडे स्थिर इंटरनेट कनेक्शन असल्याची खात्री करा</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> मध्ये तुमचा पासवर्ड भरा</translation>
 <translation id="2764001903315068341">कॉमिक</translation>
 <translation id="2765217105034171413">लहान</translation>
@@ -1279,6 +1280,7 @@
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> साठी CVC प्रविष्‍ट करा</translation>
 <translation id="3234666976984236645">नेहमी या साइटवर महत्त्वाचा आशय शोधा</translation>
 <translation id="323585066388831737">फिकट लाल</translation>
+<translation id="3235902901585019063">तुमच्या स्थानिक फाइल <ph name="DATE_TIME" /> वर हटवल्या जातील. कोणताही महत्त्वाचा व्यवसायासंबंधित किंवा वैयक्तिक डेटा बाह्यरीत्या स्टोअर केल्याची खात्री करा.</translation>
 <translation id="3236212803136366317">कार्डचे फायदे</translation>
 <translation id="3238395604961564389">गुप्त विंडो मध्ये लिंक उघडा</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुमच्या ब्राउझरचे रूप कस्टमाइझ करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
@@ -1756,6 +1758,7 @@
 <translation id="4031179711345676612">मायक्रोफोनला अनुमती आहे</translation>
 <translation id="4036753017940930924">प्लॉट आणि जमीन</translation>
 <translation id="4039506337798853114">तुमचा कर्सर दाखवण्यासाठी, |<ph name="ACCELERATOR" />| प्रेस करा</translation>
+<translation id="4045226534284799755">पुन्हा प्रयत्न करण्यापूर्वी तुमच्या Microsoft खात्यामध्ये साइन इन करा</translation>
 <translation id="4045441967987592849">पुन्हा उघडा</translation>
 <translation id="4047351652147966654">18 x 24 in</translation>
 <translation id="404831776305217138">"<ph name="EXTENSION_ID" />" आयडी असलेल्या एक्स्टेंशनसाठी अपडेट URL चुकीची आहे किंवा सपोर्ट नसलेली स्‍कीम वापरत आहे. सपोर्ट असलेल्या स्कीम: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> आणि <ph name="FILE_SCHEME" />.</translation>
@@ -1776,6 +1779,7 @@
 <translation id="4073797364926776829">कार्ड पहा</translation>
 <translation id="4075732493274867456">क्लायंट आणि सर्व्हर एक सामान्य SSL प्रोटोकॉल आवृत्ती किंवा सायफर संचाला सपोर्ट करीत नाही.</translation>
 <translation id="4079302484614802869">प्रॉक्सी कॉन्फिगरेशन .pac स्क्रिप्ट URL वापरण्‍यास सेट करण्‍यात आले आहे, निश्चित प्रॉक्सी सर्व्हर नव्हे.</translation>
+<translation id="4080855220442581440">शेअर केलेले टॅब स्क्रोल करा आणि झूम करा</translation>
 <translation id="4082333119419111506">पेपर (प्रिंटेट)</translation>
 <translation id="4082393374666368382">सेटिंग्ज - व्यवस्थापक</translation>
 <translation id="4084219288110917128">एन्व्हलप सी१</translation>
@@ -2044,6 +2048,7 @@
 <translation id="4521280267704259211">एन्व्हलप मोनार्क</translation>
 <translation id="4521916730539354575">डावा ट्रे</translation>
 <translation id="4522570452068850558">तपशील</translation>
+<translation id="4523580145196408446">लिंक केलेले</translation>
 <translation id="4523643381056109546">माहिती फलक</translation>
 <translation id="4524138615196389145">आतापासून WebAuthn वापरून तुमच्या कार्डांची जलद खात्री करा</translation>
 <translation id="45243788195988825"><ph name="TOPIC" /> ब्लॉक करा</translation>
@@ -2208,6 +2213,7 @@
 <translation id="4834250788637067901">Google Pay वापरून पेमेंट पद्धती, ऑफर आणि अ‍ॅड्रेस</translation>
 <translation id="4840250757394056958">तुमचा Chrome इतिहास पहा</translation>
 <translation id="484462545196658690">ऑटो</translation>
+<translation id="4844937814014739139">शेअर केलेले टॅब स्क्रोल करा आणि झूम करा</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> आणि आणखी बऱ्याच गोष्टींवर सवलत मिळवा</translation>
 <translation id="484988093836683706">डिव्हाइस अनलॉक वापरा</translation>
 <translation id="4850886885716139402">पहा</translation>
@@ -2501,6 +2507,7 @@
 <translation id="5344522958567249764">जाहिरातींशी संबंधित गोपनीयता व्यवस्थापित करा</translation>
 <translation id="5344579389779391559">या पेजवर कदाचित तुमच्याकडून शुल्क आकारले जाऊ शकते</translation>
 <translation id="5345249337934847112">पेपर (हेवीवेट कोटेड)</translation>
+<translation id="5348330584842140856">ही फाइल यापुढे अस्तित्वात नसल्यामुळे ती हलवली नव्‍हती</translation>
 <translation id="5349543692327946794">लेबल (इंकजेट)</translation>
 <translation id="5351548097010183514">बांधकामासंबंधित साहित्य आणि वस्तूंचा पुरवठा</translation>
 <translation id="5354143049423063163">हेज फंड</translation>
@@ -2765,6 +2772,7 @@
 <translation id="5826507051599432481">सामान्य नाव (CN)</translation>
 <translation id="5830698870816298009">कॅमेराचा वापर आणि त्याची हालचाल</translation>
 <translation id="583281660410589416">अज्ञात</translation>
+<translation id="5837220895135257862">पुन्हा प्रयत्न करण्यापूर्वी<ph name="CLOUD_PROVIDER" /> मध्ये जागा मोकळी करा</translation>
 <translation id="5838278095973806738">या साइटवर कोणतीही संवेदनशील माहिती (उदाहरणार्थ, पासवर्ड किंवा क्रेडिट कार्ड) एंटर करू नका, कारण आक्रमणकर्ते ती चोरू शकतात.</translation>
 <translation id="5838732667866024867">किमतीमधील बदल आलेखावर पाहण्यासाठी तुम्ही लेफ्ट/राइट अ‍ॅरो वापरू शकता</translation>
 <translation id="5840318881868981258">तुमच्या Google खाते मध्ये, <ph name="ACCOUNT" /></translation>
@@ -3117,6 +3125,7 @@
 <translation id="6405181733356710802"><ph name="APP_NAME" /> वर पुढे सुरू ठेवायचे आहे का?</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> साठी कालबाह्यता तारीख आणि CVC प्रविष्‍ट करा</translation>
 <translation id="6411107829285739505">A4x8</translation>
+<translation id="6412543105195503444">पालकांच्या मंजुरीशी संबंधित डायलॉग</translation>
 <translation id="6414010576370319452">त्वचा आणि नखांची निगा</translation>
 <translation id="6415778972515849510">तुमच्या Google खात्याचे संरक्षण करण्यात आणि तुमचा पासवर्ड बदलण्यात Chromium तुम्हाला मदत करू शकते.</translation>
 <translation id="6416877227920300343">EDP</translation>
@@ -4026,6 +4035,7 @@
 <translation id="799149739215780103">बाइंड</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> सोबत स्क्रीन शेअर करणे पुन्हा सुरू केले</translation>
 <translation id="7995512525968007366">नमूद केलेले नाही</translation>
+<translation id="7997855386298213183">शेअर केलेले टॅब</translation>
 <translation id="800218591365569300">मेमरी मोकळी करण्‍यासाठी अन्य टॅब किंवा प्रोग्राम बंद करून पहा.</translation>
 <translation id="8002230960325005199">नवीन टॅबमध्ये संबंधित साइट पहा</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>

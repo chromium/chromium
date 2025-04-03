@@ -4100,6 +4100,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3820749202859700794">SECG эллиптикалык ийри сызыгы secp521r1 (aka NIST P-521)</translation>
 <translation id="3821074617718452587">Phone Hub билдирмелери</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Кеңейтүү жактырылды}other{# кеңейтүү жактырылды}}</translation>
+<translation id="3822426549715448461">КК</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux үчүн кеминде <ph name="INSTALL_SIZE" /> орун талап кылынат.</translation>
 <translation id="3824621460022590830">Түзмөктү каттоо токени жараксыз. Түзмөктүн ээсине же администраторго кайрылыңыз. Ката коду: <ph name="ERROR_CODE" />.</translation>
@@ -4629,6 +4630,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4203769790323223880">Камераны колдонууга тыюу салынды</translation>
 <translation id="4204415812590935863">Азырынча тема түзүүгө болбойт.</translation>
 <translation id="4205157409548006256">Linux'ту конфигурациялоодо ката кетти.</translation>
+<translation id="4205643719206044108">Сунуштарды көрсөтүү үчүн сиз баш баккан сайттар жана барактардын мазмуну Google менен бөлүшүлөт</translation>
 <translation id="4206144641569145248">Келгин</translation>
 <translation id="4206323443866416204">Пикир билдирүү</translation>
 <translation id="4206585797409671301">Сурамдарды көрсөтүүгө уруксат берилди</translation>
@@ -8769,6 +8771,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7199452998289813782"><ph name="DEVICE_NAME" /> түзмөгүнө чыгарууну тындыруу</translation>
 <translation id="720110658997053098">Бул түзмөк биротоло киоск режиминде калсын</translation>
 <translation id="7201118060536064622">"<ph name="DELETED_ITEM_NAME" />" өчүрүлдү</translation>
+<translation id="7201336084980086208">Форманы тапшырганда сиз киргизген маалыматты, мисалы, айдоочунун күбөлүгүнүн же паспорттун номерин сактоону тандай аласыз</translation>
 <translation id="7201420661433230412">Файлдарды көрүү</translation>
 <translation id="7201432510117121839">Бул түзмөктө компьютердин аудиосун тышкы экранга чыгаруу колдоого алынган эмес</translation>
 <translation id="7201535955609308429">Текшерилип жатат. Күтө туруңуз</translation>

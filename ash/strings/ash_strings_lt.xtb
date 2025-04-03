@@ -112,6 +112,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1306549533752902673">REKOMENDUOJAMOS PROGRAMOS</translation>
 <translation id="1310396869741602366">Keisti toną</translation>
 <translation id="1312604459020188865">Signalo stiprumas <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">Pasirinkta viršutinė kraštinė rankenėlė, naudokite rodyklių klavišus, kad perkeltumėte</translation>
 <translation id="1316069254387866896">Visada rodyti lentyną</translation>
 <translation id="132346741904777634">Fotoaparato peržiūra pridėta viršutiniame kairiajame kampe. Nesuderinama su sistemos platforma.</translation>
 <translation id="132415371743256095">Uždaryti „<ph name="DESK_NAME" />“ ir langus</translation>
@@ -186,6 +187,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1557622599341396706">Rodyti darbalaukio pavadinimą</translation>
 <translation id="1569384531973824928">Suteikiama prieiga visoms programoms ir svetainėms, turinčioms fotoaparato ir mikrofono leidimus. Gali reikėti atnaujinti tinklalapį arba paleisti programą iš naujo.</translation>
 <translation id="1571697193564730395">Perjungti netrukdymo režimą. <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">Pasirinkta kairioji kraštinė rankenėlė, naudokite rodyklių klavišus, kad perkeltumėte</translation>
 <translation id="1576623706766186887">Tolinti, kai įjungtas didintuvas</translation>
 <translation id="1582946770779745370">Pasiekiama žaidimų informacijos suvestinė. Paspauskite <ph name="LAUNCHER_KEY_NAME" /> + „Shift“ + „Escape“, tada bet kuriuo metu <ph name="LAUNCHER_KEY_NAME" /> + g, kad atidarytumėte</translation>
 <translation id="1586324912145647027">Eiti į 1–8 darbalaukį</translation>
@@ -609,6 +611,7 @@ Kitu atveju įtaisytoji jutiklinė dalis bus vėl įjungta po <ph name="TIMEOUT_
 <translation id="304097922505898963">Atidaryti pagrindinių šaukinių programą</translation>
 <translation id="304417730895741346">Prisegtos ir atidarytos programos yra lentynoje. Jei norite prisegti programą lentynoje, dešiniuoju pelės klavišu spustelėkite programą arba palieskite jutiklinę dalį dviem pirštais.</translation>
 <translation id="3045488863354895414">Laba diena,</translation>
+<translation id="3045670165536837541">Pasirinkta viršutinė dešinioji rankenėlė, naudokite rodyklių klavišus, kad perkeltumėte</translation>
 <translation id="3047761520276763270">Pabandykite pasakyti:</translation>
 <translation id="3053407068093039599">Įjungti / išjungti prieigą prie vaizdo kameros</translation>
 <translation id="3055162170959710888">Šį įrenginį šiandien naudojote <ph name="USED_TIME" /></translation>
@@ -1764,6 +1767,7 @@ Naujas įdiegimas</translation>
 <translation id="6696025732084565524">Atjungiamai klaviatūrai reikia pritaikyti kritinį naujinį</translation>
 <translation id="6697913454192220372">Pridėti naują darbalaukį</translation>
 <translation id="6700713906295497288">IME meniu mygtukas</translation>
+<translation id="6704073473590541209">Pasirinkta dešinioji kraštinė rankenėlė, naudokite rodyklių klavišus, kad perkeltumėte</translation>
 <translation id="6706742084323792866">Prisegti klaviatūrą</translation>
 <translation id="6710213216561001401">Ankstesnė</translation>
 <translation id="6723839937902243910">Maitinimas</translation>
@@ -1787,6 +1791,7 @@ Naujas įdiegimas</translation>
 <translation id="6781002679438061620">9 darbalaukis</translation>
 <translation id="6782182743534150858">13 darbalaukis</translation>
 <translation id="6782919488259222803">Ieškoti dabartiniame puslapyje</translation>
+<translation id="6783348167101855071">Pasirinkta apatinė dešinioji rankenėlė, naudokite rodyklių klavišus, kad perkeltumėte</translation>
 <translation id="6786750046913594791">Uždaryti aplanką</translation>
 <translation id="6790428901817661496">Žaisti</translation>
 <translation id="6792262051831399889">Nepasiekiama</translation>
@@ -1942,6 +1947,7 @@ Naujas įdiegimas</translation>
 <translation id="7371404428569700291">Įrašymo langas</translation>
 <translation id="7372069265635026568">Laisvos atminties: <ph name="AVAILABLE_MEMORY" /> iš <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Tai leis pasiekti mikrofoną visoms programoms ir svetainėms, turinčioms mikrofono leidimą</translation>
+<translation id="7376933029363911338">Pasirinkta apatinė kraštinė rankenėlė, naudokite rodyklių klavišus, kad perkeltumėte</translation>
 <translation id="7377169924702866686">Įjungtas didžiųjų raidžių klavišas.</translation>
 <translation id="7377481913241237033">Susieti naudojant kodą</translation>
 <translation id="7378203170292176219">Vilkdami pasirinkite norimą įrašyti vietą</translation>
@@ -2038,6 +2044,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7659861092419699379">Darbalaukis ir langai uždaryti</translation>
 <translation id="7660160718439869192">Įrenginys „<ph name="NAME" />“ bus rodomas įrenginiuose, susietuose su <ph name="EMAIL" /></translation>
+<translation id="7661694115779363471">Pasirinkta apatinė kairioji rankenėlė, naudokite rodyklių klavišus, kad perkeltumėte</translation>
 <translation id="7662283695561029522">Palieskite, kad konfigūruotumėte</translation>
 <translation id="7670953955701272011">Atidaryti šią datą „Google“ kalendoriuje</translation>
 <translation id="7671610481353807627">Programos rūšiuojamos pagal spalvą</translation>
@@ -2206,6 +2213,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8155628902202578800">Atidaryti <ph name="USER_EMAIL_ADDRESS" /> informacijos dialogo langą</translation>
 <translation id="8167567890448493835">Naudojama: <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Turinys</translation>
+<translation id="8172370561760918656">Pasirinkta viršutinė kairioji rankenėlė, naudokite rodyklių klavišus, kad perkeltumėte</translation>
 <translation id="81817143961839203">Nepavyko įterpti vaizdo</translation>
 <translation id="8185090165691050712">Įjungti ir (arba) išjungti meniu norint pakeisti užrakinimo režimo dydį</translation>
 <translation id="8192727139462702395">Kai išjungsite „Bluetooth“, šie išoriniai įrenginiai bus atjungti nuo „<ph name="DEVICE_TYPE" />“:</translation>

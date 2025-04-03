@@ -213,6 +213,7 @@ Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph
 <translation id="8820741577754260431">Näete oma vahelehtedel hinnalangusi</translation>
 <translation id="8887921976452567404">Teie suletud vahelehti ja gruppe on võimalik avada jaotistest Hiljutised vahelehed ja Vahelehegrupid.</translation>
 <translation id="8915916167043355778">Sule kõik</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Teisalda uude aknasse}other{Teisalda teise aknasse}}</translation>
 <translation id="9090098097337832354">Selle poe teave suleti</translation>
 <translation id="9114502155681725011">Avage vahelehegrupi <ph name="TITLE_OF_GROUP" /> toimingute menüü, värv <ph name="COLOR_NAME" />.</translation>
 <translation id="9169141410816678175">Kõik kaotavad kohe juurdepääsu vahelehegrupile „<ph name="GROUP_NAME" />“ ja see kustutatakse kõigist seadmetest</translation>

@@ -4096,6 +4096,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3820749202859700794">Елиптична крива secp521r1 по SECG (позната и като NIST P-521)</translation>
 <translation id="3821074617718452587">Известия от Phone Hub</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Разширение бе одобрено}other{# разширения бяха одобрени}}</translation>
+<translation id="3822426549715448461">ДД</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">За Linux е препоръчително да разполагате с поне <ph name="INSTALL_SIZE" /> свободно място.</translation>
 <translation id="3824621460022590830">Означението за регистриране на устройството е невалидно. Моля, свържете се със собственика или администратора на устройството си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
@@ -4626,6 +4627,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4203769790323223880">Достъпът до камерата не е разрешен</translation>
 <translation id="4204415812590935863">В момента не може да се създаде тема.</translation>
 <translation id="4205157409548006256">При конфигурирането на Linux възникна грешка.</translation>
+<translation id="4205643719206044108">За да ви показваме предложения, посещаваните от вас сайтове и съдържанието на страниците се споделят с Google.</translation>
 <translation id="4206144641569145248">Извънземно</translation>
 <translation id="4206323443866416204">Сигнал с отзив</translation>
 <translation id="4206585797409671301">Има разрешение да показва заявки</translation>
@@ -8768,6 +8770,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7199452998289813782">Поставяне на пауза на предаването към „<ph name="DEVICE_NAME" />“</translation>
 <translation id="720110658997053098">Това устройство да е постоянно в павилионен режим</translation>
 <translation id="7201118060536064622">Изтрихте „<ph name="DELETED_ITEM_NAME" />“</translation>
+<translation id="7201336084980086208">Автоматичното попълване може да предлага да запазва информация, когато изпращате формуляри, като например номера на шофьорската книжка или на паспорта ви.</translation>
 <translation id="7201420661433230412">Преглед на файловете</translation>
 <translation id="7201432510117121839">Предаването на звук от работен плот не се поддържа на това устройство</translation>
 <translation id="7201535955609308429">Изчакайте, докато потвърждаването е в ход</translation>

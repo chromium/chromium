@@ -4103,6 +4103,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3820749202859700794">Cromlin eliptig SECG secp521r1 (aka NIST P-521)</translation>
 <translation id="3821074617718452587">Hysbysiadau Phone Hub</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Mae estyniad wedi'i gymeradwyo}zero{# estyniad wedi'u cymeradwyo}two{# estyniad wedi'u cymeradwyo}few{# estyniad wedi'u cymeradwyo}many{# estyniad wedi'u cymeradwyo}other{# estyniad wedi'u cymeradwyo}}</translation>
+<translation id="3822426549715448461">DD</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Argymhellir o leiaf <ph name="INSTALL_SIZE" /> o le ar gyfer Linux.</translation>
 <translation id="3824621460022590830">Mae'r tocyn cofrestru dyfeisiau yn annilys. Cysylltwch â pherchennog neu weinyddwr eich dyfais. Cod gwall: <ph name="ERROR_CODE" />.</translation>
@@ -4632,6 +4633,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4203769790323223880">Ni chaniateir camera</translation>
 <translation id="4204415812590935863">Methu â chreu thema ar hyn o bryd.</translation>
 <translation id="4205157409548006256">Bu gwall wrth ffurfweddu Linux.</translation>
+<translation id="4205643719206044108">I gynnig awgrymiadau, mae gwefannau rydych chi'n ymweld â nhw a chynnwys tudalennau yn cael eu rhannu â Google</translation>
 <translation id="4206144641569145248">Estron</translation>
 <translation id="4206323443866416204">Adroddiad Adborth</translation>
 <translation id="4206585797409671301">Caniateir dangos ceisiadau</translation>
@@ -7001,6 +7003,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5916655001090539219">Darllen awtomatig</translation>
 <translation id="5916664084637901428">Ymlaen</translation>
 <translation id="59174027418879706">Galluogwyd</translation>
+<translation id="5919305207330938913">Defnyddir yr holl ddata a gesglir yn ôl <ph name="BEGIN_LINK" />Polisi Preifatrwydd<ph name="END_LINK" /> Google.</translation>
 <translation id="5920543303088087579">Mae cysylltu â'r rhwydwaith hwn wedi'i analluogi gan eich gweinyddwr</translation>
 <translation id="5922963926582976524">Datgysylltu rhwydwaith Poethfan sydyn</translation>
 <translation id="5924047253200400718">Cael help<ph name="SCANNING_STATUS" /></translation>
@@ -7512,6 +7515,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="6283438600881103103">Byddwch yn cael eich allgofnodi yn awtomatig nawr.
 Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</translation>
 <translation id="628352644014831790">4 eiliad</translation>
+<translation id="6283823201263716145">Mae dyfeisiau Modd Demo yn anfon adroddiadau toriadau yn awtomatig yn ogystal â data diagnostig a data defnydd i Google, i helpu i wella nodweddion a pherfformiad.</translation>
 <translation id="6285120108426285413">Nid yw <ph name="FILE_NAME" /> yn cael ei lawrlwytho'n gyffredin a gall fod yn beryglus.</translation>
 <translation id="6285770818046456882">Gwnaeth y ddyfais sy'n rhannu â chi ganslo'r trosglwyddiad</translation>
 <translation id="628699625505156622">Defnyddio lleoliad. Caniatáu i apiau, gwefannau a gwasanaethau Android a ChromeOS sydd â chaniatâd lleoliad ddefnyddio lleoliad y ddyfais hon. Mae Cywirdeb Lleoliad yn darparu lleoliad mwy cywir ar gyfer apiau a gwasanaethau Android. I wneud hyn, mae Google yn prosesu gwybodaeth o bryd i'w gilydd am synwyryddion dyfais a signalau diwifr o'r ddyfais hon er mwyn canfod lleoliadau signal diwifr drwy gyfrannu torfol. Defnyddir y rhain heb adnabod unrhyw unigolyn i wella cywirdeb lleoliad a gwasanaethau seiliedig ar leoliad ac i wella, darparu, a chynnal gwasanaethau Google yn seiliedig ar fuddiannau cyfreithlon Google a thrydydd parti i wasanaethu anghenion defnyddwyr. <ph name="BEGIN_LINK1" />Dysgu rhagor am ddefnyddio lleoliad<ph name="END_LINK1" /></translation>
@@ -8781,6 +8785,7 @@ es pori a dod o hyd i wefannau y gwnaethoch ymweld â nhw. Gallwch hefyd ofyn cw
 <translation id="7199452998289813782">Seibio castio i <ph name="DEVICE_NAME" /></translation>
 <translation id="720110658997053098">Cadw'r ddyfais hon yn y modd Kiosk yn barhaol</translation>
 <translation id="7201118060536064622">Dilëwyd '<ph name="DELETED_ITEM_NAME" />'</translation>
+<translation id="7201336084980086208">Gall awtolenwi gynnig arbed gwybodaeth pan fyddwch yn cyflwyno ffurflenni, fel eich trwydded yrru neu rif pasbort</translation>
 <translation id="7201420661433230412">Gweld ffeiliau</translation>
 <translation id="7201432510117121839">Ni chefnogir castio sain bwrdd gwaith ar y ddyfais hon</translation>
 <translation id="7201535955609308429">Arhoswch tra bod dilysu ar y gweill</translation>
@@ -9382,6 +9387,7 @@ es pori a dod o hyd i wefannau y gwnaethoch ymweld â nhw. Gallwch hefyd ofyn cw
 <translation id="7641720519047586765">Cafodd y cod pas hwn ei ddileu o'r wefan hon</translation>
 <translation id="764178579712141045">Cafodd <ph name="USER_EMAIL" /> ei ychwanegu</translation>
 <translation id="7642778300616172920">Cuddio cynnwys sensitif</translation>
+<translation id="7643117827468520640">Adolygu'r telerau hyn</translation>
 <translation id="7643842463591647490">{0,plural, =1{# ffenestr ar agor}zero{# ffenestr ar agor}two{# ffenestr ar agor}few{# ffenestr ar agor}many{# ffenestr ar agor}other{# ffenestr ar agor}}</translation>
 <translation id="7643932971554933646">Gadael i'r wefan weld ffeiliau?</translation>
 <translation id="7644953783774050577">Dewis dim un</translation>

@@ -17,6 +17,7 @@
 <translation id="1052842760770519282">Some of your passwords aren't accessible</translation>
 <translation id="1058669287135776095">You’re offline. Check your Internet connection and try again.</translation>
 <translation id="10614374240317010">Never saved</translation>
+<translation id="1070689840697074178">You can download PDFs here</translation>
 <translation id="107147699690128016">If you change the file extension, the file may open in a different application and potentially be a hazard to your device.</translation>
 <translation id="1080365971383768617">Passwords on all of your devices</translation>
 <translation id="1087176310396019910">Possible spam</translation>
@@ -288,6 +289,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2362083820973145409">Signed in as <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Opens settings.</translation>
 <translation id="2363734411417672757">More pages are preloaded. Pages may be preloaded through Google servers when requested by other sites or apps.</translation>
 <translation id="2366554533468315977">Price history across the web for this option</translation>
+<translation id="2367818124433749493">Developer shortcuts</translation>
 <translation id="2385605401818128172">You can review sites that send a lot of notifications and stop them from sending more in the future</translation>
 <translation id="2386938421315164605">Hide and unhide topics</translation>
 <translation id="2390510615457643724">Do you want to download <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> again?</translation>
@@ -954,6 +956,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5456381639095306749">Download page</translation>
 <translation id="5458366071038729214">You'll find the sites that you follow here</translation>
 <translation id="5468068603361015296">Do you want to download <ph name="FILE_NAME" /> anyway?</translation>
+<translation id="5471273988133666918">Tab <ph name="TAB_TITLE" /> can't be moved</translation>
 <translation id="548278423535722844">Open in maps app</translation>
 <translation id="5492637351392383067">On-device encryption</translation>
 <translation id="549660026907543296">Join as <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1130,6 +1133,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6295158916970320988">All sites</translation>
 <translation id="6296366034485697675">Export and delete</translation>
 <translation id="629730747756840877">Account</translation>
+<translation id="6301526076346731664">Open Developer tools</translation>
 <translation id="6303969859164067831">Sign out and turn off sync</translation>
 <translation id="6307241780749477694">Verify that it's you to get all your passwords on this device</translation>
 <translation id="6312687380483398334">Web apps (quiet)</translation>

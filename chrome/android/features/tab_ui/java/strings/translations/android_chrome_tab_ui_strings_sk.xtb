@@ -213,6 +213,7 @@ Ak ju odstránite, všetci okamžite stratia prístup k skupine kariet <ph name
 <translation id="8820741577754260431">Zobrazte si na kartách poklesy cien</translation>
 <translation id="8887921976452567404">Zavreté karty a skupiny môžete znova otvoriť v sekciách Nedávne karty a Skupiny kariet.</translation>
 <translation id="8915916167043355778">Zavrieť všetko</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Presunúť do nového okna}few{Presunúť do druhého okna}many{Move to other window}other{Presunúť do druhého okna}}</translation>
 <translation id="9090098097337832354">Informácie o tomto obchode boli zavreté</translation>
 <translation id="9114502155681725011">Otvorte ponuku akcií skupiny kariet <ph name="TITLE_OF_GROUP" /> vo farbe <ph name="COLOR_NAME" />.</translation>
 <translation id="9169141410816678175">Všetci okamžite stratia prístup ku skupine kariet <ph name="GROUP_NAME" />, ktorá bude odstránená zo všetkých zariadení</translation>

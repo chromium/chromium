@@ -1015,6 +1015,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2742870351467570537">Seçilen öğeleri sil</translation>
 <translation id="2743512410823092182">DJ Kaynakları ve Donanımı</translation>
 <translation id="2743934314332613923">Sürücü belgesi güncellensin mi?</translation>
+<translation id="2759299890026163685">Tekrar denemeden önce internet bağlantınızın kesintisiz olduğundan emin olun</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> uygulamasında şifrenizi doldurmak</translation>
 <translation id="2764001903315068341">Çizgi romanlar</translation>
 <translation id="2765217105034171413">Küçük</translation>
@@ -1279,6 +1280,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> numaralı kartın CVC kodunu girin</translation>
 <translation id="3234666976984236645">Her zaman bu sitedeki önemli içeriği algıla</translation>
 <translation id="323585066388831737">Açık Kırmızı</translation>
+<translation id="3235902901585019063">Yerel dosyalar <ph name="DATE_TIME" /> tarihinde silinecek. Kritik iş veya kişisel verilerinizin harici bir depolama alanına kaydedildiğinden emin olun.</translation>
 <translation id="3236212803136366317">Kart avantajları</translation>
 <translation id="3238395604961564389">Bağlantıyı Gizli Pencere'de Aç</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tarayıcınızın görünümünü özelleştirmek için sekmeye, ardından Enter'a basın</translation>
@@ -1757,6 +1759,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4031179711345676612">Mikrofona izin verildi</translation>
 <translation id="4036753017940930924">Arsa ve Arazi</translation>
 <translation id="4039506337798853114">İmlecinizi göstermek için |<ph name="ACCELERATOR" />| tuşuna basın</translation>
+<translation id="4045226534284799755">Tekrar denemeden önce Microsoft hesabınızda oturum açın</translation>
 <translation id="4045441967987592849">Yeniden aç</translation>
 <translation id="4047351652147966654">18 x 24 inç</translation>
 <translation id="404831776305217138">"<ph name="EXTENSION_ID" />" kimliğine sahip uzantının güncelleme URL'si geçersiz veya desteklenmeyen bir şema kullanıyor. Desteklenen şemalar şunlardır: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> ve <ph name="FILE_SCHEME" />.</translation>
@@ -1777,6 +1780,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4073797364926776829">Kartı göster</translation>
 <translation id="4075732493274867456">İstemci ve sunucu, ortak bir SSL protokolü sürümünü veya şifre setini desteklemiyor.</translation>
 <translation id="4079302484614802869">Proxy yapılandırması sabit proxy sunucuları değil, bir .pac komut dosyası URL'sini kullanmak üzere ayarlandı.</translation>
+<translation id="4080855220442581440">paylaşılan sekmeleri kaydırma ve yakınlaştırma</translation>
 <translation id="4082333119419111506">Kağıt (Önceden Basılmış)</translation>
 <translation id="4082393374666368382">Ayarlar - Yönetim</translation>
 <translation id="4084219288110917128">Zarf C1</translation>
@@ -2209,6 +2213,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4834250788637067901">Google Pay'i kullanan ödeme yöntemleri, teklifler ve adresler</translation>
 <translation id="4840250757394056958">Chrome geçmişimi göster</translation>
 <translation id="484462545196658690">Auto</translation>
+<translation id="4844937814014739139">Paylaşılan sekmeleri kaydırma ve yakınlaştırma</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> ve diğer satıcılardan indirimli alışveriş yapın</translation>
 <translation id="484988093836683706">Cihazda kilit açmayı kullan</translation>
 <translation id="4850886885716139402">Görüntüle</translation>
@@ -2502,6 +2507,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5344522958567249764">Reklam gizliliğini yönet</translation>
 <translation id="5344579389779391559">Bu sayfa sizden para almaya çalışabilir</translation>
 <translation id="5345249337934847112">Kağıt (Kalın Kaplanmış)</translation>
+<translation id="5348330584842140856">Bu dosya artık mevcut olmadığı için taşınamadı</translation>
 <translation id="5349543692327946794">Etiketler (Mürekkep Püskürtmeli)</translation>
 <translation id="5351548097010183514">İnşaat Malzemeleri ve Gereçleri</translation>
 <translation id="5354143049423063163">Yüksek Riskli Yatırım Fonları</translation>
@@ -2766,6 +2772,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5826507051599432481">Genel Ad (CN)</translation>
 <translation id="5830698870816298009">kamera kullanma ve hareket ettirme</translation>
 <translation id="583281660410589416">Bilinmiyor</translation>
+<translation id="5837220895135257862">Tekrar denemeden önce <ph name="CLOUD_PROVIDER" /> depolama alanında yer açın</translation>
 <translation id="5838278095973806738">Bu sitede hiçbir hassas bilginizi (örneğin şifrelerinizi veya kredi kartı bilgilerinizi) girmemelisiniz. Aksi takdirde bu bilgiler saldırganlar tarafından çalınabilir.</translation>
 <translation id="5838732667866024867">Grafikteki fiyat değişikliklerini incelemek için sol/sağ oku kullanabilirsiniz</translation>
 <translation id="5840318881868981258">Google Hesabınızda, <ph name="ACCOUNT" /></translation>
@@ -4026,6 +4033,7 @@ Ek ayrıntılar:
 <translation id="799149739215780103">Bağlama</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> ile ekran paylaşımı devam ettirildi</translation>
 <translation id="7995512525968007366">Belirtilmedi</translation>
+<translation id="7997855386298213183">paylaşılan sekmeler</translation>
 <translation id="800218591365569300">Bellekte yer açmak için diğer sekmeleri veya programları kapatmayı deneyin.</translation>
 <translation id="8002230960325005199">İlgili siteler yeni bir sekmede gösterilir</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
@@ -4100,6 +4108,7 @@ Ek ayrıntılar:
 <translation id="812020627659652807">Dosyaları hemen sil</translation>
 <translation id="8120720167840853945">Bu politika, başka hiçbir politikanın varsayılan davranışını kontrol etmiyor.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" yazılımı bilgisayarınıza veya ağa düzgün şekilde yüklenmemiş. BT yöneticinizden sorunu çözmesini isteyin.</translation>
+<translation id="8130113808541743942">Şuraya taşı...</translation>
 <translation id="8131740175452115882">Onayla</translation>
 <translation id="8133495915926741232">Reklamların kişiselleştirilmesine yardımcı olmak için kullanılacak geniş kapsamlı konu kategorilerini seçin. Daha geniş kapsamlı bir kategori devre dışı bırakıldığında bu kategoriyle ilgili konular da engellenir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">İşe Alım ve Kadrolar</translation>

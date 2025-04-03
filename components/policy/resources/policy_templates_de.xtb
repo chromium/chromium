@@ -4321,6 +4321,9 @@ Hinweis: Wenn interne URLs von „chrome://*“ und „chrome-untrusted://*“ b
       In Kiosksitzungen gibt es keine Frist und keine Benachrichtigungen zum Neustart.
 </translation>
 <translation id="4187576366596772431">WebHID API auf diesen Websites blockieren</translation>
+<translation id="4188427466177877986">Ist die Richtlinie aktiviert oder nicht konfiguriert, können Nutzer ihre Pakete in <ph name="PRODUCT_NAME" /> über die Seite „Neuer Tab“ verfolgen.
+Ist die Richtlinie deaktiviert, können Nutzer ihre Pakete in <ph name="PRODUCT_NAME" /> nicht über die Seite „Neuer Tab“ verfolgen.
+Nicht mehr unterstützt: Die Paketverfolgung ist seit M132 deaktiviert und diese Richtlinie hat seitdem keine Auswirkungen.</translation>
 <translation id="4189100643304138928">Liste der Einstellungen für Chrome Enterprise Connectors-Dienste für den Enterprise Connector „<ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" />“. Dieser wird ausgelöst, wenn eine Datei an eine Seite in Chrome angehängt wird.
 
       Mit den Feldern „<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />“ und „<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />“ wird festgelegt, ob der Connector eine Datei zur Analyse senden soll, wenn sie an eine bestimmte Seite angehängt wird, und welche Tags für die Analyseanfrage verwendet werden sollen. Ein Tag, das einem „enable“-Muster entspricht, wird der Anfrage hinzugefügt, wenn die Seiten-URL mit einem für das jeweilige Tag passenden Muster übereinstimmt – jedoch nur, wenn kein „disable“-Muster mit demselben Tag mit der Seiten-URL übereinstimmt. Die Analyse wird durchgeführt, wenn die Anfrage mindestens ein Tag enthält.
@@ -7666,6 +7669,15 @@ HINWEIS: Das Standardverhalten hängt davon ab, ob es sich um ein Verbraucherger
       2) Der Systemsprache.
       3) Der Ersatzsprache (en-US).</translation>
 <translation id="6493089139124468815">Websites erlauben, den Nutzer zu bitten, die Zwischenablage verwenden zu dürfen</translation>
+<translation id="6493557163786346587">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer nicht um Zugriff auf einen seriellen Port bitten dürfen.
+
+Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
+
+Bei URL-Mustern, die nicht der Richtlinie entsprechen, haben „<ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />“ (falls eine Übereinstimmung besteht), „<ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />“ (falls konfiguriert) oder die persönlichen Einstellungen des Nutzers Vorrang – in dieser Reihenfolge.
+
+Wenn URL-Muster im Konflikt mit „<ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />“ stehen, hat diese Richtlinie Vorrang.
+
+Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. „<ph name="WILDCARD_VALUE" />“ ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="6493918190032622602">Mindestversion von <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="6495337487202227251">Diese Richtlinie ist veraltet und wird in Version 85 von <ph name="PRODUCT_OS_NAME" /> entfernt. Bitte verwende stattdessen die Richtlinie "<ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />".
 
@@ -10192,6 +10204,15 @@ Hinweis: Diese Richtlinie ist eine vorübergehende Lösung, um die Umstellung vo
 <translation id="8371178326720637170">Ermöglicht verwalteten Erweiterungen, die Enterprise Hardware Platform API zu verwenden</translation>
 <translation id="8373176843640227330">Melden der Bluetooth-Informationen auf Geräten deaktivieren</translation>
 <translation id="8375817202037102567">Schreibzugriff auf Dateien und Verzeichnisse auf diesen Websites blockieren</translation>
+<translation id="837805585374308454">Wenn die Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer um Zugriff auf einen seriellen Port bitten dürfen.
+
+Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, werden die persönlichen Einstellungen des Nutzers verwendet.
+
+Bei URL-Mustern, die nicht der Richtlinie entsprechen, haben „<ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />“ (falls eine Übereinstimmung besteht), „<ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />“ (falls konfiguriert) oder die persönlichen Einstellungen des Nutzers Vorrang – in dieser Reihenfolge.
+
+Wenn URL-Muster im Konflikt mit „<ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />“ stehen, werden sie ignoriert.
+
+Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. „<ph name="WILDCARD_VALUE" />“ ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="8378266419596669629">Berechtigung für lokale Schriftarten auf diesen Websites blockieren</translation>
 <translation id="8379281645427937253">Eine Liste von TLS-Zertifikaten, die von <ph name="PRODUCT_NAME" /> für die Serverauthentifizierung als vertrauenswürdig eingestuft werden sollen.
 Zertifikate müssen mit Base64 codiert sein.</translation>

@@ -112,6 +112,7 @@
 <translation id="1306549533752902673">AJÁNLOTT ALKALMAZÁSOK</translation>
 <translation id="1310396869741602366">Hangszín módosítása</translation>
 <translation id="1312604459020188865">Jelerősség: <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">A felső középső fogópont kiválasztva, a nyílbillentyűkkel mozgathatja</translation>
 <translation id="1316069254387866896">Mindig látsszon a polc</translation>
 <translation id="132346741904777634">Kamera a bal felső sarokhoz igazítva. Ütközés a rendszerfelülettel.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> és az ablakok bezárása</translation>
@@ -186,6 +187,7 @@
 <translation id="1557622599341396706">Asztal nevének megjelenítése</translation>
 <translation id="1569384531973824928">Ezzel engedélyezi a hozzáférést a kamera- és mikrofonengedéllyel rendelkező összes alkalmazás és webhely számára. Előfordulhat, hogy frissítenie kell a weboldalt, vagy újra kell indítania az alkalmazást.</translation>
 <translation id="1571697193564730395">A Ne zavarjanak mód ki- vagy bekapcsolása. <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">A bal oldali középső fogópont kiválasztva, a nyílbillentyűkkel mozgathatja</translation>
 <translation id="1576623706766186887">Kicsinyítés, ha a nagyító be van kapcsolva</translation>
 <translation id="1582946770779745370">Rendelkezésre áll a Játékok irányítópultja. A megnyitáshoz nyomja meg bármikor a következőket: <ph name="LAUNCHER_KEY_NAME" /> + Shift + Esc, majd <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
 <translation id="1586324912145647027">Lépjen az 1–8. asztal valamelyikéhez.</translation>
@@ -609,6 +611,7 @@ Ellenkező esetben a beépített érintőpad <ph name="TIMEOUT_SECONDS" /> múlv
 <translation id="304097922505898963">A Billentyűparancsok alkalmazás megnyitása</translation>
 <translation id="304417730895741346">A kitűzött és a megnyitott alkalmazások a polcon találhatók. Ha ki szeretne tűzni egy alkalmazást a polcra, kattintson jobb egérgombbal az alkalmazásra vagy két ujjával koppintson az érintőpadra.</translation>
 <translation id="3045488863354895414">Jó napot!</translation>
+<translation id="3045670165536837541">A jobb felső fogópont kiválasztva, a nyílbillentyűkkel mozgathatja</translation>
 <translation id="3047761520276763270">Mondja azt, hogy:</translation>
 <translation id="3053407068093039599">Kamera-hozzáférés be-/kikapcsolása</translation>
 <translation id="3055162170959710888">Az eszköz mai használatának teljes időtartama: <ph name="USED_TIME" /></translation>
@@ -1765,6 +1768,7 @@ Frissen telepítve</translation>
 <translation id="6696025732084565524">Szükség van a leválasztható billentyűzet kritikus frissítésének telepítésére</translation>
 <translation id="6697913454192220372">Új asztal hozzáadása</translation>
 <translation id="6700713906295497288">IME-menü gomb</translation>
+<translation id="6704073473590541209">A jobb oldali középső fogópont kiválasztva, a nyílbillentyűkkel mozgathatja</translation>
 <translation id="6706742084323792866">Billentyűzet kitűzése</translation>
 <translation id="6710213216561001401">Előző</translation>
 <translation id="6723839937902243910">Energiaellátás</translation>
@@ -1788,6 +1792,7 @@ Frissen telepítve</translation>
 <translation id="6781002679438061620">9. asztal</translation>
 <translation id="6782182743534150858">13. asztal</translation>
 <translation id="6782919488259222803">Keresés az aktuális oldalon</translation>
+<translation id="6783348167101855071">A jobb alsó fogópont kiválasztva, a nyílbillentyűkkel mozgathatja</translation>
 <translation id="6786750046913594791">Mappa bezárása</translation>
 <translation id="6790428901817661496">Lejátszás</translation>
 <translation id="6792262051831399889">Nem áll rendelkezésre</translation>
@@ -1943,6 +1948,7 @@ Frissen telepítve</translation>
 <translation id="7371404428569700291">Felvétel készítése az ablakról</translation>
 <translation id="7372069265635026568"><ph name="TOTAL_MEMORY" />/<ph name="AVAILABLE_MEMORY" /> memória áll rendelkezésre</translation>
 <translation id="737315737514430195">Ezzel engedélyezi a mikrofonhoz való hozzáférést a mikrofonhasználati engedéllyel rendelkező összes alkalmazás és webhely számára</translation>
+<translation id="7376933029363911338">Az alsó középső fogópont kiválasztva, a nyílbillentyűkkel mozgathatja</translation>
 <translation id="7377169924702866686">A Caps Lock be van kapcsolva.</translation>
 <translation id="7377481913241237033">Összekapcsolás kód használatával</translation>
 <translation id="7378203170292176219">Húzással jelöljön ki egy területet a videó készítéséhez</translation>
@@ -2039,6 +2045,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7659861092419699379">Az asztal és az ablakok be vannak zárva</translation>
 <translation id="7660160718439869192">A(z) <ph name="NAME" /> a következőkkel társított eszközökön jelenik meg: <ph name="EMAIL" /></translation>
+<translation id="7661694115779363471">A bal alsó fogópont kiválasztva, a nyílbillentyűkkel mozgathatja</translation>
 <translation id="7662283695561029522">Koppintson a konfiguráláshoz</translation>
 <translation id="7670953955701272011">Ennek a napnak a megnyitása a Google Naptárban</translation>
 <translation id="7671610481353807627">Az alkalmazások szín szerint rendezettek</translation>
@@ -2207,6 +2214,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8155628902202578800">Információs párbeszédpanel, <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> nyelv használata</translation>
 <translation id="8168435359814927499">Tartalom</translation>
+<translation id="8172370561760918656">A bal felső fogópont kiválasztva, a nyílbillentyűkkel mozgathatja</translation>
 <translation id="81817143961839203">Nem sikerült a kép beszúrása</translation>
 <translation id="8185090165691050712">A zárolt üzemmód átméretezésére szolgáló menü be- vagy kikapcsolása</translation>
 <translation id="8192727139462702395">A Bluetooth kikapcsolásakor megszakad a(z) Ön <ph name="DEVICE_TYPE" /> eszköze és a következő külső eszközök közötti kapcsolat:</translation>

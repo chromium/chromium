@@ -112,6 +112,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1306549533752902673">APL YANG DISYORKAN</translation>
 <translation id="1310396869741602366">Ubah nada teks</translation>
 <translation id="1312604459020188865">Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">Pemegang bahagian sisi sebelah atas dipilih, gunakan kekunci anak panah untuk digerakkan</translation>
 <translation id="1316069254387866896">Sentiasa tunjukkan rak</translation>
 <translation id="132346741904777634">Kamera diautojajar ke penjuru kiri sebelah atas. Bercanggah dengan permukaan sistem.</translation>
 <translation id="132415371743256095">Tutup <ph name="DESK_NAME" /> dan tetingkap</translation>
@@ -186,6 +187,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1557622599341396706">Tunjukkan nama meja</translation>
 <translation id="1569384531973824928">Tindakan ini akan membenarkan akses kepada semua apl dan laman web dengan kebenaran kamera dan mikrofon. Anda mungkin perlu menyegarkan semula halaman web atau memulakan semula apl.</translation>
 <translation id="1571697193564730395">Togol Jangan Ganggu. <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">Pemegang bahagian sisi sebelah kiri dipilih, gunakan kekunci anak panah untuk digerakkan</translation>
 <translation id="1576623706766186887">Zum keluar apabila penggadang dihidupkan</translation>
 <translation id="1582946770779745370">Papan Pemuka Permainan tersedia. Tekan <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, kemudian <ph name="LAUNCHER_KEY_NAME" /> + g pada bila-bila masa untuk membuka</translation>
 <translation id="1586324912145647027">Pergi ke meja 1 hingga 8</translation>
@@ -609,6 +611,7 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="304097922505898963">Buka apl Pintasan Kekunci</translation>
 <translation id="304417730895741346">Apl anda yang disematkan dan dibuka berada pada rak. Untuk menyematkan apl pada rak, klik kanan apl atau ketik pad sentuh menggunakan dua jari.</translation>
 <translation id="3045488863354895414">Selamat tengah hari,</translation>
+<translation id="3045670165536837541">Pemegang bahagian atas sebelah kanan dipilih, gunakan kekunci anak panah untuk digerakkan</translation>
 <translation id="3047761520276763270">Cuba sebut:</translation>
 <translation id="3053407068093039599">Hidupkan/matikan akses kamera</translation>
 <translation id="3055162170959710888">Anda menggunakan peranti ini selama <ph name="USED_TIME" /> hari ini</translation>
@@ -1764,6 +1767,7 @@ Pemasangan baharu</translation>
 <translation id="6696025732084565524">Papan kekunci anda yang boleh dicabut memerlukan kemas kini kritikal</translation>
 <translation id="6697913454192220372">Tambahkan meja baharu</translation>
 <translation id="6700713906295497288">Butang menu IME</translation>
+<translation id="6704073473590541209">Pemegang bahagian sisi sebelah kanan dipilih, gunakan kekunci anak panah untuk digerakkan</translation>
 <translation id="6706742084323792866">Papan kekunci PIN</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
 <translation id="6723839937902243910">Kuasa</translation>
@@ -1787,6 +1791,7 @@ Pemasangan baharu</translation>
 <translation id="6781002679438061620">Meja 9</translation>
 <translation id="6782182743534150858">Meja 13</translation>
 <translation id="6782919488259222803">Cari halaman semasa</translation>
+<translation id="6783348167101855071">Pemegang bahagian bawah sebelah kanan dipilih, gunakan kekunci anak panah untuk digerakkan</translation>
 <translation id="6786750046913594791">Tutup folder</translation>
 <translation id="6790428901817661496">Mainkan</translation>
 <translation id="6792262051831399889">Tidak tersedia</translation>
@@ -1942,6 +1947,7 @@ Pemasangan baharu</translation>
 <translation id="7371404428569700291">Rakam tetingkap</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> memori tersedia daripada jumlah <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Ini membenarkan akses mikrofon untuk semua apl dan laman web yang mempunyai kebenaran mikrofon</translation>
+<translation id="7376933029363911338">Pemegang bahagian sisi sebelah bawah dipilih, gunakan kekunci anak panah untuk digerakkan</translation>
 <translation id="7377169924702866686">Caps Lock dihidupkan.</translation>
 <translation id="7377481913241237033">Sambung menggunakan kod</translation>
 <translation id="7378203170292176219">Seret untuk memilih kawasan yang hendak dirakam</translation>
@@ -2038,6 +2044,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7659861092419699379">Meja dan tetingkap telah ditutup</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> anda akan dipaparkan pada peranti yang dipaut dengan <ph name="EMAIL" /></translation>
+<translation id="7661694115779363471">Pemegang bahagian bawah sebelah kiri dipilih, gunakan kekunci anak panah untuk digerakkan</translation>
 <translation id="7662283695561029522">Ketik untuk membuat konfigurasi</translation>
 <translation id="7670953955701272011">Buka tarikh ini dalam Google Calendar</translation>
 <translation id="7671610481353807627">Apl diisih mengikut warna</translation>
@@ -2206,6 +2213,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8155628902202578800">Buka dialog maklumat untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Menggunakan <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Kandungan</translation>
+<translation id="8172370561760918656">Pemegang bahagian atas sebelah kiri dipilih, gunakan kekunci anak panah untuk digerakkan</translation>
 <translation id="81817143961839203">Penyisipan imej gagal</translation>
 <translation id="8185090165691050712">Hidupkan/Matikan menu untuk mengubah saiz mod kunci</translation>
 <translation id="8192727139462702395">Apabila anda mematikan Bluetooth, peranti luaran ini akan diputuskan sambungan daripada <ph name="DEVICE_TYPE" /> anda:</translation>

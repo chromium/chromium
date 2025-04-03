@@ -213,6 +213,7 @@
 <translation id="8820741577754260431">在分頁上查看降價資料</translation>
 <translation id="8887921976452567404">你可以在「最近開啟的分頁」和「分頁群組」部分重新開啟已關閉的分頁和群組。</translation>
 <translation id="8915916167043355778">全部關閉</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{移到新視窗}other{移到其他視窗}}</translation>
 <translation id="9090098097337832354">閂咗關於呢間商店嘅資料</translation>
 <translation id="9114502155681725011">開啟分頁群組「<ph name="TITLE_OF_GROUP" />」的操作選單，顏色為「<ph name="COLOR_NAME" />」。</translation>
 <translation id="9169141410816678175">所有人將立即無法再存取「<ph name="GROUP_NAME" />」分頁群組，此分頁群組亦會從所有裝置刪除</translation>

@@ -105,6 +105,7 @@
 <translation id="1411386976162024013">Recherche visuelle Lens</translation>
 <translation id="1417474386970818917">Se déconnecter et supprimer</translation>
 <translation id="1426410128494586442">Oui</translation>
+<translation id="1429187656584513419">Ouvrez Mots de passe</translation>
 <translation id="1430915738399379752">Imprimer</translation>
 <translation id="1436671784520050284">Poursuivre la configuration</translation>
 <translation id="143681031165817424">Adresse enregistrée uniquement sur cet appareil</translation>
@@ -590,6 +591,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3530206579861815432">Retrouvez rapidement les onglets ouverts et fermés récemment sur vos appareils synchronisés.</translation>
 <translation id="3530767473765895035">Gérer les comptes sur cet appareil…</translation>
 <translation id="3533436815740441613">Nouvel onglet</translation>
+<translation id="3533860663366814939">Ouvrez les réglages "Remplissage automatique et mots de passe"</translation>
 <translation id="3547356470684043247">Lire les évaluations des clients sur les produits, services ou expériences pour prendre des décisions éclairées</translation>
 <translation id="3557336313807607643">Ajouter aux contacts</translation>
 <translation id="355765753469272474">Annuler</translation>
@@ -1512,6 +1514,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7431851541687113774">Désactiver la détection d'adresse</translation>
 <translation id="7431991332293347422">Contrôlez la manière dont votre historique de navigation est utilisé pour personnaliser la recherche et plus</translation>
 <translation id="7435356471928173109">Mode désactivé par votre administrateur</translation>
+<translation id="7437712592381799950">Vous pouvez balayer l'écran vers le haut pour voir plus de contenus personnalisés.</translation>
 <translation id="7438481509621345350">Vous verrez les stories de <ph name="CHANNEL_NAME" /> quand vous ouvrirez un nouvel onglet.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Favori enregistré dans "{title}"}one{Favori enregistré dans "{title}"}other{Favoris enregistrés dans "{title}"}}</translation>
 <translation id="7451404862887877229">Appuyez sur "Confidentialité et sécurité", puis sur "Navigation sécurisée"</translation>
@@ -1614,6 +1617,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="784934925303690534">Période</translation>
 <translation id="7851858861565204677">Autres appareils</translation>
 <translation id="7853202427316060426">Activité</translation>
+<translation id="7854006015462979438">Ouvrez "Général"</translation>
 <translation id="7859988229622350291">Ne jamais traduire</translation>
 <translation id="7863211248337747225">Obtenir l'appli</translation>
 <translation id="7865127013871431856">Options de traduction</translation>

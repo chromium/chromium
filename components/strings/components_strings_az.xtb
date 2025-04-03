@@ -1015,6 +1015,7 @@
 <translation id="2742870351467570537">Seçilmiş elementləri silin</translation>
 <translation id="2743512410823092182">DJ resurs və avadanlığı</translation>
 <translation id="2743934314332613923">Sürücülük vəsiqəsi güncəllənsin?</translation>
+<translation id="2759299890026163685">Yenidən cəhd etməzdən əvvəl sabit internet bağlantısı olduğundan əmin olun</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> tətbiqində parolunuzu daxil edin</translation>
 <translation id="2764001903315068341">Komiks</translation>
 <translation id="2765217105034171413">Kiçik</translation>
@@ -1277,6 +1278,7 @@
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> üçün CVC kodu daxil edin</translation>
 <translation id="3234666976984236645">Bu saytda həmişə önəmli məzmunu aşkarlayın</translation>
 <translation id="323585066388831737">Açıq Qırmızı</translation>
+<translation id="3235902901585019063">Lokal fayllar <ph name="DATE_TIME" /> tarixində silinəcək. Vacib biznes və ya şəxsi məlumatların xarici qaydada saxlanıldığına əmin olun.</translation>
 <translation id="3236212803136366317">Kart faydaları</translation>
 <translation id="3238395604961564389">Keçidi Anonim Pəncərədə açın</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq brauzerinizin görünüşünü fərdiləşdirin</translation>
@@ -1753,6 +1755,7 @@
 <translation id="4031179711345676612">Mikrofona icazə verildi</translation>
 <translation id="4036753017940930924">Ərazi və Torpaq Sahələri</translation>
 <translation id="4039506337798853114">Kursoru göstərmək üçün |<ph name="ACCELERATOR" />| üzərinə basın</translation>
+<translation id="4045226534284799755">Yenidən cəhd etməzdən əvvəl Microsoft hesabına daxil olun</translation>
 <translation id="4045441967987592849">Yenidən açın</translation>
 <translation id="4047351652147966654">18 x 24 düym</translation>
 <translation id="404831776305217138">"<ph name="EXTENSION_ID" />" ID-li artırma üçün güncəllənmə URL-i yanlışdır, yaxud sxemi dəstəklənmir. Dəstəklənən sxemlər: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> və <ph name="FILE_SCHEME" />.</translation>
@@ -1773,6 +1776,7 @@
 <translation id="4073797364926776829">Karta baxın</translation>
 <translation id="4075732493274867456">Klient və server ümumi SSL protokol versiyasını və ya şifrə dəstini dəstəkləmir.</translation>
 <translation id="4079302484614802869">Proksi konfiqurasiyası sabit proksi serverlər deyil, .pac skript URL istifadə etmək üçün ayarlanıb.</translation>
+<translation id="4080855220442581440">paylaşılan tabların sürüşdürülməsi və miqyasının dəyişdirilməsi</translation>
 <translation id="4082333119419111506">Kağız (ön çaplı)</translation>
 <translation id="4082393374666368382">Ayarlar - İdarəetmə</translation>
 <translation id="4084219288110917128">Zərf C1</translation>
@@ -2205,6 +2209,7 @@
 <translation id="4834250788637067901">Google Pay istifadə edən ödəniş metodları, təkliflər və ünvanlar</translation>
 <translation id="4840250757394056958">Chrome tarixçənizə baxın</translation>
 <translation id="484462545196658690">Avtomatik</translation>
+<translation id="4844937814014739139">Paylaşılan tabların sürüşdürülməsi və miqyasının dəyişdirilməsi</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> və digərləri üçün endirim əldə edin</translation>
 <translation id="484988093836683706">Cihazın kiliddən çıxarılmasından istifadə edin</translation>
 <translation id="4850886885716139402">Görünüş</translation>
@@ -2498,6 +2503,7 @@
 <translation id="5344522958567249764">Reklam məxfiliyini idarə edin</translation>
 <translation id="5344579389779391559">Bu səhifədə Sizdən ödəniş tutula bilər</translation>
 <translation id="5345249337934847112">Kağız (ağır örtüklü)</translation>
+<translation id="5348330584842140856">Bu fayl artıq mövcud olmadığı üçün köçürülmədi.</translation>
 <translation id="5349543692327946794">Etiket (mürəkkəbli)</translation>
 <translation id="5351548097010183514">Tikinti material və ləvazimatları</translation>
 <translation id="5354143049423063163">Hedge Fondlar</translation>
@@ -2762,6 +2768,7 @@
 <translation id="5826507051599432481">Ümumi Adı (CN)</translation>
 <translation id="5830698870816298009">kameranın istifadəsi və hərəkət etdirilməsi</translation>
 <translation id="583281660410589416">Naməlum</translation>
+<translation id="5837220895135257862">Yenidən cəhd etməzdən əvvəl <ph name="CLOUD_PROVIDER" /> buludunda yaddaş yeri boşaldın</translation>
 <translation id="5838278095973806738">Bu saytda hər hansı həssəs məlumatı (məsələn, parollar və kredit kartları) yerləşdirməməlisiniz, cünki, hücumçular tərəfindən oğurlana bilər.</translation>
 <translation id="5838732667866024867">Qrafikdə qiymət dəyişikliklərini nəzərdən keçirmək üçün sol/sağ oxdan istifadə edə bilərsiniz</translation>
 <translation id="5840318881868981258"><ph name="ACCOUNT" /> Google Hesabınızda</translation>
@@ -4021,6 +4028,7 @@
 <translation id="799149739215780103">Uclarını qovuşdurun</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> ilə ekran paylaşımı davam etdirilib</translation>
 <translation id="7995512525968007366">Göstərilməəyib</translation>
+<translation id="7997855386298213183">paylaşılan tablar</translation>
 <translation id="800218591365569300">Yaddaşı boşaltmaq üçün digər tab və proqramları bağlayın.</translation>
 <translation id="8002230960325005199">Əlaqədar saytlara yeni tabda baxın</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
@@ -4095,6 +4103,7 @@
 <translation id="812020627659652807">Faylları silin</translation>
 <translation id="8120720167840853945">Bu siyasət digər siyasətlərin defolt rəftarına nəzarət etmir.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" kompüter və ya şəbəkənizdə düzgün quraşdırılmayıb. IT administratorunuzdan bu problemi həll etməyi tələb edin.</translation>
+<translation id="8130113808541743942">Bura köçürün...</translation>
 <translation id="8131740175452115882">Təsdiq edin</translation>
 <translation id="8133495915926741232">Reklamları fərdiləşdirmək üçün istifadə olunacaq geniş mövzu kateqoriyalarını seçin. Daha geniş kateqoriyanın deaktiv edilməsi əlaqədar mövzuları da bloklayacaq. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">İşə qəbul və iş heyəti</translation>
